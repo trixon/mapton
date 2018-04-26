@@ -101,6 +101,7 @@
                     <installerOsSolaris>false</installerOsSolaris>
                     <installerOsMacosx>false</installerOsMacosx>
                     <installerLicenseFile>../LICENSE</installerLicenseFile>
+                    <etcConfFile>src/main/resources/mapton.conf</etcConfFile>
                 </configuration>
             </plugin>
         </plugins>
