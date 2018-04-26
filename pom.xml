@@ -99,4 +99,5 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <almond.version>2.0.0-SNAPSHOT</almond.version>
     </properties>
+    <description>Some kind of map application</description>
 </project>

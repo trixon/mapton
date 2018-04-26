@@ -34,5 +34,12 @@
             <artifactId>org-netbeans-api-annotations-common</artifactId>
             <version>${netbeans.version}</version>
         </dependency>
+
+        <!-- Trixon -->
+        <dependency>
+            <groupId>se.trixon.almond</groupId>
+            <artifactId>almond-nbp</artifactId>
+            <version>${almond.version}</version>
+        </dependency>
     </dependencies>
 </project>
