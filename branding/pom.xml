@@ -9,10 +9,10 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>branding</artifactId>
+    <artifactId>mapton-branding</artifactId>
     <packaging>nbm</packaging>
 
-    <name>branding</name>
+    <name>mapton-branding</name>
 
     <dependencies>
         <dependency>
