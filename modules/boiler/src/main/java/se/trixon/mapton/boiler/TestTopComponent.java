@@ -10,9 +10,6 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
-import se.trixon.almond.nbp.about.AboutAction;
-import se.trixon.almond.util.AboutModel;
-import se.trixon.almond.util.SystemHelper;
 
 /**
  * Top component which displays something.
@@ -82,9 +79,6 @@ public final class TestTopComponent extends TopComponent {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        AboutModel aboutModel = new AboutModel(SystemHelper.getBundle(getClass(), "about"),
-                SystemHelper.getResourceAsImageIcon(getClass(), "logo.png"));
-        AboutAction.setAboutModel(aboutModel);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
