@@ -90,6 +90,19 @@
             <artifactId>mapton-branding</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- Trixon -->
+        <dependency>
+            <groupId>se.trixon.almond</groupId>
+            <artifactId>almond-nbp-actions</artifactId>
+            <version>${almond.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
