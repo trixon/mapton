@@ -3,9 +3,10 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>se.trixon.mapo</groupId>
+        <groupId>se.trixon.mapton</groupId>
         <artifactId>mapton-parent</artifactId>
         <version>0.0.1-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>mapton-app</artifactId>
@@ -23,7 +24,67 @@
             <artifactId>platform</artifactId>
             <version>${netbeans.version}</version>
             <type>pom</type>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.netbeans.modules</groupId>
+                    <artifactId>org-netbeans-modules-junitlib</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.netbeans.api</groupId>
+                    <artifactId>org-netbeans-api-htmlui</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.netbeans.modules</groupId>
+                    <artifactId>org-netbeans-modules-templatesui</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.netbeans.api</groupId>
+                    <artifactId>org-netbeans-api-progress-compat8</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.netbeans.api</groupId>
+                    <artifactId>org-netbeans-api-visual</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.netbeans.api</groupId>
+                    <artifactId>org-netbeans-libs-junit4</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.netbeans.api</groupId>
+                    <artifactId>org-netbeans-libs-testng</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.netbeans.api</groupId>
+                    <artifactId>org-openide-execution-compat8</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.netbeans.api</groupId>
+                    <artifactId>org-jdesktop-layout</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.netbeans.api</groupId>
+                    <artifactId>org-netbeans-libs-javafx</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.netbeans.api</groupId>
+                    <artifactId>org-netbeans-libs-jsr223</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.netbeans.api</groupId>
+                    <artifactId>org-openide-compat</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.netbeans.modules</groupId>
+                    <artifactId>org-netbeans-modules-core-kit</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.netbeans.modules</groupId>
+                    <artifactId>org-netbeans-modules-favorites</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
+
+        <!-- Mapton -->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>mapton-branding</artifactId>
@@ -36,6 +97,11 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>nbm-maven-plugin</artifactId>
+                <configuration>
+                    <installerOsSolaris>false</installerOsSolaris>
+                    <installerOsMacosx>false</installerOsMacosx>
+                    <installerLicenseFile>../LICENSE</installerLicenseFile>
+                </configuration>
             </plugin>
         </plugins>
     </build>

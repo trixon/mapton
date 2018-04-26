@@ -3,19 +3,40 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>se.trixon.mapo</groupId>
+    <groupId>se.trixon.mapton</groupId>
     <artifactId>mapton-parent</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>mapton-parent</name>
+    <url>https://github.com/trixon/netbeans-mapton</url>
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+    <developers>
+        <developer>
+            <id>trixon</id>
+            <name>Patrik Karlström</name>
+            <roles>
+                <role>architect</role>
+                <role>developer</role>
+            </roles>
+            <email>patrik@trixon.se</email>
+            <url>https://trixon.se</url>
+            <timezone>+1</timezone>
+        </developer>
+    </developers>
+    <scm>
+        <url>https://github.com/trixon/netbeans-mapton</url>
+        <connection>scm:git:git://github.com/trixon/netbeans-mapton.git</connection>
+        <developerConnection>scm:git:git@github.com:trixon/netbeans-mapton.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
 
     <repositories>
-        <!--
-        Repository hosting NetBeans modules, especially APIs.
-        Versions are based on IDE releases, e.g.: RELEASE691
-        To create your own repository, use: nbm:populate-repository
-        -->
         <repository>
             <id>netbeans</id>
             <name>NetBeans</name>
@@ -34,6 +55,7 @@
                     <configuration>
                         <brandingToken>${brandingToken}</brandingToken>
                         <cluster>${brandingToken}</cluster>
+                        <additionalArguments>-J-Xmx768m</additionalArguments>
                     </configuration>
                 </plugin>
                 <plugin>
