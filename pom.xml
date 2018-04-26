@@ -91,6 +91,7 @@
         <module>branding</module>
         <module>application</module>
         <module>core</module>
+        <module>modules/boiler</module>
     </modules>
 
     <properties>
