@@ -15,11 +15,13 @@
  */
 package se.trixon.mapton.core.api;
 
+import com.lynden.gmapsfx.javascript.object.GoogleMap;
 import java.awt.BorderLayout;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Scene;
 import org.openide.windows.TopComponent;
+import se.trixon.mapton.core.Mapton;
 
 /**
  *
@@ -116,6 +118,10 @@ public abstract class FxTopComponent extends TopComponent {
     }
 
     protected void fxComponentShowing() {
+    }
+
+    protected GoogleMap getMap() {
+        return Mapton.getInstance().getMap();
     }
 
     /**

@@ -44,6 +44,7 @@ import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.FxActionSwing;
 import se.trixon.almond.util.fx.FxActionSwingCheck;
 import se.trixon.almond.util.fx.FxHelper;
+import se.trixon.mapton.core.map.MapController;
 
 /**
  *
@@ -51,13 +52,15 @@ import se.trixon.almond.util.fx.FxHelper;
  */
 public class AppToolBar extends ToolBar {
 
-    public static final int ICON_SIZE = 48;
-    public static final int ICON_SIZE_MENU = ICON_SIZE / 3;
+    public static final int ICON_SIZE = 36;
+    public static final int ICON_SIZE_MENU = 12;
     private static final boolean IS_MAC = SystemUtils.IS_OS_MAC;
     private final AlmondOptions mAlmondOptions = AlmondOptions.INSTANCE;
     private final java.awt.event.ActionEvent mDummySwingActionEvent = new java.awt.event.ActionEvent(new JButton(), 0, "");
     private final GlyphFont mFontAwesome = GlyphFontRegistry.font("FontAwesome");
     private final Color mIconColor = Color.BLACK;
+    private final MapController mMapController = MapController.getInstance();
+    private Action mMapHomeAction;
     private FxActionSwing mSysAboutAction;
     private Action mSysHelpAction;
     private FxActionSwing mSysOptionsAction;
@@ -67,7 +70,7 @@ public class AppToolBar extends ToolBar {
     private FxActionSwingCheck mSysViewFullscreenAction;
     private FxActionSwing mSysViewLogOutAction;
     private FxActionSwing mSysViewLogSysAction;
-    private FxActionSwing mSysViewMapAction;
+    private FxActionSwingCheck mSysViewMapAction;
     private FxActionSwing mSysViewResetAction;
 
     public AppToolBar() {
@@ -113,6 +116,7 @@ public class AppToolBar extends ToolBar {
 
         ArrayList<Action> actions = new ArrayList<>();
         actions.addAll(Arrays.asList(
+                mMapHomeAction,
                 ActionUtils.ACTION_SPAN,
                 systemActionGroup
         ));
@@ -134,6 +138,12 @@ public class AppToolBar extends ToolBar {
     }
 
     private void initActionsFx() {
+        //Home
+        mMapHomeAction = new Action(Dict.HOME.toString(), (ActionEvent event) -> {
+            mMapController.goHome();
+        });
+        mMapHomeAction.setGraphic(getGlyph(FontAwesome.Glyph.HOME).size(ICON_SIZE));
+
         //Help
         mSysHelpAction = new Action(Dict.HELP.toString(), (ActionEvent event) -> {
             SystemHelper.desktopBrowse("https://trixon.se/projects/mapton/documentation/");
@@ -149,7 +159,7 @@ public class AppToolBar extends ToolBar {
         mSysViewFullscreenAction.setAccelerator(KeyCombination.keyCombination("F11"));
 
         //Map
-        mSysViewMapAction = new FxActionSwing(Dict.MAP.toString(), () -> {
+        mSysViewMapAction = new FxActionSwingCheck(Dict.MAP.toString(), () -> {
             Actions.forID("Window", "org.netbeans.core.windows.actions.ShowEditorOnlyAction").actionPerformed(null);
         });
         mSysViewMapAction.setAccelerator(KeyCombination.keyCombination("F12"));

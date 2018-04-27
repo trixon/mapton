@@ -17,4 +17,8 @@ limitations under the License.
 <!DOCTYPE filesystem PUBLIC "-//NetBeans//DTD Filesystem 1.2//EN" "http://www.netbeans.org/dtds/filesystem-1_2.dtd">
 <filesystem>
     <folder name="Menu_hidden"/>
+    <!--    <folder name="Shortcuts">
+        <file name="DS-ENTER.shadow_hidden"/>
+        <file name="F12.shadow_hidden"/>
+    </folder>-->
 </filesystem>
