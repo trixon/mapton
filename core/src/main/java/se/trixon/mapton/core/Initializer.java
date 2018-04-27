@@ -40,6 +40,7 @@ public class Initializer implements Runnable {
         Platform.setImplicitExit(false);
         new JFXPanel(); //Force init of JavaFX platform
 
+        System.setProperty("netbeans.winsys.no_help_in_dialogs", "true");
         System.setProperty("netbeans.winsys.no_toolbars", "true");
         SwingUtilities.invokeLater(() -> {
             JFrame frame = (JFrame) Almond.getFrame();
