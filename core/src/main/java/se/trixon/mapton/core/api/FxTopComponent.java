@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -50,6 +50,72 @@ public abstract class FxTopComponent extends TopComponent {
 
     public void setScene(Scene scene) {
         mScene = scene;
+    }
+
+    @Override
+    protected void componentActivated() {
+        super.componentActivated();
+        Platform.runLater(() -> {
+            fxComponentActivated();
+        });
+    }
+
+    @Override
+    protected void componentClosed() {
+        super.componentClosed();
+        Platform.runLater(() -> {
+            fxComponentClosed();
+        });
+    }
+
+    @Override
+    protected void componentDeactivated() {
+        super.componentDeactivated();
+        Platform.runLater(() -> {
+            fxComponentDeactivated();
+        });
+    }
+
+    @Override
+    protected void componentHidden() {
+        super.componentHidden();
+        Platform.runLater(() -> {
+            fxComponentHidden();
+        });
+    }
+
+    @Override
+    protected void componentOpened() {
+        super.componentOpened();
+        Platform.runLater(() -> {
+            fxComponentOpened();
+        });
+    }
+
+    @Override
+    protected void componentShowing() {
+        super.componentShowing();
+        Platform.runLater(() -> {
+            fxComponentShowing();
+        });
+    }
+
+    protected void fxComponentActivated() {
+    }
+
+    protected void fxComponentClosed() {
+    }
+
+    protected void fxComponentDeactivated() {
+    }
+
+    protected void fxComponentHidden() {
+    }
+
+    protected void fxComponentOpened() {
+    }
+
+    protected void fxComponentShowing() {
     }
 
     /**
