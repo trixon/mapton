@@ -50,11 +50,4 @@ limitations under the License.
             <attr name="position" intvalue="9010"/>
         </file>
     </folder>
-    <folder name="Toolbars">
-        <folder name="File_hidden">
-            <file name="org-openide-actions-SaveAllAction.shadow_hidden"/>
-        </folder>
-        <file name="UndoRedo_hidden"/>
-        <file name="ToolbarMapton.xml" url="ToolbarMapton.xml"/>
-    </folder>
 </filesystem>

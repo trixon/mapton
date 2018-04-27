@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,10 +17,16 @@ package se.trixon.mapton.core;
 
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JLayeredPane;
+import javax.swing.SwingUtilities;
 import org.openide.modules.OnStart;
 import org.openide.windows.WindowManager;
+import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.nbp.NbLog;
+import se.trixon.mapton.core.toolbar.AppToolBarProvider;
+import se.trixon.mapton.core.toolbar.RootPaneLayout;
 
 /**
  *
@@ -33,6 +39,15 @@ public class Initializer implements Runnable {
     public void run() {
         Platform.setImplicitExit(false);
         new JFXPanel(); //Force init of JavaFX platform
+
+        System.setProperty("netbeans.winsys.no_toolbars", "true");
+        SwingUtilities.invokeLater(() -> {
+            JFrame frame = (JFrame) Almond.getFrame();
+            JComponent toolbar = AppToolBarProvider.getDefault().createToolbar();
+            frame.getRootPane().setLayout(new RootPaneLayout(toolbar));
+            toolbar.putClientProperty(JLayeredPane.LAYER_PROPERTY, 0);
+            frame.getRootPane().getLayeredPane().add(toolbar, 0);
+        });
 
         WindowManager.getDefault().invokeWhenUIReady(() -> {
             JFrame mainFrame = (JFrame) WindowManager.getDefault().getMainWindow();
