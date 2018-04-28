@@ -30,6 +30,7 @@ public class MaptonOptions {
 
     private static final int DEFAULT_MAP_ZOOM = 5;
 
+    private static final String KEY_DISPLAY_BOOKMARK = "display_bookmark";
     private static final String KEY_MAP_CENTER_LAT = "map_center_lat";
     private static final String KEY_MAP_CENTER_LON = "map_center_lon";
     private static final String KEY_MAP_KEY = "map_key";
@@ -55,6 +56,14 @@ public class MaptonOptions {
 
     public int getMapZoom() {
         return mPreferences.getInt(KEY_MAP_ZOOM, DEFAULT_MAP_ZOOM);
+    }
+
+    public boolean isBookmarkVisible() {
+        return mPreferences.getBoolean(KEY_DISPLAY_BOOKMARK, true);
+    }
+
+    public void setBookamarkVisible(boolean value) {
+        mPreferences.putBoolean(KEY_DISPLAY_BOOKMARK, value);
     }
 
     public void setMapCenter(LatLong value) {

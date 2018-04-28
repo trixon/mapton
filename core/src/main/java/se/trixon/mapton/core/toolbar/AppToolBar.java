@@ -38,13 +38,17 @@ import org.controlsfx.glyphfont.Glyph;
 import org.controlsfx.glyphfont.GlyphFont;
 import org.controlsfx.glyphfont.GlyphFontRegistry;
 import org.openide.awt.Actions;
+import org.openide.windows.WindowManager;
 import se.trixon.almond.nbp.AlmondOptions;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.FxActionSwing;
 import se.trixon.almond.util.fx.FxActionSwingCheck;
 import se.trixon.almond.util.fx.FxHelper;
+import se.trixon.mapton.core.MaptonOptions;
+import se.trixon.mapton.core.api.FxTopComponent;
 import se.trixon.mapton.core.map.MapController;
+import se.trixon.mapton.core.map.MapTopComponent;
 
 /**
  *
@@ -61,6 +65,7 @@ public class AppToolBar extends ToolBar {
     private final Color mIconColor = Color.BLACK;
     private final MapController mMapController = MapController.getInstance();
     private Action mMapHomeAction;
+    private FxActionSwingCheck mWinBookmarkAction;
     private FxActionSwing mSysAboutAction;
     private Action mSysHelpAction;
     private FxActionSwing mSysOptionsAction;
@@ -72,6 +77,8 @@ public class AppToolBar extends ToolBar {
     private FxActionSwing mSysViewLogSysAction;
     private FxActionSwingCheck mSysViewMapAction;
     private FxActionSwing mSysViewResetAction;
+    private MapTopComponent mMapTopComponent;
+    private final MaptonOptions mOptions = MaptonOptions.getInstance();
 
     public AppToolBar() {
         initActionsFx();
@@ -117,6 +124,7 @@ public class AppToolBar extends ToolBar {
         ArrayList<Action> actions = new ArrayList<>();
         actions.addAll(Arrays.asList(
                 mMapHomeAction,
+                mWinBookmarkAction,
                 ActionUtils.ACTION_SPAN,
                 systemActionGroup
         ));
@@ -137,6 +145,14 @@ public class AppToolBar extends ToolBar {
         });
     }
 
+    private MapTopComponent mGetMapTC() {
+        if (mMapTopComponent == null) {
+            mMapTopComponent = (MapTopComponent) WindowManager.getDefault().findTopComponent("MapTopComponent");
+        }
+
+        return mMapTopComponent;
+    }
+
     private void initActionsFx() {
         //Home
         mMapHomeAction = new Action(Dict.HOME.toString(), (ActionEvent event) -> {
@@ -152,6 +168,16 @@ public class AppToolBar extends ToolBar {
     }
 
     private void initActionsSwing() {
+        //Bookmark
+        mWinBookmarkAction = new FxActionSwingCheck(Dict.BOOKMARKS.toString(), () -> {
+            FxTopComponent topComponent = (FxTopComponent) WindowManager.getDefault().findTopComponent("BookmarkTopComponent");
+            topComponent.toggleOpened();
+        });
+        mWinBookmarkAction.setGraphic(getGlyph(FontAwesome.Glyph.BOOKMARK).size(ICON_SIZE));
+        mWinBookmarkAction.setSelected(mOptions.isBookmarkVisible());
+//
+//
+//
         //Full screen
         mSysViewFullscreenAction = new FxActionSwingCheck(Dict.FULL_SCREEN.toString(), () -> {
             Actions.forID("Window", "org.netbeans.core.windows.actions.ToggleFullScreenAction").actionPerformed(null);

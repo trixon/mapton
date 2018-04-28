@@ -54,6 +54,14 @@ public abstract class FxTopComponent extends TopComponent {
         mScene = scene;
     }
 
+    public void toggleOpened() {
+        if (isOpened()) {
+            close();
+        } else {
+            open();
+        }
+    }
+
     @Override
     protected void componentActivated() {
         super.componentActivated();
