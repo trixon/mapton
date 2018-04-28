@@ -21,8 +21,14 @@ import com.lynden.gmapsfx.javascript.object.LatLong;
 import com.lynden.gmapsfx.javascript.object.MapOptions;
 import com.lynden.gmapsfx.javascript.object.MapTypeIdEnum;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.scene.Scene;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.web.WebView;
+import org.controlsfx.control.action.Action;
+import org.controlsfx.control.action.ActionUtils;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -31,6 +37,7 @@ import org.openide.windows.TopComponent;
 import se.trixon.almond.util.Dict;
 import se.trixon.mapton.core.Mapton;
 import se.trixon.mapton.core.MaptonOptions;
+import se.trixon.mapton.core.api.DictMT;
 import se.trixon.mapton.core.api.FxTopComponent;
 
 /**
@@ -89,6 +96,12 @@ public final class MapTopComponent extends FxTopComponent {
         return mMapView;
     }
 
+    @Override
+    protected void initFX() {
+        setScene(createScene());
+        initMenu();
+    }
+
     private Scene createScene() {
         mMapView = new GoogleMapView();
         mMapView.addMapInitializedListener(() -> {
@@ -117,9 +130,25 @@ public final class MapTopComponent extends FxTopComponent {
         return new Scene(mRoot);
     }
 
-    @Override
-    protected void initFX() {
-        setScene(createScene());
+    private void initMenu() {
+        Action setHomeAction = new Action(DictMT.SET_HOME.toString(), (ActionEvent t) -> {
+            mOptions.setMapHome(mMap.getCenter());
+            mOptions.setMapHomeZoom(mMap.getZoom());
+        });
+
+        ContextMenu contextMenu = new ContextMenu(
+                ActionUtils.createMenuItem(setHomeAction)
+        );
+
+        WebView webView = mMapView.getWebview();
+        webView.setContextMenuEnabled(false);
+        webView.setOnMousePressed(e -> {
+            if (e.getButton() == MouseButton.SECONDARY) {
+                contextMenu.show(webView, e.getScreenX(), e.getScreenY());
+            } else {
+                contextMenu.hide();
+            }
+        });
     }
 
     void readProperties(java.util.Properties p) {

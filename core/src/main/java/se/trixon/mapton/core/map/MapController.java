@@ -35,7 +35,8 @@ public class MapController {
     }
 
     public void goHome() {
-        getMap().panTo(mOptions.defaultHome());
+        getMap().panTo(mOptions.getMapHome());
+        getMap().setZoom(mOptions.getMapHomeZoom());
     }
 
     private GoogleMap getMap() {
