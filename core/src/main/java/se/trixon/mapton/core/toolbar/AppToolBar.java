@@ -76,6 +76,7 @@ public class AppToolBar extends ToolBar {
     private FxActionSwing mSysViewLogSysAction;
     private FxActionSwingCheck mSysViewMapAction;
     private FxActionSwing mSysViewResetAction;
+    private FxActionSwing mSysViewNotesAction;
     private MapTopComponent mMapTopComponent;
     private final MaptonOptions mOptions = MaptonOptions.getInstance();
 
@@ -102,6 +103,7 @@ public class AppToolBar extends ToolBar {
                 mSysViewMapAction,
                 mSysViewAlwaysOnTopAction,
                 ActionUtils.ACTION_SEPARATOR,
+                mSysViewNotesAction,
                 mSysViewLogOutAction,
                 mSysViewLogSysAction,
                 ActionUtils.ACTION_SEPARATOR,
@@ -194,6 +196,10 @@ public class AppToolBar extends ToolBar {
         });
         mSysViewAlwaysOnTopAction.setSelected(mAlmondOptions.getAlwaysOnTop());
 
+        //Notes
+        mSysViewNotesAction = new FxActionSwing(Dict.NOTES.toString(), () -> {
+            Actions.forID("Window", "se.trixon.almond.nbp.fx.NotesTopComponent").actionPerformed(null);
+        });
         //LogOut
         mSysViewLogOutAction = new FxActionSwing(Dict.OUTPUT.toString(), () -> {
             Actions.forID("Window", "org.netbeans.core.io.ui.IOWindowAction").actionPerformed(null);
