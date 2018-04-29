@@ -19,6 +19,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
@@ -32,6 +35,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javax.swing.SwingUtilities;
+import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
 import org.controlsfx.glyphfont.FontAwesome;
@@ -49,6 +53,7 @@ import se.trixon.almond.util.SystemHelper;
 public class BookmarkView extends BorderPane {
 
     private static final int ICON_SIZE = 16;
+    private final ObservableList<Bookmark> mBookmarks = FXCollections.observableArrayList();
     private final Font mDefaultFont = Font.getDefault();
     private final TextField mFilterTextField;
     private final GlyphFont mFontAwesome = GlyphFontRegistry.font("FontAwesome");
@@ -59,7 +64,7 @@ public class BookmarkView extends BorderPane {
     public BookmarkView() {
         mFilterTextField = new TextField();
         mFilterTextField.setPromptText(Dict.BOOKMARKS_SEARCH.toString());
-        mListView = new ListView<>(mManager.getItems());
+        mListView = new ListView<>(mBookmarks);
         mListView.setPlaceholder(new Label(Dict.NO_BOOKMARKS.toString()));
         mListView.setCellFactory((ListView<Bookmark> param) -> new BookmarkListCell());
         mListView.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends Bookmark> observable, Bookmark oldValue, Bookmark newValue) -> {
@@ -68,7 +73,13 @@ public class BookmarkView extends BorderPane {
 
         setTop(mFilterTextField);
         setCenter(mListView);
-        //TODO Add bookmark search
+        mFilterTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+            updateBookmarks(newValue);
+        });
+
+        mManager.getItems().addListener((ListChangeListener.Change<? extends Bookmark> c) -> {
+            updateBookmarks(mFilterTextField.getText());
+        });
     }
 
     private void bookmarkCopy() {
@@ -128,6 +139,15 @@ public class BookmarkView extends BorderPane {
 
     private Bookmark getSelectedBookmark() {
         return mListView.getSelectionModel().getSelectedItem();
+    }
+
+    private void updateBookmarks(String filter) {
+        mBookmarks.clear();
+        mManager.getItems().stream()
+                .filter((item) -> (StringUtils.containsIgnoreCase(String.join(" ", item.getName(), item.getCategory(), item.getDescription()), filter)))
+                .forEachOrdered((item) -> {
+                    mBookmarks.add(item);
+                });
     }
 
     class BookmarkListCell extends ListCell<Bookmark> {
