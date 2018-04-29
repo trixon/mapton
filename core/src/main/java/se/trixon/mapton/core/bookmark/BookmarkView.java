@@ -17,6 +17,7 @@ package se.trixon.mapton.core.bookmark;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -148,6 +149,12 @@ public class BookmarkView extends BorderPane {
                 .forEachOrdered((item) -> {
                     mBookmarks.add(item);
                 });
+
+        Comparator<Bookmark> comparator = Comparator.comparing(Bookmark::getCategory)
+                .thenComparing(Comparator.comparing(Bookmark::getName))
+                .thenComparing(Comparator.comparing(Bookmark::getDescription));
+
+        FXCollections.sort(mBookmarks, comparator);
     }
 
     class BookmarkListCell extends ListCell<Bookmark> {
