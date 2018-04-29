@@ -32,7 +32,7 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
-import se.trixon.mapton.core.api.FxTopComponent;
+import se.trixon.mapton.core.api.MaptonTopComponent;
 
 /**
  * Top component which displays something.
@@ -58,7 +58,7 @@ import se.trixon.mapton.core.api.FxTopComponent;
     "CTL_Fx1TopComponent=Fx1 Window",
     "HINT_Fx1TopComponent=This is a Fx1 window"
 })
-public final class Fx1TopComponent extends FxTopComponent {
+public final class Fx1TopComponent extends MaptonTopComponent {
 
     public Fx1TopComponent() {
         setName(Bundle.CTL_Fx1TopComponent());

@@ -15,29 +15,17 @@
  */
 package se.trixon.mapton.core.api;
 
-import java.util.Locale;
-import java.util.ResourceBundle;
-import se.trixon.almond.util.SystemHelper;
+import com.lynden.gmapsfx.javascript.object.GoogleMap;
+import se.trixon.almond.nbp.fx.FxTopComponent;
+import se.trixon.mapton.core.Mapton;
 
 /**
  *
  * @author Patrik Karlström
  */
-public enum DictMT {
-    DISPLAY_PLACEMARK,
-    SET_HOME;
-    private final ResourceBundle mResourceBundle = ResourceBundle.getBundle(SystemHelper.getPackageAsPath(DictMT.class) + "DictMT", Locale.getDefault());
+public abstract class MaptonTopComponent extends FxTopComponent {
 
-    private static String getString(ResourceBundle bundle, String key) {
-        if (bundle.containsKey(key)) {
-            return bundle.getString(key);
-        } else {
-            return "Key not found: " + key;
-        }
-    }
-
-    @Override
-    public String toString() {
-        return getString(mResourceBundle, name().toLowerCase());
+    protected GoogleMap getMap() {
+        return Mapton.getInstance().getMap();
     }
 }

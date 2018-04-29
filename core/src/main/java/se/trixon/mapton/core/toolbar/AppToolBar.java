@@ -46,7 +46,6 @@ import se.trixon.almond.util.fx.FxActionSwing;
 import se.trixon.almond.util.fx.FxActionSwingCheck;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.mapton.core.MaptonOptions;
-import se.trixon.mapton.core.api.FxTopComponent;
 import se.trixon.mapton.core.map.MapController;
 import se.trixon.mapton.core.map.MapTopComponent;
 
@@ -170,8 +169,7 @@ public class AppToolBar extends ToolBar {
     private void initActionsSwing() {
         //Bookmark
         mWinBookmarkAction = new FxActionSwingCheck(Dict.BOOKMARKS.toString(), () -> {
-            FxTopComponent topComponent = (FxTopComponent) WindowManager.getDefault().findTopComponent("BookmarkTopComponent");
-            topComponent.toggleOpened();
+            Actions.forID("Mapton", "se.trixon.mapton.core.bookmark.BookmarkAction").actionPerformed(null);
         });
         mWinBookmarkAction.setGraphic(getGlyph(FontAwesome.Glyph.BOOKMARK).size(ICON_SIZE));
         mWinBookmarkAction.setSelected(mOptions.isBookmarkVisible());

@@ -20,6 +20,8 @@ import com.lynden.gmapsfx.javascript.object.GoogleMap;
 import com.lynden.gmapsfx.javascript.object.LatLong;
 import com.lynden.gmapsfx.javascript.object.MapOptions;
 import com.lynden.gmapsfx.javascript.object.MapTypeIdEnum;
+import java.util.Arrays;
+import java.util.Collection;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
@@ -38,7 +40,8 @@ import se.trixon.almond.util.Dict;
 import se.trixon.mapton.core.Mapton;
 import se.trixon.mapton.core.MaptonOptions;
 import se.trixon.mapton.core.api.DictMT;
-import se.trixon.mapton.core.api.FxTopComponent;
+import se.trixon.mapton.core.api.MaptonTopComponent;
+import se.trixon.mapton.core.bookmark.BookmarkManager;
 
 /**
  * Top component which displays something.
@@ -64,7 +67,7 @@ import se.trixon.mapton.core.api.FxTopComponent;
     "CTL_MapTopComponent=Map Window",
     "HINT_MapTopComponent=This is a Map window"
 })
-public final class MapTopComponent extends FxTopComponent {
+public final class MapTopComponent extends MaptonTopComponent {
 
     private GoogleMap mMap;
     private MapOptions mMapOptions;
@@ -76,10 +79,12 @@ public final class MapTopComponent extends FxTopComponent {
     public MapTopComponent() {
         super();
         setName(Dict.MAP.toString());
+
         putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.TRUE);
         putClientProperty(TopComponent.PROP_DRAGGING_DISABLED, Boolean.TRUE);
         putClientProperty(TopComponent.PROP_MAXIMIZATION_DISABLED, Boolean.TRUE);
         putClientProperty(TopComponent.PROP_UNDOCKING_DISABLED, Boolean.TRUE);
+
         mMapton.setMapTopComponent(this);
     }
 
@@ -136,9 +141,12 @@ public final class MapTopComponent extends FxTopComponent {
             mOptions.setMapHomeZoom(mMap.getZoom());
         });
 
-        ContextMenu contextMenu = new ContextMenu(
-                ActionUtils.createMenuItem(setHomeAction)
+        Collection<? extends Action> actions = Arrays.asList(
+                BookmarkManager.getInstance().getAddBookmarkAction(),
+                setHomeAction
         );
+
+        ContextMenu contextMenu = ActionUtils.createContextMenu(actions);
 
         WebView webView = mMapView.getWebview();
         webView.setContextMenuEnabled(false);

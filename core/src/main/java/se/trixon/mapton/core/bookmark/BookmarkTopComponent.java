@@ -17,8 +17,6 @@ package se.trixon.mapton.core.bookmark;
 
 import javafx.application.Platform;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -26,7 +24,7 @@ import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
 import se.trixon.almond.util.Dict;
 import se.trixon.mapton.core.MaptonOptions;
-import se.trixon.mapton.core.api.FxTopComponent;
+import se.trixon.almond.nbp.fx.FxTopComponent;
 
 /**
  * Top component which displays something.
@@ -54,8 +52,6 @@ import se.trixon.mapton.core.api.FxTopComponent;
 })
 public final class BookmarkTopComponent extends FxTopComponent {
 
-    private ListView mListView;
-
     public BookmarkTopComponent() {
         setName(Dict.BOOKMARKS.toString());
 
@@ -65,13 +61,6 @@ public final class BookmarkTopComponent extends FxTopComponent {
         putClientProperty(TopComponent.PROP_SLIDING_DISABLED, Boolean.TRUE);
         putClientProperty(TopComponent.PROP_UNDOCKING_DISABLED, Boolean.TRUE);
         putClientProperty(TopComponent.PROP_KEEP_PREFERRED_SIZE_WHEN_SLIDED_IN, Boolean.TRUE);
-    }
-
-    private Scene createScene() {
-        mListView = new ListView();
-        mListView.setPlaceholder(new Label(Dict.NO_BOOKMARKS.toString()));
-
-        return new Scene(mListView);
     }
 
     @Override
@@ -89,6 +78,10 @@ public final class BookmarkTopComponent extends FxTopComponent {
     @Override
     protected void initFX() {
         setScene(createScene());
+    }
+
+    private Scene createScene() {
+        return new Scene(new BookmarkView());
     }
 
     void readProperties(java.util.Properties p) {
