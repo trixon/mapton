@@ -15,7 +15,7 @@
  */
 package se.trixon.mapton.core.bookmark;
 
-import com.lynden.gmapsfx.javascript.object.LatLong;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
@@ -45,11 +45,11 @@ import org.controlsfx.glyphfont.GlyphFont;
 import org.controlsfx.glyphfont.GlyphFontRegistry;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
+import org.openide.util.Exceptions;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.mapton.core.api.Mapton;
 import static se.trixon.mapton.core.api.Mapton.getIconSizeContextMenu;
-import se.trixon.mapton.core.map.MapController;
 
 /**
  *
@@ -63,7 +63,6 @@ public class BookmarkView extends BorderPane {
     private final GlyphFont mFontAwesome = GlyphFontRegistry.font("FontAwesome");
     private final ListView<Bookmark> mListView;
     private final BookmarkManager mManager = BookmarkManager.getInstance();
-    private final MapController mMapController = MapController.getInstance();
 
     public BookmarkView() {
         mFilterTextField = new TextField();
@@ -86,6 +85,8 @@ public class BookmarkView extends BorderPane {
         mManager.getItems().addListener((ListChangeListener.Change<? extends Bookmark> c) -> {
             updateBookmarks(mFilterTextField.getText());
         });
+
+        updateBookmarks(mFilterTextField.getText());
     }
 
     private void bookmarkCopy() {
@@ -99,7 +100,11 @@ public class BookmarkView extends BorderPane {
     }
 
     private void bookmarkGoTo(Bookmark bookmark) {
-        mMapController.panTo(new LatLong(bookmark.getLatitude(), bookmark.getLongitude()), bookmark.getZoom());
+        try {
+            mManager.goTo(bookmark);
+        } catch (ClassNotFoundException | SQLException ex) {
+            Exceptions.printStackTrace(ex);
+        }
     }
 
     private void bookmarkRemove() {
@@ -117,7 +122,11 @@ public class BookmarkView extends BorderPane {
 
             if (Dict.REMOVE.toString() == DialogDisplayer.getDefault().notify(d)) {
                 Platform.runLater(() -> {
-                    mManager.getItems().remove(bookmark);
+                    try {
+                        mManager.dbDelete(bookmark);
+                    } catch (ClassNotFoundException | SQLException ex) {
+                        Exceptions.printStackTrace(ex);
+                    }
                 });
             }
         });
@@ -136,7 +145,11 @@ public class BookmarkView extends BorderPane {
 
             if (Dict.REMOVE_ALL.toString() == DialogDisplayer.getDefault().notify(d)) {
                 Platform.runLater(() -> {
-                    mManager.getItems().clear();
+                    try {
+                        mManager.dbTruncate();
+                    } catch (ClassNotFoundException | SQLException ex) {
+                        Exceptions.printStackTrace(ex);
+                    }
                 });
             }
         });

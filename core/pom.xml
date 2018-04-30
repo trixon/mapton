@@ -17,6 +17,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <publicPackages>
+                        <publicPackage>se.trixon.mapton.core.api.*</publicPackage>
                         <publicPackage>se.trixon.almond.nbp.*</publicPackage>
                         <publicPackage>org.apache.commons.*</publicPackage>
                         <publicPackage>org.controlsfx.*</publicPackage>
@@ -71,6 +72,11 @@
             <artifactId>org-netbeans-modules-settings</artifactId>
             <version>${netbeans.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-dialogs</artifactId>
+            <version>${netbeans.version}</version>
+        </dependency>
 
         <!-- Trixon -->
         <dependency>
@@ -96,9 +102,19 @@
             <version>2.6</version>
         </dependency>
         <dependency>
-            <groupId>org.netbeans.api</groupId>
-            <artifactId>org-openide-dialogs</artifactId>
-            <version>RELEASE82</version>
+            <groupId>com.healthmarketscience.sqlbuilder</groupId>
+            <artifactId>sqlbuilder</artifactId>
+            <version>2.1.7</version>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>1.4.196</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.8.2</version>
         </dependency>
     </dependencies>
     <properties>

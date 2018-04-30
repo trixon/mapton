@@ -15,14 +15,17 @@
  */
 package se.trixon.mapton.core.bookmark;
 
+import java.sql.Timestamp;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.LongProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleLongProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
@@ -39,14 +42,12 @@ public class Bookmark {
     private final DoubleProperty mLatitude = new SimpleDoubleProperty();
     private final DoubleProperty mLongitude = new SimpleDoubleProperty();
     private final StringProperty mName = new SimpleStringProperty();
-    private final LongProperty mTimeAccessed = new SimpleLongProperty();
-    private final LongProperty mTimeCreated = new SimpleLongProperty();
-    private final LongProperty mTimeModified = new SimpleLongProperty();
+    private final ObjectProperty<Timestamp> mTimeAccessed = new SimpleObjectProperty<>();
+    private final ObjectProperty<Timestamp> mTimeCreated = new SimpleObjectProperty<>();
+    private final ObjectProperty<Timestamp> mTimeModified = new SimpleObjectProperty<>();
     private final IntegerProperty mZoom = new SimpleIntegerProperty();
 
     public Bookmark() {
-        mId.set(System.currentTimeMillis());
-        mTimeCreated.set(getId());
     }
 
     public final StringProperty categoryProperty() {
@@ -69,10 +70,6 @@ public class Bookmark {
         return mDescription.get();
     }
 
-    public final boolean getDisplayMarker() {
-        return mDisplayMarker.get();
-    }
-
     public final long getId() {
         return mId.get();
     }
@@ -89,15 +86,15 @@ public class Bookmark {
         return mName.get();
     }
 
-    public final long getTimeAccessed() {
+    public final Timestamp getTimeAccessed() {
         return mTimeAccessed.get();
     }
 
-    public final long getTimeCreated() {
+    public final Timestamp getTimeCreated() {
         return mTimeCreated.get();
     }
 
-    public final long getTimeModified() {
+    public final Timestamp getTimeModified() {
         return mTimeModified.get();
     }
 
@@ -111,6 +108,10 @@ public class Bookmark {
 
     public final LongProperty idProperty() {
         return mId;
+    }
+
+    public final boolean isDisplayMarker() {
+        return mDisplayMarker.get();
     }
 
     public DoubleProperty latitudeProperty() {
@@ -153,15 +154,15 @@ public class Bookmark {
         mName.set(value);
     }
 
-    public final void setTimeAccessed(long value) {
+    public final void setTimeAccessed(Timestamp value) {
         mTimeAccessed.set(value);
     }
 
-    public final void setTimeCreated(long value) {
+    public final void setTimeCreated(Timestamp value) {
         mTimeCreated.set(value);
     }
 
-    public final void setTimeModified(long value) {
+    public final void setTimeModified(Timestamp value) {
         mTimeModified.set(value);
     }
 
@@ -169,15 +170,15 @@ public class Bookmark {
         mZoom.set(value);
     }
 
-    public final LongProperty timeAccessedProperty() {
+    public final ObjectProperty<Timestamp> timeAccessedProperty() {
         return mTimeAccessed;
     }
 
-    public final LongProperty timeCreatedProperty() {
+    public final ObjectProperty<Timestamp> timeCreatedProperty() {
         return mTimeCreated;
     }
 
-    public final LongProperty timeModifiedProperty() {
+    public final ObjectProperty<Timestamp> timeModifiedProperty() {
         return mTimeModified;
     }
 

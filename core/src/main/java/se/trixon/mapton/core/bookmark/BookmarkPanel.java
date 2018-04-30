@@ -29,6 +29,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
+import org.apache.commons.lang.StringUtils;
 import org.controlsfx.validation.ValidationResult;
 import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
@@ -163,14 +164,14 @@ public class BookmarkPanel extends FxDialogPanel {
         mZoomSpinner.getValueFactory().setValue(bookmark.getZoom());
         mLatitudeSpinner.getValueFactory().setValue(bookmark.getLatitude());
         mLongitudeSpinner.getValueFactory().setValue(bookmark.getLongitude());
-        mPlacemarkCheckBox.setSelected(bookmark.getDisplayMarker());
+        mPlacemarkCheckBox.setSelected(bookmark.isDisplayMarker());
     }
 
     void save(Bookmark bookmark) {
         Platform.runLater(() -> {
             bookmark.setName(mNameTextField.getText());
-            bookmark.setCategory(mCatTextField.getText());
-            bookmark.setDescription(mDescTextArea.getText());
+            bookmark.setCategory(StringUtils.defaultString(mCatTextField.getText()));
+            bookmark.setDescription(StringUtils.defaultString(mDescTextArea.getText()));
             bookmark.setZoom(mZoomSpinner.getValue());
             bookmark.setLatitude(mLatitudeSpinner.getValue());
             bookmark.setLongitude(mLongitudeSpinner.getValue());
