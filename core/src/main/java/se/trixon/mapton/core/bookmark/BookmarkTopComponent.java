@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 pata.
+ * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +22,9 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
-import se.trixon.almond.util.Dict;
-import se.trixon.mapton.core.MaptonOptions;
 import se.trixon.almond.nbp.fx.FxTopComponent;
+import se.trixon.almond.util.Dict;
+import se.trixon.mapton.core.api.MaptonOptions;
 
 /**
  * Top component which displays something.

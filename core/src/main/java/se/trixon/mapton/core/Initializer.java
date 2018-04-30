@@ -15,6 +15,7 @@
  */
 package se.trixon.mapton.core;
 
+import se.trixon.mapton.core.api.Mapton;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javax.swing.JComponent;

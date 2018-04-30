@@ -17,8 +17,8 @@ package se.trixon.mapton.core.map;
 
 import com.lynden.gmapsfx.javascript.object.GoogleMap;
 import com.lynden.gmapsfx.javascript.object.LatLong;
-import se.trixon.mapton.core.Mapton;
-import se.trixon.mapton.core.MaptonOptions;
+import se.trixon.mapton.core.api.Mapton;
+import se.trixon.mapton.core.api.MaptonOptions;
 
 /**
  *

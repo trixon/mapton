@@ -50,9 +50,10 @@ import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
-import se.trixon.mapton.core.Mapton;
-import se.trixon.mapton.core.MaptonOptions;
 import se.trixon.mapton.core.api.DictMT;
+import se.trixon.mapton.core.api.Mapton;
+import static se.trixon.mapton.core.api.Mapton.getIconSizeToolBarInt;
+import se.trixon.mapton.core.api.MaptonOptions;
 import se.trixon.mapton.core.api.MaptonTopComponent;
 import se.trixon.mapton.core.bookmark.BookmarkManager;
 
@@ -82,7 +83,10 @@ import se.trixon.mapton.core.bookmark.BookmarkManager;
 })
 public final class MapTopComponent extends MaptonTopComponent {
 
+    private final GlyphFont mFontAwesome = GlyphFontRegistry.font("FontAwesome");
+    private final Color mIconColor = Mapton.getIconColor();
     private GoogleMap mMap;
+    private final MapController mMapController = MapController.getInstance();
     private MapOptions mMapOptions;
     private GoogleMapView mMapView;
     private final Mapton mMapton = Mapton.getInstance();
@@ -90,10 +94,6 @@ public final class MapTopComponent extends MaptonTopComponent {
     private BorderPane mRoot;
     private StatusBar mStatusBar;
     private ToolBar mToolBar;
-    private final GlyphFont mFontAwesome = GlyphFontRegistry.font("FontAwesome");
-    public static final int ICON_SIZE = 24;
-    private final Color mIconColor = Color.BLACK;
-    private final MapController mMapController = MapController.getInstance();
 
     public MapTopComponent() {
         super();
@@ -166,6 +166,10 @@ public final class MapTopComponent extends MaptonTopComponent {
         return new Scene(mRoot);
     }
 
+    private Glyph getGlyph(FontAwesome.Glyph glyph) {
+        return mFontAwesome.create(glyph).size(getIconSizeToolBarInt()).color(mIconColor);
+    }
+
     private void initMenu() {
         Action setHomeAction = new Action(DictMT.SET_HOME.toString(), (ActionEvent t) -> {
             mOptions.setMapHome(mMap.getCenter());
@@ -190,16 +194,12 @@ public final class MapTopComponent extends MaptonTopComponent {
         });
     }
 
-    private Glyph getGlyph(FontAwesome.Glyph glyph) {
-        return mFontAwesome.create(glyph).size(ICON_SIZE).color(mIconColor);
-    }
-
     private void initToolBar() {
         //Home
         Action homeAction = new Action(Dict.HOME.toString(), (ActionEvent event) -> {
             mMapController.goHome();
         });
-        homeAction.setGraphic(getGlyph(FontAwesome.Glyph.HOME).size(ICON_SIZE));
+        homeAction.setGraphic(getGlyph(FontAwesome.Glyph.HOME));
 
         ArrayList<Action> actions = new ArrayList<>();
         actions.addAll(Arrays.asList(
@@ -207,13 +207,14 @@ public final class MapTopComponent extends MaptonTopComponent {
         ));
 
         mToolBar = new ToolBar();
-        mToolBar.setMinHeight(ICON_SIZE * 1.7);
-        mToolBar.setMaxHeight(ICON_SIZE * 1.7);
+        double height = getIconSizeToolBarInt() * 1.6;
+        mToolBar.setMinHeight(height);
+        mToolBar.setMaxHeight(height);
 
         Platform.runLater(() -> {
             ActionUtils.updateToolBar(mToolBar, actions, ActionUtils.ActionTextBehavior.HIDE);
 
-            FxHelper.adjustButtonWidth(mToolBar.getItems().stream(), ICON_SIZE * 1.5);
+            FxHelper.adjustButtonWidth(mToolBar.getItems().stream(), getIconSizeToolBarInt() * 1.5);
             mToolBar.getItems().stream().filter((item) -> (item instanceof ButtonBase))
                     .map((item) -> (ButtonBase) item).forEachOrdered((buttonBase) -> {
                 FxHelper.undecorateButton(buttonBase);

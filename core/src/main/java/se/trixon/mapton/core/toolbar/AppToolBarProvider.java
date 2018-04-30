@@ -21,6 +21,7 @@ import javafx.embed.swing.JFXPanel;
 import javafx.scene.Scene;
 import javax.swing.JComponent;
 import org.openide.util.Lookup;
+import static se.trixon.mapton.core.api.Mapton.getIconSizeToolBar;
 
 /**
  * From https://dzone.com/articles/how-create-tabbed-toolbar-on-nb
@@ -46,7 +47,7 @@ public abstract class AppToolBarProvider {
         @Override
         public JComponent createToolbar() {
             JFXPanel fxPanel = new JFXPanel();
-            fxPanel.setPreferredSize(new Dimension(100, (int) (AppToolBar.ICON_SIZE * 1.2)));
+            fxPanel.setPreferredSize(new Dimension(100, (int) (getIconSizeToolBar() * 1.2)));
 
             Platform.runLater(() -> {
                 AppToolBar appToolBar = new AppToolBar();

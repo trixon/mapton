@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.trixon.mapton.core;
+package se.trixon.mapton.core.api;
 
 import com.lynden.gmapsfx.javascript.object.LatLong;
 import java.util.prefs.Preferences;

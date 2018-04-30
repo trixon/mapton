@@ -47,6 +47,8 @@ import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
+import se.trixon.mapton.core.api.Mapton;
+import static se.trixon.mapton.core.api.Mapton.getIconSizeContextMenu;
 import se.trixon.mapton.core.map.MapController;
 
 /**
@@ -55,12 +57,10 @@ import se.trixon.mapton.core.map.MapController;
  */
 public class BookmarkView extends BorderPane {
 
-    private static final int ICON_SIZE = 16;
     private final ObservableList<Bookmark> mBookmarks = FXCollections.observableArrayList();
     private final Font mDefaultFont = Font.getDefault();
     private final TextField mFilterTextField;
     private final GlyphFont mFontAwesome = GlyphFontRegistry.font("FontAwesome");
-    private final Color mIconColor = Color.BLACK;
     private final ListView<Bookmark> mListView;
     private final BookmarkManager mManager = BookmarkManager.getInstance();
     private final MapController mMapController = MapController.getInstance();
@@ -195,6 +195,8 @@ public class BookmarkView extends BorderPane {
         }
 
         private void createUI() {
+            final Color iconColor = Mapton.getIconColor();
+
             String fontFamily = mDefaultFont.getFamily();
             double fontSize = mDefaultFont.getSize();
 
@@ -203,12 +205,12 @@ public class BookmarkView extends BorderPane {
             Action editAction = new Action(Dict.EDIT.toString(), (ActionEvent event) -> {
                 bookmarkEdit();
             });
-            editAction.setGraphic(mFontAwesome.create(FontAwesome.Glyph.EDIT).size(ICON_SIZE).color(mIconColor));
+            editAction.setGraphic(mFontAwesome.create(FontAwesome.Glyph.EDIT).size(getIconSizeContextMenu()).color(iconColor));
 
             Action copyAction = new Action(Dict.COPY.toString(), (ActionEvent event) -> {
                 bookmarkCopy();
             });
-            copyAction.setGraphic(mFontAwesome.create(FontAwesome.Glyph.COPY).size(ICON_SIZE).color(mIconColor));
+            copyAction.setGraphic(mFontAwesome.create(FontAwesome.Glyph.COPY).size(getIconSizeContextMenu()).color(iconColor));
 
             Action removeAction = new Action(Dict.REMOVE.toString(), (ActionEvent event) -> {
                 bookmarkRemove();

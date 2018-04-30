@@ -17,7 +17,6 @@ package se.trixon.mapton.core.api;
 
 import com.lynden.gmapsfx.javascript.object.GoogleMap;
 import se.trixon.almond.nbp.fx.FxTopComponent;
-import se.trixon.mapton.core.Mapton;
 
 /**
  *
