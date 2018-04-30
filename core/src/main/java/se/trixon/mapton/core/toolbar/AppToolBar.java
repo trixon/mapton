@@ -46,7 +46,6 @@ import se.trixon.almond.util.fx.FxActionSwing;
 import se.trixon.almond.util.fx.FxActionSwingCheck;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.mapton.core.MaptonOptions;
-import se.trixon.mapton.core.map.MapController;
 import se.trixon.mapton.core.map.MapTopComponent;
 
 /**
@@ -62,8 +61,6 @@ public class AppToolBar extends ToolBar {
     private final java.awt.event.ActionEvent mDummySwingActionEvent = new java.awt.event.ActionEvent(new JButton(), 0, "");
     private final GlyphFont mFontAwesome = GlyphFontRegistry.font("FontAwesome");
     private final Color mIconColor = Color.BLACK;
-    private final MapController mMapController = MapController.getInstance();
-    private Action mMapHomeAction;
     private FxActionSwingCheck mWinBookmarkAction;
     private FxActionSwing mSysAboutAction;
     private Action mSysHelpAction;
@@ -124,7 +121,6 @@ public class AppToolBar extends ToolBar {
 
         ArrayList<Action> actions = new ArrayList<>();
         actions.addAll(Arrays.asList(
-                mMapHomeAction,
                 mWinBookmarkAction,
                 ActionUtils.ACTION_SPAN,
                 systemActionGroup
@@ -138,7 +134,7 @@ public class AppToolBar extends ToolBar {
         Platform.runLater(() -> {
             ActionUtils.updateToolBar(this, actions, ActionUtils.ActionTextBehavior.HIDE);
 
-            adjustButtonWidth(getItems().stream(), ICON_SIZE * 1.5);
+            FxHelper.adjustButtonWidth(getItems().stream(), ICON_SIZE * 1.5);
             getItems().stream().filter((item) -> (item instanceof ButtonBase))
                     .map((item) -> (ButtonBase) item).forEachOrdered((buttonBase) -> {
                 FxHelper.undecorateButton(buttonBase);
@@ -155,12 +151,6 @@ public class AppToolBar extends ToolBar {
     }
 
     private void initActionsFx() {
-        //Home
-        mMapHomeAction = new Action(Dict.HOME.toString(), (ActionEvent event) -> {
-            mMapController.goHome();
-        });
-        mMapHomeAction.setGraphic(getGlyph(FontAwesome.Glyph.HOME).size(ICON_SIZE));
-
         //Help
         mSysHelpAction = new Action(Dict.HELP.toString(), (ActionEvent event) -> {
             SystemHelper.desktopBrowse("https://trixon.se/projects/mapton/documentation/");

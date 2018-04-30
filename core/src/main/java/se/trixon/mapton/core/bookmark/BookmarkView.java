@@ -15,6 +15,7 @@
  */
 package se.trixon.mapton.core.bookmark;
 
+import com.lynden.gmapsfx.javascript.object.LatLong;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
@@ -46,6 +47,7 @@ import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
+import se.trixon.mapton.core.map.MapController;
 
 /**
  *
@@ -61,6 +63,7 @@ public class BookmarkView extends BorderPane {
     private final Color mIconColor = Color.BLACK;
     private final ListView<Bookmark> mListView;
     private final BookmarkManager mManager = BookmarkManager.getInstance();
+    private final MapController mMapController = MapController.getInstance();
 
     public BookmarkView() {
         mFilterTextField = new TextField();
@@ -69,7 +72,9 @@ public class BookmarkView extends BorderPane {
         mListView.setPlaceholder(new Label(Dict.NO_BOOKMARKS.toString()));
         mListView.setCellFactory((ListView<Bookmark> param) -> new BookmarkListCell());
         mListView.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends Bookmark> observable, Bookmark oldValue, Bookmark newValue) -> {
-            bookmarkGoTo();
+            if (newValue != null) {
+                bookmarkGoTo(newValue);
+            }
         });
 
         setTop(mFilterTextField);
@@ -93,9 +98,8 @@ public class BookmarkView extends BorderPane {
         mManager.editBookmark(bookmark);
     }
 
-    private void bookmarkGoTo() {
-        //TODO Pan map
-        System.out.println("GO TO BOOKMARK " + System.currentTimeMillis());
+    private void bookmarkGoTo(Bookmark bookmark) {
+        mMapController.panTo(new LatLong(bookmark.getLatitude(), bookmark.getLongitude()), bookmark.getZoom());
     }
 
     private void bookmarkRemove() {
@@ -113,7 +117,7 @@ public class BookmarkView extends BorderPane {
 
             if (Dict.REMOVE.toString() == DialogDisplayer.getDefault().notify(d)) {
                 Platform.runLater(() -> {
-                    mListView.getItems().remove(bookmark);
+                    mManager.getItems().remove(bookmark);
                 });
             }
         });
@@ -132,7 +136,7 @@ public class BookmarkView extends BorderPane {
 
             if (Dict.REMOVE_ALL.toString() == DialogDisplayer.getDefault().notify(d)) {
                 Platform.runLater(() -> {
-                    mListView.getItems().clear();
+                    mManager.getItems().clear();
                 });
             }
         });
@@ -209,7 +213,6 @@ public class BookmarkView extends BorderPane {
             Action removeAction = new Action(Dict.REMOVE.toString(), (ActionEvent event) -> {
                 bookmarkRemove();
             });
-            //removeAction.setGraphic(mFontAwesome.create(FontAwesome.Glyph.TRASH).size(ICON_SIZE).color(mIconColor));
 
             Action removeAllAction = new Action(Dict.REMOVE_ALL.toString(), (ActionEvent event) -> {
                 bookmarkRemoveAll();
@@ -236,7 +239,7 @@ public class BookmarkView extends BorderPane {
                     contextMenu.show(mMainBox, event.getScreenX(), event.getScreenY());
                 } else if (event.isPrimaryButtonDown()) {
                     contextMenu.hide();
-                    bookmarkGoTo();
+                    bookmarkGoTo(this.getItem());
                 }
             });
         }

@@ -26,6 +26,7 @@ import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxActionSwing;
+import se.trixon.mapton.core.map.MapController;
 
 /**
  *
@@ -34,6 +35,7 @@ import se.trixon.almond.util.fx.FxActionSwing;
 public class BookmarkManager {
 
     private ObjectProperty<ObservableList<Bookmark>> mItems = new SimpleObjectProperty<>(this, "items");
+    private final MapController mMapController = MapController.getInstance();
 
     public static BookmarkManager getInstance() {
         return Holder.INSTANCE;
@@ -50,9 +52,9 @@ public class BookmarkManager {
             if (add) {
                 newBookmark = new Bookmark();
                 newBookmark.setCategory("default");
-                newBookmark.setZoom(5);
-                newBookmark.setLatitude(55);
-                newBookmark.setLongitude(11);
+                newBookmark.setZoom(mMapController.getZoom());
+                newBookmark.setLatitude(mMapController.getLatitude());
+                newBookmark.setLongitude(mMapController.getLongitude());
             }
 
             final Bookmark bookmark = newBookmark;

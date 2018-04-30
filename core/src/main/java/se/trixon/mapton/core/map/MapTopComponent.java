@@ -16,27 +16,40 @@
 package se.trixon.mapton.core.map;
 
 import com.lynden.gmapsfx.GoogleMapView;
+import com.lynden.gmapsfx.javascript.event.GMapMouseEvent;
+import com.lynden.gmapsfx.javascript.event.MapStateEventType;
+import com.lynden.gmapsfx.javascript.event.UIEventType;
 import com.lynden.gmapsfx.javascript.object.GoogleMap;
 import com.lynden.gmapsfx.javascript.object.LatLong;
 import com.lynden.gmapsfx.javascript.object.MapOptions;
 import com.lynden.gmapsfx.javascript.object.MapTypeIdEnum;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
+import javafx.scene.control.ButtonBase;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.ToolBar;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.paint.Color;
 import javafx.scene.web.WebView;
+import org.controlsfx.control.StatusBar;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
+import org.controlsfx.glyphfont.FontAwesome;
+import org.controlsfx.glyphfont.Glyph;
+import org.controlsfx.glyphfont.GlyphFont;
+import org.controlsfx.glyphfont.GlyphFontRegistry;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.mapton.core.Mapton;
 import se.trixon.mapton.core.MaptonOptions;
 import se.trixon.mapton.core.api.DictMT;
@@ -75,6 +88,12 @@ public final class MapTopComponent extends MaptonTopComponent {
     private final Mapton mMapton = Mapton.getInstance();
     private final MaptonOptions mOptions = MaptonOptions.getInstance();
     private BorderPane mRoot;
+    private StatusBar mStatusBar;
+    private ToolBar mToolBar;
+    private final GlyphFont mFontAwesome = GlyphFontRegistry.font("FontAwesome");
+    public static final int ICON_SIZE = 24;
+    private final Color mIconColor = Color.BLACK;
+    private final MapController mMapController = MapController.getInstance();
 
     public MapTopComponent() {
         super();
@@ -108,6 +127,8 @@ public final class MapTopComponent extends MaptonTopComponent {
     }
 
     private Scene createScene() {
+        initToolBar();
+        mStatusBar = new StatusBar();
         mMapView = new GoogleMapView();
         mMapView.addMapInitializedListener(() -> {
             LatLong infoWindowLocation = new LatLong(57.66, 12);
@@ -123,6 +144,14 @@ public final class MapTopComponent extends MaptonTopComponent {
                     .zoom(15);
 
             mMap = mMapView.createMap(mMapOptions);
+            mMap.addStateEventHandler(MapStateEventType.zoom_changed, () -> {
+                mMapController.setZoom(mMap.getZoom());
+            });
+            mMap.addMouseEventHandler(UIEventType.mousemove, (GMapMouseEvent event) -> {
+                LatLong latLong = event.getLatLong();
+                mStatusBar.setText(String.format("%.6f  %.6f", latLong.getLatitude(), latLong.getLongitude()));
+                mMapController.setLatLong(latLong);
+            });
 
             Platform.runLater(() -> {
                 mMap.setZoom(mOptions.getMapZoom());
@@ -131,6 +160,8 @@ public final class MapTopComponent extends MaptonTopComponent {
         });
 
         mRoot = new BorderPane(mMapView);
+        mRoot.setTop(mToolBar);
+        mRoot.setBottom(mStatusBar);
 
         return new Scene(mRoot);
     }
@@ -157,6 +188,38 @@ public final class MapTopComponent extends MaptonTopComponent {
                 contextMenu.hide();
             }
         });
+    }
+
+    private Glyph getGlyph(FontAwesome.Glyph glyph) {
+        return mFontAwesome.create(glyph).size(ICON_SIZE).color(mIconColor);
+    }
+
+    private void initToolBar() {
+        //Home
+        Action homeAction = new Action(Dict.HOME.toString(), (ActionEvent event) -> {
+            mMapController.goHome();
+        });
+        homeAction.setGraphic(getGlyph(FontAwesome.Glyph.HOME).size(ICON_SIZE));
+
+        ArrayList<Action> actions = new ArrayList<>();
+        actions.addAll(Arrays.asList(
+                homeAction
+        ));
+
+        mToolBar = new ToolBar();
+        mToolBar.setMinHeight(ICON_SIZE * 1.7);
+        mToolBar.setMaxHeight(ICON_SIZE * 1.7);
+
+        Platform.runLater(() -> {
+            ActionUtils.updateToolBar(mToolBar, actions, ActionUtils.ActionTextBehavior.HIDE);
+
+            FxHelper.adjustButtonWidth(mToolBar.getItems().stream(), ICON_SIZE * 1.5);
+            mToolBar.getItems().stream().filter((item) -> (item instanceof ButtonBase))
+                    .map((item) -> (ButtonBase) item).forEachOrdered((buttonBase) -> {
+                FxHelper.undecorateButton(buttonBase);
+            });
+        });
+
     }
 
     void readProperties(java.util.Properties p) {

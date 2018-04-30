@@ -16,6 +16,7 @@
 package se.trixon.mapton.core.map;
 
 import com.lynden.gmapsfx.javascript.object.GoogleMap;
+import com.lynden.gmapsfx.javascript.object.LatLong;
 import se.trixon.mapton.core.Mapton;
 import se.trixon.mapton.core.MaptonOptions;
 
@@ -25,7 +26,11 @@ import se.trixon.mapton.core.MaptonOptions;
  */
 public class MapController {
 
+    private LatLong mLatLong;
+    private double mLatitude;
+    private double mLongitude;
     private final MaptonOptions mOptions = MaptonOptions.getInstance();
+    private int mZoom;
 
     public static MapController getInstance() {
         return Holder.INSTANCE;
@@ -34,13 +39,48 @@ public class MapController {
     private MapController() {
     }
 
+    public LatLong getLatLong() {
+        return mLatLong;
+    }
+
+    public double getLatitude() {
+        return mLatitude;
+    }
+
+    public double getLongitude() {
+        return mLongitude;
+    }
+
+    public int getZoom() {
+        return mZoom;
+    }
+
     public void goHome() {
         getMap().panTo(mOptions.getMapHome());
         getMap().setZoom(mOptions.getMapHomeZoom());
     }
 
+    public void panTo(LatLong latLong) {
+        getMap().panTo(latLong);
+    }
+
+    public void panTo(LatLong latLong, int zoom) {
+        getMap().setZoom(zoom);
+        panTo(latLong);
+    }
+
+    public void setLatLong(LatLong latLong) {
+        mLatLong = latLong;
+        mLatitude = latLong.getLatitude();
+        mLongitude = latLong.getLongitude();
+    }
+
     private GoogleMap getMap() {
         return Mapton.getInstance().getMap();
+    }
+
+    void setZoom(int zoom) {
+        mZoom = zoom;
     }
 
     private static class Holder {

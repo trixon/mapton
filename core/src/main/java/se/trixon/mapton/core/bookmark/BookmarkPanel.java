@@ -15,6 +15,8 @@
  */
 package se.trixon.mapton.core.bookmark;
 
+import java.text.DecimalFormat;
+import java.text.ParseException;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
@@ -26,6 +28,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.util.StringConverter;
 import org.controlsfx.validation.ValidationResult;
 import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
@@ -56,9 +59,45 @@ public class BookmarkPanel extends FxDialogPanel {
         mNameTextField = new TextField();
         mCatTextField = new TextField();
         mDescTextArea = new TextArea();
-        mZoomSpinner = new Spinner(0, 21, 5, 1);
-        mLatitudeSpinner = new Spinner(-180, 180, 0, 0.001);
-        mLongitudeSpinner = new Spinner(-90, 90, 0, 0.001);
+        mZoomSpinner = new Spinner(0, 22, 5, 1);
+        mLatitudeSpinner = new Spinner(-90, 90, 0, 0.000001);
+        mLongitudeSpinner = new Spinner(-180, 180, 0, 0.000001);
+
+        StringConverter<Double> converter = new StringConverter<Double>() {
+            private final DecimalFormat mDecimalFormat = new DecimalFormat("#.######");
+
+            @Override
+            public Double fromString(String value) {
+                try {
+                    if (value == null) {
+                        return null;
+                    }
+
+                    value = value.trim();
+
+                    if (value.length() < 1) {
+                        return null;
+                    }
+
+                    return mDecimalFormat.parse(value).doubleValue();
+                } catch (ParseException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+
+            @Override
+            public String toString(Double value) {
+                if (value == null) {
+                    return "";
+                }
+
+                return mDecimalFormat.format(value);
+            }
+        };
+
+        mLatitudeSpinner.getValueFactory().setConverter(converter);
+        mLongitudeSpinner.getValueFactory().setConverter(converter);
+
         mPlacemarkCheckBox = new CheckBox(DictMT.DISPLAY_PLACEMARK.toString());
 
         mLatitudeSpinner.setEditable(true);
