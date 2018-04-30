@@ -46,6 +46,7 @@ import org.controlsfx.glyphfont.GlyphFontRegistry;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
 import se.trixon.almond.util.Dict;
@@ -71,7 +72,11 @@ import se.trixon.mapton.core.bookmark.BookmarkManager;
 )
 @TopComponent.Registration(mode = "editor", openAtStartup = true)
 @ActionID(category = "Window", id = "se.trixon.mapton.core.map.MapTopComponent")
-@ActionReference(path = "Menu/Window" /*, position = 333 */)
+@ActionReferences({
+    @ActionReference(path = "Menu/Window" /*, position = 333 */)
+    ,
+    @ActionReference(path = "Shortcuts", name = "D-M")
+})
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_MapAction",
         preferredID = "MapTopComponent"

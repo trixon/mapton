@@ -43,7 +43,7 @@ import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.FxActionSwing;
 import se.trixon.almond.util.fx.FxActionSwingCheck;
 import se.trixon.almond.util.fx.FxHelper;
-import se.trixon.mapton.core.api.Mapton;
+import static se.trixon.mapton.core.api.Mapton.getIconColor;
 import static se.trixon.mapton.core.api.Mapton.getIconSizeContextMenu;
 import static se.trixon.mapton.core.api.Mapton.getIconSizeToolBar;
 import se.trixon.mapton.core.api.MaptonOptions;
@@ -74,6 +74,7 @@ public class AppToolBar extends ToolBar {
     private FxActionSwing mSysViewNotesAction;
     private FxActionSwing mSysViewResetAction;
     private FxActionSwingCheck mWinBookmarkAction;
+    private FxActionSwing mWinMapAction;
 
     public AppToolBar() {
         initActionsFx();
@@ -89,12 +90,11 @@ public class AppToolBar extends ToolBar {
     }
 
     private Glyph getGlyph(FontAwesome.Glyph glyph) {
-        return mFontAwesome.create(glyph).size(getIconSizeToolBar()).color(Mapton.getIconColor());
+        return mFontAwesome.create(glyph).size(getIconSizeToolBar()).color(getIconColor());
     }
 
     private void init() {
         ActionGroup viewActionGroup = new ActionGroup(Dict.VIEW.toString(),
-                mSysViewFullscreenAction,
                 mSysViewMapAction,
                 mSysViewAlwaysOnTopAction,
                 ActionUtils.ACTION_SEPARATOR,
@@ -109,7 +109,6 @@ public class AppToolBar extends ToolBar {
                 viewActionGroup,
                 ActionUtils.ACTION_SEPARATOR,
                 mSysPluginsAction,
-                mSysOptionsAction,
                 ActionUtils.ACTION_SEPARATOR,
                 mSysHelpAction,
                 mSysAboutAction,
@@ -119,8 +118,11 @@ public class AppToolBar extends ToolBar {
 
         ArrayList<Action> actions = new ArrayList<>();
         actions.addAll(Arrays.asList(
+                mWinMapAction,
                 mWinBookmarkAction,
                 ActionUtils.ACTION_SPAN,
+                mSysViewFullscreenAction,
+                mSysOptionsAction,
                 systemActionGroup
         ));
 
@@ -144,6 +146,12 @@ public class AppToolBar extends ToolBar {
     }
 
     private void initActionsSwing() {
+        //Map
+        mWinMapAction = new FxActionSwing(Dict.BOOKMARKS.toString(), () -> {
+            Actions.forID("Window", "se.trixon.mapton.core.map.MapTopComponent").actionPerformed(null);
+        });
+        mWinMapAction.setGraphic(getGlyph(FontAwesome.Glyph.GLOBE));
+
         //Bookmark
         mWinBookmarkAction = new FxActionSwingCheck(Dict.BOOKMARKS.toString(), () -> {
             Actions.forID("Mapton", "se.trixon.mapton.core.bookmark.BookmarkAction").actionPerformed(null);
@@ -158,6 +166,7 @@ public class AppToolBar extends ToolBar {
             Actions.forID("Window", "org.netbeans.core.windows.actions.ToggleFullScreenAction").actionPerformed(null);
         });
         mSysViewFullscreenAction.setAccelerator(KeyCombination.keyCombination("F11"));
+        mSysViewFullscreenAction.setGraphic(getGlyph(FontAwesome.Glyph.EXPAND).size(getIconSizeToolBar()));
 
         //Map
         mSysViewMapAction = new FxActionSwingCheck(Dict.MAP.toString(), () -> {
@@ -201,7 +210,7 @@ public class AppToolBar extends ToolBar {
         mSysOptionsAction = new FxActionSwing(Dict.OPTIONS.toString(), () -> {
             Actions.forID("Window", "org.netbeans.modules.options.OptionsWindowAction").actionPerformed(null);
         });
-        mSysOptionsAction.setGraphic(getGlyph(FontAwesome.Glyph.COG).size(getIconSizeContextMenu()));
+        mSysOptionsAction.setGraphic(getGlyph(FontAwesome.Glyph.COG).size(getIconSizeToolBar()));
         if (!IS_MAC) {
             mSysOptionsAction.setAccelerator(new KeyCodeCombination(KeyCode.COMMA, KeyCombination.SHORTCUT_DOWN));
         }

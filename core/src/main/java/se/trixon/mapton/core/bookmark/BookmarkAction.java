@@ -20,6 +20,7 @@ import java.awt.event.ActionListener;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
+import org.openide.awt.Actions;
 import org.openide.windows.WindowManager;
 import se.trixon.almond.nbp.fx.FxTopComponent;
 
@@ -35,6 +36,12 @@ public final class BookmarkAction implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        ((FxTopComponent) WindowManager.getDefault().findTopComponent("BookmarkTopComponent")).toggleOpened();
+        FxTopComponent tc = (FxTopComponent) WindowManager.getDefault().findTopComponent("BookmarkTopComponent");
+        tc.toggleOpened();
+        if (tc.isOpened()) {
+            tc.requestActive();
+        } else {
+            Actions.forID("Window", "se.trixon.mapton.core.map.MapTopComponent").actionPerformed(null);
+        }
     }
 }
