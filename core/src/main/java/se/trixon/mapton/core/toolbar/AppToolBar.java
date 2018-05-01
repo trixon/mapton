@@ -223,6 +223,7 @@ public class AppToolBar extends ToolBar {
                 @Override
                 public void windowActivated(WindowEvent e) {
                     final boolean fullscreen = frame.isUndecorated();
+                    mOptions.setFullscreen(fullscreen);
                     Platform.runLater(() -> {
                         MaterialIcon._Navigation fullscreenIcon = fullscreen == true ? MaterialIcon._Navigation.FULLSCREEN_EXIT : MaterialIcon._Navigation.FULLSCREEN;
                         mSysViewFullscreenAction.setGraphic(fullscreenIcon.getImageView(getIconSizeToolBar()));

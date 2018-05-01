@@ -25,12 +25,12 @@ import org.openide.util.NbPreferences;
  */
 public class MaptonOptions {
 
+    private static final boolean DEFAULT_FULL_SCREEN = false;
     private static final double DEFAULT_MAP_LAT = 57.661509;
     private static final double DEFAULT_MAP_LON = 11.999312;
-
     private static final int DEFAULT_MAP_ZOOM = 5;
-
     private static final String KEY_DISPLAY_BOOKMARK = "display_bookmark";
+    private static final String KEY_FULL_SCREEN = "fullscreen";
     private static final String KEY_MAP_CENTER_LAT = "map_center_lat";
     private static final String KEY_MAP_CENTER_LON = "map_center_lon";
     private static final String KEY_MAP_HOME_LAT = "map_home_lat";
@@ -71,8 +71,16 @@ public class MaptonOptions {
         return mPreferences.getBoolean(KEY_DISPLAY_BOOKMARK, true);
     }
 
+    public boolean isFullscreen() {
+        return mPreferences.getBoolean(KEY_FULL_SCREEN, DEFAULT_FULL_SCREEN);
+    }
+
     public void setBookamarkVisible(boolean value) {
         mPreferences.putBoolean(KEY_DISPLAY_BOOKMARK, value);
+    }
+
+    public void setFullscreen(boolean value) {
+        mPreferences.putBoolean(KEY_FULL_SCREEN, value);
     }
 
     public void setMapCenter(LatLong value) {

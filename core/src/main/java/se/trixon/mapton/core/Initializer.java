@@ -15,17 +15,19 @@
  */
 package se.trixon.mapton.core;
 
-import se.trixon.mapton.core.api.Mapton;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLayeredPane;
 import javax.swing.SwingUtilities;
+import org.openide.awt.Actions;
 import org.openide.modules.OnStart;
 import org.openide.windows.WindowManager;
 import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.nbp.NbLog;
+import se.trixon.mapton.core.api.Mapton;
+import se.trixon.mapton.core.api.MaptonOptions;
 import se.trixon.mapton.core.toolbar.AppToolBarProvider;
 import se.trixon.mapton.core.toolbar.RootPaneLayout;
 
@@ -36,6 +38,8 @@ import se.trixon.mapton.core.toolbar.RootPaneLayout;
 @OnStart
 public class Initializer implements Runnable {
 
+    private final MaptonOptions mOptions = MaptonOptions.getInstance();
+
     @Override
     public void run() {
         Platform.setImplicitExit(false);
@@ -43,6 +47,8 @@ public class Initializer implements Runnable {
 
         System.setProperty("netbeans.winsys.no_help_in_dialogs", "true");
         System.setProperty("netbeans.winsys.no_toolbars", "true");
+        boolean fullscreen = mOptions.isFullscreen();
+
         SwingUtilities.invokeLater(() -> {
             JFrame frame = (JFrame) Almond.getFrame();
             JComponent toolbar = AppToolBarProvider.getDefault().createToolbar();
@@ -52,7 +58,9 @@ public class Initializer implements Runnable {
         });
 
         WindowManager.getDefault().invokeWhenUIReady(() -> {
-            JFrame mainFrame = (JFrame) WindowManager.getDefault().getMainWindow();
+            if (fullscreen) {
+                Actions.forID("Window", "org.netbeans.core.windows.actions.ToggleFullScreenAction").actionPerformed(null);
+            }
 
             NbLog.select();
             NbLog.v(Mapton.LOG_TAG, "Loaded and ready...");
