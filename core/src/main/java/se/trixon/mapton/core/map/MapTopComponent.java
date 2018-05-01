@@ -31,6 +31,7 @@ import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Slider;
 import javafx.scene.control.ToolBar;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
@@ -129,21 +130,22 @@ public final class MapTopComponent extends MaptonTopComponent {
     }
 
     private Scene createScene() {
-        initToolBar();
-        mStatusBar = new StatusBar();
         mMapView = new GoogleMapView();
+        mRoot = new BorderPane(mMapView);
+
         mMapView.addMapInitializedListener(() -> {
-            LatLong infoWindowLocation = new LatLong(57.66, 12);
 
             mMapOptions = new MapOptions()
-                    .center(infoWindowLocation)
+                    .center(mOptions.getMapCenter())
+                    .zoom(mOptions.getMapZoom())
                     .mapType(MapTypeIdEnum.ROADMAP)
-                    .rotateControl(false)
+                    .rotateControl(true)
                     .streetViewControl(false)
                     .mapTypeControl(false)
-                    //                    .overviewMapControl(false)
-                    //                    .mapMaker(false);
-                    .zoom(15);
+                    .fullscreenControl(false)
+                    .zoomControl(false);
+            //                    .overviewMapControl(false)
+            //                    .mapMaker(false);
 
             mMap = mMapView.createMap(mMapOptions);
             mMap.addStateEventHandler(MapStateEventType.zoom_changed, () -> {
@@ -159,11 +161,10 @@ public final class MapTopComponent extends MaptonTopComponent {
                 mMap.setZoom(mOptions.getMapZoom());
                 mMap.setCenter(mOptions.getMapCenter());
             });
-        });
 
-        mRoot = new BorderPane(mMapView);
-        mRoot.setTop(mToolBar);
-        mRoot.setBottom(mStatusBar);
+            initToolBar();
+            initStatusBar();
+        });
 
         return new Scene(mRoot);
     }
@@ -198,6 +199,11 @@ public final class MapTopComponent extends MaptonTopComponent {
         });
     }
 
+    private void initStatusBar() {
+        mStatusBar = new StatusBar();
+        mRoot.setBottom(mStatusBar);
+    }
+
     private void initToolBar() {
         //Home
         Action homeAction = new Action(Dict.HOME.toString(), (ActionEvent event) -> {
@@ -207,7 +213,8 @@ public final class MapTopComponent extends MaptonTopComponent {
 
         ArrayList<Action> actions = new ArrayList<>();
         actions.addAll(Arrays.asList(
-                homeAction
+                homeAction,
+                ActionUtils.ACTION_SPAN
         ));
 
         mToolBar = new ToolBar();
@@ -215,16 +222,20 @@ public final class MapTopComponent extends MaptonTopComponent {
         mToolBar.setMinHeight(height);
         mToolBar.setMaxHeight(height);
 
-        Platform.runLater(() -> {
-            ActionUtils.updateToolBar(mToolBar, actions, ActionUtils.ActionTextBehavior.HIDE);
+        ActionUtils.updateToolBar(mToolBar, actions, ActionUtils.ActionTextBehavior.HIDE);
 
-            FxHelper.adjustButtonWidth(mToolBar.getItems().stream(), getIconSizeToolBarInt() * 1.5);
-            mToolBar.getItems().stream().filter((item) -> (item instanceof ButtonBase))
-                    .map((item) -> (ButtonBase) item).forEachOrdered((buttonBase) -> {
-                FxHelper.undecorateButton(buttonBase);
-            });
+        FxHelper.adjustButtonWidth(mToolBar.getItems().stream(), getIconSizeToolBarInt() * 1.5);
+        mToolBar.getItems().stream().filter((item) -> (item instanceof ButtonBase))
+                .map((item) -> (ButtonBase) item).forEachOrdered((buttonBase) -> {
+            FxHelper.undecorateButton(buttonBase);
         });
 
+        Slider zoomSlider = new Slider(0, 22, 1);
+        getMap().zoomProperty().bindBidirectional(zoomSlider.valueProperty());
+
+        mToolBar.getItems().add(zoomSlider);
+
+        mRoot.setTop(mToolBar);
     }
 
     void readProperties(java.util.Properties p) {
