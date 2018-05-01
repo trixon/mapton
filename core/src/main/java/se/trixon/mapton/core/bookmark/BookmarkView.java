@@ -46,6 +46,7 @@ import org.openide.util.Exceptions;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.icons.material.MaterialIcon;
+import se.trixon.mapton.core.api.DictMT;
 import se.trixon.mapton.core.api.Mapton;
 import static se.trixon.mapton.core.api.Mapton.getIconSizeContextMenu;
 
@@ -88,7 +89,7 @@ public class BookmarkView extends BorderPane {
 
     private void bookmarkCopy() {
         Bookmark bookmark = getSelectedBookmark();
-        SystemHelper.copyToClipboard(String.format("geo:%f,%f", bookmark.getLatitude(), bookmark.getLongitude()));
+        SystemHelper.copyToClipboard(String.format("geo:%.6f,%.6f;crs=wgs84", bookmark.getLatitude(), bookmark.getLongitude()));
     }
 
     private void bookmarkEdit() {
@@ -217,10 +218,10 @@ public class BookmarkView extends BorderPane {
             });
             editAction.setGraphic(MaterialIcon._Content.CREATE.getImageView(getIconSizeContextMenu()));
 
-            Action copyAction = new Action(Dict.COPY.toString(), (ActionEvent event) -> {
+            Action copyLocationAction = new Action(DictMT.COPY_LOCATION.toString(), (ActionEvent event) -> {
                 bookmarkCopy();
             });
-            copyAction.setGraphic(MaterialIcon._Content.CONTENT_COPY.getImageView(getIconSizeContextMenu()));
+            copyLocationAction.setGraphic(MaterialIcon._Content.CONTENT_COPY.getImageView(getIconSizeContextMenu()));
 
             Action removeAction = new Action(Dict.REMOVE.toString(), (ActionEvent event) -> {
                 bookmarkRemove();
@@ -238,7 +239,7 @@ public class BookmarkView extends BorderPane {
 
             Collection<? extends Action> actions = Arrays.asList(
                     editAction,
-                    copyAction,
+                    copyLocationAction,
                     ActionUtils.ACTION_SEPARATOR,
                     removeAction,
                     removeAllAction

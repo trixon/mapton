@@ -24,6 +24,7 @@ import se.trixon.almond.util.SystemHelper;
  * @author Patrik Karlström
  */
 public enum DictMT {
+    COPY_LOCATION,
     DISPLAY_PLACEMARK,
     SET_HOME;
     private final ResourceBundle mResourceBundle = ResourceBundle.getBundle(SystemHelper.getPackageAsPath(DictMT.class) + "DictMT", Locale.getDefault());

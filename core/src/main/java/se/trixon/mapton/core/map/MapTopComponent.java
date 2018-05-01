@@ -46,6 +46,7 @@ import org.openide.awt.ActionReferences;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 import se.trixon.mapton.core.api.DictMT;
@@ -168,12 +169,18 @@ public final class MapTopComponent extends MaptonTopComponent {
     }
 
     private void initMenu() {
+        Action copyLocationAction = new Action(DictMT.COPY_LOCATION.toString(), (ActionEvent event) -> {
+            SystemHelper.copyToClipboard(String.format("geo:%.6f,%.6f;crs=wgs84", mMapController.getLatitude(), mMapController.getLongitude()));
+        });
+
         Action setHomeAction = new Action(DictMT.SET_HOME.toString(), (ActionEvent t) -> {
             mOptions.setMapHome(mMap.getCenter());
             mOptions.setMapHomeZoom(mMap.getZoom());
         });
 
         Collection<? extends Action> actions = Arrays.asList(
+                copyLocationAction,
+                ActionUtils.ACTION_SEPARATOR,
                 BookmarkManager.getInstance().getAddBookmarkAction(),
                 setHomeAction
         );
