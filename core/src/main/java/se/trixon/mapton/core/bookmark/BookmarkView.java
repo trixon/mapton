@@ -40,14 +40,12 @@ import javax.swing.SwingUtilities;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
-import org.controlsfx.glyphfont.FontAwesome;
-import org.controlsfx.glyphfont.GlyphFont;
-import org.controlsfx.glyphfont.GlyphFontRegistry;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
+import se.trixon.almond.util.icons.material.MaterialIcon;
 import se.trixon.mapton.core.api.Mapton;
 import static se.trixon.mapton.core.api.Mapton.getIconSizeContextMenu;
 
@@ -60,7 +58,6 @@ public class BookmarkView extends BorderPane {
     private final ObservableList<Bookmark> mBookmarks = FXCollections.observableArrayList();
     private final Font mDefaultFont = Font.getDefault();
     private final TextField mFilterTextField;
-    private final GlyphFont mFontAwesome = GlyphFontRegistry.font("FontAwesome");
     private final ListView<Bookmark> mListView;
     private final BookmarkManager mManager = BookmarkManager.getInstance();
 
@@ -218,12 +215,12 @@ public class BookmarkView extends BorderPane {
             Action editAction = new Action(Dict.EDIT.toString(), (ActionEvent event) -> {
                 bookmarkEdit();
             });
-            editAction.setGraphic(mFontAwesome.create(FontAwesome.Glyph.EDIT).size(getIconSizeContextMenu()).color(iconColor));
+            editAction.setGraphic(MaterialIcon._Content.CREATE.getImageView(getIconSizeContextMenu()));
 
             Action copyAction = new Action(Dict.COPY.toString(), (ActionEvent event) -> {
                 bookmarkCopy();
             });
-            copyAction.setGraphic(mFontAwesome.create(FontAwesome.Glyph.COPY).size(getIconSizeContextMenu()).color(iconColor));
+            copyAction.setGraphic(MaterialIcon._Content.CONTENT_COPY.getImageView(getIconSizeContextMenu()));
 
             Action removeAction = new Action(Dict.REMOVE.toString(), (ActionEvent event) -> {
                 bookmarkRemove();

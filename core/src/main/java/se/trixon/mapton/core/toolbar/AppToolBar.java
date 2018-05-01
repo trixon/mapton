@@ -15,35 +15,34 @@
  */
 package se.trixon.mapton.core.toolbar;
 
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.stream.Stream;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
-import javafx.scene.Node;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.ToolBar;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 import org.apache.commons.lang3.SystemUtils;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionGroup;
 import org.controlsfx.control.action.ActionUtils;
-import org.controlsfx.glyphfont.FontAwesome;
-import org.controlsfx.glyphfont.Glyph;
-import org.controlsfx.glyphfont.GlyphFont;
-import org.controlsfx.glyphfont.GlyphFontRegistry;
 import org.openide.awt.Actions;
 import org.openide.windows.WindowManager;
+import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.nbp.AlmondOptions;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.FxActionSwing;
 import se.trixon.almond.util.fx.FxActionSwingCheck;
 import se.trixon.almond.util.fx.FxHelper;
-import static se.trixon.mapton.core.api.Mapton.getIconColor;
+import se.trixon.almond.util.icons.material.MaterialIcon;
 import static se.trixon.mapton.core.api.Mapton.getIconSizeContextMenu;
 import static se.trixon.mapton.core.api.Mapton.getIconSizeToolBar;
 import se.trixon.mapton.core.api.MaptonOptions;
@@ -58,7 +57,6 @@ public class AppToolBar extends ToolBar {
     private static final boolean IS_MAC = SystemUtils.IS_OS_MAC;
     private final AlmondOptions mAlmondOptions = AlmondOptions.INSTANCE;
     private final java.awt.event.ActionEvent mDummySwingActionEvent = new java.awt.event.ActionEvent(new JButton(), 0, "");
-    private final GlyphFont mFontAwesome = GlyphFontRegistry.font("FontAwesome");
     private MapTopComponent mMapTopComponent;
     private final MaptonOptions mOptions = MaptonOptions.getInstance();
     private FxActionSwing mSysAboutAction;
@@ -80,17 +78,7 @@ public class AppToolBar extends ToolBar {
         initActionsFx();
         initActionsSwing();
         init();
-    }
-
-    private void adjustButtonWidth(Stream<Node> stream, double prefWidth) {
-        stream.filter((item) -> (item instanceof ButtonBase))
-                .map((item) -> (ButtonBase) item).forEachOrdered((buttonBase) -> {
-            buttonBase.setPrefWidth(prefWidth);
-        });
-    }
-
-    private Glyph getGlyph(FontAwesome.Glyph glyph) {
-        return mFontAwesome.create(glyph).size(getIconSizeToolBar()).color(getIconColor());
+        initListeners();
     }
 
     private void init() {
@@ -105,7 +93,7 @@ public class AppToolBar extends ToolBar {
                 mSysViewResetAction
         );
 
-        ActionGroup systemActionGroup = new ActionGroup(Dict.MENU.toString(), getGlyph(FontAwesome.Glyph.BARS),
+        ActionGroup systemActionGroup = new ActionGroup(Dict.MENU.toString(), MaterialIcon._Navigation.MENU.getImageView(getIconSizeToolBar()),
                 viewActionGroup,
                 ActionUtils.ACTION_SEPARATOR,
                 mSysPluginsAction,
@@ -150,13 +138,13 @@ public class AppToolBar extends ToolBar {
         mWinMapAction = new FxActionSwing(Dict.BOOKMARKS.toString(), () -> {
             Actions.forID("Window", "se.trixon.mapton.core.map.MapTopComponent").actionPerformed(null);
         });
-        mWinMapAction.setGraphic(getGlyph(FontAwesome.Glyph.GLOBE));
+        mWinMapAction.setGraphic(MaterialIcon._Maps.MAP.getImageView(getIconSizeToolBar()));
 
         //Bookmark
         mWinBookmarkAction = new FxActionSwingCheck(Dict.BOOKMARKS.toString(), () -> {
             Actions.forID("Mapton", "se.trixon.mapton.core.bookmark.BookmarkAction").actionPerformed(null);
         });
-        mWinBookmarkAction.setGraphic(getGlyph(FontAwesome.Glyph.BOOKMARK));
+        mWinBookmarkAction.setGraphic(MaterialIcon._Action.BOOKMARK_BORDER.getImageView(getIconSizeToolBar()));
         mWinBookmarkAction.setSelected(mOptions.isBookmarkVisible());
 //
 //
@@ -166,7 +154,7 @@ public class AppToolBar extends ToolBar {
             Actions.forID("Window", "org.netbeans.core.windows.actions.ToggleFullScreenAction").actionPerformed(null);
         });
         mSysViewFullscreenAction.setAccelerator(KeyCombination.keyCombination("F11"));
-        mSysViewFullscreenAction.setGraphic(getGlyph(FontAwesome.Glyph.EXPAND).size(getIconSizeToolBar()));
+        mSysViewFullscreenAction.setGraphic(MaterialIcon._Navigation.FULLSCREEN.getImageView(getIconSizeToolBar()));
 
         //Map
         mSysViewMapAction = new FxActionSwingCheck(Dict.MAP.toString(), () -> {
@@ -210,7 +198,7 @@ public class AppToolBar extends ToolBar {
         mSysOptionsAction = new FxActionSwing(Dict.OPTIONS.toString(), () -> {
             Actions.forID("Window", "org.netbeans.modules.options.OptionsWindowAction").actionPerformed(null);
         });
-        mSysOptionsAction.setGraphic(getGlyph(FontAwesome.Glyph.COG).size(getIconSizeToolBar()));
+        mSysOptionsAction.setGraphic(MaterialIcon._Action.SETTINGS.getImageView(getIconSizeToolBar()));
         if (!IS_MAC) {
             mSysOptionsAction.setAccelerator(new KeyCodeCombination(KeyCode.COMMA, KeyCombination.SHORTCUT_DOWN));
         }
@@ -226,6 +214,22 @@ public class AppToolBar extends ToolBar {
         });
         mSysQuitAction.setAccelerator(new KeyCodeCombination(KeyCode.Q, KeyCombination.SHORTCUT_DOWN));
 
+    }
+
+    private void initListeners() {
+        SwingUtilities.invokeLater(() -> {
+            final JFrame frame = (JFrame) Almond.getFrame();
+            frame.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowActivated(WindowEvent e) {
+                    final boolean fullscreen = frame.isUndecorated();
+                    Platform.runLater(() -> {
+                        MaterialIcon._Navigation fullscreenIcon = fullscreen == true ? MaterialIcon._Navigation.FULLSCREEN_EXIT : MaterialIcon._Navigation.FULLSCREEN;
+                        mSysViewFullscreenAction.setGraphic(fullscreenIcon.getImageView(getIconSizeToolBar()));
+                    });
+                }
+            });
+        });
     }
 
     private MapTopComponent mGetMapTC() {

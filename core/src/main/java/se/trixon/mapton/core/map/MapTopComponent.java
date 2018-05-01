@@ -39,10 +39,6 @@ import javafx.scene.web.WebView;
 import org.controlsfx.control.StatusBar;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
-import org.controlsfx.glyphfont.FontAwesome;
-import org.controlsfx.glyphfont.Glyph;
-import org.controlsfx.glyphfont.GlyphFont;
-import org.controlsfx.glyphfont.GlyphFontRegistry;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -51,6 +47,7 @@ import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
+import se.trixon.almond.util.icons.material.MaterialIcon;
 import se.trixon.mapton.core.api.DictMT;
 import se.trixon.mapton.core.api.Mapton;
 import static se.trixon.mapton.core.api.Mapton.getIconSizeToolBarInt;
@@ -88,7 +85,6 @@ import se.trixon.mapton.core.bookmark.BookmarkManager;
 })
 public final class MapTopComponent extends MaptonTopComponent {
 
-    private final GlyphFont mFontAwesome = GlyphFontRegistry.font("FontAwesome");
     private final Color mIconColor = Mapton.getIconColor();
     private GoogleMap mMap;
     private final MapController mMapController = MapController.getInstance();
@@ -171,10 +167,6 @@ public final class MapTopComponent extends MaptonTopComponent {
         return new Scene(mRoot);
     }
 
-    private Glyph getGlyph(FontAwesome.Glyph glyph) {
-        return mFontAwesome.create(glyph).size(getIconSizeToolBarInt()).color(mIconColor);
-    }
-
     private void initMenu() {
         Action setHomeAction = new Action(DictMT.SET_HOME.toString(), (ActionEvent t) -> {
             mOptions.setMapHome(mMap.getCenter());
@@ -204,7 +196,7 @@ public final class MapTopComponent extends MaptonTopComponent {
         Action homeAction = new Action(Dict.HOME.toString(), (ActionEvent event) -> {
             mMapController.goHome();
         });
-        homeAction.setGraphic(getGlyph(FontAwesome.Glyph.HOME));
+        homeAction.setGraphic(MaterialIcon._Action.HOME.getImageView(getIconSizeToolBarInt()));
 
         ArrayList<Action> actions = new ArrayList<>();
         actions.addAll(Arrays.asList(
