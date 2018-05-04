@@ -21,6 +21,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import org.apache.commons.io.IOUtils;
 import org.openide.util.Exceptions;
+import org.openide.util.Lookup;
 import se.trixon.almond.util.SystemHelper;
 
 /**
@@ -31,6 +32,18 @@ public abstract class MapStyleProvider {
 
     private final StringProperty mName = new SimpleStringProperty();
     private final StringProperty mStyle = new SimpleStringProperty();
+
+    public static String getStyle(String name) {
+        String style = "";
+
+        for (MapStyleProvider mapStyle : Lookup.getDefault().lookupAll(MapStyleProvider.class)) {
+            if (mapStyle.getName().equalsIgnoreCase(name)) {
+                style = mapStyle.getStyle();
+            }
+        }
+
+        return style;
+    }
 
     public MapStyleProvider(String name, String resourceName) {
         setName(name);

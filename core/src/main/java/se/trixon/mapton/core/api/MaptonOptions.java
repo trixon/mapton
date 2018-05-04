@@ -25,9 +25,12 @@ import org.openide.util.NbPreferences;
  */
 public class MaptonOptions {
 
+    public static final String KEY_MAP_STYLE = "map_style";
+
     private static final boolean DEFAULT_FULL_SCREEN = false;
     private static final double DEFAULT_MAP_LAT = 57.661509;
     private static final double DEFAULT_MAP_LON = 11.999312;
+    private static final String DEFAULT_MAP_STYLE = "standard";
     private static final int DEFAULT_MAP_ZOOM = 5;
     private static final String KEY_DISPLAY_BOOKMARK = "display_bookmark";
     private static final String KEY_FULL_SCREEN = "fullscreen";
@@ -63,8 +66,20 @@ public class MaptonOptions {
         return mPreferences.getInt(KEY_MAP_HOME_ZOOM, DEFAULT_MAP_ZOOM);
     }
 
+    public String getMapKey() {
+        return mPreferences.get(KEY_MAP_KEY, "");
+    }
+
+    public String getMapStyle() {
+        return mPreferences.get(KEY_MAP_STYLE, DEFAULT_MAP_STYLE);
+    }
+
     public int getMapZoom() {
         return mPreferences.getInt(KEY_MAP_ZOOM, DEFAULT_MAP_ZOOM);
+    }
+
+    public Preferences getPreferences() {
+        return mPreferences;
     }
 
     public boolean isBookmarkVisible() {
@@ -99,6 +114,10 @@ public class MaptonOptions {
 
     public void setMapKey(String value) {
         mPreferences.put(KEY_MAP_KEY, value);
+    }
+
+    public void setMapStyle(String value) {
+        mPreferences.put(KEY_MAP_STYLE, value);
     }
 
     public void setMapZoom(int value) {

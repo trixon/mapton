@@ -62,7 +62,7 @@ public class Initializer implements Runnable {
                 Actions.forID("Window", "org.netbeans.core.windows.actions.ToggleFullScreenAction").actionPerformed(null);
             }
 
-            NbLog.select();
+            //NbLog.select();
             NbLog.v(Mapton.LOG_TAG, "Loaded and ready...");
         });
     }
