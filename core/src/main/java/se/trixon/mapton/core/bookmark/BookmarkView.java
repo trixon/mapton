@@ -40,6 +40,7 @@ import javax.swing.SwingUtilities;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
+import org.controlsfx.control.textfield.TextFields;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.util.Exceptions;
@@ -63,7 +64,7 @@ public class BookmarkView extends BorderPane {
     private final BookmarkManager mManager = BookmarkManager.getInstance();
 
     public BookmarkView() {
-        mFilterTextField = new TextField();
+        mFilterTextField = TextFields.createClearableTextField();
         mFilterTextField.setPromptText(Dict.BOOKMARKS_SEARCH.toString());
         mListView = new ListView<>(mBookmarks);
         mListView.setPlaceholder(new Label(Dict.NO_BOOKMARKS.toString()));
