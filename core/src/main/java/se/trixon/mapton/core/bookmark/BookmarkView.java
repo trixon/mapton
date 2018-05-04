@@ -19,6 +19,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Locale;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -90,7 +91,7 @@ public class BookmarkView extends BorderPane {
 
     private void bookmarkCopy() {
         Bookmark bookmark = getSelectedBookmark();
-        SystemHelper.copyToClipboard(String.format("geo:%.6f,%.6f;crs=wgs84", bookmark.getLatitude(), bookmark.getLongitude()));
+        SystemHelper.copyToClipboard(String.format(Locale.ENGLISH, "geo:%.6f,%.6f;crs=wgs84", bookmark.getLatitude(), bookmark.getLongitude()));
     }
 
     private void bookmarkEdit() {

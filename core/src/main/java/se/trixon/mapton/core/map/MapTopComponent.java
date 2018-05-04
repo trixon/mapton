@@ -206,7 +206,7 @@ public final class MapTopComponent extends MaptonTopComponent {
 
     private void initMenu() {
         Action copyLocationAction = new Action(DictMT.COPY_LOCATION.toString(), (ActionEvent event) -> {
-            SystemHelper.copyToClipboard(String.format("geo:%.6f,%.6f;crs=wgs84", mMapController.getLatitude(), mMapController.getLongitude()));
+            SystemHelper.copyToClipboard(String.format(Locale.ENGLISH, "geo:%.6f,%.6f;crs=wgs84", mMapController.getLatitude(), mMapController.getLongitude()));
         });
 
         Action setHomeAction = new Action(DictMT.SET_HOME.toString(), (ActionEvent t) -> {
