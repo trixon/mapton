@@ -1,4 +1,4 @@
-/*
+/* 
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -107,12 +107,15 @@ public class AppToolBar extends ToolBar {
         ArrayList<Action> actions = new ArrayList<>();
         actions.addAll(Arrays.asList(
                 mWinMapAction,
-                mWinBookmarkAction,
                 ActionUtils.ACTION_SPAN,
                 mSysViewFullscreenAction,
                 mSysOptionsAction,
                 systemActionGroup
         ));
+
+        if (!mOptions.isBookmarkPopover()) {
+            actions.add(1, mWinBookmarkAction);
+        }
 
         Platform.runLater(() -> {
             ActionUtils.updateToolBar(this, actions, ActionUtils.ActionTextBehavior.HIDE);
@@ -142,7 +145,9 @@ public class AppToolBar extends ToolBar {
 
         //Bookmark
         mWinBookmarkAction = new FxActionSwingCheck(Dict.BOOKMARKS.toString(), () -> {
-            Actions.forID("Mapton", "se.trixon.mapton.core.bookmark.BookmarkAction").actionPerformed(null);
+            if (!mOptions.isBookmarkPopover()) {
+                Actions.forID("Mapton", "se.trixon.mapton.core.bookmark.BookmarkAction").actionPerformed(null);
+            }
         });
         mWinBookmarkAction.setGraphic(MaterialIcon._Action.BOOKMARK_BORDER.getImageView(getIconSizeToolBar()));
         mWinBookmarkAction.setSelected(mOptions.isBookmarkVisible());

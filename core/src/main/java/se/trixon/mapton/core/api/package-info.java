@@ -13,19 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.trixon.mapton.core.map.style;
+@OptionsPanelController.ContainerRegistration(
+        id = "Mapton",
+        categoryName = "#OptionsCategory_Name_Mapton",
+        iconBase = "se/trixon/mapton/core/api/mapton32.png",
+        keywords = "#OptionsCategory_Keywords_Mapton",
+        keywordsCategory = "Mapton",
+        position = 0)
+@NbBundle.Messages(value = {"OptionsCategory_Name_Mapton=Mapton", "OptionsCategory_Keywords_Mapton=Mapton"})
+package se.trixon.mapton.core.api;
 
-import org.openide.util.lookup.ServiceProvider;
-import se.trixon.mapton.core.api.MapStyleProvider;
-
-/**
- *
- * @author Patrik Karlström
- */
-@ServiceProvider(service = MapStyleProvider.class)
-public class SilverMapStyle extends MapStyleProvider {
-
-    public SilverMapStyle() {
-        super("Silver", "silver.json");
-    }
-}
+import org.netbeans.spi.options.OptionsPanelController;
+import org.openide.util.NbBundle;

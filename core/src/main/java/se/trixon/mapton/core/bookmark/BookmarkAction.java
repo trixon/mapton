@@ -1,4 +1,4 @@
-/*
+/* 
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,6 +23,7 @@ import org.openide.awt.ActionRegistration;
 import org.openide.awt.Actions;
 import org.openide.windows.WindowManager;
 import se.trixon.almond.nbp.fx.FxTopComponent;
+import se.trixon.mapton.core.api.MaptonOptions;
 
 @ActionID(
         category = "Mapton",
@@ -36,6 +37,10 @@ public final class BookmarkAction implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        if (MaptonOptions.getInstance().isBookmarkPopover()) {
+            return;
+        }
+
         FxTopComponent tc = (FxTopComponent) WindowManager.getDefault().findTopComponent("BookmarkTopComponent");
         tc.toggleOpened();
         if (tc.isOpened()) {

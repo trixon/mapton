@@ -1,4 +1,4 @@
-/*
+/* 
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -32,6 +32,7 @@ public class MaptonOptions {
     private static final double DEFAULT_MAP_LON = 11.999312;
     private static final String DEFAULT_MAP_STYLE = "standard";
     private static final int DEFAULT_MAP_ZOOM = 5;
+    private static final boolean DEFAULT_UI_BOOKMARK_POPOVER = true;
     private static final String KEY_DISPLAY_BOOKMARK = "display_bookmark";
     private static final String KEY_FULL_SCREEN = "fullscreen";
     private static final String KEY_MAP_CENTER_LAT = "map_center_lat";
@@ -42,6 +43,7 @@ public class MaptonOptions {
     private static final String KEY_MAP_HOME_ZOOM = "map_home_zoom";
     private static final String KEY_MAP_KEY = "map_key";
     private static final String KEY_MAP_ZOOM = "map_zoom";
+    private static final String KEY_UI_BOOKMARK_POPOVER = "ui_bookmark_popover";
     private final Preferences mPreferences = NbPreferences.forModule(MaptonOptions.class);
 
     public static MaptonOptions getInstance() {
@@ -87,6 +89,10 @@ public class MaptonOptions {
         return mPreferences;
     }
 
+    public boolean isBookmarkPopover() {
+        return mPreferences.getBoolean(KEY_UI_BOOKMARK_POPOVER, DEFAULT_UI_BOOKMARK_POPOVER);
+    }
+
     public boolean isBookmarkVisible() {
         return mPreferences.getBoolean(KEY_DISPLAY_BOOKMARK, true);
     }
@@ -95,7 +101,11 @@ public class MaptonOptions {
         return mPreferences.getBoolean(KEY_FULL_SCREEN, DEFAULT_FULL_SCREEN);
     }
 
-    public void setBookamarkVisible(boolean value) {
+    public void setBookmarkPopover(boolean value) {
+        mPreferences.putBoolean(KEY_UI_BOOKMARK_POPOVER, value);
+    }
+
+    public void setBookmarkVisible(boolean value) {
         mPreferences.putBoolean(KEY_DISPLAY_BOOKMARK, value);
     }
 

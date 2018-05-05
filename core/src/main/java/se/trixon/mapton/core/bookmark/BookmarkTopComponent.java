@@ -1,4 +1,4 @@
-/*
+/* 
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -38,7 +38,7 @@ import se.trixon.mapton.core.api.MaptonOptions;
         //iconBase="SET/PATH/TO/ICON/HERE",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
-@TopComponent.Registration(mode = "explorer", openAtStartup = true)
+@TopComponent.Registration(mode = "explorer", openAtStartup = false)
 @ActionID(category = "Window", id = "se.trixon.mapton.core.bookmark.BookmarkTopComponent")
 @ActionReference(path = "Menu/Window" /*, position = 333 */)
 @TopComponent.OpenActionRegistration(
@@ -65,13 +65,13 @@ public final class BookmarkTopComponent extends FxTopComponent {
 
     @Override
     protected void componentClosed() {
-        MaptonOptions.getInstance().setBookamarkVisible(false);
+        MaptonOptions.getInstance().setBookmarkVisible(false);
         super.componentClosed();
     }
 
     @Override
     protected void componentOpened() {
-        MaptonOptions.getInstance().setBookamarkVisible(true);
+        MaptonOptions.getInstance().setBookmarkVisible(true);
         super.componentOpened();
     }
 

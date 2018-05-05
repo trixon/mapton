@@ -1,4 +1,4 @@
-/*
+/* 
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -282,12 +282,15 @@ public final class MapTopComponent extends MaptonTopComponent {
         actions.addAll(Arrays.asList(
                 homeAction,
                 ActionUtils.ACTION_SEPARATOR,
-                bookmarkAction,
                 styleAction,
                 ActionUtils.ACTION_SEPARATOR,
                 testAction,
                 ActionUtils.ACTION_SPAN
         ));
+
+        if (mOptions.isBookmarkPopover()) {
+            actions.add(1, bookmarkAction);
+        }
 
         mToolBar = new ToolBar();
         double height = getIconSizeToolBarInt() * 1.6;
