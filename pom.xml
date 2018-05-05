@@ -92,6 +92,7 @@
         <module>application</module>
         <module>core</module>
         <module>modules/boiler</module>
+        <module>modules/swetrans</module>
     </modules>
 
     <properties>
