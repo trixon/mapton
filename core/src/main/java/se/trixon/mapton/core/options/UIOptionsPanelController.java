@@ -30,11 +30,11 @@ import org.openide.util.Lookup;
         keywordsCategory = "Mapton/UiPanel"
 )
 @org.openide.util.NbBundle.Messages({"AdvancedOption_DisplayName_UiPanel=UI", "AdvancedOption_Keywords_UiPanel=ui"})
-public final class UiPanelOptionsPanelController extends OptionsPanelController {
+public final class UIOptionsPanelController extends OptionsPanelController {
 
     private boolean changed;
 
-    private UiPanelPanel panel;
+    private UIPanel panel;
     private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
     @Override
@@ -86,9 +86,9 @@ public final class UiPanelOptionsPanelController extends OptionsPanelController 
         changed = false;
     }
 
-    private UiPanelPanel getPanel() {
+    private UIPanel getPanel() {
         if (panel == null) {
-            panel = new UiPanelPanel(this);
+            panel = new UIPanel(this);
         }
         return panel;
     }

@@ -17,12 +17,12 @@ package se.trixon.mapton.core.options;
 
 import se.trixon.mapton.core.api.MaptonOptions;
 
-final class UiPanelPanel extends javax.swing.JPanel {
+final class UIPanel extends javax.swing.JPanel {
 
-    private final UiPanelOptionsPanelController mController;
+    private final UIOptionsPanelController mController;
     private final MaptonOptions mCptions = MaptonOptions.getInstance();
 
-    UiPanelPanel(UiPanelOptionsPanelController controller) {
+    UIPanel(UIOptionsPanelController controller) {
         this.mController = controller;
         initComponents();
         // TODO listen to changes in form fields and call controller.changed()
@@ -37,7 +37,7 @@ final class UiPanelPanel extends javax.swing.JPanel {
 
         bookmarkPopoverCheckBox = new javax.swing.JCheckBox();
 
-        org.openide.awt.Mnemonics.setLocalizedText(bookmarkPopoverCheckBox, org.openide.util.NbBundle.getMessage(UiPanelPanel.class, "UiPanelPanel.bookmarkPopoverCheckBox.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(bookmarkPopoverCheckBox, org.openide.util.NbBundle.getMessage(UIPanel.class, "UIPanel.bookmarkPopoverCheckBox.text")); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
