@@ -36,6 +36,7 @@ public class MaptonOptions {
     private static final String KEY_FULL_SCREEN = "fullscreen";
     private static final String KEY_MAP_CENTER_LAT = "map_center_lat";
     private static final String KEY_MAP_CENTER_LON = "map_center_lon";
+    private static final String KEY_MAP_COO_TRANS = "map_coo_trans";
     private static final String KEY_MAP_HOME_LAT = "map_home_lat";
     private static final String KEY_MAP_HOME_LON = "map_home_lon";
     private static final String KEY_MAP_HOME_ZOOM = "map_home_zoom";
@@ -54,6 +55,10 @@ public class MaptonOptions {
         return new LatLong(
                 mPreferences.getDouble(KEY_MAP_CENTER_LAT, DEFAULT_MAP_LAT),
                 mPreferences.getDouble(KEY_MAP_CENTER_LON, DEFAULT_MAP_LON));
+    }
+
+    public String getMapCooTrans() {
+        return mPreferences.get(KEY_MAP_COO_TRANS, "");
     }
 
     public LatLong getMapHome() {
@@ -101,6 +106,10 @@ public class MaptonOptions {
     public void setMapCenter(LatLong value) {
         mPreferences.putDouble(KEY_MAP_CENTER_LAT, value.getLatitude());
         mPreferences.putDouble(KEY_MAP_CENTER_LON, value.getLongitude());
+    }
+
+    public void setMapCooTrans(String value) {
+        mPreferences.put(KEY_MAP_COO_TRANS, value);
     }
 
     public void setMapHome(LatLong value) {

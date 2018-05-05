@@ -40,7 +40,6 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.web.WebView;
 import org.controlsfx.control.PopOver;
-import org.controlsfx.control.StatusBar;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
 import org.netbeans.api.settings.ConvertAsProperties;
@@ -100,7 +99,7 @@ public final class MapTopComponent extends MaptonTopComponent {
     private final Mapton mMapton = Mapton.getInstance();
     private final MaptonOptions mOptions = MaptonOptions.getInstance();
     private BorderPane mRoot;
-    private StatusBar mStatusBar;
+    private MapStatusBar mStatusBar;
     private PopOver mStylePopOver;
     private ToolBar mToolBar;
     private Slider mZoomSlider;
@@ -162,7 +161,8 @@ public final class MapTopComponent extends MaptonTopComponent {
 
             initListeners();
             initPopOvers();
-            initStatusBar();
+            mStatusBar = new MapStatusBar();
+            mRoot.setBottom(mStatusBar);
         });
 
         return new Scene(mRoot);
@@ -199,8 +199,8 @@ public final class MapTopComponent extends MaptonTopComponent {
 
         mMap.addMouseEventHandler(UIEventType.mousemove, (GMapMouseEvent event) -> {
             LatLong latLong = event.getLatLong();
-            mStatusBar.setText(String.format("%.6f  %.6f", latLong.getLatitude(), latLong.getLongitude()));
             mMapController.setLatLong(latLong);
+            mStatusBar.updateLatLong();
         });
     }
 
@@ -252,11 +252,6 @@ public final class MapTopComponent extends MaptonTopComponent {
         mStylePopOver.setDetachable(false);
         mStylePopOver.setContentNode(new StyleView());
         mStylePopOver.setAnimated(false);
-    }
-
-    private void initStatusBar() {
-        mStatusBar = new StatusBar();
-        mRoot.setBottom(mStatusBar);
     }
 
     private void initToolBar() {
