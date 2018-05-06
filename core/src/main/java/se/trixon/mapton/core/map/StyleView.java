@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,13 +15,19 @@
  */
 package se.trixon.mapton.core.map;
 
+import com.lynden.gmapsfx.javascript.object.MapTypeIdEnum;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
-import javafx.scene.control.Button;
+import javafx.geometry.Orientation;
+import javafx.scene.control.Separator;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.control.ToggleGroup;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
+import se.trixon.almond.util.Dict;
 import se.trixon.mapton.core.api.MapStyleProvider;
 import se.trixon.mapton.core.api.MaptonOptions;
 
@@ -29,33 +35,85 @@ import se.trixon.mapton.core.api.MaptonOptions;
  *
  * @author Patrik Karlström
  */
-public class StyleView extends VBox {
+public class StyleView extends HBox {
 
     private final MaptonOptions mOptions = MaptonOptions.getInstance();
+    private final VBox mTypeBox = new VBox(16);
+    private final VBox mStyleBox = new VBox(16);
 
     public StyleView() {
         setSpacing(16);
-        setPadding(new Insets(16));
-        setPrefWidth(200);
+        setPadding(new Insets(8, 16, 16, 16));
+        mTypeBox.setPrefWidth(200);
+        mStyleBox.setPrefWidth(200);
+
         Lookup.getDefault().lookupResult(MapStyleProvider.class).addLookupListener((LookupEvent ev) -> {
-            update();
+            initStyle();
         });
 
-        update();
+        initType();
+        initStyle();
+
+        getChildren().addAll(mTypeBox, new Separator(Orientation.VERTICAL), mStyleBox);
     }
 
-    public void update() {
+    private void initStyle() {
         Platform.runLater(() -> {
-            getChildren().clear();
-            for (MapStyleProvider mapStyle : Lookup.getDefault().lookupAll(MapStyleProvider.class)) {
-                Button button = new Button(mapStyle.getName());
-                button.setOnAction((ActionEvent event) -> {
-                    mOptions.setMapStyle(mapStyle.getName());
-                });
-                button.prefWidthProperty().bind(widthProperty());
+            ToggleGroup group = new ToggleGroup();
 
-                getChildren().add(button);
+            mStyleBox.getChildren().clear();
+            for (MapStyleProvider mapStyle : Lookup.getDefault().lookupAll(MapStyleProvider.class)) {
+                ToggleButton button = new ToggleButton(mapStyle.getName());
+                button.prefWidthProperty().bind(widthProperty());
+                button.setToggleGroup(group);
+                button.setOnAction((ActionEvent event) -> {
+                    MapTypeIdEnum type = mOptions.getMapType();
+                    mOptions.setMapStyle(mapStyle.getName());
+                    if (MapTypeIdEnum.ROADMAP != type) {
+                        mOptions.setMapType(MapTypeIdEnum.ROADMAP);
+                        mOptions.setMapType(type);
+                    }
+                });
+
+                mStyleBox.getChildren().add(button);
             }
+        });
+    }
+
+    private void initType() {
+        ToggleButton hybridToggleButton = new ToggleButton(Dict.MAP_TYPE_HYBRID.toString());
+        ToggleButton terrainToggleButton = new ToggleButton(Dict.MAP_TYPE_TERRAIN.toString());
+        ToggleButton roadmapToggleButton = new ToggleButton(Dict.MAP_TYPE_ROADMAP.toString());
+        ToggleButton satelliteToggleButton = new ToggleButton(Dict.MAP_TYPE_SATELLITE.toString());
+
+        hybridToggleButton.setOnAction((ActionEvent event) -> {
+            mOptions.setMapType(MapTypeIdEnum.HYBRID);
+        });
+
+        terrainToggleButton.setOnAction((ActionEvent event) -> {
+            mOptions.setMapType(MapTypeIdEnum.TERRAIN);
+        });
+
+        roadmapToggleButton.setOnAction((ActionEvent event) -> {
+            mOptions.setMapType(MapTypeIdEnum.ROADMAP);
+        });
+
+        satelliteToggleButton.setOnAction((ActionEvent event) -> {
+            mOptions.setMapType(MapTypeIdEnum.SATELLITE);
+        });
+
+        mTypeBox.getChildren().addAll(
+                roadmapToggleButton,
+                satelliteToggleButton,
+                hybridToggleButton,
+                terrainToggleButton
+        );
+
+        ToggleGroup group = new ToggleGroup();
+        mTypeBox.getChildren().forEach((node) -> {
+            ToggleButton button = (ToggleButton) node;
+            button.prefWidthProperty().bind(widthProperty());
+            button.setToggleGroup(group);
         });
     }
 }

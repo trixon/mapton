@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -170,15 +170,19 @@ public final class MapTopComponent extends MaptonTopComponent {
 
     private void initListeners() {
         mOptions.getPreferences().addPreferenceChangeListener((PreferenceChangeEvent evt) -> {
-            switch (evt.getKey()) {
-                case MaptonOptions.KEY_MAP_STYLE:
-                    Platform.runLater(() -> {
+            Platform.runLater(() -> {
+                switch (evt.getKey()) {
+                    case MaptonOptions.KEY_MAP_STYLE:
                         initMap();
-                    });
-                    break;
+                        break;
 
-                default:
-            }
+                    case MaptonOptions.KEY_MAP_TYPE:
+                        mMap.setMapType(mOptions.getMapType());
+                        break;
+
+                    default:
+                }
+            });
         });
     }
 
@@ -245,7 +249,7 @@ public final class MapTopComponent extends MaptonTopComponent {
         mBookmarkPopOver.setAnimated(false);
 
         mStylePopOver = new PopOver();
-        mStylePopOver.setTitle(Dict.STYLE.toString());
+        mStylePopOver.setTitle(String.format("%s & %s", Dict.TYPE.toString(), Dict.STYLE.toString()));
         mStylePopOver.setArrowLocation(PopOver.ArrowLocation.TOP_CENTER);
         mStylePopOver.setHeaderAlwaysVisible(true);
         mStylePopOver.setCloseButtonEnabled(false);

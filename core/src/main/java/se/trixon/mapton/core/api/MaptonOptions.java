@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +16,7 @@
 package se.trixon.mapton.core.api;
 
 import com.lynden.gmapsfx.javascript.object.LatLong;
+import com.lynden.gmapsfx.javascript.object.MapTypeIdEnum;
 import java.util.prefs.Preferences;
 import org.openide.util.NbPreferences;
 
@@ -26,6 +27,7 @@ import org.openide.util.NbPreferences;
 public class MaptonOptions {
 
     public static final String KEY_MAP_STYLE = "map_style";
+    public static final String KEY_MAP_TYPE = "map_type";
 
     private static final boolean DEFAULT_FULL_SCREEN = false;
     private static final double DEFAULT_MAP_LAT = 57.661509;
@@ -79,6 +81,22 @@ public class MaptonOptions {
 
     public String getMapStyle() {
         return mPreferences.get(KEY_MAP_STYLE, DEFAULT_MAP_STYLE);
+    }
+
+    public MapTypeIdEnum getMapType() {
+        switch (mPreferences.get(KEY_MAP_TYPE, "roadmap")) {
+            case "HYBRID":
+                return MapTypeIdEnum.HYBRID;
+
+            case "SATELLITE":
+                return MapTypeIdEnum.SATELLITE;
+
+            case "TERRAIN":
+                return MapTypeIdEnum.TERRAIN;
+
+            default:
+                return MapTypeIdEnum.ROADMAP;
+        }
     }
 
     public int getMapZoom() {
@@ -137,6 +155,10 @@ public class MaptonOptions {
 
     public void setMapStyle(String value) {
         mPreferences.put(KEY_MAP_STYLE, value);
+    }
+
+    public void setMapType(MapTypeIdEnum mapType) {
+        mPreferences.put(KEY_MAP_TYPE, mapType.getName());
     }
 
     public void setMapZoom(int value) {
