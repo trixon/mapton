@@ -18,6 +18,7 @@ package se.trixon.mapton.swetrans;
 import com.github.goober.coordinatetransformation.positions.RT90Position;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.mapton.core.api.CooTransProvider;
+import se.trixon.mapton.core.api.MapBounds;
 
 /**
  *
@@ -29,5 +30,6 @@ public class RT90V25 extends BaseRT {
     public RT90V25() {
         mName = "RT 90 2.5 gon V";
         mProjection = RT90Position.RT90Projection.rt90_2_5_gon_v;
+        mBoundsWgs84 = new MapBounds(14.0900, 56.0000, 16.9400, 68.0000);
     }
 }

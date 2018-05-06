@@ -18,7 +18,9 @@ package se.trixon.mapton.swetrans;
 import com.github.goober.coordinatetransformation.positions.SWEREF99Position;
 import com.github.goober.coordinatetransformation.positions.SWEREF99Position.SWEREFProjection;
 import com.github.goober.coordinatetransformation.positions.WGS84Position;
+import se.trixon.almond.util.Dict;
 import se.trixon.mapton.core.api.CooTransProvider;
+import se.trixon.mapton.core.api.MapBounds;
 
 /**
  *
@@ -26,8 +28,20 @@ import se.trixon.mapton.core.api.CooTransProvider;
  */
 public abstract class BaseSR implements CooTransProvider {
 
+    protected MapBounds mBoundsProjected;
+    protected MapBounds mBoundsWgs84;
     protected String mName;
     protected SWEREFProjection mProjection;
+
+    @Override
+    public MapBounds getBoundsProjected() {
+        return mBoundsProjected;
+    }
+
+    @Override
+    public MapBounds getBoundsWgs84() {
+        return mBoundsWgs84;
+    }
 
     @Override
     public double getLatitude(double latitude, double longitude) {
@@ -56,12 +70,16 @@ public abstract class BaseSR implements CooTransProvider {
 
     @Override
     public String getString(double latitude, double longitude) {
-        return String.format("%s  %s", getLatitudeString(latitude, longitude), getLongitudeString(latitude, longitude));
+        if (isValid(latitude, longitude)) {
+            return String.format("%s  %s", getLatitudeString(latitude, longitude), getLongitudeString(latitude, longitude));
+        } else {
+            return Dict.OUT_OF_BOUNDS.toString();
+        }
     }
 
     @Override
-    public boolean isValid() {
-        return true;
+    public boolean isValid(double latitude, double longitude) {
+        return mBoundsWgs84.contains(longitude, latitude);
     }
 
     @Override

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -33,6 +33,10 @@ public interface CooTransProvider {
         return null;
     }
 
+    MapBounds getBoundsProjected();
+
+    MapBounds getBoundsWgs84();
+
     double getLatitude(double latitude, double longitude);
 
     String getLatitudeString(double latitude, double longitude);
@@ -45,5 +49,6 @@ public interface CooTransProvider {
 
     String getString(double latitude, double longitude);
 
-    boolean isValid();
+    boolean isValid(double latitude, double longitude);
+
 }

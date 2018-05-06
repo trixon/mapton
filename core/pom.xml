@@ -18,6 +18,7 @@
                 <configuration>
                     <publicPackages>
                         <publicPackage>se.trixon.mapton.core.api.*</publicPackage>
+                        <publicPackage>se.trixon.almond.util.*</publicPackage>
                         <publicPackage>se.trixon.almond.nbp.*</publicPackage>
                         <publicPackage>org.apache.commons.*</publicPackage>
                         <publicPackage>org.controlsfx.*</publicPackage>

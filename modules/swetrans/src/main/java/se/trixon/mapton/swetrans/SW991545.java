@@ -18,6 +18,7 @@ package se.trixon.mapton.swetrans;
 import com.github.goober.coordinatetransformation.positions.SWEREF99Position.SWEREFProjection;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.mapton.core.api.CooTransProvider;
+import se.trixon.mapton.core.api.MapBounds;
 
 /**
  *
@@ -29,5 +30,6 @@ public class SW991545 extends BaseSR {
     public SW991545() {
         mName = "SWEREF 99 15 45";
         mProjection = SWEREFProjection.sweref_99_15_45;
+        mBoundsWgs84 = new MapBounds(13.6400, 60.5000, 17.0000, 65.1000);
     }
 }

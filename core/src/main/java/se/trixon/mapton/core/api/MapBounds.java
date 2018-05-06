@@ -13,23 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.trixon.mapton.swetrans;
+package se.trixon.mapton.core.api;
 
-import com.github.goober.coordinatetransformation.positions.RT90Position;
-import org.openide.util.lookup.ServiceProvider;
-import se.trixon.mapton.core.api.CooTransProvider;
-import se.trixon.mapton.core.api.MapBounds;
+import javafx.geometry.Rectangle2D;
 
 /**
  *
  * @author Patrik Karlström
  */
-@ServiceProvider(service = CooTransProvider.class)
-public class RT90 extends BaseRT {
+public class MapBounds extends Rectangle2D {
 
-    public RT90() {
-        mName = "RT 90 0 gon";
-        mProjection = RT90Position.RT90Projection.rt90_0_0_gon_v;
-        mBoundsWgs84 = new MapBounds(16.9400, 56.9000, 19.1900, 68.5800);
+    public MapBounds(double minX, double minY, double maxX, double maxY) {
+        super(minX, minY, maxX - minX, maxY - minY);
     }
+
 }
