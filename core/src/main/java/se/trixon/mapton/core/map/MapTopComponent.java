@@ -266,13 +266,13 @@ public final class MapTopComponent extends MaptonTopComponent {
         homeAction.setGraphic(MaterialIcon._Action.HOME.getImageView(getIconSizeToolBarInt()));
 
         //Bookmark
-        Action bookmarkAction = new Action(Dict.STYLE.toString(), (ActionEvent event) -> {
+        Action bookmarkAction = new Action(Dict.BOOKMARKS.toString(), (ActionEvent event) -> {
             mBookmarkPopOver.show((Node) event.getSource());
         });
         bookmarkAction.setGraphic(MaterialIcon._Action.BOOKMARK_BORDER.getImageView(getIconSizeToolBarInt()));
 
         //Style
-        Action styleAction = new Action(Dict.STYLE.toString(), (ActionEvent event) -> {
+        Action styleAction = new Action(String.format("%s & %s", Dict.TYPE.toString(), Dict.STYLE.toString()), (ActionEvent event) -> {
             mStylePopOver.show((Node) event.getSource());
         });
         styleAction.setGraphic(MaterialIcon._Image.COLOR_LENS.getImageView(getIconSizeToolBarInt()));
@@ -314,6 +314,7 @@ public final class MapTopComponent extends MaptonTopComponent {
         mZoomSlider = new Slider(0, 22, 1);
 
         mToolBar.getItems().add(mZoomSlider);
+        mToolBar.getItems().add(2, new SearchView().getNode());
 
         mRoot.setTop(mToolBar);
     }
