@@ -18,6 +18,7 @@ package se.trixon.mapton.swetrans;
 import com.github.goober.coordinatetransformation.positions.SWEREF99Position;
 import com.github.goober.coordinatetransformation.positions.SWEREF99Position.SWEREFProjection;
 import com.github.goober.coordinatetransformation.positions.WGS84Position;
+import javafx.geometry.Point2D;
 import se.trixon.almond.util.Dict;
 import se.trixon.mapton.core.api.CooTransProvider;
 import se.trixon.mapton.core.api.MapBounds;
@@ -34,6 +35,13 @@ public abstract class BaseSR implements CooTransProvider {
     protected SWEREFProjection mProjection;
 
     @Override
+    public Point2D fromWgs84(double latitude, double longitude) {
+        SWEREF99Position position = getPosition(latitude, longitude);
+
+        return new Point2D(position.getLongitude(), position.getLatitude());
+    }
+
+    @Override
     public MapBounds getBoundsProjected() {
         return mBoundsProjected;
     }
@@ -45,22 +53,22 @@ public abstract class BaseSR implements CooTransProvider {
 
     @Override
     public double getLatitude(double latitude, double longitude) {
-        return getPosition(latitude, longitude, mProjection).getLatitude();
+        return getPosition(latitude, longitude).getLatitude();
     }
 
     @Override
     public String getLatitudeString(double latitude, double longitude) {
-        return String.format("%.1f N", getPosition(latitude, longitude, mProjection).getLatitude());
+        return String.format("%.1f N", getPosition(latitude, longitude).getLatitude());
     }
 
     @Override
     public double getLongitude(double latitude, double longitude) {
-        return getPosition(latitude, longitude, mProjection).getLongitude();
+        return getPosition(latitude, longitude).getLongitude();
     }
 
     @Override
     public String getLongitudeString(double latitude, double longitude) {
-        return String.format("%.1f E", getPosition(latitude, longitude, mProjection).getLongitude());
+        return String.format("%.1f E", getPosition(latitude, longitude).getLongitude());
     }
 
     @Override
@@ -70,7 +78,7 @@ public abstract class BaseSR implements CooTransProvider {
 
     @Override
     public String getString(double latitude, double longitude) {
-        if (isValid(latitude, longitude)) {
+        if (isWithinWgs84Bounds(latitude, longitude)) {
             return String.format("%s  %s", getLatitudeString(latitude, longitude), getLongitudeString(latitude, longitude));
         } else {
             return Dict.OUT_OF_BOUNDS.toString();
@@ -78,7 +86,12 @@ public abstract class BaseSR implements CooTransProvider {
     }
 
     @Override
-    public boolean isValid(double latitude, double longitude) {
+    public boolean isWithinProjectedBounds(double latitude, double longitude) {
+        return mBoundsProjected.contains(longitude, latitude);
+    }
+
+    @Override
+    public boolean isWithinWgs84Bounds(double latitude, double longitude) {
         return mBoundsWgs84.contains(longitude, latitude);
     }
 
@@ -87,8 +100,14 @@ public abstract class BaseSR implements CooTransProvider {
         return getName();
     }
 
-    private SWEREF99Position getPosition(double latitude, double longitude, SWEREFProjection projection) {
-        return new SWEREF99Position(new WGS84Position(latitude, longitude), projection);
+    @Override
+    public Point2D toWgs84(double latitude, double longitude) {
+        SWEREF99Position position = new SWEREF99Position(latitude, longitude, mProjection);
+
+        return new Point2D(position.toWGS84().getLongitude(), position.toWGS84().getLatitude());
     }
 
+    private SWEREF99Position getPosition(double latitude, double longitude) {
+        return new SWEREF99Position(new WGS84Position(latitude, longitude), mProjection);
+    }
 }

@@ -31,5 +31,6 @@ public class SW991800 extends BaseSR {
         mName = "SWEREF 99 18 00";
         mProjection = SWEREFProjection.sweref_99_18_00;
         mBoundsWgs84 = new MapBounds(17.0800, 58.7000, 19.2100, 60.6500);
+        mBoundsProjected = new MapBounds(96664.5565, 6509617.2232, 220146.6914, 6727103.5879);
     }
 }

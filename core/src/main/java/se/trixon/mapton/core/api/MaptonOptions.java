@@ -18,6 +18,7 @@ package se.trixon.mapton.core.api;
 import com.lynden.gmapsfx.javascript.object.LatLong;
 import com.lynden.gmapsfx.javascript.object.MapTypeIdEnum;
 import java.util.prefs.Preferences;
+import org.openide.util.Lookup;
 import org.openide.util.NbPreferences;
 
 /**
@@ -61,7 +62,17 @@ public class MaptonOptions {
                 mPreferences.getDouble(KEY_MAP_CENTER_LON, DEFAULT_MAP_LON));
     }
 
-    public String getMapCooTrans() {
+    public CooTransProvider getMapCooTrans() {
+        for (CooTransProvider cooTrans : Lookup.getDefault().lookupAll(CooTransProvider.class)) {
+            if (cooTrans.getName().equalsIgnoreCase(getMapCooTransName())) {
+                return cooTrans;
+            }
+        }
+
+        return null;
+    }
+
+    public String getMapCooTransName() {
         return mPreferences.get(KEY_MAP_COO_TRANS, "");
     }
 

@@ -74,7 +74,7 @@ public class MapStatusBar extends StatusBar {
             mComboBox.setItems(mComboBox.getItems().sorted());
 
             if (!mComboBox.getItems().isEmpty()) {
-                CooTransProvider cooTrans = CooTransProvider.getCooTrans(mOptions.getMapCooTrans());
+                CooTransProvider cooTrans = CooTransProvider.getCooTrans(mOptions.getMapCooTransName());
 
                 if (cooTrans == null) {
                     cooTrans = mComboBox.getItems().get(0);

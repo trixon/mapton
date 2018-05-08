@@ -31,5 +31,6 @@ public class RT90V75 extends BaseRT {
         mName = "RT 90 7.5 gon V";
         mProjection = RT90Position.RT90Projection.rt90_7_5_gon_v;
         mBoundsWgs84 = new MapBounds(10.5700, 56.8500, 12.4400, 63.8000);
+        mBoundsProjected = new MapBounds(1454958.9318, 6302797.6794, 1569043.4074, 7077305.8823);
     }
 }

@@ -15,6 +15,7 @@
  */
 package se.trixon.mapton.core.api;
 
+import javafx.geometry.Point2D;
 import org.openide.util.Lookup;
 
 /**
@@ -43,12 +44,18 @@ public interface CooTransProvider {
 
     double getLongitude(double latitude, double longitude);
 
+    Point2D toWgs84(double latitude, double longitude);
+
+    Point2D fromWgs84(double latitude, double longitude);
+
     String getLongitudeString(double latitude, double longitude);
 
     String getName();
 
     String getString(double latitude, double longitude);
 
-    boolean isValid(double latitude, double longitude);
+    boolean isWithinProjectedBounds(double latitude, double longitude);
+
+    boolean isWithinWgs84Bounds(double latitude, double longitude);
 
 }

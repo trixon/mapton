@@ -15,6 +15,7 @@
  */
 package se.trixon.mapton.core.map;
 
+import javafx.geometry.Point2D;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.mapton.core.api.CooTransProvider;
 import se.trixon.mapton.core.api.DecDegDMS;
@@ -27,8 +28,13 @@ import se.trixon.mapton.core.api.MapBounds;
 @ServiceProvider(service = CooTransProvider.class)
 public class Wgs84DMS implements CooTransProvider {
 
-    private MapBounds mBoundsProjected = new MapBounds(-180, -90, 180, 90);
-    private MapBounds mBoundsWgs84 = new MapBounds(-180, -90, 180, 90);
+    private final MapBounds mBoundsProjected = new MapBounds(-180, -90, 180, 90);
+    private final MapBounds mBoundsWgs84 = new MapBounds(-180, -90, 180, 90);
+
+    @Override
+    public Point2D fromWgs84(double latitude, double longitude) {
+        return new Point2D(longitude, latitude);
+    }
 
     @Override
     public MapBounds getBoundsProjected() {
@@ -75,7 +81,12 @@ public class Wgs84DMS implements CooTransProvider {
     }
 
     @Override
-    public boolean isValid(double latitude, double longitude) {
+    public boolean isWithinProjectedBounds(double latitude, double longitude) {
+        return mBoundsProjected.contains(longitude, latitude);
+    }
+
+    @Override
+    public boolean isWithinWgs84Bounds(double latitude, double longitude) {
         return mBoundsWgs84.contains(longitude, latitude);
     }
 
@@ -84,4 +95,8 @@ public class Wgs84DMS implements CooTransProvider {
         return getName();
     }
 
+    @Override
+    public Point2D toWgs84(double latitude, double longitude) {
+        return new Point2D(longitude, latitude);
+    }
 }

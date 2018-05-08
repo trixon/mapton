@@ -18,6 +18,7 @@ package se.trixon.mapton.core.map;
 import com.lynden.gmapsfx.javascript.object.LatLong;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
+import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -25,8 +26,10 @@ import org.controlsfx.control.textfield.CustomTextField;
 import org.controlsfx.control.textfield.TextFields;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.icons.material.MaterialIcon;
+import se.trixon.mapton.core.api.CooTransProvider;
 import se.trixon.mapton.core.api.DecDegDMS;
 import static se.trixon.mapton.core.api.Mapton.getIconSizeToolBarInt;
+import se.trixon.mapton.core.api.MaptonOptions;
 
 /**
  *
@@ -38,6 +41,7 @@ public class SearchView {
 
     private final MapController mMapController = MapController.getInstance();
     private CustomTextField mSearchTextField;
+    private final MaptonOptions mOptions = MaptonOptions.getInstance();
 
     public SearchView() {
         mSearchTextField = (CustomTextField) TextFields.createClearableTextField();
@@ -77,8 +81,14 @@ public class SearchView {
                 final Double lat = NumberUtils.createDouble(coordinate[0]);
                 final Double lon = NumberUtils.createDouble(coordinate[1]);
                 Wgs84DMS dms = new Wgs84DMS();
-                if (dms.isValid(lat, lon)) {
+                if (dms.isWithinWgs84Bounds(lat, lon)) {
                     latLong = new LatLong(lat, lon);
+                } else {
+                    CooTransProvider cooTrans = mOptions.getMapCooTrans();
+                    if (cooTrans.isWithinProjectedBounds(lat, lon)) {
+                        Point2D p = cooTrans.toWgs84(lat, lon);
+                        latLong = new LatLong(p.getY(), p.getX());
+                    }
                 }
             } catch (Exception e) {
                 // nvm
