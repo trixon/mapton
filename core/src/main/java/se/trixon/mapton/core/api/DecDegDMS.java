@@ -15,14 +15,27 @@
  */
 package se.trixon.mapton.core.api;
 
+import org.apache.commons.lang3.Range;
+
 /**
  *
  * @author Patrik Karlström
  */
 public class DecDegDMS {
 
+    private static final Range<Integer> sLatRange = Range.between(-90, 90);
+    private static final Range<Integer> sLonRange = Range.between(-180, 180);
+    private static final Range<Integer> sMinRange = Range.between(0, 59);
+    private static final Range<Double> sSecRange = Range.between(0.0, 59.999999);
+
     private boolean mAbsolute;
     private double mDecDeg;
+    private int mLatDeg;
+    private int mLatMin;
+    private double mLatSec;
+    private int mLonDeg;
+    private int mLonMin;
+    private double mLonSec;
 
     public DecDegDMS(double decdeg, boolean absolute) {
         mDecDeg = decdeg;
@@ -31,6 +44,24 @@ public class DecDegDMS {
 
     public DecDegDMS(double decdeg) {
         this(decdeg, false);
+    }
+
+    public DecDegDMS(int latDeg, int latMin, double latSec, int lonDeg, int lonMin, double lonSec) {
+        mLatDeg = latDeg;
+        mLatMin = latMin;
+        mLatSec = latSec;
+        mLonDeg = lonDeg;
+        mLonMin = lonMin;
+        mLonSec = lonSec;
+
+        if (!(sLatRange.contains(latDeg)
+                && sMinRange.contains(latMin)
+                && sSecRange.contains(latSec)
+                && sLonRange.contains(lonDeg)
+                && sMinRange.contains(lonMin)
+                && sSecRange.contains(lonSec))) {
+            throw new IllegalArgumentException();
+        }
     }
 
     public String format(String format, String pos, String neg) {
@@ -48,6 +79,16 @@ public class DecDegDMS {
 
     public int getDeg() {
         return (int) getDecimalDegrees();
+    }
+
+    public double getLatitude() {
+        double lat = Math.abs(mLatDeg) + mLatMin / 60f + mLatSec / 3600f;
+        return mLatDeg < 0 ? -1 * lat : lat;
+    }
+
+    public double getLongitude() {
+        double lon = Math.abs(mLonDeg) + mLonMin / 60f + mLonSec / 3600f;
+        return mLonDeg < 0 ? -1 * lon : lon;
     }
 
     public int getMin() {
