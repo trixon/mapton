@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,6 +21,7 @@ import javafx.embed.swing.JFXPanel;
 import javafx.scene.Scene;
 import javax.swing.JComponent;
 import org.openide.util.Lookup;
+import se.trixon.mapton.core.api.Mapton;
 import static se.trixon.mapton.core.api.Mapton.getIconSizeToolBar;
 
 /**
@@ -51,6 +52,7 @@ public abstract class AppToolBarProvider {
 
             Platform.runLater(() -> {
                 AppToolBar appToolBar = new AppToolBar();
+                Mapton.setToolBar(appToolBar);
                 Scene scene = new Scene(appToolBar);
                 fxPanel.setScene(scene);
             });

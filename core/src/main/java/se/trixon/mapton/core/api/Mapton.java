@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,6 +22,7 @@ import java.text.DateFormat;
 import javafx.scene.paint.Color;
 import org.openide.awt.StatusDisplayer;
 import se.trixon.mapton.core.map.MapTopComponent;
+import se.trixon.mapton.core.toolbar.AppToolBar;
 
 /**
  *
@@ -34,11 +35,16 @@ public class Mapton {
     private static final int ICON_SIZE_CONTEXT_MENU = 16;
     private static final int ICON_SIZE_TOOLBAR = 36;
     private static final int ICON_SIZE_TOOLBAR_INT = 24;
+    private static AppToolBar sAppToolBar;
     private static final Color sIconColor = Color.BLACK;
     private MapTopComponent mMapTopComponent;
 
     public static void clearStatusText() {
         setStatusText("");
+    }
+
+    public static AppToolBar getAppToolBar() {
+        return sAppToolBar;
     }
 
     public static DateFormat getDefaultDateFormat() {
@@ -57,6 +63,7 @@ public class Mapton {
         return ICON_SIZE_TOOLBAR;
     }
 
+    @Deprecated
     public static int getIconSizeToolBarInt() {
         return ICON_SIZE_TOOLBAR_INT;
     }
@@ -71,6 +78,10 @@ public class Mapton {
 
     public static void setStatusText(String text) {
         setStatusText(text, StatusDisplayer.IMPORTANCE_ANNOTATION);
+    }
+
+    public static void setToolBar(AppToolBar appToolBar) {
+        sAppToolBar = appToolBar;
     }
 
     private Mapton() {

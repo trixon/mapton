@@ -55,7 +55,7 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
 import se.trixon.mapton.core.api.DictMT;
 import se.trixon.mapton.core.api.MapStyleProvider;
 import se.trixon.mapton.core.api.Mapton;
-import static se.trixon.mapton.core.api.Mapton.getIconSizeToolBarInt;
+import static se.trixon.mapton.core.api.Mapton.getIconSizeToolBar;
 import se.trixon.mapton.core.api.MaptonOptions;
 import se.trixon.mapton.core.api.MaptonTopComponent;
 import se.trixon.mapton.core.bookmark.BookmarkManager;
@@ -263,33 +263,33 @@ public final class MapTopComponent extends MaptonTopComponent {
         Action homeAction = new Action(Dict.HOME.toString(), (ActionEvent event) -> {
             mMapController.goHome();
         });
-        homeAction.setGraphic(MaterialIcon._Action.HOME.getImageView(getIconSizeToolBarInt()));
+        homeAction.setGraphic(MaterialIcon._Action.HOME.getImageView(getIconSizeToolBar()));
 
         //Bookmark
         Action bookmarkAction = new Action(Dict.BOOKMARKS.toString(), (ActionEvent event) -> {
             mBookmarkPopOver.show((Node) event.getSource());
         });
-        bookmarkAction.setGraphic(MaterialIcon._Action.BOOKMARK_BORDER.getImageView(getIconSizeToolBarInt()));
+        bookmarkAction.setGraphic(MaterialIcon._Action.BOOKMARK_BORDER.getImageView(getIconSizeToolBar()));
 
         //Style
         Action styleAction = new Action(String.format("%s & %s", Dict.TYPE.toString(), Dict.STYLE.toString()), (ActionEvent event) -> {
             mStylePopOver.show((Node) event.getSource());
         });
-        styleAction.setGraphic(MaterialIcon._Image.COLOR_LENS.getImageView(getIconSizeToolBarInt()));
+        styleAction.setGraphic(MaterialIcon._Image.COLOR_LENS.getImageView(getIconSizeToolBar()));
 
         //Test
         Action testAction = new Action("-DEV TEST-", (ActionEvent event) -> {
         });
-        testAction.setGraphic(MaterialIcon._Alert.WARNING.getImageView(getIconSizeToolBarInt()));
+        testAction.setGraphic(MaterialIcon._Alert.WARNING.getImageView(getIconSizeToolBar()));
 
         ArrayList<Action> actions = new ArrayList<>();
         actions.addAll(Arrays.asList(
                 homeAction,
-                ActionUtils.ACTION_SEPARATOR,
                 styleAction,
-                ActionUtils.ACTION_SEPARATOR,
-                testAction,
-                ActionUtils.ACTION_SPAN
+                ActionUtils.ACTION_SEPARATOR
+        //                ActionUtils.ACTION_SEPARATOR,
+        //                testAction,
+        //                ActionUtils.ACTION_SPAN
         ));
 
         if (mOptions.isBookmarkPopover()) {
@@ -297,13 +297,10 @@ public final class MapTopComponent extends MaptonTopComponent {
         }
 
         mToolBar = new ToolBar();
-        double height = getIconSizeToolBarInt() * 1.6;
-        mToolBar.setMinHeight(height);
-        mToolBar.setMaxHeight(height);
 
         ActionUtils.updateToolBar(mToolBar, actions, ActionUtils.ActionTextBehavior.HIDE);
 
-        FxHelper.adjustButtonWidth(mToolBar.getItems().stream(), getIconSizeToolBarInt() * 1.5);
+        FxHelper.adjustButtonWidth(mToolBar.getItems().stream(), getIconSizeToolBar() * 1.5);
         mToolBar.getItems().stream()
                 .filter((item) -> (item instanceof ButtonBase))
                 .map((item) -> (ButtonBase) item)
@@ -313,10 +310,14 @@ public final class MapTopComponent extends MaptonTopComponent {
 
         mZoomSlider = new Slider(0, 22, 1);
 
-        mToolBar.getItems().add(mZoomSlider);
         mToolBar.getItems().add(2, new SearchView().getNode());
+        mMapView.getChildren().add(mZoomSlider);
 
-        mRoot.setTop(mToolBar);
+        int size = mToolBar.getItems().size();
+        for (int i = size - 1; i >= 0; i--) {
+            Node item = mToolBar.getItems().get(i);
+            Mapton.getAppToolBar().getItems().add(1, item);
+        }
     }
 
     void readProperties(java.util.Properties p) {
