@@ -23,23 +23,18 @@ import com.lynden.gmapsfx.javascript.object.GoogleMap;
 import com.lynden.gmapsfx.javascript.object.LatLong;
 import com.lynden.gmapsfx.javascript.object.MapOptions;
 import com.lynden.gmapsfx.javascript.object.MapTypeIdEnum;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.prefs.PreferenceChangeEvent;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
-import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.ButtonBase;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Slider;
-import javafx.scene.control.ToolBar;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.web.WebView;
-import org.controlsfx.control.PopOver;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
 import org.netbeans.api.settings.ConvertAsProperties;
@@ -50,16 +45,12 @@ import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
-import se.trixon.almond.util.fx.FxHelper;
-import se.trixon.almond.util.icons.material.MaterialIcon;
 import se.trixon.mapton.core.api.DictMT;
 import se.trixon.mapton.core.api.MapStyleProvider;
 import se.trixon.mapton.core.api.Mapton;
-import static se.trixon.mapton.core.api.Mapton.getIconSizeToolBar;
 import se.trixon.mapton.core.api.MaptonOptions;
 import se.trixon.mapton.core.api.MaptonTopComponent;
 import se.trixon.mapton.core.bookmark.BookmarkManager;
-import se.trixon.mapton.core.bookmark.BookmarkView;
 
 /**
  * Top component which displays something.
@@ -91,7 +82,6 @@ import se.trixon.mapton.core.bookmark.BookmarkView;
 })
 public final class MapTopComponent extends MaptonTopComponent {
 
-    private PopOver mBookmarkPopOver;
     private GoogleMap mMap;
     private final MapController mMapController = MapController.getInstance();
     private MapOptions mMapOptions;
@@ -100,8 +90,6 @@ public final class MapTopComponent extends MaptonTopComponent {
     private final MaptonOptions mOptions = MaptonOptions.getInstance();
     private BorderPane mRoot;
     private MapStatusBar mStatusBar;
-    private PopOver mStylePopOver;
-    private ToolBar mToolBar;
     private Slider mZoomSlider;
 
     public MapTopComponent() {
@@ -132,7 +120,7 @@ public final class MapTopComponent extends MaptonTopComponent {
     @Override
     protected void initFX() {
         setScene(createScene());
-        initMenu();
+        initContextMenu();
     }
 
     private Scene createScene() {
@@ -152,7 +140,10 @@ public final class MapTopComponent extends MaptonTopComponent {
                     .styleString(MapStyleProvider.getStyle(mOptions.getMapStyle()))
                     .zoomControl(false);
 
-            initToolBar();
+            mZoomSlider = new Slider(0, 22, 1);
+            mMapView.getChildren().add(mZoomSlider);
+            Mapton.getAppToolBar().setDisable(false);
+
             initMap();
             Platform.runLater(() -> {
                 mMap.setZoom(mOptions.getMapZoom());
@@ -160,12 +151,41 @@ public final class MapTopComponent extends MaptonTopComponent {
             });
 
             initListeners();
-            initPopOvers();
             mStatusBar = new MapStatusBar();
             mRoot.setBottom(mStatusBar);
         });
 
         return new Scene(mRoot);
+    }
+
+    private void initContextMenu() {
+        Action copyLocationAction = new Action(DictMT.COPY_LOCATION.toString(), (ActionEvent event) -> {
+            SystemHelper.copyToClipboard(String.format(Locale.ENGLISH, "geo:%.6f,%.6f;crs=wgs84", mMapController.getLatitude(), mMapController.getLongitude()));
+        });
+
+        Action setHomeAction = new Action(DictMT.SET_HOME.toString(), (ActionEvent t) -> {
+            mOptions.setMapHome(mMap.getCenter());
+            mOptions.setMapHomeZoom(mMap.getZoom());
+        });
+
+        Collection<? extends Action> actions = Arrays.asList(
+                copyLocationAction,
+                ActionUtils.ACTION_SEPARATOR,
+                BookmarkManager.getInstance().getAddBookmarkAction(),
+                setHomeAction
+        );
+
+        ContextMenu contextMenu = ActionUtils.createContextMenu(actions);
+
+        WebView webView = mMapView.getWebview();
+        webView.setContextMenuEnabled(false);
+        webView.setOnMousePressed(e -> {
+            if (e.getButton() == MouseButton.SECONDARY) {
+                contextMenu.show(webView, e.getScreenX(), e.getScreenY());
+            } else {
+                contextMenu.hide();
+            }
+        });
     }
 
     private void initListeners() {
@@ -206,118 +226,6 @@ public final class MapTopComponent extends MaptonTopComponent {
             mMapController.setLatLong(latLong);
             mStatusBar.updateLatLong();
         });
-    }
-
-    private void initMenu() {
-        Action copyLocationAction = new Action(DictMT.COPY_LOCATION.toString(), (ActionEvent event) -> {
-            SystemHelper.copyToClipboard(String.format(Locale.ENGLISH, "geo:%.6f,%.6f;crs=wgs84", mMapController.getLatitude(), mMapController.getLongitude()));
-        });
-
-        Action setHomeAction = new Action(DictMT.SET_HOME.toString(), (ActionEvent t) -> {
-            mOptions.setMapHome(mMap.getCenter());
-            mOptions.setMapHomeZoom(mMap.getZoom());
-        });
-
-        Collection<? extends Action> actions = Arrays.asList(
-                copyLocationAction,
-                ActionUtils.ACTION_SEPARATOR,
-                BookmarkManager.getInstance().getAddBookmarkAction(),
-                setHomeAction
-        );
-
-        ContextMenu contextMenu = ActionUtils.createContextMenu(actions);
-
-        WebView webView = mMapView.getWebview();
-        webView.setContextMenuEnabled(false);
-        webView.setOnMousePressed(e -> {
-            if (e.getButton() == MouseButton.SECONDARY) {
-                contextMenu.show(webView, e.getScreenX(), e.getScreenY());
-            } else {
-                contextMenu.hide();
-            }
-        });
-    }
-
-    private void initPopOvers() {
-        mBookmarkPopOver = new PopOver();
-        mBookmarkPopOver.setTitle(Dict.BOOKMARKS.toString());
-        mBookmarkPopOver.setArrowLocation(PopOver.ArrowLocation.TOP_CENTER);
-        mBookmarkPopOver.setHeaderAlwaysVisible(true);
-        mBookmarkPopOver.setCloseButtonEnabled(false);
-        mBookmarkPopOver.setDetachable(false);
-        mBookmarkPopOver.setContentNode(new BookmarkView());
-        mBookmarkPopOver.setAnimated(false);
-
-        mStylePopOver = new PopOver();
-        mStylePopOver.setTitle(String.format("%s & %s", Dict.TYPE.toString(), Dict.STYLE.toString()));
-        mStylePopOver.setArrowLocation(PopOver.ArrowLocation.TOP_CENTER);
-        mStylePopOver.setHeaderAlwaysVisible(true);
-        mStylePopOver.setCloseButtonEnabled(false);
-        mStylePopOver.setDetachable(false);
-        mStylePopOver.setContentNode(new StyleView());
-        mStylePopOver.setAnimated(false);
-    }
-
-    private void initToolBar() {
-        //Home
-        Action homeAction = new Action(Dict.HOME.toString(), (ActionEvent event) -> {
-            mMapController.goHome();
-        });
-        homeAction.setGraphic(MaterialIcon._Action.HOME.getImageView(getIconSizeToolBar()));
-
-        //Bookmark
-        Action bookmarkAction = new Action(Dict.BOOKMARKS.toString(), (ActionEvent event) -> {
-            mBookmarkPopOver.show((Node) event.getSource());
-        });
-        bookmarkAction.setGraphic(MaterialIcon._Action.BOOKMARK_BORDER.getImageView(getIconSizeToolBar()));
-
-        //Style
-        Action styleAction = new Action(String.format("%s & %s", Dict.TYPE.toString(), Dict.STYLE.toString()), (ActionEvent event) -> {
-            mStylePopOver.show((Node) event.getSource());
-        });
-        styleAction.setGraphic(MaterialIcon._Image.COLOR_LENS.getImageView(getIconSizeToolBar()));
-
-        //Test
-        Action testAction = new Action("-DEV TEST-", (ActionEvent event) -> {
-        });
-        testAction.setGraphic(MaterialIcon._Alert.WARNING.getImageView(getIconSizeToolBar()));
-
-        ArrayList<Action> actions = new ArrayList<>();
-        actions.addAll(Arrays.asList(
-                homeAction,
-                styleAction,
-                ActionUtils.ACTION_SEPARATOR
-        //                ActionUtils.ACTION_SEPARATOR,
-        //                testAction,
-        //                ActionUtils.ACTION_SPAN
-        ));
-
-        if (mOptions.isBookmarkPopover()) {
-            actions.add(1, bookmarkAction);
-        }
-
-        mToolBar = new ToolBar();
-
-        ActionUtils.updateToolBar(mToolBar, actions, ActionUtils.ActionTextBehavior.HIDE);
-
-        FxHelper.adjustButtonWidth(mToolBar.getItems().stream(), getIconSizeToolBar() * 1.5);
-        mToolBar.getItems().stream()
-                .filter((item) -> (item instanceof ButtonBase))
-                .map((item) -> (ButtonBase) item)
-                .forEachOrdered((buttonBase) -> {
-                    FxHelper.undecorateButton(buttonBase);
-                });
-
-        mZoomSlider = new Slider(0, 22, 1);
-
-        mToolBar.getItems().add(2, new SearchView().getNode());
-        mMapView.getChildren().add(mZoomSlider);
-
-        int size = mToolBar.getItems().size();
-        for (int i = size - 1; i >= 0; i--) {
-            Node item = mToolBar.getItems().get(i);
-            Mapton.getAppToolBar().getItems().add(1, item);
-        }
     }
 
     void readProperties(java.util.Properties p) {

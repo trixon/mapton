@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.scene.Node;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.ToolBar;
 import javafx.scene.input.KeyCode;
@@ -30,6 +31,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import org.apache.commons.lang3.SystemUtils;
+import org.controlsfx.control.PopOver;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionGroup;
 import org.controlsfx.control.action.ActionUtils;
@@ -46,7 +48,11 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
 import static se.trixon.mapton.core.api.Mapton.getIconSizeContextMenu;
 import static se.trixon.mapton.core.api.Mapton.getIconSizeToolBar;
 import se.trixon.mapton.core.api.MaptonOptions;
+import se.trixon.mapton.core.bookmark.BookmarkView;
+import se.trixon.mapton.core.map.MapController;
 import se.trixon.mapton.core.map.MapTopComponent;
+import se.trixon.mapton.core.map.SearchView;
+import se.trixon.mapton.core.map.StyleView;
 
 /**
  *
@@ -55,10 +61,13 @@ import se.trixon.mapton.core.map.MapTopComponent;
 public class AppToolBar extends ToolBar {
 
     private static final boolean IS_MAC = SystemUtils.IS_OS_MAC;
+    private Action mHomeAction;
     private final AlmondOptions mAlmondOptions = AlmondOptions.INSTANCE;
+    private PopOver mBookmarkPopOver;
     private final java.awt.event.ActionEvent mDummySwingActionEvent = new java.awt.event.ActionEvent(new JButton(), 0, "");
     private MapTopComponent mMapTopComponent;
     private final MaptonOptions mOptions = MaptonOptions.getInstance();
+    private PopOver mStylePopOver;
     private FxActionSwing mSysAboutAction;
     private Action mSysHelpAction;
     private FxActionSwing mSysOptionsAction;
@@ -71,17 +80,26 @@ public class AppToolBar extends ToolBar {
     private FxActionSwingCheck mSysViewMapAction;
     private FxActionSwing mSysViewNotesAction;
     private FxActionSwing mSysViewResetAction;
-    private FxActionSwingCheck mWinBookmarkAction;
+    private Action mWinBookmarkAction;
     private FxActionSwing mWinMapAction;
+    private final MapController mMapController = MapController.getInstance();
+    private Action mStyleAction;
 
     public AppToolBar() {
+        initPopOvers();
         initActionsFx();
         initActionsSwing();
         init();
         initListeners();
+        setDisable(true);
     }
 
     private void init() {
+        //Test
+        Action testAction = new Action("-DEV TEST-", (ActionEvent event) -> {
+        });
+        testAction.setGraphic(MaterialIcon._Alert.WARNING.getImageView(getIconSizeToolBar()));
+
         ActionGroup viewActionGroup = new ActionGroup(Dict.VIEW.toString(),
                 mSysViewMapAction,
                 mSysViewAlwaysOnTopAction,
@@ -107,15 +125,15 @@ public class AppToolBar extends ToolBar {
         ArrayList<Action> actions = new ArrayList<>();
         actions.addAll(Arrays.asList(
                 mWinMapAction,
+                mHomeAction,
+                mWinBookmarkAction,
+                mStyleAction,
+                testAction,
                 ActionUtils.ACTION_SPAN,
                 mSysViewFullscreenAction,
                 mSysOptionsAction,
                 systemActionGroup
         ));
-
-        if (!mOptions.isBookmarkPopover()) {
-            actions.add(1, mWinBookmarkAction);
-        }
 
         Platform.runLater(() -> {
             ActionUtils.updateToolBar(this, actions, ActionUtils.ActionTextBehavior.HIDE);
@@ -125,10 +143,25 @@ public class AppToolBar extends ToolBar {
                     .map((item) -> (ButtonBase) item).forEachOrdered((buttonBase) -> {
                 FxHelper.undecorateButton(buttonBase);
             });
+
+            getItems().add(3, new SearchView().getNode());
         });
+
     }
 
     private void initActionsFx() {
+        //Home
+        mHomeAction = new Action(Dict.HOME.toString(), (ActionEvent event) -> {
+            mMapController.goHome();
+        });
+        mHomeAction.setGraphic(MaterialIcon._Action.HOME.getImageView(getIconSizeToolBar()));
+
+        //Style
+        mStyleAction = new Action(String.format("%s & %s", Dict.TYPE.toString(), Dict.STYLE.toString()), (ActionEvent event) -> {
+            mStylePopOver.show((Node) event.getSource());
+        });
+        mStyleAction.setGraphic(MaterialIcon._Image.COLOR_LENS.getImageView(getIconSizeToolBar()));
+
         //Help
         mSysHelpAction = new Action(Dict.HELP.toString(), (ActionEvent event) -> {
             SystemHelper.desktopBrowse("https://trixon.se/projects/mapton/documentation/");
@@ -144,9 +177,13 @@ public class AppToolBar extends ToolBar {
         mWinMapAction.setGraphic(MaterialIcon._Maps.MAP.getImageView(getIconSizeToolBar()));
 
         //Bookmark
-        mWinBookmarkAction = new FxActionSwingCheck(Dict.BOOKMARKS.toString(), () -> {
-            if (!mOptions.isBookmarkPopover()) {
-                Actions.forID("Mapton", "se.trixon.mapton.core.bookmark.BookmarkAction").actionPerformed(null);
+        mWinBookmarkAction = new Action(Dict.BOOKMARKS.toString(), (ActionEvent event) -> {
+            if (mOptions.isBookmarkPopover()) {
+                mBookmarkPopOver.show((Node) event.getSource());
+            } else {
+                SwingUtilities.invokeLater(() -> {
+                    Actions.forID("Mapton", "se.trixon.mapton.core.bookmark.BookmarkAction").actionPerformed(null);
+                });
             }
         });
         mWinBookmarkAction.setGraphic(MaterialIcon._Action.BOOKMARK_BORDER.getImageView(getIconSizeToolBar()));
@@ -236,6 +273,26 @@ public class AppToolBar extends ToolBar {
                 }
             });
         });
+    }
+
+    private void initPopOvers() {
+        mBookmarkPopOver = new PopOver();
+        mBookmarkPopOver.setTitle(Dict.BOOKMARKS.toString());
+        mBookmarkPopOver.setArrowLocation(PopOver.ArrowLocation.TOP_CENTER);
+        mBookmarkPopOver.setHeaderAlwaysVisible(true);
+        mBookmarkPopOver.setCloseButtonEnabled(false);
+        mBookmarkPopOver.setDetachable(false);
+        mBookmarkPopOver.setContentNode(new BookmarkView());
+        mBookmarkPopOver.setAnimated(false);
+
+        mStylePopOver = new PopOver();
+        mStylePopOver.setTitle(String.format("%s & %s", Dict.TYPE.toString(), Dict.STYLE.toString()));
+        mStylePopOver.setArrowLocation(PopOver.ArrowLocation.TOP_CENTER);
+        mStylePopOver.setHeaderAlwaysVisible(true);
+        mStylePopOver.setCloseButtonEnabled(false);
+        mStylePopOver.setDetachable(false);
+        mStylePopOver.setContentNode(new StyleView());
+        mStylePopOver.setAnimated(false);
     }
 
     private MapTopComponent mGetMapTC() {

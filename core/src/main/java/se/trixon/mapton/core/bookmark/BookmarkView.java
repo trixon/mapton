@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -76,6 +76,7 @@ public class BookmarkView extends BorderPane {
             }
         });
 
+        setPrefWidth(300);
         setTop(mFilterTextField);
         setCenter(mListView);
         mFilterTextField.textProperty().addListener((observable, oldValue, newValue) -> {
