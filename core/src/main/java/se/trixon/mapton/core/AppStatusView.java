@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.trixon.mapton.core.map;
+package se.trixon.mapton.core;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -26,12 +26,13 @@ import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import se.trixon.mapton.core.api.CooTransProvider;
 import se.trixon.mapton.core.api.MaptonOptions;
+import se.trixon.mapton.core.map.MapController;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class MapStatusBar extends StatusBar {
+public class AppStatusView extends StatusBar {
 
     private final ComboBox<CooTransProvider> mComboBox = new ComboBox();
     private CooTransProvider mCooTrans;
@@ -39,7 +40,7 @@ public class MapStatusBar extends StatusBar {
     private final MapController mMapController = MapController.getInstance();
     private final MaptonOptions mOptions = MaptonOptions.getInstance();
 
-    public MapStatusBar() {
+    public AppStatusView() {
         super.setText("");
         getRightItems().addAll(mLabel, mComboBox);
 
@@ -65,6 +66,20 @@ public class MapStatusBar extends StatusBar {
         mLabel.setText(message);
     }
 
+    public void updateLatLong() {
+        final double latitude = mMapController.getLatitude();
+        final double longitude = mMapController.getLongitude();
+
+        if (latitude != 0 && longitude != 0) {
+            String cooString = mCooTrans.getString(latitude, longitude);
+
+            String lat = String.format("%9.6f°%s", Math.abs(latitude), latitude < 0 ? "S" : "N");
+            String lon = String.format("%10.6f°%s", Math.abs(longitude), longitude < 0 ? "W" : "E");
+
+            setMessage(String.format("%s  %s WGS 84, %s", lat, lon, cooString));
+        }
+    }
+
     private void updateProviders() {
         Platform.runLater(() -> {
             mComboBox.getItems().clear();
@@ -85,19 +100,5 @@ public class MapStatusBar extends StatusBar {
                 updateLatLong();
             }
         });
-    }
-
-    void updateLatLong() {
-        final double latitude = mMapController.getLatitude();
-        final double longitude = mMapController.getLongitude();
-
-        if (latitude != 0 && longitude != 0) {
-            String cooString = mCooTrans.getString(latitude, longitude);
-
-            String lat = String.format("%9.6f°%s", Math.abs(latitude), latitude < 0 ? "S" : "N");
-            String lon = String.format("%10.6f°%s", Math.abs(longitude), longitude < 0 ? "W" : "E");
-
-            setMessage(String.format("%s  %s WGS 84, %s", lat, lon, cooString));
-        }
     }
 }

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -47,6 +47,8 @@ public class Initializer implements Runnable {
 
         System.setProperty("netbeans.winsys.no_help_in_dialogs", "true");
         System.setProperty("netbeans.winsys.no_toolbars", "true");
+        System.setProperty("netbeans.winsys.status_line.path", "AppStatusPanel.instance");
+
         boolean fullscreen = mOptions.isFullscreen();
 
         SwingUtilities.invokeLater(() -> {

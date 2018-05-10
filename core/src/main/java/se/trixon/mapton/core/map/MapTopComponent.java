@@ -45,6 +45,7 @@ import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
+import se.trixon.mapton.core.AppStatusPanel;
 import se.trixon.mapton.core.api.DictMT;
 import se.trixon.mapton.core.api.MapStyleProvider;
 import se.trixon.mapton.core.api.Mapton;
@@ -89,7 +90,6 @@ public final class MapTopComponent extends MaptonTopComponent {
     private final Mapton mMapton = Mapton.getInstance();
     private final MaptonOptions mOptions = MaptonOptions.getInstance();
     private BorderPane mRoot;
-    private MapStatusBar mStatusBar;
     private Slider mZoomSlider;
 
     public MapTopComponent() {
@@ -151,8 +151,6 @@ public final class MapTopComponent extends MaptonTopComponent {
             });
 
             initListeners();
-            mStatusBar = new MapStatusBar();
-            mRoot.setBottom(mStatusBar);
         });
 
         return new Scene(mRoot);
@@ -224,7 +222,7 @@ public final class MapTopComponent extends MaptonTopComponent {
         mMap.addMouseEventHandler(UIEventType.mousemove, (GMapMouseEvent event) -> {
             LatLong latLong = event.getLatLong();
             mMapController.setLatLong(latLong);
-            mStatusBar.updateLatLong();
+            AppStatusPanel.getInstance().getView().updateLatLong();
         });
     }
 
