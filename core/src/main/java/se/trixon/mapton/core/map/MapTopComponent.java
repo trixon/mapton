@@ -133,6 +133,7 @@ public final class MapTopComponent extends MaptonTopComponent {
                     .zoom(mOptions.getMapZoom())
                     .mapType(MapTypeIdEnum.ROADMAP)
                     .rotateControl(true)
+                    .clickableIcons(false)
                     .streetViewControl(false)
                     .mapTypeControl(false)
                     .fullscreenControl(false)

@@ -45,6 +45,7 @@ import se.trixon.almond.util.fx.FxActionSwing;
 import se.trixon.almond.util.fx.FxActionSwingCheck;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.icons.material.MaterialIcon;
+import se.trixon.mapton.core.AppStatusPanel;
 import static se.trixon.mapton.core.api.Mapton.getIconSizeContextMenu;
 import static se.trixon.mapton.core.api.Mapton.getIconSizeToolBar;
 import se.trixon.mapton.core.api.MaptonOptions;
@@ -97,6 +98,10 @@ public class AppToolBar extends ToolBar {
     private void init() {
         //Test
         Action testAction = new Action("-DEV TEST-", (ActionEvent event) -> {
+            AppStatusPanel.getInstance().setStatusText("Build succeeded!");
+            SwingUtilities.invokeLater(() -> {
+                Actions.forID("Window", "se.trixon.mapton.core.testing.Fx1TopComponent").actionPerformed(null);
+            });
         });
         testAction.setGraphic(MaterialIcon._Alert.WARNING.getImageView(getIconSizeToolBar()));
 
@@ -156,6 +161,19 @@ public class AppToolBar extends ToolBar {
         });
         mHomeAction.setGraphic(MaterialIcon._Action.HOME.getImageView(getIconSizeToolBar()));
 
+        //Bookmark
+        mWinBookmarkAction = new Action(Dict.BOOKMARKS.toString(), (ActionEvent event) -> {
+            if (mOptions.isBookmarkPopover()) {
+                mBookmarkPopOver.show((Node) event.getSource());
+            } else {
+                SwingUtilities.invokeLater(() -> {
+                    Actions.forID("Mapton", "se.trixon.mapton.core.bookmark.BookmarkAction").actionPerformed(null);
+                });
+            }
+        });
+        mWinBookmarkAction.setGraphic(MaterialIcon._Action.BOOKMARK_BORDER.getImageView(getIconSizeToolBar()));
+        mWinBookmarkAction.setSelected(mOptions.isBookmarkVisible());
+
         //Style
         mStyleAction = new Action(String.format("%s & %s", Dict.TYPE.toString(), Dict.STYLE.toString()), (ActionEvent event) -> {
             mStylePopOver.show((Node) event.getSource());
@@ -175,19 +193,6 @@ public class AppToolBar extends ToolBar {
             Actions.forID("Window", "se.trixon.mapton.core.map.MapTopComponent").actionPerformed(null);
         });
         mWinMapAction.setGraphic(MaterialIcon._Maps.MAP.getImageView(getIconSizeToolBar()));
-
-        //Bookmark
-        mWinBookmarkAction = new Action(Dict.BOOKMARKS.toString(), (ActionEvent event) -> {
-            if (mOptions.isBookmarkPopover()) {
-                mBookmarkPopOver.show((Node) event.getSource());
-            } else {
-                SwingUtilities.invokeLater(() -> {
-                    Actions.forID("Mapton", "se.trixon.mapton.core.bookmark.BookmarkAction").actionPerformed(null);
-                });
-            }
-        });
-        mWinBookmarkAction.setGraphic(MaterialIcon._Action.BOOKMARK_BORDER.getImageView(getIconSizeToolBar()));
-        mWinBookmarkAction.setSelected(mOptions.isBookmarkVisible());
 //
 //
 //
