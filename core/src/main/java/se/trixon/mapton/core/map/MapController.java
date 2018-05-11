@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,6 +17,7 @@ package se.trixon.mapton.core.map;
 
 import com.lynden.gmapsfx.javascript.object.GoogleMap;
 import com.lynden.gmapsfx.javascript.object.LatLong;
+import com.lynden.gmapsfx.service.geocoding.GeocoderGeometry;
 import se.trixon.mapton.core.api.Mapton;
 import se.trixon.mapton.core.api.MaptonOptions;
 
@@ -37,6 +38,14 @@ public class MapController {
     }
 
     private MapController() {
+    }
+
+    public void fitBounds(GeocoderGeometry geometry) {
+        try {
+            getMap().fitBounds(geometry.getBounds());
+        } catch (netscape.javascript.JSException e) {
+            panTo(geometry.getLocation());
+        }
     }
 
     public LatLong getLatLong() {

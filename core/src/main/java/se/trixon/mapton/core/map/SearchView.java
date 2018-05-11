@@ -16,12 +16,25 @@
 package se.trixon.mapton.core.map;
 
 import com.lynden.gmapsfx.javascript.object.LatLong;
+import com.lynden.gmapsfx.service.geocoding.GeocoderStatus;
+import com.lynden.gmapsfx.service.geocoding.GeocodingResult;
+import com.lynden.gmapsfx.service.geocoding.GeocodingService;
+import com.lynden.gmapsfx.service.geocoding.GeocodingServiceCallback;
+import java.util.Arrays;
 import java.util.ResourceBundle;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.VBox;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.controlsfx.control.PopOver;
 import org.controlsfx.control.textfield.CustomTextField;
 import org.controlsfx.control.textfield.TextFields;
 import org.openide.util.NbBundle;
@@ -38,38 +51,69 @@ import se.trixon.mapton.core.api.MaptonOptions;
 public class SearchView {
 
     private static final ResourceBundle mBundle = NbBundle.getBundle(SearchView.class);
-
+    private final ObservableList<GeocodingResult> mItems = FXCollections.observableArrayList();
     private final MapController mMapController = MapController.getInstance();
-    private CustomTextField mSearchTextField;
     private final MaptonOptions mOptions = MaptonOptions.getInstance();
+    private final PopOver mResultPopOver;
+    private final ListView<GeocodingResult> mResultView = new ListView();
+    private CustomTextField mSearchTextField;
 
     public SearchView() {
         mSearchTextField = (CustomTextField) TextFields.createClearableTextField();
         mSearchTextField.setLeft(MaterialIcon._Action.SEARCH.getImageView(getIconSizeToolBarInt() - 4));
         mSearchTextField.setPromptText(mBundle.getString("search_prompt"));
         mSearchTextField.setPrefColumnCount(30);
+        mSearchTextField.setText("");
         mSearchTextField.setOnAction((ActionEvent event) -> {
             final String searchString = mSearchTextField.getText();
             if (!StringUtils.isBlank(searchString)) {
                 parse(searchString);
             }
         });
+
+        mResultPopOver = new PopOver();
+        mResultPopOver.setTitle("");
+        mResultPopOver.setArrowLocation(PopOver.ArrowLocation.TOP_CENTER);
+        mResultPopOver.setHeaderAlwaysVisible(true);
+        mResultPopOver.setCloseButtonEnabled(false);
+        mResultPopOver.setDetachable(false);
+        mResultPopOver.setContentNode(mResultView);
+        mResultPopOver.setAnimated(false);
+
+        mResultView.prefWidthProperty().bind(mSearchTextField.widthProperty());
+        mResultView.setItems(mItems);
+        mResultView.setCellFactory((ListView<GeocodingResult> param) -> new GeocodingResultListCell());
+        mResultView.setOnMousePressed((MouseEvent event) -> {
+            if (event.isPrimaryButtonDown()) {
+                mResultPopOver.hide();
+                GeocodingResult result = mResultView.getSelectionModel().getSelectedItem();
+                if (result != null) {
+                    mSearchTextField.setText(result.getFormattedAddress());
+                    mMapController.fitBounds(result.getGeometry());
+                }
+            }
+        });
     }
 
-    public Node getNode() {
+    public Node getPresenter() {
         return mSearchTextField;
+    }
+
+    private void panTo(LatLong latLong) {
+        mMapController.panTo(latLong);
     }
 
     private void parse(String searchString) {
         LatLong latLong = parseDecimal(searchString);
         if (latLong == null) {
             latLong = parseDegMinSec(searchString);
+            if (latLong == null) {
+                parseString(searchString);
+            }
         }
 
-        if (latLong == null) {
-            System.out.println("Not a coordinate, search as text...");
-        } else {
-            mMapController.panTo(latLong);
+        if (latLong != null) {
+            panTo(latLong);
         }
     }
 
@@ -135,4 +179,65 @@ public class SearchView {
         return latLong;
     }
 
+    private void parseString(String searchString) {
+        GeocodingServiceCallback callback = (GeocodingResult[] results, GeocoderStatus status) -> {
+            mItems.clear();
+            if (status != GeocoderStatus.OK) {
+                mResultPopOver.hide();
+                return;
+            }
+
+            mResultPopOver.setTitle("" + results.length + " TRÄFFAR");
+            mResultPopOver.show(mSearchTextField);
+            mItems.addAll(Arrays.asList(results));
+        };
+
+        GeocodingService service = new GeocodingService();
+        service.geocode(searchString, callback);
+    }
+
+    class GeocodingResultListCell extends ListCell<GeocodingResult> {
+
+        private final Label mLabel = new Label();
+        private VBox mBox = new VBox();
+
+        public GeocodingResultListCell() {
+            createUI();
+        }
+
+        private void addContent(GeocodingResult result) {
+            setText(null);
+            mLabel.setText(result.getFormattedAddress());
+
+            setGraphic(mBox);
+        }
+
+        private void clearContent() {
+            setText(null);
+            setGraphic(null);
+        }
+
+        @Override
+        protected void updateItem(GeocodingResult result, boolean empty) {
+            super.updateItem(result, empty);
+
+            if (result == null || empty) {
+                clearContent();
+            } else {
+                addContent(result);
+            }
+        }
+
+        private void selectListItem() {
+            mResultView.getSelectionModel().select(this.getIndex());
+            mResultView.requestFocus();
+        }
+
+        private void createUI() {
+            mBox.getChildren().add(mLabel);
+            mBox.setOnMouseEntered((MouseEvent event) -> {
+                selectListItem();
+            });
+        }
+    }
 }

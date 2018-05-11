@@ -98,9 +98,9 @@ public class AppToolBar extends ToolBar {
     private void init() {
         //Test
         Action testAction = new Action("-DEV TEST-", (ActionEvent event) -> {
-            AppStatusPanel.getInstance().setStatusText("Build succeeded!");
+            AppStatusPanel.getInstance().setStatusText("Status updated!");
             SwingUtilities.invokeLater(() -> {
-                Actions.forID("Window", "se.trixon.mapton.core.testing.Fx1TopComponent").actionPerformed(null);
+//                Actions.forID("Window", "se.trixon.mapton.core.testing.Fx1TopComponent").actionPerformed(null);
             });
         });
         testAction.setGraphic(MaterialIcon._Alert.WARNING.getImageView(getIconSizeToolBar()));
@@ -149,7 +149,7 @@ public class AppToolBar extends ToolBar {
                 FxHelper.undecorateButton(buttonBase);
             });
 
-            getItems().add(3, new SearchView().getNode());
+            getItems().add(3, new SearchView().getPresenter());
         });
 
     }

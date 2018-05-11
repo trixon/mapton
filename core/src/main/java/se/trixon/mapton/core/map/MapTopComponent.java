@@ -124,7 +124,7 @@ public final class MapTopComponent extends MaptonTopComponent {
     }
 
     private Scene createScene() {
-        mMapView = new GoogleMapView(Locale.getDefault().getLanguage(), null);
+        mMapView = new GoogleMapView(Locale.getDefault().getLanguage(), mOptions.getMapKey());
         mRoot = new BorderPane(mMapView);
 
         mMapView.addMapInitializedListener(() -> {
