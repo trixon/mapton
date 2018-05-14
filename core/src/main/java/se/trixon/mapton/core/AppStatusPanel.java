@@ -16,6 +16,7 @@
 package se.trixon.mapton.core;
 
 import javafx.scene.Scene;
+import javafx.scene.layout.BorderPane;
 import se.trixon.almond.nbp.fx.FxPanel;
 
 /**
@@ -25,8 +26,8 @@ import se.trixon.almond.nbp.fx.FxPanel;
 public class AppStatusPanel extends FxPanel {
 
     private static AppStatusPanel sAppStatusPanel;
-
-    private AppStatusView mAppStatusView = new AppStatusView();
+    private final AppStatusView mAppStatusView = new AppStatusView();
+    private final BorderPane mBox = new BorderPane();
 
     public static AppStatusPanel getInstance() {
         return sAppStatusPanel;
@@ -38,8 +39,12 @@ public class AppStatusPanel extends FxPanel {
         initFx(null);
     }
 
-    public AppStatusView getView() {
+    public AppStatusView getProvider() {
         return mAppStatusView;
+    }
+
+    public void reset() {
+        mBox.setCenter(mAppStatusView);
     }
 
     public void setStatusText(String text) {
@@ -52,6 +57,7 @@ public class AppStatusPanel extends FxPanel {
     }
 
     private Scene createScene() {
-        return new Scene(mAppStatusView);
+        reset();
+        return new Scene(mBox);
     }
 }

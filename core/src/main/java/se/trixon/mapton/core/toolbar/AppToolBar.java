@@ -100,7 +100,7 @@ public class AppToolBar extends ToolBar {
         Action testAction = new Action("-DEV TEST-", (ActionEvent event) -> {
             AppStatusPanel.getInstance().setStatusText("Status updated!");
             SwingUtilities.invokeLater(() -> {
-//                Actions.forID("Window", "se.trixon.mapton.core.testing.Fx1TopComponent").actionPerformed(null);
+
             });
         });
         testAction.setGraphic(MaterialIcon._Alert.WARNING.getImageView(getIconSizeToolBar()));

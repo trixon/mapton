@@ -23,6 +23,8 @@ import com.lynden.gmapsfx.javascript.object.GoogleMap;
 import com.lynden.gmapsfx.javascript.object.LatLong;
 import com.lynden.gmapsfx.javascript.object.MapOptions;
 import com.lynden.gmapsfx.javascript.object.MapTypeIdEnum;
+import java.awt.Dimension;
+import java.awt.event.HierarchyEvent;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Locale;
@@ -35,6 +37,9 @@ import javafx.scene.control.Slider;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.web.WebView;
+import javax.swing.JFrame;
+import javax.swing.JLayeredPane;
+import javax.swing.SwingUtilities;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
 import org.netbeans.api.settings.ConvertAsProperties;
@@ -43,9 +48,11 @@ import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
+import org.openide.windows.WindowManager;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.mapton.core.AppStatusPanel;
+import se.trixon.mapton.core.AppStatusView;
 import se.trixon.mapton.core.api.DictMT;
 import se.trixon.mapton.core.api.MapStyleProvider;
 import se.trixon.mapton.core.api.Mapton;
@@ -91,6 +98,7 @@ public final class MapTopComponent extends MaptonTopComponent {
     private final MaptonOptions mOptions = MaptonOptions.getInstance();
     private BorderPane mRoot;
     private Slider mZoomSlider;
+    private AppStatusView mStatusBar;
 
     public MapTopComponent() {
         super();
@@ -146,11 +154,13 @@ public final class MapTopComponent extends MaptonTopComponent {
             Mapton.getAppToolBar().setDisable(false);
 
             initMap();
+
             Platform.runLater(() -> {
                 mMap.setZoom(mOptions.getMapZoom());
                 mMap.setCenter(mOptions.getMapCenter());
             });
 
+            mStatusBar = AppStatusPanel.getInstance().getProvider();
             initListeners();
         });
 
@@ -203,6 +213,25 @@ public final class MapTopComponent extends MaptonTopComponent {
                 }
             });
         });
+
+        SwingUtilities.invokeLater(() -> {
+            addHierarchyListener((HierarchyEvent e) -> {
+                if (e.getChangedParent() instanceof JLayeredPane) {
+                    Dimension d = ((JFrame) WindowManager.getDefault().getMainWindow()).getContentPane().getPreferredSize();
+                    final boolean showOnlyEditor = 1 == d.height && 1 == d.width;
+                    Platform.runLater(() -> {
+                        if (showOnlyEditor) {
+                            mRoot.setBottom(mStatusBar);
+                        } else {
+                            if (mRoot.getBottom() != null) {
+                                mRoot.setBottom(null);
+                                AppStatusPanel.getInstance().reset();
+                            }
+                        }
+                    });
+                }
+            });
+        });
     }
 
     private void initMap() {
@@ -223,7 +252,7 @@ public final class MapTopComponent extends MaptonTopComponent {
         mMap.addMouseEventHandler(UIEventType.mousemove, (GMapMouseEvent event) -> {
             LatLong latLong = event.getLatLong();
             mMapController.setLatLong(latLong);
-            AppStatusPanel.getInstance().getView().updateLatLong();
+            AppStatusPanel.getInstance().getProvider().updateLatLong();
         });
     }
 
