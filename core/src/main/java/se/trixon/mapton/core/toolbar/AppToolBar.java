@@ -19,6 +19,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.prefs.PreferenceChangeEvent;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
@@ -62,12 +63,14 @@ import se.trixon.mapton.core.map.StyleView;
 public class AppToolBar extends ToolBar {
 
     private static final boolean IS_MAC = SystemUtils.IS_OS_MAC;
-    private Action mHomeAction;
     private final AlmondOptions mAlmondOptions = AlmondOptions.INSTANCE;
     private PopOver mBookmarkPopOver;
     private final java.awt.event.ActionEvent mDummySwingActionEvent = new java.awt.event.ActionEvent(new JButton(), 0, "");
+    private Action mHomeAction;
+    private final MapController mMapController = MapController.getInstance();
     private MapTopComponent mMapTopComponent;
     private final MaptonOptions mOptions = MaptonOptions.getInstance();
+    private Action mStyleAction;
     private PopOver mStylePopOver;
     private FxActionSwing mSysAboutAction;
     private Action mSysHelpAction;
@@ -83,8 +86,6 @@ public class AppToolBar extends ToolBar {
     private FxActionSwing mSysViewResetAction;
     private Action mWinBookmarkAction;
     private FxActionSwing mWinMapAction;
-    private final MapController mMapController = MapController.getInstance();
-    private Action mStyleAction;
 
     public AppToolBar() {
         initPopOvers();
@@ -208,6 +209,7 @@ public class AppToolBar extends ToolBar {
             Actions.forID("Window", "org.netbeans.core.windows.actions.ShowEditorOnlyAction").actionPerformed(null);
         });
         mSysViewMapAction.setAccelerator(KeyCombination.keyCombination("F12"));
+        mSysViewMapAction.setSelected(mOptions.isMapOnly());
 
         //OnTop
         mSysViewAlwaysOnTopAction = new FxActionSwingCheck(Dict.ALWAYS_ON_TOP.toString(), () -> {
@@ -277,6 +279,17 @@ public class AppToolBar extends ToolBar {
                     });
                 }
             });
+        });
+
+        mOptions.getPreferences().addPreferenceChangeListener((PreferenceChangeEvent evt) -> {
+            switch (evt.getKey()) {
+                case MaptonOptions.KEY_MAP_ONLY:
+                    mSysViewMapAction.setSelected(mOptions.isMapOnly());
+                    break;
+
+                default:
+                    break;
+            }
         });
     }
 

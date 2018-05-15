@@ -97,8 +97,8 @@ public final class MapTopComponent extends MaptonTopComponent {
     private final Mapton mMapton = Mapton.getInstance();
     private final MaptonOptions mOptions = MaptonOptions.getInstance();
     private BorderPane mRoot;
-    private Slider mZoomSlider;
     private AppStatusView mStatusBar;
+    private Slider mZoomSlider;
 
     public MapTopComponent() {
         super();
@@ -161,6 +161,10 @@ public final class MapTopComponent extends MaptonTopComponent {
             });
 
             mStatusBar = AppStatusPanel.getInstance().getProvider();
+            if (mOptions.isMapOnly()) {
+                mRoot.setBottom(mStatusBar);
+            }
+
             initListeners();
         });
 
@@ -219,6 +223,7 @@ public final class MapTopComponent extends MaptonTopComponent {
                 if (e.getChangedParent() instanceof JLayeredPane) {
                     Dimension d = ((JFrame) WindowManager.getDefault().getMainWindow()).getContentPane().getPreferredSize();
                     final boolean showOnlyEditor = 1 == d.height && 1 == d.width;
+                    mOptions.setMapOnly(showOnlyEditor);
                     Platform.runLater(() -> {
                         if (showOnlyEditor) {
                             mRoot.setBottom(mStatusBar);

@@ -27,12 +27,14 @@ import org.openide.util.NbPreferences;
  */
 public class MaptonOptions {
 
+    public static final String KEY_MAP_ONLY = "map_only";
     public static final String KEY_MAP_STYLE = "map_style";
     public static final String KEY_MAP_TYPE = "map_type";
 
     private static final boolean DEFAULT_FULL_SCREEN = false;
     private static final double DEFAULT_MAP_LAT = 57.661509;
     private static final double DEFAULT_MAP_LON = 11.999312;
+    private static final boolean DEFAULT_MAP_ONLY = false;
     private static final String DEFAULT_MAP_STYLE = "standard";
     private static final int DEFAULT_MAP_ZOOM = 5;
     private static final boolean DEFAULT_UI_BOOKMARK_POPOVER = true;
@@ -50,7 +52,7 @@ public class MaptonOptions {
     private final Preferences mPreferences = NbPreferences.forModule(MaptonOptions.class);
 
     public static MaptonOptions getInstance() {
-        return MaptonOptionsHolder.INSTANCE;
+        return Holder.INSTANCE;
     }
 
     private MaptonOptions() {
@@ -130,6 +132,10 @@ public class MaptonOptions {
         return mPreferences.getBoolean(KEY_FULL_SCREEN, DEFAULT_FULL_SCREEN);
     }
 
+    public boolean isMapOnly() {
+        return mPreferences.getBoolean(KEY_MAP_ONLY, DEFAULT_MAP_ONLY);
+    }
+
     public void setBookmarkPopover(boolean value) {
         mPreferences.putBoolean(KEY_UI_BOOKMARK_POPOVER, value);
     }
@@ -164,6 +170,10 @@ public class MaptonOptions {
         mPreferences.put(KEY_MAP_KEY, value);
     }
 
+    public void setMapOnly(boolean value) {
+        mPreferences.putBoolean(KEY_MAP_ONLY, value);
+    }
+
     public void setMapStyle(String value) {
         mPreferences.put(KEY_MAP_STYLE, value);
     }
@@ -176,7 +186,7 @@ public class MaptonOptions {
         mPreferences.putInt(KEY_MAP_ZOOM, value);
     }
 
-    private static class MaptonOptionsHolder {
+    private static class Holder {
 
         private static final MaptonOptions INSTANCE = new MaptonOptions();
     }
