@@ -28,11 +28,14 @@ import java.awt.event.HierarchyEvent;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.prefs.PreferenceChangeEvent;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.Slider;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
@@ -46,6 +49,9 @@ import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
+import org.openide.util.Lookup;
+import org.openide.util.LookupEvent;
+import org.openide.util.NbBundle;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
@@ -54,6 +60,7 @@ import se.trixon.almond.util.SystemHelper;
 import se.trixon.mapton.core.AppStatusPanel;
 import se.trixon.mapton.core.AppStatusView;
 import se.trixon.mapton.core.api.DictMT;
+import se.trixon.mapton.core.api.MapContextMenuProvider;
 import se.trixon.mapton.core.api.MapStyleProvider;
 import se.trixon.mapton.core.api.Mapton;
 import se.trixon.mapton.core.api.MaptonOptions;
@@ -89,6 +96,11 @@ import se.trixon.mapton.core.bookmark.BookmarkManager;
     "HINT_MapTopComponent=This is a Map window"
 })
 public final class MapTopComponent extends MaptonTopComponent {
+
+    private Menu mContextOpenMenu;
+    private Menu mContextCopyMenu;
+    private Menu mContextExtrasMenu;
+    private final ResourceBundle mBundle = NbBundle.getBundle(MapTopComponent.class);
 
     private GoogleMap mMap;
     private final MapController mMapController = MapController.getInstance();
@@ -185,10 +197,15 @@ public final class MapTopComponent extends MaptonTopComponent {
                 copyLocationAction,
                 ActionUtils.ACTION_SEPARATOR,
                 BookmarkManager.getInstance().getAddBookmarkAction(),
-                setHomeAction
+                setHomeAction,
+                ActionUtils.ACTION_SEPARATOR
         );
 
+        mContextCopyMenu = new Menu(mBundle.getString("copy_location"));
+        mContextOpenMenu = new Menu(mBundle.getString("open_location"));
+        mContextExtrasMenu = new Menu(mBundle.getString("extras"));
         ContextMenu contextMenu = ActionUtils.createContextMenu(actions);
+        contextMenu.getItems().addAll(mContextCopyMenu, mContextOpenMenu, mContextExtrasMenu);
 
         WebView webView = mMapView.getWebview();
         webView.setContextMenuEnabled(false);
@@ -199,6 +216,12 @@ public final class MapTopComponent extends MaptonTopComponent {
                 contextMenu.hide();
             }
         });
+
+        Lookup.getDefault().lookupResult(MapContextMenuProvider.class).addLookupListener((LookupEvent ev) -> {
+            populateContextProviders();
+        });
+
+        populateContextProviders();
     }
 
     private void initListeners() {
@@ -258,6 +281,44 @@ public final class MapTopComponent extends MaptonTopComponent {
             LatLong latLong = event.getLatLong();
             mMapController.setLatLong(latLong);
             AppStatusPanel.getInstance().getProvider().updateLatLong();
+        });
+    }
+
+    private void populateContextProviders() {
+        Platform.runLater(() -> {
+            mContextCopyMenu.getItems().clear();
+            mContextOpenMenu.getItems().clear();
+            mContextExtrasMenu.getItems().clear();
+
+            for (MapContextMenuProvider provider : Lookup.getDefault().lookupAll(MapContextMenuProvider.class)) {
+                MenuItem item = new MenuItem(provider.getName());
+                item.setOnAction(provider.getAction());
+                switch (provider.getType()) {
+                    case COPY:
+                        mContextCopyMenu.getItems().add(item);
+                        break;
+
+                    case EXTRAS:
+                        mContextExtrasMenu.getItems().add(item);
+                        break;
+
+                    case OPEN:
+                        mContextOpenMenu.getItems().add(item);
+                        break;
+
+                    default:
+                        throw new AssertionError();
+                }
+            }
+
+            mContextCopyMenu.getItems().sorted((MenuItem o1, MenuItem o2) -> o1.getText().compareToIgnoreCase(o2.getText()));
+            mContextCopyMenu.setVisible(!mContextCopyMenu.getItems().isEmpty());
+
+            mContextOpenMenu.getItems().sorted((MenuItem o1, MenuItem o2) -> o1.getText().compareToIgnoreCase(o2.getText()));
+            mContextOpenMenu.setVisible(!mContextOpenMenu.getItems().isEmpty());
+
+            mContextExtrasMenu.getItems().sorted((MenuItem o1, MenuItem o2) -> o1.getText().compareToIgnoreCase(o2.getText()));
+            mContextExtrasMenu.setVisible(!mContextExtrasMenu.getItems().isEmpty());
         });
     }
 

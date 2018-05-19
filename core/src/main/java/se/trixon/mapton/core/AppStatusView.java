@@ -76,7 +76,7 @@ public class AppStatusView extends StatusBar {
             String lat = String.format("%9.6f°%s", Math.abs(latitude), latitude < 0 ? "S" : "N");
             String lon = String.format("%10.6f°%s", Math.abs(longitude), longitude < 0 ? "W" : "E");
 
-            setMessage(String.format("%s  %s WGS 84, %s", lat, lon, cooString));
+            setMessage(String.format("%s  %s WGS 84 DD, %s", lat, lon, cooString));
         }
     }
 
