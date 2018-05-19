@@ -19,7 +19,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.Locale;
+import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -30,6 +30,8 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
@@ -45,12 +47,17 @@ import org.controlsfx.control.textfield.TextFields;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.util.Exceptions;
+import org.openide.util.Lookup;
+import org.openide.util.LookupEvent;
+import org.openide.util.NbBundle;
+import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.icons.material.MaterialIcon;
-import se.trixon.mapton.core.api.DictMT;
+import se.trixon.mapton.core.api.MapContextMenuProvider;
 import se.trixon.mapton.core.api.Mapton;
 import static se.trixon.mapton.core.api.Mapton.getIconSizeContextMenu;
+import se.trixon.mapton.core.map.MapTopComponent;
 
 /**
  *
@@ -88,11 +95,6 @@ public class BookmarkView extends BorderPane {
         });
 
         updateBookmarks(mFilterTextField.getText());
-    }
-
-    private void bookmarkCopy() {
-        Bookmark bookmark = getSelectedBookmark();
-        SystemHelper.copyToClipboard(String.format(Locale.ENGLISH, "geo:%.6f,%.6f;crs=wgs84", bookmark.getLatitude(), bookmark.getLongitude()));
     }
 
     private void bookmarkEdit() {
@@ -177,7 +179,11 @@ public class BookmarkView extends BorderPane {
 
     class BookmarkListCell extends ListCell<Bookmark> {
 
+        private final ResourceBundle mBundle = NbBundle.getBundle(MapTopComponent.class);
+
         private final Label mCatLabel = new Label();
+        private Menu mContextCopyMenu;
+        private Menu mContextOpenMenu;
         private final Label mDescLabel = new Label();
         private final VBox mMainBox = new VBox();
         private final Label mNameLabel = new Label();
@@ -221,11 +227,6 @@ public class BookmarkView extends BorderPane {
             });
             editAction.setGraphic(MaterialIcon._Content.CREATE.getImageView(getIconSizeContextMenu()));
 
-            Action copyLocationAction = new Action(DictMT.COPY_LOCATION.toString(), (ActionEvent event) -> {
-                bookmarkCopy();
-            });
-            copyLocationAction.setGraphic(MaterialIcon._Content.CONTENT_COPY.getImageView(getIconSizeContextMenu()));
-
             Action removeAction = new Action(Dict.REMOVE.toString(), (ActionEvent event) -> {
                 bookmarkRemove();
             });
@@ -242,13 +243,17 @@ public class BookmarkView extends BorderPane {
 
             Collection<? extends Action> actions = Arrays.asList(
                     editAction,
-                    copyLocationAction,
                     ActionUtils.ACTION_SEPARATOR,
                     removeAction,
                     removeAllAction
             );
 
             ContextMenu contextMenu = ActionUtils.createContextMenu(actions);
+
+            mContextCopyMenu = new Menu(mBundle.getString("copy_location"));
+            mContextOpenMenu = new Menu(mBundle.getString("open_location"));
+            contextMenu.getItems().add(1, mContextCopyMenu);
+            contextMenu.getItems().add(2, mContextOpenMenu);
 
             mMainBox.setOnMousePressed((MouseEvent event) -> {
                 if (event.isSecondaryButtonDown()) {
@@ -258,6 +263,47 @@ public class BookmarkView extends BorderPane {
                     bookmarkGoTo(this.getItem());
                 }
             });
+
+            Lookup.getDefault().lookupResult(MapContextMenuProvider.class).addLookupListener((LookupEvent ev) -> {
+                populateContextProviders();
+            });
+
+            populateContextProviders();
+
+        }
+
+        private void populateContextProviders() {
+            mContextCopyMenu.getItems().clear();
+            mContextOpenMenu.getItems().clear();
+
+            for (MapContextMenuProvider provider : Lookup.getDefault().lookupAll(MapContextMenuProvider.class)) {
+                MenuItem item = new MenuItem(provider.getName());
+                switch (provider.getType()) {
+                    case COPY:
+                        mContextCopyMenu.getItems().add(item);
+                        item.setOnAction((ActionEvent event) -> {
+                            String s = provider.getUrl();
+                            NbLog.v("Open location", s);
+                            SystemHelper.copyToClipboard(s);
+                        });
+                        break;
+
+                    case OPEN:
+                        mContextOpenMenu.getItems().add(item);
+                        item.setOnAction((ActionEvent event) -> {
+                            String s = provider.getUrl();
+                            NbLog.v("Copy location", s);
+                            SystemHelper.desktopBrowse(s);
+                        });
+                        break;
+                }
+            }
+
+            mContextCopyMenu.getItems().sorted((MenuItem o1, MenuItem o2) -> o1.getText().compareToIgnoreCase(o2.getText()));
+            mContextCopyMenu.setVisible(!mContextCopyMenu.getItems().isEmpty());
+
+            mContextOpenMenu.getItems().sorted((MenuItem o1, MenuItem o2) -> o1.getText().compareToIgnoreCase(o2.getText()));
+            mContextOpenMenu.setVisible(!mContextOpenMenu.getItems().isEmpty());
         }
     }
 }

@@ -55,6 +55,7 @@ import org.openide.util.NbBundle;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
+import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.mapton.core.AppStatusPanel;
@@ -97,10 +98,10 @@ import se.trixon.mapton.core.bookmark.BookmarkManager;
 })
 public final class MapTopComponent extends MaptonTopComponent {
 
-    private Menu mContextOpenMenu;
+    private final ResourceBundle mBundle = NbBundle.getBundle(MapTopComponent.class);
     private Menu mContextCopyMenu;
     private Menu mContextExtrasMenu;
-    private final ResourceBundle mBundle = NbBundle.getBundle(MapTopComponent.class);
+    private Menu mContextOpenMenu;
 
     private GoogleMap mMap;
     private final MapController mMapController = MapController.getInstance();
@@ -184,18 +185,12 @@ public final class MapTopComponent extends MaptonTopComponent {
     }
 
     private void initContextMenu() {
-        Action copyLocationAction = new Action(DictMT.COPY_LOCATION.toString(), (ActionEvent event) -> {
-            SystemHelper.copyToClipboard(String.format(Locale.ENGLISH, "geo:%.6f,%.6f;crs=wgs84", mMapController.getLatitude(), mMapController.getLongitude()));
-        });
-
         Action setHomeAction = new Action(DictMT.SET_HOME.toString(), (ActionEvent t) -> {
             mOptions.setMapHome(mMap.getCenter());
             mOptions.setMapHomeZoom(mMap.getZoom());
         });
 
         Collection<? extends Action> actions = Arrays.asList(
-                copyLocationAction,
-                ActionUtils.ACTION_SEPARATOR,
                 BookmarkManager.getInstance().getAddBookmarkAction(),
                 setHomeAction,
                 ActionUtils.ACTION_SEPARATOR
@@ -292,18 +287,28 @@ public final class MapTopComponent extends MaptonTopComponent {
 
             for (MapContextMenuProvider provider : Lookup.getDefault().lookupAll(MapContextMenuProvider.class)) {
                 MenuItem item = new MenuItem(provider.getName());
-                item.setOnAction(provider.getAction());
                 switch (provider.getType()) {
                     case COPY:
                         mContextCopyMenu.getItems().add(item);
+                        item.setOnAction((ActionEvent event) -> {
+                            String s = provider.getUrl();
+                            NbLog.v("Open location", s);
+                            SystemHelper.copyToClipboard(s);
+                        });
                         break;
 
                     case EXTRAS:
                         mContextExtrasMenu.getItems().add(item);
+                        item.setOnAction(provider.getAction());
                         break;
 
                     case OPEN:
                         mContextOpenMenu.getItems().add(item);
+                        item.setOnAction((ActionEvent event) -> {
+                            String s = provider.getUrl();
+                            NbLog.v("Copy location", s);
+                            SystemHelper.desktopBrowse(s);
+                        });
                         break;
 
                     default:

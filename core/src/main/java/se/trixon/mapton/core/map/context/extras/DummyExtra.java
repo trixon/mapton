@@ -13,46 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.trixon.mapton.core.api;
+package se.trixon.mapton.core.map.context.extras;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import se.trixon.mapton.core.map.MapController;
+import org.openide.util.lookup.ServiceProvider;
+import se.trixon.mapton.core.api.MapContextMenuProvider;
 
 /**
  *
  * @author Patrik Karlström
  */
-public abstract class MapContextMenuProvider {
+@ServiceProvider(service = MapContextMenuProvider.class)
+public class DummyExtra extends MapContextMenuProvider {
 
-    protected final MapController mMapController = MapController.getInstance();
-
+    @Override
     public EventHandler<ActionEvent> getAction() {
-        return (event) -> {
+        return (ActionEvent event) -> {
+            System.out.println("Excute dummy");
         };
     }
 
-    public abstract String getName();
-
-    public abstract ContextType getType();
-
-    public String getUrl() {
-        return "";
+    @Override
+    public String getName() {
+        return "Dummy";
     }
 
-    protected double getLatitude() {
-        return mMapController.getLatitude();
+    @Override
+    public ContextType getType() {
+        return ContextType.EXTRAS;
     }
 
-    protected double getLongitude() {
-        return mMapController.getLongitude();
-    }
-
-    protected int getZoom() {
-        return mMapController.getZoom();
-    }
-
-    public enum ContextType {
-        COPY, EXTRAS, OPEN;
-    }
 }
