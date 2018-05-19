@@ -106,7 +106,6 @@ public class AppToolBar extends ToolBar {
         testAction.setGraphic(MaterialIcon._Alert.WARNING.getImageView(getIconSizeToolBar()));
 
         ActionGroup viewActionGroup = new ActionGroup(Dict.VIEW.toString(),
-                mSysViewMapAction,
                 mSysViewAlwaysOnTopAction,
                 ActionUtils.ACTION_SEPARATOR,
                 mSysViewNotesAction,
@@ -119,6 +118,7 @@ public class AppToolBar extends ToolBar {
         ActionGroup systemActionGroup = new ActionGroup(Dict.MENU.toString(), MaterialIcon._Navigation.MENU.getImageView(getIconSizeToolBar()),
                 viewActionGroup,
                 ActionUtils.ACTION_SEPARATOR,
+                mSysOptionsAction,
                 mSysPluginsAction,
                 ActionUtils.ACTION_SEPARATOR,
                 mSysHelpAction,
@@ -134,8 +134,8 @@ public class AppToolBar extends ToolBar {
                 mStyleAction,
                 testAction,
                 ActionUtils.ACTION_SPAN,
+                mSysViewMapAction,
                 mSysViewFullscreenAction,
-                mSysOptionsAction,
                 systemActionGroup
         ));
 
@@ -198,8 +198,9 @@ public class AppToolBar extends ToolBar {
 
         //Map
         mSysViewMapAction = new FxActionSwingCheck(Dict.MAP.toString(), () -> {
-            Actions.forID("Window", "org.netbeans.core.windows.actions.ShowEditorOnlyAction").actionPerformed(null);
+            Actions.forID("Mapton", "se.trixon.mapton.core.action.OnlyMapAction").actionPerformed(null);
         });
+        mSysViewMapAction.setGraphic(MaterialIcon._Maps.MAP.getImageView(getIconSizeToolBar()));
         mSysViewMapAction.setAccelerator(KeyCombination.keyCombination("F12"));
         mSysViewMapAction.setSelected(mOptions.isMapOnly());
 
@@ -237,9 +238,8 @@ public class AppToolBar extends ToolBar {
 
         //options
         mSysOptionsAction = new FxActionSwing(Dict.OPTIONS.toString(), () -> {
-            Actions.forID("Window", "org.netbeans.modules.options.OptionsWindowAction").actionPerformed(null);
+            Actions.forID("Mapton", "se.trixon.mapton.core.action.OptionsAction").actionPerformed(null);
         });
-        mSysOptionsAction.setGraphic(MaterialIcon._Action.SETTINGS.getImageView(getIconSizeToolBar()));
         if (!IS_MAC) {
             mSysOptionsAction.setAccelerator(new KeyCodeCombination(KeyCode.COMMA, KeyCombination.SHORTCUT_DOWN));
         }
@@ -288,7 +288,7 @@ public class AppToolBar extends ToolBar {
     private void initPopOvers() {
         mBookmarkPopOver = new PopOver();
         mBookmarkPopOver.setTitle(Dict.BOOKMARKS.toString());
-        mBookmarkPopOver.setArrowLocation(PopOver.ArrowLocation.TOP_CENTER);
+        mBookmarkPopOver.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
         mBookmarkPopOver.setHeaderAlwaysVisible(true);
         mBookmarkPopOver.setCloseButtonEnabled(false);
         mBookmarkPopOver.setDetachable(false);
@@ -297,7 +297,7 @@ public class AppToolBar extends ToolBar {
 
         mStylePopOver = new PopOver();
         mStylePopOver.setTitle(String.format("%s & %s", Dict.TYPE.toString(), Dict.STYLE.toString()));
-        mStylePopOver.setArrowLocation(PopOver.ArrowLocation.TOP_CENTER);
+        mStylePopOver.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
         mStylePopOver.setHeaderAlwaysVisible(true);
         mStylePopOver.setCloseButtonEnabled(false);
         mStylePopOver.setDetachable(false);
