@@ -66,7 +66,6 @@ public class AppToolBar extends ToolBar {
     private final AlmondOptions mAlmondOptions = AlmondOptions.INSTANCE;
     private PopOver mBookmarkPopOver;
     private final java.awt.event.ActionEvent mDummySwingActionEvent = new java.awt.event.ActionEvent(new JButton(), 0, "");
-    private Action mHomeAction;
     private final MapController mMapController = MapController.getInstance();
     private MapTopComponent mMapTopComponent;
     private final MaptonOptions mOptions = MaptonOptions.getInstance();
@@ -85,7 +84,7 @@ public class AppToolBar extends ToolBar {
     private FxActionSwing mSysViewNotesAction;
     private FxActionSwing mSysViewResetAction;
     private Action mWinBookmarkAction;
-    private FxActionSwing mWinMapAction;
+    private FxActionSwing mHomeAction;
 
     public AppToolBar() {
         initPopOvers();
@@ -101,7 +100,7 @@ public class AppToolBar extends ToolBar {
         Action testAction = new Action("-DEV TEST-", (ActionEvent event) -> {
             AppStatusPanel.getInstance().setStatusText("Status updated!");
             SwingUtilities.invokeLater(() -> {
-
+                Actions.forID("Window", "se.trixon.mapton.core.testing.Fx1TopComponent").actionPerformed(null);
             });
         });
         testAction.setGraphic(MaterialIcon._Alert.WARNING.getImageView(getIconSizeToolBar()));
@@ -130,7 +129,6 @@ public class AppToolBar extends ToolBar {
 
         ArrayList<Action> actions = new ArrayList<>();
         actions.addAll(Arrays.asList(
-                mWinMapAction,
                 mHomeAction,
                 mWinBookmarkAction,
                 mStyleAction,
@@ -156,12 +154,6 @@ public class AppToolBar extends ToolBar {
     }
 
     private void initActionsFx() {
-        //Home
-        mHomeAction = new Action(Dict.HOME.toString(), (ActionEvent event) -> {
-            mMapController.goHome();
-        });
-        mHomeAction.setGraphic(MaterialIcon._Action.HOME.getImageView(getIconSizeToolBar()));
-
         //Bookmark
         mWinBookmarkAction = new Action(Dict.BOOKMARKS.toString(), (ActionEvent event) -> {
             if (mOptions.isBookmarkPopover()) {
@@ -189,11 +181,11 @@ public class AppToolBar extends ToolBar {
     }
 
     private void initActionsSwing() {
-        //Map
-        mWinMapAction = new FxActionSwing(Dict.BOOKMARKS.toString(), () -> {
-            Actions.forID("Window", "se.trixon.mapton.core.map.MapTopComponent").actionPerformed(null);
+        //Home
+        mHomeAction = new FxActionSwing(Dict.HOME.toString(), () -> {
+            Actions.forID("Mapton", "se.trixon.mapton.core.action.HomeAction").actionPerformed(null);
         });
-        mWinMapAction.setGraphic(MaterialIcon._Maps.MAP.getImageView(getIconSizeToolBar()));
+        mHomeAction.setGraphic(MaterialIcon._Action.HOME.getImageView(getIconSizeToolBar()));
 //
 //
 //
