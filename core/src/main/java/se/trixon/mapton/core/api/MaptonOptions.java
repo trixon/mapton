@@ -75,7 +75,7 @@ public class MaptonOptions {
     }
 
     public String getMapCooTransName() {
-        return mPreferences.get(KEY_MAP_COO_TRANS, "");
+        return mPreferences.get(KEY_MAP_COO_TRANS, "WGS 84 DMS");
     }
 
     public LatLong getMapHome() {

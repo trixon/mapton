@@ -25,30 +25,39 @@ import com.lynden.gmapsfx.javascript.object.MapOptions;
 import com.lynden.gmapsfx.javascript.object.MapTypeIdEnum;
 import java.awt.Dimension;
 import java.awt.event.HierarchyEvent;
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.prefs.PreferenceChangeEvent;
 import javafx.application.Platform;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Slider;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.web.WebView;
+import javafx.stage.FileChooser;
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JLayeredPane;
 import javax.swing.SwingUtilities;
+import org.apache.commons.io.FileUtils;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
+import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.util.NbBundle;
@@ -58,6 +67,7 @@ import org.openide.windows.WindowManager;
 import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
+import se.trixon.almond.util.fx.dialogs.SimpleDialog;
 import se.trixon.mapton.core.AppStatusPanel;
 import se.trixon.mapton.core.AppStatusView;
 import se.trixon.mapton.core.api.DictMT;
@@ -101,7 +111,9 @@ public final class MapTopComponent extends MaptonTopComponent {
     private final ResourceBundle mBundle = NbBundle.getBundle(MapTopComponent.class);
     private Menu mContextCopyMenu;
     private Menu mContextExtrasMenu;
+    private ContextMenu mContextMenu;
     private Menu mContextOpenMenu;
+    private File mDestination;
 
     private GoogleMap mMap;
     private final MapController mMapController = MapController.getInstance();
@@ -184,31 +196,69 @@ public final class MapTopComponent extends MaptonTopComponent {
         return new Scene(mRoot);
     }
 
+    private void exportImage() {
+        mZoomSlider.setVisible(false);
+        WritableImage image = mMapView.snapshot(new SnapshotParameters(), null);
+
+        FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter("Image (*.png)", "*.png");
+        SimpleDialog.clearFilters();
+        SimpleDialog.addFilter(new FileChooser.ExtensionFilter(Dict.ALL_FILES.toString(), "*"));
+        SimpleDialog.addFilter(filter);
+        SimpleDialog.setFilter(filter);
+        //SimpleDialog.setOwner(mStage);
+        SimpleDialog.setTitle(mBundle.getString("export_view"));
+
+        if (mDestination == null) {
+            SimpleDialog.setPath(FileUtils.getUserDirectory());
+        } else {
+            SimpleDialog.setPath(mDestination.getParentFile());
+            SimpleDialog.setSelectedFile(new File(""));
+        }
+
+        mContextMenu.hide();
+        mZoomSlider.setVisible(true);
+        if (SimpleDialog.saveFile(new String[]{"png"})) {
+            mDestination = SimpleDialog.getPath();
+            try {
+                ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", mDestination);
+            } catch (IOException ex) {
+                Exceptions.printStackTrace(ex);
+            }
+
+        }
+    }
+
     private void initContextMenu() {
         Action setHomeAction = new Action(DictMT.SET_HOME.toString(), (ActionEvent t) -> {
             mOptions.setMapHome(mMap.getCenter());
             mOptions.setMapHomeZoom(mMap.getZoom());
         });
 
+        Action saveImageAction = new Action(mBundle.getString("export_image"), (ActionEvent t) -> {
+            exportImage();
+        });
+
         Collection<? extends Action> actions = Arrays.asList(
                 BookmarkManager.getInstance().getAddBookmarkAction(),
                 setHomeAction,
+                ActionUtils.ACTION_SEPARATOR,
+                saveImageAction,
                 ActionUtils.ACTION_SEPARATOR
         );
 
         mContextCopyMenu = new Menu(mBundle.getString("copy_location"));
         mContextOpenMenu = new Menu(mBundle.getString("open_location"));
         mContextExtrasMenu = new Menu(mBundle.getString("extras"));
-        ContextMenu contextMenu = ActionUtils.createContextMenu(actions);
-        contextMenu.getItems().addAll(mContextCopyMenu, mContextOpenMenu, mContextExtrasMenu);
+        mContextMenu = ActionUtils.createContextMenu(actions);
+        mContextMenu.getItems().addAll(mContextCopyMenu, mContextOpenMenu, mContextExtrasMenu);
 
         WebView webView = mMapView.getWebview();
         webView.setContextMenuEnabled(false);
         webView.setOnMousePressed(e -> {
             if (e.getButton() == MouseButton.SECONDARY) {
-                contextMenu.show(webView, e.getScreenX(), e.getScreenY());
+                mContextMenu.show(webView, e.getScreenX(), e.getScreenY());
             } else {
-                contextMenu.hide();
+                mContextMenu.hide();
             }
         });
 
