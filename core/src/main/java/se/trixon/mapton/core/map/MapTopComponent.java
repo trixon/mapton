@@ -20,9 +20,14 @@ import com.lynden.gmapsfx.javascript.event.GMapMouseEvent;
 import com.lynden.gmapsfx.javascript.event.MapStateEventType;
 import com.lynden.gmapsfx.javascript.event.UIEventType;
 import com.lynden.gmapsfx.javascript.object.GoogleMap;
+import com.lynden.gmapsfx.javascript.object.InfoWindow;
 import com.lynden.gmapsfx.javascript.object.LatLong;
 import com.lynden.gmapsfx.javascript.object.MapOptions;
 import com.lynden.gmapsfx.javascript.object.MapTypeIdEnum;
+import com.lynden.gmapsfx.service.geocoding.GeocoderStatus;
+import com.lynden.gmapsfx.service.geocoding.GeocodingResult;
+import com.lynden.gmapsfx.service.geocoding.GeocodingService;
+import com.lynden.gmapsfx.service.geocoding.GeocodingServiceCallback;
 import java.awt.Dimension;
 import java.awt.event.HierarchyEvent;
 import java.io.File;
@@ -114,7 +119,7 @@ public final class MapTopComponent extends MaptonTopComponent {
     private ContextMenu mContextMenu;
     private Menu mContextOpenMenu;
     private File mDestination;
-
+    private InfoWindow mInfoWindow;
     private GoogleMap mMap;
     private final MapController mMapController = MapController.getInstance();
     private MapOptions mMapOptions;
@@ -161,6 +166,7 @@ public final class MapTopComponent extends MaptonTopComponent {
         mRoot = new BorderPane(mMapView);
 
         mMapView.addMapInitializedListener(() -> {
+            mInfoWindow = new InfoWindow();
             mMapOptions = new MapOptions()
                     .center(mOptions.getMapCenter())
                     .zoom(mOptions.getMapZoom())
@@ -234,23 +240,33 @@ public final class MapTopComponent extends MaptonTopComponent {
             mOptions.setMapHomeZoom(mMap.getZoom());
         });
 
-        Action saveImageAction = new Action(mBundle.getString("export_image"), (ActionEvent t) -> {
+        Action whatsHereAction = new Action(mBundle.getString("whats_here"), (ActionEvent t) -> {
+            whatsHere();
+        });
+
+        Action exportImageAction = new Action(mBundle.getString("export_image"), (ActionEvent t) -> {
             exportImage();
         });
 
         Collection<? extends Action> actions = Arrays.asList(
+                whatsHereAction,
                 BookmarkManager.getInstance().getAddBookmarkAction(),
-                setHomeAction,
                 ActionUtils.ACTION_SEPARATOR,
-                saveImageAction,
-                ActionUtils.ACTION_SEPARATOR
+                exportImageAction,
+                ActionUtils.ACTION_SEPARATOR,
+                ActionUtils.ACTION_SEPARATOR,
+                setHomeAction
         );
 
         mContextCopyMenu = new Menu(mBundle.getString("copy_location"));
         mContextOpenMenu = new Menu(mBundle.getString("open_location"));
         mContextExtrasMenu = new Menu(mBundle.getString("extras"));
         mContextMenu = ActionUtils.createContextMenu(actions);
-        mContextMenu.getItems().addAll(mContextCopyMenu, mContextOpenMenu, mContextExtrasMenu);
+
+        int insertPos = mContextMenu.getItems().size() - 2;
+        mContextMenu.getItems().add(insertPos, mContextExtrasMenu);
+        mContextMenu.getItems().add(insertPos, mContextOpenMenu);
+        mContextMenu.getItems().add(insertPos, mContextCopyMenu);
 
         WebView webView = mMapView.getWebview();
         webView.setContextMenuEnabled(false);
@@ -375,6 +391,26 @@ public final class MapTopComponent extends MaptonTopComponent {
             mContextExtrasMenu.getItems().sorted((MenuItem o1, MenuItem o2) -> o1.getText().compareToIgnoreCase(o2.getText()));
             mContextExtrasMenu.setVisible(!mContextExtrasMenu.getItems().isEmpty());
         });
+    }
+
+    private void whatsHere() {
+        GeocodingServiceCallback callback = (GeocodingResult[] results, GeocoderStatus status) -> {
+            if (status != GeocoderStatus.OK) {
+                return;
+            }
+
+            Platform.runLater(() -> {
+                String content = String.format("<html><h3>%s</h3></html>",
+                        results[0].getFormattedAddress()
+                );
+                mInfoWindow.setContent(content);
+                mInfoWindow.setPosition(mMapController.getLatLong());
+                mInfoWindow.open(mMap);
+            });
+        };
+
+        GeocodingService service = new GeocodingService();
+        service.reverseGeocode(mMapController.getLatitude(), mMapController.getLongitude(), callback);
     }
 
     void readProperties(java.util.Properties p) {
