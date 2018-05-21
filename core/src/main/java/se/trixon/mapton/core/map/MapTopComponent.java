@@ -395,14 +395,15 @@ public final class MapTopComponent extends MaptonTopComponent {
 
     private void whatsHere() {
         GeocodingServiceCallback callback = (GeocodingResult[] results, GeocoderStatus status) -> {
-            if (status != GeocoderStatus.OK) {
-                return;
-            }
-
-            Platform.runLater(() -> {
-                String content = String.format("<html><h3>%s</h3></html>",
+            String s = "Unknown";
+            if (status == GeocoderStatus.OK) {
+                s = String.format("<html><h3>%s</h3></html>",
                         results[0].getFormattedAddress()
                 );
+            }
+
+            final String content = s;
+            Platform.runLater(() -> {
                 mInfoWindow.setContent(content);
                 mInfoWindow.setPosition(mMapController.getLatLong());
                 mInfoWindow.open(mMap);
