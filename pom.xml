@@ -99,7 +99,8 @@
         <netbeans.version>RELEASE82</netbeans.version>
         <brandingToken>mapton</brandingToken>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <almond.version>2.0.0-SNAPSHOT</almond.version>
+        <mapton.version>0.0.1-SNAPSHOT</mapton.version>
+        <almond-nbp.version>2.0.0-SNAPSHOT</almond-nbp.version>
     </properties>
     <description>Some kind of map application</description>
 </project>
