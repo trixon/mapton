@@ -15,8 +15,8 @@
  */
 package se.trixon.mapton.core.testing;
 
-import javax.swing.SwingUtilities;
 import org.openide.util.lookup.ServiceProvider;
+import se.trixon.almond.nbp.Almond;
 import se.trixon.mapton.core.api.MenuItemProvider;
 
 /**
@@ -29,10 +29,7 @@ public class Fx1MenuItem extends MenuItemProvider {
     public Fx1MenuItem() {
         setText("Fx1TopComp");
         setOnAction((actionEvent) -> {
-            SwingUtilities.invokeLater(() -> {
-                mWindowManager.findTopComponent("Fx1TopComponent").open();
-                mWindowManager.findTopComponent("Fx1TopComponent").requestActive();
-            });
+            Almond.openAndActivateTopComponent("Fx1TopComponent");
         });
     }
 
