@@ -34,6 +34,11 @@
             <artifactId>org-netbeans-api-annotations-common</artifactId>
             <version>${netbeans.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-util</artifactId>
+            <version>${netbeans.version}</version>
+        </dependency>
 
         <!-- Mapton -->
         <dependency>
@@ -44,19 +49,9 @@
 
         <!-- Other -->
         <dependency>
-            <groupId>com.github.goober</groupId>
-            <artifactId>coordinate-transformation-library</artifactId>
-            <version>1.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.netbeans.api</groupId>
-            <artifactId>org-openide-util</artifactId>
-            <version>RELEASE82</version>
-        </dependency>
-        <dependency>
             <groupId>se.trixon.almond</groupId>
             <artifactId>almond-nbp</artifactId>
-            <version>2.0.0-SNAPSHOT</version>
+            <version>${almond-nbp.version}</version>
         </dependency>
     </dependencies>
     <properties>
