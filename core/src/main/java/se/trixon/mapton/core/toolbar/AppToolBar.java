@@ -40,7 +40,6 @@ import org.controlsfx.control.action.ActionUtils;
 import org.openide.awt.Actions;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
-import org.openide.windows.WindowManager;
 import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.nbp.AlmondOptions;
 import se.trixon.almond.util.Dict;
@@ -89,7 +88,8 @@ public class AppToolBar extends ToolBar {
     private FxActionSwing mSysViewResetAction;
     private Action mWinBookmarkAction;
     private FxActionSwing mHomeAction;
-    private MenuButton mMenuButton;
+    private MenuButton mWindowMenuButton;
+    private MenuButton mToolsMenuButton;
 
     public AppToolBar() {
         initPopOvers();
@@ -144,12 +144,17 @@ public class AppToolBar extends ToolBar {
                 systemActionGroup
         ));
 
-        mMenuButton = new MenuButton("Forms");
+        mWindowMenuButton = new MenuButton(Dict.WINDOW.toString());
         Lookup.getDefault().lookupResult(MenuItemProvider.class).addLookupListener((LookupEvent ev) -> {
-            initMenuItems();
+            initMenuWindow();
+        });
+        mToolsMenuButton = new MenuButton(Dict.TOOLS.toString());
+        Lookup.getDefault().lookupResult(MenuItemProvider.class).addLookupListener((LookupEvent ev) -> {
+            initMenuTools();
         });
 
-        initMenuItems();
+        initMenuTools();
+        initMenuWindow();
 
         Platform.runLater(() -> {
             ActionUtils.updateToolBar(this, actions, ActionUtils.ActionTextBehavior.HIDE);
@@ -162,7 +167,8 @@ public class AppToolBar extends ToolBar {
 
             getItems().add(3, new SearchView().getPresenter());
 
-            getItems().add(4, mMenuButton);
+            getItems().add(4, mWindowMenuButton);
+            getItems().add(4, mToolsMenuButton);
         });
 
     }
@@ -299,9 +305,12 @@ public class AppToolBar extends ToolBar {
         });
     }
 
-    private void initMenuItems() {
+    private void initMenuTools() {
+    }
+
+    private void initMenuWindow() {
         for (MenuItemProvider menuItem : Lookup.getDefault().lookupAll(MenuItemProvider.class)) {
-            mMenuButton.getItems().add(menuItem);
+            mWindowMenuButton.getItems().add(menuItem);
         }
     }
 
@@ -323,13 +332,5 @@ public class AppToolBar extends ToolBar {
         mStylePopOver.setDetachable(false);
         mStylePopOver.setContentNode(new StyleView());
         mStylePopOver.setAnimated(false);
-    }
-
-    private MapTopComponent mGetMapTC() {
-        if (mMapTopComponent == null) {
-            mMapTopComponent = (MapTopComponent) WindowManager.getDefault().findTopComponent("MapTopComponent");
-        }
-
-        return mMapTopComponent;
     }
 }
