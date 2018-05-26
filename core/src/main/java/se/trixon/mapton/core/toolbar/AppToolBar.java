@@ -24,6 +24,7 @@ import java.util.Comparator;
 import java.util.TreeMap;
 import java.util.prefs.PreferenceChangeEvent;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
@@ -60,8 +61,6 @@ import static se.trixon.mapton.core.api.Mapton.getIconSizeToolBar;
 import se.trixon.mapton.core.api.MaptonOptions;
 import se.trixon.mapton.core.api.ToolActionProvider;
 import se.trixon.mapton.core.bookmark.BookmarkView;
-import se.trixon.mapton.core.map.MapController;
-import se.trixon.mapton.core.map.MapTopComponent;
 import se.trixon.mapton.core.map.SearchView;
 import se.trixon.mapton.core.map.StyleView;
 
@@ -76,8 +75,6 @@ public class AppToolBar extends ToolBar {
     private PopOver mBookmarkPopOver;
     private final java.awt.event.ActionEvent mDummySwingActionEvent = new java.awt.event.ActionEvent(new JButton(), 0, "");
     private FxActionSwing mHomeAction;
-    private final MapController mMapController = MapController.getInstance();
-    private MapTopComponent mMapTopComponent;
     private final MaptonOptions mOptions = MaptonOptions.getInstance();
     private Action mStyleAction;
     private PopOver mStylePopOver;
@@ -88,10 +85,7 @@ public class AppToolBar extends ToolBar {
     private FxActionSwing mSysQuitAction;
     private FxActionSwingCheck mSysViewAlwaysOnTopAction;
     private FxActionSwingCheck mSysViewFullscreenAction;
-    private FxActionSwing mSysViewLogOutAction;
-    private FxActionSwing mSysViewLogSysAction;
     private FxActionSwingCheck mSysViewMapAction;
-    private FxActionSwing mSysViewNotesAction;
     private FxActionSwing mSysViewResetAction;
     private MenuButton mToolsMenuButton;
     private Action mWinBookmarkAction;
@@ -108,10 +102,6 @@ public class AppToolBar extends ToolBar {
     private void init() {
         ActionGroup viewActionGroup = new ActionGroup(Dict.VIEW.toString(),
                 mSysViewAlwaysOnTopAction,
-                ActionUtils.ACTION_SEPARATOR,
-                mSysViewNotesAction,
-                mSysViewLogOutAction,
-                mSysViewLogSysAction,
                 ActionUtils.ACTION_SEPARATOR,
                 mSysViewResetAction
         );
@@ -217,20 +207,6 @@ public class AppToolBar extends ToolBar {
         });
         mSysViewAlwaysOnTopAction.setSelected(mAlmondOptions.getAlwaysOnTop());
 
-        //Notes
-        mSysViewNotesAction = new FxActionSwing(Dict.NOTES.toString(), () -> {
-            Actions.forID("Window", "se.trixon.almond.nbp.fx.NotesTopComponent").actionPerformed(null);
-        });
-        //LogOut
-        mSysViewLogOutAction = new FxActionSwing(Dict.OUTPUT.toString(), () -> {
-            Actions.forID("Window", "org.netbeans.core.io.ui.IOWindowAction").actionPerformed(null);
-        });
-
-        //LogSys
-        mSysViewLogSysAction = new FxActionSwing(Dict.SYSTEM.toString(), () -> {
-            Actions.forID("View", "org.netbeans.core.actions.LogAction").actionPerformed(null);
-        });
-
         //Reset
         mSysViewResetAction = new FxActionSwing(Dict.RESET.toString(), () -> {
             Actions.forID("Window", "org.netbeans.core.windows.actions.ResetWindowsAction").actionPerformed(null);
@@ -329,7 +305,9 @@ public class AppToolBar extends ToolBar {
             }
         });
 
+        Comparator<MenuItem> menuItemComparator = (MenuItem o1, MenuItem o2) -> o1.getText().compareTo(o2.getText());
         parents.values().forEach((parent) -> {
+            FXCollections.sort(parent.getItems(), menuItemComparator);
             menuButtonItems.add(parent);
         });
 
@@ -337,7 +315,6 @@ public class AppToolBar extends ToolBar {
             menuButtonItems.add(new SeparatorMenuItem());
         }
 
-        Comparator<MenuItem> menuItemComparator = (MenuItem o1, MenuItem o2) -> o1.getText().compareTo(o2.getText());
         Collections.sort(rootItems, menuItemComparator);
 
         rootItems.forEach((rootItem) -> {
