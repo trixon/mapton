@@ -19,12 +19,19 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.TreeMap;
 import java.util.prefs.PreferenceChangeEvent;
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.control.ButtonBase;
+import javafx.scene.control.Menu;
 import javafx.scene.control.MenuButton;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.ToolBar;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -48,11 +55,10 @@ import se.trixon.almond.util.fx.FxActionSwing;
 import se.trixon.almond.util.fx.FxActionSwingCheck;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.icons.material.MaterialIcon;
-import se.trixon.mapton.core.AppStatusPanel;
 import static se.trixon.mapton.core.api.Mapton.getIconSizeContextMenu;
 import static se.trixon.mapton.core.api.Mapton.getIconSizeToolBar;
 import se.trixon.mapton.core.api.MaptonOptions;
-import se.trixon.mapton.core.api.MenuItemProvider;
+import se.trixon.mapton.core.api.ToolActionProvider;
 import se.trixon.mapton.core.bookmark.BookmarkView;
 import se.trixon.mapton.core.map.MapController;
 import se.trixon.mapton.core.map.MapTopComponent;
@@ -69,6 +75,7 @@ public class AppToolBar extends ToolBar {
     private final AlmondOptions mAlmondOptions = AlmondOptions.INSTANCE;
     private PopOver mBookmarkPopOver;
     private final java.awt.event.ActionEvent mDummySwingActionEvent = new java.awt.event.ActionEvent(new JButton(), 0, "");
+    private FxActionSwing mHomeAction;
     private final MapController mMapController = MapController.getInstance();
     private MapTopComponent mMapTopComponent;
     private final MaptonOptions mOptions = MaptonOptions.getInstance();
@@ -86,10 +93,8 @@ public class AppToolBar extends ToolBar {
     private FxActionSwingCheck mSysViewMapAction;
     private FxActionSwing mSysViewNotesAction;
     private FxActionSwing mSysViewResetAction;
-    private Action mWinBookmarkAction;
-    private FxActionSwing mHomeAction;
-    private MenuButton mWindowMenuButton;
     private MenuButton mToolsMenuButton;
+    private Action mWinBookmarkAction;
 
     public AppToolBar() {
         initPopOvers();
@@ -101,15 +106,6 @@ public class AppToolBar extends ToolBar {
     }
 
     private void init() {
-        //Test
-        Action testAction = new Action("-DEV TEST-", (ActionEvent event) -> {
-            AppStatusPanel.getInstance().setStatusText("Status updated!");
-            SwingUtilities.invokeLater(() -> {
-                Actions.forID("Window", "se.trixon.mapton.core.testing.Fx1TopComponent").actionPerformed(null);
-            });
-        });
-        testAction.setGraphic(MaterialIcon._Alert.WARNING.getImageView(getIconSizeToolBar()));
-
         ActionGroup viewActionGroup = new ActionGroup(Dict.VIEW.toString(),
                 mSysViewAlwaysOnTopAction,
                 ActionUtils.ACTION_SEPARATOR,
@@ -137,24 +133,17 @@ public class AppToolBar extends ToolBar {
                 mHomeAction,
                 mWinBookmarkAction,
                 mStyleAction,
-                testAction,
                 ActionUtils.ACTION_SPAN,
                 mSysViewMapAction,
                 mSysViewFullscreenAction,
                 systemActionGroup
         ));
 
-        mWindowMenuButton = new MenuButton(Dict.WINDOW.toString());
-        Lookup.getDefault().lookupResult(MenuItemProvider.class).addLookupListener((LookupEvent ev) -> {
-            initMenuWindow();
-        });
         mToolsMenuButton = new MenuButton(Dict.TOOLS.toString());
-        Lookup.getDefault().lookupResult(MenuItemProvider.class).addLookupListener((LookupEvent ev) -> {
-            initMenuTools();
+        Lookup.getDefault().lookupResult(ToolActionProvider.class).addLookupListener((LookupEvent ev) -> {
+            populateMenuTools();
         });
-
-        initMenuTools();
-        initMenuWindow();
+        populateMenuTools();
 
         Platform.runLater(() -> {
             ActionUtils.updateToolBar(this, actions, ActionUtils.ActionTextBehavior.HIDE);
@@ -166,8 +155,6 @@ public class AppToolBar extends ToolBar {
             });
 
             getItems().add(3, new SearchView().getPresenter());
-
-            getItems().add(4, mWindowMenuButton);
             getItems().add(4, mToolsMenuButton);
         });
 
@@ -305,15 +292,6 @@ public class AppToolBar extends ToolBar {
         });
     }
 
-    private void initMenuTools() {
-    }
-
-    private void initMenuWindow() {
-        for (MenuItemProvider menuItem : Lookup.getDefault().lookupAll(MenuItemProvider.class)) {
-            mWindowMenuButton.getItems().add(menuItem);
-        }
-    }
-
     private void initPopOvers() {
         mBookmarkPopOver = new PopOver();
         mBookmarkPopOver.setTitle(Dict.BOOKMARKS.toString());
@@ -332,5 +310,38 @@ public class AppToolBar extends ToolBar {
         mStylePopOver.setDetachable(false);
         mStylePopOver.setContentNode(new StyleView());
         mStylePopOver.setAnimated(false);
+    }
+
+    private void populateMenuTools() {
+        ObservableList<MenuItem> menuButtonItems = mToolsMenuButton.getItems();
+        menuButtonItems.clear();
+        TreeMap<String, Menu> parents = new TreeMap<>();
+        ArrayList<MenuItem> rootItems = new ArrayList<>();
+
+        Lookup.getDefault().lookupAll(ToolActionProvider.class).forEach((toolActionProvider) -> {
+            final MenuItem menuItem = ActionUtils.createMenuItem(toolActionProvider.getAction());
+            final String parent = toolActionProvider.getParent();
+
+            if (parent == null) {
+                rootItems.add(menuItem);
+            } else {
+                parents.computeIfAbsent(parent, k -> new Menu(parent)).getItems().add(menuItem);
+            }
+        });
+
+        parents.values().forEach((parent) -> {
+            menuButtonItems.add(parent);
+        });
+
+        if (!rootItems.isEmpty() && !parents.isEmpty()) {
+            menuButtonItems.add(new SeparatorMenuItem());
+        }
+
+        Comparator<MenuItem> menuItemComparator = (MenuItem o1, MenuItem o2) -> o1.getText().compareTo(o2.getText());
+        Collections.sort(rootItems, menuItemComparator);
+
+        rootItems.forEach((rootItem) -> {
+            menuButtonItems.add(rootItem);
+        });
     }
 }

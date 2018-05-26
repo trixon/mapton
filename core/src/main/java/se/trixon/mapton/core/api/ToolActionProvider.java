@@ -15,14 +15,15 @@
  */
 package se.trixon.mapton.core.api;
 
-import javafx.scene.control.MenuItem;
-import org.openide.windows.WindowManager;
+import org.controlsfx.control.action.Action;
 
 /**
  *
  * @author Patrik Karlström
  */
-public abstract class MenuItemProvider extends MenuItem {
+public abstract interface ToolActionProvider {
 
-    protected WindowManager mWindowManager = WindowManager.getDefault();
+    Action getAction();
+
+    String getParent();
 }
