@@ -15,22 +15,28 @@
  */
 package se.trixon.mapton.core.testing;
 
+import org.controlsfx.control.action.Action;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.Almond;
-import se.trixon.mapton.core.api.MenuItemProvider;
+import se.trixon.mapton.core.api.ToolActionProvider;
 
 /**
  *
  * @author Patrik Karlström
  */
-@ServiceProvider(service = MenuItemProvider.class)
-public class Fx1MenuItem extends MenuItemProvider {
+@ServiceProvider(service = ToolActionProvider.class)
+public class Fx1MenuItem implements ToolActionProvider {
 
-    public Fx1MenuItem() {
-        setText("Fx1TopComp");
-        setOnAction((actionEvent) -> {
+    @Override
+    public Action getAction() {
+        Action action = new Action("Fx1TopComp", (t) -> {
             Almond.openAndActivateTopComponent("Fx1TopComponent");
         });
+        return action;
     }
 
+    @Override
+    public String getParent() {
+        return "Test";
+    }
 }
