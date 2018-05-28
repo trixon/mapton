@@ -92,14 +92,11 @@ import se.trixon.mapton.core.bookmark.BookmarkManager;
 )
 @TopComponent.Description(
         preferredID = "MapTopComponent",
-        //iconBase="SET/PATH/TO/ICON/HERE",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(mode = "editor", openAtStartup = true)
 @ActionID(category = "Window", id = "se.trixon.mapton.core.map.MapTopComponent")
 @ActionReferences({
-    @ActionReference(path = "Menu/Window" /*, position = 333 */)
-    ,
     @ActionReference(path = "Shortcuts", name = "D-M")
 })
 @TopComponent.OpenActionRegistration(

@@ -40,6 +40,6 @@ public class NotesAction implements ToolActionProvider {
 
     @Override
     public String getParent() {
-        return Dict.SYSTEM.toString();
+        return null;
     }
 }

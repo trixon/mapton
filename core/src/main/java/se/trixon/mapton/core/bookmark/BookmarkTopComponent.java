@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -35,7 +35,6 @@ import se.trixon.mapton.core.api.MaptonOptions;
 )
 @TopComponent.Description(
         preferredID = "BookmarkTopComponent",
-        //iconBase="SET/PATH/TO/ICON/HERE",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(mode = "explorer", openAtStartup = false)
@@ -46,9 +45,7 @@ import se.trixon.mapton.core.api.MaptonOptions;
         preferredID = "BookmarkTopComponent"
 )
 @Messages({
-    "CTL_BookmarkAction=Bookmark",
-    "CTL_BookmarkTopComponent=Bookmark Window",
-    "HINT_BookmarkTopComponent=This is a Bookmark window"
+    "CTL_BookmarkAction=Bookmark"
 })
 public final class BookmarkTopComponent extends FxTopComponent {
 
