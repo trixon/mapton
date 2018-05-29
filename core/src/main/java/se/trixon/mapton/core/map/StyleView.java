@@ -16,6 +16,8 @@
 package se.trixon.mapton.core.map;
 
 import com.lynden.gmapsfx.javascript.object.MapTypeIdEnum;
+import java.util.ArrayList;
+import java.util.Collections;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
@@ -62,7 +64,10 @@ public class StyleView extends HBox {
             ToggleGroup group = new ToggleGroup();
 
             mStyleBox.getChildren().clear();
-            for (MapStyleProvider mapStyle : Lookup.getDefault().lookupAll(MapStyleProvider.class)) {
+            ArrayList< MapStyleProvider> styles = new ArrayList< MapStyleProvider>(Lookup.getDefault().lookupAll(MapStyleProvider.class));
+            Collections.sort(styles, (MapStyleProvider o1, MapStyleProvider o2) -> o1.getName().compareTo(o2.getName()));
+
+            for (MapStyleProvider mapStyle : styles) {
                 ToggleButton button = new ToggleButton(mapStyle.getName());
                 button.prefWidthProperty().bind(widthProperty());
                 button.setToggleGroup(group);

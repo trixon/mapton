@@ -158,6 +158,16 @@
   },
   {
     "featureType": "transit",
+    "elementType": "labels",
+    "stylers": [
+      {
+        "visibility": "off"
+      }
+    ]
+  },
+  {
+    "featureType": "transit",
+    "elementType": "labels.icon",
     "stylers": [
       {
         "visibility": "off"
