@@ -221,6 +221,7 @@
   },
   {
     "featureType": "transit",
+    "elementType": "labels",
     "stylers": [
       {
         "visibility": "off"
@@ -229,19 +230,10 @@
   },
   {
     "featureType": "transit",
-    "elementType": "labels.text.fill",
+    "elementType": "labels.icon",
     "stylers": [
       {
-        "color": "#98a5be"
-      }
-    ]
-  },
-  {
-    "featureType": "transit",
-    "elementType": "labels.text.stroke",
-    "stylers": [
-      {
-        "color": "#1d2c4d"
+        "visibility": "off"
       }
     ]
   },
