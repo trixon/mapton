@@ -33,9 +33,7 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
-import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToolBar;
-import javafx.scene.control.TreeView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -63,6 +61,7 @@ import static se.trixon.mapton.core.api.Mapton.getIconSizeToolBar;
 import se.trixon.mapton.core.api.MaptonOptions;
 import se.trixon.mapton.core.api.ToolActionProvider;
 import se.trixon.mapton.core.bookmark.BookmarkView;
+import se.trixon.mapton.core.layer.LayerView;
 import se.trixon.mapton.core.map.SearchView;
 import se.trixon.mapton.core.map.StyleView;
 
@@ -109,7 +108,7 @@ public class AppToolBar extends ToolBar {
         } else {
             mStylePopOver.hide();
             mLayerPopOver.hide();
-            ((ToggleButton) getItems().get(1)).fire();
+            ((ButtonBase) getItems().get(1)).fire();
         }
     }
 
@@ -119,7 +118,7 @@ public class AppToolBar extends ToolBar {
         } else {
             mStylePopOver.hide();
             mBookmarkPopOver.hide();
-            ((ToggleButton) getItems().get(2)).fire();
+            ((ButtonBase) getItems().get(2)).fire();
         }
     }
 
@@ -129,7 +128,7 @@ public class AppToolBar extends ToolBar {
         } else {
             mLayerPopOver.hide();
             mBookmarkPopOver.hide();
-            ((ToggleButton) getItems().get(3)).fire();
+            ((ButtonBase) getItems().get(3)).fire();
         }
     }
 
@@ -332,7 +331,7 @@ public class AppToolBar extends ToolBar {
         mLayerPopOver.setHeaderAlwaysVisible(true);
         mLayerPopOver.setCloseButtonEnabled(false);
         mLayerPopOver.setDetachable(false);
-        mLayerPopOver.setContentNode(new TreeView());
+        mLayerPopOver.setContentNode(new LayerView());
         mLayerPopOver.setAnimated(false);
 
         mStylePopOver = new PopOver();

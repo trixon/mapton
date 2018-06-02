@@ -17,7 +17,6 @@ package se.trixon.mapton.core.layer;
 
 import java.util.prefs.PreferenceChangeEvent;
 import javafx.scene.Scene;
-import javafx.scene.control.TreeView;
 import javax.swing.SwingUtilities;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
@@ -36,10 +35,9 @@ import se.trixon.mapton.core.api.MaptonTopComponent;
 )
 @TopComponent.Description(
         preferredID = "LayerTopComponent",
-        //iconBase="SET/PATH/TO/ICON/HERE",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
-@TopComponent.Registration(mode = "navigator", openAtStartup = true)
+@TopComponent.Registration(mode = "navigator", openAtStartup = false)
 @ActionID(category = "Mapton", id = "se.trixon.mapton.core.layer.LayerTopComponent")
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_LayerAction",
@@ -86,7 +84,12 @@ public final class LayerTopComponent extends MaptonTopComponent {
     }
 
     private Scene createScene() {
-        return new Scene(new TreeView());
+        return new Scene(new LayerView());
+    }
+
+    void readProperties(java.util.Properties p) {
+        String version = p.getProperty("version");
+        // TODO read your settings according to their version
     }
 
     void writeProperties(java.util.Properties p) {
@@ -94,10 +97,5 @@ public final class LayerTopComponent extends MaptonTopComponent {
         // http://wiki.apidesign.org/wiki/PropertyFiles
         p.setProperty("version", "1.0");
         // TODO store your settings
-    }
-
-    void readProperties(java.util.Properties p) {
-        String version = p.getProperty("version");
-        // TODO read your settings according to their version
     }
 }
