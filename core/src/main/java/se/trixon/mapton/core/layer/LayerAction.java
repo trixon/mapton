@@ -39,13 +39,20 @@ public final class LayerAction implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (MaptonOptions.getInstance().isPreferPopover()) {
+        MaptonOptions options = MaptonOptions.getInstance();
+        if (options.isPreferPopover()) {
             Platform.runLater(() -> {
                 Mapton.getAppToolBar().toogleLayerPopover();
             });
         } else {
             FxTopComponent tc = (FxTopComponent) WindowManager.getDefault().findTopComponent("LayerTopComponent");
-            tc.toggleOpened();
+
+            if (options.isMapOnly()) {
+                tc.open();
+            } else {
+                tc.toggleOpened();
+            }
+
             if (tc.isOpened()) {
                 tc.requestActive();
             } else {

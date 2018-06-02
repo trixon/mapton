@@ -39,13 +39,20 @@ public final class BookmarkAction implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (MaptonOptions.getInstance().isPreferPopover()) {
+        MaptonOptions options = MaptonOptions.getInstance();
+        if (options.isPreferPopover()) {
             Platform.runLater(() -> {
                 Mapton.getAppToolBar().toogleBookmarkPopover();
             });
         } else {
             FxTopComponent tc = (FxTopComponent) WindowManager.getDefault().findTopComponent("BookmarkTopComponent");
-            tc.toggleOpened();
+
+            if (options.isMapOnly()) {
+                tc.open();
+            } else {
+                tc.toggleOpened();
+            }
+
             if (tc.isOpened()) {
                 tc.requestActive();
             } else {
