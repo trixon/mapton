@@ -30,6 +30,7 @@ public class MaptonOptions {
     public static final String KEY_MAP_ONLY = "map_only";
     public static final String KEY_MAP_STYLE = "map_style";
     public static final String KEY_MAP_TYPE = "map_type";
+    public static final String KEY_PREFER_POPOVER = "prefer_popover";
 
     private static final boolean DEFAULT_FULL_SCREEN = false;
     private static final double DEFAULT_MAP_LAT = 57.661509;
@@ -37,7 +38,7 @@ public class MaptonOptions {
     private static final boolean DEFAULT_MAP_ONLY = false;
     private static final String DEFAULT_MAP_STYLE = "standard";
     private static final int DEFAULT_MAP_ZOOM = 5;
-    private static final boolean DEFAULT_UI_BOOKMARK_POPOVER = true;
+    private static final boolean DEFAULT_PREFER_POPOVER = true;
     private static final String KEY_DISPLAY_BOOKMARK = "display_bookmark";
     private static final String KEY_FULL_SCREEN = "fullscreen";
     private static final String KEY_MAP_CENTER_LAT = "map_center_lat";
@@ -48,7 +49,6 @@ public class MaptonOptions {
     private static final String KEY_MAP_HOME_ZOOM = "map_home_zoom";
     private static final String KEY_MAP_KEY = "map_key";
     private static final String KEY_MAP_ZOOM = "map_zoom";
-    private static final String KEY_UI_BOOKMARK_POPOVER = "ui_bookmark_popover";
     private final Preferences mPreferences = NbPreferences.forModule(MaptonOptions.class);
 
     public static MaptonOptions getInstance() {
@@ -120,10 +120,6 @@ public class MaptonOptions {
         return mPreferences;
     }
 
-    public boolean isBookmarkPopover() {
-        return mPreferences.getBoolean(KEY_UI_BOOKMARK_POPOVER, DEFAULT_UI_BOOKMARK_POPOVER);
-    }
-
     public boolean isBookmarkVisible() {
         return mPreferences.getBoolean(KEY_DISPLAY_BOOKMARK, true);
     }
@@ -136,8 +132,8 @@ public class MaptonOptions {
         return mPreferences.getBoolean(KEY_MAP_ONLY, DEFAULT_MAP_ONLY);
     }
 
-    public void setBookmarkPopover(boolean value) {
-        mPreferences.putBoolean(KEY_UI_BOOKMARK_POPOVER, value);
+    public boolean isPreferPopover() {
+        return mPreferences.getBoolean(KEY_PREFER_POPOVER, DEFAULT_PREFER_POPOVER);
     }
 
     public void setBookmarkVisible(boolean value) {
@@ -184,6 +180,10 @@ public class MaptonOptions {
 
     public void setMapZoom(int value) {
         mPreferences.putInt(KEY_MAP_ZOOM, value);
+    }
+
+    public void setPreferPopover(boolean value) {
+        mPreferences.putBoolean(KEY_PREFER_POPOVER, value);
     }
 
     private static class Holder {

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.trixon.mapton.core.bookmark;
+package se.trixon.mapton.core.map;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -21,36 +21,22 @@ import javafx.application.Platform;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
-import org.openide.awt.Actions;
-import org.openide.windows.WindowManager;
-import se.trixon.almond.nbp.fx.FxTopComponent;
 import se.trixon.mapton.core.api.Mapton;
-import se.trixon.mapton.core.api.MaptonOptions;
 
 @ActionID(
         category = "Mapton",
-        id = "se.trixon.mapton.core.bookmark.BookmarkAction"
+        id = "se.trixon.mapton.core.map.StyleAction"
 )
 @ActionRegistration(
-        displayName = "Bookmarks"
+        displayName = "Style"
 )
-@ActionReference(path = "Shortcuts", name = "D-B")
-public final class BookmarkAction implements ActionListener {
+@ActionReference(path = "Shortcuts", name = "D-S")
+public final class StyleAction implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (MaptonOptions.getInstance().isPreferPopover()) {
-            Platform.runLater(() -> {
-                Mapton.getAppToolBar().toogleBookmarkPopover();
-            });
-        } else {
-            FxTopComponent tc = (FxTopComponent) WindowManager.getDefault().findTopComponent("BookmarkTopComponent");
-            tc.toggleOpened();
-            if (tc.isOpened()) {
-                tc.requestActive();
-            } else {
-                Actions.forID("Window", "se.trixon.mapton.core.map.MapTopComponent").actionPerformed(null);
-            }
-        }
+        Platform.runLater(() -> {
+            Mapton.getAppToolBar().toogleStylePopover();
+        });
     }
 }

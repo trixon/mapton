@@ -33,7 +33,9 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToolBar;
+import javafx.scene.control.TreeView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -72,9 +74,12 @@ public class AppToolBar extends ToolBar {
 
     private static final boolean IS_MAC = SystemUtils.IS_OS_MAC;
     private final AlmondOptions mAlmondOptions = AlmondOptions.INSTANCE;
+    private Action mBookmarkAction;
     private PopOver mBookmarkPopOver;
     private final java.awt.event.ActionEvent mDummySwingActionEvent = new java.awt.event.ActionEvent(new JButton(), 0, "");
     private FxActionSwing mHomeAction;
+    private Action mLayerAction;
+    private PopOver mLayerPopOver;
     private final MaptonOptions mOptions = MaptonOptions.getInstance();
     private Action mStyleAction;
     private PopOver mStylePopOver;
@@ -88,7 +93,6 @@ public class AppToolBar extends ToolBar {
     private FxActionSwingCheck mSysViewMapAction;
     private FxActionSwing mSysViewResetAction;
     private MenuButton mToolsMenuButton;
-    private Action mWinBookmarkAction;
 
     public AppToolBar() {
         initPopOvers();
@@ -97,6 +101,36 @@ public class AppToolBar extends ToolBar {
         init();
         initListeners();
         setDisable(true);
+    }
+
+    public void toogleBookmarkPopover() {
+        if (mBookmarkPopOver.isShowing()) {
+            mBookmarkPopOver.hide();
+        } else {
+            mStylePopOver.hide();
+            mLayerPopOver.hide();
+            ((ToggleButton) getItems().get(1)).fire();
+        }
+    }
+
+    public void toogleLayerPopover() {
+        if (mLayerPopOver.isShowing()) {
+            mLayerPopOver.hide();
+        } else {
+            mStylePopOver.hide();
+            mBookmarkPopOver.hide();
+            ((ToggleButton) getItems().get(2)).fire();
+        }
+    }
+
+    public void toogleStylePopover() {
+        if (mStylePopOver.isShowing()) {
+            mStylePopOver.hide();
+        } else {
+            mLayerPopOver.hide();
+            mBookmarkPopOver.hide();
+            ((ToggleButton) getItems().get(3)).fire();
+        }
     }
 
     private void init() {
@@ -121,7 +155,8 @@ public class AppToolBar extends ToolBar {
         ArrayList<Action> actions = new ArrayList<>();
         actions.addAll(Arrays.asList(
                 mHomeAction,
-                mWinBookmarkAction,
+                mBookmarkAction,
+                mLayerAction,
                 mStyleAction,
                 ActionUtils.ACTION_SPAN,
                 mSysViewMapAction,
@@ -144,16 +179,16 @@ public class AppToolBar extends ToolBar {
                 FxHelper.undecorateButton(buttonBase);
             });
 
-            getItems().add(3, new SearchView().getPresenter());
-            getItems().add(4, mToolsMenuButton);
+            getItems().add(4, new SearchView().getPresenter());
+            getItems().add(5, mToolsMenuButton);
         });
 
     }
 
     private void initActionsFx() {
         //Bookmark
-        mWinBookmarkAction = new Action(Dict.BOOKMARKS.toString(), (ActionEvent event) -> {
-            if (mOptions.isBookmarkPopover()) {
+        mBookmarkAction = new Action(Dict.BOOKMARKS.toString(), (ActionEvent event) -> {
+            if (mOptions.isPreferPopover()) {
                 mBookmarkPopOver.show((Node) event.getSource());
             } else {
                 SwingUtilities.invokeLater(() -> {
@@ -161,8 +196,21 @@ public class AppToolBar extends ToolBar {
                 });
             }
         });
-        mWinBookmarkAction.setGraphic(MaterialIcon._Action.BOOKMARK_BORDER.getImageView(getIconSizeToolBar()));
-        mWinBookmarkAction.setSelected(mOptions.isBookmarkVisible());
+        mBookmarkAction.setGraphic(MaterialIcon._Action.BOOKMARK_BORDER.getImageView(getIconSizeToolBar()));
+        mBookmarkAction.setSelected(mOptions.isBookmarkVisible());
+
+        //Layer
+        mLayerAction = new Action(Dict.LAYERS.toString(), (ActionEvent event) -> {
+            if (mOptions.isPreferPopover()) {
+                mLayerPopOver.show((Node) event.getSource());
+            } else {
+                SwingUtilities.invokeLater(() -> {
+                    Actions.forID("Mapton", "se.trixon.mapton.core.layer.LayerAction").actionPerformed(null);
+                });
+            }
+        });
+        mLayerAction.setGraphic(MaterialIcon._Maps.LAYERS.getImageView(getIconSizeToolBar()));
+        mLayerAction.setSelected(mOptions.isBookmarkVisible());
 
         //Style
         mStyleAction = new Action(String.format("%s & %s", Dict.TYPE.toString(), Dict.STYLE.toString()), (ActionEvent event) -> {
@@ -208,7 +256,7 @@ public class AppToolBar extends ToolBar {
         mSysViewAlwaysOnTopAction.setSelected(mAlmondOptions.getAlwaysOnTop());
 
         //Reset
-        mSysViewResetAction = new FxActionSwing(Dict.RESET.toString(), () -> {
+        mSysViewResetAction = new FxActionSwing(Dict.RESET_WINDOWS.toString(), () -> {
             Actions.forID("Window", "org.netbeans.core.windows.actions.ResetWindowsAction").actionPerformed(null);
         });
 //
@@ -278,6 +326,15 @@ public class AppToolBar extends ToolBar {
         mBookmarkPopOver.setContentNode(new BookmarkView());
         mBookmarkPopOver.setAnimated(false);
 
+        mLayerPopOver = new PopOver();
+        mLayerPopOver.setTitle(Dict.LAYERS.toString());
+        mLayerPopOver.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
+        mLayerPopOver.setHeaderAlwaysVisible(true);
+        mLayerPopOver.setCloseButtonEnabled(false);
+        mLayerPopOver.setDetachable(false);
+        mLayerPopOver.setContentNode(new TreeView());
+        mLayerPopOver.setAnimated(false);
+
         mStylePopOver = new PopOver();
         mStylePopOver.setTitle(String.format("%s & %s", Dict.TYPE.toString(), Dict.STYLE.toString()));
         mStylePopOver.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
@@ -286,6 +343,7 @@ public class AppToolBar extends ToolBar {
         mStylePopOver.setDetachable(false);
         mStylePopOver.setContentNode(new StyleView());
         mStylePopOver.setAnimated(false);
+
     }
 
     private void populateMenuTools() {

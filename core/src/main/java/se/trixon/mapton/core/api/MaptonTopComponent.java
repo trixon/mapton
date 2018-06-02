@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,6 +23,8 @@ import se.trixon.almond.nbp.fx.FxTopComponent;
  * @author Patrik Karlström
  */
 public abstract class MaptonTopComponent extends FxTopComponent {
+
+    protected final MaptonOptions mOptions = MaptonOptions.getInstance();
 
     protected GoogleMap getMap() {
         return Mapton.getInstance().getMap();

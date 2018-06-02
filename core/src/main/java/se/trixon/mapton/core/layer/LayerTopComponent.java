@@ -13,15 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.trixon.mapton.core.bookmark;
+package se.trixon.mapton.core.layer;
 
 import java.util.prefs.PreferenceChangeEvent;
-import javafx.application.Platform;
 import javafx.scene.Scene;
+import javafx.scene.control.TreeView;
 import javax.swing.SwingUtilities;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
-import org.openide.awt.ActionReference;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
 import se.trixon.almond.util.Dict;
@@ -32,27 +31,27 @@ import se.trixon.mapton.core.api.MaptonTopComponent;
  * Top component which displays something.
  */
 @ConvertAsProperties(
-        dtd = "-//se.trixon.mapton.core.bookmark//Bookmark//EN",
+        dtd = "-//se.trixon.mapton.core.layer//Layer//EN",
         autostore = false
 )
 @TopComponent.Description(
-        preferredID = "BookmarkTopComponent",
+        preferredID = "LayerTopComponent",
+        //iconBase="SET/PATH/TO/ICON/HERE",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
-@TopComponent.Registration(mode = "explorer", openAtStartup = false)
-@ActionID(category = "Window", id = "se.trixon.mapton.core.bookmark.BookmarkTopComponent")
-@ActionReference(path = "Menu/Window" /*, position = 333 */)
+@TopComponent.Registration(mode = "navigator", openAtStartup = true)
+@ActionID(category = "Mapton", id = "se.trixon.mapton.core.layer.LayerTopComponent")
 @TopComponent.OpenActionRegistration(
-        displayName = "#CTL_BookmarkAction",
-        preferredID = "BookmarkTopComponent"
+        displayName = "#CTL_LayerAction",
+        preferredID = "LayerTopComponent"
 )
 @Messages({
-    "CTL_BookmarkAction=Bookmark"
+    "CTL_LayerAction=Layer"
 })
-public final class BookmarkTopComponent extends MaptonTopComponent {
+public final class LayerTopComponent extends MaptonTopComponent {
 
-    public BookmarkTopComponent() {
-        setName(Dict.BOOKMARKS.toString());
+    public LayerTopComponent() {
+        setName(Dict.LAYERS.toString());
 
         putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.FALSE);
         putClientProperty(TopComponent.PROP_DRAGGING_DISABLED, Boolean.TRUE);
@@ -82,37 +81,23 @@ public final class BookmarkTopComponent extends MaptonTopComponent {
     }
 
     @Override
-    protected void componentClosed() {
-        MaptonOptions.getInstance().setBookmarkVisible(false);
-        super.componentClosed();
-    }
-
-    @Override
-    protected void componentOpened() {
-        MaptonOptions.getInstance().setBookmarkVisible(true);
-        super.componentOpened();
-    }
-
-    @Override
     protected void initFX() {
         setScene(createScene());
     }
 
     private Scene createScene() {
-        return new Scene(new BookmarkView());
-    }
-
-    void readProperties(java.util.Properties p) {
-        String version = p.getProperty("version");
-        Platform.runLater(() -> {
-        });
+        return new Scene(new TreeView());
     }
 
     void writeProperties(java.util.Properties p) {
         // better to version settings since initial version as advocated at
         // http://wiki.apidesign.org/wiki/PropertyFiles
         p.setProperty("version", "1.0");
-        Platform.runLater(() -> {
-        });
+        // TODO store your settings
+    }
+
+    void readProperties(java.util.Properties p) {
+        String version = p.getProperty("version");
+        // TODO read your settings according to their version
     }
 }

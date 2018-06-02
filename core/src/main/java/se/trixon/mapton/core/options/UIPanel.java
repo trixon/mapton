@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -58,11 +58,11 @@ final class UIPanel extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     void load() {
-        bookmarkPopoverCheckBox.setSelected(mCptions.isBookmarkPopover());
+        bookmarkPopoverCheckBox.setSelected(mCptions.isPreferPopover());
     }
 
     void store() {
-        mCptions.setBookmarkPopover(bookmarkPopoverCheckBox.isSelected());
+        mCptions.setPreferPopover(bookmarkPopoverCheckBox.isSelected());
     }
 
     boolean valid() {

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.trixon.mapton.core.bookmark;
+package se.trixon.mapton.core.layer;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -29,22 +29,22 @@ import se.trixon.mapton.core.api.MaptonOptions;
 
 @ActionID(
         category = "Mapton",
-        id = "se.trixon.mapton.core.bookmark.BookmarkAction"
+        id = "se.trixon.mapton.core.layer.LayerAction"
 )
 @ActionRegistration(
-        displayName = "Bookmarks"
+        displayName = "Layer"
 )
-@ActionReference(path = "Shortcuts", name = "D-B")
-public final class BookmarkAction implements ActionListener {
+@ActionReference(path = "Shortcuts", name = "D-L")
+public final class LayerAction implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
         if (MaptonOptions.getInstance().isPreferPopover()) {
             Platform.runLater(() -> {
-                Mapton.getAppToolBar().toogleBookmarkPopover();
+                Mapton.getAppToolBar().toogleLayerPopover();
             });
         } else {
-            FxTopComponent tc = (FxTopComponent) WindowManager.getDefault().findTopComponent("BookmarkTopComponent");
+            FxTopComponent tc = (FxTopComponent) WindowManager.getDefault().findTopComponent("LayerTopComponent");
             tc.toggleOpened();
             if (tc.isOpened()) {
                 tc.requestActive();
