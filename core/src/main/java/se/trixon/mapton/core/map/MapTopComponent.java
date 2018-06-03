@@ -122,7 +122,6 @@ public final class MapTopComponent extends MaptonTopComponent {
     private MapOptions mMapOptions;
     private GoogleMapView mMapView;
     private final Mapton mMapton = Mapton.getInstance();
-    private final MaptonOptions mOptions = MaptonOptions.getInstance();
     private BorderPane mRoot;
     private AppStatusView mStatusBar;
     private Slider mZoomSlider;

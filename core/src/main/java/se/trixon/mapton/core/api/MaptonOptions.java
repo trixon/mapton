@@ -89,7 +89,7 @@ public class MaptonOptions {
     }
 
     public String getMapKey() {
-        return mPreferences.get(KEY_MAP_KEY, "");
+        return mPreferences.get(KEY_MAP_KEY, "AIzaSyCdVPck8GWP2piXLjl7XTf4QOaydWWYzFE");
     }
 
     public String getMapStyle() {
