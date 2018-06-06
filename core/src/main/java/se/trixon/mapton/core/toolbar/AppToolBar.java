@@ -139,17 +139,28 @@ public class AppToolBar extends ToolBar {
                 mSysViewResetAction
         );
 
-        ActionGroup systemActionGroup = new ActionGroup(Dict.MENU.toString(), MaterialIcon._Navigation.MENU.getImageView(getIconSizeToolBar()),
-                viewActionGroup,
-                ActionUtils.ACTION_SEPARATOR,
-                mSysOptionsAction,
-                mSysPluginsAction,
-                ActionUtils.ACTION_SEPARATOR,
-                mSysHelpAction,
-                mSysAboutAction,
-                ActionUtils.ACTION_SEPARATOR,
-                mSysQuitAction
-        );
+        ActionGroup systemActionGroup;
+        if (IS_MAC) {
+            systemActionGroup = new ActionGroup(Dict.MENU.toString(), MaterialIcon._Navigation.MENU.getImageView(getIconSizeToolBar()),
+                    viewActionGroup,
+                    ActionUtils.ACTION_SEPARATOR,
+                    mSysPluginsAction,
+                    ActionUtils.ACTION_SEPARATOR,
+                    mSysHelpAction
+            );
+        } else {
+            systemActionGroup = new ActionGroup(Dict.MENU.toString(), MaterialIcon._Navigation.MENU.getImageView(getIconSizeToolBar()),
+                    viewActionGroup,
+                    ActionUtils.ACTION_SEPARATOR,
+                    mSysOptionsAction,
+                    mSysPluginsAction,
+                    ActionUtils.ACTION_SEPARATOR,
+                    mSysHelpAction,
+                    mSysAboutAction,
+                    ActionUtils.ACTION_SEPARATOR,
+                    mSysQuitAction
+            );
+        }
 
         ArrayList<Action> actions = new ArrayList<>();
         actions.addAll(Arrays.asList(
