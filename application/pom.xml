@@ -115,6 +115,11 @@
             <artifactId>almond-nbp-actions</artifactId>
             <version>${almond-nbp.version}</version>
         </dependency>
+        <dependency>
+            <groupId>se.trixon.almond</groupId>
+            <artifactId>almond-nbp-actions-osx</artifactId>
+            <version>${almond-nbp.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

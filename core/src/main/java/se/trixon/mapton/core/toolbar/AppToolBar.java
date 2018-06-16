@@ -246,7 +246,11 @@ public class AppToolBar extends ToolBar {
 //
         //Full screen
         mSysViewFullscreenAction = new FxActionSwingCheck(Dict.FULL_SCREEN.toString(), () -> {
-            Actions.forID("Window", "org.netbeans.core.windows.actions.ToggleFullScreenAction").actionPerformed(null);
+            if (IS_MAC) {
+                Actions.forID("Almond", "se.trixon.almond.nbp.osx.actions.ToggleFullScreenAction").actionPerformed(null);
+            } else {
+                Actions.forID("Window", "org.netbeans.core.windows.actions.ToggleFullScreenAction").actionPerformed(null);
+            }
         });
         mSysViewFullscreenAction.setAccelerator(KeyCombination.keyCombination("F11"));
         mSysViewFullscreenAction.setGraphic(MaterialIcon._Navigation.FULLSCREEN.getImageView(getIconSizeToolBar()));
