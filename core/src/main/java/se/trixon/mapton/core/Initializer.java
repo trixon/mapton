@@ -26,8 +26,6 @@ import org.openide.modules.OnStart;
 import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
 import se.trixon.almond.nbp.Almond;
-import se.trixon.almond.nbp.NbLog;
-import se.trixon.mapton.core.api.Mapton;
 import se.trixon.mapton.core.api.MaptonOptions;
 import se.trixon.mapton.core.toolbar.AppToolBarProvider;
 import se.trixon.mapton.core.toolbar.RootPaneLayout;
@@ -74,7 +72,6 @@ public class Initializer implements Runnable {
             }
 
             //NbLog.select();
-            NbLog.v(Mapton.LOG_TAG, "Loaded and ready...");
         });
     }
 }

@@ -194,6 +194,8 @@ public final class MapTopComponent extends MaptonTopComponent {
             }
 
             initListeners();
+
+            NbLog.v(Mapton.LOG_TAG, "Loaded and ready");
         });
 
         return new Scene(mRoot);
@@ -321,6 +323,8 @@ public final class MapTopComponent extends MaptonTopComponent {
     }
 
     private void initMap() {
+        NbLog.v(Mapton.LOG_TAG, "Initializing map...");
+
         mMapOptions.styleString(MapStyleProvider.getStyle(mOptions.getMapStyle()));
         if (mMap != null) {
             mMapOptions
@@ -329,6 +333,7 @@ public final class MapTopComponent extends MaptonTopComponent {
         }
 
         mMap = mMapView.createMap(mMapOptions);
+        mMap.setMapType(mOptions.getMapType());
         mMap.zoomProperty().bindBidirectional(mZoomSlider.valueProperty());
 
         mMap.addStateEventHandler(MapStateEventType.zoom_changed, () -> {
@@ -340,6 +345,8 @@ public final class MapTopComponent extends MaptonTopComponent {
             mMapController.setLatLong(latLong);
             AppStatusPanel.getInstance().getProvider().updateLatLong();
         });
+
+        NbLog.v(Mapton.LOG_TAG, "Map initialized");
     }
 
     private void populateContextProviders() {
