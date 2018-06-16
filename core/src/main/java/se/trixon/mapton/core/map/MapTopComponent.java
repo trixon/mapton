@@ -355,7 +355,7 @@ public final class MapTopComponent extends MaptonTopComponent {
                         mContextCopyMenu.getItems().add(item);
                         item.setOnAction((ActionEvent event) -> {
                             String s = provider.getUrl();
-                            NbLog.v("Open location", s);
+                            NbLog.v("Copy location", s);
                             SystemHelper.copyToClipboard(s);
                         });
                         break;
@@ -369,7 +369,7 @@ public final class MapTopComponent extends MaptonTopComponent {
                         mContextOpenMenu.getItems().add(item);
                         item.setOnAction((ActionEvent event) -> {
                             String s = provider.getUrl();
-                            NbLog.v("Copy location", s);
+                            NbLog.v("Open location", s);
                             SystemHelper.desktopBrowse(s);
                         });
                         break;
