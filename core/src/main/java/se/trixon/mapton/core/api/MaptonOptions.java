@@ -36,9 +36,10 @@ public class MaptonOptions {
     private static final double DEFAULT_MAP_LAT = 57.661509;
     private static final double DEFAULT_MAP_LON = 11.999312;
     private static final boolean DEFAULT_MAP_ONLY = false;
-    private static final String DEFAULT_MAP_STYLE = "standard";
-    private static final int DEFAULT_MAP_ZOOM = 5;
-    private static final boolean DEFAULT_PREFER_POPOVER = true;
+    private static final String DEFAULT_MAP_STYLE = "Retro";
+    private static final String DEFAULT_MAP_TYPE = "TERRAIN";
+    private static final int DEFAULT_MAP_ZOOM = 12;
+    private static final boolean DEFAULT_PREFER_POPOVER = false;
     private static final String KEY_DISPLAY_BOOKMARK = "display_bookmark";
     private static final String KEY_FULL_SCREEN = "fullscreen";
     private static final String KEY_MAP_CENTER_LAT = "map_center_lat";
@@ -97,7 +98,7 @@ public class MaptonOptions {
     }
 
     public MapTypeIdEnum getMapType() {
-        switch (mPreferences.get(KEY_MAP_TYPE, "roadmap")) {
+        switch (mPreferences.get(KEY_MAP_TYPE, DEFAULT_MAP_TYPE)) {
             case "HYBRID":
                 return MapTypeIdEnum.HYBRID;
 

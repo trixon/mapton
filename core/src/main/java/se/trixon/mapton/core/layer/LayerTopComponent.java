@@ -37,7 +37,7 @@ import se.trixon.mapton.core.api.MaptonTopComponent;
         preferredID = "LayerTopComponent",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
-@TopComponent.Registration(mode = "navigator", openAtStartup = false)
+@TopComponent.Registration(mode = "navigator", openAtStartup = true)
 @ActionID(category = "Mapton", id = "se.trixon.mapton.core.layer.LayerTopComponent")
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_LayerAction",

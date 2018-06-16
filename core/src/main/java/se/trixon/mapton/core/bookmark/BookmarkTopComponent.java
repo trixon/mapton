@@ -39,7 +39,7 @@ import se.trixon.mapton.core.api.MaptonTopComponent;
         preferredID = "BookmarkTopComponent",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
-@TopComponent.Registration(mode = "explorer", openAtStartup = false)
+@TopComponent.Registration(mode = "explorer", openAtStartup = true)
 @ActionID(category = "Window", id = "se.trixon.mapton.core.bookmark.BookmarkTopComponent")
 @ActionReference(path = "Menu/Window" /*, position = 333 */)
 @TopComponent.OpenActionRegistration(

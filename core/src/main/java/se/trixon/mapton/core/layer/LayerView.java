@@ -15,7 +15,6 @@
  */
 package se.trixon.mapton.core.layer;
 
-import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 
 /**
@@ -25,7 +24,7 @@ import javafx.scene.layout.BorderPane;
 public class LayerView extends BorderPane {
 
     public LayerView() {
-        setCenter(new Label("Not yet implemented"));
+        //setCenter(new Label("Not yet implemented"));
     }
 
 }
