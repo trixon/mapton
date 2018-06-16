@@ -40,6 +40,7 @@ import java.util.prefs.PreferenceChangeEvent;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.ContextMenu;
@@ -104,9 +105,7 @@ import se.trixon.mapton.core.bookmark.BookmarkManager;
         preferredID = "MapTopComponent"
 )
 @Messages({
-    "CTL_MapAction=Map",
-    "CTL_MapTopComponent=Map Window",
-    "HINT_MapTopComponent=This is a Map window"
+    "CTL_MapAction=Map"
 })
 public final class MapTopComponent extends MaptonTopComponent {
 
@@ -177,6 +176,8 @@ public final class MapTopComponent extends MaptonTopComponent {
                     .zoomControl(false);
 
             mZoomSlider = new Slider(0, 22, 1);
+            mZoomSlider.setPadding(new Insets(8, 0, 0, 8));
+            mZoomSlider.setBlockIncrement(1);
             mMapView.getChildren().add(mZoomSlider);
             Mapton.getAppToolBar().setDisable(false);
 
