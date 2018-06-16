@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.trixon.mapton.core.testing;
+package se.trixon.mapton.boiler.testing;
 
 import com.lynden.gmapsfx.javascript.object.GoogleMap;
 import com.lynden.gmapsfx.javascript.object.LatLong;
@@ -38,7 +38,7 @@ import se.trixon.mapton.core.api.MaptonTopComponent;
  * Top component which displays something.
  */
 @ConvertAsProperties(
-        dtd = "-//se.trixon.mapton.core.testing//Fx1//EN",
+        dtd = "-//se.trixon.mapton.boiler.testing//Fx1//EN",
         autostore = false
 )
 @TopComponent.Description(
@@ -47,7 +47,7 @@ import se.trixon.mapton.core.api.MaptonTopComponent;
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(mode = "properties", openAtStartup = false)
-@ActionID(category = "Window", id = "se.trixon.mapton.core.testing.Fx1TopComponent")
+@ActionID(category = "Window", id = "se.trixon.mapton.boiler.testing.Fx1TopComponent")
 @ActionReference(path = "Menu/Window" /*, position = 333 */)
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_Fx1Action",

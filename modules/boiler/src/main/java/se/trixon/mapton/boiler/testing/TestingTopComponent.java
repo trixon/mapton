@@ -13,31 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.trixon.mapton.core.testing;
+package se.trixon.mapton.boiler.testing;
 
 import java.awt.Component;
 import java.awt.Window;
-import javafx.application.Platform;
-import javafx.scene.control.Button;
 import javax.swing.SwingUtilities;
-import org.controlsfx.control.action.Action;
-import org.controlsfx.control.action.ActionUtils;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
-import se.trixon.almond.nbp.about.AboutAction;
-import se.trixon.almond.util.AboutModel;
-import se.trixon.almond.util.SystemHelper;
-import se.trixon.almond.util.fx.dialogs.about.AboutPane;
-import se.trixon.mapton.core.AboutInitializer;
 
 /**
  * Top component which displays something.
  */
 @ConvertAsProperties(
-        dtd = "-//se.trixon.mapton.core.testing//Testing//EN",
+        dtd = "-//se.trixon.mapton.boiler.testing//Testing//EN",
         autostore = false
 )
 @TopComponent.Description(
@@ -46,7 +37,7 @@ import se.trixon.mapton.core.AboutInitializer;
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(mode = "properties", openAtStartup = false)
-@ActionID(category = "Window", id = "se.trixon.mapton.core.testing.TestingTopComponent")
+@ActionID(category = "Window", id = "se.trixon.mapton.boiler.testing.TestingTopComponent")
 @ActionReference(path = "Menu/Window" /*, position = 333 */)
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_TestingAction",
@@ -109,20 +100,6 @@ public static void activateComponent(final Component targetComponent, final bool
 
     }
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-//        System.out.println(evt);
-        AboutModel aboutModel = new AboutModel(SystemHelper.getBundle(AboutInitializer.class, "about"),
-                SystemHelper.getResourceAsImageIcon(getClass(), "logo.png"));
-        AboutAction.setAboutModel(aboutModel);
-
-        Platform.runLater(() -> {
-            activateComponent(jButton1, false);
-//            SimpleDialog.saveFile();
-            Action action = AboutPane.getAction(null, aboutModel);
-            Button b = ActionUtils.createButton(action);
-            b.fire();
-
-            activateComponent(jButton1, true);
-        });
     }//GEN-LAST:event_jButton1ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

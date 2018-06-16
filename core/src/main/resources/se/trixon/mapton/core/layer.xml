@@ -27,7 +27,6 @@ limitations under the License.
     <folder name="Windows2">
         <folder name="Modes">
             <file name="navigator.wsmode" url="navigatorWsmode.xml"/>
-            <file name="notes.wsmode" url="notesWsmode.xml"/>
         </folder>
     </folder>
 </filesystem>

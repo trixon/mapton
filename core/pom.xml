@@ -25,6 +25,8 @@
                         <publicPackage>org.postgresql.*</publicPackage>
                         <publicPackage>de.micromata.*</publicPackage>
                         <publicPackage>com.github.goober.*</publicPackage>
+                        <publicPackage>org.controlsfx.*</publicPackage>
+                        <publicPackage>com.lynden.gmapsfx.*</publicPackage>
                     </publicPackages>
                 </configuration>
             </plugin>

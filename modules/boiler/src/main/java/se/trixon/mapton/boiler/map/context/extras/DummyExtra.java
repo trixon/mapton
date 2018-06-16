@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.trixon.mapton.core.map.context.extras;
+package se.trixon.mapton.boiler.map.context.extras;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
