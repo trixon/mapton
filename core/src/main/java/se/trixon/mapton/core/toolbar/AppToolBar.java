@@ -75,7 +75,6 @@ public class AppToolBar extends ToolBar {
     private final AlmondOptions mAlmondOptions = AlmondOptions.INSTANCE;
     private Action mBookmarkAction;
     private PopOver mBookmarkPopOver;
-    private final java.awt.event.ActionEvent mDummySwingActionEvent = new java.awt.event.ActionEvent(new JButton(), 0, "");
     private FxActionSwing mHomeAction;
     private Action mLayerAction;
     private PopOver mLayerPopOver;
@@ -278,7 +277,8 @@ public class AppToolBar extends ToolBar {
 //
         //Plugins
         mSysPluginsAction = new FxActionSwing(Dict.PLUGINS.toString(), () -> {
-            Actions.forID("System", "org.netbeans.modules.autoupdate.ui.actions.PluginManagerAction").actionPerformed(mDummySwingActionEvent);
+            final java.awt.event.ActionEvent dummySwingActionEvent = new java.awt.event.ActionEvent(new JButton(), 0, "");
+            Actions.forID("System", "org.netbeans.modules.autoupdate.ui.actions.PluginManagerAction").actionPerformed(dummySwingActionEvent);
         });
 
         //options

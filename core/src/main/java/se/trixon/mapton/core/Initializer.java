@@ -26,6 +26,7 @@ import org.openide.modules.OnStart;
 import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
 import se.trixon.almond.nbp.Almond;
+import se.trixon.almond.util.icons.IconColor;
 import se.trixon.mapton.core.api.MaptonOptions;
 import se.trixon.mapton.core.toolbar.AppToolBarProvider;
 import se.trixon.mapton.core.toolbar.RootPaneLayout;
@@ -51,6 +52,7 @@ public class Initializer implements Runnable {
         boolean fullscreen = mOptions.isFullscreen();
 
         SwingUtilities.invokeLater(() -> {
+            IconColor.initFx();
             JFrame frame = (JFrame) Almond.getFrame();
             JComponent toolbar = AppToolBarProvider.getDefault().createToolbar();
             frame.getRootPane().setLayout(new RootPaneLayout(toolbar));
