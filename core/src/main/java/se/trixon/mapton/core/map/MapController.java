@@ -56,8 +56,16 @@ public class MapController {
         return mLatitude;
     }
 
+    public double getLatitudeProj() {
+        return mOptions.getMapCooTrans().getLatitude(mLatitude, mLongitude);
+    }
+
     public double getLongitude() {
         return mLongitude;
+    }
+
+    public double getLongitudeProj() {
+        return mOptions.getMapCooTrans().getLongitude(mLatitude, mLongitude);
     }
 
     public int getZoom() {

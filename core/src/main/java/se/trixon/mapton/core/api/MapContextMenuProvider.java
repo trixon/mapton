@@ -44,8 +44,16 @@ public abstract class MapContextMenuProvider {
         return mMapController.getLatitude();
     }
 
+    protected double getLatitudeProj() {
+        return mMapController.getLatitudeProj();
+    }
+
     protected double getLongitude() {
         return mMapController.getLongitude();
+    }
+
+    protected double getLongitudeProj() {
+        return mMapController.getLongitudeProj();
     }
 
     protected int getZoom() {
