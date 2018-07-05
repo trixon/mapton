@@ -15,17 +15,33 @@
  */
 package se.trixon.mapton.core.api;
 
+import de.micromata.opengis.kml.v_2_2_0.AltitudeMode;
+import de.micromata.opengis.kml.v_2_2_0.Boundary;
+import de.micromata.opengis.kml.v_2_2_0.ColorMode;
+import de.micromata.opengis.kml.v_2_2_0.Coordinate;
 import de.micromata.opengis.kml.v_2_2_0.Document;
 import de.micromata.opengis.kml.v_2_2_0.Feature;
 import de.micromata.opengis.kml.v_2_2_0.Folder;
 import de.micromata.opengis.kml.v_2_2_0.Kml;
+import de.micromata.opengis.kml.v_2_2_0.KmlFactory;
+import de.micromata.opengis.kml.v_2_2_0.LineString;
+import de.micromata.opengis.kml.v_2_2_0.LineStyle;
+import de.micromata.opengis.kml.v_2_2_0.LinearRing;
+import de.micromata.opengis.kml.v_2_2_0.Placemark;
+import de.micromata.opengis.kml.v_2_2_0.PolyStyle;
+import de.micromata.opengis.kml.v_2_2_0.Polygon;
+import de.micromata.opengis.kml.v_2_2_0.Style;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
+import javafx.geometry.Point3D;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import se.trixon.almond.util.ext.GrahamScan;
 
 /**
  *
@@ -41,6 +57,136 @@ public abstract class KmlCreator {
 
     public KmlCreator() {
         mDocument = mKml.createAndSetDocument().withOpen(true);
+    }
+
+    public Placemark addCircle0(String name, ArrayList<Coordinate> coordinates, Folder folder) {
+        try {
+            Placemark placemark = folder
+                    .createAndAddPlacemark()
+                    .withName(name);
+
+            Style style = placemark.createAndAddStyle();
+            LineStyle lineStyle = style.createAndSetLineStyle()
+                    .withColor("00000000")
+                    .withWidth(0.0);
+
+            PolyStyle polyStyle = style.createAndSetPolyStyle()
+                    .withColor("ccffffff")
+                    .withColorMode(ColorMode.RANDOM);
+
+            Polygon polygon = placemark.createAndSetPolygon();
+            Boundary boundary = polygon.createAndSetOuterBoundaryIs();
+            LinearRing linearRing = boundary.createAndSetLinearRing();
+
+            coordinates.forEach((node) -> {
+                linearRing.addToCoordinates(node.getLongitude(), node.getLatitude());
+            });
+            return placemark;
+        } catch (IndexOutOfBoundsException | IllegalArgumentException e) {
+            System.err.println(e);
+            return null;
+        }
+    }
+
+    public void addConvexHullPolygon(String name, ArrayList<Coordinate> coordinates, Folder polygonFolder, String alpha) {
+        List<java.awt.geom.Point2D.Double> inputs = new ArrayList<>();
+        coordinates.forEach((coordinate) -> {
+            inputs.add(new java.awt.geom.Point2D.Double(coordinate.getLongitude(), coordinate.getLatitude()));
+        });
+
+        try {
+            List<java.awt.geom.Point2D.Double> convexHull = GrahamScan.getConvexHullDouble(inputs);
+            Placemark placemark = polygonFolder
+                    .createAndAddPlacemark()
+                    .withName(name);
+
+            Style style = placemark.createAndAddStyle();
+            LineStyle lineStyle = style.createAndSetLineStyle()
+                    .withColor("00000000")
+                    .withWidth(0.0);
+
+            PolyStyle polyStyle = style.createAndSetPolyStyle()
+                    .withColor(alpha + "ffffff")
+                    .withColorMode(ColorMode.RANDOM);
+
+            Polygon polygon = placemark.createAndSetPolygon();
+            Boundary boundary = polygon.createAndSetOuterBoundaryIs();
+            LinearRing linearRing = boundary.createAndSetLinearRing();
+
+            convexHull.forEach((node) -> {
+                linearRing.addToCoordinates(node.x, node.y);
+
+            });
+        } catch (IndexOutOfBoundsException e) {
+            System.err.println(e);
+        } catch (IllegalArgumentException e) {
+            System.err.println(e);
+        }
+    }
+
+    public Placemark createCircle(String name, ArrayList<Point3D> coordinates, Folder folder, String color) {
+        try {
+            Placemark placemark = folder
+                    .createAndAddPlacemark()
+                    .withName(name);
+            Style style = placemark.createAndAddStyle();
+            if (color != null) {
+
+                LineStyle lineStyle = style.createAndSetLineStyle()
+                        .withColor(color)
+                        .withWidth(0.0);
+
+                PolyStyle polyStyle = style.createAndSetPolyStyle()
+                        .withColor(color)
+                        .withFill(true)
+                        .withColorMode(ColorMode.NORMAL);
+            }
+
+            Polygon polygon = placemark.createAndSetPolygon();
+            Boundary boundary = polygon.createAndSetOuterBoundaryIs();
+            LinearRing linearRing = boundary.createAndSetLinearRing();
+
+            coordinates.forEach((node) -> {
+                linearRing.addToCoordinates(node.getX(), node.getY());
+            });
+            return placemark;
+        } catch (IndexOutOfBoundsException | IllegalArgumentException e) {
+            System.err.println(e);
+            return null;
+        }
+    }
+
+    public ArrayList<Point3D> createCircle(double lat, double lon, double radius, int quality) {
+        if (quality < 3) {
+            throw new IllegalArgumentException("Quality must be greater than 2");
+        }
+
+        ArrayList<Point3D> list = new ArrayList<>();
+        for (double phi = 0; phi < 2 * Math.PI; phi += 2 * Math.PI / quality) {
+            double lat2 = Math.sin(phi);
+            double lon2 = Math.cos(phi);
+            list.add(new Point3D(lon + lon2 * radius, lat + lat2 * radius, 0));
+        }
+
+        return list;
+    }
+
+    public Placemark createLine(String name, Point3D p1, Point3D p2, double width, String color, AltitudeMode altitudeMode) {
+        Placemark placemark = KmlFactory.createPlacemark().withName(name);
+        Style style = placemark.createAndAddStyle();
+        LineStyle lineStyle = style.createAndSetLineStyle()
+                .withWidth(width);
+
+        if (color != null) {
+            lineStyle.setColor(color);
+        }
+
+        LineString line = placemark.createAndSetLineString();
+        line.addToCoordinates(p1.getX(), p1.getY(), p1.getZ());
+        line.addToCoordinates(p2.getX(), p2.getY(), p2.getZ());
+
+        line.setAltitudeMode(altitudeMode);
+        return placemark;
     }
 
     public String save(File f) throws IOException {
