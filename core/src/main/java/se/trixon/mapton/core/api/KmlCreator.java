@@ -88,7 +88,7 @@ public abstract class KmlCreator {
         }
     }
 
-    public void addConvexHullPolygon(String name, ArrayList<Coordinate> coordinates, Folder polygonFolder, String alpha) {
+    public void addConvexHullPolygon(String name, ArrayList<Coordinate> coordinates, Folder polygonFolder, String color, ColorMode colorMode) {
         List<java.awt.geom.Point2D.Double> inputs = new ArrayList<>();
         coordinates.forEach((coordinate) -> {
             inputs.add(new java.awt.geom.Point2D.Double(coordinate.getLongitude(), coordinate.getLatitude()));
@@ -105,9 +105,13 @@ public abstract class KmlCreator {
                     .withColor("00000000")
                     .withWidth(0.0);
 
-            PolyStyle polyStyle = style.createAndSetPolyStyle()
-                    .withColor(alpha + "ffffff")
-                    .withColorMode(ColorMode.RANDOM);
+            PolyStyle polyStyle = style.createAndSetPolyStyle();
+            if (color != null) {
+                polyStyle.setColor(color);
+            }
+            if (colorMode != null) {
+                polyStyle.setColorMode(colorMode);
+            }
 
             Polygon polygon = placemark.createAndSetPolygon();
             Boundary boundary = polygon.createAndSetOuterBoundaryIs();
