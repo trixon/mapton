@@ -120,6 +120,11 @@
             <artifactId>almond-nbp-actions-osx</artifactId>
             <version>${almond-nbp.version}</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>worldwind</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

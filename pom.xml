@@ -93,6 +93,7 @@
         <module>core</module>
         <module>modules/boiler</module>
         <module>modules/swetrans</module>
+        <module>modules/worldwind</module>
     </modules>
 
     <properties>
