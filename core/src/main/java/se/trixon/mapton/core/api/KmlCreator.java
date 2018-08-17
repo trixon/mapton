@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Logger;
 import javafx.geometry.Point3D;
@@ -57,6 +58,10 @@ public abstract class KmlCreator {
 
     public KmlCreator() {
         mDocument = mKml.createAndSetDocument().withOpen(true);
+    }
+
+    public static Comparator<Feature> getFeatureNameComparator() {
+        return (Feature o1, Feature o2) -> o1.getName().compareTo(o2.getName());
     }
 
     public Placemark addCircle0(String name, ArrayList<Coordinate> coordinates, Folder folder) {
@@ -128,11 +133,9 @@ public abstract class KmlCreator {
         }
     }
 
-    public Placemark createCircle(String name, ArrayList<Point3D> coordinates, Folder folder, String color) {
+    public Placemark createCircle(String name, ArrayList<Point3D> coordinates, String color) {
         try {
-            Placemark placemark = folder
-                    .createAndAddPlacemark()
-                    .withName(name);
+            Placemark placemark = KmlFactory.createPlacemark().withName(name);
             Style style = placemark.createAndAddStyle();
             if (color != null) {
 
@@ -221,6 +224,24 @@ public abstract class KmlCreator {
             ((Folder) feature).getFeature().forEach((f) -> {
                 setVisible(f, visible);
             });
+        }
+    }
+
+    public void sort(Comparator<Feature> c, List<Feature> features) {
+        for (Feature feature : features) {
+            sort(c, feature);
+        }
+    }
+
+    public void sort(Comparator<Feature> c, Feature... features) {
+        for (Feature feature : features) {
+            if (feature instanceof Folder) {
+                final List<Feature> subFeatures = ((Folder) feature).getFeature();
+                subFeatures.sort(c);
+                subFeatures.forEach((f) -> {
+                    sort(c, f);
+                });
+            }
         }
     }
 
