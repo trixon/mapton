@@ -175,6 +175,8 @@ public abstract class KmlCreator {
             list.add(new Point3D(lon + lon2 * radius, lat + lat2 * radius, 0));
         }
 
+        list.add(list.get(0));
+
         return list;
     }
 
