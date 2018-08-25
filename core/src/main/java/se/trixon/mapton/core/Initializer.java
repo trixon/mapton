@@ -26,10 +26,10 @@ import org.openide.modules.OnStart;
 import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
 import se.trixon.almond.nbp.Almond;
+import se.trixon.almond.nbp.swing.RootPaneLayout;
 import se.trixon.almond.util.icons.IconColor;
 import se.trixon.mapton.core.api.MaptonOptions;
 import se.trixon.mapton.core.toolbar.AppToolBarProvider;
-import se.trixon.mapton.core.toolbar.RootPaneLayout;
 
 /**
  *

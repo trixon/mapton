@@ -31,6 +31,8 @@ import se.trixon.mapton.core.toolbar.AppToolBar;
 public class Mapton {
 
     public static final String LOG_TAG = "Mapton";
+    public static final double MYLAT = 57.66;
+    public static final double MYLON = 12.0;
 
     private static final int ICON_SIZE_CONTEXT_MENU = 16;
     private static final int ICON_SIZE_TOOLBAR = 36;

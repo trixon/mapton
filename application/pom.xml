@@ -97,6 +97,21 @@
             <artifactId>core</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>me-gmapsfx</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>me-jxmapviewer2</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>me-worldwind</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <!--        <dependency>
             <groupId>${project.groupId}</groupId>
@@ -119,11 +134,6 @@
             <groupId>se.trixon.almond</groupId>
             <artifactId>almond-nbp-actions-osx</artifactId>
             <version>${almond-nbp.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>worldwind</artifactId>
-            <version>${project.version}</version>
         </dependency>
     </dependencies>
 

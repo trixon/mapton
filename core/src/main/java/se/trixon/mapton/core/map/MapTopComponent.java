@@ -92,7 +92,7 @@ import se.trixon.mapton.core.bookmark.BookmarkManager;
         autostore = false
 )
 @TopComponent.Description(
-        preferredID = "MapTopComponent",
+        preferredID = "MapTopComponentOLD",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(mode = "editor", openAtStartup = true)
@@ -102,7 +102,7 @@ import se.trixon.mapton.core.bookmark.BookmarkManager;
 })
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_MapAction",
-        preferredID = "MapTopComponent"
+        preferredID = "MapTopComponentOLD"
 )
 @Messages({
     "CTL_MapAction=Map"
@@ -127,7 +127,7 @@ public final class MapTopComponent extends MaptonTopComponent {
 
     public MapTopComponent() {
         super();
-        setName(Dict.MAP.toString());
+        setName("GMapsFX");
 
         putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.TRUE);
         putClientProperty(TopComponent.PROP_DRAGGING_DISABLED, Boolean.TRUE);
