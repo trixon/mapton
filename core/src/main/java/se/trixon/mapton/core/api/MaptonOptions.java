@@ -27,12 +27,14 @@ import org.openide.util.NbPreferences;
  */
 public class MaptonOptions {
 
+    public static final String KEY_MAP_ENGINE = "map_engine";
     public static final String KEY_MAP_ONLY = "map_only";
     public static final String KEY_MAP_STYLE = "map_style";
     public static final String KEY_MAP_TYPE = "map_type";
     public static final String KEY_PREFER_POPOVER = "prefer_popover";
 
     private static final boolean DEFAULT_FULL_SCREEN = false;
+    private static final String DEFAULT_MAP_ENGINE = "JxMapViewer2";
     private static final double DEFAULT_MAP_LAT = 57.661509;
     private static final double DEFAULT_MAP_LON = 11.999312;
     private static final boolean DEFAULT_MAP_ONLY = false;
@@ -77,6 +79,10 @@ public class MaptonOptions {
 
     public String getMapCooTransName() {
         return mPreferences.get(KEY_MAP_COO_TRANS, "WGS 84 DMS");
+    }
+
+    public String getMapEngine() {
+        return mPreferences.get(KEY_MAP_ENGINE, DEFAULT_MAP_ENGINE);
     }
 
     public LatLong getMapHome() {
@@ -152,6 +158,10 @@ public class MaptonOptions {
 
     public void setMapCooTrans(String value) {
         mPreferences.put(KEY_MAP_COO_TRANS, value);
+    }
+
+    public void setMapEngine(String value) {
+        mPreferences.put(KEY_MAP_ENGINE, value);
     }
 
     public void setMapHome(LatLong value) {
