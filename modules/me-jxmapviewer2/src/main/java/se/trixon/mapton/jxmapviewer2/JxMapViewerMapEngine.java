@@ -20,6 +20,7 @@ import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.Point2D;
+import javafx.scene.Node;
 import javax.swing.JToolTip;
 import org.jxmapviewer.JXMapKit;
 import org.jxmapviewer.JXMapViewer;
@@ -49,6 +50,11 @@ public class JxMapViewerMapEngine extends MapEngine {
     @Override
     public String getName() {
         return "JxMapViewer2";
+    }
+
+    @Override
+    public Node getStyleView() {
+        return null;
     }
 
     @Override

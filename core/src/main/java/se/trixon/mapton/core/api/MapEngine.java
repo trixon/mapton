@@ -15,15 +15,19 @@
  */
 package se.trixon.mapton.core.api;
 
+import javafx.scene.Node;
+
 /**
  *
  * @author Patrik Karlström
  */
 public abstract class MapEngine {
 
-    protected final MaptonOptions mOptions = MaptonOptions.getInstance();
+    protected final MaptonOptions mGlobalOptions = MaptonOptions.getInstance();
 
     public abstract String getName();
+
+    public abstract Node getStyleView();
 
     public abstract Object getUI();
 

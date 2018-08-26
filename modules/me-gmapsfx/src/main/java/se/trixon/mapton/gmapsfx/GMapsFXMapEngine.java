@@ -25,6 +25,7 @@ import com.lynden.gmapsfx.javascript.object.LatLong;
 import com.lynden.gmapsfx.javascript.object.MapOptions;
 import com.lynden.gmapsfx.javascript.object.MapTypeIdEnum;
 import java.util.Locale;
+import java.util.prefs.PreferenceChangeEvent;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
@@ -32,7 +33,7 @@ import javafx.scene.control.Slider;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.NbLog;
 import se.trixon.mapton.core.api.MapEngine;
-import se.trixon.mapton.core.api.MapStyleProvider;
+import se.trixon.mapton.gmapsfx.api.MapStyle;
 
 /**
  *
@@ -48,13 +49,21 @@ public class GMapsFXMapEngine extends MapEngine {
     private MapOptions mMapOptions;
     private GoogleMapView mMapView;
     private Slider mZoomSlider;
+    private StyleView mStyleView;
+    private ModuleOptions mOptions = ModuleOptions.getInstance();
 
     public GMapsFXMapEngine() {
+        mStyleView = new StyleView();
     }
 
     @Override
     public String getName() {
         return "GMapsFX";
+    }
+
+    @Override
+    public Node getStyleView() {
+        return mStyleView;
     }
 
     @Override
@@ -77,7 +86,7 @@ public class GMapsFXMapEngine extends MapEngine {
         mMapView.addMapInitializedListener(() -> {
             mInfoWindow = new InfoWindow();
             mMapOptions = new MapOptions()
-                    .center(mOptions.getMapCenter())
+                    .center(mGlobalOptions.getMapCenter())
                     .zoom(mOptions.getMapZoom())
                     .mapType(MapTypeIdEnum.ROADMAP)
                     .rotateControl(true)
@@ -86,7 +95,7 @@ public class GMapsFXMapEngine extends MapEngine {
                     .mapTypeControl(false)
                     .fullscreenControl(false)
                     .scaleControl(true)
-                    .styleString(MapStyleProvider.getStyle(mOptions.getMapStyle()))
+                    .styleString(MapStyle.getStyle(mOptions.getMapStyle()))
                     .zoomControl(false);
 
             mZoomSlider = new Slider(0, 22, 1);
@@ -99,7 +108,7 @@ public class GMapsFXMapEngine extends MapEngine {
 
             Platform.runLater(() -> {
                 mMap.setZoom(mOptions.getMapZoom());
-                mMap.setCenter(mOptions.getMapCenter());
+                mMap.setCenter(mGlobalOptions.getMapCenter());
             });
 
 //            mStatusBar = AppStatusPanel.getInstance().getProvider();
@@ -107,15 +116,53 @@ public class GMapsFXMapEngine extends MapEngine {
 //                mRoot.setBottom(mStatusBar);
 //            }
 //
-//            initListeners();
+            initListeners();
             NbLog.v(LOG_TAG, "Loaded and ready");
         });
+    }
+
+    private void initListeners() {
+        mOptions.getPreferences().addPreferenceChangeListener((PreferenceChangeEvent evt) -> {
+            Platform.runLater(() -> {
+                switch (evt.getKey()) {
+                    case ModuleOptions.KEY_MAP_STYLE:
+                        initMap();
+                        break;
+
+                    case ModuleOptions.KEY_MAP_TYPE:
+                        mMap.setMapType(mOptions.getMapType());
+                        break;
+
+                    default:
+                }
+            });
+        });
+
+//        SwingUtilities.invokeLater(() -> {
+//            addHierarchyListener((HierarchyEvent e) -> {
+//                if (e.getChangedParent() instanceof JLayeredPane) {
+//                    Dimension d = ((JFrame) WindowManager.getDefault().getMainWindow()).getContentPane().getPreferredSize();
+//                    final boolean showOnlyEditor = 1 == d.height && 1 == d.width;
+//                    mOptions.setMapOnly(showOnlyEditor);
+//                    Platform.runLater(() -> {
+//                        if (showOnlyEditor) {
+//                            mRoot.setBottom(mStatusBar);
+//                        } else {
+//                            if (mRoot.getBottom() != null) {
+//                                mRoot.setBottom(null);
+//                                AppStatusPanel.getInstance().reset();
+//                            }
+//                        }
+//                    });
+//                }
+//            });
+//        });
     }
 
     private void initMap() {
         NbLog.v(LOG_TAG, "Initializing map...");
 
-        mMapOptions.styleString(MapStyleProvider.getStyle(mOptions.getMapStyle()));
+        mMapOptions.styleString(MapStyle.getStyle(mOptions.getMapStyle()));
         if (mMap != null) {
             mMapOptions
                     .center(mMap.getCenter())

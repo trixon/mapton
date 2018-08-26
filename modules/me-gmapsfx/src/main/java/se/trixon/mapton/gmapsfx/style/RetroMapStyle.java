@@ -13,19 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.trixon.mapton.core.map.style;
+package se.trixon.mapton.gmapsfx.style;
 
 import org.openide.util.lookup.ServiceProvider;
-import se.trixon.mapton.core.api.MapStyleProvider;
+import se.trixon.mapton.gmapsfx.api.MapStyle;
 
 /**
  *
  * @author Patrik Karlström
  */
-@ServiceProvider(service = MapStyleProvider.class)
-public class DarkMapStyle extends MapStyleProvider {
+@ServiceProvider(service = MapStyle.class)
+public class RetroMapStyle extends MapStyle {
 
-    public DarkMapStyle() {
-        super("Dark", "dark.json");
+    public RetroMapStyle() {
+        super("Retro", "retro.json");
     }
 }

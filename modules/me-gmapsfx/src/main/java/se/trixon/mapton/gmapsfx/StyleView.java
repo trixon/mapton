@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.trixon.mapton.core.map;
+package se.trixon.mapton.gmapsfx;
 
 import com.lynden.gmapsfx.javascript.object.MapTypeIdEnum;
 import java.util.ArrayList;
@@ -30,8 +30,7 @@ import javafx.scene.layout.VBox;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import se.trixon.almond.util.Dict;
-import se.trixon.mapton.core.api.MapStyleProvider;
-import se.trixon.mapton.core.api.MaptonOptions;
+import se.trixon.mapton.gmapsfx.api.MapStyle;
 
 /**
  *
@@ -39,7 +38,7 @@ import se.trixon.mapton.core.api.MaptonOptions;
  */
 public class StyleView extends HBox {
 
-    private final MaptonOptions mOptions = MaptonOptions.getInstance();
+    private final ModuleOptions mOptions = ModuleOptions.getInstance();
     private final VBox mTypeBox = new VBox(16);
     private final VBox mStyleBox = new VBox(16);
 
@@ -49,7 +48,7 @@ public class StyleView extends HBox {
         mTypeBox.setPrefWidth(200);
         mStyleBox.setPrefWidth(200);
 
-        Lookup.getDefault().lookupResult(MapStyleProvider.class).addLookupListener((LookupEvent ev) -> {
+        Lookup.getDefault().lookupResult(MapStyle.class).addLookupListener((LookupEvent ev) -> {
             initStyle();
         });
 
@@ -64,10 +63,10 @@ public class StyleView extends HBox {
             ToggleGroup group = new ToggleGroup();
 
             mStyleBox.getChildren().clear();
-            ArrayList< MapStyleProvider> styles = new ArrayList< MapStyleProvider>(Lookup.getDefault().lookupAll(MapStyleProvider.class));
-            Collections.sort(styles, (MapStyleProvider o1, MapStyleProvider o2) -> o1.getName().compareTo(o2.getName()));
+            ArrayList< MapStyle> styles = new ArrayList<>(Lookup.getDefault().lookupAll(MapStyle.class));
+            Collections.sort(styles, (MapStyle o1, MapStyle o2) -> o1.getName().compareTo(o2.getName()));
 
-            for (MapStyleProvider mapStyle : styles) {
+            for (MapStyle mapStyle : styles) {
                 ToggleButton button = new ToggleButton(mapStyle.getName());
                 button.prefWidthProperty().bind(widthProperty());
                 button.setToggleGroup(group);

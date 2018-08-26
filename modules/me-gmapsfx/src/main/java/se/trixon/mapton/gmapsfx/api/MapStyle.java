@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.trixon.mapton.core.api;
+package se.trixon.mapton.gmapsfx.api;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,7 +28,7 @@ import se.trixon.almond.util.SystemHelper;
  *
  * @author Patrik Karlström
  */
-public abstract class MapStyleProvider {
+public abstract class MapStyle {
 
     private final StringProperty mName = new SimpleStringProperty();
     private final StringProperty mStyle = new SimpleStringProperty();
@@ -36,7 +36,7 @@ public abstract class MapStyleProvider {
     public static String getStyle(String name) {
         String style = "";
 
-        for (MapStyleProvider mapStyle : Lookup.getDefault().lookupAll(MapStyleProvider.class)) {
+        for (MapStyle mapStyle : Lookup.getDefault().lookupAll(MapStyle.class)) {
             if (mapStyle.getName().equalsIgnoreCase(name)) {
                 style = mapStyle.getStyle();
             }
@@ -45,7 +45,7 @@ public abstract class MapStyleProvider {
         return style;
     }
 
-    public MapStyleProvider(String name, String resourceName) {
+    public MapStyle(String name, String resourceName) {
         setName(name);
         setStyle(loadFromResource(resourceName));
     }

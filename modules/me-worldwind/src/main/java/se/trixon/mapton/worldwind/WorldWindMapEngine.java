@@ -19,6 +19,7 @@ import gov.nasa.worldwind.Model;
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.awt.WorldWindowGLJPanel;
+import javafx.scene.Node;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.NbLog;
 import se.trixon.mapton.core.api.MapEngine;
@@ -40,6 +41,11 @@ public class WorldWindMapEngine extends MapEngine {
     @Override
     public String getName() {
         return "WorldWind";
+    }
+
+    @Override
+    public Node getStyleView() {
+        return null;
     }
 
     @Override

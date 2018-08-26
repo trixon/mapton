@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,7 +20,9 @@ import com.lynden.gmapsfx.javascript.object.GoogleMap;
 import com.lynden.gmapsfx.javascript.object.MapOptions;
 import java.text.DateFormat;
 import javafx.scene.paint.Color;
+import org.apache.commons.lang.StringUtils;
 import org.openide.awt.StatusDisplayer;
+import org.openide.util.Lookup;
 import se.trixon.mapton.core.map.MapTopComponent;
 import se.trixon.mapton.core.toolbar.AppToolBar;
 
@@ -51,6 +53,20 @@ public class Mapton {
 
     public static DateFormat getDefaultDateFormat() {
         return DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM);
+    }
+
+    public static MapEngine getEngine() {
+        MapEngine defaultEngine = null;
+
+        for (MapEngine mapEngine : Lookup.getDefault().lookupAll(MapEngine.class)) {
+            if (StringUtils.equalsIgnoreCase(mapEngine.getName(), MaptonOptions.getInstance().getMapEngine())) {
+                return mapEngine;
+            } else {
+                defaultEngine = mapEngine;
+            }
+        }
+
+        return defaultEngine;
     }
 
     public static Color getIconColor() {

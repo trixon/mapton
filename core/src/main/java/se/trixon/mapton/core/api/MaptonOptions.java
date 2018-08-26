@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,6 @@
 package se.trixon.mapton.core.api;
 
 import com.lynden.gmapsfx.javascript.object.LatLong;
-import com.lynden.gmapsfx.javascript.object.MapTypeIdEnum;
 import java.util.prefs.Preferences;
 import org.openide.util.Lookup;
 import org.openide.util.NbPreferences;
@@ -29,8 +28,6 @@ public class MaptonOptions {
 
     public static final String KEY_MAP_ENGINE = "map_engine";
     public static final String KEY_MAP_ONLY = "map_only";
-    public static final String KEY_MAP_STYLE = "map_style";
-    public static final String KEY_MAP_TYPE = "map_type";
     public static final String KEY_PREFER_POPOVER = "prefer_popover";
 
     private static final boolean DEFAULT_FULL_SCREEN = false;
@@ -38,8 +35,6 @@ public class MaptonOptions {
     private static final double DEFAULT_MAP_LAT = 57.661509;
     private static final double DEFAULT_MAP_LON = 11.999312;
     private static final boolean DEFAULT_MAP_ONLY = false;
-    private static final String DEFAULT_MAP_STYLE = "Retro";
-    private static final String DEFAULT_MAP_TYPE = "TERRAIN";
     private static final int DEFAULT_MAP_ZOOM = 12;
     private static final boolean DEFAULT_PREFER_POPOVER = false;
     private static final String KEY_DISPLAY_BOOKMARK = "display_bookmark";
@@ -50,7 +45,6 @@ public class MaptonOptions {
     private static final String KEY_MAP_HOME_LAT = "map_home_lat";
     private static final String KEY_MAP_HOME_LON = "map_home_lon";
     private static final String KEY_MAP_HOME_ZOOM = "map_home_zoom";
-    private static final String KEY_MAP_KEY = "map_key";
     private static final String KEY_MAP_ZOOM = "map_zoom";
     private final Preferences mPreferences = NbPreferences.forModule(MaptonOptions.class);
 
@@ -93,30 +87,6 @@ public class MaptonOptions {
 
     public int getMapHomeZoom() {
         return mPreferences.getInt(KEY_MAP_HOME_ZOOM, DEFAULT_MAP_ZOOM);
-    }
-
-    public String getMapKey() {
-        return mPreferences.get(KEY_MAP_KEY, "AIzaSyCdVPck8GWP2piXLjl7XTf4QOaydWWYzFE");
-    }
-
-    public String getMapStyle() {
-        return mPreferences.get(KEY_MAP_STYLE, DEFAULT_MAP_STYLE);
-    }
-
-    public MapTypeIdEnum getMapType() {
-        switch (mPreferences.get(KEY_MAP_TYPE, DEFAULT_MAP_TYPE)) {
-            case "HYBRID":
-                return MapTypeIdEnum.HYBRID;
-
-            case "SATELLITE":
-                return MapTypeIdEnum.SATELLITE;
-
-            case "TERRAIN":
-                return MapTypeIdEnum.TERRAIN;
-
-            default:
-                return MapTypeIdEnum.ROADMAP;
-        }
     }
 
     public int getMapZoom() {
@@ -173,20 +143,8 @@ public class MaptonOptions {
         mPreferences.putInt(KEY_MAP_HOME_ZOOM, value);
     }
 
-    public void setMapKey(String value) {
-        mPreferences.put(KEY_MAP_KEY, value);
-    }
-
     public void setMapOnly(boolean value) {
         mPreferences.putBoolean(KEY_MAP_ONLY, value);
-    }
-
-    public void setMapStyle(String value) {
-        mPreferences.put(KEY_MAP_STYLE, value);
-    }
-
-    public void setMapType(MapTypeIdEnum mapType) {
-        mPreferences.put(KEY_MAP_TYPE, mapType.getName());
     }
 
     public void setMapZoom(int value) {
