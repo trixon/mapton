@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,9 +19,15 @@ package se.trixon.mapton.core.api;
  *
  * @author Patrik Karlström
  */
-public abstract class MapEngineProvider {
+public abstract class MapEngine {
+
+    protected final MaptonOptions mOptions = MaptonOptions.getInstance();
 
     public abstract String getName();
 
     public abstract Object getUI();
+
+    public boolean isSwing() {
+        return true;
+    }
 }

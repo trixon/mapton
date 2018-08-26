@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -56,7 +56,7 @@ public final class BookmarkAction implements ActionListener {
             if (tc.isOpened()) {
                 tc.requestActive();
             } else {
-                Actions.forID("Window", "se.trixon.mapton.core.map.MapTopComponent").actionPerformed(null);
+                Actions.forID("Window", "se.trixon.mapton.core.ui.MapTopComponent").actionPerformed(null);
             }
         }
     }

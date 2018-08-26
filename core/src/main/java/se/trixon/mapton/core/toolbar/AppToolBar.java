@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -60,7 +60,7 @@ import se.trixon.almond.util.fx.FxActionSwingCheck;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 import se.trixon.mapton.core.api.DictMT;
-import se.trixon.mapton.core.api.MapEngineProvider;
+import se.trixon.mapton.core.api.MapEngine;
 import static se.trixon.mapton.core.api.Mapton.getIconSizeContextMenu;
 import static se.trixon.mapton.core.api.Mapton.getIconSizeToolBar;
 import se.trixon.mapton.core.api.MaptonOptions;
@@ -181,9 +181,11 @@ public class AppToolBar extends ToolBar {
         Lookup.getDefault().lookupResult(ToolActionProvider.class).addLookupListener((LookupEvent ev) -> {
             populateMenuTools();
         });
-        Lookup.getDefault().lookupResult(MapEngineProvider.class).addLookupListener((LookupEvent ev) -> {
+
+        Lookup.getDefault().lookupResult(MapEngine.class).addLookupListener((LookupEvent ev) -> {
             populateMenuTools();
         });
+
         populateMenuTools();
 
         Platform.runLater(() -> {
@@ -373,12 +375,12 @@ public class AppToolBar extends ToolBar {
         TreeMap<String, Menu> parents = new TreeMap<>();
         ArrayList<MenuItem> rootItems = new ArrayList<>();
 
-        final ToggleGroup mepToggleGroup = new ToggleGroup();
-        Lookup.getDefault().lookupAll(MapEngineProvider.class).forEach((mep) -> {
-            final String name = mep.getName();
+        final ToggleGroup mapEngineToggleGroup = new ToggleGroup();
+        Lookup.getDefault().lookupAll(MapEngine.class).forEach((mapEngine) -> {
+            final String name = mapEngine.getName();
             final RadioMenuItem menuItem = new RadioMenuItem(name);
             menuItem.setSelected(StringUtils.equalsIgnoreCase(name, mOptions.getMapEngine()));
-            menuItem.setToggleGroup(mepToggleGroup);
+            menuItem.setToggleGroup(mapEngineToggleGroup);
             menuItem.setOnAction((event) -> {
                 mOptions.setMapEngine(name);
             });

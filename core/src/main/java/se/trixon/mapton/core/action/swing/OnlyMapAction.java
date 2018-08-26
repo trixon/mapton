@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -36,7 +36,7 @@ public final class OnlyMapAction implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        Actions.forID("Window", "se.trixon.mapton.core.map.MapTopComponent").actionPerformed(null);
+        Actions.forID("Window", "se.trixon.mapton.core.ui.MapTopComponent").actionPerformed(null);
         Actions.forID("Window", "org.netbeans.core.windows.actions.ShowEditorOnlyAction").actionPerformed(null);
     }
 }

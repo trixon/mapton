@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,23 +20,26 @@ import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.awt.WorldWindowGLJPanel;
 import org.openide.util.lookup.ServiceProvider;
-import se.trixon.mapton.core.api.MapEngineProvider;
+import se.trixon.almond.nbp.NbLog;
+import se.trixon.mapton.core.api.MapEngine;
 
 /**
  *
  * @author Patrik Karlström
  */
-@ServiceProvider(service = MapEngineProvider.class)
-public class WorldWindMapEngineProvider extends MapEngineProvider {
+@ServiceProvider(service = MapEngine.class)
+public class WorldWindMapEngine extends MapEngine {
+
+    public static final String LOG_TAG = "WorldWind";
 
     private WorldWindowGLJPanel mWorldWindow;
 
-    public WorldWindMapEngineProvider() {
+    public WorldWindMapEngine() {
     }
 
     @Override
     public String getName() {
-        return "World Wind";
+        return "WorldWind";
     }
 
     @Override
@@ -52,6 +55,8 @@ public class WorldWindMapEngineProvider extends MapEngineProvider {
         mWorldWindow = new WorldWindowGLJPanel();
         Model m = (Model) WorldWind.createConfigurationComponent(AVKey.MODEL_CLASS_NAME);
         mWorldWindow.setModel(m);
+
+        NbLog.v(LOG_TAG, "Loaded and ready");
     }
 
 }

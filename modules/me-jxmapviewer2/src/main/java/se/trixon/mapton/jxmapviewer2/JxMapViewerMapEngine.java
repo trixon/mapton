@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,19 +28,22 @@ import org.jxmapviewer.viewer.DefaultTileFactory;
 import org.jxmapviewer.viewer.GeoPosition;
 import org.jxmapviewer.viewer.TileFactoryInfo;
 import org.openide.util.lookup.ServiceProvider;
-import se.trixon.mapton.core.api.MapEngineProvider;
+import se.trixon.almond.nbp.NbLog;
+import se.trixon.mapton.core.api.MapEngine;
 import se.trixon.mapton.core.api.Mapton;
 
 /**
  *
  * @author Patrik Karlström
  */
-@ServiceProvider(service = MapEngineProvider.class)
-public class JxMapViewerProvider extends MapEngineProvider {
+@ServiceProvider(service = MapEngine.class)
+public class JxMapViewerMapEngine extends MapEngine {
+
+    public static final String LOG_TAG = "JxMapViewer2";
 
     private JXMapKit mMapKit;
 
-    public JxMapViewerProvider() {
+    public JxMapViewerMapEngine() {
     }
 
     @Override
@@ -103,6 +106,8 @@ public class JxMapViewerProvider extends MapEngineProvider {
                 }
             }
         });
+
+        NbLog.v(LOG_TAG, "Loaded and ready");
     }
 
 }

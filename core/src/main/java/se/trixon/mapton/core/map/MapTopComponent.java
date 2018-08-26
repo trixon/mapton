@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -98,7 +98,7 @@ import se.trixon.mapton.core.bookmark.BookmarkManager;
 @TopComponent.Registration(mode = "editor", openAtStartup = true)
 @ActionID(category = "Window", id = "se.trixon.mapton.core.map.MapTopComponent")
 @ActionReferences({
-    @ActionReference(path = "Shortcuts", name = "D-M")
+    @ActionReference(path = "Shortcuts", name = "D-N")
 })
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_MapAction",
