@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,7 +23,6 @@ import com.healthmarketscience.sqlbuilder.UpdateQuery;
 import com.healthmarketscience.sqlbuilder.dbspec.Constraint;
 import com.healthmarketscience.sqlbuilder.dbspec.basic.DbColumn;
 import com.healthmarketscience.sqlbuilder.dbspec.basic.DbConstraint;
-import com.lynden.gmapsfx.javascript.object.LatLong;
 import java.awt.Dimension;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -40,8 +39,9 @@ import org.openide.DialogDisplayer;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxActionSwing;
+import se.trixon.mapton.core.api.LatLon;
+import se.trixon.mapton.core.api.Mapton;
 import se.trixon.mapton.core.db.DbBaseManager;
-import se.trixon.mapton.core.map.MapController;
 
 /**
  *
@@ -58,7 +58,6 @@ public class BookmarkManager extends DbBaseManager {
     private ObjectProperty<ObservableList<Bookmark>> mItems = new SimpleObjectProperty<>();
     private final DbColumn mLatitude;
     private final DbColumn mLongitude;
-    private final MapController mMapController = MapController.getInstance();
     private final DbColumn mName;
     private final DbColumn mTimeAccessed;
     private final DbColumn mTimeCreated;
@@ -112,9 +111,9 @@ public class BookmarkManager extends DbBaseManager {
             boolean add = aBookmark == null;
             if (add) {
                 newBookmark = new Bookmark();
-                newBookmark.setZoom(mMapController.getZoom());
-                newBookmark.setLatitude(mMapController.getLatitude());
-                newBookmark.setLongitude(mMapController.getLongitude());
+                newBookmark.setZoom(Mapton.getController().getZoom());
+                newBookmark.setLatitude(Mapton.getController().getLatitude());
+                newBookmark.setLongitude(Mapton.getController().getLongitude());
             }
 
             final Bookmark bookmark = newBookmark;
@@ -322,7 +321,7 @@ public class BookmarkManager extends DbBaseManager {
     }
 
     void goTo(Bookmark bookmark) throws ClassNotFoundException, SQLException {
-        mMapController.panTo(new LatLong(bookmark.getLatitude(), bookmark.getLongitude()), bookmark.getZoom());
+        Mapton.getController().panTo(new LatLon(bookmark.getLatitude(), bookmark.getLongitude()), bookmark.getZoom());
         bookmark.setTimeAccessed(new Timestamp(System.currentTimeMillis()));
         dbUpdate(bookmark);
     }

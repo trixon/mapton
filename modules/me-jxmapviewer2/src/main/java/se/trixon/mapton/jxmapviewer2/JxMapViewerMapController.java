@@ -13,27 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.trixon.mapton.core.api;
+package se.trixon.mapton.jxmapviewer2;
 
-import javafx.scene.Node;
+import se.trixon.mapton.core.api.MapController;
 
 /**
  *
  * @author Patrik Karlström
  */
-public abstract class MapEngine {
+public class JxMapViewerMapController extends MapController {
 
-    protected final MaptonOptions mGlobalOptions = MaptonOptions.getInstance();
-
-    public abstract MapController getController();
-
-    public abstract String getName();
-
-    public abstract Node getStyleView();
-
-    public abstract Object getUI();
-
-    public boolean isSwing() {
-        return true;
+    public JxMapViewerMapController() {
     }
+
+//    @Override
+//    public void goHome() {
+//    }
+//
+//    @Override
+//    public void panTo(LatLon latLong) {
+//    }
+//
+//    @Override
+//    public void panTo(LatLon latLong, int zoom) {
+//    }
+//
+//    @Override
+//    public void setLatLon(LatLon latLong) {
+//    }
 }

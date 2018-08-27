@@ -32,6 +32,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Slider;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.NbLog;
+import se.trixon.mapton.core.api.MapController;
 import se.trixon.mapton.core.api.MapEngine;
 import se.trixon.mapton.gmapsfx.api.MapStyle;
 
@@ -46,14 +47,20 @@ public class GMapsFXMapEngine extends MapEngine {
 
     private InfoWindow mInfoWindow;
     private GoogleMap mMap;
+    private GMapsFXMapController mMapController;
     private MapOptions mMapOptions;
     private GoogleMapView mMapView;
-    private Slider mZoomSlider;
-    private StyleView mStyleView;
     private ModuleOptions mOptions = ModuleOptions.getInstance();
+    private StyleView mStyleView;
+    private Slider mZoomSlider;
 
     public GMapsFXMapEngine() {
         mStyleView = new StyleView();
+    }
+
+    @Override
+    public MapController getController() {
+        return mMapController;
     }
 
     @Override
@@ -86,7 +93,7 @@ public class GMapsFXMapEngine extends MapEngine {
         mMapView.addMapInitializedListener(() -> {
             mInfoWindow = new InfoWindow();
             mMapOptions = new MapOptions()
-                    .center(mGlobalOptions.getMapCenter())
+                    //.center(mMapController.getMapCenter())
                     .zoom(mOptions.getMapZoom())
                     .mapType(MapTypeIdEnum.ROADMAP)
                     .rotateControl(true)
@@ -105,10 +112,11 @@ public class GMapsFXMapEngine extends MapEngine {
 //            Mapton.getAppToolBar().setDisable(false);
 
             initMap();
+            mMapController = new GMapsFXMapController(mMap);
 
             Platform.runLater(() -> {
                 mMap.setZoom(mOptions.getMapZoom());
-                mMap.setCenter(mGlobalOptions.getMapCenter());
+                mMap.setCenter(mMapController.getMapCenter());
             });
 
 //            mStatusBar = AppStatusPanel.getInstance().getProvider();

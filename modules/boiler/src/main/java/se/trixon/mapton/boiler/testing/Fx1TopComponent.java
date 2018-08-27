@@ -15,7 +15,6 @@
  */
 package se.trixon.mapton.boiler.testing;
 
-import com.lynden.gmapsfx.javascript.object.GoogleMap;
 import com.lynden.gmapsfx.javascript.object.LatLong;
 import com.lynden.gmapsfx.shapes.Circle;
 import java.awt.Dimension;
@@ -75,13 +74,13 @@ public final class Fx1TopComponent extends MaptonTopComponent {
         Button button = new Button("hello");
         button.setOnAction((ActionEvent event) -> {
 //            //MapOptions aa = mMapton.getMapOptions().mapType(MapTypeIdEnum.SATELLITE).zoom(1);
-            GoogleMap mMap = getMap();
+//            GoogleMap mMap = getMap();
             LatLong infoWindowLocation = new LatLong(57.67, 12);
 //
             Circle circle = new Circle();
             circle.setCenter(infoWindowLocation);
             circle.setRadius(200);
-            mMap.addMapShape(circle);
+//            mMap.addMapShape(circle);
 ////            mMapton.getMapOptions().center(infoWindowLocation);
 //            mMap.panTo(infoWindowLocation);
 //            mMap.setZoom(15);

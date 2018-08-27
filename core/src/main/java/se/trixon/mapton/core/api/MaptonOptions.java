@@ -15,7 +15,6 @@
  */
 package se.trixon.mapton.core.api;
 
-import com.lynden.gmapsfx.javascript.object.LatLong;
 import java.util.prefs.Preferences;
 import org.openide.util.Lookup;
 import org.openide.util.NbPreferences;
@@ -55,8 +54,8 @@ public class MaptonOptions {
     private MaptonOptions() {
     }
 
-    public LatLong getMapCenter() {
-        return new LatLong(
+    public LatLon getMapCenter() {
+        return new LatLon(
                 mPreferences.getDouble(KEY_MAP_CENTER_LAT, DEFAULT_MAP_LAT),
                 mPreferences.getDouble(KEY_MAP_CENTER_LON, DEFAULT_MAP_LON));
     }
@@ -79,8 +78,8 @@ public class MaptonOptions {
         return mPreferences.get(KEY_MAP_ENGINE, DEFAULT_MAP_ENGINE);
     }
 
-    public LatLong getMapHome() {
-        return new LatLong(
+    public LatLon getMapHome() {
+        return new LatLon(
                 mPreferences.getDouble(KEY_MAP_HOME_LAT, DEFAULT_MAP_LAT),
                 mPreferences.getDouble(KEY_MAP_HOME_LON, DEFAULT_MAP_LON));
     }
@@ -121,7 +120,7 @@ public class MaptonOptions {
         mPreferences.putBoolean(KEY_FULL_SCREEN, value);
     }
 
-    public void setMapCenter(LatLong value) {
+    public void setMapCenter(LatLon value) {
         mPreferences.putDouble(KEY_MAP_CENTER_LAT, value.getLatitude());
         mPreferences.putDouble(KEY_MAP_CENTER_LON, value.getLongitude());
     }
@@ -134,7 +133,7 @@ public class MaptonOptions {
         mPreferences.put(KEY_MAP_ENGINE, value);
     }
 
-    public void setMapHome(LatLong value) {
+    public void setMapHome(LatLon value) {
         mPreferences.putDouble(KEY_MAP_HOME_LAT, value.getLatitude());
         mPreferences.putDouble(KEY_MAP_HOME_LON, value.getLongitude());
     }

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,15 +17,12 @@ package se.trixon.mapton.core.api;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import se.trixon.mapton.core.map.MapController;
 
 /**
  *
  * @author Patrik Karlström
  */
 public abstract class MapContextMenuProvider {
-
-    protected final MapController mMapController = MapController.getInstance();
 
     public EventHandler<ActionEvent> getAction() {
         return (event) -> {
@@ -41,23 +38,27 @@ public abstract class MapContextMenuProvider {
     }
 
     protected double getLatitude() {
-        return mMapController.getLatitude();
+        return getMapController().getLatitude();
     }
 
     protected double getLatitudeProj() {
-        return mMapController.getLatitudeProj();
+        return getMapController().getLatitudeProj();
     }
 
     protected double getLongitude() {
-        return mMapController.getLongitude();
+        return getMapController().getLongitude();
     }
 
     protected double getLongitudeProj() {
-        return mMapController.getLongitudeProj();
+        return getMapController().getLongitudeProj();
     }
 
     protected int getZoom() {
-        return mMapController.getZoom();
+        return getMapController().getZoom();
+    }
+
+    private MapController getMapController() {
+        return Mapton.getController();
     }
 
     public enum ContextType {

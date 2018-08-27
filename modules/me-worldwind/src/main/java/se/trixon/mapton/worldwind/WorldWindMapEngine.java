@@ -22,6 +22,7 @@ import gov.nasa.worldwind.awt.WorldWindowGLJPanel;
 import javafx.scene.Node;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.NbLog;
+import se.trixon.mapton.core.api.MapController;
 import se.trixon.mapton.core.api.MapEngine;
 
 /**
@@ -32,10 +33,15 @@ import se.trixon.mapton.core.api.MapEngine;
 public class WorldWindMapEngine extends MapEngine {
 
     public static final String LOG_TAG = "WorldWind";
-
+    private WorldWindMapController mMapController;
     private WorldWindowGLJPanel mWorldWindow;
 
     public WorldWindMapEngine() {
+    }
+
+    @Override
+    public MapController getController() {
+        return mMapController;
     }
 
     @Override
@@ -52,6 +58,7 @@ public class WorldWindMapEngine extends MapEngine {
     public Object getUI() {
         if (mWorldWindow == null) {
             init();
+            mMapController = new WorldWindMapController();
         }
 
         return mWorldWindow;

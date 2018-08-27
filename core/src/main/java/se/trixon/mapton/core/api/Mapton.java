@@ -15,15 +15,11 @@
  */
 package se.trixon.mapton.core.api;
 
-import com.lynden.gmapsfx.GoogleMapView;
-import com.lynden.gmapsfx.javascript.object.GoogleMap;
-import com.lynden.gmapsfx.javascript.object.MapOptions;
 import java.text.DateFormat;
 import javafx.scene.paint.Color;
 import org.apache.commons.lang.StringUtils;
 import org.openide.awt.StatusDisplayer;
 import org.openide.util.Lookup;
-import se.trixon.mapton.core.map.MapTopComponent;
 import se.trixon.mapton.core.toolbar.AppToolBar;
 
 /**
@@ -41,7 +37,6 @@ public class Mapton {
     private static final int ICON_SIZE_TOOLBAR_INT = 24;
     private static AppToolBar sAppToolBar;
     private static final Color sIconColor = Color.BLACK;
-    private MapTopComponent mMapTopComponent;
 
     public static void clearStatusText() {
         setStatusText("");
@@ -105,25 +100,8 @@ public class Mapton {
     private Mapton() {
     }
 
-    public GoogleMap getMap() {
-        return getMapTopComponent().getMap();
-    }
-
-    public MapOptions getMapOptions() {
-        return getMapTopComponent().getMapOptions();
-    }
-
-    public MapTopComponent getMapTopComponent() {
-
-        return mMapTopComponent;
-    }
-
-    public GoogleMapView getMapView() {
-        return getMapTopComponent().getMapView();
-    }
-
-    public void setMapTopComponent(MapTopComponent mapTopComponent) {
-        mMapTopComponent = mapTopComponent;
+    public static MapController getController() {
+        return getEngine().getController();
     }
 
     private static class Holder {

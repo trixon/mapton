@@ -30,6 +30,7 @@ import org.jxmapviewer.viewer.GeoPosition;
 import org.jxmapviewer.viewer.TileFactoryInfo;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.NbLog;
+import se.trixon.mapton.core.api.MapController;
 import se.trixon.mapton.core.api.MapEngine;
 import se.trixon.mapton.core.api.Mapton;
 
@@ -41,10 +42,15 @@ import se.trixon.mapton.core.api.Mapton;
 public class JxMapViewerMapEngine extends MapEngine {
 
     public static final String LOG_TAG = "JxMapViewer2";
-
+    private JxMapViewerMapController mMapController;
     private JXMapKit mMapKit;
 
     public JxMapViewerMapEngine() {
+    }
+
+    @Override
+    public MapController getController() {
+        return mMapController;
     }
 
     @Override
@@ -61,6 +67,7 @@ public class JxMapViewerMapEngine extends MapEngine {
     public Object getUI() {
         if (mMapKit == null) {
             init();
+            mMapController = new JxMapViewerMapController();
         }
 
         return mMapKit;

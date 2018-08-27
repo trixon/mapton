@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -52,7 +52,6 @@ public class SearchView {
 
     private static final ResourceBundle mBundle = NbBundle.getBundle(SearchView.class);
     private final ObservableList<GeocodingResult> mItems = FXCollections.observableArrayList();
-    private final MapController mMapController = MapController.getInstance();
     private final MaptonOptions mOptions = MaptonOptions.getInstance();
     private final PopOver mResultPopOver;
     private final ListView<GeocodingResult> mResultView = new ListView();
@@ -89,7 +88,8 @@ public class SearchView {
                 GeocodingResult result = mResultView.getSelectionModel().getSelectedItem();
                 if (result != null) {
                     mSearchTextField.setText(result.getFormattedAddress());
-                    mMapController.fitBounds(result.getGeometry());
+//TODO Replace me
+//                    Mapton.getInstance().getMapController().fitBounds(result.getGeometry());
                 }
             }
         });
@@ -100,7 +100,8 @@ public class SearchView {
     }
 
     private void panTo(LatLong latLong) {
-        mMapController.panTo(latLong);
+//TODO Replace me
+//        Mapton.getInstance().getMapController().panTo(latLong);
     }
 
     private void parse(String searchString) {

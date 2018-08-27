@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -57,7 +57,7 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
 import se.trixon.mapton.core.api.MapContextMenuProvider;
 import se.trixon.mapton.core.api.Mapton;
 import static se.trixon.mapton.core.api.Mapton.getIconSizeContextMenu;
-import se.trixon.mapton.core.map.MapTopComponent;
+import se.trixon.mapton.core.map.SearchView;
 
 /**
  *
@@ -179,7 +179,7 @@ public class BookmarkView extends BorderPane {
 
     class BookmarkListCell extends ListCell<Bookmark> {
 
-        private final ResourceBundle mBundle = NbBundle.getBundle(MapTopComponent.class);
+        private final ResourceBundle mBundle = NbBundle.getBundle(SearchView.class);
 
         private final Label mCatLabel = new Label();
         private Menu mContextCopyMenu;

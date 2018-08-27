@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,8 +25,9 @@ import org.controlsfx.control.StatusBar;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import se.trixon.mapton.core.api.CooTransProvider;
+import se.trixon.mapton.core.api.MapController;
+import se.trixon.mapton.core.api.Mapton;
 import se.trixon.mapton.core.api.MaptonOptions;
-import se.trixon.mapton.core.map.MapController;
 
 /**
  *
@@ -37,7 +38,7 @@ public class AppStatusView extends StatusBar {
     private final ComboBox<CooTransProvider> mComboBox = new ComboBox();
     private CooTransProvider mCooTrans;
     private final Label mLabel = new Label();
-    private final MapController mMapController = MapController.getInstance();
+//    private final MapController mMapController = MapController.getInstance();
     private final MaptonOptions mOptions = MaptonOptions.getInstance();
 
     public AppStatusView() {
@@ -67,16 +68,20 @@ public class AppStatusView extends StatusBar {
     }
 
     public void updateLatLong() {
-        final double latitude = mMapController.getLatitude();
-        final double longitude = mMapController.getLongitude();
+        MapController mapController = Mapton.getController();
 
-        if (latitude != 0 && longitude != 0) {
-            String cooString = mCooTrans.getString(latitude, longitude);
+        if (mapController != null) {
+            final double latitude = mapController.getLatitude();
+            final double longitude = mapController.getLongitude();
 
-            String lat = String.format("%9.6f°%s", Math.abs(latitude), latitude < 0 ? "S" : "N");
-            String lon = String.format("%10.6f°%s", Math.abs(longitude), longitude < 0 ? "W" : "E");
+            if (latitude != 0 && longitude != 0) {
+                String cooString = mCooTrans.getString(latitude, longitude);
 
-            setMessage(String.format("%s  %s WGS 84 DD, %s", lat, lon, cooString));
+                String lat = String.format("%9.6f°%s", Math.abs(latitude), latitude < 0 ? "S" : "N");
+                String lon = String.format("%10.6f°%s", Math.abs(longitude), longitude < 0 ? "W" : "E");
+
+                setMessage(String.format("%s  %s WGS 84 DD, %s", lat, lon, cooString));
+            }
         }
     }
 

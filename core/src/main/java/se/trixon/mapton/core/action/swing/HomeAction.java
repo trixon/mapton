@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,7 +25,7 @@ import org.openide.util.NbBundle.Messages;
 import org.openide.windows.Mode;
 import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
-import se.trixon.mapton.core.map.MapController;
+import se.trixon.mapton.core.api.Mapton;
 
 @ActionID(
         category = "Mapton",
@@ -49,7 +49,7 @@ public final class HomeAction implements ActionListener {
         } else {
             tc.requestActive();
             Platform.runLater(() -> {
-                MapController.getInstance().goHome();
+                Mapton.getController().goHome();
             });
         }
     }
