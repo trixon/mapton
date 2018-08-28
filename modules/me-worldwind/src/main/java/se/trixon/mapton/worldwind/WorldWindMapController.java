@@ -27,10 +27,6 @@ public class WorldWindMapController extends MapController {
     }
 
 //    @Override
-//    public void goHome() {
-//    }
-//
-//    @Override
 //    public void panTo(LatLon latLong) {
 //    }
 //

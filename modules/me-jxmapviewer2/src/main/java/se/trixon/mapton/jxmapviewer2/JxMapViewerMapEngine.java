@@ -22,12 +22,8 @@ import java.awt.event.MouseMotionListener;
 import java.awt.geom.Point2D;
 import javafx.scene.Node;
 import javax.swing.JToolTip;
-import org.jxmapviewer.JXMapKit;
 import org.jxmapviewer.JXMapViewer;
-import org.jxmapviewer.OSMTileFactoryInfo;
-import org.jxmapviewer.viewer.DefaultTileFactory;
 import org.jxmapviewer.viewer.GeoPosition;
-import org.jxmapviewer.viewer.TileFactoryInfo;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.NbLog;
 import se.trixon.mapton.core.api.MapController;
@@ -43,7 +39,7 @@ public class JxMapViewerMapEngine extends MapEngine {
 
     public static final String LOG_TAG = "JxMapViewer2";
     private JxMapViewerMapController mMapController;
-    private JXMapKit mMapKit;
+    private MapKit mMapKit;
 
     public JxMapViewerMapEngine() {
     }
@@ -67,17 +63,14 @@ public class JxMapViewerMapEngine extends MapEngine {
     public Object getUI() {
         if (mMapKit == null) {
             init();
-            mMapController = new JxMapViewerMapController();
+            mMapController = new JxMapViewerMapController(mMapKit);
         }
 
         return mMapKit;
     }
 
     private void init() {
-        mMapKit = new JXMapKit();
-        TileFactoryInfo info = new OSMTileFactoryInfo();
-        DefaultTileFactory tileFactory = new DefaultTileFactory(info);
-        mMapKit.setTileFactory(tileFactory);
+        mMapKit = new MapKit();
 
         final GeoPosition gp = new GeoPosition(Mapton.MYLAT, Mapton.MYLON);
 

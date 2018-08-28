@@ -33,12 +33,6 @@ public class GMapsFXMapController extends MapController {
     }
 
     @Override
-    public void goHome() {
-        mMap.panTo(convertToLatLong(mOptions.getMapHome()));
-        mMap.setZoom(mOptions.getMapHomeZoom());
-    }
-
-    @Override
     public void panTo(LatLon latLon) {
         mMap.panTo(convertToLatLong(latLon));
     }
@@ -65,7 +59,6 @@ public class GMapsFXMapController extends MapController {
                 latLon.getLatitude(),
                 latLon.getLongitude()
         );
-
     }
 
 }

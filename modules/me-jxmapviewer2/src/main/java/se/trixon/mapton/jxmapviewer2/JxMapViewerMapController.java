@@ -15,6 +15,8 @@
  */
 package se.trixon.mapton.jxmapviewer2;
 
+import org.jxmapviewer.viewer.GeoPosition;
+import se.trixon.mapton.core.api.LatLon;
 import se.trixon.mapton.core.api.MapController;
 
 /**
@@ -23,22 +25,35 @@ import se.trixon.mapton.core.api.MapController;
  */
 public class JxMapViewerMapController extends MapController {
 
-    public JxMapViewerMapController() {
+    private final MapKit mMapKit;
+
+    public JxMapViewerMapController(MapKit mapKit) {
+        mMapKit = mapKit;
+    }
+
+    @Override
+    public void panTo(LatLon latLong) {
+        panTo(latLong, mMapKit.getMainMap().getZoom());
+    }
+
+    @Override
+    public void panTo(LatLon latLon, int zoom) {
+        panAndZoomTo(convertToGeoPosition(latLon), zoom);
+    }
+
+    void panAndZoomTo(GeoPosition geoPosition, int zoom) {
+        mMapKit.setGeoPosition(geoPosition);
+        mMapKit.setAddressLocation(geoPosition);
+        mMapKit.setZoom(zoom);
     }
 
 //    @Override
-//    public void goHome() {
-//    }
-//
-//    @Override
-//    public void panTo(LatLon latLong) {
-//    }
-//
-//    @Override
-//    public void panTo(LatLon latLong, int zoom) {
-//    }
-//
-//    @Override
 //    public void setLatLon(LatLon latLong) {
 //    }
+    private GeoPosition convertToGeoPosition(LatLon latLon) {
+        return new GeoPosition(
+                latLon.getLatitude(),
+                latLon.getLongitude()
+        );
+    }
 }

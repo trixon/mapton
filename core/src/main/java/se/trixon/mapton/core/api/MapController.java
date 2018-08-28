@@ -64,15 +64,15 @@ public abstract class MapController {
         return mZoom;
     }
 
-    public void goHome() {
-        NbLog.i(getClass().getSimpleName(), "goHome not implemented");
+    public final void goHome() {
+        panTo(mOptions.getMapHome(), mOptions.getMapHomeZoom());
     }
 
-    public void panTo(LatLon latLong) {
+    public void panTo(LatLon latLon) {
         NbLog.i(getClass().getSimpleName(), "panTo not implemented");
     }
 
-    public void panTo(LatLon latLong, int zoom) {
+    public void panTo(LatLon latLon, int zoom) {
         NbLog.i(getClass().getSimpleName(), "panTo(Zoom) not implemented");
     }
 

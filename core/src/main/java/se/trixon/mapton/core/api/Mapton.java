@@ -15,6 +15,7 @@
  */
 package se.trixon.mapton.core.api;
 
+import java.io.File;
 import java.text.DateFormat;
 import javafx.scene.paint.Color;
 import org.apache.commons.lang.StringUtils;
@@ -32,11 +33,18 @@ public class Mapton {
     public static final double MYLAT = 57.66;
     public static final double MYLON = 12.0;
 
+    private static final File CACHE_DIR;
+    private static final File CONFIG_DIR;
     private static final int ICON_SIZE_CONTEXT_MENU = 16;
     private static final int ICON_SIZE_TOOLBAR = 36;
     private static final int ICON_SIZE_TOOLBAR_INT = 24;
     private static AppToolBar sAppToolBar;
     private static final Color sIconColor = Color.BLACK;
+
+    static {
+        CONFIG_DIR = new File(System.getProperty("netbeans.user"));
+        CACHE_DIR = new File(CONFIG_DIR, "cache");
+    }
 
     public static void clearStatusText() {
         setStatusText("");
@@ -44,6 +52,18 @@ public class Mapton {
 
     public static AppToolBar getAppToolBar() {
         return sAppToolBar;
+    }
+
+    public static File getCacheDir() {
+        return CACHE_DIR;
+    }
+
+    public static File getConfigDir() {
+        return CONFIG_DIR;
+    }
+
+    public static MapController getController() {
+        return getEngine().getController();
     }
 
     public static DateFormat getDefaultDateFormat() {
@@ -98,10 +118,6 @@ public class Mapton {
     }
 
     private Mapton() {
-    }
-
-    public static MapController getController() {
-        return getEngine().getController();
     }
 
     private static class Holder {
