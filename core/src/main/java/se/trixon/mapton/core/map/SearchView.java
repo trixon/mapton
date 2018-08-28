@@ -15,11 +15,6 @@
  */
 package se.trixon.mapton.core.map;
 
-import com.lynden.gmapsfx.javascript.object.LatLong;
-import com.lynden.gmapsfx.service.geocoding.GeocoderStatus;
-import com.lynden.gmapsfx.service.geocoding.GeocodingResult;
-import com.lynden.gmapsfx.service.geocoding.GeocodingService;
-import com.lynden.gmapsfx.service.geocoding.GeocodingServiceCallback;
 import java.util.Arrays;
 import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
@@ -41,8 +36,14 @@ import org.openide.util.NbBundle;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 import se.trixon.mapton.core.api.CooTransProvider;
 import se.trixon.mapton.core.api.DecDegDMS;
+import se.trixon.mapton.core.api.LatLon;
+import se.trixon.mapton.core.api.Mapton;
 import static se.trixon.mapton.core.api.Mapton.getIconSizeToolBarInt;
 import se.trixon.mapton.core.api.MaptonOptions;
+import se.trixon.mapton.core.api.geocode.GeocoderStatus;
+import se.trixon.mapton.core.api.geocode.GeocodingResult;
+import se.trixon.mapton.core.api.geocode.GeocodingService;
+import se.trixon.mapton.core.api.geocode.GeocodingServiceCallback;
 
 /**
  *
@@ -99,13 +100,12 @@ public class SearchView {
         return mSearchTextField;
     }
 
-    private void panTo(LatLong latLong) {
-//TODO Replace me
-//        Mapton.getInstance().getMapController().panTo(latLong);
+    private void panTo(LatLon latLon) {
+        Mapton.getController().panTo(latLon);
     }
 
     private void parse(String searchString) {
-        LatLong latLong = parseDecimal(searchString);
+        LatLon latLong = parseDecimal(searchString);
         if (latLong == null) {
             latLong = parseDegMinSec(searchString);
             if (latLong == null) {
@@ -118,21 +118,23 @@ public class SearchView {
         }
     }
 
-    private LatLong parseDecimal(String searchString) {
-        LatLong latLong = null;
+    private LatLon parseDecimal(String searchString) {
+        LatLon latLong = null;
         String[] coordinate = searchString.replace(",", " ").trim().split("\\s+");
+
         if (coordinate.length == 2) {
             try {
                 final Double lat = NumberUtils.createDouble(coordinate[0]);
                 final Double lon = NumberUtils.createDouble(coordinate[1]);
                 Wgs84DMS dms = new Wgs84DMS();
+
                 if (dms.isWithinWgs84Bounds(lat, lon)) {
-                    latLong = new LatLong(lat, lon);
+                    latLong = new LatLon(lat, lon);
                 } else {
                     CooTransProvider cooTrans = mOptions.getMapCooTrans();
                     if (cooTrans.isWithinProjectedBounds(lat, lon)) {
                         Point2D p = cooTrans.toWgs84(lat, lon);
-                        latLong = new LatLong(p.getY(), p.getX());
+                        latLong = new LatLon(p.getY(), p.getX());
                     }
                 }
             } catch (Exception e) {
@@ -143,8 +145,8 @@ public class SearchView {
         return latLong;
     }
 
-    private LatLong parseDegMinSec(String searchString) {
-        LatLong latLong = null;
+    private LatLon parseDegMinSec(String searchString) {
+        LatLon latLong = null;
         String[] coordinate = searchString.replace(",", " ").trim().split("\\s+");
 
         if (coordinate.length == 2
@@ -171,7 +173,7 @@ public class SearchView {
                 }
 
                 DecDegDMS dddms = new DecDegDMS(latDeg, latMin, latSec, lonDeg, lonMin, lonSec);
-                latLong = new LatLong(dddms.getLatitude(), dddms.getLongitude());
+                latLong = new LatLon(dddms.getLatitude(), dddms.getLongitude());
             } catch (Exception e) {
                 // nvm
             }
