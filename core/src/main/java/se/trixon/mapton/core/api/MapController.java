@@ -15,7 +15,9 @@
  */
 package se.trixon.mapton.core.api;
 
+import javafx.application.Platform;
 import se.trixon.almond.nbp.NbLog;
+import se.trixon.mapton.core.AppStatusPanel;
 
 /**
  *
@@ -25,7 +27,7 @@ public abstract class MapController {
 
     protected final MaptonOptions mOptions = MaptonOptions.getInstance();
 
-    private LatLon mLatLon;
+    private LatLon mLatLonMouse;
     private double mLatitude;
     private double mLongitude;
     private int mZoom;
@@ -40,8 +42,8 @@ public abstract class MapController {
 ////            panTo(geometry.getLocation());
 ////        }
 //    }
-    public LatLon getLatLon() {
-        return mLatLon;
+    public LatLon getLatLonMouse() {
+        return mLatLonMouse;
     }
 
     public double getLatitude() {
@@ -76,13 +78,17 @@ public abstract class MapController {
         NbLog.i(getClass().getSimpleName(), "panTo(Zoom) not implemented");
     }
 
-    public void setLatLon(LatLon latLon) {
-        mLatLon = latLon;
-        mLatitude = latLon.getLatitude();
-        mLongitude = latLon.getLongitude();
+    public final void setLatLonMouse(LatLon latLonMouse) {
+        mLatLonMouse = latLonMouse;
+        mLatitude = latLonMouse.getLatitude();
+        mLongitude = latLonMouse.getLongitude();
+
+        Platform.runLater(() -> {
+            AppStatusPanel.getInstance().getProvider().updateLatLong();
+        });
     }
 
-    void setZoom(int zoom) {
+    public void setZoom(int zoom) {
         mZoom = zoom;
     }
 

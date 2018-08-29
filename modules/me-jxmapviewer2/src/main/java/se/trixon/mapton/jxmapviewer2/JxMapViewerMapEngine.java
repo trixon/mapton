@@ -15,14 +15,9 @@
  */
 package se.trixon.mapton.jxmapviewer2;
 
-import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
-import java.awt.geom.Point2D;
+import java.awt.event.MouseMotionAdapter;
 import javafx.scene.Node;
-import javax.swing.JToolTip;
-import org.jxmapviewer.JXMapViewer;
 import org.jxmapviewer.viewer.GeoPosition;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.NbLog;
@@ -38,7 +33,7 @@ import se.trixon.mapton.core.api.Mapton;
 public class JxMapViewerMapEngine extends MapEngine {
 
     public static final String LOG_TAG = "JxMapViewer2";
-    private JxMapViewerMapController mMapController;
+    private JxMapViewerMapController mController;
     private MapKit mMapKit;
 
     public JxMapViewerMapEngine() {
@@ -46,7 +41,7 @@ public class JxMapViewerMapEngine extends MapEngine {
 
     @Override
     public MapController getController() {
-        return mMapController;
+        return mController;
     }
 
     @Override
@@ -63,7 +58,7 @@ public class JxMapViewerMapEngine extends MapEngine {
     public Object getUI() {
         if (mMapKit == null) {
             init();
-            mMapController = new JxMapViewerMapController(mMapKit);
+            mController = new JxMapViewerMapController(mMapKit);
         }
 
         return mMapKit;
@@ -74,42 +69,15 @@ public class JxMapViewerMapEngine extends MapEngine {
 
         final GeoPosition gp = new GeoPosition(Mapton.MYLAT, Mapton.MYLON);
 
-        final JToolTip tooltip = new JToolTip();
-        tooltip.setTipText("Mölndal");
-        tooltip.setComponent(mMapKit.getMainMap());
-        mMapKit.getMainMap().add(tooltip);
-
         mMapKit.setZoom(5);
         mMapKit.setAddressLocation(gp);
 
-        mMapKit.getMainMap().addMouseMotionListener(new MouseMotionListener() {
-            @Override
-            public void mouseDragged(MouseEvent e) {
-                // ignore
-            }
+        mMapKit.getMainMap().addMouseMotionListener(new MouseMotionAdapter() {
 
             @Override
             public void mouseMoved(MouseEvent e) {
-                JXMapViewer map = mMapKit.getMainMap();
-
-                // convert to world bitmap
-                Point2D worldPos = map.getTileFactory().geoToPixel(gp, map.getZoom());
-
-                // convert to screen
-                Rectangle rect = map.getViewportBounds();
-                int sx = (int) worldPos.getX() - rect.x;
-                int sy = (int) worldPos.getY() - rect.y;
-                Point screenPos = new Point(sx, sy);
-
-                // check if near the mouse
-                if (screenPos.distance(e.getPoint()) < 20) {
-                    screenPos.x -= tooltip.getWidth() / 2;
-
-                    tooltip.setLocation(screenPos);
-                    tooltip.setVisible(true);
-                } else {
-                    tooltip.setVisible(false);
-                }
+                GeoPosition geoPosition = mMapKit.getMainMap().convertPointToGeoPosition(e.getPoint());
+                mController.setLatLonMouse(mController.toLatLon(geoPosition));
             }
         });
 

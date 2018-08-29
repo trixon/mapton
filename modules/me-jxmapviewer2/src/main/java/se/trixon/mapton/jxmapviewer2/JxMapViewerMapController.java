@@ -38,7 +38,7 @@ public class JxMapViewerMapController extends MapController {
 
     @Override
     public void panTo(LatLon latLon, int zoom) {
-        panAndZoomTo(convertToGeoPosition(latLon), zoom);
+        panAndZoomTo(toGeoPosition(latLon), zoom);
     }
 
     void panAndZoomTo(GeoPosition geoPosition, int zoom) {
@@ -47,13 +47,17 @@ public class JxMapViewerMapController extends MapController {
         mMapKit.setZoom(zoom);
     }
 
-//    @Override
-//    public void setLatLon(LatLon latLong) {
-//    }
-    private GeoPosition convertToGeoPosition(LatLon latLon) {
+    GeoPosition toGeoPosition(LatLon latLon) {
         return new GeoPosition(
                 latLon.getLatitude(),
                 latLon.getLongitude()
+        );
+    }
+
+    LatLon toLatLon(GeoPosition geoPosition) {
+        return new LatLon(
+                geoPosition.getLatitude(),
+                geoPosition.getLongitude()
         );
     }
 }

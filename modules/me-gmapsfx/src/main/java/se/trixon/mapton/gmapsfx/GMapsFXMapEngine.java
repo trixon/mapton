@@ -21,7 +21,6 @@ import com.lynden.gmapsfx.javascript.event.MapStateEventType;
 import com.lynden.gmapsfx.javascript.event.UIEventType;
 import com.lynden.gmapsfx.javascript.object.GoogleMap;
 import com.lynden.gmapsfx.javascript.object.InfoWindow;
-import com.lynden.gmapsfx.javascript.object.LatLong;
 import com.lynden.gmapsfx.javascript.object.MapOptions;
 import com.lynden.gmapsfx.javascript.object.MapTypeIdEnum;
 import java.util.Locale;
@@ -45,12 +44,12 @@ public class GMapsFXMapEngine extends MapEngine {
 
     public static final String LOG_TAG = "GMapsFX";
 
+    private GMapsFXMapController mController;
     private InfoWindow mInfoWindow;
     private GoogleMap mMap;
-    private GMapsFXMapController mMapController;
     private MapOptions mMapOptions;
     private GoogleMapView mMapView;
-    private ModuleOptions mOptions = ModuleOptions.getInstance();
+    private final ModuleOptions mOptions = ModuleOptions.getInstance();
     private StyleView mStyleView;
     private Slider mZoomSlider;
 
@@ -60,7 +59,7 @@ public class GMapsFXMapEngine extends MapEngine {
 
     @Override
     public MapController getController() {
-        return mMapController;
+        return mController;
     }
 
     @Override
@@ -109,21 +108,15 @@ public class GMapsFXMapEngine extends MapEngine {
             mZoomSlider.setPadding(new Insets(8, 0, 0, 8));
             mZoomSlider.setBlockIncrement(1);
             mMapView.getChildren().add(mZoomSlider);
-//            Mapton.getAppToolBar().setDisable(false);
 
             initMap();
-            mMapController = new GMapsFXMapController(mMap);
+            mController = new GMapsFXMapController(mMap);
 
             Platform.runLater(() -> {
                 mMap.setZoom(mOptions.getMapZoom());
-                mMap.setCenter(mMapController.getMapCenter());
+                mMap.setCenter(mController.getMapCenter());
             });
 
-//            mStatusBar = AppStatusPanel.getInstance().getProvider();
-//            if (mOptions.isMapOnly()) {
-//                mRoot.setBottom(mStatusBar);
-//            }
-//
             initListeners();
             NbLog.v(LOG_TAG, "Loaded and ready");
         });
@@ -145,26 +138,6 @@ public class GMapsFXMapEngine extends MapEngine {
                 }
             });
         });
-
-//        SwingUtilities.invokeLater(() -> {
-//            addHierarchyListener((HierarchyEvent e) -> {
-//                if (e.getChangedParent() instanceof JLayeredPane) {
-//                    Dimension d = ((JFrame) WindowManager.getDefault().getMainWindow()).getContentPane().getPreferredSize();
-//                    final boolean showOnlyEditor = 1 == d.height && 1 == d.width;
-//                    mOptions.setMapOnly(showOnlyEditor);
-//                    Platform.runLater(() -> {
-//                        if (showOnlyEditor) {
-//                            mRoot.setBottom(mStatusBar);
-//                        } else {
-//                            if (mRoot.getBottom() != null) {
-//                                mRoot.setBottom(null);
-//                                AppStatusPanel.getInstance().reset();
-//                            }
-//                        }
-//                    });
-//                }
-//            });
-//        });
     }
 
     private void initMap() {
@@ -182,13 +155,11 @@ public class GMapsFXMapEngine extends MapEngine {
         mMap.zoomProperty().bindBidirectional(mZoomSlider.valueProperty());
 
         mMap.addStateEventHandler(MapStateEventType.zoom_changed, () -> {
-//            mMapController.setZoom(mMap.getZoom());
+            mController.setZoom(mMap.getZoom());
         });
 
         mMap.addMouseEventHandler(UIEventType.mousemove, (GMapMouseEvent event) -> {
-            LatLong latLong = event.getLatLong();
-//            mMapController.setLatLong(latLong);
-//            AppStatusPanel.getInstance().getProvider().updateLatLong();
+            mController.setLatLonMouse(mController.toLatLon(event.getLatLong()));
         });
 
         NbLog.v(LOG_TAG, "Map initialized");

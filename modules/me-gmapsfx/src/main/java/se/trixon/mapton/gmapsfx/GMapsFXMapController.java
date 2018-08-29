@@ -34,7 +34,7 @@ public class GMapsFXMapController extends MapController {
 
     @Override
     public void panTo(LatLon latLon) {
-        mMap.panTo(convertToLatLong(latLon));
+        mMap.panTo(toLatLong(latLon));
     }
 
     @Override
@@ -43,18 +43,18 @@ public class GMapsFXMapController extends MapController {
         panTo(latLong);
     }
 
-    @Override
-    public void setLatLon(LatLon latLong) {
-//        mLatLong = latLong;
-//        mLatitude = latLong.getLatitude();
-//        mLongitude = latLong.getLongitude();
-    }
-
     LatLong getMapCenter() {
-        return convertToLatLong(mOptions.getMapCenter());
+        return toLatLong(mOptions.getMapCenter());
     }
 
-    private LatLong convertToLatLong(LatLon latLon) {
+    LatLon toLatLon(LatLong latLong) {
+        return new LatLon(
+                latLong.getLatitude(),
+                latLong.getLongitude()
+        );
+    }
+
+    LatLong toLatLong(LatLon latLon) {
         return new LatLong(
                 latLon.getLatitude(),
                 latLon.getLongitude()

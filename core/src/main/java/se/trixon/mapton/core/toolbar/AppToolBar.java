@@ -59,6 +59,7 @@ import se.trixon.almond.util.fx.FxActionSwing;
 import se.trixon.almond.util.fx.FxActionSwingCheck;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.icons.material.MaterialIcon;
+import se.trixon.mapton.core.AppStatusPanel;
 import se.trixon.mapton.core.api.DictMT;
 import se.trixon.mapton.core.api.MapEngine;
 import se.trixon.mapton.core.api.Mapton;
@@ -386,6 +387,8 @@ public class AppToolBar extends ToolBar {
 
             menuItem.setToggleGroup(mapEngineToggleGroup);
             menuItem.setOnAction((event) -> {
+                AppStatusPanel.getInstance().getProvider().setMessage("");
+
                 mOptions.setMapEngine(name);
                 mStyleAction.setDisabled(mapEngine.getStyleView() == null);
             });
