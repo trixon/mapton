@@ -13,28 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.trixon.mapton.worldwind;
+package se.trixon.mapton.core;
 
-import se.trixon.mapton.core.api.MapController;
+import org.openide.modules.OnStop;
+import se.trixon.mapton.core.api.MapEngine;
+import se.trixon.mapton.core.api.Mapton;
+import se.trixon.mapton.core.api.MaptonOptions;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class WorldWindMapController extends MapController {
+@OnStop
+public class Finalizer implements Runnable {
 
-    public WorldWindMapController() {
+    private final MaptonOptions mOptions = MaptonOptions.getInstance();
+
+    @Override
+    public void run() {
+        final MapEngine engine = Mapton.getEngine();
+        try {
+            mOptions.setMapZoom(engine.getZoom());
+            mOptions.setMapCenter(engine.getCenter());
+        } catch (Exception e) {
+            //nvm
+        }
     }
 
-//    @Override
-//    public void panTo(LatLon latLong) {
-//    }
-//
-//    @Override
-//    public void panTo(LatLon latLong, int zoom) {
-//    }
-//
-//    @Override
-//    public void setLatLon(LatLon latLong) {
-//    }
 }

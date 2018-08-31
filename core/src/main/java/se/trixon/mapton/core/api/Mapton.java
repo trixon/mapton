@@ -62,10 +62,6 @@ public class Mapton {
         return CONFIG_DIR;
     }
 
-    public static MapController getController() {
-        return getEngine().getController();
-    }
-
     public static DateFormat getDefaultDateFormat() {
         return DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM);
     }

@@ -21,6 +21,7 @@ import com.lynden.gmapsfx.javascript.event.MapStateEventType;
 import com.lynden.gmapsfx.javascript.event.UIEventType;
 import com.lynden.gmapsfx.javascript.object.GoogleMap;
 import com.lynden.gmapsfx.javascript.object.InfoWindow;
+import com.lynden.gmapsfx.javascript.object.LatLong;
 import com.lynden.gmapsfx.javascript.object.MapOptions;
 import com.lynden.gmapsfx.javascript.object.MapTypeIdEnum;
 import java.util.Locale;
@@ -31,7 +32,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Slider;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.NbLog;
-import se.trixon.mapton.core.api.MapController;
+import se.trixon.mapton.core.api.LatLon;
 import se.trixon.mapton.core.api.MapEngine;
 import se.trixon.mapton.gmapsfx.api.MapStyle;
 
@@ -44,7 +45,6 @@ public class GMapsFXMapEngine extends MapEngine {
 
     public static final String LOG_TAG = "GMapsFX";
 
-    private GMapsFXMapController mController;
     private InfoWindow mInfoWindow;
     private GoogleMap mMap;
     private MapOptions mMapOptions;
@@ -58,8 +58,8 @@ public class GMapsFXMapEngine extends MapEngine {
     }
 
     @Override
-    public MapController getController() {
-        return mController;
+    public LatLon getCenter() {
+        return toLatLon(mMap.getCenter());
     }
 
     @Override
@@ -86,6 +86,17 @@ public class GMapsFXMapEngine extends MapEngine {
         return false;
     }
 
+    @Override
+    public void panTo(LatLon latLon) {
+        mMap.panTo(toLatLong(latLon));
+    }
+
+    @Override
+    public void panTo(LatLon latLong, int zoom) {
+        mMap.setZoom(zoom);
+        panTo(latLong);
+    }
+
     private void init() {
         mMapView = new GoogleMapView(Locale.getDefault().getLanguage(), mOptions.getMapKey());
 
@@ -93,7 +104,7 @@ public class GMapsFXMapEngine extends MapEngine {
             mInfoWindow = new InfoWindow();
             mMapOptions = new MapOptions()
                     //.center(mMapController.getMapCenter())
-                    .zoom(mOptions.getMapZoom())
+                    .zoom(mMaptonOptions.getMapZoom())
                     .mapType(MapTypeIdEnum.ROADMAP)
                     .rotateControl(true)
                     .clickableIcons(false)
@@ -110,13 +121,11 @@ public class GMapsFXMapEngine extends MapEngine {
             mMapView.getChildren().add(mZoomSlider);
 
             initMap();
-            mController = new GMapsFXMapController(mMap);
-
-            Platform.runLater(() -> {
-                mMap.setZoom(mOptions.getMapZoom());
-                mMap.setCenter(mController.getMapCenter());
-            });
-
+            initialized();
+//            Platform.runLater(() -> {
+//                mMap.setZoom(mOptions.getMapZoom());
+//                mMap.setCenter(mController.getMapCenter());
+//            });
             initListeners();
             NbLog.v(LOG_TAG, "Loaded and ready");
         });
@@ -138,6 +147,10 @@ public class GMapsFXMapEngine extends MapEngine {
                 }
             });
         });
+
+        mZoomSlider.valueProperty().addListener((event) -> {
+            System.out.println("Fx zoom: " + mMap.getZoom());
+        });
     }
 
     private void initMap() {
@@ -155,14 +168,28 @@ public class GMapsFXMapEngine extends MapEngine {
         mMap.zoomProperty().bindBidirectional(mZoomSlider.valueProperty());
 
         mMap.addStateEventHandler(MapStateEventType.zoom_changed, () -> {
-            mController.setZoom(mMap.getZoom());
+            setZoom(mMap.getZoom());
         });
 
         mMap.addMouseEventHandler(UIEventType.mousemove, (GMapMouseEvent event) -> {
-            mController.setLatLonMouse(mController.toLatLon(event.getLatLong()));
+            setLatLonMouse(toLatLon(event.getLatLong()));
         });
 
         NbLog.v(LOG_TAG, "Map initialized");
+    }
+
+    private LatLon toLatLon(LatLong latLong) {
+        return new LatLon(
+                latLong.getLatitude(),
+                latLong.getLongitude()
+        );
+    }
+
+    private LatLong toLatLong(LatLon latLon) {
+        return new LatLong(
+                latLon.getLatitude(),
+                latLon.getLongitude()
+        );
     }
 
 }

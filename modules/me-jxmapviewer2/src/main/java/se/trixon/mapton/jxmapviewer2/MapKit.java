@@ -17,7 +17,6 @@ package se.trixon.mapton.jxmapviewer2;
 
 import java.awt.Color;
 import java.awt.Cursor;
-import java.awt.Desktop;
 import java.awt.GridBagConstraints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -34,10 +33,10 @@ import org.jxmapviewer.JXMapKit;
 import org.jxmapviewer.JXMapViewer;
 import org.jxmapviewer.OSMTileFactoryInfo;
 import org.jxmapviewer.viewer.DefaultTileFactory;
-import org.jxmapviewer.viewer.GeoPosition;
 import org.jxmapviewer.viewer.TileCache;
 import org.jxmapviewer.viewer.TileFactoryInfo;
 import org.openide.util.Exceptions;
+import se.trixon.almond.util.SystemHelper;
 import se.trixon.mapton.core.api.Mapton;
 
 /**
@@ -47,7 +46,6 @@ import se.trixon.mapton.core.api.Mapton;
 public class MapKit extends JXMapKit {
 
     private JLabel mCopyrightNoticeLabel;
-    private GeoPosition mGeoPosition;
     private JXMapViewer mMap = getMainMap();
     private DefaultTileFactory mTileFactory;
     private TileFactoryInfo mTileFactoryInfo;
@@ -136,10 +134,6 @@ public class MapKit extends JXMapKit {
         return mCopyrightNoticeLabel;
     }
 
-    public GeoPosition getGeoPosition() {
-        return mGeoPosition;
-    }
-
     public void removeCopyrightNotice() {
         if (mCopyrightNoticeLabel != null) {
             mMap.remove(mCopyrightNoticeLabel);
@@ -159,20 +153,12 @@ public class MapKit extends JXMapKit {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (uri != null && mCopyrightNoticeLabel.isEnabled()) {
-                    try {
-                        Desktop.getDesktop().browse(uri);
-                    } catch (IOException ex) {
-                        // nvm
-                    }
+                    SystemHelper.desktopBrowse(uri.toString());
                 }
             }
         });
 
         mMap.add(mCopyrightNoticeLabel, gridBagConstraints);
-    }
-
-    public void setGeoPosition(GeoPosition geoPosition) {
-        mGeoPosition = geoPosition;
     }
 
     private void init() {

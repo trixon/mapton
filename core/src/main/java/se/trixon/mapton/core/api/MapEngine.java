@@ -15,7 +15,10 @@
  */
 package se.trixon.mapton.core.api;
 
+import javafx.application.Platform;
 import javafx.scene.Node;
+import se.trixon.almond.nbp.NbLog;
+import se.trixon.mapton.core.AppStatusPanel;
 
 /**
  *
@@ -23,9 +26,45 @@ import javafx.scene.Node;
  */
 public abstract class MapEngine {
 
-    protected final MaptonOptions mGlobalOptions = MaptonOptions.getInstance();
+    protected final MaptonOptions mMaptonOptions = MaptonOptions.getInstance();
 
-    public abstract MapController getController();
+    private LatLon mLatLonMouse;
+    private double mLatitude;
+    private double mLongitude;
+    private int mZoom;
+
+    public LatLon getCenter() {
+        NbLog.i(getClass().getSimpleName(), "panTo not implemented");
+        return new LatLon(0, 0);
+    }
+
+//    public abstract MapController getController();
+//    public void fitBounds(GeocoderGeometry geometry) {
+////        try {
+////            getMap().fitBounds(geometry.getBounds());
+////        } catch (netscape.javascript.JSException e) {
+////            panTo(geometry.getLocation());
+////        }
+//    }
+    public LatLon getLatLonMouse() {
+        return mLatLonMouse;
+    }
+
+    public double getLatitude() {
+        return mLatitude;
+    }
+
+    public double getLatitudeProj() {
+        return mMaptonOptions.getMapCooTrans().getLatitude(mLatitude, mLongitude);
+    }
+
+    public double getLongitude() {
+        return mLongitude;
+    }
+
+    public double getLongitudeProj() {
+        return mMaptonOptions.getMapCooTrans().getLongitude(mLatitude, mLongitude);
+    }
 
     public abstract String getName();
 
@@ -33,7 +72,42 @@ public abstract class MapEngine {
 
     public abstract Object getUI();
 
+    public int getZoom() {
+        return mZoom;
+    }
+
+    public final void goHome() {
+        panTo(mMaptonOptions.getMapHome(), mMaptonOptions.getMapHomeZoom());
+    }
+
+    public final void initialized() {
+        panTo(mMaptonOptions.getMapCenter(), mMaptonOptions.getMapZoom());
+    }
+
     public boolean isSwing() {
         return true;
     }
+
+    public void panTo(LatLon latLon) {
+        NbLog.i(getClass().getSimpleName(), "panTo not implemented");
+    }
+
+    public void panTo(LatLon latLon, int zoom) {
+        NbLog.i(getClass().getSimpleName(), "panTo(Zoom) not implemented");
+    }
+
+    public final void setLatLonMouse(LatLon latLonMouse) {
+        mLatLonMouse = latLonMouse;
+        mLatitude = latLonMouse.getLatitude();
+        mLongitude = latLonMouse.getLongitude();
+
+        Platform.runLater(() -> {
+            AppStatusPanel.getInstance().getProvider().updateLatLong();
+        });
+    }
+
+    public void setZoom(int zoom) {
+        mZoom = zoom;
+    }
+
 }

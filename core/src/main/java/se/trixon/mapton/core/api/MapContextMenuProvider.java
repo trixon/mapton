@@ -38,27 +38,27 @@ public abstract class MapContextMenuProvider {
     }
 
     protected double getLatitude() {
-        return getMapController().getLatitude();
+        return getEngine().getLatitude();
     }
 
     protected double getLatitudeProj() {
-        return getMapController().getLatitudeProj();
+        return getEngine().getLatitudeProj();
     }
 
     protected double getLongitude() {
-        return getMapController().getLongitude();
+        return getEngine().getLongitude();
     }
 
     protected double getLongitudeProj() {
-        return getMapController().getLongitudeProj();
+        return getEngine().getLongitudeProj();
     }
 
     protected int getZoom() {
-        return getMapController().getZoom();
+        return getEngine().getZoom();
     }
 
-    private MapController getMapController() {
-        return Mapton.getController();
+    private MapEngine getEngine() {
+        return Mapton.getEngine();
     }
 
     public enum ContextType {

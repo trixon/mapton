@@ -114,8 +114,6 @@ public final class MapTopComponent extends MaptonTopComponent {
                     break;
             }
         });
-
-        //mMapton.setMapTopComponent(this);
     }
 
     @Override
@@ -278,11 +276,19 @@ public final class MapTopComponent extends MaptonTopComponent {
                 add((JComponent) mapEngine.getUI(), BorderLayout.CENTER);
                 revalidate();
                 repaint();
+                try {
+                    mapEngine.panTo(mOptions.getMapCenter(), mOptions.getMapZoom());
+                } catch (NullPointerException e) {
+                }
             });
         } else {
             Platform.runLater(() -> {
                 resetFx();
                 mRoot.setCenter((Node) mapEngine.getUI());
+                try {
+                    mapEngine.panTo(mOptions.getMapCenter(), mOptions.getMapZoom());
+                } catch (NullPointerException e) {
+                }
                 SwingUtilities.invokeLater(() -> {
                     revalidate();
                     repaint();

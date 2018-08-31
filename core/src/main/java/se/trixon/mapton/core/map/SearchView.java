@@ -101,7 +101,7 @@ public class SearchView {
     }
 
     private void panTo(LatLon latLon) {
-        Mapton.getController().panTo(latLon);
+        Mapton.getEngine().panTo(latLon);
     }
 
     private void parse(String searchString) {

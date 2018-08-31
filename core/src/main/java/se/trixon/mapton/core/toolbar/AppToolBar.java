@@ -387,10 +387,7 @@ public class AppToolBar extends ToolBar {
 
             menuItem.setToggleGroup(mapEngineToggleGroup);
             menuItem.setOnAction((event) -> {
-                AppStatusPanel.getInstance().getProvider().setMessage("");
-
-                mOptions.setMapEngine(name);
-                mStyleAction.setDisabled(mapEngine.getStyleView() == null);
+                switchEngine(mapEngine);
             });
 
             final String parent = DictMT.MAP_ENGINE.toString();
@@ -424,5 +421,16 @@ public class AppToolBar extends ToolBar {
         rootItems.forEach((rootItem) -> {
             menuButtonItems.add(rootItem);
         });
+    }
+
+    private void switchEngine(MapEngine newEngine) {
+        AppStatusPanel.getInstance().getProvider().setMessage("");
+
+        final MapEngine oldEngine = Mapton.getEngine();
+        mOptions.setMapZoom(oldEngine.getZoom());
+        mOptions.setMapCenter(oldEngine.getCenter());
+
+        mOptions.setMapEngine(newEngine.getName());
+        mStyleAction.setDisabled(newEngine.getStyleView() == null);
     }
 }

@@ -25,7 +25,7 @@ import org.controlsfx.control.StatusBar;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import se.trixon.mapton.core.api.CooTransProvider;
-import se.trixon.mapton.core.api.MapController;
+import se.trixon.mapton.core.api.MapEngine;
 import se.trixon.mapton.core.api.Mapton;
 import se.trixon.mapton.core.api.MaptonOptions;
 
@@ -38,7 +38,6 @@ public class AppStatusView extends StatusBar {
     private final ComboBox<CooTransProvider> mComboBox = new ComboBox();
     private CooTransProvider mCooTrans;
     private final Label mLabel = new Label();
-//    private final MapController mMapController = MapController.getInstance();
     private final MaptonOptions mOptions = MaptonOptions.getInstance();
 
     public AppStatusView() {
@@ -68,11 +67,11 @@ public class AppStatusView extends StatusBar {
     }
 
     public void updateLatLong() {
-        MapController mapController = Mapton.getController();
+        MapEngine engine = Mapton.getEngine();
 
-        if (mapController != null) {
-            final double latitude = mapController.getLatitude();
-            final double longitude = mapController.getLongitude();
+        if (engine != null) {
+            final double latitude = engine.getLatitude();
+            final double longitude = engine.getLongitude();
 
             if (latitude != 0 && longitude != 0) {
                 String cooString = mCooTrans.getString(latitude, longitude);

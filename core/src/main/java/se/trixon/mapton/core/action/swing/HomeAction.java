@@ -49,7 +49,7 @@ public final class HomeAction implements ActionListener {
         } else {
             tc.requestActive();
             Platform.runLater(() -> {
-                Mapton.getController().goHome();
+                Mapton.getEngine().goHome();
             });
         }
     }

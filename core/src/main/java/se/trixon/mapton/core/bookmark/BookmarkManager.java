@@ -111,9 +111,9 @@ public class BookmarkManager extends DbBaseManager {
             boolean add = aBookmark == null;
             if (add) {
                 newBookmark = new Bookmark();
-                newBookmark.setZoom(Mapton.getController().getZoom());
-                newBookmark.setLatitude(Mapton.getController().getLatitude());
-                newBookmark.setLongitude(Mapton.getController().getLongitude());
+                newBookmark.setZoom(Mapton.getEngine().getZoom());
+                newBookmark.setLatitude(Mapton.getEngine().getLatitude());
+                newBookmark.setLongitude(Mapton.getEngine().getLongitude());
             }
 
             final Bookmark bookmark = newBookmark;
@@ -321,7 +321,7 @@ public class BookmarkManager extends DbBaseManager {
     }
 
     void goTo(Bookmark bookmark) throws ClassNotFoundException, SQLException {
-        Mapton.getController().panTo(new LatLon(bookmark.getLatitude(), bookmark.getLongitude()), bookmark.getZoom());
+        Mapton.getEngine().panTo(new LatLon(bookmark.getLatitude(), bookmark.getLongitude()), bookmark.getZoom());
         bookmark.setTimeAccessed(new Timestamp(System.currentTimeMillis()));
         dbUpdate(bookmark);
     }
