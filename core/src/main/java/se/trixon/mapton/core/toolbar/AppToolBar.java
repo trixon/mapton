@@ -331,6 +331,9 @@ public class AppToolBar extends ToolBar {
 
         mOptions.getPreferences().addPreferenceChangeListener((PreferenceChangeEvent evt) -> {
             switch (evt.getKey()) {
+                case MaptonOptions.KEY_MAP_ENGINE:
+                    mStyleAction.setDisabled(MapEngine.byName(evt.getNewValue()).getStyleView() == null);
+                    break;
                 case MaptonOptions.KEY_MAP_ONLY:
                     mSysViewMapAction.setSelected(mOptions.isMapOnly());
                     break;
@@ -431,6 +434,5 @@ public class AppToolBar extends ToolBar {
         mOptions.setMapCenter(oldEngine.getCenter());
 
         mOptions.setMapEngine(newEngine.getName());
-        mStyleAction.setDisabled(newEngine.getStyleView() == null);
     }
 }

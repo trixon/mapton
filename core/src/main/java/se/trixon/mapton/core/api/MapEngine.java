@@ -15,8 +15,11 @@
  */
 package se.trixon.mapton.core.api;
 
+import java.util.TreeMap;
 import javafx.application.Platform;
 import javafx.scene.Node;
+import org.openide.util.Lookup;
+import org.openide.util.LookupEvent;
 import se.trixon.almond.nbp.NbLog;
 import se.trixon.mapton.core.AppStatusPanel;
 
@@ -26,12 +29,36 @@ import se.trixon.mapton.core.AppStatusPanel;
  */
 public abstract class MapEngine {
 
+    private static final TreeMap<String, MapEngine> sEngines = new TreeMap<>();
+
     protected final MaptonOptions mMaptonOptions = MaptonOptions.getInstance();
 
     private LatLon mLatLonMouse;
     private double mLatitude;
     private double mLongitude;
     private int mZoom;
+
+    static {
+        Lookup.getDefault().lookupResult(MapEngine.class).addLookupListener((LookupEvent ev) -> {
+            populateEngines();
+        });
+
+        populateEngines();
+    }
+
+    public static MapEngine byName(String name) {
+        return sEngines.getOrDefault(name, null);
+    }
+
+    private static void populateEngines() {
+        sEngines.clear();
+        Lookup.getDefault().lookupAll(MapEngine.class).forEach((engine) -> {
+            sEngines.put(engine.getName(), engine);
+        });
+    }
+
+    public MapEngine() {
+    }
 
     public LatLon getCenter() {
         NbLog.i(getClass().getSimpleName(), "panTo not implemented");

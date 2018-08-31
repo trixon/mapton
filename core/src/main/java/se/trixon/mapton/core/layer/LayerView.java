@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,7 +15,24 @@
  */
 package se.trixon.mapton.core.layer;
 
+import java.util.stream.Stream;
+import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
+import javafx.scene.Node;
+import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
+import org.apache.commons.lang.StringUtils;
+import org.controlsfx.control.CheckListView;
+import org.openide.util.Lookup;
+import org.openide.util.LookupEvent;
+import se.trixon.mapton.core.AppStatusPanel;
+import se.trixon.mapton.core.api.DictMT;
+import se.trixon.mapton.core.api.MapEngine;
+import se.trixon.mapton.core.api.Mapton;
+import se.trixon.mapton.core.api.MaptonOptions;
 
 /**
  *
@@ -23,8 +40,61 @@ import javafx.scene.layout.BorderPane;
  */
 public class LayerView extends BorderPane {
 
+    private VBox mEngineBox;
+    private Label mEngineLabel = new Label(DictMT.MAP_ENGINE.toString());
+    private CheckListView<String> mListView;
+    private final MaptonOptions mOptions = MaptonOptions.getInstance();
+
     public LayerView() {
-        //setCenter(new Label("Not yet implemented"));
+        createUI();
+        Lookup.getDefault().lookupResult(MapEngine.class).addLookupListener((LookupEvent ev) -> {
+            populateEngines();
+        });
+
     }
 
+    private void createUI() {
+        mListView = new CheckListView<>();
+        mEngineBox = new VBox(8);
+        mEngineBox.setPadding(new Insets(8));
+        mEngineBox.backgroundProperty().bind(mListView.backgroundProperty());
+
+        setCenter(mListView);
+        setBottom(mEngineBox);
+
+        populateEngines();
+    }
+
+    private void populateEngines() {
+        final ObservableList<Node> children = mEngineBox.getChildren();
+        children.clear();
+        children.add(mEngineLabel);
+
+        final ToggleGroup mapEngineToggleGroup = new ToggleGroup();
+        Stream<? extends MapEngine> engines = Lookup.getDefault().lookupAll(MapEngine.class).stream().sorted((MapEngine o1, MapEngine o2) -> o1.getName().compareTo(o2.getName()));
+        engines.forEach((mapEngine) -> {
+            final String name = mapEngine.getName();
+            final RadioButton radioButton = new RadioButton(name);
+            if (StringUtils.equalsIgnoreCase(name, mOptions.getMapEngine())) {
+                radioButton.setSelected(true);
+            }
+
+            radioButton.setToggleGroup(mapEngineToggleGroup);
+            radioButton.setOnAction((event) -> {
+                switchEngine(mapEngine);
+            });
+
+            children.add(radioButton);
+        });
+    }
+
+    private void switchEngine(MapEngine newEngine) {
+        AppStatusPanel.getInstance().getProvider().setMessage("");
+
+        final MapEngine oldEngine = Mapton.getEngine();
+        mOptions.setMapZoom(oldEngine.getZoom());
+        mOptions.setMapCenter(oldEngine.getCenter());
+
+        mOptions.setMapEngine(newEngine.getName());
+    }
 }
