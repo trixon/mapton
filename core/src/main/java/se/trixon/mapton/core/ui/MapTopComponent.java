@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,7 +15,6 @@
  */
 package se.trixon.mapton.core.ui;
 
-import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.HierarchyEvent;
 import java.util.Arrays;
@@ -23,6 +22,7 @@ import java.util.Collection;
 import java.util.ResourceBundle;
 import java.util.prefs.PreferenceChangeEvent;
 import javafx.application.Platform;
+import javafx.embed.swing.SwingNode;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -271,28 +271,24 @@ public final class MapTopComponent extends MaptonTopComponent {
 
     private void setEngine(MapEngine mapEngine) {
         if (mapEngine.isSwing()) {
+            final SwingNode swingNode = new SwingNode();
             SwingUtilities.invokeLater(() -> {
-                removeAll();
-                add((JComponent) mapEngine.getUI(), BorderLayout.CENTER);
-                revalidate();
-                repaint();
+                swingNode.setContent((JComponent) mapEngine.getUI());
                 try {
                     mapEngine.panTo(mOptions.getMapCenter(), mOptions.getMapZoom());
                 } catch (NullPointerException e) {
                 }
             });
+            Platform.runLater(() -> {
+                mRoot.setCenter(swingNode);
+            });
         } else {
             Platform.runLater(() -> {
-                resetFx();
                 mRoot.setCenter((Node) mapEngine.getUI());
                 try {
                     mapEngine.panTo(mOptions.getMapCenter(), mOptions.getMapZoom());
                 } catch (NullPointerException e) {
                 }
-                SwingUtilities.invokeLater(() -> {
-                    revalidate();
-                    repaint();
-                });
             });
         }
 
