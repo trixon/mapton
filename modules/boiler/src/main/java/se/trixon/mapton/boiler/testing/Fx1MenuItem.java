@@ -18,14 +18,14 @@ package se.trixon.mapton.boiler.testing;
 import org.controlsfx.control.action.Action;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.Almond;
-import se.trixon.mapton.core.api.ToolActionProvider;
+import se.trixon.mapton.core.api.ToolboxAction;
 
 /**
  *
  * @author Patrik Karlström
  */
-@ServiceProvider(service = ToolActionProvider.class)
-public class Fx1MenuItem implements ToolActionProvider {
+@ServiceProvider(service = ToolboxAction.class)
+public class Fx1MenuItem implements ToolboxAction {
 
     @Override
     public Action getAction() {

@@ -20,14 +20,14 @@ import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxActionSwing;
-import se.trixon.mapton.core.api.ToolActionProvider;
+import se.trixon.mapton.core.api.ToolboxAction;
 
 /**
  *
  * @author Patrik Karlström
  */
-@ServiceProvider(service = ToolActionProvider.class)
-public class NotesAction implements ToolActionProvider {
+@ServiceProvider(service = ToolboxAction.class)
+public class NotesAction implements ToolboxAction {
 
     @Override
     public Action getAction() {

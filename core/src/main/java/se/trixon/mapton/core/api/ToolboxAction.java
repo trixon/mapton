@@ -21,7 +21,7 @@ import org.controlsfx.control.action.Action;
  *
  * @author Patrik Karlström
  */
-public abstract interface ToolActionProvider {
+public abstract interface ToolboxAction {
 
     Action getAction();
 

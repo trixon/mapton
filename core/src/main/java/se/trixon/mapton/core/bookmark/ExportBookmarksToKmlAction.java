@@ -32,14 +32,14 @@ import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.dialogs.SimpleDialog;
 import se.trixon.mapton.core.api.KmlCreator;
-import se.trixon.mapton.core.api.ToolActionProvider;
+import se.trixon.mapton.core.api.ToolboxAction;
 
 /**
  *
  * @author Patrik Karlström
  */
-@ServiceProvider(service = ToolActionProvider.class)
-public class ExportBookmarksToKmlAction implements ToolActionProvider {
+@ServiceProvider(service = ToolboxAction.class)
+public class ExportBookmarksToKmlAction implements ToolboxAction {
 
     private final ResourceBundle mBundle = NbBundle.getBundle(ExportBookmarksToKmlAction.class);
     private File mDestination;
