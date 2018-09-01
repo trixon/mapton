@@ -15,14 +15,15 @@
  */
 package se.trixon.mapton.core.ui;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.event.HierarchyEvent;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.ResourceBundle;
 import java.util.prefs.PreferenceChangeEvent;
 import javafx.application.Platform;
-import javafx.embed.swing.SwingNode;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -30,7 +31,6 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
-import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -52,7 +52,6 @@ import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.mapton.core.AppStatusPanel;
-import se.trixon.mapton.core.AppStatusView;
 import se.trixon.mapton.core.api.DictMT;
 import se.trixon.mapton.core.api.MapContextMenuProvider;
 import se.trixon.mapton.core.api.MapEngine;
@@ -86,14 +85,15 @@ import se.trixon.mapton.core.bookmark.BookmarkManager;
 })
 public final class MapTopComponent extends MaptonTopComponent {
 
+    private AppStatusPanel mAppStatusPanel;
     private final ResourceBundle mBundle = NbBundle.getBundle(MapTopComponent.class);
     private Menu mContextCopyMenu;
     private Menu mContextExtrasMenu;
     private ContextMenu mContextMenu;
     private Menu mContextOpenMenu;
+    private MapEngine mEngine;
     private final Mapton mMapton = Mapton.getInstance();
     private BorderPane mRoot;
-    private AppStatusView mStatusBar;
 
     public MapTopComponent() {
         super();
@@ -116,6 +116,12 @@ public final class MapTopComponent extends MaptonTopComponent {
         });
     }
 
+    public void displayContextMenu(Point screenXY) {
+        Platform.runLater(() -> {
+            mContextMenu.show(mRoot, screenXY.x, screenXY.y);
+        });
+    }
+
     @Override
     protected void initFX() {
         setScene(createScene());
@@ -135,13 +141,33 @@ public final class MapTopComponent extends MaptonTopComponent {
         // TODO store your settings
     }
 
+    private void attachStatusbar(boolean showOnlyMap) {
+        if (mAppStatusPanel == null) {
+            mAppStatusPanel = AppStatusPanel.getInstance();
+        }
+
+        if (mEngine.isSwing()) {
+            if (showOnlyMap) {
+                add(mAppStatusPanel.getFxPanel(), BorderLayout.SOUTH);
+            } else {
+                mAppStatusPanel.resetSwing();
+            }
+        } else {
+            Platform.runLater(() -> {
+                if (showOnlyMap) {
+                    mRoot.setBottom(mAppStatusPanel.getProvider());
+                } else {
+                    if (mRoot.getBottom() != null) {
+                        mRoot.setBottom(null);
+                        mAppStatusPanel.resetFx();
+                    }
+                }
+            });
+        }
+    }
+
     private Scene createScene() {
         mRoot = new BorderPane(new Label("loading map engine..."));
-
-        mStatusBar = AppStatusPanel.getInstance().getProvider();
-        if (mOptions.isMapOnly()) {
-            mRoot.setBottom(mStatusBar);
-        }
 
         initListeners();
 
@@ -182,16 +208,6 @@ public final class MapTopComponent extends MaptonTopComponent {
         mContextMenu.getItems().add(insertPos, mContextOpenMenu);
         mContextMenu.getItems().add(insertPos, mContextCopyMenu);
 
-//        WebView webView = mMapView.getWebview();
-//        webView.setContextMenuEnabled(false);
-        mRoot.setOnMousePressed(e -> {
-            if (e.getButton() == MouseButton.SECONDARY) {
-                mContextMenu.show(mRoot, e.getScreenX(), e.getScreenY());
-            } else {
-                mContextMenu.hide();
-            }
-        });
-
         Lookup.getDefault().lookupResult(MapContextMenuProvider.class).addLookupListener((LookupEvent ev) -> {
             populateContextProviders();
         });
@@ -204,18 +220,9 @@ public final class MapTopComponent extends MaptonTopComponent {
             addHierarchyListener((HierarchyEvent e) -> {
                 if (e.getChangedParent() instanceof JLayeredPane) {
                     Dimension d = ((JFrame) WindowManager.getDefault().getMainWindow()).getContentPane().getPreferredSize();
-                    final boolean showOnlyEditor = 1 == d.height && 1 == d.width;
-                    mOptions.setMapOnly(showOnlyEditor);
-                    Platform.runLater(() -> {
-                        if (showOnlyEditor) {
-                            mRoot.setBottom(mStatusBar);
-                        } else {
-                            if (mRoot.getBottom() != null) {
-                                mRoot.setBottom(null);
-                                AppStatusPanel.getInstance().reset();
-                            }
-                        }
-                    });
+                    final boolean showOnlyMap = 1 == d.height && 1 == d.width;
+                    mOptions.setMapOnly(showOnlyMap);
+                    attachStatusbar(showOnlyMap);
                 }
             });
         });
@@ -269,30 +276,42 @@ public final class MapTopComponent extends MaptonTopComponent {
         });
     }
 
-    private void setEngine(MapEngine mapEngine) {
-        if (mapEngine.isSwing()) {
-            final SwingNode swingNode = new SwingNode();
+    private void setEngine(MapEngine engine) {
+        mEngine = engine;
+        if (engine.isSwing()) {
             SwingUtilities.invokeLater(() -> {
-                swingNode.setContent((JComponent) mapEngine.getUI());
+                removeAll();
+                final JComponent ui = (JComponent) engine.getUI();
+                ui.setMinimumSize(new Dimension(1, 1));
+                ui.setPreferredSize(new Dimension(1, 1));
+                add(getFxPanel(), BorderLayout.NORTH);
+                getFxPanel().setVisible(false);
+                add(ui, BorderLayout.CENTER);
+                attachStatusbar(mOptions.isMapOnly());
+                revalidate();
+                repaint();
                 try {
-                    mapEngine.panTo(mOptions.getMapCenter(), mOptions.getMapZoom());
+                    engine.panTo(mOptions.getMapCenter(), mOptions.getMapZoom());
                 } catch (NullPointerException e) {
                 }
-            });
-            Platform.runLater(() -> {
-                mRoot.setCenter(swingNode);
             });
         } else {
             Platform.runLater(() -> {
-                mRoot.setCenter((Node) mapEngine.getUI());
+                resetFx();
+                mRoot.setCenter((Node) engine.getUI());
+                attachStatusbar(mOptions.isMapOnly());
                 try {
-                    mapEngine.panTo(mOptions.getMapCenter(), mOptions.getMapZoom());
+                    engine.panTo(mOptions.getMapCenter(), mOptions.getMapZoom());
                 } catch (NullPointerException e) {
                 }
+                SwingUtilities.invokeLater(() -> {
+                    revalidate();
+                    repaint();
+                });
             });
         }
 
-        NbLog.v(Mapton.LOG_TAG, String.format("Set Map Engine to %s", mapEngine.getName()));
+        NbLog.v(Mapton.LOG_TAG, String.format("Set Map Engine to %s", engine.getName()));
     }
 
 }

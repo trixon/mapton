@@ -24,6 +24,7 @@ import com.lynden.gmapsfx.javascript.object.InfoWindow;
 import com.lynden.gmapsfx.javascript.object.LatLong;
 import com.lynden.gmapsfx.javascript.object.MapOptions;
 import com.lynden.gmapsfx.javascript.object.MapTypeIdEnum;
+import java.awt.Point;
 import java.util.Locale;
 import java.util.prefs.PreferenceChangeEvent;
 import javafx.application.Platform;
@@ -64,7 +65,7 @@ public class GMapsFXMapEngine extends MapEngine {
 
     @Override
     public String getName() {
-        return "GMapsFX";
+        return "Google Maps (GMapsFX)";
     }
 
     @Override
@@ -150,6 +151,10 @@ public class GMapsFXMapEngine extends MapEngine {
 
         mZoomSlider.valueProperty().addListener((event) -> {
             System.out.println("Fx zoom: " + mMap.getZoom());
+        });
+
+        mMapView.setOnContextMenuRequested((e) -> {
+            displayContextMenu(new Point((int) e.getScreenX(), (int) e.getScreenY()));
         });
     }
 

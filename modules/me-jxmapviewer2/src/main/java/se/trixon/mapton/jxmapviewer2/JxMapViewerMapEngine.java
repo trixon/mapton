@@ -15,6 +15,7 @@
  */
 package se.trixon.mapton.jxmapviewer2;
 
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import javafx.scene.Node;
@@ -46,7 +47,7 @@ public class JxMapViewerMapEngine extends MapEngine {
 
     @Override
     public String getName() {
-        return "JxMapViewer2";
+        return "Open Street Map (JxMapViewer2)";
     }
 
     @Override
@@ -58,6 +59,7 @@ public class JxMapViewerMapEngine extends MapEngine {
     public Object getUI() {
         if (mMapKit == null) {
             init();
+            initListeners();
         }
 
         return mMapKit;
@@ -75,6 +77,29 @@ public class JxMapViewerMapEngine extends MapEngine {
 
     private void init() {
         mMapKit = new MapKit();
+
+        NbLog.v(LOG_TAG, "Loaded and ready");
+    }
+
+    private void initListeners() {
+        mMapKit.getMainMap().addMouseListener(new MouseAdapter() {
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                maybeShowPopup(e);
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                maybeShowPopup(e);
+            }
+
+            private void maybeShowPopup(MouseEvent e) {
+                if (e.isPopupTrigger()) {
+                    displayContextMenu(e.getLocationOnScreen());
+                }
+            }
+        });
         mMapKit.getMainMap().addMouseMotionListener(new MouseMotionAdapter() {
 
             @Override
@@ -90,8 +115,6 @@ public class JxMapViewerMapEngine extends MapEngine {
                 System.out.println("Jx zoom: " + mMapKit.getMainMap().getZoom());
             }
         });
-
-        NbLog.v(LOG_TAG, "Loaded and ready");
     }
 
     private void panAndZoomTo(GeoPosition geoPosition, int zoom) {

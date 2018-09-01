@@ -15,13 +15,17 @@
  */
 package se.trixon.mapton.core.api;
 
+import java.awt.Point;
 import java.util.TreeMap;
 import javafx.application.Platform;
 import javafx.scene.Node;
+import javax.swing.SwingUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
+import org.openide.windows.WindowManager;
 import se.trixon.almond.nbp.NbLog;
 import se.trixon.mapton.core.AppStatusPanel;
+import se.trixon.mapton.core.ui.MapTopComponent;
 
 /**
  *
@@ -75,6 +79,16 @@ public abstract class MapEngine {
 //    }
     public LatLon getLatLonMouse() {
         return mLatLonMouse;
+    }
+
+    public void displayContextMenu(Point screenXY) {
+        System.out.println(">>> displayContextMenu");
+        SwingUtilities.invokeLater(() -> {
+            MapTopComponent tc = (MapTopComponent) WindowManager.getDefault().findTopComponent("MapTopComponent");
+            Platform.runLater(() -> {
+                tc.displayContextMenu(screenXY);
+            });
+        });
     }
 
     public double getLatitude() {
