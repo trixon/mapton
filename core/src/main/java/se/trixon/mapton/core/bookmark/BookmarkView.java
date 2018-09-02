@@ -256,11 +256,14 @@ public class BookmarkView extends BorderPane {
             contextMenu.getItems().add(2, mContextOpenMenu);
 
             mMainBox.setOnMousePressed((MouseEvent event) -> {
+                Bookmark b = this.getItem();
                 if (event.isSecondaryButtonDown()) {
+                    Mapton.getEngine().setLatitude(b.getLatitude());
+                    Mapton.getEngine().setLongitude(b.getLongitude());
                     contextMenu.show(mMainBox, event.getScreenX(), event.getScreenY());
                 } else if (event.isPrimaryButtonDown()) {
                     contextMenu.hide();
-                    bookmarkGoTo(this.getItem());
+                    bookmarkGoTo(b);
                 }
             });
 

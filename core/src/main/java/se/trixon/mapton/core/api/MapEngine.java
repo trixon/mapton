@@ -151,4 +151,12 @@ public abstract class MapEngine {
         });
     }
 
+    public void setLatitude(double latitude) {
+        mLatitude = latitude;
+    }
+
+    public void setLongitude(double longitude) {
+        mLongitude = longitude;
+    }
+
 }
