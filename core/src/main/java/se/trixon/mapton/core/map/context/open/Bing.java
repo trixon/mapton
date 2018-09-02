@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,6 +17,7 @@ package se.trixon.mapton.core.map.context.open;
 
 import java.util.Locale;
 import org.openide.util.lookup.ServiceProvider;
+import se.trixon.almond.util.MathHelper;
 import se.trixon.mapton.core.api.MapContextMenuProvider;
 
 /**
@@ -41,7 +42,7 @@ public class Bing extends MapContextMenuProvider {
         return String.format(Locale.ENGLISH, "https://www.bing.com/maps?cp=%f~%f&lvl=%d",
                 getLatitude(),
                 getLongitude(),
-                getZoom()
+                MathHelper.round(3 + 17 * getZoom())
         );
     }
 }

@@ -248,7 +248,7 @@ public class BookmarkManager extends DbBaseManager {
                 bookmark.setDisplayMarker(getBoolean(rs, mDisplayMarker));
                 bookmark.setLatitude(getDouble(rs, mLatitude));
                 bookmark.setLongitude(getDouble(rs, mLongitude));
-                bookmark.setZoom(getInteger(rs, mZoom));
+                bookmark.setZoom(getDouble(rs, mZoom));
                 bookmark.setTimeCreated(getTimestamp(rs, mTimeCreated));
                 bookmark.setTimeAccessed(getTimestamp(rs, mTimeAccessed));
                 bookmark.setTimeModified(getTimestamp(rs, mTimeModified));
