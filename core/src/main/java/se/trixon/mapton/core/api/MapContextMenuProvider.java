@@ -53,7 +53,7 @@ public abstract class MapContextMenuProvider {
         return getEngine().getLongitudeProj();
     }
 
-    protected int getZoom() {
+    protected double getZoom() {
         return getEngine().getZoom();
     }
 

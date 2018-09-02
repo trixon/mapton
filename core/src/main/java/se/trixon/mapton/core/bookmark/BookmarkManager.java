@@ -78,7 +78,7 @@ public class BookmarkManager extends DbBaseManager {
         mDisplayMarker = mTable.addColumn("display_marker", SQL_BOOLEAN, null);
         mLatitude = mTable.addColumn("latitude", SQL_DOUBLE, null);
         mLongitude = mTable.addColumn("longitude", SQL_DOUBLE, null);
-        mZoom = mTable.addColumn("zoom", SQL_INTEGER, null);
+        mZoom = mTable.addColumn("zoom", SQL_DOUBLE, null);
         mTimeCreated = mTable.addColumn("created", SQL_TIMESTAMP, null);
         mTimeAccessed = mTable.addColumn("accessed", SQL_TIMESTAMP, null);
         mTimeModified = mTable.addColumn("modified", SQL_TIMESTAMP, null);
@@ -200,7 +200,7 @@ public class BookmarkManager extends DbBaseManager {
         mInsertPlaceHolders.get(mDisplayMarker).setBoolean(bookmark.isDisplayMarker(), mInsertPreparedStatement);
         mInsertPlaceHolders.get(mLatitude).setObject(bookmark.getLatitude(), mInsertPreparedStatement);
         mInsertPlaceHolders.get(mLongitude).setObject(bookmark.getLongitude(), mInsertPreparedStatement);
-        mInsertPlaceHolders.get(mZoom).setInt(bookmark.getZoom(), mInsertPreparedStatement);
+        mInsertPlaceHolders.get(mZoom).setObject(bookmark.getZoom(), mInsertPreparedStatement);
         mInsertPlaceHolders.get(mTimeCreated).setObject(new Timestamp(System.currentTimeMillis()), mInsertPreparedStatement);
 
         int affectedRows = mInsertPreparedStatement.executeUpdate();
@@ -299,7 +299,7 @@ public class BookmarkManager extends DbBaseManager {
         mUpdatePlaceHolders.get(mDisplayMarker).setBoolean(bookmark.isDisplayMarker(), mUpdatePreparedStatement);
         mUpdatePlaceHolders.get(mLatitude).setObject(bookmark.getLatitude(), mUpdatePreparedStatement);
         mUpdatePlaceHolders.get(mLongitude).setObject(bookmark.getLongitude(), mUpdatePreparedStatement);
-        mUpdatePlaceHolders.get(mZoom).setInt(bookmark.getZoom(), mUpdatePreparedStatement);
+        mUpdatePlaceHolders.get(mZoom).setObject(bookmark.getZoom(), mUpdatePreparedStatement);
 
         mUpdatePreparedStatement.setTimestamp(mUpdatePlaceHolders.get(mTimeAccessed).getIndex(), bookmark.getTimeAccessed());
         mUpdatePreparedStatement.setTimestamp(mUpdatePlaceHolders.get(mTimeModified).getIndex(), bookmark.getTimeModified());

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -49,7 +49,7 @@ public class BookmarkPanel extends FxDialogPanel {
     private Spinner<Double> mLongitudeSpinner;
     private TextField mNameTextField;
     private CheckBox mPlacemarkCheckBox;
-    private Spinner<Integer> mZoomSpinner;
+    private Spinner<Double> mZoomSpinner;
 
     @Override
     protected void fxConstructor() {
@@ -60,7 +60,7 @@ public class BookmarkPanel extends FxDialogPanel {
         mNameTextField = new TextField();
         mCatTextField = new TextField();
         mDescTextArea = new TextArea();
-        mZoomSpinner = new Spinner(0, 22, 5, 1);
+        mZoomSpinner = new Spinner(0.0, 1.0, 0.25, 0.1);
         mLatitudeSpinner = new Spinner(-90, 90, 0, 0.000001);
         mLongitudeSpinner = new Spinner(-180, 180, 0, 0.000001);
 
@@ -96,11 +96,13 @@ public class BookmarkPanel extends FxDialogPanel {
             }
         };
 
+        mZoomSpinner.getValueFactory().setConverter(converter);
         mLatitudeSpinner.getValueFactory().setConverter(converter);
         mLongitudeSpinner.getValueFactory().setConverter(converter);
 
         mPlacemarkCheckBox = new CheckBox(DictMT.DISPLAY_PLACEMARK.toString());
 
+        mZoomSpinner.setEditable(true);
         mLatitudeSpinner.setEditable(true);
         mLongitudeSpinner.setEditable(true);
 

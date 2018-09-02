@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,12 +18,10 @@ package se.trixon.mapton.core.bookmark;
 import java.sql.Timestamp;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.LongProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -45,7 +43,7 @@ public class Bookmark {
     private final ObjectProperty<Timestamp> mTimeAccessed = new SimpleObjectProperty<>();
     private final ObjectProperty<Timestamp> mTimeCreated = new SimpleObjectProperty<>();
     private final ObjectProperty<Timestamp> mTimeModified = new SimpleObjectProperty<>();
-    private final IntegerProperty mZoom = new SimpleIntegerProperty();
+    private final DoubleProperty mZoom = new SimpleDoubleProperty();
 
     public Bookmark() {
     }
@@ -98,11 +96,11 @@ public class Bookmark {
         return mTimeModified.get();
     }
 
-    public final int getZoom() {
+    public final double getZoom() {
         return mZoom.get();
     }
 
-    public IntegerProperty getZoomProperty() {
+    public DoubleProperty getZoomProperty() {
         return mZoom;
     }
 
@@ -166,7 +164,7 @@ public class Bookmark {
         mTimeModified.set(value);
     }
 
-    public final void setZoom(int value) {
+    public final void setZoom(double value) {
         mZoom.set(value);
     }
 

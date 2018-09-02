@@ -176,17 +176,19 @@ public final class MapTopComponent extends MaptonTopComponent {
 
     private void initContextMenu() {
         Action setHomeAction = new Action(DictMT.SET_HOME.toString(), (ActionEvent t) -> {
-//            mOptions.setMapHome(mMap.getCenter());
-//            mOptions.setMapHomeZoom(mMap.getZoom());
+            mOptions.setMapHome(mEngine.getCenter());
+            mOptions.setMapHomeZoom(mEngine.getZoom());
         });
 
         Action whatsHereAction = new Action(mBundle.getString("whats_here"), (ActionEvent t) -> {
 //            whatsHere();
         });
+        whatsHereAction.setDisabled(true);
 
         Action exportImageAction = new Action(mBundle.getString("export_image"), (ActionEvent t) -> {
 //            exportImage();
         });
+        exportImageAction.setDisabled(true);
 
         Collection<? extends Action> actions = Arrays.asList(
                 whatsHereAction,
@@ -302,7 +304,7 @@ public final class MapTopComponent extends MaptonTopComponent {
                 attachStatusbar(mOptions.isMapOnly());
                 try {
                     engine.panTo(mOptions.getMapCenter(), mOptions.getMapZoom());
-                } catch (NullPointerException e) {
+                } catch (Exception e) {
                 }
                 SwingUtilities.invokeLater(() -> {
                     revalidate();

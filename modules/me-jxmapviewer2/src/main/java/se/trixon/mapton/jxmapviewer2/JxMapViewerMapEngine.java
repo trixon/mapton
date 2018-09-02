@@ -21,9 +21,11 @@ import java.awt.event.MouseMotionAdapter;
 import javafx.scene.Node;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import org.jxmapviewer.JXMapViewer;
 import org.jxmapviewer.viewer.GeoPosition;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.NbLog;
+import se.trixon.almond.util.MathHelper;
 import se.trixon.mapton.core.api.LatLon;
 import se.trixon.mapton.core.api.MapEngine;
 
@@ -35,6 +37,7 @@ import se.trixon.mapton.core.api.MapEngine;
 public class JxMapViewerMapEngine extends MapEngine {
 
     public static final String LOG_TAG = "JxMapViewer2";
+    private JXMapViewer mMap;
     private MapKit mMapKit;
 
     public JxMapViewerMapEngine() {
@@ -67,22 +70,22 @@ public class JxMapViewerMapEngine extends MapEngine {
 
     @Override
     public void panTo(LatLon latLong) {
-        panTo(latLong, mMapKit.getMainMap().getZoom());
+        panTo(latLong, mMap.getZoom());
     }
 
     @Override
-    public void panTo(LatLon latLon, int zoom) {
-        panAndZoomTo(toGeoPosition(latLon), zoom);
+    public void panTo(LatLon latLon, double zoom) {
+        panAndZoomTo(toGeoPosition(latLon), MathHelper.round(toLocalZoom(zoom)));
     }
 
     private void init() {
         mMapKit = new MapKit();
-
+        mMap = mMapKit.getMainMap();
         NbLog.v(LOG_TAG, "Loaded and ready");
     }
 
     private void initListeners() {
-        mMapKit.getMainMap().addMouseListener(new MouseAdapter() {
+        mMap.addMouseListener(new MouseAdapter() {
 
             @Override
             public void mousePressed(MouseEvent e) {
@@ -100,11 +103,12 @@ public class JxMapViewerMapEngine extends MapEngine {
                 }
             }
         });
-        mMapKit.getMainMap().addMouseMotionListener(new MouseMotionAdapter() {
+
+        mMap.addMouseMotionListener(new MouseMotionAdapter() {
 
             @Override
             public void mouseMoved(MouseEvent e) {
-                GeoPosition geoPosition = mMapKit.getMainMap().convertPointToGeoPosition(e.getPoint());
+                GeoPosition geoPosition = mMap.convertPointToGeoPosition(e.getPoint());
                 setLatLonMouse(toLatLon(geoPosition));
             }
         });
@@ -112,7 +116,12 @@ public class JxMapViewerMapEngine extends MapEngine {
         mMapKit.getZoomSlider().addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
-                System.out.println("Jx zoom: " + mMapKit.getMainMap().getZoom());
+                setZoom(toGlobalZoom());
+                System.out.println("Jx");
+                System.out.println("zoom: " + mMap.getZoom());
+                System.out.println("toGlobal: " + toGlobalZoom());
+                System.out.println("toLocal: " + toLocalZoom(toGlobalZoom()));
+                System.out.println("");
             }
         });
     }
@@ -130,11 +139,24 @@ public class JxMapViewerMapEngine extends MapEngine {
         );
     }
 
+    private double toGlobalZoom() {
+        final double steps = 17;
+        final int zoom = mMap.getZoom();
+
+        return (steps - zoom) / steps;
+    }
+
     private LatLon toLatLon(GeoPosition geoPosition) {
         return new LatLon(
                 geoPosition.getLatitude(),
                 geoPosition.getLongitude()
         );
+    }
+
+    private double toLocalZoom(double globalZoom) {
+        final double steps = 17;
+
+        return steps - steps * globalZoom;
     }
 
 }

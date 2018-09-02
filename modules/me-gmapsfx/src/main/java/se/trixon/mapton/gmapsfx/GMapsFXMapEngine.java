@@ -33,6 +33,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Slider;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.NbLog;
+import se.trixon.almond.util.MathHelper;
 import se.trixon.mapton.core.api.LatLon;
 import se.trixon.mapton.core.api.MapEngine;
 import se.trixon.mapton.gmapsfx.api.MapStyle;
@@ -93,8 +94,8 @@ public class GMapsFXMapEngine extends MapEngine {
     }
 
     @Override
-    public void panTo(LatLon latLong, int zoom) {
-        mMap.setZoom(zoom);
+    public void panTo(LatLon latLong, double zoom) {
+        mMap.setZoom(MathHelper.round(toLocalZoom(zoom)));
         panTo(latLong);
     }
 
@@ -105,7 +106,7 @@ public class GMapsFXMapEngine extends MapEngine {
             mInfoWindow = new InfoWindow();
             mMapOptions = new MapOptions()
                     //.center(mMapController.getMapCenter())
-                    .zoom(mMaptonOptions.getMapZoom())
+                    .zoom(5)
                     .mapType(MapTypeIdEnum.ROADMAP)
                     .rotateControl(true)
                     .clickableIcons(false)
@@ -150,7 +151,11 @@ public class GMapsFXMapEngine extends MapEngine {
         });
 
         mZoomSlider.valueProperty().addListener((event) -> {
-            System.out.println("Fx zoom: " + mMap.getZoom());
+            System.out.println("FX");
+            System.out.println("zoom: " + mMap.getZoom());
+            System.out.println("toGlobal: " + toGlobalZoom());
+            System.out.println("toLocal: " + toLocalZoom(toGlobalZoom()));
+            System.out.println("");
         });
 
         mMapView.setOnContextMenuRequested((e) -> {
@@ -173,7 +178,7 @@ public class GMapsFXMapEngine extends MapEngine {
         mMap.zoomProperty().bindBidirectional(mZoomSlider.valueProperty());
 
         mMap.addStateEventHandler(MapStateEventType.zoom_changed, () -> {
-            setZoom(mMap.getZoom());
+            setZoom(toGlobalZoom());
         });
 
         mMap.addMouseEventHandler(UIEventType.mousemove, (GMapMouseEvent event) -> {
@@ -181,6 +186,13 @@ public class GMapsFXMapEngine extends MapEngine {
         });
 
         NbLog.v(LOG_TAG, "Map initialized");
+    }
+
+    private double toGlobalZoom() {
+        final double steps = 22;
+        final int zoom = mMap.getZoom();
+
+        return zoom / (steps - 0);
     }
 
     private LatLon toLatLon(LatLong latLong) {
@@ -195,6 +207,10 @@ public class GMapsFXMapEngine extends MapEngine {
                 latLon.getLatitude(),
                 latLon.getLongitude()
         );
+    }
+
+    private double toLocalZoom(double globalZoom) {
+        return globalZoom * 22;
     }
 
 }

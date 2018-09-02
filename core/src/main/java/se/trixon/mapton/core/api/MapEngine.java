@@ -33,14 +33,14 @@ import se.trixon.mapton.core.ui.MapTopComponent;
  */
 public abstract class MapEngine {
 
-    private static final TreeMap<String, MapEngine> sEngines = new TreeMap<>();
+    private static final TreeMap<String, MapEngine> ENGINES = new TreeMap<>();
+    private static double mZoom;
 
     protected final MaptonOptions mMaptonOptions = MaptonOptions.getInstance();
 
     private LatLon mLatLonMouse;
     private double mLatitude;
     private double mLongitude;
-    private int mZoom;
 
     static {
         Lookup.getDefault().lookupResult(MapEngine.class).addLookupListener((LookupEvent ev) -> {
@@ -51,21 +51,38 @@ public abstract class MapEngine {
     }
 
     public static MapEngine byName(String name) {
-        return sEngines.getOrDefault(name, null);
+        return ENGINES.getOrDefault(name, null);
+    }
+
+    public static double getZoom() {
+        System.out.println("getGlobalZoom: " + mZoom);
+        return mZoom;
+    }
+
+    public static void setZoom(double zoom) {
+        mZoom = zoom;
+        System.out.println("setGlobalZoom: " + mZoom);
     }
 
     private static void populateEngines() {
-        sEngines.clear();
+        ENGINES.clear();
         Lookup.getDefault().lookupAll(MapEngine.class).forEach((engine) -> {
-            sEngines.put(engine.getName(), engine);
+            ENGINES.put(engine.getName(), engine);
         });
     }
 
     public MapEngine() {
     }
 
+    public void displayContextMenu(Point screenXY) {
+        SwingUtilities.invokeLater(() -> {
+            MapTopComponent tc = (MapTopComponent) WindowManager.getDefault().findTopComponent("MapTopComponent");
+            tc.displayContextMenu(screenXY);
+        });
+    }
+
     public LatLon getCenter() {
-        NbLog.i(getClass().getSimpleName(), "panTo not implemented");
+        NbLog.i(getClass().getSimpleName(), "getCenter not implemented");
         return new LatLon(0, 0);
     }
 
@@ -79,16 +96,6 @@ public abstract class MapEngine {
 //    }
     public LatLon getLatLonMouse() {
         return mLatLonMouse;
-    }
-
-    public void displayContextMenu(Point screenXY) {
-        System.out.println(">>> displayContextMenu");
-        SwingUtilities.invokeLater(() -> {
-            MapTopComponent tc = (MapTopComponent) WindowManager.getDefault().findTopComponent("MapTopComponent");
-            Platform.runLater(() -> {
-                tc.displayContextMenu(screenXY);
-            });
-        });
     }
 
     public double getLatitude() {
@@ -113,11 +120,8 @@ public abstract class MapEngine {
 
     public abstract Object getUI();
 
-    public int getZoom() {
-        return mZoom;
-    }
-
     public final void goHome() {
+        System.out.println("homeZoom=" + mMaptonOptions.getMapHomeZoom());
         panTo(mMaptonOptions.getMapHome(), mMaptonOptions.getMapHomeZoom());
     }
 
@@ -133,7 +137,7 @@ public abstract class MapEngine {
         NbLog.i(getClass().getSimpleName(), "panTo not implemented");
     }
 
-    public void panTo(LatLon latLon, int zoom) {
+    public void panTo(LatLon latLon, double zoom) {
         NbLog.i(getClass().getSimpleName(), "panTo(Zoom) not implemented");
     }
 
@@ -145,10 +149,6 @@ public abstract class MapEngine {
         Platform.runLater(() -> {
             AppStatusPanel.getInstance().getProvider().updateLatLong();
         });
-    }
-
-    public void setZoom(int zoom) {
-        mZoom = zoom;
     }
 
 }

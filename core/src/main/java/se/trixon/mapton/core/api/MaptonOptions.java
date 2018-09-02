@@ -30,11 +30,11 @@ public class MaptonOptions {
     public static final String KEY_PREFER_POPOVER = "prefer_popover";
 
     private static final boolean DEFAULT_FULL_SCREEN = false;
-    private static final String DEFAULT_MAP_ENGINE = "JxMapViewer2";
+    private static final String DEFAULT_MAP_ENGINE = "Open Street Map (JxMapViewer2)";
     private static final double DEFAULT_MAP_LAT = 57.661509;
     private static final double DEFAULT_MAP_LON = 11.999312;
     private static final boolean DEFAULT_MAP_ONLY = false;
-    private static final int DEFAULT_MAP_ZOOM = 12;
+    private static final double DEFAULT_MAP_ZOOM = 700f;
     private static final boolean DEFAULT_PREFER_POPOVER = false;
     private static final String KEY_DISPLAY_BOOKMARK = "display_bookmark";
     private static final String KEY_FULL_SCREEN = "fullscreen";
@@ -84,12 +84,12 @@ public class MaptonOptions {
                 mPreferences.getDouble(KEY_MAP_HOME_LON, DEFAULT_MAP_LON));
     }
 
-    public int getMapHomeZoom() {
-        return mPreferences.getInt(KEY_MAP_HOME_ZOOM, DEFAULT_MAP_ZOOM);
+    public double getMapHomeZoom() {
+        return mPreferences.getDouble(KEY_MAP_HOME_ZOOM, DEFAULT_MAP_ZOOM);
     }
 
-    public int getMapZoom() {
-        return mPreferences.getInt(KEY_MAP_ZOOM, DEFAULT_MAP_ZOOM);
+    public double getMapZoom() {
+        return mPreferences.getDouble(KEY_MAP_ZOOM, DEFAULT_MAP_ZOOM);
     }
 
     public Preferences getPreferences() {
@@ -138,16 +138,16 @@ public class MaptonOptions {
         mPreferences.putDouble(KEY_MAP_HOME_LON, value.getLongitude());
     }
 
-    public void setMapHomeZoom(int value) {
-        mPreferences.putInt(KEY_MAP_HOME_ZOOM, value);
+    public void setMapHomeZoom(double value) {
+        mPreferences.putDouble(KEY_MAP_HOME_ZOOM, value);
     }
 
     public void setMapOnly(boolean value) {
         mPreferences.putBoolean(KEY_MAP_ONLY, value);
     }
 
-    public void setMapZoom(int value) {
-        mPreferences.putInt(KEY_MAP_ZOOM, value);
+    public void setMapZoom(double value) {
+        mPreferences.putDouble(KEY_MAP_ZOOM, value);
     }
 
     public void setPreferPopover(boolean value) {
