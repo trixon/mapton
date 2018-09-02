@@ -18,6 +18,7 @@ package se.trixon.mapton.jxmapviewer2;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.awt.image.BufferedImage;
 import javafx.scene.Node;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -25,6 +26,7 @@ import org.jxmapviewer.JXMapViewer;
 import org.jxmapviewer.viewer.GeoPosition;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.NbLog;
+import se.trixon.almond.util.GraphicsHelper;
 import se.trixon.almond.util.MathHelper;
 import se.trixon.mapton.core.api.LatLon;
 import se.trixon.mapton.core.api.MapEngine;
@@ -81,6 +83,19 @@ public class JxMapViewerMapEngine extends MapEngine {
     private void init() {
         mMapKit = new MapKit();
         mMap = mMapKit.getMainMap();
+        setImageRenderer(() -> {
+            mMapKit.getZoomSlider().setVisible(false);
+            mMapKit.getZoomInButton().setVisible(false);
+            mMapKit.getZoomOutButton().setVisible(false);
+
+            BufferedImage image = GraphicsHelper.componentToImage(mMap, null);
+
+            mMapKit.getZoomSlider().setVisible(true);
+            mMapKit.getZoomInButton().setVisible(true);
+            mMapKit.getZoomOutButton().setVisible(true);
+
+            return image;
+        });
         NbLog.v(LOG_TAG, "Loaded and ready");
     }
 

@@ -16,7 +16,9 @@
 package se.trixon.mapton.core.api;
 
 import java.awt.Point;
+import java.awt.image.BufferedImage;
 import java.util.TreeMap;
+import java.util.concurrent.Callable;
 import javafx.application.Platform;
 import javafx.scene.Node;
 import javax.swing.SwingUtilities;
@@ -37,7 +39,7 @@ public abstract class MapEngine {
     private static double mZoom;
 
     protected final MaptonOptions mMaptonOptions = MaptonOptions.getInstance();
-
+    private Callable<BufferedImage> mImageRenderer;
     private LatLon mLatLonMouse;
     private double mLatitude;
     private double mLongitude;
@@ -84,6 +86,10 @@ public abstract class MapEngine {
     public LatLon getCenter() {
         NbLog.i(getClass().getSimpleName(), "getCenter not implemented");
         return new LatLon(0, 0);
+    }
+
+    public Callable<BufferedImage> getImageRenderer() {
+        return mImageRenderer;
     }
 
 //    public abstract MapController getController();
@@ -139,6 +145,10 @@ public abstract class MapEngine {
 
     public void panTo(LatLon latLon, double zoom) {
         NbLog.i(getClass().getSimpleName(), "panTo(Zoom) not implemented");
+    }
+
+    public void setImageRenderer(Callable<BufferedImage> imageRenderer) {
+        mImageRenderer = imageRenderer;
     }
 
     public final void setLatLonMouse(LatLon latLonMouse) {

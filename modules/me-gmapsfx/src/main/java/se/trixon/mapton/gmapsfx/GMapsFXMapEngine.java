@@ -28,9 +28,12 @@ import java.awt.Point;
 import java.util.Locale;
 import java.util.prefs.PreferenceChangeEvent;
 import javafx.application.Platform;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Slider;
+import javafx.scene.image.WritableImage;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.util.MathHelper;
@@ -129,6 +132,13 @@ public class GMapsFXMapEngine extends MapEngine {
 //                mMap.setCenter(mController.getMapCenter());
 //            });
             initListeners();
+            setImageRenderer(() -> {
+                mZoomSlider.setVisible(false);
+                WritableImage image = mMapView.snapshot(new SnapshotParameters(), null);
+                mZoomSlider.setVisible(true);
+
+                return SwingFXUtils.fromFXImage(image, null);
+            });
             NbLog.v(LOG_TAG, "Loaded and ready");
         });
     }

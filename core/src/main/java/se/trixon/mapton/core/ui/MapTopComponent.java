@@ -19,6 +19,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.HierarchyEvent;
+import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.ResourceBundle;
@@ -32,16 +33,20 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.FileChooser;
+import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLayeredPane;
 import javax.swing.SwingUtilities;
+import org.apache.commons.io.FileUtils;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
+import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.util.NbBundle;
@@ -51,6 +56,7 @@ import org.openide.windows.WindowManager;
 import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
+import se.trixon.almond.util.fx.dialogs.SimpleDialog;
 import se.trixon.mapton.core.AppStatusPanel;
 import se.trixon.mapton.core.api.DictMT;
 import se.trixon.mapton.core.api.MapContextMenuProvider;
@@ -91,6 +97,7 @@ public final class MapTopComponent extends MaptonTopComponent {
     private Menu mContextExtrasMenu;
     private ContextMenu mContextMenu;
     private Menu mContextOpenMenu;
+    private File mDestination;
     private MapEngine mEngine;
     private final Mapton mMapton = Mapton.getInstance();
     private BorderPane mRoot;
@@ -174,6 +181,34 @@ public final class MapTopComponent extends MaptonTopComponent {
         return new Scene(mRoot);
     }
 
+    private void exportImage() {
+        FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter("Image (*.png)", "*.png");
+        SimpleDialog.clearFilters();
+        SimpleDialog.addFilter(new FileChooser.ExtensionFilter(Dict.ALL_FILES.toString(), "*"));
+        SimpleDialog.addFilter(filter);
+        SimpleDialog.setFilter(filter);
+        //SimpleDialog.setOwner(mStage);
+        SimpleDialog.setTitle(mBundle.getString("export_view"));
+
+        if (mDestination == null) {
+            SimpleDialog.setPath(FileUtils.getUserDirectory());
+        } else {
+            SimpleDialog.setPath(mDestination.getParentFile());
+            SimpleDialog.setSelectedFile(new File(""));
+        }
+
+        mContextMenu.hide();
+        if (SimpleDialog.saveFile(new String[]{"png"})) {
+            mDestination = SimpleDialog.getPath();
+            try {
+                ImageIO.write(mEngine.getImageRenderer().call(), "png", mDestination);
+            } catch (Exception ex) {
+                Exceptions.printStackTrace(ex);
+            }
+
+        }
+    }
+
     private void initContextMenu() {
         Action setHomeAction = new Action(DictMT.SET_HOME.toString(), (ActionEvent t) -> {
             mOptions.setMapHome(mEngine.getCenter());
@@ -186,7 +221,7 @@ public final class MapTopComponent extends MaptonTopComponent {
         whatsHereAction.setDisabled(true);
 
         Action exportImageAction = new Action(mBundle.getString("export_image"), (ActionEvent t) -> {
-//            exportImage();
+            exportImage();
         });
         exportImageAction.setDisabled(true);
 
@@ -209,6 +244,9 @@ public final class MapTopComponent extends MaptonTopComponent {
         mContextMenu.getItems().add(insertPos, mContextExtrasMenu);
         mContextMenu.getItems().add(insertPos, mContextOpenMenu);
         mContextMenu.getItems().add(insertPos, mContextCopyMenu);
+        mContextMenu.setOnShowing((event) -> {
+            exportImageAction.setDisabled(mEngine.getImageRenderer() == null);
+        });
 
         Lookup.getDefault().lookupResult(MapContextMenuProvider.class).addLookupListener((LookupEvent ev) -> {
             populateContextProviders();
