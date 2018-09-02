@@ -112,12 +112,6 @@
             <artifactId>me-worldwind</artifactId>
             <version>${project.version}</version>
         </dependency>
-
-        <!--        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>boiler</artifactId>
-            <version>${project.version}</version>
-        </dependency>-->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>swetrans</artifactId>
