@@ -40,6 +40,7 @@ import javax.swing.JFrame;
 import javax.swing.JLayeredPane;
 import javax.swing.SwingUtilities;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
 import org.netbeans.api.settings.ConvertAsProperties;
@@ -295,8 +296,10 @@ public final class MapTopComponent extends MaptonTopComponent {
                         mContextOpenMenu.getItems().add(item);
                         item.setOnAction((ActionEvent event) -> {
                             String s = provider.getUrl();
-                            NbLog.v("Open location", s);
-                            SystemHelper.desktopBrowse(s);
+                            if (!StringUtils.isBlank(s)) {
+                                NbLog.v("Open location", s);
+                                SystemHelper.desktopBrowse(s);
+                            }
                         });
                         break;
 
