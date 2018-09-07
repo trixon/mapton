@@ -19,16 +19,22 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
+import java.util.HashSet;
+import java.util.Set;
 import javafx.scene.Node;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.jxmapviewer.JXMapViewer;
 import org.jxmapviewer.viewer.GeoPosition;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.NbLog;
+import se.trixon.almond.nbp.dialogs.NbMessage;
 import se.trixon.almond.util.GraphicsHelper;
 import se.trixon.almond.util.MathHelper;
 import se.trixon.mapton.core.api.LatLon;
+import se.trixon.mapton.core.api.LatLonBox;
 import se.trixon.mapton.core.api.MapEngine;
 
 /**
@@ -43,6 +49,17 @@ public class JxMapViewerMapEngine extends MapEngine {
     private MapKit mMapKit;
 
     public JxMapViewerMapEngine() {
+    }
+
+    @Override
+    public void fitToBounds(LatLonBox latLonBox) {
+        Set<GeoPosition> positions = new HashSet<>();
+        positions.add(toGeoPosition(latLonBox.getNorthEast()));
+        positions.add(toGeoPosition(latLonBox.getSouthWest()));
+        mMap.zoomToBestFit(positions, 0.9);
+        mMap.setCenterPosition(toGeoPosition(latLonBox.getCenter()));
+        System.out.println(ToStringBuilder.reflectionToString(latLonBox, ToStringStyle.MULTI_LINE_STYLE));
+        System.out.println(ToStringBuilder.reflectionToString(latLonBox.getCenter(), ToStringStyle.MULTI_LINE_STYLE));
     }
 
     @Override
@@ -68,6 +85,11 @@ public class JxMapViewerMapEngine extends MapEngine {
         }
 
         return mMapKit;
+    }
+
+    @Override
+    public void onWhatsHere(String s) {
+        NbMessage.information("WHATS HERE?", s);
     }
 
     @Override

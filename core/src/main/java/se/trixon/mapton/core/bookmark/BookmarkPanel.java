@@ -29,7 +29,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.validation.ValidationResult;
 import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
@@ -54,6 +54,28 @@ public class BookmarkPanel extends FxDialogPanel {
     @Override
     protected void fxConstructor() {
         setScene(createScene());
+    }
+
+    void load(Bookmark bookmark) {
+        mNameTextField.setText(bookmark.getName());
+        mCatTextField.setText(bookmark.getCategory());
+        mDescTextArea.setText(bookmark.getDescription());
+        mZoomSpinner.getValueFactory().setValue(bookmark.getZoom());
+        mLatitudeSpinner.getValueFactory().setValue(bookmark.getLatitude());
+        mLongitudeSpinner.getValueFactory().setValue(bookmark.getLongitude());
+        mPlacemarkCheckBox.setSelected(bookmark.isDisplayMarker());
+    }
+
+    void save(Bookmark bookmark) {
+        Platform.runLater(() -> {
+            bookmark.setName(mNameTextField.getText());
+            bookmark.setCategory(StringUtils.defaultString(mCatTextField.getText()));
+            bookmark.setDescription(StringUtils.defaultString(mDescTextArea.getText()));
+            bookmark.setZoom(mZoomSpinner.getValue());
+            bookmark.setLatitude(mLatitudeSpinner.getValue());
+            bookmark.setLongitude(mLongitudeSpinner.getValue());
+            bookmark.setDisplayMarker(mPlacemarkCheckBox.isSelected());
+        });
     }
 
     private Scene createScene() {
@@ -157,27 +179,5 @@ public class BookmarkPanel extends FxDialogPanel {
         });
 
         validationSupport.initInitialDecoration();
-    }
-
-    void load(Bookmark bookmark) {
-        mNameTextField.setText(bookmark.getName());
-        mCatTextField.setText(bookmark.getCategory());
-        mDescTextArea.setText(bookmark.getDescription());
-        mZoomSpinner.getValueFactory().setValue(bookmark.getZoom());
-        mLatitudeSpinner.getValueFactory().setValue(bookmark.getLatitude());
-        mLongitudeSpinner.getValueFactory().setValue(bookmark.getLongitude());
-        mPlacemarkCheckBox.setSelected(bookmark.isDisplayMarker());
-    }
-
-    void save(Bookmark bookmark) {
-        Platform.runLater(() -> {
-            bookmark.setName(mNameTextField.getText());
-            bookmark.setCategory(StringUtils.defaultString(mCatTextField.getText()));
-            bookmark.setDescription(StringUtils.defaultString(mDescTextArea.getText()));
-            bookmark.setZoom(mZoomSpinner.getValue());
-            bookmark.setLatitude(mLatitudeSpinner.getValue());
-            bookmark.setLongitude(mLongitudeSpinner.getValue());
-            bookmark.setDisplayMarker(mPlacemarkCheckBox.isSelected());
-        });
     }
 }

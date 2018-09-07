@@ -83,6 +83,10 @@ public abstract class MapEngine {
         });
     }
 
+    public void fitToBounds(LatLonBox latLonBox) {
+        NbLog.i(getClass().getSimpleName(), "fitToBounds not implemented");
+    }
+
     public LatLon getCenter() {
         NbLog.i(getClass().getSimpleName(), "getCenter not implemented");
         return new LatLon(0, 0);
@@ -92,14 +96,6 @@ public abstract class MapEngine {
         return mImageRenderer;
     }
 
-//    public abstract MapController getController();
-//    public void fitBounds(GeocoderGeometry geometry) {
-////        try {
-////            getMap().fitBounds(geometry.getBounds());
-////        } catch (netscape.javascript.JSException e) {
-////            panTo(geometry.getLocation());
-////        }
-//    }
     public LatLon getLatLonMouse() {
         return mLatLonMouse;
     }
@@ -137,6 +133,10 @@ public abstract class MapEngine {
 
     public boolean isSwing() {
         return true;
+    }
+
+    public void onWhatsHere(String s) {
+        NbLog.i(getClass().getSimpleName(), "displayWhatsHere not implemented");
     }
 
     public void panTo(LatLon latLon) {

@@ -18,7 +18,7 @@ package se.trixon.mapton.core.api;
 import java.io.File;
 import java.text.DateFormat;
 import javafx.scene.paint.Color;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openide.awt.StatusDisplayer;
 import org.openide.util.Lookup;
 import se.trixon.mapton.core.toolbar.AppToolBar;

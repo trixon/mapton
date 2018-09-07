@@ -15,11 +15,13 @@
  */
 package se.trixon.mapton.core.ui;
 
+import fr.dudie.nominatim.model.Address;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.HierarchyEvent;
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.ResourceBundle;
@@ -41,6 +43,8 @@ import javax.swing.JLayeredPane;
 import javax.swing.SwingUtilities;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
 import org.netbeans.api.settings.ConvertAsProperties;
@@ -65,6 +69,7 @@ import se.trixon.mapton.core.api.MapEngine;
 import se.trixon.mapton.core.api.Mapton;
 import se.trixon.mapton.core.api.MaptonOptions;
 import se.trixon.mapton.core.api.MaptonTopComponent;
+import se.trixon.mapton.core.api.Nominatim;
 import se.trixon.mapton.core.bookmark.BookmarkManager;
 
 /**
@@ -101,6 +106,7 @@ public final class MapTopComponent extends MaptonTopComponent {
     private File mDestination;
     private MapEngine mEngine;
     private final Mapton mMapton = Mapton.getInstance();
+    private final Nominatim mNominatim = Nominatim.getInstance();
     private BorderPane mRoot;
 
     public MapTopComponent() {
@@ -150,24 +156,24 @@ public final class MapTopComponent extends MaptonTopComponent {
     }
 
     private void attachStatusbar(boolean showOnlyMap) {
-        if (mAppStatusPanel == null) {
-            mAppStatusPanel = AppStatusPanel.getInstance();
-        }
-
         if (mEngine.isSwing()) {
-            if (showOnlyMap) {
-                add(mAppStatusPanel.getFxPanel(), BorderLayout.SOUTH);
-            } else {
-                mAppStatusPanel.resetSwing();
+            try {
+                if (showOnlyMap) {
+                    add(getStatusbar().getFxPanel(), BorderLayout.SOUTH);
+                } else {
+                    getStatusbar().resetSwing();
+                }
+            } catch (NullPointerException e) {
+                // nvm
             }
         } else {
             Platform.runLater(() -> {
                 if (showOnlyMap) {
-                    mRoot.setBottom(mAppStatusPanel.getProvider());
+                    mRoot.setBottom(getStatusbar().getProvider());
                 } else {
                     if (mRoot.getBottom() != null) {
                         mRoot.setBottom(null);
-                        mAppStatusPanel.resetFx();
+                        getStatusbar().resetFx();
                     }
                 }
             });
@@ -210,6 +216,14 @@ public final class MapTopComponent extends MaptonTopComponent {
         }
     }
 
+    private AppStatusPanel getStatusbar() {
+        if (mAppStatusPanel == null) {
+            mAppStatusPanel = AppStatusPanel.getInstance();
+        }
+
+        return mAppStatusPanel;
+    }
+
     private void initContextMenu() {
         Action setHomeAction = new Action(DictMT.SET_HOME.toString(), (ActionEvent t) -> {
             mOptions.setMapHome(mEngine.getCenter());
@@ -217,9 +231,8 @@ public final class MapTopComponent extends MaptonTopComponent {
         });
 
         Action whatsHereAction = new Action(mBundle.getString("whats_here"), (ActionEvent t) -> {
-//            whatsHere();
+            whatsHere();
         });
-        whatsHereAction.setDisabled(true);
 
         Action exportImageAction = new Action(mBundle.getString("export_image"), (ActionEvent t) -> {
             exportImage();
@@ -357,4 +370,34 @@ public final class MapTopComponent extends MaptonTopComponent {
         NbLog.v(Mapton.LOG_TAG, String.format("Set Map Engine to %s", engine.getName()));
     }
 
+    private void whatsHere() {
+        Platform.runLater(() -> {
+            getStatusbar().getProvider().setProgress(-1);
+        });
+
+        new Thread(() -> {
+            try {
+                int zoom = (int) (5 + mEngine.getZoom() * 18);
+                Address address = mNominatim.getAddress(mEngine.getLatLonMouse(), zoom);
+                NbLog.v(Mapton.LOG_TAG, ToStringBuilder.reflectionToString(address, ToStringStyle.MULTI_LINE_STYLE));
+                String s = address.getDisplayName();
+
+                Runnable r = () -> {
+                    mEngine.onWhatsHere(s);
+                };
+
+                if (mEngine.isSwing()) {
+                    SwingUtilities.invokeLater(r);
+                } else {
+                    Platform.runLater(r);
+                }
+
+                Platform.runLater(() -> {
+                    getStatusbar().getProvider().setProgress(1);
+                });
+            } catch (IOException ex) {
+                Exceptions.printStackTrace(ex);
+            }
+        }).start();
+    }
 }

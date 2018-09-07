@@ -22,6 +22,7 @@ import com.lynden.gmapsfx.javascript.event.UIEventType;
 import com.lynden.gmapsfx.javascript.object.GoogleMap;
 import com.lynden.gmapsfx.javascript.object.InfoWindow;
 import com.lynden.gmapsfx.javascript.object.LatLong;
+import com.lynden.gmapsfx.javascript.object.LatLongBounds;
 import com.lynden.gmapsfx.javascript.object.MapOptions;
 import com.lynden.gmapsfx.javascript.object.MapTypeIdEnum;
 import java.awt.Point;
@@ -38,6 +39,7 @@ import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.util.MathHelper;
 import se.trixon.mapton.core.api.LatLon;
+import se.trixon.mapton.core.api.LatLonBox;
 import se.trixon.mapton.core.api.MapEngine;
 import se.trixon.mapton.gmapsfx.api.MapStyle;
 
@@ -60,6 +62,11 @@ public class GMapsFXMapEngine extends MapEngine {
 
     public GMapsFXMapEngine() {
         mStyleView = new StyleView();
+    }
+
+    @Override
+    public void fitToBounds(LatLonBox latLonBox) {
+        mMap.fitBounds(new LatLongBounds(toLatLong(latLonBox.getSouthWest()), toLatLong(latLonBox.getNorthEast())));
     }
 
     @Override
@@ -89,6 +96,13 @@ public class GMapsFXMapEngine extends MapEngine {
     @Override
     public boolean isSwing() {
         return false;
+    }
+
+    @Override
+    public void onWhatsHere(String s) {
+        mInfoWindow.setContent(s);
+        mInfoWindow.setPosition(toLatLong(getLatLonMouse()));
+        mInfoWindow.open(mMap);
     }
 
     @Override

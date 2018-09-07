@@ -148,6 +148,11 @@
             <artifactId>coordinate-transformation-library</artifactId>
             <version>1.1</version>
         </dependency>
+        <dependency>
+            <groupId>fr.dudie</groupId>
+            <artifactId>nominatim-api</artifactId>
+            <version>3.3</version>
+        </dependency>
     </dependencies>
     <properties>
         <netbeans.hint.license>apache20</netbeans.hint.license>

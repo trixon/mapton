@@ -15,8 +15,12 @@
  */
 package se.trixon.mapton.core.map;
 
-import java.util.Arrays;
+import fr.dudie.nominatim.model.Address;
+import fr.dudie.nominatim.model.BoundingBox;
+import java.io.IOException;
+import java.util.List;
 import java.util.ResourceBundle;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -28,22 +32,24 @@ import javafx.scene.control.ListView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.controlsfx.control.PopOver;
 import org.controlsfx.control.textfield.CustomTextField;
 import org.controlsfx.control.textfield.TextFields;
+import org.openide.util.Exceptions;
 import org.openide.util.NbBundle;
+import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 import se.trixon.mapton.core.api.CooTransProvider;
 import se.trixon.mapton.core.api.DecDegDMS;
 import se.trixon.mapton.core.api.LatLon;
+import se.trixon.mapton.core.api.LatLonBox;
 import se.trixon.mapton.core.api.Mapton;
 import static se.trixon.mapton.core.api.Mapton.getIconSizeToolBarInt;
 import se.trixon.mapton.core.api.MaptonOptions;
-import se.trixon.mapton.core.api.geocode.GeocoderStatus;
-import se.trixon.mapton.core.api.geocode.GeocodingResult;
-import se.trixon.mapton.core.api.geocode.GeocodingService;
-import se.trixon.mapton.core.api.geocode.GeocodingServiceCallback;
+import se.trixon.mapton.core.api.Nominatim;
 
 /**
  *
@@ -52,10 +58,11 @@ import se.trixon.mapton.core.api.geocode.GeocodingServiceCallback;
 public class SearchView {
 
     private static final ResourceBundle mBundle = NbBundle.getBundle(SearchView.class);
-    private final ObservableList<GeocodingResult> mItems = FXCollections.observableArrayList();
+    private final ObservableList<Address> mItems = FXCollections.observableArrayList();
+    private final Nominatim mNominatim = Nominatim.getInstance();
     private final MaptonOptions mOptions = MaptonOptions.getInstance();
     private final PopOver mResultPopOver;
-    private final ListView<GeocodingResult> mResultView = new ListView();
+    private final ListView<Address> mResultView = new ListView();
     private CustomTextField mSearchTextField;
 
     public SearchView() {
@@ -82,15 +89,20 @@ public class SearchView {
 
         mResultView.prefWidthProperty().bind(mSearchTextField.widthProperty());
         mResultView.setItems(mItems);
-        mResultView.setCellFactory((ListView<GeocodingResult> param) -> new GeocodingResultListCell());
+        mResultView.setCellFactory((ListView<Address> param) -> new GeocodingResultListCell());
         mResultView.setOnMousePressed((MouseEvent event) -> {
             if (event.isPrimaryButtonDown()) {
                 mResultPopOver.hide();
-                GeocodingResult result = mResultView.getSelectionModel().getSelectedItem();
-                if (result != null) {
-                    mSearchTextField.setText(result.getFormattedAddress());
-//TODO Replace me
-//                    Mapton.getInstance().getMapController().fitBounds(result.getGeometry());
+                Address address = mResultView.getSelectionModel().getSelectedItem();
+                if (address != null) {
+                    mSearchTextField.setText(address.getDisplayName());
+                    BoundingBox bb = address.getBoundingBox();
+                    LatLonBox latLonBox = new LatLonBox(
+                            new LatLon(bb.getSouth(), bb.getWest()),
+                            new LatLon(bb.getNorth(), bb.getEast())
+                    );
+
+                    Mapton.getEngine().fitToBounds(latLonBox);
                 }
             }
         });
@@ -183,45 +195,38 @@ public class SearchView {
     }
 
     private void parseString(String searchString) {
-        GeocodingServiceCallback callback = (GeocodingResult[] results, GeocoderStatus status) -> {
-            mItems.clear();
-            if (status != GeocoderStatus.OK) {
+        new Thread(() -> {
+            try {
+                mItems.clear();
+
+                final List<Address> addresses = mNominatim.search(searchString);
+                Platform.runLater(() -> {
+                    mResultPopOver.setTitle("" + addresses.size() + " TRÄFFAR");
+                    mResultPopOver.show(mSearchTextField);
+                    mItems.addAll(addresses);
+                });
+
+                for (final Address address : addresses) {
+                    NbLog.v(getClass(), ToStringBuilder.reflectionToString(address, ToStringStyle.MULTI_LINE_STYLE));
+                }
+            } catch (IOException ex) {
                 mResultPopOver.hide();
-                return;
+                Exceptions.printStackTrace(ex);
             }
-
-            mResultPopOver.setTitle("" + results.length + " TRÄFFAR");
-            mResultPopOver.show(mSearchTextField);
-            mItems.addAll(Arrays.asList(results));
-        };
-
-        GeocodingService service = new GeocodingService();
-        service.geocode(searchString, callback);
+        }).start();
     }
 
-    class GeocodingResultListCell extends ListCell<GeocodingResult> {
+    class GeocodingResultListCell extends ListCell<Address> {
 
-        private final Label mLabel = new Label();
         private VBox mBox = new VBox();
+        private final Label mLabel = new Label();
 
         public GeocodingResultListCell() {
             createUI();
         }
 
-        private void addContent(GeocodingResult result) {
-            setText(null);
-            mLabel.setText(result.getFormattedAddress());
-
-            setGraphic(mBox);
-        }
-
-        private void clearContent() {
-            setText(null);
-            setGraphic(null);
-        }
-
         @Override
-        protected void updateItem(GeocodingResult result, boolean empty) {
+        protected void updateItem(Address result, boolean empty) {
             super.updateItem(result, empty);
 
             if (result == null || empty) {
@@ -231,9 +236,16 @@ public class SearchView {
             }
         }
 
-        private void selectListItem() {
-            mResultView.getSelectionModel().select(this.getIndex());
-            mResultView.requestFocus();
+        private void addContent(Address result) {
+            setText(null);
+            mLabel.setText(result.getDisplayName());
+
+            setGraphic(mBox);
+        }
+
+        private void clearContent() {
+            setText(null);
+            setGraphic(null);
         }
 
         private void createUI() {
@@ -241,6 +253,11 @@ public class SearchView {
             mBox.setOnMouseEntered((MouseEvent event) -> {
                 selectListItem();
             });
+        }
+
+        private void selectListItem() {
+            mResultView.getSelectionModel().select(this.getIndex());
+            mResultView.requestFocus();
         }
     }
 }

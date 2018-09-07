@@ -24,7 +24,7 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.CheckListView;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
