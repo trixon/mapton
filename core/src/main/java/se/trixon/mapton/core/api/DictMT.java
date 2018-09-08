@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,10 +24,27 @@ import se.trixon.almond.util.SystemHelper;
  * @author Patrik Karlström
  */
 public enum DictMT {
+    COMPASS,
     COPY_LOCATION,
     DISPLAY_PLACEMARK,
+    FLAT,
+    GLOBE,
     MAP_ENGINE,
-    SET_HOME;
+    PROJECTION,
+    PROJ_LAT_LON,
+    PROJ_MERCATOR,
+    PROJ_POLAR_NORTH,
+    PROJ_POLAR_SOUTH,
+    PROJ_SINUSOIDAL,
+    PROJ_SINUSOIDAL_MODIFIED,
+    PROJ_TRANSVERSE_MERCATOR,
+    PROJ_UPS_NORTH,
+    PROJ_UPS_SOUTH,
+    SCALE_BAR,
+    SET_HOME,
+    VIEW_CONTROLS,
+    WORLD_MAP;
+
     private final ResourceBundle mResourceBundle = ResourceBundle.getBundle(SystemHelper.getPackageAsPath(DictMT.class) + "DictMT", Locale.getDefault());
 
     private static String getString(ResourceBundle bundle, String key) {

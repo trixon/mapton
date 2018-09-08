@@ -15,13 +15,14 @@
  */
 package se.trixon.mapton.worldwind;
 
-import gov.nasa.worldwind.Model;
-import gov.nasa.worldwind.WorldWind;
-import gov.nasa.worldwind.avlist.AVKey;
-import gov.nasa.worldwind.awt.WorldWindowGLJPanel;
+import gov.nasa.worldwind.event.PositionEvent;
+import gov.nasa.worldwind.geom.Position;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import javafx.scene.Node;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.NbLog;
+import se.trixon.mapton.core.api.LatLon;
 import se.trixon.mapton.core.api.MapEngine;
 
 /**
@@ -32,9 +33,11 @@ import se.trixon.mapton.core.api.MapEngine;
 public class WorldWindMapEngine extends MapEngine {
 
     public static final String LOG_TAG = "WorldWind";
-    private WorldWindowGLJPanel mWorldWindow;
+    private WorldWindowPanel mMap;
+    private StyleView mStyleView;
 
     public WorldWindMapEngine() {
+        mStyleView = new StyleView();
     }
 
     @Override
@@ -44,24 +47,64 @@ public class WorldWindMapEngine extends MapEngine {
 
     @Override
     public Node getStyleView() {
-        return null;
+        return mStyleView;
     }
 
     @Override
     public Object getUI() {
-        if (mWorldWindow == null) {
+        if (mMap == null) {
             init();
+            initListeners();
         }
 
-        return mWorldWindow;
+        return mMap;
+    }
+
+    @Override
+    public void onWhatsHere(String s) {
     }
 
     private void init() {
-        mWorldWindow = new WorldWindowGLJPanel();
-        Model m = (Model) WorldWind.createConfigurationComponent(AVKey.MODEL_CLASS_NAME);
-        mWorldWindow.setModel(m);
+        mMap = new WorldWindowPanel();
 
         NbLog.v(LOG_TAG, "Loaded and ready");
     }
 
+    private void initListeners() {
+        mMap.addMouseListener(new MouseAdapter() {
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                maybeShowPopup(e);
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                maybeShowPopup(e);
+            }
+
+            private void maybeShowPopup(MouseEvent e) {
+                if (e.isPopupTrigger()) {
+                    displayContextMenu(e.getLocationOnScreen());
+                }
+            }
+        });
+
+        mMap.addPositionListener((PositionEvent pe) -> {
+            Position position = pe.getPosition();
+            if (position != null) {
+                setLatLonMouse(toLatLon(position));
+            } else {
+//                setLatLonMouse(null);
+            }
+        });
+
+    }
+
+    private LatLon toLatLon(Position p) {
+        return new LatLon(
+                p.getLatitude().getDegrees(),
+                p.getLongitude().getDegrees()
+        );
+    }
 }

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,6 @@
 package se.trixon.mapton.core.bookmark;
 
 import java.util.prefs.PreferenceChangeEvent;
-import javafx.application.Platform;
 import javafx.scene.Scene;
 import javax.swing.SwingUtilities;
 import org.netbeans.api.settings.ConvertAsProperties;
@@ -104,15 +103,11 @@ public final class BookmarkTopComponent extends MaptonTopComponent {
 
     void readProperties(java.util.Properties p) {
         String version = p.getProperty("version");
-        Platform.runLater(() -> {
-        });
     }
 
     void writeProperties(java.util.Properties p) {
         // better to version settings since initial version as advocated at
         // http://wiki.apidesign.org/wiki/PropertyFiles
         p.setProperty("version", "1.0");
-        Platform.runLater(() -> {
-        });
     }
 }
