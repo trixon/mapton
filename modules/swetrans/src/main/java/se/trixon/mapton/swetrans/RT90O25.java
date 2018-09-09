@@ -17,20 +17,20 @@ package se.trixon.mapton.swetrans;
 
 import com.github.goober.coordinatetransformation.positions.RT90Position;
 import org.openide.util.lookup.ServiceProvider;
-import se.trixon.mapton.core.api.CooTransProvider;
-import se.trixon.mapton.core.api.MapBounds;
+import se.trixon.mapton.api.MBounds;
+import se.trixon.mapton.api.MCooTrans;
 
 /**
  *
  * @author Patrik Karlström
  */
-@ServiceProvider(service = CooTransProvider.class)
+@ServiceProvider(service = MCooTrans.class)
 public class RT90O25 extends BaseRT {
 
     public RT90O25() {
         mName = "RT 90 2.5 gon O";
         mProjection = RT90Position.RT90Projection.rt90_2_5_gon_o;
-        mBoundsWgs84 = new MapBounds(19.1900, 63.3000, 21.4400, 69.1000);
-        mBoundsProjected = new MapBounds(1443925.0767, 7021572.1361, 1556749.0296, 7668177.0436);
+        mBoundsWgs84 = new MBounds(19.1900, 63.3000, 21.4400, 69.1000);
+        mBoundsProjected = new MBounds(1443925.0767, 7021572.1361, 1556749.0296, 7668177.0436);
     }
 }

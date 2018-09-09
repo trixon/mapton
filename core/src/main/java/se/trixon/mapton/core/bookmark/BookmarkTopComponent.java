@@ -24,8 +24,8 @@ import org.openide.awt.ActionReference;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
 import se.trixon.almond.util.Dict;
-import se.trixon.mapton.core.api.MaptonOptions;
-import se.trixon.mapton.core.api.MaptonTopComponent;
+import se.trixon.mapton.api.MOptions;
+import se.trixon.mapton.api.MTopComponent;
 
 /**
  * Top component which displays something.
@@ -48,7 +48,7 @@ import se.trixon.mapton.core.api.MaptonTopComponent;
 @Messages({
     "CTL_BookmarkAction=Bookmark"
 })
-public final class BookmarkTopComponent extends MaptonTopComponent {
+public final class BookmarkTopComponent extends MTopComponent {
 
     public BookmarkTopComponent() {
         setName(Dict.BOOKMARKS.toString());
@@ -60,11 +60,11 @@ public final class BookmarkTopComponent extends MaptonTopComponent {
         putClientProperty(TopComponent.PROP_UNDOCKING_DISABLED, Boolean.TRUE);
         putClientProperty(TopComponent.PROP_KEEP_PREFERRED_SIZE_WHEN_SLIDED_IN, Boolean.TRUE);
 
-        mOptions.getPreferences().addPreferenceChangeListener((PreferenceChangeEvent evt) -> {
+        mMOptions.getPreferences().addPreferenceChangeListener((PreferenceChangeEvent evt) -> {
             switch (evt.getKey()) {
-                case MaptonOptions.KEY_PREFER_POPOVER:
+                case MOptions.KEY_PREFER_POPOVER:
                     SwingUtilities.invokeLater(() -> {
-                        if (mOptions.isPreferPopover()) {
+                        if (mMOptions.isPreferPopover()) {
                             close();
                         } else {
                             open();
@@ -82,13 +82,13 @@ public final class BookmarkTopComponent extends MaptonTopComponent {
 
     @Override
     protected void componentClosed() {
-        MaptonOptions.getInstance().setBookmarkVisible(false);
+        MOptions.getInstance().setBookmarkVisible(false);
         super.componentClosed();
     }
 
     @Override
     protected void componentOpened() {
-        MaptonOptions.getInstance().setBookmarkVisible(true);
+        MOptions.getInstance().setBookmarkVisible(true);
         super.componentOpened();
     }
 

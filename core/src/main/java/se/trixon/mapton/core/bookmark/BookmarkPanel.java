@@ -35,7 +35,7 @@ import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
 import se.trixon.almond.nbp.fx.FxDialogPanel;
 import se.trixon.almond.util.Dict;
-import se.trixon.mapton.core.api.DictMT;
+import se.trixon.mapton.api.MDict;
 
 /**
  *
@@ -122,7 +122,7 @@ public class BookmarkPanel extends FxDialogPanel {
         mLatitudeSpinner.getValueFactory().setConverter(converter);
         mLongitudeSpinner.getValueFactory().setConverter(converter);
 
-        mPlacemarkCheckBox = new CheckBox(DictMT.DISPLAY_PLACEMARK.toString());
+        mPlacemarkCheckBox = new CheckBox(MDict.DISPLAY_PLACEMARK.toString());
 
         mZoomSpinner.setEditable(true);
         mLatitudeSpinner.setEditable(true);

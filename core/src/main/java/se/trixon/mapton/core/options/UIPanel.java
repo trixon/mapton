@@ -15,12 +15,12 @@
  */
 package se.trixon.mapton.core.options;
 
-import se.trixon.mapton.core.api.MaptonOptions;
+import se.trixon.mapton.api.MOptions;
 
 final class UIPanel extends javax.swing.JPanel {
 
     private final UIOptionsPanelController mController;
-    private final MaptonOptions mCptions = MaptonOptions.getInstance();
+    private final MOptions mCptions = MOptions.getInstance();
 
     UIPanel(UIOptionsPanelController controller) {
         this.mController = controller;

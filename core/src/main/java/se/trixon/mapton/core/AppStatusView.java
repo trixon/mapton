@@ -24,10 +24,10 @@ import javafx.scene.text.Font;
 import org.controlsfx.control.StatusBar;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
-import se.trixon.mapton.core.api.CooTransProvider;
-import se.trixon.mapton.core.api.MapEngine;
-import se.trixon.mapton.core.api.Mapton;
-import se.trixon.mapton.core.api.MaptonOptions;
+import se.trixon.mapton.api.MCooTrans;
+import se.trixon.mapton.api.MEngine;
+import se.trixon.mapton.api.MOptions;
+import se.trixon.mapton.api.Mapton;
 
 /**
  *
@@ -35,10 +35,10 @@ import se.trixon.mapton.core.api.MaptonOptions;
  */
 public class AppStatusView extends StatusBar {
 
-    private final ComboBox<CooTransProvider> mComboBox = new ComboBox();
-    private CooTransProvider mCooTrans;
+    private final ComboBox<MCooTrans> mComboBox = new ComboBox();
+    private MCooTrans mCooTrans;
     private final Label mLabel = new Label();
-    private final MaptonOptions mOptions = MaptonOptions.getInstance();
+    private final MOptions mOptions = MOptions.getInstance();
 
     public AppStatusView() {
         super.setText("");
@@ -48,7 +48,7 @@ public class AppStatusView extends StatusBar {
         mLabel.setPadding(new Insets(0, 8, 0, 8));
         mLabel.setFont(Font.font("monospaced"));
 
-        Lookup.getDefault().lookupResult(CooTransProvider.class).addLookupListener((LookupEvent ev) -> {
+        Lookup.getDefault().lookupResult(MCooTrans.class).addLookupListener((LookupEvent ev) -> {
             updateProviders();
         });
 
@@ -67,7 +67,7 @@ public class AppStatusView extends StatusBar {
     }
 
     public void updateLatLong() {
-        MapEngine engine = Mapton.getEngine();
+        MEngine engine = Mapton.getEngine();
 
         if (engine != null) {
             final double latitude = engine.getLatitude();
@@ -87,13 +87,13 @@ public class AppStatusView extends StatusBar {
     private void updateProviders() {
         Platform.runLater(() -> {
             mComboBox.getItems().clear();
-            for (CooTransProvider cooTrans : Lookup.getDefault().lookupAll(CooTransProvider.class)) {
+            Lookup.getDefault().lookupAll(MCooTrans.class).forEach((cooTrans) -> {
                 mComboBox.getItems().add(cooTrans);
-            }
+            });
             mComboBox.setItems(mComboBox.getItems().sorted());
 
             if (!mComboBox.getItems().isEmpty()) {
-                CooTransProvider cooTrans = CooTransProvider.getCooTrans(mOptions.getMapCooTransName());
+                MCooTrans cooTrans = MCooTrans.getCooTrans(mOptions.getMapCooTransName());
 
                 if (cooTrans == null) {
                     cooTrans = mComboBox.getItems().get(0);

@@ -37,10 +37,10 @@ import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.icons.material.MaterialIcon;
-import se.trixon.mapton.core.api.MapEngine;
-import static se.trixon.mapton.core.api.Mapton.getIconSizeToolBar;
-import se.trixon.mapton.core.api.MaptonTopComponent;
-import se.trixon.mapton.core.api.ToolboxAction;
+import se.trixon.mapton.api.MEngine;
+import static se.trixon.mapton.api.Mapton.getIconSizeToolBar;
+import se.trixon.mapton.api.MTopComponent;
+import se.trixon.mapton.api.MTool;
 
 /**
  * Top component which displays something.
@@ -64,7 +64,7 @@ import se.trixon.mapton.core.api.ToolboxAction;
 @Messages({
     "CTL_ToolboxAction=Toolbox"
 })
-public final class ToolboxTopComponent extends MaptonTopComponent {
+public final class ToolboxTopComponent extends MTopComponent {
 
     private TreeView<Action> mRoot;
 
@@ -107,7 +107,7 @@ public final class ToolboxTopComponent extends MaptonTopComponent {
             }
         });
 
-        Lookup.getDefault().lookupResult(MapEngine.class).addLookupListener((LookupEvent ev) -> {
+        Lookup.getDefault().lookupResult(MEngine.class).addLookupListener((LookupEvent ev) -> {
             populateToolbox();
         });
 
@@ -123,7 +123,7 @@ public final class ToolboxTopComponent extends MaptonTopComponent {
         TreeMap<String, TreeItem<Action>> actionParents = new TreeMap<>();
         ArrayList<TreeItem> tempRootItems = new ArrayList<>();
 
-        Lookup.getDefault().lookupAll(ToolboxAction.class).forEach((toolboxAction) -> {
+        Lookup.getDefault().lookupAll(MTool.class).forEach((toolboxAction) -> {
             TreeItem<Action> treeItem = new TreeItem(toolboxAction.getAction());
             treeItem.getValue().setGraphic(MaterialIcon._Action.BUILD.getImageView(getIconSizeToolBar() / 2));
 

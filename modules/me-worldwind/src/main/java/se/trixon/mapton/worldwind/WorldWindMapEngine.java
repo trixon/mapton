@@ -22,15 +22,15 @@ import java.awt.event.MouseEvent;
 import javafx.scene.Node;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.NbLog;
-import se.trixon.mapton.core.api.LatLon;
-import se.trixon.mapton.core.api.MapEngine;
+import se.trixon.mapton.api.MLatLon;
+import se.trixon.mapton.api.MEngine;
 
 /**
  *
  * @author Patrik Karlström
  */
-@ServiceProvider(service = MapEngine.class)
-public class WorldWindMapEngine extends MapEngine {
+@ServiceProvider(service = MEngine.class)
+public class WorldWindMapEngine extends MEngine {
 
     public static final String LOG_TAG = "WorldWind";
     private WorldWindowPanel mMap;
@@ -101,8 +101,8 @@ public class WorldWindMapEngine extends MapEngine {
 
     }
 
-    private LatLon toLatLon(Position p) {
-        return new LatLon(
+    private MLatLon toLatLon(Position p) {
+        return new MLatLon(
                 p.getLatitude().getDegrees(),
                 p.getLongitude().getDegrees()
         );

@@ -62,14 +62,13 @@ import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.dialogs.SimpleDialog;
-import se.trixon.mapton.core.AppStatusPanel;
-import se.trixon.mapton.core.api.DictMT;
-import se.trixon.mapton.core.api.MapContextMenuProvider;
-import se.trixon.mapton.core.api.MapEngine;
-import se.trixon.mapton.core.api.Mapton;
-import se.trixon.mapton.core.api.MaptonOptions;
-import se.trixon.mapton.core.api.MaptonTopComponent;
-import se.trixon.mapton.core.api.Nominatim;
+import se.trixon.mapton.api.MContextMenuItem;
+import se.trixon.mapton.api.MDict;
+import se.trixon.mapton.api.MEngine;
+import se.trixon.mapton.api.MNominatim;
+import se.trixon.mapton.api.MOptions;
+import se.trixon.mapton.api.MTopComponent;
+import se.trixon.mapton.api.Mapton;
 import se.trixon.mapton.core.bookmark.BookmarkManager;
 
 /**
@@ -95,7 +94,7 @@ import se.trixon.mapton.core.bookmark.BookmarkManager;
 @Messages({
     "CTL_MapAction=Map"
 })
-public final class MapTopComponent extends MaptonTopComponent {
+public final class MapTopComponent extends MTopComponent {
 
     private AppStatusPanel mAppStatusPanel;
     private final ResourceBundle mBundle = NbBundle.getBundle(MapTopComponent.class);
@@ -104,9 +103,9 @@ public final class MapTopComponent extends MaptonTopComponent {
     private ContextMenu mContextMenu;
     private Menu mContextOpenMenu;
     private File mDestination;
-    private MapEngine mEngine;
+    private MEngine mEngine;
     private final Mapton mMapton = Mapton.getInstance();
-    private final Nominatim mNominatim = Nominatim.getInstance();
+    private final MNominatim mNominatim = MNominatim.getInstance();
     private BorderPane mRoot;
 
     public MapTopComponent() {
@@ -118,9 +117,9 @@ public final class MapTopComponent extends MaptonTopComponent {
         putClientProperty(TopComponent.PROP_MAXIMIZATION_DISABLED, Boolean.TRUE);
         putClientProperty(TopComponent.PROP_UNDOCKING_DISABLED, Boolean.TRUE);
 
-        mOptions.getPreferences().addPreferenceChangeListener((PreferenceChangeEvent evt) -> {
+        mMOptions.getPreferences().addPreferenceChangeListener((PreferenceChangeEvent evt) -> {
             switch (evt.getKey()) {
-                case MaptonOptions.KEY_MAP_ENGINE:
+                case MOptions.KEY_MAP_ENGINE:
                     setEngine(Mapton.getEngine());
                     break;
 
@@ -225,9 +224,9 @@ public final class MapTopComponent extends MaptonTopComponent {
     }
 
     private void initContextMenu() {
-        Action setHomeAction = new Action(DictMT.SET_HOME.toString(), (ActionEvent t) -> {
-            mOptions.setMapHome(mEngine.getCenter());
-            mOptions.setMapHomeZoom(mEngine.getZoom());
+        Action setHomeAction = new Action(MDict.SET_HOME.toString(), (ActionEvent t) -> {
+            mMOptions.setMapHome(mEngine.getCenter());
+            mMOptions.setMapHomeZoom(mEngine.getZoom());
         });
 
         Action whatsHereAction = new Action(mBundle.getString("whats_here"), (ActionEvent t) -> {
@@ -262,7 +261,7 @@ public final class MapTopComponent extends MaptonTopComponent {
             exportImageAction.setDisabled(mEngine.getImageRenderer() == null);
         });
 
-        Lookup.getDefault().lookupResult(MapContextMenuProvider.class).addLookupListener((LookupEvent ev) -> {
+        Lookup.getDefault().lookupResult(MContextMenuItem.class).addLookupListener((LookupEvent ev) -> {
             populateContextProviders();
         });
 
@@ -275,7 +274,7 @@ public final class MapTopComponent extends MaptonTopComponent {
                 if (e.getChangedParent() instanceof JLayeredPane) {
                     Dimension d = ((JFrame) WindowManager.getDefault().getMainWindow()).getContentPane().getPreferredSize();
                     final boolean showOnlyMap = 1 == d.height && 1 == d.width;
-                    mOptions.setMapOnly(showOnlyMap);
+                    mMOptions.setMapOnly(showOnlyMap);
                     attachStatusbar(showOnlyMap);
                 }
             });
@@ -288,7 +287,7 @@ public final class MapTopComponent extends MaptonTopComponent {
             mContextOpenMenu.getItems().clear();
             mContextExtrasMenu.getItems().clear();
 
-            for (MapContextMenuProvider provider : Lookup.getDefault().lookupAll(MapContextMenuProvider.class)) {
+            for (MContextMenuItem provider : Lookup.getDefault().lookupAll(MContextMenuItem.class)) {
                 MenuItem item = new MenuItem(provider.getName());
                 switch (provider.getType()) {
                     case COPY:
@@ -332,7 +331,7 @@ public final class MapTopComponent extends MaptonTopComponent {
         });
     }
 
-    private void setEngine(MapEngine engine) {
+    private void setEngine(MEngine engine) {
         mEngine = engine;
         if (engine.isSwing()) {
             SwingUtilities.invokeLater(() -> {
@@ -343,11 +342,11 @@ public final class MapTopComponent extends MaptonTopComponent {
                 add(getFxPanel(), BorderLayout.NORTH);
                 getFxPanel().setVisible(false);
                 add(ui, BorderLayout.CENTER);
-                attachStatusbar(mOptions.isMapOnly());
+                attachStatusbar(mMOptions.isMapOnly());
                 revalidate();
                 repaint();
                 try {
-                    engine.panTo(mOptions.getMapCenter(), mOptions.getMapZoom());
+                    engine.panTo(mMOptions.getMapCenter(), mMOptions.getMapZoom());
                 } catch (NullPointerException e) {
                 }
             });
@@ -355,9 +354,9 @@ public final class MapTopComponent extends MaptonTopComponent {
             Platform.runLater(() -> {
                 resetFx();
                 mRoot.setCenter((Node) engine.getUI());
-                attachStatusbar(mOptions.isMapOnly());
+                attachStatusbar(mMOptions.isMapOnly());
                 try {
-                    engine.panTo(mOptions.getMapCenter(), mOptions.getMapZoom());
+                    engine.panTo(mMOptions.getMapCenter(), mMOptions.getMapZoom());
                 } catch (Exception e) {
                 }
                 SwingUtilities.invokeLater(() -> {

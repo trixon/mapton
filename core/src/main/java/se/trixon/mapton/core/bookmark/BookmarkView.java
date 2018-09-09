@@ -54,10 +54,10 @@ import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.icons.material.MaterialIcon;
-import se.trixon.mapton.core.api.MapContextMenuProvider;
-import se.trixon.mapton.core.api.Mapton;
-import static se.trixon.mapton.core.api.Mapton.getIconSizeContextMenu;
-import se.trixon.mapton.core.map.SearchView;
+import se.trixon.mapton.api.MContextMenuItem;
+import se.trixon.mapton.api.Mapton;
+import static se.trixon.mapton.api.Mapton.getIconSizeContextMenu;
+import se.trixon.mapton.core.ui.SearchView;
 
 /**
  *
@@ -267,7 +267,7 @@ public class BookmarkView extends BorderPane {
                 }
             });
 
-            Lookup.getDefault().lookupResult(MapContextMenuProvider.class).addLookupListener((LookupEvent ev) -> {
+            Lookup.getDefault().lookupResult(MContextMenuItem.class).addLookupListener((LookupEvent ev) -> {
                 populateContextProviders();
             });
 
@@ -279,7 +279,7 @@ public class BookmarkView extends BorderPane {
             mContextCopyMenu.getItems().clear();
             mContextOpenMenu.getItems().clear();
 
-            for (MapContextMenuProvider provider : Lookup.getDefault().lookupAll(MapContextMenuProvider.class)) {
+            for (MContextMenuItem provider : Lookup.getDefault().lookupAll(MContextMenuItem.class)) {
                 MenuItem item = new MenuItem(provider.getName());
                 switch (provider.getType()) {
                     case COPY:

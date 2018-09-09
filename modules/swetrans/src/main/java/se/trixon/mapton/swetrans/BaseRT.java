@@ -20,17 +20,17 @@ import com.github.goober.coordinatetransformation.positions.RT90Position.RT90Pro
 import com.github.goober.coordinatetransformation.positions.WGS84Position;
 import javafx.geometry.Point2D;
 import se.trixon.almond.util.Dict;
-import se.trixon.mapton.core.api.CooTransProvider;
-import se.trixon.mapton.core.api.MapBounds;
+import se.trixon.mapton.api.MBounds;
+import se.trixon.mapton.api.MCooTrans;
 
 /**
  *
  * @author Patrik Karlström
  */
-public abstract class BaseRT implements CooTransProvider {
+public abstract class BaseRT implements MCooTrans {
 
-    protected MapBounds mBoundsProjected;
-    protected MapBounds mBoundsWgs84;
+    protected MBounds mBoundsProjected;
+    protected MBounds mBoundsWgs84;
     protected String mName;
     protected RT90Projection mProjection;
 
@@ -42,12 +42,12 @@ public abstract class BaseRT implements CooTransProvider {
     }
 
     @Override
-    public MapBounds getBoundsProjected() {
+    public MBounds getBoundsProjected() {
         return mBoundsProjected;
     }
 
     @Override
-    public MapBounds getBoundsWgs84() {
+    public MBounds getBoundsWgs84() {
         return mBoundsWgs84;
     }
 

@@ -30,7 +30,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import org.controlsfx.control.CheckListView;
 import se.trixon.almond.util.Dict;
-import se.trixon.mapton.core.api.DictMT;
+import se.trixon.mapton.api.MDict;
 
 /**
  *
@@ -51,15 +51,15 @@ public class StyleView extends HBox {
     private CheckBox mWorldMapCheckBox;
 
     public StyleView() {
-        mProjections.add(DictMT.PROJ_LAT_LON.toString());
-        mProjections.add(DictMT.PROJ_MERCATOR.toString());
-        mProjections.add(DictMT.PROJ_POLAR_NORTH.toString());
-        mProjections.add(DictMT.PROJ_POLAR_SOUTH.toString());
-        mProjections.add(DictMT.PROJ_SINUSOIDAL.toString());
-        mProjections.add(DictMT.PROJ_SINUSOIDAL_MODIFIED.toString());
-        mProjections.add(DictMT.PROJ_TRANSVERSE_MERCATOR.toString());
-        mProjections.add(DictMT.PROJ_UPS_NORTH.toString());
-        mProjections.add(DictMT.PROJ_UPS_SOUTH.toString());
+        mProjections.add(MDict.PROJ_LAT_LON.toString());
+        mProjections.add(MDict.PROJ_MERCATOR.toString());
+        mProjections.add(MDict.PROJ_POLAR_NORTH.toString());
+        mProjections.add(MDict.PROJ_POLAR_SOUTH.toString());
+        mProjections.add(MDict.PROJ_SINUSOIDAL.toString());
+        mProjections.add(MDict.PROJ_SINUSOIDAL_MODIFIED.toString());
+        mProjections.add(MDict.PROJ_TRANSVERSE_MERCATOR.toString());
+        mProjections.add(MDict.PROJ_UPS_NORTH.toString());
+        mProjections.add(MDict.PROJ_UPS_SOUTH.toString());
 
         createUI();
         load();
@@ -72,29 +72,29 @@ public class StyleView extends HBox {
 
         Insets topInsets = new Insets(12, 0, 0, 0);
         Label modeLabel = new Label(Dict.MODE.toString());
-        Label projLabel = new Label(DictMT.PROJECTION.toString());
+        Label projLabel = new Label(MDict.PROJECTION.toString());
         GridPane.setMargin(projLabel, topInsets);
 
         ToggleGroup modeToggleGroup = new ToggleGroup();
-        mModeGlobeRadioButton = new RadioButton(DictMT.GLOBE.toString());
+        mModeGlobeRadioButton = new RadioButton(MDict.GLOBE.toString());
         mModeGlobeRadioButton.setToggleGroup(modeToggleGroup);
         GridPane.setMargin(mModeGlobeRadioButton, topInsets);
-        mModeFlatRadioButton = new RadioButton(DictMT.FLAT.toString());
+        mModeFlatRadioButton = new RadioButton(MDict.FLAT.toString());
         mModeFlatRadioButton.setToggleGroup(modeToggleGroup);
         GridPane.setMargin(mModeFlatRadioButton, topInsets);
 
         mProjComboBox = new ComboBox();
 
-        mWorldMapCheckBox = new CheckBox(DictMT.WORLD_MAP.toString());
+        mWorldMapCheckBox = new CheckBox(MDict.WORLD_MAP.toString());
         GridPane.setMargin(mWorldMapCheckBox, topInsets);
 
-        mScaleBarCheckBox = new CheckBox(DictMT.SCALE_BAR.toString());
+        mScaleBarCheckBox = new CheckBox(MDict.SCALE_BAR.toString());
         GridPane.setMargin(mScaleBarCheckBox, topInsets);
 
-        mControlsCheckBox = new CheckBox(DictMT.VIEW_CONTROLS.toString());
+        mControlsCheckBox = new CheckBox(MDict.VIEW_CONTROLS.toString());
         GridPane.setMargin(mControlsCheckBox, topInsets);
 
-        mCompassCheckBox = new CheckBox(DictMT.COMPASS.toString());
+        mCompassCheckBox = new CheckBox(MDict.COMPASS.toString());
         GridPane.setMargin(mCompassCheckBox, topInsets);
 
         mProjComboBox.getItems().addAll(mProjections);

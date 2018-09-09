@@ -33,16 +33,16 @@ import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.nbp.dialogs.NbMessage;
 import se.trixon.almond.util.GraphicsHelper;
 import se.trixon.almond.util.MathHelper;
-import se.trixon.mapton.core.api.LatLon;
-import se.trixon.mapton.core.api.LatLonBox;
-import se.trixon.mapton.core.api.MapEngine;
+import se.trixon.mapton.api.MLatLon;
+import se.trixon.mapton.api.MLatLonBox;
+import se.trixon.mapton.api.MEngine;
 
 /**
  *
  * @author Patrik Karlström
  */
-@ServiceProvider(service = MapEngine.class)
-public class JxMapViewerMapEngine extends MapEngine {
+@ServiceProvider(service = MEngine.class)
+public class JxMapViewerMapEngine extends MEngine {
 
     public static final String LOG_TAG = "JxMapViewer2";
     private JXMapViewer mMap;
@@ -52,7 +52,7 @@ public class JxMapViewerMapEngine extends MapEngine {
     }
 
     @Override
-    public void fitToBounds(LatLonBox latLonBox) {
+    public void fitToBounds(MLatLonBox latLonBox) {
         Set<GeoPosition> positions = new HashSet<>();
         positions.add(toGeoPosition(latLonBox.getNorthEast()));
         positions.add(toGeoPosition(latLonBox.getSouthWest()));
@@ -63,7 +63,7 @@ public class JxMapViewerMapEngine extends MapEngine {
     }
 
     @Override
-    public LatLon getCenter() {
+    public MLatLon getCenter() {
         return toLatLon(mMapKit.getCenterPosition());
     }
 
@@ -93,12 +93,12 @@ public class JxMapViewerMapEngine extends MapEngine {
     }
 
     @Override
-    public void panTo(LatLon latLong) {
+    public void panTo(MLatLon latLong) {
         panTo(latLong, mMap.getZoom());
     }
 
     @Override
-    public void panTo(LatLon latLon, double zoom) {
+    public void panTo(MLatLon latLon, double zoom) {
         panAndZoomTo(toGeoPosition(latLon), MathHelper.round(toLocalZoom(zoom)));
     }
 
@@ -169,7 +169,7 @@ public class JxMapViewerMapEngine extends MapEngine {
         mMapKit.setZoom(zoom);
     }
 
-    private GeoPosition toGeoPosition(LatLon latLon) {
+    private GeoPosition toGeoPosition(MLatLon latLon) {
         return new GeoPosition(
                 latLon.getLatitude(),
                 latLon.getLongitude()
@@ -183,8 +183,8 @@ public class JxMapViewerMapEngine extends MapEngine {
         return (steps - zoom) / steps;
     }
 
-    private LatLon toLatLon(GeoPosition geoPosition) {
-        return new LatLon(
+    private MLatLon toLatLon(GeoPosition geoPosition) {
+        return new MLatLon(
                 geoPosition.getLatitude(),
                 geoPosition.getLongitude()
         );

@@ -22,7 +22,7 @@ limitations under the License.
         <file name="F12.shadow_hidden"/>
     </folder>-->
     <file name="AppStatusPanel.instance">
-        <attr name="instanceClass" stringvalue="se.trixon.mapton.core.AppStatusPanel"/>
+        <attr name="instanceClass" stringvalue="se.trixon.mapton.core.ui.AppStatusPanel"/>
     </file>
     <folder name="Windows2">
         <folder name="Modes">

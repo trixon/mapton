@@ -16,9 +16,9 @@
 package se.trixon.mapton.core;
 
 import org.openide.modules.OnStop;
-import se.trixon.mapton.core.api.MapEngine;
-import se.trixon.mapton.core.api.Mapton;
-import se.trixon.mapton.core.api.MaptonOptions;
+import se.trixon.mapton.api.MEngine;
+import se.trixon.mapton.api.MOptions;
+import se.trixon.mapton.api.Mapton;
 
 /**
  *
@@ -27,13 +27,13 @@ import se.trixon.mapton.core.api.MaptonOptions;
 @OnStop
 public class Finalizer implements Runnable {
 
-    private final MaptonOptions mOptions = MaptonOptions.getInstance();
+    private final MOptions mOptions = MOptions.getInstance();
 
     @Override
     public void run() {
-        final MapEngine engine = Mapton.getEngine();
+        final MEngine engine = Mapton.getEngine();
         try {
-            mOptions.setMapZoom(engine.getZoom());
+            mOptions.setMapZoom(MEngine.getZoom());
             mOptions.setMapCenter(engine.getCenter());
         } catch (Exception e) {
             //nvm

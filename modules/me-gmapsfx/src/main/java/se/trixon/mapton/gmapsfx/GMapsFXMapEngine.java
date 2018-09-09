@@ -38,17 +38,17 @@ import javafx.scene.image.WritableImage;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.util.MathHelper;
-import se.trixon.mapton.core.api.LatLon;
-import se.trixon.mapton.core.api.LatLonBox;
-import se.trixon.mapton.core.api.MapEngine;
+import se.trixon.mapton.api.MLatLon;
+import se.trixon.mapton.api.MLatLonBox;
+import se.trixon.mapton.api.MEngine;
 import se.trixon.mapton.gmapsfx.api.MapStyle;
 
 /**
  *
  * @author Patrik Karlström
  */
-@ServiceProvider(service = MapEngine.class)
-public class GMapsFXMapEngine extends MapEngine {
+@ServiceProvider(service = MEngine.class)
+public class GMapsFXMapEngine extends MEngine {
 
     public static final String LOG_TAG = "GMapsFX";
 
@@ -65,12 +65,12 @@ public class GMapsFXMapEngine extends MapEngine {
     }
 
     @Override
-    public void fitToBounds(LatLonBox latLonBox) {
+    public void fitToBounds(MLatLonBox latLonBox) {
         mMap.fitBounds(new LatLongBounds(toLatLong(latLonBox.getSouthWest()), toLatLong(latLonBox.getNorthEast())));
     }
 
     @Override
-    public LatLon getCenter() {
+    public MLatLon getCenter() {
         return toLatLon(mMap.getCenter());
     }
 
@@ -106,12 +106,12 @@ public class GMapsFXMapEngine extends MapEngine {
     }
 
     @Override
-    public void panTo(LatLon latLon) {
+    public void panTo(MLatLon latLon) {
         mMap.panTo(toLatLong(latLon));
     }
 
     @Override
-    public void panTo(LatLon latLong, double zoom) {
+    public void panTo(MLatLon latLong, double zoom) {
         mMap.setZoom(MathHelper.round(toLocalZoom(zoom)));
         panTo(latLong);
     }
@@ -219,14 +219,14 @@ public class GMapsFXMapEngine extends MapEngine {
         return zoom / (steps - 0);
     }
 
-    private LatLon toLatLon(LatLong latLong) {
-        return new LatLon(
+    private MLatLon toLatLon(LatLong latLong) {
+        return new MLatLon(
                 latLong.getLatitude(),
                 latLong.getLongitude()
         );
     }
 
-    private LatLong toLatLong(LatLon latLon) {
+    private LatLong toLatLong(MLatLon latLon) {
         return new LatLong(
                 latLon.getLatitude(),
                 latLon.getLongitude()

@@ -39,8 +39,8 @@ import org.openide.DialogDisplayer;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxActionSwing;
-import se.trixon.mapton.core.api.LatLon;
-import se.trixon.mapton.core.api.Mapton;
+import se.trixon.mapton.api.MLatLon;
+import se.trixon.mapton.api.Mapton;
 import se.trixon.mapton.core.db.DbBaseManager;
 
 /**
@@ -321,7 +321,7 @@ public class BookmarkManager extends DbBaseManager {
     }
 
     void goTo(Bookmark bookmark) throws ClassNotFoundException, SQLException {
-        Mapton.getEngine().panTo(new LatLon(bookmark.getLatitude(), bookmark.getLongitude()), bookmark.getZoom());
+        Mapton.getEngine().panTo(new MLatLon(bookmark.getLatitude(), bookmark.getLongitude()), bookmark.getZoom());
         bookmark.setTimeAccessed(new Timestamp(System.currentTimeMillis()));
         dbUpdate(bookmark);
     }

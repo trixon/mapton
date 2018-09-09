@@ -28,8 +28,8 @@ import org.openide.windows.WindowManager;
 import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.nbp.swing.RootPaneLayout;
 import se.trixon.almond.util.icons.IconColor;
-import se.trixon.mapton.core.api.MaptonOptions;
-import se.trixon.mapton.core.toolbar.AppToolBarProvider;
+import se.trixon.mapton.api.MOptions;
+import se.trixon.mapton.core.ui.AppToolBarProvider;
 
 /**
  *
@@ -38,7 +38,7 @@ import se.trixon.mapton.core.toolbar.AppToolBarProvider;
 @OnStart
 public class Initializer implements Runnable {
 
-    private final MaptonOptions mOptions = MaptonOptions.getInstance();
+    private final MOptions mOptions = MOptions.getInstance();
 
     @Override
     public void run() {

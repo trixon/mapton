@@ -37,7 +37,7 @@ import org.jxmapviewer.viewer.TileCache;
 import org.jxmapviewer.viewer.TileFactoryInfo;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.SystemHelper;
-import se.trixon.mapton.core.api.Mapton;
+import se.trixon.mapton.api.Mapton;
 
 /**
  *
