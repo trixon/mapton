@@ -22,8 +22,8 @@ import java.awt.event.MouseEvent;
 import javafx.scene.Node;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.NbLog;
-import se.trixon.mapton.api.MLatLon;
 import se.trixon.mapton.api.MEngine;
+import se.trixon.mapton.api.MLatLon;
 
 /**
  *
@@ -84,7 +84,7 @@ public class WorldWindMapEngine extends MEngine {
             }
 
             private void maybeShowPopup(MouseEvent e) {
-                if (e.isPopupTrigger()) {
+                if (e.isPopupTrigger() && e.isShiftDown()) {
                     displayContextMenu(e.getLocationOnScreen());
                 }
             }

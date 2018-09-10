@@ -63,7 +63,6 @@ public class AppToolBar extends ToolBar {
     private Action mBookmarkAction;
     private PopOver mBookmarkPopOver;
     private FxActionSwing mHomeAction;
-    private FxActionSwing mToolboxAction;
     private Action mLayerAction;
     private PopOver mLayerPopOver;
     private final MOptions mOptions = MOptions.getInstance();
@@ -78,6 +77,7 @@ public class AppToolBar extends ToolBar {
     private FxActionSwingCheck mSysViewFullscreenAction;
     private FxActionSwingCheck mSysViewMapAction;
     private FxActionSwing mSysViewResetAction;
+    private FxActionSwing mToolboxAction;
 
     public AppToolBar() {
         initPopOvers();
@@ -115,6 +115,10 @@ public class AppToolBar extends ToolBar {
             mBookmarkPopOver.hide();
             ((ButtonBase) getItems().get(4)).fire();
         }
+    }
+
+    void refreshEngine(MEngine engine) {
+        mStyleAction.setDisabled(engine.getStyleView() == null);
     }
 
     private void init() {
@@ -207,6 +211,7 @@ public class AppToolBar extends ToolBar {
             mStylePopOver.show((Node) event.getSource());
         });
         mStyleAction.setGraphic(MaterialIcon._Image.COLOR_LENS.getImageView(getIconSizeToolBar()));
+        mStyleAction.setDisabled(true);
 
         //Help
         mSysHelpAction = new Action(Dict.HELP.toString(), (ActionEvent event) -> {
@@ -307,9 +312,6 @@ public class AppToolBar extends ToolBar {
 
         mOptions.getPreferences().addPreferenceChangeListener((PreferenceChangeEvent evt) -> {
             switch (evt.getKey()) {
-                case MOptions.KEY_MAP_ENGINE:
-                    mStyleAction.setDisabled(MEngine.byName(evt.getNewValue()).getStyleView() == null);
-                    break;
                 case MOptions.KEY_MAP_ONLY:
                     mSysViewMapAction.setSelected(mOptions.isMapOnly());
                     break;

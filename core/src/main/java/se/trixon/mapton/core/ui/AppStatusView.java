@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.trixon.mapton.core;
+package se.trixon.mapton.core.ui;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -59,7 +59,6 @@ public class AppStatusView extends StatusBar {
         });
 
         updateProviders();
-
     }
 
     public void setMessage(String message) {

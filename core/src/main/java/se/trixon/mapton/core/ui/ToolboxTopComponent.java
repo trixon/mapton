@@ -38,9 +38,9 @@ import org.openide.windows.TopComponent;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 import se.trixon.mapton.api.MEngine;
-import static se.trixon.mapton.api.Mapton.getIconSizeToolBar;
-import se.trixon.mapton.api.MTopComponent;
 import se.trixon.mapton.api.MTool;
+import se.trixon.mapton.api.MTopComponent;
+import static se.trixon.mapton.api.Mapton.getIconSizeToolBar;
 
 /**
  * Top component which displays something.

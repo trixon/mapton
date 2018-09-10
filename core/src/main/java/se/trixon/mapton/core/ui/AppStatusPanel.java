@@ -20,7 +20,6 @@ import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javax.swing.JPanel;
 import se.trixon.almond.nbp.fx.FxPanel;
-import se.trixon.mapton.core.AppStatusView;
 
 /**
  *
