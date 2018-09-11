@@ -17,9 +17,11 @@ package se.trixon.mapton.worldwind;
 
 import com.jogamp.opengl.GLCapabilities;
 import com.jogamp.opengl.GLCapabilitiesChooser;
+import gov.nasa.worldwind.Configuration;
 import gov.nasa.worldwind.Model;
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.WorldWindow;
+import gov.nasa.worldwind.WorldWindowGLDrawable;
 import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.awt.WorldWindowGLJPanel;
 import gov.nasa.worldwind.globes.EarthFlat;
@@ -42,6 +44,8 @@ import gov.nasa.worldwind.layers.ViewControlsSelectListener;
 import gov.nasa.worldwind.terrain.ZeroElevationModel;
 import java.util.HashMap;
 import java.util.prefs.PreferenceChangeEvent;
+import se.trixon.mapton.api.MLatLon;
+import se.trixon.mapton.api.MOptions;
 
 /**
  *
@@ -50,6 +54,7 @@ import java.util.prefs.PreferenceChangeEvent;
 public class WorldWindowPanel extends WorldWindowGLJPanel {
 
     private FlatGlobe mFlatGlobe;
+    private final MOptions mMaptonOptions = MOptions.getInstance();
     private HashMap<String, AbstractGeographicProjection> mNameProjections;
     private final ModuleOptions mOptions = ModuleOptions.getInstance();
     private Globe mRoundGlobe;
@@ -69,6 +74,10 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         super(ww, glc, glcc);
         init();
         initListeners();
+    }
+
+    public WorldWindowGLDrawable getWwd() {
+        return wwd;
     }
 
     private LayerList getLayers() {
@@ -99,6 +108,12 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
     }
 
     private void init() {
+        MLatLon latLon = mMaptonOptions.getMapCenter();
+
+        Configuration.setValue(AVKey.INITIAL_LATITUDE, latLon.getLatitude());
+        Configuration.setValue(AVKey.INITIAL_LONGITUDE, latLon.getLongitude());
+        Configuration.setValue(AVKey.INITIAL_ALTITUDE, 1000000);
+
         Model m = (Model) WorldWind.createConfigurationComponent(AVKey.MODEL_CLASS_NAME);
         setModel(m);
 

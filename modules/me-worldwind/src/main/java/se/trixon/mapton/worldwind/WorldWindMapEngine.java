@@ -15,8 +15,12 @@
  */
 package se.trixon.mapton.worldwind;
 
+import gov.nasa.worldwind.WorldWindow;
 import gov.nasa.worldwind.event.PositionEvent;
+import gov.nasa.worldwind.geom.Angle;
+import gov.nasa.worldwind.geom.Box;
 import gov.nasa.worldwind.geom.Position;
+import gov.nasa.worldwind.geom.Sector;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javafx.scene.Node;
@@ -24,6 +28,7 @@ import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.NbLog;
 import se.trixon.mapton.api.MEngine;
 import se.trixon.mapton.api.MLatLon;
+import se.trixon.mapton.api.MLatLonBox;
 
 /**
  *
@@ -38,6 +43,11 @@ public class WorldWindMapEngine extends MEngine {
 
     public WorldWindMapEngine() {
         mStyleView = new StyleView();
+    }
+
+    @Override
+    public void fitToBounds(MLatLonBox latLonBox) {
+        fitToBounds(toSector(latLonBox));
     }
 
     @Override
@@ -62,6 +72,38 @@ public class WorldWindMapEngine extends MEngine {
 
     @Override
     public void onWhatsHere(String s) {
+    }
+
+    @Override
+    public void panTo(MLatLon latLon, double zoom) {
+        if (mMap.isRealized()) {
+            mMap.getView().goTo(toPosition(latLon), zoom * 100000);
+        }
+    }
+
+    @Override
+    public void panTo(MLatLon latLon) {
+        panTo(latLon, mMap.getView().getEyePosition().getAltitude() / 100000);
+    }
+
+    private void fitToBounds(Sector sector) {
+        WorldWindow wwd = mMap.getWwd();
+
+        if (sector == null) {
+            throw new IllegalArgumentException();
+        }
+
+        Box extent = Sector.computeBoundingBox(wwd.getModel().getGlobe(),
+                wwd.getSceneController().getVerticalExaggeration(), sector);
+
+        Angle fieldOfView = wwd.getView().getFieldOfView();
+        double zoom = extent.getRadius() / fieldOfView.cosHalfAngle() / fieldOfView.tanHalfAngle();
+
+        // Configure OrbitView to look at the center of the sector from our estimated distance. This causes OrbitView to
+        // animate to the specified position over several seconds. To affect this change immediately use the following:
+        // ((OrbitView) wwd.getView()).setCenterPosition(new Position(sector.getCentroid(), 0d));
+        // ((OrbitView) wwd.getView()).setZoom(zoom);
+        wwd.getView().goTo(new Position(sector.getCentroid(), 0d), zoom);
     }
 
     private void init() {
@@ -99,12 +141,30 @@ public class WorldWindMapEngine extends MEngine {
             }
         });
 
+        //TODO Add zoom change listener
+        //setZoom(toGlobalZoom());
     }
 
     private MLatLon toLatLon(Position p) {
         return new MLatLon(
                 p.getLatitude().getDegrees(),
                 p.getLongitude().getDegrees()
+        );
+    }
+
+    private Position toPosition(MLatLon latLon) {
+        Angle lat = Angle.fromDegreesLatitude(latLon.getLatitude());
+        Angle lon = Angle.fromDegreesLatitude(latLon.getLongitude());
+
+        return new Position(lat, lon, 0);
+    }
+
+    private Sector toSector(MLatLonBox latLonBox) {
+        return new Sector(
+                Angle.fromDegreesLatitude(latLonBox.getSouthWest().getLatitude()),
+                Angle.fromDegreesLatitude(latLonBox.getNorthEast().getLatitude()),
+                Angle.fromDegreesLatitude(latLonBox.getSouthWest().getLongitude()),
+                Angle.fromDegreesLatitude(latLonBox.getNorthEast().getLongitude())
         );
     }
 }
