@@ -126,6 +126,7 @@ public class WorldWindMapEngine extends MEngine {
 
     private void init() {
         mMap = new WorldWindowPanel();
+        setImageRenderer(mMap.getImageRenderer());
 
         NbLog.v(LOG_TAG, "Loaded and ready");
     }

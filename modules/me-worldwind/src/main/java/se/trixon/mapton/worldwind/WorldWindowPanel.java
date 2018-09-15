@@ -17,7 +17,6 @@ package se.trixon.mapton.worldwind;
 
 import com.jogamp.opengl.GLCapabilities;
 import com.jogamp.opengl.GLCapabilitiesChooser;
-import gov.nasa.worldwind.Configuration;
 import gov.nasa.worldwind.Model;
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.WorldWindow;
@@ -42,9 +41,11 @@ import gov.nasa.worldwind.layers.LayerList;
 import gov.nasa.worldwind.layers.ViewControlsLayer;
 import gov.nasa.worldwind.layers.ViewControlsSelectListener;
 import gov.nasa.worldwind.terrain.ZeroElevationModel;
+import java.awt.image.BufferedImage;
 import java.util.HashMap;
+import java.util.concurrent.Callable;
 import java.util.prefs.PreferenceChangeEvent;
-import se.trixon.mapton.api.MLatLon;
+import se.trixon.almond.util.GraphicsHelper;
 import se.trixon.mapton.api.MOptions;
 
 /**
@@ -80,6 +81,17 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         return wwd;
     }
 
+    Callable<BufferedImage> getImageRenderer() {
+        return () -> {
+            //TODO Save unwanted layer state and hide them
+            BufferedImage image = GraphicsHelper.componentToImage(this, null);
+            //TODO Restore
+
+            return image;
+        };
+
+    }
+
     private LayerList getLayers() {
         return getModel().getLayers();
     }
@@ -108,12 +120,6 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
     }
 
     private void init() {
-        MLatLon latLon = mMaptonOptions.getMapCenter();
-
-        Configuration.setValue(AVKey.INITIAL_LATITUDE, latLon.getLatitude());
-        Configuration.setValue(AVKey.INITIAL_LONGITUDE, latLon.getLongitude());
-        Configuration.setValue(AVKey.INITIAL_ALTITUDE, 1000000);
-
         Model m = (Model) WorldWind.createConfigurationComponent(AVKey.MODEL_CLASS_NAME);
         setModel(m);
 
