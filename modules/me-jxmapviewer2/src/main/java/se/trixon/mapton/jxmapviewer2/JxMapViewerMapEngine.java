@@ -23,7 +23,6 @@ import java.util.HashSet;
 import java.util.Set;
 import javafx.scene.Node;
 import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.jxmapviewer.JXMapViewer;
@@ -33,9 +32,9 @@ import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.nbp.dialogs.NbMessage;
 import se.trixon.almond.util.GraphicsHelper;
 import se.trixon.almond.util.MathHelper;
+import se.trixon.mapton.api.MEngine;
 import se.trixon.mapton.api.MLatLon;
 import se.trixon.mapton.api.MLatLonBox;
-import se.trixon.mapton.api.MEngine;
 
 /**
  *
@@ -85,6 +84,11 @@ public class JxMapViewerMapEngine extends MEngine {
         }
 
         return mMapKit;
+    }
+
+    @Override
+    public double getZoom() {
+        return toGlobalZoom();
     }
 
     @Override
@@ -150,16 +154,8 @@ public class JxMapViewerMapEngine extends MEngine {
             }
         });
 
-        mMapKit.getZoomSlider().addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                setZoom(toGlobalZoom());
-                System.out.println("Jx");
-                System.out.println("zoom: " + mMap.getZoom());
-                System.out.println("toGlobal: " + toGlobalZoom());
-                System.out.println("toLocal: " + toLocalZoom(toGlobalZoom()));
-                System.out.println("");
-            }
+        mMapKit.getZoomSlider().addChangeListener((ChangeEvent e) -> {
+            log(String.format("GlobalZoom = %f", toGlobalZoom()));
         });
     }
 

@@ -15,6 +15,7 @@
  */
 package se.trixon.mapton.core;
 
+import javafx.application.Platform;
 import org.openide.modules.OnStop;
 import se.trixon.mapton.api.MEngine;
 import se.trixon.mapton.api.MOptions;
@@ -32,11 +33,16 @@ public class Finalizer implements Runnable {
     @Override
     public void run() {
         final MEngine engine = Mapton.getEngine();
-        try {
-            mOptions.setMapZoom(MEngine.getZoom());
+
+        Runnable r = () -> {
+            mOptions.setMapZoom(engine.getZoom());
             mOptions.setMapCenter(engine.getCenter());
-        } catch (Exception e) {
-            //nvm
+        };
+
+        if (engine.isSwing()) {
+            r.run();
+        } else {
+            Platform.runLater(r);
         }
     }
 

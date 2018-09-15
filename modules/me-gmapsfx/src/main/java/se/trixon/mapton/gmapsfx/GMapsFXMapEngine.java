@@ -17,7 +17,6 @@ package se.trixon.mapton.gmapsfx;
 
 import com.lynden.gmapsfx.GoogleMapView;
 import com.lynden.gmapsfx.javascript.event.GMapMouseEvent;
-import com.lynden.gmapsfx.javascript.event.MapStateEventType;
 import com.lynden.gmapsfx.javascript.event.UIEventType;
 import com.lynden.gmapsfx.javascript.object.GoogleMap;
 import com.lynden.gmapsfx.javascript.object.InfoWindow;
@@ -29,6 +28,7 @@ import java.awt.Point;
 import java.util.Locale;
 import java.util.prefs.PreferenceChangeEvent;
 import javafx.application.Platform;
+import javafx.beans.Observable;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
@@ -38,9 +38,9 @@ import javafx.scene.image.WritableImage;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.util.MathHelper;
+import se.trixon.mapton.api.MEngine;
 import se.trixon.mapton.api.MLatLon;
 import se.trixon.mapton.api.MLatLonBox;
-import se.trixon.mapton.api.MEngine;
 import se.trixon.mapton.gmapsfx.api.MapStyle;
 
 /**
@@ -94,6 +94,11 @@ public class GMapsFXMapEngine extends MEngine {
     }
 
     @Override
+    public double getZoom() {
+        return toGlobalZoom();
+    }
+
+    @Override
     public boolean isSwing() {
         return false;
     }
@@ -122,7 +127,6 @@ public class GMapsFXMapEngine extends MEngine {
         mMapView.addMapInitializedListener(() -> {
             mInfoWindow = new InfoWindow();
             mMapOptions = new MapOptions()
-                    //.center(mMapController.getMapCenter())
                     .zoom(5)
                     .mapType(MapTypeIdEnum.ROADMAP)
                     .rotateControl(true)
@@ -141,11 +145,8 @@ public class GMapsFXMapEngine extends MEngine {
 
             initMap();
             initialized();
-//            Platform.runLater(() -> {
-//                mMap.setZoom(mOptions.getMapZoom());
-//                mMap.setCenter(mController.getMapCenter());
-//            });
             initListeners();
+
             setImageRenderer(() -> {
                 mZoomSlider.setVisible(false);
                 WritableImage image = mMapView.snapshot(new SnapshotParameters(), null);
@@ -153,6 +154,7 @@ public class GMapsFXMapEngine extends MEngine {
 
                 return SwingFXUtils.fromFXImage(image, null);
             });
+
             NbLog.v(LOG_TAG, "Loaded and ready");
         });
     }
@@ -174,12 +176,8 @@ public class GMapsFXMapEngine extends MEngine {
             });
         });
 
-        mZoomSlider.valueProperty().addListener((event) -> {
-            System.out.println("FX");
-            System.out.println("zoom: " + mMap.getZoom());
-            System.out.println("toGlobal: " + toGlobalZoom());
-            System.out.println("toLocal: " + toLocalZoom(toGlobalZoom()));
-            System.out.println("");
+        mZoomSlider.valueProperty().addListener((Observable event) -> {
+            log(String.format("GlobalZoom = %f", toGlobalZoom()));
         });
 
         mMapView.setOnContextMenuRequested((e) -> {
@@ -191,19 +189,9 @@ public class GMapsFXMapEngine extends MEngine {
         NbLog.v(LOG_TAG, "Initializing map...");
 
         mMapOptions.styleString(MapStyle.getStyle(mOptions.getMapStyle()));
-        if (mMap != null) {
-            mMapOptions
-                    .center(mMap.getCenter())
-                    .zoom(mMap.getZoom());
-        }
-
         mMap = mMapView.createMap(mMapOptions);
         mMap.setMapType(mOptions.getMapType());
         mMap.zoomProperty().bindBidirectional(mZoomSlider.valueProperty());
-
-        mMap.addStateEventHandler(MapStateEventType.zoom_changed, () -> {
-            setZoom(toGlobalZoom());
-        });
 
         mMap.addMouseEventHandler(UIEventType.mousemove, (GMapMouseEvent event) -> {
             setLatLonMouse(toLatLon(event.getLatLong()));

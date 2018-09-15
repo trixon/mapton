@@ -54,7 +54,7 @@ public abstract class MContextMenuItem {
     }
 
     protected double getZoom() {
-        return MEngine.getZoom();
+        return getEngine().getZoom();
     }
 
     private MEngine getEngine() {

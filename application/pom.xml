@@ -141,6 +141,7 @@
                     <installerOsMacosx>false</installerOsMacosx>
                     <installerLicenseFile>../LICENSE</installerLicenseFile>
                     <etcConfFile>src/main/resources/mapton.conf</etcConfFile>
+                    <installerPack200Enable>false</installerPack200Enable>
                 </configuration>
             </plugin>
         </plugins>

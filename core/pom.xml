@@ -21,7 +21,6 @@
                         <!--<publicPackage>se.trixon.almond.util.*</publicPackage>-->
                         <!--<publicPackage>se.trixon.almond.nbp.*</publicPackage>-->
                         <publicPackage>org.apache.commons.*</publicPackage>
-                        <publicPackage>org.controlsfx.*</publicPackage>
                         <publicPackage>org.postgresql.*</publicPackage>
                         <publicPackage>de.micromata.*</publicPackage>
                         <publicPackage>com.github.goober.*</publicPackage>
@@ -136,7 +135,7 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.2.4</version>
+            <version>42.2.5</version>
         </dependency>
         <dependency>
             <groupId>de.micromata.jak</groupId>

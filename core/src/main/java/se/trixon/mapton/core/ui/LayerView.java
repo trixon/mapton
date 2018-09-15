@@ -30,8 +30,8 @@ import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import se.trixon.mapton.api.MDict;
 import se.trixon.mapton.api.MEngine;
-import se.trixon.mapton.api.Mapton;
 import se.trixon.mapton.api.MOptions;
+import se.trixon.mapton.api.Mapton;
 
 /**
  *

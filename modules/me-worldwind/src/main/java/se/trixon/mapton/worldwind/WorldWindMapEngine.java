@@ -15,12 +15,15 @@
  */
 package se.trixon.mapton.worldwind;
 
+import com.jogamp.opengl.GLAutoDrawable;
+import com.jogamp.opengl.GLEventListener;
 import gov.nasa.worldwind.WorldWindow;
 import gov.nasa.worldwind.event.PositionEvent;
 import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.Box;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.geom.Sector;
+import gov.nasa.worldwind.geom.Vec4;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javafx.scene.Node;
@@ -38,6 +41,8 @@ import se.trixon.mapton.api.MLatLonBox;
 public class WorldWindMapEngine extends MEngine {
 
     public static final String LOG_TAG = "WorldWind";
+    private static final double MAX_ALTITUDE = 2.0E7f;
+    private boolean mInitialized;
     private WorldWindowPanel mMap;
     private StyleView mStyleView;
 
@@ -48,6 +53,14 @@ public class WorldWindMapEngine extends MEngine {
     @Override
     public void fitToBounds(MLatLonBox latLonBox) {
         fitToBounds(toSector(latLonBox));
+    }
+
+    @Override
+    public MLatLon getCenter() {
+        Vec4 centerPoint = mMap.getView().getCenterPoint();
+        Position centerPosition = mMap.getView().getGlobe().computePositionFromPoint(centerPoint);
+
+        return toLatLon(centerPosition);
     }
 
     @Override
@@ -71,19 +84,24 @@ public class WorldWindMapEngine extends MEngine {
     }
 
     @Override
+    public double getZoom() {
+        return toGlobalZoom();
+    }
+
+    @Override
     public void onWhatsHere(String s) {
     }
 
     @Override
     public void panTo(MLatLon latLon, double zoom) {
-        if (mMap.isRealized()) {
-            mMap.getView().goTo(toPosition(latLon), zoom * 100000);
+        if (mInitialized) {
+            mMap.getView().goTo(toPosition(latLon), toLocalZoom(zoom));
         }
     }
 
     @Override
     public void panTo(MLatLon latLon) {
-        panTo(latLon, mMap.getView().getEyePosition().getAltitude() / 100000);
+        panTo(latLon, toGlobalZoom());
     }
 
     private void fitToBounds(Sector sector) {
@@ -117,6 +135,7 @@ public class WorldWindMapEngine extends MEngine {
 
             @Override
             public void mousePressed(MouseEvent e) {
+                log(String.format("GlobalZoom = %f", toGlobalZoom()));
                 maybeShowPopup(e);
             }
 
@@ -141,8 +160,36 @@ public class WorldWindMapEngine extends MEngine {
             }
         });
 
-        //TODO Add zoom change listener
-        //setZoom(toGlobalZoom());
+        mMap.addGLEventListener(new GLEventListener() {
+            private boolean runOnce = true;
+
+            @Override
+            public void display(GLAutoDrawable drawable) {
+                mInitialized = true;
+                if (runOnce) {
+                    initialized();
+                    runOnce = false;
+                }
+            }
+
+            @Override
+            public void dispose(GLAutoDrawable drawable) {
+            }
+
+            @Override
+            public void init(GLAutoDrawable drawable) {
+            }
+
+            @Override
+            public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
+            }
+        });
+    }
+
+    private double toGlobalZoom() {
+        double revAltitude = MAX_ALTITUDE - mMap.getView().getEyePosition().getAltitude();
+
+        return Math.max(revAltitude / MAX_ALTITUDE, 0);
     }
 
     private MLatLon toLatLon(Position p) {
@@ -150,6 +197,10 @@ public class WorldWindMapEngine extends MEngine {
                 p.getLatitude().getDegrees(),
                 p.getLongitude().getDegrees()
         );
+    }
+
+    private double toLocalZoom(double globalZoom) {
+        return MAX_ALTITUDE - globalZoom * MAX_ALTITUDE;
     }
 
     private Position toPosition(MLatLon latLon) {

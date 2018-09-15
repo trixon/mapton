@@ -34,7 +34,7 @@ public class MOptions {
     private static final double DEFAULT_MAP_LAT = 57.661509;
     private static final double DEFAULT_MAP_LON = 11.999312;
     private static final boolean DEFAULT_MAP_ONLY = false;
-    private static final double DEFAULT_MAP_ZOOM = 700f;
+    private static final double DEFAULT_MAP_ZOOM = 0.8f;
     private static final boolean DEFAULT_PREFER_POPOVER = false;
     private static final String KEY_DISPLAY_BOOKMARK = "display_bookmark";
     private static final String KEY_FULL_SCREEN = "fullscreen";

@@ -19,6 +19,7 @@ import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.util.TreeMap;
 import java.util.concurrent.Callable;
+import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.scene.Node;
 import javax.swing.SwingUtilities;
@@ -35,8 +36,8 @@ import se.trixon.mapton.core.ui.MapTopComponent;
  */
 public abstract class MEngine {
 
+    protected static final Logger LOGGER = Logger.getLogger(MEngine.class.getName());
     private static final TreeMap<String, MEngine> ENGINES = new TreeMap<>();
-    private static double mZoom;
 
     protected final MOptions mMaptonOptions = MOptions.getInstance();
     private Callable<BufferedImage> mImageRenderer;
@@ -54,16 +55,6 @@ public abstract class MEngine {
 
     public static MEngine byName(String name) {
         return ENGINES.getOrDefault(name, null);
-    }
-
-    public static double getZoom() {
-        System.out.println("getGlobalZoom: " + mZoom);
-        return mZoom;
-    }
-
-    public static void setZoom(double zoom) {
-        mZoom = zoom;
-        System.out.println("setGlobalZoom: " + mZoom);
     }
 
     private static void populateEngines() {
@@ -122,8 +113,12 @@ public abstract class MEngine {
 
     public abstract Object getUI();
 
+    public double getZoom() {
+        NbLog.i(getClass().getSimpleName(), "getZoom not implemented");
+        return 0.2;
+    }
+
     public final void goHome() {
-        System.out.println("homeZoom=" + mMaptonOptions.getMapHomeZoom());
         panTo(mMaptonOptions.getMapHome(), mMaptonOptions.getMapHomeZoom());
     }
 
@@ -133,6 +128,10 @@ public abstract class MEngine {
 
     public boolean isSwing() {
         return true;
+    }
+
+    public void log(String message) {
+        NbLog.v(getClass().getSimpleName(), message);
     }
 
     public void onWhatsHere(String s) {
