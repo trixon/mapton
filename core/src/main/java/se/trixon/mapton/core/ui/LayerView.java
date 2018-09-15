@@ -71,16 +71,16 @@ public class LayerView extends BorderPane {
 
         final ToggleGroup mapEngineToggleGroup = new ToggleGroup();
         Stream<? extends MEngine> engines = Lookup.getDefault().lookupAll(MEngine.class).stream().sorted((MEngine o1, MEngine o2) -> o1.getName().compareTo(o2.getName()));
-        engines.forEach((mapEngine) -> {
-            final String name = mapEngine.getName();
+        engines.forEach((engine) -> {
+            final String name = engine.getName();
             final RadioButton radioButton = new RadioButton(name);
-            if (StringUtils.equalsIgnoreCase(name, mOptions.getEngine())) {
+            if (StringUtils.equalsIgnoreCase(engine.getClass().getName(), mOptions.getEngine())) {
                 radioButton.setSelected(true);
             }
 
             radioButton.setToggleGroup(mapEngineToggleGroup);
             radioButton.setOnAction((event) -> {
-                switchEngine(mapEngine);
+                switchEngine(engine);
             });
 
             children.add(radioButton);
@@ -97,6 +97,6 @@ public class LayerView extends BorderPane {
         } catch (NullPointerException e) {
         }
 
-        mOptions.setEngine(newEngine.getName());
+        mOptions.setEngine(newEngine.getClass().getName());
     }
 }

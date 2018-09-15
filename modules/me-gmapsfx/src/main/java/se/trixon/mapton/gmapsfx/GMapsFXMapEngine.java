@@ -76,7 +76,7 @@ public class GMapsFXMapEngine extends MEngine {
 
     @Override
     public String getName() {
-        return "Google Maps (GMapsFX)";
+        return "Google Maps";
     }
 
     @Override

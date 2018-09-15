@@ -68,7 +68,7 @@ public class JxMapViewerMapEngine extends MEngine {
 
     @Override
     public String getName() {
-        return "Open Street Map (JxMapViewer2)";
+        return "Open Street Map";
     }
 
     @Override

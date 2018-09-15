@@ -382,15 +382,9 @@ public final class MapTopComponent extends MTopComponent {
                 NbLog.v(Mapton.LOG_TAG, ToStringBuilder.reflectionToString(address, ToStringStyle.MULTI_LINE_STYLE));
                 String s = address.getDisplayName();
 
-                Runnable r = () -> {
+                Mapton.execute(() -> {
                     mEngine.onWhatsHere(s);
-                };
-
-                if (mEngine.isSwing()) {
-                    SwingUtilities.invokeLater(r);
-                } else {
-                    Platform.runLater(r);
-                }
+                });
 
                 Platform.runLater(() -> {
                     getStatusbar().getProvider().setProgress(1);

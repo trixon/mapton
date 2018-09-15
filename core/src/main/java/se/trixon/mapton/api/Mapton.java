@@ -17,7 +17,9 @@ package se.trixon.mapton.api;
 
 import java.io.File;
 import java.text.DateFormat;
+import javafx.application.Platform;
 import javafx.scene.paint.Color;
+import javax.swing.SwingUtilities;
 import org.apache.commons.lang3.StringUtils;
 import org.openide.awt.StatusDisplayer;
 import org.openide.util.Lookup;
@@ -35,11 +37,11 @@ public class Mapton {
 
     private static final File CACHE_DIR;
     private static final File CONFIG_DIR;
+    private static final Color ICON_COLOR = Color.BLACK;
     private static final int ICON_SIZE_CONTEXT_MENU = 16;
     private static final int ICON_SIZE_TOOLBAR = 36;
     private static final int ICON_SIZE_TOOLBAR_INT = 24;
     private static AppToolBar sAppToolBar;
-    private static final Color ICON_COLOR = Color.BLACK;
 
     static {
         CONFIG_DIR = new File(System.getProperty("netbeans.user"));
@@ -48,6 +50,19 @@ public class Mapton {
 
     public static void clearStatusText() {
         setStatusText("");
+    }
+
+    /**
+     * Run in the thread of the map engine type
+     *
+     * @param runnable
+     */
+    public static void execute(Runnable runnable) {
+        if (getEngine().isSwing()) {
+            SwingUtilities.invokeLater(runnable);
+        } else {
+            Platform.runLater(runnable);
+        }
     }
 
     public static AppToolBar getAppToolBar() {
@@ -70,7 +85,7 @@ public class Mapton {
         MEngine defaultEngine = null;
 
         for (MEngine mapEngine : Lookup.getDefault().lookupAll(MEngine.class)) {
-            if (StringUtils.equalsIgnoreCase(mapEngine.getName(), MOptions.getInstance().getEngine())) {
+            if (StringUtils.equalsIgnoreCase(mapEngine.getClass().getName(), MOptions.getInstance().getEngine())) {
                 return mapEngine;
             } else {
                 defaultEngine = mapEngine;

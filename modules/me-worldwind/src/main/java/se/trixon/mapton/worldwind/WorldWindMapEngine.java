@@ -65,7 +65,7 @@ public class WorldWindMapEngine extends MEngine {
 
     @Override
     public String getName() {
-        return "WorldWind (NASA)";
+        return "WorldWind";
     }
 
     @Override

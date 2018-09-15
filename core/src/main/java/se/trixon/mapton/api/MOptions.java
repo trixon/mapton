@@ -30,7 +30,7 @@ public class MOptions {
     public static final String KEY_PREFER_POPOVER = "prefer_popover";
 
     private static final boolean DEFAULT_FULL_SCREEN = false;
-    private static final String DEFAULT_MAP_ENGINE = "Open Street Map (JxMapViewer2)";
+    private static final String DEFAULT_MAP_ENGINE = "se.trixon.mapton.worldwind.WorldWindMapEngine";
     private static final double DEFAULT_MAP_LAT = 57.661509;
     private static final double DEFAULT_MAP_LON = 11.999312;
     private static final boolean DEFAULT_MAP_ONLY = false;
