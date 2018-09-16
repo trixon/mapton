@@ -22,6 +22,7 @@ import java.util.concurrent.Callable;
 import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.scene.Node;
+import javafx.scene.layout.Pane;
 import javax.swing.SwingUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
@@ -97,6 +98,12 @@ public abstract class MEngine {
 
     public double getLatitudeProj() {
         return mMaptonOptions.getMapCooTrans().getLatitude(mLatitude, mLongitude);
+    }
+
+    public Node getLayerView() {
+        NbLog.i(getClass().getSimpleName(), "getLayerView not implemented");
+
+        return new Pane();
     }
 
     public double getLongitude() {

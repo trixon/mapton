@@ -43,11 +43,13 @@ public class WorldWindMapEngine extends MEngine {
     public static final String LOG_TAG = "WorldWind";
     private static final double MAX_ALTITUDE = 2.0E7f;
     private boolean mInitialized;
+    private final LayerView mLayerView;
     private WorldWindowPanel mMap;
-    private StyleView mStyleView;
+    private final StyleView mStyleView;
 
     public WorldWindMapEngine() {
         mStyleView = new StyleView();
+        mLayerView = new LayerView();
     }
 
     @Override
@@ -61,6 +63,11 @@ public class WorldWindMapEngine extends MEngine {
         Position centerPosition = mMap.getView().getGlobe().computePositionFromPoint(centerPoint);
 
         return toLatLon(centerPosition);
+    }
+
+    @Override
+    public Node getLayerView() {
+        return mLayerView;
     }
 
     @Override
@@ -126,6 +133,7 @@ public class WorldWindMapEngine extends MEngine {
 
     private void init() {
         mMap = new WorldWindowPanel();
+        mLayerView.refresh(mMap);
         setImageRenderer(mMap.getImageRenderer());
 
         NbLog.v(LOG_TAG, "Loaded and ready");

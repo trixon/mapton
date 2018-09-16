@@ -92,7 +92,7 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
 
     }
 
-    private LayerList getLayers() {
+    LayerList getLayers() {
         return getModel().getLayers();
     }
 
@@ -145,10 +145,12 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
                 case ModuleOptions.KEY_MAP_PROJECTION:
                     updateProjection();
                     break;
+                case ModuleOptions.KEY_DISPLAY_ATMOSPHERE:
                 case ModuleOptions.KEY_DISPLAY_COMPASS:
-                case ModuleOptions.KEY_DISPLAY_WORLD_MAP:
-                case ModuleOptions.KEY_DISPLAY_SCALE_BAR:
                 case ModuleOptions.KEY_DISPLAY_CONTROLS:
+                case ModuleOptions.KEY_DISPLAY_SCALE_BAR:
+                case ModuleOptions.KEY_DISPLAY_STARS:
+                case ModuleOptions.KEY_DISPLAY_WORLD_MAP:
                     updateScreenLayers();
                     break;
 
@@ -207,6 +209,8 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         getLayers().getLayerByName("World Map").setEnabled(mOptions.isDisplayWorldMap());
         getLayers().getLayerByName("Scale bar").setEnabled(mOptions.isDisplayScaleBar());
         getLayers().getLayerByName("View Controls").setEnabled(mOptions.isDisplayControls());
+        getLayers().getLayerByName("Atmosphere").setEnabled(mOptions.isDisplayAtmosphere());
+        getLayers().getLayerByName("Stars").setEnabled(mOptions.isDisplayStar());
 
         redraw();
     }

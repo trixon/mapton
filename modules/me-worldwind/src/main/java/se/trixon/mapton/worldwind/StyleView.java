@@ -15,20 +15,16 @@
  */
 package se.trixon.mapton.worldwind;
 
-import gov.nasa.worldwind.layers.Layer;
 import java.util.ArrayList;
 import javafx.geometry.Insets;
-import javafx.geometry.Orientation;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
-import javafx.scene.control.Separator;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
-import org.controlsfx.control.CheckListView;
 import se.trixon.almond.util.Dict;
 import se.trixon.mapton.api.MDict;
 
@@ -38,9 +34,10 @@ import se.trixon.mapton.api.MDict;
  */
 public class StyleView extends HBox {
 
+    private CheckBox mAtmosphereCheckBox;
+
     private CheckBox mCompassCheckBox;
     private CheckBox mControlsCheckBox;
-    private final CheckListView<Layer> mLayerListView = new CheckListView<>();
     private final GridPane mLeftPane = new GridPane();
     private RadioButton mModeFlatRadioButton;
     private RadioButton mModeGlobeRadioButton;
@@ -48,6 +45,7 @@ public class StyleView extends HBox {
     private ComboBox<String> mProjComboBox;
     private final ArrayList<String> mProjections = new ArrayList<>();
     private CheckBox mScaleBarCheckBox;
+    private CheckBox mStarsCheckBox;
     private CheckBox mWorldMapCheckBox;
 
     public StyleView() {
@@ -97,6 +95,12 @@ public class StyleView extends HBox {
         mCompassCheckBox = new CheckBox(MDict.COMPASS.toString());
         GridPane.setMargin(mCompassCheckBox, topInsets);
 
+        mStarsCheckBox = new CheckBox(MDict.STARS.toString());
+        GridPane.setMargin(mStarsCheckBox, topInsets);
+
+        mAtmosphereCheckBox = new CheckBox(MDict.ATMOSPHERE.toString());
+        GridPane.setMargin(mAtmosphereCheckBox, topInsets);
+
         mProjComboBox.getItems().addAll(mProjections);
 
         mLeftPane.addColumn(
@@ -109,7 +113,9 @@ public class StyleView extends HBox {
                 mWorldMapCheckBox,
                 mCompassCheckBox,
                 mControlsCheckBox,
-                mScaleBarCheckBox
+                mScaleBarCheckBox,
+                mStarsCheckBox,
+                mAtmosphereCheckBox
         );
 
         mModeFlatRadioButton.setMaxWidth(Double.MAX_VALUE);
@@ -145,10 +151,16 @@ public class StyleView extends HBox {
             mOptions.setDisplayCompass(mCompassCheckBox.isSelected());
         });
 
+        mAtmosphereCheckBox.setOnAction((event) -> {
+            mOptions.setDisplayAtmosphere(mAtmosphereCheckBox.isSelected());
+        });
+
+        mStarsCheckBox.setOnAction((event) -> {
+            mOptions.setDisplayStars(mStarsCheckBox.isSelected());
+        });
+
         getChildren().addAll(
-                mLeftPane,
-                new Separator(Orientation.VERTICAL),
-                mLayerListView
+                mLeftPane
         );
     }
 
@@ -164,5 +176,7 @@ public class StyleView extends HBox {
         mScaleBarCheckBox.setSelected(mOptions.isDisplayScaleBar());
         mControlsCheckBox.setSelected(mOptions.isDisplayControls());
         mCompassCheckBox.setSelected(mOptions.isDisplayCompass());
+        mAtmosphereCheckBox.setSelected(mOptions.isDisplayAtmosphere());
+        mStarsCheckBox.setSelected(mOptions.isDisplayStar());
     }
 }

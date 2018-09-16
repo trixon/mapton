@@ -24,15 +24,19 @@ import org.openide.util.NbPreferences;
  */
 public class ModuleOptions {
 
+    public static final String KEY_DISPLAY_ATMOSPHERE = "display_atmosphere";
     public static final String KEY_DISPLAY_COMPASS = "display_compass";
     public static final String KEY_DISPLAY_CONTROLS = "display_controls";
     public static final String KEY_DISPLAY_SCALE_BAR = "display_scale_bar";
+    public static final String KEY_DISPLAY_STARS = "display_stars";
     public static final String KEY_DISPLAY_WORLD_MAP = "display_world_map";
     public static final String KEY_MAP_GLOBE = "map_mode";
     public static final String KEY_MAP_PROJECTION = "map_projection";
+    private static final boolean DEFAULT_DISPLAY_ATMOSPHERE = true;
     private static final boolean DEFAULT_DISPLAY_COMPASS = true;
     private static final boolean DEFAULT_DISPLAY_CONTROLS = true;
     private static final boolean DEFAULT_DISPLAY_SCALE_BAR = true;
+    private static final boolean DEFAULT_DISPLAY_STARS = true;
     private static final boolean DEFAULT_DISPLAY_WORLD_MAP = true;
     private static final boolean DEFAULT_MAP_GLOBE = true;
     private static final int DEFAULT_MAP_PROJECTION = 1;
@@ -53,6 +57,10 @@ public class ModuleOptions {
         return mPreferences;
     }
 
+    public boolean isDisplayAtmosphere() {
+        return mPreferences.getBoolean(KEY_DISPLAY_ATMOSPHERE, DEFAULT_DISPLAY_ATMOSPHERE);
+    }
+
     public boolean isDisplayCompass() {
         return mPreferences.getBoolean(KEY_DISPLAY_COMPASS, DEFAULT_DISPLAY_COMPASS);
     }
@@ -65,12 +73,20 @@ public class ModuleOptions {
         return mPreferences.getBoolean(KEY_DISPLAY_SCALE_BAR, DEFAULT_DISPLAY_SCALE_BAR);
     }
 
+    public boolean isDisplayStar() {
+        return mPreferences.getBoolean(KEY_DISPLAY_STARS, DEFAULT_DISPLAY_STARS);
+    }
+
     public boolean isDisplayWorldMap() {
         return mPreferences.getBoolean(KEY_DISPLAY_WORLD_MAP, DEFAULT_DISPLAY_WORLD_MAP);
     }
 
     public boolean isMapGlobe() {
         return mPreferences.getBoolean(KEY_MAP_GLOBE, DEFAULT_MAP_GLOBE);
+    }
+
+    public void setDisplayAtmosphere(boolean value) {
+        mPreferences.putBoolean(KEY_DISPLAY_ATMOSPHERE, value);
     }
 
     public void setDisplayCompass(boolean value) {
@@ -83,6 +99,10 @@ public class ModuleOptions {
 
     public void setDisplayScaleBar(boolean value) {
         mPreferences.putBoolean(KEY_DISPLAY_SCALE_BAR, value);
+    }
+
+    public void setDisplayStars(boolean value) {
+        mPreferences.putBoolean(KEY_DISPLAY_STARS, value);
     }
 
     public void setDisplayWorldMap(boolean value) {

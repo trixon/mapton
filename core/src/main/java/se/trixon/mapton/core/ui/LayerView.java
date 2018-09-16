@@ -16,6 +16,7 @@
 package se.trixon.mapton.core.ui;
 
 import java.util.stream.Stream;
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
@@ -62,6 +63,13 @@ public class LayerView extends BorderPane {
         setBottom(mEngineBox);
 
         populateEngines();
+        loadLayerView();
+    }
+
+    private void loadLayerView() {
+        Platform.runLater(() -> {
+            setCenter(Mapton.getEngine().getLayerView());
+        });
     }
 
     private void populateEngines() {
@@ -98,5 +106,6 @@ public class LayerView extends BorderPane {
         }
 
         mOptions.setEngine(newEngine.getClass().getName());
+        loadLayerView();
     }
 }
