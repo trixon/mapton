@@ -17,6 +17,7 @@ package se.trixon.mapton.worldwind;
 
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLEventListener;
+import gov.nasa.worldwind.View;
 import gov.nasa.worldwind.WorldWindow;
 import gov.nasa.worldwind.event.PositionEvent;
 import gov.nasa.worldwind.geom.Angle;
@@ -46,6 +47,7 @@ public class WorldWindMapEngine extends MEngine {
     private final LayerView mLayerView;
     private WorldWindowPanel mMap;
     private final StyleView mStyleView;
+    private final ModuleOptions mOptions = ModuleOptions.getInstance();
 
     public WorldWindMapEngine() {
         mStyleView = new StyleView();
@@ -73,6 +75,27 @@ public class WorldWindMapEngine extends MEngine {
     @Override
     public String getName() {
         return "WorldWind";
+    }
+
+    @Override
+    public void onActivate() {
+        View view = mMap.getView();
+        view.setHeading(mOptions.getViewHeading());
+        view.setPitch(mOptions.getViewPitch());
+        view.setRoll(mOptions.getViewRoll());
+    }
+
+    @Override
+    public void onDeactivate() {
+        View view = mMap.getView();
+        mOptions.setViewHeading(view.getHeading());
+        mOptions.setViewPitch(view.getPitch());
+        mOptions.setViewRoll(view.getRoll());
+    }
+
+    @Override
+    public void onClosing() {
+        onDeactivate();
     }
 
     @Override

@@ -15,6 +15,7 @@
  */
 package se.trixon.mapton.worldwind;
 
+import gov.nasa.worldwind.geom.Angle;
 import java.util.prefs.Preferences;
 import org.openide.util.NbPreferences;
 
@@ -32,6 +33,10 @@ public class ModuleOptions {
     public static final String KEY_DISPLAY_WORLD_MAP = "display_world_map";
     public static final String KEY_MAP_GLOBE = "map_mode";
     public static final String KEY_MAP_PROJECTION = "map_projection";
+    public static final String KEY_VIEW_HEADING = "view_heading";
+    public static final String KEY_VIEW_PITCH = "view_pitch";
+    public static final String KEY_VIEW_ROLL = "view_roll";
+
     private static final boolean DEFAULT_DISPLAY_ATMOSPHERE = true;
     private static final boolean DEFAULT_DISPLAY_COMPASS = true;
     private static final boolean DEFAULT_DISPLAY_CONTROLS = true;
@@ -55,6 +60,18 @@ public class ModuleOptions {
 
     public Preferences getPreferences() {
         return mPreferences;
+    }
+
+    public Angle getViewHeading() {
+        return Angle.fromDegrees(mPreferences.getDouble(KEY_VIEW_HEADING, 0));
+    }
+
+    public Angle getViewPitch() {
+        return Angle.fromDegrees(mPreferences.getDouble(KEY_VIEW_PITCH, 0));
+    }
+
+    public Angle getViewRoll() {
+        return Angle.fromDegrees(mPreferences.getDouble(KEY_VIEW_ROLL, 0));
     }
 
     public boolean isDisplayAtmosphere() {
@@ -115,6 +132,18 @@ public class ModuleOptions {
 
     public void setMapProjection(int value) {
         mPreferences.putInt(KEY_MAP_PROJECTION, value);
+    }
+
+    public void setViewHeading(Angle value) {
+        mPreferences.putDouble(KEY_VIEW_HEADING, value.getDegrees());
+    }
+
+    public void setViewPitch(Angle value) {
+        mPreferences.putDouble(KEY_VIEW_PITCH, value.getDegrees());
+    }
+
+    public void setViewRoll(Angle value) {
+        mPreferences.putDouble(KEY_VIEW_ROLL, value.getDegrees());
     }
 
     private static class Holder {
