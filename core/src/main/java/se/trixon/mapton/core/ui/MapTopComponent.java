@@ -346,6 +346,7 @@ public final class MapTopComponent extends MTopComponent {
                 revalidate();
                 repaint();
                 try {
+                    engine.onActivate();
                     engine.panTo(mMOptions.getMapCenter(), mMOptions.getMapZoom());
                 } catch (NullPointerException e) {
                 }
@@ -356,6 +357,7 @@ public final class MapTopComponent extends MTopComponent {
                 mRoot.setCenter((Node) engine.getUI());
                 attachStatusbar(mMOptions.isMapOnly());
                 try {
+                    engine.onActivate();
                     engine.panTo(mMOptions.getMapCenter(), mMOptions.getMapZoom());
                 } catch (Exception e) {
                 }

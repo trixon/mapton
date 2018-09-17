@@ -141,6 +141,18 @@ public abstract class MEngine {
         NbLog.v(getClass().getSimpleName(), message);
     }
 
+    public void onActivate() {
+    }
+
+    public void onClosing() {
+    }
+
+    public void onDeactivate() {
+    }
+
+    public void onOpening() {
+    }
+
     public void onWhatsHere(String s) {
         NbLog.i(getClass().getSimpleName(), "displayWhatsHere not implemented");
     }

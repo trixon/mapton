@@ -16,6 +16,7 @@
 package se.trixon.mapton.core;
 
 import org.openide.modules.OnStop;
+import org.openide.util.Lookup;
 import se.trixon.mapton.api.MEngine;
 import se.trixon.mapton.api.MOptions;
 import se.trixon.mapton.api.Mapton;
@@ -36,6 +37,10 @@ public class Finalizer implements Runnable {
         Mapton.execute(() -> {
             mOptions.setMapZoom(engine.getZoom());
             mOptions.setMapCenter(engine.getCenter());
+        });
+
+        Lookup.getDefault().lookupAll(MEngine.class).forEach((mapEngine) -> {
+            Mapton.execute(mapEngine::onClosing);
         });
     }
 

@@ -100,6 +100,7 @@ public class LayerView extends BorderPane {
 
         final MEngine oldEngine = Mapton.getEngine();
         try {
+            oldEngine.onDeactivate();
             mOptions.setMapZoom(oldEngine.getZoom());
             mOptions.setMapCenter(oldEngine.getCenter());
         } catch (NullPointerException e) {
