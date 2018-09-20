@@ -39,8 +39,12 @@ public class Finalizer implements Runnable {
             mOptions.setMapCenter(engine.getCenter());
         });
 
-        Lookup.getDefault().lookupAll(MEngine.class).forEach((mapEngine) -> {
-            Mapton.execute(mapEngine::onClosing);
+        Lookup.getDefault().lookupAll(MEngine.class).forEach((MEngine mapEngine) -> {
+            try {
+                Mapton.execute(mapEngine::onClosing);
+            } catch (Exception e) {
+                System.err.println(e.getMessage());
+            }
         });
     }
 

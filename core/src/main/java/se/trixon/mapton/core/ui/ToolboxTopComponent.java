@@ -37,7 +37,6 @@ import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.icons.material.MaterialIcon;
-import se.trixon.mapton.api.MEngine;
 import se.trixon.mapton.api.MTool;
 import se.trixon.mapton.api.MTopComponent;
 import static se.trixon.mapton.api.Mapton.getIconSizeToolBar;
@@ -96,18 +95,20 @@ public final class ToolboxTopComponent extends MTopComponent {
         mRoot.setCellFactory((TreeView<Action> param) -> new ActionTreeCell());
 
         mRoot.setOnMouseClicked((event) -> {
-            if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
-                mRoot.getSelectionModel().getSelectedItem().getValue().handle(null);
+            final TreeItem<Action> selectedItem = mRoot.getSelectionModel().getSelectedItem();
+            if (selectedItem != null && event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
+                selectedItem.getValue().handle(null);
             }
         });
 
         mRoot.setOnKeyPressed((event) -> {
-            if (event.getCode() == KeyCode.ENTER) {
+            final TreeItem<Action> selectedItem = mRoot.getSelectionModel().getSelectedItem();
+            if (selectedItem != null && event.getCode() == KeyCode.ENTER) {
                 mRoot.getSelectionModel().getSelectedItem().getValue().handle(null);
             }
         });
 
-        Lookup.getDefault().lookupResult(MEngine.class).addLookupListener((LookupEvent ev) -> {
+        Lookup.getDefault().lookupResult(MTool.class).addLookupListener((LookupEvent ev) -> {
             populateToolbox();
         });
 
@@ -152,6 +153,10 @@ public final class ToolboxTopComponent extends MTopComponent {
         Collections.sort(tempRootItems, treeItemComparator);
         tempRootItems.forEach((rootItem) -> {
             treeRootChildrens.add(rootItem);
+        });
+
+        root.getChildren().forEach((treeItem) -> {
+            treeItem.setExpanded(true);
         });
 
         mRoot.setRoot(root);
