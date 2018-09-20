@@ -28,6 +28,7 @@ public enum MDict {
     COMPASS,
     COPY_LOCATION,
     DISPLAY_PLACEMARK,
+    ELEVATION,
     FLAT,
     GLOBE,
     MAP_ENGINE,

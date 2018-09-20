@@ -32,6 +32,7 @@ public class ModuleOptions {
     public static final String KEY_DISPLAY_SCALE_BAR = "display_scale_bar";
     public static final String KEY_DISPLAY_STARS = "display_stars";
     public static final String KEY_DISPLAY_WORLD_MAP = "display_world_map";
+    public static final String KEY_MAP_ELEVATION = "map_elevation";
     public static final String KEY_MAP_GLOBE = "map_mode";
     public static final String KEY_MAP_OPACITY = "map_opacity";
     public static final String KEY_MAP_PROJECTION = "map_projection";
@@ -46,6 +47,7 @@ public class ModuleOptions {
     private static final boolean DEFAULT_DISPLAY_SCALE_BAR = true;
     private static final boolean DEFAULT_DISPLAY_STARS = true;
     private static final boolean DEFAULT_DISPLAY_WORLD_MAP = false;
+    private static final boolean DEFAULT_MAP_ELEVATION = true;
     private static final boolean DEFAULT_MAP_GLOBE = true;
     private static final double DEFAULT_MAP_OPACITY = 1.0;
     private static final int DEFAULT_MAP_PROJECTION = 1;
@@ -111,6 +113,10 @@ public class ModuleOptions {
         return mPreferences.getBoolean(KEY_DISPLAY_WORLD_MAP, DEFAULT_DISPLAY_WORLD_MAP);
     }
 
+    public boolean isMapElevation() {
+        return mPreferences.getBoolean(KEY_MAP_ELEVATION, DEFAULT_MAP_ELEVATION);
+    }
+
     public boolean isMapGlobe() {
         return mPreferences.getBoolean(KEY_MAP_GLOBE, DEFAULT_MAP_GLOBE);
     }
@@ -137,6 +143,10 @@ public class ModuleOptions {
 
     public void setDisplayWorldMap(boolean value) {
         mPreferences.putBoolean(KEY_DISPLAY_WORLD_MAP, value);
+    }
+
+    public void setMapElevation(boolean value) {
+        mPreferences.putBoolean(KEY_MAP_ELEVATION, value);
     }
 
     public void setMapGlobe(boolean value) {

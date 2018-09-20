@@ -24,6 +24,7 @@ import gov.nasa.worldwind.WorldWindowGLDrawable;
 import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.awt.WorldWindowGLJPanel;
 import gov.nasa.worldwind.globes.EarthFlat;
+import gov.nasa.worldwind.globes.ElevationModel;
 import gov.nasa.worldwind.globes.FlatGlobe;
 import gov.nasa.worldwind.globes.GeographicProjection;
 import gov.nasa.worldwind.globes.Globe;
@@ -40,6 +41,7 @@ import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.layers.LayerList;
 import gov.nasa.worldwind.layers.ViewControlsLayer;
 import gov.nasa.worldwind.layers.ViewControlsSelectListener;
+import gov.nasa.worldwind.terrain.CompoundElevationModel;
 import gov.nasa.worldwind.terrain.ZeroElevationModel;
 import java.awt.image.BufferedImage;
 import java.util.Arrays;
@@ -138,6 +140,7 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         updateMode();
         updateProjection();
         updateStyle();
+        updateElevation();
     }
 
     private void initListeners() {
@@ -146,6 +149,9 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
                 case ModuleOptions.KEY_MAP_OPACITY:
                 case ModuleOptions.KEY_MAP_STYLE:
                     updateStyle();
+                    break;
+                case ModuleOptions.KEY_MAP_ELEVATION:
+                    updateElevation();
                     break;
                 case ModuleOptions.KEY_MAP_GLOBE:
                     updateMode();
@@ -183,6 +189,15 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
 
     private boolean isFlatGlobe() {
         return getModel().getGlobe() instanceof FlatGlobe;
+    }
+
+    private void updateElevation() {
+        CompoundElevationModel cem = (CompoundElevationModel) wwd.getModel().getGlobe().getElevationModel();
+        for (ElevationModel elevationModel : cem.getElevationModels()) {
+            elevationModel.setEnabled(mOptions.isMapElevation());
+        }
+
+        wwd.redraw();
     }
 
     private void updateMode() {

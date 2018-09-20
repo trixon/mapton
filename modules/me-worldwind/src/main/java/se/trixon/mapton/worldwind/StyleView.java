@@ -46,6 +46,7 @@ import se.trixon.mapton.worldwind.api.MapStyle;
  */
 public class StyleView extends HBox {
 
+    private CheckBox mElevationCheckBox;
     private CheckBox mAtmosphereCheckBox;
     private CheckBox mCompassCheckBox;
     private CheckBox mControlsCheckBox;
@@ -180,7 +181,12 @@ public class StyleView extends HBox {
             mOptions.setDisplayStars(mStarsCheckBox.isSelected());
         });
 
-        mOpacityBox = new VBox(new Label(Dict.OPACITY.toString()), mOpacitySlider);
+        mElevationCheckBox = new CheckBox(MDict.ELEVATION.toString());
+        mElevationCheckBox.setOnAction((event) -> {
+            mOptions.setMapElevation(mElevationCheckBox.isSelected());
+        });
+
+        mOpacityBox = new VBox(new Label(Dict.OPACITY.toString()), mOpacitySlider, mElevationCheckBox);
 
         getChildren().addAll(
                 mLeftPane,
@@ -234,5 +240,6 @@ public class StyleView extends HBox {
         mStarsCheckBox.setSelected(mOptions.isDisplayStar());
 
         mOpacitySlider.setValue(mOptions.getMapOpacity());
+        mElevationCheckBox.setSelected(mOptions.isMapElevation());
     }
 }
