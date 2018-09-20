@@ -16,17 +16,29 @@
 package se.trixon.mapton.worldwind;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import javafx.application.Platform;
+import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.Separator;
+import javafx.scene.control.Slider;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
+import org.openide.util.Lookup;
+import org.openide.util.LookupEvent;
 import se.trixon.almond.util.Dict;
 import se.trixon.mapton.api.MDict;
+import se.trixon.mapton.worldwind.api.MapStyle;
 
 /**
  *
@@ -35,17 +47,19 @@ import se.trixon.mapton.api.MDict;
 public class StyleView extends HBox {
 
     private CheckBox mAtmosphereCheckBox;
-
     private CheckBox mCompassCheckBox;
     private CheckBox mControlsCheckBox;
     private final GridPane mLeftPane = new GridPane();
     private RadioButton mModeFlatRadioButton;
     private RadioButton mModeGlobeRadioButton;
+    private VBox mOpacityBox;
+    private final Slider mOpacitySlider = new Slider(0, 1, 1);
     private final ModuleOptions mOptions = ModuleOptions.getInstance();
     private ComboBox<String> mProjComboBox;
     private final ArrayList<String> mProjections = new ArrayList<>();
     private CheckBox mScaleBarCheckBox;
     private CheckBox mStarsCheckBox;
+    private final VBox mStyleBox = new VBox(16);
     private CheckBox mWorldMapCheckBox;
 
     public StyleView() {
@@ -60,13 +74,20 @@ public class StyleView extends HBox {
         mProjections.add(MDict.PROJ_UPS_SOUTH.toString());
 
         createUI();
+        initListeners();
         load();
+        Lookup.getDefault().lookupResult(MapStyle.class).addLookupListener((LookupEvent ev) -> {
+            initStyle();
+        });
+
+        initStyle();
     }
 
     private void createUI() {
         setSpacing(16);
         setPadding(new Insets(8, 16, 16, 16));
         mLeftPane.setPrefWidth(200);
+        mStyleBox.setPrefWidth(200);
 
         Insets topInsets = new Insets(12, 0, 0, 0);
         Label modeLabel = new Label(Dict.MODE.toString());
@@ -159,9 +180,42 @@ public class StyleView extends HBox {
             mOptions.setDisplayStars(mStarsCheckBox.isSelected());
         });
 
+        mOpacityBox = new VBox(new Label(Dict.OPACITY.toString()), mOpacitySlider);
+
         getChildren().addAll(
-                mLeftPane
+                mLeftPane,
+                new Separator(Orientation.VERTICAL),
+                mStyleBox
         );
+    }
+
+    private void initListeners() {
+        mOpacitySlider.valueProperty().addListener((ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
+            mOptions.setMapOpacity(mOpacitySlider.getValue());
+        });
+    }
+
+    private void initStyle() {
+        Platform.runLater(() -> {
+            ToggleGroup group = new ToggleGroup();
+
+            mStyleBox.getChildren().clear();
+            ArrayList< MapStyle> styles = new ArrayList<>(Lookup.getDefault().lookupAll(MapStyle.class));
+            Collections.sort(styles, (MapStyle o1, MapStyle o2) -> o1.getName().compareTo(o2.getName()));
+
+            for (MapStyle mapStyle : styles) {
+                ToggleButton button = new ToggleButton(mapStyle.getName());
+                button.prefWidthProperty().bind(widthProperty());
+                button.setToggleGroup(group);
+                button.setOnAction((ActionEvent event) -> {
+                    mOptions.setMapStyle(mapStyle.getName());
+                });
+
+                mStyleBox.getChildren().add(button);
+            }
+
+            mStyleBox.getChildren().add(mOpacityBox);
+        });
     }
 
     private void load() {
@@ -178,5 +232,7 @@ public class StyleView extends HBox {
         mCompassCheckBox.setSelected(mOptions.isDisplayCompass());
         mAtmosphereCheckBox.setSelected(mOptions.isDisplayAtmosphere());
         mStarsCheckBox.setSelected(mOptions.isDisplayStar());
+
+        mOpacitySlider.setValue(mOptions.getMapOpacity());
     }
 }

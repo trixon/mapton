@@ -69,7 +69,7 @@ public class WorldWindMapEngine extends MEngine {
 
     @Override
     public Node getLayerView() {
-        return mLayerView;
+        return null;
     }
 
     @Override

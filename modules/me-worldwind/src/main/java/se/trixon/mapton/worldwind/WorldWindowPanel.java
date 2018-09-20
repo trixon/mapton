@@ -42,11 +42,14 @@ import gov.nasa.worldwind.layers.ViewControlsLayer;
 import gov.nasa.worldwind.layers.ViewControlsSelectListener;
 import gov.nasa.worldwind.terrain.ZeroElevationModel;
 import java.awt.image.BufferedImage;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.concurrent.Callable;
 import java.util.prefs.PreferenceChangeEvent;
 import se.trixon.almond.util.GraphicsHelper;
 import se.trixon.mapton.api.MOptions;
+import se.trixon.mapton.worldwind.api.MapStyle;
 
 /**
  *
@@ -134,11 +137,16 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         updateScreenLayers();
         updateMode();
         updateProjection();
+        updateStyle();
     }
 
     private void initListeners() {
         mOptions.getPreferences().addPreferenceChangeListener((PreferenceChangeEvent evt) -> {
             switch (evt.getKey()) {
+                case ModuleOptions.KEY_MAP_OPACITY:
+                case ModuleOptions.KEY_MAP_STYLE:
+                    updateStyle();
+                    break;
                 case ModuleOptions.KEY_MAP_GLOBE:
                     updateMode();
                     break;
@@ -215,4 +223,24 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         redraw();
     }
 
+    private void updateStyle() {
+        HashSet<String> blacklist = new HashSet<>();
+        blacklist.add("Compass");
+        blacklist.add("World Map");
+        blacklist.add("Scale bar");
+        blacklist.add("View Controls");
+        blacklist.add("Stars");
+        blacklist.add("Atmosphere");
+
+        String[] styleLayers = MapStyle.getLayers(mOptions.getMapStyle());
+        getLayers().forEach((layer) -> {
+            final String name = layer.getName();
+            if (!blacklist.contains(name)) {
+                layer.setEnabled(Arrays.asList(styleLayers).contains(name));
+                layer.setOpacity(mOptions.getMapOpacity());
+            }
+        });
+
+        redraw();
+    }
 }

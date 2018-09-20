@@ -18,6 +18,7 @@ package se.trixon.mapton.worldwind;
 import gov.nasa.worldwind.geom.Angle;
 import java.util.prefs.Preferences;
 import org.openide.util.NbPreferences;
+import se.trixon.almond.util.Dict;
 
 /**
  *
@@ -32,7 +33,9 @@ public class ModuleOptions {
     public static final String KEY_DISPLAY_STARS = "display_stars";
     public static final String KEY_DISPLAY_WORLD_MAP = "display_world_map";
     public static final String KEY_MAP_GLOBE = "map_mode";
+    public static final String KEY_MAP_OPACITY = "map_opacity";
     public static final String KEY_MAP_PROJECTION = "map_projection";
+    public static final String KEY_MAP_STYLE = "map_style";
     public static final String KEY_VIEW_HEADING = "view_heading";
     public static final String KEY_VIEW_PITCH = "view_pitch";
     public static final String KEY_VIEW_ROLL = "view_roll";
@@ -42,9 +45,11 @@ public class ModuleOptions {
     private static final boolean DEFAULT_DISPLAY_CONTROLS = true;
     private static final boolean DEFAULT_DISPLAY_SCALE_BAR = true;
     private static final boolean DEFAULT_DISPLAY_STARS = true;
-    private static final boolean DEFAULT_DISPLAY_WORLD_MAP = true;
+    private static final boolean DEFAULT_DISPLAY_WORLD_MAP = false;
     private static final boolean DEFAULT_MAP_GLOBE = true;
+    private static final double DEFAULT_MAP_OPACITY = 1.0;
     private static final int DEFAULT_MAP_PROJECTION = 1;
+    private static final String DEFAULT_MAP_STYLE = Dict.MAP_TYPE_ROADMAP.toString();
     private final Preferences mPreferences = NbPreferences.forModule(ModuleOptions.class);
 
     public static ModuleOptions getInstance() {
@@ -54,8 +59,16 @@ public class ModuleOptions {
     private ModuleOptions() {
     }
 
+    public double getMapOpacity() {
+        return mPreferences.getDouble(KEY_MAP_OPACITY, DEFAULT_MAP_OPACITY);
+    }
+
     public int getMapProjection() {
         return mPreferences.getInt(KEY_MAP_PROJECTION, DEFAULT_MAP_PROJECTION);
+    }
+
+    public String getMapStyle() {
+        return mPreferences.get(KEY_MAP_STYLE, DEFAULT_MAP_STYLE);
     }
 
     public Preferences getPreferences() {
@@ -130,8 +143,16 @@ public class ModuleOptions {
         mPreferences.putBoolean(KEY_MAP_GLOBE, value);
     }
 
+    public void setMapOpacity(double value) {
+        mPreferences.putDouble(KEY_MAP_OPACITY, value);
+    }
+
     public void setMapProjection(int value) {
         mPreferences.putInt(KEY_MAP_PROJECTION, value);
+    }
+
+    public void setMapStyle(String value) {
+        mPreferences.put(KEY_MAP_STYLE, value);
     }
 
     public void setViewHeading(Angle value) {
