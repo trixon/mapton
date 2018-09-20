@@ -23,6 +23,7 @@ import gov.nasa.worldwind.WorldWindow;
 import gov.nasa.worldwind.WorldWindowGLDrawable;
 import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.awt.WorldWindowGLJPanel;
+import gov.nasa.worldwind.geom.Sector;
 import gov.nasa.worldwind.globes.EarthFlat;
 import gov.nasa.worldwind.globes.ElevationModel;
 import gov.nasa.worldwind.globes.FlatGlobe;
@@ -39,8 +40,10 @@ import gov.nasa.worldwind.globes.projections.ProjectionUPS;
 import gov.nasa.worldwind.layers.CompassLayer;
 import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.layers.LayerList;
+import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.layers.ViewControlsLayer;
 import gov.nasa.worldwind.layers.ViewControlsSelectListener;
+import gov.nasa.worldwind.render.SurfaceImage;
 import gov.nasa.worldwind.terrain.CompoundElevationModel;
 import gov.nasa.worldwind.terrain.ZeroElevationModel;
 import java.awt.image.BufferedImage;
@@ -101,6 +104,14 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         return getModel().getLayers();
     }
 
+    private void addRenderableLayer() {
+        SurfaceImage blackBackground = new SurfaceImage("https://trixon.se/files/pata.jpg", Sector.FULL_SPHERE);
+        RenderableLayer blackBackgroundLayer = new RenderableLayer();
+        blackBackgroundLayer.setName("pata");
+        blackBackgroundLayer.addRenderable(blackBackground);
+        getLayers().add(blackBackgroundLayer);
+    }
+
     private GeographicProjection getProjection() {
         switch (mOptions.getMapProjection()) {
             case 1:
@@ -136,6 +147,7 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         insertLayerBefore(viewControlsLayer, CompassLayer.class);
         addSelectListener(new ViewControlsSelectListener(this, viewControlsLayer));
 
+        addRenderableLayer();
         updateScreenLayers();
         updateMode();
         updateProjection();
