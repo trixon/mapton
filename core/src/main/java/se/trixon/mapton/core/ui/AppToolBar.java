@@ -181,7 +181,7 @@ public class AppToolBar extends ToolBar {
     private void initActionsFx() {
         //Bookmark
         mBookmarkAction = new Action(Dict.BOOKMARKS.toString(), (ActionEvent event) -> {
-            if (mOptions.isPreferPopover()) {
+            if (usePopover()) {
                 mBookmarkPopOver.show((Node) event.getSource());
             } else {
                 SwingUtilities.invokeLater(() -> {
@@ -194,7 +194,7 @@ public class AppToolBar extends ToolBar {
 
         //Layer
         mLayerAction = new Action(Dict.LAYERS.toString(), (ActionEvent event) -> {
-            if (mOptions.isPreferPopover()) {
+            if (usePopover()) {
                 mLayerPopOver.show((Node) event.getSource());
             } else {
                 SwingUtilities.invokeLater(() -> {
@@ -348,5 +348,9 @@ public class AppToolBar extends ToolBar {
         mStylePopOver.setCloseButtonEnabled(false);
         mStylePopOver.setDetachable(false);
         mStylePopOver.setAnimated(false);
+    }
+
+    private boolean usePopover() {
+        return mOptions.isPreferPopover() || mOptions.isMapOnly();
     }
 }

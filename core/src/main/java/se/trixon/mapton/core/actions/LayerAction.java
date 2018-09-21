@@ -16,7 +16,6 @@
 package se.trixon.mapton.core.actions;
 
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import javafx.application.Platform;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -24,7 +23,6 @@ import org.openide.awt.ActionRegistration;
 import org.openide.awt.Actions;
 import org.openide.windows.WindowManager;
 import se.trixon.almond.nbp.fx.FxTopComponent;
-import se.trixon.mapton.api.MOptions;
 import se.trixon.mapton.api.Mapton;
 
 @ActionID(
@@ -35,19 +33,18 @@ import se.trixon.mapton.api.Mapton;
         displayName = "Layer"
 )
 @ActionReference(path = "Shortcuts", name = "D-L")
-public final class LayerAction implements ActionListener {
+public final class LayerAction extends BaseAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        MOptions options = MOptions.getInstance();
-        if (options.isPreferPopover()) {
+        if (usePopover()) {
             Platform.runLater(() -> {
                 Mapton.getAppToolBar().toogleLayerPopover();
             });
         } else {
             FxTopComponent tc = (FxTopComponent) WindowManager.getDefault().findTopComponent("LayerTopComponent");
 
-            if (options.isMapOnly()) {
+            if (mOptions.isMapOnly()) {
                 tc.open();
             } else {
                 tc.toggleOpened();
