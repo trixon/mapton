@@ -25,6 +25,8 @@ import gov.nasa.worldwind.geom.Box;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.geom.Sector;
 import gov.nasa.worldwind.geom.Vec4;
+import java.awt.event.HierarchyBoundsListener;
+import java.awt.event.HierarchyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javafx.scene.Node;
@@ -201,6 +203,17 @@ public class WorldWindMapEngine extends MEngine {
                 if (runOnce) {
                     initialized();
                     runOnce = false;
+                    mMap.addHierarchyBoundsListener(new HierarchyBoundsListener() {
+                        @Override
+                        public void ancestorMoved(HierarchyEvent e) {
+                            //nvm
+                        }
+
+                        @Override
+                        public void ancestorResized(HierarchyEvent e) {
+                            mMap.redrawNow();
+                        }
+                    });
                 }
             }
 
