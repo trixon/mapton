@@ -16,13 +16,9 @@
 package se.trixon.mapton.core.actions;
 
 import java.awt.event.ActionEvent;
-import javafx.application.Platform;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
-import org.openide.awt.Actions;
-import org.openide.windows.WindowManager;
-import se.trixon.almond.nbp.fx.FxTopComponent;
 import se.trixon.mapton.api.Mapton;
 
 @ActionID(
@@ -38,23 +34,9 @@ public final class BookmarkAction extends BaseAction {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (usePopover()) {
-            Platform.runLater(() -> {
-                Mapton.getAppToolBar().toogleBookmarkPopover();
-            });
+            Mapton.getAppToolBar().toogleBookmarkPopOver();
         } else {
-            FxTopComponent tc = (FxTopComponent) WindowManager.getDefault().findTopComponent("BookmarkTopComponent");
-
-            if (mOptions.isMapOnly()) {
-                tc.open();
-            } else {
-                tc.toggleOpened();
-            }
-
-            if (tc.isOpened()) {
-                tc.requestActive();
-            } else {
-                Actions.forID("Window", "se.trixon.mapton.core.ui.MapTopComponent").actionPerformed(null);
-            }
+            toggleTopComponent("BookmarkTopComponent");
         }
     }
 }

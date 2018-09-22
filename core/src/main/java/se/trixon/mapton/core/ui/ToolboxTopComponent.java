@@ -15,31 +15,14 @@
  */
 package se.trixon.mapton.core.ui;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.TreeMap;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.scene.Scene;
-import javafx.scene.control.TreeCell;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.MouseButton;
-import org.controlsfx.control.action.Action;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
-import org.openide.util.Lookup;
-import org.openide.util.LookupEvent;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
 import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.icons.material.MaterialIcon;
-import se.trixon.mapton.api.MTool;
 import se.trixon.mapton.api.MTopComponent;
-import static se.trixon.mapton.api.Mapton.getIconSizeToolBar;
 
 /**
  * Top component which displays something.
@@ -65,8 +48,6 @@ import static se.trixon.mapton.api.Mapton.getIconSizeToolBar;
 })
 public final class ToolboxTopComponent extends MTopComponent {
 
-    private TreeView<Action> mRoot;
-
     public ToolboxTopComponent() {
         super();
         setName(Dict.TOOLBOX.toString());
@@ -90,108 +71,6 @@ public final class ToolboxTopComponent extends MTopComponent {
     }
 
     private Scene createScene() {
-        mRoot = new TreeView<>();
-        mRoot.setShowRoot(false);
-        mRoot.setCellFactory((TreeView<Action> param) -> new ActionTreeCell());
-
-        mRoot.setOnMouseClicked((event) -> {
-            final TreeItem<Action> selectedItem = mRoot.getSelectionModel().getSelectedItem();
-            if (selectedItem != null && event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
-                selectedItem.getValue().handle(null);
-            }
-        });
-
-        mRoot.setOnKeyPressed((event) -> {
-            final TreeItem<Action> selectedItem = mRoot.getSelectionModel().getSelectedItem();
-            if (selectedItem != null && event.getCode() == KeyCode.ENTER) {
-                mRoot.getSelectionModel().getSelectedItem().getValue().handle(null);
-            }
-        });
-
-        Lookup.getDefault().lookupResult(MTool.class).addLookupListener((LookupEvent ev) -> {
-            populateToolbox();
-        });
-
-        populateToolbox();
-
-        return new Scene(mRoot);
+        return new Scene(new ToolboxView());
     }
-
-    private void populateToolbox() {
-        TreeItem<Action> root = new TreeItem<>();
-        root.setExpanded(true);
-        ObservableList<TreeItem<Action>> treeRootChildrens = root.getChildren();
-        TreeMap<String, TreeItem<Action>> actionParents = new TreeMap<>();
-        ArrayList<TreeItem> tempRootItems = new ArrayList<>();
-
-        Lookup.getDefault().lookupAll(MTool.class).forEach((toolboxAction) -> {
-            TreeItem<Action> treeItem = new TreeItem(toolboxAction.getAction());
-            treeItem.getValue().setGraphic(MaterialIcon._Action.BUILD.getImageView(getIconSizeToolBar() / 2));
-
-            final String parentName = toolboxAction.getParent();
-            if (parentName == null) {
-                tempRootItems.add(treeItem);
-            } else {
-                actionParents.computeIfAbsent(parentName, k -> new TreeItem(parentName)).getChildren().add(treeItem);
-            }
-        });
-
-        Comparator<TreeItem> treeItemComparator = (TreeItem o1, TreeItem o2) -> ((Action) o1.getValue()).getText().compareTo(((Action) o2.getValue()).getText());
-
-        actionParents.keySet().stream().map((key) -> {
-            TreeItem<Action> parentItem = new TreeItem<>(new Action(key));
-            parentItem.getValue().setGraphic(MaterialIcon._Places.BUSINESS_CENTER.getImageView(getIconSizeToolBar() / 2));
-            FXCollections.sort(actionParents.get(key).getChildren(), treeItemComparator);
-            actionParents.get(key).getChildren().forEach((item) -> {
-                parentItem.getChildren().add(item);
-            });
-            return parentItem;
-        }).forEachOrdered((parentItem) -> {
-            treeRootChildrens.add(parentItem);
-        });
-
-        Collections.sort(tempRootItems, treeItemComparator);
-        tempRootItems.forEach((rootItem) -> {
-            treeRootChildrens.add(rootItem);
-        });
-
-        root.getChildren().forEach((treeItem) -> {
-            treeItem.setExpanded(true);
-        });
-
-        mRoot.setRoot(root);
-    }
-
-    class ActionTreeCell extends TreeCell<Action> {
-
-        public ActionTreeCell() {
-            createUI();
-        }
-
-        @Override
-        protected void updateItem(Action action, boolean empty) {
-            super.updateItem(action, empty);
-
-            if (action == null || empty) {
-                clearContent();
-            } else {
-                addContent(action);
-            }
-        }
-
-        private void addContent(Action action) {
-            setText(action.getText());
-            setGraphic(action.getGraphic());
-        }
-
-        private void clearContent() {
-            setText(null);
-            setGraphic(null);
-        }
-
-        private void createUI() {
-        }
-
-    }
-
 }

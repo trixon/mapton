@@ -16,13 +16,10 @@
 package se.trixon.mapton.core.actions;
 
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
-import org.openide.awt.Actions;
-import org.openide.windows.WindowManager;
-import se.trixon.almond.nbp.fx.FxTopComponent;
+import se.trixon.mapton.api.Mapton;
 
 @ActionID(
         category = "Mapton",
@@ -32,18 +29,14 @@ import se.trixon.almond.nbp.fx.FxTopComponent;
         displayName = "Toolbox"
 )
 @ActionReference(path = "Shortcuts", name = "D-T")
-public final class ToolboxAction implements ActionListener {
+public final class ToolboxAction extends BaseAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        FxTopComponent tc = (FxTopComponent) WindowManager.getDefault().findTopComponent("ToolboxTopComponent");
-
-        tc.toggleOpened();
-
-        if (tc.isOpened()) {
-            tc.requestActive();
+        if (usePopover()) {
+            Mapton.getAppToolBar().toogleToolboxPopOver();
         } else {
-            Actions.forID("Window", "se.trixon.mapton.core.ui.MapTopComponent").actionPerformed(null);
+            toggleTopComponent("ToolboxTopComponent");
         }
     }
 }

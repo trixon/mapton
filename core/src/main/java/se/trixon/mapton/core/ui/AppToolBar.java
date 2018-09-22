@@ -19,6 +19,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.prefs.PreferenceChangeEvent;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -28,6 +29,7 @@ import javafx.scene.control.ToolBar;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
+import javafx.scene.layout.BorderPane;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
@@ -66,6 +68,7 @@ public class AppToolBar extends ToolBar {
     private Action mLayerAction;
     private PopOver mLayerPopOver;
     private final MOptions mOptions = MOptions.getInstance();
+    private final HashSet<PopOver> mPopOvers = new HashSet<>();
     private Action mStyleAction;
     private PopOver mStylePopOver;
     private FxActionSwing mSysAboutAction;
@@ -77,7 +80,8 @@ public class AppToolBar extends ToolBar {
     private FxActionSwingCheck mSysViewFullscreenAction;
     private FxActionSwingCheck mSysViewMapAction;
     private FxActionSwing mSysViewResetAction;
-    private FxActionSwing mToolboxAction;
+    private Action mToolboxAction;
+    private PopOver mToolboxPopOver;
 
     public AppToolBar() {
         initPopOvers();
@@ -87,34 +91,20 @@ public class AppToolBar extends ToolBar {
         initListeners();
     }
 
-    public void toogleBookmarkPopover() {
-        if (mBookmarkPopOver.isShowing()) {
-            mBookmarkPopOver.hide();
-        } else {
-            mStylePopOver.hide();
-            mLayerPopOver.hide();
-            ((ButtonBase) getItems().get(1)).fire();
-        }
+    public void toogleBookmarkPopOver() {
+        tooglePopOver(mBookmarkPopOver, mBookmarkAction);
     }
 
-    public void toogleLayerPopover() {
-        if (mLayerPopOver.isShowing()) {
-            mLayerPopOver.hide();
-        } else {
-            mStylePopOver.hide();
-            mBookmarkPopOver.hide();
-            ((ButtonBase) getItems().get(2)).fire();
-        }
+    public void toogleLayerPopOver() {
+        tooglePopOver(mLayerPopOver, mLayerAction);
     }
 
-    public void toogleStylePopover() {
-        if (mStylePopOver.isShowing()) {
-            mStylePopOver.hide();
-        } else {
-            mLayerPopOver.hide();
-            mBookmarkPopOver.hide();
-            ((ButtonBase) getItems().get(4)).fire();
-        }
+    public void toogleStylePopOver() {
+        tooglePopOver(mStylePopOver, mStyleAction);
+    }
+
+    public void toogleToolboxPopOver() {
+        tooglePopOver(mToolboxPopOver, mToolboxAction);
     }
 
     void refreshEngine(MEngine engine) {
@@ -175,13 +165,12 @@ public class AppToolBar extends ToolBar {
 
             getItems().add(5, new SearchView().getPresenter());
         });
-
     }
 
     private void initActionsFx() {
         //Bookmark
         mBookmarkAction = new Action(Dict.BOOKMARKS.toString(), (ActionEvent event) -> {
-            if (usePopover()) {
+            if (usePopOver()) {
                 mBookmarkPopOver.show((Node) event.getSource());
             } else {
                 SwingUtilities.invokeLater(() -> {
@@ -194,7 +183,7 @@ public class AppToolBar extends ToolBar {
 
         //Layer
         mLayerAction = new Action(Dict.LAYERS.toString(), (ActionEvent event) -> {
-            if (usePopover()) {
+            if (usePopOver()) {
                 mLayerPopOver.show((Node) event.getSource());
             } else {
                 SwingUtilities.invokeLater(() -> {
@@ -205,9 +194,22 @@ public class AppToolBar extends ToolBar {
         mLayerAction.setGraphic(MaterialIcon._Maps.LAYERS.getImageView(getIconSizeToolBar()));
         mLayerAction.setSelected(mOptions.isBookmarkVisible());
 
+        //mToolbox
+        mToolboxAction = new Action(Dict.TOOLBOX.toString(), (event) -> {
+            if (usePopOver()) {
+                mToolboxPopOver.show((Node) event.getSource());
+            } else {
+                SwingUtilities.invokeLater(() -> {
+                    Actions.forID("Mapton", "se.trixon.mapton.core.actions.ToolboxAction").actionPerformed(null);
+                });
+            }
+        });
+        mToolboxAction.setGraphic(MaterialIcon._Places.BUSINESS_CENTER.getImageView(getIconSizeToolBar()));
+
         //Style
         mStyleAction = new Action(String.format("%s & %s", Dict.TYPE.toString(), Dict.STYLE.toString()), (ActionEvent event) -> {
-            mStylePopOver.setContentNode(Mapton.getEngine().getStyleView());
+            BorderPane pane = (BorderPane) mStylePopOver.getContentNode();
+            pane.setCenter(Mapton.getEngine().getStyleView());
             mStylePopOver.show((Node) event.getSource());
         });
         mStyleAction.setGraphic(MaterialIcon._Image.COLOR_LENS.getImageView(getIconSizeToolBar()));
@@ -226,12 +228,6 @@ public class AppToolBar extends ToolBar {
             Actions.forID("Mapton", "se.trixon.mapton.core.actions.HomeAction").actionPerformed(null);
         });
         mHomeAction.setGraphic(MaterialIcon._Action.HOME.getImageView(getIconSizeToolBar()));
-
-        //mToolbox
-        mToolboxAction = new FxActionSwing(Dict.TOOLBOX.toString(), () -> {
-            Actions.forID("Mapton", "se.trixon.mapton.core.actions.ToolboxAction").actionPerformed(null);
-        });
-        mToolboxAction.setGraphic(MaterialIcon._Places.BUSINESS_CENTER.getImageView(getIconSizeToolBar()));
 //
 //
 //
@@ -291,7 +287,6 @@ public class AppToolBar extends ToolBar {
             Actions.forID("File", "se.trixon.almond.nbp.actions.QuitAction").actionPerformed(null);
         });
         mSysQuitAction.setAccelerator(new KeyCodeCombination(KeyCode.Q, KeyCombination.SHORTCUT_DOWN));
-
     }
 
     private void initListeners() {
@@ -322,35 +317,53 @@ public class AppToolBar extends ToolBar {
         });
     }
 
-    private void initPopOvers() {
-        mBookmarkPopOver = new PopOver();
-        mBookmarkPopOver.setTitle(Dict.BOOKMARKS.toString());
-        mBookmarkPopOver.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
-        mBookmarkPopOver.setHeaderAlwaysVisible(true);
-        mBookmarkPopOver.setCloseButtonEnabled(false);
-        mBookmarkPopOver.setDetachable(false);
-        mBookmarkPopOver.setContentNode(new BookmarkView());
-        mBookmarkPopOver.setAnimated(false);
+    private void initPopOver(PopOver popOver, String title, Node content) {
+        popOver.setTitle(title);
+        popOver.setContentNode(content);
+        popOver.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
+        popOver.setHeaderAlwaysVisible(true);
+        popOver.setCloseButtonEnabled(false);
+        popOver.setDetachable(false);
+        popOver.setAnimated(false);
 
-        mLayerPopOver = new PopOver();
-        mLayerPopOver.setTitle(Dict.LAYERS.toString());
-        mLayerPopOver.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
-        mLayerPopOver.setHeaderAlwaysVisible(true);
-        mLayerPopOver.setCloseButtonEnabled(false);
-        mLayerPopOver.setDetachable(false);
-        mLayerPopOver.setContentNode(new LayerView());
-        mLayerPopOver.setAnimated(false);
-
-        mStylePopOver = new PopOver();
-        mStylePopOver.setTitle(String.format("%s & %s", Dict.TYPE.toString(), Dict.STYLE.toString()));
-        mStylePopOver.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
-        mStylePopOver.setHeaderAlwaysVisible(true);
-        mStylePopOver.setCloseButtonEnabled(false);
-        mStylePopOver.setDetachable(false);
-        mStylePopOver.setAnimated(false);
+        mPopOvers.add(popOver);
     }
 
-    private boolean usePopover() {
+    private void initPopOvers() {
+        mBookmarkPopOver = new PopOver();
+        initPopOver(mBookmarkPopOver, Dict.BOOKMARKS.toString(), new BookmarkView());
+
+        mLayerPopOver = new PopOver();
+        initPopOver(mLayerPopOver, Dict.LAYERS.toString(), new LayerView());
+
+        mToolboxPopOver = new PopOver();
+        initPopOver(mToolboxPopOver, Dict.TOOLBOX.toString(), new ToolboxView());
+
+        mStylePopOver = new PopOver();
+        initPopOver(mStylePopOver, String.format("%s & %s", Dict.TYPE.toString(), Dict.STYLE.toString()), new BorderPane());
+    }
+
+    private void tooglePopOver(PopOver popOver, Action action) {
+        Platform.runLater(() -> {
+            if (popOver.isShowing()) {
+                popOver.hide();
+            } else {
+                mPopOvers.forEach((item) -> {
+                    item.hide();
+                });
+
+                getItems().stream()
+                        .filter((item) -> (item instanceof ButtonBase))
+                        .map((item) -> (ButtonBase) item)
+                        .filter((buttonBase) -> (buttonBase.getOnAction() == action))
+                        .forEachOrdered((buttonBase) -> {
+                            buttonBase.fire();
+                        });
+            }
+        });
+    }
+
+    private boolean usePopOver() {
         return mOptions.isPreferPopover() || mOptions.isMapOnly();
     }
 }

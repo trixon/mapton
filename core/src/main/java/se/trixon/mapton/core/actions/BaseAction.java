@@ -16,6 +16,9 @@
 package se.trixon.mapton.core.actions;
 
 import java.awt.event.ActionListener;
+import org.openide.awt.Actions;
+import org.openide.windows.WindowManager;
+import se.trixon.almond.nbp.fx.FxTopComponent;
 import se.trixon.mapton.api.MOptions;
 
 /**
@@ -25,6 +28,23 @@ import se.trixon.mapton.api.MOptions;
 public abstract class BaseAction implements ActionListener {
 
     protected MOptions mOptions = MOptions.getInstance();
+
+    protected void toggleTopComponent(String id) {
+        FxTopComponent tc = (FxTopComponent) WindowManager.getDefault().findTopComponent(id);
+
+        if (mOptions.isMapOnly()) {
+            tc.open();
+        } else {
+            tc.toggleOpened();
+        }
+
+        if (tc.isOpened()) {
+            tc.requestActive();
+        } else {
+            Actions.forID("Window", "se.trixon.mapton.core.ui.MapTopComponent").actionPerformed(null);
+        }
+
+    }
 
     protected boolean usePopover() {
         return mOptions.isPreferPopover() || mOptions.isMapOnly();

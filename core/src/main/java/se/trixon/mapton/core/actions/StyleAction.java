@@ -17,7 +17,6 @@ package se.trixon.mapton.core.actions;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javafx.application.Platform;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
@@ -35,8 +34,6 @@ public final class StyleAction implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        Platform.runLater(() -> {
-            Mapton.getAppToolBar().toogleStylePopover();
-        });
+        Mapton.getAppToolBar().toogleStylePopOver();
     }
 }
