@@ -52,9 +52,13 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.concurrent.Callable;
 import java.util.prefs.PreferenceChangeEvent;
+import org.openide.util.Exceptions;
+import org.openide.util.Lookup;
+import org.openide.util.LookupEvent;
 import se.trixon.almond.util.GraphicsHelper;
 import se.trixon.mapton.api.MOptions;
 import se.trixon.mapton.worldwind.api.MapStyle;
+import se.trixon.mapton.worldwind.api.WmsService;
 
 /**
  *
@@ -153,6 +157,12 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         updateProjection();
         updateStyle();
         updateElevation();
+
+        Lookup.getDefault().lookupResult(WmsService.class).addLookupListener((LookupEvent ev) -> {
+            initWmsService();
+        });
+
+        initWmsService();
     }
 
     private void initListeners() {
@@ -184,6 +194,23 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
                     break;
             }
         });
+    }
+
+    private void initWmsService() {
+        for (WmsService wmsService : Lookup.getDefault().lookupAll(WmsService.class)) {
+            if (!wmsService.isPopulated()) {
+                new Thread(() -> {
+                    try {
+                        wmsService.populate();
+                        for (Layer layer : wmsService.getLayers()) {
+                            getLayers().addIfAbsent(layer);
+                        }
+                    } catch (Exception ex) {
+                        Exceptions.printStackTrace(ex);
+                    }
+                }).start();
+            }
+        }
     }
 
     private void insertLayerBefore(Layer layer, Class type) {
