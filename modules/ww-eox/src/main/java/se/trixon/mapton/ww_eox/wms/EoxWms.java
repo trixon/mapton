@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.trixon.mapton.worldwind.wms;
+package se.trixon.mapton.ww_eox.wms;
 
 import gov.nasa.worldwind.layers.Layer;
 import java.net.URI;

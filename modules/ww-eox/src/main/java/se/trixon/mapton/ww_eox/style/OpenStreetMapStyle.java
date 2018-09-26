@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.trixon.mapton.worldwind.style;
+package se.trixon.mapton.ww_eox.style;
 
 import org.openide.util.lookup.ServiceProvider;
-import se.trixon.almond.util.Dict;
 import se.trixon.mapton.worldwind.api.MapStyle;
 
 /**
@@ -24,10 +23,10 @@ import se.trixon.mapton.worldwind.api.MapStyle;
  * @author Patrik Karlström
  */
 @ServiceProvider(service = MapStyle.class)
-public class RoadMapStyle extends MapStyle {
+public class OpenStreetMapStyle extends MapStyle {
 
-    public RoadMapStyle() {
-        setName(Dict.MAP_TYPE_ROADMAP.toString());
+    public OpenStreetMapStyle() {
+        setName("Open Street Map");
         setLayers(new String[]{
             "OpenStreetMap background layer by EOX"
         });

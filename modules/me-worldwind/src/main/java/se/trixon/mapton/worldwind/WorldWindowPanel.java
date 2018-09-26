@@ -290,15 +290,18 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         blacklist.add("Atmosphere");
 
         String[] styleLayers = MapStyle.getLayers(mOptions.getMapStyle());
-        NbLog.v(getClass(), String.join(", ", styleLayers));
-
-        getLayers().forEach((layer) -> {
-            final String name = layer.getName();
-            if (!blacklist.contains(name)) {
-                layer.setEnabled(Arrays.asList(styleLayers).contains(name));
-                layer.setOpacity(mOptions.getMapOpacity());
-            }
-        });
+        try {
+            NbLog.v(getClass(), String.join(", ", styleLayers));
+            getLayers().forEach((layer) -> {
+                final String name = layer.getName();
+                if (!blacklist.contains(name)) {
+                    layer.setEnabled(Arrays.asList(styleLayers).contains(name));
+                    layer.setOpacity(mOptions.getMapOpacity());
+                }
+            });
+        } catch (NullPointerException e) {
+            //nvm
+        }
 
         redraw();
     }
