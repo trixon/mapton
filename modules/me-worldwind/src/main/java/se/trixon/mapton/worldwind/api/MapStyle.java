@@ -15,8 +15,6 @@
  */
 package se.trixon.mapton.worldwind.api;
 
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import org.openide.util.Lookup;
 
 /**
@@ -26,7 +24,8 @@ import org.openide.util.Lookup;
 public abstract class MapStyle {
 
     private String[] mLayers;
-    private final StringProperty mName = new SimpleStringProperty();
+    private String mName;
+    private String mSuppliers;
 
     public static String[] getLayers(String name) {
         String[] layers = null;
@@ -44,24 +43,28 @@ public abstract class MapStyle {
     public MapStyle() {
     }
 
-    public final String[] getLayers() {
+    public String[] getLayers() {
         return mLayers;
     }
 
-    public final String getName() {
-        return mName.get();
-    }
-
-    public final StringProperty nameProperty() {
+    public String getName() {
         return mName;
     }
 
-    public final void setLayers(String[] value) {
+    public String getSuppliers() {
+        return mSuppliers;
+    }
+
+    public void setLayers(String[] value) {
         mLayers = value.clone();
     }
 
-    public final void setName(String value) {
-        mName.set(value);
+    public void setName(String value) {
+        mName = value;
+    }
+
+    public void setSuppliers(String suppliers) {
+        mSuppliers = suppliers;
     }
 
 }

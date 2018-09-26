@@ -30,6 +30,7 @@ import javafx.scene.control.Separator;
 import javafx.scene.control.Slider;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -216,6 +217,10 @@ public class StyleView extends HBox {
                 button.setOnAction((ActionEvent event) -> {
                     mOptions.setMapStyle(mapStyle.getName());
                 });
+
+                if (mapStyle.getSuppliers() != null) {
+                    button.setTooltip(new Tooltip(String.format("%s %s", Dict.FROM.toString().toLowerCase(), mapStyle.getSuppliers())));
+                }
 
                 mStyleBox.getChildren().add(button);
             }

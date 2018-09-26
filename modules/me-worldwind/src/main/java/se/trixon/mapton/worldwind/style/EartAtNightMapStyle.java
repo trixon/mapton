@@ -27,6 +27,7 @@ public class EartAtNightMapStyle extends MapStyle {
 
     public EartAtNightMapStyle() {
         setName("Earth at night");
+        setSuppliers("NASA");
         setLayers(new String[]{
             "Earth at Night"
         });

@@ -112,7 +112,7 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
     private void addRenderableLayer() {
         SurfaceImage blackBackground = new SurfaceImage("https://trixon.se/files/pata.jpg", Sector.FULL_SPHERE);
         RenderableLayer blackBackgroundLayer = new RenderableLayer();
-        blackBackgroundLayer.setName("pata");
+        blackBackgroundLayer.setName("trixon");
         blackBackgroundLayer.addRenderable(blackBackground);
         getLayers().add(blackBackgroundLayer);
     }

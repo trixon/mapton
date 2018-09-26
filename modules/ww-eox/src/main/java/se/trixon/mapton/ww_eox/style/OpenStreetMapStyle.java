@@ -27,6 +27,7 @@ public class OpenStreetMapStyle extends MapStyle {
 
     public OpenStreetMapStyle() {
         setName("Open Street Map");
+        setSuppliers("EOX & OpenStreepMap");
         setLayers(new String[]{
             "OpenStreetMap background layer by EOX"
         });

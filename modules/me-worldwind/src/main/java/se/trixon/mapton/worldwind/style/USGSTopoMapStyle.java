@@ -27,6 +27,7 @@ public class USGSTopoMapStyle extends MapStyle {
 
     public USGSTopoMapStyle() {
         setName("USGS Topo");
+        setSuppliers("NASA");
         setLayers(new String[]{
             "USGS Topo Base Map",
             "USGS Topo Base Map Large Scale"

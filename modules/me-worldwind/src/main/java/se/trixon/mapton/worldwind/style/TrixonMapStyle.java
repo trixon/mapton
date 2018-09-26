@@ -23,12 +23,13 @@ import se.trixon.mapton.worldwind.api.MapStyle;
  * @author Patrik Karlström
  */
 @ServiceProvider(service = MapStyle.class)
-public class PataMapStyle extends MapStyle {
+public class TrixonMapStyle extends MapStyle {
 
-    public PataMapStyle() {
-        setName("Pata");
+    public TrixonMapStyle() {
+        setName("Trixon");
+        setSuppliers("Trixon");
         setLayers(new String[]{
-            "pata"
+            "trixon"
         });
     }
 }

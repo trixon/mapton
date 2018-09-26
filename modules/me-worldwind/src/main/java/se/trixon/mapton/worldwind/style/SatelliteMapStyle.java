@@ -28,6 +28,7 @@ public class SatelliteMapStyle extends MapStyle {
 
     public SatelliteMapStyle() {
         setName(Dict.MAP_TYPE_SATELLITE.toString());
+        setSuppliers("NASA & Bing");
         setLayers(new String[]{
             "NASA Blue Marble Image",
             "Blue Marble May 2004",
