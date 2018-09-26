@@ -29,7 +29,7 @@ public class RoadMapStyle extends MapStyle {
     public RoadMapStyle() {
         setName(Dict.MAP_TYPE_ROADMAP.toString());
         setLayers(new String[]{
-            "osm"
+            "OpenStreetMap background layer by EOX"
         });
     }
 }

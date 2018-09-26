@@ -37,7 +37,7 @@ import java.util.TreeSet;
 public abstract class WmsService {
 
     private final TreeSet<LayerInfo> mLayerInfos = new TreeSet<>((LayerInfo o1, LayerInfo o2) -> o1.getName().compareTo(o2.getName()));
-    private ArrayList<Layer> mLayers = new ArrayList<>();
+    private final ArrayList<Layer> mLayers = new ArrayList<>();
     private boolean mPopulated = false;
 
     public WmsService() {

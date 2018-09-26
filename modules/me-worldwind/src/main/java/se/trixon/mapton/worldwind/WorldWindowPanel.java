@@ -55,6 +55,7 @@ import java.util.prefs.PreferenceChangeEvent;
 import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
+import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.util.GraphicsHelper;
 import se.trixon.mapton.api.MOptions;
 import se.trixon.mapton.worldwind.api.MapStyle;
@@ -203,8 +204,10 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
                     try {
                         wmsService.populate();
                         for (Layer layer : wmsService.getLayers()) {
+                            layer.setEnabled(false);
                             getLayers().addIfAbsent(layer);
                         }
+                        updateStyle();
                     } catch (Exception ex) {
                         Exceptions.printStackTrace(ex);
                     }
@@ -287,6 +290,8 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         blacklist.add("Atmosphere");
 
         String[] styleLayers = MapStyle.getLayers(mOptions.getMapStyle());
+        NbLog.v(getClass(), String.join(", ", styleLayers));
+
         getLayers().forEach((layer) -> {
             final String name = layer.getName();
             if (!blacklist.contains(name)) {
