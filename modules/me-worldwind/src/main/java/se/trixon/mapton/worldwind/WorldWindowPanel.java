@@ -204,6 +204,7 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
                     try {
                         wmsService.populate();
                         for (Layer layer : wmsService.getLayers()) {
+                            NbLog.v(getClass(), "Adding layer " + layer.getName());
                             layer.setEnabled(false);
                             getLayers().addIfAbsent(layer);
                         }

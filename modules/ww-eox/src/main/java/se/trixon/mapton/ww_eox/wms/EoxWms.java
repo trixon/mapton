@@ -17,6 +17,7 @@ package se.trixon.mapton.ww_eox.wms;
 
 import gov.nasa.worldwind.layers.Layer;
 import java.net.URI;
+import org.apache.commons.lang3.StringUtils;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.mapton.worldwind.api.WmsService;
 
@@ -35,7 +36,7 @@ public class EoxWms extends WmsService {
         addService(new URI("https://tiles.maps.eox.at/wms?service=wms&request=getcapabilities"));
 
         for (LayerInfo layerInfo : getLayerInfos()) {
-            if (layerInfo.getName().equalsIgnoreCase("osm")) {
+            if (StringUtils.equalsAny(layerInfo.getName(), "osm", "terrain", "terrain-light")) {
                 Object component = createComponent(layerInfo.getWmsCapabilities(), layerInfo.getParams());
                 if (component instanceof Layer) {
                     getLayers().add((Layer) component);
