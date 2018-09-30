@@ -4,7 +4,7 @@
 
     <groupId>se.trixon.mapton</groupId>
     <artifactId>mapton-parent</artifactId>
-    <version>0.1.0</version>
+    <version>0.1.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>mapton-parent</name>
@@ -32,7 +32,7 @@
         <url>https://github.com/trixon/netbeans-mapton</url>
         <connection>scm:git:git://github.com/trixon/netbeans-mapton.git</connection>
         <developerConnection>scm:git:git@github.com:trixon/netbeans-mapton.git</developerConnection>
-        <tag>mapton-parent-0.1.0</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <repositories>
