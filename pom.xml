@@ -8,7 +8,7 @@
     <packaging>pom</packaging>
 
     <name>mapton-parent</name>
-    <url>https://github.com/trixon/netbeans-mapton</url>
+    <url>https://github.com/trixon/mapton</url>
     <licenses>
         <license>
             <name>The Apache Software License, Version 2.0</name>
@@ -29,9 +29,9 @@
         </developer>
     </developers>
     <scm>
-        <url>https://github.com/trixon/netbeans-mapton</url>
-        <connection>scm:git:git://github.com/trixon/netbeans-mapton.git</connection>
-        <developerConnection>scm:git:git@github.com:trixon/netbeans-mapton.git</developerConnection>
+        <url>https://github.com/trixon/mapton</url>
+        <connection>scm:git:git://github.com/trixon/mapton.git</connection>
+        <developerConnection>scm:git:git@github.com:trixon/mapton.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
 
