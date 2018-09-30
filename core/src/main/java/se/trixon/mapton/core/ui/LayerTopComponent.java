@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,15 +15,12 @@
  */
 package se.trixon.mapton.core.ui;
 
-import java.util.prefs.PreferenceChangeEvent;
 import javafx.scene.Scene;
-import javax.swing.SwingUtilities;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
 import se.trixon.almond.util.Dict;
-import se.trixon.mapton.api.MOptions;
 import se.trixon.mapton.api.MTopComponent;
 
 /**
@@ -49,8 +46,6 @@ import se.trixon.mapton.api.MTopComponent;
 public final class LayerTopComponent extends MTopComponent {
 
     public LayerTopComponent() {
-        setName(Dict.LAYERS.toString());
-
         putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.FALSE);
         putClientProperty(TopComponent.PROP_DRAGGING_DISABLED, Boolean.TRUE);
         putClientProperty(TopComponent.PROP_MAXIMIZATION_DISABLED, Boolean.TRUE);
@@ -58,24 +53,8 @@ public final class LayerTopComponent extends MTopComponent {
         putClientProperty(TopComponent.PROP_UNDOCKING_DISABLED, Boolean.TRUE);
         putClientProperty(TopComponent.PROP_KEEP_PREFERRED_SIZE_WHEN_SLIDED_IN, Boolean.TRUE);
 
-        mMOptions.getPreferences().addPreferenceChangeListener((PreferenceChangeEvent evt) -> {
-            switch (evt.getKey()) {
-                case MOptions.KEY_PREFER_POPOVER:
-                    SwingUtilities.invokeLater(() -> {
-                        if (mMOptions.isPreferPopover()) {
-                            close();
-                        } else {
-                            open();
-                            requestActive();
-                        }
-                    });
-
-                    break;
-
-                default:
-                    break;
-            }
-        });
+        setName(Dict.LAYERS.toString());
+        setPopOverHolder(true);
     }
 
     @Override

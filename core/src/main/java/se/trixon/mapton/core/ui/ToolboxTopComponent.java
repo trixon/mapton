@@ -49,8 +49,8 @@ import se.trixon.mapton.api.MTopComponent;
 public final class ToolboxTopComponent extends MTopComponent {
 
     public ToolboxTopComponent() {
-        super();
         setName(Dict.TOOLBOX.toString());
+        setPopOverHolder(true);
     }
 
     @Override

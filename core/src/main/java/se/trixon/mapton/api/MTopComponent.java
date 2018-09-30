@@ -15,6 +15,8 @@
  */
 package se.trixon.mapton.api;
 
+import java.util.prefs.PreferenceChangeEvent;
+import javax.swing.SwingUtilities;
 import se.trixon.almond.nbp.fx.FxTopComponent;
 
 /**
@@ -24,5 +26,37 @@ import se.trixon.almond.nbp.fx.FxTopComponent;
 public abstract class MTopComponent extends FxTopComponent {
 
     protected final MOptions mMOptions = MOptions.getInstance();
+    private boolean mPopOverHolder;
+
+    public MTopComponent() {
+        mMOptions.getPreferences().addPreferenceChangeListener((PreferenceChangeEvent evt) -> {
+            switch (evt.getKey()) {
+                case MOptions.KEY_PREFER_POPOVER:
+                    if (mPopOverHolder) {
+                        SwingUtilities.invokeLater(() -> {
+                            if (mMOptions.isPreferPopover()) {
+                                close();
+                            } else {
+                                open();
+                                requestActive();
+                            }
+                        });
+                    }
+
+                    break;
+
+                default:
+                    break;
+            }
+        });
+    }
+
+    public boolean isPopOverHolder() {
+        return mPopOverHolder;
+    }
+
+    public void setPopOverHolder(boolean popOverHolder) {
+        mPopOverHolder = popOverHolder;
+    }
 
 }

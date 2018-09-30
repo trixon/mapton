@@ -15,9 +15,7 @@
  */
 package se.trixon.mapton.core.bookmark;
 
-import java.util.prefs.PreferenceChangeEvent;
 import javafx.scene.Scene;
-import javax.swing.SwingUtilities;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -51,8 +49,6 @@ import se.trixon.mapton.api.MTopComponent;
 public final class BookmarkTopComponent extends MTopComponent {
 
     public BookmarkTopComponent() {
-        setName(Dict.BOOKMARKS.toString());
-
         putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.FALSE);
         putClientProperty(TopComponent.PROP_DRAGGING_DISABLED, Boolean.TRUE);
         putClientProperty(TopComponent.PROP_MAXIMIZATION_DISABLED, Boolean.TRUE);
@@ -60,24 +56,8 @@ public final class BookmarkTopComponent extends MTopComponent {
         putClientProperty(TopComponent.PROP_UNDOCKING_DISABLED, Boolean.TRUE);
         putClientProperty(TopComponent.PROP_KEEP_PREFERRED_SIZE_WHEN_SLIDED_IN, Boolean.TRUE);
 
-        mMOptions.getPreferences().addPreferenceChangeListener((PreferenceChangeEvent evt) -> {
-            switch (evt.getKey()) {
-                case MOptions.KEY_PREFER_POPOVER:
-                    SwingUtilities.invokeLater(() -> {
-                        if (mMOptions.isPreferPopover()) {
-                            close();
-                        } else {
-                            open();
-                            requestActive();
-                        }
-                    });
-
-                    break;
-
-                default:
-                    break;
-            }
-        });
+        setName(Dict.BOOKMARKS.toString());
+        setPopOverHolder(true);
     }
 
     @Override
