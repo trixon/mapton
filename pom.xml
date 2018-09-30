@@ -103,7 +103,7 @@
         <brandingToken>mapton</brandingToken>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <mapton.version>0.1.0-SNAPSHOT</mapton.version>
-        <almond-nbp.version>2.0.0-SNAPSHOT</almond-nbp.version>
+        <version.almond-nbp>3.0.0-SNAPSHOT</version.almond-nbp>
     </properties>
     <description>Some kind of map application</description>
 </project>
