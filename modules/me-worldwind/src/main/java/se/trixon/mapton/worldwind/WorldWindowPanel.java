@@ -110,11 +110,12 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
     }
 
     private void addRenderableLayer() {
-        SurfaceImage blackBackground = new SurfaceImage("https://trixon.se/files/pata.jpg", Sector.FULL_SPHERE);
-        RenderableLayer blackBackgroundLayer = new RenderableLayer();
-        blackBackgroundLayer.setName("trixon");
-        blackBackgroundLayer.addRenderable(blackBackground);
-        getLayers().add(blackBackgroundLayer);
+        SurfaceImage surfaceImage = new SurfaceImage("https://trixon.se/files/pata.jpg", Sector.FULL_SPHERE);
+        RenderableLayer renderableLayer = new RenderableLayer();
+        renderableLayer.setName("trixon");
+        renderableLayer.setEnabled(false);
+        renderableLayer.addRenderable(surfaceImage);
+        getLayers().add(renderableLayer);
     }
 
     private GeographicProjection getProjection() {
@@ -235,8 +236,13 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
     }
 
     private void updateElevation() {
-        CompoundElevationModel cem = (CompoundElevationModel) wwd.getModel().getGlobe().getElevationModel();
-        for (ElevationModel elevationModel : cem.getElevationModels()) {
+        final ElevationModel elevationModel = wwd.getModel().getGlobe().getElevationModel();
+        if (elevationModel instanceof CompoundElevationModel) {
+            CompoundElevationModel compoundElevationModel = (CompoundElevationModel) elevationModel;
+            for (ElevationModel subElevationModel : compoundElevationModel.getElevationModels()) {
+                subElevationModel.setEnabled(mOptions.isMapElevation());
+            }
+        } else if (elevationModel != null) {
             elevationModel.setEnabled(mOptions.isMapElevation());
         }
 
