@@ -31,7 +31,6 @@ import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.BorderPane;
@@ -136,10 +135,15 @@ public final class MapTopComponent extends MTopComponent {
     }
 
     @Override
+    protected void componentOpened() {
+        super.componentOpened();
+        setEngine(Mapton.getEngine());
+    }
+
+    @Override
     protected void initFX() {
         setScene(createScene());
         initContextMenu();
-        setEngine(Mapton.getEngine());
     }
 
     void readProperties(java.util.Properties p) {
@@ -180,7 +184,7 @@ public final class MapTopComponent extends MTopComponent {
     }
 
     private Scene createScene() {
-        mRoot = new BorderPane(new Label("loading map engine..."));
+        mRoot = new BorderPane();
 
         initListeners();
 
@@ -270,12 +274,15 @@ public final class MapTopComponent extends MTopComponent {
 
     private void initListeners() {
         SwingUtilities.invokeLater(() -> {
-            addHierarchyListener((HierarchyEvent e) -> {
-                if (e.getChangedParent() instanceof JLayeredPane) {
+            addHierarchyListener((HierarchyEvent hierarchyEvent) -> {
+                if (hierarchyEvent.getChangedParent() instanceof JLayeredPane) {
                     Dimension d = ((JFrame) WindowManager.getDefault().getMainWindow()).getContentPane().getPreferredSize();
                     final boolean showOnlyMap = 1 == d.height && 1 == d.width;
                     mMOptions.setMapOnly(showOnlyMap);
-                    attachStatusbar(showOnlyMap);
+                    try {
+                        attachStatusbar(showOnlyMap);
+                    } catch (NullPointerException e) {
+                    }
                 }
             });
         });
@@ -333,6 +340,7 @@ public final class MapTopComponent extends MTopComponent {
 
     private void setEngine(MEngine engine) {
         mEngine = engine;
+
         if (engine.isSwing()) {
             SwingUtilities.invokeLater(() -> {
                 removeAll();
@@ -345,6 +353,7 @@ public final class MapTopComponent extends MTopComponent {
                 attachStatusbar(mMOptions.isMapOnly());
                 revalidate();
                 repaint();
+
                 try {
                     engine.onActivate();
                     engine.panTo(mMOptions.getMapCenter(), mMOptions.getMapZoom());
