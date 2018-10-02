@@ -18,14 +18,11 @@
                 <configuration>
                     <publicPackages>
                         <publicPackage>se.trixon.mapton.api.*</publicPackage>
-                        <!--<publicPackage>se.trixon.almond.util.*</publicPackage>-->
-                        <!--<publicPackage>se.trixon.almond.nbp.*</publicPackage>-->
                         <publicPackage>org.apache.commons.*</publicPackage>
                         <publicPackage>org.postgresql.*</publicPackage>
                         <publicPackage>de.micromata.*</publicPackage>
                         <publicPackage>com.github.goober.*</publicPackage>
                         <publicPackage>org.controlsfx.*</publicPackage>
-                        <publicPackage>com.lynden.gmapsfx.*</publicPackage>
                         <publicPackage>javax.xml.*</publicPackage>
                     </publicPackages>
                 </configuration>
