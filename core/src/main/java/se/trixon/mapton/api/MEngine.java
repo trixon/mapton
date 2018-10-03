@@ -42,6 +42,7 @@ public abstract class MEngine {
 
     protected final MOptions mMaptonOptions = MOptions.getInstance();
     private Callable<BufferedImage> mImageRenderer;
+    private boolean mInitialized;
     private MLatLon mLatLonMouse;
     private double mLatitude;
     private double mLongitude;
@@ -130,7 +131,12 @@ public abstract class MEngine {
     }
 
     public final void initialized() {
+        mInitialized = true;
         panTo(mMaptonOptions.getMapCenter(), mMaptonOptions.getMapZoom());
+    }
+
+    public boolean isInitialized() {
+        return mInitialized;
     }
 
     public boolean isSwing() {
