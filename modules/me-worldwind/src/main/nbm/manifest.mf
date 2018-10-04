@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
 OpenIDE-Module-Localizing-Bundle: se/trixon/mapton/worldwind/Bundle.properties
 OpenIDE-Module-Requires: org.openide.windows.WindowManager
+AutoUpdate-Essential-Module: true
 
