@@ -24,6 +24,16 @@ limitations under the License.
     <file name="AppStatusPanel.instance">
         <attr name="instanceClass" stringvalue="se.trixon.mapton.core.ui.AppStatusPanel"/>
     </file>
+    <folder name="OptionsDialog">
+        <folder name="Advanced">
+            <file name="org-netbeans-core-ui-options-filetypes-FileAssociationsOptionsPanelController.instance_hidden"/>
+        </folder>
+        <folder name="Appearance">
+            <file name="DocumentTabs.instance_hidden"/>
+            <file name="Windows.instance_hidden"/>
+            <file name="se-trixon-almond-nbp-options-IconOptionsPanelController.instance_hidden"/>
+        </folder>
+    </folder>
     <folder name="Windows2">
         <folder name="Modes">
             <file name="navigator.wsmode" url="navigatorWsmode.xml"/>
