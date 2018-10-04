@@ -15,22 +15,10 @@
  */
 package se.trixon.mapton.core.ui;
 
-import java.util.stream.Stream;
+import java.util.prefs.PreferenceChangeEvent;
 import javafx.application.Platform;
-import javafx.collections.ObservableList;
-import javafx.geometry.Insets;
-import javafx.scene.Node;
-import javafx.scene.control.Label;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.VBox;
-import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.CheckListView;
-import org.openide.util.Lookup;
-import org.openide.util.LookupEvent;
-import se.trixon.mapton.api.MDict;
-import se.trixon.mapton.api.MEngine;
 import se.trixon.mapton.api.MOptions;
 import se.trixon.mapton.api.Mapton;
 
@@ -40,29 +28,33 @@ import se.trixon.mapton.api.Mapton;
  */
 public class LayerView extends BorderPane {
 
-    private VBox mEngineBox;
-    private Label mEngineLabel = new Label(MDict.MAP_ENGINE.toString());
+    private EngineBox mEngineBox;
     private CheckListView<String> mListView;
-    private final MOptions mOptions = MOptions.getInstance();
+    private final MOptions mMOptions = MOptions.getInstance();
 
     public LayerView() {
         createUI();
-        Lookup.getDefault().lookupResult(MEngine.class).addLookupListener((LookupEvent ev) -> {
-            populateEngines();
+        mMOptions.getPreferences().addPreferenceChangeListener((PreferenceChangeEvent evt) -> {
+            switch (evt.getKey()) {
+                case MOptions.KEY_MAP_ENGINE:
+                    loadLayerView();
+                    break;
+
+                default:
+                    break;
+            }
         });
 
     }
 
     private void createUI() {
         mListView = new CheckListView<>();
-        mEngineBox = new VBox(8);
-        mEngineBox.setPadding(new Insets(8));
+        mEngineBox = new EngineBox();
         mEngineBox.backgroundProperty().bind(mListView.backgroundProperty());
 
         setCenter(mListView);
         setBottom(mEngineBox);
 
-        populateEngines();
         loadLayerView();
     }
 
@@ -70,43 +62,5 @@ public class LayerView extends BorderPane {
         Platform.runLater(() -> {
             setCenter(Mapton.getEngine().getLayerView());
         });
-    }
-
-    private void populateEngines() {
-        final ObservableList<Node> children = mEngineBox.getChildren();
-        children.clear();
-        children.add(mEngineLabel);
-
-        final ToggleGroup mapEngineToggleGroup = new ToggleGroup();
-        Stream<? extends MEngine> engines = Lookup.getDefault().lookupAll(MEngine.class).stream().sorted((MEngine o1, MEngine o2) -> o1.getName().compareTo(o2.getName()));
-        engines.forEach((engine) -> {
-            final String name = engine.getName();
-            final RadioButton radioButton = new RadioButton(name);
-            if (StringUtils.equalsIgnoreCase(engine.getClass().getName(), mOptions.getEngine())) {
-                radioButton.setSelected(true);
-            }
-
-            radioButton.setToggleGroup(mapEngineToggleGroup);
-            radioButton.setOnAction((event) -> {
-                switchEngine(engine);
-            });
-
-            children.add(radioButton);
-        });
-    }
-
-    private void switchEngine(MEngine newEngine) {
-        AppStatusPanel.getInstance().getProvider().setMessage("");
-
-        final MEngine oldEngine = Mapton.getEngine();
-        try {
-            oldEngine.onDeactivate();
-            mOptions.setMapZoom(oldEngine.getZoom());
-            mOptions.setMapCenter(oldEngine.getCenter());
-        } catch (NullPointerException e) {
-        }
-
-        mOptions.setEngine(newEngine.getClass().getName());
-        loadLayerView();
     }
 }

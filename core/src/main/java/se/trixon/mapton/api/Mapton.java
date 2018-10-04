@@ -107,7 +107,6 @@ public class Mapton {
         return ICON_SIZE_TOOLBAR;
     }
 
-    @Deprecated
     public static int getIconSizeToolBarInt() {
         return ICON_SIZE_TOOLBAR_INT;
     }

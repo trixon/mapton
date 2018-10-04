@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,18 +23,19 @@ import org.netbeans.spi.options.OptionsPanelController;
 import org.openide.util.HelpCtx;
 import org.openide.util.Lookup;
 
-@OptionsPanelController.SubRegistration(
-        location = "Mapton",
-        displayName = "#AdvancedOption_DisplayName_UiPanel",
-        keywords = "#AdvancedOption_Keywords_UiPanel",
-        keywordsCategory = "Mapton/UiPanel"
+@OptionsPanelController.TopLevelRegistration(
+        position = 0,
+        categoryName = "#OptionsCategory_Name_Mapton",
+        iconBase = "se/trixon/mapton/api/mapton32.png",
+        keywords = "#OptionsCategory_Keywords_Mapton",
+        keywordsCategory = "Mapton"
 )
-@org.openide.util.NbBundle.Messages({"AdvancedOption_DisplayName_UiPanel=UI", "AdvancedOption_Keywords_UiPanel=ui"})
-public final class UIOptionsPanelController extends OptionsPanelController {
+@org.openide.util.NbBundle.Messages({"OptionsCategory_Name_Mapton=Mapton", "OptionsCategory_Keywords_Mapton=mapton"})
+public final class MainOptionsPanelController extends OptionsPanelController {
 
     private boolean changed;
 
-    private UIPanel panel;
+    private MainPanel panel;
     private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
     @Override
@@ -44,15 +45,18 @@ public final class UIOptionsPanelController extends OptionsPanelController {
 
     @Override
     public void applyChanges() {
-        SwingUtilities.invokeLater(() -> {
-            getPanel().store();
-            changed = false;
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                getPanel().store();
+                changed = false;
+            }
         });
     }
 
     @Override
     public void cancel() {
-
+        // need not do anything special, if no changes have been persisted yet
     }
 
     @Override
@@ -62,7 +66,7 @@ public final class UIOptionsPanelController extends OptionsPanelController {
 
     @Override
     public HelpCtx getHelpCtx() {
-        return null;
+        return null; // new HelpCtx("...ID") if you have a help set
     }
 
     @Override
@@ -86,19 +90,19 @@ public final class UIOptionsPanelController extends OptionsPanelController {
         changed = false;
     }
 
-    private UIPanel getPanel() {
-        if (panel == null) {
-            panel = new UIPanel(this);
-        }
-        return panel;
-    }
-
     void changed() {
         if (!changed) {
             changed = true;
             pcs.firePropertyChange(OptionsPanelController.PROP_CHANGED, false, true);
         }
         pcs.firePropertyChange(OptionsPanelController.PROP_VALID, null, null);
+    }
+
+    private MainPanel getPanel() {
+        if (panel == null) {
+            panel = new MainPanel(this);
+        }
+        return panel;
     }
 
 }
