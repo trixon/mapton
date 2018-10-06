@@ -36,7 +36,7 @@ import se.trixon.mapton.api.MTopComponent;
         //iconBase="SET/PATH/TO/ICON/HERE",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
-@TopComponent.Registration(mode = "properties", openAtStartup = true)
+@TopComponent.Registration(mode = "explorer", openAtStartup = true)
 @ActionID(category = "Window", id = "se.trixon.mapton.core.ui.ToolboxTopComponent")
 @ActionReference(path = "Menu/Window" /*, position = 333 */)
 @TopComponent.OpenActionRegistration(
@@ -49,6 +49,11 @@ import se.trixon.mapton.api.MTopComponent;
 public final class ToolboxTopComponent extends MTopComponent {
 
     public ToolboxTopComponent() {
+        putClientProperty(PROP_MAXIMIZATION_DISABLED, Boolean.TRUE);
+        putClientProperty(PROP_SLIDING_DISABLED, Boolean.TRUE);
+        putClientProperty(PROP_UNDOCKING_DISABLED, Boolean.TRUE);
+        putClientProperty(PROP_KEEP_PREFERRED_SIZE_WHEN_SLIDED_IN, Boolean.TRUE);
+
         setName(Dict.TOOLBOX.toString());
         setPopOverHolder(true);
     }

@@ -36,7 +36,7 @@ import se.trixon.mapton.api.MTopComponent;
         preferredID = "BookmarkTopComponent",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
-@TopComponent.Registration(mode = "explorer", openAtStartup = true)
+@TopComponent.Registration(mode = "topLeft", openAtStartup = true)
 @ActionID(category = "Window", id = "se.trixon.mapton.core.bookmark.BookmarkTopComponent")
 @ActionReference(path = "Menu/Window" /*, position = 333 */)
 @TopComponent.OpenActionRegistration(
@@ -49,12 +49,10 @@ import se.trixon.mapton.api.MTopComponent;
 public final class BookmarkTopComponent extends MTopComponent {
 
     public BookmarkTopComponent() {
-        putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.FALSE);
-        putClientProperty(TopComponent.PROP_DRAGGING_DISABLED, Boolean.TRUE);
-        putClientProperty(TopComponent.PROP_MAXIMIZATION_DISABLED, Boolean.TRUE);
-        putClientProperty(TopComponent.PROP_SLIDING_DISABLED, Boolean.TRUE);
-        putClientProperty(TopComponent.PROP_UNDOCKING_DISABLED, Boolean.TRUE);
-        putClientProperty(TopComponent.PROP_KEEP_PREFERRED_SIZE_WHEN_SLIDED_IN, Boolean.TRUE);
+        putClientProperty(PROP_MAXIMIZATION_DISABLED, Boolean.TRUE);
+        putClientProperty(PROP_SLIDING_DISABLED, Boolean.TRUE);
+        putClientProperty(PROP_UNDOCKING_DISABLED, Boolean.TRUE);
+        putClientProperty(PROP_KEEP_PREFERRED_SIZE_WHEN_SLIDED_IN, Boolean.TRUE);
 
         setName(Dict.BOOKMARKS.toString());
         setPopOverHolder(true);

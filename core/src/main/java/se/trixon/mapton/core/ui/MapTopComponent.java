@@ -50,7 +50,6 @@ import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
-import org.openide.awt.Actions;
 import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
@@ -112,10 +111,10 @@ public final class MapTopComponent extends MTopComponent {
         super();
         setName(Dict.MAP.toString());
 
-        putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.TRUE);
-        putClientProperty(TopComponent.PROP_DRAGGING_DISABLED, Boolean.TRUE);
-        putClientProperty(TopComponent.PROP_MAXIMIZATION_DISABLED, Boolean.TRUE);
-        putClientProperty(TopComponent.PROP_UNDOCKING_DISABLED, Boolean.TRUE);
+        putClientProperty(PROP_CLOSING_DISABLED, Boolean.TRUE);
+        putClientProperty(PROP_DRAGGING_DISABLED, Boolean.TRUE);
+        putClientProperty(PROP_MAXIMIZATION_DISABLED, Boolean.TRUE);
+        putClientProperty(PROP_UNDOCKING_DISABLED, Boolean.TRUE);
 
         mMOptions.getPreferences().addPreferenceChangeListener((PreferenceChangeEvent evt) -> {
             switch (evt.getKey()) {
@@ -139,7 +138,6 @@ public final class MapTopComponent extends MTopComponent {
     protected void componentOpened() {
         super.componentOpened();
         setEngine(Mapton.getEngine());
-        Actions.forID("Window", "se.trixon.mapton.core.ui.MapTopComponent").actionPerformed(null);
     }
 
     @Override

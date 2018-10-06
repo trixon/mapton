@@ -70,6 +70,8 @@ public class Initializer implements Runnable {
                 tc.requestActive();
                 Actions.forID("Window", "org.netbeans.core.windows.actions.ShowEditorOnlyAction").actionPerformed(null);
             }
+
+            Actions.forID("Window", "se.trixon.mapton.core.ui.MapTopComponent").actionPerformed(null);
         });
     }
 }
