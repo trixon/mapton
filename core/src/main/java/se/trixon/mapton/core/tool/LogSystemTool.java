@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -33,6 +33,7 @@ public class LogSystemTool implements MTool {
     public Action getAction() {
         FxActionSwing action = new FxActionSwing(Dict.LOG_SYSTEM.toString(), () -> {
             Actions.forID("View", "org.netbeans.core.actions.LogAction").actionPerformed(null);
+            Actions.forID("Window", "org.netbeans.core.io.ui.IOWindowAction").actionPerformed(null);
         });
 
         return action;
