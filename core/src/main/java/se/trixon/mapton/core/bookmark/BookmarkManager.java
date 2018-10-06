@@ -105,6 +105,17 @@ public class BookmarkManager extends DbBaseManager {
         mDb.create(mTable, false, primaryKeyConstraint, uniqueKeyConstraint);
     }
 
+    public void dbDelete(Bookmark bookmark) throws ClassNotFoundException, SQLException {
+        mDb.delete(mTable, mId, bookmark.getId());
+        getItems().remove(bookmark);
+    }
+
+    public void dbTruncate() throws ClassNotFoundException, SQLException {
+        mDb.truncate(mTable);
+        getItems().clear();
+
+    }
+
     public void editBookmark(final Bookmark aBookmark) {
         SwingUtilities.invokeLater(() -> {
             Bookmark newBookmark = aBookmark;
@@ -155,6 +166,12 @@ public class BookmarkManager extends DbBaseManager {
 
     public final ObservableList<Bookmark> getItems() {
         return mItems == null ? null : mItems.get();
+    }
+
+    public void goTo(Bookmark bookmark) throws ClassNotFoundException, SQLException {
+        Mapton.getEngine().panTo(new MLatLon(bookmark.getLatitude(), bookmark.getLongitude()), bookmark.getZoom());
+        bookmark.setTimeAccessed(new Timestamp(System.currentTimeMillis()));
+        dbUpdate(bookmark);
     }
 
     public final ObjectProperty<ObservableList<Bookmark>> itemsProperty() {
@@ -309,21 +326,9 @@ public class BookmarkManager extends DbBaseManager {
         return bookmark.getId();
     }
 
-    void dbDelete(Bookmark bookmark) throws ClassNotFoundException, SQLException {
-        mDb.delete(mTable, mId, bookmark.getId());
-        getItems().remove(bookmark);
-    }
+    private static class Holder {
 
-    void dbTruncate() throws ClassNotFoundException, SQLException {
-        mDb.truncate(mTable);
-        getItems().clear();
-
-    }
-
-    void goTo(Bookmark bookmark) throws ClassNotFoundException, SQLException {
-        Mapton.getEngine().panTo(new MLatLon(bookmark.getLatitude(), bookmark.getLongitude()), bookmark.getZoom());
-        bookmark.setTimeAccessed(new Timestamp(System.currentTimeMillis()));
-        dbUpdate(bookmark);
+        private static final BookmarkManager INSTANCE = new BookmarkManager();
     }
 
     public class Columns extends DbBaseManager.Columns {
@@ -367,10 +372,5 @@ public class BookmarkManager extends DbBaseManager {
         public DbColumn getZoom() {
             return mZoom;
         }
-    }
-
-    private static class Holder {
-
-        private static final BookmarkManager INSTANCE = new BookmarkManager();
     }
 }

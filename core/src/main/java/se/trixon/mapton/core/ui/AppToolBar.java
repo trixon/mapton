@@ -52,7 +52,6 @@ import se.trixon.mapton.api.MOptions;
 import se.trixon.mapton.api.Mapton;
 import static se.trixon.mapton.api.Mapton.getIconSizeContextMenu;
 import static se.trixon.mapton.api.Mapton.getIconSizeToolBar;
-import se.trixon.mapton.core.bookmark.BookmarkView;
 
 /**
  *

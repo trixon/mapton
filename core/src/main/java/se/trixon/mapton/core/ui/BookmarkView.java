@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.trixon.mapton.core.bookmark;
+package se.trixon.mapton.core.ui;
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -56,6 +56,8 @@ import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 import se.trixon.mapton.api.MContextMenuItem;
 import se.trixon.mapton.api.Mapton;
+import se.trixon.mapton.core.bookmark.Bookmark;
+import se.trixon.mapton.core.bookmark.BookmarkManager;
 import static se.trixon.mapton.api.Mapton.getIconSizeContextMenu;
 import se.trixon.mapton.core.ui.SearchView;
 
