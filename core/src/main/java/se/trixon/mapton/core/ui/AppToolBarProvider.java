@@ -16,7 +16,6 @@
 package se.trixon.mapton.core.ui;
 
 import java.awt.Dimension;
-import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Scene;
 import javax.swing.JComponent;
@@ -48,14 +47,14 @@ public abstract class AppToolBarProvider {
         @Override
         public JComponent createToolbar() {
             JFXPanel fxPanel = new JFXPanel();
-            fxPanel.setPreferredSize(new Dimension(100, (int) (getIconSizeToolBar() * 1.2)));
+            fxPanel.setVisible(false);
 
-            Platform.runLater(() -> {
-                AppToolBar appToolBar = new AppToolBar();
-                Mapton.setToolBar(appToolBar);
-                Scene scene = new Scene(appToolBar);
-                fxPanel.setScene(scene);
-            });
+            fxPanel.setPreferredSize(new Dimension(100, (int) (getIconSizeToolBar() * 1.2)));
+            AppToolBar appToolBar = new AppToolBar();
+            Mapton.setToolBar(appToolBar);
+            Scene scene = new Scene(appToolBar);
+            fxPanel.setScene(scene);
+            fxPanel.setVisible(true);
 
             return fxPanel;
         }

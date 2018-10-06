@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,6 @@
 package se.trixon.mapton.core;
 
 import javafx.application.Platform;
-import javafx.embed.swing.JFXPanel;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLayeredPane;
@@ -43,7 +42,6 @@ public class Initializer implements Runnable {
     @Override
     public void run() {
         Platform.setImplicitExit(false);
-        new JFXPanel(); //Force init of JavaFX platform
 
         System.setProperty("netbeans.winsys.no_help_in_dialogs", "true");
         System.setProperty("netbeans.winsys.no_toolbars", "true");
@@ -72,8 +70,6 @@ public class Initializer implements Runnable {
                 tc.requestActive();
                 Actions.forID("Window", "org.netbeans.core.windows.actions.ShowEditorOnlyAction").actionPerformed(null);
             }
-
-            //NbLog.select();
         });
     }
 }
