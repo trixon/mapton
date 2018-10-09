@@ -188,9 +188,13 @@ public class WorldWindMapEngine extends MEngine {
         mMap.addPositionListener((PositionEvent pe) -> {
             Position position = pe.getPosition();
             if (position != null) {
-                setLatLonMouse(toLatLon(position));
+                Double altitude = null;
+                if (mMap.getView() != null && mMap.getView().getEyePosition() != null) {
+                    altitude = mMap.getView().getEyePosition().getElevation();
+                }
+                setMousePositionData(toLatLon(position), position.getElevation(), altitude);
             } else {
-//                setLatLonMouse(null);
+                setMousePositionData(null, null, null);
             }
         });
 

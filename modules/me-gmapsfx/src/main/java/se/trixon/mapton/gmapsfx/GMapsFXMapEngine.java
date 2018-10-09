@@ -194,7 +194,7 @@ public class GMapsFXMapEngine extends MEngine {
         mMap.zoomProperty().bindBidirectional(mZoomSlider.valueProperty());
 
         mMap.addMouseEventHandler(UIEventType.mousemove, (GMapMouseEvent event) -> {
-            setLatLonMouse(toLatLon(event.getLatLong()));
+            setMousePositionData(toLatLon(event.getLatLong()), null, null);
         });
 
         NbLog.v(LOG_TAG, "Map initialized");

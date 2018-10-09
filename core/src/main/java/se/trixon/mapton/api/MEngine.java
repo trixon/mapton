@@ -41,11 +41,13 @@ public abstract class MEngine {
     private static final TreeMap<String, MEngine> ENGINES = new TreeMap<>();
 
     protected final MOptions mMaptonOptions = MOptions.getInstance();
+    private Double mAltitude;
+    private Double mElevation;
     private Callable<BufferedImage> mImageRenderer;
     private boolean mInitialized;
     private MLatLon mLatLonMouse;
-    private double mLatitude;
-    private double mLongitude;
+    private Double mLatitude;
+    private Double mLongitude;
 
     static {
         Lookup.getDefault().lookupResult(MEngine.class).addLookupListener((LookupEvent ev) -> {
@@ -80,9 +82,17 @@ public abstract class MEngine {
         NbLog.i(getClass().getSimpleName(), "fitToBounds not implemented");
     }
 
+    public Double getAltitude() {
+        return mAltitude;
+    }
+
     public MLatLon getCenter() {
         NbLog.i(getClass().getSimpleName(), "getCenter not implemented");
         return new MLatLon(0, 0);
+    }
+
+    public Double getElevation() {
+        return mElevation;
     }
 
     public Callable<BufferedImage> getImageRenderer() {
@@ -93,7 +103,7 @@ public abstract class MEngine {
         return mLatLonMouse;
     }
 
-    public double getLatitude() {
+    public Double getLatitude() {
         return mLatitude;
     }
 
@@ -107,7 +117,7 @@ public abstract class MEngine {
         return new Pane();
     }
 
-    public double getLongitude() {
+    public Double getLongitude() {
         return mLongitude;
     }
 
@@ -175,22 +185,29 @@ public abstract class MEngine {
         mImageRenderer = imageRenderer;
     }
 
-    public final void setLatLonMouse(MLatLon latLonMouse) {
-        mLatLonMouse = latLonMouse;
-        mLatitude = latLonMouse.getLatitude();
-        mLongitude = latLonMouse.getLongitude();
-
-        Platform.runLater(() -> {
-            AppStatusPanel.getInstance().getProvider().updateLatLong();
-        });
-    }
-
     public void setLatitude(double latitude) {
         mLatitude = latitude;
     }
 
     public void setLongitude(double longitude) {
         mLongitude = longitude;
+    }
+
+    public final void setMousePositionData(MLatLon latLonMouse, Double elevation, Double altitude) {
+        mLatLonMouse = latLonMouse;
+        if (latLonMouse != null) {
+            mLatitude = latLonMouse.getLatitude();
+            mLongitude = latLonMouse.getLongitude();
+        } else {
+            mLatitude = null;
+            mLongitude = null;
+        }
+        mElevation = elevation;
+        mAltitude = altitude;
+
+        Platform.runLater(() -> {
+            AppStatusPanel.getInstance().getProvider().updateMousePositionData();
+        });
     }
 
 }

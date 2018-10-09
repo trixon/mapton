@@ -24,6 +24,7 @@ import javafx.scene.text.Font;
 import org.controlsfx.control.StatusBar;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
+import se.trixon.almond.util.Dict;
 import se.trixon.mapton.api.MCooTrans;
 import se.trixon.mapton.api.MEngine;
 import se.trixon.mapton.api.MOptions;
@@ -55,7 +56,7 @@ public class AppStatusView extends StatusBar {
         mComboBox.setOnAction((ActionEvent event) -> {
             mCooTrans = mComboBox.getSelectionModel().getSelectedItem();
             mOptions.setMapCooTrans(mCooTrans.getName());
-            updateLatLong();
+            updateMousePositionData();
         });
 
         updateProviders();
@@ -65,20 +66,39 @@ public class AppStatusView extends StatusBar {
         mLabel.setText(message);
     }
 
-    public void updateLatLong() {
+    public void updateMousePositionData() {
         MEngine engine = Mapton.getEngine();
 
         if (engine != null) {
-            final double latitude = engine.getLatitude();
-            final double longitude = engine.getLongitude();
+            if (engine.getLatitude() != null) {
+                double latitude = engine.getLatitude();
+                double longitude = engine.getLongitude();
 
-            if (latitude != 0 && longitude != 0) {
-                String cooString = mCooTrans.getString(latitude, longitude);
+                if (latitude != 0 && longitude != 0) {
+                    String altitude = "";
+                    if (engine.getAltitude() != null) {
+                        double metersAltitude = engine.getAltitude();
+                        if (Math.abs(metersAltitude) >= 1000) {
+                            altitude = String.format("%s %,7d km, ", Dict.ALTITUDE.toString(), (int) Math.round(metersAltitude / 1e3));
+                        } else {
+                            altitude = String.format("%s %,7d m, ", Dict.ALTITUDE.toString(), (int) Math.round(metersAltitude));
+                        }
+                    }
 
-                String lat = String.format("%9.6f°%s", Math.abs(latitude), latitude < 0 ? "S" : "N");
-                String lon = String.format("%10.6f°%s", Math.abs(longitude), longitude < 0 ? "W" : "E");
+                    String elevation = "";
+                    if (engine.getElevation() != null) {
+                        elevation = String.format("%s %,6d %s, ", Dict.ELEVATION.toString(), (int) engine.getElevation().doubleValue(), Dict.METERS.toString().toLowerCase());
+                    }
 
-                setMessage(String.format("%s  %s WGS 84 DD, %s", lat, lon, cooString));
+                    String cooString = mCooTrans.getString(latitude, longitude);
+                    String lat = String.format("%9.6f°%s", Math.abs(latitude), latitude < 0 ? "S" : "N");
+                    String lon = String.format("%10.6f°%s", Math.abs(longitude), longitude < 0 ? "W" : "E");
+                    String latLon = String.format("%s  %s WGS 84 DD, %s", lat, lon, cooString);
+
+                    setMessage(altitude + elevation + latLon);
+                }
+            } else {
+                setMessage("");
             }
         }
     }
@@ -100,7 +120,7 @@ public class AppStatusView extends StatusBar {
 
                 mComboBox.getSelectionModel().select(cooTrans);
                 mCooTrans = mComboBox.getSelectionModel().getSelectedItem();
-                updateLatLong();
+                updateMousePositionData();
             }
         });
     }
