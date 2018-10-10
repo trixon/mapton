@@ -150,7 +150,7 @@ public class JxMapViewerMapEngine extends MEngine {
             @Override
             public void mouseMoved(MouseEvent e) {
                 GeoPosition geoPosition = mMap.convertPointToGeoPosition(e.getPoint());
-                setMousePositionData(toLatLon(geoPosition), null, null);
+                setStatusMousePositionData(toLatLon(geoPosition), null, null);
             }
         });
 

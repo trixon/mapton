@@ -18,6 +18,7 @@ package se.trixon.mapton.worldwind;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLEventListener;
 import gov.nasa.worldwind.View;
+import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.WorldWindow;
 import gov.nasa.worldwind.event.PositionEvent;
 import gov.nasa.worldwind.geom.Angle;
@@ -30,6 +31,7 @@ import java.awt.event.HierarchyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javafx.scene.Node;
+import javax.swing.Timer;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.NbLog;
 import se.trixon.mapton.api.MEngine;
@@ -45,11 +47,12 @@ public class WorldWindMapEngine extends MEngine {
 
     public static final String LOG_TAG = "WorldWind";
     private static final double MAX_ALTITUDE = 2.0E7f;
+    private boolean mInProgress;
     private boolean mInitialized;
     private final LayerView mLayerView;
     private WorldWindowPanel mMap;
-    private final StyleView mStyleView;
     private final ModuleOptions mOptions = ModuleOptions.getInstance();
+    private final StyleView mStyleView;
 
     public WorldWindMapEngine() {
         mStyleView = new StyleView();
@@ -80,27 +83,6 @@ public class WorldWindMapEngine extends MEngine {
     }
 
     @Override
-    public void onActivate() {
-        View view = mMap.getView();
-        view.setHeading(mOptions.getViewHeading());
-        view.setPitch(mOptions.getViewPitch());
-        view.setRoll(mOptions.getViewRoll());
-    }
-
-    @Override
-    public void onDeactivate() {
-        View view = mMap.getView();
-        mOptions.setViewHeading(view.getHeading());
-        mOptions.setViewPitch(view.getPitch());
-        mOptions.setViewRoll(view.getRoll());
-    }
-
-    @Override
-    public void onClosing() {
-        onDeactivate();
-    }
-
-    @Override
     public Node getStyleView() {
         return mStyleView;
     }
@@ -118,6 +100,27 @@ public class WorldWindMapEngine extends MEngine {
     @Override
     public double getZoom() {
         return toGlobalZoom();
+    }
+
+    @Override
+    public void onActivate() {
+        View view = mMap.getView();
+        view.setHeading(mOptions.getViewHeading());
+        view.setPitch(mOptions.getViewPitch());
+        view.setRoll(mOptions.getViewRoll());
+    }
+
+    @Override
+    public void onClosing() {
+        onDeactivate();
+    }
+
+    @Override
+    public void onDeactivate() {
+        View view = mMap.getView();
+        mOptions.setViewHeading(view.getHeading());
+        mOptions.setViewPitch(view.getPitch());
+        mOptions.setViewRoll(view.getRoll());
     }
 
     @Override
@@ -192,9 +195,9 @@ public class WorldWindMapEngine extends MEngine {
                 if (mMap.getView() != null && mMap.getView().getEyePosition() != null) {
                     altitude = mMap.getView().getEyePosition().getElevation();
                 }
-                setMousePositionData(toLatLon(position), position.getElevation(), altitude);
+                setStatusMousePositionData(toLatLon(position), position.getElevation(), altitude);
             } else {
-                setMousePositionData(null, null, null);
+                setStatusMousePositionData(null, null, null);
             }
         });
 
@@ -233,6 +236,16 @@ public class WorldWindMapEngine extends MEngine {
             public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
             }
         });
+
+        Timer downloadTimer = new Timer(100, (event) -> {
+            boolean inProgress = WorldWind.getRetrievalService().hasActiveTasks();
+            if (mInProgress != inProgress) {
+                mInProgress = inProgress;
+                setStatusProgress(mInProgress ? -1 : 1);
+            }
+        });
+
+        downloadTimer.start();
     }
 
     private double toGlobalZoom() {

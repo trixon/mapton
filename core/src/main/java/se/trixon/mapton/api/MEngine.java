@@ -193,8 +193,9 @@ public abstract class MEngine {
         mLongitude = longitude;
     }
 
-    public final void setMousePositionData(MLatLon latLonMouse, Double elevation, Double altitude) {
+    public final void setStatusMousePositionData(MLatLon latLonMouse, Double elevation, Double altitude) {
         mLatLonMouse = latLonMouse;
+
         if (latLonMouse != null) {
             mLatitude = latLonMouse.getLatitude();
             mLongitude = latLonMouse.getLongitude();
@@ -202,6 +203,7 @@ public abstract class MEngine {
             mLatitude = null;
             mLongitude = null;
         }
+
         mElevation = elevation;
         mAltitude = altitude;
 
@@ -210,4 +212,9 @@ public abstract class MEngine {
         });
     }
 
+    public void setStatusProgress(double progress) {
+        Platform.runLater(() -> {
+            AppStatusPanel.getInstance().getProvider().setProgress(progress);
+        });
+    }
 }

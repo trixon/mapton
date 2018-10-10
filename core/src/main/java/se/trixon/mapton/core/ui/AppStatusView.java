@@ -99,6 +99,7 @@ public class AppStatusView extends StatusBar {
                 }
             } else {
                 setMessage("");
+                setProgress(0);
             }
         }
     }
