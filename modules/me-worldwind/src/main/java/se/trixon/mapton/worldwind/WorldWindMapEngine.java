@@ -74,7 +74,7 @@ public class WorldWindMapEngine extends MEngine {
 
     @Override
     public Node getLayerView() {
-        return null;
+        return mLayerView;
     }
 
     public WorldWindowPanel getMap() {

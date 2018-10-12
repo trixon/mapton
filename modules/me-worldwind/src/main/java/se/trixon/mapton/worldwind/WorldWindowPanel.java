@@ -47,13 +47,15 @@ import gov.nasa.worldwind.render.SurfaceImage;
 import gov.nasa.worldwind.terrain.CompoundElevationModel;
 import gov.nasa.worldwind.terrain.ZeroElevationModel;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 import java.util.prefs.PreferenceChangeEvent;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
@@ -70,8 +72,7 @@ import se.trixon.mapton.worldwind.api.WmsService;
  */
 public class WorldWindowPanel extends WorldWindowGLJPanel {
 
-    private final ArrayList<Layer> mCustomLayers = new ArrayList<>();
-
+    private final ObservableList<Layer> mCustomLayers = FXCollections.observableArrayList();
     private FlatGlobe mFlatGlobe;
     private final MOptions mMaptonOptions = MOptions.getInstance();
     private HashMap<String, AbstractGeographicProjection> mNameProjections;
@@ -105,6 +106,10 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
 
     public WorldWindowGLDrawable getWwd() {
         return wwd;
+    }
+
+    ObservableList<Layer> getCustomLayers() {
+        return mCustomLayers;
     }
 
     Callable<BufferedImage> getImageRenderer() {
@@ -189,6 +194,11 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         for (CustomLayer layerService : Lookup.getDefault().lookupAll(CustomLayer.class)) {
             if (!layerService.isPopulated()) {
                 new Thread(() -> {
+                    try {
+                        TimeUnit.MILLISECONDS.sleep(2000);
+                    } catch (InterruptedException ex) {
+                        Exceptions.printStackTrace(ex);
+                    }
                     try {
                         layerService.populate();
                         for (Iterator iterator = layerService.getLayers().iterator(); iterator.hasNext();) {
