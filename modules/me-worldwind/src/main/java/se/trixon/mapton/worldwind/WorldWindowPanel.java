@@ -50,19 +50,18 @@ import java.awt.image.BufferedImage;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.concurrent.Callable;
-import java.util.concurrent.TimeUnit;
 import java.util.prefs.PreferenceChangeEvent;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javax.swing.SwingUtilities;
 import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.util.GraphicsHelper;
 import se.trixon.mapton.api.MOptions;
-import se.trixon.mapton.worldwind.api.CustomLayer;
+import se.trixon.mapton.worldwind.api.LayerBundle;
 import se.trixon.mapton.worldwind.api.MapStyle;
 import se.trixon.mapton.worldwind.api.WmsService;
 
@@ -178,39 +177,33 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         updateStyle();
         updateElevation();
 
-        Lookup.getDefault().lookupResult(CustomLayer.class).addLookupListener((LookupEvent ev) -> {
-            initCustomLayers();
+        Lookup.getDefault().lookupResult(LayerBundle.class).addLookupListener((LookupEvent ev) -> {
+            initLayerBundles();
         });
 
         Lookup.getDefault().lookupResult(WmsService.class).addLookupListener((LookupEvent ev) -> {
             initWmsService();
         });
 
-        initCustomLayers();
+        initLayerBundles();
         initWmsService();
     }
 
-    private void initCustomLayers() {
-        for (CustomLayer layerService : Lookup.getDefault().lookupAll(CustomLayer.class)) {
-            if (!layerService.isPopulated()) {
-                new Thread(() -> {
-                    try {
-                        TimeUnit.MILLISECONDS.sleep(2000);
-                    } catch (InterruptedException ex) {
-                        Exceptions.printStackTrace(ex);
-                    }
-                    try {
-                        layerService.populate();
-                        for (Iterator iterator = layerService.getLayers().iterator(); iterator.hasNext();) {
-                            Layer layer = (Layer) iterator.next();
-                            addCustomLayer(layer);
+    private void initLayerBundles() {
+        SwingUtilities.invokeLater(() -> {
+            Lookup.getDefault().lookupAll(LayerBundle.class).stream()
+                    .filter((LayerBundle) -> (!LayerBundle.isPopulated()))
+                    .forEachOrdered((customLayerBundle) -> {
+                        try {
+                            customLayerBundle.populate();
+                            customLayerBundle.getLayers().forEach((layer) -> {
+                                addCustomLayer(layer);
+                            });
+                        } catch (Exception ex) {
+                            Exceptions.printStackTrace(ex);
                         }
-                    } catch (Exception ex) {
-                        Exceptions.printStackTrace(ex);
-                    }
-                }).start();
-            }
-        }
+                    });
+        });
     }
 
     private void initListeners() {

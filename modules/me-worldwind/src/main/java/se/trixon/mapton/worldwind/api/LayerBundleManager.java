@@ -24,16 +24,16 @@ import se.trixon.mapton.worldwind.WorldWindowPanel;
  *
  * @author Patrik Karlström
  */
-public class CustomLayerManager {
+public class LayerBundleManager {
 
     private WorldWindMapEngine mEngine;
     private WorldWindowPanel mMap;
 
-    public static CustomLayerManager getInstance() {
+    public static LayerBundleManager getInstance() {
         return Holder.INSTANCE;
     }
 
-    private CustomLayerManager() {
+    private LayerBundleManager() {
     }
 
     public void add(Layer layer) {
@@ -57,6 +57,6 @@ public class CustomLayerManager {
 
     private static class Holder {
 
-        private static final CustomLayerManager INSTANCE = new CustomLayerManager();
+        private static final LayerBundleManager INSTANCE = new LayerBundleManager();
     }
 }

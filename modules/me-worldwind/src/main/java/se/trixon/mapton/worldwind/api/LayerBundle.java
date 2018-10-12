@@ -22,12 +22,12 @@ import java.util.ArrayList;
  *
  * @author Patrik Karlström
  */
-public abstract class CustomLayer {
+public abstract class LayerBundle {
 
     private final ArrayList<Layer> mLayers = new ArrayList<>();
     private boolean mPopulated = false;
 
-    public CustomLayer() {
+    public LayerBundle() {
     }
 
     public ArrayList<Layer> getLayers() {

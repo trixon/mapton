@@ -31,18 +31,18 @@ import gov.nasa.worldwind.render.ShapeAttributes;
 import gov.nasa.worldwind.render.Wedge;
 import java.util.ArrayList;
 import org.openide.util.lookup.ServiceProvider;
-import se.trixon.mapton.worldwind.api.CustomLayer;
+import se.trixon.mapton.worldwind.api.LayerBundle;
 
 /**
  *
  * @author Patrik Karlström
  */
-@ServiceProvider(service = CustomLayer.class)
-public class RigidShapesCustomLayer extends CustomLayer {
+@ServiceProvider(service = LayerBundle.class)
+public class RigidShapesLayerBundle extends LayerBundle {
 
     private final RenderableLayer mLayer = new RenderableLayer();
 
-    public RigidShapesCustomLayer() {
+    public RigidShapesLayerBundle() {
         mLayer.setName("Rigid Shapes");
         mLayer.setEnabled(true);
     }
@@ -103,10 +103,10 @@ public class RigidShapesCustomLayer extends CustomLayer {
         // Box with a texture.
         Box box = new Box(Position.fromDegrees(0, -90, 600000), 600000, 600000, 600000);
         box.setAltitudeMode(WorldWind.RELATIVE_TO_GROUND);
-        ArrayList<Object> imageSources = new ArrayList<Object>();
+        ArrayList<Object> imageSources = new ArrayList<>();
         imageSources.add("images/32x32-icon-nasa.png");
         imageSources.add(null);
-        imageSources.add("se/trixon/mapton/worldwind/demo/500px-Checkerboard_pattern.png");
+        imageSources.add("se/trixon/mapton/demo/500px-Checkerboard_pattern.png");
         imageSources.add(null);
         imageSources.add("images/64x64-crosshair.png");
         imageSources.add(null);
@@ -118,7 +118,7 @@ public class RigidShapesCustomLayer extends CustomLayer {
         // Sphere with a texture.
         Ellipsoid sphere = new Ellipsoid(Position.fromDegrees(0, -110, 600000), 600000, 600000, 600000);
         sphere.setAltitudeMode(WorldWind.RELATIVE_TO_GROUND);
-        sphere.setImageSources("se/trixon/mapton/worldwind/demo/500px-Checkerboard_pattern.png");
+        sphere.setImageSources("se/trixon/mapton/demo/500px-Checkerboard_pattern.png");
         sphere.setAttributes(attrs);
         sphere.setValue(AVKey.DISPLAY_NAME, "Sphere with a texture");
         mLayer.addRenderable(sphere);
@@ -126,7 +126,7 @@ public class RigidShapesCustomLayer extends CustomLayer {
         // Cylinder with a texture.
         Cylinder cylinder = new Cylinder(Position.fromDegrees(0, -130, 600000), 600000, 600000, 600000);
         cylinder.setAltitudeMode(WorldWind.RELATIVE_TO_GROUND);
-        cylinder.setImageSources("se/trixon/mapton/worldwind/demo/500px-Checkerboard_pattern.png");
+        cylinder.setImageSources("se/trixon/mapton/demo/500px-Checkerboard_pattern.png");
         cylinder.setAttributes(attrs);
         cylinder.setValue(AVKey.DISPLAY_NAME, "Cylinder with a texture");
         mLayer.addRenderable(cylinder);
@@ -150,7 +150,7 @@ public class RigidShapesCustomLayer extends CustomLayer {
         ellipsoid = new Ellipsoid(Position.fromDegrees(30, 30, 750000), 1000000, 500000, 100000,
                 Angle.fromDegrees(90), Angle.fromDegrees(45), Angle.fromDegrees(30));
         ellipsoid.setAltitudeMode(WorldWind.RELATIVE_TO_GROUND);
-        ellipsoid.setImageSources("se/trixon/mapton/worldwind/demo/500px-Checkerboard_pattern.png");
+        ellipsoid.setImageSources("se/trixon/mapton/demo/500px-Checkerboard_pattern.png");
         ellipsoid.setAttributes(attrs2);
         ellipsoid.setValue(AVKey.DISPLAY_NAME, "Ellipsoid with a pre-set orientation");
         mLayer.addRenderable(ellipsoid);
