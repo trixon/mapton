@@ -95,13 +95,14 @@
         <module>modules/me-worldwind</module>
         <module>modules/me-jxmapviewer2</module>
         <module>modules/ww-eox</module>
+        <module>demo</module>
     </modules>
 
     <properties>
         <netbeans.version>RELEASE82</netbeans.version>
         <brandingToken>mapton</brandingToken>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <mapton.version>0.1.0-SNAPSHOT</mapton.version>
+        <mapton.version>0.1.1-SNAPSHOT</mapton.version>
         <version.almond-nbp>3.0.0-SNAPSHOT</version.almond-nbp>
     </properties>
     <description>Some kind of map application</description>

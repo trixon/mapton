@@ -121,6 +121,11 @@
             <artifactId>ww-eox</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>demo</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <!-- Trixon -->
         <dependency>
