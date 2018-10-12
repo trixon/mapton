@@ -77,6 +77,10 @@ public class WorldWindMapEngine extends MEngine {
         return null;
     }
 
+    public WorldWindowPanel getMap() {
+        return mMap;
+    }
+
     @Override
     public String getName() {
         return "WorldWind";

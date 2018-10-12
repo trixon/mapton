@@ -47,9 +47,11 @@ import gov.nasa.worldwind.render.SurfaceImage;
 import gov.nasa.worldwind.terrain.CompoundElevationModel;
 import gov.nasa.worldwind.terrain.ZeroElevationModel;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.concurrent.Callable;
 import java.util.prefs.PreferenceChangeEvent;
 import org.openide.util.Exceptions;
@@ -58,6 +60,7 @@ import org.openide.util.LookupEvent;
 import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.util.GraphicsHelper;
 import se.trixon.mapton.api.MOptions;
+import se.trixon.mapton.worldwind.api.CustomLayer;
 import se.trixon.mapton.worldwind.api.MapStyle;
 import se.trixon.mapton.worldwind.api.WmsService;
 
@@ -66,6 +69,8 @@ import se.trixon.mapton.worldwind.api.WmsService;
  * @author Patrik Karlström
  */
 public class WorldWindowPanel extends WorldWindowGLJPanel {
+
+    private final ArrayList<Layer> mCustomLayers = new ArrayList<>();
 
     private FlatGlobe mFlatGlobe;
     private final MOptions mMaptonOptions = MOptions.getInstance();
@@ -88,6 +93,14 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         super(ww, glc, glcc);
         init();
         initListeners();
+    }
+
+    public void addCustomLayer(Layer layer) {
+        if (!getLayers().contains(layer)) {
+            NbLog.v(getClass(), "Adding Custom Layer: " + layer.getName());
+            mCustomLayers.add(layer);
+            insertLayerBefore(layer, CompassLayer.class);
+        }
     }
 
     public WorldWindowGLDrawable getWwd() {
@@ -160,11 +173,34 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         updateStyle();
         updateElevation();
 
+        Lookup.getDefault().lookupResult(CustomLayer.class).addLookupListener((LookupEvent ev) -> {
+            initCustomLayers();
+        });
+
         Lookup.getDefault().lookupResult(WmsService.class).addLookupListener((LookupEvent ev) -> {
             initWmsService();
         });
 
+        initCustomLayers();
         initWmsService();
+    }
+
+    private void initCustomLayers() {
+        for (CustomLayer layerService : Lookup.getDefault().lookupAll(CustomLayer.class)) {
+            if (!layerService.isPopulated()) {
+                new Thread(() -> {
+                    try {
+                        layerService.populate();
+                        for (Iterator iterator = layerService.getLayers().iterator(); iterator.hasNext();) {
+                            Layer layer = (Layer) iterator.next();
+                            addCustomLayer(layer);
+                        }
+                    } catch (Exception ex) {
+                        Exceptions.printStackTrace(ex);
+                    }
+                }).start();
+            }
+        }
     }
 
     private void initListeners() {
@@ -205,7 +241,7 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
                     try {
                         wmsService.populate();
                         for (Layer layer : wmsService.getLayers()) {
-                            NbLog.v(getClass(), "Adding layer " + layer.getName());
+                            NbLog.v(getClass(), "Adding WMS Layer: " + layer.getName());
                             layer.setEnabled(false);
                             getLayers().addIfAbsent(layer);
                         }
@@ -301,7 +337,7 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
             NbLog.v(getClass(), String.join(", ", styleLayers));
             getLayers().forEach((layer) -> {
                 final String name = layer.getName();
-                if (!blacklist.contains(name)) {
+                if (!blacklist.contains(name) && !mCustomLayers.contains(layer)) {
                     layer.setEnabled(Arrays.asList(styleLayers).contains(name));
                     layer.setOpacity(mOptions.getMapOpacity());
                 }
