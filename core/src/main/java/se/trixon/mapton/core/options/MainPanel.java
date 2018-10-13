@@ -17,6 +17,7 @@ package se.trixon.mapton.core.options;
 
 import java.awt.BorderLayout;
 import java.util.ResourceBundle;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
 import javafx.scene.layout.VBox;
@@ -29,7 +30,7 @@ final class MainPanel extends javax.swing.JPanel {
 
     private final MainOptionsPanelController controller;
     private final ResourceBundle mBundle = NbBundle.getBundle(MainPanel.class);
-    private final MOptions mCptions = MOptions.getInstance();
+    private final MOptions mOptions = MOptions.getInstance();
     private EngineBox mEngineBox;
     private final FxPanel mFxPanel;
 
@@ -62,18 +63,27 @@ final class MainPanel extends javax.swing.JPanel {
     }
 
     void load() {
-    }
-
-    void loadFX() {
-        mPopoverCheckBox.setSelected(mCptions.isPreferPopover());
+        Platform.runLater(() -> {
+            loadFX();
+        });
     }
 
     void store() {
-        mCptions.setPreferPopover(mPopoverCheckBox.isSelected());
+        Platform.runLater(() -> {
+            storeFX();
+        });
     }
 
     boolean valid() {
         // TODO check whether form is consistent and complete
         return true;
+    }
+
+    private void loadFX() {
+        mPopoverCheckBox.setSelected(mOptions.isPreferPopover());
+    }
+
+    private void storeFX() {
+        mOptions.setPreferPopover(mPopoverCheckBox.isSelected());
     }
 }

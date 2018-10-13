@@ -33,24 +33,20 @@ import org.openide.util.Lookup;
 @org.openide.util.NbBundle.Messages({"OptionsCategory_Name_Mapton=Mapton", "OptionsCategory_Keywords_Mapton=mapton"})
 public final class MainOptionsPanelController extends OptionsPanelController {
 
-    private boolean changed;
-
-    private MainPanel panel;
-    private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
+    private boolean mChanged;
+    private MainPanel mMainPanel;
+    private final PropertyChangeSupport mPropertyChangeSupport = new PropertyChangeSupport(this);
 
     @Override
     public void addPropertyChangeListener(PropertyChangeListener l) {
-        pcs.addPropertyChangeListener(l);
+        mPropertyChangeSupport.addPropertyChangeListener(l);
     }
 
     @Override
     public void applyChanges() {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                getPanel().store();
-                changed = false;
-            }
+        SwingUtilities.invokeLater(() -> {
+            getPanel().store();
+            mChanged = false;
         });
     }
 
@@ -71,7 +67,7 @@ public final class MainOptionsPanelController extends OptionsPanelController {
 
     @Override
     public boolean isChanged() {
-        return changed;
+        return mChanged;
     }
 
     @Override
@@ -81,28 +77,28 @@ public final class MainOptionsPanelController extends OptionsPanelController {
 
     @Override
     public void removePropertyChangeListener(PropertyChangeListener l) {
-        pcs.removePropertyChangeListener(l);
+        mPropertyChangeSupport.removePropertyChangeListener(l);
     }
 
     @Override
     public void update() {
         getPanel().load();
-        changed = false;
+        mChanged = false;
     }
 
     void changed() {
-        if (!changed) {
-            changed = true;
-            pcs.firePropertyChange(OptionsPanelController.PROP_CHANGED, false, true);
+        if (!mChanged) {
+            mChanged = true;
+            mPropertyChangeSupport.firePropertyChange(OptionsPanelController.PROP_CHANGED, false, true);
         }
-        pcs.firePropertyChange(OptionsPanelController.PROP_VALID, null, null);
+        mPropertyChangeSupport.firePropertyChange(OptionsPanelController.PROP_VALID, null, null);
     }
 
     private MainPanel getPanel() {
-        if (panel == null) {
-            panel = new MainPanel(this);
+        if (mMainPanel == null) {
+            mMainPanel = new MainPanel(this);
         }
-        return panel;
-    }
 
+        return mMainPanel;
+    }
 }
