@@ -201,7 +201,7 @@ public class WorldWindMapEngine extends MEngine {
                 }
                 setStatusMousePositionData(toLatLon(position), position.getElevation(), altitude);
             } else {
-                setStatusMousePositionData(null, null, null);
+//                setStatusMousePositionData(null, null, null);
             }
         });
 
