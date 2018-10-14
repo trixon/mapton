@@ -38,23 +38,23 @@ import se.trixon.mapton.worldwind.api.LayerBundle;
  * @author Patrik Karlström
  */
 @ServiceProvider(service = LayerBundle.class)
-public class RigidShapesLayerBundle extends LayerBundle {
+public class DemoLayerBundle extends LayerBundle {
 
-    private final RenderableLayer mLayer = new RenderableLayer();
+    private final RenderableLayer mRigidShapesLayer = new RenderableLayer();
 
-    public RigidShapesLayerBundle() {
-        mLayer.setName("Rigid Shapes");
-        mLayer.setEnabled(true);
+    public DemoLayerBundle() {
+        mRigidShapesLayer.setName("Rigid Shapes");
+        mRigidShapesLayer.setEnabled(false);
     }
 
     public RenderableLayer getLayer() {
-        return mLayer;
+        return mRigidShapesLayer;
     }
 
     @Override
     public void populate() throws Exception {
         addRigidShapes();
-        getLayers().add(mLayer);
+        getLayers().add(mRigidShapesLayer);
         setPopulated(true);
     }
 
@@ -83,14 +83,14 @@ public class RigidShapesLayerBundle extends LayerBundle {
         pyramid.setAltitudeMode(WorldWind.ABSOLUTE);
         pyramid.setAttributes(attrs);
         pyramid.setValue(AVKey.DISPLAY_NAME, "Pyramid with equal axes, ABSOLUTE altitude mode");
-        mLayer.addRenderable(pyramid);
+        mRigidShapesLayer.addRenderable(pyramid);
 
         // Cone with equal axes, RELATIVE_TO_GROUND.
         Cone cone = new Cone(Position.fromDegrees(37.5, -115, 200000), 200000, 200000, 200000);
         cone.setAltitudeMode(WorldWind.RELATIVE_TO_GROUND);
         cone.setAttributes(attrs);
         cone.setValue(AVKey.DISPLAY_NAME, "Cone with equal axes, RELATIVE_TO_GROUND altitude mode");
-        mLayer.addRenderable(cone);
+        mRigidShapesLayer.addRenderable(cone);
 
         // Wedge with equal axes, CLAMP_TO_GROUND.
         Wedge wedge = new Wedge(Position.fromDegrees(35, -110, 200000), Angle.fromDegrees(225),
@@ -98,7 +98,7 @@ public class RigidShapesLayerBundle extends LayerBundle {
         wedge.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
         wedge.setAttributes(attrs);
         wedge.setValue(AVKey.DISPLAY_NAME, "Wedge with equal axes, CLAMP_TO_GROUND altitude mode");
-        mLayer.addRenderable(wedge);
+        mRigidShapesLayer.addRenderable(wedge);
 
         // Box with a texture.
         Box box = new Box(Position.fromDegrees(0, -90, 600000), 600000, 600000, 600000);
@@ -113,7 +113,7 @@ public class RigidShapesLayerBundle extends LayerBundle {
         box.setImageSources(imageSources);
         box.setAttributes(attrs);
         box.setValue(AVKey.DISPLAY_NAME, "Box with a texture");
-        mLayer.addRenderable(box);
+        mRigidShapesLayer.addRenderable(box);
 
         // Sphere with a texture.
         Ellipsoid sphere = new Ellipsoid(Position.fromDegrees(0, -110, 600000), 600000, 600000, 600000);
@@ -121,7 +121,7 @@ public class RigidShapesLayerBundle extends LayerBundle {
         sphere.setImageSources("se/trixon/mapton/demo/500px-Checkerboard_pattern.png");
         sphere.setAttributes(attrs);
         sphere.setValue(AVKey.DISPLAY_NAME, "Sphere with a texture");
-        mLayer.addRenderable(sphere);
+        mRigidShapesLayer.addRenderable(sphere);
 
         // Cylinder with a texture.
         Cylinder cylinder = new Cylinder(Position.fromDegrees(0, -130, 600000), 600000, 600000, 600000);
@@ -129,14 +129,14 @@ public class RigidShapesLayerBundle extends LayerBundle {
         cylinder.setImageSources("se/trixon/mapton/demo/500px-Checkerboard_pattern.png");
         cylinder.setAttributes(attrs);
         cylinder.setValue(AVKey.DISPLAY_NAME, "Cylinder with a texture");
-        mLayer.addRenderable(cylinder);
+        mRigidShapesLayer.addRenderable(cylinder);
 
         // Cylinder with default orientation.
         cylinder = new Cylinder(Position.ZERO, 600000, 500000, 300000);
         cylinder.setAltitudeMode(WorldWind.ABSOLUTE);
         cylinder.setAttributes(attrs);
         cylinder.setValue(AVKey.DISPLAY_NAME, "Cylinder with default orientation");
-        mLayer.addRenderable(cylinder);
+        mRigidShapesLayer.addRenderable(cylinder);
 
         // Ellipsoid with a pre-set orientation.
         Ellipsoid ellipsoid = new Ellipsoid(Position.fromDegrees(0, 30, 750000), 1000000, 500000, 100000,
@@ -144,7 +144,7 @@ public class RigidShapesLayerBundle extends LayerBundle {
         ellipsoid.setAltitudeMode(WorldWind.RELATIVE_TO_GROUND);
         ellipsoid.setAttributes(attrs2);
         ellipsoid.setValue(AVKey.DISPLAY_NAME, "Ellipsoid with a pre-set orientation");
-        mLayer.addRenderable(ellipsoid);
+        mRigidShapesLayer.addRenderable(ellipsoid);
 
         // Ellipsoid with a pre-set orientation.
         ellipsoid = new Ellipsoid(Position.fromDegrees(30, 30, 750000), 1000000, 500000, 100000,
@@ -153,7 +153,7 @@ public class RigidShapesLayerBundle extends LayerBundle {
         ellipsoid.setImageSources("se/trixon/mapton/demo/500px-Checkerboard_pattern.png");
         ellipsoid.setAttributes(attrs2);
         ellipsoid.setValue(AVKey.DISPLAY_NAME, "Ellipsoid with a pre-set orientation");
-        mLayer.addRenderable(ellipsoid);
+        mRigidShapesLayer.addRenderable(ellipsoid);
 
         // Ellipsoid with a pre-set orientation.
         ellipsoid = new Ellipsoid(Position.fromDegrees(60, 30, 750000), 1000000, 500000, 100000,
@@ -161,7 +161,7 @@ public class RigidShapesLayerBundle extends LayerBundle {
         ellipsoid.setAltitudeMode(WorldWind.RELATIVE_TO_GROUND);
         ellipsoid.setAttributes(attrs2);
         ellipsoid.setValue(AVKey.DISPLAY_NAME, "Ellipsoid with a pre-set orientation");
-        mLayer.addRenderable(ellipsoid);
+        mRigidShapesLayer.addRenderable(ellipsoid);
 
         // Ellipsoid oriented in 3rd "quadrant" (-X, -Y, -Z).
         ellipsoid = new Ellipsoid(Position.fromDegrees(-45, -180, 750000), 1000000, 500000, 100000,
@@ -169,7 +169,7 @@ public class RigidShapesLayerBundle extends LayerBundle {
         ellipsoid.setAltitudeMode(WorldWind.RELATIVE_TO_GROUND);
         ellipsoid.setAttributes(attrs2);
         ellipsoid.setValue(AVKey.DISPLAY_NAME, "Ellipsoid oriented in 3rd \"quadrant\" (-X, -Y, -Z)");
-        mLayer.addRenderable(ellipsoid);
+        mRigidShapesLayer.addRenderable(ellipsoid);
     }
 
 }
