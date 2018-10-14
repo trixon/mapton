@@ -15,7 +15,11 @@
  */
 package se.trixon.mapton.core.ui;
 
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import javafx.application.Platform;
 import javafx.scene.Scene;
+import javafx.scene.layout.BorderPane;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.util.NbBundle.Messages;
@@ -45,6 +49,8 @@ import se.trixon.mapton.api.MTopComponent;
 })
 public final class LayerTopComponent extends MTopComponent {
 
+    private BorderPane mBorderPane;
+
     public LayerTopComponent() {
         putClientProperty(PROP_MAXIMIZATION_DISABLED, Boolean.TRUE);
         putClientProperty(PROP_SLIDING_DISABLED, Boolean.TRUE);
@@ -53,15 +59,17 @@ public final class LayerTopComponent extends MTopComponent {
 
         setName(Dict.LAYERS.toString());
         setPopOverHolder(true);
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentShown(ComponentEvent e) {
+                reInitFX();
+            }
+        });
     }
 
     @Override
     protected void initFX() {
         setScene(createScene());
-    }
-
-    private Scene createScene() {
-        return new Scene(new LayerView());
     }
 
     void readProperties(java.util.Properties p) {
@@ -74,5 +82,18 @@ public final class LayerTopComponent extends MTopComponent {
         // http://wiki.apidesign.org/wiki/PropertyFiles
         p.setProperty("version", "1.0");
         // TODO store your settings
+    }
+
+    private Scene createScene() {
+        mBorderPane = new BorderPane();
+        reInitFX();
+
+        return new Scene(mBorderPane);
+    }
+
+    private void reInitFX() {
+        Platform.runLater(() -> {
+            mBorderPane.setCenter(new LayerView());
+        });
     }
 }

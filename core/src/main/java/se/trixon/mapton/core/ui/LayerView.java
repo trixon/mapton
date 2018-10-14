@@ -18,7 +18,6 @@ package se.trixon.mapton.core.ui;
 import java.util.prefs.PreferenceChangeEvent;
 import javafx.application.Platform;
 import javafx.scene.layout.BorderPane;
-import org.controlsfx.control.CheckListView;
 import se.trixon.mapton.api.MOptions;
 import se.trixon.mapton.api.Mapton;
 
@@ -28,12 +27,11 @@ import se.trixon.mapton.api.Mapton;
  */
 public class LayerView extends BorderPane {
 
-    private EngineBox mEngineBox;
-    private CheckListView<String> mListView;
     private final MOptions mMOptions = MOptions.getInstance();
 
     public LayerView() {
         createUI();
+
         mMOptions.getPreferences().addPreferenceChangeListener((PreferenceChangeEvent evt) -> {
             switch (evt.getKey()) {
                 case MOptions.KEY_MAP_ENGINE:
@@ -48,13 +46,6 @@ public class LayerView extends BorderPane {
     }
 
     private void createUI() {
-        mListView = new CheckListView<>();
-        mEngineBox = new EngineBox();
-        mEngineBox.backgroundProperty().bind(mListView.backgroundProperty());
-
-        setCenter(mListView);
-        setBottom(mEngineBox);
-
         loadLayerView();
     }
 

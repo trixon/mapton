@@ -30,7 +30,11 @@ public class LayerView extends BorderPane {
     private final CheckListView<Layer> mListView = new CheckListView<>();
     private WorldWindowPanel mMap;
 
-    public LayerView() {
+    public static LayerView getInstance() {
+        return Holder.INSTANCE;
+    }
+
+    private LayerView() {
         createUI();
         initListeners();
     }
@@ -81,5 +85,10 @@ public class LayerView extends BorderPane {
     }
 
     private void initListeners() {
+    }
+
+    private static class Holder {
+
+        private static final LayerView INSTANCE = new LayerView();
     }
 }

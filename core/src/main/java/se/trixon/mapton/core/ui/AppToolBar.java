@@ -333,7 +333,10 @@ public class AppToolBar extends ToolBar {
         initPopOver(mBookmarkPopOver, Dict.BOOKMARKS.toString(), new BookmarkView());
 
         mLayerPopOver = new PopOver();
-        initPopOver(mLayerPopOver, Dict.LAYERS.toString(), new LayerView());
+        initPopOver(mLayerPopOver, Dict.LAYERS.toString(), null);
+        mLayerPopOver.setOnShowing((event) -> {
+            mLayerPopOver.setContentNode(new LayerView());
+        });
 
         mToolboxPopOver = new PopOver();
         initPopOver(mToolboxPopOver, Dict.TOOLBOX.toString(), new ToolboxView());

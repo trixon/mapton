@@ -56,7 +56,7 @@ public class WorldWindMapEngine extends MEngine {
 
     public WorldWindMapEngine() {
         mStyleView = new StyleView();
-        mLayerView = new LayerView();
+        mLayerView = LayerView.getInstance();
     }
 
     @Override
