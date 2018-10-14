@@ -32,7 +32,7 @@ import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.dialogs.SimpleDialog;
 import se.trixon.mapton.api.MKmlCreator;
-import se.trixon.mapton.core.bookmark.BookmarkManager;
+import se.trixon.mapton.api.MBookmarkManager;
 import se.trixon.mapton.api.MTool;
 
 /**
@@ -87,7 +87,7 @@ public class ExportBookmarksToKmlTool implements MTool {
     public class Exporter extends MKmlCreator {
 
         private final TreeMap<String, Folder> mCategories = new TreeMap<>();
-        private final BookmarkManager mManager = BookmarkManager.getInstance();
+        private final MBookmarkManager mManager = MBookmarkManager.getInstance();
 
         public Exporter(File file) throws IOException {
             mDocument.setName(String.format("Mapton %s", Dict.BOOKMARKS.toString()));

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.trixon.mapton.core.bookmark;
+package se.trixon.mapton.api;
 
 import com.healthmarketscience.sqlbuilder.BinaryCondition;
 import com.healthmarketscience.sqlbuilder.InsertQuery;
@@ -39,15 +39,14 @@ import org.openide.DialogDisplayer;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxActionSwing;
-import se.trixon.mapton.api.MLatLon;
-import se.trixon.mapton.api.Mapton;
 import se.trixon.mapton.core.db.DbBaseManager;
+import se.trixon.mapton.core.ui.BookmarkPanel;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class BookmarkManager extends DbBaseManager {
+public class MBookmarkManager extends DbBaseManager {
 
     public static final String COL_ID = "bookmark_id";
 
@@ -55,7 +54,7 @@ public class BookmarkManager extends DbBaseManager {
     private final Columns mColumns = new Columns();
     private final DbColumn mDescription;
     private final DbColumn mDisplayMarker;
-    private ObjectProperty<ObservableList<Bookmark>> mItems = new SimpleObjectProperty<>();
+    private ObjectProperty<ObservableList<MBookmark>> mItems = new SimpleObjectProperty<>();
     private final DbColumn mLatitude;
     private final DbColumn mLongitude;
     private final DbColumn mName;
@@ -64,11 +63,11 @@ public class BookmarkManager extends DbBaseManager {
     private final DbColumn mTimeModified;
     private final DbColumn mZoom;
 
-    public static BookmarkManager getInstance() {
+    public static MBookmarkManager getInstance() {
         return Holder.INSTANCE;
     }
 
-    private BookmarkManager() {
+    private MBookmarkManager() {
         mTable = getSchema().addTable("bookmark");
 
         mId = mTable.addColumn(COL_ID, SQL_IDENTITY, null);
@@ -105,7 +104,7 @@ public class BookmarkManager extends DbBaseManager {
         mDb.create(mTable, false, primaryKeyConstraint, uniqueKeyConstraint);
     }
 
-    public void dbDelete(Bookmark bookmark) throws ClassNotFoundException, SQLException {
+    public void dbDelete(MBookmark bookmark) throws ClassNotFoundException, SQLException {
         mDb.delete(mTable, mId, bookmark.getId());
         getItems().remove(bookmark);
     }
@@ -116,18 +115,18 @@ public class BookmarkManager extends DbBaseManager {
 
     }
 
-    public void editBookmark(final Bookmark aBookmark) {
+    public void editBookmark(final MBookmark aBookmark) {
         SwingUtilities.invokeLater(() -> {
-            Bookmark newBookmark = aBookmark;
+            MBookmark newBookmark = aBookmark;
             boolean add = aBookmark == null;
             if (add) {
-                newBookmark = new Bookmark();
+                newBookmark = new MBookmark();
                 newBookmark.setZoom(Mapton.getEngine().getZoom());
                 newBookmark.setLatitude(Mapton.getEngine().getLatitude());
                 newBookmark.setLongitude(Mapton.getEngine().getLongitude());
             }
 
-            final Bookmark bookmark = newBookmark;
+            final MBookmark bookmark = newBookmark;
             BookmarkPanel bookmarkPanel = new BookmarkPanel();
             DialogDescriptor d = new DialogDescriptor(bookmarkPanel, Dict.BOOKMARK.toString());
             bookmarkPanel.setDialogDescriptor(d);
@@ -164,17 +163,17 @@ public class BookmarkManager extends DbBaseManager {
         return action;
     }
 
-    public final ObservableList<Bookmark> getItems() {
+    public final ObservableList<MBookmark> getItems() {
         return mItems == null ? null : mItems.get();
     }
 
-    public void goTo(Bookmark bookmark) throws ClassNotFoundException, SQLException {
+    public void goTo(MBookmark bookmark) throws ClassNotFoundException, SQLException {
         Mapton.getEngine().panTo(new MLatLon(bookmark.getLatitude(), bookmark.getLongitude()), bookmark.getZoom());
         bookmark.setTimeAccessed(new Timestamp(System.currentTimeMillis()));
         dbUpdate(bookmark);
     }
 
-    public final ObjectProperty<ObservableList<Bookmark>> itemsProperty() {
+    public final ObjectProperty<ObservableList<MBookmark>> itemsProperty() {
         if (mItems == null) {
             mItems = new SimpleObjectProperty<>(this, "items");
         }
@@ -182,7 +181,7 @@ public class BookmarkManager extends DbBaseManager {
         return mItems;
     }
 
-    private Long dbInsert(Bookmark bookmark) throws ClassNotFoundException, SQLException {
+    private Long dbInsert(MBookmark bookmark) throws ClassNotFoundException, SQLException {
         if (mInsertPreparedStatement == null) {
             mInsertPlaceHolders.init(
                     mName,
@@ -257,7 +256,7 @@ public class BookmarkManager extends DbBaseManager {
             rs.beforeFirst();
 
             while (rs.next()) {
-                Bookmark bookmark = new Bookmark();
+                MBookmark bookmark = new MBookmark();
                 bookmark.setId(getLong(rs, mId));
                 bookmark.setName(getString(rs, mName));
                 bookmark.setCategory(getString(rs, mCategory));
@@ -277,7 +276,7 @@ public class BookmarkManager extends DbBaseManager {
         }
     }
 
-    private Long dbUpdate(Bookmark bookmark) throws ClassNotFoundException, SQLException {
+    private Long dbUpdate(MBookmark bookmark) throws ClassNotFoundException, SQLException {
         if (mUpdatePreparedStatement == null) {
             mUpdatePlaceHolders.init(
                     mId,
@@ -328,7 +327,7 @@ public class BookmarkManager extends DbBaseManager {
 
     private static class Holder {
 
-        private static final BookmarkManager INSTANCE = new BookmarkManager();
+        private static final MBookmarkManager INSTANCE = new MBookmarkManager();
     }
 
     public class Columns extends DbBaseManager.Columns {

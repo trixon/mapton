@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.trixon.mapton.core.bookmark;
+package se.trixon.mapton.api;
 
 import java.sql.Timestamp;
 import javafx.beans.property.BooleanProperty;
@@ -31,7 +31,7 @@ import javafx.beans.property.StringProperty;
  *
  * @author Patrik Karlström
  */
-public class Bookmark {
+public class MBookmark {
 
     private final StringProperty mCategory = new SimpleStringProperty();
     private final StringProperty mDescription = new SimpleStringProperty();
@@ -45,7 +45,7 @@ public class Bookmark {
     private final ObjectProperty<Timestamp> mTimeModified = new SimpleObjectProperty<>();
     private final DoubleProperty mZoom = new SimpleDoubleProperty();
 
-    public Bookmark() {
+    public MBookmark() {
     }
 
     public final StringProperty categoryProperty() {

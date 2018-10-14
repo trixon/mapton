@@ -54,12 +54,11 @@ import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.icons.material.MaterialIcon;
+import se.trixon.mapton.api.MBookmark;
+import se.trixon.mapton.api.MBookmarkManager;
 import se.trixon.mapton.api.MContextMenuItem;
 import se.trixon.mapton.api.Mapton;
-import se.trixon.mapton.core.bookmark.Bookmark;
-import se.trixon.mapton.core.bookmark.BookmarkManager;
 import static se.trixon.mapton.api.Mapton.getIconSizeContextMenu;
-import se.trixon.mapton.core.ui.SearchView;
 
 /**
  *
@@ -67,19 +66,19 @@ import se.trixon.mapton.core.ui.SearchView;
  */
 public class BookmarkView extends BorderPane {
 
-    private final ObservableList<Bookmark> mBookmarks = FXCollections.observableArrayList();
+    private final ObservableList<MBookmark> mBookmarks = FXCollections.observableArrayList();
     private final Font mDefaultFont = Font.getDefault();
     private final TextField mFilterTextField;
-    private final ListView<Bookmark> mListView;
-    private final BookmarkManager mManager = BookmarkManager.getInstance();
+    private final ListView<MBookmark> mListView;
+    private final MBookmarkManager mManager = MBookmarkManager.getInstance();
 
     public BookmarkView() {
         mFilterTextField = TextFields.createClearableTextField();
         mFilterTextField.setPromptText(Dict.BOOKMARKS_SEARCH.toString());
         mListView = new ListView<>(mBookmarks);
         mListView.setPlaceholder(new Label(Dict.NO_BOOKMARKS.toString()));
-        mListView.setCellFactory((ListView<Bookmark> param) -> new BookmarkListCell());
-        mListView.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends Bookmark> observable, Bookmark oldValue, Bookmark newValue) -> {
+        mListView.setCellFactory((ListView<MBookmark> param) -> new BookmarkListCell());
+        mListView.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends MBookmark> observable, MBookmark oldValue, MBookmark newValue) -> {
             if (newValue != null) {
                 bookmarkGoTo(newValue);
             }
@@ -92,7 +91,7 @@ public class BookmarkView extends BorderPane {
             updateBookmarks(newValue);
         });
 
-        mManager.getItems().addListener((ListChangeListener.Change<? extends Bookmark> c) -> {
+        mManager.getItems().addListener((ListChangeListener.Change<? extends MBookmark> c) -> {
             updateBookmarks(mFilterTextField.getText());
         });
 
@@ -100,11 +99,11 @@ public class BookmarkView extends BorderPane {
     }
 
     private void bookmarkEdit() {
-        Bookmark bookmark = getSelectedBookmark();
+        MBookmark bookmark = getSelectedBookmark();
         mManager.editBookmark(bookmark);
     }
 
-    private void bookmarkGoTo(Bookmark bookmark) {
+    private void bookmarkGoTo(MBookmark bookmark) {
         try {
             mManager.goTo(bookmark);
         } catch (ClassNotFoundException | SQLException ex) {
@@ -113,7 +112,7 @@ public class BookmarkView extends BorderPane {
     }
 
     private void bookmarkRemove() {
-        final Bookmark bookmark = getSelectedBookmark();
+        final MBookmark bookmark = getSelectedBookmark();
 
         SwingUtilities.invokeLater(() -> {
             String[] buttons = new String[]{Dict.CANCEL.toString(), Dict.REMOVE.toString()};
@@ -160,7 +159,7 @@ public class BookmarkView extends BorderPane {
         });
     }
 
-    private Bookmark getSelectedBookmark() {
+    private MBookmark getSelectedBookmark() {
         return mListView.getSelectionModel().getSelectedItem();
     }
 
@@ -172,14 +171,14 @@ public class BookmarkView extends BorderPane {
                     mBookmarks.add(item);
                 });
 
-        Comparator<Bookmark> comparator = Comparator.comparing(Bookmark::getCategory)
-                .thenComparing(Comparator.comparing(Bookmark::getName))
-                .thenComparing(Comparator.comparing(Bookmark::getDescription));
+        Comparator<MBookmark> comparator = Comparator.comparing(MBookmark::getCategory)
+                .thenComparing(Comparator.comparing(MBookmark::getName))
+                .thenComparing(Comparator.comparing(MBookmark::getDescription));
 
         FXCollections.sort(mBookmarks, comparator);
     }
 
-    class BookmarkListCell extends ListCell<Bookmark> {
+    class BookmarkListCell extends ListCell<MBookmark> {
 
         private final ResourceBundle mBundle = NbBundle.getBundle(SearchView.class);
 
@@ -195,7 +194,7 @@ public class BookmarkView extends BorderPane {
         }
 
         @Override
-        protected void updateItem(Bookmark bookmark, boolean empty) {
+        protected void updateItem(MBookmark bookmark, boolean empty) {
             super.updateItem(bookmark, empty);
 
             if (bookmark == null || empty) {
@@ -206,7 +205,7 @@ public class BookmarkView extends BorderPane {
             }
         }
 
-        private void addContent(Bookmark bookmark) {
+        private void addContent(MBookmark bookmark) {
             setText(null);
 
             mNameLabel.textProperty().bind(bookmark.nameProperty());
@@ -258,7 +257,7 @@ public class BookmarkView extends BorderPane {
             contextMenu.getItems().add(2, mContextOpenMenu);
 
             mMainBox.setOnMousePressed((MouseEvent event) -> {
-                Bookmark b = this.getItem();
+                MBookmark b = this.getItem();
                 if (event.isSecondaryButtonDown()) {
                     Mapton.getEngine().setLatitude(b.getLatitude());
                     Mapton.getEngine().setLongitude(b.getLongitude());

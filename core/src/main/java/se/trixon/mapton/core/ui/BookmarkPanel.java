@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.trixon.mapton.core.bookmark;
+package se.trixon.mapton.core.ui;
 
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -35,6 +35,7 @@ import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
 import se.trixon.almond.nbp.fx.FxDialogPanel;
 import se.trixon.almond.util.Dict;
+import se.trixon.mapton.api.MBookmark;
 import se.trixon.mapton.api.MDict;
 
 /**
@@ -51,12 +52,7 @@ public class BookmarkPanel extends FxDialogPanel {
     private CheckBox mPlacemarkCheckBox;
     private Spinner<Double> mZoomSpinner;
 
-    @Override
-    protected void fxConstructor() {
-        setScene(createScene());
-    }
-
-    void load(Bookmark bookmark) {
+    public void load(MBookmark bookmark) {
         mNameTextField.setText(bookmark.getName());
         mCatTextField.setText(bookmark.getCategory());
         mDescTextArea.setText(bookmark.getDescription());
@@ -66,7 +62,7 @@ public class BookmarkPanel extends FxDialogPanel {
         mPlacemarkCheckBox.setSelected(bookmark.isDisplayMarker());
     }
 
-    void save(Bookmark bookmark) {
+    public void save(MBookmark bookmark) {
         Platform.runLater(() -> {
             bookmark.setName(mNameTextField.getText());
             bookmark.setCategory(StringUtils.defaultString(mCatTextField.getText()));
@@ -76,6 +72,11 @@ public class BookmarkPanel extends FxDialogPanel {
             bookmark.setLongitude(mLongitudeSpinner.getValue());
             bookmark.setDisplayMarker(mPlacemarkCheckBox.isSelected());
         });
+    }
+
+    @Override
+    protected void fxConstructor() {
+        setScene(createScene());
     }
 
     private Scene createScene() {

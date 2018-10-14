@@ -61,6 +61,7 @@ import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.dialogs.SimpleDialog;
+import se.trixon.mapton.api.MBookmarkManager;
 import se.trixon.mapton.api.MContextMenuItem;
 import se.trixon.mapton.api.MDict;
 import se.trixon.mapton.api.MEngine;
@@ -68,7 +69,6 @@ import se.trixon.mapton.api.MNominatim;
 import se.trixon.mapton.api.MOptions;
 import se.trixon.mapton.api.MTopComponent;
 import se.trixon.mapton.api.Mapton;
-import se.trixon.mapton.core.bookmark.BookmarkManager;
 
 /**
  * Top component which displays something.
@@ -244,7 +244,7 @@ public final class MapTopComponent extends MTopComponent {
 
         Collection<? extends Action> actions = Arrays.asList(
                 whatsHereAction,
-                BookmarkManager.getInstance().getAddBookmarkAction(),
+                MBookmarkManager.getInstance().getAddBookmarkAction(),
                 ActionUtils.ACTION_SEPARATOR,
                 exportImageAction,
                 ActionUtils.ACTION_SEPARATOR,
