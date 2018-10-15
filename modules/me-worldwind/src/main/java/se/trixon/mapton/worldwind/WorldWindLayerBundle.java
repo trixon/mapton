@@ -19,12 +19,15 @@ import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.PointPlacemark;
+import java.util.prefs.PreferenceChangeEvent;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
 import se.trixon.mapton.api.MBookmark;
 import se.trixon.mapton.api.MBookmarkManager;
+import se.trixon.mapton.api.MLatLon;
+import se.trixon.mapton.api.MOptions;
 import se.trixon.mapton.worldwind.api.LayerBundle;
 
 /**
@@ -37,12 +40,21 @@ public class WorldWindLayerBundle extends LayerBundle {
     private final MBookmarkManager mBookmarkManager = MBookmarkManager.getInstance();
     private final ObservableList<MBookmark> mBookmarks = mBookmarkManager.getItems();
     private final RenderableLayer mBookmarksLayer = new RenderableLayer();
+    private final MOptions mOptions = MOptions.getInstance();
 
     public WorldWindLayerBundle() {
         mBookmarksLayer.setName(String.format("~ %s ~", Dict.BOOKMARKS.toString()));
         mBookmarksLayer.setEnabled(true);
         mBookmarkManager.getItems().addListener((ListChangeListener.Change<? extends MBookmark> c) -> {
             updatePlacemarks();
+        });
+
+        mOptions.getPreferences().addPreferenceChangeListener((PreferenceChangeEvent evt) -> {
+            switch (evt.getKey()) {
+                case MOptions.KEY_MAP_HOME_LAT:
+                    updatePlacemarks();
+                    break;
+            }
         });
 
         updatePlacemarks();
@@ -68,5 +80,13 @@ public class WorldWindLayerBundle extends LayerBundle {
 
             mBookmarksLayer.addRenderable(placemark);
         }
+
+        MLatLon home = mOptions.getMapHome();
+        PointPlacemark placemark = new PointPlacemark(Position.fromDegrees(home.getLatitude(), home.getLongitude()));
+        placemark.setLabelText(Dict.HOME.toString());
+        placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
+        placemark.setEnableLabelPicking(true);
+
+        mBookmarksLayer.addRenderable(placemark);
     }
 }

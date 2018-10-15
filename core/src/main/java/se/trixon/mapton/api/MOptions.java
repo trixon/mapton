@@ -26,6 +26,8 @@ import org.openide.util.NbPreferences;
 public class MOptions {
 
     public static final String KEY_MAP_ENGINE = "map_engine";
+    public static final String KEY_MAP_HOME_LAT = "map_home_lat";
+    public static final String KEY_MAP_HOME_LON = "map_home_lon";
     public static final String KEY_MAP_ONLY = "map_only";
     public static final String KEY_PREFER_POPOVER = "prefer_popover";
 
@@ -41,8 +43,6 @@ public class MOptions {
     private static final String KEY_MAP_CENTER_LAT = "map_center_lat";
     private static final String KEY_MAP_CENTER_LON = "map_center_lon";
     private static final String KEY_MAP_COO_TRANS = "map_coo_trans";
-    private static final String KEY_MAP_HOME_LAT = "map_home_lat";
-    private static final String KEY_MAP_HOME_LON = "map_home_lon";
     private static final String KEY_MAP_HOME_ZOOM = "map_home_zoom";
     private static final String KEY_MAP_ZOOM = "map_zoom";
     private final Preferences mPreferences = NbPreferences.forModule(MOptions.class);
