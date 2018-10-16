@@ -16,6 +16,7 @@
 package se.trixon.mapton.worldwind;
 
 import gov.nasa.worldwind.layers.Layer;
+import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.scene.layout.BorderPane;
@@ -45,8 +46,10 @@ public class LayerView extends BorderPane {
         mListView.setCellFactory(lv -> new CheckBoxListCell<Layer>(mListView::getItemBooleanProperty) {
             @Override
             public void updateItem(Layer layer, boolean empty) {
-                super.updateItem(layer, empty);
-                setText(layer == null ? "" : layer.getName());
+                Platform.runLater(() -> {
+                    super.updateItem(layer, empty);
+                    setText(layer == null ? "" : layer.getName());
+                });
             }
         });
 

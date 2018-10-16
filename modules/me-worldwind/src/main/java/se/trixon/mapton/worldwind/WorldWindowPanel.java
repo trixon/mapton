@@ -53,6 +53,7 @@ import java.util.HashSet;
 import java.util.concurrent.Callable;
 import java.util.prefs.PreferenceChangeEvent;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javax.swing.SwingUtilities;
 import org.openide.util.Exceptions;
@@ -105,6 +106,14 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
 
     public WorldWindowGLDrawable getWwd() {
         return wwd;
+    }
+
+    public void removeCustomLayer(Layer layer) {
+        if (getLayers().contains(layer)) {
+            NbLog.v(getClass(), "Removing Custom Layer: " + layer.getName());
+            mCustomLayers.remove(layer);
+            getLayers().remove(layer);
+        }
     }
 
     ObservableList<Layer> getCustomLayers() {
@@ -192,11 +201,26 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
     private void initLayerBundles() {
         SwingUtilities.invokeLater(() -> {
             Lookup.getDefault().lookupAll(LayerBundle.class).stream()
-                    .filter((LayerBundle) -> (!LayerBundle.isPopulated()))
-                    .forEachOrdered((customLayerBundle) -> {
+                    .filter((layerBundle) -> (!layerBundle.isPopulated()))
+                    .forEachOrdered((layerBundle) -> {
+                        layerBundle.getLayers().addListener((ListChangeListener.Change<? extends Layer> c) -> {
+                            while (c.next()) {
+                                if (c.wasAdded()) {
+                                    c.getAddedSubList().forEach((layer) -> {
+                                        addCustomLayer(layer);
+                                    });
+                                }
+                                if (c.wasRemoved()) {
+                                    c.getRemoved().forEach((layer) -> {
+                                        removeCustomLayer(layer);
+                                    });
+                                }
+                            }
+                        });
+
                         try {
-                            customLayerBundle.populate();
-                            customLayerBundle.getLayers().forEach((layer) -> {
+                            layerBundle.populate();
+                            layerBundle.getLayers().forEach((layer) -> {
                                 addCustomLayer(layer);
                             });
                         } catch (Exception ex) {

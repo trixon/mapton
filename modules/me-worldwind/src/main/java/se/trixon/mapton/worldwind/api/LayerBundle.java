@@ -16,7 +16,10 @@
 package se.trixon.mapton.worldwind.api;
 
 import gov.nasa.worldwind.layers.Layer;
-import java.util.ArrayList;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 /**
  *
@@ -24,21 +27,34 @@ import java.util.ArrayList;
  */
 public abstract class LayerBundle {
 
-    private final ArrayList<Layer> mLayers = new ArrayList<>();
+    private final ObservableList<Layer> mLayers = FXCollections.observableArrayList();
+    private final StringProperty mName = new SimpleStringProperty();
     private boolean mPopulated = false;
 
     public LayerBundle() {
     }
 
-    public ArrayList<Layer> getLayers() {
+    public ObservableList<Layer> getLayers() {
         return mLayers;
+    }
+
+    public final String getName() {
+        return mName.get();
     }
 
     public boolean isPopulated() {
         return mPopulated;
     }
 
+    public final StringProperty nameProperty() {
+        return mName;
+    }
+
     public abstract void populate() throws Exception;
+
+    public final void setName(String value) {
+        mName.set(value);
+    }
 
     public void setPopulated(boolean populated) {
         mPopulated = populated;

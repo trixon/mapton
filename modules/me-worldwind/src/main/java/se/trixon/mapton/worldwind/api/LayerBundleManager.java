@@ -40,6 +40,10 @@ public class LayerBundleManager {
         getMap().addCustomLayer(layer);
     }
 
+    public void remove(Layer layer) {
+        getMap().removeCustomLayer(layer);
+    }
+
     private WorldWindMapEngine getEngine() {
         if (mEngine == null) {
             mEngine = (WorldWindMapEngine) MEngine.byName("WorldWind");
