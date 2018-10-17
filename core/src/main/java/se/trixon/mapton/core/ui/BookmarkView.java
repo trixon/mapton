@@ -21,6 +21,8 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -66,16 +68,19 @@ import static se.trixon.mapton.api.Mapton.getIconSizeContextMenu;
  */
 public class BookmarkView extends BorderPane {
 
-    private final ObservableList<MBookmark> mBookmarks = FXCollections.observableArrayList();
+    private ObjectProperty<ObservableList<MBookmark>> mBookmarks = new SimpleObjectProperty<>();
     private final Font mDefaultFont = Font.getDefault();
     private final TextField mFilterTextField;
     private final ListView<MBookmark> mListView;
     private final MBookmarkManager mManager = MBookmarkManager.getInstance();
 
     public BookmarkView() {
+        mBookmarks.setValue(FXCollections.observableArrayList());
+        mManager.itemsDisplayedProperty().bind(mBookmarks);
+
         mFilterTextField = TextFields.createClearableTextField();
         mFilterTextField.setPromptText(Dict.BOOKMARKS_SEARCH.toString());
-        mListView = new ListView<>(mBookmarks);
+        mListView = new ListView<>(mBookmarks.get());
         mListView.setPlaceholder(new Label(Dict.NO_BOOKMARKS.toString()));
         mListView.setCellFactory((ListView<MBookmark> param) -> new BookmarkListCell());
         mListView.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends MBookmark> observable, MBookmark oldValue, MBookmark newValue) -> {
@@ -164,18 +169,18 @@ public class BookmarkView extends BorderPane {
     }
 
     private void updateBookmarks(String filter) {
-        mBookmarks.clear();
+        mBookmarks.get().clear();
         mManager.getItems().stream()
                 .filter((item) -> (StringUtils.containsIgnoreCase(String.join(" ", item.getName(), item.getCategory(), item.getDescription()), filter)))
                 .forEachOrdered((item) -> {
-                    mBookmarks.add(item);
+                    mBookmarks.get().add(item);
                 });
 
         Comparator<MBookmark> comparator = Comparator.comparing(MBookmark::getCategory)
                 .thenComparing(Comparator.comparing(MBookmark::getName))
                 .thenComparing(Comparator.comparing(MBookmark::getDescription));
 
-        FXCollections.sort(mBookmarks, comparator);
+        FXCollections.sort(mBookmarks.get(), comparator);
     }
 
     class BookmarkListCell extends ListCell<MBookmark> {

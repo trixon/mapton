@@ -46,6 +46,7 @@ public class MBookmark {
     private final DoubleProperty mZoom = new SimpleDoubleProperty();
 
     public MBookmark() {
+        setDisplayMarker(true);
     }
 
     public final StringProperty categoryProperty() {

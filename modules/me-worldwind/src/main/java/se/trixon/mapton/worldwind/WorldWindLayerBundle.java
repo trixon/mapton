@@ -26,6 +26,7 @@ import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
 import se.trixon.mapton.api.MBookmark;
 import se.trixon.mapton.api.MBookmarkManager;
+import se.trixon.mapton.api.MEngine;
 import se.trixon.mapton.api.MLatLon;
 import se.trixon.mapton.api.MOptions;
 import se.trixon.mapton.worldwind.api.LayerBundle;
@@ -38,14 +39,16 @@ import se.trixon.mapton.worldwind.api.LayerBundle;
 public class WorldWindLayerBundle extends LayerBundle {
 
     private final MBookmarkManager mBookmarkManager = MBookmarkManager.getInstance();
-    private final ObservableList<MBookmark> mBookmarks = mBookmarkManager.getItems();
+    private final ObservableList<MBookmark> mBookmarks = mBookmarkManager.getItemsDisplayed();
     private final RenderableLayer mBookmarksLayer = new RenderableLayer();
+    private final WorldWindMapEngine mEngine;
     private final MOptions mOptions = MOptions.getInstance();
 
     public WorldWindLayerBundle() {
+        mEngine = (WorldWindMapEngine) MEngine.byName("WorldWind");
         mBookmarksLayer.setName(String.format("~ %s ~", Dict.BOOKMARKS.toString()));
         mBookmarksLayer.setEnabled(true);
-        mBookmarkManager.getItems().addListener((ListChangeListener.Change<? extends MBookmark> c) -> {
+        mBookmarkManager.getItemsDisplayed().addListener((ListChangeListener.Change<? extends MBookmark> c) -> {
             updatePlacemarks();
         });
 
@@ -72,13 +75,16 @@ public class WorldWindLayerBundle extends LayerBundle {
 
     private void updatePlacemarks() {
         mBookmarksLayer.removeAllRenderables();
-        for (MBookmark bookmark : mBookmarks) {
-            PointPlacemark placemark = new PointPlacemark(Position.fromDegrees(bookmark.getLatitude(), bookmark.getLongitude()));
-            placemark.setLabelText(bookmark.getName());
-            placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
-            placemark.setEnableLabelPicking(true);
 
-            mBookmarksLayer.addRenderable(placemark);
+        for (MBookmark bookmark : mBookmarks) {
+            if (bookmark.isDisplayMarker()) {
+                PointPlacemark placemark = new PointPlacemark(Position.fromDegrees(bookmark.getLatitude(), bookmark.getLongitude()));
+                placemark.setLabelText(bookmark.getName());
+                placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
+                placemark.setEnableLabelPicking(true);
+
+                mBookmarksLayer.addRenderable(placemark);
+            }
         }
 
         MLatLon home = mOptions.getMapHome();
@@ -88,5 +94,7 @@ public class WorldWindLayerBundle extends LayerBundle {
         placemark.setEnableLabelPicking(true);
 
         mBookmarksLayer.addRenderable(placemark);
+
+        mEngine.getMap().redraw();
     }
 }

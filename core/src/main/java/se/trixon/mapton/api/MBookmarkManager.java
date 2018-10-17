@@ -55,6 +55,7 @@ public class MBookmarkManager extends DbBaseManager {
     private final DbColumn mDescription;
     private final DbColumn mDisplayMarker;
     private ObjectProperty<ObservableList<MBookmark>> mItems = new SimpleObjectProperty<>();
+    private ObjectProperty<ObservableList<MBookmark>> mItemsDisplayed = new SimpleObjectProperty<>();
     private final DbColumn mLatitude;
     private final DbColumn mLongitude;
     private final DbColumn mName;
@@ -85,6 +86,7 @@ public class MBookmarkManager extends DbBaseManager {
         addNotNullConstraints(mName, mCategory, mDescription);
         create();
         mItems.setValue(FXCollections.observableArrayList());
+        mItemsDisplayed.setValue(FXCollections.observableArrayList());
 
         dbLoad();
     }
@@ -167,10 +169,22 @@ public class MBookmarkManager extends DbBaseManager {
         return mItems == null ? null : mItems.get();
     }
 
+    public final ObservableList<MBookmark> getItemsDisplayed() {
+        return mItemsDisplayed == null ? null : mItemsDisplayed.get();
+    }
+
     public void goTo(MBookmark bookmark) throws ClassNotFoundException, SQLException {
         Mapton.getEngine().panTo(new MLatLon(bookmark.getLatitude(), bookmark.getLongitude()), bookmark.getZoom());
         bookmark.setTimeAccessed(new Timestamp(System.currentTimeMillis()));
         dbUpdate(bookmark);
+    }
+
+    public final ObjectProperty<ObservableList<MBookmark>> itemsDisplayedProperty() {
+        if (mItemsDisplayed == null) {
+            mItemsDisplayed = new SimpleObjectProperty<>(this, "items");
+        }
+
+        return mItemsDisplayed;
     }
 
     public final ObjectProperty<ObservableList<MBookmark>> itemsProperty() {
