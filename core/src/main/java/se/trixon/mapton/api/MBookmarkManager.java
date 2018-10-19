@@ -136,8 +136,7 @@ public class MBookmarkManager extends DbBaseManager {
                 bookmarkPanel.load(bookmark);
             });
 
-            bookmarkPanel.setPreferredSize(new Dimension(300, 400));
-
+            bookmarkPanel.setPreferredSize(new Dimension(300, 500));
             if (DialogDescriptor.OK_OPTION == DialogDisplayer.getDefault().notify(d)) {
                 bookmarkPanel.save(bookmark);
                 Platform.runLater(() -> {
