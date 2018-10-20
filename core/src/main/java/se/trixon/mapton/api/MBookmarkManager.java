@@ -16,10 +16,11 @@
 package se.trixon.mapton.api;
 
 import com.healthmarketscience.sqlbuilder.BinaryCondition;
+import com.healthmarketscience.sqlbuilder.ComboCondition;
 import com.healthmarketscience.sqlbuilder.InsertQuery;
-import com.healthmarketscience.sqlbuilder.OrderObject;
 import com.healthmarketscience.sqlbuilder.SelectQuery;
 import com.healthmarketscience.sqlbuilder.UpdateQuery;
+import com.healthmarketscience.sqlbuilder.custom.postgresql.PgBinaryCondition;
 import com.healthmarketscience.sqlbuilder.dbspec.Constraint;
 import com.healthmarketscience.sqlbuilder.dbspec.basic.DbColumn;
 import com.healthmarketscience.sqlbuilder.dbspec.basic.DbConstraint;
@@ -34,9 +35,12 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javax.swing.SwingUtilities;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 import org.openide.util.Exceptions;
+import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxActionSwing;
 import se.trixon.mapton.core.db.DbBaseManager;
@@ -55,11 +59,10 @@ public class MBookmarkManager extends DbBaseManager {
     private final DbColumn mDescription;
     private final DbColumn mDisplayMarker;
     private ObjectProperty<ObservableList<MBookmark>> mItems = new SimpleObjectProperty<>();
-    private ObjectProperty<ObservableList<MBookmark>> mItemsDisplayed = new SimpleObjectProperty<>();
     private final DbColumn mLatitude;
     private final DbColumn mLongitude;
     private final DbColumn mName;
-    private final DbColumn mTimeAccessed;
+    private String mStoredFilter = "";
     private final DbColumn mTimeCreated;
     private final DbColumn mTimeModified;
     private final DbColumn mZoom;
@@ -80,13 +83,11 @@ public class MBookmarkManager extends DbBaseManager {
         mLongitude = mTable.addColumn("longitude", SQL_DOUBLE, null);
         mZoom = mTable.addColumn("zoom", SQL_DOUBLE, null);
         mTimeCreated = mTable.addColumn("created", SQL_TIMESTAMP, null);
-        mTimeAccessed = mTable.addColumn("accessed", SQL_TIMESTAMP, null);
         mTimeModified = mTable.addColumn("modified", SQL_TIMESTAMP, null);
 
         addNotNullConstraints(mName, mCategory, mDescription);
         create();
         mItems.setValue(FXCollections.observableArrayList());
-        mItemsDisplayed.setValue(FXCollections.observableArrayList());
 
         dbLoad();
     }
@@ -108,13 +109,78 @@ public class MBookmarkManager extends DbBaseManager {
 
     public void dbDelete(MBookmark bookmark) throws ClassNotFoundException, SQLException {
         mDb.delete(mTable, mId, bookmark.getId());
-        getItems().remove(bookmark);
+        dbLoad();
+    }
+
+    public void dbLoad() {
+        dbLoad(mStoredFilter);
+    }
+
+    public void dbLoad(String filter) {
+        if (mSelectPreparedStatement == null) {
+            mSelectPlaceHolders.init(
+                    mCategory,
+                    mName,
+                    mDescription
+            );
+
+            ComboCondition comboCondition = ComboCondition.or(
+                    PgBinaryCondition.iLike(mCategory, mSelectPlaceHolders.get(mCategory)),
+                    PgBinaryCondition.iLike(mDescription, mSelectPlaceHolders.get(mDescription)),
+                    PgBinaryCondition.iLike(mName, mSelectPlaceHolders.get(mName))
+            );
+
+            SelectQuery selectQuery = new SelectQuery()
+                    .addAllTableColumns(mTable)
+                    .addOrderings(mCategory, mName, mDescription)
+                    .addCondition(comboCondition)
+                    .validate();
+
+            String sql = selectQuery.toString();
+
+            try {
+                mSelectPreparedStatement = mDb.getAutoCommitConnection().prepareStatement(sql);
+            } catch (SQLException ex) {
+                Exceptions.printStackTrace(ex);
+            }
+        }
+
+        try {
+            mStoredFilter = filter;
+            filter = getFilterPattern(filter);
+            mSelectPlaceHolders.get(mCategory).setString(filter, mSelectPreparedStatement);
+            mSelectPlaceHolders.get(mName).setString(filter, mSelectPreparedStatement);
+            mSelectPlaceHolders.get(mDescription).setString(filter, mSelectPreparedStatement);
+
+            ResultSet rs = mSelectPreparedStatement.executeQuery();
+            rs.beforeFirst();
+            getItems().clear();
+
+            while (rs.next()) {
+                MBookmark bookmark = new MBookmark();
+                bookmark.setId(getLong(rs, mId));
+                bookmark.setName(getString(rs, mName));
+                bookmark.setCategory(getString(rs, mCategory));
+                bookmark.setDescription(getString(rs, mDescription));
+                bookmark.setDisplayMarker(getBoolean(rs, mDisplayMarker));
+                bookmark.setLatitude(getDouble(rs, mLatitude));
+                bookmark.setLongitude(getDouble(rs, mLongitude));
+                bookmark.setZoom(getDouble(rs, mZoom));
+                bookmark.setTimeCreated(getTimestamp(rs, mTimeCreated));
+                bookmark.setTimeModified(getTimestamp(rs, mTimeModified));
+
+                getItems().add(bookmark);
+            }
+        } catch (SQLException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+
+        //debugPrint();
     }
 
     public void dbTruncate() throws ClassNotFoundException, SQLException {
         mDb.truncate(mTable);
-        getItems().clear();
-
+        dbLoad();
     }
 
     public void editBookmark(final MBookmark aBookmark) {
@@ -143,7 +209,6 @@ public class MBookmarkManager extends DbBaseManager {
                     try {
                         if (add) {
                             dbInsert(bookmark);
-                            getItems().add(bookmark);
                         } else {
                             bookmark.setTimeModified(new Timestamp(System.currentTimeMillis()));
                             dbUpdate(bookmark);
@@ -168,22 +233,9 @@ public class MBookmarkManager extends DbBaseManager {
         return mItems == null ? null : mItems.get();
     }
 
-    public final ObservableList<MBookmark> getItemsDisplayed() {
-        return mItemsDisplayed == null ? null : mItemsDisplayed.get();
-    }
-
     public void goTo(MBookmark bookmark) throws ClassNotFoundException, SQLException {
+        Almond.requestActive("MapTopComponent");
         Mapton.getEngine().panTo(new MLatLon(bookmark.getLatitude(), bookmark.getLongitude()), bookmark.getZoom());
-        bookmark.setTimeAccessed(new Timestamp(System.currentTimeMillis()));
-        dbUpdate(bookmark);
-    }
-
-    public final ObjectProperty<ObservableList<MBookmark>> itemsDisplayedProperty() {
-        if (mItemsDisplayed == null) {
-            mItemsDisplayed = new SimpleObjectProperty<>(this, "items");
-        }
-
-        return mItemsDisplayed;
     }
 
     public final ObjectProperty<ObservableList<MBookmark>> itemsProperty() {
@@ -194,7 +246,7 @@ public class MBookmarkManager extends DbBaseManager {
         return mItems;
     }
 
-    private Long dbInsert(MBookmark bookmark) throws ClassNotFoundException, SQLException {
+    private void dbInsert(MBookmark bookmark) throws ClassNotFoundException, SQLException {
         if (mInsertPreparedStatement == null) {
             mInsertPlaceHolders.init(
                     mName,
@@ -234,62 +286,13 @@ public class MBookmarkManager extends DbBaseManager {
 
         int affectedRows = mInsertPreparedStatement.executeUpdate();
         if (affectedRows == 0) {
-            throw new SQLException("Creating album failed, no rows affected.");
+            Exceptions.printStackTrace(new SQLException("Creating bookmark failed"));
         }
 
-        try (ResultSet generatedKeys = mInsertPreparedStatement.getGeneratedKeys()) {
-            if (generatedKeys.next()) {
-                return generatedKeys.getLong(1);
-            } else {
-                throw new SQLException("Creating album failed, no ID obtained.");
-            }
-        }
+        dbLoad();
     }
 
-    private void dbLoad() {
-        if (mSelectPreparedStatement == null) {
-            SelectQuery selectQuery = new SelectQuery()
-                    .addAllTableColumns(mTable)
-                    .addOrdering(mCategory, OrderObject.Dir.ASCENDING)
-                    .addOrdering(mName, OrderObject.Dir.ASCENDING)
-                    .addOrdering(mDescription, OrderObject.Dir.ASCENDING)
-                    .validate();
-
-            String sql = selectQuery.toString();
-
-            try {
-                mSelectPreparedStatement = mDb.getAutoCommitConnection().prepareStatement(sql);
-            } catch (SQLException ex) {
-                Exceptions.printStackTrace(ex);
-            }
-        }
-
-        try {
-            ResultSet rs = mSelectPreparedStatement.executeQuery();
-            rs.beforeFirst();
-
-            while (rs.next()) {
-                MBookmark bookmark = new MBookmark();
-                bookmark.setId(getLong(rs, mId));
-                bookmark.setName(getString(rs, mName));
-                bookmark.setCategory(getString(rs, mCategory));
-                bookmark.setDescription(getString(rs, mDescription));
-                bookmark.setDisplayMarker(getBoolean(rs, mDisplayMarker));
-                bookmark.setLatitude(getDouble(rs, mLatitude));
-                bookmark.setLongitude(getDouble(rs, mLongitude));
-                bookmark.setZoom(getDouble(rs, mZoom));
-                bookmark.setTimeCreated(getTimestamp(rs, mTimeCreated));
-                bookmark.setTimeAccessed(getTimestamp(rs, mTimeAccessed));
-                bookmark.setTimeModified(getTimestamp(rs, mTimeModified));
-
-                getItems().add(bookmark);
-            }
-        } catch (SQLException ex) {
-            Exceptions.printStackTrace(ex);
-        }
-    }
-
-    private Long dbUpdate(MBookmark bookmark) throws ClassNotFoundException, SQLException {
+    private void dbUpdate(MBookmark bookmark) throws ClassNotFoundException, SQLException {
         if (mUpdatePreparedStatement == null) {
             mUpdatePlaceHolders.init(
                     mId,
@@ -300,7 +303,6 @@ public class MBookmarkManager extends DbBaseManager {
                     mLatitude,
                     mLongitude,
                     mZoom,
-                    mTimeAccessed,
                     mTimeModified
             );
 
@@ -313,7 +315,6 @@ public class MBookmarkManager extends DbBaseManager {
                     .addSetClause(mLatitude, mUpdatePlaceHolders.get(mLatitude))
                     .addSetClause(mLongitude, mUpdatePlaceHolders.get(mLongitude))
                     .addSetClause(mZoom, mUpdatePlaceHolders.get(mZoom))
-                    .addSetClause(mTimeAccessed, mUpdatePlaceHolders.get(mTimeAccessed))
                     .addSetClause(mTimeModified, mUpdatePlaceHolders.get(mTimeModified))
                     .validate();
 
@@ -330,59 +331,22 @@ public class MBookmarkManager extends DbBaseManager {
         mUpdatePlaceHolders.get(mLongitude).setObject(bookmark.getLongitude(), mUpdatePreparedStatement);
         mUpdatePlaceHolders.get(mZoom).setObject(bookmark.getZoom(), mUpdatePreparedStatement);
 
-        mUpdatePreparedStatement.setTimestamp(mUpdatePlaceHolders.get(mTimeAccessed).getIndex(), bookmark.getTimeAccessed());
         mUpdatePreparedStatement.setTimestamp(mUpdatePlaceHolders.get(mTimeModified).getIndex(), bookmark.getTimeModified());
 
         mUpdatePreparedStatement.executeUpdate();
 
-        return bookmark.getId();
+        dbLoad();
+    }
+
+    private void debugPrint() {
+        System.out.println("debugPrint");
+        for (MBookmark bookmark : getItems()) {
+            System.out.println(ToStringBuilder.reflectionToString(bookmark, ToStringStyle.MULTI_LINE_STYLE));
+        }
     }
 
     private static class Holder {
 
         private static final MBookmarkManager INSTANCE = new MBookmarkManager();
-    }
-
-    public class Columns extends DbBaseManager.Columns {
-
-        public DbColumn getCategory() {
-            return mCategory;
-        }
-
-        public DbColumn getDescription() {
-            return mDescription;
-        }
-
-        public DbColumn getDisplayMarker() {
-            return mDisplayMarker;
-        }
-
-        public DbColumn getLatitude() {
-            return mLatitude;
-        }
-
-        public DbColumn getLongitude() {
-            return mLongitude;
-        }
-
-        public DbColumn getName() {
-            return mName;
-        }
-
-        public DbColumn getTimeAccessed() {
-            return mTimeAccessed;
-        }
-
-        public DbColumn getTimeCreated() {
-            return mTimeCreated;
-        }
-
-        public DbColumn getTimeModified() {
-            return mTimeModified;
-        }
-
-        public DbColumn getZoom() {
-            return mZoom;
-        }
     }
 }

@@ -21,7 +21,6 @@ import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.PointPlacemark;
 import java.util.prefs.PreferenceChangeEvent;
 import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
 import se.trixon.mapton.api.MBookmark;
@@ -39,7 +38,6 @@ import se.trixon.mapton.worldwind.api.LayerBundle;
 public class WorldWindLayerBundle extends LayerBundle {
 
     private final MBookmarkManager mBookmarkManager = MBookmarkManager.getInstance();
-    private final ObservableList<MBookmark> mBookmarks = mBookmarkManager.getItemsDisplayed();
     private final RenderableLayer mBookmarksLayer = new RenderableLayer();
     private final WorldWindMapEngine mEngine;
     private final MOptions mOptions = MOptions.getInstance();
@@ -48,7 +46,7 @@ public class WorldWindLayerBundle extends LayerBundle {
         mEngine = (WorldWindMapEngine) MEngine.byName("WorldWind");
         mBookmarksLayer.setName(String.format("~ %s ~", Dict.BOOKMARKS.toString()));
         mBookmarksLayer.setEnabled(true);
-        mBookmarkManager.getItemsDisplayed().addListener((ListChangeListener.Change<? extends MBookmark> c) -> {
+        mBookmarkManager.getItems().addListener((ListChangeListener.Change<? extends MBookmark> c) -> {
             updatePlacemarks();
         });
 
@@ -76,7 +74,7 @@ public class WorldWindLayerBundle extends LayerBundle {
     private void updatePlacemarks() {
         mBookmarksLayer.removeAllRenderables();
 
-        for (MBookmark bookmark : mBookmarks) {
+        for (MBookmark bookmark : mBookmarkManager.getItems()) {
             if (bookmark.isDisplayMarker()) {
                 PointPlacemark placemark = new PointPlacemark(Position.fromDegrees(bookmark.getLatitude(), bookmark.getLongitude()));
                 placemark.setLabelText(bookmark.getName());

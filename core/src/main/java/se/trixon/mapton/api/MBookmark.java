@@ -40,7 +40,6 @@ public class MBookmark {
     private final DoubleProperty mLatitude = new SimpleDoubleProperty();
     private final DoubleProperty mLongitude = new SimpleDoubleProperty();
     private final StringProperty mName = new SimpleStringProperty();
-    private final ObjectProperty<Timestamp> mTimeAccessed = new SimpleObjectProperty<>();
     private final ObjectProperty<Timestamp> mTimeCreated = new SimpleObjectProperty<>();
     private final ObjectProperty<Timestamp> mTimeModified = new SimpleObjectProperty<>();
     private final DoubleProperty mZoom = new SimpleDoubleProperty();
@@ -83,10 +82,6 @@ public class MBookmark {
 
     public final String getName() {
         return mName.get();
-    }
-
-    public final Timestamp getTimeAccessed() {
-        return mTimeAccessed.get();
     }
 
     public final Timestamp getTimeCreated() {
@@ -153,10 +148,6 @@ public class MBookmark {
         mName.set(value);
     }
 
-    public final void setTimeAccessed(Timestamp value) {
-        mTimeAccessed.set(value);
-    }
-
     public final void setTimeCreated(Timestamp value) {
         mTimeCreated.set(value);
     }
@@ -167,10 +158,6 @@ public class MBookmark {
 
     public final void setZoom(double value) {
         mZoom.set(value);
-    }
-
-    public final ObjectProperty<Timestamp> timeAccessedProperty() {
-        return mTimeAccessed;
     }
 
     public final ObjectProperty<Timestamp> timeCreatedProperty() {

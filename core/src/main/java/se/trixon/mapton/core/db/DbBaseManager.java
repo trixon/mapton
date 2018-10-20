@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -44,11 +44,11 @@ public abstract class DbBaseManager {
     protected final Db mDb;
     protected DbColumn mId;
     protected PlaceHolderController mInsertPlaceHolders = new PlaceHolderController();
-    protected PlaceHolderController mSelectPlaceHolders = new PlaceHolderController();
-    protected PlaceHolderController mUpdatePlaceHolders = new PlaceHolderController();
     protected PreparedStatement mInsertPreparedStatement;
-    protected DbTable mTable;
+    protected PlaceHolderController mSelectPlaceHolders = new PlaceHolderController();
     protected PreparedStatement mSelectPreparedStatement;
+    protected DbTable mTable;
+    protected PlaceHolderController mUpdatePlaceHolders = new PlaceHolderController();
     protected PreparedStatement mUpdatePreparedStatement;
 
     public DbBaseManager() {
@@ -94,12 +94,35 @@ public abstract class DbBaseManager {
         }
     }
 
+    protected Boolean getBoolean(ResultSet rs, DbColumn column) throws SQLException {
+        return getBoolean(rs, column.getName());
+    }
+
+    protected Boolean getBoolean(ResultSet rs, String column) throws SQLException {
+        return rs.getBoolean(column);
+    }
+
     protected Double getDouble(ResultSet rs, DbColumn column) throws SQLException {
         return getDouble(rs, column.getName());
     }
 
     protected Double getDouble(ResultSet rs, String columnName) throws SQLException {
         return rs.getObject(columnName, Double.class);
+    }
+
+    protected String getFilterPattern(String filter) {
+        filter = filter.replaceAll("\\*", "%");
+        filter = filter.replaceAll("\\?", "_");
+
+        if (filter.length() == 0) {
+            filter = "%";
+        }
+
+        if (!filter.contains("%")) {
+            filter = String.format("%%%s%%", filter);
+        }
+
+        return filter;
     }
 
     protected Integer getInteger(ResultSet rs, DbColumn column) throws SQLException {
@@ -120,14 +143,6 @@ public abstract class DbBaseManager {
 
     protected String getString(ResultSet rs, DbColumn column) throws SQLException {
         return getString(rs, column.getName());
-    }
-
-    protected Boolean getBoolean(ResultSet rs, DbColumn column) throws SQLException {
-        return getBoolean(rs, column.getName());
-    }
-
-    protected Boolean getBoolean(ResultSet rs, String column) throws SQLException {
-        return rs.getBoolean(column);
     }
 
     protected String getString(ResultSet rs, String columnName) throws SQLException {

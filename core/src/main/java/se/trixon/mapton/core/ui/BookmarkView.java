@@ -18,15 +18,9 @@ package se.trixon.mapton.core.ui;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
@@ -42,7 +36,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javax.swing.SwingUtilities;
-import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
 import org.controlsfx.control.textfield.TextFields;
@@ -68,19 +61,15 @@ import static se.trixon.mapton.api.Mapton.getIconSizeContextMenu;
  */
 public class BookmarkView extends BorderPane {
 
-    private ObjectProperty<ObservableList<MBookmark>> mBookmarks = new SimpleObjectProperty<>();
     private final Font mDefaultFont = Font.getDefault();
     private final TextField mFilterTextField;
     private final ListView<MBookmark> mListView;
     private final MBookmarkManager mManager = MBookmarkManager.getInstance();
 
     public BookmarkView() {
-        mBookmarks.setValue(FXCollections.observableArrayList());
-        mManager.itemsDisplayedProperty().bind(mBookmarks);
-
         mFilterTextField = TextFields.createClearableTextField();
         mFilterTextField.setPromptText(Dict.BOOKMARKS_SEARCH.toString());
-        mListView = new ListView<>(mBookmarks.get());
+        mListView = new ListView<>(mManager.getItems());
         mListView.setPlaceholder(new Label(Dict.NO_BOOKMARKS.toString()));
         mListView.setCellFactory((ListView<MBookmark> param) -> new BookmarkListCell());
         mListView.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends MBookmark> observable, MBookmark oldValue, MBookmark newValue) -> {
@@ -93,14 +82,11 @@ public class BookmarkView extends BorderPane {
         setTop(mFilterTextField);
         setCenter(mListView);
         mFilterTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-            updateBookmarks(newValue);
+            mManager.dbLoad(newValue);
+
         });
 
-        mManager.getItems().addListener((ListChangeListener.Change<? extends MBookmark> c) -> {
-            updateBookmarks(mFilterTextField.getText());
-        });
-
-        updateBookmarks(mFilterTextField.getText());
+        mManager.dbLoad(mFilterTextField.getText());
     }
 
     private void bookmarkEdit() {
@@ -166,21 +152,6 @@ public class BookmarkView extends BorderPane {
 
     private MBookmark getSelectedBookmark() {
         return mListView.getSelectionModel().getSelectedItem();
-    }
-
-    private void updateBookmarks(String filter) {
-        mBookmarks.get().clear();
-        mManager.getItems().stream()
-                .filter((item) -> (StringUtils.containsIgnoreCase(String.join(" ", item.getName(), item.getCategory(), item.getDescription()), filter)))
-                .forEachOrdered((item) -> {
-                    mBookmarks.get().add(item);
-                });
-
-        Comparator<MBookmark> comparator = Comparator.comparing(MBookmark::getCategory)
-                .thenComparing(Comparator.comparing(MBookmark::getName))
-                .thenComparing(Comparator.comparing(MBookmark::getDescription));
-
-        FXCollections.sort(mBookmarks.get(), comparator);
     }
 
     class BookmarkListCell extends ListCell<MBookmark> {
