@@ -22,9 +22,7 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle.Messages;
-import org.openide.windows.Mode;
-import org.openide.windows.TopComponent;
-import org.openide.windows.WindowManager;
+import se.trixon.almond.nbp.Almond;
 import se.trixon.mapton.api.Mapton;
 
 @ActionID(
@@ -40,14 +38,7 @@ public final class HomeAction implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        WindowManager wm = WindowManager.getDefault();
-        TopComponent tc = wm.findTopComponent("MapTopComponent");
-        Mode mode = wm.findMode(tc);
-
-        if (mode.getSelectedTopComponent() != tc) {
-            tc.requestActive();
-        } else {
-            tc.requestActive();
+        if (Almond.requestActive("MapTopComponent")) {
             Platform.runLater(() -> {
                 Mapton.getEngine().goHome();
             });
