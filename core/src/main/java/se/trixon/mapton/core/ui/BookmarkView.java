@@ -171,23 +171,30 @@ public class BookmarkView extends BorderPane {
 
         @Override
         protected void updateItem(MBookmark bookmark, boolean empty) {
-            super.updateItem(bookmark, empty);
+            Runnable r = () -> {
+                super.updateItem(bookmark, empty);
 
-            if (bookmark == null || empty) {
-                setText(null);
-                setGraphic(null);
+                if (bookmark == null || empty) {
+                    setText(null);
+                    setGraphic(null);
+                } else {
+                    addContent(bookmark);
+                }
+            };
+
+            if (Platform.isFxApplicationThread()) {
+                r.run();
             } else {
-                addContent(bookmark);
+                Platform.runLater(r);
             }
         }
 
         private void addContent(MBookmark bookmark) {
             setText(null);
 
-            mNameLabel.textProperty().bind(bookmark.nameProperty());
-            mCatLabel.textProperty().bind(bookmark.categoryProperty());
-            mDescLabel.textProperty().bind(bookmark.descriptionProperty());
-
+            mNameLabel.setText(bookmark.getName());
+            mCatLabel.setText(bookmark.getCategory());
+            mDescLabel.setText(bookmark.getDescription());
             setGraphic(mMainBox);
         }
 

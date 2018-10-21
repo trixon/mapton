@@ -15,17 +15,8 @@
  */
 package se.trixon.mapton.api;
 
+import com.google.gson.annotations.SerializedName;
 import java.sql.Timestamp;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.LongProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleLongProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 
 /**
  *
@@ -33,139 +24,107 @@ import javafx.beans.property.StringProperty;
  */
 public class MBookmark {
 
-    private final StringProperty mCategory = new SimpleStringProperty();
-    private final StringProperty mDescription = new SimpleStringProperty();
-    private final BooleanProperty mDisplayMarker = new SimpleBooleanProperty();
-    private final LongProperty mId = new SimpleLongProperty();
-    private final DoubleProperty mLatitude = new SimpleDoubleProperty();
-    private final DoubleProperty mLongitude = new SimpleDoubleProperty();
-    private final StringProperty mName = new SimpleStringProperty();
-    private final ObjectProperty<Timestamp> mTimeCreated = new SimpleObjectProperty<>();
-    private final ObjectProperty<Timestamp> mTimeModified = new SimpleObjectProperty<>();
-    private final DoubleProperty mZoom = new SimpleDoubleProperty();
+    @SerializedName("category")
+    private String mCategory = "";
+    @SerializedName("description")
+    private String mDescription = "";
+    @SerializedName("display_marker")
+    private Boolean mDisplayMarker;
+    private transient Long mId;
+    @SerializedName("latitude")
+    private Double mLatitude;
+    @SerializedName("longitude")
+    private Double mLongitude;
+    @SerializedName("name")
+    private String mName = "";
+    @SerializedName("time_created")
+    private transient Timestamp mTimeCreated;
+    @SerializedName("time_modified")
+    private transient Timestamp mTimeModified;
+    @SerializedName("zoom")
+    private Double mZoom;
 
     public MBookmark() {
         setDisplayMarker(true);
     }
 
-    public final StringProperty categoryProperty() {
+    public String getCategory() {
         return mCategory;
     }
 
-    public final StringProperty descriptionProperty() {
+    public String getDescription() {
         return mDescription;
     }
 
-    public BooleanProperty displayMarker() {
-        return mDisplayMarker;
-    }
-
-    public final String getCategory() {
-        return mCategory.get();
-    }
-
-    public final String getDescription() {
-        return mDescription.get();
-    }
-
-    public final long getId() {
-        return mId.get();
-    }
-
-    public final double getLatitude() {
-        return mLatitude.get();
-    }
-
-    public final double getLongitude() {
-        return mLongitude.get();
-    }
-
-    public final String getName() {
-        return mName.get();
-    }
-
-    public final Timestamp getTimeCreated() {
-        return mTimeCreated.get();
-    }
-
-    public final Timestamp getTimeModified() {
-        return mTimeModified.get();
-    }
-
-    public final double getZoom() {
-        return mZoom.get();
-    }
-
-    public DoubleProperty getZoomProperty() {
-        return mZoom;
-    }
-
-    public final LongProperty idProperty() {
+    public Long getId() {
         return mId;
     }
 
-    public final boolean isDisplayMarker() {
-        return mDisplayMarker.get();
-    }
-
-    public DoubleProperty latitudeProperty() {
+    public Double getLatitude() {
         return mLatitude;
     }
 
-    public DoubleProperty longitudeProperty() {
+    public Double getLongitude() {
         return mLongitude;
     }
 
-    public final StringProperty nameProperty() {
+    public String getName() {
         return mName;
     }
 
-    public final void setCategory(String value) {
-        mCategory.set(value);
-    }
-
-    public final void setDescription(String value) {
-        mDescription.set(value);
-    }
-
-    public final void setDisplayMarker(boolean value) {
-        mDisplayMarker.set(value);
-    }
-
-    public final void setId(long value) {
-        mId.set(value);
-    }
-
-    public final void setLatitude(double value) {
-        mLatitude.set(value);
-    }
-
-    public final void setLongitude(double value) {
-        mLongitude.set(value);
-    }
-
-    public final void setName(String value) {
-        mName.set(value);
-    }
-
-    public final void setTimeCreated(Timestamp value) {
-        mTimeCreated.set(value);
-    }
-
-    public final void setTimeModified(Timestamp value) {
-        mTimeModified.set(value);
-    }
-
-    public final void setZoom(double value) {
-        mZoom.set(value);
-    }
-
-    public final ObjectProperty<Timestamp> timeCreatedProperty() {
+    public Timestamp getTimeCreated() {
         return mTimeCreated;
     }
 
-    public final ObjectProperty<Timestamp> timeModifiedProperty() {
+    public Timestamp getTimeModified() {
         return mTimeModified;
     }
 
+    public Double getZoom() {
+        return mZoom;
+    }
+
+    public Boolean isDisplayMarker() {
+        return mDisplayMarker;
+    }
+
+    public void setCategory(String category) {
+        mCategory = category;
+    }
+
+    public void setDescription(String description) {
+        mDescription = description;
+    }
+
+    public void setDisplayMarker(Boolean displayMarker) {
+        mDisplayMarker = displayMarker;
+    }
+
+    public void setId(Long id) {
+        mId = id;
+    }
+
+    public void setLatitude(Double latitude) {
+        mLatitude = latitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        mLongitude = longitude;
+    }
+
+    public void setName(String name) {
+        mName = name;
+    }
+
+    public void setTimeCreated(Timestamp timeCreated) {
+        mTimeCreated = timeCreated;
+    }
+
+    public void setTimeModified(Timestamp timeModified) {
+        mTimeModified = timeModified;
+    }
+
+    public void setZoom(Double zoom) {
+        mZoom = zoom;
+    }
 }

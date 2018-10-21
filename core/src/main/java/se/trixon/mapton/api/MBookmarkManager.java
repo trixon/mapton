@@ -52,7 +52,16 @@ import se.trixon.mapton.core.ui.BookmarkPanel;
  */
 public class MBookmarkManager extends DbBaseManager {
 
+    public static final String COL_CATEGORY = "category";
+    public static final String COL_CREATED = "created";
+    public static final String COL_DESCRIPTION = "description";
+    public static final String COL_DISPLAY_MARKER = "display_marker";
     public static final String COL_ID = "bookmark_id";
+    public static final String COL_LATITUDE = "latitude";
+    public static final String COL_LONGITUDE = "longitude";
+    public static final String COL_MODIFIED = "modified";
+    public static final String COL_NAME = "name";
+    public static final String COL_ZOOM = "zoom";
 
     private final DbColumn mCategory;
     private final Columns mColumns = new Columns();
@@ -75,15 +84,15 @@ public class MBookmarkManager extends DbBaseManager {
         mTable = getSchema().addTable("bookmark");
 
         mId = mTable.addColumn(COL_ID, SQL_IDENTITY, null);
-        mName = mTable.addColumn("name", SQL_VARCHAR, Integer.MAX_VALUE);
-        mCategory = mTable.addColumn("category", SQL_VARCHAR, Integer.MAX_VALUE);
-        mDescription = mTable.addColumn("description", SQL_VARCHAR, Integer.MAX_VALUE);
-        mDisplayMarker = mTable.addColumn("display_marker", SQL_BOOLEAN, null);
-        mLatitude = mTable.addColumn("latitude", SQL_DOUBLE, null);
-        mLongitude = mTable.addColumn("longitude", SQL_DOUBLE, null);
-        mZoom = mTable.addColumn("zoom", SQL_DOUBLE, null);
-        mTimeCreated = mTable.addColumn("created", SQL_TIMESTAMP, null);
-        mTimeModified = mTable.addColumn("modified", SQL_TIMESTAMP, null);
+        mName = mTable.addColumn(COL_NAME, SQL_VARCHAR, Integer.MAX_VALUE);
+        mCategory = mTable.addColumn(COL_CATEGORY, SQL_VARCHAR, Integer.MAX_VALUE);
+        mDescription = mTable.addColumn(COL_DESCRIPTION, SQL_VARCHAR, Integer.MAX_VALUE);
+        mDisplayMarker = mTable.addColumn(COL_DISPLAY_MARKER, SQL_BOOLEAN, null);
+        mLatitude = mTable.addColumn(COL_LATITUDE, SQL_DOUBLE, null);
+        mLongitude = mTable.addColumn(COL_LONGITUDE, SQL_DOUBLE, null);
+        mZoom = mTable.addColumn(COL_ZOOM, SQL_DOUBLE, null);
+        mTimeCreated = mTable.addColumn(COL_CREATED, SQL_TIMESTAMP, null);
+        mTimeModified = mTable.addColumn(COL_MODIFIED, SQL_TIMESTAMP, null);
 
         addNotNullConstraints(mName, mCategory, mDescription);
         create();
@@ -101,14 +110,60 @@ public class MBookmarkManager extends DbBaseManager {
         String indexName = getIndexName(new DbColumn[]{mId}, "pkey");
         DbConstraint primaryKeyConstraint = new DbConstraint(mTable, indexName, Constraint.Type.PRIMARY_KEY, mId);
 
-        indexName = getIndexName(new DbColumn[]{mName}, "key");
-        DbConstraint uniqueKeyConstraint = new DbConstraint(mTable, indexName, Constraint.Type.UNIQUE, mName);
+        indexName = getIndexName(new DbColumn[]{mName, mCategory}, "key");
+        DbConstraint uniqueKeyConstraint = new DbConstraint(mTable, indexName, Constraint.Type.UNIQUE, mName, mCategory);
 
         mDb.create(mTable, false, primaryKeyConstraint, uniqueKeyConstraint);
     }
 
     public void dbDelete(MBookmark bookmark) throws ClassNotFoundException, SQLException {
         mDb.delete(mTable, mId, bookmark.getId());
+        dbLoad();
+    }
+
+    public void dbInsert(MBookmark bookmark) throws ClassNotFoundException, SQLException {
+        if (mInsertPreparedStatement == null) {
+            mInsertPlaceHolders.init(
+                    mName,
+                    mCategory,
+                    mDescription,
+                    mDisplayMarker,
+                    mLatitude,
+                    mLongitude,
+                    mZoom,
+                    mTimeCreated
+            );
+
+            InsertQuery insertQuery = new InsertQuery(mTable)
+                    .addColumn(mName, mInsertPlaceHolders.get(mName))
+                    .addColumn(mCategory, mInsertPlaceHolders.get(mCategory))
+                    .addColumn(mDescription, mInsertPlaceHolders.get(mDescription))
+                    .addColumn(mDisplayMarker, mInsertPlaceHolders.get(mDisplayMarker))
+                    .addColumn(mLatitude, mInsertPlaceHolders.get(mLatitude))
+                    .addColumn(mLongitude, mInsertPlaceHolders.get(mLongitude))
+                    .addColumn(mZoom, mInsertPlaceHolders.get(mZoom))
+                    .addColumn(mTimeCreated, mInsertPlaceHolders.get(mTimeCreated))
+                    .validate();
+
+            String sql = insertQuery.toString();
+            mInsertPreparedStatement = mDb.getAutoCommitConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            //System.out.println(mInsertPreparedStatement.toString());
+        }
+
+        mInsertPlaceHolders.get(mName).setString(bookmark.getName(), mInsertPreparedStatement);
+        mInsertPlaceHolders.get(mCategory).setString(bookmark.getCategory(), mInsertPreparedStatement);
+        mInsertPlaceHolders.get(mDescription).setString(bookmark.getDescription(), mInsertPreparedStatement);
+        mInsertPlaceHolders.get(mDisplayMarker).setBoolean(bookmark.isDisplayMarker(), mInsertPreparedStatement);
+        mInsertPlaceHolders.get(mLatitude).setObject(bookmark.getLatitude(), mInsertPreparedStatement);
+        mInsertPlaceHolders.get(mLongitude).setObject(bookmark.getLongitude(), mInsertPreparedStatement);
+        mInsertPlaceHolders.get(mZoom).setObject(bookmark.getZoom(), mInsertPreparedStatement);
+        mInsertPlaceHolders.get(mTimeCreated).setObject(new Timestamp(System.currentTimeMillis()), mInsertPreparedStatement);
+
+        int affectedRows = mInsertPreparedStatement.executeUpdate();
+        if (affectedRows == 0) {
+            Exceptions.printStackTrace(new SQLException("Creating bookmark failed"));
+        }
+
         dbLoad();
     }
 
@@ -244,52 +299,6 @@ public class MBookmarkManager extends DbBaseManager {
         }
 
         return mItems;
-    }
-
-    private void dbInsert(MBookmark bookmark) throws ClassNotFoundException, SQLException {
-        if (mInsertPreparedStatement == null) {
-            mInsertPlaceHolders.init(
-                    mName,
-                    mCategory,
-                    mDescription,
-                    mDisplayMarker,
-                    mLatitude,
-                    mLongitude,
-                    mZoom,
-                    mTimeCreated
-            );
-
-            InsertQuery insertQuery = new InsertQuery(mTable)
-                    .addColumn(mName, mInsertPlaceHolders.get(mName))
-                    .addColumn(mCategory, mInsertPlaceHolders.get(mCategory))
-                    .addColumn(mDescription, mInsertPlaceHolders.get(mDescription))
-                    .addColumn(mDisplayMarker, mInsertPlaceHolders.get(mDisplayMarker))
-                    .addColumn(mLatitude, mInsertPlaceHolders.get(mLatitude))
-                    .addColumn(mLongitude, mInsertPlaceHolders.get(mLongitude))
-                    .addColumn(mZoom, mInsertPlaceHolders.get(mZoom))
-                    .addColumn(mTimeCreated, mInsertPlaceHolders.get(mTimeCreated))
-                    .validate();
-
-            String sql = insertQuery.toString();
-            mInsertPreparedStatement = mDb.getAutoCommitConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            //System.out.println(mInsertPreparedStatement.toString());
-        }
-
-        mInsertPlaceHolders.get(mName).setString(bookmark.getName(), mInsertPreparedStatement);
-        mInsertPlaceHolders.get(mCategory).setString(bookmark.getCategory(), mInsertPreparedStatement);
-        mInsertPlaceHolders.get(mDescription).setString(bookmark.getDescription(), mInsertPreparedStatement);
-        mInsertPlaceHolders.get(mDisplayMarker).setBoolean(bookmark.isDisplayMarker(), mInsertPreparedStatement);
-        mInsertPlaceHolders.get(mLatitude).setObject(bookmark.getLatitude(), mInsertPreparedStatement);
-        mInsertPlaceHolders.get(mLongitude).setObject(bookmark.getLongitude(), mInsertPreparedStatement);
-        mInsertPlaceHolders.get(mZoom).setObject(bookmark.getZoom(), mInsertPreparedStatement);
-        mInsertPlaceHolders.get(mTimeCreated).setObject(new Timestamp(System.currentTimeMillis()), mInsertPreparedStatement);
-
-        int affectedRows = mInsertPreparedStatement.executeUpdate();
-        if (affectedRows == 0) {
-            Exceptions.printStackTrace(new SQLException("Creating bookmark failed"));
-        }
-
-        dbLoad();
     }
 
     private void dbUpdate(MBookmark bookmark) throws ClassNotFoundException, SQLException {
