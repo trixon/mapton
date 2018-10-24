@@ -16,26 +16,33 @@
 package se.trixon.mapton.core.ui;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.ResourceBundle;
+import java.util.TreeMap;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TreeCell;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import javax.swing.SwingUtilities;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
 import org.controlsfx.control.textfield.TextFields;
@@ -61,32 +68,39 @@ import static se.trixon.mapton.api.Mapton.getIconSizeContextMenu;
  */
 public class BookmarkView extends BorderPane {
 
+    private final ResourceBundle mBundle = NbBundle.getBundle(BookmarkView.class);
+
     private final Font mDefaultFont = Font.getDefault();
-    private final TextField mFilterTextField;
-    private final ListView<MBookmark> mListView;
+    private TextField mFilterTextField;
     private final MBookmarkManager mManager = MBookmarkManager.getInstance();
+    private final TreeView<MBookmark> mTreeView = new TreeView<>();
 
     public BookmarkView() {
-        mFilterTextField = TextFields.createClearableTextField();
-        mFilterTextField.setPromptText(Dict.BOOKMARKS_SEARCH.toString());
-        mListView = new ListView<>(mManager.getItems());
-        mListView.setPlaceholder(new Label(Dict.NO_BOOKMARKS.toString()));
-        mListView.setCellFactory((ListView<MBookmark> param) -> new BookmarkListCell());
-        mListView.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends MBookmark> observable, MBookmark oldValue, MBookmark newValue) -> {
-            if (newValue != null) {
-                bookmarkGoTo(newValue);
-            }
-        });
+        createUI();
+        addListeners();
 
-        setPrefWidth(300);
-        setTop(mFilterTextField);
-        setCenter(mListView);
+        mManager.dbLoad(mFilterTextField.getText());
+        populate();
+    }
+
+    private void addListeners() {
         mFilterTextField.textProperty().addListener((observable, oldValue, newValue) -> {
             mManager.dbLoad(newValue);
 
         });
 
-        mManager.dbLoad(mFilterTextField.getText());
+        mManager.getItems().addListener((ListChangeListener.Change<? extends MBookmark> c) -> {
+            populate();
+        });
+
+        mTreeView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TreeItem<MBookmark>>() {
+            @Override
+            public void changed(ObservableValue<? extends TreeItem<MBookmark>> observable, TreeItem<MBookmark> oldValue, TreeItem<MBookmark> newValue) {
+                if (ObjectUtils.allNotNull(newValue, newValue.getValue().getLatitude(), newValue.getValue().getLongitude())) {
+                    bookmarkGoTo(newValue.getValue());
+                }
+            }
+        });
     }
 
     private void bookmarkEdit() {
@@ -97,6 +111,8 @@ public class BookmarkView extends BorderPane {
     private void bookmarkGoTo(MBookmark bookmark) {
         try {
             mManager.goTo(bookmark);
+        } catch (NullPointerException ex) {
+            // nvm
         } catch (ClassNotFoundException | SQLException ex) {
             Exceptions.printStackTrace(ex);
         }
@@ -150,62 +166,97 @@ public class BookmarkView extends BorderPane {
         });
     }
 
-    private MBookmark getSelectedBookmark() {
-        return mListView.getSelectionModel().getSelectedItem();
+    private void createUI() {
+        mFilterTextField = TextFields.createClearableTextField();
+        mFilterTextField.setPromptText(Dict.BOOKMARKS_SEARCH.toString());
+
+        mTreeView.setShowRoot(false);
+        mTreeView.setCellFactory((TreeView<MBookmark> param) -> new BookmarkTreeCell());
+
+        setPrefWidth(300);
+        setTop(mFilterTextField);
+        setCenter(mTreeView);
     }
 
-    class BookmarkListCell extends ListCell<MBookmark> {
+    private MBookmark getSelectedBookmark() {
+        return mTreeView.getSelectionModel().getSelectedItem().getValue();
+    }
 
-        private final ResourceBundle mBundle = NbBundle.getBundle(SearchView.class);
+    private void populate() {
+        TreeItem<MBookmark> root = new TreeItem<>();
+        root.setExpanded(true);
+        ObservableList<TreeItem<MBookmark>> treeRootChildrens = root.getChildren();
+        TreeMap<String, TreeItem<MBookmark>> actionParents = new TreeMap<>();
+        ArrayList<TreeItem> tempRootItems = new ArrayList<>();
 
-        private final Label mCatLabel = new Label();
+        for (MBookmark bookmark : mManager.getItems()) {
+            TreeItem<MBookmark> treeItem = new TreeItem(bookmark);
+
+            final String parentName = bookmark.getCategory();
+            if (StringUtils.isBlank(parentName)) {
+                tempRootItems.add(treeItem);
+            } else {
+                actionParents.computeIfAbsent(parentName, k -> new TreeItem(parentName)).getChildren().add(treeItem);
+            }
+        }
+
+        Comparator<TreeItem> treeItemComparator = (TreeItem o1, TreeItem o2) -> ((MBookmark) o1.getValue()).getName().compareTo(((MBookmark) o2.getValue()).getName());
+
+        actionParents.keySet().stream().map((key) -> {
+            MBookmark parentBookmark = new MBookmark();
+            parentBookmark.setName(key);
+            TreeItem<MBookmark> parentItem = new TreeItem<>(parentBookmark);
+            FXCollections.sort(actionParents.get(key).getChildren(), treeItemComparator);
+            actionParents.get(key).getChildren().forEach((item) -> {
+                parentItem.getChildren().add(item);
+            });
+            return parentItem;
+        }).forEachOrdered((parentItem) -> {
+            treeRootChildrens.add(parentItem);
+        });
+
+        Collections.sort(tempRootItems, treeItemComparator);
+        tempRootItems.forEach((rootItem) -> {
+            treeRootChildrens.add(rootItem);
+        });
+
+        root.getChildren().forEach((treeItem) -> {
+            treeItem.setExpanded(true);//TODO Remove me
+        });
+
+        mTreeView.setRoot(root);
+    }
+
+    class BookmarkTreeCell extends TreeCell<MBookmark> {
+
         private Menu mContextCopyMenu;
         private Menu mContextOpenMenu;
-        private final Label mDescLabel = new Label();
-        private final VBox mMainBox = new VBox();
-        private final Label mNameLabel = new Label();
 
-        public BookmarkListCell() {
+        public BookmarkTreeCell() {
             createUI();
         }
 
         @Override
         protected void updateItem(MBookmark bookmark, boolean empty) {
-            Runnable r = () -> {
-                super.updateItem(bookmark, empty);
+            super.updateItem(bookmark, empty);
 
-                if (bookmark == null || empty) {
-                    setText(null);
-                    setGraphic(null);
-                } else {
-                    addContent(bookmark);
-                }
-            };
-
-            if (Platform.isFxApplicationThread()) {
-                r.run();
+            if (bookmark == null || empty) {
+                clearContent();
             } else {
-                Platform.runLater(r);
+                addContent(bookmark);
             }
         }
 
         private void addContent(MBookmark bookmark) {
-            setText(null);
+            setText(bookmark.getName());
+        }
 
-            mNameLabel.setText(bookmark.getName());
-            mCatLabel.setText(bookmark.getCategory());
-            mDescLabel.setText(bookmark.getDescription());
-            setGraphic(mMainBox);
+        private void clearContent() {
+            setText(null);
+            setGraphic(null);
         }
 
         private void createUI() {
-            final Color iconColor = Mapton.getIconColor();
-
-            String fontFamily = mDefaultFont.getFamily();
-            double fontSize = mDefaultFont.getSize();
-
-            mNameLabel.setFont(Font.font(fontFamily, FontWeight.BOLD, fontSize * 1.2));
-
             Action editAction = new Action(Dict.EDIT.toString(), (ActionEvent event) -> {
                 bookmarkEdit();
             });
@@ -218,12 +269,6 @@ public class BookmarkView extends BorderPane {
             Action removeAllAction = new Action(Dict.REMOVE_ALL.toString(), (ActionEvent event) -> {
                 bookmarkRemoveAll();
             });
-
-            mMainBox.getChildren().addAll(
-                    mNameLabel,
-                    mCatLabel,
-                    mDescLabel
-            );
 
             Collection<? extends Action> actions = Arrays.asList(
                     editAction,
@@ -239,15 +284,17 @@ public class BookmarkView extends BorderPane {
             contextMenu.getItems().add(1, mContextCopyMenu);
             contextMenu.getItems().add(2, mContextOpenMenu);
 
-            mMainBox.setOnMousePressed((MouseEvent event) -> {
+            setOnMousePressed((MouseEvent event) -> {
                 MBookmark b = this.getItem();
-                if (event.isSecondaryButtonDown()) {
-                    Mapton.getEngine().setLatitude(b.getLatitude());
-                    Mapton.getEngine().setLongitude(b.getLongitude());
-                    contextMenu.show(mMainBox, event.getScreenX(), event.getScreenY());
-                } else if (event.isPrimaryButtonDown()) {
-                    contextMenu.hide();
-                    bookmarkGoTo(b);
+                if (b != null && ObjectUtils.allNotNull(b.getLatitude(), b.getLongitude())) {
+                    if (event.isSecondaryButtonDown()) {
+                        Mapton.getEngine().setLatitude(b.getLatitude());
+                        Mapton.getEngine().setLongitude(b.getLongitude());
+                        contextMenu.show(this, event.getScreenX(), event.getScreenY());
+                    } else if (event.isPrimaryButtonDown()) {
+                        contextMenu.hide();
+                        bookmarkGoTo(b);
+                    }
                 }
             });
 
@@ -256,7 +303,6 @@ public class BookmarkView extends BorderPane {
             });
 
             populateContextProviders();
-
         }
 
         private void populateContextProviders() {
