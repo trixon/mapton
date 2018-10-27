@@ -25,6 +25,7 @@ import com.healthmarketscience.sqlbuilder.dbspec.Constraint;
 import com.healthmarketscience.sqlbuilder.dbspec.basic.DbColumn;
 import com.healthmarketscience.sqlbuilder.dbspec.basic.DbConstraint;
 import java.awt.Dimension;
+import java.awt.Point;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -123,49 +124,28 @@ public class MBookmarkManager extends DbBaseManager {
     }
 
     public void dbInsert(MBookmark bookmark) throws ClassNotFoundException, SQLException {
-        if (mInsertPreparedStatement == null) {
-            mInsertPlaceHolders.init(
-                    mName,
-                    mCategory,
-                    mDescription,
-                    mDisplayMarker,
-                    mLatitude,
-                    mLongitude,
-                    mZoom,
-                    mTimeCreated
-            );
-
-            InsertQuery insertQuery = new InsertQuery(mTable)
-                    .addColumn(mName, mInsertPlaceHolders.get(mName))
-                    .addColumn(mCategory, mInsertPlaceHolders.get(mCategory))
-                    .addColumn(mDescription, mInsertPlaceHolders.get(mDescription))
-                    .addColumn(mDisplayMarker, mInsertPlaceHolders.get(mDisplayMarker))
-                    .addColumn(mLatitude, mInsertPlaceHolders.get(mLatitude))
-                    .addColumn(mLongitude, mInsertPlaceHolders.get(mLongitude))
-                    .addColumn(mZoom, mInsertPlaceHolders.get(mZoom))
-                    .addColumn(mTimeCreated, mInsertPlaceHolders.get(mTimeCreated))
-                    .validate();
-
-            String sql = insertQuery.toString();
-            mInsertPreparedStatement = mDb.getAutoCommitConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            //System.out.println(mInsertPreparedStatement.toString());
-        }
-
-        mInsertPlaceHolders.get(mName).setString(bookmark.getName(), mInsertPreparedStatement);
-        mInsertPlaceHolders.get(mCategory).setString(bookmark.getCategory(), mInsertPreparedStatement);
-        mInsertPlaceHolders.get(mDescription).setString(bookmark.getDescription(), mInsertPreparedStatement);
-        mInsertPlaceHolders.get(mDisplayMarker).setBoolean(bookmark.isDisplayMarker(), mInsertPreparedStatement);
-        mInsertPlaceHolders.get(mLatitude).setObject(bookmark.getLatitude(), mInsertPreparedStatement);
-        mInsertPlaceHolders.get(mLongitude).setObject(bookmark.getLongitude(), mInsertPreparedStatement);
-        mInsertPlaceHolders.get(mZoom).setObject(bookmark.getZoom(), mInsertPreparedStatement);
-        mInsertPlaceHolders.get(mTimeCreated).setObject(new Timestamp(System.currentTimeMillis()), mInsertPreparedStatement);
-
-        int affectedRows = mInsertPreparedStatement.executeUpdate();
-        if (affectedRows == 0) {
-            Exceptions.printStackTrace(new SQLException("Creating bookmark failed"));
-        }
-
+        dbInsertSilent(bookmark);
         dbLoad();
+    }
+
+    public Point dbInsert(ArrayList<MBookmark> bookmarks) {
+        int imports = 0;
+        int errors = 0;
+
+        for (MBookmark bookmark : bookmarks) {
+            try {
+                dbInsertSilent(bookmark);
+                imports++;
+            } catch (ClassNotFoundException | SQLException ex) {
+                errors++;
+            }
+        }
+
+        Platform.runLater(() -> {
+            dbLoad();
+        });
+
+        return new Point(imports, errors);
     }
 
     public void dbLoad() {
@@ -301,6 +281,51 @@ public class MBookmarkManager extends DbBaseManager {
         }
 
         return mItems;
+    }
+
+    private void dbInsertSilent(MBookmark bookmark) throws ClassNotFoundException, SQLException {
+        if (mInsertPreparedStatement == null) {
+            mInsertPlaceHolders.init(
+                    mName,
+                    mCategory,
+                    mDescription,
+                    mDisplayMarker,
+                    mLatitude,
+                    mLongitude,
+                    mZoom,
+                    mTimeCreated
+            );
+
+            InsertQuery insertQuery = new InsertQuery(mTable)
+                    .addColumn(mName, mInsertPlaceHolders.get(mName))
+                    .addColumn(mCategory, mInsertPlaceHolders.get(mCategory))
+                    .addColumn(mDescription, mInsertPlaceHolders.get(mDescription))
+                    .addColumn(mDisplayMarker, mInsertPlaceHolders.get(mDisplayMarker))
+                    .addColumn(mLatitude, mInsertPlaceHolders.get(mLatitude))
+                    .addColumn(mLongitude, mInsertPlaceHolders.get(mLongitude))
+                    .addColumn(mZoom, mInsertPlaceHolders.get(mZoom))
+                    .addColumn(mTimeCreated, mInsertPlaceHolders.get(mTimeCreated))
+                    .validate();
+
+            String sql = insertQuery.toString();
+            mInsertPreparedStatement = mDb.getAutoCommitConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            //System.out.println(mInsertPreparedStatement.toString());
+        }
+
+        mInsertPlaceHolders.get(mName).setString(bookmark.getName(), mInsertPreparedStatement);
+        mInsertPlaceHolders.get(mCategory).setString(bookmark.getCategory(), mInsertPreparedStatement);
+        mInsertPlaceHolders.get(mDescription).setString(bookmark.getDescription(), mInsertPreparedStatement);
+        mInsertPlaceHolders.get(mDisplayMarker).setBoolean(bookmark.isDisplayMarker(), mInsertPreparedStatement);
+        mInsertPlaceHolders.get(mLatitude).setObject(bookmark.getLatitude(), mInsertPreparedStatement);
+        mInsertPlaceHolders.get(mLongitude).setObject(bookmark.getLongitude(), mInsertPreparedStatement);
+        mInsertPlaceHolders.get(mZoom).setObject(bookmark.getZoom(), mInsertPreparedStatement);
+        mInsertPlaceHolders.get(mTimeCreated).setObject(new Timestamp(System.currentTimeMillis()), mInsertPreparedStatement);
+
+        int affectedRows = mInsertPreparedStatement.executeUpdate();
+        if (affectedRows == 0) {
+            Exceptions.printStackTrace(new SQLException("Creating bookmark failed"));
+        }
+
     }
 
     private void dbUpdate(MBookmark bookmark) throws ClassNotFoundException, SQLException {

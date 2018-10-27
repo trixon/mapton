@@ -18,10 +18,10 @@ package se.trixon.mapton.core.tool;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import java.awt.Point;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 import org.apache.commons.csv.CSVFormat;
@@ -136,8 +136,9 @@ public class BookmarkImportTool extends BookmarkTool {
                 CSVFormat.DEFAULT.withFirstRecordAsHeader().withDelimiter(';')
         )) {
             String default_zoom = "0.85";
-
             if (isValidCsv(records, requiredColumns)) {
+                ArrayList<MBookmark> bookmarks = new ArrayList<>();
+
                 for (CSVRecord record : records) {
                     String category = getOrDefault(record, MBookmarkManager.COL_CATEGORY, Dict.DEFAULT.toString());
                     String description = getOrDefault(record, MBookmarkManager.COL_DESCRIPTION, "");
@@ -162,13 +163,12 @@ public class BookmarkImportTool extends BookmarkTool {
                     bookmark.setLongitude(lon);
                     bookmark.setZoom(zoom);
 
-                    try {
-                        mManager.dbInsert(bookmark);
-                        mImports++;
-                    } catch (ClassNotFoundException | SQLException ex) {
-                        mErrors++;
-                    }
+                    bookmarks.add(bookmark);
                 }
+
+                Point result = mManager.dbInsert(bookmarks);
+                mImports = result.x;
+                mErrors = result.y;
             } else {
                 String message = String.format(mBundle.getString("bookmark_import_error_csv_message"), String.join("\n ▶ ", requiredColumns));
                 NbMessage.error(mBundle.getString("bookmark_import_error_csv_title"), message);
@@ -187,14 +187,10 @@ public class BookmarkImportTool extends BookmarkTool {
 
         ArrayList<MBookmark> bookmarks = gson.fromJson(json, new TypeToken<ArrayList<MBookmark>>() {
         }.getType());
-        for (MBookmark bookmark : bookmarks) {
-            try {
-                mManager.dbInsert(bookmark);
-                mImports++;
-            } catch (ClassNotFoundException | SQLException ex) {
-                mErrors++;
-            }
-        }
+
+        Point result = mManager.dbInsert(bookmarks);
+        mImports = result.x;
+        mErrors = result.y;
     }
 
     private boolean isValidCsv(CSVParser records, String[] columns) {
