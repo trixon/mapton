@@ -29,6 +29,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -209,7 +210,7 @@ public class MBookmarkManager extends DbBaseManager {
 
             ResultSet rs = mSelectPreparedStatement.executeQuery();
             rs.beforeFirst();
-            getItems().clear();
+            ArrayList<MBookmark> bookmarks = new ArrayList<>();
 
             while (rs.next()) {
                 MBookmark bookmark = new MBookmark();
@@ -224,8 +225,9 @@ public class MBookmarkManager extends DbBaseManager {
                 bookmark.setTimeCreated(getTimestamp(rs, mTimeCreated));
                 bookmark.setTimeModified(getTimestamp(rs, mTimeModified));
 
-                getItems().add(bookmark);
+                bookmarks.add(bookmark);
             }
+            getItems().setAll(bookmarks);
         } catch (SQLException ex) {
             Exceptions.printStackTrace(ex);
         }

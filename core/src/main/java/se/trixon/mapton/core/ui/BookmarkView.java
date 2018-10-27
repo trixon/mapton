@@ -16,19 +16,14 @@
 package se.trixon.mapton.core.ui;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
@@ -68,8 +63,8 @@ import static se.trixon.mapton.api.Mapton.getIconSizeContextMenu;
  */
 public class BookmarkView extends BorderPane {
 
+    private final Map<String, TreeItem<MBookmark>> mBookmarkParents = new TreeMap<>();
     private final ResourceBundle mBundle = NbBundle.getBundle(BookmarkView.class);
-
     private final Font mDefaultFont = Font.getDefault();
     private TextField mFilterTextField;
     private final MBookmarkManager mManager = MBookmarkManager.getInstance();
@@ -77,10 +72,10 @@ public class BookmarkView extends BorderPane {
 
     public BookmarkView() {
         createUI();
-        addListeners();
 
         mManager.dbLoad(mFilterTextField.getText());
         populate();
+        addListeners();
     }
 
     private void addListeners() {
@@ -93,12 +88,11 @@ public class BookmarkView extends BorderPane {
             populate();
         });
 
-        mTreeView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TreeItem<MBookmark>>() {
-            @Override
-            public void changed(ObservableValue<? extends TreeItem<MBookmark>> observable, TreeItem<MBookmark> oldValue, TreeItem<MBookmark> newValue) {
-                if (ObjectUtils.allNotNull(newValue, newValue.getValue().getLatitude(), newValue.getValue().getLongitude())) {
-                    bookmarkGoTo(newValue.getValue());
-                }
+        mTreeView.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends TreeItem<MBookmark>> observable, TreeItem<MBookmark> oldValue, TreeItem<MBookmark> newValue) -> {
+            try {
+                bookmarkGoTo(newValue.getValue());
+            } catch (NullPointerException e) {
+                //nvm
             }
         });
     }
@@ -178,53 +172,59 @@ public class BookmarkView extends BorderPane {
         setCenter(mTreeView);
     }
 
+    private TreeItem<MBookmark> getParent(TreeItem<MBookmark> parent, String category) {
+        String[] categorySegments = StringUtils.split(category, "/");
+        StringBuilder sb = new StringBuilder();
+
+        for (String segment : categorySegments) {
+            sb.append(segment);
+            String path = sb.toString();
+
+            if (mBookmarkParents.containsKey(path)) {
+                parent = mBookmarkParents.get(path);
+            } else {
+                MBookmark bookmark = new MBookmark();
+                bookmark.setName(segment);
+
+                parent.getChildren().add(parent = mBookmarkParents.computeIfAbsent(sb.toString(), k -> new TreeItem(bookmark)));
+            }
+
+            sb.append("/");
+        }
+
+        return parent;
+    }
+
     private MBookmark getSelectedBookmark() {
         return mTreeView.getSelectionModel().getSelectedItem().getValue();
     }
 
     private void populate() {
-        TreeItem<MBookmark> root = new TreeItem<>();
-        root.setExpanded(true);
-        ObservableList<TreeItem<MBookmark>> treeRootChildrens = root.getChildren();
-        TreeMap<String, TreeItem<MBookmark>> actionParents = new TreeMap<>();
-        ArrayList<TreeItem> tempRootItems = new ArrayList<>();
+        mBookmarkParents.clear();
+        MBookmark rootMark = new MBookmark();
+        rootMark.setName("");
+        TreeItem<MBookmark> root = new TreeItem<>(rootMark);
 
         for (MBookmark bookmark : mManager.getItems()) {
-            TreeItem<MBookmark> treeItem = new TreeItem(bookmark);
-
-            final String parentName = bookmark.getCategory();
-            if (StringUtils.isBlank(parentName)) {
-                tempRootItems.add(treeItem);
-            } else {
-                actionParents.computeIfAbsent(parentName, k -> new TreeItem(parentName)).getChildren().add(treeItem);
-            }
+            TreeItem<MBookmark> bookmarkTreeItem = new TreeItem(bookmark);
+            String category = bookmark.getCategory();
+            TreeItem parent = mBookmarkParents.computeIfAbsent(category, k -> getParent(root, category));
+            parent.getChildren().add(bookmarkTreeItem);
         }
 
-        Comparator<TreeItem> treeItemComparator = (TreeItem o1, TreeItem o2) -> ((MBookmark) o1.getValue()).getName().compareTo(((MBookmark) o2.getValue()).getName());
-
-        actionParents.keySet().stream().map((key) -> {
-            MBookmark parentBookmark = new MBookmark();
-            parentBookmark.setName(key);
-            TreeItem<MBookmark> parentItem = new TreeItem<>(parentBookmark);
-            FXCollections.sort(actionParents.get(key).getChildren(), treeItemComparator);
-            actionParents.get(key).getChildren().forEach((item) -> {
-                parentItem.getChildren().add(item);
-            });
-            return parentItem;
-        }).forEachOrdered((parentItem) -> {
-            treeRootChildrens.add(parentItem);
-        });
-
-        Collections.sort(tempRootItems, treeItemComparator);
-        tempRootItems.forEach((rootItem) -> {
-            treeRootChildrens.add(rootItem);
-        });
-
-        root.getChildren().forEach((treeItem) -> {
-            treeItem.setExpanded(true);//TODO Remove me
-        });
-
+        postPopulate(root, "");
         mTreeView.setRoot(root);
+    }
+
+    private void postPopulate(TreeItem<MBookmark> treeItem, String level) {
+        //System.out.println(level + treeItem.getValue().getName());
+        treeItem.setExpanded(true);//TODO Remove me
+
+        for (TreeItem<MBookmark> childTreeItem : treeItem.getChildren()) {
+            postPopulate(childTreeItem, level + "-");
+        }
+
+        //TODO Some sorting...?
     }
 
     class BookmarkTreeCell extends TreeCell<MBookmark> {
