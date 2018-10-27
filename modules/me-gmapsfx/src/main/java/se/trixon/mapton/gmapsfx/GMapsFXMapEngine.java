@@ -54,6 +54,7 @@ public class GMapsFXMapEngine extends MEngine {
 
     public static final String LOG_TAG = "GMapsFX";
 
+    private BookmarkPlotter mBookmarkPlotter;
     private InfoWindow mInfoWindow;
     private GoogleMap mMap;
     private MapOptions mMapOptions;
@@ -74,6 +75,10 @@ public class GMapsFXMapEngine extends MEngine {
     @Override
     public MLatLon getCenter() {
         return toLatLon(mMap.getCenter());
+    }
+
+    public GoogleMap getMap() {
+        return mMap;
     }
 
     @Override
@@ -157,6 +162,7 @@ public class GMapsFXMapEngine extends MEngine {
                 return SwingFXUtils.fromFXImage(image, null);
             });
 
+            mBookmarkPlotter = new BookmarkPlotter(this);
             NbLog.v(LOG_TAG, "Loaded and ready");
         });
     }
