@@ -44,6 +44,7 @@ import se.trixon.mapton.api.MLatLonBox;
 public class JxMapViewerMapEngine extends MEngine {
 
     public static final String LOG_TAG = "JxMapViewer2";
+    private BookmarkPlotter mBookmarkPlotter;
     private JXMapViewer mMap;
     private MapKit mMapKit;
 
@@ -64,6 +65,10 @@ public class JxMapViewerMapEngine extends MEngine {
     @Override
     public MLatLon getCenter() {
         return toLatLon(mMapKit.getCenterPosition());
+    }
+
+    public JXMapViewer getMap() {
+        return mMap;
     }
 
     @Override
@@ -122,6 +127,9 @@ public class JxMapViewerMapEngine extends MEngine {
 
             return image;
         });
+
+        mBookmarkPlotter = new BookmarkPlotter(this);
+
         NbLog.v(LOG_TAG, "Loaded and ready");
     }
 
