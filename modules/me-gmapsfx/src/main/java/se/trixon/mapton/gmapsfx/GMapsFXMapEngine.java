@@ -26,6 +26,7 @@ import com.lynden.gmapsfx.javascript.object.MapOptions;
 import com.lynden.gmapsfx.javascript.object.MapTypeIdEnum;
 import java.awt.Point;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 import java.util.prefs.PreferenceChangeEvent;
 import javafx.application.Platform;
 import javafx.beans.Observable;
@@ -35,6 +36,7 @@ import javafx.scene.Node;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Slider;
 import javafx.scene.image.WritableImage;
+import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.util.MathHelper;
@@ -164,7 +166,19 @@ public class GMapsFXMapEngine extends MEngine {
             Platform.runLater(() -> {
                 switch (evt.getKey()) {
                     case ModuleOptions.KEY_MAP_STYLE:
+                        final MLatLon old = getCenter();
                         initMap();
+                        new Thread(() -> {
+                            try {
+                                TimeUnit.MILLISECONDS.sleep(100);
+                                Platform.runLater(() -> {
+                                    panTo(old);
+                                });
+                            } catch (InterruptedException ex) {
+                                Exceptions.printStackTrace(ex);
+                            }
+
+                        }).start();
                         break;
 
                     case ModuleOptions.KEY_MAP_TYPE:
@@ -187,6 +201,10 @@ public class GMapsFXMapEngine extends MEngine {
 
     private void initMap() {
         NbLog.v(LOG_TAG, "Initializing map...");
+
+        if (mMap != null) {
+            mMap.zoomProperty().unbindBidirectional(mZoomSlider.valueProperty());
+        }
 
         mMapOptions.styleString(MapStyle.getStyle(mOptions.getMapStyle()));
         mMap = mMapView.createMap(mMapOptions);
