@@ -1,3 +1,3 @@
 Manifest-Version: 1.0
-OpenIDE-Module-Localizing-Bundle: se/trixon/mapton/jxmapviewer2/Bundle.properties
+OpenIDE-Module-Localizing-Bundle: org/mapton/jxmapviewer2/Bundle.properties
 

@@ -18,7 +18,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <publicPackages>
-                        <publicPackage>se.trixon.mapton.worldwind.api.*</publicPackage>
+                        <publicPackage>org.mapton.worldwind.api.*</publicPackage>
                         <publicPackage>gov.nasa.worldwind.*</publicPackage>
                     </publicPackages>
                 </configuration>

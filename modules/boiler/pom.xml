@@ -69,14 +69,14 @@
         <dependency>
             <groupId>se.trixon.almond</groupId>
             <artifactId>almond-nbp</artifactId>
-            <version>${almond-nbp.version}</version>
+            <version>${version.almond-nbp}</version>
         </dependency>
 
         <!-- Mapton -->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>core</artifactId>
-            <version>${project.version}</version>
+            <version>${mapton.version}</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

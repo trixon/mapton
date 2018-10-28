@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
-OpenIDE-Module-Layer: se/trixon/mapton/core/layer.xml
-OpenIDE-Module-Localizing-Bundle: se/trixon/mapton/core/Bundle.properties
+OpenIDE-Module-Layer: org/mapton/core/layer.xml
+OpenIDE-Module-Localizing-Bundle: org/mapton/core/Bundle.properties
 AutoUpdate-Essential-Module: true
 AutoUpdate-Show-In-Client: false
 OpenIDE-Module-Requires: org.openide.windows.WindowManager
