@@ -29,6 +29,7 @@ public class ModuleOptions {
     public static final String KEY_DISPLAY_ATMOSPHERE = "display_atmosphere";
     public static final String KEY_DISPLAY_COMPASS = "display_compass";
     public static final String KEY_DISPLAY_CONTROLS = "display_controls";
+    public static final String KEY_DISPLAY_PLACE_NAMES = "display_place_names";
     public static final String KEY_DISPLAY_SCALE_BAR = "display_scale_bar";
     public static final String KEY_DISPLAY_STARS = "display_stars";
     public static final String KEY_DISPLAY_WORLD_MAP = "display_world_map";
@@ -44,6 +45,7 @@ public class ModuleOptions {
     private static final boolean DEFAULT_DISPLAY_ATMOSPHERE = true;
     private static final boolean DEFAULT_DISPLAY_COMPASS = true;
     private static final boolean DEFAULT_DISPLAY_CONTROLS = true;
+    private static final boolean DEFAULT_DISPLAY_PLACE_NAMES = true;
     private static final boolean DEFAULT_DISPLAY_SCALE_BAR = true;
     private static final boolean DEFAULT_DISPLAY_STARS = true;
     private static final boolean DEFAULT_DISPLAY_WORLD_MAP = false;
@@ -101,6 +103,10 @@ public class ModuleOptions {
         return mPreferences.getBoolean(KEY_DISPLAY_CONTROLS, DEFAULT_DISPLAY_CONTROLS);
     }
 
+    public boolean isDisplayPlaceNames() {
+        return mPreferences.getBoolean(KEY_DISPLAY_PLACE_NAMES, DEFAULT_DISPLAY_PLACE_NAMES);
+    }
+
     public boolean isDisplayScaleBar() {
         return mPreferences.getBoolean(KEY_DISPLAY_SCALE_BAR, DEFAULT_DISPLAY_SCALE_BAR);
     }
@@ -131,6 +137,10 @@ public class ModuleOptions {
 
     public void setDisplayControls(boolean value) {
         mPreferences.putBoolean(KEY_DISPLAY_CONTROLS, value);
+    }
+
+    public void setDisplayPlaceNames(boolean value) {
+        mPreferences.putBoolean(KEY_DISPLAY_PLACE_NAMES, value);
     }
 
     public void setDisplayScaleBar(boolean value) {

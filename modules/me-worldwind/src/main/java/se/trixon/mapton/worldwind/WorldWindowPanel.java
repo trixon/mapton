@@ -249,6 +249,7 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
                 case ModuleOptions.KEY_DISPLAY_ATMOSPHERE:
                 case ModuleOptions.KEY_DISPLAY_COMPASS:
                 case ModuleOptions.KEY_DISPLAY_CONTROLS:
+                case ModuleOptions.KEY_DISPLAY_PLACE_NAMES:
                 case ModuleOptions.KEY_DISPLAY_SCALE_BAR:
                 case ModuleOptions.KEY_DISPLAY_STARS:
                 case ModuleOptions.KEY_DISPLAY_WORLD_MAP:
@@ -346,6 +347,7 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         getLayers().getLayerByName("View Controls").setEnabled(mOptions.isDisplayControls());
         getLayers().getLayerByName("Atmosphere").setEnabled(mOptions.isDisplayAtmosphere());
         getLayers().getLayerByName("Stars").setEnabled(mOptions.isDisplayStar());
+        getLayers().getLayerByName("Place Names").setEnabled(mOptions.isDisplayPlaceNames());
 
         redraw();
     }
@@ -358,6 +360,7 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         blacklist.add("View Controls");
         blacklist.add("Stars");
         blacklist.add("Atmosphere");
+        blacklist.add("Place Names");
 
         String[] styleLayers = MapStyle.getLayers(mOptions.getMapStyle());
         try {

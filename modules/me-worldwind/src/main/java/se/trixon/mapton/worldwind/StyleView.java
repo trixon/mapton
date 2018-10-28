@@ -47,16 +47,17 @@ import se.trixon.mapton.worldwind.api.MapStyle;
  */
 public class StyleView extends HBox {
 
-    private CheckBox mElevationCheckBox;
     private CheckBox mAtmosphereCheckBox;
     private CheckBox mCompassCheckBox;
     private CheckBox mControlsCheckBox;
+    private CheckBox mElevationCheckBox;
     private final GridPane mLeftPane = new GridPane();
     private RadioButton mModeFlatRadioButton;
     private RadioButton mModeGlobeRadioButton;
     private VBox mOpacityBox;
     private final Slider mOpacitySlider = new Slider(0, 1, 1);
     private final ModuleOptions mOptions = ModuleOptions.getInstance();
+    private CheckBox mPlaceNameCheckBox;
     private ComboBox<String> mProjComboBox;
     private final ArrayList<String> mProjections = new ArrayList<>();
     private CheckBox mScaleBarCheckBox;
@@ -124,6 +125,9 @@ public class StyleView extends HBox {
         mAtmosphereCheckBox = new CheckBox(MDict.ATMOSPHERE.toString());
         GridPane.setMargin(mAtmosphereCheckBox, topInsets);
 
+        mPlaceNameCheckBox = new CheckBox(Dict.PLACE_NAMES.toString().toString());
+        GridPane.setMargin(mPlaceNameCheckBox, topInsets);
+
         mProjComboBox.getItems().addAll(mProjections);
 
         mLeftPane.addColumn(
@@ -138,7 +142,8 @@ public class StyleView extends HBox {
                 mControlsCheckBox,
                 mScaleBarCheckBox,
                 mStarsCheckBox,
-                mAtmosphereCheckBox
+                mAtmosphereCheckBox,
+                mPlaceNameCheckBox
         );
 
         mModeFlatRadioButton.setMaxWidth(Double.MAX_VALUE);
@@ -180,6 +185,10 @@ public class StyleView extends HBox {
 
         mStarsCheckBox.setOnAction((event) -> {
             mOptions.setDisplayStars(mStarsCheckBox.isSelected());
+        });
+
+        mPlaceNameCheckBox.setOnAction((event) -> {
+            mOptions.setDisplayPlaceNames(mPlaceNameCheckBox.isSelected());
         });
 
         mElevationCheckBox = new CheckBox(MDict.ELEVATION.toString());
@@ -243,6 +252,7 @@ public class StyleView extends HBox {
         mCompassCheckBox.setSelected(mOptions.isDisplayCompass());
         mAtmosphereCheckBox.setSelected(mOptions.isDisplayAtmosphere());
         mStarsCheckBox.setSelected(mOptions.isDisplayStar());
+        mPlaceNameCheckBox.setSelected(mOptions.isDisplayPlaceNames());
 
         mOpacitySlider.setValue(mOptions.getMapOpacity());
         mElevationCheckBox.setSelected(mOptions.isMapElevation());
