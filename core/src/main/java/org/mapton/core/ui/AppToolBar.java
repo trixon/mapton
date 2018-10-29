@@ -38,20 +38,23 @@ import org.controlsfx.control.PopOver;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionGroup;
 import org.controlsfx.control.action.ActionUtils;
+import org.mapton.api.MEngine;
+import org.mapton.api.MOptions;
+import org.mapton.api.Mapton;
+import static org.mapton.api.Mapton.getIconSizeContextMenu;
+import static org.mapton.api.Mapton.getIconSizeToolBar;
+import org.mapton.core.Initializer;
 import org.openide.awt.Actions;
 import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.nbp.AlmondOptions;
+import se.trixon.almond.nbp.dialogs.NbAboutFx;
+import se.trixon.almond.util.AboutModel;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.FxActionSwing;
 import se.trixon.almond.util.fx.FxActionSwingCheck;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.icons.material.MaterialIcon;
-import org.mapton.api.MEngine;
-import org.mapton.api.MOptions;
-import org.mapton.api.Mapton;
-import static org.mapton.api.Mapton.getIconSizeContextMenu;
-import static org.mapton.api.Mapton.getIconSizeToolBar;
 
 /**
  *
@@ -278,7 +281,9 @@ public class AppToolBar extends ToolBar {
 
         //About
         mSysAboutAction = new FxActionSwing(String.format(Dict.ABOUT_S.toString(), "Mapton"), () -> {
-            Actions.forID("Help", "org.netbeans.core.actions.AboutAction").actionPerformed(null);
+            AboutModel aboutModel = new AboutModel(SystemHelper.getBundle(Initializer.class, "about"), SystemHelper.getResourceAsImageView(Initializer.class, "logo.png"));
+            NbAboutFx nbAboutFx = new NbAboutFx(aboutModel);
+            nbAboutFx.display();
         });
 
         //quit
