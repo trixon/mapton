@@ -23,6 +23,9 @@ import de.micromata.opengis.kml.v_2_2_0.Placemark;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
 import org.apache.commons.csv.CSVFormat;
@@ -31,16 +34,20 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.action.Action;
+import org.mapton.api.MBookmark;
+import org.mapton.api.MBookmarkManager;
+import org.mapton.api.MKmlCreator;
+import org.mapton.api.MTool;
 import org.openide.util.Exceptions;
 import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.dialogs.NbMessage;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.dialogs.SimpleDialog;
-import org.mapton.api.MBookmark;
-import org.mapton.api.MBookmarkManager;
-import org.mapton.api.MKmlCreator;
-import org.mapton.api.MTool;
+import se.trixon.almond.util.io.Geo;
+import se.trixon.almond.util.io.GeoHeader;
+import se.trixon.almond.util.io.GeoPoint;
 
 /**
  *
@@ -62,6 +69,7 @@ public class BookmarkExportTool extends BookmarkTool {
         Action action = new Action(title, (t) -> {
             SimpleDialog.clearFilters();
             SimpleDialog.addFilter(mExtCsv);
+            SimpleDialog.addFilter(mExtGeo);
             SimpleDialog.addFilter(mExtJson);
             SimpleDialog.addFilter(mExtKml);
             SimpleDialog.setFilter(mExtCsv);
@@ -74,7 +82,7 @@ public class BookmarkExportTool extends BookmarkTool {
                 SimpleDialog.setSelectedFile(new File(""));
             }
 
-            if (SimpleDialog.saveFile(new String[]{"csv", "json", "kml"})) {
+            if (SimpleDialog.saveFile(new String[]{"csv", "geo", "json", "kml"})) {
                 new Thread(() -> {
                     mFile = SimpleDialog.getPath();
 
@@ -86,6 +94,10 @@ public class BookmarkExportTool extends BookmarkTool {
 
                             case "json":
                                 new JsonExporter();
+                                break;
+
+                            case "geo":
+                                new GeoExporter();
                                 break;
 
                             case "kml":
@@ -143,6 +155,33 @@ public class BookmarkExportTool extends BookmarkTool {
             }
 
             FileUtils.writeStringToFile(mFile, stringWriter.toString(), "utf-8");
+        }
+    }
+
+    private class GeoExporter {
+
+        public GeoExporter() throws IOException {
+            LinkedHashMap<String, String> map = new LinkedHashMap<>();
+            map.put("Application", "Mapton");
+            map.put("Author", SystemHelper.getUserName());
+            map.put("Created", new SimpleDateFormat("yyyy-MM-dd HH.mm.ss").format(new Date()));
+            GeoHeader geoHeader = new GeoHeader("\"SBG Object Text v2.01\",\"Coordinate Document\"", map);
+
+            Geo geo = new Geo();
+            geo.setHeader(geoHeader);
+
+            for (MBookmark bookmark : mManager.getItems()) {
+                GeoPoint point = new GeoPoint();
+                point.setPointId(bookmark.getName());
+                point.setRemark(bookmark.getCategory());
+                point.setX(bookmark.getLatitude());
+                point.setY(bookmark.getLongitude());
+                point.setZ(.0);
+
+                geo.addPoint(point);
+            }
+
+            geo.write(mFile);
         }
     }
 

@@ -31,6 +31,9 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.controlsfx.control.action.Action;
+import org.mapton.api.MBookmark;
+import org.mapton.api.MBookmarkManager;
+import org.mapton.api.MTool;
 import org.openide.util.Exceptions;
 import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
@@ -38,9 +41,8 @@ import se.trixon.almond.nbp.dialogs.NbMessage;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.MathHelper;
 import se.trixon.almond.util.fx.dialogs.SimpleDialog;
-import org.mapton.api.MBookmark;
-import org.mapton.api.MBookmarkManager;
-import org.mapton.api.MTool;
+import se.trixon.almond.util.io.Geo;
+import se.trixon.almond.util.io.GeoPoint;
 
 /**
  *
@@ -64,6 +66,7 @@ public class BookmarkImportTool extends BookmarkTool {
         Action action = new Action(title, (t) -> {
             SimpleDialog.clearFilters();
             SimpleDialog.addFilter(mExtCsv);
+            SimpleDialog.addFilter(mExtGeo);
             SimpleDialog.addFilter(mExtJson);
             SimpleDialog.setFilter(mExtCsv);
             SimpleDialog.setTitle(String.format("%s %s", title, Dict.BOOKMARKS.toString().toLowerCase()));
@@ -85,6 +88,11 @@ public class BookmarkImportTool extends BookmarkTool {
                         switch (FilenameUtils.getExtension(mFile.getName())) {
                             case "csv": {
                                 importCsv();
+                            }
+                            break;
+
+                            case "geo": {
+                                importGeo();
                             }
                             break;
 
@@ -174,6 +182,27 @@ public class BookmarkImportTool extends BookmarkTool {
                 NbMessage.error(mBundle.getString("bookmark_import_error_csv_title"), message);
             }
         }
+    }
+
+    private void importGeo() throws IOException {
+        Geo geo = new Geo();
+        geo.read(mFile);
+        ArrayList<MBookmark> bookmarks = new ArrayList<>();
+
+        for (GeoPoint point : geo.getPoints()) {
+            MBookmark bookmark = new MBookmark();
+            bookmark.setName(point.getPointId());
+            bookmark.setCategory(point.getRemark());
+            bookmark.setLatitude(point.getX());
+            bookmark.setLongitude(point.getY());
+            bookmark.setZoom(0.999);
+
+            bookmarks.add(bookmark);
+        }
+
+        Point result = mManager.dbInsert(bookmarks);
+        mImports = result.x;
+        mErrors = result.y;
     }
 
     private void importJson() throws IOException {

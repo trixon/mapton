@@ -16,8 +16,8 @@
 package org.mapton.core.tool;
 
 import javafx.stage.FileChooser;
-import se.trixon.almond.util.Dict;
 import org.mapton.api.MTool;
+import se.trixon.almond.util.Dict;
 
 /**
  *
@@ -27,6 +27,7 @@ public abstract class BookmarkTool implements MTool {
 
     protected FileChooser.ExtensionFilter mExtAll = new FileChooser.ExtensionFilter(Dict.ALL_FILES.toString(), "*");
     protected FileChooser.ExtensionFilter mExtCsv = new FileChooser.ExtensionFilter("Comma-separated value (*.csv)", "*.csv");
+    protected FileChooser.ExtensionFilter mExtGeo = new FileChooser.ExtensionFilter("SBG Geo (*.geo)", "*.geo");
     protected FileChooser.ExtensionFilter mExtJson = new FileChooser.ExtensionFilter("JSON (*.json)", "*.json");
     protected FileChooser.ExtensionFilter mExtKml = new FileChooser.ExtensionFilter("Keyhole Markup Language (*.kml)", "*.kml");
 
