@@ -16,12 +16,12 @@
 package org.mapton.core.tool;
 
 import org.controlsfx.control.action.Action;
+import org.mapton.api.MTool;
 import org.openide.awt.Actions;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxActionSwing;
-import org.mapton.api.MTool;
 
 /**
  *
@@ -42,6 +42,6 @@ public class LogOutputTool implements MTool {
 
     @Override
     public String getParent() {
-        return Dict.SYSTEM.toString();
+        return String.format("%s/%s", Dict.SYSTEM.toString(), Dict.LOGGING.toString());
     }
 }

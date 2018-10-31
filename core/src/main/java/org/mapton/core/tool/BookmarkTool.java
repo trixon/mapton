@@ -31,4 +31,8 @@ public abstract class BookmarkTool implements MTool {
     protected FileChooser.ExtensionFilter mExtJson = new FileChooser.ExtensionFilter("JSON (*.json)", "*.json");
     protected FileChooser.ExtensionFilter mExtKml = new FileChooser.ExtensionFilter("Keyhole Markup Language (*.kml)", "*.kml");
 
+    @Override
+    public String getParent() {
+        return String.format("%s/%s", Dict.SYSTEM.toString(), Dict.BOOKMARKS.toString());
+    }
 }

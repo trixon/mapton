@@ -119,11 +119,6 @@ public class BookmarkImportTool extends BookmarkTool {
         return action;
     }
 
-    @Override
-    public String getParent() {
-        return Dict.BOOKMARKS.toString();
-    }
-
     private String getOrDefault(CSVRecord record, String key, String defaultValue) {
         if (record.isSet(key)) {
             return record.get(key);

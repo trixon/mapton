@@ -15,29 +15,27 @@
  */
 package org.mapton.core.ui;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
+import java.util.Map;
 import java.util.TreeMap;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
+import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.action.Action;
+import org.mapton.api.MTool;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
-import se.trixon.almond.util.icons.material.MaterialIcon;
-import org.mapton.api.MTool;
-import static org.mapton.api.Mapton.getIconSizeToolBar;
 
 /**
  *
  * @author Patrik Karlström
  */
 public class ToolboxView extends TreeView<Action> {
+
+    private final Map<String, TreeItem<Action>> mToolParents = new TreeMap<>();
 
     public ToolboxView() {
         createUI();
@@ -62,55 +60,86 @@ public class ToolboxView extends TreeView<Action> {
         });
 
         Lookup.getDefault().lookupResult(MTool.class).addLookupListener((LookupEvent ev) -> {
-            populateToolbox();
+            populate();
         });
 
-        populateToolbox();
+        populate();
     }
 
-    private void populateToolbox() {
-        TreeItem<Action> root = new TreeItem<>();
-        root.setExpanded(true);
-        ObservableList<TreeItem<Action>> treeRootChildrens = root.getChildren();
-        TreeMap<String, TreeItem<Action>> actionParents = new TreeMap<>();
-        ArrayList<TreeItem> tempRootItems = new ArrayList<>();
+    private TreeItem<Action> getParent(TreeItem<Action> parent, String category) {
+        String[] categorySegments = StringUtils.split(category, "/");
+        StringBuilder sb = new StringBuilder();
 
-        Lookup.getDefault().lookupAll(MTool.class).forEach((toolboxAction) -> {
-            TreeItem<Action> treeItem = new TreeItem(toolboxAction.getAction());
-            treeItem.getValue().setGraphic(MaterialIcon._Action.BUILD.getImageView(getIconSizeToolBar() / 2));
+        for (String segment : categorySegments) {
+            sb.append(segment);
+            String path = sb.toString();
 
-            final String parentName = toolboxAction.getParent();
-            if (parentName == null) {
-                tempRootItems.add(treeItem);
+            if (mToolParents.containsKey(path)) {
+                parent = mToolParents.get(path);
             } else {
-                actionParents.computeIfAbsent(parentName, k -> new TreeItem(parentName)).getChildren().add(treeItem);
+                MTool tool = new MTool() {
+                    @Override
+                    public Action getAction() {
+                        Action action = new Action(segment, (event) -> {
+                        });
+
+                        return action;
+                    }
+
+                    @Override
+                    public String getParent() {
+                        return path;
+                    }
+                };
+
+                parent.getChildren().add(parent = mToolParents.computeIfAbsent(sb.toString(), k -> new TreeItem(tool.getAction())));
             }
+
+            sb.append("/");
+        }
+
+        return parent;
+    }
+
+    private void populate() {
+        mToolParents.clear();
+        Action rootMark = new Action("");
+        TreeItem<Action> root = new TreeItem<>(rootMark);
+        Lookup.getDefault().lookupAll(MTool.class).forEach((tool) -> {
+            TreeItem<Action> actionTreeItem = new TreeItem(tool.getAction());
+            String category = StringUtils.defaultString(tool.getParent());
+
+            TreeItem parent = mToolParents.computeIfAbsent(category, k -> getParent(root, category));
+            parent.getChildren().add(actionTreeItem);
         });
 
-        Comparator<TreeItem> treeItemComparator = (TreeItem o1, TreeItem o2) -> ((Action) o1.getValue()).getText().compareTo(((Action) o2.getValue()).getText());
-
-        actionParents.keySet().stream().map((key) -> {
-            TreeItem<Action> parentItem = new TreeItem<>(new Action(key));
-            parentItem.getValue().setGraphic(MaterialIcon._Places.BUSINESS_CENTER.getImageView(getIconSizeToolBar() / 2));
-            FXCollections.sort(actionParents.get(key).getChildren(), treeItemComparator);
-            actionParents.get(key).getChildren().forEach((item) -> {
-                parentItem.getChildren().add(item);
-            });
-            return parentItem;
-        }).forEachOrdered((parentItem) -> {
-            treeRootChildrens.add(parentItem);
-        });
-
-        Collections.sort(tempRootItems, treeItemComparator);
-        tempRootItems.forEach((rootItem) -> {
-            treeRootChildrens.add(rootItem);
-        });
-
-        root.getChildren().forEach((treeItem) -> {
-            treeItem.setExpanded(true);
-        });
-
+        postPopulate(root, "");
         setRoot(root);
+    }
+
+    private void postPopulate(TreeItem<Action> treeItem, String level) {
+        //System.out.println(level + treeItem.getValue().getName());
+        treeItem.setExpanded(true);
+
+        Comparator c1 = new Comparator<TreeItem<Action>>() {
+            @Override
+            public int compare(TreeItem<Action> o1, TreeItem<Action> o2) {
+                return Boolean.compare(o1.getChildren().isEmpty(), o2.getChildren().isEmpty());
+            }
+        };
+
+        Comparator c2 = new Comparator<TreeItem<Action>>() {
+            @Override
+            public int compare(TreeItem<Action> o1, TreeItem<Action> o2) {
+                return o1.getValue().getText().compareTo(o2.getValue().getText());
+            }
+        };
+
+        treeItem.getChildren().sort(c1.thenComparing(c2));
+
+        for (TreeItem<Action> childTreeItem : treeItem.getChildren()) {
+            postPopulate(childTreeItem, level + "-");
+        }
     }
 
     class ActionTreeCell extends TreeCell<Action> {
@@ -142,7 +171,5 @@ public class ToolboxView extends TreeView<Action> {
 
         private void createUI() {
         }
-
     }
-
 }

@@ -120,11 +120,6 @@ public class BookmarkExportTool extends BookmarkTool {
         return action;
     }
 
-    @Override
-    public String getParent() {
-        return Dict.BOOKMARKS.toString();
-    }
-
     private class CsvExporter {
 
         public CsvExporter() throws IOException {
