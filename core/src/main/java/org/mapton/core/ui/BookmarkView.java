@@ -18,6 +18,7 @@ package org.mapton.core.ui;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
@@ -41,6 +42,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
 import org.controlsfx.control.textfield.TextFields;
+import org.mapton.api.MBookmark;
+import org.mapton.api.MBookmarkManager;
+import org.mapton.api.MContextMenuItem;
+import org.mapton.api.Mapton;
+import static org.mapton.api.Mapton.getIconSizeContextMenu;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.util.Exceptions;
@@ -51,11 +57,6 @@ import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.icons.material.MaterialIcon;
-import org.mapton.api.MBookmark;
-import org.mapton.api.MBookmarkManager;
-import org.mapton.api.MContextMenuItem;
-import org.mapton.api.Mapton;
-import static org.mapton.api.Mapton.getIconSizeContextMenu;
 
 /**
  *
@@ -218,13 +219,27 @@ public class BookmarkView extends BorderPane {
 
     private void postPopulate(TreeItem<MBookmark> treeItem, String level) {
         //System.out.println(level + treeItem.getValue().getName());
-        treeItem.setExpanded(true);//TODO Remove me
+        treeItem.setExpanded(true);
+
+        Comparator c1 = new Comparator<TreeItem<MBookmark>>() {
+            @Override
+            public int compare(TreeItem<MBookmark> o1, TreeItem<MBookmark> o2) {
+                return Boolean.compare(o1.getChildren().isEmpty(), o2.getChildren().isEmpty());
+            }
+        };
+
+        Comparator c2 = new Comparator<TreeItem<MBookmark>>() {
+            @Override
+            public int compare(TreeItem<MBookmark> o1, TreeItem<MBookmark> o2) {
+                return o1.getValue().getName().compareTo(o2.getValue().getName());
+            }
+        };
+
+        treeItem.getChildren().sort(c1.thenComparing(c2));
 
         for (TreeItem<MBookmark> childTreeItem : treeItem.getChildren()) {
             postPopulate(childTreeItem, level + "-");
         }
-
-        //TODO Some sorting...?
     }
 
     class BookmarkTreeCell extends TreeCell<MBookmark> {
