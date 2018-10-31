@@ -82,7 +82,6 @@ public class BookmarkView extends BorderPane {
     private void addListeners() {
         mFilterTextField.textProperty().addListener((observable, oldValue, newValue) -> {
             mManager.dbLoad(newValue);
-
         });
 
         mManager.getItems().addListener((ListChangeListener.Change<? extends MBookmark> c) -> {

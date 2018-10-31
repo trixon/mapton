@@ -15,55 +15,77 @@
  */
 package org.mapton.core.ui;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.TreeMap;
+import javafx.scene.control.TextField;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
+import javafx.scene.layout.BorderPane;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.action.Action;
+import org.controlsfx.control.textfield.TextFields;
 import org.mapton.api.MTool;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
+import se.trixon.almond.util.Dict;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class ToolboxView extends TreeView<Action> {
+public class ToolboxView extends BorderPane {
 
+    private TextField mFilterTextField;
     private final Map<String, TreeItem<Action>> mToolParents = new TreeMap<>();
+    private final ArrayList<MTool> mTools = new ArrayList<>();
+    private final TreeView<Action> mTreeView = new TreeView<>();
 
     public ToolboxView() {
         createUI();
+        addListeners();
+
+        initTools();
+        populate();
     }
 
-    private void createUI() {
-        setShowRoot(false);
-        setCellFactory((TreeView<Action> param) -> new ActionTreeCell());
+    private void addListeners() {
+        mFilterTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+            populate();
+        });
 
-        setOnMouseClicked((event) -> {
-            final TreeItem<Action> selectedItem = getSelectionModel().getSelectedItem();
+        mTreeView.setOnMouseClicked((event) -> {
+            final TreeItem<Action> selectedItem = mTreeView.getSelectionModel().getSelectedItem();
             if (selectedItem != null && event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
                 selectedItem.getValue().handle(null);
             }
         });
 
-        setOnKeyPressed((event) -> {
-            final TreeItem<Action> selectedItem = getSelectionModel().getSelectedItem();
+        mTreeView.setOnKeyPressed((event) -> {
+            final TreeItem<Action> selectedItem = mTreeView.getSelectionModel().getSelectedItem();
             if (selectedItem != null && event.getCode() == KeyCode.ENTER) {
-                getSelectionModel().getSelectedItem().getValue().handle(null);
+                mTreeView.getSelectionModel().getSelectedItem().getValue().handle(null);
             }
         });
 
         Lookup.getDefault().lookupResult(MTool.class).addLookupListener((LookupEvent ev) -> {
-            populate();
+            initTools();
         });
+    }
 
-        populate();
+    private void createUI() {
+        mFilterTextField = TextFields.createClearableTextField();
+        mFilterTextField.setPromptText(Dict.TOOLS_SEARCH.toString());
+
+        mTreeView.setShowRoot(false);
+        mTreeView.setCellFactory((TreeView<Action> param) -> new ActionTreeCell());
+
+        setTop(mFilterTextField);
+        setCenter(mTreeView);
     }
 
     private TreeItem<Action> getParent(TreeItem<Action> parent, String category) {
@@ -101,20 +123,31 @@ public class ToolboxView extends TreeView<Action> {
         return parent;
     }
 
+    private void initTools() {
+        mTools.clear();
+        Lookup.getDefault().lookupAll(MTool.class).forEach((tool) -> {
+            mTools.add(tool);
+        });
+    }
+
     private void populate() {
         mToolParents.clear();
         Action rootMark = new Action("");
         TreeItem<Action> root = new TreeItem<>(rootMark);
-        Lookup.getDefault().lookupAll(MTool.class).forEach((tool) -> {
-            TreeItem<Action> actionTreeItem = new TreeItem(tool.getAction());
-            String category = StringUtils.defaultString(tool.getParent());
 
-            TreeItem parent = mToolParents.computeIfAbsent(category, k -> getParent(root, category));
-            parent.getChildren().add(actionTreeItem);
-        });
+        for (MTool tool : mTools) {
+            String s = tool.getParent() + "/" + tool.getAction().getText();
+            if (StringUtils.containsIgnoreCase(s, mFilterTextField.getText())) {
+                TreeItem<Action> actionTreeItem = new TreeItem(tool.getAction());
+                String category = StringUtils.defaultString(tool.getParent());
+
+                TreeItem parent = mToolParents.computeIfAbsent(category, k -> getParent(root, category));
+                parent.getChildren().add(actionTreeItem);
+            }
+        }
 
         postPopulate(root, "");
-        setRoot(root);
+        mTreeView.setRoot(root);
     }
 
     private void postPopulate(TreeItem<Action> treeItem, String level) {
