@@ -1,3 +1,3 @@
 Manifest-Version: 1.0
-OpenIDE-Module-Localizing-Bundle: se/trixon/mapton/ww/eos/Bundle.properties
+OpenIDE-Module-Localizing-Bundle: org/mapton/ww/eos/Bundle.properties
 
