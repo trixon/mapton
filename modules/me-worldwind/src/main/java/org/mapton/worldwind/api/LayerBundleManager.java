@@ -40,6 +40,10 @@ public class LayerBundleManager {
         getMap().addCustomLayer(layer);
     }
 
+    public void redraw() {
+        getMap().redraw();
+    }
+
     public void remove(Layer layer) {
         getMap().removeCustomLayer(layer);
     }
