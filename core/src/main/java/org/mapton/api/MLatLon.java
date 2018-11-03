@@ -15,6 +15,8 @@
  */
 package org.mapton.api;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Based on com.lynden.gmapsfx.javascript.object.LatLong
  *
@@ -24,7 +26,9 @@ package org.mapton.api;
 public class MLatLon {
 
     public static final double EARTH_RADIUS_METERS = 6378137.0; // meters
+    @SerializedName("latitude")
     private final double mLatitude;
+    @SerializedName("longitude")
     private final double mLongitude;
 
     public MLatLon(double latitude, double longitude) {
@@ -33,8 +37,7 @@ public class MLatLon {
     }
 
     /**
-     * From v3_epoly.js, calculates the distance between this LatLong point and
-     * another.
+     * From v3_epoly.js, calculates the distance between this LatLong point and another.
      *
      * @param end The end point to calculate the distance to.
      * @return The distance, in metres, to the end point.
@@ -55,8 +58,7 @@ public class MLatLon {
     }
 
     /**
-     * Calculates the bearing, in degrees, of the end LatLong point from this
-     * LatLong point.
+     * Calculates the bearing, in degrees, of the end LatLong point from this LatLong point.
      *
      * @param end The point that the bearing is calculated for.
      * @return The bearing, in degrees, of the supplied point from this point.
@@ -86,9 +88,7 @@ public class MLatLon {
     }
 
     /**
-     * Calculates the LatLong position of the end point of a line the specified
-     * distance from this LatLong, along the provided bearing, where North is 0,
-     * East is 90 etc.
+     * Calculates the LatLong position of the end point of a line the specified distance from this LatLong, along the provided bearing, where North is 0, East is 90 etc.
      *
      * @param bearing The bearing, in degrees, with North as 0, East as 90 etc.
      * @param distance The distance in metres.

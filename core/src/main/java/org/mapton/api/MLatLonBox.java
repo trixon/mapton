@@ -15,13 +15,17 @@
  */
 package org.mapton.api;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  *
  * @author Patrik Karlström
  */
 public class MLatLonBox {
 
+    @SerializedName("northEast")
     private MLatLon mNorthEast;
+    @SerializedName("southWest")
     private MLatLon mSouthWest;
 
     public MLatLonBox() {

@@ -219,7 +219,7 @@ public class AppToolBar extends ToolBar {
 
         //Help
         mSysHelpAction = new Action(Dict.HELP.toString(), (ActionEvent event) -> {
-            SystemHelper.desktopBrowse("https://trixon.se/projects/mapton/documentation/");
+            SystemHelper.desktopBrowse("https://mapton.org/help/");
         });
         mSysHelpAction.setAccelerator(KeyCombination.keyCombination("F1"));
     }

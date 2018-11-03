@@ -24,6 +24,7 @@
                         <publicPackage>com.github.goober.*</publicPackage>
                         <publicPackage>org.controlsfx.*</publicPackage>
                         <publicPackage>javax.xml.*</publicPackage>
+                        <publicPackage>com.google.gson.*</publicPackage>
                     </publicPackages>
                 </configuration>
             </plugin>

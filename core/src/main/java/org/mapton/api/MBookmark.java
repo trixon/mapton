@@ -31,6 +31,8 @@ public class MBookmark {
     @SerializedName("display_marker")
     private Boolean mDisplayMarker;
     private transient Long mId;
+    @SerializedName("lanLonBox")
+    private MLatLonBox mLatLonBox;
     @SerializedName("latitude")
     private Double mLatitude;
     @SerializedName("longitude")
@@ -58,6 +60,10 @@ public class MBookmark {
 
     public Long getId() {
         return mId;
+    }
+
+    public MLatLonBox getLatLonBox() {
+        return mLatLonBox;
     }
 
     public Double getLatitude() {
@@ -102,6 +108,10 @@ public class MBookmark {
 
     public void setId(Long id) {
         mId = id;
+    }
+
+    public void setLatLonBox(MLatLonBox latLonBox) {
+        mLatLonBox = latLonBox;
     }
 
     public void setLatitude(Double latitude) {
