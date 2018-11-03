@@ -96,6 +96,7 @@
         <module>modules/me-jxmapviewer2</module>
         <module>modules/ww-eox</module>
         <module>demo</module>
+        <module>modules/se-geonames</module>
     </modules>
 
     <properties>
