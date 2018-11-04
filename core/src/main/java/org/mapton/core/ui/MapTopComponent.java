@@ -15,13 +15,12 @@
  */
 package org.mapton.core.ui;
 
-import fr.dudie.nominatim.model.Address;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.HierarchyEvent;
 import java.io.File;
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.ResourceBundle;
@@ -42,10 +41,16 @@ import javax.swing.JLayeredPane;
 import javax.swing.SwingUtilities;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
+import org.mapton.api.MBookmarkManager;
+import org.mapton.api.MContextMenuItem;
+import org.mapton.api.MDict;
+import org.mapton.api.MEngine;
+import org.mapton.api.MOptions;
+import org.mapton.api.MTopComponent;
+import org.mapton.api.MWhatsHereEngine;
+import org.mapton.api.Mapton;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -61,14 +66,6 @@ import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.dialogs.SimpleDialog;
-import org.mapton.api.MBookmarkManager;
-import org.mapton.api.MContextMenuItem;
-import org.mapton.api.MDict;
-import org.mapton.api.MEngine;
-import org.mapton.api.MNominatim;
-import org.mapton.api.MOptions;
-import org.mapton.api.MTopComponent;
-import org.mapton.api.Mapton;
 
 /**
  * Top component which displays something.
@@ -104,7 +101,6 @@ public final class MapTopComponent extends MTopComponent {
     private File mDestination;
     private MEngine mEngine;
     private final Mapton mMapton = Mapton.getInstance();
-    private final MNominatim mNominatim = MNominatim.getInstance();
     private BorderPane mRoot;
 
     public MapTopComponent() {
@@ -387,21 +383,24 @@ public final class MapTopComponent extends MTopComponent {
         });
 
         new Thread(() -> {
-            try {
-                int zoom = (int) (5 + mEngine.getZoom() * 18);
-                Address address = mNominatim.getAddress(mEngine.getLatLonMouse(), zoom);
-                NbLog.v(Mapton.LOG_TAG, ToStringBuilder.reflectionToString(address, ToStringStyle.MULTI_LINE_STYLE));
-                String s = address.getDisplayName();
+            ArrayList< MWhatsHereEngine> engines = new ArrayList<>(Lookup.getDefault().lookupAll(MWhatsHereEngine.class));
 
-                Mapton.execute(() -> {
-                    mEngine.onWhatsHere(s);
-                });
+            if (!engines.isEmpty()) {
+                MWhatsHereEngine whatsHereEngine = engines.get(0);
+                int zoom = (int) (5 + mEngine.getZoom() * 18);
+                String s = whatsHereEngine.getResult(mEngine.getLatLonMouse(), zoom);
+                if (StringUtils.isNotBlank(s)) {
+                    NbLog.i(MapTopComponent.class, "WhatsHere: " + s);
+                    Mapton.execute(() -> {
+                        mEngine.onWhatsHere(s);
+                    });
+                }
 
                 Platform.runLater(() -> {
                     getStatusbar().getProvider().setProgress(1);
                 });
-            } catch (IOException ex) {
-                Exceptions.printStackTrace(ex);
+            } else {
+                //TODO err inf dialog
             }
         }).start();
     }

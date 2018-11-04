@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.api;
+package org.mapton.nominatim;
 
 import fr.dudie.nominatim.client.JsonNominatimClient;
 import fr.dudie.nominatim.client.NominatimOptions;
@@ -33,26 +33,27 @@ import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.SingleClientConnManager;
+import org.mapton.api.MLatLon;
 import org.openide.util.Exceptions;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class MNominatim {
+public class Nominatim {
 
-    private static final Logger LOGGER = Logger.getLogger(MNominatim.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(Nominatim.class.getName());
     private JsonNominatimClient mClient;
 
-    public static MNominatim getInstance() {
+    public static Nominatim getInstance() {
         return Holder.INSTANCE;
     }
 
     public static void main(String[] args) throws IOException {
-        MNominatim nominatim = getInstance();
+        Nominatim nominatim = getInstance();
     }
 
-    private MNominatim() {
+    private Nominatim() {
         InputStream inputStream = null;
 
         try {
@@ -98,6 +99,6 @@ public class MNominatim {
 
     private static class Holder {
 
-        private static final MNominatim INSTANCE = new MNominatim();
+        private static final Nominatim INSTANCE = new Nominatim();
     }
 }

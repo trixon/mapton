@@ -15,11 +15,7 @@
  */
 package org.mapton.core.ui;
 
-import fr.dudie.nominatim.model.Address;
-import fr.dudie.nominatim.model.BoundingBox;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -43,14 +39,11 @@ import org.mapton.api.MBookmark;
 import org.mapton.api.MCooTrans;
 import org.mapton.api.MDecDegDMS;
 import org.mapton.api.MLatLon;
-import org.mapton.api.MLatLonBox;
-import org.mapton.api.MNominatim;
 import org.mapton.api.MOptions;
 import org.mapton.api.MSearchEngine;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.mapton.core.Wgs84DMS;
-import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
 import se.trixon.almond.nbp.NbLog;
@@ -63,14 +56,14 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
  */
 public class SearchView {
 
+    private static final String PROVIDER_PREFIX = "> > > ";
+
     private final ResourceBundle mBundle = NbBundle.getBundle(SearchView.class);
     private final ObservableList<MBookmark> mItems = FXCollections.observableArrayList();
-    private final MNominatim mNominatim = MNominatim.getInstance();
     private final MOptions mOptions = MOptions.getInstance();
     private PopOver mResultPopOver;
     private final ListView<MBookmark> mResultView = new ListView();
     private CustomTextField mSearchTextField;
-    private static final String PROVIDER_PREFIX = "> > > ";
 
     public SearchView() {
         createUI();
@@ -217,61 +210,31 @@ public class SearchView {
 
     private void parseString(String searchString) {
         new Thread(() -> {
-            try {
-                mItems.clear();
-                final List<Address> addresses = mNominatim.search(searchString);
+            mItems.clear();
 
+            int providerCount = 0;
+            ArrayList< MSearchEngine> searchers = new ArrayList<>(Lookup.getDefault().lookupAll(MSearchEngine.class));
+            searchers.sort((MSearchEngine o1, MSearchEngine o2) -> o1.getName().compareTo(o2.getName()));
+
+            for (MSearchEngine searcher : searchers) {
+                ArrayList<MBookmark> bookmarks = searcher.getResults(searchString);
+                if (!bookmarks.isEmpty()) {
+                    providerCount++;
+                    MBookmark b = new MBookmark();
+                    b.setName(PROVIDER_PREFIX + searcher.getName());
+                    b.setId(new Long(bookmarks.size()));
+                    mItems.add(b);
+                    mItems.addAll(bookmarks);
+                }
+            }
+
+            int hitCount = mItems.size() - providerCount;
+
+            if (hitCount > 0) {
                 Platform.runLater(() -> {
-                    int providerCount = 0;
                     mResultPopOver.show(mSearchTextField);
-                    ArrayList< MSearchEngine> searchers = new ArrayList<>(Lookup.getDefault().lookupAll(MSearchEngine.class));
-                    searchers.sort((MSearchEngine o1, MSearchEngine o2) -> o1.getName().compareTo(o2.getName()));
-
-                    for (MSearchEngine searcher : searchers) {
-                        ArrayList<MBookmark> bookmarks = searcher.getResults(searchString);
-                        if (!bookmarks.isEmpty()) {
-                            providerCount++;
-                            MBookmark b = new MBookmark();
-                            b.setName(PROVIDER_PREFIX + searcher.getName());
-                            b.setId(new Long(bookmarks.size()));
-                            mItems.add(b);
-
-                            for (MBookmark bookmark : bookmarks) {
-                                mItems.add(bookmark);
-                            }
-                        }
-                    }
-
-                    boolean addHeader = true;
-                    for (Address address : addresses) {
-                        if (addHeader) {
-                            providerCount++;
-                            MBookmark b = new MBookmark();
-                            b.setName(PROVIDER_PREFIX + "Nominatim");
-                            b.setId(new Long(addresses.size()));
-                            mItems.add(b);
-                            addHeader = false;
-                        }
-
-                        MBookmark bookmark = new MBookmark();
-                        bookmark.setName(address.getDisplayName());
-                        bookmark.setLatitude(address.getLatitude());
-                        bookmark.setLongitude(address.getLongitude());
-                        BoundingBox bb = address.getBoundingBox();
-                        MLatLonBox latLonBox = new MLatLonBox(
-                                new MLatLon(bb.getSouth(), bb.getWest()),
-                                new MLatLon(bb.getNorth(), bb.getEast())
-                        );
-                        bookmark.setLatLonBox(latLonBox);
-
-                        mItems.add(bookmark);
-                    }
-
-                    mResultPopOver.setTitle(String.format("%d %s", mItems.size() - providerCount, Dict.HITS.toString()));
+                    mResultPopOver.setTitle(String.format("%d %s", hitCount, Dict.HITS.toString()));
                 });
-            } catch (IOException ex) {
-                mResultPopOver.hide();
-                Exceptions.printStackTrace(ex);
             }
         }).start();
     }

@@ -154,11 +154,6 @@
             <version>1.1</version>
         </dependency>
         <dependency>
-            <groupId>fr.dudie</groupId>
-            <artifactId>nominatim-api</artifactId>
-            <version>3.3</version>
-        </dependency>
-        <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-csv</artifactId>
             <version>1.6</version>
