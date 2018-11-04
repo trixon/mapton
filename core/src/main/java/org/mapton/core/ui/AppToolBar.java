@@ -1,4 +1,4 @@
-/*
+/* 
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,6 +25,7 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.control.ButtonBase;
+import javafx.scene.control.MenuButton;
 import javafx.scene.control.ToolBar;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -91,6 +92,15 @@ public class AppToolBar extends ToolBar {
         initActionsSwing();
         init();
         initListeners();
+    }
+
+    public void displayMenu() {
+        Platform.runLater(() -> {
+            Node node = getItems().get(getItems().size() - 1);
+            if (node instanceof MenuButton) {
+                ((MenuButton) node).show();
+            }
+        });
     }
 
     public void toogleBookmarkPopOver() {
