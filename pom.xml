@@ -90,13 +90,13 @@
         <module>branding</module>
         <module>application</module>
         <module>core</module>
-        <module>modules/swetrans</module>
         <module>modules/me-gmapsfx</module>
         <module>modules/me-worldwind</module>
         <module>modules/me-jxmapviewer2</module>
         <module>modules/ww-eox</module>
         <module>modules/se-geonames</module>
         <module>modules/se-nominatim</module>
+        <module>modules/te-swetrans</module>
         <module>demo</module>
     </modules>
 

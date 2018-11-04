@@ -8,6 +8,7 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <artifactId>ww-eox</artifactId>
+    <description>WMS layers for WorldWind from EOX, https://eox.at/</description>
     <packaging>nbm</packaging>
     <build>
         <plugins>

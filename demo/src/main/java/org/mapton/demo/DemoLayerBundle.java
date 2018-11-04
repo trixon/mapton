@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,14 +30,13 @@ import gov.nasa.worldwind.render.Pyramid;
 import gov.nasa.worldwind.render.ShapeAttributes;
 import gov.nasa.worldwind.render.Wedge;
 import java.util.ArrayList;
-import org.openide.util.lookup.ServiceProvider;
 import org.mapton.worldwind.api.LayerBundle;
 
 /**
  *
  * @author Patrik Karlström
  */
-@ServiceProvider(service = LayerBundle.class)
+//@org.openide.util.lookup.ServiceProvider(service = LayerBundle.class)
 public class DemoLayerBundle extends LayerBundle {
 
     private final RenderableLayer mRigidShapesLayer = new RenderableLayer();

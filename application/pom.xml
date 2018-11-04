@@ -113,17 +113,12 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>swetrans</artifactId>
+            <artifactId>te-swetrans</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>ww-eox</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>demo</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -136,6 +131,11 @@
             <artifactId>se-nominatim</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <!--        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>demo</artifactId>
+            <version>${project.version}</version>
+        </dependency>-->
 
         <!-- Trixon -->
         <dependency>

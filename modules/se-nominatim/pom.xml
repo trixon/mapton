@@ -9,6 +9,7 @@
     </parent>
     <artifactId>se-nominatim</artifactId>
     <name>se-nominatim</name>
+    <description>An on line search engine backed by Nominatim&lt;br/&gt;https://nominatim.openstreetmap.org/ &lt;br/&gt;The data is licensed under ODbL&lt;br/&gt; https://www.openstreetmap.org/copyright</description>
     <packaging>nbm</packaging>
     <build>
         <plugins>

@@ -9,6 +9,7 @@
     </parent>
     <artifactId>me-jxmapviewer2</artifactId>
     <name>me-jxmapviewer2</name>
+    <description>A map engine based on jxmapviewer2.&lt;br/&gt;https://github.com/msteiger/jxmapviewer2</description>
     <packaging>nbm</packaging>
     <build>
         <plugins>

@@ -9,6 +9,7 @@
     </parent>
     <artifactId>me-gmapsfx</artifactId>
     <name>me-gmapsfx</name>
+    <description>A map engine based on GMapsFX.&lt;br/&gt;https://rterp.github.io/GMapsFX/</description>
     <packaging>nbm</packaging>
     <build>
         <plugins>

@@ -9,6 +9,7 @@
     </parent>
     <artifactId>se-geonames</artifactId>
     <name>se-geonames</name>
+    <description>An off line search engine based on data from GeoNames.&lt;br/&gt;https://www.geonames.org/ &lt;br/&gt;The data is licensed under CC BY 4.0&lt;br/&gt; https://creativecommons.org/licenses/by/4.0/</description>
     <packaging>nbm</packaging>
     <build>
         <plugins>

@@ -9,6 +9,7 @@
     </parent>
     <artifactId>me-worldwind</artifactId>
     <name>me-worldwind</name>
+    <description>A map engine based on WorldWind.&lt;br/&gt;https://worldwind.arc.nasa.gov/</description>
     <packaging>nbm</packaging>
     <build>
         <plugins>
