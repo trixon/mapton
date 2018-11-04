@@ -90,7 +90,7 @@ public class SearchView {
         mSearchTextField = (CustomTextField) TextFields.createClearableTextField();
         mSearchTextField.setLeft(MaterialIcon._Action.SEARCH.getImageView(getIconSizeToolBarInt() - 4));
         mSearchTextField.setPromptText(mBundle.getString("search_prompt"));
-        mSearchTextField.setPrefColumnCount(30);
+        mSearchTextField.setPrefColumnCount(20);
         mSearchTextField.setText("");
 
         mResultPopOver = new PopOver();
@@ -104,7 +104,7 @@ public class SearchView {
 
         mResultView.prefWidthProperty().bind(mSearchTextField.widthProperty());
         mResultView.setItems(mItems);
-        mResultView.setCellFactory((ListView<MBookmark> param) -> new GeocodingResultListCell());
+        mResultView.setCellFactory((ListView<MBookmark> param) -> new SearchResultListCell());
     }
 
     private void initListeners() {
@@ -117,9 +117,9 @@ public class SearchView {
 
         mResultView.setOnMousePressed((MouseEvent event) -> {
             if (event.isPrimaryButtonDown()) {
-                mResultPopOver.hide();
                 MBookmark bookmark = mResultView.getSelectionModel().getSelectedItem();
-                if (bookmark != null) {
+                if (bookmark != null && ObjectUtils.allNotNull(bookmark.getLatitude(), bookmark.getLongitude())) {
+                    mResultPopOver.hide();
                     mSearchTextField.setText(bookmark.getName());
                     if (bookmark.getLatLonBox() != null) {
                         Mapton.getEngine().fitToBounds(bookmark.getLatLonBox());
@@ -233,6 +233,7 @@ public class SearchView {
                             providerCount++;
                             MBookmark b = new MBookmark();
                             b.setName(PROVIDER_PREFIX + searcher.getName());
+                            b.setId(new Long(bookmarks.size()));
                             mItems.add(b);
 
                             for (MBookmark bookmark : bookmarks) {
@@ -247,6 +248,7 @@ public class SearchView {
                             providerCount++;
                             MBookmark b = new MBookmark();
                             b.setName(PROVIDER_PREFIX + "Nominatim");
+                            b.setId(new Long(addresses.size()));
                             mItems.add(b);
                             addHeader = false;
                         }
@@ -274,14 +276,14 @@ public class SearchView {
         }).start();
     }
 
-    class GeocodingResultListCell extends ListCell<MBookmark> {
+    class SearchResultListCell extends ListCell<MBookmark> {
 
         private final VBox mBox = new VBox();
         private final Font mDefaultFont = Font.getDefault();
         private final Font mHeaderFont = new Font(mDefaultFont.getSize() * 1.5);
         private final Label mLabel = new Label();
 
-        public GeocodingResultListCell() {
+        public SearchResultListCell() {
             createUI();
         }
 
@@ -301,7 +303,7 @@ public class SearchView {
             String name = bookmark.getName();
             if (StringUtils.startsWith(name, PROVIDER_PREFIX)) {
                 mLabel.setFont(mHeaderFont);
-                name = StringUtils.removeStart(name, PROVIDER_PREFIX);
+                name = String.format("%s (%d)", StringUtils.removeStart(name, PROVIDER_PREFIX), bookmark.getId());
             } else {
                 mLabel.setFont(mDefaultFont);
 
