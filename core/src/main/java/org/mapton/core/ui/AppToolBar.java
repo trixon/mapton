@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,6 +26,7 @@ import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.MenuButton;
+import javafx.scene.control.TextField;
 import javafx.scene.control.ToolBar;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -72,6 +73,7 @@ public class AppToolBar extends ToolBar {
     private PopOver mLayerPopOver;
     private final MOptions mOptions = MOptions.getInstance();
     private final HashSet<PopOver> mPopOvers = new HashSet<>();
+    private SearchView mSearchView;
     private Action mStyleAction;
     private PopOver mStylePopOver;
     private FxActionSwing mSysAboutAction;
@@ -92,6 +94,13 @@ public class AppToolBar extends ToolBar {
         initActionsSwing();
         init();
         initListeners();
+    }
+
+    public void activateSearch() {
+        Platform.runLater(() -> {
+            TextField tf = (TextField) mSearchView.getPresenter();
+            tf.requestFocus();
+        });
     }
 
     public void displayMenu() {
@@ -175,7 +184,8 @@ public class AppToolBar extends ToolBar {
                 FxHelper.undecorateButton(buttonBase);
             });
 
-            getItems().add(5, new SearchView().getPresenter());
+            mSearchView = new SearchView();
+            getItems().add(5, mSearchView.getPresenter());
         });
     }
 
