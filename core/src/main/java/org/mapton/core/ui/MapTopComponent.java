@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -290,7 +290,10 @@ public final class MapTopComponent extends MTopComponent {
             mContextOpenMenu.getItems().clear();
             mContextExtrasMenu.getItems().clear();
 
-            for (MContextMenuItem provider : Lookup.getDefault().lookupAll(MContextMenuItem.class)) {
+            ArrayList<MContextMenuItem> contextMenues = new ArrayList<>(Lookup.getDefault().lookupAll(MContextMenuItem.class));
+            contextMenues.sort((MContextMenuItem o1, MContextMenuItem o2) -> o1.getName().compareTo(o2.getName()));
+
+            for (MContextMenuItem provider : contextMenues) {
                 MenuItem item = new MenuItem(provider.getName());
                 switch (provider.getType()) {
                     case COPY:

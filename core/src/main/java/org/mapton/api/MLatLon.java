@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -39,17 +39,17 @@ public class MLatLon {
     /**
      * From v3_epoly.js, calculates the distance between this LatLong point and another.
      *
-     * @param end The end point to calculate the distance to.
+     * @param anotherLatLon The end point to calculate the distance to.
      * @return The distance, in metres, to the end point.
      */
-    public double distanceFrom(MLatLon end) {
+    public double distance(MLatLon anotherLatLon) {
 
-        double dLat = (end.getLatitude() - getLatitude()) * Math.PI / 180;
-        double dLon = (end.getLongitude() - getLongitude()) * Math.PI / 180;
+        double dLat = (anotherLatLon.getLatitude() - getLatitude()) * Math.PI / 180;
+        double dLon = (anotherLatLon.getLongitude() - getLongitude()) * Math.PI / 180;
 
         double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
                 + Math.cos(getLatitude() * Math.PI / 180)
-                * Math.cos(end.getLatitude() * Math.PI / 180)
+                * Math.cos(anotherLatLon.getLatitude() * Math.PI / 180)
                 * Math.sin(dLon / 2) * Math.sin(dLon / 2);
 
         double c = 2.0 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));

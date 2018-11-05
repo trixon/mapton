@@ -34,13 +34,32 @@ import se.trixon.almond.util.SystemHelper;
 @ServiceProvider(service = MSearchEngine.class)
 public class GeonamesSearchEngine implements MSearchEngine {
 
-    private final TreeMap<String, String> mCountries = new TreeMap<>();
+    private static final TreeMap<String, String> sCountries = new TreeMap<>();
+    private static ArrayList<Geoname> sGeonames;
 
-    private ArrayList<Geoname> mGeonames;
-    private final Gson mGson = new GsonBuilder().create();
+    static {
+        init();
+    }
+
+    private static void init() {
+        Gson gson = new GsonBuilder().create();
+        String json;
+
+        json = SystemHelper.getResourceAsString(GeonamesSearchEngine.class, "geonames.json");
+        sGeonames = gson.fromJson(json, new TypeToken<ArrayList<Geoname>>() {
+        }.getType());
+
+        sGeonames.sort((Geoname o1, Geoname o2) -> o1.getName().compareTo(o2.getName()));
+        json = SystemHelper.getResourceAsString(GeonamesSearchEngine.class, "country_codes.json");
+        ArrayList<Country> countries = gson.fromJson(json, new TypeToken<ArrayList<Country>>() {
+        }.getType());
+
+        countries.forEach((country) -> {
+            sCountries.put(country.mCode, country.mName);
+        });
+    }
 
     public GeonamesSearchEngine() {
-        init();
     }
 
     @Override
@@ -51,10 +70,10 @@ public class GeonamesSearchEngine implements MSearchEngine {
     @Override
     public ArrayList<MBookmark> getResults(String searchString) {
         ArrayList<MBookmark> bookmarks = new ArrayList<>();
-
-        mGeonames.stream()
-                .filter((g) -> (StringUtils.containsIgnoreCase(String.join("/", g.getAsciiName(), g.getName(), g.getAlternateNames(), mCountries.getOrDefault(g.getCountryCode(), "")), searchString)))
-                .limit(20)
+        int limit = StringUtils.isBlank(searchString) ? Integer.MAX_VALUE : 20;
+        sGeonames.stream()
+                .filter((g) -> (StringUtils.containsIgnoreCase(String.join("/", g.getAsciiName(), g.getName(), g.getAlternateNames(), sCountries.getOrDefault(g.getCountryCode(), "")), searchString)))
+                .limit(limit)
                 .forEachOrdered((g) -> {
                     MBookmark b = new MBookmark();
                     b.setName(g.getName());
@@ -65,23 +84,6 @@ public class GeonamesSearchEngine implements MSearchEngine {
                 });
 
         return bookmarks;
-    }
-
-    private void init() {
-        String json;
-
-        json = SystemHelper.getResourceAsString(GeonamesSearchEngine.class, "geonames.json");
-        mGeonames = mGson.fromJson(json, new TypeToken<ArrayList<Geoname>>() {
-        }.getType());
-
-        mGeonames.sort((Geoname o1, Geoname o2) -> o1.getName().compareTo(o2.getName()));
-        json = SystemHelper.getResourceAsString(GeonamesSearchEngine.class, "country_codes.json");
-        ArrayList<Country> countries = mGson.fromJson(json, new TypeToken<ArrayList<Country>>() {
-        }.getType());
-
-        countries.forEach((country) -> {
-            mCountries.put(country.mCode, country.mName);
-        });
     }
 
     private class Country {
