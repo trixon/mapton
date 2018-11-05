@@ -62,7 +62,7 @@ public class Nominatim {
             ClientConnectionManager connexionManager = new SingleClientConnManager(null, registry);
             HttpClient httpClient = new DefaultHttpClient(connexionManager, null);
 
-            inputStream = new URL("https://trixon.se/files/nominatim-client.properties").openStream();
+            inputStream = new URL("https://mapton.org/files/nominatim-client.properties").openStream();
             Properties properties = new Properties();
             properties.load(inputStream);
             String baseUrl = properties.getProperty("nominatim.server.url");
