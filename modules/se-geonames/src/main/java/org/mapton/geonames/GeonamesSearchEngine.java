@@ -54,6 +54,7 @@ public class GeonamesSearchEngine implements MSearchEngine {
 
         mGeonames.stream()
                 .filter((g) -> (StringUtils.containsIgnoreCase(String.join("/", g.getAsciiName(), g.getName(), g.getAlternateNames(), mCountries.getOrDefault(g.getCountryCode(), "")), searchString)))
+                .limit(20)
                 .forEachOrdered((g) -> {
                     MBookmark b = new MBookmark();
                     b.setName(g.getName());
