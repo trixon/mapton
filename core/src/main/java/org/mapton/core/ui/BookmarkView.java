@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -74,14 +74,14 @@ public class BookmarkView extends BorderPane {
     public BookmarkView() {
         createUI();
 
-        mManager.dbLoad(mFilterTextField.getText());
+        mManager.dbLoad(mFilterTextField.getText(), true);
         populate();
         addListeners();
     }
 
     private void addListeners() {
         mFilterTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-            mManager.dbLoad(newValue);
+            mManager.dbLoad(newValue, true);
         });
 
         mManager.getItems().addListener((ListChangeListener.Change<? extends MBookmark> c) -> {

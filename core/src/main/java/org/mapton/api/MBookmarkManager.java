@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -39,14 +39,14 @@ import javafx.collections.ObservableList;
 import javax.swing.SwingUtilities;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.mapton.core.db.DbBaseManager;
+import org.mapton.core.ui.BookmarkPanel;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 import org.openide.util.Exceptions;
 import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxActionSwing;
-import org.mapton.core.db.DbBaseManager;
-import org.mapton.core.ui.BookmarkPanel;
 
 /**
  *
@@ -148,11 +148,11 @@ public class MBookmarkManager extends DbBaseManager {
         return new Point(imports, errors);
     }
 
-    public void dbLoad() {
-        dbLoad(mStoredFilter);
+    public ArrayList<MBookmark> dbLoad() {
+        return dbLoad(mStoredFilter, true);
     }
 
-    public void dbLoad(String filter) {
+    public ArrayList<MBookmark> dbLoad(String filter, boolean addToList) {
         if (mSelectPreparedStatement == null) {
             mSelectPlaceHolders.init(
                     mCategory,
@@ -181,6 +181,8 @@ public class MBookmarkManager extends DbBaseManager {
             }
         }
 
+        ArrayList<MBookmark> bookmarks = new ArrayList<>();
+
         try {
             mStoredFilter = filter;
             filter = getFilterPattern(filter);
@@ -190,7 +192,6 @@ public class MBookmarkManager extends DbBaseManager {
 
             ResultSet rs = mSelectPreparedStatement.executeQuery();
             rs.beforeFirst();
-            ArrayList<MBookmark> bookmarks = new ArrayList<>();
 
             while (rs.next()) {
                 MBookmark bookmark = new MBookmark();
@@ -207,12 +208,15 @@ public class MBookmarkManager extends DbBaseManager {
 
                 bookmarks.add(bookmark);
             }
-            getItems().setAll(bookmarks);
+            if (addToList) {
+                getItems().setAll(bookmarks);
+            }
         } catch (SQLException ex) {
             Exceptions.printStackTrace(ex);
         }
 
         //debugPrint();
+        return bookmarks;
     }
 
     public void dbTruncate() throws ClassNotFoundException, SQLException {
