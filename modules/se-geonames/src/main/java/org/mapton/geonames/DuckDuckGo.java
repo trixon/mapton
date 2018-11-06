@@ -15,6 +15,8 @@
  */
 package org.mapton.geonames;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import org.mapton.api.MBookmark;
 import org.mapton.api.MContextMenuItem;
 import org.mapton.api.MLatLon;
@@ -59,8 +61,12 @@ public class DuckDuckGo extends MContextMenuItem {
             }
         }
 
-        return String.format("https://duckduckgo.com/?q=%s",
-                nearest.getName()
-        );
+        try {
+            return String.format("https://duckduckgo.com/?q=%s",
+                    URLEncoder.encode(nearest.getName(), "UTF-8")
+            );
+        } catch (UnsupportedEncodingException ex) {
+            return null;
+        }
     }
 }
