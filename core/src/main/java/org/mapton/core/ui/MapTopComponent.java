@@ -78,7 +78,7 @@ import se.trixon.almond.util.fx.dialogs.SimpleDialog;
         preferredID = "MapTopComponent",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
-@TopComponent.Registration(mode = "editor", openAtStartup = true)
+@TopComponent.Registration(mode = "editor", openAtStartup = true, position = Integer.MIN_VALUE)
 @ActionID(category = "Window", id = "org.mapton.core.ui.MapTopComponent")
 @ActionReferences({
     @ActionReference(path = "Shortcuts", name = "D-M")
