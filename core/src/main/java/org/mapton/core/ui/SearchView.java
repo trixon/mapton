@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,18 +17,21 @@ package org.mapton.core.ui;
 
 import java.util.ArrayList;
 import java.util.ResourceBundle;
+import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
+import javafx.util.Duration;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -45,6 +48,7 @@ import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.mapton.core.Wgs84DMS;
 import org.openide.util.Lookup;
+import org.openide.util.LookupEvent;
 import org.openide.util.NbBundle;
 import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.util.Dict;
@@ -56,11 +60,16 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
  */
 public class SearchView {
 
+    private static final Logger LOGGER = Logger.getLogger(SearchView.class.getName());
     private static final String PROVIDER_PREFIX = "> > > ";
-
     private final ResourceBundle mBundle = NbBundle.getBundle(SearchView.class);
+    private final ArrayList<MSearchEngine> mInstantEngines = new ArrayList<>();
+    private int mInstantProviderCount;
+    private final ArrayList<MBookmark> mInstantResults = new ArrayList<>();
     private final ObservableList<MBookmark> mItems = FXCollections.observableArrayList();
     private final MOptions mOptions = MOptions.getInstance();
+    private final ArrayList<MSearchEngine> mRegularEngines = new ArrayList<>();
+    private int mRegularProviderCount;
     private PopOver mResultPopOver;
     private final ListView<MBookmark> mResultView = new ListView();
     private CustomTextField mSearchTextField;
@@ -73,6 +82,8 @@ public class SearchView {
                 NbLog.i(getClass(), "Loading search engine: " + searchEngine.getName());
             });
         }).start();
+
+        populateEngines();
     }
 
     public Node getPresenter() {
@@ -93,7 +104,10 @@ public class SearchView {
         mResultPopOver.setCloseButtonEnabled(false);
         mResultPopOver.setDetachable(false);
         mResultPopOver.setContentNode(mResultView);
-        mResultPopOver.setAnimated(false);
+        mResultPopOver.setAnimated(true);
+        int fadeDuration = 800;
+        mResultPopOver.setFadeInDuration(Duration.millis(fadeDuration));
+        mResultPopOver.setFadeOutDuration(Duration.millis(fadeDuration));
 
         mResultView.prefWidthProperty().bind(mSearchTextField.widthProperty());
         mResultView.setItems(mItems);
@@ -101,13 +115,35 @@ public class SearchView {
     }
 
     private void initListeners() {
-        mSearchTextField.setOnAction((ActionEvent event) -> {
-            final String searchString = mSearchTextField.getText();
-            if (!StringUtils.isBlank(searchString)) {
-                parse(searchString);
+        mSearchTextField.textProperty().addListener((observable, oldValue, searchString) -> {
+            if (StringUtils.isNotBlank(searchString)) {
+                LOGGER.info("mSearchTextField.textProperty().addListener SEARCH");
+                searchInstantly(searchString);
+            } else {
+                mResultPopOver.hide();
             }
         });
 
+        mSearchTextField.setOnKeyPressed((KeyEvent keyEvent) -> {
+            if (keyEvent.getCode().equals(KeyCode.ENTER)) {
+                String searchString = mSearchTextField.getText();
+                if (StringUtils.isNotBlank(searchString)) {
+                    LOGGER.info("mSearchTextField.setOnKeyPressed ENTER SEARCH");
+                    searchInstantly(searchString);
+                    parse(searchString);
+                }
+            }
+        });
+
+//        mSearchTextField.setOnAction((event) -> {
+//            String searchString = mSearchTextField.getText();
+//            if (StringUtils.isNotBlank(searchString)) {
+//                LOGGER.info("mSearchTextField.setOnAction SEARCH");
+//                parse(searchString);
+////                searchInstantly(searchString);
+////                searchRegular(searchString);
+//            }
+//        });
         mResultView.setOnMousePressed((MouseEvent event) -> {
             if (event.isPrimaryButtonDown()) {
                 MBookmark bookmark = mResultView.getSelectionModel().getSelectedItem();
@@ -124,6 +160,10 @@ public class SearchView {
                 }
             }
         });
+
+        Lookup.getDefault().lookupResult(MSearchEngine.class).addLookupListener((LookupEvent ev) -> {
+            populateEngines();
+        });
     }
 
     private void panTo(MLatLon latLon) {
@@ -135,7 +175,7 @@ public class SearchView {
         if (latLong == null) {
             latLong = parseDegMinSec(searchString);
             if (latLong == null) {
-                parseString(searchString);
+                searchRegular(searchString);
             }
         }
 
@@ -208,35 +248,72 @@ public class SearchView {
         return latLong;
     }
 
-    private void parseString(String searchString) {
+    private void populateEngines() {
+        mInstantEngines.clear();
+        mRegularEngines.clear();
+
+        ArrayList<MSearchEngine> engines = new ArrayList<>(Lookup.getDefault().lookupAll(MSearchEngine.class));
+        engines.sort((MSearchEngine o1, MSearchEngine o2) -> o1.getName().compareTo(o2.getName()));
+
+        engines.forEach((engine) -> {
+            if (engine.isInstantSearch()) {
+                mInstantEngines.add(engine);
+            } else {
+                mRegularEngines.add(engine);
+            }
+        });
+    }
+
+    private synchronized void search(String searchString, ArrayList<MSearchEngine> engines) {
         new Thread(() -> {
-            mItems.clear();
-
-            int providerCount = 0;
-            ArrayList< MSearchEngine> searchers = new ArrayList<>(Lookup.getDefault().lookupAll(MSearchEngine.class));
-            searchers.sort((MSearchEngine o1, MSearchEngine o2) -> o1.getName().compareTo(o2.getName()));
-
-            for (MSearchEngine searcher : searchers) {
-                ArrayList<MBookmark> bookmarks = searcher.getResults(searchString);
+            for (MSearchEngine engine : engines) {
+                ArrayList<MBookmark> bookmarks = engine.getResults(searchString);
                 if (!bookmarks.isEmpty()) {
-                    providerCount++;
                     MBookmark b = new MBookmark();
-                    b.setName(PROVIDER_PREFIX + searcher.getName());
+                    b.setName(PROVIDER_PREFIX + engine.getName());
                     b.setId(new Long(bookmarks.size()));
-                    mItems.add(b);
-                    mItems.addAll(bookmarks);
+
+                    if (engine == mInstantEngines) {
+                        mInstantProviderCount++;
+                        mInstantResults.add(b);
+                        mInstantResults.addAll(bookmarks);
+                    } else {
+                        mRegularProviderCount++;
+                        mItems.add(b);
+                        mItems.addAll(bookmarks);
+                    }
                 }
             }
 
-            int hitCount = mItems.size() - providerCount;
+            mItems.addAll(mInstantResults);
 
-            if (hitCount > 0) {
-                Platform.runLater(() -> {
+            int hitCount = mItems.size() - mInstantProviderCount - mRegularProviderCount;
+
+            Platform.runLater(() -> {
+                if (!mResultPopOver.isShowing()) {
                     mResultPopOver.show(mSearchTextField);
-                    mResultPopOver.setTitle(String.format("%d %s", hitCount, Dict.HITS.toString()));
-                });
-            }
+                }
+                mResultPopOver.setTitle(String.format("%d %s", hitCount, Dict.HITS.toString()));
+            });
         }).start();
+    }
+
+    private synchronized void searchInstantly(String searchString) {
+        LOGGER.info("searchInstantly " + searchString);
+
+        mItems.clear();
+        mInstantResults.clear();
+        mInstantProviderCount = 0;
+        mRegularProviderCount = 0;
+        search(searchString, mInstantEngines);
+    }
+
+    private synchronized void searchRegular(String searchString) {
+        LOGGER.info("searchRegular " + searchString);
+        mItems.clear();
+        mItems.addAll(mInstantResults);
+        mRegularProviderCount = 0;
+        search(searchString, mRegularEngines);
     }
 
     class SearchResultListCell extends ListCell<MBookmark> {
@@ -269,11 +346,13 @@ public class SearchView {
                 name = String.format("%s (%d)", StringUtils.removeStart(name, PROVIDER_PREFIX), bookmark.getId());
             } else {
                 mLabel.setFont(mDefaultFont);
-
             }
-            mLabel.setText(name);
 
-            setGraphic(mBox);
+            String nname = name;
+            Platform.runLater(() -> {
+                mLabel.setText(nname);
+                setGraphic(mBox);
+            });
         }
 
         private void clearContent() {

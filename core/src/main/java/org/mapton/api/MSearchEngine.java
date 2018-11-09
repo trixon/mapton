@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,4 +26,8 @@ public interface MSearchEngine {
     public String getName();
 
     public ArrayList<MBookmark> getResults(String searchString);
+
+    public default boolean isInstantSearch() {
+        return true;
+    }
 }

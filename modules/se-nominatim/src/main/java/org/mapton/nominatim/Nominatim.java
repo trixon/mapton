@@ -43,7 +43,6 @@ import org.openide.util.Exceptions;
 public class Nominatim {
 
     private static final Logger LOGGER = Logger.getLogger(Nominatim.class.getName());
-    private JsonNominatimClient mClient;
 
     public static Nominatim getInstance() {
         return Holder.INSTANCE;
@@ -54,6 +53,21 @@ public class Nominatim {
     }
 
     private Nominatim() {
+    }
+
+    public Address getAddress(MLatLon latLon) throws IOException {
+        return getClient().getAddress(latLon.getLongitude(), latLon.getLatitude());
+    }
+
+    public Address getAddress(MLatLon latLon, int zoom) throws IOException {
+        return getClient().getAddress(latLon.getLongitude(), latLon.getLatitude(), zoom);
+    }
+
+    public List<Address> search(String string) throws IOException {
+        return getClient().search(string);
+    }
+
+    private JsonNominatimClient getClient() {
         InputStream inputStream = null;
 
         try {
@@ -69,7 +83,7 @@ public class Nominatim {
             String email = properties.getProperty("nominatim.headerEmail");
             NominatimOptions options = new NominatimOptions();
             options.setAcceptLanguage(Locale.getDefault());
-            mClient = new JsonNominatimClient(baseUrl, httpClient, email, options);
+            return new JsonNominatimClient(baseUrl, httpClient, email, options);
         } catch (MalformedURLException ex) {
             Exceptions.printStackTrace(ex);
         } catch (IOException ex) {
@@ -83,18 +97,8 @@ public class Nominatim {
                 Exceptions.printStackTrace(ex);
             }
         }
-    }
 
-    public Address getAddress(MLatLon latLon) throws IOException {
-        return mClient.getAddress(latLon.getLongitude(), latLon.getLatitude());
-    }
-
-    public Address getAddress(MLatLon latLon, int zoom) throws IOException {
-        return mClient.getAddress(latLon.getLongitude(), latLon.getLatitude(), zoom);
-    }
-
-    public List<Address> search(String string) throws IOException {
-        return mClient.search(string);
+        return null;
     }
 
     private static class Holder {

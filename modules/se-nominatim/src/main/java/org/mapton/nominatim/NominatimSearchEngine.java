@@ -71,6 +71,11 @@ public class NominatimSearchEngine implements MSearchEngine {
         return bookmarks;
     }
 
+    @Override
+    public boolean isInstantSearch() {
+        return false;
+    }
+
     private void init() {
     }
 
