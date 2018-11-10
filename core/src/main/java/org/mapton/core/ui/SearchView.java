@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
 import javafx.application.Platform;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Point2D;
@@ -117,7 +118,6 @@ public class SearchView {
     private void initListeners() {
         mSearchTextField.textProperty().addListener((observable, oldValue, searchString) -> {
             if (StringUtils.isNotBlank(searchString)) {
-                LOGGER.info("mSearchTextField.textProperty().addListener SEARCH");
                 searchInstantly(searchString);
             } else {
                 mResultPopOver.hide();
@@ -128,26 +128,29 @@ public class SearchView {
             if (keyEvent.getCode().equals(KeyCode.ENTER)) {
                 String searchString = mSearchTextField.getText();
                 if (StringUtils.isNotBlank(searchString)) {
-                    LOGGER.info("mSearchTextField.setOnKeyPressed ENTER SEARCH");
                     searchInstantly(searchString);
                     parse(searchString);
                 }
             }
         });
 
-//        mSearchTextField.setOnAction((event) -> {
-//            String searchString = mSearchTextField.getText();
-//            if (StringUtils.isNotBlank(searchString)) {
-//                LOGGER.info("mSearchTextField.setOnAction SEARCH");
-//                parse(searchString);
-////                searchInstantly(searchString);
-////                searchRegular(searchString);
-//            }
-//        });
+        mResultView.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends MBookmark> observable, MBookmark oldValue, MBookmark bookmark) -> {
+            try {
+                if (!bookmark.isCategory()) {
+                    if (bookmark.getZoom() != null) {
+                        Mapton.getEngine().panTo(new MLatLon(bookmark.getLatitude(), bookmark.getLongitude()), bookmark.getZoom());
+                    } else {
+                        Mapton.getEngine().panTo(new MLatLon(bookmark.getLatitude(), bookmark.getLongitude()));
+                    }
+                }
+            } catch (Exception e) {
+            }
+        });
+
         mResultView.setOnMousePressed((MouseEvent event) -> {
             if (event.isPrimaryButtonDown()) {
                 MBookmark bookmark = mResultView.getSelectionModel().getSelectedItem();
-                if (bookmark != null && ObjectUtils.allNotNull(bookmark.getLatitude(), bookmark.getLongitude())) {
+                if (bookmark != null && !bookmark.isCategory()) {
                     mResultPopOver.hide();
                     mSearchTextField.setText(bookmark.getName());
                     if (bookmark.getLatLonBox() != null) {
@@ -299,8 +302,6 @@ public class SearchView {
     }
 
     private synchronized void searchInstantly(String searchString) {
-        LOGGER.info("searchInstantly " + searchString);
-
         mItems.clear();
         mInstantResults.clear();
         mInstantProviderCount = 0;
@@ -309,7 +310,6 @@ public class SearchView {
     }
 
     private synchronized void searchRegular(String searchString) {
-        LOGGER.info("searchRegular " + searchString);
         mItems.clear();
         mItems.addAll(mInstantResults);
         mRegularProviderCount = 0;
