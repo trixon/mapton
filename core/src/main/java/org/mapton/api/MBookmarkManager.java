@@ -37,12 +37,14 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javax.swing.SwingUtilities;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.mapton.core.db.DbBaseManager;
 import org.mapton.core.ui.BookmarkPanel;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
+import org.openide.NotifyDescriptor;
 import org.openide.util.Exceptions;
 import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.Dict;
@@ -120,6 +122,24 @@ public class MBookmarkManager extends DbBaseManager {
 
     public void dbDelete(MBookmark bookmark) throws ClassNotFoundException, SQLException {
         mDb.delete(mTable, mId, bookmark.getId());
+        dbLoad();
+    }
+
+    public void dbDelete(String category) throws ClassNotFoundException, SQLException {
+        for (MBookmark bookmark : mItems.get()) {
+            if (StringUtils.startsWith(bookmark.getCategory(), category)) {
+                mDb.delete(mTable, mId, bookmark.getId());
+            }
+        }
+
+        dbLoad();
+    }
+
+    public void dbDelete() throws ClassNotFoundException, SQLException {
+        for (MBookmark bookmark : mItems.get()) {
+            mDb.delete(mTable, mId, bookmark.getId());
+        }
+
         dbLoad();
     }
 
@@ -253,11 +273,45 @@ public class MBookmarkManager extends DbBaseManager {
                         } else {
                             bookmark.setTimeModified(new Timestamp(System.currentTimeMillis()));
                             dbUpdate(bookmark);
+                            dbLoad();
                         }
                     } catch (ClassNotFoundException | SQLException ex) {
                         Exceptions.printStackTrace(ex);
                     }
                 });
+            }
+        });
+    }
+
+    public void editCategory(final String category) {
+        SwingUtilities.invokeLater(() -> {
+            NotifyDescriptor.InputLine d = new NotifyDescriptor.InputLine(
+                    Dict.CATEGORY.toString(),
+                    Dict.EDIT.toString());
+            d.setInputText(category);
+
+            if (DialogDescriptor.OK_OPTION == DialogDisplayer.getDefault().notify(d)) {
+                String newCategory = d.getInputText();
+                if (!StringUtils.equals(category, newCategory)) {
+                    Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+
+                    for (MBookmark bookmark : mItems.get()) {
+                        if (StringUtils.startsWith(bookmark.getCategory(), category)) {
+                            bookmark.setCategory(StringUtils.replaceOnce(bookmark.getCategory(), category, newCategory));
+                            bookmark.setTimeModified(timestamp);
+                            try {
+                                dbUpdate(bookmark);
+                            } catch (ClassNotFoundException | SQLException ex) {
+                                Exceptions.printStackTrace(ex);
+                            }
+                        }
+                    }
+
+                    Platform.runLater(() -> {
+                        dbLoad();
+                    });
+
+                }
             }
         });
     }
@@ -374,8 +428,6 @@ public class MBookmarkManager extends DbBaseManager {
         mUpdatePreparedStatement.setTimestamp(mUpdatePlaceHolders.get(mTimeModified).getIndex(), bookmark.getTimeModified());
 
         mUpdatePreparedStatement.executeUpdate();
-
-        dbLoad();
     }
 
     private void debugPrint() {

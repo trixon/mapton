@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,6 +17,7 @@ package org.mapton.api;
 
 import com.google.gson.annotations.SerializedName;
 import java.sql.Timestamp;
+import org.apache.commons.lang3.ObjectUtils;
 
 /**
  *
@@ -88,6 +89,10 @@ public class MBookmark {
 
     public Double getZoom() {
         return mZoom;
+    }
+
+    public Boolean isCategory() {
+        return !ObjectUtils.allNotNull(getLatitude(), getLongitude());
     }
 
     public Boolean isDisplayMarker() {

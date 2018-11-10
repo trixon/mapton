@@ -37,7 +37,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Font;
 import javax.swing.SwingUtilities;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
@@ -99,7 +98,11 @@ public class BookmarkView extends BorderPane {
 
     private void bookmarkEdit() {
         MBookmark bookmark = getSelectedBookmark();
-        mManager.editBookmark(bookmark);
+        if (bookmark.isCategory()) {
+            mManager.editCategory(bookmark.getCategory());
+        } else {
+            mManager.editBookmark(bookmark);
+        }
     }
 
     private void bookmarkGoTo(MBookmark bookmark) {
@@ -128,7 +131,11 @@ public class BookmarkView extends BorderPane {
             if (Dict.REMOVE.toString() == DialogDisplayer.getDefault().notify(d)) {
                 Platform.runLater(() -> {
                     try {
-                        mManager.dbDelete(bookmark);
+                        if (bookmark.isCategory()) {
+                            mManager.dbDelete(bookmark.getCategory());
+                        } else {
+                            mManager.dbDelete(bookmark);
+                        }
                     } catch (ClassNotFoundException | SQLException ex) {
                         Exceptions.printStackTrace(ex);
                     }
@@ -151,7 +158,7 @@ public class BookmarkView extends BorderPane {
             if (Dict.REMOVE_ALL.toString() == DialogDisplayer.getDefault().notify(d)) {
                 Platform.runLater(() -> {
                     try {
-                        mManager.dbTruncate();
+                        mManager.dbDelete();
                     } catch (ClassNotFoundException | SQLException ex) {
                         Exceptions.printStackTrace(ex);
                     }
@@ -184,6 +191,7 @@ public class BookmarkView extends BorderPane {
                 parent = mBookmarkParents.get(path);
             } else {
                 MBookmark bookmark = new MBookmark();
+                bookmark.setCategory(path);
                 bookmark.setName(segment);
 
                 parent.getChildren().add(parent = mBookmarkParents.computeIfAbsent(sb.toString(), k -> new TreeItem(bookmark)));
@@ -300,10 +308,17 @@ public class BookmarkView extends BorderPane {
 
             setOnMousePressed((MouseEvent event) -> {
                 MBookmark b = this.getItem();
-                if (b != null && ObjectUtils.allNotNull(b.getLatitude(), b.getLongitude())) {
+
+                if (b != null) {
                     if (event.isSecondaryButtonDown()) {
-                        Mapton.getEngine().setLatitude(b.getLatitude());
-                        Mapton.getEngine().setLongitude(b.getLongitude());
+                        mContextCopyMenu.setDisable(b.isCategory());
+                        mContextOpenMenu.setDisable(b.isCategory());
+
+                        if (!b.isCategory()) {
+                            Mapton.getEngine().setLatitude(b.getLatitude());
+                            Mapton.getEngine().setLongitude(b.getLongitude());
+                        }
+
                         contextMenu.show(this, event.getScreenX(), event.getScreenY());
                     } else if (event.isPrimaryButtonDown()) {
                         contextMenu.hide();
