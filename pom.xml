@@ -94,6 +94,7 @@
         <module>modules/me-worldwind</module>
         <module>modules/me-jxmapviewer2</module>
         <module>modules/ww-eox</module>
+        <module>modules/ww-grid</module>
         <module>modules/se-bookmarks</module>
         <module>modules/se-geonames</module>
         <module>modules/se-nominatim</module>
