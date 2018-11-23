@@ -72,6 +72,11 @@
         </dependency>
 
         <!-- Trixon -->
+        <dependency>
+            <groupId>se.trixon.almond</groupId>
+            <artifactId>almond-nbp</artifactId>
+            <version>${version.almond-nbp}</version>
+        </dependency>
 
         <!-- Other -->
     </dependencies>
