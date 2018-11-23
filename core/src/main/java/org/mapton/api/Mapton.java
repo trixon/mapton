@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,12 +18,14 @@ package org.mapton.api;
 import java.io.File;
 import java.text.DateFormat;
 import javafx.application.Platform;
+import javafx.scene.layout.Background;
 import javafx.scene.paint.Color;
 import javax.swing.SwingUtilities;
 import org.apache.commons.lang3.StringUtils;
+import org.mapton.core.ui.AppToolBar;
 import org.openide.awt.StatusDisplayer;
 import org.openide.util.Lookup;
-import org.mapton.core.ui.AppToolBar;
+import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
@@ -113,6 +115,14 @@ public class Mapton {
 
     public static Mapton getInstance() {
         return Holder.INSTANCE;
+    }
+
+    public static Background getThemeBackground() {
+        return FxHelper.createBackground(getThemeColor());
+    }
+
+    public static Color getThemeColor() {
+        return Color.web("#00406c").brighter().brighter();
     }
 
     public static void setStatusText(String text, int importance) {
