@@ -16,11 +16,13 @@
 package org.mapton.worldwind;
 
 import gov.nasa.worldwind.layers.Layer;
+import java.util.prefs.Preferences;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.scene.layout.BorderPane;
 import org.controlsfx.control.CheckListView;
+import org.openide.util.NbPreferences;
 
 /**
  *
@@ -30,6 +32,7 @@ public class LayerView extends BorderPane {
 
     private final CheckListView<Layer> mListView = new CheckListView<>();
     private WorldWindowPanel mMap;
+    private final Preferences mPreferences = NbPreferences.forModule(LayerView.class);
 
     public static LayerView getInstance() {
         return Holder.INSTANCE;
@@ -54,15 +57,11 @@ public class LayerView extends BorderPane {
         });
 
         mListView.getItems().addListener((ListChangeListener.Change<? extends Layer> c) -> {
-            while (c.next()) {
-                if (c.wasAdded()) {
-                    c.getAddedSubList().forEach((layer) -> {
-                        if (layer.isEnabled()) {
-                            mListView.getCheckModel().check(layer);
-                        } else {
-                            mListView.getCheckModel().clearCheck(layer);
-                        }
-                    });
+            for (Layer layer : mListView.getItems()) {
+                if (mPreferences.getBoolean(layer.getName(), layer.isEnabled())) {
+                    mListView.getCheckModel().check(layer);
+                } else {
+                    mListView.getCheckModel().clearCheck(layer);
                 }
             }
         });
@@ -72,11 +71,12 @@ public class LayerView extends BorderPane {
                 if (c.wasAdded()) {
                     c.getAddedSubList().forEach((layer) -> {
                         layer.setEnabled(true);
+                        mPreferences.putBoolean(layer.getName(), true);
                     });
-
                 } else if (c.wasRemoved()) {
                     c.getRemoved().forEach((layer) -> {
                         layer.setEnabled(false);
+                        mPreferences.putBoolean(layer.getName(), false);
                     });
                 }
             }

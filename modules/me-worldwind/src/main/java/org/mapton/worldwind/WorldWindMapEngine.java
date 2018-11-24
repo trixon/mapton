@@ -32,11 +32,11 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javafx.scene.Node;
 import javax.swing.Timer;
-import org.openide.util.lookup.ServiceProvider;
-import se.trixon.almond.nbp.NbLog;
 import org.mapton.api.MEngine;
 import org.mapton.api.MLatLon;
 import org.mapton.api.MLatLonBox;
+import org.openide.util.lookup.ServiceProvider;
+import se.trixon.almond.nbp.NbLog;
 
 /**
  *
