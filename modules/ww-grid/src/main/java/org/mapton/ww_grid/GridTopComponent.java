@@ -48,7 +48,6 @@ import org.openide.windows.TopComponent;
 @TopComponent.Registration(mode = "properties", openAtStartup = false)
 public final class GridTopComponent extends MTopComponent {
 
-    private final ResourceBundle mBundle = NbBundle.getBundle(GridTopComponent.class);
     private CheckBox mClampToGroundCheckBox;
     private CheckBox mEquatorCheckBox;
     private CheckBox mLatitudesCheckBox;
@@ -84,18 +83,20 @@ public final class GridTopComponent extends MTopComponent {
     }
 
     private Scene createScene() {
+        ResourceBundle bundle = NbBundle.getBundle(GridTopComponent.class);
+
         Label titleLabel = new Label(MDict.GRID.toString());
 
         mClampToGroundCheckBox = new CheckBox("CLAMP TO GROUND");
 
-        mLongitudesCheckBox = new CheckBox(mBundle.getString("longitudes"));
-        mLatitudesCheckBox = new CheckBox(mBundle.getString("latitudes"));
+        mLongitudesCheckBox = new CheckBox(bundle.getString("longitudes"));
+        mLatitudesCheckBox = new CheckBox(bundle.getString("latitudes"));
 
-        mPolarArticCheckBox = new CheckBox(mBundle.getString("arctic_circle"));
-        mTropicCancerCheckBox = new CheckBox(mBundle.getString("tropic_cancer"));
-        mEquatorCheckBox = new CheckBox(mBundle.getString("equator"));
-        mTropicCapricornCheckBox = new CheckBox(mBundle.getString("tropic_capricorn"));
-        mPolarAntarticCheckBox = new CheckBox(mBundle.getString("antarctic_circle"));
+        mPolarArticCheckBox = new CheckBox(bundle.getString("arctic_circle"));
+        mTropicCancerCheckBox = new CheckBox(bundle.getString("tropic_cancer"));
+        mEquatorCheckBox = new CheckBox(bundle.getString("equator"));
+        mTropicCapricornCheckBox = new CheckBox(bundle.getString("tropic_capricorn"));
+        mPolarAntarticCheckBox = new CheckBox(bundle.getString("antarctic_circle"));
 
         Separator sep1 = new Separator(Orientation.HORIZONTAL);
         VBox titleBox = new VBox(8, titleLabel);
@@ -107,7 +108,7 @@ public final class GridTopComponent extends MTopComponent {
         titleLabel.setAlignment(Pos.BASELINE_CENTER);
         titleLabel.setFont(new Font(defaultFont.getSize() * 2));
 
-        Label presentationLabel = new Label(mBundle.getString("major_latitudes"));
+        Label presentationLabel = new Label(bundle.getString("major_latitudes"));
         presentationLabel.setFont(new Font(defaultFont.getSize() * 1.2));
 
         VBox vbox = new VBox(8,
