@@ -32,7 +32,7 @@ public class LayerView extends BorderPane {
 
     private final CheckListView<Layer> mListView = new CheckListView<>();
     private WorldWindowPanel mMap;
-    private final Preferences mPreferences = NbPreferences.forModule(LayerView.class);
+    private final Preferences mPreferences = NbPreferences.forModule(LayerView.class).node("layer_visibility");
 
     public static LayerView getInstance() {
         return Holder.INSTANCE;
