@@ -23,7 +23,6 @@ import gov.nasa.worldwind.WorldWindow;
 import gov.nasa.worldwind.WorldWindowGLDrawable;
 import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.awt.WorldWindowGLJPanel;
-import gov.nasa.worldwind.geom.Sector;
 import gov.nasa.worldwind.globes.EarthFlat;
 import gov.nasa.worldwind.globes.ElevationModel;
 import gov.nasa.worldwind.globes.FlatGlobe;
@@ -40,10 +39,8 @@ import gov.nasa.worldwind.globes.projections.ProjectionUPS;
 import gov.nasa.worldwind.layers.CompassLayer;
 import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.layers.LayerList;
-import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.layers.ViewControlsLayer;
 import gov.nasa.worldwind.layers.ViewControlsSelectListener;
-import gov.nasa.worldwind.render.SurfaceImage;
 import gov.nasa.worldwind.terrain.CompoundElevationModel;
 import gov.nasa.worldwind.terrain.ZeroElevationModel;
 import java.awt.image.BufferedImage;
@@ -56,15 +53,15 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javax.swing.SwingUtilities;
+import org.mapton.api.MOptions;
+import org.mapton.worldwind.api.LayerBundle;
+import org.mapton.worldwind.api.MapStyle;
+import org.mapton.worldwind.api.WmsService;
 import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.util.GraphicsHelper;
-import org.mapton.api.MOptions;
-import org.mapton.worldwind.api.LayerBundle;
-import org.mapton.worldwind.api.MapStyle;
-import org.mapton.worldwind.api.WmsService;
 
 /**
  *
@@ -135,15 +132,6 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         return getModel().getLayers();
     }
 
-    private void addRenderableLayer() {
-        SurfaceImage surfaceImage = new SurfaceImage("https://trixon.se/files/pata.jpg", Sector.FULL_SPHERE);
-        RenderableLayer renderableLayer = new RenderableLayer();
-        renderableLayer.setName("trixon");
-        renderableLayer.setEnabled(false);
-        renderableLayer.addRenderable(surfaceImage);
-        getLayers().add(renderableLayer);
-    }
-
     private GeographicProjection getProjection() {
         switch (mOptions.getMapProjection()) {
             case 1:
@@ -179,7 +167,6 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         insertLayerBefore(viewControlsLayer, CompassLayer.class);
         addSelectListener(new ViewControlsSelectListener(this, viewControlsLayer));
 
-        addRenderableLayer();
         updateScreenLayers();
         updateMode();
         updateProjection();

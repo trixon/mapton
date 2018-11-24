@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.demo;
+package org.mapton.demo.ww;
 
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVKey;
@@ -36,12 +36,12 @@ import org.mapton.worldwind.api.LayerBundle;
  *
  * @author Patrik Karlström
  */
-//@org.openide.util.lookup.ServiceProvider(service = LayerBundle.class)
-public class DemoLayerBundle extends LayerBundle {
+@org.openide.util.lookup.ServiceProvider(service = LayerBundle.class)
+public class RigidShapesLayerBundle extends LayerBundle {
 
     private final RenderableLayer mRigidShapesLayer = new RenderableLayer();
 
-    public DemoLayerBundle() {
+    public RigidShapesLayerBundle() {
         mRigidShapesLayer.setName("Rigid Shapes");
         mRigidShapesLayer.setEnabled(false);
     }
