@@ -339,7 +339,9 @@ public final class MapTopComponent extends MTopComponent {
 
     private void setEngine(MEngine engine) {
         mEngine = engine;
-        setToolTipText(String.format("%s: %s", MDict.MAP_ENGINE.toString(), engine.getName()));
+        SwingUtilities.invokeLater(() -> {
+            setToolTipText(String.format("%s: %s", MDict.MAP_ENGINE.toString(), engine.getName()));
+        });
 
         if (engine.isSwing()) {
             SwingUtilities.invokeLater(() -> {
