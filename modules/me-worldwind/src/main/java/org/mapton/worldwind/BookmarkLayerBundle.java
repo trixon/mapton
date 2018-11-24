@@ -21,28 +21,29 @@ import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.PointPlacemark;
 import java.util.prefs.PreferenceChangeEvent;
 import javafx.collections.ListChangeListener;
-import org.openide.util.lookup.ServiceProvider;
-import se.trixon.almond.util.Dict;
 import org.mapton.api.MBookmark;
 import org.mapton.api.MBookmarkManager;
 import org.mapton.api.MEngine;
 import org.mapton.api.MLatLon;
 import org.mapton.api.MOptions;
 import org.mapton.worldwind.api.LayerBundle;
+import org.mapton.worldwind.api.LayerBundleManager;
+import org.openide.util.lookup.ServiceProvider;
+import se.trixon.almond.util.Dict;
 
 /**
  *
  * @author Patrik Karlström
  */
 @ServiceProvider(service = LayerBundle.class)
-public class WorldWindLayerBundle extends LayerBundle {
+public class BookmarkLayerBundle extends LayerBundle {
 
     private final MBookmarkManager mBookmarkManager = MBookmarkManager.getInstance();
     private final RenderableLayer mBookmarksLayer = new RenderableLayer();
     private final WorldWindMapEngine mEngine;
     private final MOptions mOptions = MOptions.getInstance();
 
-    public WorldWindLayerBundle() {
+    public BookmarkLayerBundle() {
         mEngine = (WorldWindMapEngine) MEngine.byName("WorldWind");
         mBookmarksLayer.setName(String.format("~ %s ~", Dict.BOOKMARKS.toString()));
         mBookmarksLayer.setEnabled(true);
@@ -59,10 +60,6 @@ public class WorldWindLayerBundle extends LayerBundle {
         });
 
         updatePlacemarks();
-    }
-
-    public RenderableLayer getLayer() {
-        return mBookmarksLayer;
     }
 
     @Override
@@ -93,6 +90,6 @@ public class WorldWindLayerBundle extends LayerBundle {
 
         mBookmarksLayer.addRenderable(placemark);
 
-        mEngine.getMap().redraw();
+        LayerBundleManager.getInstance().redraw();
     }
 }
