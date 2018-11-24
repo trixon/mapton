@@ -142,11 +142,11 @@
             <version>${project.version}</version>
         </dependency>
 
-        <dependency>
+        <!--        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>demo</artifactId>
             <version>${project.version}</version>
-        </dependency>
+        </dependency>-->
 
         <!-- Trixon -->
         <dependency>
