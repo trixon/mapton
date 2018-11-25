@@ -284,6 +284,10 @@ public class BookmarkView extends BorderPane {
             });
             editAction.setGraphic(MaterialIcon._Content.CREATE.getImageView(getIconSizeContextMenu()));
 
+            Action zoomExtentAction = new Action(Dict.ZOOM_EXTENTS.toString(), (ActionEvent event) -> {
+                Mapton.getEngine().fitToBounds(mManager.getExtents(getSelectedBookmark().getCategory()));
+            });
+
             Action removeAction = new Action(Dict.REMOVE.toString(), (ActionEvent event) -> {
                 bookmarkRemove();
             });
@@ -294,6 +298,7 @@ public class BookmarkView extends BorderPane {
 
             Collection<? extends Action> actions = Arrays.asList(
                     editAction,
+                    zoomExtentAction,
                     ActionUtils.ACTION_SEPARATOR,
                     removeAction,
                     removeAllAction
@@ -313,6 +318,7 @@ public class BookmarkView extends BorderPane {
                     if (event.isSecondaryButtonDown()) {
                         mContextCopyMenu.setDisable(b.isCategory());
                         mContextOpenMenu.setDisable(b.isCategory());
+                        zoomExtentAction.setDisabled(!b.isCategory());
 
                         if (!b.isCategory()) {
                             Mapton.getEngine().setLatitude(b.getLatitude());

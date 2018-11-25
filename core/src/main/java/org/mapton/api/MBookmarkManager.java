@@ -324,6 +324,18 @@ public class MBookmarkManager extends DbBaseManager {
         return action;
     }
 
+    public MLatLonBox getExtents(String category) {
+        ArrayList<MLatLon> latLons = new ArrayList<>();
+
+        mItems.get().stream()
+                .filter((bookmark) -> (StringUtils.startsWith(bookmark.getCategory(), category)))
+                .forEachOrdered((bookmark) -> {
+                    latLons.add(new MLatLon(bookmark.getLatitude(), bookmark.getLongitude()));
+                });
+
+        return new MLatLonBox(latLons);
+    }
+
     public final ObservableList<MBookmark> getItems() {
         return mItems == null ? null : mItems.get();
     }

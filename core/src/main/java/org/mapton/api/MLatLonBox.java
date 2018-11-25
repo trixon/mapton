@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +16,7 @@
 package org.mapton.api;
 
 import com.google.gson.annotations.SerializedName;
+import java.util.ArrayList;
 
 /**
  *
@@ -34,6 +35,23 @@ public class MLatLonBox {
     public MLatLonBox(MLatLon southWest, MLatLon northEast) {
         mSouthWest = southWest;
         mNorthEast = northEast;
+    }
+
+    public MLatLonBox(ArrayList<MLatLon> latLons) {
+        double north = Double.MIN_VALUE;
+        double east = Double.MIN_VALUE;
+        double south = Double.MAX_VALUE;
+        double west = Double.MAX_VALUE;
+
+        for (MLatLon latLon : latLons) {
+            north = Math.max(latLon.getLatitude(), north);
+            east = Math.max(latLon.getLongitude(), east);
+            south = Math.min(latLon.getLatitude(), south);
+            west = Math.min(latLon.getLongitude(), west);
+        }
+
+        mSouthWest = new MLatLon(south, west);
+        mNorthEast = new MLatLon(north, east);
     }
 
     public MLatLon getCenter() {
