@@ -175,6 +175,10 @@ public class AppToolBar extends ToolBar {
                 systemActionGroup
         ));
 
+        if (IS_MAC) {
+            actions.remove(mSysViewFullscreenAction);
+        }
+
         Platform.runLater(() -> {
             ActionUtils.updateToolBar(this, actions, ActionUtils.ActionTextBehavior.HIDE);
 
