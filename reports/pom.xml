@@ -82,4 +82,7 @@
             <version>1.3.0</version>
         </dependency>
     </dependencies>
+    <properties>
+        <netbeans.hint.license>apache20</netbeans.hint.license>
+    </properties>
 </project>
