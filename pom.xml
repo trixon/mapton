@@ -99,8 +99,8 @@
         <module>modules/se-geonames</module>
         <module>modules/se-nominatim</module>
         <module>modules/te-swetrans</module>
+        <module>modules/reports</module>
         <module>demo</module>
-        <module>reports</module>
     </modules>
 
     <properties>
