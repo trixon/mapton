@@ -22,7 +22,9 @@ import java.util.Comparator;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
+import java.util.prefs.Preferences;
 import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
@@ -52,6 +54,7 @@ import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.util.NbBundle;
+import org.openide.util.NbPreferences;
 import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
@@ -68,6 +71,7 @@ public class BookmarkView extends BorderPane {
     private final Font mDefaultFont = Font.getDefault();
     private TextField mFilterTextField;
     private final MBookmarkManager mManager = MBookmarkManager.getInstance();
+    private final Preferences mPreferences = NbPreferences.forModule(ToolboxView.class).node("expanded_state");
     private final TreeView<MBookmark> mTreeView = new TreeView<>();
 
     public BookmarkView() {
@@ -225,8 +229,16 @@ public class BookmarkView extends BorderPane {
     }
 
     private void postPopulate(TreeItem<MBookmark> treeItem, String level) {
-        //System.out.println(level + treeItem.getValue().getName());
-        treeItem.setExpanded(true);
+        final MBookmark value = treeItem.getValue();
+        final String path = String.format("%s/%s", value.getCategory(), value.getName());
+        treeItem.setExpanded(mPreferences.getBoolean(path, false));
+
+        treeItem.expandedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
+            BooleanProperty booleanProperty = (BooleanProperty) observable;
+            TreeItem ti = (TreeItem) booleanProperty.getBean();
+            MBookmark bookmark = (MBookmark) ti.getValue();
+            mPreferences.putBoolean(path, newValue);
+        });
 
         Comparator c1 = new Comparator<TreeItem<MBookmark>>() {
             @Override
