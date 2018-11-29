@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,8 +17,12 @@ package org.mapton.core.ui;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.prefs.Preferences;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
@@ -32,6 +36,7 @@ import org.controlsfx.control.textfield.TextFields;
 import org.mapton.api.MTool;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
+import org.openide.util.NbPreferences;
 import se.trixon.almond.util.Dict;
 
 /**
@@ -40,7 +45,9 @@ import se.trixon.almond.util.Dict;
  */
 public class ToolboxView extends BorderPane {
 
+    private final Map<Action, String> mActionParents = new HashMap<>();
     private TextField mFilterTextField;
+    private final Preferences mPreferences = NbPreferences.forModule(ToolboxView.class).node("expanded_state");
     private final Map<String, TreeItem<Action>> mToolParents = new TreeMap<>();
     private final ArrayList<MTool> mTools = new ArrayList<>();
     private final TreeView<Action> mTreeView = new TreeView<>();
@@ -137,6 +144,7 @@ public class ToolboxView extends BorderPane {
 
         for (MTool tool : mTools) {
             String s = tool.getParent() + "/" + tool.getAction().getText();
+            mActionParents.put(tool.getAction(), tool.getParent());
             if (StringUtils.containsIgnoreCase(s, mFilterTextField.getText())) {
                 TreeItem<Action> actionTreeItem = new TreeItem(tool.getAction());
                 String category = StringUtils.defaultString(tool.getParent());
@@ -151,8 +159,16 @@ public class ToolboxView extends BorderPane {
     }
 
     private void postPopulate(TreeItem<Action> treeItem, String level) {
-        //System.out.println(level + treeItem.getValue().getName());
-        treeItem.setExpanded(true);
+        final Action value = treeItem.getValue();
+        final String path = String.format("%s/%s", mActionParents.get(value), value.getText());
+        treeItem.setExpanded(mPreferences.getBoolean(path, false));
+
+        treeItem.expandedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
+            BooleanProperty booleanProperty = (BooleanProperty) observable;
+            TreeItem ti = (TreeItem) booleanProperty.getBean();
+            Action action = (Action) ti.getValue();
+            mPreferences.putBoolean(path, newValue);
+        });
 
         Comparator c1 = new Comparator<TreeItem<Action>>() {
             @Override
