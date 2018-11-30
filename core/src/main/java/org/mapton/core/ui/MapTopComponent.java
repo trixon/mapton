@@ -19,6 +19,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.HierarchyEvent;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,6 +27,7 @@ import java.util.Collection;
 import java.util.ResourceBundle;
 import java.util.prefs.PreferenceChangeEvent;
 import javafx.application.Platform;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -179,6 +181,16 @@ public final class MapTopComponent extends MTopComponent {
         }
     }
 
+    private void copyImage() {
+        mContextMenu.hide();
+        try {
+            BufferedImage bufferedImage = mEngine.getImageRenderer().call();
+            SystemHelper.copyToClipboard(SwingFXUtils.toFXImage(bufferedImage, null));
+        } catch (Exception ex) {
+            Exceptions.printStackTrace(ex);
+        }
+    }
+
     private Scene createScene() {
         mRoot = new BorderPane();
 
@@ -233,6 +245,11 @@ public final class MapTopComponent extends MTopComponent {
             whatsHere();
         });
 
+        Action copyImageAction = new Action(mBundle.getString("copy_image"), (ActionEvent t) -> {
+            copyImage();
+        });
+        copyImageAction.setDisabled(true);
+
         Action exportImageAction = new Action(mBundle.getString("export_image"), (ActionEvent t) -> {
             exportImage();
         });
@@ -242,6 +259,7 @@ public final class MapTopComponent extends MTopComponent {
                 whatsHereAction,
                 MBookmarkManager.getInstance().getAddBookmarkAction(),
                 ActionUtils.ACTION_SEPARATOR,
+                copyImageAction,
                 exportImageAction,
                 ActionUtils.ACTION_SEPARATOR,
                 ActionUtils.ACTION_SEPARATOR,
@@ -258,6 +276,7 @@ public final class MapTopComponent extends MTopComponent {
         mContextMenu.getItems().add(insertPos, mContextOpenMenu);
         mContextMenu.getItems().add(insertPos, mContextCopyMenu);
         mContextMenu.setOnShowing((event) -> {
+            copyImageAction.setDisabled(mEngine.getImageRenderer() == null);
             exportImageAction.setDisabled(mEngine.getImageRenderer() == null);
         });
 
