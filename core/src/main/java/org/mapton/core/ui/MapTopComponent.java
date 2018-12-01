@@ -19,7 +19,6 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.HierarchyEvent;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,7 +26,6 @@ import java.util.Collection;
 import java.util.ResourceBundle;
 import java.util.prefs.PreferenceChangeEvent;
 import javafx.application.Platform;
-import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -184,8 +182,7 @@ public final class MapTopComponent extends MTopComponent {
     private void copyImage() {
         mContextMenu.hide();
         try {
-            BufferedImage bufferedImage = mEngine.getImageRenderer().call();
-            SystemHelper.copyToClipboard(SwingFXUtils.toFXImage(bufferedImage, null));
+            SystemHelper.copyToClipboard(mEngine.getImageRenderer().call());
         } catch (Exception ex) {
             Exceptions.printStackTrace(ex);
         }
