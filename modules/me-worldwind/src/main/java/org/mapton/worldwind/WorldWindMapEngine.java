@@ -37,6 +37,8 @@ import org.mapton.api.MLatLon;
 import org.mapton.api.MLatLonBox;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.NbLog;
+import se.trixon.almond.nbp.dialogs.NbMessage;
+import se.trixon.almond.util.Dict;
 
 /**
  *
@@ -129,6 +131,7 @@ public class WorldWindMapEngine extends MEngine {
 
     @Override
     public void onWhatsHere(String s) {
+        NbMessage.information(Dict.INFORMATION.toString(), s);
     }
 
     @Override
