@@ -139,6 +139,10 @@ public class AppToolBar extends ToolBar {
                 mSysViewResetAction
         );
 
+        if (!IS_MAC) {
+            viewActionGroup.getActions().add(0, mSysViewFullscreenAction);
+        }
+
         ActionGroup systemActionGroup;
         if (IS_MAC) {
             systemActionGroup = new ActionGroup(Dict.MENU.toString(), MaterialIcon._Navigation.MENU.getImageView(getIconSizeToolBar()),
@@ -171,13 +175,8 @@ public class AppToolBar extends ToolBar {
                 mStyleAction,
                 ActionUtils.ACTION_SPAN,
                 mSysViewMapAction,
-                mSysViewFullscreenAction,
                 systemActionGroup
         ));
-
-        if (IS_MAC) {
-            actions.remove(mSysViewFullscreenAction);
-        }
 
         Platform.runLater(() -> {
             ActionUtils.updateToolBar(this, actions, ActionUtils.ActionTextBehavior.HIDE);
@@ -266,7 +265,6 @@ public class AppToolBar extends ToolBar {
             }
         });
         mSysViewFullscreenAction.setAccelerator(KeyCombination.keyCombination("F11"));
-        mSysViewFullscreenAction.setGraphic(MaterialIcon._Navigation.FULLSCREEN.getImageView(getIconSizeToolBar()));
 
         //Map
         mSysViewMapAction = new FxActionSwingCheck(Dict.MAP.toString(), () -> {
@@ -325,10 +323,7 @@ public class AppToolBar extends ToolBar {
                 public void windowActivated(WindowEvent e) {
                     final boolean fullscreen = frame.isUndecorated();
                     mOptions.setFullscreen(fullscreen);
-                    Platform.runLater(() -> {
-                        MaterialIcon._Navigation fullscreenIcon = fullscreen == true ? MaterialIcon._Navigation.FULLSCREEN_EXIT : MaterialIcon._Navigation.FULLSCREEN;
-                        mSysViewFullscreenAction.setGraphic(fullscreenIcon.getImageView(getIconSizeToolBar()));
-                    });
+                    mSysViewFullscreenAction.setSelected(fullscreen);
                 }
             });
         });
