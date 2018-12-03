@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -56,12 +56,12 @@ public abstract class MKmlCreator {
     protected Folder mRootFolder;
     protected final SimpleDateFormat mTimeStampDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
 
-    public MKmlCreator() {
-        mDocument = mKml.createAndSetDocument().withOpen(true);
-    }
-
     public static Comparator<Feature> getFeatureNameComparator() {
         return (Feature o1, Feature o2) -> o1.getName().compareTo(o2.getName());
+    }
+
+    public MKmlCreator() {
+        mDocument = mKml.createAndSetDocument().withOpen(true);
     }
 
     public Placemark addCircle0(String name, ArrayList<Coordinate> coordinates, Folder folder) {
@@ -178,7 +178,7 @@ public abstract class MKmlCreator {
         return list;
     }
 
-    public Placemark createLine(String name, Point3D p1, Point3D p2, double width, String color, AltitudeMode altitudeMode) {
+    public Placemark createLine(String name, ArrayList<Point3D> coordinates, double width, String color, AltitudeMode altitudeMode) {
         Placemark placemark = KmlFactory.createPlacemark().withName(name);
         Style style = placemark.createAndAddStyle();
         LineStyle lineStyle = style.createAndSetLineStyle()
@@ -189,11 +189,21 @@ public abstract class MKmlCreator {
         }
 
         LineString line = placemark.createAndSetLineString();
-        line.addToCoordinates(p1.getX(), p1.getY(), p1.getZ());
-        line.addToCoordinates(p2.getX(), p2.getY(), p2.getZ());
+        for (Point3D coordinate : coordinates) {
+            line.addToCoordinates(coordinate.getX(), coordinate.getY(), coordinate.getZ());
+        }
 
         line.setAltitudeMode(altitudeMode);
+
         return placemark;
+    }
+
+    public Placemark createLine(String name, Point3D p1, Point3D p2, double width, String color, AltitudeMode altitudeMode) {
+        ArrayList<Point3D> coordinates = new ArrayList<>();
+        coordinates.add(p1);
+        coordinates.add(p2);
+
+        return createLine(name, coordinates, width, color, altitudeMode);
     }
 
     public String save(File f) throws IOException {
