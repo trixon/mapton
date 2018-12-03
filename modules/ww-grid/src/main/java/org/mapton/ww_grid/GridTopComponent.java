@@ -27,6 +27,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import org.mapton.api.MDict;
+import org.mapton.api.MMapMagnet;
 import org.mapton.api.MTopComponent;
 import org.mapton.api.Mapton;
 import org.netbeans.api.settings.ConvertAsProperties;
@@ -46,7 +47,7 @@ import org.openide.windows.TopComponent;
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(mode = "properties", openAtStartup = false)
-public final class GridTopComponent extends MTopComponent {
+public final class GridTopComponent extends MTopComponent implements MMapMagnet {
 
     private CheckBox mClampToGroundCheckBox;
     private CheckBox mEquatorCheckBox;
