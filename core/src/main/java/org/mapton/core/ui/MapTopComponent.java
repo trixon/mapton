@@ -23,6 +23,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.ResourceBundle;
 import java.util.prefs.PreferenceChangeEvent;
 import javafx.application.Platform;
@@ -47,6 +48,7 @@ import org.mapton.api.MBookmarkManager;
 import org.mapton.api.MContextMenuItem;
 import org.mapton.api.MDict;
 import org.mapton.api.MEngine;
+import org.mapton.api.MMapMagnet;
 import org.mapton.api.MOptions;
 import org.mapton.api.MTopComponent;
 import org.mapton.api.MWhatsHereEngine;
@@ -60,6 +62,7 @@ import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.util.NbBundle;
 import org.openide.util.NbBundle.Messages;
+import org.openide.windows.Mode;
 import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
 import se.trixon.almond.nbp.NbLog;
@@ -100,6 +103,7 @@ public final class MapTopComponent extends MTopComponent {
     private Menu mContextOpenMenu;
     private File mDestination;
     private MEngine mEngine;
+    private HashSet<TopComponent> mMapMagnets = new HashSet<>();
     private final Mapton mMapton = Mapton.getInstance();
     private BorderPane mRoot;
 
@@ -131,9 +135,33 @@ public final class MapTopComponent extends MTopComponent {
     }
 
     @Override
+    protected void componentHidden() {
+        super.componentHidden();
+        mMapMagnets.clear();
+        for (Mode mode : WindowManager.getDefault().getModes()) {
+            for (TopComponent tc : mode.getTopComponents()) {
+                if (tc instanceof MTopComponent && tc.isOpened()) {
+                    if (tc instanceof MMapMagnet) {
+                        tc.close();
+                        mMapMagnets.add(tc);
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
     protected void componentOpened() {
         super.componentOpened();
         setEngine(Mapton.getEngine());
+    }
+
+    @Override
+    protected void componentShowing() {
+        super.componentShowing();
+        for (TopComponent tc : mMapMagnets) {
+            tc.open();
+        }
     }
 
     @Override
