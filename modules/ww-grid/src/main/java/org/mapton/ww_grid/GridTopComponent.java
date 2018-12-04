@@ -109,10 +109,18 @@ public final class GridTopComponent extends MTopComponent implements MMapMagnet 
         titleLabel.setAlignment(Pos.BASELINE_CENTER);
         titleLabel.setFont(new Font(defaultFont.getSize() * 2));
 
+        Label globalLabel = new Label(bundle.getString("global"));
+        globalLabel.setFont(new Font(defaultFont.getSize() * 1.4));
+        Label localLabel = new Label(bundle.getString("local"));
+        localLabel.setFont(new Font(defaultFont.getSize() * 1.4));
+
         Label presentationLabel = new Label(bundle.getString("major_latitudes"));
         presentationLabel.setFont(new Font(defaultFont.getSize() * 1.2));
 
+        LocalView localView = new LocalView();
+
         VBox vbox = new VBox(8,
+                globalLabel,
                 //                mClampToGroundCheckBox,
                 mLongitudesCheckBox,
                 mLatitudesCheckBox,
@@ -122,7 +130,9 @@ public final class GridTopComponent extends MTopComponent implements MMapMagnet 
                 mEquatorCheckBox,
                 mTropicCapricornCheckBox,
                 mPolarAntarticCheckBox,
-                sep1
+                sep1,
+                localLabel,
+                localView
         );
 
         vbox.setPadding(new Insets(8));
