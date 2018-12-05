@@ -104,6 +104,7 @@ public final class MapTopComponent extends MTopComponent {
     private File mDestination;
     private MEngine mEngine;
     private HashSet<TopComponent> mMapMagnets = new HashSet<>();
+    private HashSet<TopComponent> mActiveMapMagnets = new HashSet<>();
     private final Mapton mMapton = Mapton.getInstance();
     private BorderPane mRoot;
 
@@ -138,10 +139,22 @@ public final class MapTopComponent extends MTopComponent {
     protected void componentHidden() {
         super.componentHidden();
         mMapMagnets.clear();
-        for (Mode mode : WindowManager.getDefault().getModes()) {
+        mActiveMapMagnets.clear();
+
+        final WindowManager windowManager = WindowManager.getDefault();
+        for (Mode mode : windowManager.getModes()) {
+            if (mode.equals(windowManager.findMode(this))) {
+                break;
+            }
+
+            TopComponent selectedTopComponent = mode.getSelectedTopComponent();
             for (TopComponent tc : mode.getTopComponents()) {
                 if (tc instanceof MTopComponent && tc.isOpened()) {
                     if (tc instanceof MMapMagnet) {
+                        if (tc.equals(selectedTopComponent)) {
+                            mActiveMapMagnets.add(tc);
+                        }
+
                         tc.close();
                         mMapMagnets.add(tc);
                     }
@@ -161,6 +174,10 @@ public final class MapTopComponent extends MTopComponent {
         super.componentShowing();
         for (TopComponent tc : mMapMagnets) {
             tc.open();
+        }
+
+        for (TopComponent tc : mActiveMapMagnets) {
+            tc.requestActive();
         }
     }
 
