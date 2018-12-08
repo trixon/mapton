@@ -1,4 +1,4 @@
-/*
+/* 
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,6 +21,7 @@ package org.mapton.ww_grid;
  */
 public class LocalGrid {
 
+    private boolean mChecked = true;
     private String mName;
 
     public LocalGrid() {
@@ -28,6 +29,14 @@ public class LocalGrid {
 
     public String getName() {
         return mName;
+    }
+
+    public boolean isChecked() {
+        return mChecked;
+    }
+
+    public void setChecked(boolean checked) {
+        mChecked = checked;
     }
 
     public void setName(String name) {

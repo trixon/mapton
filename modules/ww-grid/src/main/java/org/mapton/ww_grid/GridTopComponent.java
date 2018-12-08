@@ -1,4 +1,4 @@
-/*
+/* 
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,13 +17,11 @@ package org.mapton.ww_grid;
 
 import java.util.ResourceBundle;
 import javafx.geometry.Insets;
-import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.Separator;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import org.mapton.api.MDict;
@@ -49,16 +47,8 @@ import org.openide.windows.TopComponent;
 @TopComponent.Registration(mode = "properties", openAtStartup = false)
 public final class GridTopComponent extends MTopComponent implements MMapMagnet {
 
-    private CheckBox mClampToGroundCheckBox;
-    private CheckBox mEquatorCheckBox;
-    private CheckBox mLatitudesCheckBox;
-    private CheckBox mLongitudesCheckBox;
     private final Options mOptions = Options.getInstance();
-    private CheckBox mPolarAntarticCheckBox;
-    private CheckBox mPolarArticCheckBox;
     private BorderPane mRoot;
-    private CheckBox mTropicCancerCheckBox;
-    private CheckBox mTropicCapricornCheckBox;
 
     public GridTopComponent() {
         setName(MDict.GRID.toString());
@@ -67,8 +57,6 @@ public final class GridTopComponent extends MTopComponent implements MMapMagnet 
     @Override
     protected void initFX() {
         setScene(createScene());
-        initStates();
-        initListeners();
     }
 
     void readProperties(java.util.Properties p) {
@@ -88,18 +76,6 @@ public final class GridTopComponent extends MTopComponent implements MMapMagnet 
 
         Label titleLabel = new Label(MDict.GRID.toString());
 
-        mClampToGroundCheckBox = new CheckBox("CLAMP TO GROUND");
-
-        mLongitudesCheckBox = new CheckBox(bundle.getString("longitudes"));
-        mLatitudesCheckBox = new CheckBox(bundle.getString("latitudes"));
-
-        mPolarArticCheckBox = new CheckBox(bundle.getString("arctic_circle"));
-        mTropicCancerCheckBox = new CheckBox(bundle.getString("tropic_cancer"));
-        mEquatorCheckBox = new CheckBox(bundle.getString("equator"));
-        mTropicCapricornCheckBox = new CheckBox(bundle.getString("tropic_capricorn"));
-        mPolarAntarticCheckBox = new CheckBox(bundle.getString("antarctic_circle"));
-
-        Separator sep1 = new Separator(Orientation.HORIZONTAL);
         VBox titleBox = new VBox(8, titleLabel);
         titleBox.setAlignment(Pos.CENTER);
         Font defaultFont = Font.getDefault();
@@ -109,83 +85,20 @@ public final class GridTopComponent extends MTopComponent implements MMapMagnet 
         titleLabel.setAlignment(Pos.BASELINE_CENTER);
         titleLabel.setFont(new Font(defaultFont.getSize() * 2));
 
-        Label globalLabel = new Label(bundle.getString("global"));
-        globalLabel.setFont(new Font(defaultFont.getSize() * 1.4));
-        Label localLabel = new Label(bundle.getString("local"));
-        localLabel.setFont(new Font(defaultFont.getSize() * 1.4));
-
-        Label presentationLabel = new Label(bundle.getString("major_latitudes"));
-        presentationLabel.setFont(new Font(defaultFont.getSize() * 1.2));
-
-        LocalView localView = new LocalView();
+        GlobalGridView globalGridView = new GlobalGridView();
+        LocalGridView localGridView = new LocalGridView();
 
         VBox vbox = new VBox(8,
-                globalLabel,
-                //                mClampToGroundCheckBox,
-                mLongitudesCheckBox,
-                mLatitudesCheckBox,
-                presentationLabel,
-                mPolarArticCheckBox,
-                mTropicCancerCheckBox,
-                mEquatorCheckBox,
-                mTropicCapricornCheckBox,
-                mPolarAntarticCheckBox,
-                sep1,
-                localLabel,
-                localView
+                globalGridView,
+                localGridView
         );
 
         vbox.setPadding(new Insets(8));
+        VBox.setVgrow(localGridView, Priority.ALWAYS);
+
         mRoot = new BorderPane(vbox);
         mRoot.setTop(titleBox);
 
         return new Scene(mRoot);
-    }
-
-    private void initListeners() {
-        mClampToGroundCheckBox.setOnAction((event) -> {
-            mOptions.setClampToGround(mClampToGroundCheckBox.isSelected());
-        });
-
-        mLongitudesCheckBox.setOnAction((event) -> {
-            mOptions.setLongitudes(mLongitudesCheckBox.isSelected());
-        });
-
-        mLatitudesCheckBox.setOnAction((event) -> {
-            mOptions.setLatitudes(mLatitudesCheckBox.isSelected());
-        });
-
-        mPolarArticCheckBox.setOnAction((event) -> {
-            mOptions.setPolarArctic(mPolarArticCheckBox.isSelected());
-        });
-
-        mTropicCancerCheckBox.setOnAction((event) -> {
-            mOptions.setTropicCancer(mTropicCancerCheckBox.isSelected());
-        });
-
-        mEquatorCheckBox.setOnAction((event) -> {
-            mOptions.setEquator(mEquatorCheckBox.isSelected());
-        });
-
-        mTropicCapricornCheckBox.setOnAction((event) -> {
-            mOptions.setTropicCapricorn(mTropicCapricornCheckBox.isSelected());
-        });
-
-        mPolarAntarticCheckBox.setOnAction((event) -> {
-            mOptions.setPolarAntarctic(mPolarAntarticCheckBox.isSelected());
-        });
-    }
-
-    private void initStates() {
-        mClampToGroundCheckBox.setSelected(mOptions.isClampToGround());
-
-        mLongitudesCheckBox.setSelected(mOptions.isLongitudes());
-        mLatitudesCheckBox.setSelected(mOptions.isLatitudes());
-
-        mPolarArticCheckBox.setSelected(mOptions.isPolarArctic());
-        mTropicCancerCheckBox.setSelected(mOptions.isTropicCancer());
-        mEquatorCheckBox.setSelected(mOptions.isEquator());
-        mTropicCapricornCheckBox.setSelected(mOptions.isTropicCapricorn());
-        mPolarAntarticCheckBox.setSelected(mOptions.isPolarAntarctic());
     }
 }

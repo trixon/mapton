@@ -1,4 +1,4 @@
-/*
+/* 
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,6 +24,7 @@ import gov.nasa.worldwind.render.Path;
 import org.mapton.api.MDict;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.LayerBundleManager;
+import static org.mapton.ww_grid.Options.*;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -117,17 +118,14 @@ public class GridController extends LayerBundle {
         mPolarAttributes.setOutlineWidth(2.0);
     }
 
-    private void refresh() {
-        mLayer.removeAllRenderables();
-        mAltitudeMode = mOptions.isClampToGround() ? WorldWind.CLAMP_TO_GROUND : WorldWind.ABSOLUTE;
-
-        if (mOptions.isLatitudes()) {
+    private void plotGlobal() {
+        if (mOptions.is(KEY_GLOBAL_LATITUDES)) {
             for (int i = -90; i < 90; i += 15) {
                 drawLatitude(i, mGridAttributes);
             }
         }
 
-        if (mOptions.isLongitudes()) {
+        if (mOptions.is(KEY_GLOBAL_LONGITUDES)) {
             for (int i = -180; i < 180; i += 15) {
                 drawLongitude(i, i == 0 ? mEquatorAttributes : mGridAttributes);
             }
@@ -136,24 +134,40 @@ public class GridController extends LayerBundle {
         final double POLAR = 66.563167; //As of 2018-11-23
         final double TROPIC = 23.43683; //As of 2018-11-23
 
-        if (mOptions.isPolarArctic()) {
+        if (mOptions.is(KEY_GLOBAL_POLAR_ARCTIC)) {
             drawLatitude(POLAR, mPolarAttributes);
         }
 
-        if (mOptions.isTropicCancer()) {
+        if (mOptions.is(KEY_GLOBAL_TROPIC_CANCER)) {
             drawLatitude(TROPIC, mTropicAttributes);
         }
 
-        if (mOptions.isEquator()) {
+        if (mOptions.is(KEY_GLOBAL_EQUATOR)) {
             drawLatitude(0.0, mEquatorAttributes);
         }
 
-        if (mOptions.isTropicCapricorn()) {
+        if (mOptions.is(KEY_GLOBAL_TROPIC_CAPRICORN)) {
             drawLatitude(-TROPIC, mTropicAttributes);
         }
 
-        if (mOptions.isPolarAntarctic()) {
+        if (mOptions.is(KEY_GLOBAL_POLAR_ANTARCTIC)) {
             drawLatitude(-POLAR, mPolarAttributes);
+        }
+    }
+
+    private void plotLocal() {
+    }
+
+    private void refresh() {
+        mLayer.removeAllRenderables();
+        mAltitudeMode = mOptions.is(KEY_GLOBAL_CLAMP_TO_GROUND) ? WorldWind.CLAMP_TO_GROUND : WorldWind.ABSOLUTE;
+
+        if (mOptions.is(KEY_GLOBAL_PLOT)) {
+            plotGlobal();
+        }
+
+        if (mOptions.is(KEY_LOCAL_PLOT)) {
+            plotLocal();
         }
 
         LayerBundleManager.getInstance().redraw();
