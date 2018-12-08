@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,8 +21,6 @@ import com.google.gson.reflect.TypeToken;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import javafx.application.Platform;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javax.swing.SwingUtilities;
@@ -42,7 +40,7 @@ public class LocalGridManager {
             .serializeNulls()
             .setPrettyPrinting()
             .create();
-    private ObjectProperty<ObservableList<LocalGrid>> mItems = new SimpleObjectProperty<>();
+    private final ObservableList<LocalGrid> mItems = FXCollections.observableArrayList();
     private final Options mOptions = Options.getInstance();
 
     public static LocalGridManager getInstance() {
@@ -50,8 +48,6 @@ public class LocalGridManager {
     }
 
     private LocalGridManager() {
-        mItems.setValue(FXCollections.observableArrayList());
-        FXCollections.sort(mItems.get(), (LocalGrid o1, LocalGrid o2) -> o1.getName().compareTo(o2.getName()));
     }
 
     public void edit(final LocalGrid aLocalGrid) {
@@ -75,43 +71,30 @@ public class LocalGridManager {
                 Platform.runLater(() -> {
                     localGridPanel.save(localGrid);
                     if (add) {
-                        mItems.get().add(localGrid);
+                        mItems.add(localGrid);
                     }
-                    FXCollections.sort(mItems.get(), (LocalGrid o1, LocalGrid o2) -> o1.getName().compareTo(o2.getName()));
-                    save();
+
+                    FXCollections.sort(mItems, (LocalGrid o1, LocalGrid o2) -> o1.getName().compareTo(o2.getName()));
                 });
             }
         });
     }
 
-    public final ObservableList<LocalGrid> getItems() {
-        return mItems == null ? null : mItems.get();
-    }
-
-    public final ObjectProperty<ObservableList<LocalGrid>> itemsProperty() {
-        if (mItems == null) {
-            mItems = new SimpleObjectProperty<>(this, "items");
-        }
-
+    public ObservableList<LocalGrid> getItems() {
         return mItems;
     }
 
-    void load() {
-        String json = mOptions.get(KEY_LOCAL_GRIDS);
-        ArrayList<LocalGrid> grids = mGson.fromJson(json, new TypeToken<ArrayList<LocalGrid>>() {
+    public ArrayList<LocalGrid> loadItems() {
+        return mGson.fromJson(mOptions.get(KEY_LOCAL_GRIDS), new TypeToken<ArrayList<LocalGrid>>() {
         }.getType());
-
-        mItems.get().clear();
-        mItems.get().addAll(grids);
     }
 
     void removeAll(LocalGrid... localGrids) {
         getItems().removeAll(localGrids);
-        save();
     }
 
     void save() {
-        mOptions.set(KEY_LOCAL_GRIDS, mGson.toJson(mItems.get()));
+        mOptions.set(KEY_LOCAL_GRIDS, mGson.toJson(mItems));
     }
 
     private static class Holder {

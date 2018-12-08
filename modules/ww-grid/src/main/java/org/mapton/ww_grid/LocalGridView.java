@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,19 +15,24 @@
  */
 package org.mapton.ww_grid;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ToolBar;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javax.swing.SwingUtilities;
 import org.controlsfx.control.CheckListView;
+import org.controlsfx.control.IndexedCheckModel;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.MDict;
@@ -55,7 +60,7 @@ public class LocalGridView extends BorderPane {
         createUI();
         initStates();
         initListeners();
-        mManager.load();
+        load();
     }
 
     private void createUI() {
@@ -88,6 +93,7 @@ public class LocalGridView extends BorderPane {
         });
         importAction.setGraphic(MaterialIcon._File.FILE_DOWNLOAD.getImageView(getIconSizeToolBarInt()));
         importAction.setDisabled(true);
+
         Action exportAction = new Action(Dict.EXPORT.toString(), (ActionEvent event) -> {
             exportGrids();
         });
@@ -134,10 +140,62 @@ public class LocalGridView extends BorderPane {
         mPlotCheckBox.setOnAction((event) -> {
             mOptions.set(KEY_LOCAL_PLOT, mPlotCheckBox.isSelected());
         });
+
+        mListView.setOnMouseClicked((mouseEvent) -> {
+            if (getSelected() != null
+                    && mouseEvent.getButton() == MouseButton.PRIMARY
+                    && mouseEvent.getClickCount() == 2) {
+                mManager.edit(getSelected());
+            }
+        });
+
+        mManager.getItems().addListener((ListChangeListener.Change<? extends LocalGrid> c) -> {
+            Platform.runLater(() -> {
+                refreshCheckedStates();
+                mManager.save();
+            });
+
+        });
     }
 
     private void initStates() {
         mPlotCheckBox.setSelected(mOptions.is(KEY_LOCAL_PLOT));
+    }
+
+    private void load() {
+        ArrayList<LocalGrid> grids = mManager.loadItems();
+        Platform.runLater(() -> {
+            mListView.getItems().clear();
+            if (grids != null) {
+                mListView.getItems().addAll(grids);
+                refreshCheckedStates();
+
+                final IndexedCheckModel<LocalGrid> checkModel = mListView.getCheckModel();
+                final ObservableList<LocalGrid> items = mListView.getItems();
+
+                checkModel.getCheckedItems().addListener((ListChangeListener.Change<? extends LocalGrid> c) -> {
+                    Platform.runLater(() -> {
+                        items.forEach((grid) -> {
+                            grid.setChecked(checkModel.isChecked(grid));
+                        });
+                        mManager.save();
+                    });
+                });
+            }
+        });
+    }
+
+    private void refreshCheckedStates() {
+        final IndexedCheckModel<LocalGrid> checkModel = mListView.getCheckModel();
+        final ObservableList<LocalGrid> items = mListView.getItems();
+
+        for (LocalGrid grid : items) {
+            if (grid.isChecked()) {
+                checkModel.check(grid);
+            } else {
+                checkModel.clearCheck(grid);
+            }
+        }
     }
 
     private void remove() {

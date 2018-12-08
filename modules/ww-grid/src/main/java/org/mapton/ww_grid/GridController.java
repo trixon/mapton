@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,6 +21,7 @@ import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.Path;
+import javafx.collections.ObservableList;
 import org.mapton.api.MDict;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.LayerBundleManager;
@@ -38,6 +39,7 @@ public class GridController extends LayerBundle {
     private BasicShapeAttributes mEquatorAttributes;
     private final BasicShapeAttributes mGridAttributes = new BasicShapeAttributes();
     private final RenderableLayer mLayer = new RenderableLayer();
+    private final LocalGridManager mManager = LocalGridManager.getInstance();
     private final Options mOptions = Options.getInstance();
     private BasicShapeAttributes mPolarAttributes;
     private BasicShapeAttributes mTropicAttributes;
@@ -119,6 +121,8 @@ public class GridController extends LayerBundle {
     }
 
     private void plotGlobal() {
+//        System.out.println("PLOT GLOBAL");
+
         if (mOptions.is(KEY_GLOBAL_LATITUDES)) {
             for (int i = -90; i < 90; i += 15) {
                 drawLatitude(i, mGridAttributes);
@@ -156,6 +160,20 @@ public class GridController extends LayerBundle {
     }
 
     private void plotLocal() {
+        System.out.println("PLOT LOCAL");
+        ObservableList<LocalGrid> grids = mManager.getItems();
+        if (grids != null) {
+            for (LocalGrid grid : grids) {
+                if (grid.isChecked()) {
+                    plotLocal(grid);
+                }
+            }
+            System.out.println("");
+        }
+    }
+
+    private void plotLocal(LocalGrid grid) {
+        System.out.println(grid.getName());
     }
 
     private void refresh() {
