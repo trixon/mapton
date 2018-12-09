@@ -22,6 +22,10 @@ import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.Path;
 import javafx.collections.ObservableList;
+import javafx.geometry.Point2D;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+import org.mapton.api.MCooTrans;
 import org.mapton.api.MDict;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.LayerBundleManager;
@@ -39,6 +43,7 @@ public class GridController extends LayerBundle {
     private BasicShapeAttributes mEquatorAttributes;
     private final BasicShapeAttributes mGridAttributes = new BasicShapeAttributes();
     private final RenderableLayer mLayer = new RenderableLayer();
+    private BasicShapeAttributes mLocalGridAttributes;
     private final LocalGridManager mManager = LocalGridManager.getInstance();
     private final Options mOptions = Options.getInstance();
     private BasicShapeAttributes mPolarAttributes;
@@ -60,23 +65,22 @@ public class GridController extends LayerBundle {
         });
     }
 
+    private void draw(Position pos1, Position pos2, BasicShapeAttributes attributes) {
+        Path path = new Path(pos1, pos2);
+        path.setAttributes(attributes);
+        path.setFollowTerrain(true);
+        path.setAltitudeMode(mAltitudeMode);
+
+        mLayer.addRenderable(path);
+    }
+
     private void drawLatitude(double latitude, BasicShapeAttributes attributes) {
         Position pos0 = Position.fromDegrees(latitude, 0);
         Position pos1 = Position.fromDegrees(latitude, 180);
         Position pos2 = Position.fromDegrees(latitude, -180);
 
-        Path path1 = new Path(pos0, pos1);
-        path1.setAttributes(attributes);
-        path1.setFollowTerrain(true);
-        path1.setAltitudeMode(mAltitudeMode);
-
-        Path path2 = new Path(pos0, pos2);
-        path2.setAttributes(attributes);
-        path2.setFollowTerrain(true);
-        path2.setAltitudeMode(mAltitudeMode);
-
-        mLayer.addRenderable(path1);
-        mLayer.addRenderable(path2);
+        draw(pos0, pos1, attributes);
+        draw(pos0, pos2, attributes);
     }
 
     private void drawLongitude(double longitude, BasicShapeAttributes attributes) {
@@ -84,18 +88,8 @@ public class GridController extends LayerBundle {
         Position pos1 = Position.fromDegrees(90, longitude);
         Position pos2 = Position.fromDegrees(-90, longitude);
 
-        Path path1 = new Path(pos0, pos1);
-        path1.setAttributes(attributes);
-        path1.setFollowTerrain(true);
-        path1.setAltitudeMode(mAltitudeMode);
-
-        Path path2 = new Path(pos0, pos2);
-        path2.setAttributes(attributes);
-        path2.setFollowTerrain(true);
-        path2.setAltitudeMode(mAltitudeMode);
-
-        mLayer.addRenderable(path1);
-        mLayer.addRenderable(path2);
+        draw(pos0, pos1, attributes);
+        draw(pos0, pos2, attributes);
     }
 
     private void init() {
@@ -118,6 +112,9 @@ public class GridController extends LayerBundle {
         mPolarAttributes = (BasicShapeAttributes) mGridAttributes.copy();
         mPolarAttributes.setOutlineMaterial(Material.BLUE);
         mPolarAttributes.setOutlineWidth(2.0);
+
+        mLocalGridAttributes = (BasicShapeAttributes) mGridAttributes.copy();
+        mLocalGridAttributes.setOutlineMaterial(Material.YELLOW);
     }
 
     private void plotGlobal() {
@@ -174,6 +171,37 @@ public class GridController extends LayerBundle {
 
     private void plotLocal(LocalGrid grid) {
         System.out.println(grid.getName());
+        System.out.println(ToStringBuilder.reflectionToString(grid, ToStringStyle.MULTI_LINE_STYLE));
+        BasicShapeAttributes shapeAttributes = (BasicShapeAttributes) mLocalGridAttributes.copy();
+        shapeAttributes.setOutlineWidth(grid.getLineWidth());
+        MCooTrans cooTrans = MCooTrans.getCooTrans(grid.getCooTrans());
+
+        double latMin = grid.getLatStart();
+        double latMax = grid.getLatStart() + grid.getLatStep() * grid.getLatCount();
+        double lonMin = grid.getLonStart();
+        double lonMax = grid.getLonStart() + grid.getLonStep() * grid.getLonCount();
+
+        for (int lonCount = 0; lonCount < grid.getLonCount() + 1; lonCount++) {
+            double lon = grid.getLonStart() + lonCount * grid.getLonStep();
+            Point2D p1 = cooTrans.toWgs84(latMin, lon);
+            Point2D p2 = cooTrans.toWgs84(latMax, lon);
+
+            Position pos1 = Position.fromDegrees(p1.getY(), p1.getX());
+            Position pos2 = Position.fromDegrees(p2.getY(), p2.getX());
+
+            draw(pos1, pos2, shapeAttributes);
+        }
+
+        for (int latCount = 0; latCount < grid.getLatCount() + 1; latCount++) {
+            double lat = grid.getLatStart() + latCount * grid.getLatStep();
+            Point2D p1 = cooTrans.toWgs84(lat, lonMin);
+            Point2D p2 = cooTrans.toWgs84(lat, lonMax);
+
+            Position pos1 = Position.fromDegrees(p1.getY(), p1.getX());
+            Position pos2 = Position.fromDegrees(p2.getY(), p2.getX());
+
+            draw(pos1, pos2, shapeAttributes);
+        }
     }
 
     private void refresh() {

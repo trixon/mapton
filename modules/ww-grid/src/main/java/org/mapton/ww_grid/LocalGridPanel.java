@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,20 +20,19 @@ import java.text.ParseException;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
 import org.controlsfx.validation.ValidationResult;
 import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
-import org.mapton.api.MDict;
+import org.mapton.api.MCooTrans;
 import se.trixon.almond.nbp.fx.FxDialogPanel;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
@@ -41,34 +40,54 @@ import se.trixon.almond.util.Dict;
  */
 public class LocalGridPanel extends FxDialogPanel {
 
-    private TextField mCatTextField;
-    private TextArea mDescTextArea;
-    private Spinner<Double> mLatitudeSpinner;
-    private Spinner<Double> mLongitudeSpinner;
-    private TextField mNameTextField;
-    private CheckBox mPlacemarkCheckBox;
-    private Spinner<Double> mZoomSpinner;
+    private final ComboBox<MCooTrans> mComboBox = new ComboBox();
 
-    public void load(LocalGrid localGrid) {
-        mNameTextField.setText(localGrid.getName());
-//        mCatTextField.setText(bookmark.getCategory());
-//        mDescTextArea.setText(bookmark.getDescription());
-//        mZoomSpinner.getValueFactory().setValue(bookmark.getZoom());
-//        mLatitudeSpinner.getValueFactory().setValue(bookmark.getLatitude());
-//        mLongitudeSpinner.getValueFactory().setValue(bookmark.getLongitude());
-//        mPlacemarkCheckBox.setSelected(bookmark.isDisplayMarker());
+    private Spinner<Integer> mLatCountSpinner;
+    private Spinner<Double> mLatStartSpinner;
+    private Spinner<Double> mLatStepSpinner;
+    private Spinner<Double> mLineWidthSpinner;
+    private Spinner<Integer> mLonCountSpinner;
+    private Spinner<Double> mLonStartSpinner;
+    private Spinner<Double> mLonStepSpinner;
+    private TextField mNameTextField;
+
+    public void load(LocalGrid grid) {
+        mNameTextField.setText(grid.getName());
+
+        mLatStartSpinner.getValueFactory().setValue(grid.getLatStart());
+        mLatStepSpinner.getValueFactory().setValue(grid.getLatStep());
+        mLatCountSpinner.getValueFactory().setValue(grid.getLatCount());
+
+        mLonStartSpinner.getValueFactory().setValue(grid.getLonStart());
+        mLonStepSpinner.getValueFactory().setValue(grid.getLonStep());
+        mLonCountSpinner.getValueFactory().setValue(grid.getLonCount());
+
+        mLineWidthSpinner.getValueFactory().setValue(grid.getLineWidth());
+
+        if (!mComboBox.getItems().isEmpty()) {
+            MCooTrans cooTrans = MCooTrans.getCooTrans(grid.getCooTrans());
+
+            if (cooTrans == null) {
+                cooTrans = mComboBox.getItems().get(0);
+            }
+
+            mComboBox.getSelectionModel().select(cooTrans);
+        }
     }
 
-    public void save(LocalGrid localGrid) {
-//        Platform.runLater(() -> {
-        localGrid.setName(mNameTextField.getText());
-//            bookmark.setCategory(StringUtils.defaultString(mCatTextField.getText()));
-//            bookmark.setDescription(StringUtils.defaultString(mDescTextArea.getText()));
-//            bookmark.setZoom(mZoomSpinner.getValue());
-//            bookmark.setLatitude(mLatitudeSpinner.getValue());
-//            bookmark.setLongitude(mLongitudeSpinner.getValue());
-//            bookmark.setDisplayMarker(mPlacemarkCheckBox.isSelected());
-//        });
+    public void save(LocalGrid grid) {
+        grid.setName(mNameTextField.getText());
+        grid.setLatStart(mLatStartSpinner.getValue());
+        grid.setLatStep(mLatStepSpinner.getValue());
+        grid.setLatCount(mLatCountSpinner.getValue());
+
+        grid.setLonStart(mLonStartSpinner.getValue());
+        grid.setLonStep(mLonStepSpinner.getValue());
+        grid.setLonCount(mLonCountSpinner.getValue());
+
+        grid.setLineWidth(mLineWidthSpinner.getValue());
+
+        grid.setCooTrans(mComboBox.getSelectionModel().getSelectedItem().getName());
     }
 
     @Override
@@ -78,11 +97,16 @@ public class LocalGridPanel extends FxDialogPanel {
 
     private Scene createScene() {
         mNameTextField = new TextField();
-        mCatTextField = new TextField();
-        mDescTextArea = new TextArea();
-        mZoomSpinner = new Spinner(0.0, 1.0, 0.25, 0.1);
-        mLatitudeSpinner = new Spinner(-90, 90, 0, 0.000001);
-        mLongitudeSpinner = new Spinner(-180, 180, 0, 0.000001);
+
+        mLatStartSpinner = new Spinner<>(Integer.MIN_VALUE, Double.MAX_VALUE, 0, 1);
+        mLatStepSpinner = new Spinner<>(1, Double.MAX_VALUE, 1);
+        mLatCountSpinner = new Spinner<>(1, Integer.MAX_VALUE, 1);
+
+        mLonStartSpinner = new Spinner(Integer.MIN_VALUE, Double.MAX_VALUE, 0, 1);
+        mLonStepSpinner = new Spinner<>(1, Double.MAX_VALUE, 1);
+        mLonCountSpinner = new Spinner<>(1, Integer.MAX_VALUE, 1);
+
+        mLineWidthSpinner = new Spinner<>(0.1, 20, 0.1);
 
         StringConverter<Double> converter = new StringConverter<Double>() {
             private final DecimalFormat mDecimalFormat = new DecimalFormat("#.######");
@@ -116,50 +140,54 @@ public class LocalGridPanel extends FxDialogPanel {
             }
         };
 
-        mZoomSpinner.getValueFactory().setConverter(converter);
-        mLatitudeSpinner.getValueFactory().setConverter(converter);
-        mLongitudeSpinner.getValueFactory().setConverter(converter);
+        mLatStartSpinner.getValueFactory().setConverter(converter);
+        mLonStartSpinner.getValueFactory().setConverter(converter);
 
-        mPlacemarkCheckBox = new CheckBox(MDict.DISPLAY_PLACEMARK.toString());
-
-        mZoomSpinner.setEditable(true);
-        mLatitudeSpinner.setEditable(true);
-        mLongitudeSpinner.setEditable(true);
+        FxHelper.setEditable(true, mLatCountSpinner, mLatStartSpinner, mLatStepSpinner, mLonCountSpinner, mLonStartSpinner, mLonStepSpinner, mLineWidthSpinner);
+        FxHelper.autoCommitSpinners(mLatCountSpinner, mLatStartSpinner, mLatStepSpinner, mLonCountSpinner, mLonStartSpinner, mLonStepSpinner, mLineWidthSpinner);
 
         Label nameLabel = new Label(Dict.NAME.toString());
-        Label descLabel = new Label(Dict.DESCRIPTION.toString());
-        Label catLabel = new Label(Dict.CATEGORY.toString());
-        Label zoomLabel = new Label(Dict.ZOOM.toString());
-        Label latLabel = new Label(Dict.LATITUDE.toString());
-        Label lonLabel = new Label(Dict.LONGITUDE.toString());
+        Label latStartLabel = new Label("START LAT");
+        Label latStepLabel = new Label("STEP LAT");
+        Label latCountLabel = new Label("COUNT LAT");
+
+        Label lonStartLabel = new Label("START LON");
+        Label lonStepLabel = new Label("STEP LON");
+        Label lonCountLabel = new Label("COUNT LON");
+
+        Label lineWidthLabel = new Label("LINE WIDTH");
+        Label cooTransLabel = new Label("COO TRANS");
 
         VBox box = new VBox(
                 nameLabel,
                 mNameTextField,
-                catLabel,
-                mCatTextField,
-                descLabel,
-                mDescTextArea,
-                zoomLabel,
-                mZoomSpinner,
-                latLabel,
-                mLatitudeSpinner,
-                lonLabel,
-                mLongitudeSpinner,
-                mPlacemarkCheckBox
+                cooTransLabel,
+                mComboBox,
+                latStartLabel,
+                mLatStartSpinner,
+                lonStartLabel,
+                mLonStartSpinner,
+                latStepLabel,
+                mLatStepSpinner,
+                lonStepLabel,
+                mLonStepSpinner,
+                latCountLabel,
+                mLatCountSpinner,
+                lonCountLabel,
+                mLonCountSpinner,
+                lineWidthLabel,
+                mLineWidthSpinner
         );
 
         initValidation();
         box.setPadding(new Insets(8, 16, 0, 16));
-        VBox.setVgrow(mDescTextArea, Priority.ALWAYS);
 
         final Insets topInsets = new Insets(8, 0, 8, 0);
-        VBox.setMargin(descLabel, topInsets);
-        VBox.setMargin(catLabel, topInsets);
-        VBox.setMargin(zoomLabel, topInsets);
-        VBox.setMargin(latLabel, topInsets);
-        VBox.setMargin(lonLabel, topInsets);
-        VBox.setMargin(mPlacemarkCheckBox, topInsets);
+        VBox.setMargin(latStartLabel, topInsets);
+        VBox.setMargin(lonStartLabel, topInsets);
+
+        mComboBox.getItems().setAll(MCooTrans.getCooTrans());
+        mComboBox.setItems(mComboBox.getItems().sorted());
 
         return new Scene(box);
     }
