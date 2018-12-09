@@ -31,6 +31,7 @@ import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.LayerBundleManager;
 import static org.mapton.ww_grid.Options.*;
 import org.openide.util.lookup.ServiceProvider;
+import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
@@ -43,7 +44,6 @@ public class GridController extends LayerBundle {
     private BasicShapeAttributes mEquatorAttributes;
     private final BasicShapeAttributes mGridAttributes = new BasicShapeAttributes();
     private final RenderableLayer mLayer = new RenderableLayer();
-    private BasicShapeAttributes mLocalGridAttributes;
     private final LocalGridManager mManager = LocalGridManager.getInstance();
     private final Options mOptions = Options.getInstance();
     private BasicShapeAttributes mPolarAttributes;
@@ -112,9 +112,6 @@ public class GridController extends LayerBundle {
         mPolarAttributes = (BasicShapeAttributes) mGridAttributes.copy();
         mPolarAttributes.setOutlineMaterial(Material.BLUE);
         mPolarAttributes.setOutlineWidth(2.0);
-
-        mLocalGridAttributes = (BasicShapeAttributes) mGridAttributes.copy();
-        mLocalGridAttributes.setOutlineMaterial(Material.YELLOW);
     }
 
     private void plotGlobal() {
@@ -172,8 +169,13 @@ public class GridController extends LayerBundle {
     private void plotLocal(LocalGrid grid) {
         System.out.println(grid.getName());
         System.out.println(ToStringBuilder.reflectionToString(grid, ToStringStyle.MULTI_LINE_STYLE));
-        BasicShapeAttributes shapeAttributes = (BasicShapeAttributes) mLocalGridAttributes.copy();
+
+        BasicShapeAttributes shapeAttributes = new BasicShapeAttributes();
+        shapeAttributes.setDrawOutline(true);
+//        shapeAttributes.setOutlineOpacity(0.5);
         shapeAttributes.setOutlineWidth(grid.getLineWidth());
+        shapeAttributes.setOutlineMaterial(new Material(FxHelper.colorToColor(FxHelper.colorFromHex(grid.getColor()))));
+
         MCooTrans cooTrans = MCooTrans.getCooTrans(grid.getCooTrans());
 
         //FIXME Don't use static min/max

@@ -20,6 +20,7 @@ import java.text.ParseException;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
+import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
@@ -50,9 +51,11 @@ public class LocalGridPanel extends FxDialogPanel {
     private Spinner<Double> mLonStartSpinner;
     private Spinner<Double> mLonStepSpinner;
     private TextField mNameTextField;
+    private ColorPicker mColorPicker;
 
     public void load(LocalGrid grid) {
         mNameTextField.setText(grid.getName());
+        mColorPicker.setValue(FxHelper.colorFromHex(grid.getColor()));
 
         mLatStartSpinner.getValueFactory().setValue(grid.getLatStart());
         mLatStepSpinner.getValueFactory().setValue(grid.getLatStep());
@@ -77,6 +80,8 @@ public class LocalGridPanel extends FxDialogPanel {
 
     public void save(LocalGrid grid) {
         grid.setName(mNameTextField.getText());
+        grid.setColor(FxHelper.colorToHex(mColorPicker.getValue()));
+
         grid.setLatStart(mLatStartSpinner.getValue());
         grid.setLatStep(mLatStepSpinner.getValue());
         grid.setLatCount(mLatCountSpinner.getValue());
@@ -97,6 +102,7 @@ public class LocalGridPanel extends FxDialogPanel {
 
     private Scene createScene() {
         mNameTextField = new TextField();
+        mColorPicker = new ColorPicker();
 
         mLatStartSpinner = new Spinner<>(Integer.MIN_VALUE, Double.MAX_VALUE, 0, 1);
         mLatStepSpinner = new Spinner<>(1, Double.MAX_VALUE, 1);
@@ -157,11 +163,14 @@ public class LocalGridPanel extends FxDialogPanel {
 
         Label lineWidthLabel = new Label("LINE WIDTH");
         Label cooTransLabel = new Label("COO TRANS");
+        Label colorLabel = new Label(Dict.COLOR.toString());
 
         VBox box = new VBox(
                 nameLabel,
                 mNameTextField,
                 cooTransLabel,
+                colorLabel,
+                mColorPicker,
                 mComboBox,
                 latStartLabel,
                 mLatStartSpinner,

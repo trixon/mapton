@@ -23,6 +23,8 @@ import com.google.gson.annotations.SerializedName;
  */
 public class LocalGrid {
 
+    @SerializedName("color")
+    private String mColor = "000000";
     @SerializedName("cooTrans")
     private String mCooTrans = "WGS 84";
     @SerializedName("latCount")
@@ -45,6 +47,10 @@ public class LocalGrid {
     private boolean mVisible = true;
 
     public LocalGrid() {
+    }
+
+    public String getColor() {
+        return mColor;
     }
 
     public String getCooTrans() {
@@ -85,6 +91,10 @@ public class LocalGrid {
 
     public boolean isVisible() {
         return mVisible;
+    }
+
+    public void setColor(String color) {
+        mColor = color;
     }
 
     public void setCooTrans(String cooTrans) {
