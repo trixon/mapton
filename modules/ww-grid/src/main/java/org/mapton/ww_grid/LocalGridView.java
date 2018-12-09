@@ -90,8 +90,8 @@ public class LocalGridView extends BorderPane {
 
         Collection<? extends Action> actions = Arrays.asList(
                 addAction,
-                editAction,
-                remAction
+                remAction,
+                editAction
         );
 
         ToolBar toolBar = ActionUtils.createToolBar(actions, ActionUtils.ActionTextBehavior.HIDE);

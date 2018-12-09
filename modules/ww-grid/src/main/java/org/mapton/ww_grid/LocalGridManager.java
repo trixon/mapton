@@ -69,7 +69,7 @@ public class LocalGridManager {
                 localGridPanel.load(localGrid);
             });
 
-            localGridPanel.setPreferredSize(new Dimension(400, 400));
+            localGridPanel.setPreferredSize(new Dimension(600, 300));
             if (DialogDescriptor.OK_OPTION == DialogDisplayer.getDefault().notify(d)) {
                 Platform.runLater(() -> {
                     localGridPanel.save(localGrid);

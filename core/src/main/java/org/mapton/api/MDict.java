@@ -26,6 +26,7 @@ import se.trixon.almond.util.SystemHelper;
 public enum MDict {
     ATMOSPHERE,
     COMPASS,
+    COORDINATE_SYSTEM,
     COPY_LOCATION,
     DISPLAY_PLACEMARK,
     ELEVATION,
@@ -34,6 +35,7 @@ public enum MDict {
     GRID,
     HOLLOW,
     MAP_ENGINE,
+    ORIGIN,
     PROJECTION,
     PROJ_LAT_LON,
     PROJ_MERCATOR,
