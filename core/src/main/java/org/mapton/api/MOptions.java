@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,6 @@
 package org.mapton.api;
 
 import java.util.prefs.Preferences;
-import org.openide.util.Lookup;
 import org.openide.util.NbPreferences;
 
 /**
@@ -65,7 +64,7 @@ public class MOptions {
     }
 
     public MCooTrans getMapCooTrans() {
-        for (MCooTrans cooTrans : Lookup.getDefault().lookupAll(MCooTrans.class)) {
+        for (MCooTrans cooTrans : MCooTrans.getCooTrans()) {
             if (cooTrans.getName().equalsIgnoreCase(getMapCooTransName())) {
                 return cooTrans;
             }

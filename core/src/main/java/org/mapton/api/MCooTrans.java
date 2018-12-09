@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,6 +15,7 @@
  */
 package org.mapton.api;
 
+import java.util.ArrayList;
 import javafx.geometry.Point2D;
 import org.openide.util.Lookup;
 
@@ -25,7 +26,7 @@ import org.openide.util.Lookup;
 public interface MCooTrans {
 
     public static MCooTrans getCooTrans(String name) {
-        for (MCooTrans cooTrans : Lookup.getDefault().lookupAll(MCooTrans.class)) {
+        for (MCooTrans cooTrans : getCooTrans()) {
             if (cooTrans.getName().equalsIgnoreCase(name)) {
                 return cooTrans;
             }
@@ -33,6 +34,12 @@ public interface MCooTrans {
 
         return null;
     }
+
+    public static ArrayList<MCooTrans> getCooTrans() {
+        return new ArrayList<>(Lookup.getDefault().lookupAll(MCooTrans.class));
+    }
+
+    Point2D fromWgs84(double latitude, double longitude);
 
     MBounds getBoundsProjected();
 
@@ -44,10 +51,6 @@ public interface MCooTrans {
 
     double getLongitude(double latitude, double longitude);
 
-    Point2D toWgs84(double latitude, double longitude);
-
-    Point2D fromWgs84(double latitude, double longitude);
-
     String getLongitudeString(double latitude, double longitude);
 
     String getName();
@@ -57,5 +60,7 @@ public interface MCooTrans {
     boolean isWithinProjectedBounds(double latitude, double longitude);
 
     boolean isWithinWgs84Bounds(double latitude, double longitude);
+
+    Point2D toWgs84(double latitude, double longitude);
 
 }

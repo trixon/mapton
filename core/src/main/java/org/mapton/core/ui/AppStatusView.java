@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,13 +22,13 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.text.Font;
 import org.controlsfx.control.StatusBar;
-import org.openide.util.Lookup;
-import org.openide.util.LookupEvent;
-import se.trixon.almond.util.Dict;
 import org.mapton.api.MCooTrans;
 import org.mapton.api.MEngine;
 import org.mapton.api.MOptions;
 import org.mapton.api.Mapton;
+import org.openide.util.Lookup;
+import org.openide.util.LookupEvent;
+import se.trixon.almond.util.Dict;
 
 /**
  *
@@ -106,10 +106,7 @@ public class AppStatusView extends StatusBar {
 
     private void updateProviders() {
         Platform.runLater(() -> {
-            mComboBox.getItems().clear();
-            Lookup.getDefault().lookupAll(MCooTrans.class).forEach((cooTrans) -> {
-                mComboBox.getItems().add(cooTrans);
-            });
+            mComboBox.getItems().setAll(MCooTrans.getCooTrans());
             mComboBox.setItems(mComboBox.getItems().sorted());
 
             if (!mComboBox.getItems().isEmpty()) {
