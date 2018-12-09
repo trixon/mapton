@@ -161,7 +161,7 @@ public class GridController extends LayerBundle {
         ObservableList<LocalGrid> grids = mManager.getItems();
         if (grids != null) {
             for (LocalGrid grid : grids) {
-                if (grid.isChecked()) {
+                if (grid.isVisible()) {
                     plotLocal(grid);
                 }
             }
@@ -176,6 +176,7 @@ public class GridController extends LayerBundle {
         shapeAttributes.setOutlineWidth(grid.getLineWidth());
         MCooTrans cooTrans = MCooTrans.getCooTrans(grid.getCooTrans());
 
+        //FIXME Don't use static min/max
         double latMin = grid.getLatStart();
         double latMax = grid.getLatStart() + grid.getLatStep() * grid.getLatCount();
         double lonMin = grid.getLonStart();

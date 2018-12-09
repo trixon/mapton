@@ -15,22 +15,34 @@
  */
 package org.mapton.ww_grid;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  *
  * @author Patrik Karlström
  */
 public class LocalGrid {
 
-    private boolean mChecked = true;
+    @SerializedName("cooTrans")
     private String mCooTrans = "WGS 84";
+    @SerializedName("latCount")
     private int mLatCount;
+    @SerializedName("latStart")
     private double mLatStart;
+    @SerializedName("latStep")
     private double mLatStep;
+    @SerializedName("lineWidth")
     private double mLineWidth;
+    @SerializedName("lonCount")
     private int mLonCount;
+    @SerializedName("lonStart")
     private double mLonStart;
+    @SerializedName("lonStep")
     private double mLonStep;
+    @SerializedName("name")
     private String mName;
+    @SerializedName("visible")
+    private boolean mVisible = true;
 
     public LocalGrid() {
     }
@@ -71,12 +83,8 @@ public class LocalGrid {
         return mName;
     }
 
-    public boolean isChecked() {
-        return mChecked;
-    }
-
-    public void setChecked(boolean checked) {
-        mChecked = checked;
+    public boolean isVisible() {
+        return mVisible;
     }
 
     public void setCooTrans(String cooTrans) {
@@ -113,6 +121,10 @@ public class LocalGrid {
 
     public void setName(String name) {
         mName = name;
+    }
+
+    public void setVisible(boolean visible) {
+        mVisible = visible;
     }
 
     @Override

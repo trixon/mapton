@@ -19,11 +19,14 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import java.awt.Dimension;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javax.swing.SwingUtilities;
+import org.apache.commons.io.FileUtils;
 import org.mapton.api.MDict;
 import static org.mapton.ww_grid.Options.*;
 import org.openide.DialogDescriptor;
@@ -82,6 +85,21 @@ public class LocalGridManager {
 
     public ObservableList<LocalGrid> getItems() {
         return mItems;
+    }
+
+    public void gridExport(File file, ArrayList<LocalGrid> selectedGrids) throws IOException {
+        FileUtils.writeStringToFile(file, mGson.toJson(selectedGrids), "utf-8");
+    }
+
+    public void gridImport(File file) throws IOException {
+        String json = FileUtils.readFileToString(file, "utf-8");
+        ArrayList<LocalGrid> grids = mGson.fromJson(json, new TypeToken<ArrayList<LocalGrid>>() {
+        }.getType());
+
+        Platform.runLater(() -> {
+            mItems.addAll(grids);
+            FXCollections.sort(mItems, (LocalGrid o1, LocalGrid o2) -> o1.getName().compareTo(o2.getName()));
+        });
     }
 
     public ArrayList<LocalGrid> loadItems() {

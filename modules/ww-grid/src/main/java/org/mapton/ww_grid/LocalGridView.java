@@ -88,25 +88,10 @@ public class LocalGridView extends BorderPane {
         });
         remAction.setGraphic(MaterialIcon._Content.REMOVE.getImageView(getIconSizeToolBarInt()));
 
-        Action importAction = new Action(Dict.IMPORT.toString(), (ActionEvent event) -> {
-            importGrids();
-        });
-        importAction.setGraphic(MaterialIcon._File.FILE_DOWNLOAD.getImageView(getIconSizeToolBarInt()));
-        importAction.setDisabled(true);
-
-        Action exportAction = new Action(Dict.EXPORT.toString(), (ActionEvent event) -> {
-            exportGrids();
-        });
-        exportAction.setGraphic(MaterialIcon._File.FILE_UPLOAD.getImageView(getIconSizeToolBarInt()));
-        exportAction.setDisabled(true);
-
         Collection<? extends Action> actions = Arrays.asList(
                 addAction,
                 editAction,
-                remAction,
-                ActionUtils.ACTION_SPAN,
-                importAction,
-                exportAction
+                remAction
         );
 
         ToolBar toolBar = ActionUtils.createToolBar(actions, ActionUtils.ActionTextBehavior.HIDE);
@@ -126,14 +111,8 @@ public class LocalGridView extends BorderPane {
         mListView.setItems(mManager.getItems());
     }
 
-    private void exportGrids() {
-    }
-
     private LocalGrid getSelected() {
         return mListView.getSelectionModel().getSelectedItem();
-    }
-
-    private void importGrids() {
     }
 
     private void initListeners() {
@@ -176,7 +155,7 @@ public class LocalGridView extends BorderPane {
                 checkModel.getCheckedItems().addListener((ListChangeListener.Change<? extends LocalGrid> c) -> {
                     Platform.runLater(() -> {
                         items.forEach((grid) -> {
-                            grid.setChecked(checkModel.isChecked(grid));
+                            grid.setVisible(checkModel.isChecked(grid));
                         });
                         mManager.save();
                     });
@@ -190,7 +169,7 @@ public class LocalGridView extends BorderPane {
         final ObservableList<LocalGrid> items = mListView.getItems();
 
         for (LocalGrid grid : items) {
-            if (grid.isChecked()) {
+            if (grid.isVisible()) {
                 checkModel.check(grid);
             } else {
                 checkModel.clearCheck(grid);
