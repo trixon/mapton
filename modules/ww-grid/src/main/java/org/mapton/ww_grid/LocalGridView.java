@@ -23,6 +23,7 @@ import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.geometry.Insets;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ToolBar;
@@ -103,6 +104,7 @@ public class LocalGridView extends BorderPane {
         });
 
         toolBar.setStyle("-fx-spacing: 0px;");
+        toolBar.setPadding(Insets.EMPTY);
         setTop(new VBox(8, mPlotCheckBox, toolBar));
         setCenter(mListView);
         toolBar.disableProperty().bind(mPlotCheckBox.selectedProperty().not());

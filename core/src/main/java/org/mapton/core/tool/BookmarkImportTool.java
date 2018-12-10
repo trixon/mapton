@@ -152,7 +152,7 @@ public class BookmarkImportTool extends BookmarkTool {
                     String description = getOrDefault(record, MBookmarkManager.COL_DESCRIPTION, "");
                     String displayMarker = getOrDefault(record, MBookmarkManager.COL_DISPLAY_MARKER, "1");
                     String zoomString = getOrDefault(record, MBookmarkManager.COL_ZOOM, default_zoom);
-                    if (!NumberUtils.isNumber(zoomString)) {
+                    if (!NumberUtils.isCreatable(zoomString)) {
                         zoomString = default_zoom;
                     }
 

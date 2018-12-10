@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.prefs.PreferenceChangeEvent;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.MenuButton;
@@ -133,6 +134,8 @@ public class AppToolBar extends ToolBar {
     }
 
     private void init() {
+        setStyle("-fx-spacing: 0px;");
+        setPadding(Insets.EMPTY);
         ActionGroup viewActionGroup = new ActionGroup(Dict.VIEW.toString(),
                 mSysViewAlwaysOnTopAction,
                 ActionUtils.ACTION_SEPARATOR,
@@ -169,9 +172,9 @@ public class AppToolBar extends ToolBar {
         ArrayList<Action> actions = new ArrayList<>();
         actions.addAll(Arrays.asList(
                 mHomeAction,
+                mToolboxAction,
                 mBookmarkAction,
                 mLayerAction,
-                mToolboxAction,
                 mStyleAction,
                 ActionUtils.ACTION_SPAN,
                 mSysViewMapAction,
