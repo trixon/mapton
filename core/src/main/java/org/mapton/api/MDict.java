@@ -33,6 +33,7 @@ public enum MDict {
     FLAT,
     GLOBE,
     GRID,
+    GRIDS,
     HOLLOW,
     MAP_ENGINE,
     ORIGIN,

@@ -19,7 +19,6 @@ import java.io.File;
 import java.io.IOException;
 import org.apache.commons.io.FileUtils;
 import org.controlsfx.control.action.Action;
-import org.mapton.api.MDict;
 import org.mapton.api.MTool;
 import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
@@ -38,11 +37,11 @@ public class GridImportTool extends GridTool {
 
     @Override
     public Action getAction() {
-        String title = Dict.IMPORT.toString();
-        Action action = new Action(title, (t) -> {
+        Action action = new Action(mTitle, (t) -> {
             SimpleDialog.clearFilters();
             SimpleDialog.addFilter(mExtGrid);
-            SimpleDialog.setTitle(String.format("%s %s", title, MDict.GRID.toString().toLowerCase()));
+            final String dialogTitle = String.format("%s %s", Dict.IMPORT.toString(), mTitle.toLowerCase());
+            SimpleDialog.setTitle(dialogTitle);
 
             if (mFile == null) {
                 SimpleDialog.setPath(FileUtils.getUserDirectory());
@@ -56,7 +55,7 @@ public class GridImportTool extends GridTool {
                     mFile = SimpleDialog.getPath();
                     try {
                         mManager.gridImport(mFile);
-                        NbMessage.information(title, Dict.OPERATION_COMPLETED.toString());
+                        NbMessage.information(dialogTitle, Dict.OPERATION_COMPLETED.toString());
                     } catch (IOException ex) {
                         Exceptions.printStackTrace(ex);
                     }
@@ -65,5 +64,10 @@ public class GridImportTool extends GridTool {
         });
 
         return action;
+    }
+
+    @Override
+    public String getParent() {
+        return String.format("%s/%s", Dict.SYSTEM.toString(), Dict.IMPORT.toString());
     }
 }

@@ -19,7 +19,6 @@ import javafx.stage.FileChooser;
 import org.mapton.api.MDict;
 import org.mapton.api.MTool;
 import org.mapton.ww_grid.LocalGridManager;
-import se.trixon.almond.util.Dict;
 
 /**
  *
@@ -27,12 +26,7 @@ import se.trixon.almond.util.Dict;
  */
 public abstract class GridTool implements MTool {
 
-    protected final LocalGridManager mManager = LocalGridManager.getInstance();
-
     protected final FileChooser.ExtensionFilter mExtGrid = new FileChooser.ExtensionFilter("Mapton Grids (*.grid)", "*.grid");
-
-    @Override
-    public String getParent() {
-        return String.format("%s/%s", Dict.SYSTEM.toString(), MDict.GRID.toString());
-    }
+    protected final LocalGridManager mManager = LocalGridManager.getInstance();
+    protected final String mTitle = MDict.GRIDS.toString();
 }

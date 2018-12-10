@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,9 +30,6 @@ public abstract class BookmarkTool implements MTool {
     protected FileChooser.ExtensionFilter mExtGeo = new FileChooser.ExtensionFilter("SBG Geo (*.geo)", "*.geo");
     protected FileChooser.ExtensionFilter mExtJson = new FileChooser.ExtensionFilter("JSON (*.json)", "*.json");
     protected FileChooser.ExtensionFilter mExtKml = new FileChooser.ExtensionFilter("Keyhole Markup Language (*.kml)", "*.kml");
+    protected final String mTitle = Dict.BOOKMARKS.toString();
 
-    @Override
-    public String getParent() {
-        return String.format("%s/%s", Dict.SYSTEM.toString(), Dict.BOOKMARKS.toString());
-    }
 }

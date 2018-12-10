@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -65,15 +65,15 @@ public class BookmarkExportTool extends BookmarkTool {
 
     @Override
     public Action getAction() {
-        String title = Dict.EXPORT.toString();
-        Action action = new Action(title, (t) -> {
+        Action action = new Action(mTitle, (t) -> {
             SimpleDialog.clearFilters();
             SimpleDialog.addFilter(mExtCsv);
             SimpleDialog.addFilter(mExtGeo);
             SimpleDialog.addFilter(mExtJson);
             SimpleDialog.addFilter(mExtKml);
             SimpleDialog.setFilter(mExtCsv);
-            SimpleDialog.setTitle(String.format("%s %s", title, Dict.BOOKMARKS.toString().toLowerCase()));
+            final String dialogTitle = String.format("%s %s", Dict.EXPORT.toString(), mTitle.toLowerCase());
+            SimpleDialog.setTitle(dialogTitle);
 
             if (mFile == null) {
                 SimpleDialog.setPath(FileUtils.getUserDirectory());
@@ -108,7 +108,7 @@ public class BookmarkExportTool extends BookmarkTool {
                                 throw new AssertionError();
                         }
                         String message = String.format(mBundle.getString("bookmark_export_completed_message"), mManager.getItems().size());
-                        NbMessage.information(Dict.OPERATION_COMPLETED.toString(), message);
+                        NbMessage.information(dialogTitle, Dict.OPERATION_COMPLETED.toString());
 
                     } catch (IOException ex) {
                         Exceptions.printStackTrace(ex);
@@ -118,6 +118,11 @@ public class BookmarkExportTool extends BookmarkTool {
         });
 
         return action;
+    }
+
+    @Override
+    public String getParent() {
+        return String.format("%s/%s", Dict.SYSTEM.toString(), Dict.EXPORT.toString());
     }
 
     private class CsvExporter {

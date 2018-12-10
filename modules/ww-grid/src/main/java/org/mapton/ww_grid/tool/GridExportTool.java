@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import org.apache.commons.io.FileUtils;
 import org.controlsfx.control.action.Action;
-import org.mapton.api.MDict;
 import org.mapton.api.MTool;
 import org.mapton.ww_grid.LocalGrid;
 import org.openide.util.Exceptions;
@@ -40,8 +39,7 @@ public class GridExportTool extends GridTool {
 
     @Override
     public Action getAction() {
-        String title = Dict.EXPORT.toString();
-        Action action = new Action(title, (t) -> {
+        Action action = new Action(mTitle, (t) -> {
             ArrayList<LocalGrid> selectedGrids = new ArrayList<>();
             mManager.getItems().stream()
                     .filter((grid) -> (grid.isVisible()))
@@ -51,7 +49,8 @@ public class GridExportTool extends GridTool {
             if (!selectedGrids.isEmpty()) {
                 SimpleDialog.clearFilters();
                 SimpleDialog.addFilter(mExtGrid);
-                SimpleDialog.setTitle(String.format("%s %s", title, MDict.GRID.toString().toLowerCase()));
+                final String dialogTitle = String.format("%s %s", Dict.EXPORT.toString(), mTitle.toLowerCase());
+                SimpleDialog.setTitle(dialogTitle);
 
                 if (mFile == null) {
                     SimpleDialog.setPath(FileUtils.getUserDirectory());
@@ -65,7 +64,7 @@ public class GridExportTool extends GridTool {
                         mFile = SimpleDialog.getPath();
                         try {
                             mManager.gridExport(mFile, selectedGrids);
-                            NbMessage.information(title, Dict.OPERATION_COMPLETED.toString());
+                            NbMessage.information(dialogTitle, Dict.OPERATION_COMPLETED.toString());
                         } catch (IOException ex) {
                             Exceptions.printStackTrace(ex);
                         }
@@ -75,5 +74,10 @@ public class GridExportTool extends GridTool {
         });
 
         return action;
+    }
+
+    @Override
+    public String getParent() {
+        return String.format("%s/%s", Dict.SYSTEM.toString(), Dict.EXPORT.toString());
     }
 }
