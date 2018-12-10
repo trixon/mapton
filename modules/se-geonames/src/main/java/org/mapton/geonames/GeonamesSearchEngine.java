@@ -21,7 +21,7 @@ import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 import java.util.ArrayList;
 import java.util.TreeMap;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.mapton.api.MBookmark;
 import org.mapton.api.MSearchEngine;
 import org.openide.util.lookup.ServiceProvider;

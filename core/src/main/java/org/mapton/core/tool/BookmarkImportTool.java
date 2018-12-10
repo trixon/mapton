@@ -29,7 +29,7 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.controlsfx.control.action.Action;
 import org.mapton.api.MBookmark;
 import org.mapton.api.MBookmarkManager;

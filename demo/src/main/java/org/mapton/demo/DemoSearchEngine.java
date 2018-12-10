@@ -16,7 +16,7 @@
 package org.mapton.demo;
 
 import java.util.ArrayList;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.mapton.api.MBookmark;
 import org.mapton.api.MSearchEngine;
 import org.openide.util.lookup.ServiceProvider;
