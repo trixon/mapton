@@ -112,7 +112,7 @@ public class LocalGridManager {
     }
 
     void save() {
-        mOptions.set(KEY_LOCAL_GRIDS, mGson.toJson(mItems));
+        mOptions.put(KEY_LOCAL_GRIDS, mGson.toJson(mItems));
     }
 
     private static class Holder {

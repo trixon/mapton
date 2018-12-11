@@ -86,35 +86,35 @@ public class GlobalGridPanel extends FxDialogPanel {
 
     private void initListeners() {
         mClampToGroundCheckBox.setOnAction((event) -> {
-            mOptions.set(KEY_GLOBAL_CLAMP_TO_GROUND, mClampToGroundCheckBox.isSelected());
+            mOptions.put(KEY_GLOBAL_CLAMP_TO_GROUND, mClampToGroundCheckBox.isSelected());
         });
 
         mLongitudesCheckBox.setOnAction((event) -> {
-            mOptions.set(KEY_GLOBAL_LONGITUDES, mLongitudesCheckBox.isSelected());
+            mOptions.put(KEY_GLOBAL_LONGITUDES, mLongitudesCheckBox.isSelected());
         });
 
         mLatitudesCheckBox.setOnAction((event) -> {
-            mOptions.set(KEY_GLOBAL_LATITUDES, mLatitudesCheckBox.isSelected());
+            mOptions.put(KEY_GLOBAL_LATITUDES, mLatitudesCheckBox.isSelected());
         });
 
         mPolarArticCheckBox.setOnAction((event) -> {
-            mOptions.set(KEY_GLOBAL_POLAR_ARCTIC, mPolarArticCheckBox.isSelected());
+            mOptions.put(KEY_GLOBAL_POLAR_ARCTIC, mPolarArticCheckBox.isSelected());
         });
 
         mTropicCancerCheckBox.setOnAction((event) -> {
-            mOptions.set(KEY_GLOBAL_TROPIC_CANCER, mTropicCancerCheckBox.isSelected());
+            mOptions.put(KEY_GLOBAL_TROPIC_CANCER, mTropicCancerCheckBox.isSelected());
         });
 
         mEquatorCheckBox.setOnAction((event) -> {
-            mOptions.set(KEY_GLOBAL_EQUATOR, mEquatorCheckBox.isSelected());
+            mOptions.put(KEY_GLOBAL_EQUATOR, mEquatorCheckBox.isSelected());
         });
 
         mTropicCapricornCheckBox.setOnAction((event) -> {
-            mOptions.set(KEY_GLOBAL_TROPIC_CAPRICORN, mTropicCapricornCheckBox.isSelected());
+            mOptions.put(KEY_GLOBAL_TROPIC_CAPRICORN, mTropicCapricornCheckBox.isSelected());
         });
 
         mPolarAntarticCheckBox.setOnAction((event) -> {
-            mOptions.set(KEY_GLOBAL_POLAR_ANTARCTIC, mPolarAntarticCheckBox.isSelected());
+            mOptions.put(KEY_GLOBAL_POLAR_ANTARCTIC, mPolarAntarticCheckBox.isSelected());
         });
     }
 

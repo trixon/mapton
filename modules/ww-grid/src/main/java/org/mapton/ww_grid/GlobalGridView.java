@@ -85,7 +85,7 @@ public class GlobalGridView extends VBox {
         });
 
         mPlotCheckBox.setOnAction((event) -> {
-            mOptions.set(KEY_GLOBAL_PLOT, mPlotCheckBox.isSelected());
+            mOptions.put(KEY_GLOBAL_PLOT, mPlotCheckBox.isSelected());
         });
 
     }

@@ -119,7 +119,7 @@ public class LocalGridView extends BorderPane {
 
     private void initListeners() {
         mPlotCheckBox.setOnAction((event) -> {
-            mOptions.set(KEY_LOCAL_PLOT, mPlotCheckBox.isSelected());
+            mOptions.put(KEY_LOCAL_PLOT, mPlotCheckBox.isSelected());
         });
 
         mListView.setOnMouseClicked((mouseEvent) -> {
