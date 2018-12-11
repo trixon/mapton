@@ -26,6 +26,7 @@ import gov.nasa.worldwind.geom.Box;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.geom.Sector;
 import gov.nasa.worldwind.geom.Vec4;
+import java.awt.Point;
 import java.awt.event.HierarchyBoundsListener;
 import java.awt.event.HierarchyEvent;
 import java.awt.event.MouseAdapter;
@@ -176,20 +177,25 @@ public class WorldWindMapEngine extends MEngine {
 
     private void initListeners() {
         mMap.addMouseListener(new MouseAdapter() {
+            private Point mPoint;
 
             @Override
             public void mousePressed(MouseEvent e) {
+                mPoint = e.getPoint();
                 log(String.format("GlobalZoom = %f", toGlobalZoom()));
-                maybeShowPopup(e);
+//                maybeShowPopup(e);
             }
 
             @Override
             public void mouseReleased(MouseEvent e) {
-                maybeShowPopup(e);
+                double distance = mPoint.distance(e.getPoint());
+                if (e.getButton() == MouseEvent.BUTTON3 && distance < 3) {
+                    displayContextMenu(e.getLocationOnScreen());
+                }
             }
 
             private void maybeShowPopup(MouseEvent e) {
-                if (e.isPopupTrigger() && e.isShiftDown()) {
+                if (e.isPopupTrigger()) {
                     displayContextMenu(e.getLocationOnScreen());
                 }
             }
