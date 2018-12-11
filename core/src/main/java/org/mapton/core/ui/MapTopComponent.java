@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.ResourceBundle;
+import java.util.logging.Logger;
 import java.util.prefs.PreferenceChangeEvent;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -62,7 +63,6 @@ import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.util.NbBundle;
 import org.openide.util.NbBundle.Messages;
-import org.openide.windows.Mode;
 import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
 import se.trixon.almond.nbp.NbLog;
@@ -95,6 +95,8 @@ import se.trixon.almond.util.fx.dialogs.SimpleDialog;
 })
 public final class MapTopComponent extends MTopComponent {
 
+    private static final Logger LOGGER = Logger.getLogger(MEngine.class.getName());
+    private final HashSet<TopComponent> mActiveMapMagnets = new HashSet<>();
     private AppStatusPanel mAppStatusPanel;
     private final ResourceBundle mBundle = NbBundle.getBundle(MapTopComponent.class);
     private Menu mContextCopyMenu;
@@ -103,8 +105,7 @@ public final class MapTopComponent extends MTopComponent {
     private Menu mContextOpenMenu;
     private File mDestination;
     private MEngine mEngine;
-    private HashSet<TopComponent> mMapMagnets = new HashSet<>();
-    private HashSet<TopComponent> mActiveMapMagnets = new HashSet<>();
+    private final HashSet<TopComponent> mMapMagnets = new HashSet<>();
     private final Mapton mMapton = Mapton.getInstance();
     private BorderPane mRoot;
 
@@ -142,11 +143,7 @@ public final class MapTopComponent extends MTopComponent {
         mActiveMapMagnets.clear();
 
         final WindowManager windowManager = WindowManager.getDefault();
-        for (Mode mode : windowManager.getModes()) {
-            if (mode.equals(windowManager.findMode(this))) {
-                break;
-            }
-
+        windowManager.getModes().stream().filter((mode) -> !(mode.equals(windowManager.findMode(this)))).forEachOrdered((mode) -> {
             TopComponent selectedTopComponent = mode.getSelectedTopComponent();
             for (TopComponent tc : mode.getTopComponents()) {
                 if (tc instanceof MTopComponent && tc.isOpened()) {
@@ -160,7 +157,7 @@ public final class MapTopComponent extends MTopComponent {
                     }
                 }
             }
-        }
+        });
     }
 
     @Override
