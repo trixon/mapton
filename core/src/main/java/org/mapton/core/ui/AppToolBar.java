@@ -173,8 +173,8 @@ public class AppToolBar extends ToolBar {
         actions.addAll(Arrays.asList(
                 mHomeAction,
                 mToolboxAction,
-                mBookmarkAction,
                 mLayerAction,
+                mBookmarkAction,
                 mStyleAction,
                 ActionUtils.ACTION_SPAN,
                 mSysViewMapAction,
@@ -191,7 +191,7 @@ public class AppToolBar extends ToolBar {
             });
 
             mSearchView = new SearchView();
-            getItems().add(5, mSearchView.getPresenter());
+            getItems().add(4, mSearchView.getPresenter());
         });
     }
 
