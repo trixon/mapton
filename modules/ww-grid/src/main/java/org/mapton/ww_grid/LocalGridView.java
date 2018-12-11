@@ -146,22 +146,22 @@ public class LocalGridView extends BorderPane {
     private void load() {
         ArrayList<LocalGrid> grids = mManager.loadItems();
         Platform.runLater(() -> {
-            mListView.getItems().clear();
-            if (grids != null) {
-                mListView.getItems().addAll(grids);
-                refreshCheckedStates();
+            final IndexedCheckModel<LocalGrid> checkModel = mListView.getCheckModel();
+            final ObservableList<LocalGrid> items = mListView.getItems();
 
-                final IndexedCheckModel<LocalGrid> checkModel = mListView.getCheckModel();
-                final ObservableList<LocalGrid> items = mListView.getItems();
-
-                checkModel.getCheckedItems().addListener((ListChangeListener.Change<? extends LocalGrid> c) -> {
-                    Platform.runLater(() -> {
-                        items.forEach((grid) -> {
-                            grid.setVisible(checkModel.isChecked(grid));
-                        });
-                        mManager.save();
+            checkModel.getCheckedItems().addListener((ListChangeListener.Change<? extends LocalGrid> c) -> {
+                Platform.runLater(() -> {
+                    items.forEach((grid) -> {
+                        grid.setVisible(checkModel.isChecked(grid));
                     });
+                    mManager.save();
                 });
+            });
+
+            items.clear();
+            if (grids != null) {
+                items.addAll(grids);
+                refreshCheckedStates();
             }
         });
     }
