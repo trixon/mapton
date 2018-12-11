@@ -23,8 +23,6 @@ import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.Path;
 import javafx.collections.ObservableList;
 import javafx.geometry.Point2D;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 import org.mapton.api.MCooTrans;
 import org.mapton.api.MDict;
 import org.mapton.worldwind.api.LayerBundle;
@@ -154,7 +152,6 @@ public class GridController extends LayerBundle {
     }
 
     private void plotLocal() {
-        System.out.println("PLOT LOCAL");
         ObservableList<LocalGrid> grids = mManager.getItems();
         if (grids != null) {
             for (LocalGrid grid : grids) {
@@ -162,14 +159,10 @@ public class GridController extends LayerBundle {
                     plotLocal(grid);
                 }
             }
-            System.out.println("");
         }
     }
 
     private void plotLocal(LocalGrid grid) {
-        System.out.println(grid.getName());
-        System.out.println(ToStringBuilder.reflectionToString(grid, ToStringStyle.MULTI_LINE_STYLE));
-
         BasicShapeAttributes shapeAttributes = new BasicShapeAttributes();
         shapeAttributes.setDrawOutline(true);
 //        shapeAttributes.setOutlineOpacity(0.5);
@@ -179,6 +172,7 @@ public class GridController extends LayerBundle {
         MCooTrans cooTrans = MCooTrans.getCooTrans(grid.getCooTrans());
 
         //FIXME Don't use static min/max
+        //https://github.com/trixon/mapton/issues/36
         double latMin = grid.getLatStart();
         double latMax = grid.getLatStart() + grid.getLatStep() * grid.getLatCount();
         double lonMin = grid.getLonStart();
