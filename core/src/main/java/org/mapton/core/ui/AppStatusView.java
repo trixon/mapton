@@ -109,6 +109,10 @@ public class AppStatusView extends StatusBar {
             mComboBox.getItems().setAll(MCooTrans.getCooTrans());
             mComboBox.setItems(mComboBox.getItems().sorted());
 
+            for (MCooTrans cooTrans : mComboBox.getItems()) {
+                Mapton.logLoading("Coordinate Transformation", cooTrans.getName());
+            }
+
             if (!mComboBox.getItems().isEmpty()) {
                 MCooTrans cooTrans = MCooTrans.getCooTrans(mOptions.getMapCooTransName());
 

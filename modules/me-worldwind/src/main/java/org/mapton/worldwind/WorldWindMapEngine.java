@@ -172,7 +172,7 @@ public class WorldWindMapEngine extends MEngine {
         mLayerView.refresh(mMap);
         setImageRenderer(mMap.getImageRenderer());
 
-        NbLog.v(LOG_TAG, "Loaded and ready");
+        NbLog.i(LOG_TAG, "Loaded and ready");
     }
 
     private void initListeners() {
@@ -182,7 +182,6 @@ public class WorldWindMapEngine extends MEngine {
             @Override
             public void mousePressed(MouseEvent e) {
                 mPoint = e.getPoint();
-                log(String.format("GlobalZoom = %f", toGlobalZoom()));
 //                maybeShowPopup(e);
             }
 

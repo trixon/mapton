@@ -36,14 +36,14 @@ import javafx.scene.Node;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Slider;
 import javafx.scene.image.WritableImage;
-import org.openide.util.Exceptions;
-import org.openide.util.lookup.ServiceProvider;
-import se.trixon.almond.nbp.NbLog;
-import se.trixon.almond.util.MathHelper;
 import org.mapton.api.MEngine;
 import org.mapton.api.MLatLon;
 import org.mapton.api.MLatLonBox;
 import org.mapton.gmapsfx.api.MapStyle;
+import org.openide.util.Exceptions;
+import org.openide.util.lookup.ServiceProvider;
+import se.trixon.almond.nbp.NbLog;
+import se.trixon.almond.util.MathHelper;
 
 /**
  *
@@ -163,7 +163,7 @@ public class GMapsFXMapEngine extends MEngine {
             });
 
             mBookmarkPlotter = new BookmarkPlotter(this);
-            NbLog.v(LOG_TAG, "Loaded and ready");
+            NbLog.i(LOG_TAG, "Loaded and ready");
         });
     }
 

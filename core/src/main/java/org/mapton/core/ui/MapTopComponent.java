@@ -438,7 +438,7 @@ public final class MapTopComponent extends MTopComponent {
         }
 
         Mapton.getAppToolBar().refreshEngine(engine);
-        NbLog.v(Mapton.LOG_TAG, String.format("Set Map Engine to %s", engine.getName()));
+        Mapton.logLoading("Map Engine", engine.getName());
     }
 
     private void whatsHere() {

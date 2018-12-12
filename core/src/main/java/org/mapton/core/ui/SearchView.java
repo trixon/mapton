@@ -48,10 +48,10 @@ import org.mapton.api.MSearchEngine;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.mapton.core.Wgs84DMS;
+import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.util.NbBundle;
-import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 
@@ -79,9 +79,16 @@ public class SearchView {
         createUI();
         initListeners();
         new Thread(() -> {
-            Lookup.getDefault().lookupAll(MSearchEngine.class).forEach((searchEngine) -> {
-                NbLog.i(getClass(), "Loading search engine: " + searchEngine.getName());
-            });
+            try {
+                Thread.sleep(4000);
+                ArrayList<MSearchEngine> searchEngines = new ArrayList<>(Lookup.getDefault().lookupAll(MSearchEngine.class));
+                searchEngines.sort((MSearchEngine o1, MSearchEngine o2) -> o1.getName().compareTo(o2.getName()));
+                searchEngines.forEach((searchEngine) -> {
+                    Mapton.logLoading("Search engine", searchEngine.getName());
+                });
+            } catch (InterruptedException ex) {
+                Exceptions.printStackTrace(ex);
+            }
         }).start();
 
         populateEngines();

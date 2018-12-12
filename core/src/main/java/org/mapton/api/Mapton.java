@@ -25,6 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.mapton.core.ui.AppToolBar;
 import org.openide.awt.StatusDisplayer;
 import org.openide.util.Lookup;
+import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.util.fx.FxHelper;
 
 /**
@@ -123,6 +124,14 @@ public class Mapton {
 
     public static Color getThemeColor() {
         return Color.web("#00406c").brighter().brighter();
+    }
+
+    public static void logLoading(String category, String item) {
+        NbLog.i("Loading", String.format("%s: %s ", category, item));
+    }
+
+    public static void logRemoving(String category, String item) {
+        NbLog.i("Removing", String.format("%s: %s ", category, item));
     }
 
     public static void setStatusText(String text, int importance) {
