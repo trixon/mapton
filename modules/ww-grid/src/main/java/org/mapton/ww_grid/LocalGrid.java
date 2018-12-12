@@ -16,6 +16,11 @@
 package org.mapton.ww_grid;
 
 import com.google.gson.annotations.SerializedName;
+import javafx.geometry.Point2D;
+import org.mapton.api.MCooTrans;
+import org.mapton.api.MLatLon;
+import org.mapton.api.MLatLonBox;
+import org.mapton.api.Mapton;
 
 /**
  *
@@ -140,5 +145,18 @@ public class LocalGrid {
     @Override
     public String toString() {
         return mName;
+    }
+
+    void fitToBounds() {
+        MCooTrans cooTrans = MCooTrans.getCooTrans(getCooTrans());
+
+        Point2D sw = cooTrans.toWgs84(mLatStart, mLonStart);
+        Point2D ne = cooTrans.toWgs84(mLatStart + mLatStep * mLatCount, mLonStart + mLonStep * mLonCount);
+
+        MLatLon southWest = new MLatLon(sw.getY(), sw.getX());
+        MLatLon northEast = new MLatLon(ne.getY(), ne.getX());
+
+        MLatLonBox latLonBox = new MLatLonBox(southWest, northEast);
+        Mapton.getEngine().fitToBounds(latLonBox);
     }
 }

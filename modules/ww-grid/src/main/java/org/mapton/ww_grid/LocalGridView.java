@@ -130,6 +130,12 @@ public class LocalGridView extends BorderPane {
             }
         });
 
+        mListView.getSelectionModel().getSelectedItems().addListener((ListChangeListener.Change<? extends LocalGrid> c) -> {
+            if (getSelected() != null) {
+                getSelected().fitToBounds();
+            }
+        });
+
         mManager.getItems().addListener((ListChangeListener.Change<? extends LocalGrid> c) -> {
             Platform.runLater(() -> {
                 refreshCheckedStates();
