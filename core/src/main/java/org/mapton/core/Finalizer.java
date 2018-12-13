@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,11 +15,11 @@
  */
 package org.mapton.core;
 
-import org.openide.modules.OnStop;
-import org.openide.util.Lookup;
 import org.mapton.api.MEngine;
 import org.mapton.api.MOptions;
 import org.mapton.api.Mapton;
+import org.openide.modules.OnStop;
+import org.openide.util.Lookup;
 
 /**
  *
@@ -35,8 +35,11 @@ public class Finalizer implements Runnable {
         final MEngine engine = Mapton.getEngine();
 
         Mapton.execute(() -> {
-            mOptions.setMapZoom(engine.getZoom());
-            mOptions.setMapCenter(engine.getCenter());
+            try {
+                mOptions.setMapZoom(engine.getZoom());
+                mOptions.setMapCenter(engine.getCenter());
+            } catch (Exception e) {
+            }
         });
 
         Lookup.getDefault().lookupAll(MEngine.class).forEach((MEngine mapEngine) -> {
