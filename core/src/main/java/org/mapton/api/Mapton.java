@@ -123,7 +123,7 @@ public class Mapton {
     }
 
     public static Color getThemeColor() {
-        return Color.web("#00406c").brighter().brighter();
+        return Color.web("#006680").brighter().brighter();
     }
 
     public static void logLoading(String category, String item) {
