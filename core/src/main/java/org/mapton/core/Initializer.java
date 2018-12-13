@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,6 +20,8 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLayeredPane;
 import javax.swing.SwingUtilities;
+import org.mapton.api.MOptions;
+import org.mapton.core.ui.AppToolBarProvider;
 import org.openide.awt.Actions;
 import org.openide.modules.OnStart;
 import org.openide.windows.TopComponent;
@@ -27,8 +29,6 @@ import org.openide.windows.WindowManager;
 import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.nbp.swing.RootPaneLayout;
 import se.trixon.almond.util.icons.IconColor;
-import org.mapton.api.MOptions;
-import org.mapton.core.ui.AppToolBarProvider;
 
 /**
  *
@@ -71,7 +71,7 @@ public class Initializer implements Runnable {
                 Actions.forID("Window", "org.netbeans.core.windows.actions.ShowEditorOnlyAction").actionPerformed(null);
             }
 
-            Actions.forID("Window", "org.mapton.core.ui.MapTopComponent").actionPerformed(null);
+            //Actions.forID("Window", "org.mapton.core.ui.MapTopComponent").actionPerformed(null);
         });
     }
 }
