@@ -29,7 +29,7 @@ import org.mapton.api.Mapton;
 public class LocalGrid {
 
     @SerializedName("color")
-    private String mColor = "000000";
+    private String mColor = "FFFF00";
     @SerializedName("cooTrans")
     private String mCooTrans = "WGS 84";
     @SerializedName("latCount")
