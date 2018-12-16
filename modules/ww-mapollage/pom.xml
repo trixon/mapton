@@ -7,8 +7,8 @@
         <version>0.8.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
-    <artifactId>ww-grid</artifactId>
-    <description>Grid painter for WorldWind</description>
+    <artifactId>ww-mapollage</artifactId>
+    <description>Mapollage for WorldWind</description>
     <packaging>nbm</packaging>
     <build>
         <plugins>
@@ -85,7 +85,7 @@
 
         <!-- Other -->
     </dependencies>
-    <name>ww-grid</name>
+    <name>ww-mapollage</name>
     <properties>
         <netbeans.compile.on.save>all</netbeans.compile.on.save>
         <netbeans.hint.license>apache20</netbeans.hint.license>

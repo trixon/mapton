@@ -95,6 +95,7 @@
         <module>modules/me-jxmapviewer2</module>
         <module>modules/ww-eox</module>
         <module>modules/ww-grid</module>
+        <module>modules/ww-mapollage</module>
         <module>modules/se-bookmarks</module>
         <module>modules/se-geonames</module>
         <module>modules/se-nominatim</module>
@@ -105,6 +106,7 @@
 
     <properties>
         <netbeans.version>RELEASE82</netbeans.version>
+        <netbeans.compile.on.save>all</netbeans.compile.on.save>
         <brandingToken>mapton</brandingToken>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <mapton.version>0.8.0-SNAPSHOT</mapton.version>
