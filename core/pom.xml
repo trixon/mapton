@@ -25,6 +25,7 @@
                         <publicPackage>org.controlsfx.*</publicPackage>
                         <publicPackage>javax.xml.*</publicPackage>
                         <publicPackage>com.google.gson.*</publicPackage>
+                        <publicPackage>com.sun.xml.*</publicPackage>
                     </publicPackages>
                 </configuration>
             </plugin>
