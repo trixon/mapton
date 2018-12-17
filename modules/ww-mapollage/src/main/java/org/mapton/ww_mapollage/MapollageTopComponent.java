@@ -15,6 +15,7 @@
  */
 package org.mapton.ww_mapollage;
 
+import java.io.IOException;
 import java.util.ResourceBundle;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -26,8 +27,12 @@ import org.mapton.api.MMapMagnet;
 import org.mapton.api.MTopComponent;
 import org.mapton.api.Mapton;
 import org.netbeans.api.settings.ConvertAsProperties;
+import org.openide.util.Exceptions;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
+import se.trixon.mapollage.OperationListener;
+import se.trixon.mapollage.ProfileManager;
+import se.trixon.mapollage.ui.MainApp;
 
 /**
  * Top component which displays something.
@@ -46,9 +51,17 @@ public final class MapollageTopComponent extends MTopComponent implements MMapMa
 
     private final Options mOptions = Options.getInstance();
     private BorderPane mRoot;
+    private MainApp mMainApp;
+    private final ProfileManager mProfileManager = ProfileManager.getInstance();
 
     public MapollageTopComponent() {
         setName("Mapollage");
+        try {
+            mProfileManager.load();
+        } catch (IOException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+
     }
 
     @Override
@@ -82,7 +95,48 @@ public final class MapollageTopComponent extends MTopComponent implements MMapMa
         titleLabel.setAlignment(Pos.BASELINE_CENTER);
         titleLabel.setFont(new Font(defaultFont.getSize() * 2));
 
-        mRoot = new BorderPane();
+        MainApp.setEmbedded(true);
+        mMainApp = new MainApp();
+        mMainApp.initEmbedded();
+        mMainApp.setOperationListener(new OperationListener() {
+            @Override
+            public void onOperationError(String message) {
+            }
+
+            @Override
+            public void onOperationFailed(String message) {
+            }
+
+            @Override
+            public void onOperationFinished(String message, int placemarkCount) {
+            }
+
+            @Override
+            public void onOperationInterrupted() {
+            }
+
+            @Override
+            public void onOperationLog(String message) {
+            }
+
+            @Override
+            public void onOperationProcessingStarted() {
+            }
+
+            @Override
+            public void onOperationProgress(String message) {
+            }
+
+            @Override
+            public void onOperationProgress(int value, int max) {
+            }
+
+            @Override
+            public void onOperationStarted() {
+            }
+        });
+
+        mRoot = new BorderPane(mMainApp.getRoot());
         mRoot.setTop(titleBox);
 
         return new Scene(mRoot);
