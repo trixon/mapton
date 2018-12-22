@@ -51,6 +51,8 @@ public abstract class WmsService {
         return mLayers;
     }
 
+    public abstract String getName();
+
     public boolean isPopulated() {
         return mPopulated;
     }

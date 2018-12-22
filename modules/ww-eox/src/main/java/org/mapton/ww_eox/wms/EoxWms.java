@@ -18,8 +18,8 @@ package org.mapton.ww_eox.wms;
 import gov.nasa.worldwind.layers.Layer;
 import java.net.URI;
 import org.apache.commons.lang3.StringUtils;
-import org.openide.util.lookup.ServiceProvider;
 import org.mapton.worldwind.api.WmsService;
+import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
@@ -29,6 +29,11 @@ import org.mapton.worldwind.api.WmsService;
 public class EoxWms extends WmsService {
 
     public EoxWms() {
+    }
+
+    @Override
+    public String getName() {
+        return "EOX";
     }
 
     @Override
