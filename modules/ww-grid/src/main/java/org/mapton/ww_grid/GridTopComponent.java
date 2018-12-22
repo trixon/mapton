@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,21 +15,16 @@
  */
 package org.mapton.ww_grid;
 
-import java.util.ResourceBundle;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
 import org.mapton.api.MDict;
 import org.mapton.api.MMapMagnet;
 import org.mapton.api.MTopComponent;
-import org.mapton.api.Mapton;
 import org.netbeans.api.settings.ConvertAsProperties;
-import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
 /**
@@ -72,19 +67,6 @@ public final class GridTopComponent extends MTopComponent implements MMapMagnet 
     }
 
     private Scene createScene() {
-        ResourceBundle bundle = NbBundle.getBundle(GridTopComponent.class);
-
-        Label titleLabel = new Label(MDict.GRID.toString());
-
-        VBox titleBox = new VBox(8, titleLabel);
-        titleBox.setAlignment(Pos.CENTER);
-        Font defaultFont = Font.getDefault();
-
-        titleLabel.prefWidthProperty().bind(titleBox.widthProperty());
-        titleLabel.setBackground(Mapton.getThemeBackground());
-        titleLabel.setAlignment(Pos.BASELINE_CENTER);
-        titleLabel.setFont(new Font(defaultFont.getSize() * 2));
-
         GlobalGridView globalGridView = new GlobalGridView();
         LocalGridView localGridView = new LocalGridView();
 
@@ -96,8 +78,10 @@ public final class GridTopComponent extends MTopComponent implements MMapMagnet 
         vbox.setPadding(new Insets(8));
         VBox.setVgrow(localGridView, Priority.ALWAYS);
 
+        Label titleLabel = createTitle(MDict.GRID.toString());
         mRoot = new BorderPane(vbox);
-        mRoot.setTop(titleBox);
+        mRoot.setTop(titleLabel);
+        titleLabel.prefWidthProperty().bind(mRoot.widthProperty());
 
         return new Scene(mRoot);
     }

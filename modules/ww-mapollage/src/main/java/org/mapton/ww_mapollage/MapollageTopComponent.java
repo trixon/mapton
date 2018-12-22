@@ -17,15 +17,11 @@ package org.mapton.ww_mapollage;
 
 import java.io.IOException;
 import java.util.ResourceBundle;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
 import org.mapton.api.MMapMagnet;
 import org.mapton.api.MTopComponent;
-import org.mapton.api.Mapton;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.util.Exceptions;
 import org.openide.util.NbBundle;
@@ -84,17 +80,6 @@ public final class MapollageTopComponent extends MTopComponent implements MMapMa
     private Scene createScene() {
         ResourceBundle bundle = NbBundle.getBundle(MapollageTopComponent.class);
 
-        Label titleLabel = new Label("Mapollage");
-
-        VBox titleBox = new VBox(8, titleLabel);
-        titleBox.setAlignment(Pos.CENTER);
-        Font defaultFont = Font.getDefault();
-
-        titleLabel.prefWidthProperty().bind(titleBox.widthProperty());
-        titleLabel.setBackground(Mapton.getThemeBackground());
-        titleLabel.setAlignment(Pos.BASELINE_CENTER);
-        titleLabel.setFont(new Font(defaultFont.getSize() * 2));
-
         MainApp.setEmbedded(true);
         mMainApp = new MainApp();
         mMainApp.initEmbedded();
@@ -136,8 +121,10 @@ public final class MapollageTopComponent extends MTopComponent implements MMapMa
             }
         });
 
+        Label titleLabel = createTitle("Mapollage");
         mRoot = new BorderPane(mMainApp.getRoot());
-        mRoot.setTop(titleBox);
+        mRoot.setTop(titleLabel);
+        titleLabel.prefWidthProperty().bind(mRoot.widthProperty());
 
         return new Scene(mRoot);
     }

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +16,10 @@
 package org.mapton.api;
 
 import java.util.prefs.PreferenceChangeEvent;
+import javafx.geometry.Pos;
+import javafx.scene.control.Label;
+import javafx.scene.layout.Background;
+import javafx.scene.text.Font;
 import javax.swing.SwingUtilities;
 import se.trixon.almond.nbp.fx.FxTopComponent;
 
@@ -49,6 +53,21 @@ public abstract class MTopComponent extends FxTopComponent {
                     break;
             }
         });
+    }
+
+    public Label createTitle(String title) {
+        return createTitle(title, Mapton.getThemeBackground());
+    }
+
+    public Label createTitle(String title, Background background) {
+        Label label = new Label(title);
+        Font defaultFont = Font.getDefault();
+
+        label.setBackground(background);
+        label.setAlignment(Pos.BASELINE_CENTER);
+        label.setFont(new Font(defaultFont.getSize() * 1.4));
+
+        return label;
     }
 
     public boolean isPopOverHolder() {
