@@ -38,8 +38,4 @@ public class ReportsTool implements MTool {
         return action;
     }
 
-    @Override
-    public String getParent() {
-        return Dict.SYSTEM.toString();
-    }
 }
