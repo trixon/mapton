@@ -101,6 +101,7 @@
         <module>modules/se-nominatim</module>
         <module>modules/te-swetrans</module>
         <module>modules/reports</module>
+        <module>modules/wikipedia</module>
         <module>demo</module>
     </modules>
 
