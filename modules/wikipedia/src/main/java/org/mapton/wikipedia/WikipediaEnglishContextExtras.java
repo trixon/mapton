@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,25 +15,24 @@
  */
 package org.mapton.wikipedia;
 
-import org.openide.util.NbPreferences;
-import se.trixon.almond.util.OptionsBase;
+import java.util.Locale;
+import org.mapton.api.MContextMenuItem;
+import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class Options extends OptionsBase {
+@ServiceProvider(service = MContextMenuItem.class)
+public class WikipediaEnglishContextExtras extends WikipediaContextExtras {
 
-    public static Options getInstance() {
-        return Holder.INSTANCE;
+    public WikipediaEnglishContextExtras() {
+        mLocale = Locale.ENGLISH;
     }
 
-    private Options() {
-        setPreferences(NbPreferences.forModule(Options.class));
+    @Override
+    public String getName() {
+        return String.format("%s (%s)", super.getName(), mLocale.getDisplayLanguage());
     }
 
-    private static class Holder {
-
-        private static final Options INSTANCE = new Options();
-    }
 }

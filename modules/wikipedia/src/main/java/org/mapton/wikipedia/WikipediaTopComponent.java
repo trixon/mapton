@@ -15,6 +15,9 @@
  */
 package org.mapton.wikipedia;
 
+import java.util.Locale;
+import javafx.application.Platform;
+import javafx.collections.ListChangeListener;
 import javafx.geometry.Side;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -22,9 +25,11 @@ import javafx.scene.control.ListView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.web.WebView;
 import org.controlsfx.control.MasterDetailPane;
-import org.mapton.api.MLatLon;
 import org.mapton.api.MMapMagnet;
 import org.mapton.api.MTopComponent;
+import org.mapton.api.MWikipediaArticle;
+import org.mapton.api.MWikipediaArticleManager;
+import org.mapton.api.Mapton;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.windows.TopComponent;
 
@@ -43,11 +48,11 @@ import org.openide.windows.TopComponent;
 @TopComponent.Registration(mode = "properties", openAtStartup = false)
 public final class WikipediaTopComponent extends MTopComponent implements MMapMagnet {
 
-    private ListView mListView;
-
+    private ListView<MWikipediaArticle> mListView;
     private final Options mOptions = Options.getInstance();
     private BorderPane mRoot;
     private WebView mWebView;
+    private final MWikipediaArticleManager mWikipediaArticleManager = MWikipediaArticleManager.getInstance();
 
     public WikipediaTopComponent() {
         setName("Wikipedia");
@@ -56,10 +61,6 @@ public final class WikipediaTopComponent extends MTopComponent implements MMapMa
     @Override
     protected void initFX() {
         setScene(createScene());
-    }
-
-    void load(MLatLon latLon, String json) {
-        System.out.println(json);
     }
 
     void readProperties(java.util.Properties p) {
@@ -75,15 +76,46 @@ public final class WikipediaTopComponent extends MTopComponent implements MMapMa
     }
 
     private Scene createScene() {
-        mListView = new ListView();
+        mListView = new ListView<>();
         mWebView = new WebView();
+        mWebView.setZoom(0.8);
         MasterDetailPane masterDetailPane = new MasterDetailPane(Side.TOP, mListView, mWebView, true);
+        masterDetailPane.setDividerPosition(0.5);
 
         Label titleLabel = createTitle("Wikipedia");
         mRoot = new BorderPane(masterDetailPane);
         mRoot.setTop(titleLabel);
         titleLabel.prefWidthProperty().bind(mRoot.widthProperty());
 
+        mWikipediaArticleManager.getItems().addListener((ListChangeListener.Change<? extends MWikipediaArticle> c) -> {
+            Platform.runLater(() -> {
+                mListView.getItems().setAll(mWikipediaArticleManager.getItems());
+                if (mWikipediaArticleManager.getItems().size() > 0) {
+                    select(mWikipediaArticleManager.getItems().get(0));
+                } else {
+                    select(null);
+                }
+            });
+        });
+
+        mListView.getSelectionModel().getSelectedItems().addListener((ListChangeListener.Change<? extends MWikipediaArticle> c) -> {
+            select(mListView.getSelectionModel().getSelectedItem());
+        });
+
         return new Scene(mRoot);
+    }
+
+    private void select(MWikipediaArticle article) {
+        if (article == null) {
+            mWebView.getEngine().loadContent("");
+        } else {
+            Mapton.getEngine().panTo(article.getLatLon());
+            final String url = String.format(Locale.ENGLISH,
+                    "https://%s.m.wikipedia.org/wiki/%s",
+                    mWikipediaArticleManager.getLocale().getLanguage(),
+                    article.getTitle());
+            System.out.println(url);
+            mWebView.getEngine().load(url);
+        }
     }
 }

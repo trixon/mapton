@@ -19,17 +19,25 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Locale;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javax.swing.SwingUtilities;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.api.MContextMenuItem;
 import org.mapton.api.MLatLon;
+import org.mapton.api.MWikipediaArticle;
+import org.mapton.api.MWikipediaArticleManager;
+import org.mapton.wikipedia.result.ApiResult;
+import org.mapton.wikipedia.result.Coordinate;
+import org.mapton.wikipedia.result.Page;
+import org.mapton.wikipedia.result.Terms;
+import org.mapton.wikipedia.result.Thumbnail;
 import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
-import org.openide.windows.WindowManager;
+import se.trixon.almond.nbp.Almond;
 
 /**
  *
@@ -38,22 +46,26 @@ import org.openide.windows.WindowManager;
 @ServiceProvider(service = MContextMenuItem.class)
 public class WikipediaContextExtras extends MContextMenuItem {
 
-    private final WindowManager mWindowManager = WindowManager.getDefault();
-    private WikipediaTopComponent mWikipediaTopComponent;
+    protected Locale mLocale = Locale.getDefault();
+    private final MWikipediaArticleManager mWikipediaManager = MWikipediaArticleManager.getInstance();
 
     public WikipediaContextExtras() {
-        SwingUtilities.invokeLater(() -> {
-            mWikipediaTopComponent = (WikipediaTopComponent) mWindowManager.findTopComponent("WikipediaTopComponent");
-        });
     }
 
     @Override
     public EventHandler<ActionEvent> getAction() {
         return (event) -> {
+            Almond.openAndActivateTopComponent("WikipediaTopComponent");
             String base = String.format(Locale.ENGLISH,
                     "https://%s.wikipedia.org/w/api.php?action=query",
-                    Locale.getDefault().getLanguage()
+                    mLocale.getLanguage()
             );
+
+            final int coLimit = 50;
+            final int thumbSize = 144;
+            final int piLimit = 50;
+            final int radius = 10000;
+            final int ggsLimit = 50;
 
             String template = String.format(Locale.ENGLISH,
                     "&prop=coordinates"
@@ -69,13 +81,13 @@ public class WikipediaContextExtras extends MContextMenuItem {
                     + "&ggsradius=%d"
                     + "&ggslimit=%d"
                     + "&format=json",
-                    50,
-                    144,
-                    50,
+                    coLimit,
+                    thumbSize,
+                    piLimit,
                     getLatitude(),
                     getLongitude(),
-                    10000,
-                    50
+                    radius,
+                    ggsLimit
             );
 
             try {
@@ -85,11 +97,40 @@ public class WikipediaContextExtras extends MContextMenuItem {
 
                 System.out.println(url);
 
+                mWikipediaManager.setLocale(mLocale);
+                mWikipediaManager.getItems().clear();
                 new Thread(() -> {
                     String json;
                     try {
                         json = IOUtils.toString(url, "utf-8");
-                        mWikipediaTopComponent.load(new MLatLon(getLatitude(), getLongitude()), json);
+                        ApiResult result = ApiResult.load(json);
+                        ArrayList<MWikipediaArticle> pages = new ArrayList<>();
+
+                        for (Page page : result.getQuery().getPages().values()) {
+                            MWikipediaArticle article = new MWikipediaArticle();
+                            article.setTitle(page.getTitle());
+                            Coordinate coordinate = page.getCoordinates().get(0);
+                            MLatLon latLon = new MLatLon(coordinate.getLat(), coordinate.getLon());
+                            article.setLatLon(latLon);
+                            article.setDistance(latLon.distance(new MLatLon(getLatitude(), getLongitude())));
+                            final Thumbnail thumbnail = page.getThumbnail();
+
+                            if (thumbnail != null) {
+                                article.setThumbnail(thumbnail.getSource());
+                                article.setThumbnailHeight(thumbnail.getHeight());
+                                article.setThumbnailWidth(thumbnail.getWidth());
+                            }
+
+                            final Terms terms = page.getTerms();
+                            if (terms != null) {
+                                article.setDescription(terms.getDescription());
+                            }
+
+                            pages.add(article);
+                        }
+
+                        Collections.sort(pages, (MWikipediaArticle o1, MWikipediaArticle o2) -> o1.getDistance().compareTo(o2.getDistance()));
+                        mWikipediaManager.getItems().addAll(pages);
                     } catch (IOException ex) {
                         Exceptions.printStackTrace(ex);
                     }
@@ -110,14 +151,6 @@ public class WikipediaContextExtras extends MContextMenuItem {
     @Override
     public ContextType getType() {
         return ContextType.EXTRAS;
-    }
-
-    @Override
-    public String getUrl() {
-        return String.format(Locale.ENGLISH, "geo:%.6f,%.6f;crs=wgs84",
-                getLatitude(),
-                getLongitude()
-        );
     }
 
 }

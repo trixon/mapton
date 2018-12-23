@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,27 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.wikipedia;
-
-import org.openide.util.NbPreferences;
-import se.trixon.almond.util.OptionsBase;
+package org.mapton.wikipedia.result;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class Options extends OptionsBase {
+public class Terms {
 
-    public static Options getInstance() {
-        return Holder.INSTANCE;
+    private String mDescription;
+
+    public String getDescription() {
+        return mDescription;
     }
 
-    private Options() {
-        setPreferences(NbPreferences.forModule(Options.class));
-    }
-
-    private static class Holder {
-
-        private static final Options INSTANCE = new Options();
-    }
 }

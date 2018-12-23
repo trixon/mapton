@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,27 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.wikipedia;
+package org.mapton.wikipedia.result;
 
-import org.openide.util.NbPreferences;
-import se.trixon.almond.util.OptionsBase;
+import com.google.gson.annotations.SerializedName;
+import java.util.LinkedHashMap;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class Options extends OptionsBase {
+public class Query {
 
-    public static Options getInstance() {
-        return Holder.INSTANCE;
+    @SerializedName("pages")
+    private LinkedHashMap<String, Page> mPages;
+
+    public LinkedHashMap<String, Page> getPages() {
+        return mPages;
     }
 
-    private Options() {
-        setPreferences(NbPreferences.forModule(Options.class));
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
     }
 
-    private static class Holder {
-
-        private static final Options INSTANCE = new Options();
-    }
 }
