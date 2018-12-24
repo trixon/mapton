@@ -15,15 +15,18 @@
  */
 package org.mapton.wikipedia.result;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  *
  * @author Patrik Karlström
  */
 public class Terms {
 
-    private String mDescription;
+    @SerializedName("description")
+    private String[] mDescription;
 
-    public String getDescription() {
+    public String[] getDescription() {
         return mDescription;
     }
 

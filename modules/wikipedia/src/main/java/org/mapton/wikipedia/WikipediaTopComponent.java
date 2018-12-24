@@ -18,12 +18,22 @@ package org.mapton.wikipedia;
 import java.util.Locale;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.geometry.Side;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.web.WebView;
+import org.apache.commons.lang.StringUtils;
 import org.controlsfx.control.MasterDetailPane;
 import org.mapton.api.MMapMagnet;
 import org.mapton.api.MTopComponent;
@@ -48,6 +58,7 @@ import org.openide.windows.TopComponent;
 @TopComponent.Registration(mode = "properties", openAtStartup = false)
 public final class WikipediaTopComponent extends MTopComponent implements MMapMagnet {
 
+    private Font mDefaultFont = Font.getDefault();
     private ListView<MWikipediaArticle> mListView;
     private final Options mOptions = Options.getInstance();
     private BorderPane mRoot;
@@ -77,6 +88,7 @@ public final class WikipediaTopComponent extends MTopComponent implements MMapMa
 
     private Scene createScene() {
         mListView = new ListView<>();
+        mListView.setCellFactory((ListView<MWikipediaArticle> param) -> new ArticleListCell());
         mWebView = new WebView();
         mWebView.setZoom(0.8);
         MasterDetailPane masterDetailPane = new MasterDetailPane(Side.TOP, mListView, mWebView, true);
@@ -117,5 +129,78 @@ public final class WikipediaTopComponent extends MTopComponent implements MMapMa
             System.out.println(url);
             mWebView.getEngine().load(url);
         }
+    }
+
+    class ArticleListCell extends ListCell<MWikipediaArticle> {
+
+        private final BorderPane mBorderPane = new BorderPane();
+        private final Label mDescLabel = new Label();
+        private final ImageView mImageView = new ImageView();
+        private final Label mTitleLabel = new Label();
+
+        public ArticleListCell() {
+            createUI();
+        }
+
+        @Override
+        protected void updateItem(MWikipediaArticle article, boolean empty) {
+            super.updateItem(article, empty);
+
+            if (article == null || empty) {
+                clearContent();
+            } else {
+                addContent(article);
+            }
+        }
+
+        private void addContent(MWikipediaArticle article) {
+            setText(null);
+
+            mTitleLabel.setText(article.getTitle());
+
+            String distanceString;
+            final Double distance = article.getDistance();
+            if (distance >= 1000) {
+                distanceString = String.format("%.1f km", distance / 1000);
+            } else {
+                distanceString = String.format("%d m", distance.intValue());
+            }
+
+            if (StringUtils.isBlank(article.getDescription())) {
+                mDescLabel.setText(distanceString);
+            } else {
+                mDescLabel.setText(String.format("%s, %s", distanceString, article.getDescription()));
+            }
+
+            if (StringUtils.isBlank(article.getThumbnail())) {
+                //
+            } else {
+                mImageView.setImage(new Image(article.getThumbnail(), 50, 50, true, true, true));
+            }
+
+            setGraphic(mBorderPane);
+        }
+
+        private void clearContent() {
+            setText(null);
+            setGraphic(null);
+        }
+
+        private void createUI() {
+            String fontFamily = mDefaultFont.getFamily();
+            double fontSize = mDefaultFont.getSize();
+
+            mTitleLabel.setFont(Font.font(fontFamily, FontWeight.NORMAL, fontSize * 1.2));
+            mDescLabel.setFont(Font.font(fontFamily, FontWeight.NORMAL, fontSize * 0.9));
+            mDescLabel.setTextFill(Color.DARKGRAY.darker());
+
+            VBox centerBox = new VBox(mTitleLabel, mDescLabel);
+            centerBox.setAlignment(Pos.CENTER_LEFT);
+
+            mBorderPane.setLeft(mImageView);
+            mBorderPane.setCenter(centerBox);
+            BorderPane.setMargin(centerBox, new Insets(0, 0, 0, 8));
+        }
+
     }
 }

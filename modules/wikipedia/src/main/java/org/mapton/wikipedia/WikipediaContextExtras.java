@@ -21,6 +21,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Locale;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -104,33 +105,35 @@ public class WikipediaContextExtras extends MContextMenuItem {
                     try {
                         json = IOUtils.toString(url, "utf-8");
                         ApiResult result = ApiResult.load(json);
-                        ArrayList<MWikipediaArticle> pages = new ArrayList<>();
+                        ArrayList<MWikipediaArticle> articles = new ArrayList<>();
+                        if (result.getQuery() != null && result.getQuery().getPages() != null) {
+                            final LinkedHashMap<String, Page> pages = result.getQuery().getPages();
+                            for (Page page : pages.values()) {
+                                MWikipediaArticle article = new MWikipediaArticle();
+                                article.setTitle(page.getTitle());
+                                Coordinate coordinate = page.getCoordinates().get(0);
+                                MLatLon latLon = new MLatLon(coordinate.getLat(), coordinate.getLon());
+                                article.setLatLon(latLon);
+                                article.setDistance(latLon.distance(new MLatLon(getLatitude(), getLongitude())));
+                                final Thumbnail thumbnail = page.getThumbnail();
 
-                        for (Page page : result.getQuery().getPages().values()) {
-                            MWikipediaArticle article = new MWikipediaArticle();
-                            article.setTitle(page.getTitle());
-                            Coordinate coordinate = page.getCoordinates().get(0);
-                            MLatLon latLon = new MLatLon(coordinate.getLat(), coordinate.getLon());
-                            article.setLatLon(latLon);
-                            article.setDistance(latLon.distance(new MLatLon(getLatitude(), getLongitude())));
-                            final Thumbnail thumbnail = page.getThumbnail();
+                                if (thumbnail != null) {
+                                    article.setThumbnail(thumbnail.getSource());
+                                    article.setThumbnailHeight(thumbnail.getHeight());
+                                    article.setThumbnailWidth(thumbnail.getWidth());
+                                }
 
-                            if (thumbnail != null) {
-                                article.setThumbnail(thumbnail.getSource());
-                                article.setThumbnailHeight(thumbnail.getHeight());
-                                article.setThumbnailWidth(thumbnail.getWidth());
+                                final Terms terms = page.getTerms();
+                                if (terms != null && terms.getDescription() != null && terms.getDescription().length > 0) {
+                                    article.setDescription(terms.getDescription()[0]);
+                                }
+
+                                articles.add(article);
                             }
-
-                            final Terms terms = page.getTerms();
-                            if (terms != null) {
-                                article.setDescription(terms.getDescription());
-                            }
-
-                            pages.add(article);
                         }
 
-                        Collections.sort(pages, (MWikipediaArticle o1, MWikipediaArticle o2) -> o1.getDistance().compareTo(o2.getDistance()));
-                        mWikipediaManager.getItems().addAll(pages);
+                        Collections.sort(articles, (MWikipediaArticle o1, MWikipediaArticle o2) -> o1.getDistance().compareTo(o2.getDistance()));
+                        mWikipediaManager.getItems().addAll(articles);
                     } catch (IOException ex) {
                         Exceptions.printStackTrace(ex);
                     }
