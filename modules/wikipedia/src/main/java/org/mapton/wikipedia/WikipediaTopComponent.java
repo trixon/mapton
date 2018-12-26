@@ -15,6 +15,7 @@
  */
 package org.mapton.wikipedia;
 
+import java.util.HashMap;
 import java.util.Locale;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
@@ -28,6 +29,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -58,7 +60,8 @@ import org.openide.windows.TopComponent;
 @TopComponent.Registration(mode = "properties", openAtStartup = false)
 public final class WikipediaTopComponent extends MTopComponent implements MMapMagnet {
 
-    private Font mDefaultFont = Font.getDefault();
+    private final Font mDefaultFont = Font.getDefault();
+    private final HashMap<String, Image> mImageCache = new HashMap<>();
     private ListView<MWikipediaArticle> mListView;
     private final Options mOptions = Options.getInstance();
     private BorderPane mRoot;
@@ -101,6 +104,7 @@ public final class WikipediaTopComponent extends MTopComponent implements MMapMa
 
         mWikipediaArticleManager.getItems().addListener((ListChangeListener.Change<? extends MWikipediaArticle> c) -> {
             Platform.runLater(() -> {
+                mImageCache.clear();
                 mListView.getItems().setAll(mWikipediaArticleManager.getItems());
                 if (mWikipediaArticleManager.getItems().size() > 0) {
                     select(mWikipediaArticleManager.getItems().get(0));
@@ -127,6 +131,7 @@ public final class WikipediaTopComponent extends MTopComponent implements MMapMa
                     mWikipediaArticleManager.getLocale().getLanguage(),
                     article.getTitle());
             System.out.println(url);
+            System.out.println(article.getThumbnail());
             mWebView.getEngine().load(url);
         }
     }
@@ -136,6 +141,8 @@ public final class WikipediaTopComponent extends MTopComponent implements MMapMa
         private final BorderPane mBorderPane = new BorderPane();
         private final Label mDescLabel = new Label();
         private final ImageView mImageView = new ImageView();
+        private final int mMaxSize = 50;
+        private final StackPane mStackPane = new StackPane();
         private final Label mTitleLabel = new Label();
 
         public ArticleListCell() {
@@ -160,7 +167,10 @@ public final class WikipediaTopComponent extends MTopComponent implements MMapMa
 
             String distanceString;
             final Double distance = article.getDistance();
-            if (distance >= 1000) {
+
+            if (distance >= 10000) {
+                distanceString = String.format("%.0f km", distance / 1000);
+            } else if (distance >= 1000) {
                 distanceString = String.format("%.1f km", distance / 1000);
             } else {
                 distanceString = String.format("%d m", distance.intValue());
@@ -172,10 +182,29 @@ public final class WikipediaTopComponent extends MTopComponent implements MMapMa
                 mDescLabel.setText(String.format("%s, %s", distanceString, article.getDescription()));
             }
 
-            if (StringUtils.isBlank(article.getThumbnail())) {
-                //
+            String thumbnail = article.getThumbnail();
+            if (StringUtils.isBlank(thumbnail)) {
+                mStackPane.setPadding(new Insets(0, mMaxSize, 0, 0));
+                mImageView.setImage(null);
             } else {
-                mImageView.setImage(new Image(article.getThumbnail(), 50, 50, true, true, true));
+                Image image = mImageCache.computeIfAbsent(thumbnail, k -> new Image(article.getThumbnail(), mMaxSize, mMaxSize, true, true, false));
+                String dim = StringUtils.substringBetween(thumbnail.toLowerCase(), ".jpg/", "px-");
+                try {
+                    double baseDim = 50.0;
+                    double imgDim = Double.valueOf(dim);
+                    double pad = (baseDim - imgDim) / 2;
+                    if (pad > 0) {
+                        mStackPane.setPadding(new Insets(0, pad, 0, pad));
+                    } else {
+                        mStackPane.setPadding(Insets.EMPTY);
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Error while creating padding");
+                    System.out.println(article.getTitle());
+                    System.out.println(article.getThumbnail());
+                }
+
+                mImageView.setImage(image);
             }
 
             setGraphic(mBorderPane);
@@ -184,6 +213,8 @@ public final class WikipediaTopComponent extends MTopComponent implements MMapMa
         private void clearContent() {
             setText(null);
             setGraphic(null);
+            mImageView.setImage(null);
+            mStackPane.setPadding(Insets.EMPTY);
         }
 
         private void createUI() {
@@ -197,10 +228,10 @@ public final class WikipediaTopComponent extends MTopComponent implements MMapMa
             VBox centerBox = new VBox(mTitleLabel, mDescLabel);
             centerBox.setAlignment(Pos.CENTER_LEFT);
 
-            mBorderPane.setLeft(mImageView);
+            mStackPane.getChildren().add(mImageView);
+            mBorderPane.setLeft(mStackPane);
             mBorderPane.setCenter(centerBox);
             BorderPane.setMargin(centerBox, new Insets(0, 0, 0, 8));
         }
-
     }
 }

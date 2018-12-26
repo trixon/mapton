@@ -62,16 +62,16 @@ public class WikipediaContextExtras extends MContextMenuItem {
                     mLocale.getLanguage()
             );
 
-            final int coLimit = 50;
-            final int thumbSize = 144;
-            final int piLimit = 50;
-            final int radius = 10000;
-            final int ggsLimit = 50;
+            final int limit = 500;
+            final int coLimit = limit;
+            final int piLimit = limit;
+            final int ggsLimit = limit;
 
-            String template = String.format(Locale.ENGLISH,
-                    "&prop=coordinates"
-                    + "|pageimages"
-                    + "|pageterms"
+            final int thumbSize = 50;
+            final int radius = 10000;
+
+            String template = String.format(Locale.ENGLISH, ""
+                    + "&prop=coordinates|pageimages|pageterms"
                     + "&colimit=%d"
                     + "&piprop=thumbnail"
                     + "&pithumbsize=%d"
@@ -81,7 +81,10 @@ public class WikipediaContextExtras extends MContextMenuItem {
                     + "&ggscoord=%f|%f"
                     + "&ggsradius=%d"
                     + "&ggslimit=%d"
-                    + "&format=json",
+                    + "&format=json"
+                    + "&servedby=1"
+                    + "&curtimestamp=1"
+                    + "&responselanginfo=1",
                     coLimit,
                     thumbSize,
                     piLimit,

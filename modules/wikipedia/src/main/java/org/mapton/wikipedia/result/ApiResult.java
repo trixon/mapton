@@ -18,6 +18,7 @@ package org.mapton.wikipedia.result;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
+import java.sql.Timestamp;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -35,8 +36,16 @@ public class ApiResult {
 
     @SerializedName("batchcomplete")
     private String mBatchComplete;
+    @SerializedName("curtimestamp")
+    private Timestamp mCurTimestamp;
+    @SerializedName("errorlang")
+    private String mErrorLang;
     @SerializedName("query")
     private Query mQuery;
+    @SerializedName("servedby")
+    private String mServedBy;
+    @SerializedName("uselang")
+    private String mUseLang;
 
     public static ApiResult load(String json) {
         ApiResult apiResult = gson.fromJson(json, ApiResult.class);
@@ -51,8 +60,24 @@ public class ApiResult {
         return mBatchComplete;
     }
 
+    public Timestamp getCurTimestamp() {
+        return mCurTimestamp;
+    }
+
+    public String getErrorLang() {
+        return mErrorLang;
+    }
+
     public Query getQuery() {
         return mQuery;
+    }
+
+    public String getServedBy() {
+        return mServedBy;
+    }
+
+    public String getUseLang() {
+        return mUseLang;
     }
 
     @Override
