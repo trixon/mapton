@@ -251,8 +251,8 @@ public class MBookmarkManager extends DbBaseManager {
             if (add) {
                 newBookmark = new MBookmark();
                 newBookmark.setZoom(Mapton.getEngine().getZoom());
-                newBookmark.setLatitude(Mapton.getEngine().getLatitude());
-                newBookmark.setLongitude(Mapton.getEngine().getLongitude());
+                newBookmark.setLatitude(Mapton.getEngine().getLockedLatitude());
+                newBookmark.setLongitude(Mapton.getEngine().getLockedLongitude());
             }
 
             final MBookmark bookmark = newBookmark;

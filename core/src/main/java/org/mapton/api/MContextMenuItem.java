@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -38,19 +38,19 @@ public abstract class MContextMenuItem {
     }
 
     protected double getLatitude() {
-        return getEngine().getLatitude();
+        return getEngine().getLockedLatitude();
     }
 
     protected double getLatitudeProj() {
-        return getEngine().getLatitudeProj();
+        return getEngine().getLockedLatitudeProj();
     }
 
     protected double getLongitude() {
-        return getEngine().getLongitude();
+        return getEngine().getLockedLongitude();
     }
 
     protected double getLongitudeProj() {
-        return getEngine().getLongitudeProj();
+        return getEngine().getLockedLongitudeProj();
     }
 
     protected double getZoom() {

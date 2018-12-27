@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2018 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,12 +24,12 @@ import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import javax.swing.SwingUtilities;
+import org.mapton.core.ui.AppStatusPanel;
+import org.mapton.core.ui.MapTopComponent;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.windows.WindowManager;
 import se.trixon.almond.nbp.NbLog;
-import org.mapton.core.ui.AppStatusPanel;
-import org.mapton.core.ui.MapTopComponent;
 
 /**
  *
@@ -47,6 +47,8 @@ public abstract class MEngine {
     private boolean mInitialized;
     private MLatLon mLatLonMouse;
     private Double mLatitude;
+    private Double mLockedLatitude;
+    private Double mLockedLongitude;
     private Double mLongitude;
 
     static {
@@ -72,6 +74,9 @@ public abstract class MEngine {
     }
 
     public void displayContextMenu(Point screenXY) {
+        mLockedLatitude = mLatitude;
+        mLockedLongitude = mLongitude;
+
         SwingUtilities.invokeLater(() -> {
             MapTopComponent tc = (MapTopComponent) WindowManager.getDefault().findTopComponent("MapTopComponent");
             tc.displayContextMenu(screenXY);
@@ -99,6 +104,10 @@ public abstract class MEngine {
         return mImageRenderer;
     }
 
+    public MLatLon getLatLon() {
+        return new MLatLon(mLatitude, mLongitude);
+    }
+
     public MLatLon getLatLonMouse() {
         return mLatLonMouse;
     }
@@ -115,6 +124,26 @@ public abstract class MEngine {
         NbLog.i(getClass().getSimpleName(), "getLayerView not implemented");
 
         return new Pane();
+    }
+
+    public MLatLon getLockedLatLon() {
+        return new MLatLon(mLockedLatitude, mLockedLongitude);
+    }
+
+    public Double getLockedLatitude() {
+        return mLockedLatitude;
+    }
+
+    public double getLockedLatitudeProj() {
+        return mMaptonOptions.getMapCooTrans().getLatitude(mLockedLatitude, mLockedLongitude);
+    }
+
+    public Double getLockedLongitude() {
+        return mLockedLongitude;
+    }
+
+    public double getLockedLongitudeProj() {
+        return mMaptonOptions.getMapCooTrans().getLongitude(mLockedLatitude, mLockedLongitude);
     }
 
     public Double getLongitude() {
