@@ -31,6 +31,7 @@ import org.mapton.api.MContextMenuItem;
 import org.mapton.api.MLatLon;
 import org.mapton.api.MWikipediaArticle;
 import org.mapton.api.MWikipediaArticleManager;
+import static org.mapton.wikipedia.Module.LOG_TAG;
 import org.mapton.wikipedia.result.ApiResult;
 import org.mapton.wikipedia.result.Coordinate;
 import org.mapton.wikipedia.result.Page;
@@ -39,6 +40,7 @@ import org.mapton.wikipedia.result.Thumbnail;
 import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.Almond;
+import se.trixon.almond.nbp.NbLog;
 
 /**
  *
@@ -62,7 +64,7 @@ public class WikipediaContextExtras extends MContextMenuItem {
                     mLocale.getLanguage()
             );
 
-            final int limit = 500;
+            final int limit = 1000;
             final int coLimit = limit;
             final int piLimit = limit;
             final int ggsLimit = limit;
@@ -99,7 +101,7 @@ public class WikipediaContextExtras extends MContextMenuItem {
                         new String[]{"%26", "%3D"},
                         new String[]{"&", "="}));
 
-                System.out.println(url);
+                NbLog.v(LOG_TAG, url.toString());
 
                 mWikipediaManager.setLocale(mLocale);
                 mWikipediaManager.getItems().clear();
@@ -111,6 +113,7 @@ public class WikipediaContextExtras extends MContextMenuItem {
                         ArrayList<MWikipediaArticle> articles = new ArrayList<>();
                         if (result.getQuery() != null && result.getQuery().getPages() != null) {
                             final LinkedHashMap<String, Page> pages = result.getQuery().getPages();
+                            NbLog.v(LOG_TAG, String.format("Found %d articles", pages.size()));
                             for (Page page : pages.values()) {
                                 MWikipediaArticle article = new MWikipediaArticle();
                                 article.setTitle(page.getTitle());

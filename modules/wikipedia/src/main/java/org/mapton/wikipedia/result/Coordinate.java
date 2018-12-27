@@ -27,7 +27,6 @@ public class Coordinate {
 
     @SerializedName("globe")
     private String mGlobe;
-
     @SerializedName("lat")
     private double mLat;
     @SerializedName("lon")

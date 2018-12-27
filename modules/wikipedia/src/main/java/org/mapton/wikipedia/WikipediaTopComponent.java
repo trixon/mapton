@@ -42,8 +42,10 @@ import org.mapton.api.MTopComponent;
 import org.mapton.api.MWikipediaArticle;
 import org.mapton.api.MWikipediaArticleManager;
 import org.mapton.api.Mapton;
+import static org.mapton.wikipedia.Module.LOG_TAG;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.windows.TopComponent;
+import se.trixon.almond.nbp.NbLog;
 
 /**
  * Top component which displays something.
@@ -130,8 +132,8 @@ public final class WikipediaTopComponent extends MTopComponent implements MMapMa
                     "https://%s.m.wikipedia.org/wiki/%s",
                     mWikipediaArticleManager.getLocale().getLanguage(),
                     article.getTitle());
-            System.out.println(url);
-            System.out.println(article.getThumbnail());
+            NbLog.v(LOG_TAG, url);
+            NbLog.v(LOG_TAG, article.getThumbnail());
             mWebView.getEngine().load(url);
         }
     }
@@ -187,8 +189,17 @@ public final class WikipediaTopComponent extends MTopComponent implements MMapMa
                 mStackPane.setPadding(new Insets(0, mMaxSize, 0, 0));
                 mImageView.setImage(null);
             } else {
-                Image image = mImageCache.computeIfAbsent(thumbnail, k -> new Image(article.getThumbnail(), mMaxSize, mMaxSize, true, true, false));
-                String dim = StringUtils.substringBetween(thumbnail.toLowerCase(), ".jpg/", "px-");
+                Image image = mImageCache.computeIfAbsent(thumbnail, k -> new Image(article.getThumbnail(), mMaxSize, mMaxSize, true, true, true));
+                String dim;
+                final String lowerCaseThumbnail = thumbnail.toLowerCase();
+                if (StringUtils.containsIgnoreCase(lowerCaseThumbnail, ".jpg/")) {
+                    dim = StringUtils.substringBetween(lowerCaseThumbnail, ".jpg/", "px-");
+                } else if (StringUtils.containsIgnoreCase(lowerCaseThumbnail, ".png/")) {
+                    dim = StringUtils.substringBetween(lowerCaseThumbnail, ".png/", "px-");
+                } else {
+                    dim = StringUtils.substringBetween(lowerCaseThumbnail, ".svg/", "px-");
+                }
+
                 try {
                     double baseDim = 50.0;
                     double imgDim = Double.valueOf(dim);
@@ -198,10 +209,10 @@ public final class WikipediaTopComponent extends MTopComponent implements MMapMa
                     } else {
                         mStackPane.setPadding(Insets.EMPTY);
                     }
-                } catch (NumberFormatException e) {
-                    System.out.println("Error while creating padding");
-                    System.out.println(article.getTitle());
-                    System.out.println(article.getThumbnail());
+                } catch (NullPointerException | NumberFormatException e) {
+                    NbLog.e(LOG_TAG, "Error while creating padding");
+                    NbLog.v(LOG_TAG, article.getTitle());
+                    NbLog.v(LOG_TAG, article.getThumbnail());
                 }
 
                 mImageView.setImage(image);
