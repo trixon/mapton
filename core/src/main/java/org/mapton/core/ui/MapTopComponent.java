@@ -146,7 +146,7 @@ public final class MapTopComponent extends MTopComponent {
         windowManager.getModes().stream().filter((mode) -> !(mode.equals(windowManager.findMode(this)))).forEachOrdered((mode) -> {
             TopComponent selectedTopComponent = mode.getSelectedTopComponent();
             for (TopComponent tc : mode.getTopComponents()) {
-                if (tc instanceof MTopComponent && tc.isOpened()) {
+                if (tc instanceof MTopComponent && tc.isOpened() && !windowManager.isTopComponentFloating(tc)) {
                     if (tc instanceof MMapMagnet) {
                         if (tc.equals(selectedTopComponent)) {
                             mActiveMapMagnets.add(tc);
