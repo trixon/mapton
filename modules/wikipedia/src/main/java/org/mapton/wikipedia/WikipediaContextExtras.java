@@ -74,26 +74,23 @@ public class WikipediaContextExtras extends MContextMenuItem {
 
             String template = String.format(Locale.ENGLISH, ""
                     + "&prop=coordinates|pageimages|pageterms"
-                    + "&colimit=%d"
+                    + "&colimit=max"
+                    + "&pilimit=max"
+                    + "&ggslimit=max"
                     + "&piprop=thumbnail"
                     + "&pithumbsize=%d"
-                    + "&pilimit=%d"
                     + "&wbptterms=description"
                     + "&generator=geosearch"
                     + "&ggscoord=%f|%f"
                     + "&ggsradius=%d"
-                    + "&ggslimit=%d"
                     + "&format=json"
                     + "&servedby=1"
                     + "&curtimestamp=1"
                     + "&responselanginfo=1",
-                    coLimit,
                     thumbSize,
-                    piLimit,
                     getLatitude(),
                     getLongitude(),
-                    radius,
-                    ggsLimit
+                    radius
             );
 
             try {
