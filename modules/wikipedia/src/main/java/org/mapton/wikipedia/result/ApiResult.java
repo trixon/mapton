@@ -35,7 +35,9 @@ public class ApiResult {
             .create();
 
     @SerializedName("batchcomplete")
-    private String mBatchComplete;
+    private Boolean mBatchComplete;
+    @SerializedName("continue")
+    private Continue mContinue;
     @SerializedName("curtimestamp")
     private Timestamp mCurTimestamp;
     @SerializedName("errorlang")
@@ -56,8 +58,12 @@ public class ApiResult {
     public ApiResult() {
     }
 
-    public String getBatchComplete() {
+    public Boolean getBatchComplete() {
         return mBatchComplete;
+    }
+
+    public Continue getContinue() {
+        return mContinue;
     }
 
     public Timestamp getCurTimestamp() {
