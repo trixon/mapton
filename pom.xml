@@ -69,7 +69,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.1.0</version>
+                    <version>3.1.1</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -98,6 +98,7 @@
         <module>modules/ww-mapollage</module>
         <module>modules/se-bookmarks</module>
         <module>modules/se-geonames</module>
+        <module>modules/se-google</module>
         <module>modules/se-nominatim</module>
         <module>modules/te-swetrans</module>
         <module>modules/reports</module>
