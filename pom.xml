@@ -104,6 +104,7 @@
         <module>modules/reports</module>
         <module>modules/wikipedia</module>
         <module>demo</module>
+        <module>modules/me-mapjfx</module>
     </modules>
 
     <properties>
