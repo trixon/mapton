@@ -20,9 +20,11 @@ import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.HierarchyEvent;
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
@@ -247,12 +249,8 @@ public final class MapTopComponent extends MTopComponent {
         //SimpleDialog.setOwner(mStage);
         SimpleDialog.setTitle(mBundle.getString("export_view"));
 
-        if (mDestination == null) {
-            SimpleDialog.setPath(FileUtils.getUserDirectory());
-        } else {
-            SimpleDialog.setPath(mDestination.getParentFile());
-            SimpleDialog.setSelectedFile(new File(""));
-        }
+        SimpleDialog.setPath(mDestination == null ? FileUtils.getUserDirectory() : mDestination.getParentFile());
+        SimpleDialog.setSelectedFile(new File(new SimpleDateFormat("'Mapton_'yyyyMMdd_HHmmss").format(new Date())));
 
         mContextMenu.hide();
         if (SimpleDialog.saveFile(new String[]{"png"})) {
