@@ -91,20 +91,20 @@
         <module>application</module>
         <module>core</module>
         <module>modules/me-gmapsfx</module>
-        <module>modules/me-worldwind</module>
         <module>modules/me-jxmapviewer2</module>
-        <module>modules/ww-eox</module>
-        <module>modules/ww-grid</module>
-        <module>modules/ww-mapollage</module>
+        <module>modules/me-mapjfx</module>
+        <module>modules/me-worldwind</module>
+        <module>modules/reports</module>
         <module>modules/se-bookmarks</module>
         <module>modules/se-geonames</module>
         <module>modules/se-google</module>
         <module>modules/se-nominatim</module>
         <module>modules/te-swetrans</module>
-        <module>modules/reports</module>
         <module>modules/wikipedia</module>
+        <module>modules/ww-eox</module>
+        <module>modules/ww-grid</module>
+        <module>modules/ww-mapollage</module>
         <module>demo</module>
-        <module>modules/me-mapjfx</module>
     </modules>
 
     <properties>

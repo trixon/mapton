@@ -106,11 +106,11 @@
             <artifactId>me-jxmapviewer2</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
+        <!--        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>me-mapjfx</artifactId>
             <version>${project.version}</version>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>me-worldwind</artifactId>
@@ -131,11 +131,11 @@
             <artifactId>ww-grid</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
+        <!--        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>ww-mapollage</artifactId>
             <version>${project.version}</version>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>se-geonames</artifactId>
