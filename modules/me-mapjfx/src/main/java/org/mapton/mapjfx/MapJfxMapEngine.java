@@ -22,9 +22,13 @@ import com.sothawo.mapjfx.MapView;
 import com.sothawo.mapjfx.event.MapLabelEvent;
 import com.sothawo.mapjfx.event.MapViewEvent;
 import com.sothawo.mapjfx.event.MarkerEvent;
+import java.awt.Point;
 import java.util.concurrent.TimeUnit;
 import javafx.application.Platform;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.Node;
+import javafx.scene.SnapshotParameters;
+import javafx.scene.image.WritableImage;
 import org.mapton.api.MEngine;
 import org.mapton.api.MLatLon;
 import org.mapton.api.MLatLonBox;
@@ -42,19 +46,19 @@ public class MapJfxMapEngine extends MEngine {
 
     public static final String LOG_TAG = "OpenLayers";
 
-    private MapView mMap;
+    private MapView mMapView;
 
     public MapJfxMapEngine() {
     }
 
     @Override
     public void fitToBounds(MLatLonBox latLonBox) {
-        mMap.setExtent(Extent.forCoordinates(toCoordinate(latLonBox.getSouthWest()), toCoordinate(latLonBox.getNorthEast())));
+        mMapView.setExtent(Extent.forCoordinates(toCoordinate(latLonBox.getSouthWest()), toCoordinate(latLonBox.getNorthEast())));
     }
 
     @Override
     public MLatLon getCenter() {
-        return toLatLon(mMap.getCenter());
+        return toLatLon(mMapView.getCenter());
     }
 
     @Override
@@ -69,11 +73,11 @@ public class MapJfxMapEngine extends MEngine {
 
     @Override
     public Node getUI() {
-        if (mMap == null) {
+        if (mMapView == null) {
             init();
         }
 
-        return mMap;
+        return mMapView;
     }
 
     @Override
@@ -93,18 +97,22 @@ public class MapJfxMapEngine extends MEngine {
 
     @Override
     public void panTo(MLatLon latLon) {
-        mMap.setCenter(toCoordinate(latLon));
+        mMapView.setCenter(toCoordinate(latLon));
     }
 
     @Override
     public void panTo(MLatLon latLong, double zoom) {
-        mMap.setZoom(MathHelper.round(toLocalZoom(zoom)));
+        mMapView.setZoom(MathHelper.round(toLocalZoom(zoom)));
         panTo(latLong);
     }
 
     private void init() {
-        mMap = new MapView();
-        mMap.initializedProperty().addListener((observable, oldValue, newValue) -> {
+        mMapView = new MapView();
+        mMapView.setOnContextMenuRequested((e) -> {
+            displayContextMenu(new Point((int) e.getScreenX(), (int) e.getScreenY()));
+        });
+
+        mMapView.initializedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
                 new Thread(() -> {
                     try {
@@ -116,26 +124,32 @@ public class MapJfxMapEngine extends MEngine {
                         Exceptions.printStackTrace(ex);
                     }
                 }).start();
-
             }
         });
+
         new Thread(() -> {
             try {
                 TimeUnit.MILLISECONDS.sleep(2000);
                 Platform.runLater(() -> {
                     initListeners();
-                    mMap.initialize();
+                    mMapView.initialize();
                     NbLog.i(LOG_TAG, "Loaded and ready");
                 });
             } catch (InterruptedException ex) {
                 Exceptions.printStackTrace(ex);
             }
         }).start();
+
+        setImageRenderer(() -> {
+            WritableImage image = mMapView.snapshot(new SnapshotParameters(), null);
+
+            return SwingFXUtils.fromFXImage(image, null);
+        });
     }
 
     private void initListeners() {
         // add an event handler for singleclicks, set the click marker to the new position when it's visible
-        mMap.addEventHandler(MapViewEvent.MAP_CLICKED, event -> {
+        mMapView.addEventHandler(MapViewEvent.MAP_CLICKED, event -> {
             event.consume();
 //            labelEvent.setText("Event: map clicked at: " + event.getCoordinate());
 //            if (checkDrawPolygon.isSelected()) {
@@ -152,40 +166,40 @@ public class MapJfxMapEngine extends MEngine {
         });
 
         // add an event handler for MapViewEvent#MAP_EXTENT and set the extent in the map
-        mMap.addEventHandler(MapViewEvent.MAP_EXTENT, event -> {
+        mMapView.addEventHandler(MapViewEvent.MAP_EXTENT, event -> {
             event.consume();
-            mMap.setExtent(event.getExtent());
+            mMapView.setExtent(event.getExtent());
         });
 
         // add an event handler for extent changes and display them in the status label
-        mMap.addEventHandler(MapViewEvent.MAP_BOUNDING_EXTENT, event -> {
+        mMapView.addEventHandler(MapViewEvent.MAP_BOUNDING_EXTENT, event -> {
             event.consume();
             System.out.println(event.getExtent().toString());
         });
 
-        mMap.addEventHandler(MapViewEvent.MAP_RIGHTCLICKED, event -> {
+        mMapView.addEventHandler(MapViewEvent.MAP_RIGHTCLICKED, event -> {
             event.consume();
             System.out.println("Event: map right clicked at: " + event.getCoordinate());
         });
-        mMap.addEventHandler(MarkerEvent.MARKER_CLICKED, event -> {
+        mMapView.addEventHandler(MarkerEvent.MARKER_CLICKED, event -> {
             event.consume();
             System.out.println("Event: marker clicked: " + event.getMarker().getId());
         });
-        mMap.addEventHandler(MarkerEvent.MARKER_RIGHTCLICKED, event -> {
+        mMapView.addEventHandler(MarkerEvent.MARKER_RIGHTCLICKED, event -> {
             event.consume();
             System.out.println("Event: marker right clicked: " + event.getMarker().getId());
         });
-        mMap.addEventHandler(MapLabelEvent.MAPLABEL_CLICKED, event -> {
+        mMapView.addEventHandler(MapLabelEvent.MAPLABEL_CLICKED, event -> {
             event.consume();
             System.out.println("Event: label clicked: " + event.getMapLabel().getText());
         });
-        mMap.addEventHandler(MapLabelEvent.MAPLABEL_RIGHTCLICKED, event -> {
+        mMapView.addEventHandler(MapLabelEvent.MAPLABEL_RIGHTCLICKED, event -> {
             event.consume();
             System.out.println("Event: label right clicked: " + event.getMapLabel().getText());
         });
 
-        mMap.addEventHandler(MapViewEvent.MAP_POINTER_MOVED, event -> {
-            System.out.println("pointer moved to " + event.getCoordinate());
+        mMapView.addEventHandler(MapViewEvent.MAP_POINTER_MOVED, event -> {
+            setStatusMousePositionData(toLatLon(event.getCoordinate()), null, null);
         });
 
 //        logger.trace("map handlers initialized");
@@ -194,7 +208,7 @@ public class MapJfxMapEngine extends MEngine {
     private void initMap() {
         NbLog.v(LOG_TAG, "Initializing map...");
 
-        mMap.setMapType(MapType.OSM);
+        mMapView.setMapType(MapType.OSM);
 
         NbLog.v(LOG_TAG, "Map initialized");
     }
@@ -208,7 +222,7 @@ public class MapJfxMapEngine extends MEngine {
 
     private double toGlobalZoom() {
         final double steps = 28;
-        final double zoom = mMap.getZoom();
+        final double zoom = mMapView.getZoom();
 
         return zoom / steps;
     }
