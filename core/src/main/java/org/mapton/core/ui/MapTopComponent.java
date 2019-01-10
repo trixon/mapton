@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -415,6 +415,7 @@ public final class MapTopComponent extends MTopComponent {
                 try {
                     engine.onActivate();
                     engine.panTo(mMOptions.getMapCenter(), mMOptions.getMapZoom());
+                    Mapton.getAppToolBar().refreshEngine(engine);
                 } catch (NullPointerException e) {
                 }
             });
@@ -431,11 +432,11 @@ public final class MapTopComponent extends MTopComponent {
                 SwingUtilities.invokeLater(() -> {
                     revalidate();
                     repaint();
+                    Mapton.getAppToolBar().refreshEngine(engine);
                 });
             });
         }
 
-        Mapton.getAppToolBar().refreshEngine(engine);
         Mapton.logLoading("Map Engine", engine.getName());
     }
 
