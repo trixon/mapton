@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,18 +21,20 @@ import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
 import javafx.scene.layout.VBox;
+import org.mapton.api.MOptions;
+import static org.mapton.api.MOptions.KEY_DISPLAY_CROSSHAIR;
+import org.mapton.core.ui.EngineBox;
 import org.openide.util.NbBundle;
 import se.trixon.almond.nbp.fx.FxPanel;
-import org.mapton.api.MOptions;
-import org.mapton.core.ui.EngineBox;
 
 final class MainPanel extends javax.swing.JPanel {
 
     private final MainOptionsPanelController controller;
     private final ResourceBundle mBundle = NbBundle.getBundle(MainPanel.class);
-    private final MOptions mOptions = MOptions.getInstance();
+    private CheckBox mCrosshairCheckBox;
     private EngineBox mEngineBox;
     private final FxPanel mFxPanel;
+    private final MOptions mOptions = MOptions.getInstance();
 
     private CheckBox mPopoverCheckBox;
 
@@ -47,9 +49,11 @@ final class MainPanel extends javax.swing.JPanel {
 
             private Scene createScene() {
 
+                mCrosshairCheckBox = new CheckBox(mBundle.getString("croshairCheckBox.text"));
                 mPopoverCheckBox = new CheckBox(mBundle.getString("popoverCheckBox.text"));
                 mEngineBox = new EngineBox();
-                VBox box = new VBox(mPopoverCheckBox, mEngineBox);
+
+                VBox box = new VBox(mCrosshairCheckBox, mPopoverCheckBox, mEngineBox);
 
                 return new Scene(box);
             }
@@ -80,10 +84,12 @@ final class MainPanel extends javax.swing.JPanel {
     }
 
     private void loadFX() {
+        mCrosshairCheckBox.setSelected(mOptions.is(KEY_DISPLAY_CROSSHAIR));
         mPopoverCheckBox.setSelected(mOptions.isPreferPopover());
     }
 
     private void storeFX() {
+        mOptions.put(KEY_DISPLAY_CROSSHAIR, mCrosshairCheckBox.isSelected());
         mOptions.setPreferPopover(mPopoverCheckBox.isSelected());
     }
 }

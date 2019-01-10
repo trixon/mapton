@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,15 +15,16 @@
  */
 package org.mapton.api;
 
-import java.util.prefs.Preferences;
 import org.openide.util.NbPreferences;
+import se.trixon.almond.util.OptionsBase;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class MOptions {
+public class MOptions extends OptionsBase {
 
+    public static final String KEY_DISPLAY_CROSSHAIR = "display_crosshair";
     public static final String KEY_MAP_ENGINE = "map_engine";
     public static final String KEY_MAP_HOME_LAT = "map_home_lat";
     public static final String KEY_MAP_HOME_LON = "map_home_lon";
@@ -44,13 +45,13 @@ public class MOptions {
     private static final String KEY_MAP_COO_TRANS = "map_coo_trans";
     private static final String KEY_MAP_HOME_ZOOM = "map_home_zoom";
     private static final String KEY_MAP_ZOOM = "map_zoom";
-    private final Preferences mPreferences = NbPreferences.forModule(MOptions.class);
 
     public static MOptions getInstance() {
         return Holder.INSTANCE;
     }
 
     private MOptions() {
+        setPreferences(NbPreferences.forModule(MOptions.class));
     }
 
     public String getEngine() {
@@ -89,10 +90,6 @@ public class MOptions {
 
     public double getMapZoom() {
         return mPreferences.getDouble(KEY_MAP_ZOOM, DEFAULT_MAP_ZOOM);
-    }
-
-    public Preferences getPreferences() {
-        return mPreferences;
     }
 
     public boolean isBookmarkVisible() {
