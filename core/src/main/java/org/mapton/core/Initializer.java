@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,7 +27,9 @@ import org.openide.modules.OnStart;
 import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
 import se.trixon.almond.nbp.Almond;
+import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.nbp.swing.RootPaneLayout;
+import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.icons.IconColor;
 
 /**
@@ -41,6 +43,7 @@ public class Initializer implements Runnable {
 
     @Override
     public void run() {
+        NbLog.i("System", SystemHelper.getSystemInfo());
         Platform.setImplicitExit(false);
 
         System.setProperty("netbeans.winsys.no_help_in_dialogs", "true");
