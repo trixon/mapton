@@ -87,24 +87,32 @@
     </build>
 
     <modules>
-        <module>branding</module>
         <module>application</module>
+        <module>branding</module>
         <module>core</module>
+        
+        <!--Map engines-->
         <module>modules/me-gmapsfx</module>
         <module>modules/me-jxmapviewer2</module>
         <module>modules/me-mapjfx</module>
         <module>modules/me-worldwind</module>
-        <module>modules/reports</module>
+
+        <!--Search engines-->
         <module>modules/se-bookmarks</module>
         <module>modules/se-geonames</module>
         <module>modules/se-google</module>
         <module>modules/se-nominatim</module>
+
+        <!--Transformation engines-->
         <module>modules/te-swetrans</module>
+
+        <!--Other-->
+        <module>demo</module>
+        <module>modules/reports</module>
         <module>modules/wikipedia</module>
         <module>modules/ww-eox</module>
         <module>modules/ww-grid</module>
         <module>modules/ww-mapollage</module>
-        <module>demo</module>
     </modules>
 
     <properties>
@@ -113,7 +121,7 @@
         <brandingToken>mapton</brandingToken>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <mapton.version>0.8.0-SNAPSHOT</mapton.version>
-        <version.almond-nbp>3.0.0-SNAPSHOT</version.almond-nbp>
+        <almond-nbp.version>3.0.0-SNAPSHOT</almond-nbp.version>
     </properties>
     <description>Some kind of map application</description>
 </project>

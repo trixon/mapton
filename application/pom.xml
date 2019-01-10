@@ -177,12 +177,12 @@
         <dependency>
             <groupId>se.trixon.almond</groupId>
             <artifactId>almond-nbp-actions</artifactId>
-            <version>${version.almond-nbp}</version>
+            <version>${almond-nbp.version}</version>
         </dependency>
         <dependency>
             <groupId>se.trixon.almond</groupId>
             <artifactId>almond-nbp-actions-osx</artifactId>
-            <version>${version.almond-nbp}</version>
+            <version>${almond-nbp.version}</version>
         </dependency>
     </dependencies>
 
@@ -197,7 +197,7 @@
                     <installerLicenseFile>../LICENSE</installerLicenseFile>
                     <etcConfFile>src/main/resources/mapton.conf</etcConfFile>
                     <installerPack200Enable>false</installerPack200Enable>
-                    <additionalArguments>-J-Xmx2048m</additionalArguments>
+                    <additionalArguments>-J-Xmx1536m</additionalArguments>
                 </configuration>
             </plugin>
             <plugin>

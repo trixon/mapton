@@ -61,7 +61,7 @@
         <dependency>
             <groupId>se.trixon.almond</groupId>
             <artifactId>almond-nbp</artifactId>
-            <version>${version.almond-nbp}</version>
+            <version>${almond-nbp.version}</version>
         </dependency>
 
         <!-- Other -->

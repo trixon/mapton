@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
+OpenIDE-Module-Module: org.mapton.core
 OpenIDE-Module-Layer: org/mapton/core/layer.xml
 OpenIDE-Module-Localizing-Bundle: org/mapton/core/Bundle.properties
 AutoUpdate-Essential-Module: true
