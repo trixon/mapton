@@ -130,6 +130,10 @@ public final class MapTopComponent extends MTopComponent {
             switch (evt.getKey()) {
                 case MOptions.KEY_MAP_ENGINE:
                     setEngine(Mapton.getEngine());
+
+                case MOptions.KEY_DISPLAY_CROSSHAIR:
+                    repaint();
+                    revalidate();
                     break;
 
                 default:
