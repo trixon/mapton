@@ -90,11 +90,10 @@
         <module>application</module>
         <module>branding</module>
         <module>core</module>
-        
+
         <!--Map engines-->
         <module>modules/me-gmapsfx</module>
         <module>modules/me-jxmapviewer2</module>
-        <module>modules/me-mapjfx</module>
         <module>modules/me-worldwind</module>
 
         <!--Search engines-->
@@ -107,12 +106,15 @@
         <module>modules/te-swetrans</module>
 
         <!--Other-->
-        <module>demo</module>
         <module>modules/reports</module>
         <module>modules/wikipedia</module>
         <module>modules/ww-eox</module>
         <module>modules/ww-grid</module>
-        <module>modules/ww-mapollage</module>
+
+        <!--Unstable-->
+        <!--<module>demo</module>-->
+        <!--<module>modules/me-mapjfx</module>-->
+        <!--<module>modules/ww-mapollage</module>-->
     </modules>
 
     <properties>
