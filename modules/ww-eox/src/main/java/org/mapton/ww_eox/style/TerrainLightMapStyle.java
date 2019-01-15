@@ -15,9 +15,9 @@
  */
 package org.mapton.ww_eox.style;
 
+import org.mapton.worldwind.api.MapStyle;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
-import org.mapton.worldwind.api.MapStyle;
 
 /**
  *
@@ -30,7 +30,7 @@ public class TerrainLightMapStyle extends MapStyle {
         setName(String.format("%s (%s)", Dict.MAP_TYPE_TERRAIN.toString(), Dict.LIGHT.toString().toLowerCase()));
         setSuppliers("EOX & ESA");
         setLayers(new String[]{
-            "Terrain Light background layer by EOX"
+            "Terrain Light background layer by EOX - 4326"
         });
     }
 }

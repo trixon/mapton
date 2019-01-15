@@ -15,8 +15,8 @@
  */
 package org.mapton.ww_eox.style;
 
-import org.openide.util.lookup.ServiceProvider;
 import org.mapton.worldwind.api.MapStyle;
+import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
@@ -29,7 +29,7 @@ public class OpenStreetMapStyle extends MapStyle {
         setName("Open Street Map");
         setSuppliers("EOX & OpenStreepMap");
         setLayers(new String[]{
-            "OpenStreetMap background layer by EOX"
+            "OpenStreetMap background layer by EOX - 4326"
         });
     }
 }
