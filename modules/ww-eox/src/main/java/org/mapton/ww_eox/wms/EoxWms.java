@@ -41,7 +41,14 @@ public class EoxWms extends WmsService {
         addService(new URI("https://tiles.maps.eox.at/wms?service=wms&request=getcapabilities"));
 
         for (LayerInfo layerInfo : getLayerInfos()) {
-            if (StringUtils.equalsAny(layerInfo.getName(), "osm", "terrain", "terrain-light")) {
+            if (StringUtils.equalsAny(layerInfo.getName(),
+                    "coastline",
+                    "hydrography",
+                    "s2cloudless-2018",
+                    "osm",
+                    "terrain",
+                    "terrain-light"
+            )) {
                 Object component = createComponent(layerInfo.getWmsCapabilities(), layerInfo.getParams());
                 if (component instanceof Layer) {
                     getLayers().add((Layer) component);
