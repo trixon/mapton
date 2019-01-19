@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,6 +15,7 @@
  */
 package org.mapton.core.ui;
 
+import java.util.prefs.PreferenceChangeEvent;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
@@ -29,6 +30,7 @@ import org.mapton.api.Mapton;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.GlobalStateChangeEvent;
 
 /**
  *
@@ -59,11 +61,32 @@ public class AppStatusView extends StatusBar {
             updateMousePositionData();
         });
 
+        mOptions.getPreferences().addPreferenceChangeListener((PreferenceChangeEvent evt) -> {
+            if (evt.getKey().equals(MOptions.KEY_MAP_ENGINE)) {
+                setMessage("");
+            }
+        });
+
+        Mapton.getGlobalState().addListener((GlobalStateChangeEvent evt) -> {
+            Platform.runLater(() -> {
+                switch (evt.getKey()) {
+                    case MEngine.KEY_STATUS_COORDINATE:
+                        updateMousePositionData();
+                        break;
+
+                    case MEngine.KEY_STATUS_PROGRESS:
+                        setProgress(evt.getValue());
+                        break;
+                }
+            });
+        }, MEngine.KEY_STATUS_COORDINATE, MEngine.KEY_STATUS_PROGRESS);
         updateProviders();
     }
 
     public void setMessage(String message) {
-        mLabel.setText(message);
+        Platform.runLater(() -> {
+            mLabel.setText(message);
+        });
     }
 
     public void updateMousePositionData() {

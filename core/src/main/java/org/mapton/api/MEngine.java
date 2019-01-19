@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,11 +20,9 @@ import java.awt.image.BufferedImage;
 import java.util.TreeMap;
 import java.util.concurrent.Callable;
 import java.util.logging.Logger;
-import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import javax.swing.SwingUtilities;
-import org.mapton.core.ui.AppStatusPanel;
 import org.mapton.core.ui.MapTopComponent;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
@@ -36,6 +34,9 @@ import se.trixon.almond.nbp.NbLog;
  * @author Patrik Karlström
  */
 public abstract class MEngine {
+
+    public static final String KEY_STATUS_PROGRESS = "Status.Progress";
+    public static final String KEY_STATUS_COORDINATE = "Status.Coordinate";
 
     protected static final Logger LOGGER = Logger.getLogger(MEngine.class.getName());
     private static final TreeMap<String, MEngine> ENGINES = new TreeMap<>();
@@ -236,14 +237,10 @@ public abstract class MEngine {
         mElevation = elevation;
         mAltitude = altitude;
 
-        Platform.runLater(() -> {
-            AppStatusPanel.getInstance().getProvider().updateMousePositionData();
-        });
+        Mapton.getGlobalState().put(KEY_STATUS_COORDINATE, latLonMouse);
     }
 
     public void setStatusProgress(double progress) {
-        Platform.runLater(() -> {
-            AppStatusPanel.getInstance().getProvider().setProgress(progress);
-        });
+        Mapton.getGlobalState().put(KEY_STATUS_PROGRESS, progress);
     }
 }
