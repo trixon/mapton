@@ -481,9 +481,7 @@ public final class MapTopComponent extends MTopComponent {
     }
 
     private void whatsHere() {
-        Platform.runLater(() -> {
-            getStatusbar().getProvider().setProgress(-1);
-        });
+        Mapton.getGlobalState().put(MEngine.KEY_STATUS_PROGRESS, -1d);
 
         new Thread(() -> {
             ArrayList< MWhatsHereEngine> engines = new ArrayList<>(Lookup.getDefault().lookupAll(MWhatsHereEngine.class));
@@ -499,9 +497,7 @@ public final class MapTopComponent extends MTopComponent {
                     });
                 }
 
-                Platform.runLater(() -> {
-                    getStatusbar().getProvider().setProgress(1);
-                });
+                Mapton.getGlobalState().put(MEngine.KEY_STATUS_PROGRESS, 1d);
             } else {
                 //TODO err inf dialog
             }
