@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,8 +28,7 @@ import se.trixon.almond.nbp.fx.FxPanel;
 public class AppStatusPanel extends JPanel {
 
     private static AppStatusPanel sAppStatusPanel;
-    private final AppStatusView mAppStatusView = new AppStatusView();
-    private final BorderPane mBox = new BorderPane();
+    private BorderPane mBox;
     private final FxPanel mFxPanel;
 
     public static AppStatusPanel getInstance() {
@@ -46,6 +45,7 @@ public class AppStatusPanel extends JPanel {
             }
 
             private Scene createScene() {
+                mBox = new BorderPane();
                 resetFx();
                 return new Scene(mBox);
             }
@@ -62,19 +62,12 @@ public class AppStatusPanel extends JPanel {
         return mFxPanel;
     }
 
-    public AppStatusView getProvider() {
-        return mAppStatusView;
-    }
-
     public void resetFx() {
-        mBox.setCenter(mAppStatusView);
+        mBox.setCenter(AppStatusView.getInstance());
     }
 
     public void resetSwing() {
         add(mFxPanel, BorderLayout.CENTER);
     }
 
-    public void setStatusText(String text) {
-        mAppStatusView.setText(text);
-    }
 }

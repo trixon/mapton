@@ -200,6 +200,8 @@ public final class MapTopComponent extends MTopComponent {
                 }
             }
         });
+
+        AppStatusView.getInstance().setMode(false);
     }
 
     @Override
@@ -218,6 +220,8 @@ public final class MapTopComponent extends MTopComponent {
         for (TopComponent tc : mActiveMapMagnets) {
             tc.requestActive();
         }
+
+        AppStatusView.getInstance().setMode(true);
     }
 
     @Override
@@ -238,13 +242,15 @@ public final class MapTopComponent extends MTopComponent {
         // TODO store your settings
     }
 
-    private void attachStatusbar(boolean showOnlyMap) {
+    private void attachStatusbar() {
+        boolean showOnlyMap = mMOptions.isMapOnly();
+
         if (mEngine.isSwing()) {
             try {
                 if (showOnlyMap) {
-                    add(getStatusbar().getFxPanel(), BorderLayout.SOUTH);
+                    add(getStatusPanel().getFxPanel(), BorderLayout.SOUTH);
                 } else {
-                    getStatusbar().resetSwing();
+                    getStatusPanel().resetSwing();
                 }
             } catch (NullPointerException e) {
                 // nvm
@@ -252,11 +258,11 @@ public final class MapTopComponent extends MTopComponent {
         } else {
             Platform.runLater(() -> {
                 if (showOnlyMap) {
-                    mRoot.setBottom(getStatusbar().getProvider());
+                    mRoot.setBottom(AppStatusView.getInstance());
                 } else {
                     if (mRoot.getBottom() != null) {
                         mRoot.setBottom(null);
-                        getStatusbar().resetFx();
+                        getStatusPanel().resetFx();
                     }
                 }
             });
@@ -304,7 +310,7 @@ public final class MapTopComponent extends MTopComponent {
         }
     }
 
-    private AppStatusPanel getStatusbar() {
+    private AppStatusPanel getStatusPanel() {
         if (mAppStatusPanel == null) {
             mAppStatusPanel = AppStatusPanel.getInstance();
         }
@@ -372,7 +378,7 @@ public final class MapTopComponent extends MTopComponent {
                     final boolean showOnlyMap = 1 == d.height && 1 == d.width;
                     mMOptions.setMapOnly(showOnlyMap);
                     try {
-                        attachStatusbar(showOnlyMap);
+                        attachStatusbar();
                     } catch (NullPointerException e) {
                     }
                 }
@@ -442,13 +448,13 @@ public final class MapTopComponent extends MTopComponent {
         if (engine.isSwing()) {
             SwingUtilities.invokeLater(() -> {
                 removeAll();
-                final JComponent ui = (JComponent) engine.getUI();
-                ui.setMinimumSize(new Dimension(1, 1));
-                ui.setPreferredSize(new Dimension(1, 1));
+                final JComponent engineUI = (JComponent) engine.getUI();
+                engineUI.setMinimumSize(new Dimension(1, 1));
+                engineUI.setPreferredSize(new Dimension(1, 1));
                 add(getFxPanel(), BorderLayout.NORTH);
                 getFxPanel().setVisible(false);
-                add(ui, BorderLayout.CENTER);
-                attachStatusbar(mMOptions.isMapOnly());
+                add(engineUI, BorderLayout.CENTER);
+                attachStatusbar();
                 revalidate();
                 repaint();
 
@@ -463,7 +469,7 @@ public final class MapTopComponent extends MTopComponent {
             Platform.runLater(() -> {
                 resetFx();
                 mRoot.setCenter((Node) engine.getUI());
-                attachStatusbar(mMOptions.isMapOnly());
+                attachStatusbar();
                 try {
                     engine.onActivate();
                     engine.panTo(mMOptions.getMapCenter(), mMOptions.getMapZoom());
@@ -481,9 +487,7 @@ public final class MapTopComponent extends MTopComponent {
     }
 
     private void whatsHere() {
-        Platform.runLater(() -> {
-            getStatusbar().getProvider().setProgress(-1);
-        });
+        Mapton.getGlobalState().put(MEngine.KEY_STATUS_PROGRESS, -1d);
 
         new Thread(() -> {
             ArrayList< MWhatsHereEngine> engines = new ArrayList<>(Lookup.getDefault().lookupAll(MWhatsHereEngine.class));
@@ -499,9 +503,7 @@ public final class MapTopComponent extends MTopComponent {
                     });
                 }
 
-                Platform.runLater(() -> {
-                    getStatusbar().getProvider().setProgress(1);
-                });
+                Mapton.getGlobalState().put(MEngine.KEY_STATUS_PROGRESS, 1d);
             } else {
                 //TODO err inf dialog
             }

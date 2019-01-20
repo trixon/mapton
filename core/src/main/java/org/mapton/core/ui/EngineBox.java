@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,12 +24,12 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.VBox;
 import org.apache.commons.lang3.StringUtils;
-import org.openide.util.Lookup;
-import org.openide.util.LookupEvent;
 import org.mapton.api.MDict;
 import org.mapton.api.MEngine;
 import org.mapton.api.MOptions;
 import org.mapton.api.Mapton;
+import org.openide.util.Lookup;
+import org.openide.util.LookupEvent;
 
 /**
  *
@@ -74,8 +74,6 @@ public class EngineBox extends VBox {
     }
 
     private void switchEngine(MEngine newEngine) {
-        AppStatusPanel.getInstance().getProvider().setMessage("");
-
         final MEngine oldEngine = Mapton.getEngine();
         try {
             oldEngine.onDeactivate();

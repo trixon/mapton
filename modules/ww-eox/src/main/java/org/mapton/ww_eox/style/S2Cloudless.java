@@ -17,6 +17,7 @@ package org.mapton.ww_eox.style;
 
 import org.mapton.worldwind.api.MapStyle;
 import org.openide.util.lookup.ServiceProvider;
+import se.trixon.almond.util.Dict;
 
 /**
  *
@@ -26,7 +27,7 @@ import org.openide.util.lookup.ServiceProvider;
 public class S2Cloudless extends MapStyle {
 
     public S2Cloudless() {
-        setName("S2 Cloudless");
+        setName(String.format("%s Sentinel-2", Dict.MAP_TYPE_SATELLITE.toString()));
         setSuppliers("EOX & ESA");
         setLayers(new String[]{
             "Sentinel-2 cloudless layer for 2018 by EOX - 4326"

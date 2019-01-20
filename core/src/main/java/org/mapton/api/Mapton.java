@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,6 +26,7 @@ import org.mapton.core.ui.AppToolBar;
 import org.openide.awt.StatusDisplayer;
 import org.openide.util.Lookup;
 import se.trixon.almond.nbp.NbLog;
+import se.trixon.almond.util.GlobalState;
 import se.trixon.almond.util.fx.FxHelper;
 
 /**
@@ -45,6 +46,7 @@ public class Mapton {
     private static final int ICON_SIZE_TOOLBAR = 36;
     private static final int ICON_SIZE_TOOLBAR_INT = 24;
     private static AppToolBar sAppToolBar;
+    private static final GlobalState sGlobalState = new GlobalState();
 
     static {
         CONFIG_DIR = new File(System.getProperty("netbeans.user"));
@@ -96,6 +98,10 @@ public class Mapton {
         }
 
         return defaultEngine;
+    }
+
+    public static GlobalState getGlobalState() {
+        return sGlobalState;
     }
 
     public static Color getIconColor() {
