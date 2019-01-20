@@ -131,6 +131,14 @@ public class AppStatusView extends StatusBar {
         }
     }
 
+    void setMode(boolean mapMode) {
+        Platform.runLater(() -> {
+            mLabel.setVisible(mapMode);
+            mComboBox.setVisible(mapMode);
+            setProgress(0);
+        });
+    }
+
     private void updateProviders() {
         Platform.runLater(() -> {
             mComboBox.getItems().setAll(MCooTrans.getCooTrans());

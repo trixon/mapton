@@ -200,6 +200,8 @@ public final class MapTopComponent extends MTopComponent {
                 }
             }
         });
+
+        AppStatusView.getInstance().setMode(false);
     }
 
     @Override
@@ -218,6 +220,8 @@ public final class MapTopComponent extends MTopComponent {
         for (TopComponent tc : mActiveMapMagnets) {
             tc.requestActive();
         }
+
+        AppStatusView.getInstance().setMode(true);
     }
 
     @Override
