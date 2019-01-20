@@ -24,7 +24,6 @@ import org.mapton.api.MOptions;
 import org.mapton.core.ui.AppToolBarProvider;
 import org.openide.awt.Actions;
 import org.openide.modules.OnStart;
-import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
 import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.nbp.NbLog;
@@ -69,8 +68,7 @@ public class Initializer implements Runnable {
             }
 
             if (mOptions.isMapOnly()) {
-                TopComponent tc = windowManager.findTopComponent("MapTopComponent");
-                tc.requestActive();
+                windowManager.findTopComponent("MapTopComponent").requestActive();;
                 Actions.forID("Window", "org.netbeans.core.windows.actions.ShowEditorOnlyAction").actionPerformed(null);
             }
 

@@ -43,7 +43,11 @@ public class AppStatusView extends StatusBar {
     private final Label mLabel = new Label();
     private final MOptions mOptions = MOptions.getInstance();
 
-    public AppStatusView() {
+    public static AppStatusView getInstance() {
+        return Holder.INSTANCE;
+    }
+
+    private AppStatusView() {
         super.setText("");
         getRightItems().addAll(mLabel, mComboBox);
 
@@ -148,5 +152,10 @@ public class AppStatusView extends StatusBar {
                 updateMousePositionData();
             }
         });
+    }
+
+    private static class Holder {
+
+        private static final AppStatusView INSTANCE = new AppStatusView();
     }
 }
