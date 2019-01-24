@@ -36,6 +36,7 @@ import javax.swing.Timer;
 import org.mapton.api.MEngine;
 import org.mapton.api.MLatLon;
 import org.mapton.api.MLatLonBox;
+import org.mapton.api.MStatusZoomMode;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.nbp.dialogs.NbMessage;
@@ -87,6 +88,11 @@ public class WorldWindMapEngine extends MEngine {
     @Override
     public String getName() {
         return "WorldWind";
+    }
+
+    @Override
+    public MStatusZoomMode getStatusZoomMode() {
+        return MStatusZoomMode.RELATIVE;
     }
 
     @Override

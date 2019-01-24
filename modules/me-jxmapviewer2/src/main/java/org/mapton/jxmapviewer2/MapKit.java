@@ -35,9 +35,9 @@ import org.jxmapviewer.OSMTileFactoryInfo;
 import org.jxmapviewer.viewer.DefaultTileFactory;
 import org.jxmapviewer.viewer.TileCache;
 import org.jxmapviewer.viewer.TileFactoryInfo;
+import org.mapton.api.Mapton;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.SystemHelper;
-import org.mapton.api.Mapton;
 
 /**
  *
@@ -121,7 +121,7 @@ public class MapKit extends JXMapKit {
         GridBagConstraints gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
+        gridBagConstraints.anchor = GridBagConstraints.SOUTHWEST;
 
         try {
             setCopyrightNotice("<html>&nbsp;© <a href=\"\">OpenStreetMap</a> contributors&nbsp;<html>", new URI("https://www.openstreetmap.org/copyright"), gridBagConstraints);
@@ -162,6 +162,9 @@ public class MapKit extends JXMapKit {
     }
 
     private void init() {
+        getZoomSlider().setVisible(false);
+        getZoomInButton().setVisible(false);
+        getZoomOutButton().setVisible(false);
     }
 
 }

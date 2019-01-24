@@ -18,10 +18,12 @@ package org.mapton.api;
 import java.io.File;
 import java.text.DateFormat;
 import javafx.application.Platform;
+import javafx.beans.property.DoubleProperty;
 import javafx.scene.layout.Background;
 import javafx.scene.paint.Color;
 import javax.swing.SwingUtilities;
 import org.apache.commons.lang3.StringUtils;
+import org.mapton.core.ui.AppStatusView;
 import org.mapton.core.ui.AppToolBar;
 import org.openide.awt.StatusDisplayer;
 import org.openide.util.Lookup;
@@ -47,6 +49,7 @@ public class Mapton {
     private static final int ICON_SIZE_TOOLBAR_INT = 24;
     private static AppToolBar sAppToolBar;
     private static final GlobalState sGlobalState = new GlobalState();
+    private final DoubleProperty mZoomProperty;
 
     static {
         CONFIG_DIR = new File(System.getProperty("netbeans.user"));
@@ -153,6 +156,11 @@ public class Mapton {
     }
 
     private Mapton() {
+        mZoomProperty = AppStatusView.getInstance().getZoomAbsoluteSlider().valueProperty();
+    }
+
+    public DoubleProperty zoomProperty() {
+        return mZoomProperty;
     }
 
     private static class Holder {

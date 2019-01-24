@@ -61,6 +61,7 @@ import org.mapton.api.MOptions;
 import org.mapton.api.MTopComponent;
 import org.mapton.api.MWhatsHereEngine;
 import org.mapton.api.Mapton;
+import org.mapton.core.ui.AppStatusView.StatusWindowMode;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -201,7 +202,7 @@ public final class MapTopComponent extends MTopComponent {
             }
         });
 
-        AppStatusView.getInstance().setMode(false);
+        AppStatusView.getInstance().setWindowMode(StatusWindowMode.OTHER);
     }
 
     @Override
@@ -221,7 +222,7 @@ public final class MapTopComponent extends MTopComponent {
             tc.requestActive();
         }
 
-        AppStatusView.getInstance().setMode(true);
+        AppStatusView.getInstance().setWindowMode(StatusWindowMode.MAP);
     }
 
     @Override

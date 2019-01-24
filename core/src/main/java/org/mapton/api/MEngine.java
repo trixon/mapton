@@ -35,8 +35,8 @@ import se.trixon.almond.nbp.NbLog;
  */
 public abstract class MEngine {
 
-    public static final String KEY_STATUS_PROGRESS = "Status.Progress";
     public static final String KEY_STATUS_COORDINATE = "Status.Coordinate";
+    public static final String KEY_STATUS_PROGRESS = "Status.Progress";
 
     protected static final Logger LOGGER = Logger.getLogger(MEngine.class.getName());
     private static final TreeMap<String, MEngine> ENGINES = new TreeMap<>();
@@ -157,6 +157,10 @@ public abstract class MEngine {
 
     public abstract String getName();
 
+    public MStatusZoomMode getStatusZoomMode() {
+        return MStatusZoomMode.ABSOLUTE;
+    }
+
     public abstract Node getStyleView();
 
     public abstract Object getUI();
@@ -242,5 +246,9 @@ public abstract class MEngine {
 
     public void setStatusProgress(double progress) {
         Mapton.getGlobalState().put(KEY_STATUS_PROGRESS, progress);
+    }
+
+    public void zoomTo(double zoom) {
+        panTo(getCenter(), zoom);
     }
 }

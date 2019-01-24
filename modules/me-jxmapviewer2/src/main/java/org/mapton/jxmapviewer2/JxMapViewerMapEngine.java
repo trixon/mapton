@@ -30,6 +30,7 @@ import org.jxmapviewer.viewer.GeoPosition;
 import org.mapton.api.MEngine;
 import org.mapton.api.MLatLon;
 import org.mapton.api.MLatLonBox;
+import org.mapton.api.Mapton;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.nbp.dialogs.NbMessage;
@@ -115,15 +116,7 @@ public class JxMapViewerMapEngine extends MEngine {
         mMapKit = new MapKit();
         mMap = mMapKit.getMainMap();
         setImageRenderer(() -> {
-            mMapKit.getZoomSlider().setVisible(false);
-            mMapKit.getZoomInButton().setVisible(false);
-            mMapKit.getZoomOutButton().setVisible(false);
-
             BufferedImage image = GraphicsHelper.componentToImage(mMap, null);
-
-            mMapKit.getZoomSlider().setVisible(true);
-            mMapKit.getZoomInButton().setVisible(true);
-            mMapKit.getZoomOutButton().setVisible(true);
 
             return image;
         });
@@ -163,13 +156,12 @@ public class JxMapViewerMapEngine extends MEngine {
         });
 
         mMapKit.getZoomSlider().addChangeListener((ChangeEvent e) -> {
-            log(String.format("GlobalZoom = %f", toGlobalZoom()));
+            Mapton.getInstance().zoomProperty().set(toGlobalZoom());
         });
     }
 
     private void panAndZoomTo(GeoPosition geoPosition, int zoom) {
         mMapKit.setCenterPosition(geoPosition);
-//        mMapKit.setAddressLocation(geoPosition);
         mMapKit.setZoom(zoom);
     }
 

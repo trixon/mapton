@@ -17,15 +17,19 @@ package org.mapton.core.ui;
 
 import java.util.prefs.PreferenceChangeEvent;
 import javafx.application.Platform;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
 import javafx.scene.text.Font;
+import org.controlsfx.control.PlusMinusSlider;
 import org.controlsfx.control.StatusBar;
 import org.mapton.api.MCooTrans;
 import org.mapton.api.MEngine;
 import org.mapton.api.MOptions;
+import org.mapton.api.MStatusZoomMode;
 import org.mapton.api.Mapton;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
@@ -42,6 +46,10 @@ public class AppStatusView extends StatusBar {
     private MCooTrans mCooTrans;
     private final Label mLabel = new Label();
     private final MOptions mOptions = MOptions.getInstance();
+    private StatusWindowMode mWindowMode = StatusWindowMode.MAP;
+    private Slider mZoomAbsoluteSlider;
+    private MStatusZoomMode mZoomMode = MStatusZoomMode.ABSOLUTE;
+    private PlusMinusSlider mZoomRelativeSlider;
 
     public static AppStatusView getInstance() {
         return Holder.INSTANCE;
@@ -49,42 +57,15 @@ public class AppStatusView extends StatusBar {
 
     private AppStatusView() {
         super.setText("");
-        getRightItems().addAll(mLabel, mComboBox);
+        createUI();
+        initListeners();
 
-        mLabel.prefHeightProperty().bind(heightProperty());
-        mLabel.setPadding(new Insets(0, 8, 0, 8));
-        mLabel.setFont(Font.font("monospaced"));
-
-        Lookup.getDefault().lookupResult(MCooTrans.class).addLookupListener((LookupEvent ev) -> {
-            updateProviders();
-        });
-
-        mComboBox.setOnAction((ActionEvent event) -> {
-            mCooTrans = mComboBox.getSelectionModel().getSelectedItem();
-            mOptions.setMapCooTrans(mCooTrans.getName());
-            updateMousePositionData();
-        });
-
-        mOptions.getPreferences().addPreferenceChangeListener((PreferenceChangeEvent evt) -> {
-            if (evt.getKey().equals(MOptions.KEY_MAP_ENGINE)) {
-                setMessage("");
-            }
-        });
-
-        Mapton.getGlobalState().addListener((GlobalStateChangeEvent evt) -> {
-            Platform.runLater(() -> {
-                switch (evt.getKey()) {
-                    case MEngine.KEY_STATUS_COORDINATE:
-                        updateMousePositionData();
-                        break;
-
-                    case MEngine.KEY_STATUS_PROGRESS:
-                        setProgress(evt.getValue());
-                        break;
-                }
-            });
-        }, MEngine.KEY_STATUS_COORDINATE, MEngine.KEY_STATUS_PROGRESS);
         updateProviders();
+        updateZoomMode();
+    }
+
+    public Slider getZoomAbsoluteSlider() {
+        return mZoomAbsoluteSlider;
     }
 
     public void setMessage(String message) {
@@ -131,11 +112,76 @@ public class AppStatusView extends StatusBar {
         }
     }
 
-    void setMode(boolean mapMode) {
+    void setWindowMode(StatusWindowMode windowMode) {
+        mWindowMode = windowMode;
+
         Platform.runLater(() -> {
+            boolean mapMode = windowMode == StatusWindowMode.MAP;
             mLabel.setVisible(mapMode);
             mComboBox.setVisible(mapMode);
+
+            updateZoomMode();
+
             setProgress(0);
+        });
+    }
+
+    private void createUI() {
+        final Insets top4Insets = new Insets(4, 0, 0, 0);
+        final int sliderWidth = 200;
+
+        mZoomAbsoluteSlider = new Slider(0, 1, 0.5);
+        mZoomAbsoluteSlider.setPadding(top4Insets);
+        mZoomAbsoluteSlider.setPrefWidth(sliderWidth);
+        mZoomAbsoluteSlider.setBlockIncrement(0.1);
+
+        mZoomRelativeSlider = new PlusMinusSlider();
+        mZoomRelativeSlider.setPadding(top4Insets);
+        mZoomRelativeSlider.setPrefWidth(sliderWidth);
+
+        getRightItems().addAll(mLabel, mComboBox);
+
+        mLabel.prefHeightProperty().bind(heightProperty());
+        mLabel.setPadding(new Insets(0, 8, 0, 8));
+        mLabel.setFont(Font.font("monospaced"));
+    }
+
+    private void initListeners() {
+        Lookup.getDefault().lookupResult(MCooTrans.class).addLookupListener((LookupEvent ev) -> {
+            updateProviders();
+        });
+
+        mComboBox.setOnAction((ActionEvent event) -> {
+            mCooTrans = mComboBox.getSelectionModel().getSelectedItem();
+            mOptions.setMapCooTrans(mCooTrans.getName());
+            updateMousePositionData();
+        });
+
+        mOptions.getPreferences().addPreferenceChangeListener((PreferenceChangeEvent evt) -> {
+            if (evt.getKey().equals(MOptions.KEY_MAP_ENGINE)) {
+                setMessage("");
+                Platform.runLater(() -> {
+                    updateZoomMode();
+                });
+            }
+        });
+
+        Mapton.getGlobalState().addListener((GlobalStateChangeEvent evt) -> {
+            Platform.runLater(() -> {
+                switch (evt.getKey()) {
+                    case MEngine.KEY_STATUS_COORDINATE:
+                        updateMousePositionData();
+                        break;
+
+                    case MEngine.KEY_STATUS_PROGRESS:
+                        setProgress(evt.getValue());
+                        break;
+                }
+            });
+        }, MEngine.KEY_STATUS_COORDINATE, MEngine.KEY_STATUS_PROGRESS);
+
+        mZoomAbsoluteSlider.valueProperty().addListener((ObservableValue<? extends Number> ov, Number t, Number newValue) -> {
+            Mapton.getEngine().zoomTo(newValue.doubleValue());
         });
     }
 
@@ -162,8 +208,25 @@ public class AppStatusView extends StatusBar {
         });
     }
 
+    private void updateZoomMode() {
+        getLeftItems().clear();
+
+        mZoomMode = Mapton.getEngine().getStatusZoomMode();
+        if (mWindowMode == StatusWindowMode.MAP) {
+            if (mZoomMode == MStatusZoomMode.ABSOLUTE) {
+                getLeftItems().add(mZoomAbsoluteSlider);
+            } else {
+                getLeftItems().add(mZoomRelativeSlider);
+            }
+        }
+    }
+
     private static class Holder {
 
         private static final AppStatusView INSTANCE = new AppStatusView();
+    }
+
+    public enum StatusWindowMode {
+        MAP, OTHER;
     }
 }

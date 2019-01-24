@@ -29,16 +29,15 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import java.util.prefs.PreferenceChangeEvent;
 import javafx.application.Platform;
-import javafx.beans.Observable;
+import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.SwingFXUtils;
-import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.SnapshotParameters;
-import javafx.scene.control.Slider;
 import javafx.scene.image.WritableImage;
 import org.mapton.api.MEngine;
 import org.mapton.api.MLatLon;
 import org.mapton.api.MLatLonBox;
+import org.mapton.api.Mapton;
 import org.mapton.gmapsfx.api.MapStyle;
 import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
@@ -61,7 +60,6 @@ public class GMapsFXMapEngine extends MEngine {
     private GoogleMapView mMapView;
     private final ModuleOptions mOptions = ModuleOptions.getInstance();
     private StyleView mStyleView;
-    private Slider mZoomSlider;
 
     public GMapsFXMapEngine() {
         mStyleView = new StyleView();
@@ -145,19 +143,12 @@ public class GMapsFXMapEngine extends MEngine {
                     .styleString(MapStyle.getStyle(mOptions.getMapStyle()))
                     .zoomControl(false);
 
-            mZoomSlider = new Slider(0, 22, 1);
-            mZoomSlider.setPadding(new Insets(8, 0, 0, 8));
-            mZoomSlider.setBlockIncrement(1);
-            mMapView.getChildren().add(mZoomSlider);
-
             initMap();
             initialized();
             initListeners();
 
             setImageRenderer(() -> {
-                mZoomSlider.setVisible(false);
                 WritableImage image = mMapView.snapshot(new SnapshotParameters(), null);
-                mZoomSlider.setVisible(true);
 
                 return SwingFXUtils.fromFXImage(image, null);
             });
@@ -196,8 +187,8 @@ public class GMapsFXMapEngine extends MEngine {
             });
         });
 
-        mZoomSlider.valueProperty().addListener((Observable event) -> {
-            log(String.format("GlobalZoom = %f", toGlobalZoom()));
+        mMap.zoomProperty().addListener((ObservableValue<? extends Number> ov, Number t, Number t1) -> {
+            Mapton.getInstance().zoomProperty().set(toGlobalZoom());
         });
 
         mMapView.setOnContextMenuRequested((e) -> {
@@ -208,14 +199,9 @@ public class GMapsFXMapEngine extends MEngine {
     private void initMap() {
         NbLog.v(LOG_TAG, "Initializing map...");
 
-        if (mMap != null) {
-            mMap.zoomProperty().unbindBidirectional(mZoomSlider.valueProperty());
-        }
-
         mMapOptions.styleString(MapStyle.getStyle(mOptions.getMapStyle()));
         mMap = mMapView.createMap(mMapOptions);
         mMap.setMapType(mOptions.getMapType());
-        mMap.zoomProperty().bindBidirectional(mZoomSlider.valueProperty());
 
         mMap.addMouseEventHandler(UIEventType.mousemove, (GMapMouseEvent event) -> {
             setStatusMousePositionData(toLatLon(event.getLatLong()), null, null);
