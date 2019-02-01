@@ -23,6 +23,7 @@ import javafx.geometry.Insets;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import javafx.scene.layout.StackPane;
 import javafx.scene.text.Font;
 import org.controlsfx.control.PlusMinusSlider;
 import org.controlsfx.control.StatusBar;
@@ -44,12 +45,13 @@ public class AppStatusView extends StatusBar {
 
     private final ComboBox<MCooTrans> mComboBox = new ComboBox();
     private MCooTrans mCooTrans;
-    private final Label mLabel = new Label();
+    private final Label mRightLabel = new Label();
     private final MOptions mOptions = MOptions.getInstance();
     private StatusWindowMode mWindowMode = StatusWindowMode.MAP;
     private Slider mZoomAbsoluteSlider;
     private MStatusZoomMode mZoomMode = MStatusZoomMode.ABSOLUTE;
     private PlusMinusSlider mZoomRelativeSlider;
+    private StackPane mZoomRelativePane;
 
     public static AppStatusView getInstance() {
         return Holder.INSTANCE;
@@ -70,7 +72,7 @@ public class AppStatusView extends StatusBar {
 
     public void setMessage(String message) {
         Platform.runLater(() -> {
-            mLabel.setText(message);
+            mRightLabel.setText(message);
         });
     }
 
@@ -117,7 +119,7 @@ public class AppStatusView extends StatusBar {
 
         Platform.runLater(() -> {
             boolean mapMode = windowMode == StatusWindowMode.MAP;
-            mLabel.setVisible(mapMode);
+            mRightLabel.setVisible(mapMode);
             mComboBox.setVisible(mapMode);
 
             updateZoomMode();
@@ -127,23 +129,23 @@ public class AppStatusView extends StatusBar {
     }
 
     private void createUI() {
-        final Insets top4Insets = new Insets(4, 0, 0, 0);
         final int sliderWidth = 200;
 
         mZoomAbsoluteSlider = new Slider(0, 1, 0.5);
-        mZoomAbsoluteSlider.setPadding(top4Insets);
+        mZoomAbsoluteSlider.setPadding(new Insets(4, 0, 0, 0));
         mZoomAbsoluteSlider.setPrefWidth(sliderWidth);
         mZoomAbsoluteSlider.setBlockIncrement(0.1);
 
         mZoomRelativeSlider = new PlusMinusSlider();
-        mZoomRelativeSlider.setPadding(top4Insets);
         mZoomRelativeSlider.setPrefWidth(sliderWidth);
+        mZoomRelativePane = new StackPane(mZoomRelativeSlider);
+        mZoomRelativePane.setPadding(new Insets(2, 0, 2, 0));
 
-        getRightItems().addAll(mLabel, mComboBox);
+        mRightLabel.prefHeightProperty().bind(heightProperty());
+        mRightLabel.setPadding(new Insets(0, 8, 0, 8));
+        mRightLabel.setFont(Font.font("monospaced"));
 
-        mLabel.prefHeightProperty().bind(heightProperty());
-        mLabel.setPadding(new Insets(0, 8, 0, 8));
-        mLabel.setFont(Font.font("monospaced"));
+        getRightItems().addAll(mRightLabel, mComboBox);
     }
 
     private void initListeners() {
@@ -216,7 +218,7 @@ public class AppStatusView extends StatusBar {
             if (mZoomMode == MStatusZoomMode.ABSOLUTE) {
                 getLeftItems().add(mZoomAbsoluteSlider);
             } else {
-                getLeftItems().add(mZoomRelativeSlider);
+                getLeftItems().add(mZoomRelativePane);
             }
         }
     }
