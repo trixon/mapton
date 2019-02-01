@@ -138,6 +138,8 @@ public class AppStatusView extends StatusBar {
 
         mZoomRelativeSlider = new PlusMinusSlider();
         mZoomRelativeSlider.setPrefWidth(sliderWidth);
+        mZoomRelativeSlider.setDisable(true);
+
         mZoomRelativePane = new StackPane(mZoomRelativeSlider);
         mZoomRelativePane.setPadding(new Insets(2, 0, 2, 0));
 
