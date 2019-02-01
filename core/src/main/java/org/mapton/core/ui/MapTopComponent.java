@@ -151,31 +151,34 @@ public final class MapTopComponent extends MTopComponent {
 
     @Override
     public void paint(Graphics g) {
-        super.paint(g);
+        try {
+            super.paint(g);
 
-        if (mOptions.is(MOptions.KEY_DISPLAY_CROSSHAIR)) {
-            Graphics2D g2 = (Graphics2D) g;
-            int x = getWidth() / 2;
-            int y = getHeight() / 2;
-            final int gap = 6;
-            final int length = 4 + gap;
+            if (mOptions.is(MOptions.KEY_DISPLAY_CROSSHAIR)) {
+                Graphics2D g2 = (Graphics2D) g;
+                int x = getWidth() / 2;
+                int y = getHeight() / 2;
+                final int gap = 6;
+                final int length = 4 + gap;
 
 //        Stroke[] strokes = {new BasicStroke(3, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER), new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER)};
 //        Stroke[] strokes = {new BasicStroke(5, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER), new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER)};
-            Stroke[] strokes = {new BasicStroke(5), new BasicStroke(1)};
+                Stroke[] strokes = {new BasicStroke(5), new BasicStroke(1)};
 //        Color[] colors = {Color.BLACK, Color.WHITE};
-            Color[] colors = {new Color(0f, 0f, 0f, 0.4f), Color.WHITE};
+                Color[] colors = {new Color(0f, 0f, 0f, 0.4f), Color.WHITE};
 //        int[] pads = {0, 2};
 
-            for (int i = 0; i < 2; i++) {
-                g2.setStroke(strokes[i]);
-                g2.setColor(colors[i]);
+                for (int i = 0; i < 2; i++) {
+                    g2.setStroke(strokes[i]);
+                    g2.setColor(colors[i]);
 
-                g2.drawLine(x, y + gap, x, y + length);//Down
-                g2.drawLine(x, y - gap, x, y - length);//Up
-                g2.drawLine(x + gap, y, x + length, y);//Right
-                g2.drawLine(x - gap, y, x - length, y);//Left
+                    g2.drawLine(x, y + gap, x, y + length);//Down
+                    g2.drawLine(x, y - gap, x, y - length);//Up
+                    g2.drawLine(x + gap, y, x + length, y);//Right
+                    g2.drawLine(x - gap, y, x - length, y);//Left
+                }
             }
+        } catch (Exception e) {
         }
     }
 
