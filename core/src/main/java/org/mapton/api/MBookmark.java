@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,6 +18,7 @@ package org.mapton.api;
 import com.google.gson.annotations.SerializedName;
 import java.sql.Timestamp;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  *
@@ -27,6 +28,8 @@ public class MBookmark {
 
     @SerializedName("category")
     private String mCategory = "";
+    @SerializedName("color")
+    private String mColor = "";
     @SerializedName("description")
     private String mDescription = "";
     @SerializedName("display_marker")
@@ -53,6 +56,10 @@ public class MBookmark {
 
     public String getCategory() {
         return mCategory;
+    }
+
+    public String getColor() {
+        return StringUtils.defaultString(mColor, "FFFF00");
     }
 
     public String getDescription() {
@@ -101,6 +108,10 @@ public class MBookmark {
 
     public void setCategory(String category) {
         mCategory = category;
+    }
+
+    public void setColor(String color) {
+        mColor = color;
     }
 
     public void setDescription(String description) {

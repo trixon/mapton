@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,21 +22,24 @@ import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.util.StringConverter;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.validation.ValidationResult;
 import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
-import se.trixon.almond.nbp.fx.FxDialogPanel;
-import se.trixon.almond.util.Dict;
 import org.mapton.api.MBookmark;
 import org.mapton.api.MDict;
+import se.trixon.almond.nbp.fx.FxDialogPanel;
+import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
@@ -45,6 +48,7 @@ import org.mapton.api.MDict;
 public class BookmarkPanel extends FxDialogPanel {
 
     private TextField mCatTextField;
+    private ColorPicker mColorPicker;
     private TextArea mDescTextArea;
     private Spinner<Double> mLatitudeSpinner;
     private Spinner<Double> mLongitudeSpinner;
@@ -60,6 +64,12 @@ public class BookmarkPanel extends FxDialogPanel {
         mLatitudeSpinner.getValueFactory().setValue(bookmark.getLatitude());
         mLongitudeSpinner.getValueFactory().setValue(bookmark.getLongitude());
         mPlacemarkCheckBox.setSelected(bookmark.isDisplayMarker());
+        Color color = Color.YELLOW;
+        try {
+            color = FxHelper.colorFromHex(bookmark.getColor());
+        } catch (Exception e) {
+        }
+        mColorPicker.setValue(color);
     }
 
     public void save(MBookmark bookmark) {
@@ -71,6 +81,7 @@ public class BookmarkPanel extends FxDialogPanel {
             bookmark.setLatitude(mLatitudeSpinner.getValue());
             bookmark.setLongitude(mLongitudeSpinner.getValue());
             bookmark.setDisplayMarker(mPlacemarkCheckBox.isSelected());
+            bookmark.setColor(FxHelper.colorToHex(mColorPicker.getValue()));
         });
     }
 
@@ -86,6 +97,7 @@ public class BookmarkPanel extends FxDialogPanel {
         mZoomSpinner = new Spinner(0.0, 1.0, 0.25, 0.1);
         mLatitudeSpinner = new Spinner(-90, 90, 0, 0.000001);
         mLongitudeSpinner = new Spinner(-180, 180, 0, 0.000001);
+        mColorPicker = new ColorPicker();
 
         StringConverter<Double> converter = new StringConverter<Double>() {
             private final DecimalFormat mDecimalFormat = new DecimalFormat("#.######");
@@ -129,9 +141,12 @@ public class BookmarkPanel extends FxDialogPanel {
         mLatitudeSpinner.setEditable(true);
         mLongitudeSpinner.setEditable(true);
 
+        mDescTextArea.setPrefHeight(100);
+
         Label nameLabel = new Label(Dict.NAME.toString());
         Label descLabel = new Label(Dict.DESCRIPTION.toString());
         Label catLabel = new Label(Dict.CATEGORY.toString());
+        Label colorLabel = new Label(Dict.COLOR.toString());
         Label zoomLabel = new Label(Dict.ZOOM.toString());
         Label latLabel = new Label(Dict.LATITUDE.toString());
         Label lonLabel = new Label(Dict.LONGITUDE.toString());
@@ -143,6 +158,8 @@ public class BookmarkPanel extends FxDialogPanel {
                 mCatTextField,
                 descLabel,
                 mDescTextArea,
+                colorLabel,
+                mColorPicker,
                 zoomLabel,
                 mZoomSpinner,
                 latLabel,
@@ -162,6 +179,7 @@ public class BookmarkPanel extends FxDialogPanel {
         VBox.setMargin(zoomLabel, topInsets);
         VBox.setMargin(latLabel, topInsets);
         VBox.setMargin(lonLabel, topInsets);
+        VBox.setMargin(colorLabel, topInsets);
         VBox.setMargin(mPlacemarkCheckBox, topInsets);
 
         return new Scene(box);

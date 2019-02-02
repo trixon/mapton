@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -56,6 +56,19 @@ public class Db {
         mConnString = String.format("jdbc:h2:%s;DEFRAG_ALWAYS=true", StringUtils.removeEnd(mDbFile.getAbsolutePath(), DB_POSTFIX));
         mSpec = new DbSpec();
         init();
+    }
+
+    public void addMissingColumn(String table, String col, String type, String after) throws SQLException {
+        try (Statement statement = getAutoCommitConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
+            String sql = String.format("ALTER TABLE IF EXISTS %s ADD COLUMN IF NOT EXISTS %s %s AFTER %s;",
+                    table,
+                    col,
+                    type,
+                    after
+            );
+            //System.out.println(sql);
+            statement.execute(sql);
+        }
     }
 
 //    public void connectionCommit() throws ClassNotFoundException, SQLException {

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -136,6 +136,7 @@ public class BookmarkExportTool extends BookmarkTool {
                             MBookmarkManager.COL_CATEGORY,
                             MBookmarkManager.COL_NAME,
                             MBookmarkManager.COL_DESCRIPTION,
+                            MBookmarkManager.COL_COLOR,
                             MBookmarkManager.COL_LATITUDE,
                             MBookmarkManager.COL_LONGITUDE,
                             MBookmarkManager.COL_ZOOM,
@@ -147,6 +148,7 @@ public class BookmarkExportTool extends BookmarkTool {
                         bookmark.getCategory(),
                         bookmark.getName(),
                         bookmark.getDescription(),
+                        bookmark.getColor(),
                         bookmark.getLatitude(),
                         bookmark.getLongitude(),
                         bookmark.getZoom(),

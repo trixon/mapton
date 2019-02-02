@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -107,6 +107,12 @@ public class BookmarkView extends BorderPane {
         } else {
             mManager.editBookmark(bookmark);
         }
+    }
+
+    private void bookmarkEditColor() {
+        MBookmark bookmark = getSelectedBookmark();
+
+        mManager.editColor(bookmark.getCategory());
     }
 
     private void bookmarkGoTo(MBookmark bookmark) {
@@ -296,6 +302,11 @@ public class BookmarkView extends BorderPane {
             });
             editAction.setGraphic(MaterialIcon._Content.CREATE.getImageView(getIconSizeContextMenu()));
 
+            Action editColorAction = new Action(Dict.COLOR.toString(), (ActionEvent event) -> {
+                bookmarkEditColor();
+            });
+            editColorAction.setGraphic(MaterialIcon._Image.COLORIZE.getImageView(getIconSizeContextMenu()));
+
             Action zoomExtentAction = new Action(Dict.ZOOM_EXTENTS.toString(), (ActionEvent event) -> {
                 Mapton.getEngine().fitToBounds(mManager.getExtents(getSelectedBookmark().getCategory()));
             });
@@ -310,6 +321,7 @@ public class BookmarkView extends BorderPane {
 
             Collection<? extends Action> actions = Arrays.asList(
                     editAction,
+                    editColorAction,
                     zoomExtentAction,
                     ActionUtils.ACTION_SEPARATOR,
                     removeAction,
@@ -320,8 +332,8 @@ public class BookmarkView extends BorderPane {
 
             mContextCopyMenu = new Menu(mBundle.getString("copy_location"));
             mContextOpenMenu = new Menu(mBundle.getString("open_location"));
-            contextMenu.getItems().add(1, mContextCopyMenu);
-            contextMenu.getItems().add(2, mContextOpenMenu);
+            contextMenu.getItems().add(3, mContextOpenMenu);
+            contextMenu.getItems().add(3, mContextCopyMenu);
 
             setOnMousePressed((MouseEvent event) -> {
                 MBookmark b = this.getItem();
@@ -330,6 +342,7 @@ public class BookmarkView extends BorderPane {
                     if (event.isSecondaryButtonDown()) {
                         mContextCopyMenu.setDisable(b.isCategory());
                         mContextOpenMenu.setDisable(b.isCategory());
+                        editColorAction.setDisabled(!b.isCategory());
                         zoomExtentAction.setDisabled(!b.isCategory());
 
                         if (!b.isCategory()) {

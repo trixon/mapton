@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -41,6 +41,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.mapton.core.db.DbBaseManager;
+import org.mapton.core.ui.BookmarkColorPanel;
 import org.mapton.core.ui.BookmarkPanel;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
@@ -57,6 +58,7 @@ import se.trixon.almond.util.fx.FxActionSwing;
 public class MBookmarkManager extends DbBaseManager {
 
     public static final String COL_CATEGORY = "category";
+    public static final String COL_COLOR = "color";
     public static final String COL_CREATED = "created";
     public static final String COL_DESCRIPTION = "description";
     public static final String COL_DISPLAY_MARKER = "display_marker";
@@ -68,6 +70,7 @@ public class MBookmarkManager extends DbBaseManager {
     public static final String COL_ZOOM = "zoom";
 
     private final DbColumn mCategory;
+    private final DbColumn mColor;
     private final Columns mColumns = new Columns();
     private final DbColumn mDescription;
     private final DbColumn mDisplayMarker;
@@ -91,6 +94,7 @@ public class MBookmarkManager extends DbBaseManager {
         mName = mTable.addColumn(COL_NAME, SQL_VARCHAR, Integer.MAX_VALUE);
         mCategory = mTable.addColumn(COL_CATEGORY, SQL_VARCHAR, Integer.MAX_VALUE);
         mDescription = mTable.addColumn(COL_DESCRIPTION, SQL_VARCHAR, Integer.MAX_VALUE);
+        mColor = mTable.addColumn(COL_COLOR, SQL_VARCHAR, Integer.MAX_VALUE);
         mDisplayMarker = mTable.addColumn(COL_DISPLAY_MARKER, SQL_BOOLEAN, null);
         mLatitude = mTable.addColumn(COL_LATITUDE, SQL_DOUBLE, null);
         mLongitude = mTable.addColumn(COL_LONGITUDE, SQL_DOUBLE, null);
@@ -101,7 +105,7 @@ public class MBookmarkManager extends DbBaseManager {
         addNotNullConstraints(mName, mCategory, mDescription);
         create();
         mItems.setValue(FXCollections.observableArrayList());
-
+        addMissingColumns();
         dbLoad();
     }
 
@@ -120,12 +124,12 @@ public class MBookmarkManager extends DbBaseManager {
         mDb.create(mTable, false, primaryKeyConstraint, uniqueKeyConstraint);
     }
 
-    public void dbDelete(MBookmark bookmark) throws ClassNotFoundException, SQLException {
+    public synchronized void dbDelete(MBookmark bookmark) throws ClassNotFoundException, SQLException {
         mDb.delete(mTable, mId, bookmark.getId());
         dbLoad();
     }
 
-    public void dbDelete(String category) throws ClassNotFoundException, SQLException {
+    public synchronized void dbDelete(String category) throws ClassNotFoundException, SQLException {
         for (MBookmark bookmark : mItems.get()) {
             if (StringUtils.startsWith(bookmark.getCategory(), category)) {
                 mDb.delete(mTable, mId, bookmark.getId());
@@ -135,7 +139,7 @@ public class MBookmarkManager extends DbBaseManager {
         dbLoad();
     }
 
-    public void dbDelete() throws ClassNotFoundException, SQLException {
+    public synchronized void dbDelete() throws ClassNotFoundException, SQLException {
         for (MBookmark bookmark : mItems.get()) {
             mDb.delete(mTable, mId, bookmark.getId());
         }
@@ -143,12 +147,12 @@ public class MBookmarkManager extends DbBaseManager {
         dbLoad();
     }
 
-    public void dbInsert(MBookmark bookmark) throws ClassNotFoundException, SQLException {
+    public synchronized void dbInsert(MBookmark bookmark) throws ClassNotFoundException, SQLException {
         dbInsertSilent(bookmark);
         dbLoad();
     }
 
-    public Point dbInsert(ArrayList<MBookmark> bookmarks) {
+    public synchronized Point dbInsert(ArrayList<MBookmark> bookmarks) {
         int imports = 0;
         int errors = 0;
 
@@ -168,11 +172,11 @@ public class MBookmarkManager extends DbBaseManager {
         return new Point(imports, errors);
     }
 
-    public ArrayList<MBookmark> dbLoad() {
+    public synchronized ArrayList<MBookmark> dbLoad() {
         return dbLoad(mStoredFilter, true);
     }
 
-    public ArrayList<MBookmark> dbLoad(String filter, boolean addToList) {
+    public synchronized ArrayList<MBookmark> dbLoad(String filter, boolean addToList) {
         if (mSelectPreparedStatement == null) {
             mSelectPlaceHolders.init(
                     mCategory,
@@ -219,6 +223,7 @@ public class MBookmarkManager extends DbBaseManager {
                 bookmark.setName(getString(rs, mName));
                 bookmark.setCategory(getString(rs, mCategory));
                 bookmark.setDescription(getString(rs, mDescription));
+                bookmark.setColor(getString(rs, mColor));
                 bookmark.setDisplayMarker(getBoolean(rs, mDisplayMarker));
                 bookmark.setLatitude(getDouble(rs, mLatitude));
                 bookmark.setLongitude(getDouble(rs, mLongitude));
@@ -239,7 +244,7 @@ public class MBookmarkManager extends DbBaseManager {
         return bookmarks;
     }
 
-    public void dbTruncate() throws ClassNotFoundException, SQLException {
+    public synchronized void dbTruncate() throws ClassNotFoundException, SQLException {
         mDb.truncate(mTable);
         dbLoad();
     }
@@ -310,10 +315,42 @@ public class MBookmarkManager extends DbBaseManager {
                     Platform.runLater(() -> {
                         dbLoad();
                     });
-
                 }
             }
         });
+    }
+
+    public void editColor(final String category) {
+        SwingUtilities.invokeLater(() -> {
+            BookmarkColorPanel bookmarkPanel = new BookmarkColorPanel();
+            DialogDescriptor d = new DialogDescriptor(bookmarkPanel, Dict.EDIT.toString());
+            bookmarkPanel.setDialogDescriptor(d);
+            bookmarkPanel.initFx(() -> {
+            });
+
+            bookmarkPanel.setPreferredSize(new Dimension(200, 100));
+            if (DialogDescriptor.OK_OPTION == DialogDisplayer.getDefault().notify(d)) {
+                String color = bookmarkPanel.getColor();
+                Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+
+                for (MBookmark bookmark : mItems.get()) {
+                    if (StringUtils.startsWith(bookmark.getCategory(), category)) {
+                        bookmark.setColor(color);
+                        bookmark.setTimeModified(timestamp);
+                        try {
+                            dbUpdate(bookmark);
+                        } catch (ClassNotFoundException | SQLException ex) {
+                            Exceptions.printStackTrace(ex);
+                        }
+                    }
+                }
+
+                Platform.runLater(() -> {
+                    dbLoad();
+                });
+            }
+        });
+
     }
 
     public FxActionSwing getAddBookmarkAction() {
@@ -353,12 +390,21 @@ public class MBookmarkManager extends DbBaseManager {
         return mItems;
     }
 
+    private void addMissingColumns() {
+        try {
+            mDb.addMissingColumn(mTable.getAbsoluteName(), COL_COLOR, SQL_VARCHAR + "(10)", COL_DESCRIPTION);
+        } catch (SQLException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+    }
+
     private void dbInsertSilent(MBookmark bookmark) throws ClassNotFoundException, SQLException {
         if (mInsertPreparedStatement == null) {
             mInsertPlaceHolders.init(
                     mName,
                     mCategory,
                     mDescription,
+                    mColor,
                     mDisplayMarker,
                     mLatitude,
                     mLongitude,
@@ -370,6 +416,7 @@ public class MBookmarkManager extends DbBaseManager {
                     .addColumn(mName, mInsertPlaceHolders.get(mName))
                     .addColumn(mCategory, mInsertPlaceHolders.get(mCategory))
                     .addColumn(mDescription, mInsertPlaceHolders.get(mDescription))
+                    .addColumn(mColor, mInsertPlaceHolders.get(mColor))
                     .addColumn(mDisplayMarker, mInsertPlaceHolders.get(mDisplayMarker))
                     .addColumn(mLatitude, mInsertPlaceHolders.get(mLatitude))
                     .addColumn(mLongitude, mInsertPlaceHolders.get(mLongitude))
@@ -385,6 +432,7 @@ public class MBookmarkManager extends DbBaseManager {
         mInsertPlaceHolders.get(mName).setString(bookmark.getName(), mInsertPreparedStatement);
         mInsertPlaceHolders.get(mCategory).setString(bookmark.getCategory(), mInsertPreparedStatement);
         mInsertPlaceHolders.get(mDescription).setString(bookmark.getDescription(), mInsertPreparedStatement);
+        mInsertPlaceHolders.get(mColor).setString(bookmark.getColor(), mInsertPreparedStatement);
         mInsertPlaceHolders.get(mDisplayMarker).setBoolean(bookmark.isDisplayMarker(), mInsertPreparedStatement);
         mInsertPlaceHolders.get(mLatitude).setObject(bookmark.getLatitude(), mInsertPreparedStatement);
         mInsertPlaceHolders.get(mLongitude).setObject(bookmark.getLongitude(), mInsertPreparedStatement);
@@ -405,6 +453,7 @@ public class MBookmarkManager extends DbBaseManager {
                     mName,
                     mCategory,
                     mDescription,
+                    mColor,
                     mDisplayMarker,
                     mLatitude,
                     mLongitude,
@@ -417,6 +466,7 @@ public class MBookmarkManager extends DbBaseManager {
                     .addSetClause(mName, mUpdatePlaceHolders.get(mName))
                     .addSetClause(mCategory, mUpdatePlaceHolders.get(mCategory))
                     .addSetClause(mDescription, mUpdatePlaceHolders.get(mDescription))
+                    .addSetClause(mColor, mUpdatePlaceHolders.get(mColor))
                     .addSetClause(mDisplayMarker, mUpdatePlaceHolders.get(mDisplayMarker))
                     .addSetClause(mLatitude, mUpdatePlaceHolders.get(mLatitude))
                     .addSetClause(mLongitude, mUpdatePlaceHolders.get(mLongitude))
@@ -432,6 +482,7 @@ public class MBookmarkManager extends DbBaseManager {
         mUpdatePlaceHolders.get(mName).setString(bookmark.getName(), mUpdatePreparedStatement);
         mUpdatePlaceHolders.get(mCategory).setString(bookmark.getCategory(), mUpdatePreparedStatement);
         mUpdatePlaceHolders.get(mDescription).setString(bookmark.getDescription(), mUpdatePreparedStatement);
+        mUpdatePlaceHolders.get(mColor).setString(bookmark.getColor(), mUpdatePreparedStatement);
         mUpdatePlaceHolders.get(mDisplayMarker).setBoolean(bookmark.isDisplayMarker(), mUpdatePreparedStatement);
         mUpdatePlaceHolders.get(mLatitude).setObject(bookmark.getLatitude(), mUpdatePreparedStatement);
         mUpdatePlaceHolders.get(mLongitude).setObject(bookmark.getLongitude(), mUpdatePreparedStatement);

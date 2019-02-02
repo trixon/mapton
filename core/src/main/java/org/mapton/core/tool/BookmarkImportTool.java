@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -150,6 +150,7 @@ public class BookmarkImportTool extends BookmarkTool {
                 for (CSVRecord record : records) {
                     String category = getOrDefault(record, MBookmarkManager.COL_CATEGORY, Dict.DEFAULT.toString());
                     String description = getOrDefault(record, MBookmarkManager.COL_DESCRIPTION, "");
+                    String color = getOrDefault(record, MBookmarkManager.COL_COLOR, "FFFF00");
                     String displayMarker = getOrDefault(record, MBookmarkManager.COL_DISPLAY_MARKER, "1");
                     String zoomString = getOrDefault(record, MBookmarkManager.COL_ZOOM, default_zoom);
                     if (!NumberUtils.isCreatable(zoomString)) {
@@ -165,6 +166,7 @@ public class BookmarkImportTool extends BookmarkTool {
                     bookmark.setCategory(category);
                     bookmark.setName(record.get(MBookmarkManager.COL_NAME));
                     bookmark.setDescription(description);
+                    bookmark.setColor(color);
                     bookmark.setDisplayMarker(displayMarker.equalsIgnoreCase("1"));
 
                     bookmark.setLatitude(lat);
