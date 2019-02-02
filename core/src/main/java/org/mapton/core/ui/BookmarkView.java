@@ -217,7 +217,7 @@ public class BookmarkView extends BorderPane {
         return mTreeView.getSelectionModel().getSelectedItem().getValue();
     }
 
-    private synchronized void populate() {
+    private void populate() {
         mBookmarkParents.clear();
         MBookmark rootMark = new MBookmark();
         rootMark.setName("");

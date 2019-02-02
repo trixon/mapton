@@ -27,7 +27,7 @@ import org.openide.awt.ActionRegistration;
         id = "org.mapton.core.actions.SearchAction"
 )
 @ActionRegistration(
-        displayName = "Menu"
+        displayName = "Find"
 )
 @ActionReference(path = "Shortcuts", name = "D-F")
 public final class SearchAction implements ActionListener {
