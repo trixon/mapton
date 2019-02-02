@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,7 +27,6 @@ import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.MenuButton;
-import javafx.scene.control.TextField;
 import javafx.scene.control.ToolBar;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -99,8 +98,8 @@ public class AppToolBar extends ToolBar {
 
     public void activateSearch() {
         Platform.runLater(() -> {
-            TextField tf = (TextField) mSearchView.getPresenter();
-            tf.requestFocus();
+            getScene().getWindow().requestFocus();
+            mSearchView.getPresenter().requestFocus();
         });
     }
 
