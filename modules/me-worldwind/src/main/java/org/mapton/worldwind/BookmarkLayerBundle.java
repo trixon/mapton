@@ -19,6 +19,7 @@ import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.PointPlacemark;
+import gov.nasa.worldwind.render.PointPlacemarkAttributes;
 import java.util.prefs.PreferenceChangeEvent;
 import javafx.collections.ListChangeListener;
 import org.mapton.api.MBookmark;
@@ -30,6 +31,7 @@ import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.LayerBundleManager;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
@@ -77,6 +79,15 @@ public class BookmarkLayerBundle extends LayerBundle {
                 placemark.setLabelText(bookmark.getName());
                 placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
                 placemark.setEnableLabelPicking(true);
+
+                PointPlacemarkAttributes attrs = new PointPlacemarkAttributes(placemark.getDefaultAttributes());
+                attrs.setImageAddress("images/pushpins/plain-white.png");
+                attrs.setImageColor(FxHelper.colorToColor(FxHelper.colorFromHex(bookmark.getColor())));
+                placemark.setAttributes(attrs);
+
+                PointPlacemarkAttributes attrsH = new PointPlacemarkAttributes(attrs);
+                attrsH.setScale(attrsH.getScale() * 1.5);
+                placemark.setHighlightAttributes(attrsH);
 
                 mBookmarksLayer.addRenderable(placemark);
             }
