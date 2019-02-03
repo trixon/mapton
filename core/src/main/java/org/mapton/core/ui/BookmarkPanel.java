@@ -140,6 +140,7 @@ public class BookmarkPanel extends FxDialogPanel {
         mZoomSpinner.setEditable(true);
         mLatitudeSpinner.setEditable(true);
         mLongitudeSpinner.setEditable(true);
+        FxHelper.autoCommitSpinners(mZoomSpinner, mLatitudeSpinner, mLongitudeSpinner);
 
         mDescTextArea.setPrefHeight(100);
 
