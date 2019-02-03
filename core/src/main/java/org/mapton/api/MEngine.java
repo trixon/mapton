@@ -248,6 +248,11 @@ public abstract class MEngine {
         Mapton.getGlobalState().put(KEY_STATUS_PROGRESS, progress);
     }
 
+    /**
+     * Zoom to the specified zoom value. 0=fully zoomed out 1=fully zoomed in
+     *
+     * @param zoom
+     */
     public void zoomTo(double zoom) {
         panTo(getCenter(), zoom);
     }
