@@ -47,7 +47,7 @@ public class AppStatusView extends StatusBar {
     private MCooTrans mCooTrans;
     private final Label mRightLabel = new Label();
     private final MOptions mOptions = MOptions.getInstance();
-    private StatusWindowMode mWindowMode = StatusWindowMode.MAP;
+    private StatusWindowMode mWindowMode = StatusWindowMode.OTHER;
     private Slider mZoomAbsoluteSlider;
     private MStatusZoomMode mZoomMode = MStatusZoomMode.ABSOLUTE;
     private PlusMinusSlider mZoomRelativeSlider;
