@@ -37,10 +37,12 @@ import javax.swing.Timer;
 import org.mapton.api.MEngine;
 import org.mapton.api.MLatLon;
 import org.mapton.api.MLatLonBox;
+import org.mapton.api.Mapton;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.nbp.dialogs.NbMessage;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.SystemHelper;
 
 /**
  *
@@ -51,7 +53,6 @@ public class WorldWindMapEngine extends MEngine {
 
     public static final String LOG_TAG = "WorldWind";
     private static final Logger LOGGER = Logger.getLogger(WorldWindMapEngine.class.getName());
-    private long mExternalZoomEpoch;
     private boolean mInProgress;
     private boolean mInitialized;
     private final LayerView mLayerView;
@@ -61,6 +62,7 @@ public class WorldWindMapEngine extends MEngine {
     private final ModuleOptions mOptions = ModuleOptions.getInstance();
     private final StyleView mStyleView;
     private final double[] mZoomLevels;
+    private long mZoomEpoch = System.currentTimeMillis();
 
     public WorldWindMapEngine() {
         mStyleView = new StyleView();
@@ -166,7 +168,7 @@ public class WorldWindMapEngine extends MEngine {
 
     @Override
     public void panTo(MLatLon latLon, double zoom) {
-        if (mInitialized) {
+        if (mInitialized && SystemHelper.age(mZoomEpoch) > 1000) {
             mMap.getView().goTo(toPosition(latLon), toLocalZoom(zoom));
         }
     }
@@ -233,24 +235,17 @@ public class WorldWindMapEngine extends MEngine {
             Position position = pe.getPosition();
             if (position != null) {
                 Double altitude = null;
-//                if (mMap.getView() != null && mMap.getView().getEyePosition() != null) {
-//                    altitude = mMap.getView().getEyePosition().getElevation();
-//                    if (Math.abs(mOldAltitude - altitude) > 1 && System.currentTimeMillis() - mExternalZoomEpoch > 1000) {
-//                        System.out.println("");
-//                        System.out.println(new Date());
-//                        System.out.println("alt.c=" + altitude);
-//                        System.out.println("alt.o=" + mOldAltitude);
-//                        System.out.println("diff =" + Math.abs(mOldAltitude - altitude));
-//                        System.out.println("should call onAltitudeChange");
-//                        mExternalZoomEpoch = System.currentTimeMillis();
-//                        mOldAltitude = altitude;
-//
-//                        System.out.println("zoom.g   =" + Mapton.getInstance().zoomProperty().get());
-//                        System.out.println("zoom.l->g=" + toGlobalZoom());
-////                        onAltitudeChange(altitude);
-////                        Mapton.getInstance().zoomProperty().set(toGlobalZoom());
-//                    }
-//                }
+                if (mMap.getView() != null && mMap.getView().getEyePosition() != null) {
+                    altitude = mMap.getView().getEyePosition().getElevation();
+                    if (Math.abs(mOldAltitude - altitude) > 1) {
+                        double globalZoom = toGlobalZoom();
+                        if (Math.abs(mOldGlobalZoom - globalZoom) > 1 / mZoomLevels.length) {
+                            mZoomEpoch = System.currentTimeMillis();
+                            mOldGlobalZoom = globalZoom;
+                            Mapton.getInstance().zoomProperty().set(globalZoom);
+                        }
+                    }
+                }
                 setStatusMousePositionData(toLatLon(position), position.getElevation(), altitude);
             } else {
 //                setStatusMousePositionData(null, null, null);
@@ -304,22 +299,6 @@ public class WorldWindMapEngine extends MEngine {
         downloadTimer.start();
     }
 
-//    private synchronized void onAltitudeChange(Double altitude) {
-//        System.out.println("");
-//        System.out.println("onAltitudeChange ****************************" + altitude);
-//
-//        System.out.println("oldGlobalZoom " + mOldGlobalZoom);
-//        double globalZoom = toGlobalZoom();
-//        System.out.println("global " + globalZoom);
-//        System.out.println("diff   " + (mOldGlobalZoom - globalZoom));
-//
-//        if (Math.abs(mOldGlobalZoom - globalZoom) > 1 / mZoomLevels.length) {
-//            mOldGlobalZoom = globalZoom;
-//            Mapton.getInstance().zoomProperty().set(globalZoom);
-////            Mapton.getInstance().zoomProperty().set(0.5);
-//        }
-////        Mapton.getInstance().zoomProperty().set(globalZoom);
-//    }
     private double toGlobalZoom() {
         double altitude = mMap.getView().getEyePosition().getAltitude();
         int level = 0;
