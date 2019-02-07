@@ -22,6 +22,7 @@ import javafx.beans.property.DoubleProperty;
 import javafx.scene.layout.Background;
 import javafx.scene.paint.Color;
 import javax.swing.SwingUtilities;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.core.ui.AppStatusView;
 import org.mapton.core.ui.AppToolBar;
@@ -53,7 +54,8 @@ public class Mapton {
 
     static {
         CONFIG_DIR = new File(System.getProperty("netbeans.user"));
-        CACHE_DIR = new File(CONFIG_DIR, "cache");
+        CACHE_DIR = new File(FileUtils.getUserDirectory(), ".cache/mapton");
+        System.setProperty("mapton.cache", CACHE_DIR.getAbsolutePath());//Used by WorldWind
     }
 
     public static void clearStatusText() {

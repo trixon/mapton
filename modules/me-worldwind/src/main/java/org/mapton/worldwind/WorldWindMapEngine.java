@@ -17,9 +17,11 @@ package org.mapton.worldwind;
 
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLEventListener;
+import gov.nasa.worldwind.Configuration;
 import gov.nasa.worldwind.View;
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.WorldWindow;
+import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.event.PositionEvent;
 import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.Box;
@@ -61,8 +63,15 @@ public class WorldWindMapEngine extends MEngine {
     private double mOldGlobalZoom;
     private final ModuleOptions mOptions = ModuleOptions.getInstance();
     private final StyleView mStyleView;
-    private final double[] mZoomLevels;
     private long mZoomEpoch = System.currentTimeMillis();
+    private final double[] mZoomLevels;
+
+    static {
+        Configuration.setValue(
+                AVKey.DATA_FILE_STORE_CONFIGURATION_FILE_NAME,
+                "org/mapton/worldwind/CacheLocationConfiguration.xml"
+        );
+    }
 
     public WorldWindMapEngine() {
         mStyleView = new StyleView();
