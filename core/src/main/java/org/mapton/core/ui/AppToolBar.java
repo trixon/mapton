@@ -73,6 +73,7 @@ public class AppToolBar extends ToolBar {
     private PopOver mLayerPopOver;
     private final MOptions mOptions = MOptions.getInstance();
     private final HashSet<PopOver> mPopOvers = new HashSet<>();
+    private FxActionSwing mRulerAction;
     private SearchView mSearchView;
     private Action mStyleAction;
     private PopOver mStylePopOver;
@@ -175,6 +176,7 @@ public class AppToolBar extends ToolBar {
                 mLayerAction,
                 mBookmarkAction,
                 mStyleAction,
+                mRulerAction,
                 ActionUtils.ACTION_SPAN,
                 mSysViewMapAction,
                 systemActionGroup
@@ -255,6 +257,12 @@ public class AppToolBar extends ToolBar {
             Actions.forID("Mapton", "org.mapton.core.actions.HomeAction").actionPerformed(null);
         });
         mHomeAction.setGraphic(MaterialIcon._Action.HOME.getImageView(getIconSizeToolBar()));
+
+        //Ruler
+        mRulerAction = new FxActionSwing(Dict.RULER.toString(), () -> {
+            Actions.forID("Mapton", "org.mapton.core.actions.RulerAction").actionPerformed(null);
+        });
+        mRulerAction.setGraphic(MaterialIcon._Action.TIMELINE.getImageView(getIconSizeToolBar()));
 //
 //
 //
