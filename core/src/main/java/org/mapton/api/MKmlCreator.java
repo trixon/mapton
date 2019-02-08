@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,12 +16,15 @@
 package org.mapton.api;
 
 import de.micromata.opengis.kml.v_2_2_0.AltitudeMode;
+import de.micromata.opengis.kml.v_2_2_0.BalloonStyle;
 import de.micromata.opengis.kml.v_2_2_0.Boundary;
 import de.micromata.opengis.kml.v_2_2_0.ColorMode;
 import de.micromata.opengis.kml.v_2_2_0.Coordinate;
 import de.micromata.opengis.kml.v_2_2_0.Document;
 import de.micromata.opengis.kml.v_2_2_0.Feature;
 import de.micromata.opengis.kml.v_2_2_0.Folder;
+import de.micromata.opengis.kml.v_2_2_0.Icon;
+import de.micromata.opengis.kml.v_2_2_0.IconStyle;
 import de.micromata.opengis.kml.v_2_2_0.Kml;
 import de.micromata.opengis.kml.v_2_2_0.KmlFactory;
 import de.micromata.opengis.kml.v_2_2_0.LineString;
@@ -31,6 +34,7 @@ import de.micromata.opengis.kml.v_2_2_0.Placemark;
 import de.micromata.opengis.kml.v_2_2_0.PolyStyle;
 import de.micromata.opengis.kml.v_2_2_0.Polygon;
 import de.micromata.opengis.kml.v_2_2_0.Style;
+import de.micromata.opengis.kml.v_2_2_0.Vec2;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -204,6 +208,36 @@ public abstract class MKmlCreator {
         coordinates.add(p2);
 
         return createLine(name, coordinates, width, color, altitudeMode);
+    }
+
+    public Placemark createPlacemark(String name, double lat, double lon, double scale, String color, String href, Vec2 hotSpot, BalloonStyle balloonStyle) {
+        Placemark placemark = KmlFactory.createPlacemark().withName(name);
+
+        if (href != null) {
+            Style style = placemark.createAndAddStyle();
+            IconStyle iconStyle = style
+                    .createAndSetIconStyle()
+                    .withScale(scale);
+
+            if (color != null) {
+                iconStyle.setColor(color);
+            }
+
+            if (balloonStyle != null) {
+                style.setBalloonStyle(balloonStyle);
+            }
+
+            if (hotSpot != null) {
+                iconStyle.setHotSpot(hotSpot);
+            }
+
+            Icon icon = KmlFactory.createIcon().withHref(href);
+            iconStyle.setIcon(icon);
+        }
+
+        placemark.createAndSetPoint().addToCoordinates(lon, lat);
+
+        return placemark;
     }
 
     public String save(File f) throws IOException {
