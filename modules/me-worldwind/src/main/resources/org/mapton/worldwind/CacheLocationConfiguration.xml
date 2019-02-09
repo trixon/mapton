@@ -20,7 +20,7 @@
         <!-- If that creation attempt succeeds, the location becomes the first writable location and thus is used. -->
         <!-- Only the first location that's writable or creatable is used. Subsequent locations are ignored. -->
         <!-- The chosen writable location is also the first search location, searched prior to any readLocations. -->
-        <location property="mapton.cache" wwDir="./wordlwind" create="true"/>
+        <location property="mapton.cache" wwDir="./worldwind" create="true"/>
         <!--<location property="gov.nasa.worldwind.platform.alluser.store" wwDir="WorldWindData" create="true"/>-->
         <!--<location property="gov.nasa.worldwind.platform.user.store"    wwDir="WorldWindData" create="true"/>-->
         <!--<location property="java.io.tmpdir" wwDir="WorldWindData" create="true"/>-->
