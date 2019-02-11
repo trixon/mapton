@@ -19,7 +19,6 @@ import javafx.scene.Scene;
 import org.mapton.api.MTopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
-import org.openide.awt.ActionReference;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
 import se.trixon.almond.util.Dict;
@@ -28,34 +27,43 @@ import se.trixon.almond.util.Dict;
  * Top component which displays something.
  */
 @ConvertAsProperties(
-        dtd = "-//org.mapton.core.ui//Toolbox//EN",
+        dtd = "-//org.mapton.core.bookmark//Ruler//EN",
         autostore = false
 )
 @TopComponent.Description(
-        preferredID = "ToolboxTopComponent",
-        //iconBase="SET/PATH/TO/ICON/HERE",
+        preferredID = "RulerTopComponent",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
-@TopComponent.Registration(mode = "explorer", openAtStartup = true, position = 1)
-@ActionID(category = "Window", id = "org.mapton.core.ui.ToolboxTopComponent")
-@ActionReference(path = "Menu/Window" /*, position = 333 */)
+@TopComponent.Registration(mode = "explorer", openAtStartup = true, position = 99)
+@ActionID(category = "Window", id = "org.mapton.core.bookmark.RulerTopComponent")
 @TopComponent.OpenActionRegistration(
-        displayName = "#CTL_ToolboxAction",
-        preferredID = "ToolboxTopComponent"
+        displayName = "#CTL_RulerAction",
+        preferredID = "RulerTopComponent"
 )
 @Messages({
-    "CTL_ToolboxAction=Toolbox"
+    "CTL_RulerAction=Ruler"
 })
-public final class ToolboxTopComponent extends MTopComponent {
+public final class RulerTopComponent extends MTopComponent {
 
-    public ToolboxTopComponent() {
+    private RulerView mRulerView;
+
+    public RulerTopComponent() {
         putClientProperty(PROP_MAXIMIZATION_DISABLED, Boolean.TRUE);
-        putClientProperty(PROP_SLIDING_DISABLED, Boolean.TRUE);
-        putClientProperty(PROP_UNDOCKING_DISABLED, Boolean.TRUE);
-        putClientProperty(PROP_KEEP_PREFERRED_SIZE_WHEN_SLIDED_IN, Boolean.TRUE);
+//        putClientProperty(PROP_SLIDING_DISABLED, Boolean.TRUE);
+//        putClientProperty(PROP_UNDOCKING_DISABLED, Boolean.TRUE);
+//        putClientProperty(PROP_KEEP_PREFERRED_SIZE_WHEN_SLIDED_IN, Boolean.TRUE);
 
-        setName(Dict.TOOLBOX.toString());
-        setPopOverHolder(true);
+        setName(Dict.RULER.toString());
+    }
+
+    @Override
+    protected void componentClosed() {
+        super.componentClosed();
+    }
+
+    @Override
+    protected void componentOpened() {
+        super.componentOpened();
     }
 
     @Override
@@ -63,19 +71,19 @@ public final class ToolboxTopComponent extends MTopComponent {
         setScene(createScene());
     }
 
+    private Scene createScene() {
+        mRulerView = new RulerView();
+
+        return new Scene(mRulerView);
+    }
+
     void readProperties(java.util.Properties p) {
         String version = p.getProperty("version");
-        // TODO read your settings according to their version
     }
 
     void writeProperties(java.util.Properties p) {
         // better to version settings since initial version as advocated at
         // http://wiki.apidesign.org/wiki/PropertyFiles
         p.setProperty("version", "1.0");
-        // TODO store your settings
-    }
-
-    private Scene createScene() {
-        return new Scene(new ToolboxView());
     }
 }

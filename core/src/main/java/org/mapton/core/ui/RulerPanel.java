@@ -16,7 +16,6 @@
 package org.mapton.core.ui;
 
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
 import se.trixon.almond.nbp.fx.FxDialogPanel;
 
 /**
@@ -24,6 +23,8 @@ import se.trixon.almond.nbp.fx.FxDialogPanel;
  * @author Patrik Karlström
  */
 public class RulerPanel extends FxDialogPanel {
+
+    private RulerView mRulerView;
 
     public RulerPanel() {
     }
@@ -34,7 +35,9 @@ public class RulerPanel extends FxDialogPanel {
     }
 
     private Scene createScene() {
-        return new Scene(new Label("WIP"));
+        mRulerView = new RulerView();
+
+        return new Scene(mRulerView);
     }
 
 }

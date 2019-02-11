@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,14 +16,14 @@
 package org.mapton.core.ui;
 
 import javafx.scene.Scene;
+import org.mapton.api.MOptions;
+import org.mapton.api.MTopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
 import se.trixon.almond.util.Dict;
-import org.mapton.api.MOptions;
-import org.mapton.api.MTopComponent;
 
 /**
  * Top component which displays something.

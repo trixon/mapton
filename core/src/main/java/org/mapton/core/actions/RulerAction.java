@@ -19,7 +19,6 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import org.mapton.core.ui.RulerPanel;
 import org.openide.DialogDescriptor;
-import org.openide.DialogDisplayer;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
@@ -43,13 +42,15 @@ public final class RulerAction extends BaseAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        DialogDisplayer.getDefault().notify(getDialogDescriptor());
+        //org.openide.DialogDisplayer.getDefault().notify(getDialogDescriptor());
+        toggleTopComponent("RulerTopComponent");
+
     }
 
     private DialogDescriptor getDialogDescriptor() {
         if (mDialogDescriptor == null) {
             mRulerPanel = new RulerPanel();
-            mDialogDescriptor = new DialogDescriptor(mRulerPanel, Dict.RULER.toString() + " (Work in progress)", false, (ActionEvent e1) -> {
+            mDialogDescriptor = new DialogDescriptor(mRulerPanel, Dict.RULER.toString(), false, (ActionEvent e1) -> {
                 System.out.println(e1);
             });
             mRulerPanel.setDialogDescriptor(mDialogDescriptor);
