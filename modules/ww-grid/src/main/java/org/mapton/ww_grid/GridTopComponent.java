@@ -70,7 +70,7 @@ public final class GridTopComponent extends MTopComponent implements MMapMagnet 
         GlobalGridView globalGridView = new GlobalGridView();
         LocalGridView localGridView = new LocalGridView();
 
-        VBox vbox = new VBox(8,
+        VBox vbox = new VBox(16,
                 globalGridView,
                 localGridView
         );

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,18 +15,15 @@
  */
 package org.mapton.ww_grid;
 
-import java.awt.Dimension;
 import java.util.ResourceBundle;
-import javafx.scene.control.Button;
+import javafx.geometry.Insets;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
-import javax.swing.SwingUtilities;
+import javafx.scene.text.FontWeight;
 import static org.mapton.ww_grid.Options.*;
-import org.openide.DialogDisplayer;
-import org.openide.NotifyDescriptor;
 import org.openide.util.NbBundle;
-import se.trixon.almond.util.Dict;
 
 /**
  *
@@ -34,10 +31,16 @@ import se.trixon.almond.util.Dict;
  */
 public class GlobalGridView extends VBox {
 
-    private Button mButton;
-
+    private CheckBox mClampToGroundCheckBox;
+    private CheckBox mEquatorCheckBox;
+    private CheckBox mLatitudesCheckBox;
+    private CheckBox mLongitudesCheckBox;
     private final Options mOptions = Options.getInstance();
     private CheckBox mPlotCheckBox;
+    private CheckBox mPolarAntarticCheckBox;
+    private CheckBox mPolarArticCheckBox;
+    private CheckBox mTropicCancerCheckBox;
+    private CheckBox mTropicCapricornCheckBox;
 
     public GlobalGridView() {
         createUI();
@@ -49,49 +52,93 @@ public class GlobalGridView extends VBox {
         Font defaultFont = Font.getDefault();
         ResourceBundle bundle = NbBundle.getBundle(GridTopComponent.class);
         mPlotCheckBox = new CheckBox(bundle.getString("global"));
-        mPlotCheckBox.setFont(new Font(defaultFont.getSize() * 1.2));
-        mButton = new Button(Dict.OPTIONS.toString());
+        mPlotCheckBox.setFont(Font.font(defaultFont.getFamily(), FontWeight.BOLD, defaultFont.getSize() * 1.2));
 
-        mButton.disableProperty().bind(mPlotCheckBox.selectedProperty().not());
+        mClampToGroundCheckBox = new CheckBox("CLAMP TO GROUND");
 
-        getChildren().addAll(
-                mPlotCheckBox,
-                mButton
+        mLongitudesCheckBox = new CheckBox(bundle.getString("longitudes"));
+        mLatitudesCheckBox = new CheckBox(bundle.getString("latitudes"));
+
+        mPolarArticCheckBox = new CheckBox(bundle.getString("arctic_circle"));
+        mTropicCancerCheckBox = new CheckBox(bundle.getString("tropic_cancer"));
+        mEquatorCheckBox = new CheckBox(bundle.getString("equator"));
+        mTropicCapricornCheckBox = new CheckBox(bundle.getString("tropic_capricorn"));
+        mPolarAntarticCheckBox = new CheckBox(bundle.getString("antarctic_circle"));
+
+        Label presentationLabel = new Label(bundle.getString("major_latitudes"));
+        presentationLabel.setFont(new Font(defaultFont.getSize() * 1.2));
+
+        VBox vbox = new VBox(8,
+                //mClampToGroundCheckBox,
+                mLongitudesCheckBox,
+                mLatitudesCheckBox,
+                presentationLabel,
+                mPolarArticCheckBox,
+                mTropicCancerCheckBox,
+                mEquatorCheckBox,
+                mTropicCapricornCheckBox,
+                mPolarAntarticCheckBox
         );
 
+        vbox.disableProperty().bind(mPlotCheckBox.selectedProperty().not());
+
         setSpacing(8);
+        getChildren().addAll(mPlotCheckBox, vbox);
+        vbox.setPadding(new Insets(4, 0, 0, 16));
+
     }
 
     private void initListeners() {
-        mButton.setOnAction((event) -> {
-            SwingUtilities.invokeLater(() -> {
-                GlobalGridPanel globalGridPanel = new GlobalGridPanel();
-                globalGridPanel.initFx(() -> {
-                });
-
-                globalGridPanel.setPreferredSize(new Dimension(280, 300));
-
-                String[] buttons = new String[]{Dict.CLOSE.toString()};
-                NotifyDescriptor d = new NotifyDescriptor(
-                        globalGridPanel,
-                        Dict.CUSTOMIZE.toString(),
-                        NotifyDescriptor.OK_CANCEL_OPTION,
-                        NotifyDescriptor.PLAIN_MESSAGE,
-                        buttons,
-                        buttons[0]);
-
-                DialogDisplayer.getDefault().notify(d);
-            });
-        });
-
         mPlotCheckBox.setOnAction((event) -> {
             mOptions.put(KEY_GLOBAL_PLOT, mPlotCheckBox.isSelected());
+        });
+        mClampToGroundCheckBox.setOnAction((event) -> {
+            mOptions.put(KEY_GLOBAL_CLAMP_TO_GROUND, mClampToGroundCheckBox.isSelected());
+        });
+
+        mLongitudesCheckBox.setOnAction((event) -> {
+            mOptions.put(KEY_GLOBAL_LONGITUDES, mLongitudesCheckBox.isSelected());
+        });
+
+        mLatitudesCheckBox.setOnAction((event) -> {
+            mOptions.put(KEY_GLOBAL_LATITUDES, mLatitudesCheckBox.isSelected());
+        });
+
+        mPolarArticCheckBox.setOnAction((event) -> {
+            mOptions.put(KEY_GLOBAL_POLAR_ARCTIC, mPolarArticCheckBox.isSelected());
+        });
+
+        mTropicCancerCheckBox.setOnAction((event) -> {
+            mOptions.put(KEY_GLOBAL_TROPIC_CANCER, mTropicCancerCheckBox.isSelected());
+        });
+
+        mEquatorCheckBox.setOnAction((event) -> {
+            mOptions.put(KEY_GLOBAL_EQUATOR, mEquatorCheckBox.isSelected());
+        });
+
+        mTropicCapricornCheckBox.setOnAction((event) -> {
+            mOptions.put(KEY_GLOBAL_TROPIC_CAPRICORN, mTropicCapricornCheckBox.isSelected());
+        });
+
+        mPolarAntarticCheckBox.setOnAction((event) -> {
+            mOptions.put(KEY_GLOBAL_POLAR_ANTARCTIC, mPolarAntarticCheckBox.isSelected());
         });
 
     }
 
     private void initStates() {
         mPlotCheckBox.setSelected(mOptions.is(KEY_GLOBAL_PLOT));
+
+        mClampToGroundCheckBox.setSelected(mOptions.is(KEY_GLOBAL_CLAMP_TO_GROUND));
+
+        mLongitudesCheckBox.setSelected(mOptions.is(KEY_GLOBAL_LONGITUDES));
+        mLatitudesCheckBox.setSelected(mOptions.is(KEY_GLOBAL_LATITUDES));
+
+        mPolarArticCheckBox.setSelected(mOptions.is(KEY_GLOBAL_POLAR_ARCTIC));
+        mTropicCancerCheckBox.setSelected(mOptions.is(KEY_GLOBAL_TROPIC_CANCER));
+        mEquatorCheckBox.setSelected(mOptions.is(KEY_GLOBAL_EQUATOR));
+        mTropicCapricornCheckBox.setSelected(mOptions.is(KEY_GLOBAL_TROPIC_CAPRICORN));
+        mPolarAntarticCheckBox.setSelected(mOptions.is(KEY_GLOBAL_POLAR_ANTARCTIC));
     }
 
 }

@@ -31,6 +31,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javax.swing.SwingUtilities;
 import org.controlsfx.control.CheckListView;
 import org.controlsfx.control.IndexedCheckModel;
@@ -68,7 +69,7 @@ public class LocalGridView extends BorderPane {
         Font defaultFont = Font.getDefault();
         ResourceBundle bundle = NbBundle.getBundle(GridTopComponent.class);
         mPlotCheckBox = new CheckBox(bundle.getString("local"));
-        mPlotCheckBox.setFont(new Font(defaultFont.getSize() * 1.2));
+        mPlotCheckBox.setFont(Font.font(defaultFont.getFamily(), FontWeight.BOLD, defaultFont.getSize() * 1.2));
 
         Action addAction = new Action(Dict.ADD.toString(), (ActionEvent event) -> {
             mManager.edit(null);
