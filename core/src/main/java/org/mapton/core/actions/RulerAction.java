@@ -43,7 +43,7 @@ public final class RulerAction extends BaseAction {
     @Override
     public void actionPerformed(ActionEvent e) {
         //org.openide.DialogDisplayer.getDefault().notify(getDialogDescriptor());
-        //toggleTopComponent("RulerTopComponent");
+        toggleTopComponent("RulerTopComponent");
 
     }
 

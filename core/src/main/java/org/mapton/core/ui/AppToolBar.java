@@ -263,7 +263,6 @@ public class AppToolBar extends ToolBar {
             Actions.forID("Mapton", "org.mapton.core.actions.RulerAction").actionPerformed(null);
         });
         mRulerAction.setGraphic(MaterialIcon._Action.TIMELINE.getImageView(getIconSizeToolBar()));
-        mRulerAction.setDisabled(true);
 //
 //
 //

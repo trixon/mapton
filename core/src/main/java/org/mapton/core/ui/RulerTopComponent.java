@@ -34,7 +34,7 @@ import se.trixon.almond.util.Dict;
         preferredID = "RulerTopComponent",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
-@TopComponent.Registration(mode = "explorer", openAtStartup = false, position = 99)
+@TopComponent.Registration(mode = "explorer", openAtStartup = true, position = 99)
 @ActionID(category = "Window", id = "org.mapton.core.bookmark.RulerTopComponent")
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_RulerAction",
