@@ -53,14 +53,17 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javax.swing.SwingUtilities;
+import javax.xml.stream.XMLStreamException;
 import org.mapton.api.MOptions;
 import org.mapton.api.Mapton;
+import static org.mapton.worldwind.WorldWindMapEngine.LOG_TAG;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.MapStyle;
 import org.mapton.worldwind.api.WmsService;
 import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
+import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.util.GraphicsHelper;
 
 /**
@@ -261,6 +264,8 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
                             getLayers().addIfAbsent(layer);
                         }
                         updateStyle();
+                    } catch (XMLStreamException ex) {
+                        NbLog.w(LOG_TAG, ex.getMessage());
                     } catch (Exception ex) {
                         Exceptions.printStackTrace(ex);
                     }
