@@ -43,6 +43,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.mapton.core.db.DbBaseManager;
 import org.mapton.core.ui.BookmarkColorPanel;
 import org.mapton.core.ui.BookmarkPanel;
+import org.mapton.core.ui.BookmarkZoomPanel;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
@@ -322,15 +323,15 @@ public class MBookmarkManager extends DbBaseManager {
 
     public void editColor(final String category) {
         SwingUtilities.invokeLater(() -> {
-            BookmarkColorPanel bookmarkPanel = new BookmarkColorPanel();
-            DialogDescriptor d = new DialogDescriptor(bookmarkPanel, Dict.EDIT.toString());
-            bookmarkPanel.setDialogDescriptor(d);
-            bookmarkPanel.initFx(() -> {
+            BookmarkColorPanel bookmarkColorPanel = new BookmarkColorPanel();
+            DialogDescriptor d = new DialogDescriptor(bookmarkColorPanel, Dict.EDIT.toString());
+            bookmarkColorPanel.setDialogDescriptor(d);
+            bookmarkColorPanel.initFx(() -> {
             });
 
-            bookmarkPanel.setPreferredSize(new Dimension(200, 100));
+            bookmarkColorPanel.setPreferredSize(new Dimension(200, 100));
             if (DialogDescriptor.OK_OPTION == DialogDisplayer.getDefault().notify(d)) {
-                String color = bookmarkPanel.getColor();
+                String color = bookmarkColorPanel.getColor();
                 Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
                 for (MBookmark bookmark : mItems.get()) {
@@ -351,6 +352,38 @@ public class MBookmarkManager extends DbBaseManager {
             }
         });
 
+    }
+
+    public void editZoom(final String category) {
+        SwingUtilities.invokeLater(() -> {
+            BookmarkZoomPanel bookmarkZoomPanel = new BookmarkZoomPanel();
+            DialogDescriptor d = new DialogDescriptor(bookmarkZoomPanel, Dict.EDIT.toString());
+            bookmarkZoomPanel.setDialogDescriptor(d);
+            bookmarkZoomPanel.initFx(() -> {
+            });
+
+            bookmarkZoomPanel.setPreferredSize(new Dimension(200, 100));
+            if (DialogDescriptor.OK_OPTION == DialogDisplayer.getDefault().notify(d)) {
+                double zoom = bookmarkZoomPanel.getZoom();
+                Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+
+                for (MBookmark bookmark : mItems.get()) {
+                    if (StringUtils.startsWith(bookmark.getCategory(), category)) {
+                        bookmark.setZoom(zoom);
+                        bookmark.setTimeModified(timestamp);
+                        try {
+                            dbUpdate(bookmark);
+                        } catch (ClassNotFoundException | SQLException ex) {
+                            Exceptions.printStackTrace(ex);
+                        }
+                    }
+                }
+
+                Platform.runLater(() -> {
+                    dbLoad();
+                });
+            }
+        });
     }
 
     public FxActionSwing getAddBookmarkAction() {
