@@ -142,7 +142,7 @@ public class BookmarkPanel extends FxDialogPanel {
         mLongitudeSpinner.setEditable(true);
         FxHelper.autoCommitSpinners(mZoomSpinner, mLatitudeSpinner, mLongitudeSpinner);
 
-        mDescTextArea.setPrefHeight(100);
+        mDescTextArea.setPrefHeight(20);
 
         Label nameLabel = new Label(Dict.NAME.toString());
         Label descLabel = new Label(Dict.DESCRIPTION.toString());
