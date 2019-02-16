@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -131,13 +131,15 @@ public class SearchView {
             }
         });
 
-        mSearchTextField.setOnKeyPressed((KeyEvent keyEvent) -> {
-            if (keyEvent.getCode().equals(KeyCode.ENTER)) {
+        mResultView.setOnKeyPressed((KeyEvent keyEvent) -> {
+            if (keyEvent.getCode() == KeyCode.ENTER) {
                 String searchString = mSearchTextField.getText();
                 if (StringUtils.isNotBlank(searchString)) {
                     searchInstantly(searchString);
                     parse(searchString);
                 }
+            } else if (keyEvent.getCode() == KeyCode.ESCAPE) {
+                mResultPopOver.hide();
             }
         });
 
