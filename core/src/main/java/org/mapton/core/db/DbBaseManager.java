@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,6 +15,8 @@
  */
 package org.mapton.core.db;
 
+import com.healthmarketscience.sqlbuilder.BinaryCondition;
+import com.healthmarketscience.sqlbuilder.SelectQuery;
 import com.healthmarketscience.sqlbuilder.dbspec.Constraint;
 import com.healthmarketscience.sqlbuilder.dbspec.basic.DbColumn;
 import com.healthmarketscience.sqlbuilder.dbspec.basic.DbConstraint;
@@ -24,6 +26,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.HashMap;
+import java.util.Map;
+import org.openide.util.Exceptions;
 
 /**
  *
@@ -56,6 +61,40 @@ public abstract class DbBaseManager {
     }
 
     public abstract void create();
+
+    public boolean exists(DbColumn exceptForColumn, Object exceptForValue, HashMap<DbColumn, Object> map) {
+        PlaceHolderController placeHolders = new PlaceHolderController();
+
+        SelectQuery selectQuery = new SelectQuery()
+                .addFromTable(mTable)
+                .addAllColumns()
+                .validate();
+
+        if (exceptForValue != null) {
+            selectQuery.addCondition(BinaryCondition.notEqualTo(exceptForColumn, exceptForValue));
+        }
+
+        map.keySet().forEach((column) -> {
+            placeHolders.add(column);
+            selectQuery.addCondition(BinaryCondition.equalTo(column, placeHolders.get(column)));
+        });
+
+        selectQuery.validate();
+
+        String sql = selectQuery.toString();
+
+        try {
+            PreparedStatement preparedStatement = mDb.getAutoCommitConnection().prepareStatement(sql, PreparedStatement.NO_GENERATED_KEYS);
+            for (Map.Entry<DbColumn, Object> entry : map.entrySet()) {
+                placeHolders.get(entry.getKey()).setString((String) entry.getValue(), preparedStatement);
+            }
+            ResultSet resultSet = preparedStatement.executeQuery();
+            return resultSet.first();
+        } catch (SQLException ex) {
+            Exceptions.printStackTrace(ex);
+            return false;
+        }
+    }
 
     public DbColumn getId() {
         return mId;

@@ -36,6 +36,7 @@ import org.controlsfx.validation.ValidationResult;
 import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
 import org.mapton.api.MBookmark;
+import org.mapton.api.MBookmarkManager;
 import org.mapton.api.MDict;
 import se.trixon.almond.nbp.fx.FxDialogPanel;
 import se.trixon.almond.util.Dict;
@@ -47,18 +48,21 @@ import se.trixon.almond.util.fx.FxHelper;
  */
 public class BookmarkPanel extends FxDialogPanel {
 
-    private TextField mCatTextField;
+    private MBookmark mBookmark;
+    private TextField mCategoryTextField;
     private ColorPicker mColorPicker;
     private TextArea mDescTextArea;
     private Spinner<Double> mLatitudeSpinner;
     private Spinner<Double> mLongitudeSpinner;
+    private MBookmarkManager mManager = MBookmarkManager.getInstance();
     private TextField mNameTextField;
     private CheckBox mPlacemarkCheckBox;
     private Spinner<Double> mZoomSpinner;
 
     public void load(MBookmark bookmark) {
+        mBookmark = bookmark;
         mNameTextField.setText(bookmark.getName());
-        mCatTextField.setText(bookmark.getCategory());
+        mCategoryTextField.setText(bookmark.getCategory());
         mDescTextArea.setText(bookmark.getDescription());
         mZoomSpinner.getValueFactory().setValue(bookmark.getZoom());
         mLatitudeSpinner.getValueFactory().setValue(bookmark.getLatitude());
@@ -75,7 +79,7 @@ public class BookmarkPanel extends FxDialogPanel {
     public void save(MBookmark bookmark) {
         Platform.runLater(() -> {
             bookmark.setName(mNameTextField.getText());
-            bookmark.setCategory(StringUtils.defaultString(mCatTextField.getText()));
+            bookmark.setCategory(StringUtils.defaultString(mCategoryTextField.getText()));
             bookmark.setDescription(StringUtils.defaultString(mDescTextArea.getText()));
             bookmark.setZoom(mZoomSpinner.getValue());
             bookmark.setLatitude(mLatitudeSpinner.getValue());
@@ -92,7 +96,7 @@ public class BookmarkPanel extends FxDialogPanel {
 
     private Scene createScene() {
         mNameTextField = new TextField();
-        mCatTextField = new TextField();
+        mCategoryTextField = new TextField();
         mDescTextArea = new TextArea();
         mZoomSpinner = new Spinner(0.0, 1.0, 0.25, 0.1);
         mLatitudeSpinner = new Spinner(-90, 90, 0, 0.000001);
@@ -156,7 +160,7 @@ public class BookmarkPanel extends FxDialogPanel {
                 nameLabel,
                 mNameTextField,
                 catLabel,
-                mCatTextField,
+                mCategoryTextField,
                 descLabel,
                 mDescTextArea,
                 colorLabel,
@@ -193,9 +197,15 @@ public class BookmarkPanel extends FxDialogPanel {
         ValidationSupport validationSupport = new ValidationSupport();
         Validator<Object> emptyValidator = Validator.createEmptyValidator(text_is_required);
         validationSupport.registerValidator(mNameTextField, indicateRequired, emptyValidator);
+        Validator<String> uniqueValidator = Validator.createPredicateValidator((String s) -> {
+            return true;//Only used to trigger validation
+        }, "The combination of name and category has to be unique");
 
+        validationSupport.registerValidator(mCategoryTextField, indicateRequired, uniqueValidator);
         validationSupport.validationResultProperty().addListener((ObservableValue<? extends ValidationResult> observable, ValidationResult oldValue, ValidationResult newValue) -> {
-            mDialogDescriptor.setValid(!validationSupport.isInvalid());
+            mDialogDescriptor.setValid(!validationSupport.isInvalid()
+                    && !mManager.exists(mBookmark.getId(), mNameTextField.getText().trim(), mCategoryTextField.getText().trim())
+            );
         });
 
         validationSupport.initInitialDecoration();

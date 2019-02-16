@@ -31,6 +31,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.ResourceBundle;
+import java.util.TreeSet;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -48,7 +51,9 @@ import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.util.Exceptions;
+import org.openide.util.NbBundle;
 import se.trixon.almond.nbp.Almond;
+import se.trixon.almond.nbp.dialogs.NbMessage;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxActionSwing;
 
@@ -83,6 +88,7 @@ public class MBookmarkManager extends DbBaseManager {
     private final DbColumn mTimeCreated;
     private final DbColumn mTimeModified;
     private final DbColumn mZoom;
+    private final ResourceBundle mBundle = NbBundle.getBundle(MBookmarkManager.class);
 
     public static MBookmarkManager getInstance() {
         return Holder.INSTANCE;
@@ -301,14 +307,16 @@ public class MBookmarkManager extends DbBaseManager {
                 if (!StringUtils.equals(category, newCategory)) {
                     Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
+                    TreeSet<String> bookmarkNames = new TreeSet<>();
                     for (MBookmark bookmark : mItems.get()) {
                         if (StringUtils.startsWith(bookmark.getCategory(), category)) {
+                            String oldCategory = bookmark.getCategory();
                             bookmark.setCategory(StringUtils.replaceOnce(bookmark.getCategory(), category, newCategory));
                             bookmark.setTimeModified(timestamp);
                             try {
                                 dbUpdate(bookmark);
-                            } catch (ClassNotFoundException | SQLException ex) {
-                                Exceptions.printStackTrace(ex);
+                            } catch (SQLException ex) {
+                                bookmarkNames.add(String.format("%s/%s", oldCategory, bookmark.getName()));
                             }
                         }
                     }
@@ -316,6 +324,13 @@ public class MBookmarkManager extends DbBaseManager {
                     Platform.runLater(() -> {
                         dbLoad();
                     });
+
+                    if (!bookmarkNames.isEmpty()) {
+                        String delim = "\n ◆ ";
+                        NbMessage.error(Dict.Dialog.ERROR.toString(),
+                                String.format("%s\n%s%s", mBundle.getString("bookmark_rename_category_error"), delim, String.join(delim, bookmarkNames))
+                        );
+                    }
                 }
             }
         });
@@ -340,7 +355,7 @@ public class MBookmarkManager extends DbBaseManager {
                         bookmark.setTimeModified(timestamp);
                         try {
                             dbUpdate(bookmark);
-                        } catch (ClassNotFoundException | SQLException ex) {
+                        } catch (SQLException ex) {
                             Exceptions.printStackTrace(ex);
                         }
                     }
@@ -373,7 +388,7 @@ public class MBookmarkManager extends DbBaseManager {
                         bookmark.setTimeModified(timestamp);
                         try {
                             dbUpdate(bookmark);
-                        } catch (ClassNotFoundException | SQLException ex) {
+                        } catch (SQLException ex) {
                             Exceptions.printStackTrace(ex);
                         }
                     }
@@ -384,6 +399,14 @@ public class MBookmarkManager extends DbBaseManager {
                 });
             }
         });
+    }
+
+    public boolean exists(Object exceptForValue, String name, String category) {
+        HashMap<DbColumn, Object> map = new HashMap<>();
+        map.put(mName, name);
+        map.put(mCategory, category);
+
+        return exists(mId, exceptForValue, map);
     }
 
     public FxActionSwing getAddBookmarkAction() {
@@ -479,7 +502,7 @@ public class MBookmarkManager extends DbBaseManager {
 
     }
 
-    private void dbUpdate(MBookmark bookmark) throws ClassNotFoundException, SQLException {
+    private void dbUpdate(MBookmark bookmark) throws SQLException {
         if (mUpdatePreparedStatement == null) {
             mUpdatePlaceHolders.init(
                     mId,
