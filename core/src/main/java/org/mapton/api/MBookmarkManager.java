@@ -18,6 +18,7 @@ package org.mapton.api;
 import com.healthmarketscience.sqlbuilder.BinaryCondition;
 import com.healthmarketscience.sqlbuilder.ComboCondition;
 import com.healthmarketscience.sqlbuilder.InsertQuery;
+import com.healthmarketscience.sqlbuilder.OrderObject;
 import com.healthmarketscience.sqlbuilder.SelectQuery;
 import com.healthmarketscience.sqlbuilder.UpdateQuery;
 import com.healthmarketscience.sqlbuilder.custom.postgresql.PgBinaryCondition;
@@ -44,12 +45,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.mapton.core.db.DbBaseManager;
+import org.mapton.core.ui.BookmarkCategoryPanel;
 import org.mapton.core.ui.BookmarkColorPanel;
 import org.mapton.core.ui.BookmarkPanel;
 import org.mapton.core.ui.BookmarkZoomPanel;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
-import org.openide.NotifyDescriptor;
 import org.openide.util.Exceptions;
 import org.openide.util.NbBundle;
 import se.trixon.almond.nbp.Almond;
@@ -74,6 +75,7 @@ public class MBookmarkManager extends DbBaseManager {
     public static final String COL_MODIFIED = "modified";
     public static final String COL_NAME = "name";
     public static final String COL_ZOOM = "zoom";
+    private final ResourceBundle mBundle = NbBundle.getBundle(MBookmarkManager.class);
 
     private final DbColumn mCategory;
     private final DbColumn mColor;
@@ -88,7 +90,6 @@ public class MBookmarkManager extends DbBaseManager {
     private final DbColumn mTimeCreated;
     private final DbColumn mTimeModified;
     private final DbColumn mZoom;
-    private final ResourceBundle mBundle = NbBundle.getBundle(MBookmarkManager.class);
 
     public static MBookmarkManager getInstance() {
         return Holder.INSTANCE;
@@ -297,13 +298,17 @@ public class MBookmarkManager extends DbBaseManager {
 
     public void editCategory(final String category) {
         SwingUtilities.invokeLater(() -> {
-            NotifyDescriptor.InputLine d = new NotifyDescriptor.InputLine(
-                    Dict.CATEGORY.toString(),
-                    Dict.EDIT.toString());
-            d.setInputText(category);
+            BookmarkCategoryPanel bookmarkCategoryPanel = new BookmarkCategoryPanel();
+            DialogDescriptor d = new DialogDescriptor(bookmarkCategoryPanel, Dict.EDIT.toString());
+            bookmarkCategoryPanel.setDialogDescriptor(d);
+            bookmarkCategoryPanel.initFx(() -> {
+                bookmarkCategoryPanel.setCategory(category);
+            });
+
+            bookmarkCategoryPanel.setPreferredSize(new Dimension(400, 100));
 
             if (DialogDescriptor.OK_OPTION == DialogDisplayer.getDefault().notify(d)) {
-                String newCategory = d.getInputText();
+                String newCategory = bookmarkCategoryPanel.getCategory();
                 if (!StringUtils.equals(category, newCategory)) {
                     Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
@@ -415,6 +420,31 @@ public class MBookmarkManager extends DbBaseManager {
         });
 
         return action;
+    }
+
+    public TreeSet<String> getCategories() {
+        SelectQuery selectQuery = new SelectQuery()
+                .addFromTable(mTable)
+                .addColumns(mCategory)
+                .addOrdering(mCategory, OrderObject.Dir.ASCENDING)
+                .addGroupings(mCategory)
+                .validate();
+
+        TreeSet<String> categories = new TreeSet<>();
+        categories.add("");
+        try (Statement statement = mDb.getAutoCommitConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
+            String sql = selectQuery.toString();
+            ResultSet rs = statement.executeQuery(sql);
+            rs.first();
+            while (rs.next()) {
+                categories.add(getString(rs, mCategory));
+            }
+
+        } catch (SQLException ex) {
+            //Exceptions.printStackTrace(ex);
+        }
+
+        return categories;
     }
 
     public MLatLonBox getExtents(String category) {

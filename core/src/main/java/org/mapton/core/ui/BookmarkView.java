@@ -102,10 +102,12 @@ public class BookmarkView extends BorderPane {
 
     private void bookmarkEdit() {
         MBookmark bookmark = getSelectedBookmark();
-        if (bookmark.isCategory()) {
-            mManager.editCategory(bookmark.getCategory());
-        } else {
-            mManager.editBookmark(bookmark);
+        if (bookmark != null) {
+            if (bookmark.isCategory()) {
+                mManager.editCategory(bookmark.getCategory());
+            } else {
+                mManager.editBookmark(bookmark);
+            }
         }
     }
 
@@ -216,10 +218,12 @@ public class BookmarkView extends BorderPane {
     }
 
     private MBookmark getSelectedBookmark() {
-        return mTreeView.getSelectionModel().getSelectedItem().getValue();
+        TreeItem<MBookmark> item = mTreeView.getSelectionModel().getSelectedItem();
+
+        return item != null ? item.getValue() : null;
     }
 
-    private void populate() {
+    private synchronized void populate() {
         mBookmarkParents.clear();
         MBookmark rootMark = new MBookmark();
         rootMark.setName("");

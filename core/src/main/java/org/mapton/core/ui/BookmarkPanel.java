@@ -23,6 +23,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ColorPicker;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TextArea;
@@ -49,7 +50,7 @@ import se.trixon.almond.util.fx.FxHelper;
 public class BookmarkPanel extends FxDialogPanel {
 
     private MBookmark mBookmark;
-    private TextField mCategoryTextField;
+    private ComboBox<String> mCategoryComboBox;
     private ColorPicker mColorPicker;
     private TextArea mDescTextArea;
     private Spinner<Double> mLatitudeSpinner;
@@ -62,7 +63,7 @@ public class BookmarkPanel extends FxDialogPanel {
     public void load(MBookmark bookmark) {
         mBookmark = bookmark;
         mNameTextField.setText(bookmark.getName());
-        mCategoryTextField.setText(bookmark.getCategory());
+        mCategoryComboBox.getSelectionModel().select(bookmark.getCategory());
         mDescTextArea.setText(bookmark.getDescription());
         mZoomSpinner.getValueFactory().setValue(bookmark.getZoom());
         mLatitudeSpinner.getValueFactory().setValue(bookmark.getLatitude());
@@ -79,7 +80,7 @@ public class BookmarkPanel extends FxDialogPanel {
     public void save(MBookmark bookmark) {
         Platform.runLater(() -> {
             bookmark.setName(mNameTextField.getText());
-            bookmark.setCategory(StringUtils.defaultString(mCategoryTextField.getText()));
+            bookmark.setCategory(StringUtils.defaultString(mCategoryComboBox.getSelectionModel().getSelectedItem()));
             bookmark.setDescription(StringUtils.defaultString(mDescTextArea.getText()));
             bookmark.setZoom(mZoomSpinner.getValue());
             bookmark.setLatitude(mLatitudeSpinner.getValue());
@@ -96,12 +97,15 @@ public class BookmarkPanel extends FxDialogPanel {
 
     private Scene createScene() {
         mNameTextField = new TextField();
-        mCategoryTextField = new TextField();
+        mCategoryComboBox = new ComboBox<>();
         mDescTextArea = new TextArea();
         mZoomSpinner = new Spinner(0.0, 1.0, 0.25, 0.1);
         mLatitudeSpinner = new Spinner(-90, 90, 0, 0.000001);
         mLongitudeSpinner = new Spinner(-180, 180, 0, 0.000001);
         mColorPicker = new ColorPicker();
+        mCategoryComboBox.prefWidthProperty().bind(mNameTextField.widthProperty());
+        mCategoryComboBox.setEditable(true);
+        mCategoryComboBox.getItems().setAll(mManager.getCategories());
 
         StringConverter<Double> converter = new StringConverter<Double>() {
             private final DecimalFormat mDecimalFormat = new DecimalFormat("#.######");
@@ -150,7 +154,7 @@ public class BookmarkPanel extends FxDialogPanel {
 
         Label nameLabel = new Label(Dict.NAME.toString());
         Label descLabel = new Label(Dict.DESCRIPTION.toString());
-        Label catLabel = new Label(Dict.CATEGORY.toString());
+        Label categoryLabel = new Label(Dict.CATEGORY.toString());
         Label colorLabel = new Label(Dict.COLOR.toString());
         Label zoomLabel = new Label(Dict.ZOOM.toString());
         Label latLabel = new Label(Dict.LATITUDE.toString());
@@ -159,8 +163,8 @@ public class BookmarkPanel extends FxDialogPanel {
         VBox box = new VBox(
                 nameLabel,
                 mNameTextField,
-                catLabel,
-                mCategoryTextField,
+                categoryLabel,
+                mCategoryComboBox,
                 descLabel,
                 mDescTextArea,
                 colorLabel,
@@ -180,7 +184,7 @@ public class BookmarkPanel extends FxDialogPanel {
 
         final Insets topInsets = new Insets(8, 0, 8, 0);
         VBox.setMargin(descLabel, topInsets);
-        VBox.setMargin(catLabel, topInsets);
+        VBox.setMargin(categoryLabel, topInsets);
         VBox.setMargin(zoomLabel, topInsets);
         VBox.setMargin(latLabel, topInsets);
         VBox.setMargin(lonLabel, topInsets);
@@ -201,10 +205,10 @@ public class BookmarkPanel extends FxDialogPanel {
             return true;//Only used to trigger validation
         }, "The combination of name and category has to be unique");
 
-        validationSupport.registerValidator(mCategoryTextField, indicateRequired, uniqueValidator);
+        validationSupport.registerValidator(mCategoryComboBox, indicateRequired, uniqueValidator);
         validationSupport.validationResultProperty().addListener((ObservableValue<? extends ValidationResult> observable, ValidationResult oldValue, ValidationResult newValue) -> {
             mDialogDescriptor.setValid(!validationSupport.isInvalid()
-                    && !mManager.exists(mBookmark.getId(), mNameTextField.getText().trim(), mCategoryTextField.getText().trim())
+                    && !mManager.exists(mBookmark.getId(), mNameTextField.getText().trim(), mCategoryComboBox.getSelectionModel().getSelectedItem().trim())
             );
         });
 
