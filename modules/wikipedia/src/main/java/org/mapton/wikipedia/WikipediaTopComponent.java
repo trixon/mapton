@@ -35,7 +35,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.web.WebView;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.MasterDetailPane;
 import org.mapton.api.MMapMagnet;
 import org.mapton.api.MTopComponent;
