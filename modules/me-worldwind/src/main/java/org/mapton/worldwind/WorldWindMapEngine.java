@@ -62,6 +62,7 @@ public class WorldWindMapEngine extends MEngine {
     private double mOldAltitude;
     private double mOldGlobalZoom;
     private final ModuleOptions mOptions = ModuleOptions.getInstance();
+    private RulerView mRulerView;
     private final StyleView mStyleView;
     private long mZoomEpoch = System.currentTimeMillis();
     private final double[] mZoomLevels;
@@ -76,6 +77,7 @@ public class WorldWindMapEngine extends MEngine {
     public WorldWindMapEngine() {
         mStyleView = new StyleView();
         mLayerView = LayerView.getInstance();
+        mRulerView = RulerView.getInstance();
 
         mZoomLevels = new double[]{
             48374812,//1 -- Flat
@@ -127,6 +129,11 @@ public class WorldWindMapEngine extends MEngine {
     @Override
     public String getName() {
         return "WorldWind";
+    }
+
+    @Override
+    public Node getRulerView() {
+        return mRulerView;
     }
 
     @Override
