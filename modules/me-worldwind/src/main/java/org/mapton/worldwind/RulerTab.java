@@ -18,24 +18,31 @@ package org.mapton.worldwind;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import gov.nasa.worldwind.WorldWindow;
+import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.util.measure.MeasureTool;
 import gov.nasa.worldwind.util.measure.MeasureToolController;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.beans.PropertyChangeEvent;
+import java.util.ResourceBundle;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import org.apache.commons.lang3.StringUtils;
+import org.controlsfx.control.PopOver;
 import org.controlsfx.control.SegmentedButton;
 import static org.mapton.api.Mapton.getIconSizeToolBar;
 import static org.mapton.worldwind.ModuleOptions.*;
+import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 
@@ -45,22 +52,20 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
  */
 public class RulerTab extends Tab {
 
+    private static final int DEFAULT_PATH_TYPE_INDEX = 2;
     private BorderPane mBorderPane;
-    private CheckBox mControlPointsCheckBox;
-    private CheckBox mFollowTerrainCheckBox;
-    private CheckBox mFreeHandCheckBox;
-    private final BiMap<String, CheckBox> mKeyCheckBoxes = HashBiMap.create();
+    private final ResourceBundle mBundle = NbBundle.getBundle(RulerTab.class);
     private final MeasureTool mMeasureTool;
     private final ModuleOptions mOptions = ModuleOptions.getInstance();
+    private PopOver mOptionsPopOver;
+    private ToggleButton mOptionsToggleButton;
+    private final String[] mPathTypes = {AVKey.LINEAR, AVKey.RHUMB_LINE, AVKey.GREAT_CIRCLE};
     private ImageView mPauseImageView;
     private ToggleButton mPauseToggleButton;
     private ToggleButton mPlayToggleButton;
     private ImageView mResumeImageView;
-    private CheckBox mRubberBandCheckBox;
-    private ToggleButton mSettingsToggleButton;
     private ComboBox<String> mShapeComboBox;
     private ToggleButton mStopToggleButton;
-    private CheckBox mToolTipCheckBox;
     private final WorldWindow mWorldWindow;
 
     public RulerTab(String title, WorldWindow worldWindow) {
@@ -72,7 +77,6 @@ public class RulerTab extends Tab {
         createUI();
         initListeners();
         postInit();
-        initStates();
     }
 
     public MeasureTool getMeasureTool() {
@@ -93,14 +97,6 @@ public class RulerTab extends Tab {
                 Dict.Shape.RECTANGLE.toString()
         );
 
-        mFollowTerrainCheckBox = new CheckBox("FOLLOW TERRAIN");
-        mRubberBandCheckBox = new CheckBox("RUBBER BAND");
-        mFreeHandCheckBox = new CheckBox("FREE HAND");
-        mToolTipCheckBox = new CheckBox("TOOL TIP");
-        mControlPointsCheckBox = new CheckBox("CONTROL POINTS");
-
-        mFreeHandCheckBox.disableProperty().bind(mRubberBandCheckBox.selectedProperty().not());
-
         int imageSize = getIconSizeToolBar();
         mPauseImageView = MaterialIcon._Av.PAUSE_CIRCLE_OUTLINE.getImageView(imageSize);
         mResumeImageView = MaterialIcon._Av.PLAY_CIRCLE_OUTLINE.getImageView(imageSize);
@@ -108,22 +104,16 @@ public class RulerTab extends Tab {
         mPlayToggleButton = new ToggleButton("", MaterialIcon._Av.PLAY_ARROW.getImageView(imageSize));
         mPauseToggleButton = new ToggleButton("", mPauseImageView);
         mStopToggleButton = new ToggleButton("", MaterialIcon._Av.STOP.getImageView(imageSize));
-        mSettingsToggleButton = new ToggleButton("", MaterialIcon._Action.SETTINGS.getImageView(imageSize));
+        mOptionsToggleButton = new ToggleButton("", MaterialIcon._Action.SETTINGS.getImageView(imageSize));
         mPauseToggleButton.setDisable(true);
         mStopToggleButton.setDisable(true);
 
         SegmentedButton segmentedButton = new SegmentedButton();
-        segmentedButton.getButtons().addAll(mPlayToggleButton, mPauseToggleButton, mStopToggleButton, mSettingsToggleButton);
+        segmentedButton.getButtons().addAll(mPlayToggleButton, mPauseToggleButton, mStopToggleButton, mOptionsToggleButton);
 
         VBox box = new VBox(8,
-                new BorderPane(segmentedButton),
-                mFollowTerrainCheckBox,
-                mRubberBandCheckBox,
-                mFreeHandCheckBox,
-                mToolTipCheckBox,
-                mControlPointsCheckBox
+                new BorderPane(segmentedButton)
         );
-
         box.setPadding(insets8);
 
         mBorderPane = new BorderPane(box);
@@ -136,11 +126,14 @@ public class RulerTab extends Tab {
 
         setContent(mBorderPane);
 
-        mKeyCheckBoxes.put(KEY_RULER_FOLLOW_TERRAIN, mFollowTerrainCheckBox);
-        mKeyCheckBoxes.put(KEY_RULER_RUBBER_BAND, mRubberBandCheckBox);
-        mKeyCheckBoxes.put(KEY_RULER_FREE_HAND, mFreeHandCheckBox);
-        mKeyCheckBoxes.put(KEY_RULER_TOOL_TIP, mToolTipCheckBox);
-        mKeyCheckBoxes.put(KEY_RULER_CONTROL_POINTS, mControlPointsCheckBox);
+        mOptionsPopOver = new PopOver();
+        mOptionsPopOver.setTitle(Dict.OPTIONS.toString());
+        mOptionsPopOver.setContentNode(new OptionsPane());
+        mOptionsPopOver.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
+        mOptionsPopOver.setHeaderAlwaysVisible(true);
+        mOptionsPopOver.setCloseButtonEnabled(false);
+        mOptionsPopOver.setDetachable(false);
+        mOptionsPopOver.setAnimated(true);
     }
 
     private void initListeners() {
@@ -156,39 +149,6 @@ public class RulerTab extends Tab {
 
         mShapeComboBox.setOnAction((event) -> {
             mMeasureTool.setMeasureShapeType(shapes[mShapeComboBox.getSelectionModel().getSelectedIndex()]);
-        });
-
-        EventHandler<ActionEvent> eventHandler = (ActionEvent event) -> {
-            CheckBox checkBox = (CheckBox) event.getSource();
-            String key = mKeyCheckBoxes.inverse().get(checkBox);
-            boolean selected = checkBox.isSelected();
-            mOptions.put(key, selected);
-
-            switch (key) {
-                case KEY_RULER_CONTROL_POINTS:
-                    mMeasureTool.setShowControlPoints(selected);
-                    break;
-                case KEY_RULER_FOLLOW_TERRAIN:
-                    mMeasureTool.setFollowTerrain(selected);
-                    break;
-                case KEY_RULER_FREE_HAND:
-                    mMeasureTool.getController().setFreeHand(selected);
-                    break;
-                case KEY_RULER_RUBBER_BAND:
-                    mMeasureTool.getController().setUseRubberBand(selected);
-                    break;
-                case KEY_RULER_TOOL_TIP:
-                    mMeasureTool.setShowAnnotation(selected);
-                    break;
-
-                default:
-                    throw new AssertionError();
-            }
-            mWorldWindow.redraw();
-        };
-
-        mKeyCheckBoxes.values().forEach((checkBox) -> {
-            checkBox.setOnAction(eventHandler);
         });
 
         mPlayToggleButton.setOnAction((event) -> {
@@ -208,8 +168,14 @@ public class RulerTab extends Tab {
             mStopToggleButton.setSelected(false);
         });
 
-        mSettingsToggleButton.setOnAction((event) -> {
-            mSettingsToggleButton.setSelected(false);
+        mOptionsToggleButton.setOnAction((event) -> {
+            if (mOptionsPopOver.isShowing()) {
+                mOptionsPopOver.hide();
+            } else {
+                mOptionsPopOver.show(mOptionsToggleButton);
+            }
+
+            mOptionsToggleButton.setSelected(false);
         });
 
         mMeasureTool.addPropertyChangeListener((PropertyChangeEvent event) -> {
@@ -242,19 +208,115 @@ public class RulerTab extends Tab {
         });
     }
 
-    private void initStates() {
-        mKeyCheckBoxes.values().forEach((checkBox) -> {
-            checkBox.setSelected(mOptions.is(mKeyCheckBoxes.inverse().get(checkBox)));
-        });
-    }
-
     private void postInit() {
         mShapeComboBox.getSelectionModel().select(0);
+
+        mMeasureTool.setPathType(mPathTypes[DEFAULT_PATH_TYPE_INDEX]);
+        mMeasureTool.setShowControlPoints(mOptions.is(KEY_RULER_CONTROL_POINTS));
+        mMeasureTool.setFollowTerrain(mOptions.is(KEY_RULER_FOLLOW_TERRAIN));
+        mMeasureTool.setShowAnnotation(mOptions.is(KEY_RULER_TOOL_TIP));
+        mMeasureTool.getController().setFreeHand(mOptions.is(KEY_RULER_FREE_HAND));
+        mMeasureTool.getController().setUseRubberBand(mOptions.is(KEY_RULER_FREE_HAND));
     }
 
     private void updateMetrics() {
     }
 
     private void updatePoints() {
+    }
+
+    private class OptionsPane extends VBox {
+
+        private CheckBox mAnnotationCheckBox;
+        private CheckBox mControlPointsCheckBox;
+        private CheckBox mFollowTerrainCheckBox;
+        private CheckBox mFreeHandCheckBox;
+        private final BiMap<String, CheckBox> mKeyCheckBoxes = HashBiMap.create();
+        private ComboBox<String> mPathTypeComboBox;
+        private CheckBox mRubberBandCheckBox;
+
+        public OptionsPane() {
+            createUI();
+            initListeners();
+            initStates();
+        }
+
+        private void createUI() {
+            setPadding(new Insets(8, 16, 16, 16));
+            setSpacing(8);
+
+            Label pathTypeLabel = new Label(mBundle.getString("ruler.option.path_type"));
+            String[] pathTypes = StringUtils.split(mBundle.getString("ruler.option.path_types"), "|");
+            mPathTypeComboBox = new ComboBox<>(FXCollections.observableArrayList(pathTypes));
+            mPathTypeComboBox.getSelectionModel().select(DEFAULT_PATH_TYPE_INDEX);
+            mFollowTerrainCheckBox = new CheckBox(mBundle.getString("ruler.option.follow_terrain"));
+            mRubberBandCheckBox = new CheckBox(mBundle.getString("ruler.option.rubber_band"));
+            mFreeHandCheckBox = new CheckBox(mBundle.getString("ruler.option.free_hand"));
+            mAnnotationCheckBox = new CheckBox(mBundle.getString("ruler.option.annotation"));
+            mControlPointsCheckBox = new CheckBox(mBundle.getString("ruler.option.control_points"));
+
+            mFreeHandCheckBox.disableProperty().bind(mRubberBandCheckBox.selectedProperty().not());
+            getChildren().setAll(
+                    pathTypeLabel,
+                    mPathTypeComboBox,
+                    mFollowTerrainCheckBox,
+                    mRubberBandCheckBox,
+                    mFreeHandCheckBox,
+                    mAnnotationCheckBox,
+                    mControlPointsCheckBox
+            );
+
+            mKeyCheckBoxes.put(KEY_RULER_FOLLOW_TERRAIN, mFollowTerrainCheckBox);
+            mKeyCheckBoxes.put(KEY_RULER_RUBBER_BAND, mRubberBandCheckBox);
+            mKeyCheckBoxes.put(KEY_RULER_FREE_HAND, mFreeHandCheckBox);
+            mKeyCheckBoxes.put(KEY_RULER_TOOL_TIP, mAnnotationCheckBox);
+            mKeyCheckBoxes.put(KEY_RULER_CONTROL_POINTS, mControlPointsCheckBox);
+        }
+
+        private void initListeners() {
+            EventHandler<ActionEvent> eventHandler = (ActionEvent event) -> {
+                CheckBox checkBox = (CheckBox) event.getSource();
+                String key = mKeyCheckBoxes.inverse().get(checkBox);
+                boolean selected = checkBox.isSelected();
+                mOptions.put(key, selected);
+
+                switch (key) {
+                    case KEY_RULER_CONTROL_POINTS:
+                        mMeasureTool.setShowControlPoints(selected);
+                        break;
+                    case KEY_RULER_FOLLOW_TERRAIN:
+                        mMeasureTool.setFollowTerrain(selected);
+                        break;
+                    case KEY_RULER_FREE_HAND:
+                        mMeasureTool.getController().setFreeHand(selected);
+                        break;
+                    case KEY_RULER_RUBBER_BAND:
+                        mMeasureTool.getController().setUseRubberBand(selected);
+                        break;
+                    case KEY_RULER_TOOL_TIP:
+                        mMeasureTool.setShowAnnotation(selected);
+                        break;
+
+                    default:
+                        throw new AssertionError();
+                }
+
+                mWorldWindow.redraw();
+            };
+
+            mKeyCheckBoxes.values().forEach((checkBox) -> {
+                checkBox.setOnAction(eventHandler);
+            });
+
+            mPathTypeComboBox.setOnAction((event) -> {
+                mMeasureTool.setPathType(mPathTypes[mPathTypeComboBox.getSelectionModel().getSelectedIndex()]);
+            });
+        }
+
+        private void initStates() {
+            mKeyCheckBoxes.values().forEach((checkBox) -> {
+                checkBox.setSelected(mOptions.is(mKeyCheckBoxes.inverse().get(checkBox)));
+            });
+        }
     }
 }
