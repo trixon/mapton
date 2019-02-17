@@ -15,17 +15,11 @@
  */
 package org.mapton.core.ui;
 
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
+import java.util.prefs.PreferenceChangeEvent;
+import javafx.application.Platform;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
-import org.controlsfx.control.ToggleSwitch;
-import se.trixon.almond.util.Dict;
+import org.mapton.api.MOptions;
+import org.mapton.api.Mapton;
 
 /**
  *
@@ -33,44 +27,31 @@ import se.trixon.almond.util.Dict;
  */
 public class RulerView extends BorderPane {
 
-    private Button mClearButton;
-    private ComboBox<String> mModeComboBox;
-    private ToggleSwitch mToggleSwitch;
+    private final MOptions mMOptions = MOptions.getInstance();
 
     public RulerView() {
         createUI();
+
+        mMOptions.getPreferences().addPreferenceChangeListener((PreferenceChangeEvent evt) -> {
+            switch (evt.getKey()) {
+                case MOptions.KEY_MAP_ENGINE:
+                    loadRulerView();
+                    break;
+
+                default:
+                    break;
+            }
+        });
+
     }
 
     private void createUI() {
-        mModeComboBox = new ComboBox<>();
-        mModeComboBox.getItems().setAll(
-                Dict.LINE.toString(),
-                Dict.PATH_GFX.toString(),
-                Dict.POLYGON.toString(),
-                Dict.CIRCLE.toString()
-        );
+        loadRulerView();
+    }
 
-        mToggleSwitch = new ToggleSwitch(Dict.ACTIVE.toString());
-        mToggleSwitch.setSelected(true);
-        mToggleSwitch.setAlignment(Pos.BASELINE_RIGHT);
-
-        setTop(mModeComboBox);
-
-        VBox vBox = new VBox(8);
-        setCenter(vBox);
-        mModeComboBox.prefWidthProperty().bind(widthProperty());
-        mModeComboBox.getSelectionModel().select(0);
-
-        mClearButton = new Button(Dict.CLEAR.toString());
-        Region spring = new Region();
-        HBox.setHgrow(spring, Priority.ALWAYS);
-
-        HBox hBox = new HBox(mClearButton, spring, mToggleSwitch);
-        hBox.setPadding(new Insets(0, 8, 4, 8));
-        setBottom(hBox);
-
-        getTop().disableProperty().bind(mToggleSwitch.selectedProperty().not());
-        getCenter().disableProperty().bind(mToggleSwitch.selectedProperty().not());
-        mClearButton.disableProperty().bind(mToggleSwitch.selectedProperty().not());
+    private void loadRulerView() {
+        Platform.runLater(() -> {
+            setCenter(Mapton.getEngine().getRulerView());
+        });
     }
 }

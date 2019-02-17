@@ -157,6 +157,12 @@ public abstract class MEngine {
 
     public abstract String getName();
 
+    public Node getRulerView() {
+        NbLog.i(getClass().getSimpleName(), "getRulerView not implemented");
+
+        return new Pane();
+    }
+
     public MStatusZoomMode getStatusZoomMode() {
         return MStatusZoomMode.ABSOLUTE;
     }
