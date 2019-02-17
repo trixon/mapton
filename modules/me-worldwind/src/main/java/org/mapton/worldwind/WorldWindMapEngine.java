@@ -40,6 +40,7 @@ import org.mapton.api.MEngine;
 import org.mapton.api.MLatLon;
 import org.mapton.api.MLatLonBox;
 import org.mapton.api.Mapton;
+import static org.mapton.worldwind.ModuleOptions.*;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.nbp.dialogs.NbMessage;
@@ -159,9 +160,9 @@ public class WorldWindMapEngine extends MEngine {
     @Override
     public void onActivate() {
         View view = mMap.getView();
-        view.setHeading(mOptions.getViewHeading());
-        view.setPitch(mOptions.getViewPitch());
-        view.setRoll(mOptions.getViewRoll());
+        view.setHeading(Angle.fromDegrees(mOptions.getDouble(KEY_VIEW_HEADING)));
+        view.setPitch(Angle.fromDegrees(mOptions.getDouble(KEY_VIEW_PITCH)));
+        view.setRoll(Angle.fromDegrees(mOptions.getDouble(KEY_VIEW_ROLL)));
     }
 
     @Override
@@ -172,9 +173,9 @@ public class WorldWindMapEngine extends MEngine {
     @Override
     public void onDeactivate() {
         View view = mMap.getView();
-        mOptions.setViewHeading(view.getHeading());
-        mOptions.setViewPitch(view.getPitch());
-        mOptions.setViewRoll(view.getRoll());
+        mOptions.put(KEY_VIEW_HEADING, view.getHeading().getDegrees());
+        mOptions.put(KEY_VIEW_PITCH, view.getPitch().getDegrees());
+        mOptions.put(KEY_VIEW_ROLL, view.getRoll().getDegrees());
     }
 
     @Override

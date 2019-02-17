@@ -35,11 +35,12 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import org.mapton.api.MDict;
+import static org.mapton.worldwind.ModuleOptions.*;
+import org.mapton.worldwind.api.MapStyle;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import se.trixon.almond.util.Dict;
-import org.mapton.api.MDict;
-import org.mapton.worldwind.api.MapStyle;
 
 /**
  *
@@ -125,7 +126,7 @@ public class StyleView extends HBox {
         mAtmosphereCheckBox = new CheckBox(MDict.ATMOSPHERE.toString());
         GridPane.setMargin(mAtmosphereCheckBox, topInsets);
 
-        mPlaceNameCheckBox = new CheckBox(Dict.PLACE_NAMES.toString().toString());
+        mPlaceNameCheckBox = new CheckBox(Dict.PLACE_NAMES.toString());
         GridPane.setMargin(mPlaceNameCheckBox, topInsets);
 
         mProjComboBox.getItems().addAll(mProjections);
@@ -153,47 +154,48 @@ public class StyleView extends HBox {
         GridPane.setFillWidth(mProjComboBox, true);
         mProjComboBox.disableProperty().bind(mModeGlobeRadioButton.selectedProperty());
         mModeGlobeRadioButton.setOnAction((event -> {
-            mOptions.setMapGlobe(true);
+            mOptions.put(KEY_MAP_GLOBE, true);
         }));
         mModeFlatRadioButton.setOnAction((event -> {
-            mOptions.setMapGlobe(false);
+            mOptions.put(KEY_MAP_GLOBE, false);
         }));
 
         mProjComboBox.setOnAction((event -> {
-            mOptions.setMapProjection(mProjComboBox.getSelectionModel().getSelectedIndex());
+            mOptions.put(KEY_MAP_PROJECTION, mProjComboBox.getSelectionModel().getSelectedIndex());
+
         }));
 
         mWorldMapCheckBox.setOnAction((event) -> {
-            mOptions.setDisplayWorldMap(mWorldMapCheckBox.isSelected());
+            mOptions.put(KEY_DISPLAY_WORLD_MAP, mWorldMapCheckBox.isSelected());
         });
 
         mScaleBarCheckBox.setOnAction((event) -> {
-            mOptions.setDisplayScaleBar(mScaleBarCheckBox.isSelected());
+            mOptions.put(KEY_DISPLAY_SCALE_BAR, mScaleBarCheckBox.isSelected());
         });
 
         mControlsCheckBox.setOnAction((event) -> {
-            mOptions.setDisplayControls(mControlsCheckBox.isSelected());
+            mOptions.put(KEY_DISPLAY_CONTROLS, mControlsCheckBox.isSelected());
         });
 
         mCompassCheckBox.setOnAction((event) -> {
-            mOptions.setDisplayCompass(mCompassCheckBox.isSelected());
+            mOptions.put(KEY_DISPLAY_COMPASS, mCompassCheckBox.isSelected());
         });
 
         mAtmosphereCheckBox.setOnAction((event) -> {
-            mOptions.setDisplayAtmosphere(mAtmosphereCheckBox.isSelected());
+            mOptions.put(KEY_DISPLAY_ATMOSPHERE, mAtmosphereCheckBox.isSelected());
         });
 
         mStarsCheckBox.setOnAction((event) -> {
-            mOptions.setDisplayStars(mStarsCheckBox.isSelected());
+            mOptions.put(KEY_DISPLAY_STARS, mStarsCheckBox.isSelected());
         });
 
         mPlaceNameCheckBox.setOnAction((event) -> {
-            mOptions.setDisplayPlaceNames(mPlaceNameCheckBox.isSelected());
+            mOptions.put(KEY_DISPLAY_PLACE_NAMES, mPlaceNameCheckBox.isSelected());
         });
 
         mElevationCheckBox = new CheckBox(MDict.ELEVATION.toString());
         mElevationCheckBox.setOnAction((event) -> {
-            mOptions.setMapElevation(mElevationCheckBox.isSelected());
+            mOptions.put(KEY_MAP_ELEVATION, mElevationCheckBox.isSelected());
         });
 
         mOpacityBox = new VBox(new Label(Dict.OPACITY.toString()), mOpacitySlider, mElevationCheckBox);
@@ -207,7 +209,7 @@ public class StyleView extends HBox {
 
     private void initListeners() {
         mOpacitySlider.valueProperty().addListener((ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
-            mOptions.setMapOpacity(mOpacitySlider.getValue());
+            mOptions.put(KEY_MAP_OPACITY, mOpacitySlider.getValue());
         });
     }
 
@@ -224,7 +226,7 @@ public class StyleView extends HBox {
                 button.prefWidthProperty().bind(widthProperty());
                 button.setToggleGroup(group);
                 button.setOnAction((ActionEvent event) -> {
-                    mOptions.setMapStyle(mapStyle.getName());
+                    mOptions.put(KEY_MAP_STYLE, mapStyle.getName());
                 });
 
                 if (mapStyle.getSuppliers() != null) {
@@ -239,22 +241,22 @@ public class StyleView extends HBox {
     }
 
     private void load() {
-        if (mOptions.isMapGlobe()) {
+        if (mOptions.is(KEY_MAP_GLOBE, DEFAULT_MAP_GLOBE)) {
             mModeGlobeRadioButton.setSelected(true);
         } else {
             mModeFlatRadioButton.setSelected(true);
         }
-        mProjComboBox.getSelectionModel().select(mOptions.getMapProjection());
 
-        mWorldMapCheckBox.setSelected(mOptions.isDisplayWorldMap());
-        mScaleBarCheckBox.setSelected(mOptions.isDisplayScaleBar());
-        mControlsCheckBox.setSelected(mOptions.isDisplayControls());
-        mCompassCheckBox.setSelected(mOptions.isDisplayCompass());
-        mAtmosphereCheckBox.setSelected(mOptions.isDisplayAtmosphere());
-        mStarsCheckBox.setSelected(mOptions.isDisplayStar());
-        mPlaceNameCheckBox.setSelected(mOptions.isDisplayPlaceNames());
+        mProjComboBox.getSelectionModel().select(mOptions.getInt(KEY_MAP_PROJECTION, DEFAULT_MAP_PROJECTION));
+        mWorldMapCheckBox.setSelected(mOptions.is(KEY_DISPLAY_WORLD_MAP, DEFAULT_DISPLAY_WORLD_MAP));
+        mScaleBarCheckBox.setSelected(mOptions.is(KEY_DISPLAY_SCALE_BAR, DEFAULT_DISPLAY_SCALE_BAR));
+        mControlsCheckBox.setSelected(mOptions.is(KEY_DISPLAY_CONTROLS, DEFAULT_DISPLAY_CONTROLS));
+        mCompassCheckBox.setSelected(mOptions.is(KEY_DISPLAY_COMPASS, DEFAULT_DISPLAY_COMPASS));
+        mAtmosphereCheckBox.setSelected(mOptions.is(KEY_DISPLAY_ATMOSPHERE, DEFAULT_DISPLAY_ATMOSPHERE));
+        mStarsCheckBox.setSelected(mOptions.is(KEY_DISPLAY_STARS, DEFAULT_DISPLAY_STARS));
+        mPlaceNameCheckBox.setSelected(mOptions.is(KEY_DISPLAY_PLACE_NAMES, DEFAULT_DISPLAY_PLACE_NAMES));
 
-        mOpacitySlider.setValue(mOptions.getMapOpacity());
-        mElevationCheckBox.setSelected(mOptions.isMapElevation());
+        mOpacitySlider.setValue(mOptions.getDouble(KEY_MAP_OPACITY, DEFAULT_MAP_OPACITY));
+        mElevationCheckBox.setSelected(mOptions.is(KEY_MAP_ELEVATION, DEFAULT_MAP_ELEVATION));
     }
 }

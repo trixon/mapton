@@ -56,6 +56,7 @@ import javax.swing.SwingUtilities;
 import javax.xml.stream.XMLStreamException;
 import org.mapton.api.MOptions;
 import org.mapton.api.Mapton;
+import static org.mapton.worldwind.ModuleOptions.*;
 import static org.mapton.worldwind.WorldWindMapEngine.LOG_TAG;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.MapStyle;
@@ -136,7 +137,7 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
     }
 
     private GeographicProjection getProjection() {
-        switch (mOptions.getMapProjection()) {
+        switch (mOptions.getInt(KEY_MAP_PROJECTION)) {
             case 1:
                 return new ProjectionMercator();
             case 2:
@@ -296,17 +297,17 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         if (elevationModel instanceof CompoundElevationModel) {
             CompoundElevationModel compoundElevationModel = (CompoundElevationModel) elevationModel;
             for (ElevationModel subElevationModel : compoundElevationModel.getElevationModels()) {
-                subElevationModel.setEnabled(mOptions.isMapElevation());
+                subElevationModel.setEnabled(mOptions.is(KEY_MAP_ELEVATION));
             }
         } else if (elevationModel != null) {
-            elevationModel.setEnabled(mOptions.isMapElevation());
+            elevationModel.setEnabled(mOptions.is(KEY_MAP_ELEVATION));
         }
 
         wwd.redraw();
     }
 
     private void updateMode() {
-        boolean flat = !mOptions.isMapGlobe();
+        boolean flat = !mOptions.is(KEY_MAP_GLOBE);
         if (isFlatGlobe() == flat) {
             //return;
         }
@@ -333,13 +334,13 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
     }
 
     private void updateScreenLayers() {
-        getLayers().getLayerByName("Compass").setEnabled(mOptions.isDisplayCompass());
-        getLayers().getLayerByName("World Map").setEnabled(mOptions.isDisplayWorldMap());
-        getLayers().getLayerByName("Scale bar").setEnabled(mOptions.isDisplayScaleBar());
-        getLayers().getLayerByName("View Controls").setEnabled(mOptions.isDisplayControls());
-        getLayers().getLayerByName("Atmosphere").setEnabled(mOptions.isDisplayAtmosphere());
-        getLayers().getLayerByName("Stars").setEnabled(mOptions.isDisplayStar());
-        getLayers().getLayerByName("Place Names").setEnabled(mOptions.isDisplayPlaceNames());
+        getLayers().getLayerByName("Compass").setEnabled(mOptions.is(KEY_DISPLAY_COMPASS));
+        getLayers().getLayerByName("World Map").setEnabled(mOptions.is(KEY_DISPLAY_WORLD_MAP));
+        getLayers().getLayerByName("Scale bar").setEnabled(mOptions.is(KEY_DISPLAY_SCALE_BAR));
+        getLayers().getLayerByName("View Controls").setEnabled(mOptions.is(KEY_DISPLAY_CONTROLS));
+        getLayers().getLayerByName("Atmosphere").setEnabled(mOptions.is(KEY_DISPLAY_ATMOSPHERE));
+        getLayers().getLayerByName("Stars").setEnabled(mOptions.is(KEY_DISPLAY_STARS));
+        getLayers().getLayerByName("Place Names").setEnabled(mOptions.is(KEY_DISPLAY_PLACE_NAMES));
 
         redraw();
     }
@@ -354,14 +355,14 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         blacklist.add("Atmosphere");
         blacklist.add("Place Names");
 
-        String[] styleLayers = MapStyle.getLayers(mOptions.getMapStyle());
+        String[] styleLayers = MapStyle.getLayers(mOptions.get(KEY_MAP_STYLE));
         try {
             //NbLog.v(getClass(), String.join(", ", styleLayers));
             getLayers().forEach((layer) -> {
                 final String name = layer.getName();
                 if (!blacklist.contains(name) && !mCustomLayers.contains(layer)) {
                     layer.setEnabled(Arrays.asList(styleLayers).contains(name));
-                    layer.setOpacity(mOptions.getMapOpacity());
+                    layer.setOpacity(mOptions.getDouble(KEY_MAP_OPACITY, DEFAULT_MAP_OPACITY));
                 }
             });
         } catch (NullPointerException e) {
