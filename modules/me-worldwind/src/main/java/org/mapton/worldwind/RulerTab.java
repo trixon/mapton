@@ -17,18 +17,27 @@ package org.mapton.worldwind;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import gov.nasa.worldwind.WorldWindowGLDrawable;
+import gov.nasa.worldwind.WorldWindow;
 import gov.nasa.worldwind.util.measure.MeasureTool;
+import gov.nasa.worldwind.util.measure.MeasureToolController;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.beans.PropertyChangeEvent;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.control.Button;
+import javafx.geometry.Insets;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Tab;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import org.controlsfx.control.SegmentedButton;
+import static org.mapton.api.Mapton.getIconSizeToolBar;
 import static org.mapton.worldwind.ModuleOptions.*;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.icons.material.MaterialIcon;
 
 /**
  *
@@ -43,25 +52,27 @@ public class RulerTab extends Tab {
     private final BiMap<String, CheckBox> mKeyCheckBoxes = HashBiMap.create();
     private final MeasureTool mMeasureTool;
     private final ModuleOptions mOptions = ModuleOptions.getInstance();
+    private ImageView mPauseImageView;
+    private ToggleButton mPauseToggleButton;
+    private ToggleButton mPlayToggleButton;
+    private ImageView mResumeImageView;
     private CheckBox mRubberBandCheckBox;
+    private ToggleButton mSettingsToggleButton;
     private ComboBox<String> mShapeComboBox;
+    private ToggleButton mStopToggleButton;
     private CheckBox mToolTipCheckBox;
-    private final WorldWindowGLDrawable mWwd;
+    private final WorldWindow mWorldWindow;
 
-    public RulerTab(String title, WorldWindowGLDrawable wwd, MeasureTool measureTool) {
+    public RulerTab(String title, WorldWindow worldWindow) {
         super(title);
-        mWwd = wwd;
-        mMeasureTool = measureTool;
+        mWorldWindow = worldWindow;
+        mMeasureTool = new MeasureTool(mWorldWindow);
+        mMeasureTool.setController(new MeasureToolController());
 
         createUI();
         initListeners();
         postInit();
-    }
-
-    private void initStates() {
-        mKeyCheckBoxes.values().forEach((checkBox) -> {
-            checkBox.setSelected(mOptions.is(mKeyCheckBoxes.inverse().get(checkBox)));
-        });
+        initStates();
     }
 
     public MeasureTool getMeasureTool() {
@@ -69,6 +80,8 @@ public class RulerTab extends Tab {
     }
 
     private void createUI() {
+        final Insets insets8 = new Insets(8);
+
         mShapeComboBox = new ComboBox<>();
         mShapeComboBox.getItems().setAll(
                 Dict.Shape.LINE.toString(),
@@ -79,10 +92,6 @@ public class RulerTab extends Tab {
                 Dict.Shape.SQUARE.toString(),
                 Dict.Shape.RECTANGLE.toString()
         );
-        Button armButton = new Button("arm");
-        armButton.setOnAction((event) -> {
-            mMeasureTool.setArmed(!mMeasureTool.isArmed());
-        });
 
         mFollowTerrainCheckBox = new CheckBox("FOLLOW TERRAIN");
         mRubberBandCheckBox = new CheckBox("RUBBER BAND");
@@ -92,8 +101,22 @@ public class RulerTab extends Tab {
 
         mFreeHandCheckBox.disableProperty().bind(mRubberBandCheckBox.selectedProperty().not());
 
+        int imageSize = getIconSizeToolBar();
+        mPauseImageView = MaterialIcon._Av.PAUSE_CIRCLE_OUTLINE.getImageView(imageSize);
+        mResumeImageView = MaterialIcon._Av.PLAY_CIRCLE_OUTLINE.getImageView(imageSize);
+
+        mPlayToggleButton = new ToggleButton("", MaterialIcon._Av.PLAY_ARROW.getImageView(imageSize));
+        mPauseToggleButton = new ToggleButton("", mPauseImageView);
+        mStopToggleButton = new ToggleButton("", MaterialIcon._Av.STOP.getImageView(imageSize));
+        mSettingsToggleButton = new ToggleButton("", MaterialIcon._Action.SETTINGS.getImageView(imageSize));
+        mPauseToggleButton.setDisable(true);
+        mStopToggleButton.setDisable(true);
+
+        SegmentedButton segmentedButton = new SegmentedButton();
+        segmentedButton.getButtons().addAll(mPlayToggleButton, mPauseToggleButton, mStopToggleButton, mSettingsToggleButton);
+
         VBox box = new VBox(8,
-                armButton,
+                new BorderPane(segmentedButton),
                 mFollowTerrainCheckBox,
                 mRubberBandCheckBox,
                 mFreeHandCheckBox,
@@ -101,8 +124,14 @@ public class RulerTab extends Tab {
                 mControlPointsCheckBox
         );
 
+        box.setPadding(insets8);
+
         mBorderPane = new BorderPane(box);
-        mBorderPane.setTop(mShapeComboBox);
+        VBox topBox = new VBox(mShapeComboBox);
+        topBox.setPadding(insets8);
+
+        mBorderPane.setTop(topBox);
+
         mShapeComboBox.prefWidthProperty().bind(mBorderPane.widthProperty());
 
         setContent(mBorderPane);
@@ -155,16 +184,77 @@ public class RulerTab extends Tab {
                 default:
                     throw new AssertionError();
             }
-            mWwd.redraw();
+            mWorldWindow.redraw();
         };
 
         mKeyCheckBoxes.values().forEach((checkBox) -> {
             checkBox.setOnAction(eventHandler);
         });
 
+        mPlayToggleButton.setOnAction((event) -> {
+            mMeasureTool.clear();
+            mMeasureTool.setArmed(true);
+        });
+
+        mPauseToggleButton.setOnAction((event) -> {
+            mMeasureTool.setArmed(!mMeasureTool.isArmed());
+            mPauseToggleButton.setGraphic(!mMeasureTool.isArmed() ? mResumeImageView : mPauseImageView);
+            mPauseToggleButton.setDisable(false);
+            ((Component) mWorldWindow).setCursor(!mMeasureTool.isArmed() ? Cursor.getDefaultCursor() : Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
+        });
+
+        mStopToggleButton.setOnAction((event) -> {
+            mMeasureTool.setArmed(false);
+            mStopToggleButton.setSelected(false);
+        });
+
+        mSettingsToggleButton.setOnAction((event) -> {
+            mSettingsToggleButton.setSelected(false);
+        });
+
+        mMeasureTool.addPropertyChangeListener((PropertyChangeEvent event) -> {
+            final String propertyName = event.getPropertyName();
+            // Add, remove or change positions
+            if (propertyName.equals(MeasureTool.EVENT_POSITION_ADD)
+                    || propertyName.equals(MeasureTool.EVENT_POSITION_REMOVE)
+                    || propertyName.equals(MeasureTool.EVENT_POSITION_REPLACE)) {
+                updatePoints();    // Update position list when changed
+            } // The tool was armed / disarmed
+            else if (propertyName.equals(MeasureTool.EVENT_ARMED)) {
+                if (mMeasureTool.isArmed()) {
+                    mPlayToggleButton.setDisable(true);
+                    mPauseToggleButton.setGraphic(mPauseImageView);
+                    mPauseToggleButton.setDisable(false);
+                    mStopToggleButton.setDisable(false);
+                    ((Component) mWorldWindow).setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
+                } else {
+                    mPlayToggleButton.setDisable(false);
+                    mPauseToggleButton.setGraphic(mPauseImageView);
+                    mPauseToggleButton.setDisable(true);
+                    mStopToggleButton.setDisable(true);
+                    ((Component) mWorldWindow).setCursor(Cursor.getDefaultCursor());
+                }
+
+            } // Metric changed - sent after each render frame
+            else if (propertyName.equals(MeasureTool.EVENT_METRIC_CHANGED)) {
+                updateMetrics();
+            }
+        });
+    }
+
+    private void initStates() {
+        mKeyCheckBoxes.values().forEach((checkBox) -> {
+            checkBox.setSelected(mOptions.is(mKeyCheckBoxes.inverse().get(checkBox)));
+        });
     }
 
     private void postInit() {
         mShapeComboBox.getSelectionModel().select(0);
+    }
+
+    private void updateMetrics() {
+    }
+
+    private void updatePoints() {
     }
 }

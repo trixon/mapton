@@ -15,12 +15,9 @@
  */
 package org.mapton.worldwind;
 
-import com.jogamp.opengl.GLCapabilities;
-import com.jogamp.opengl.GLCapabilitiesChooser;
 import gov.nasa.worldwind.Model;
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.WorldWindow;
-import gov.nasa.worldwind.WorldWindowGLDrawable;
 import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.awt.WorldWindowGLJPanel;
 import gov.nasa.worldwind.globes.EarthFlat;
@@ -54,7 +51,6 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javax.swing.SwingUtilities;
 import javax.xml.stream.XMLStreamException;
-import org.mapton.api.MOptions;
 import org.mapton.api.Mapton;
 import static org.mapton.worldwind.ModuleOptions.*;
 import static org.mapton.worldwind.WorldWindMapEngine.LOG_TAG;
@@ -75,7 +71,6 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
 
     private final ObservableList<Layer> mCustomLayers = FXCollections.observableArrayList();
     private FlatGlobe mFlatGlobe;
-    private final MOptions mMaptonOptions = MOptions.getInstance();
     private HashMap<String, AbstractGeographicProjection> mNameProjections;
     private final ModuleOptions mOptions = ModuleOptions.getInstance();
     private Globe mRoundGlobe;
@@ -91,12 +86,6 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         initListeners();
     }
 
-    public WorldWindowPanel(WorldWindow ww, GLCapabilities glc, GLCapabilitiesChooser glcc) {
-        super(ww, glc, glcc);
-        init();
-        initListeners();
-    }
-
     public void addCustomLayer(Layer layer) {
         if (!getLayers().contains(layer)) {
             Mapton.logLoading("Custom Layer", layer.getName());
@@ -105,7 +94,7 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         }
     }
 
-    public WorldWindowGLDrawable getWwd() {
+    public WorldWindow getWwd() {
         return wwd;
     }
 
