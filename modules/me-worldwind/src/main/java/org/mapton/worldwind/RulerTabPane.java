@@ -23,15 +23,15 @@ import javafx.scene.control.TabPane;
  *
  * @author Patrik Karlström
  */
-public class RulerView extends TabPane {
+public class RulerTabPane extends TabPane {
 
     private int mTabCounter = 0;
 
-    public static RulerView getInstance() {
+    public static RulerTabPane getInstance() {
         return Holder.INSTANCE;
     }
 
-    private RulerView() {
+    private RulerTabPane() {
         createUI();
         initListeners();
     }
@@ -59,7 +59,7 @@ public class RulerView extends TabPane {
 
     private static class Holder {
 
-        private static final RulerView INSTANCE = new RulerView();
+        private static final RulerTabPane INSTANCE = new RulerTabPane();
     }
 
 }
