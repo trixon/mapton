@@ -15,6 +15,10 @@
  */
 package org.mapton.worldwind;
 
+import gov.nasa.worldwind.WorldWindowGLDrawable;
+import gov.nasa.worldwind.util.measure.MeasureTool;
+import gov.nasa.worldwind.util.measure.MeasureToolController;
+import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -25,6 +29,7 @@ import javafx.scene.control.TabPane;
  */
 public class RulerTabPane extends TabPane {
 
+    private WorldWindowPanel mMap;
     private int mTabCounter = 0;
 
     public static RulerTabPane getInstance() {
@@ -36,21 +41,36 @@ public class RulerTabPane extends TabPane {
         initListeners();
     }
 
+    void refresh(WorldWindowPanel map) {
+        mMap = map;
+        addTab();
+
+    }
+
     private void addTab() {
-        RulerTab rulerTab = new RulerTab(Integer.toString(++mTabCounter));
-        getTabs().add(rulerTab);
-        getSelectionModel().select(rulerTab);
+        WorldWindowGLDrawable wwd = mMap.getWwd();
+        MeasureTool measureTool = new MeasureTool(wwd);
+        measureTool.setController(new MeasureToolController());
+
+        RulerTab rulerTab = new RulerTab(Integer.toString(++mTabCounter), wwd, measureTool);
+        Platform.runLater(() -> {
+            getTabs().add(rulerTab);
+            getSelectionModel().select(rulerTab);
+        });
     }
 
     private void createUI() {
         Tab plusTab = new Tab("+");
         plusTab.setClosable(false);
         getTabs().add(plusTab);
-        addTab();
     }
 
     private void initListeners() {
-        getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends Tab> ov, Tab t, Tab t1) -> {
+        getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends Tab> ov, Tab oldTab, Tab newTab) -> {
+            if (oldTab instanceof RulerTab) {
+                ((RulerTab) oldTab).getMeasureTool().setArmed(false);
+            }
+
             if (getSelectionModel().getSelectedIndex() == 0) {
                 addTab();
             }

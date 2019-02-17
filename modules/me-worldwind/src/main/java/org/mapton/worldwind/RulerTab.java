@@ -15,9 +15,14 @@
  */
 package org.mapton.worldwind;
 
-import javafx.scene.control.Label;
+import gov.nasa.worldwind.WorldWindowGLDrawable;
+import gov.nasa.worldwind.util.measure.MeasureTool;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Tab;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import se.trixon.almond.util.Dict;
 
 /**
  *
@@ -25,13 +30,66 @@ import javafx.scene.layout.VBox;
  */
 public class RulerTab extends Tab {
 
-    public RulerTab(String text) {
-        super(text);
+    private final MeasureTool mMeasureTool;
+    private final WorldWindowGLDrawable mWwd;
+    private ComboBox<String> mShapeComboBox;
+    private BorderPane mBorderPane;
+
+    public RulerTab(String title, WorldWindowGLDrawable wwd, MeasureTool measureTool) {
+        super(title);
+        mWwd = wwd;
+        mMeasureTool = measureTool;
+
         createUI();
+        initListeners();
+        postInit();
+    }
+
+    public MeasureTool getMeasureTool() {
+        return mMeasureTool;
     }
 
     private void createUI() {
-        VBox box = new VBox(new Label("ruler"));
-        setContent(box);
+        mShapeComboBox = new ComboBox<>();
+        mShapeComboBox.getItems().setAll(
+                Dict.Shape.LINE.toString(),
+                Dict.Shape.PATH.toString(),
+                Dict.Shape.POLYGON.toString(),
+                Dict.Shape.CIRCLE.toString(),
+                Dict.Shape.ELLIPSE.toString(),
+                Dict.Shape.SQUARE.toString(),
+                Dict.Shape.RECTANGLE.toString()
+        );
+        Button armButton = new Button("arm");
+        armButton.setOnAction((event) -> {
+            mMeasureTool.setArmed(!mMeasureTool.isArmed());
+        });
+        VBox box = new VBox(armButton);
+        mBorderPane = new BorderPane(box);
+        mBorderPane.setTop(mShapeComboBox);
+        mShapeComboBox.prefWidthProperty().bind(mBorderPane.widthProperty());
+
+        setContent(mBorderPane);
+
+    }
+
+    private void initListeners() {
+        String shapes[] = {
+            MeasureTool.SHAPE_LINE,
+            MeasureTool.SHAPE_PATH,
+            MeasureTool.SHAPE_POLYGON,
+            MeasureTool.SHAPE_CIRCLE,
+            MeasureTool.SHAPE_ELLIPSE,
+            MeasureTool.SHAPE_SQUARE,
+            MeasureTool.SHAPE_QUAD
+        };
+
+        mShapeComboBox.setOnAction((event) -> {
+            mMeasureTool.setMeasureShapeType(shapes[mShapeComboBox.getSelectionModel().getSelectedIndex()]);
+        });
+    }
+
+    private void postInit() {
+        mShapeComboBox.getSelectionModel().select(0);
     }
 }
