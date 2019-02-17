@@ -15,13 +15,19 @@
  */
 package org.mapton.worldwind;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import gov.nasa.worldwind.WorldWindowGLDrawable;
 import gov.nasa.worldwind.util.measure.MeasureTool;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Tab;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import static org.mapton.worldwind.ModuleOptions.*;
 import se.trixon.almond.util.Dict;
 
 /**
@@ -30,10 +36,17 @@ import se.trixon.almond.util.Dict;
  */
 public class RulerTab extends Tab {
 
-    private final MeasureTool mMeasureTool;
-    private final WorldWindowGLDrawable mWwd;
-    private ComboBox<String> mShapeComboBox;
     private BorderPane mBorderPane;
+    private CheckBox mControlPointsCheckBox;
+    private CheckBox mFollowTerrainCheckBox;
+    private CheckBox mFreeHandCheckBox;
+    private final BiMap<String, CheckBox> mKeyCheckBoxes = HashBiMap.create();
+    private final MeasureTool mMeasureTool;
+    private final ModuleOptions mOptions = ModuleOptions.getInstance();
+    private CheckBox mRubberBandCheckBox;
+    private ComboBox<String> mShapeComboBox;
+    private CheckBox mToolTipCheckBox;
+    private final WorldWindowGLDrawable mWwd;
 
     public RulerTab(String title, WorldWindowGLDrawable wwd, MeasureTool measureTool) {
         super(title);
@@ -43,6 +56,12 @@ public class RulerTab extends Tab {
         createUI();
         initListeners();
         postInit();
+    }
+
+    private void initStates() {
+        mKeyCheckBoxes.values().forEach((checkBox) -> {
+            checkBox.setSelected(mOptions.is(mKeyCheckBoxes.inverse().get(checkBox)));
+        });
     }
 
     public MeasureTool getMeasureTool() {
@@ -64,13 +83,35 @@ public class RulerTab extends Tab {
         armButton.setOnAction((event) -> {
             mMeasureTool.setArmed(!mMeasureTool.isArmed());
         });
-        VBox box = new VBox(armButton);
+
+        mFollowTerrainCheckBox = new CheckBox("FOLLOW TERRAIN");
+        mRubberBandCheckBox = new CheckBox("RUBBER BAND");
+        mFreeHandCheckBox = new CheckBox("FREE HAND");
+        mToolTipCheckBox = new CheckBox("TOOL TIP");
+        mControlPointsCheckBox = new CheckBox("CONTROL POINTS");
+
+        mFreeHandCheckBox.disableProperty().bind(mRubberBandCheckBox.selectedProperty().not());
+
+        VBox box = new VBox(8,
+                armButton,
+                mFollowTerrainCheckBox,
+                mRubberBandCheckBox,
+                mFreeHandCheckBox,
+                mToolTipCheckBox,
+                mControlPointsCheckBox
+        );
+
         mBorderPane = new BorderPane(box);
         mBorderPane.setTop(mShapeComboBox);
         mShapeComboBox.prefWidthProperty().bind(mBorderPane.widthProperty());
 
         setContent(mBorderPane);
 
+        mKeyCheckBoxes.put(KEY_RULER_FOLLOW_TERRAIN, mFollowTerrainCheckBox);
+        mKeyCheckBoxes.put(KEY_RULER_RUBBER_BAND, mRubberBandCheckBox);
+        mKeyCheckBoxes.put(KEY_RULER_FREE_HAND, mFreeHandCheckBox);
+        mKeyCheckBoxes.put(KEY_RULER_TOOL_TIP, mToolTipCheckBox);
+        mKeyCheckBoxes.put(KEY_RULER_CONTROL_POINTS, mControlPointsCheckBox);
     }
 
     private void initListeners() {
@@ -87,6 +128,40 @@ public class RulerTab extends Tab {
         mShapeComboBox.setOnAction((event) -> {
             mMeasureTool.setMeasureShapeType(shapes[mShapeComboBox.getSelectionModel().getSelectedIndex()]);
         });
+
+        EventHandler<ActionEvent> eventHandler = (ActionEvent event) -> {
+            CheckBox checkBox = (CheckBox) event.getSource();
+            String key = mKeyCheckBoxes.inverse().get(checkBox);
+            boolean selected = checkBox.isSelected();
+            mOptions.put(key, selected);
+
+            switch (key) {
+                case KEY_RULER_CONTROL_POINTS:
+                    mMeasureTool.setShowControlPoints(selected);
+                    break;
+                case KEY_RULER_FOLLOW_TERRAIN:
+                    mMeasureTool.setFollowTerrain(selected);
+                    break;
+                case KEY_RULER_FREE_HAND:
+                    mMeasureTool.getController().setFreeHand(selected);
+                    break;
+                case KEY_RULER_RUBBER_BAND:
+                    mMeasureTool.getController().setUseRubberBand(selected);
+                    break;
+                case KEY_RULER_TOOL_TIP:
+                    mMeasureTool.setShowAnnotation(selected);
+                    break;
+
+                default:
+                    throw new AssertionError();
+            }
+            mWwd.redraw();
+        };
+
+        mKeyCheckBoxes.values().forEach((checkBox) -> {
+            checkBox.setOnAction(eventHandler);
+        });
+
     }
 
     private void postInit() {
