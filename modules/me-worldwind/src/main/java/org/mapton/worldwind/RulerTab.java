@@ -219,9 +219,9 @@ public class RulerTab extends Tab {
         mMeasureTool.setPathType(mPathTypes[DEFAULT_PATH_TYPE_INDEX]);
         mMeasureTool.setShowControlPoints(mOptions.is(KEY_RULER_CONTROL_POINTS));
         mMeasureTool.setFollowTerrain(mOptions.is(KEY_RULER_FOLLOW_TERRAIN));
-        mMeasureTool.setShowAnnotation(mOptions.is(KEY_RULER_TOOL_TIP));
+        mMeasureTool.setShowAnnotation(mOptions.is(KEY_RULER_ANNOTATION));
         mMeasureTool.getController().setFreeHand(mOptions.is(KEY_RULER_FREE_HAND));
-        mMeasureTool.getController().setUseRubberBand(mOptions.is(KEY_RULER_FREE_HAND));
+        mMeasureTool.getController().setUseRubberBand(mOptions.is(KEY_RULER_RUBBER_BAND));
     }
 
     private void updateMetrics() {
@@ -274,7 +274,7 @@ public class RulerTab extends Tab {
             mKeyCheckBoxes.put(KEY_RULER_FOLLOW_TERRAIN, mFollowTerrainCheckBox);
             mKeyCheckBoxes.put(KEY_RULER_RUBBER_BAND, mRubberBandCheckBox);
             mKeyCheckBoxes.put(KEY_RULER_FREE_HAND, mFreeHandCheckBox);
-            mKeyCheckBoxes.put(KEY_RULER_TOOL_TIP, mAnnotationCheckBox);
+            mKeyCheckBoxes.put(KEY_RULER_ANNOTATION, mAnnotationCheckBox);
             mKeyCheckBoxes.put(KEY_RULER_CONTROL_POINTS, mControlPointsCheckBox);
         }
 
@@ -298,7 +298,7 @@ public class RulerTab extends Tab {
                     case KEY_RULER_RUBBER_BAND:
                         mMeasureTool.getController().setUseRubberBand(selected);
                         break;
-                    case KEY_RULER_TOOL_TIP:
+                    case KEY_RULER_ANNOTATION:
                         mMeasureTool.setShowAnnotation(selected);
                         break;
 
