@@ -41,6 +41,7 @@ import gov.nasa.worldwind.layers.ViewControlsSelectListener;
 import gov.nasa.worldwind.terrain.CompoundElevationModel;
 import gov.nasa.worldwind.terrain.ZeroElevationModel;
 import java.awt.image.BufferedImage;
+import java.net.SocketTimeoutException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -61,6 +62,7 @@ import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import se.trixon.almond.nbp.NbLog;
+import se.trixon.almond.nbp.dialogs.NbMessage;
 import se.trixon.almond.util.GraphicsHelper;
 
 /**
@@ -254,6 +256,9 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
                             getLayers().addIfAbsent(layer);
                         }
                         updateStyle();
+                    } catch (SocketTimeoutException ex) {
+                        NbMessage.warning("ERROR", "initWmsService");//TODO Remove this once spotted
+                        NbLog.w(LOG_TAG, ex.getMessage());
                     } catch (XMLStreamException ex) {
                         NbLog.w(LOG_TAG, ex.getMessage());
                     } catch (Exception ex) {
@@ -343,6 +348,7 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         blacklist.add("Stars");
         blacklist.add("Atmosphere");
         blacklist.add("Place Names");
+        blacklist.add("Measure Tool");
 
         String[] styleLayers = MapStyle.getLayers(mOptions.get(KEY_MAP_STYLE));
         try {
