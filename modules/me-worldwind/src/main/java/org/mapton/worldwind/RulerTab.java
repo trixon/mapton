@@ -25,6 +25,7 @@ import java.awt.Component;
 import java.awt.Cursor;
 import java.beans.PropertyChangeEvent;
 import java.util.ResourceBundle;
+import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -259,16 +260,23 @@ public class RulerTab extends Tab {
             mFreeHandCheckBox = new CheckBox(mBundle.getString("ruler.option.free_hand"));
             mAnnotationCheckBox = new CheckBox(mBundle.getString("ruler.option.annotation"));
             mControlPointsCheckBox = new CheckBox(mBundle.getString("ruler.option.control_points"));
+            ReadOnlyIntegerProperty selectedIndexProperty = mShapeComboBox.getSelectionModel().selectedIndexProperty();
+            mFollowTerrainCheckBox.disableProperty().bind(selectedIndexProperty.greaterThan(1));
+            mFreeHandCheckBox.disableProperty().bind(
+                    mRubberBandCheckBox.selectedProperty().not()
+                            .or(selectedIndexProperty.greaterThan(0)
+                                    .and(selectedIndexProperty.lessThan(3)).not())
+            );
+            mAnnotationCheckBox.disableProperty().bind(mControlPointsCheckBox.selectedProperty().not());
 
-            mFreeHandCheckBox.disableProperty().bind(mRubberBandCheckBox.selectedProperty().not());
             getChildren().setAll(
                     pathTypeLabel,
                     mPathTypeComboBox,
                     mFollowTerrainCheckBox,
                     mRubberBandCheckBox,
                     mFreeHandCheckBox,
-                    mAnnotationCheckBox,
-                    mControlPointsCheckBox
+                    mControlPointsCheckBox,
+                    mAnnotationCheckBox
             );
 
             mKeyCheckBoxes.put(KEY_RULER_FOLLOW_TERRAIN, mFollowTerrainCheckBox);
