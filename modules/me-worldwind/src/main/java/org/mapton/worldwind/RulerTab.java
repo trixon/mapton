@@ -206,6 +206,11 @@ public class RulerTab extends Tab {
                 updateMetrics();
             }
         });
+
+        setOnClosed((event -> {
+            mMeasureTool.setArmed(false);
+            mMeasureTool.clear();
+        }));
     }
 
     private void postInit() {
