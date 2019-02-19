@@ -20,7 +20,6 @@ import com.google.common.collect.HashBiMap;
 import gov.nasa.worldwind.WorldWindow;
 import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.geom.Angle;
-import gov.nasa.worldwind.geom.LatLon;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.util.measure.MeasureTool;
 import gov.nasa.worldwind.util.measure.MeasureToolController;
@@ -28,8 +27,10 @@ import java.awt.Component;
 import java.awt.Cursor;
 import java.beans.PropertyChangeEvent;
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
+import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
@@ -251,44 +252,49 @@ public class RulerTab extends Tab {
     }
 
     private void updateMetrics() {
+        double unitLimit;
         double length = mMeasureTool.getLength();
         String lenghtString;
+        unitLimit = 1E3;
         if (length <= 0) {
             lenghtString = "-";
-        } else if (length < 1000) {
+        } else if (length < unitLimit) {
             lenghtString = String.format("%,7.1f m", length);
         } else {
-            lenghtString = String.format("%,7.3f km", length / 1000);
+            lenghtString = String.format("%,7.3f km", length / unitLimit);
         }
 
         double area = mMeasureTool.getArea();
         String areaString;
+        unitLimit = 1E4;
         if (area < 0) {
             areaString = "-";
-        } else if (area < 1e6) {
-            areaString = String.format("%,7.1f m2", area);
+        } else if (area < unitLimit) {
+            areaString = String.format("%,7.1f m²", area);
         } else {
-            areaString = String.format("%,7.3f km2", area / 1e6);
+            areaString = String.format("%,7.3f km²", area / unitLimit / 1E2);
         }
 
         double width = mMeasureTool.getWidth();
         String widthString;
+        unitLimit = 1E3;
         if (width < 0) {
             widthString = "-";
-        } else if (width < 1000) {
+        } else if (width < unitLimit) {
             widthString = String.format("%,7.1f m", width);
         } else {
-            widthString = String.format("%,7.3f km", width / 1000);
+            widthString = String.format("%,7.3f km", width / unitLimit);
         }
 
         double height = mMeasureTool.getHeight();
         String heightString;
+        unitLimit = 1E3;
         if (height < 0) {
             heightString = "-";
-        } else if (height < 1000) {
+        } else if (height < unitLimit) {
             heightString = String.format("%,7.1f m", height);
         } else {
-            heightString = String.format("%,7.3f km", height / 1000);
+            heightString = String.format("%,7.3f km", height / unitLimit);
         }
 
         Angle angle = mMeasureTool.getOrientation();
@@ -332,7 +338,9 @@ public class RulerTab extends Tab {
             builder.append(StringUtils.leftPad(key, maxKeyLength)).append(separator).append(value).append("\n");
         }
 
-        mMetricsTextArea.setText(builder.toString());
+        Platform.runLater(() -> {
+            mMetricsTextArea.setText(builder.toString());
+        });
     }
 
     private void updatePoints() {
@@ -340,13 +348,13 @@ public class RulerTab extends Tab {
         if (mMeasureTool.getPositions() != null) {
             StringBuilder builder = new StringBuilder();
 
-            for (LatLon pos : mMeasureTool.getPositions()) {
-                String las = String.format("Lat %7.4f\u00B0", pos.getLatitude().getDegrees());
-                String los = String.format("Lon %7.4f\u00B0", pos.getLongitude().getDegrees());
-                builder.append(las).append("  ").append(los).append("\n");
-            }
+            mMeasureTool.getPositions().forEach((pos) -> {
+                builder.append(String.format(Locale.ENGLISH, "%3.6f %2.6f\n", pos.getLongitude().getDegrees(), pos.getLatitude().getDegrees()));
+            });
 
-            mPointsTextArea.setText(builder.toString());
+            Platform.runLater(() -> {
+                mPointsTextArea.setText(builder.toString());
+            });
         }
     }
 
