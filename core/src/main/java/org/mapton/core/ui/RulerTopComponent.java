@@ -41,7 +41,7 @@ import se.trixon.almond.util.Dict;
         preferredID = "RulerTopComponent"
 )
 @Messages({
-    "CTL_RulerAction=Ruler"
+    "CTL_RulerAction=Measure"
 })
 public final class RulerTopComponent extends MTopComponent {
 
@@ -49,21 +49,8 @@ public final class RulerTopComponent extends MTopComponent {
 
     public RulerTopComponent() {
         putClientProperty(PROP_MAXIMIZATION_DISABLED, Boolean.TRUE);
-//        putClientProperty(PROP_SLIDING_DISABLED, Boolean.TRUE);
-//        putClientProperty(PROP_UNDOCKING_DISABLED, Boolean.TRUE);
-//        putClientProperty(PROP_KEEP_PREFERRED_SIZE_WHEN_SLIDED_IN, Boolean.TRUE);
 
-        setName(Dict.RULER.toString());
-    }
-
-    @Override
-    protected void componentClosed() {
-        super.componentClosed();
-    }
-
-    @Override
-    protected void componentOpened() {
-        super.componentOpened();
+        setName(Dict.MEASURE.toString());
     }
 
     @Override

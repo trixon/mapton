@@ -29,7 +29,7 @@ import se.trixon.almond.util.Dict;
         id = "org.mapton.core.actions.RulerAction"
 )
 @ActionRegistration(
-        displayName = "Ruler"
+        displayName = "Measure"
 )
 @ActionReference(path = "Shortcuts", name = "D-R")
 public final class RulerAction extends BaseAction {
@@ -44,13 +44,12 @@ public final class RulerAction extends BaseAction {
     public void actionPerformed(ActionEvent e) {
         //org.openide.DialogDisplayer.getDefault().notify(getDialogDescriptor());
         toggleTopComponent("RulerTopComponent");
-
     }
 
     private DialogDescriptor getDialogDescriptor() {
         if (mDialogDescriptor == null) {
             mRulerPanel = new RulerPanel();
-            mDialogDescriptor = new DialogDescriptor(mRulerPanel, Dict.RULER.toString(), false, (ActionEvent e1) -> {
+            mDialogDescriptor = new DialogDescriptor(mRulerPanel, Dict.MEASURE.toString(), false, (ActionEvent e1) -> {
                 System.out.println(e1);
             });
             mRulerPanel.setDialogDescriptor(mDialogDescriptor);

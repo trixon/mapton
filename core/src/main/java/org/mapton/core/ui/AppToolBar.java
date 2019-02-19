@@ -261,10 +261,10 @@ public class AppToolBar extends ToolBar {
         mHomeAction.setGraphic(MaterialIcon._Action.HOME.getImageView(getIconSizeToolBar()));
 
         //Ruler
-        mRulerAction = new FxActionSwing(Dict.RULER.toString(), () -> {
+        mRulerAction = new FxActionSwing(Dict.MEASURE.toString(), () -> {
             Actions.forID("Mapton", "org.mapton.core.actions.RulerAction").actionPerformed(null);
         });
-        mRulerAction.setGraphic(MaterialIcon._Action.TIMELINE.getImageView(getIconSizeToolBar()));
+        mRulerAction.setGraphic(MaterialIcon._Editor.SPACE_BAR.getImageView(getIconSizeToolBar()));
 //
 //
 //
