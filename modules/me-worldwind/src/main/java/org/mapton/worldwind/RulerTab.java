@@ -34,6 +34,7 @@ import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -96,8 +97,6 @@ public class RulerTab extends Tab {
     }
 
     private void createUI() {
-        final Insets insets8 = new Insets(8);
-
         mShapeComboBox = new ComboBox<>();
         mShapeComboBox.getItems().setAll(
                 Dict.Geometry.LINE.toString(),
@@ -126,20 +125,19 @@ public class RulerTab extends Tab {
         mMetricsTextArea.setPrefRowCount(7);
         mMetricsTextArea.setFont(Font.font("monospaced"));
 
-        VBox box = new VBox(8,
-                new BorderPane(segmentedButton),
+        mPointsTextArea = new TextArea();
+        mPointsTextArea.setEditable(false);
+
+        mBorderPane = new BorderPane(mPointsTextArea);
+        VBox topBox = new VBox(8,
+                mShapeComboBox,
+                segmentedButton,
                 mMetricsTextArea
         );
-        box.setPadding(insets8);
-
-        mBorderPane = new BorderPane(box);
-        VBox topBox = new VBox(mShapeComboBox);
-        topBox.setPadding(new Insets(8, 8, 0, 8));
+        topBox.setAlignment(Pos.CENTER);
+        topBox.setPadding(new Insets(8, 0, 0, 0));
 
         mBorderPane.setTop(topBox);
-
-        mShapeComboBox.prefWidthProperty().bind(mBorderPane.widthProperty());
-
         setContent(mBorderPane);
 
         mOptionsPopOver = new PopOver();
