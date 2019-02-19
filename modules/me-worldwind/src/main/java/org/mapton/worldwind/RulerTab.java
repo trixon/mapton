@@ -20,6 +20,7 @@ import com.google.common.collect.HashBiMap;
 import gov.nasa.worldwind.WorldWindow;
 import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.geom.Angle;
+import gov.nasa.worldwind.geom.LatLon;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.util.measure.MeasureTool;
 import gov.nasa.worldwind.util.measure.MeasureToolController;
@@ -335,6 +336,18 @@ public class RulerTab extends Tab {
     }
 
     private void updatePoints() {
+        mPointsTextArea.clear();
+        if (mMeasureTool.getPositions() != null) {
+            StringBuilder builder = new StringBuilder();
+
+            for (LatLon pos : mMeasureTool.getPositions()) {
+                String las = String.format("Lat %7.4f\u00B0", pos.getLatitude().getDegrees());
+                String los = String.format("Lon %7.4f\u00B0", pos.getLongitude().getDegrees());
+                builder.append(las).append("  ").append(los).append("\n");
+            }
+
+            mPointsTextArea.setText(builder.toString());
+        }
     }
 
     public enum RunState {
