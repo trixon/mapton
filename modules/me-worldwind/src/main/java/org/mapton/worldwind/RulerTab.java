@@ -19,11 +19,15 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import gov.nasa.worldwind.WorldWindow;
 import gov.nasa.worldwind.avlist.AVKey;
+import gov.nasa.worldwind.geom.Angle;
+import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.util.measure.MeasureTool;
 import gov.nasa.worldwind.util.measure.MeasureToolController;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.beans.PropertyChangeEvent;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.ResourceBundle;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.collections.FXCollections;
@@ -34,10 +38,12 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.PopOver;
 import org.controlsfx.control.SegmentedButton;
@@ -57,11 +63,13 @@ public class RulerTab extends Tab {
     private BorderPane mBorderPane;
     private final ResourceBundle mBundle = NbBundle.getBundle(RulerTab.class);
     private final MeasureTool mMeasureTool;
+    private TextArea mMetricsTextArea;
     private final ModuleOptions mOptions = ModuleOptions.getInstance();
     private PopOver mOptionsPopOver;
     private ToggleButton mOptionsToggleButton;
     private final String[] mPathTypes = {AVKey.LINEAR, AVKey.RHUMB_LINE, AVKey.GREAT_CIRCLE};
     private ImageView mPauseImageView;
+    private TextArea mPointsTextArea;
     private ImageView mResumeImageView;
     private RunState mRunState;
     private ComboBox<String> mShapeComboBox;
@@ -92,13 +100,13 @@ public class RulerTab extends Tab {
 
         mShapeComboBox = new ComboBox<>();
         mShapeComboBox.getItems().setAll(
-                Dict.Shape.LINE.toString(),
-                Dict.Shape.PATH.toString(),
-                Dict.Shape.POLYGON.toString(),
-                Dict.Shape.CIRCLE.toString(),
-                Dict.Shape.ELLIPSE.toString(),
-                Dict.Shape.SQUARE.toString(),
-                Dict.Shape.RECTANGLE.toString()
+                Dict.Geometry.LINE.toString(),
+                Dict.Geometry.PATH.toString(),
+                Dict.Geometry.POLYGON.toString(),
+                Dict.Geometry.CIRCLE.toString(),
+                Dict.Geometry.ELLIPSE.toString(),
+                Dict.Geometry.SQUARE.toString(),
+                Dict.Geometry.RECTANGLE.toString()
         );
 
         int imageSize = (int) (getIconSizeToolBar() * 0.8);
@@ -113,14 +121,20 @@ public class RulerTab extends Tab {
         SegmentedButton segmentedButton = new SegmentedButton();
         segmentedButton.getButtons().addAll(mStartToggleButton, mStopToggleButton, mOptionsToggleButton);
 
+        mMetricsTextArea = new TextArea();
+        mMetricsTextArea.setEditable(false);
+        mMetricsTextArea.setPrefRowCount(7);
+        mMetricsTextArea.setFont(Font.font("monospaced"));
+
         VBox box = new VBox(8,
-                new BorderPane(segmentedButton)
+                new BorderPane(segmentedButton),
+                mMetricsTextArea
         );
         box.setPadding(insets8);
 
         mBorderPane = new BorderPane(box);
         VBox topBox = new VBox(mShapeComboBox);
-        topBox.setPadding(insets8);
+        topBox.setPadding(new Insets(8, 8, 0, 8));
 
         mBorderPane.setTop(topBox);
 
@@ -195,6 +209,10 @@ public class RulerTab extends Tab {
         }));
     }
 
+    private boolean isClosedShape() {
+        return mShapeComboBox.getSelectionModel().getSelectedIndex() > 1;
+    }
+
     private void postInit() {
         mShapeComboBox.getSelectionModel().select(0);
 
@@ -234,6 +252,88 @@ public class RulerTab extends Tab {
     }
 
     private void updateMetrics() {
+        double length = mMeasureTool.getLength();
+        String lenghtString;
+        if (length <= 0) {
+            lenghtString = "-";
+        } else if (length < 1000) {
+            lenghtString = String.format("%,7.1f m", length);
+        } else {
+            lenghtString = String.format("%,7.3f km", length / 1000);
+        }
+
+        double area = mMeasureTool.getArea();
+        String areaString;
+        if (area < 0) {
+            areaString = "-";
+        } else if (area < 1e6) {
+            areaString = String.format("%,7.1f m2", area);
+        } else {
+            areaString = String.format("%,7.3f km2", area / 1e6);
+        }
+
+        double width = mMeasureTool.getWidth();
+        String widthString;
+        if (width < 0) {
+            widthString = "-";
+        } else if (width < 1000) {
+            widthString = String.format("%,7.1f m", width);
+        } else {
+            widthString = String.format("%,7.3f km", width / 1000);
+        }
+
+        double height = mMeasureTool.getHeight();
+        String heightString;
+        if (height < 0) {
+            heightString = "-";
+        } else if (height < 1000) {
+            heightString = String.format("%,7.1f m", height);
+        } else {
+            heightString = String.format("%,7.3f km", height / 1000);
+        }
+
+        Angle angle = mMeasureTool.getOrientation();
+        String angleString;
+        if (angle == null) {
+            angleString = "-";
+        } else {
+            angleString = String.format("%,6.2f\u00B0", angle.degrees);
+        }
+
+        Position center = mMeasureTool.getCenterPosition();
+        String centerString;
+        if (center == null) {
+            centerString = "-";
+        } else {
+            centerString = String.format("%,7.4f\u00B0 %,7.4f\u00B0", center.getLatitude().degrees, center.getLongitude().degrees);
+        }
+
+        int maxKeyLength = Integer.MIN_VALUE;
+        int maxValLength = Integer.MIN_VALUE;
+        LinkedHashMap<String, String> values = new LinkedHashMap<>();
+
+        values.put(isClosedShape() ? Dict.Geometry.PERIMETER.toString() : Dict.Geometry.LENGTH.toString(), lenghtString);
+        values.put(Dict.Geometry.AREA.toString(), areaString);
+        values.put(Dict.Geometry.BEARING.toString(), angleString);
+        values.put(Dict.Geometry.WIDTH.toString(), widthString);
+        values.put(Dict.Geometry.HEIGHT.toString(), heightString);
+        values.put(Dict.Geometry.CENTER.toString(), centerString);
+
+        for (Map.Entry<String, String> entry : values.entrySet()) {
+            maxKeyLength = Math.max(maxKeyLength, entry.getKey().length());
+            maxValLength = Math.max(maxValLength, entry.getValue().length());
+        }
+
+        String separator = " : ";
+        StringBuilder builder = new StringBuilder();
+
+        for (Map.Entry<String, String> entry : values.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+            builder.append(StringUtils.leftPad(key, maxKeyLength)).append(separator).append(value).append("\n");
+        }
+
+        mMetricsTextArea.setText(builder.toString());
     }
 
     private void updatePoints() {
