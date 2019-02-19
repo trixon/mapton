@@ -72,7 +72,7 @@ public class RulerTab extends Tab {
     private ToggleButton mOptionsToggleButton;
     private final String[] mPathTypes = {AVKey.LINEAR, AVKey.RHUMB_LINE, AVKey.GREAT_CIRCLE};
     private ImageView mPauseImageView;
-    private TextArea mPointsTextArea;
+    private TextArea mPointListTextArea;
     private ImageView mResumeImageView;
     private RunState mRunState;
     private ComboBox<String> mShapeComboBox;
@@ -127,10 +127,10 @@ public class RulerTab extends Tab {
         mMetricsTextArea.setPrefRowCount(7);
         mMetricsTextArea.setFont(Font.font("monospaced"));
 
-        mPointsTextArea = new TextArea();
-        mPointsTextArea.setEditable(false);
+        mPointListTextArea = new TextArea();
+        mPointListTextArea.setEditable(false);
 
-        mBorderPane = new BorderPane(mPointsTextArea);
+        mBorderPane = new BorderPane(mPointListTextArea);
         VBox topBox = new VBox(8,
                 mShapeComboBox,
                 segmentedButton,
@@ -344,7 +344,7 @@ public class RulerTab extends Tab {
     }
 
     private void updatePoints() {
-        mPointsTextArea.clear();
+        mPointListTextArea.clear();
         if (mMeasureTool.getPositions() != null) {
             StringBuilder builder = new StringBuilder();
 
@@ -353,7 +353,7 @@ public class RulerTab extends Tab {
             });
 
             Platform.runLater(() -> {
-                mPointsTextArea.setText(builder.toString());
+                mPointListTextArea.setText(builder.toString());
             });
         }
     }
@@ -365,6 +365,7 @@ public class RulerTab extends Tab {
     private class OptionsPane extends VBox {
 
         private CheckBox mAnnotationCheckBox;
+        private CheckBox mPointListCheckBox;
         private CheckBox mControlPointsCheckBox;
         private CheckBox mFollowTerrainCheckBox;
         private CheckBox mFreeHandCheckBox;
@@ -391,6 +392,7 @@ public class RulerTab extends Tab {
             mFreeHandCheckBox = new CheckBox(mBundle.getString("ruler.option.free_hand"));
             mAnnotationCheckBox = new CheckBox(mBundle.getString("ruler.option.annotation"));
             mControlPointsCheckBox = new CheckBox(mBundle.getString("ruler.option.control_points"));
+            mPointListCheckBox = new CheckBox(mBundle.getString("ruler.option.point_list"));
             ReadOnlyIntegerProperty selectedIndexProperty = mShapeComboBox.getSelectionModel().selectedIndexProperty();
             mFollowTerrainCheckBox.disableProperty().bind(selectedIndexProperty.greaterThan(1));
             mFreeHandCheckBox.disableProperty().bind(
@@ -407,7 +409,8 @@ public class RulerTab extends Tab {
                     mRubberBandCheckBox,
                     mFreeHandCheckBox,
                     mControlPointsCheckBox,
-                    mAnnotationCheckBox
+                    mAnnotationCheckBox,
+                    mPointListCheckBox
             );
 
             mKeyCheckBoxes.put(KEY_RULER_FOLLOW_TERRAIN, mFollowTerrainCheckBox);
@@ -415,6 +418,9 @@ public class RulerTab extends Tab {
             mKeyCheckBoxes.put(KEY_RULER_FREE_HAND, mFreeHandCheckBox);
             mKeyCheckBoxes.put(KEY_RULER_ANNOTATION, mAnnotationCheckBox);
             mKeyCheckBoxes.put(KEY_RULER_CONTROL_POINTS, mControlPointsCheckBox);
+            mKeyCheckBoxes.put(KEY_RULER_POINT_LIST, mPointListCheckBox);
+
+            mPointListTextArea.visibleProperty().bind(mPointListCheckBox.selectedProperty());
         }
 
         private void initListeners() {
@@ -440,9 +446,6 @@ public class RulerTab extends Tab {
                     case KEY_RULER_ANNOTATION:
                         mMeasureTool.setShowAnnotation(selected);
                         break;
-
-                    default:
-                        throw new AssertionError();
                 }
 
                 mWorldWindow.redraw();
