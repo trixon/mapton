@@ -62,10 +62,11 @@ public class RulerTab extends Tab {
     private ToggleButton mOptionsToggleButton;
     private final String[] mPathTypes = {AVKey.LINEAR, AVKey.RHUMB_LINE, AVKey.GREAT_CIRCLE};
     private ImageView mPauseImageView;
-    private ToggleButton mPauseToggleButton;
-    private ToggleButton mPlayToggleButton;
     private ImageView mResumeImageView;
+    private RunState mRunState;
     private ComboBox<String> mShapeComboBox;
+    private ImageView mStartImageView;
+    private ToggleButton mStartToggleButton;
     private ToggleButton mStopToggleButton;
     private final WorldWindow mWorldWindow;
 
@@ -78,6 +79,8 @@ public class RulerTab extends Tab {
         createUI();
         initListeners();
         postInit();
+
+        setRunState(RunState.STARTABLE);
     }
 
     public MeasureTool getMeasureTool() {
@@ -98,19 +101,17 @@ public class RulerTab extends Tab {
                 Dict.Shape.RECTANGLE.toString()
         );
 
-        int imageSize = getIconSizeToolBar();
+        int imageSize = (int) (getIconSizeToolBar() * 0.8);
+        mStartImageView = MaterialIcon._Av.PLAY_ARROW.getImageView(imageSize);
         mPauseImageView = MaterialIcon._Av.PAUSE_CIRCLE_OUTLINE.getImageView(imageSize);
         mResumeImageView = MaterialIcon._Av.PLAY_CIRCLE_OUTLINE.getImageView(imageSize);
 
-        mPlayToggleButton = new ToggleButton("", MaterialIcon._Av.PLAY_ARROW.getImageView(imageSize));
-        mPauseToggleButton = new ToggleButton("", mPauseImageView);
+        mStartToggleButton = new ToggleButton();
         mStopToggleButton = new ToggleButton("", MaterialIcon._Av.STOP.getImageView(imageSize));
         mOptionsToggleButton = new ToggleButton("", MaterialIcon._Action.SETTINGS.getImageView(imageSize));
-        mPauseToggleButton.setDisable(true);
-        mStopToggleButton.setDisable(true);
 
         SegmentedButton segmentedButton = new SegmentedButton();
-        segmentedButton.getButtons().addAll(mPlayToggleButton, mPauseToggleButton, mStopToggleButton, mOptionsToggleButton);
+        segmentedButton.getButtons().addAll(mStartToggleButton, mStopToggleButton, mOptionsToggleButton);
 
         VBox box = new VBox(8,
                 new BorderPane(segmentedButton)
@@ -150,23 +151,16 @@ public class RulerTab extends Tab {
 
         mShapeComboBox.setOnAction((event) -> {
             mMeasureTool.setMeasureShapeType(shapes[mShapeComboBox.getSelectionModel().getSelectedIndex()]);
+//            setRunState(RunState.STARTABLE);
+//            setRunState(RunState.STOPPABLE);
         });
 
-        mPlayToggleButton.setOnAction((event) -> {
-            mMeasureTool.clear();
-            mMeasureTool.setArmed(true);
-        });
-
-        mPauseToggleButton.setOnAction((event) -> {
-            mMeasureTool.setArmed(!mMeasureTool.isArmed());
-            mPauseToggleButton.setGraphic(!mMeasureTool.isArmed() ? mResumeImageView : mPauseImageView);
-            mPauseToggleButton.setDisable(false);
-            ((Component) mWorldWindow).setCursor(!mMeasureTool.isArmed() ? Cursor.getDefaultCursor() : Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
+        mStartToggleButton.setOnAction((event) -> {
+            setRunState(mRunState == RunState.STARTABLE ? RunState.STOPPABLE : RunState.RESUMABLE);
         });
 
         mStopToggleButton.setOnAction((event) -> {
-            mMeasureTool.setArmed(false);
-            mStopToggleButton.setSelected(false);
+            setRunState(RunState.STARTABLE);
         });
 
         mOptionsToggleButton.setOnAction((event) -> {
@@ -179,31 +173,18 @@ public class RulerTab extends Tab {
             mOptionsToggleButton.setSelected(false);
         });
 
-        mMeasureTool.addPropertyChangeListener((PropertyChangeEvent event) -> {
-            final String propertyName = event.getPropertyName();
-            // Add, remove or change positions
-            if (propertyName.equals(MeasureTool.EVENT_POSITION_ADD)
-                    || propertyName.equals(MeasureTool.EVENT_POSITION_REMOVE)
-                    || propertyName.equals(MeasureTool.EVENT_POSITION_REPLACE)) {
-                updatePoints();    // Update position list when changed
-            } // The tool was armed / disarmed
-            else if (propertyName.equals(MeasureTool.EVENT_ARMED)) {
-                if (mMeasureTool.isArmed()) {
-                    mPlayToggleButton.setDisable(true);
-                    mPauseToggleButton.setGraphic(mPauseImageView);
-                    mPauseToggleButton.setDisable(false);
-                    mStopToggleButton.setDisable(false);
-                    ((Component) mWorldWindow).setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
-                } else {
-                    mPlayToggleButton.setDisable(false);
-                    mPauseToggleButton.setGraphic(mPauseImageView);
-                    mPauseToggleButton.setDisable(true);
-                    mStopToggleButton.setDisable(true);
-                    ((Component) mWorldWindow).setCursor(Cursor.getDefaultCursor());
-                }
+        mMeasureTool.addPropertyChangeListener((PropertyChangeEvent propertyChangeEvent) -> {
+            final String propertyName = propertyChangeEvent.getPropertyName();
 
-            } // Metric changed - sent after each render frame
-            else if (propertyName.equals(MeasureTool.EVENT_METRIC_CHANGED)) {
+            if (StringUtils.equalsAny(propertyName, MeasureTool.EVENT_POSITION_ADD, MeasureTool.EVENT_POSITION_REMOVE, MeasureTool.EVENT_POSITION_REPLACE)) {
+                updatePoints();
+            } else if (propertyName.equals(MeasureTool.EVENT_ARMED)) {
+                ((Component) mWorldWindow).setCursor(mMeasureTool.isArmed() ? Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR) : Cursor.getDefaultCursor());
+//                int shape = mShapeComboBox.getSelectionModel().getSelectedIndex();
+//                if ((shape == 1 || shape == 2) && !mMeasureTool.isArmed()) {
+//                    setRunState(RunState.STARTABLE);
+//                }
+            } else if (propertyName.equals(MeasureTool.EVENT_METRIC_CHANGED)) {
                 updateMetrics();
             }
         });
@@ -225,10 +206,41 @@ public class RulerTab extends Tab {
         mMeasureTool.getController().setUseRubberBand(mOptions.is(KEY_RULER_RUBBER_BAND));
     }
 
+    private void setRunState(RunState runState) {
+        switch (runState) {
+            case STARTABLE://Stop measure
+                mStartToggleButton.setGraphic(mStartImageView);
+                mStartToggleButton.setSelected(false);
+                mStopToggleButton.setDisable(true);
+                mMeasureTool.setArmed(false);
+                break;
+
+            case RESUMABLE://Pause/Resume
+                mMeasureTool.setArmed(!mMeasureTool.isArmed());
+                mStartToggleButton.setGraphic(!mMeasureTool.isArmed() ? mResumeImageView : mPauseImageView);
+                mStartToggleButton.setSelected(false);
+                break;
+
+            case STOPPABLE://Start measure
+                mStartToggleButton.setGraphic(mPauseImageView);
+                mStartToggleButton.setSelected(false);
+                mStopToggleButton.setDisable(false);
+                mMeasureTool.clear();
+                mMeasureTool.setArmed(true);
+                break;
+        }
+
+        mRunState = runState;
+    }
+
     private void updateMetrics() {
     }
 
     private void updatePoints() {
+    }
+
+    public enum RunState {
+        STARTABLE, RESUMABLE, STOPPABLE;
     }
 
     private class OptionsPane extends VBox {
