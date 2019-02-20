@@ -30,6 +30,7 @@ import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.prefs.PreferenceChangeEvent;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.collections.FXCollections;
@@ -79,6 +80,7 @@ public class RulerTab extends Tab {
     private ImageView mStartImageView;
     private ToggleButton mStartToggleButton;
     private ToggleButton mStopToggleButton;
+    private VBox mTopBox;
     private final WorldWindow mWorldWindow;
 
     public RulerTab(String title, WorldWindow worldWindow) {
@@ -131,15 +133,14 @@ public class RulerTab extends Tab {
         mPointListTextArea.setEditable(false);
 
         mBorderPane = new BorderPane(mPointListTextArea);
-        VBox topBox = new VBox(8,
+        mTopBox = new VBox(8,
                 mShapeComboBox,
-                segmentedButton,
-                mMetricsTextArea
+                segmentedButton
         );
-        topBox.setAlignment(Pos.CENTER);
-        topBox.setPadding(new Insets(8, 0, 0, 0));
+        mTopBox.setAlignment(Pos.CENTER);
+        mTopBox.setPadding(new Insets(8, 0, 8, 0));
 
-        mBorderPane.setTop(topBox);
+        mBorderPane.setTop(mTopBox);
         setContent(mBorderPane);
 
         mOptionsPopOver = new PopOver();
@@ -365,12 +366,12 @@ public class RulerTab extends Tab {
     private class OptionsPane extends VBox {
 
         private CheckBox mAnnotationCheckBox;
-        private CheckBox mPointListCheckBox;
         private CheckBox mControlPointsCheckBox;
         private CheckBox mFollowTerrainCheckBox;
         private CheckBox mFreeHandCheckBox;
         private final BiMap<String, CheckBox> mKeyCheckBoxes = HashBiMap.create();
         private ComboBox<String> mPathTypeComboBox;
+        private CheckBox mPointListCheckBox;
         private CheckBox mRubberBandCheckBox;
 
         public OptionsPane() {
@@ -420,7 +421,7 @@ public class RulerTab extends Tab {
             mKeyCheckBoxes.put(KEY_RULER_CONTROL_POINTS, mControlPointsCheckBox);
             mKeyCheckBoxes.put(KEY_RULER_POINT_LIST, mPointListCheckBox);
 
-            mPointListTextArea.visibleProperty().bind(mPointListCheckBox.selectedProperty());
+            updatePointListVisibility();
         }
 
         private void initListeners() {
@@ -458,12 +459,33 @@ public class RulerTab extends Tab {
             mPathTypeComboBox.setOnAction((event) -> {
                 mMeasureTool.setPathType(mPathTypes[mPathTypeComboBox.getSelectionModel().getSelectedIndex()]);
             });
+
+            mOptions.getPreferences().addPreferenceChangeListener((PreferenceChangeEvent evt) -> {
+                Platform.runLater(() -> {
+                    switch (evt.getKey()) {
+                        case KEY_RULER_POINT_LIST:
+                            updatePointListVisibility();
+                            break;
+                    }
+                });
+            });
         }
 
         private void initStates() {
             mKeyCheckBoxes.values().forEach((checkBox) -> {
                 checkBox.setSelected(mOptions.is(mKeyCheckBoxes.inverse().get(checkBox)));
             });
+
+            mPointListCheckBox.setSelected(mOptions.is(KEY_RULER_POINT_LIST, false));
+        }
+
+        private void updatePointListVisibility() {
+            if (mOptions.is(KEY_RULER_POINT_LIST, false)) {
+                mBorderPane.setCenter(mPointListTextArea);
+                mTopBox.getChildren().add(mMetricsTextArea);
+            } else {
+                mBorderPane.setCenter(mMetricsTextArea);
+            }
         }
     }
 }
