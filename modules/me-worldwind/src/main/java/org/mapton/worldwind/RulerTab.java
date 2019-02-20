@@ -17,6 +17,7 @@ package org.mapton.worldwind;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import de.micromata.opengis.kml.v_2_2_0.Feature;
 import gov.nasa.worldwind.WorldWindow;
 import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.geom.Angle;
@@ -69,6 +70,7 @@ public class RulerTab extends Tab {
     private static final int DEFAULT_PATH_TYPE_INDEX = 2;
     private BorderPane mBorderPane;
     private final ResourceBundle mBundle = NbBundle.getBundle(RulerTab.class);
+    private final FeatureGenerator mFeatureGenerator = new FeatureGenerator();
     private final MeasureTool mMeasureTool;
     private TextArea mMetricsTextArea;
     private final ModuleOptions mOptions = ModuleOptions.getInstance();
@@ -79,6 +81,7 @@ public class RulerTab extends Tab {
     private TextArea mPointListTextArea;
     private ImageView mResumeImageView;
     private RunState mRunState;
+    private ToggleButton mSaveToggleButton;
     private ComboBox<String> mShapeComboBox;
     private ImageView mStartImageView;
     private ToggleButton mStartToggleButton;
@@ -103,6 +106,10 @@ public class RulerTab extends Tab {
         return mMeasureTool;
     }
 
+    Feature getFeature() {
+        return mFeatureGenerator.generate();
+    }
+
     private void createUI() {
         mShapeComboBox = new ComboBox<>();
         mShapeComboBox.getItems().setAll(
@@ -122,10 +129,11 @@ public class RulerTab extends Tab {
 
         mStartToggleButton = new ToggleButton();
         mStopToggleButton = new ToggleButton("", MaterialIcon._Av.STOP.getImageView(imageSize));
+        mSaveToggleButton = new ToggleButton("", MaterialIcon._Content.SAVE.getImageView(imageSize));
         mOptionsToggleButton = new ToggleButton("", MaterialIcon._Action.SETTINGS.getImageView(imageSize));
 
         SegmentedButton segmentedButton = new SegmentedButton();
-        segmentedButton.getButtons().addAll(mStartToggleButton, mStopToggleButton, mOptionsToggleButton);
+        segmentedButton.getButtons().addAll(mStartToggleButton, mStopToggleButton, mSaveToggleButton, mOptionsToggleButton);
 
         mMetricsTextArea = new TextArea();
         mMetricsTextArea.setEditable(false);
@@ -179,6 +187,10 @@ public class RulerTab extends Tab {
 
         mStopToggleButton.setOnAction((event) -> {
             setRunState(RunState.STARTABLE);
+        });
+
+        mSaveToggleButton.setOnAction((event) -> {
+            ((RulerTabPane) getTabPane()).save();
         });
 
         mOptionsToggleButton.setOnAction((event) -> {
@@ -364,6 +376,19 @@ public class RulerTab extends Tab {
 
     public enum RunState {
         STARTABLE, RESUMABLE, STOPPABLE;
+    }
+
+    private class FeatureGenerator {
+
+        public FeatureGenerator() {
+        }
+
+        private Feature generate() {
+            Feature f = null;
+            //TODO Generate feature
+
+            return f;
+        }
     }
 
     private class OptionsPane extends VBox {
