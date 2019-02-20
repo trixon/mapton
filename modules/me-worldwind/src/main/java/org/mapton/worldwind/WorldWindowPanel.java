@@ -328,13 +328,13 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
     }
 
     private void updateScreenLayers() {
-        getLayers().getLayerByName("Compass").setEnabled(mOptions.is(KEY_DISPLAY_COMPASS));
-        getLayers().getLayerByName("World Map").setEnabled(mOptions.is(KEY_DISPLAY_WORLD_MAP));
-        getLayers().getLayerByName("Scale bar").setEnabled(mOptions.is(KEY_DISPLAY_SCALE_BAR));
-        getLayers().getLayerByName("View Controls").setEnabled(mOptions.is(KEY_DISPLAY_CONTROLS));
-        getLayers().getLayerByName("Atmosphere").setEnabled(mOptions.is(KEY_DISPLAY_ATMOSPHERE));
-        getLayers().getLayerByName("Stars").setEnabled(mOptions.is(KEY_DISPLAY_STARS));
-        getLayers().getLayerByName("Place Names").setEnabled(mOptions.is(KEY_DISPLAY_PLACE_NAMES));
+        getLayers().getLayerByName("Compass").setEnabled(mOptions.is(KEY_DISPLAY_COMPASS, DEFAULT_DISPLAY_COMPASS));
+        getLayers().getLayerByName("World Map").setEnabled(mOptions.is(KEY_DISPLAY_WORLD_MAP, DEFAULT_DISPLAY_WORLD_MAP));
+        getLayers().getLayerByName("Scale bar").setEnabled(mOptions.is(KEY_DISPLAY_SCALE_BAR, DEFAULT_DISPLAY_SCALE_BAR));
+        getLayers().getLayerByName("View Controls").setEnabled(mOptions.is(KEY_DISPLAY_CONTROLS, DEFAULT_DISPLAY_CONTROLS));
+        getLayers().getLayerByName("Atmosphere").setEnabled(mOptions.is(KEY_DISPLAY_ATMOSPHERE, DEFAULT_DISPLAY_ATMOSPHERE));
+        getLayers().getLayerByName("Stars").setEnabled(mOptions.is(KEY_DISPLAY_STARS, DEFAULT_DISPLAY_STARS));
+        getLayers().getLayerByName("Place Names").setEnabled(mOptions.is(KEY_DISPLAY_PLACE_NAMES, DEFAULT_DISPLAY_PLACE_NAMES));
 
         redraw();
     }
