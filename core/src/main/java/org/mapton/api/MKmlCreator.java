@@ -240,6 +240,36 @@ public abstract class MKmlCreator {
         return placemark;
     }
 
+    public Placemark createPolygon(String name, ArrayList<Point3D> coordinates, double width, String color, ColorMode colorMode, AltitudeMode altitudeMode) {
+        Placemark placemark = KmlFactory.createPlacemark().withName(name);
+
+        Style style = placemark.createAndAddStyle();
+        LineStyle lineStyle = style.createAndSetLineStyle()
+                .withColor("00000000")
+                .withWidth(0.0);
+
+        PolyStyle polyStyle = style.createAndSetPolyStyle();
+        if (color != null) {
+            polyStyle.setColor(color);
+        }
+        if (colorMode != null) {
+            polyStyle.setColorMode(colorMode);
+        }
+
+        Polygon polygon = placemark.createAndSetPolygon();
+        Boundary boundary = polygon.createAndSetOuterBoundaryIs();
+        LinearRing linearRing = boundary.createAndSetLinearRing();
+
+        coordinates.forEach((node) -> {
+            linearRing.addToCoordinates(node.getX(), node.getY());
+
+        });
+
+        polygon.setAltitudeMode(altitudeMode);
+
+        return placemark;
+    }
+
     public String save(File f) throws IOException {
         return save(f, false, false);
     }
