@@ -70,7 +70,6 @@ public class RulerTab extends Tab {
     private static final int DEFAULT_PATH_TYPE_INDEX = 2;
     private BorderPane mBorderPane;
     private final ResourceBundle mBundle = NbBundle.getBundle(RulerTab.class);
-    private final FeatureGenerator mFeatureGenerator = new FeatureGenerator();
     private final MeasureTool mMeasureTool;
     private TextArea mMetricsTextArea;
     private final ModuleOptions mOptions = ModuleOptions.getInstance();
@@ -107,7 +106,7 @@ public class RulerTab extends Tab {
     }
 
     Feature getFeature() {
-        return mFeatureGenerator.generate();
+        return new RulerKmlFeatureGenerator(getText(), mMeasureTool).generate();
     }
 
     private void createUI() {
@@ -376,19 +375,6 @@ public class RulerTab extends Tab {
 
     public enum RunState {
         STARTABLE, RESUMABLE, STOPPABLE;
-    }
-
-    private class FeatureGenerator {
-
-        public FeatureGenerator() {
-        }
-
-        private Feature generate() {
-            Feature f = null;
-            //TODO Generate feature
-
-            return f;
-        }
     }
 
     private class OptionsPane extends VBox {
