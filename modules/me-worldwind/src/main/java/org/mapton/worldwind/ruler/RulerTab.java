@@ -15,11 +15,8 @@
  */
 package org.mapton.worldwind.ruler;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
 import de.micromata.opengis.kml.v_2_2_0.Feature;
 import gov.nasa.worldwind.WorldWindow;
-import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.util.measure.MeasureTool;
@@ -32,36 +29,26 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.ResourceBundle;
 import java.util.prefs.PreferenceChangeEvent;
 import javafx.application.Platform;
-import javafx.beans.property.ReadOnlyIntegerProperty;
-import javafx.collections.FXCollections;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.ButtonBase;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.ToolBar;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.PopOver;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
-import org.mapton.worldwind.ModuleOptions;
 import static org.mapton.api.Mapton.getIconSizeToolBar;
+import org.mapton.worldwind.ModuleOptions;
 import static org.mapton.worldwind.ModuleOptions.*;
-import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxActionCheck;
 import se.trixon.almond.util.fx.FxHelper;
@@ -73,10 +60,9 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
  */
 public class RulerTab extends Tab {
 
-    private static final int DEFAULT_PATH_TYPE_INDEX = 2;
+    static final int DEFAULT_PATH_TYPE_INDEX = 2;
     private static final int ICON_SIZE = (int) (getIconSizeToolBar() * 0.8);
     private BorderPane mBorderPane;
-    private final ResourceBundle mBundle = NbBundle.getBundle(RulerTab.class);
     private BorderPane mLowerBorderPane;
     private final MeasureTool mMeasureTool;
     private TextArea mMetricsTextArea;
@@ -84,7 +70,6 @@ public class RulerTab extends Tab {
     private Action mOptionsAction;
     private ImageView mOptionsImageView;
     private PopOver mOptionsPopOver;
-    private final String[] mPathTypes = {AVKey.LINEAR, AVKey.RHUMB_LINE, AVKey.GREAT_CIRCLE};
     private ImageView mPauseImageView;
     private TextArea mPointListTextArea;
     private ImageView mResumeImageView;
@@ -111,6 +96,7 @@ public class RulerTab extends Tab {
         postInit();
 
         setRunState(RunState.STARTABLE);
+        updatePointListVisibility();
     }
 
     public MeasureTool getMeasureTool() {
@@ -165,7 +151,7 @@ public class RulerTab extends Tab {
 
         mOptionsPopOver = new PopOver();
         mOptionsPopOver.setTitle(Dict.OPTIONS.toString());
-        mOptionsPopOver.setContentNode(new OptionsPane());
+        mOptionsPopOver.setContentNode(new OptionsPane(mMeasureTool, mWorldWindow, mShapeComboBox));
         mOptionsPopOver.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
         mOptionsPopOver.setHeaderAlwaysVisible(true);
         mOptionsPopOver.setCloseButtonEnabled(false);
@@ -204,6 +190,15 @@ public class RulerTab extends Tab {
             } else if (propertyName.equals(MeasureTool.EVENT_METRIC_CHANGED)) {
                 updateMetrics();
             }
+        });
+        mOptions.getPreferences().addPreferenceChangeListener((PreferenceChangeEvent evt) -> {
+            Platform.runLater(() -> {
+                switch (evt.getKey()) {
+                    case KEY_RULER_POINT_LIST:
+                        updatePointListVisibility();
+                        break;
+                }
+            });
         });
 
         setOnClosed((event -> {
@@ -266,7 +261,6 @@ public class RulerTab extends Tab {
     private void postInit() {
         mShapeComboBox.getSelectionModel().select(0);
 
-        mMeasureTool.setPathType(mPathTypes[DEFAULT_PATH_TYPE_INDEX]);
         mMeasureTool.setShowControlPoints(mOptions.is(KEY_RULER_CONTROL_POINTS));
         mMeasureTool.setFollowTerrain(mOptions.is(KEY_RULER_FOLLOW_TERRAIN));
         mMeasureTool.setShowAnnotation(mOptions.is(KEY_RULER_ANNOTATION));
@@ -393,6 +387,15 @@ public class RulerTab extends Tab {
         });
     }
 
+    private void updatePointListVisibility() {
+        if (mOptions.is(ModuleOptions.KEY_RULER_POINT_LIST, false)) {
+            mLowerBorderPane.setCenter(mPointListTextArea);
+            mTopBox.getChildren().add(mMetricsTextArea);
+        } else {
+            mLowerBorderPane.setCenter(mMetricsTextArea);
+        }
+    }
+
     private void updatePoints() {
         mPointListTextArea.clear();
         if (mMeasureTool.getPositions() != null) {
@@ -410,164 +413,5 @@ public class RulerTab extends Tab {
 
     public enum RunState {
         STARTABLE, RESUMABLE, STOPPABLE;
-    }
-
-    private class OptionsPane extends VBox {
-
-        private CheckBox mAnnotationCheckBox;
-        private ColorPicker mAnnotationColorPicker;
-        private CheckBox mControlPointsCheckBox;
-        private CheckBox mFollowTerrainCheckBox;
-        private CheckBox mFreeHandCheckBox;
-        private final BiMap<String, CheckBox> mKeyCheckBoxes = HashBiMap.create();
-        private ColorPicker mLineColorPicker;
-        private ComboBox<String> mPathTypeComboBox;
-        private ColorPicker mPointColorPicker;
-        private CheckBox mPointListCheckBox;
-        private CheckBox mRubberBandCheckBox;
-
-        public OptionsPane() {
-            createUI();
-            initListeners();
-            initStates();
-        }
-
-        private void createUI() {
-            setPadding(new Insets(8, 16, 16, 16));
-            setSpacing(8);
-
-            Label pathTypeLabel = new Label(mBundle.getString("ruler.option.path_type"));
-            String[] pathTypes = StringUtils.split(mBundle.getString("ruler.option.path_types"), "|");
-            mPathTypeComboBox = new ComboBox<>(FXCollections.observableArrayList(pathTypes));
-            mPathTypeComboBox.getSelectionModel().select(DEFAULT_PATH_TYPE_INDEX);
-
-            mLineColorPicker = new ColorPicker(Color.YELLOW);
-            mPointColorPicker = new ColorPicker(Color.BLUE);
-            mAnnotationColorPicker = new ColorPicker(Color.WHITE);
-
-            mFollowTerrainCheckBox = new CheckBox(mBundle.getString("ruler.option.follow_terrain"));
-            mRubberBandCheckBox = new CheckBox(mBundle.getString("ruler.option.rubber_band"));
-            mFreeHandCheckBox = new CheckBox(mBundle.getString("ruler.option.free_hand"));
-            mAnnotationCheckBox = new CheckBox(mBundle.getString("ruler.option.annotation"));
-            mControlPointsCheckBox = new CheckBox(mBundle.getString("ruler.option.control_points"));
-            mPointListCheckBox = new CheckBox(mBundle.getString("ruler.option.point_list"));
-            ReadOnlyIntegerProperty selectedIndexProperty = mShapeComboBox.getSelectionModel().selectedIndexProperty();
-            mFollowTerrainCheckBox.disableProperty().bind(selectedIndexProperty.greaterThan(1));
-            mFreeHandCheckBox.disableProperty().bind(
-                    mRubberBandCheckBox.selectedProperty().not()
-                            .or(selectedIndexProperty.greaterThan(0)
-                                    .and(selectedIndexProperty.lessThan(3)).not())
-            );
-            mAnnotationCheckBox.disableProperty().bind(mControlPointsCheckBox.selectedProperty().not());
-
-            getChildren().setAll(
-                    new VBox(
-                            pathTypeLabel,
-                            mPathTypeComboBox),
-                    new VBox(
-                            new Label(Dict.Geometry.LINE.toString()),
-                            mLineColorPicker),
-                    new VBox(
-                            new Label(Dict.Geometry.POINT.toString()),
-                            mPointColorPicker),
-                    new VBox(
-                            new Label(mBundle.getString("ruler.option.annotation")),
-                            mAnnotationColorPicker),
-                    mFollowTerrainCheckBox,
-                    mRubberBandCheckBox,
-                    mFreeHandCheckBox,
-                    mControlPointsCheckBox,
-                    mAnnotationCheckBox,
-                    mPointListCheckBox
-            );
-
-            mKeyCheckBoxes.put(KEY_RULER_FOLLOW_TERRAIN, mFollowTerrainCheckBox);
-            mKeyCheckBoxes.put(KEY_RULER_RUBBER_BAND, mRubberBandCheckBox);
-            mKeyCheckBoxes.put(KEY_RULER_FREE_HAND, mFreeHandCheckBox);
-            mKeyCheckBoxes.put(KEY_RULER_ANNOTATION, mAnnotationCheckBox);
-            mKeyCheckBoxes.put(KEY_RULER_CONTROL_POINTS, mControlPointsCheckBox);
-            mKeyCheckBoxes.put(KEY_RULER_POINT_LIST, mPointListCheckBox);
-
-            updatePointListVisibility();
-        }
-
-        private void initListeners() {
-            EventHandler<ActionEvent> eventHandler = (ActionEvent event) -> {
-                CheckBox checkBox = (CheckBox) event.getSource();
-                String key = mKeyCheckBoxes.inverse().get(checkBox);
-                boolean selected = checkBox.isSelected();
-                mOptions.put(key, selected);
-
-                switch (key) {
-                    case KEY_RULER_CONTROL_POINTS:
-                        mMeasureTool.setShowControlPoints(selected);
-                        break;
-                    case KEY_RULER_FOLLOW_TERRAIN:
-                        mMeasureTool.setFollowTerrain(selected);
-                        break;
-                    case KEY_RULER_FREE_HAND:
-                        mMeasureTool.getController().setFreeHand(selected);
-                        break;
-                    case KEY_RULER_RUBBER_BAND:
-                        mMeasureTool.getController().setUseRubberBand(selected);
-                        break;
-                    case KEY_RULER_ANNOTATION:
-                        mMeasureTool.setShowAnnotation(selected);
-                        break;
-                }
-
-                mWorldWindow.redraw();
-            };
-
-            mKeyCheckBoxes.values().forEach((checkBox) -> {
-                checkBox.setOnAction(eventHandler);
-            });
-
-            mPathTypeComboBox.setOnAction((event) -> {
-                mMeasureTool.setPathType(mPathTypes[mPathTypeComboBox.getSelectionModel().getSelectedIndex()]);
-            });
-
-            mOptions.getPreferences().addPreferenceChangeListener((PreferenceChangeEvent evt) -> {
-                Platform.runLater(() -> {
-                    switch (evt.getKey()) {
-                        case KEY_RULER_POINT_LIST:
-                            updatePointListVisibility();
-                            break;
-                    }
-                });
-            });
-
-            mLineColorPicker.setOnAction((event) -> {
-                mMeasureTool.setLineColor(FxHelper.colorToColor(mLineColorPicker.getValue()));
-                mWorldWindow.redraw();
-            });
-
-            mPointColorPicker.setOnAction((event) -> {
-                mMeasureTool.getControlPointsAttributes().setBackgroundColor(FxHelper.colorToColor(mPointColorPicker.getValue()));
-                mWorldWindow.redraw();
-            });
-
-            mAnnotationColorPicker.setOnAction((event) -> {
-                mMeasureTool.getAnnotationAttributes().setTextColor(FxHelper.colorToColor(mAnnotationColorPicker.getValue()));
-                mWorldWindow.redraw();
-            });
-        }
-
-        private void initStates() {
-            mKeyCheckBoxes.values().forEach((checkBox) -> {
-                checkBox.setSelected(mOptions.is(mKeyCheckBoxes.inverse().get(checkBox)));
-            });
-
-            mPointListCheckBox.setSelected(mOptions.is(KEY_RULER_POINT_LIST, false));
-        }
-
-        private void updatePointListVisibility() {
-            if (mOptions.is(KEY_RULER_POINT_LIST, false)) {
-                mLowerBorderPane.setCenter(mPointListTextArea);
-                mTopBox.getChildren().add(mMetricsTextArea);
-            } else {
-                mLowerBorderPane.setCenter(mMetricsTextArea);
-            }
-        }
     }
 }
