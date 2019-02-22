@@ -43,6 +43,7 @@ public class ModuleOptions extends OptionsBase {
     public static final String KEY_RULER_FREE_HAND = "ruler.free_hand";
     public static final String KEY_RULER_POINT_LIST = "ruler.point_list";
     public static final String KEY_RULER_RUBBER_BAND = "ruler.rubber_band";
+    public static final String KEY_RULER_SHAPE = "ruler.shape";
     public static final String KEY_VIEW_HEADING = "view_heading";
     public static final String KEY_VIEW_PITCH = "view_pitch";
     public static final String KEY_VIEW_ROLL = "view_roll";

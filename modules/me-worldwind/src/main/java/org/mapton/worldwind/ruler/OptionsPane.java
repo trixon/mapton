@@ -21,7 +21,9 @@ import gov.nasa.worldwind.WorldWindow;
 import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.util.measure.MeasureTool;
 import java.util.ResourceBundle;
-import javafx.beans.property.ReadOnlyIntegerProperty;
+import java.util.prefs.PreferenceChangeEvent;
+import javafx.application.Platform;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -60,13 +62,12 @@ class OptionsPane extends VBox {
     private ColorPicker mPointColorPicker;
     private CheckBox mPointListCheckBox;
     private CheckBox mRubberBandCheckBox;
-    private ComboBox<String> mShapeComboBox;
+    private SimpleIntegerProperty mShapeIntegerProperty = new SimpleIntegerProperty();
     private WorldWindow mWorldWindow;
 
-    public OptionsPane(MeasureTool measureTool, WorldWindow worldWindow, ComboBox<String> shapeComboBox) {
+    public OptionsPane(MeasureTool measureTool, WorldWindow worldWindow) {
         mMeasureTool = measureTool;
         mWorldWindow = worldWindow;
-        mShapeComboBox = shapeComboBox;
 
         createUI();
         initListeners();
@@ -94,9 +95,8 @@ class OptionsPane extends VBox {
         mControlPointsCheckBox = new CheckBox(mBundle.getString("ruler.option.control_points"));
         mPointListCheckBox = new CheckBox(mBundle.getString("ruler.option.point_list"));
 
-        ReadOnlyIntegerProperty selectedIndexProperty = mShapeComboBox.getSelectionModel().selectedIndexProperty();
-        mFollowTerrainCheckBox.disableProperty().bind(selectedIndexProperty.greaterThan(1));
-        mFreeHandCheckBox.disableProperty().bind(mRubberBandCheckBox.selectedProperty().not().or(selectedIndexProperty.greaterThan(0).and(selectedIndexProperty.lessThan(3)).not()));
+        mFollowTerrainCheckBox.disableProperty().bind(mShapeIntegerProperty.greaterThan(1));
+        mFreeHandCheckBox.disableProperty().bind(mRubberBandCheckBox.selectedProperty().not().or(mShapeIntegerProperty.greaterThan(0).and(mShapeIntegerProperty.lessThan(3)).not()));
         mAnnotationCheckBox.disableProperty().bind(mControlPointsCheckBox.selectedProperty().not());
 
         getChildren().setAll(new VBox(pathTypeLabel, mPathTypeComboBox), new VBox(new Label(Dict.Geometry.LINE.toString()), mLineColorPicker), new VBox(new Label(Dict.Geometry.POINT.toString()), mPointColorPicker), new VBox(new Label(mBundle.getString("ruler.option.annotation")), mAnnotationColorPicker), mFollowTerrainCheckBox, mRubberBandCheckBox, mFreeHandCheckBox, mControlPointsCheckBox, mAnnotationCheckBox, mPointListCheckBox);
@@ -110,6 +110,16 @@ class OptionsPane extends VBox {
     }
 
     private void initListeners() {
+        mOptions.getPreferences().addPreferenceChangeListener((PreferenceChangeEvent evt) -> {
+            Platform.runLater(() -> {
+                switch (evt.getKey()) {
+                    case KEY_RULER_SHAPE:
+                        mShapeIntegerProperty.set(mOptions.getInt(KEY_RULER_SHAPE));
+                        break;
+                }
+            });
+        });
+
         EventHandler<ActionEvent> eventHandler = (ActionEvent event) -> {
             CheckBox checkBox = (CheckBox) event.getSource();
             String key = mKeyCheckBoxes.inverse().get(checkBox);
@@ -119,35 +129,44 @@ class OptionsPane extends VBox {
                 case KEY_RULER_CONTROL_POINTS:
                     mMeasureTool.setShowControlPoints(selected);
                     break;
+
                 case KEY_RULER_FOLLOW_TERRAIN:
                     mMeasureTool.setFollowTerrain(selected);
                     break;
+
                 case KEY_RULER_FREE_HAND:
                     mMeasureTool.getController().setFreeHand(selected);
                     break;
+
                 case KEY_RULER_RUBBER_BAND:
                     mMeasureTool.getController().setUseRubberBand(selected);
                     break;
+
                 case KEY_RULER_ANNOTATION:
                     mMeasureTool.setShowAnnotation(selected);
                     break;
             }
             mWorldWindow.redraw();
         };
+
         mKeyCheckBoxes.values().forEach((checkBox) -> {
             checkBox.setOnAction(eventHandler);
         });
+
         mPathTypeComboBox.setOnAction((event) -> {
             mMeasureTool.setPathType(mPathTypes[mPathTypeComboBox.getSelectionModel().getSelectedIndex()]);
         });
+
         mLineColorPicker.setOnAction((event) -> {
             mMeasureTool.setLineColor(FxHelper.colorToColor(mLineColorPicker.getValue()));
             mWorldWindow.redraw();
         });
+
         mPointColorPicker.setOnAction((event) -> {
             mMeasureTool.getControlPointsAttributes().setBackgroundColor(FxHelper.colorToColor(mPointColorPicker.getValue()));
             mWorldWindow.redraw();
         });
+
         mAnnotationColorPicker.setOnAction((event) -> {
             mMeasureTool.getAnnotationAttributes().setTextColor(FxHelper.colorToColor(mAnnotationColorPicker.getValue()));
             mWorldWindow.redraw();

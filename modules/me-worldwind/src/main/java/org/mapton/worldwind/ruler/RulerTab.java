@@ -34,7 +34,6 @@ import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.ButtonBase;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.ToolBar;
@@ -76,7 +75,9 @@ public class RulerTab extends Tab {
     private RunState mRunState;
     private Action mSaveAction;
     private ImageView mSaveImageView;
-    private ComboBox<String> mShapeComboBox;
+    private Action mShapeAction;
+    private ImageView mShapeImageView;
+    private ShapePopOver mShapePopOver;
     private FxActionCheck mStartAction;
     private ImageView mStartImageView;
     private FxActionCheck mStopAction;
@@ -108,23 +109,13 @@ public class RulerTab extends Tab {
     }
 
     private void createUI() {
-        mShapeComboBox = new ComboBox<>();
-        mShapeComboBox.getItems().setAll(
-                Dict.Geometry.LINE.toString(),
-                Dict.Geometry.PATH.toString(),
-                Dict.Geometry.POLYGON.toString(),
-                Dict.Geometry.CIRCLE.toString(),
-                Dict.Geometry.ELLIPSE.toString(),
-                Dict.Geometry.SQUARE.toString(),
-                Dict.Geometry.RECTANGLE.toString()
-        );
-
         mStartImageView = MaterialIcon._Av.PLAY_ARROW.getImageView(ICON_SIZE);
         mPauseImageView = MaterialIcon._Av.PAUSE_CIRCLE_OUTLINE.getImageView(ICON_SIZE);
         mResumeImageView = MaterialIcon._Av.PLAY_CIRCLE_OUTLINE.getImageView(ICON_SIZE);
         mStopImageView = MaterialIcon._Av.STOP.getImageView(ICON_SIZE);
         mSaveImageView = MaterialIcon._Content.SAVE.getImageView(ICON_SIZE);
         mOptionsImageView = MaterialIcon._Action.SETTINGS.getImageView(ICON_SIZE);
+        mShapeImageView = MaterialIcon._Editor.FORMAT_SHAPES.getImageView(ICON_SIZE);
 
         mMetricsTextArea = new TextArea();
         mMetricsTextArea.setEditable(false);
@@ -135,8 +126,7 @@ public class RulerTab extends Tab {
         mPointListTextArea.setEditable(false);
 
         mLowerBorderPane = new BorderPane(mPointListTextArea);
-        mTopBox = new VBox(8,
-                mShapeComboBox
+        mTopBox = new VBox(8
         );
 
         mTopBox.setAlignment(Pos.CENTER);
@@ -149,9 +139,11 @@ public class RulerTab extends Tab {
 
         initToolBar();
 
+        mShapePopOver = new ShapePopOver(mMeasureTool);
+
         mOptionsPopOver = new PopOver();
         mOptionsPopOver.setTitle(Dict.OPTIONS.toString());
-        mOptionsPopOver.setContentNode(new OptionsPane(mMeasureTool, mWorldWindow, mShapeComboBox));
+        mOptionsPopOver.setContentNode(new OptionsPane(mMeasureTool, mWorldWindow));
         mOptionsPopOver.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
         mOptionsPopOver.setHeaderAlwaysVisible(true);
         mOptionsPopOver.setCloseButtonEnabled(false);
@@ -160,22 +152,6 @@ public class RulerTab extends Tab {
     }
 
     private void initListeners() {
-        String shapes[] = {
-            MeasureTool.SHAPE_LINE,
-            MeasureTool.SHAPE_PATH,
-            MeasureTool.SHAPE_POLYGON,
-            MeasureTool.SHAPE_CIRCLE,
-            MeasureTool.SHAPE_ELLIPSE,
-            MeasureTool.SHAPE_SQUARE,
-            MeasureTool.SHAPE_QUAD
-        };
-
-        mShapeComboBox.setOnAction((event) -> {
-            mMeasureTool.setMeasureShapeType(shapes[mShapeComboBox.getSelectionModel().getSelectedIndex()]);
-//            setRunState(RunState.STARTABLE);
-//            setRunState(RunState.STOPPABLE);
-        });
-
         mMeasureTool.addPropertyChangeListener((PropertyChangeEvent propertyChangeEvent) -> {
             final String propertyName = propertyChangeEvent.getPropertyName();
 
@@ -191,6 +167,7 @@ public class RulerTab extends Tab {
                 updateMetrics();
             }
         });
+
         mOptions.getPreferences().addPreferenceChangeListener((PreferenceChangeEvent evt) -> {
             Platform.runLater(() -> {
                 switch (evt.getKey()) {
@@ -208,6 +185,15 @@ public class RulerTab extends Tab {
     }
 
     private void initToolBar() {
+        mShapeAction = new Action(Dict.Geometry.GEOMETRY.toString(), (event) -> {
+            if (mShapePopOver.isShowing()) {
+                mShapePopOver.hide();
+            } else {
+                mShapePopOver.show(((ButtonBase) event.getSource()));
+            }
+        });
+        mShapeAction.setGraphic(mShapeImageView);
+
         mStartAction = new FxActionCheck(Dict.START.toString(), (event) -> {
             setRunState(mRunState == RunState.STARTABLE ? RunState.STOPPABLE : RunState.RESUMABLE);
         });
@@ -234,6 +220,7 @@ public class RulerTab extends Tab {
 
         ArrayList<Action> actions = new ArrayList<>();
         actions.addAll(Arrays.asList(
+                mShapeAction,
                 mStartAction,
                 mStopAction,
                 mSaveAction,
@@ -255,12 +242,10 @@ public class RulerTab extends Tab {
     }
 
     private boolean isClosedShape() {
-        return mShapeComboBox.getSelectionModel().getSelectedIndex() > 1;
+        return mOptions.getInt(KEY_RULER_SHAPE) > 1;
     }
 
     private void postInit() {
-        mShapeComboBox.getSelectionModel().select(0);
-
         mMeasureTool.setShowControlPoints(mOptions.is(KEY_RULER_CONTROL_POINTS));
         mMeasureTool.setFollowTerrain(mOptions.is(KEY_RULER_FOLLOW_TERRAIN));
         mMeasureTool.setShowAnnotation(mOptions.is(KEY_RULER_ANNOTATION));
