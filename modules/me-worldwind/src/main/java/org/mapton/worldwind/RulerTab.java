@@ -27,6 +27,8 @@ import gov.nasa.worldwind.util.measure.MeasureToolController;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.beans.PropertyChangeEvent;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -39,13 +41,14 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.ButtonBase;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.ToggleButton;
+import javafx.scene.control.ToolBar;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
@@ -53,11 +56,13 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.PopOver;
-import org.controlsfx.control.SegmentedButton;
+import org.controlsfx.control.action.Action;
+import org.controlsfx.control.action.ActionUtils;
 import static org.mapton.api.Mapton.getIconSizeToolBar;
 import static org.mapton.worldwind.ModuleOptions.*;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.fx.FxActionCheck;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 
@@ -68,23 +73,29 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
 public class RulerTab extends Tab {
 
     private static final int DEFAULT_PATH_TYPE_INDEX = 2;
+    private static final int ICON_SIZE = (int) (getIconSizeToolBar() * 0.8);
     private BorderPane mBorderPane;
     private final ResourceBundle mBundle = NbBundle.getBundle(RulerTab.class);
+    private BorderPane mLowerBorderPane;
     private final MeasureTool mMeasureTool;
     private TextArea mMetricsTextArea;
     private final ModuleOptions mOptions = ModuleOptions.getInstance();
+    private Action mOptionsAction;
+    private ImageView mOptionsImageView;
     private PopOver mOptionsPopOver;
-    private ToggleButton mOptionsToggleButton;
     private final String[] mPathTypes = {AVKey.LINEAR, AVKey.RHUMB_LINE, AVKey.GREAT_CIRCLE};
     private ImageView mPauseImageView;
     private TextArea mPointListTextArea;
     private ImageView mResumeImageView;
     private RunState mRunState;
-    private ToggleButton mSaveToggleButton;
+    private Action mSaveAction;
+    private ImageView mSaveImageView;
     private ComboBox<String> mShapeComboBox;
+    private FxActionCheck mStartAction;
     private ImageView mStartImageView;
-    private ToggleButton mStartToggleButton;
-    private ToggleButton mStopToggleButton;
+    private FxActionCheck mStopAction;
+    private ImageView mStopImageView;
+    private ToolBar mToolBar;
     private VBox mTopBox;
     private final WorldWindow mWorldWindow;
 
@@ -121,18 +132,12 @@ public class RulerTab extends Tab {
                 Dict.Geometry.RECTANGLE.toString()
         );
 
-        int imageSize = (int) (getIconSizeToolBar() * 0.8);
-        mStartImageView = MaterialIcon._Av.PLAY_ARROW.getImageView(imageSize);
-        mPauseImageView = MaterialIcon._Av.PAUSE_CIRCLE_OUTLINE.getImageView(imageSize);
-        mResumeImageView = MaterialIcon._Av.PLAY_CIRCLE_OUTLINE.getImageView(imageSize);
-
-        mStartToggleButton = new ToggleButton();
-        mStopToggleButton = new ToggleButton("", MaterialIcon._Av.STOP.getImageView(imageSize));
-        mSaveToggleButton = new ToggleButton("", MaterialIcon._Content.SAVE.getImageView(imageSize));
-        mOptionsToggleButton = new ToggleButton("", MaterialIcon._Action.SETTINGS.getImageView(imageSize));
-
-        SegmentedButton segmentedButton = new SegmentedButton();
-        segmentedButton.getButtons().addAll(mStartToggleButton, mStopToggleButton, mSaveToggleButton, mOptionsToggleButton);
+        mStartImageView = MaterialIcon._Av.PLAY_ARROW.getImageView(ICON_SIZE);
+        mPauseImageView = MaterialIcon._Av.PAUSE_CIRCLE_OUTLINE.getImageView(ICON_SIZE);
+        mResumeImageView = MaterialIcon._Av.PLAY_CIRCLE_OUTLINE.getImageView(ICON_SIZE);
+        mStopImageView = MaterialIcon._Av.STOP.getImageView(ICON_SIZE);
+        mSaveImageView = MaterialIcon._Content.SAVE.getImageView(ICON_SIZE);
+        mOptionsImageView = MaterialIcon._Action.SETTINGS.getImageView(ICON_SIZE);
 
         mMetricsTextArea = new TextArea();
         mMetricsTextArea.setEditable(false);
@@ -142,16 +147,20 @@ public class RulerTab extends Tab {
         mPointListTextArea = new TextArea();
         mPointListTextArea.setEditable(false);
 
-        mBorderPane = new BorderPane(mPointListTextArea);
+        mLowerBorderPane = new BorderPane(mPointListTextArea);
         mTopBox = new VBox(8,
-                mShapeComboBox,
-                segmentedButton
+                mShapeComboBox
         );
+
         mTopBox.setAlignment(Pos.CENTER);
         mTopBox.setPadding(new Insets(8, 0, 8, 0));
 
-        mBorderPane.setTop(mTopBox);
+        mLowerBorderPane.setTop(mTopBox);
+        mBorderPane = new BorderPane(mLowerBorderPane);
+
         setContent(mBorderPane);
+
+        initToolBar();
 
         mOptionsPopOver = new PopOver();
         mOptionsPopOver.setTitle(Dict.OPTIONS.toString());
@@ -180,28 +189,6 @@ public class RulerTab extends Tab {
 //            setRunState(RunState.STOPPABLE);
         });
 
-        mStartToggleButton.setOnAction((event) -> {
-            setRunState(mRunState == RunState.STARTABLE ? RunState.STOPPABLE : RunState.RESUMABLE);
-        });
-
-        mStopToggleButton.setOnAction((event) -> {
-            setRunState(RunState.STARTABLE);
-        });
-
-        mSaveToggleButton.setOnAction((event) -> {
-            ((RulerTabPane) getTabPane()).save();
-        });
-
-        mOptionsToggleButton.setOnAction((event) -> {
-            if (mOptionsPopOver.isShowing()) {
-                mOptionsPopOver.hide();
-            } else {
-                mOptionsPopOver.show(mOptionsToggleButton);
-            }
-
-            mOptionsToggleButton.setSelected(false);
-        });
-
         mMeasureTool.addPropertyChangeListener((PropertyChangeEvent propertyChangeEvent) -> {
             final String propertyName = propertyChangeEvent.getPropertyName();
 
@@ -224,6 +211,53 @@ public class RulerTab extends Tab {
         }));
     }
 
+    private void initToolBar() {
+        mStartAction = new FxActionCheck(Dict.START.toString(), (event) -> {
+            setRunState(mRunState == RunState.STARTABLE ? RunState.STOPPABLE : RunState.RESUMABLE);
+        });
+        mStartAction.setGraphic(mStartImageView);
+
+        mStopAction = new FxActionCheck(Dict.STOP.toString(), (event) -> {
+            setRunState(RunState.STARTABLE);
+        });
+        mStopAction.setGraphic(mStopImageView);
+
+        mSaveAction = new Action(Dict.SAVE.toString(), (event) -> {
+            ((RulerTabPane) getTabPane()).save();
+        });
+        mSaveAction.setGraphic(mSaveImageView);
+
+        mOptionsAction = new Action(Dict.OPTIONS.toString(), (event) -> {
+            if (mOptionsPopOver.isShowing()) {
+                mOptionsPopOver.hide();
+            } else {
+                mOptionsPopOver.show(((ButtonBase) event.getSource()));
+            }
+        });
+        mOptionsAction.setGraphic(mOptionsImageView);
+
+        ArrayList<Action> actions = new ArrayList<>();
+        actions.addAll(Arrays.asList(
+                mStartAction,
+                mStopAction,
+                mSaveAction,
+                mOptionsAction
+        ));
+
+        mToolBar = ActionUtils.createToolBar(actions, ActionUtils.ActionTextBehavior.HIDE);
+        mToolBar.setStyle("-fx-spacing: 0px;");
+        mToolBar.setPadding(Insets.EMPTY);
+
+        Platform.runLater(() -> {
+            FxHelper.adjustButtonWidth(mToolBar.getItems().stream(), ICON_SIZE * 1.5);
+            mToolBar.getItems().stream().filter((item) -> (item instanceof ButtonBase))
+                    .map((item) -> (ButtonBase) item).forEachOrdered((buttonBase) -> {
+                FxHelper.undecorateButton(buttonBase);
+            });
+        });
+        mBorderPane.setTop(mToolBar);
+    }
+
     private boolean isClosedShape() {
         return mShapeComboBox.getSelectionModel().getSelectedIndex() > 1;
     }
@@ -242,22 +276,22 @@ public class RulerTab extends Tab {
     private void setRunState(RunState runState) {
         switch (runState) {
             case STARTABLE://Stop measure
-                mStartToggleButton.setGraphic(mStartImageView);
-                mStartToggleButton.setSelected(false);
-                mStopToggleButton.setDisable(true);
+                mStartAction.setGraphic(mStartImageView);
+                mStartAction.setSelected(false);
+                mStopAction.setDisabled(true);
                 mMeasureTool.setArmed(false);
                 break;
 
             case RESUMABLE://Pause/Resume
                 mMeasureTool.setArmed(!mMeasureTool.isArmed());
-                mStartToggleButton.setGraphic(!mMeasureTool.isArmed() ? mResumeImageView : mPauseImageView);
-                mStartToggleButton.setSelected(false);
+                mStartAction.setGraphic(!mMeasureTool.isArmed() ? mResumeImageView : mPauseImageView);
+                mStartAction.setSelected(false);
                 break;
 
             case STOPPABLE://Start measure
-                mStartToggleButton.setGraphic(mPauseImageView);
-                mStartToggleButton.setSelected(false);
-                mStopToggleButton.setDisable(false);
+                mStartAction.setGraphic(mPauseImageView);
+                mStartAction.setSelected(false);
+                mStopAction.setDisabled(false);
                 mMeasureTool.clear();
                 mMeasureTool.setArmed(true);
                 break;
@@ -528,10 +562,10 @@ public class RulerTab extends Tab {
 
         private void updatePointListVisibility() {
             if (mOptions.is(KEY_RULER_POINT_LIST, false)) {
-                mBorderPane.setCenter(mPointListTextArea);
+                mLowerBorderPane.setCenter(mPointListTextArea);
                 mTopBox.getChildren().add(mMetricsTextArea);
             } else {
-                mBorderPane.setCenter(mMetricsTextArea);
+                mLowerBorderPane.setCenter(mMetricsTextArea);
             }
         }
     }
