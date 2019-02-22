@@ -15,6 +15,7 @@
  */
 package org.mapton.worldwind;
 
+import org.mapton.worldwind.ruler.RulerTabPane;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLEventListener;
 import gov.nasa.worldwind.Configuration;

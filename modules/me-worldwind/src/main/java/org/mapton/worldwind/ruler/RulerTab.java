@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.worldwind;
+package org.mapton.worldwind.ruler;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -58,6 +58,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.PopOver;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
+import org.mapton.worldwind.ModuleOptions;
 import static org.mapton.api.Mapton.getIconSizeToolBar;
 import static org.mapton.worldwind.ModuleOptions.*;
 import org.openide.util.NbBundle;
@@ -117,7 +118,7 @@ public class RulerTab extends Tab {
     }
 
     Feature getFeature() {
-        return new RulerKmlFeatureGenerator(getText(), mMeasureTool).generate();
+        return new KmlFeatureGenerator(getText(), mMeasureTool).generate();
     }
 
     private void createUI() {

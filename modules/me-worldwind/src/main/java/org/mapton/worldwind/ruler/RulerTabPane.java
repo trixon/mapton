@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.worldwind;
+package org.mapton.worldwind.ruler;
 
 import gov.nasa.worldwind.WorldWindow;
 import java.io.File;
@@ -53,7 +53,7 @@ public class RulerTabPane extends TabPane {
         initListeners();
     }
 
-    void refresh(WorldWindow worldWindow) {
+    public void refresh(WorldWindow worldWindow) {
         mWorldWindow = worldWindow;
         addTab();
     }

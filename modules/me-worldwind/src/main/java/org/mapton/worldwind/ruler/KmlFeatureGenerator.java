@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.worldwind;
+package org.mapton.worldwind.ruler;
 
 import de.micromata.opengis.kml.v_2_2_0.AltitudeMode;
 import de.micromata.opengis.kml.v_2_2_0.ColorMode;
@@ -28,12 +28,12 @@ import org.mapton.api.MKmlCreator;
  *
  * @author Patrik Karlström
  */
-class RulerKmlFeatureGenerator extends MKmlCreator {
+class KmlFeatureGenerator extends MKmlCreator {
 
     private final MeasureTool mMeasureTool;
     private final String mTitle;
 
-    RulerKmlFeatureGenerator(String title, MeasureTool measureTool) {
+    KmlFeatureGenerator(String title, MeasureTool measureTool) {
         mTitle = title;
         mMeasureTool = measureTool;
     }
