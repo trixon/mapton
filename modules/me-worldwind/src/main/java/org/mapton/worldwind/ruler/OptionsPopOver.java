@@ -28,6 +28,7 @@ import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ComboBox;
@@ -36,7 +37,12 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.worldwind.ModuleOptions;
-import static org.mapton.worldwind.ModuleOptions.*;
+import static org.mapton.worldwind.ModuleOptions.KEY_RULER_ANNOTATION;
+import static org.mapton.worldwind.ModuleOptions.KEY_RULER_CONTROL_POINTS;
+import static org.mapton.worldwind.ModuleOptions.KEY_RULER_FOLLOW_TERRAIN;
+import static org.mapton.worldwind.ModuleOptions.KEY_RULER_FREE_HAND;
+import static org.mapton.worldwind.ModuleOptions.KEY_RULER_RUBBER_BAND;
+import static org.mapton.worldwind.ModuleOptions.KEY_RULER_SHAPE;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
@@ -45,7 +51,7 @@ import se.trixon.almond.util.fx.FxHelper;
  *
  * @author Patrik Karlström
  */
-class OptionsPane extends VBox {
+public class OptionsPopOver extends BasePopOver {
 
     private CheckBox mAnnotationCheckBox;
     private ColorPicker mAnnotationColorPicker;
@@ -55,30 +61,33 @@ class OptionsPane extends VBox {
     private CheckBox mFreeHandCheckBox;
     private final BiMap<String, CheckBox> mKeyCheckBoxes = HashBiMap.create();
     private ColorPicker mLineColorPicker;
-    private MeasureTool mMeasureTool;
+    private final MeasureTool mMeasureTool;
     private final ModuleOptions mOptions = ModuleOptions.getInstance();
     private ComboBox<String> mPathTypeComboBox;
     private final String[] mPathTypes = {AVKey.LINEAR, AVKey.RHUMB_LINE, AVKey.GREAT_CIRCLE};
     private ColorPicker mPointColorPicker;
     private CheckBox mPointListCheckBox;
     private CheckBox mRubberBandCheckBox;
-    private SimpleIntegerProperty mShapeIntegerProperty = new SimpleIntegerProperty();
-    private WorldWindow mWorldWindow;
+    private final SimpleIntegerProperty mShapeIntegerProperty;
+    private final WorldWindow mWorldWindow;
 
-    public OptionsPane(MeasureTool measureTool, WorldWindow worldWindow) {
+    public OptionsPopOver(MeasureTool measureTool, WorldWindow worldWindow) {
         mMeasureTool = measureTool;
         mWorldWindow = worldWindow;
+        mShapeIntegerProperty = new SimpleIntegerProperty();
 
-        createUI();
+        setTitle(Dict.OPTIONS.toString());
+        setContentNode(createUI());
         initListeners();
         initStates();
 
         mMeasureTool.setPathType(mPathTypes[RulerTab.DEFAULT_PATH_TYPE_INDEX]);
     }
 
-    private void createUI() {
-        setPadding(new Insets(8, 16, 16, 16));
-        setSpacing(8);
+    private Node createUI() {
+        VBox vbox = new VBox(8);
+
+        vbox.setPadding(new Insets(8, 16, 16, 16));
         Label pathTypeLabel = new Label(mBundle.getString("ruler.option.path_type"));
         String[] pathTypes = StringUtils.split(mBundle.getString("ruler.option.path_types"), "|");
         mPathTypeComboBox = new ComboBox<>(FXCollections.observableArrayList(pathTypes));
@@ -99,7 +108,15 @@ class OptionsPane extends VBox {
         mFreeHandCheckBox.disableProperty().bind(mRubberBandCheckBox.selectedProperty().not().or(mShapeIntegerProperty.greaterThan(0).and(mShapeIntegerProperty.lessThan(3)).not()));
         mAnnotationCheckBox.disableProperty().bind(mControlPointsCheckBox.selectedProperty().not());
 
-        getChildren().setAll(new VBox(pathTypeLabel, mPathTypeComboBox), new VBox(new Label(Dict.Geometry.LINE.toString()), mLineColorPicker), new VBox(new Label(Dict.Geometry.POINT.toString()), mPointColorPicker), new VBox(new Label(mBundle.getString("ruler.option.annotation")), mAnnotationColorPicker), mFollowTerrainCheckBox, mRubberBandCheckBox, mFreeHandCheckBox, mControlPointsCheckBox, mAnnotationCheckBox, mPointListCheckBox);
+        vbox.getChildren().setAll(
+                new VBox(pathTypeLabel, mPathTypeComboBox),
+                new VBox(new Label(Dict.Geometry.LINE.toString()), mLineColorPicker),
+                new VBox(new Label(Dict.Geometry.POINT.toString()), mPointColorPicker),
+                new VBox(new Label(mBundle.getString("ruler.option.annotation")), mAnnotationColorPicker),
+                mFollowTerrainCheckBox,
+                mRubberBandCheckBox,
+                mFreeHandCheckBox, mControlPointsCheckBox, mAnnotationCheckBox, mPointListCheckBox
+        );
 
         mKeyCheckBoxes.put(ModuleOptions.KEY_RULER_FOLLOW_TERRAIN, mFollowTerrainCheckBox);
         mKeyCheckBoxes.put(ModuleOptions.KEY_RULER_RUBBER_BAND, mRubberBandCheckBox);
@@ -107,6 +124,8 @@ class OptionsPane extends VBox {
         mKeyCheckBoxes.put(ModuleOptions.KEY_RULER_ANNOTATION, mAnnotationCheckBox);
         mKeyCheckBoxes.put(ModuleOptions.KEY_RULER_CONTROL_POINTS, mControlPointsCheckBox);
         mKeyCheckBoxes.put(ModuleOptions.KEY_RULER_POINT_LIST, mPointListCheckBox);
+
+        return vbox;
     }
 
     private void initListeners() {
@@ -157,20 +176,22 @@ class OptionsPane extends VBox {
             mMeasureTool.setPathType(mPathTypes[mPathTypeComboBox.getSelectionModel().getSelectedIndex()]);
         });
 
-        mLineColorPicker.setOnAction((event) -> {
-            mMeasureTool.setLineColor(FxHelper.colorToColor(mLineColorPicker.getValue()));
-            mWorldWindow.redraw();
-        });
+        EventHandler<ActionEvent> colorActionEvent = (event) -> {
+            Object source = event.getSource();
+            if (source == mLineColorPicker) {
+                mMeasureTool.setLineColor(FxHelper.colorToColor(mLineColorPicker.getValue()));
+            } else if (source == mPointColorPicker) {
+                mMeasureTool.getControlPointsAttributes().setBackgroundColor(FxHelper.colorToColor(mPointColorPicker.getValue()));
+            } else if (source == mAnnotationColorPicker) {
+                mMeasureTool.getAnnotationAttributes().setTextColor(FxHelper.colorToColor(mAnnotationColorPicker.getValue()));
+            }
 
-        mPointColorPicker.setOnAction((event) -> {
-            mMeasureTool.getControlPointsAttributes().setBackgroundColor(FxHelper.colorToColor(mPointColorPicker.getValue()));
             mWorldWindow.redraw();
-        });
+        };
 
-        mAnnotationColorPicker.setOnAction((event) -> {
-            mMeasureTool.getAnnotationAttributes().setTextColor(FxHelper.colorToColor(mAnnotationColorPicker.getValue()));
-            mWorldWindow.redraw();
-        });
+        mLineColorPicker.setOnAction(colorActionEvent);
+        mPointColorPicker.setOnAction(colorActionEvent);
+        mAnnotationColorPicker.setOnAction(colorActionEvent);
     }
 
     private void initStates() {

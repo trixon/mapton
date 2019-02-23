@@ -140,15 +140,7 @@ public class RulerTab extends Tab {
         initToolBar();
 
         mShapePopOver = new ShapePopOver(mMeasureTool);
-
-        mOptionsPopOver = new PopOver();
-        mOptionsPopOver.setTitle(Dict.OPTIONS.toString());
-        mOptionsPopOver.setContentNode(new OptionsPane(mMeasureTool, mWorldWindow));
-        mOptionsPopOver.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
-        mOptionsPopOver.setHeaderAlwaysVisible(true);
-        mOptionsPopOver.setCloseButtonEnabled(false);
-        mOptionsPopOver.setDetachable(false);
-        mOptionsPopOver.setAnimated(true);
+        mOptionsPopOver = new OptionsPopOver(mMeasureTool, mWorldWindow);
     }
 
     private void initListeners() {
