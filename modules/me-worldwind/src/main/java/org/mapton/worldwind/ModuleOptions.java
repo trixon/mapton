@@ -38,9 +38,13 @@ public class ModuleOptions extends OptionsBase {
     public static final String KEY_MAP_PROJECTION = "map_projection";
     public static final String KEY_MAP_STYLE = "map_style";
     public static final String KEY_RULER_ANNOTATION = "ruler.annotation";
+    public static final String KEY_RULER_COLOR_ANNOTATION = "ruler.color.annotation";
+    public static final String KEY_RULER_COLOR_LINE = "ruler.color.line";
+    public static final String KEY_RULER_COLOR_POINT = "ruler.color.point";
     public static final String KEY_RULER_CONTROL_POINTS = "ruler.control_points";
     public static final String KEY_RULER_FOLLOW_TERRAIN = "ruler.follow_terrain";
     public static final String KEY_RULER_FREE_HAND = "ruler.free_hand";
+    public static final String KEY_RULER_PATH_TYPE = "ruler.path_type";
     public static final String KEY_RULER_POINT_LIST = "ruler.point_list";
     public static final String KEY_RULER_RUBBER_BAND = "ruler.rubber_band";
     public static final String KEY_RULER_SHAPE = "ruler.shape";

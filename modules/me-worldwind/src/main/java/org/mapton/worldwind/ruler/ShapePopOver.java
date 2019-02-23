@@ -24,6 +24,7 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.VBox;
 import org.mapton.worldwind.ModuleOptions;
+import static org.mapton.worldwind.ModuleOptions.KEY_RULER_SHAPE;
 import se.trixon.almond.util.Dict;
 
 /**
@@ -78,6 +79,10 @@ public class ShapePopOver extends BasePopOver {
             radioButtons[i].setToggleGroup(toggleGroup);
             radioButtons[i].setOnAction(eventHandler);
         }
+
+        int index = mOptions.getInt(KEY_RULER_SHAPE);
+        radioButtons[index].setSelected(true);
+        mMeasureTool.setMeasureShapeType(shapes[index]);
 
         VBox vbox = new VBox(12, radioButtons);
         vbox.setPadding(new Insets(16));

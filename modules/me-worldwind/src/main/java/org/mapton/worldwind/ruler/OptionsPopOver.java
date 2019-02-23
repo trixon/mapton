@@ -37,12 +37,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.worldwind.ModuleOptions;
-import static org.mapton.worldwind.ModuleOptions.KEY_RULER_ANNOTATION;
-import static org.mapton.worldwind.ModuleOptions.KEY_RULER_CONTROL_POINTS;
-import static org.mapton.worldwind.ModuleOptions.KEY_RULER_FOLLOW_TERRAIN;
-import static org.mapton.worldwind.ModuleOptions.KEY_RULER_FREE_HAND;
-import static org.mapton.worldwind.ModuleOptions.KEY_RULER_RUBBER_BAND;
-import static org.mapton.worldwind.ModuleOptions.KEY_RULER_SHAPE;
+import static org.mapton.worldwind.ModuleOptions.*;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
@@ -80,8 +75,6 @@ public class OptionsPopOver extends BasePopOver {
         setContentNode(createUI());
         initListeners();
         initStates();
-
-        mMeasureTool.setPathType(mPathTypes[RulerTab.DEFAULT_PATH_TYPE_INDEX]);
     }
 
     private Node createUI() {
@@ -109,10 +102,10 @@ public class OptionsPopOver extends BasePopOver {
         mAnnotationCheckBox.disableProperty().bind(mControlPointsCheckBox.selectedProperty().not());
 
         vbox.getChildren().setAll(
-                new VBox(pathTypeLabel, mPathTypeComboBox),
                 new VBox(new Label(Dict.Geometry.LINE.toString()), mLineColorPicker),
                 new VBox(new Label(Dict.Geometry.POINT.toString()), mPointColorPicker),
                 new VBox(new Label(mBundle.getString("ruler.option.annotation")), mAnnotationColorPicker),
+                new VBox(pathTypeLabel, mPathTypeComboBox),
                 mFollowTerrainCheckBox,
                 mRubberBandCheckBox,
                 mFreeHandCheckBox, mControlPointsCheckBox, mAnnotationCheckBox, mPointListCheckBox
@@ -126,6 +119,13 @@ public class OptionsPopOver extends BasePopOver {
         mKeyCheckBoxes.put(ModuleOptions.KEY_RULER_POINT_LIST, mPointListCheckBox);
 
         return vbox;
+    }
+
+    private java.awt.Color initColors(ColorPicker colorPicker, String key, Color defaultColor) {
+        Color color = FxHelper.colorFromHex(mOptions.get(key, FxHelper.colorToHex(defaultColor)));
+        colorPicker.setValue(color);
+
+        return FxHelper.colorToColor(color);
     }
 
     private void initListeners() {
@@ -173,19 +173,29 @@ public class OptionsPopOver extends BasePopOver {
         });
 
         mPathTypeComboBox.setOnAction((event) -> {
-            mMeasureTool.setPathType(mPathTypes[mPathTypeComboBox.getSelectionModel().getSelectedIndex()]);
+            int index = mPathTypeComboBox.getSelectionModel().getSelectedIndex();
+            mMeasureTool.setPathType(mPathTypes[index]);
+            mOptions.put(KEY_RULER_PATH_TYPE, index);
         });
 
         EventHandler<ActionEvent> colorActionEvent = (event) -> {
-            Object source = event.getSource();
+            ColorPicker source = (ColorPicker) event.getSource();
+            Color color = source.getValue();
+            java.awt.Color awtColor = FxHelper.colorToColor(color);
+            String key = null;
+
             if (source == mLineColorPicker) {
-                mMeasureTool.setLineColor(FxHelper.colorToColor(mLineColorPicker.getValue()));
+                key = KEY_RULER_COLOR_LINE;
+                mMeasureTool.setLineColor(awtColor);
             } else if (source == mPointColorPicker) {
-                mMeasureTool.getControlPointsAttributes().setBackgroundColor(FxHelper.colorToColor(mPointColorPicker.getValue()));
+                key = KEY_RULER_COLOR_POINT;
+                mMeasureTool.getControlPointsAttributes().setBackgroundColor(awtColor);
             } else if (source == mAnnotationColorPicker) {
-                mMeasureTool.getAnnotationAttributes().setTextColor(FxHelper.colorToColor(mAnnotationColorPicker.getValue()));
+                key = KEY_RULER_COLOR_ANNOTATION;
+                mMeasureTool.getAnnotationAttributes().setTextColor(awtColor);
             }
 
+            mOptions.put(key, FxHelper.colorToHex(color));
             mWorldWindow.redraw();
         };
 
@@ -198,6 +208,15 @@ public class OptionsPopOver extends BasePopOver {
         mKeyCheckBoxes.values().forEach((checkBox) -> {
             checkBox.setSelected(mOptions.is(mKeyCheckBoxes.inverse().get(checkBox)));
         });
+
+        mMeasureTool.setLineColor(initColors(mLineColorPicker, KEY_RULER_COLOR_LINE, Color.YELLOW));
+        mMeasureTool.getControlPointsAttributes().setBackgroundColor(initColors(mPointColorPicker, KEY_RULER_COLOR_POINT, Color.BLUE));
+        mMeasureTool.getAnnotationAttributes().setTextColor(initColors(mAnnotationColorPicker, KEY_RULER_COLOR_ANNOTATION, Color.WHITESMOKE));
+
         mPointListCheckBox.setSelected(mOptions.is(ModuleOptions.KEY_RULER_POINT_LIST, false));
+        mShapeIntegerProperty.set(mOptions.getInt(KEY_RULER_SHAPE));
+        int index = mOptions.getInt(KEY_RULER_PATH_TYPE, 1);
+        mPathTypeComboBox.getSelectionModel().select(index);
+        mMeasureTool.setPathType(mPathTypes[index]);
     }
 }
