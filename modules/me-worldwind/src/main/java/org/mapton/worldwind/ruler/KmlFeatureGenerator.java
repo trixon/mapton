@@ -48,6 +48,7 @@ class KmlFeatureGenerator extends MKmlCreator {
             case MeasureTool.SHAPE_PATH:
                 return generateLine();
 
+            case MeasureTool.SHAPE_ELLIPSE:
             case MeasureTool.SHAPE_POLYGON:
             case MeasureTool.SHAPE_SQUARE:
             case MeasureTool.SHAPE_QUAD:
@@ -56,9 +57,6 @@ class KmlFeatureGenerator extends MKmlCreator {
             case MeasureTool.SHAPE_CIRCLE:
                 return generateCircle();
 
-            case MeasureTool.SHAPE_ELLIPSE:
-                return generateEllipse();
-
             default:
                 return null;
         }
@@ -66,15 +64,15 @@ class KmlFeatureGenerator extends MKmlCreator {
 
     private Feature generateCircle() {
         Position center = mMeasureTool.getCenterPosition();
-        double height = mMeasureTool.getHeight();
-        Placemark placemark = createCircle(mTitle, createCircle(center.getLatitude().getDegrees(), center.getLongitude().getDegrees(), height, 100), "#FF0000FF");
+        double lat = center.getLatitude().getDegrees();
+        double lon = center.getLongitude().getDegrees();
+        double radius = mMeasureTool.getHeight() / 2;
+        int quality = 100;
+
+        Placemark placemark = createCircle(mTitle, lat, lon, radius, quality, mMeasureTool.getLineWidth(), getColorLine(), getColorFill(), ColorMode.NORMAL, AltitudeMode.CLAMP_TO_GROUND);
         placemark.setDescription(mDescription);
 
         return placemark;
-    }
-
-    private Feature generateEllipse() {
-        throw new UnsupportedOperationException("Ellipse export not supported yet.");
     }
 
     private Feature generateLine() {
