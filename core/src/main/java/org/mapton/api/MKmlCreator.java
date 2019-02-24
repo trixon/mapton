@@ -165,6 +165,7 @@ public abstract class MKmlCreator {
         }
     }
 
+    @Deprecated
     public ArrayList<Point3D> createCircle(double lat, double lon, double radius, int quality) {
         if (quality < 3) {
             throw new IllegalArgumentException("Quality must be greater than 2");
@@ -180,6 +181,24 @@ public abstract class MKmlCreator {
         list.add(list.get(0));
 
         return list;
+    }
+
+    public Placemark createCircle(String name, double lat, double lon, double radius, int quality, double width, String lineColor, String fillColor, ColorMode colorMode, AltitudeMode altitudeMode) {
+        if (quality < 3) {
+            throw new IllegalArgumentException("Quality must be greater than 2");
+        }
+
+        MLatLon center = new MLatLon(lat, lon);
+        ArrayList<Point3D> list = new ArrayList<>();
+
+        for (double i = 0; i < 360.0; i = i + 360 / quality) {
+            MLatLon latLon = center.getDestinationPoint(i, radius);
+            list.add(new Point3D(latLon.getLongitude(), latLon.getLatitude(), 0));
+        }
+
+        list.add(list.get(0));
+
+        return createPolygon(name, list, width, lineColor, fillColor, colorMode, altitudeMode);
     }
 
     public Placemark createLine(String name, ArrayList<Point3D> coordinates, double width, String color, AltitudeMode altitudeMode) {
