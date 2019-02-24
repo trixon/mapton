@@ -105,7 +105,7 @@ public class RulerTab extends Tab {
     }
 
     Feature getFeature() {
-        return new KmlFeatureGenerator(getText(), mMeasureTool).generate();
+        return new KmlFeatureGenerator(getText(), mMetricsTextArea.getText(), mMeasureTool).generate();
     }
 
     private void createUI() {

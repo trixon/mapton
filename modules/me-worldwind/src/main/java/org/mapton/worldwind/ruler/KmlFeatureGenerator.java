@@ -18,11 +18,13 @@ package org.mapton.worldwind.ruler;
 import de.micromata.opengis.kml.v_2_2_0.AltitudeMode;
 import de.micromata.opengis.kml.v_2_2_0.ColorMode;
 import de.micromata.opengis.kml.v_2_2_0.Feature;
+import de.micromata.opengis.kml.v_2_2_0.Placemark;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.util.measure.MeasureTool;
 import java.util.ArrayList;
 import javafx.geometry.Point3D;
 import org.mapton.api.MKmlCreator;
+import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
@@ -30,11 +32,13 @@ import org.mapton.api.MKmlCreator;
  */
 class KmlFeatureGenerator extends MKmlCreator {
 
+    private final String mDescription;
     private final MeasureTool mMeasureTool;
     private final String mTitle;
 
-    KmlFeatureGenerator(String title, MeasureTool measureTool) {
+    KmlFeatureGenerator(String title, String description, MeasureTool measureTool) {
         mTitle = title;
+        mDescription = description;
         mMeasureTool = measureTool;
     }
 
@@ -42,42 +46,57 @@ class KmlFeatureGenerator extends MKmlCreator {
         switch (mMeasureTool.getMeasureShapeType()) {
             case MeasureTool.SHAPE_LINE:
             case MeasureTool.SHAPE_PATH:
-                return lineFeature();
+                return generateLine();
 
             case MeasureTool.SHAPE_POLYGON:
             case MeasureTool.SHAPE_SQUARE:
             case MeasureTool.SHAPE_QUAD:
-                return polygonFeature();
+                return generatePolygon();
 
             case MeasureTool.SHAPE_CIRCLE:
-                return circleFeature();
+                return generateCircle();
 
             case MeasureTool.SHAPE_ELLIPSE:
-                return ellipseFeature();
+                return generateEllipse();
 
             default:
                 return null;
         }
-
     }
 
-    private Feature circleFeature() {
+    private Feature generateCircle() {
         Position center = mMeasureTool.getCenterPosition();
         double height = mMeasureTool.getHeight();
+        Placemark placemark = createCircle(mTitle, createCircle(center.getLatitude().getDegrees(), center.getLongitude().getDegrees(), height, 100), "#FF0000FF");
+        placemark.setDescription(mDescription);
 
-        return createCircle(mTitle, createCircle(center.getLatitude().getDegrees(), center.getLongitude().getDegrees(), height, 100), "#FF0000FF");
+        return placemark;
     }
 
-    private Feature ellipseFeature() {
-        throw new UnsupportedOperationException("Ellipse not supported yet.");
+    private Feature generateEllipse() {
+        throw new UnsupportedOperationException("Ellipse export not supported yet.");
     }
 
-    private Feature lineFeature() {
-        return createLine(mTitle, getCoordinates(), 0, "#FF00FF00", AltitudeMode.CLAMP_TO_GROUND);
+    private Feature generateLine() {
+        Placemark placemark = createLine(mTitle, getCoordinates(), mMeasureTool.getLineWidth(), getColorLine(), AltitudeMode.CLAMP_TO_GROUND);
+        placemark.setDescription(mDescription);
+
+        return placemark;
     }
 
-    private Feature polygonFeature() {
-        return createPolygon(mTitle, getCoordinates(), 0, "#FF00FF00", ColorMode.NORMAL, AltitudeMode.CLAMP_TO_GROUND);
+    private Feature generatePolygon() {
+        Placemark placemark = createPolygon(mTitle, getCoordinates(), mMeasureTool.getLineWidth(), getColorLine(), getColorFill(), ColorMode.NORMAL, AltitudeMode.CLAMP_TO_GROUND);
+        placemark.setDescription(mDescription);
+
+        return placemark;
+    }
+
+    private String getColorFill() {
+        return FxHelper.colorToHexABGR(mMeasureTool.getFillColor());
+    }
+
+    private String getColorLine() {
+        return FxHelper.colorToHexABGR(mMeasureTool.getLineColor());
     }
 
     private ArrayList<Point3D> getCoordinates() {
@@ -87,6 +106,7 @@ class KmlFeatureGenerator extends MKmlCreator {
 
             coordinates.add(c);
         }
+
         return coordinates;
     }
 }

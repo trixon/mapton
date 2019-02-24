@@ -240,17 +240,17 @@ public abstract class MKmlCreator {
         return placemark;
     }
 
-    public Placemark createPolygon(String name, ArrayList<Point3D> coordinates, double width, String color, ColorMode colorMode, AltitudeMode altitudeMode) {
+    public Placemark createPolygon(String name, ArrayList<Point3D> coordinates, double width, String lineColor, String fillColor, ColorMode colorMode, AltitudeMode altitudeMode) {
         Placemark placemark = KmlFactory.createPlacemark().withName(name);
 
         Style style = placemark.createAndAddStyle();
         LineStyle lineStyle = style.createAndSetLineStyle()
-                .withColor("00000000")
-                .withWidth(0.0);
+                .withColor(lineColor)
+                .withWidth(width);
 
         PolyStyle polyStyle = style.createAndSetPolyStyle();
-        if (color != null) {
-            polyStyle.setColor(color);
+        if (fillColor != null) {
+            polyStyle.setColor(fillColor);
         }
         if (colorMode != null) {
             polyStyle.setColorMode(colorMode);
@@ -262,7 +262,6 @@ public abstract class MKmlCreator {
 
         coordinates.forEach((node) -> {
             linearRing.addToCoordinates(node.getX(), node.getY());
-
         });
 
         polygon.setAltitudeMode(altitudeMode);
