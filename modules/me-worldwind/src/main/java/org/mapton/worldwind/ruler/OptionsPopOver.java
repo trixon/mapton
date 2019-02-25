@@ -50,6 +50,7 @@ public class OptionsPopOver extends BasePopOver {
 
     private CheckBox mAnnotationCheckBox;
     private ColorPicker mAnnotationColorPicker;
+    private ColorPicker mBackgroundColorPicker;
     private final ResourceBundle mBundle = NbBundle.getBundle(RulerTab.class);
     private CheckBox mControlPointsCheckBox;
     private CheckBox mFollowTerrainCheckBox;
@@ -86,9 +87,10 @@ public class OptionsPopOver extends BasePopOver {
         mPathTypeComboBox = new ComboBox<>(FXCollections.observableArrayList(pathTypes));
         mPathTypeComboBox.getSelectionModel().select(RulerTab.DEFAULT_PATH_TYPE_INDEX);
 
-        mLineColorPicker = new ColorPicker(Color.YELLOW);
-        mPointColorPicker = new ColorPicker(Color.BLUE);
-        mAnnotationColorPicker = new ColorPicker(Color.WHITE);
+        mLineColorPicker = new ColorPicker();
+        mBackgroundColorPicker = new ColorPicker();
+        mPointColorPicker = new ColorPicker();
+        mAnnotationColorPicker = new ColorPicker();
 
         mFollowTerrainCheckBox = new CheckBox(mBundle.getString("ruler.option.follow_terrain"));
         mRubberBandCheckBox = new CheckBox(mBundle.getString("ruler.option.rubber_band"));
@@ -103,6 +105,7 @@ public class OptionsPopOver extends BasePopOver {
 
         vbox.getChildren().setAll(
                 new VBox(new Label(Dict.Geometry.LINE.toString()), mLineColorPicker),
+                new VBox(new Label(Dict.BACKGROUND.toString()), mBackgroundColorPicker),
                 new VBox(new Label(Dict.Geometry.POINT.toString()), mPointColorPicker),
                 new VBox(new Label(mBundle.getString("ruler.option.annotation")), mAnnotationColorPicker),
                 new VBox(pathTypeLabel, mPathTypeComboBox),
@@ -122,7 +125,7 @@ public class OptionsPopOver extends BasePopOver {
     }
 
     private java.awt.Color initColors(ColorPicker colorPicker, String key, Color defaultColor) {
-        Color color = FxHelper.colorFromHex(mOptions.get(key, FxHelper.colorToHex(defaultColor)));
+        Color color = FxHelper.colorFromHexRGBA(mOptions.get(key, FxHelper.colorToHexRGBA(defaultColor)));
         colorPicker.setValue(color);
 
         return FxHelper.colorToColor(color);
@@ -187,6 +190,9 @@ public class OptionsPopOver extends BasePopOver {
             if (source == mLineColorPicker) {
                 key = KEY_RULER_COLOR_LINE;
                 mMeasureTool.setLineColor(awtColor);
+            } else if (source == mBackgroundColorPicker) {
+                key = KEY_RULER_COLOR_BACKGROUND;
+                mMeasureTool.setFillColor(awtColor);
             } else if (source == mPointColorPicker) {
                 key = KEY_RULER_COLOR_POINT;
                 mMeasureTool.getControlPointsAttributes().setBackgroundColor(awtColor);
@@ -195,11 +201,12 @@ public class OptionsPopOver extends BasePopOver {
                 mMeasureTool.getAnnotationAttributes().setTextColor(awtColor);
             }
 
-            mOptions.put(key, FxHelper.colorToHex(color));
+            mOptions.put(key, FxHelper.colorToHexRGBA(color));
             mWorldWindow.redraw();
         };
 
         mLineColorPicker.setOnAction(colorActionEvent);
+        mBackgroundColorPicker.setOnAction(colorActionEvent);
         mPointColorPicker.setOnAction(colorActionEvent);
         mAnnotationColorPicker.setOnAction(colorActionEvent);
     }
@@ -210,6 +217,7 @@ public class OptionsPopOver extends BasePopOver {
         });
 
         mMeasureTool.setLineColor(initColors(mLineColorPicker, KEY_RULER_COLOR_LINE, Color.YELLOW));
+        mMeasureTool.setFillColor(initColors(mBackgroundColorPicker, KEY_RULER_COLOR_BACKGROUND, Color.web("FFFF0030")));
         mMeasureTool.getControlPointsAttributes().setBackgroundColor(initColors(mPointColorPicker, KEY_RULER_COLOR_POINT, Color.BLUE));
         mMeasureTool.getAnnotationAttributes().setTextColor(initColors(mAnnotationColorPicker, KEY_RULER_COLOR_ANNOTATION, Color.WHITESMOKE));
 
