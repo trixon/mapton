@@ -167,7 +167,7 @@ public class GridController extends LayerBundle {
         shapeAttributes.setDrawOutline(true);
 //        shapeAttributes.setOutlineOpacity(0.5);
         shapeAttributes.setOutlineWidth(grid.getLineWidth());
-        shapeAttributes.setOutlineMaterial(new Material(FxHelper.colorToColor(FxHelper.colorFromHex(grid.getColor()))));
+        shapeAttributes.setOutlineMaterial(new Material(FxHelper.colorToColor(FxHelper.colorFromHexRGBA(grid.getColor()))));
 
         MCooTrans cooTrans = MCooTrans.getCooTrans(grid.getCooTrans());
 

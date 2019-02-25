@@ -64,7 +64,7 @@ public class LocalGridPanel extends FxDialogPanel {
 
     public void load(LocalGrid grid) {
         mNameTextField.setText(grid.getName());
-        mColorPicker.setValue(FxHelper.colorFromHex(grid.getColor()));
+        mColorPicker.setValue(FxHelper.colorFromHexRGBA(grid.getColor()));
 
         mLatStartSpinner.getValueFactory().setValue(grid.getLatStart());
         mLatStepSpinner.getValueFactory().setValue(grid.getLatStep());

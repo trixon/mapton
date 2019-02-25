@@ -82,7 +82,7 @@ public class BookmarkLayerBundle extends LayerBundle {
 
                 PointPlacemarkAttributes attrs = new PointPlacemarkAttributes(placemark.getDefaultAttributes());
                 attrs.setImageAddress("images/pushpins/plain-white.png");
-                attrs.setImageColor(FxHelper.colorToColor(FxHelper.colorFromHex(bookmark.getColor())));
+                attrs.setImageColor(FxHelper.colorToColor(FxHelper.colorFromHexRGBA(bookmark.getColor())));
                 placemark.setAttributes(attrs);
 
                 PointPlacemarkAttributes attrsH = new PointPlacemarkAttributes(attrs);
