@@ -71,7 +71,7 @@ public class BookmarkPanel extends FxDialogPanel {
         mPlacemarkCheckBox.setSelected(bookmark.isDisplayMarker());
         Color color = Color.YELLOW;
         try {
-            color = FxHelper.colorFromHex(bookmark.getColor());
+            color = FxHelper.colorFromHexRGBA(bookmark.getColor());
         } catch (Exception e) {
         }
         mColorPicker.setValue(color);
@@ -86,7 +86,7 @@ public class BookmarkPanel extends FxDialogPanel {
             bookmark.setLatitude(mLatitudeSpinner.getValue());
             bookmark.setLongitude(mLongitudeSpinner.getValue());
             bookmark.setDisplayMarker(mPlacemarkCheckBox.isSelected());
-            bookmark.setColor(FxHelper.colorToHex(mColorPicker.getValue()));
+            bookmark.setColor(FxHelper.colorToHexRGB(mColorPicker.getValue()));
         });
     }
 

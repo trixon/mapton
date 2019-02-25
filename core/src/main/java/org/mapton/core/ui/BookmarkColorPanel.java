@@ -33,7 +33,7 @@ public class BookmarkColorPanel extends FxDialogPanel {
     private ColorPicker mColorPicker;
 
     public String getColor() {
-        return FxHelper.colorToHex(mColorPicker.getValue());
+        return FxHelper.colorToHexRGB(mColorPicker.getValue());
     }
 
     @Override
