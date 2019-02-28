@@ -193,7 +193,7 @@ public class LocalGridPanel extends FxDialogPanel {
         latLabel.setFont(font);
         lonLabel.setFont(font);
 
-        Label lineWidthLabel = new Label(mBundle.getString("line_width"));
+        Label lineWidthLabel = new Label(MDict.LINE_WIDTH.toString());
         Label cooTransLabel = new Label(MDict.COORDINATE_SYSTEM.toString());
         Label colorLabel = new Label(Dict.COLOR.toString());
 

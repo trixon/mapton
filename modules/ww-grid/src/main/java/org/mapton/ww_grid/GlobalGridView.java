@@ -24,6 +24,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import static org.mapton.ww_grid.Options.*;
 import org.openide.util.NbBundle;
+import se.trixon.almond.util.Dict;
 
 /**
  *
@@ -51,7 +52,7 @@ public class GlobalGridView extends VBox {
     private void createUI() {
         Font defaultFont = Font.getDefault();
         ResourceBundle bundle = NbBundle.getBundle(GridTopComponent.class);
-        mPlotCheckBox = new CheckBox(bundle.getString("global"));
+        mPlotCheckBox = new CheckBox(Dict.GLOBAL.toString());
         mPlotCheckBox.setFont(Font.font(defaultFont.getFamily(), FontWeight.BOLD, defaultFont.getSize() * 1.2));
 
         mClampToGroundCheckBox = new CheckBox("CLAMP TO GROUND");
