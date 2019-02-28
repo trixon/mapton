@@ -24,6 +24,7 @@ import java.util.ResourceBundle;
 import java.util.prefs.PreferenceChangeEvent;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -33,9 +34,11 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.Spinner;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import org.apache.commons.lang3.StringUtils;
+import org.mapton.api.MDict;
 import org.mapton.worldwind.ModuleOptions;
 import static org.mapton.worldwind.ModuleOptions.*;
 import org.openide.util.NbBundle;
@@ -57,6 +60,7 @@ public class OptionsPopOver extends BasePopOver {
     private CheckBox mFreeHandCheckBox;
     private final BiMap<String, CheckBox> mKeyCheckBoxes = HashBiMap.create();
     private ColorPicker mLineColorPicker;
+    private Spinner<Double> mLineWidthSpinner;
     private final MeasureTool mMeasureTool;
     private final ModuleOptions mOptions = ModuleOptions.getInstance();
     private ComboBox<String> mPathTypeComboBox;
@@ -92,6 +96,11 @@ public class OptionsPopOver extends BasePopOver {
         mPointColorPicker = new ColorPicker();
         mAnnotationColorPicker = new ColorPicker();
 
+        mLineWidthSpinner = new Spinner<>(1.0, 10.0, 2.0);
+        mLineWidthSpinner.prefWidthProperty().bind(mLineColorPicker.widthProperty());
+        FxHelper.setEditable(true, mLineWidthSpinner);
+        FxHelper.autoCommitSpinners(mLineWidthSpinner);
+
         mFollowTerrainCheckBox = new CheckBox(mBundle.getString("ruler.option.follow_terrain"));
         mRubberBandCheckBox = new CheckBox(mBundle.getString("ruler.option.rubber_band"));
         mFreeHandCheckBox = new CheckBox(mBundle.getString("ruler.option.free_hand"));
@@ -105,6 +114,7 @@ public class OptionsPopOver extends BasePopOver {
 
         vbox.getChildren().setAll(
                 new VBox(new Label(Dict.Geometry.LINE.toString()), mLineColorPicker),
+                new VBox(new Label(MDict.LINE_WIDTH.toString()), mLineWidthSpinner),
                 new VBox(new Label(Dict.BACKGROUND.toString()), mBackgroundColorPicker),
                 new VBox(new Label(Dict.Geometry.POINT.toString()), mPointColorPicker),
                 new VBox(new Label(mBundle.getString("ruler.option.annotation")), mAnnotationColorPicker),
@@ -209,6 +219,11 @@ public class OptionsPopOver extends BasePopOver {
         mBackgroundColorPicker.setOnAction(colorActionEvent);
         mPointColorPicker.setOnAction(colorActionEvent);
         mAnnotationColorPicker.setOnAction(colorActionEvent);
+
+        mLineWidthSpinner.valueProperty().addListener((ObservableValue<? extends Double> observable, Double oldValue, Double newValue) -> {
+            mMeasureTool.setLineWidth(newValue);
+            mOptions.put(KEY_RULER_LINE_WIDTH, newValue);
+        });
     }
 
     private void initStates() {
@@ -226,5 +241,9 @@ public class OptionsPopOver extends BasePopOver {
         int index = mOptions.getInt(KEY_RULER_PATH_TYPE, 1);
         mPathTypeComboBox.getSelectionModel().select(index);
         mMeasureTool.setPathType(mPathTypes[index]);
+
+        double lineWidth = mOptions.getDouble(KEY_RULER_LINE_WIDTH, 3.0);
+        mLineWidthSpinner.getValueFactory().setValue(lineWidth);
+        mMeasureTool.setLineWidth(lineWidth);
     }
 }
