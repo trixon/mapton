@@ -150,11 +150,19 @@ public class RulerTab extends Tab {
             if (StringUtils.equalsAny(propertyName, MeasureTool.EVENT_POSITION_ADD, MeasureTool.EVENT_POSITION_REMOVE, MeasureTool.EVENT_POSITION_REPLACE)) {
                 updatePoints();
             } else if (propertyName.equals(MeasureTool.EVENT_ARMED)) {
-                ((Component) mWorldWindow).setCursor(mMeasureTool.isArmed() ? Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR) : Cursor.getDefaultCursor());
-//                int shape = mShapeComboBox.getSelectionModel().getSelectedIndex();
-//                if ((shape == 1 || shape == 2) && !mMeasureTool.isArmed()) {
-//                    setRunState(RunState.STARTABLE);
-//                }
+                Cursor cursor;
+
+                if (mMeasureTool.isArmed()) {
+                    cursor = Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR);
+                } else {
+                    cursor = Cursor.getDefaultCursor();
+                    int shapeIndex = mOptions.getInt(KEY_RULER_SHAPE);
+                    if (mRunState == RunState.STOPPABLE && shapeIndex != 1 && shapeIndex != 2) {
+                        setRunState(RunState.STARTABLE);
+                    }
+                }
+
+                ((Component) mWorldWindow).setCursor(cursor);
             } else if (propertyName.equals(MeasureTool.EVENT_METRIC_CHANGED)) {
                 updateMetrics();
             }
@@ -165,6 +173,9 @@ public class RulerTab extends Tab {
                 switch (evt.getKey()) {
                     case KEY_RULER_POINT_LIST:
                         updatePointListVisibility();
+                        break;
+                    case KEY_RULER_SHAPE:
+                        setRunState(RunState.STOPPABLE);
                         break;
                 }
             });
@@ -246,30 +257,32 @@ public class RulerTab extends Tab {
     }
 
     private void setRunState(RunState runState) {
-        switch (runState) {
-            case STARTABLE://Stop measure
-                mStartAction.setGraphic(mStartImageView);
-                mStartAction.setSelected(false);
-                mStopAction.setDisabled(true);
-                mMeasureTool.setArmed(false);
-                break;
+        Platform.runLater(() -> {
+            switch (runState) {
+                case STARTABLE://Stop measure
+                    mStartAction.setGraphic(mStartImageView);
+                    mStartAction.setSelected(false);
+                    mStopAction.setDisabled(true);
+                    mMeasureTool.setArmed(false);
+                    break;
 
-            case RESUMABLE://Pause/Resume
-                mMeasureTool.setArmed(!mMeasureTool.isArmed());
-                mStartAction.setGraphic(!mMeasureTool.isArmed() ? mResumeImageView : mPauseImageView);
-                mStartAction.setSelected(false);
-                break;
+                case RESUMABLE://Pause/Resume
+                    mMeasureTool.setArmed(!mMeasureTool.isArmed());
+                    mStartAction.setGraphic(!mMeasureTool.isArmed() ? mResumeImageView : mPauseImageView);
+                    mStartAction.setSelected(false);
+                    break;
 
-            case STOPPABLE://Start measure
-                mStartAction.setGraphic(mPauseImageView);
-                mStartAction.setSelected(false);
-                mStopAction.setDisabled(false);
-                mMeasureTool.clear();
-                mMeasureTool.setArmed(true);
-                break;
-        }
+                case STOPPABLE://Start measure
+                    mStartAction.setGraphic(mPauseImageView);
+                    mStartAction.setSelected(false);
+                    mStopAction.setDisabled(false);
+                    mMeasureTool.clear();
+                    mMeasureTool.setArmed(true);
+                    break;
+            }
 
-        mRunState = runState;
+            mRunState = runState;
+        });
     }
 
     private void updateMetrics() {
