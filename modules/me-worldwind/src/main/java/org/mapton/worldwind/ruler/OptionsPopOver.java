@@ -27,6 +27,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
@@ -215,10 +216,29 @@ public class OptionsPopOver extends BasePopOver {
             mWorldWindow.redraw();
         };
 
+        EventHandler<Event> colorHiddenEvent = (event) -> {
+            setAutoHide(true);
+        };
+
+        EventHandler<Event> colorShowingEvent = (event) -> {
+            setAutoHide(false);
+        };
+
         mLineColorPicker.setOnAction(colorActionEvent);
+        mLineColorPicker.setOnShowing(colorShowingEvent);
+        mLineColorPicker.setOnHidden(colorHiddenEvent);
+
         mBackgroundColorPicker.setOnAction(colorActionEvent);
+        mBackgroundColorPicker.setOnShowing(colorShowingEvent);
+        mBackgroundColorPicker.setOnHidden(colorHiddenEvent);
+
         mPointColorPicker.setOnAction(colorActionEvent);
+        mPointColorPicker.setOnShowing(colorShowingEvent);
+        mPointColorPicker.setOnHidden(colorHiddenEvent);
+
         mAnnotationColorPicker.setOnAction(colorActionEvent);
+        mAnnotationColorPicker.setOnShowing(colorShowingEvent);
+        mAnnotationColorPicker.setOnHidden(colorHiddenEvent);
 
         mLineWidthSpinner.valueProperty().addListener((ObservableValue<? extends Double> observable, Double oldValue, Double newValue) -> {
             mMeasureTool.setLineWidth(newValue);
