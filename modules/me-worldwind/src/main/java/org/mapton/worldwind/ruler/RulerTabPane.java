@@ -40,7 +40,7 @@ import se.trixon.almond.util.fx.dialogs.SimpleDialog;
 public class RulerTabPane extends TabPane {
 
     private File mDestination;
-    private SimpleDateFormat mSdf = new SimpleDateFormat("yyyy-MM-dd HH.mm.ss");
+    private SimpleDateFormat mSdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
     private int mTabCounter = 0;
     private WorldWindow mWorldWindow;
 
