@@ -251,20 +251,23 @@ public class BookmarkView extends BorderPane {
             MBookmark bookmark = (MBookmark) ti.getValue();
             mPreferences.putBoolean(path, newValue);
         });
-
-        Comparator c1 = new Comparator<TreeItem<MBookmark>>() {
-            @Override
-            public int compare(TreeItem<MBookmark> o1, TreeItem<MBookmark> o2) {
-                return Boolean.compare(o1.getChildren().isEmpty(), o2.getChildren().isEmpty());
-            }
-        };
-
-        Comparator c2 = new Comparator<TreeItem<MBookmark>>() {
-            @Override
-            public int compare(TreeItem<MBookmark> o1, TreeItem<MBookmark> o2) {
-                return o1.getValue().getName().compareTo(o2.getValue().getName());
-            }
-        };
+//TODO Remove and submit bug report
+//Causes trouble with NetBeans Compile on Save
+//        Comparator c1 = new Comparator<TreeItem<MBookmark>>() {
+//            @Override
+//            public int compare(TreeItem<MBookmark> o1, TreeItem<MBookmark> o2) {
+//                return Boolean.compare(o1.getChildren().isEmpty(), o2.getChildren().isEmpty());
+//            }
+//        };
+//
+//        Comparator c2 = new Comparator<TreeItem<MBookmark>>() {
+//            @Override
+//            public int compare(TreeItem<MBookmark> o1, TreeItem<MBookmark> o2) {
+//                return o1.getValue().getName().compareTo(o2.getValue().getName());
+//            }
+//        };
+        Comparator c1 = (Comparator<TreeItem<MBookmark>>) (TreeItem<MBookmark> o1, TreeItem<MBookmark> o2) -> Boolean.compare(o1.getChildren().isEmpty(), o2.getChildren().isEmpty());
+        Comparator c2 = (Comparator<TreeItem<MBookmark>>) (TreeItem<MBookmark> o1, TreeItem<MBookmark> o2) -> o1.getValue().getName().compareTo(o2.getValue().getName());
 
         treeItem.getChildren().sort(c1.thenComparing(c2));
 

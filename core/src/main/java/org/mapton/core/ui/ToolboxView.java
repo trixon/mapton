@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -169,20 +169,23 @@ public class ToolboxView extends BorderPane {
             Action action = (Action) ti.getValue();
             mPreferences.putBoolean(path, newValue);
         });
-
-        Comparator c1 = new Comparator<TreeItem<Action>>() {
-            @Override
-            public int compare(TreeItem<Action> o1, TreeItem<Action> o2) {
-                return Boolean.compare(o1.getChildren().isEmpty(), o2.getChildren().isEmpty());
-            }
-        };
-
-        Comparator c2 = new Comparator<TreeItem<Action>>() {
-            @Override
-            public int compare(TreeItem<Action> o1, TreeItem<Action> o2) {
-                return o1.getValue().getText().compareTo(o2.getValue().getText());
-            }
-        };
+//TODO Remove and submit bug report
+//Causes trouble with NetBeans Compile on Save
+//        Comparator c1 = new Comparator<TreeItem<Action>>() {
+//            @Override
+//            public int compare(TreeItem<Action> o1, TreeItem<Action> o2) {
+//                return Boolean.compare(o1.getChildren().isEmpty(), o2.getChildren().isEmpty());
+//            }
+//        };
+//
+//        Comparator c2 = new Comparator<TreeItem<Action>>() {
+//            @Override
+//            public int compare(TreeItem<Action> o1, TreeItem<Action> o2) {
+//                return o1.getValue().getText().compareTo(o2.getValue().getText());
+//            }
+//        };
+        Comparator c1 = (Comparator<TreeItem<Action>>) (TreeItem<Action> o1, TreeItem<Action> o2) -> Boolean.compare(o1.getChildren().isEmpty(), o2.getChildren().isEmpty());
+        Comparator c2 = (Comparator<TreeItem<Action>>) (TreeItem<Action> o1, TreeItem<Action> o2) -> o1.getValue().getText().compareTo(o2.getValue().getText());
 
         treeItem.getChildren().sort(c1.thenComparing(c2));
 
