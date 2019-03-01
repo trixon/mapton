@@ -16,6 +16,7 @@
 package org.mapton.worldwind.ruler;
 
 import gov.nasa.worldwind.util.measure.MeasureTool;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -35,11 +36,16 @@ public class ShapePopOver extends BasePopOver {
 
     private final MeasureTool mMeasureTool;
     private final ModuleOptions mOptions = ModuleOptions.getInstance();
+    private final SimpleIntegerProperty mShapeIndexProperty = new SimpleIntegerProperty();
 
     public ShapePopOver(MeasureTool measureTool) {
         mMeasureTool = measureTool;
         setTitle(Dict.Geometry.GEOMETRY.toString());
         setContentNode(createUI());
+    }
+
+    public SimpleIntegerProperty shapeIndexProperty() {
+        return mShapeIndexProperty;
     }
 
     private Node createUI() {
@@ -70,7 +76,7 @@ public class ShapePopOver extends BasePopOver {
             int index = toggleGroup.getToggles().indexOf(toggleGroup.getSelectedToggle());
             mMeasureTool.setMeasureShapeType(shapes[index]);
             mOptions.put(ModuleOptions.KEY_RULER_SHAPE, index);
-
+            mShapeIndexProperty.set(index);
             hide();
         };
 

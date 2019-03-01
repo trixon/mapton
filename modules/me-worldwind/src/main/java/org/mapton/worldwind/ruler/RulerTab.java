@@ -31,6 +31,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.prefs.PreferenceChangeEvent;
 import javafx.application.Platform;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.ButtonBase;
@@ -174,11 +175,12 @@ public class RulerTab extends Tab {
                     case KEY_RULER_POINT_LIST:
                         updatePointListVisibility();
                         break;
-                    case KEY_RULER_SHAPE:
-                        setRunState(RunState.STOPPABLE);
-                        break;
                 }
             });
+        });
+
+        mShapePopOver.shapeIndexProperty().addListener((ObservableValue<? extends Number> ov, Number t, Number t1) -> {
+            setRunState(RunState.STOPPABLE);
         });
 
         setOnClosed((event -> {
