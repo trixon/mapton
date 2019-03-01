@@ -106,22 +106,10 @@ public class ToolboxView extends BorderPane {
             if (mToolParents.containsKey(path)) {
                 parent = mToolParents.get(path);
             } else {
-                MTool tool = new MTool() {
-                    @Override
-                    public Action getAction() {
-                        Action action = new Action(segment, (event) -> {
-                        });
+                Action action = new Action(segment, (event) -> {
+                });
 
-                        return action;
-                    }
-
-                    @Override
-                    public String getParent() {
-                        return path;
-                    }
-                };
-
-                parent.getChildren().add(parent = mToolParents.computeIfAbsent(sb.toString(), k -> new TreeItem(tool.getAction())));
+                parent.getChildren().add(parent = mToolParents.computeIfAbsent(sb.toString(), k -> new TreeItem(action)));
             }
 
             sb.append("/");
