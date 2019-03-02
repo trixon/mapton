@@ -80,6 +80,7 @@ public class GeonamesSearchEngine implements MSearchEngine {
                     b.setCategory(g.getCountryCode());
                     b.setLatitude(g.getLatitude());
                     b.setLongitude(g.getLongitude());
+                    b.setZoom(0.5);
                     bookmarks.add(b);
                 });
 
