@@ -145,7 +145,11 @@ public final class MapTopComponent extends MTopComponent {
 
     public void displayContextMenu(Point screenXY) {
         Platform.runLater(() -> {
-            mContextMenu.show(mRoot, screenXY.x, screenXY.y);
+            Node rootNode = AppStatusView.getInstance();
+            rootNode.getScene().getWindow().requestFocus();
+            rootNode.requestFocus();
+
+            mContextMenu.show(rootNode, screenXY.x, screenXY.y);
         });
     }
 
