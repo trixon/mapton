@@ -24,7 +24,6 @@ import java.util.prefs.PreferenceChangeEvent;
 import javafx.collections.ListChangeListener;
 import org.mapton.api.MBookmark;
 import org.mapton.api.MBookmarkManager;
-import org.mapton.api.MEngine;
 import org.mapton.api.MLatLon;
 import org.mapton.api.MOptions;
 import org.mapton.worldwind.api.LayerBundle;
@@ -42,12 +41,10 @@ public class BookmarkLayerBundle extends LayerBundle {
 
     private final MBookmarkManager mBookmarkManager = MBookmarkManager.getInstance();
     private final RenderableLayer mBookmarksLayer = new RenderableLayer();
-    private final WorldWindMapEngine mEngine;
     private final MOptions mOptions = MOptions.getInstance();
 
     public BookmarkLayerBundle() {
-        mEngine = (WorldWindMapEngine) MEngine.byName("WorldWind");
-        mBookmarksLayer.setName(String.format("~ %s ~", Dict.BOOKMARKS.toString()));
+        mBookmarksLayer.setName(String.format("- %s -", Dict.BOOKMARKS.toString()));
         mBookmarksLayer.setEnabled(true);
         mBookmarkManager.getItems().addListener((ListChangeListener.Change<? extends MBookmark> c) -> {
             updatePlacemarks();

@@ -45,7 +45,8 @@ public class LayerView extends BorderPane {
 
     void refresh(WorldWindowPanel map) {
         mMap = map;
-        mListView.setItems(mMap.getCustomLayers());
+        mListView.setItems(mMap.getCustomLayers().sorted((Layer o1, Layer o2) -> o1.getName().compareTo(o2.getName())));
+
         mListView.setCellFactory(lv -> new CheckBoxListCell<Layer>(mListView::getItemBooleanProperty) {
             @Override
             public void updateItem(Layer layer, boolean empty) {
