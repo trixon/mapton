@@ -38,7 +38,6 @@ import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.layers.LayerList;
 import gov.nasa.worldwind.layers.ViewControlsLayer;
 import gov.nasa.worldwind.layers.ViewControlsSelectListener;
-import gov.nasa.worldwind.terrain.CompoundElevationModel;
 import gov.nasa.worldwind.terrain.ZeroElevationModel;
 import java.awt.image.BufferedImage;
 import java.net.SocketTimeoutException;
@@ -74,8 +73,10 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
     private final ObservableList<Layer> mCustomLayers = FXCollections.observableArrayList();
     private FlatGlobe mFlatGlobe;
     private HashMap<String, AbstractGeographicProjection> mNameProjections;
+    private ElevationModel mNormalElevationModel;
     private final ModuleOptions mOptions = ModuleOptions.getInstance();
     private Globe mRoundGlobe;
+    private ElevationModel mZeroElevationModel = new ZeroElevationModel();
 
     public WorldWindowPanel() {
         init();
@@ -161,6 +162,7 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         ViewControlsLayer viewControlsLayer = new ViewControlsLayer();
         insertLayerBefore(viewControlsLayer, CompassLayer.class);
         addSelectListener(new ViewControlsSelectListener(this, viewControlsLayer));
+        mNormalElevationModel = wwd.getModel().getGlobe().getElevationModel();
 
         updateScreenLayers();
         updateMode();
@@ -287,16 +289,7 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
     }
 
     private void updateElevation() {
-        final ElevationModel elevationModel = wwd.getModel().getGlobe().getElevationModel();
-        if (elevationModel instanceof CompoundElevationModel) {
-            CompoundElevationModel compoundElevationModel = (CompoundElevationModel) elevationModel;
-            for (ElevationModel subElevationModel : compoundElevationModel.getElevationModels()) {
-                subElevationModel.setEnabled(mOptions.is(KEY_MAP_ELEVATION));
-            }
-        } else if (elevationModel != null) {
-            elevationModel.setEnabled(mOptions.is(KEY_MAP_ELEVATION));
-        }
-
+        wwd.getModel().getGlobe().setElevationModel(mOptions.is(KEY_MAP_ELEVATION) ? mNormalElevationModel : mZeroElevationModel);
         wwd.redraw();
     }
 
