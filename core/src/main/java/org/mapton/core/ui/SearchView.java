@@ -197,7 +197,7 @@ public class SearchView {
     }
 
     private MLatLon parseDecimal(String searchString) {
-        MLatLon latLong = null;
+        MLatLon latLon = null;
         String[] coordinate = searchString.replace(",", " ").trim().split("\\s+");
 
         if (coordinate.length == 2) {
@@ -205,14 +205,13 @@ public class SearchView {
                 final Double lat = NumberUtils.createDouble(coordinate[0]);
                 final Double lon = NumberUtils.createDouble(coordinate[1]);
                 Wgs84DMS dms = new Wgs84DMS();
-
-                if (dms.isWithinWgs84Bounds(lat, lon)) {
-                    latLong = new MLatLon(lat, lon);
+                if (dms.isWithinWgs84Bounds(lon, lat)) {
+                    latLon = new MLatLon(lat, lon);
                 } else {
                     MCooTrans cooTrans = mOptions.getMapCooTrans();
                     if (cooTrans.isWithinProjectedBounds(lat, lon)) {
                         Point2D p = cooTrans.toWgs84(lat, lon);
-                        latLong = new MLatLon(p.getY(), p.getX());
+                        latLon = new MLatLon(p.getY(), p.getX());
                     }
                 }
             } catch (Exception e) {
@@ -220,7 +219,11 @@ public class SearchView {
             }
         }
 
-        return latLong;
+        if (latLon != null) {
+            mResultPopOver.hide();
+        }
+
+        return latLon;
     }
 
     private MLatLon parseDegMinSec(String searchString) {
