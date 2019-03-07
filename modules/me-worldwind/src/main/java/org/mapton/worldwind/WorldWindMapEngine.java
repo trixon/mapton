@@ -15,7 +15,6 @@
  */
 package org.mapton.worldwind;
 
-import org.mapton.worldwind.ruler.RulerTabPane;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLEventListener;
 import gov.nasa.worldwind.Configuration;
@@ -42,6 +41,7 @@ import org.mapton.api.MLatLon;
 import org.mapton.api.MLatLonBox;
 import org.mapton.api.Mapton;
 import static org.mapton.worldwind.ModuleOptions.*;
+import org.mapton.worldwind.ruler.RulerTabPane;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.nbp.dialogs.NbMessage;
@@ -346,7 +346,7 @@ public class WorldWindMapEngine extends MEngine {
 
     private Position toPosition(MLatLon latLon) {
         Angle lat = Angle.fromDegreesLatitude(latLon.getLatitude());
-        Angle lon = Angle.fromDegreesLatitude(latLon.getLongitude());
+        Angle lon = Angle.fromDegreesLongitude(latLon.getLongitude());
 
         return new Position(lat, lon, 0);
     }
@@ -355,8 +355,8 @@ public class WorldWindMapEngine extends MEngine {
         return new Sector(
                 Angle.fromDegreesLatitude(latLonBox.getSouthWest().getLatitude()),
                 Angle.fromDegreesLatitude(latLonBox.getNorthEast().getLatitude()),
-                Angle.fromDegreesLatitude(latLonBox.getSouthWest().getLongitude()),
-                Angle.fromDegreesLatitude(latLonBox.getNorthEast().getLongitude())
+                Angle.fromDegreesLongitude(latLonBox.getSouthWest().getLongitude()),
+                Angle.fromDegreesLongitude(latLonBox.getNorthEast().getLongitude())
         );
     }
 }
