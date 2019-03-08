@@ -38,9 +38,14 @@ import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.layers.LayerList;
 import gov.nasa.worldwind.layers.ViewControlsLayer;
 import gov.nasa.worldwind.layers.ViewControlsSelectListener;
+import gov.nasa.worldwind.terrain.CompoundElevationModel;
+import gov.nasa.worldwind.terrain.LocalElevationModel;
 import gov.nasa.worldwind.terrain.ZeroElevationModel;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.net.SocketTimeoutException;
+import java.nio.BufferUnderflowException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -51,6 +56,7 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javax.swing.SwingUtilities;
 import javax.xml.stream.XMLStreamException;
+import org.apache.commons.io.FileUtils;
 import org.mapton.api.Mapton;
 import static org.mapton.worldwind.ModuleOptions.*;
 import static org.mapton.worldwind.WorldWindMapEngine.LOG_TAG;
@@ -73,7 +79,7 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
     private final ObservableList<Layer> mCustomLayers = FXCollections.observableArrayList();
     private FlatGlobe mFlatGlobe;
     private HashMap<String, AbstractGeographicProjection> mNameProjections;
-    private ElevationModel mNormalElevationModel;
+    private CompoundElevationModel mNormalElevationModel;
     private final ModuleOptions mOptions = ModuleOptions.getInstance();
     private Globe mRoundGlobe;
     private ElevationModel mZeroElevationModel = new ZeroElevationModel();
@@ -121,11 +127,47 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
 
             return image;
         };
-
     }
 
     LayerList getLayers() {
         return getModel().getLayers();
+    }
+
+    private void customElevationModelLoad(File dir) {
+        System.out.println("customElevationModelLoad " + dir.getAbsolutePath());
+        LocalElevationModel localElevationModel = new LocalElevationModel();
+
+        for (File file : dir.listFiles()) {
+            if (!file.isFile()) {
+                continue;
+            }
+
+            try {
+                System.out.println("load elevation model " + file.getAbsolutePath());
+//                CompoundElevationModel cem = (CompoundElevationModel) getWwd().getModel().getGlobe().getElevationModel();
+                localElevationModel.addElevations(file);
+//                cem.addElevationModel(em);
+                mNormalElevationModel.addElevationModel(localElevationModel);
+            } catch (BufferUnderflowException e) {
+                System.out.println(e.getMessage());
+            } catch (IOException e) {
+                Exceptions.printStackTrace(e);
+            }
+        }
+    }
+
+    private void customElevationModelRefresh() {
+        Thread thread = new Thread(() -> {
+            File dir = new File(FileUtils.getUserDirectory(), "test/dem");
+            if (dir.isDirectory()) {
+                customElevationModelLoad(dir);
+            }
+
+            System.out.println("status: ready");
+        });
+
+        thread.setPriority(Thread.MIN_PRIORITY);
+        thread.start();
     }
 
     private GeographicProjection getProjection() {
@@ -162,7 +204,7 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         ViewControlsLayer viewControlsLayer = new ViewControlsLayer();
         insertLayerBefore(viewControlsLayer, CompassLayer.class);
         addSelectListener(new ViewControlsSelectListener(this, viewControlsLayer));
-        mNormalElevationModel = wwd.getModel().getGlobe().getElevationModel();
+        mNormalElevationModel = (CompoundElevationModel) wwd.getModel().getGlobe().getElevationModel();
 
         updateScreenLayers();
         updateMode();
@@ -180,6 +222,8 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
 
         initLayerBundles();
         initWmsService();
+
+        customElevationModelRefresh();
     }
 
     private void initLayerBundles() {
