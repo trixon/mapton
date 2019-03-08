@@ -116,6 +116,7 @@
         <!--<module>demo</module>-->
         <!--<module>modules/me-mapjfx</module>-->
         <!--<module>modules/ww-mapollage</module>-->
+        <module>modules-ext/gdal</module>
     </modules>
 
     <properties>
