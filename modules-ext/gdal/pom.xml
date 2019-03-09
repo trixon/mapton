@@ -8,6 +8,7 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <artifactId>ext-gdal</artifactId>
+    <name>ext-gdal</name>
     <version>1.7.2-1</version>
     <packaging>nbm</packaging>
     <build>
@@ -40,11 +41,24 @@
         </plugins>
     </build>
     <dependencies>
+        <!-- NetBeans -->
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-netbeans-api-annotations-common</artifactId>
             <version>${netbeans.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-util</artifactId>
+            <version>${netbeans.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-modules</artifactId>
+            <version>${netbeans.version}</version>
+        </dependency>
     </dependencies>
-    <name>ext-gdal</name>
+    <properties>
+        <netbeans.hint.license>apache20</netbeans.hint.license>
+    </properties>
 </project>
