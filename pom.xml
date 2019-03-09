@@ -113,9 +113,12 @@
         <module>modules/ww-grid</module>
 
         <!--Unstable-->
+        <module>modules/datasources</module>
         <!--<module>demo</module>-->
         <!--<module>modules/me-mapjfx</module>-->
         <!--<module>modules/ww-mapollage</module>-->
+
+        <!--Unstable-->
         <module>modules-ext/gdal</module>
     </modules>
 
