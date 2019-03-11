@@ -164,6 +164,11 @@
             <artifactId>ww-grid</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>ww-datasources</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <!--Mapton/Unstable-->
         <dependency>

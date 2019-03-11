@@ -120,6 +120,7 @@
 
         <!--Unstable-->
         <module>modules-ext/gdal</module>
+        <module>modules/ww-datasources</module>
     </modules>
 
     <properties>
