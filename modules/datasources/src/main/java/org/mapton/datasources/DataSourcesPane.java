@@ -59,6 +59,10 @@ public class DataSourcesPane extends BorderPane {
     }
 
     private void apply() {
+        //TODO Read files and create point, lines and polygons for publishing
+        //TODO Support simple attributes such as colors, line width and markers.
+        //TODO Don't put any burden on map engine renderers, unless needed
+        //TODO Get importers from lookup
         ArrayList<File> files = new ArrayList<>();
         for (String line : mTextArea.getText().split("\n")) {
             File file = new File(line);
@@ -79,6 +83,7 @@ public class DataSourcesPane extends BorderPane {
 
     private void init() {
         mTextArea.setText(mPreferences.get(KEY_CONTENT, ""));
+        apply();
     }
 
     private void initToolBar() {
