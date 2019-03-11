@@ -42,7 +42,7 @@ import se.trixon.almond.util.Dict;
 )
 public final class DataSourcesTopComponent extends MTopComponent {
 
-    private DataSourcesPane mRoot;
+    private DataSourcesPane mDataSourcesPane;
 
     public DataSourcesTopComponent() {
         setName(Dict.DATA_SOURCES.toString());
@@ -63,12 +63,13 @@ public final class DataSourcesTopComponent extends MTopComponent {
         // http://wiki.apidesign.org/wiki/PropertyFiles
         p.setProperty("version", "1.0");
         // TODO store your settings
+        mDataSourcesPane.save();
     }
 
     private Scene createScene() {
-        mRoot = new DataSourcesPane();
+        mDataSourcesPane = new DataSourcesPane();
 
-        return new Scene(mRoot);
+        return new Scene(mDataSourcesPane);
     }
 
 }
