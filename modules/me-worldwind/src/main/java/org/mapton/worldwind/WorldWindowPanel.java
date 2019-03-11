@@ -230,6 +230,15 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         SwingUtilities.invokeLater(() -> {
             for (LayerBundle layerBundle : Lookup.getDefault().lookupAll(LayerBundle.class)) {
                 if (!layerBundle.isPopulated()) {
+                    try {
+                        layerBundle.populate();
+                        layerBundle.getLayers().forEach((layer) -> {
+                            addCustomLayer(layer);
+                        });
+                    } catch (Exception ex) {
+                        Exceptions.printStackTrace(ex);
+                    }
+
                     layerBundle.getLayers().addListener((ListChangeListener.Change<? extends Layer> c) -> {
                         while (c.next()) {
                             if (c.wasAdded()) {
@@ -244,15 +253,6 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
                             }
                         }
                     });
-
-                    try {
-                        layerBundle.populate();
-                        layerBundle.getLayers().forEach((layer) -> {
-                            addCustomLayer(layer);
-                        });
-                    } catch (Exception ex) {
-                        Exceptions.printStackTrace(ex);
-                    }
                 }
             }
         });
