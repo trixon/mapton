@@ -36,12 +36,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.action.Action;
 import org.mapton.api.MBookmark;
 import org.mapton.api.MBookmarkManager;
+import org.mapton.api.MKey;
 import org.mapton.api.MKmlCreator;
 import org.mapton.api.MTool;
+import org.mapton.api.Mapton;
 import org.openide.util.Exceptions;
 import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
-import se.trixon.almond.nbp.dialogs.NbMessage;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.dialogs.SimpleDialog;
@@ -108,8 +109,7 @@ public class BookmarkExportTool extends BookmarkTool {
                                 throw new AssertionError();
                         }
                         String message = String.format(mBundle.getString("bookmark_export_completed_message"), mManager.getItems().size());
-                        NbMessage.information(dialogTitle, Dict.OPERATION_COMPLETED.toString());
-
+                        Mapton.notification(MKey.NOTIFICATION_INFORMATION, dialogTitle, Dict.OPERATION_COMPLETED.toString());
                     } catch (IOException ex) {
                         Exceptions.printStackTrace(ex);
                     }

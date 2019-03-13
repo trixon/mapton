@@ -33,7 +33,9 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.controlsfx.control.action.Action;
 import org.mapton.api.MBookmark;
 import org.mapton.api.MBookmarkManager;
+import org.mapton.api.MKey;
 import org.mapton.api.MTool;
+import org.mapton.api.Mapton;
 import org.openide.util.Exceptions;
 import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
@@ -106,7 +108,7 @@ public class BookmarkImportTool extends BookmarkTool {
 
                         if (mImports + mErrors > 0) {
                             String message = String.format(mBundle.getString("bookmark_import_completed_message"), mImports, mErrors);
-                            NbMessage.information(dialogTitle, Dict.OPERATION_COMPLETED.toString());
+                            Mapton.notification(MKey.NOTIFICATION_INFORMATION, dialogTitle, Dict.OPERATION_COMPLETED.toString());
                         }
                     } catch (IOException ex) {
                         Exceptions.printStackTrace(ex);

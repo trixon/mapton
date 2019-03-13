@@ -20,11 +20,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import org.apache.commons.io.FileUtils;
 import org.controlsfx.control.action.Action;
+import org.mapton.api.MKey;
 import org.mapton.api.MTool;
+import org.mapton.api.Mapton;
 import org.mapton.ww_grid.LocalGrid;
 import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
-import se.trixon.almond.nbp.dialogs.NbMessage;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.dialogs.SimpleDialog;
 
@@ -64,7 +65,7 @@ public class GridExportTool extends GridTool {
                         mFile = SimpleDialog.getPath();
                         try {
                             mManager.gridExport(mFile, selectedGrids);
-                            NbMessage.information(dialogTitle, Dict.OPERATION_COMPLETED.toString());
+                            Mapton.notification(MKey.NOTIFICATION_INFORMATION, dialogTitle, Dict.OPERATION_COMPLETED.toString());
                         } catch (IOException ex) {
                             Exceptions.printStackTrace(ex);
                         }
