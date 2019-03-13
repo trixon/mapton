@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -32,7 +32,7 @@ public class NotesTool implements MTool {
     @Override
     public Action getAction() {
         FxActionSwing action = new FxActionSwing(Dict.NOTES.toString(), () -> {
-            Almond.openAndActivateTopComponent("NotesTopComponent");
+            Almond.openAndActivateTopComponent("NotesHtmlTopComponent");
         });
 
         return action;
