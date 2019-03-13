@@ -24,6 +24,7 @@ import java.util.prefs.PreferenceChangeEvent;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.MenuButton;
@@ -37,11 +38,13 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import org.apache.commons.lang3.SystemUtils;
+import org.controlsfx.control.Notifications;
 import org.controlsfx.control.PopOver;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionGroup;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.MEngine;
+import org.mapton.api.MKey;
 import org.mapton.api.MOptions;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeContextMenu;
@@ -53,6 +56,7 @@ import se.trixon.almond.nbp.AlmondOptions;
 import se.trixon.almond.nbp.dialogs.NbAboutFx;
 import se.trixon.almond.util.AboutModel;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.GlobalStateChangeEvent;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.FxActionSwing;
 import se.trixon.almond.util.fx.FxActionSwingCheck;
@@ -350,6 +354,38 @@ public class AppToolBar extends ToolBar {
                     break;
             }
         });
+
+        Mapton.getGlobalState().addListener((GlobalStateChangeEvent evt) -> {
+            Platform.runLater(() -> {
+                Notifications notifications = evt.getValue();
+                notifications.owner(AppToolBar.this).position(Pos.TOP_RIGHT);
+
+                switch (evt.getKey()) {
+                    case MKey.NOTIFICATION:
+                        notifications.show();
+                        break;
+
+                    case MKey.NOTIFICATION_CONFIRM:
+                        notifications.showConfirm();
+                        break;
+
+                    case MKey.NOTIFICATION_ERROR:
+                        notifications.showError();
+                        break;
+
+                    case MKey.NOTIFICATION_INFORMATION:
+                        notifications.showInformation();
+                        break;
+
+                    case MKey.NOTIFICATION_WARNING:
+                        notifications.showWarning();
+                        break;
+
+                    default:
+                        throw new AssertionError();
+                }
+            });
+        }, MKey.NOTIFICATION, MKey.NOTIFICATION_CONFIRM, MKey.NOTIFICATION_ERROR, MKey.NOTIFICATION_INFORMATION, MKey.NOTIFICATION_WARNING);
     }
 
     private void initPopOver(PopOver popOver, String title, Node content) {

@@ -24,6 +24,7 @@ import javafx.scene.paint.Color;
 import javax.swing.SwingUtilities;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.controlsfx.control.Notifications;
 import org.mapton.core.ui.AppStatusView;
 import org.mapton.core.ui.AppToolBar;
 import org.openide.awt.StatusDisplayer;
@@ -143,6 +144,10 @@ public class Mapton {
 
     public static void logRemoving(String category, String item) {
         NbLog.i("Removing", String.format("%s: %s ", category, item));
+    }
+
+    public static void notification(String type, String title, String text) {
+        getGlobalState().send(type, Notifications.create().title(title).text(text));
     }
 
     public static void setStatusText(String text, int importance) {
