@@ -110,7 +110,7 @@
         <module>modules/reports</module>
         <module>modules/wikipedia</module>
         <module>modules/ww-eox</module>
-        <module>modules/ww-grid</module>
+        <!--<module>modules/ww-grid</module>-->
 
         <!--Unstable-->
         <module>modules/datasources</module>

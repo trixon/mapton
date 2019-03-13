@@ -25,6 +25,17 @@ import se.trixon.almond.util.OptionsBase;
 public class MOptions extends OptionsBase {
 
     public static final String KEY_DISPLAY_CROSSHAIR = "display_crosshair";
+    public static final String KEY_GRID_GLOBAL_CLAMP_TO_GROUND = "global_clamp_to_ground";
+    public static final String KEY_GRID_GLOBAL_EQUATOR = "grid.global.equator";
+    public static final String KEY_GRID_GLOBAL_LATITUDES = "grid.global.latitudes";
+    public static final String KEY_GRID_GLOBAL_LONGITUDES = "grid.global.longitudes";
+    public static final String KEY_GRID_GLOBAL_PLOT = "grid.global.plot";
+    public static final String KEY_GRID_GLOBAL_POLAR_ANTARCTIC = "grid.global.polar_antarctic";
+    public static final String KEY_GRID_GLOBAL_POLAR_ARCTIC = "grid.global.polar_arctic";
+    public static final String KEY_GRID_GLOBAL_TROPIC_CANCER = "grid.global.tropic_cancer";
+    public static final String KEY_GRID_GLOBAL_TROPIC_CAPRICORN = "grid.global.tropic_capricorn";
+    public static final String KEY_GRID_LOCAL_PLOT = "grid.local.plot";
+    public static final String KEY_LOCAL_GRIDS = "local_grids";
     public static final String KEY_MAP_ENGINE = "map_engine";
     public static final String KEY_MAP_HOME_LAT = "map_home_lat";
     public static final String KEY_MAP_HOME_LON = "map_home_lon";
