@@ -13,32 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core.tool;
+package org.mapton.core.ui.grid;
 
 import java.io.File;
 import java.io.IOException;
 import org.apache.commons.io.FileUtils;
 import org.controlsfx.control.action.Action;
 import org.mapton.api.MKey;
-import org.mapton.api.MTool;
 import org.mapton.api.Mapton;
+import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.openide.util.Exceptions;
-import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.dialogs.SimpleDialog;
+import se.trixon.almond.util.icons.material.MaterialIcon;
 
 /**
  *
  * @author Patrik Karlström
  */
-@ServiceProvider(service = MTool.class)
-public class GridImportTool extends GridBaseTool {
+public class GridFileImportAction extends GridFileAction {
 
     private File mFile;
 
     @Override
     public Action getAction() {
-        Action action = new Action(mTitle, (t) -> {
+        Action action = new Action((t) -> {
             SimpleDialog.clearFilters();
             SimpleDialog.addFilter(mExtGrid);
             final String dialogTitle = String.format("%s %s", Dict.IMPORT.toString(), mTitle.toLowerCase());
@@ -64,11 +63,8 @@ public class GridImportTool extends GridBaseTool {
             }
         });
 
-        return action;
-    }
+        action.setGraphic(MaterialIcon._File.FOLDER_OPEN.getImageView(getIconSizeToolBarInt()));
 
-    @Override
-    public String getParent() {
-        return String.format("%s/%s", Dict.SYSTEM.toString(), Dict.IMPORT.toString());
+        return action;
     }
 }

@@ -13,34 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core.tool;
+package org.mapton.core.ui.grid;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import org.apache.commons.io.FileUtils;
 import org.controlsfx.control.action.Action;
-import org.mapton.api.MLocalGrid;
 import org.mapton.api.MKey;
-import org.mapton.api.MTool;
+import org.mapton.api.MLocalGrid;
 import org.mapton.api.Mapton;
+import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.openide.util.Exceptions;
-import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.dialogs.SimpleDialog;
+import se.trixon.almond.util.icons.material.MaterialIcon;
 
 /**
  *
  * @author Patrik Karlström
  */
-@ServiceProvider(service = MTool.class)
-public class GridExportTool extends GridBaseTool {
+public class GridFileExportAction extends GridFileAction {
 
     private File mFile;
 
     @Override
     public Action getAction() {
-        Action action = new Action(mTitle, (t) -> {
+        Action action = new Action((t) -> {
             ArrayList<MLocalGrid> selectedGrids = new ArrayList<>();
             mManager.getItems().stream()
                     .filter((grid) -> (grid.isVisible()))
@@ -74,11 +73,8 @@ public class GridExportTool extends GridBaseTool {
             }
         });
 
-        return action;
-    }
+        action.setGraphic(MaterialIcon._Content.SAVE.getImageView(getIconSizeToolBarInt()));
 
-    @Override
-    public String getParent() {
-        return String.format("%s/%s", Dict.SYSTEM.toString(), Dict.EXPORT.toString());
+        return action;
     }
 }

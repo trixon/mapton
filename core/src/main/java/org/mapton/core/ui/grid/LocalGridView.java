@@ -37,9 +37,9 @@ import org.controlsfx.control.CheckListView;
 import org.controlsfx.control.IndexedCheckModel;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
+import org.mapton.api.MDict;
 import org.mapton.api.MLocalGrid;
 import org.mapton.api.MLocalGridManager;
-import org.mapton.api.MDict;
 import org.mapton.api.MOptions;
 import static org.mapton.api.MOptions.*;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
@@ -71,6 +71,7 @@ public class LocalGridView extends BorderPane {
     private void createUI() {
         Font defaultFont = Font.getDefault();
         ResourceBundle bundle = NbBundle.getBundle(GridTopComponent.class);
+
         mPlotCheckBox = new CheckBox(Dict.LOCAL.toString());
         mPlotCheckBox.setFont(Font.font(defaultFont.getFamily(), FontWeight.BOLD, defaultFont.getSize() * 1.2));
 
@@ -94,6 +95,8 @@ public class LocalGridView extends BorderPane {
         remAction.setGraphic(MaterialIcon._Content.REMOVE.getImageView(getIconSizeToolBarInt()));
 
         Collection<? extends Action> actions = Arrays.asList(
+                new GridFileImportAction().getAction(),
+                new GridFileExportAction().getAction(),
                 addAction,
                 remAction,
                 editAction

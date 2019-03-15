@@ -13,20 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core.tool;
+package org.mapton.core.ui.grid;
 
 import javafx.stage.FileChooser;
+import org.controlsfx.control.action.Action;
 import org.mapton.api.MDict;
 import org.mapton.api.MLocalGridManager;
-import org.mapton.api.MTool;
 
 /**
  *
  * @author Patrik Karlström
  */
-public abstract class GridBaseTool implements MTool {
+public abstract class GridFileAction {
 
     protected final FileChooser.ExtensionFilter mExtGrid = new FileChooser.ExtensionFilter("Mapton Grid (*.grid)", "*.grid");
     protected final MLocalGridManager mManager = MLocalGridManager.getInstance();
     protected final String mTitle = MDict.GRIDS.toString();
+
+    public abstract Action getAction();
 }
