@@ -22,6 +22,8 @@ import java.util.prefs.Preferences;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.control.ButtonBase;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
@@ -41,11 +43,19 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
 public class DataSourcesPane extends BorderPane {
 
     private static final int ICON_SIZE = (int) (getIconSizeToolBar() * 0.8);
-    private static final String KEY_CONTENT = "content";
+    private static final String KEY_FILES = "files";
+    private static final String KEY_WMS_SOURCE = "wms.source";
+    private static final String KEY_WMS_STYLE = "wms.style";
     private Action mApplyAction;
+    private Tab mFileTab;
+    private TextArea mFileTextArea;
     private final Preferences mPreferences = NbPreferences.forModule(DataSourcesPane.class);
-    private TextArea mTextArea;
+    private TabPane mTabPane;
     private ToolBar mToolBar;
+    private Tab mWmsSourceTab;
+    private TextArea mWmsSourceTextArea;
+    private Tab mWmsStyleTab;
+    private TextArea mWmsStyleTextArea;
 
     public DataSourcesPane() {
         createUI();
@@ -54,7 +64,9 @@ public class DataSourcesPane extends BorderPane {
 
     void save() {
         Platform.runLater(() -> {
-            mPreferences.put(KEY_CONTENT, mTextArea.getText());
+            mPreferences.put(KEY_WMS_SOURCE, mWmsSourceTextArea.getText());
+            mPreferences.put(KEY_WMS_STYLE, mWmsStyleTextArea.getText());
+            mPreferences.put(KEY_FILES, mFileTextArea.getText());
         });
     }
 
@@ -64,7 +76,7 @@ public class DataSourcesPane extends BorderPane {
         //TODO Don't put any burden on map engine renderers, unless needed
         //TODO Get importers from lookup
         ArrayList<File> files = new ArrayList<>();
-        for (String line : mTextArea.getText().split("\n")) {
+        for (String line : mFileTextArea.getText().split("\n")) {
             File file = new File(line);
             if (file.exists()) {
                 files.add(file);
@@ -75,14 +87,29 @@ public class DataSourcesPane extends BorderPane {
     }
 
     private void createUI() {
-        mTextArea = new TextArea();
         initToolBar();
 
-        setCenter(mTextArea);
+        mFileTextArea = new TextArea();
+        mWmsSourceTextArea = new TextArea();
+        mWmsStyleTextArea = new TextArea();
+
+        mFileTab = new Tab(Dict.FILE.toString(), mFileTextArea);
+        mWmsSourceTab = new Tab("WMS " + Dict.SOURCE.toString(), mWmsSourceTextArea);
+        mWmsStyleTab = new Tab("WMS " + Dict.STYLE.toString(), mWmsStyleTextArea);
+        mTabPane = new TabPane(mWmsSourceTab, mWmsStyleTab, mFileTab);
+
+        for (Tab tab : mTabPane.getTabs()) {
+            tab.setClosable(false);
+        }
+
+        setCenter(mTabPane);
     }
 
     private void init() {
-        mTextArea.setText(mPreferences.get(KEY_CONTENT, ""));
+        mFileTextArea.setText(mPreferences.get(KEY_FILES, ""));
+        mWmsSourceTextArea.setText(mPreferences.get(KEY_WMS_SOURCE, ""));
+        mWmsStyleTextArea.setText(mPreferences.get(KEY_WMS_STYLE, ""));
+
         apply();
     }
 
@@ -94,6 +121,7 @@ public class DataSourcesPane extends BorderPane {
 
         ArrayList<Action> actions = new ArrayList<>();
         actions.addAll(Arrays.asList(
+                ActionUtils.ACTION_SPAN,
                 mApplyAction
         ));
 
