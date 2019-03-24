@@ -164,18 +164,18 @@
             <artifactId>ww-lm</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>ww-datasources</artifactId>
-            <version>${project.version}</version>
-        </dependency>
 
         <!--Mapton/Unstable-->
-        <dependency>
+        <!--        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>datasources</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>ww-datasources</artifactId>
+            <version>${project.version}</version>
+        </dependency>-->
         <!--        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>demo</artifactId>
