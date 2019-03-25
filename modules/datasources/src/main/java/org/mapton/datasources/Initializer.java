@@ -47,6 +47,7 @@ public class Initializer implements Runnable {
 
     private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
     static final Gson gson = new GsonBuilder()
+            .disableHtmlEscaping()
             .setVersion(1.0)
             .setPrettyPrinting()
             .setDateFormat(DATE_FORMAT)

@@ -18,6 +18,7 @@ package org.mapton.datasources;
 import java.util.ArrayList;
 import java.util.Arrays;
 import org.mapton.api.MWmsSource;
+import se.trixon.almond.util.SystemHelper;
 
 /**
  *
@@ -35,17 +36,35 @@ public class WmsSourceGenerator {
     public WmsSourceGenerator() {
         ArrayList<MWmsSource> sources = new ArrayList<>();
 
-        MWmsSource source1 = new MWmsSource();
-        source1.setName("LM");
-        source1.setUrl("https://mapton.org");
+        sources.add(createSource(
+                "Lantmäteriet",
+                "https://api.lantmateriet.se/historiska-ortofoton/wms/v1/token/6633c97e-a9b3-3f0f-95d1-4b50401ac8cd/?request=getcapabilities&service=wms",
+                "OI.Histortho_60",
+                "OI.Histortho_75"
+        ));
 
-        ArrayList<String> layers = new ArrayList<>(Arrays.asList("a", "b", "c"));
-        source1.setLayers(layers);
-
-        sources.add(source1);
+        sources.add(createSource(
+                "EOX",
+                "https://tiles.maps.eox.at/wms?service=wms&request=getcapabilities",
+                "coastline",
+                "hydrography",
+                "s2cloudless-2018",
+                "osm",
+                "terrain",
+                "terrain-light"
+        ));
 
         String json = Initializer.gson.toJson(sources);
         System.out.println(json);
+        SystemHelper.copyToClipboard(json);
     }
 
+    private MWmsSource createSource(String name, String url, String... layers) {
+        MWmsSource source = new MWmsSource();
+        source.setName(name);
+        source.setUrl(url);
+        source.setLayers(new ArrayList<>(Arrays.asList(layers)));
+
+        return source;
+    }
 }
