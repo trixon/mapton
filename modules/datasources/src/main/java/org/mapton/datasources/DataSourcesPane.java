@@ -16,6 +16,9 @@
 package org.mapton.datasources;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.prefs.Preferences;
@@ -27,11 +30,15 @@ import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBar;
 import org.openide.util.NbPreferences;
+import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.icons.material.MaterialIcon;
@@ -71,12 +78,20 @@ public class DataSourcesPane extends BorderPane {
     }
 
     private void apply() {
+        new Thread(() -> {
+            applyFile();
+            applyWmsSource();
+            applyWmsStyle();
+        }).start();
+    }
+
+    private void applyFile() {
         //TODO Read files and create point, lines and polygons for publishing
         //TODO Support simple attributes such as colors, line width and markers.
         //TODO Don't put any burden on map engine renderers, unless needed
         //TODO Get importers from lookup
         ArrayList<File> files = new ArrayList<>();
-        for (String line : mFileTextArea.getText().split("\n")) {
+        for (String line : getLines(mFileTextArea)) {
             File file = new File(line);
             if (file.exists()) {
                 files.add(file);
@@ -84,6 +99,18 @@ public class DataSourcesPane extends BorderPane {
         }
 
         Mapton.getGlobalState().put("data_sources.files", files);
+    }
+
+    private void applyWmsSource() {
+        for (String json : getJsons(getLines(mWmsSourceTextArea))) {
+            System.out.println(json);
+        }
+    }
+
+    private void applyWmsStyle() {
+        for (String json : getJsons(getLines(mWmsStyleTextArea))) {
+            System.out.println(json);
+        }
     }
 
     private void createUI() {
@@ -103,6 +130,36 @@ public class DataSourcesPane extends BorderPane {
         }
 
         setCenter(mTabPane);
+    }
+
+    private ArrayList<String> getJsons(String[] lines) {
+        ArrayList<String> jsons = new ArrayList<>();
+
+        for (String line : lines) {
+            if (line.startsWith("#") || StringUtils.isBlank(line)) {
+                continue;
+            }
+
+            String json = "";
+            try {
+                if (line.contains("//")) {
+                    json = IOUtils.toString(new URI(line), "utf-8");
+                } else {
+                    File file = new File(line);
+                    json = FileUtils.readFileToString(file, "utf-8");
+                }
+            } catch (URISyntaxException | IOException ex) {
+                NbLog.i("DataSources", ex.toString());
+            }
+
+            jsons.add(json);
+        }
+
+        return jsons;
+    }
+
+    private String[] getLines(TextArea textArea) {
+        return textArea.getText().split("\n");
     }
 
     private void init() {
