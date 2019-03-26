@@ -24,14 +24,18 @@ import java.util.ArrayList;
  */
 public class MWmsStyle {
 
+    @SerializedName("description")
+    private String mDescription;
     @SerializedName("layers")
     private ArrayList<String> mLayers;
     @SerializedName("name")
     private String mName;
-    @SerializedName("description")
-    private String mDescription;
-    @SerializedName("source")
-    private String mSource;
+    @SerializedName("supplier")
+    private String mSupplier;
+
+    public String getDescription() {
+        return mDescription;
+    }
 
     public ArrayList<String> getLayers() {
         return mLayers;
@@ -41,12 +45,12 @@ public class MWmsStyle {
         return mName;
     }
 
-    public String getDescription() {
-        return mDescription;
+    public String getSupplier() {
+        return mSupplier;
     }
 
-    public String getSource() {
-        return mSource;
+    public void setDescription(String description) {
+        mDescription = description;
     }
 
     public void setLayers(ArrayList<String> layers) {
@@ -57,12 +61,7 @@ public class MWmsStyle {
         mName = name;
     }
 
-    public void setDescription(String description) {
-        mDescription = description;
+    public void setSupplier(String supplier) {
+        mSupplier = supplier;
     }
-
-    public void setSource(String source) {
-        mSource = source;
-    }
-
 }
