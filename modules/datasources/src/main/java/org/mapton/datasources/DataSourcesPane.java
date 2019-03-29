@@ -111,8 +111,8 @@ public class DataSourcesPane extends BorderPane {
 
     private void init() {
         mFileTextArea.setText(mPreferences.get(KEY_FILES, ""));
-        mWmsSourceTextArea.setText(mPreferences.get(KEY_WMS_SOURCE, ""));
-        mWmsStyleTextArea.setText(mPreferences.get(KEY_WMS_STYLE, ""));
+        mWmsSourceTextArea.setText(mPreferences.get(KEY_WMS_SOURCE, Initializer.getDefaultSources()));
+        mWmsStyleTextArea.setText(mPreferences.get(KEY_WMS_STYLE, Initializer.getDefaultStyles()));
 
         apply();
     }

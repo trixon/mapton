@@ -31,10 +31,14 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.api.MKey;
 import org.mapton.api.MWmsSource;
+import org.mapton.api.MWmsSourceProvider;
 import org.mapton.api.MWmsStyle;
+import org.mapton.api.MWmsStyleProvider;
 import org.mapton.api.Mapton;
 import static org.mapton.datasources.DataSourcesPane.*;
 import org.openide.modules.OnStart;
+import org.openide.util.Lookup;
+import org.openide.util.LookupEvent;
 import org.openide.util.NbPreferences;
 import se.trixon.almond.nbp.NbLog;
 
@@ -55,6 +59,14 @@ public class Initializer implements Runnable {
     private static final String LOG_TAG = "DataSources";
     private final Preferences mPreferences = NbPreferences.forModule(DataSourcesPane.class);
 
+    static String getDefaultSources() {
+        return "https://raw.githubusercontent.com/trixon/mapton-data/master/v01/wms-sources.json";
+    }
+
+    static String getDefaultStyles() {
+        return "https://raw.githubusercontent.com/trixon/mapton-data/master/v01/wms-styles.json";
+    }
+
     public Initializer() {
         mPreferences.addPreferenceChangeListener((PreferenceChangeEvent evt) -> {
             switch (evt.getKey()) {
@@ -67,6 +79,14 @@ public class Initializer implements Runnable {
                     break;
             }
         });
+
+        Lookup.getDefault().lookupResult(MWmsSourceProvider.class).addLookupListener((LookupEvent ev) -> {
+            applyWmsSource();
+        });
+
+        Lookup.getDefault().lookupResult(MWmsStyleProvider.class).addLookupListener((LookupEvent ev) -> {
+            applyWmsStyle();
+        });
     }
 
     @Override
@@ -78,12 +98,17 @@ public class Initializer implements Runnable {
     private void applyWmsSource() {
         ArrayList<MWmsSource> allSources = new ArrayList<>();
 
-        for (String json : getJsons(mPreferences.get(KEY_WMS_SOURCE, ""))) {
+        for (String json : getJsons(mPreferences.get(KEY_WMS_SOURCE, getDefaultSources()))) {
             try {
-                ArrayList<MWmsSource> sources = gson.fromJson(json, new TypeToken<ArrayList<MWmsSource>>() {
-                }.getType());
+                allSources.addAll(deserializeSource(json));
+            } catch (JsonSyntaxException ex) {
+                NbLog.i(LOG_TAG, ex.toString());
+            }
+        }
 
-                allSources.addAll(sources);
+        for (MWmsSourceProvider wmsSourceProvider : Lookup.getDefault().lookupAll(MWmsSourceProvider.class)) {
+            try {
+                allSources.addAll(deserializeSource(wmsSourceProvider.getJson()));
             } catch (JsonSyntaxException ex) {
                 NbLog.i(LOG_TAG, ex.toString());
             }
@@ -97,16 +122,31 @@ public class Initializer implements Runnable {
 
         for (String json : getJsons(mPreferences.get(KEY_WMS_STYLE, ""))) {
             try {
-                ArrayList<MWmsStyle> styles = gson.fromJson(json, new TypeToken<ArrayList<MWmsStyle>>() {
-                }.getType());
+                allStyles.addAll(deserializeStyle(json));
+            } catch (JsonSyntaxException ex) {
+                NbLog.i(LOG_TAG, ex.toString());
+            }
+        }
 
-                allStyles.addAll(styles);
+        for (MWmsStyleProvider wmsStyleProvider : Lookup.getDefault().lookupAll(MWmsStyleProvider.class)) {
+            try {
+                allStyles.addAll(deserializeStyle(wmsStyleProvider.getJson()));
             } catch (JsonSyntaxException ex) {
                 NbLog.i(LOG_TAG, ex.toString());
             }
         }
 
         Mapton.getGlobalState().put(MKey.DATA_SOURCES_WMS_STYLES, allStyles);
+    }
+
+    private ArrayList<MWmsSource> deserializeSource(String json) {
+        return gson.fromJson(json, new TypeToken<ArrayList<MWmsSource>>() {
+        }.getType());
+    }
+
+    private ArrayList<MWmsStyle> deserializeStyle(String json) {
+        return gson.fromJson(json, new TypeToken<ArrayList<MWmsStyle>>() {
+        }.getType());
     }
 
     private ArrayList<String> getJsons(String lines) {
