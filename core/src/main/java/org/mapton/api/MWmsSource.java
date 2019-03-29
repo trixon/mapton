@@ -16,7 +16,7 @@
 package org.mapton.api;
 
 import com.google.gson.annotations.SerializedName;
-import java.util.ArrayList;
+import java.util.TreeMap;
 
 /**
  *
@@ -24,8 +24,10 @@ import java.util.ArrayList;
  */
 public class MWmsSource {
 
+    @SerializedName("enabled")
+    private boolean mEnabled;
     @SerializedName("layers")
-    private ArrayList<String> mLayers;
+    private TreeMap<String, String> mLayers = new TreeMap<>();
     @SerializedName("name")
     private String mName;
     @SerializedName("url")
@@ -34,7 +36,7 @@ public class MWmsSource {
     public MWmsSource() {
     }
 
-    public ArrayList<String> getLayers() {
+    public TreeMap<String, String> getLayers() {
         return mLayers;
     }
 
@@ -46,7 +48,15 @@ public class MWmsSource {
         return mUrl;
     }
 
-    public void setLayers(ArrayList<String> layers) {
+    public boolean isEnabled() {
+        return mEnabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        mEnabled = enabled;
+    }
+
+    public void setLayers(TreeMap<String, String> layers) {
         mLayers = layers;
     }
 

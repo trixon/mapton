@@ -17,8 +17,8 @@ package org.mapton.datasources;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.TreeMap;
 import org.mapton.api.MWmsStyle;
-import se.trixon.almond.util.SystemHelper;
 
 /**
  *
@@ -35,16 +35,22 @@ public class WmsStyleGenerator {
 
     public WmsStyleGenerator() {
         ArrayList<MWmsStyle> styles = new ArrayList<>();
+        TreeMap<String, String> names1 = new TreeMap<>();
+        names1.put("", "Swe LM Ortho 1960");
+        names1.put("sv", "Sve LM Orto 1960");
 
         styles.add(createStyle(
-                "Swe LM Orto 1960",
+                names1,
                 "Lantmäteriet",
                 "",
                 "Historiska ortofoton, 1960 : Historiska ortofoton"
         ));
 
+        TreeMap<String, String> names2 = new TreeMap<>();
+        names2.put("", "Swe LM Ortho 1975");
+        names2.put("sv", "Sve LM Orto 1975");
         styles.add(createStyle(
-                "Swe LM Orto 1975",
+                names2,
                 "Lantmäteriet",
                 "",
                 "Historiska ortofoton, 1975 : Historiska ortofoton"
@@ -52,12 +58,12 @@ public class WmsStyleGenerator {
 
         String json = Initializer.gson.toJson(styles);
         System.out.println(json);
-        SystemHelper.copyToClipboard(json);
     }
 
-    private MWmsStyle createStyle(String name, String supplier, String description, String... layers) {
+    private MWmsStyle createStyle(TreeMap<String, String> names, String supplier, String description, String... layers) {
         MWmsStyle style = new MWmsStyle();
-        style.setName(name);
+        style.setNames(names);
+        style.setEnabled(true);
         style.setSupplier(supplier);
         style.setDescription(description);
         style.setLayers(new ArrayList<>(Arrays.asList(layers)));

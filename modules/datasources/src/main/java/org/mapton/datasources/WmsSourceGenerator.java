@@ -16,9 +16,8 @@
 package org.mapton.datasources;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.TreeMap;
 import org.mapton.api.MWmsSource;
-import se.trixon.almond.util.SystemHelper;
 
 /**
  *
@@ -35,35 +34,38 @@ public class WmsSourceGenerator {
 
     public WmsSourceGenerator() {
         ArrayList<MWmsSource> sources = new ArrayList<>();
-
+        TreeMap<String, String> layers1 = new TreeMap<>();
+        layers1.put("OI.Histortho_60", "Hi60");
+        layers1.put("OI.Histortho_75", "Hi75");
         sources.add(createSource(
                 "Lantmäteriet",
                 "https://api.lantmateriet.se/historiska-ortofoton/wms/v1/token/6633c97e-a9b3-3f0f-95d1-4b50401ac8cd/?request=getcapabilities&service=wms",
-                "OI.Histortho_60",
-                "OI.Histortho_75"
+                layers1
         ));
 
+        TreeMap<String, String> layers2 = new TreeMap<>();
+        layers2.put("coastline", "");
+        layers2.put("hydrography", "");
+        layers2.put("s2cloudless-2018", "");
+        layers2.put("osm", "");
+        layers2.put("terrain", "");
+        layers2.put("terrain-light", "");
         sources.add(createSource(
                 "EOX",
                 "https://tiles.maps.eox.at/wms?service=wms&request=getcapabilities",
-                "coastline",
-                "hydrography",
-                "s2cloudless-2018",
-                "osm",
-                "terrain",
-                "terrain-light"
+                layers2
         ));
 
         String json = Initializer.gson.toJson(sources);
         System.out.println(json);
-        SystemHelper.copyToClipboard(json);
     }
 
-    private MWmsSource createSource(String name, String url, String... layers) {
+    private MWmsSource createSource(String name, String url, TreeMap<String, String> layers) {
         MWmsSource source = new MWmsSource();
         source.setName(name);
+        source.setEnabled(true);
         source.setUrl(url);
-        source.setLayers(new ArrayList<>(Arrays.asList(layers)));
+        source.setLayers(layers);
 
         return source;
     }
