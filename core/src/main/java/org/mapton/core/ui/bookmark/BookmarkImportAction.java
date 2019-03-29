@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core.tool;
+package org.mapton.core.ui.bookmark;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -23,7 +23,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.ResourceBundle;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -34,15 +33,14 @@ import org.controlsfx.control.action.Action;
 import org.mapton.api.MBookmark;
 import org.mapton.api.MBookmarkManager;
 import org.mapton.api.MKey;
-import org.mapton.api.MTool;
 import org.mapton.api.Mapton;
+import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.openide.util.Exceptions;
-import org.openide.util.NbBundle;
-import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.dialogs.NbMessage;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.MathHelper;
 import se.trixon.almond.util.fx.dialogs.SimpleDialog;
+import se.trixon.almond.util.icons.material.MaterialIcon;
 import se.trixon.almond.util.io.Geo;
 import se.trixon.almond.util.io.GeoPoint;
 
@@ -50,21 +48,15 @@ import se.trixon.almond.util.io.GeoPoint;
  *
  * @author Patrik Karlström
  */
-@ServiceProvider(service = MTool.class)
-public class BookmarkImportTool extends BookmarkTool {
+public class BookmarkImportAction extends BookmarkAction {
 
-    private final ResourceBundle mBundle = NbBundle.getBundle(BookmarkImportTool.class);
-    private int mErrors;
     private File mFile;
+    private int mErrors;
     private int mImports;
-    private final MBookmarkManager mManager = MBookmarkManager.getInstance();
-
-    public BookmarkImportTool() {
-    }
 
     @Override
     public Action getAction() {
-        Action action = new Action(mTitle, (t) -> {
+        Action action = new Action(Dict.IMPORT.toString(), (t) -> {
             SimpleDialog.clearFilters();
             SimpleDialog.addFilter(mExtCsv);
             SimpleDialog.addFilter(mExtGeo);
@@ -118,12 +110,9 @@ public class BookmarkImportTool extends BookmarkTool {
             }
         });
 
-        return action;
-    }
+        action.setGraphic(MaterialIcon._File.FOLDER_OPEN.getImageView(getIconSizeToolBarInt()));
 
-    @Override
-    public String getParent() {
-        return String.format("%s/%s", Dict.SYSTEM.toString(), Dict.IMPORT.toString());
+        return action;
     }
 
     private String getOrDefault(CSVRecord record, String key, String defaultValue) {

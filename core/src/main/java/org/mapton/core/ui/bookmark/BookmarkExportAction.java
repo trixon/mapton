@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core.tool;
+package org.mapton.core.ui.bookmark;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -26,7 +26,6 @@ import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedHashMap;
-import java.util.ResourceBundle;
 import java.util.TreeMap;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
@@ -38,14 +37,13 @@ import org.mapton.api.MBookmark;
 import org.mapton.api.MBookmarkManager;
 import org.mapton.api.MKey;
 import org.mapton.api.MKmlCreator;
-import org.mapton.api.MTool;
 import org.mapton.api.Mapton;
+import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.openide.util.Exceptions;
-import org.openide.util.NbBundle;
-import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.dialogs.SimpleDialog;
+import se.trixon.almond.util.icons.material.MaterialIcon;
 import se.trixon.almond.util.io.Geo;
 import se.trixon.almond.util.io.GeoHeader;
 import se.trixon.almond.util.io.GeoPoint;
@@ -54,19 +52,13 @@ import se.trixon.almond.util.io.GeoPoint;
  *
  * @author Patrik Karlström
  */
-@ServiceProvider(service = MTool.class)
-public class BookmarkExportTool extends BookmarkTool {
+public class BookmarkExportAction extends BookmarkAction {
 
-    private final ResourceBundle mBundle = NbBundle.getBundle(BookmarkExportTool.class);
     private File mFile;
-    private final MBookmarkManager mManager = MBookmarkManager.getInstance();
-
-    public BookmarkExportTool() {
-    }
 
     @Override
     public Action getAction() {
-        Action action = new Action(mTitle, (t) -> {
+        Action action = new Action(Dict.EXPORT.toString(), (t) -> {
             SimpleDialog.clearFilters();
             SimpleDialog.addFilter(mExtCsv);
             SimpleDialog.addFilter(mExtGeo);
@@ -117,12 +109,9 @@ public class BookmarkExportTool extends BookmarkTool {
             }
         });
 
-        return action;
-    }
+        action.setGraphic(MaterialIcon._Content.SAVE.getImageView(getIconSizeToolBarInt()));
 
-    @Override
-    public String getParent() {
-        return String.format("%s/%s", Dict.SYSTEM.toString(), Dict.EXPORT.toString());
+        return action;
     }
 
     private class CsvExporter {

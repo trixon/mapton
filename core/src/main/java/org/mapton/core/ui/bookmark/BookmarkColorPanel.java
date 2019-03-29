@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core.ui;
+package org.mapton.core.ui.bookmark;
 
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
+import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Label;
-import javafx.scene.control.Spinner;
 import javafx.scene.layout.VBox;
 import se.trixon.almond.nbp.fx.FxDialogPanel;
 import se.trixon.almond.util.Dict;
@@ -28,12 +28,12 @@ import se.trixon.almond.util.fx.FxHelper;
  *
  * @author Patrik Karlström
  */
-public class BookmarkZoomPanel extends FxDialogPanel {
+public class BookmarkColorPanel extends FxDialogPanel {
 
-    private Spinner<Double> mZoomSpinner;
+    private ColorPicker mColorPicker;
 
-    public double getZoom() {
-        return mZoomSpinner.getValue();
+    public String getColor() {
+        return FxHelper.colorToHexRGB(mColorPicker.getValue());
     }
 
     @Override
@@ -42,19 +42,18 @@ public class BookmarkZoomPanel extends FxDialogPanel {
     }
 
     private Scene createScene() {
-        Label colorLabel = new Label(Dict.ZOOM.toString());
-        mZoomSpinner = new Spinner(0.0, 1.0, 0.5, 0.1);
-        mZoomSpinner.setEditable(true);
-        FxHelper.autoCommitSpinner(mZoomSpinner);
+        mColorPicker = new ColorPicker();
+
+        Label colorLabel = new Label(Dict.COLOR.toString());
 
         VBox box = new VBox(
                 colorLabel,
-                mZoomSpinner
+                mColorPicker
         );
 
         box.setPadding(new Insets(8, 16, 0, 16));
 
-        Insets topInsets = new Insets(8, 0, 8, 0);
+        final Insets topInsets = new Insets(8, 0, 8, 0);
         VBox.setMargin(colorLabel, topInsets);
 
         return new Scene(box);

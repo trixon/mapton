@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core.ui;
+package org.mapton.core.ui.bookmark;
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -28,14 +28,17 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
+import javafx.geometry.Insets;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToolBar;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Font;
 import javax.swing.SwingUtilities;
@@ -48,6 +51,9 @@ import org.mapton.api.MBookmarkManager;
 import org.mapton.api.MContextMenuItem;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeContextMenu;
+import static org.mapton.api.Mapton.getIconSizeToolBarInt;
+import org.mapton.core.ui.MapTopComponent;
+import org.mapton.core.ui.ToolboxView;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.util.Exceptions;
@@ -58,6 +64,7 @@ import org.openide.util.NbPreferences;
 import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
+import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 
 /**
@@ -184,12 +191,26 @@ public class BookmarkView extends BorderPane {
     private void createUI() {
         mFilterTextField = TextFields.createClearableTextField();
         mFilterTextField.setPromptText(Dict.BOOKMARKS_SEARCH.toString());
+        mFilterTextField.setMinWidth(20);
 
         mTreeView.setShowRoot(false);
         mTreeView.setCellFactory((TreeView<MBookmark> param) -> new BookmarkTreeCell());
 
-        setPrefWidth(300);
-        setTop(mFilterTextField);
+        Collection<? extends Action> actions = Arrays.asList(
+                new BookmarkImportAction().getAction(),
+                new BookmarkExportAction().getAction()
+        );
+
+        ToolBar toolBar = ActionUtils.createToolBar(actions, ActionUtils.ActionTextBehavior.HIDE);
+        FxHelper.adjustButtonWidth(toolBar.getItems().stream(), getIconSizeToolBarInt());
+        FxHelper.undecorateButtons(toolBar.getItems().stream());
+        BorderPane topBorderPane = new BorderPane(mFilterTextField);
+        topBorderPane.setRight(toolBar);
+        toolBar.setMinWidth(getIconSizeToolBarInt() * 3.5);
+        toolBar.setStyle("-fx-spacing: 0px; -fx-background-insets: 0, 0 0 0 0;");
+        toolBar.setPadding(Insets.EMPTY);
+        toolBar.setBorder(Border.EMPTY);
+        setTop(topBorderPane);
         setCenter(mTreeView);
     }
 
@@ -344,9 +365,10 @@ public class BookmarkView extends BorderPane {
             );
 
             ContextMenu contextMenu = ActionUtils.createContextMenu(actions);
+            ResourceBundle bundle = NbBundle.getBundle(MapTopComponent.class);
 
-            mContextCopyMenu = new Menu(mBundle.getString("copy_location"));
-            mContextOpenMenu = new Menu(mBundle.getString("open_location"));
+            mContextCopyMenu = new Menu(bundle.getString("copy_location"));
+            mContextOpenMenu = new Menu(bundle.getString("open_location"));
             contextMenu.getItems().add(4, mContextOpenMenu);
             contextMenu.getItems().add(4, mContextCopyMenu);
 

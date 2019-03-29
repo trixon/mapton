@@ -13,27 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core.ui;
+package org.mapton.core.ui.bookmark;
 
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.control.ColorPicker;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
+import org.mapton.api.MBookmarkManager;
 import se.trixon.almond.nbp.fx.FxDialogPanel;
 import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class BookmarkColorPanel extends FxDialogPanel {
+public class BookmarkCategoryPanel extends FxDialogPanel {
 
-    private ColorPicker mColorPicker;
+    private ComboBox<String> mCategoryComboBox;
+    private MBookmarkManager mManager = MBookmarkManager.getInstance();
 
-    public String getColor() {
-        return FxHelper.colorToHexRGB(mColorPicker.getValue());
+    public String getCategory() {
+        return mCategoryComboBox.getSelectionModel().getSelectedItem();
+    }
+
+    public void setCategory(String category) {
+        mCategoryComboBox.getSelectionModel().select(category);
     }
 
     @Override
@@ -42,19 +47,21 @@ public class BookmarkColorPanel extends FxDialogPanel {
     }
 
     private Scene createScene() {
-        mColorPicker = new ColorPicker();
-
-        Label colorLabel = new Label(Dict.COLOR.toString());
+        Label label = new Label(Dict.CATEGORY.toString());
+        mCategoryComboBox = new ComboBox<>();
+        mCategoryComboBox.getItems().setAll(mManager.getCategories());
+        mCategoryComboBox.setEditable(true);
 
         VBox box = new VBox(
-                colorLabel,
-                mColorPicker
+                label,
+                mCategoryComboBox
         );
 
         box.setPadding(new Insets(8, 16, 0, 16));
+        mCategoryComboBox.prefWidthProperty().bind(box.widthProperty());
 
-        final Insets topInsets = new Insets(8, 0, 8, 0);
-        VBox.setMargin(colorLabel, topInsets);
+        Insets topInsets = new Insets(8, 0, 8, 0);
+        VBox.setMargin(label, topInsets);
 
         return new Scene(box);
     }

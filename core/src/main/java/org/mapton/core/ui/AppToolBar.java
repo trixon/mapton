@@ -50,6 +50,7 @@ import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeContextMenu;
 import static org.mapton.api.Mapton.getIconSizeToolBar;
 import org.mapton.core.Initializer;
+import org.mapton.core.ui.bookmark.BookmarkView;
 import org.openide.awt.Actions;
 import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.nbp.AlmondOptions;

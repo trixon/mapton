@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core.ui;
+package org.mapton.core.ui.bookmark;
 
 import javafx.scene.Scene;
 import org.mapton.api.MOptions;
 import org.mapton.api.MTopComponent;
+import org.mapton.core.ui.bookmark.BookmarkView;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
