@@ -36,11 +36,15 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import org.mapton.api.MDict;
+import org.mapton.api.MKey;
+import org.mapton.api.MWmsStyle;
+import org.mapton.api.Mapton;
 import static org.mapton.worldwind.ModuleOptions.*;
 import org.mapton.worldwind.api.MapStyle;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.GlobalStateChangeEvent;
 
 /**
  *
@@ -211,6 +215,10 @@ public class StyleView extends HBox {
         mOpacitySlider.valueProperty().addListener((ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
             mOptions.put(KEY_MAP_OPACITY, mOpacitySlider.getValue());
         });
+
+        Mapton.getGlobalState().addListener((GlobalStateChangeEvent evt) -> {
+            initStyle();
+        }, MKey.DATA_SOURCES_WMS_STYLES);
     }
 
     private void initStyle() {
@@ -219,6 +227,11 @@ public class StyleView extends HBox {
 
             mStyleBox.getChildren().clear();
             ArrayList< MapStyle> styles = new ArrayList<>(Lookup.getDefault().lookupAll(MapStyle.class));
+            ArrayList<MWmsStyle> wmsStyles = Mapton.getGlobalState().get(MKey.DATA_SOURCES_WMS_STYLES);
+            for (MWmsStyle wmsStyle : wmsStyles) {
+                styles.add(MapStyle.createFromWmsStyle(wmsStyle));
+            }
+
             Collections.sort(styles, (MapStyle o1, MapStyle o2) -> o1.getName().compareTo(o2.getName()));
 
             for (MapStyle mapStyle : styles) {

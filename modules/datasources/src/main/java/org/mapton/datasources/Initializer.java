@@ -109,7 +109,7 @@ public class Initializer implements Runnable {
         for (MWmsSourceProvider wmsSourceProvider : Lookup.getDefault().lookupAll(MWmsSourceProvider.class)) {
             try {
                 allSources.addAll(deserializeSource(wmsSourceProvider.getJson()));
-            } catch (JsonSyntaxException ex) {
+            } catch (NullPointerException | JsonSyntaxException ex) {
                 NbLog.i(LOG_TAG, ex.toString());
             }
         }
@@ -123,7 +123,7 @@ public class Initializer implements Runnable {
         for (String json : getJsons(mPreferences.get(KEY_WMS_STYLE, ""))) {
             try {
                 allStyles.addAll(deserializeStyle(json));
-            } catch (JsonSyntaxException ex) {
+            } catch (NullPointerException | JsonSyntaxException ex) {
                 NbLog.i(LOG_TAG, ex.toString());
             }
         }

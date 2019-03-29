@@ -17,7 +17,9 @@ package org.mapton.api;
 
 import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.TreeMap;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  *
@@ -42,6 +44,10 @@ public class MWmsStyle {
 
     public ArrayList<String> getLayers() {
         return mLayers;
+    }
+
+    public String getName() {
+        return mNames.getOrDefault(Locale.getDefault().getLanguage(), StringUtils.defaultString(mNames.get(""), "UNKNOWN"));
     }
 
     public TreeMap<String, String> getNames() {

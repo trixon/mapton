@@ -15,6 +15,7 @@
  */
 package org.mapton.worldwind.api;
 
+import org.mapton.api.MWmsStyle;
 import org.openide.util.Lookup;
 
 /**
@@ -26,6 +27,17 @@ public abstract class MapStyle {
     private String[] mLayers;
     private String mName;
     private String mSuppliers;
+
+    public static MapStyle createFromWmsStyle(MWmsStyle wmsStyle) {
+        MapStyle mapStyle = new MapStyle() {
+        };
+
+        mapStyle.setName(wmsStyle.getName());
+        mapStyle.setSuppliers(wmsStyle.getSupplier());
+        mapStyle.setLayers(wmsStyle.getLayers().toArray(new String[0]));
+
+        return mapStyle;
+    }
 
     public static String[] getLayers(String name) {
         String[] layers = null;
