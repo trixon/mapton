@@ -100,7 +100,11 @@ public class Initializer implements Runnable {
 
         for (String json : getJsons(mPreferences.get(KEY_WMS_SOURCE, getDefaultSources()))) {
             try {
-                allSources.addAll(deserializeSource(json));
+                deserializeSource(json).stream()
+                        .filter((wmsSource) -> (wmsSource.isEnabled()))
+                        .forEachOrdered((wmsSource) -> {
+                            allSources.add(wmsSource);
+                        });
             } catch (JsonSyntaxException ex) {
                 NbLog.i(LOG_TAG, ex.toString());
             }
@@ -108,7 +112,11 @@ public class Initializer implements Runnable {
 
         for (MWmsSourceProvider wmsSourceProvider : Lookup.getDefault().lookupAll(MWmsSourceProvider.class)) {
             try {
-                allSources.addAll(deserializeSource(wmsSourceProvider.getJson()));
+                deserializeSource(wmsSourceProvider.getJson()).stream()
+                        .filter((wmsSource) -> (wmsSource.isEnabled()))
+                        .forEachOrdered((wmsSource) -> {
+                            allSources.add(wmsSource);
+                        });
             } catch (NullPointerException | JsonSyntaxException ex) {
                 NbLog.i(LOG_TAG, ex.toString());
             }
@@ -120,9 +128,13 @@ public class Initializer implements Runnable {
     private void applyWmsStyle() {
         ArrayList<MWmsStyle> allStyles = new ArrayList<>();
 
-        for (String json : getJsons(mPreferences.get(KEY_WMS_STYLE, ""))) {
+        for (String json : getJsons(mPreferences.get(KEY_WMS_STYLE, getDefaultStyles()))) {
             try {
-                allStyles.addAll(deserializeStyle(json));
+                deserializeStyle(json).stream()
+                        .filter((wmsStyle) -> (wmsStyle.isEnabled()))
+                        .forEachOrdered((wmsStyle) -> {
+                            allStyles.add(wmsStyle);
+                        });
             } catch (NullPointerException | JsonSyntaxException ex) {
                 NbLog.i(LOG_TAG, ex.toString());
             }
@@ -130,7 +142,11 @@ public class Initializer implements Runnable {
 
         for (MWmsStyleProvider wmsStyleProvider : Lookup.getDefault().lookupAll(MWmsStyleProvider.class)) {
             try {
-                allStyles.addAll(deserializeStyle(wmsStyleProvider.getJson()));
+                deserializeStyle(wmsStyleProvider.getJson()).stream()
+                        .filter((wmsStyle) -> (wmsStyle.isEnabled()))
+                        .forEachOrdered((wmsStyle) -> {
+                            allStyles.add(wmsStyle);
+                        });
             } catch (JsonSyntaxException ex) {
                 NbLog.i(LOG_TAG, ex.toString());
             }

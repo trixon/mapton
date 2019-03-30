@@ -13,23 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.worldwind.style;
+package org.mapton.worldwind.style.deprecated;
 
-import org.openide.util.lookup.ServiceProvider;
 import org.mapton.worldwind.api.MapStyle;
 
 /**
  *
  * @author Patrik Karlström
  */
-@ServiceProvider(service = MapStyle.class)
-public class EartAtNightMapStyle extends MapStyle {
+//@ServiceProvider(service = MapStyle.class)
+@Deprecated
+public class USGSTopoMapStyle extends MapStyle {
 
-    public EartAtNightMapStyle() {
-        setName("Earth at night");
+    public USGSTopoMapStyle() {
+        setName("USGS Topo");
         setSuppliers("NASA");
         setLayers(new String[]{
-            "Earth at Night"
+            "USGS Topo Base Map",
+            "USGS Topo Base Map Large Scale"
         });
     }
 }

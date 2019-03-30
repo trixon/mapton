@@ -46,6 +46,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.nio.BufferUnderflowException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -57,6 +58,8 @@ import javafx.collections.ObservableList;
 import javax.swing.SwingUtilities;
 import javax.xml.stream.XMLStreamException;
 import org.apache.commons.io.FileUtils;
+import org.mapton.api.MKey;
+import org.mapton.api.MWmsSource;
 import org.mapton.api.Mapton;
 import static org.mapton.worldwind.ModuleOptions.*;
 import static org.mapton.worldwind.WorldWindMapEngine.LOG_TAG;
@@ -68,6 +71,7 @@ import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.nbp.dialogs.NbMessage;
+import se.trixon.almond.util.GlobalStateChangeEvent;
 import se.trixon.almond.util.GraphicsHelper;
 
 /**
@@ -288,10 +292,21 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
                     break;
             }
         });
+
+        Mapton.getGlobalState().addListener((GlobalStateChangeEvent evt) -> {
+            initWmsService();
+        }, MKey.DATA_SOURCES_WMS_SOURCES);
+
     }
 
     private void initWmsService() {
-        for (WmsService wmsService : Lookup.getDefault().lookupAll(WmsService.class)) {
+        ArrayList< WmsService> wmsServices = new ArrayList<>(Lookup.getDefault().lookupAll(WmsService.class));
+        ArrayList<MWmsSource> wmsSources = Mapton.getGlobalState().get(MKey.DATA_SOURCES_WMS_SOURCES);
+        for (MWmsSource wmsSource : wmsSources) {
+            wmsServices.add(WmsService.createFromWmsSource(wmsSource));
+        }
+
+        for (WmsService wmsService : wmsServices) {
             if (!wmsService.isPopulated()) {
                 new Thread(() -> {
                     try {

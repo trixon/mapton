@@ -17,6 +17,7 @@ package org.mapton.api;
 
 import com.google.gson.annotations.SerializedName;
 import java.util.TreeMap;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  *
@@ -34,6 +35,10 @@ public class MWmsSource {
     private String mUrl;
 
     public MWmsSource() {
+    }
+
+    public String getLayerName(String layer) {
+        return StringUtils.defaultIfBlank(mLayers.get(layer), layer);
     }
 
     public TreeMap<String, String> getLayers() {

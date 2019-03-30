@@ -96,6 +96,7 @@
         <module>modules/me-gmapsfx</module>
         <module>modules/me-jxmapviewer2</module>
         <module>modules/me-worldwind</module>
+        <module>modules/datasources</module>
 
         <!--Search engines-->
         <module>modules/se-bookmarks</module>
@@ -109,12 +110,13 @@
         <!--Other-->
         <module>modules/reports</module>
         <module>modules/wikipedia</module>
-        <module>modules/ww-eox</module>
-        <module>modules/ww-lm</module>
+
+        <!--Deprecated-->
+        <!--<module>modules/ww-eox</module>-->
+        <!--<module>modules/ww-lm</module>-->
         <!--<module>modules/ww-grid</module>-->
 
         <!--Unstable-->
-        <module>modules/datasources</module>
         <!--<module>demo</module>-->
         <!--<module>modules/me-mapjfx</module>-->
         <!--<module>modules/ww-mapollage</module>-->

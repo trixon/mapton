@@ -15,7 +15,10 @@
  */
 package org.mapton.worldwind.api;
 
+import java.util.ArrayList;
+import org.mapton.api.MKey;
 import org.mapton.api.MWmsStyle;
+import org.mapton.api.Mapton;
 import org.openide.util.Lookup;
 
 /**
@@ -41,8 +44,13 @@ public abstract class MapStyle {
 
     public static String[] getLayers(String name) {
         String[] layers = null;
+        ArrayList<MapStyle> styles = new ArrayList<>(Lookup.getDefault().lookupAll(MapStyle.class));
+        ArrayList<MWmsStyle> wmsStyles = Mapton.getGlobalState().get(MKey.DATA_SOURCES_WMS_STYLES);
+        wmsStyles.forEach((wmsStyle) -> {
+            styles.add(MapStyle.createFromWmsStyle(wmsStyle));
+        });
 
-        for (MapStyle mapStyle : Lookup.getDefault().lookupAll(MapStyle.class)) {
+        for (MapStyle mapStyle : styles) {
             if (mapStyle.getName().equalsIgnoreCase(name)) {
                 layers = mapStyle.getLayers();
                 break;

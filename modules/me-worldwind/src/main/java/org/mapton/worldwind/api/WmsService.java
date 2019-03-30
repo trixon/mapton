@@ -29,6 +29,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.TreeSet;
+import org.mapton.api.MWmsSource;
 
 /**
  *
@@ -39,6 +40,35 @@ public abstract class WmsService {
     private final TreeSet<LayerInfo> mLayerInfos = new TreeSet<>((LayerInfo o1, LayerInfo o2) -> o1.getName().compareTo(o2.getName()));
     private final ArrayList<Layer> mLayers = new ArrayList<>();
     private boolean mPopulated = false;
+
+    public static WmsService createFromWmsSource(MWmsSource wmsSource) {
+        WmsService wmsService = new WmsService() {
+            @Override
+            public String getName() {
+                return wmsSource.getName();
+            }
+
+            @Override
+            public void populate() throws Exception {
+                addService(new URI(wmsSource.getUrl()));
+
+                for (LayerInfo layerInfo : getLayerInfos()) {
+                    if (wmsSource.getLayers().keySet().contains(layerInfo.getName()) || wmsSource.getLayers().values().contains(layerInfo.getName())) {
+                        Object component = createComponent(layerInfo.getWmsCapabilities(), layerInfo.getParams());
+                        if (component instanceof Layer) {
+                            Layer layer = (Layer) component;
+                            layer.setName(wmsSource.getLayerName(layerInfo.getName()));
+                            getLayers().add(layer);
+                        }
+                    }
+                }
+
+                setPopulated(true);
+            }
+        };
+
+        return wmsService;
+    }
 
     public WmsService() {
     }
