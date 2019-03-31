@@ -128,7 +128,7 @@
 
     <properties>
         <netbeans.version>RELEASE100</netbeans.version>
-        <netbeans.compile.on.save>none</netbeans.compile.on.save>
+        <netbeans.compile.on.save>all</netbeans.compile.on.save>
         <brandingToken>mapton</brandingToken>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <mapton.version>0.8.0-SNAPSHOT</mapton.version>

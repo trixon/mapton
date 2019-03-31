@@ -30,12 +30,12 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.api.MKey;
+import static org.mapton.api.MKey.*;
 import org.mapton.api.MWmsSource;
 import org.mapton.api.MWmsSourceProvider;
 import org.mapton.api.MWmsStyle;
 import org.mapton.api.MWmsStyleProvider;
 import org.mapton.api.Mapton;
-import static org.mapton.datasources.DataSourcesPane.*;
 import org.openide.modules.OnStart;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
@@ -60,21 +60,33 @@ public class Initializer implements Runnable {
     private final Preferences mPreferences = NbPreferences.forModule(DataSourcesPane.class);
 
     static String getDefaultSources() {
-        return "https://raw.githubusercontent.com/trixon/mapton-data/master/v01/wms-sources.json";
+        try {
+            return IOUtils.toString(new URI("https://mapton.org/files/data_sources_wms_sources_defaults"), "utf-8") + "\n";
+        } catch (IOException | URISyntaxException ex) {
+            return "# Defaults not found\n";
+        }
     }
 
     static String getDefaultStyles() {
-        return "https://raw.githubusercontent.com/trixon/mapton-data/master/v01/wms-styles.json";
+        try {
+            return IOUtils.toString(new URI("https://mapton.org/files/data_sources_wms_styles_defaults"), "utf-8") + "\n";
+        } catch (IOException | URISyntaxException ex) {
+            return "# Defaults not found\n";
+        }
     }
 
     public Initializer() {
         mPreferences.addPreferenceChangeListener((PreferenceChangeEvent evt) -> {
             switch (evt.getKey()) {
-                case KEY_WMS_SOURCE:
+                case DATA_SOURCES_FILES:
+                    applyFile();
+                    break;
+
+                case DATA_SOURCES_WMS_SOURCES:
                     applyWmsSource();
                     break;
 
-                case KEY_WMS_STYLE:
+                case DATA_SOURCES_WMS_STYLES:
                     applyWmsStyle();
                     break;
             }
@@ -93,18 +105,37 @@ public class Initializer implements Runnable {
     public void run() {
         applyWmsSource();
         applyWmsStyle();
+        applyFile();
+    }
+
+    private void applyFile() {
+        //TODO Read files and create point, lines and polygons for publishing
+        //TODO Support simple attributes such as colors, line width and markers.
+        //TODO Don't put any burden on map engine renderers, unless needed
+        //TODO Get importers from lookup
+        ArrayList<File> files = new ArrayList<>();
+        for (String line : mPreferences.get(DATA_SOURCES_FILES, "").split("\n")) {
+            File file = new File(line);
+            if (file.exists()) {
+                files.add(file);
+            }
+        }
+
+        Mapton.getGlobalState().put(MKey.DATA_SOURCES_FILES, files);
     }
 
     private void applyWmsSource() {
         ArrayList<MWmsSource> allSources = new ArrayList<>();
 
-        for (String json : getJsons(mPreferences.get(KEY_WMS_SOURCE, getDefaultSources()))) {
+        for (String json : getJsons(mPreferences.get(DATA_SOURCES_WMS_SOURCES, getDefaultSources()))) {
             try {
                 deserializeSource(json).stream()
                         .filter((wmsSource) -> (wmsSource.isEnabled()))
                         .forEachOrdered((wmsSource) -> {
                             allSources.add(wmsSource);
                         });
+            } catch (NullPointerException ex) {
+                //nvm
             } catch (JsonSyntaxException ex) {
                 NbLog.i(LOG_TAG, ex.toString());
             }
@@ -117,18 +148,20 @@ public class Initializer implements Runnable {
                         .forEachOrdered((wmsSource) -> {
                             allSources.add(wmsSource);
                         });
-            } catch (NullPointerException | JsonSyntaxException ex) {
+            } catch (NullPointerException ex) {
+                //nvm
+            } catch (JsonSyntaxException ex) {
                 NbLog.i(LOG_TAG, ex.toString());
             }
         }
 
-        Mapton.getGlobalState().put(MKey.DATA_SOURCES_WMS_SOURCES, allSources);
+        Mapton.getGlobalState().put(DATA_SOURCES_WMS_SOURCES, allSources);
     }
 
     private void applyWmsStyle() {
         ArrayList<MWmsStyle> allStyles = new ArrayList<>();
 
-        for (String json : getJsons(mPreferences.get(KEY_WMS_STYLE, getDefaultStyles()))) {
+        for (String json : getJsons(mPreferences.get(DATA_SOURCES_WMS_STYLES, getDefaultStyles()))) {
             try {
                 deserializeStyle(json).stream()
                         .filter((wmsStyle) -> (wmsStyle.isEnabled()))
@@ -152,7 +185,7 @@ public class Initializer implements Runnable {
             }
         }
 
-        Mapton.getGlobalState().put(MKey.DATA_SOURCES_WMS_STYLES, allStyles);
+        Mapton.getGlobalState().put(DATA_SOURCES_WMS_STYLES, allStyles);
     }
 
     private ArrayList<MWmsSource> deserializeSource(String json) {

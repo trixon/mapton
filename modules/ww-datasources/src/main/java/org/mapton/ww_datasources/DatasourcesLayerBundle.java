@@ -18,9 +18,9 @@ package org.mapton.ww_datasources;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import java.io.File;
 import java.util.ArrayList;
+import org.mapton.api.MKey;
 import org.mapton.api.Mapton;
 import org.mapton.worldwind.api.LayerBundle;
-import static org.mapton.ww_datasources.Globals.*;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.GlobalStateChangeEvent;
@@ -45,13 +45,13 @@ public class DatasourcesLayerBundle extends LayerBundle {
         getLayers().add(mLayer);
         Mapton.getGlobalState().addListener((GlobalStateChangeEvent evt) -> {
             refresh();
-        }, DATA_SOURCES_FILES);
+        }, MKey.DATA_SOURCES_FILES);
 
         setPopulated(true);
     }
 
     private void refresh() {
-        ArrayList<File> files = Mapton.getGlobalState().get(DATA_SOURCES_FILES);
+        ArrayList<File> files = Mapton.getGlobalState().get(MKey.DATA_SOURCES_FILES);
         if (files != null) {
             for (File file : files) {
                 System.out.println("got file! " + file.getAbsolutePath());

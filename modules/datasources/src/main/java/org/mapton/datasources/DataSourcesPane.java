@@ -15,23 +15,18 @@
  */
 package org.mapton.datasources;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.prefs.Preferences;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
-import javafx.scene.control.ButtonBase;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
-import org.mapton.api.Mapton;
-import static org.mapton.api.Mapton.getIconSizeToolBar;
-import org.openide.util.NbPreferences;
+import org.mapton.api.MKey;
+import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.icons.material.MaterialIcon;
@@ -42,20 +37,11 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
  */
 public class DataSourcesPane extends BorderPane {
 
-    static final String KEY_FILES = "files";
-    static final String KEY_WMS_SOURCE = "wms.source";
-    static final String KEY_WMS_STYLE = "wms.style";
-    private static final int ICON_SIZE = (int) (getIconSizeToolBar() * 0.8);
-    private Action mApplyAction;
-    private Tab mFileTab;
-    private TextArea mFileTextArea;
-    private final Preferences mPreferences = NbPreferences.forModule(DataSourcesPane.class);
+    private DataSourceTab mFileTab;
     private TabPane mTabPane;
     private ToolBar mToolBar;
-    private Tab mWmsSourceTab;
-    private TextArea mWmsSourceTextArea;
-    private Tab mWmsStyleTab;
-    private TextArea mWmsStyleTextArea;
+    private DataSourceTab mWmsSourceTab;
+    private DataSourceTab mWmsStyleTab;
 
     public DataSourcesPane() {
         createUI();
@@ -64,9 +50,9 @@ public class DataSourcesPane extends BorderPane {
 
     void save() {
         Platform.runLater(() -> {
-            mPreferences.put(KEY_WMS_SOURCE, mWmsSourceTextArea.getText());
-            mPreferences.put(KEY_WMS_STYLE, mWmsStyleTextArea.getText());
-            mPreferences.put(KEY_FILES, mFileTextArea.getText());
+            mFileTab.save();
+            mWmsSourceTab.save();
+            mWmsStyleTab.save();
         });
     }
 
@@ -74,32 +60,12 @@ public class DataSourcesPane extends BorderPane {
         save();
     }
 
-    private void applyFile() {
-        //TODO Read files and create point, lines and polygons for publishing
-        //TODO Support simple attributes such as colors, line width and markers.
-        //TODO Don't put any burden on map engine renderers, unless needed
-        //TODO Get importers from lookup
-        ArrayList<File> files = new ArrayList<>();
-        for (String line : mFileTextArea.getText().split("\n")) {
-            File file = new File(line);
-            if (file.exists()) {
-                files.add(file);
-            }
-        }
-
-        Mapton.getGlobalState().put("data_sources.files", files);
-    }
-
     private void createUI() {
         initToolBar();
 
-        mFileTextArea = new TextArea();
-        mWmsSourceTextArea = new TextArea();
-        mWmsStyleTextArea = new TextArea();
-
-        mFileTab = new Tab(Dict.FILE.toString(), mFileTextArea);
-        mWmsSourceTab = new Tab("WMS " + Dict.SOURCE.toString(), mWmsSourceTextArea);
-        mWmsStyleTab = new Tab("WMS " + Dict.STYLE.toString(), mWmsStyleTextArea);
+        mFileTab = new DataSourceTab(Dict.FILE.toString(), MKey.DATA_SOURCES_FILES);
+        mWmsSourceTab = new DataSourceTab("WMS " + Dict.SOURCE.toString(), MKey.DATA_SOURCES_WMS_SOURCES);
+        mWmsStyleTab = new DataSourceTab("WMS " + Dict.STYLE.toString(), MKey.DATA_SOURCES_WMS_STYLES);
         mTabPane = new TabPane(mWmsSourceTab, mWmsStyleTab, mFileTab);
 
         for (Tab tab : mTabPane.getTabs()) {
@@ -110,23 +76,29 @@ public class DataSourcesPane extends BorderPane {
     }
 
     private void init() {
-        mFileTextArea.setText(mPreferences.get(KEY_FILES, ""));
-        mWmsSourceTextArea.setText(mPreferences.get(KEY_WMS_SOURCE, Initializer.getDefaultSources()));
-        mWmsStyleTextArea.setText(mPreferences.get(KEY_WMS_STYLE, Initializer.getDefaultStyles()));
+        mFileTab.load("");
+        mWmsSourceTab.load(Initializer.getDefaultSources());
+        mWmsStyleTab.load(Initializer.getDefaultStyles());
 
         apply();
     }
 
     private void initToolBar() {
-        mApplyAction = new Action(Dict.APPLY.toString(), (event) -> {
+        Action applyAction = new Action(Dict.APPLY.toString(), (event) -> {
             apply();
         });
-        mApplyAction.setGraphic(MaterialIcon._Navigation.CHECK.getImageView(ICON_SIZE));
+        applyAction.setGraphic(MaterialIcon._Navigation.CHECK.getImageView(getIconSizeToolBarInt()));
+
+        Action restoreDefaultsAction = new Action(Dict.RESTORE_DEFAULTS.toString(), (event) -> {
+            DataSourceTab t = (DataSourceTab) mTabPane.getSelectionModel().getSelectedItem();
+            t.restoreDefaults();
+        });
+        restoreDefaultsAction.setGraphic(MaterialIcon._Action.SETTINGS_BACKUP_RESTORE.getImageView(getIconSizeToolBarInt()));
 
         ArrayList<Action> actions = new ArrayList<>();
         actions.addAll(Arrays.asList(
-                ActionUtils.ACTION_SPAN,
-                mApplyAction
+                applyAction,
+                restoreDefaultsAction
         ));
 
         mToolBar = ActionUtils.createToolBar(actions, ActionUtils.ActionTextBehavior.HIDE);
@@ -134,11 +106,8 @@ public class DataSourcesPane extends BorderPane {
         mToolBar.setPadding(Insets.EMPTY);
 
         Platform.runLater(() -> {
-            FxHelper.adjustButtonWidth(mToolBar.getItems().stream(), ICON_SIZE * 1.5);
-            mToolBar.getItems().stream().filter((item) -> (item instanceof ButtonBase))
-                    .map((item) -> (ButtonBase) item).forEachOrdered((buttonBase) -> {
-                FxHelper.undecorateButton(buttonBase);
-            });
+            FxHelper.undecorateButtons(mToolBar.getItems().stream());
+
         });
 
         setTop(mToolBar);
