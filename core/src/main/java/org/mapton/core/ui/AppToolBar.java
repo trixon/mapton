@@ -19,6 +19,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.prefs.PreferenceChangeEvent;
 import javafx.application.Platform;
@@ -79,6 +80,7 @@ public class AppToolBar extends ToolBar {
     private PopOver mLayerPopOver;
     private final MOptions mOptions = MOptions.getInstance();
     private final HashSet<PopOver> mPopOvers = new HashSet<>();
+    private HashMap<PopOver, Long> mPopoverClosingTimes = new HashMap<>();
     private FxActionSwing mRulerAction;
     private SearchView mSearchView;
     private Action mStyleAction;
@@ -207,7 +209,9 @@ public class AppToolBar extends ToolBar {
         //Bookmark
         mBookmarkAction = new Action(Dict.BOOKMARKS.toString(), (ActionEvent event) -> {
             if (usePopOver()) {
-                mBookmarkPopOver.show((Node) event.getSource());
+                if (shouldOpen(mLayerPopOver)) {
+                    mBookmarkPopOver.show((Node) event.getSource());
+                }
             } else {
                 SwingUtilities.invokeLater(() -> {
                     Actions.forID("Mapton", "org.mapton.core.actions.BookmarkAction").actionPerformed(null);
@@ -220,7 +224,9 @@ public class AppToolBar extends ToolBar {
         //Layer
         mLayerAction = new Action(Dict.LAYERS.toString(), (ActionEvent event) -> {
             if (usePopOver()) {
-                mLayerPopOver.show((Node) event.getSource());
+                if (shouldOpen(mLayerPopOver)) {
+                    mLayerPopOver.show((Node) event.getSource());
+                }
             } else {
                 SwingUtilities.invokeLater(() -> {
                     Actions.forID("Mapton", "org.mapton.core.actions.LayerAction").actionPerformed(null);
@@ -233,7 +239,9 @@ public class AppToolBar extends ToolBar {
         //mToolbox
         mToolboxAction = new Action(Dict.TOOLBOX.toString(), (event) -> {
             if (usePopOver()) {
-                mToolboxPopOver.show((Node) event.getSource());
+                if (shouldOpen(mToolboxPopOver)) {
+                    mToolboxPopOver.show((Node) event.getSource());
+                }
             } else {
                 SwingUtilities.invokeLater(() -> {
                     Actions.forID("Mapton", "org.mapton.core.actions.ToolboxAction").actionPerformed(null);
@@ -244,9 +252,11 @@ public class AppToolBar extends ToolBar {
 
         //Style
         mStyleAction = new Action(String.format("%s & %s", Dict.TYPE.toString(), Dict.STYLE.toString()), (ActionEvent event) -> {
-            BorderPane pane = (BorderPane) mStylePopOver.getContentNode();
-            pane.setCenter(Mapton.getEngine().getStyleView());
-            mStylePopOver.show((Node) event.getSource());
+            if (shouldOpen(mStylePopOver)) {
+                BorderPane pane = (BorderPane) mStylePopOver.getContentNode();
+                pane.setCenter(Mapton.getEngine().getStyleView());
+                mStylePopOver.show((Node) event.getSource());
+            }
         });
         mStyleAction.setGraphic(MaterialIcon._Image.COLOR_LENS.getImageView(getIconSizeToolBar()));
         mStyleAction.setDisabled(true);
@@ -397,7 +407,9 @@ public class AppToolBar extends ToolBar {
         popOver.setCloseButtonEnabled(false);
         popOver.setDetachable(false);
         popOver.setAnimated(false);
-
+        popOver.setOnHiding((windowEvent -> {
+            mPopoverClosingTimes.put(popOver, System.currentTimeMillis());
+        }));
         mPopOvers.add(popOver);
     }
 
@@ -416,6 +428,10 @@ public class AppToolBar extends ToolBar {
 
         mStylePopOver = new PopOver();
         initPopOver(mStylePopOver, String.format("%s & %s", Dict.TYPE.toString(), Dict.STYLE.toString()), new BorderPane());
+    }
+
+    private boolean shouldOpen(PopOver popOver) {
+        return System.currentTimeMillis() - mPopoverClosingTimes.getOrDefault(popOver, 0L) > 200;
     }
 
     private void tooglePopOver(PopOver popOver, Action action) {
