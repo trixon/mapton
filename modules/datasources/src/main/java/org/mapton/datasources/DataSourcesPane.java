@@ -62,10 +62,11 @@ public class DataSourcesPane extends BorderPane {
 
     private void createUI() {
         initToolBar();
+        String[] wmsExts = new String[]{"json"};
 
-        mFileTab = new DataSourceTab(Dict.FILE.toString(), MKey.DATA_SOURCES_FILES);
-        mWmsSourceTab = new DataSourceTab("WMS " + Dict.SOURCE.toString(), MKey.DATA_SOURCES_WMS_SOURCES);
-        mWmsStyleTab = new DataSourceTab("WMS " + Dict.STYLE.toString(), MKey.DATA_SOURCES_WMS_STYLES);
+        mFileTab = new DataSourceTab(Dict.FILE.toString(), MKey.DATA_SOURCES_FILES, null);
+        mWmsSourceTab = new DataSourceTab("WMS " + Dict.SOURCE.toString(), MKey.DATA_SOURCES_WMS_SOURCES, wmsExts);
+        mWmsStyleTab = new DataSourceTab("WMS " + Dict.STYLE.toString(), MKey.DATA_SOURCES_WMS_STYLES, wmsExts);
         mTabPane = new TabPane(mWmsSourceTab, mWmsStyleTab, mFileTab);
 
         for (Tab tab : mTabPane.getTabs()) {

@@ -15,10 +15,16 @@
  */
 package org.mapton.datasources;
 
+import java.io.File;
 import java.util.prefs.Preferences;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextArea;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.TransferMode;
 import javafx.scene.text.Font;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openide.util.NbPreferences;
 
 /**
@@ -28,17 +34,17 @@ import org.openide.util.NbPreferences;
 public class DataSourceTab extends Tab {
 
     private String mDefaults;
-
+    private final String[] mDropExts;
     private final String mKey;
     private final Preferences mPreferences = NbPreferences.forModule(DataSourcesPane.class);
     private TextArea mTextArea;
 
-    public DataSourceTab(String text, String key) {
+    public DataSourceTab(String text, String key, String[] dropExts) {
         super(text);
-        mTextArea = new TextArea();
-        mTextArea.setFont(Font.font("monospaced", Font.getDefault().getSize() * 1.3));
-        setContent(mTextArea);
         mKey = key;
+        mDropExts = dropExts;
+        init();
+        initListeners();
     }
 
     void load(String defaults) {
@@ -54,4 +60,34 @@ public class DataSourceTab extends Tab {
         mPreferences.put(mKey, mTextArea.getText());
     }
 
+    private void append(File file) {
+        mTextArea.appendText(file.getAbsolutePath() + "\n");
+    }
+
+    private void init() {
+        mTextArea = new TextArea();
+        mTextArea.setFont(Font.font("monospaced", Font.getDefault().getSize() * 1.3));
+        setContent(mTextArea);
+    }
+
+    private void initListeners() {
+        mTextArea.setOnDragOver((DragEvent event) -> {
+            Dragboard board = event.getDragboard();
+            if (board.hasFiles()) {
+                event.acceptTransferModes(TransferMode.COPY);
+            }
+        });
+
+        mTextArea.setOnDragDropped((DragEvent event) -> {
+            for (File file : event.getDragboard().getFiles()) {
+                if (mDropExts == null) {
+                    append(file);
+                } else {
+                    if (StringUtils.equalsAnyIgnoreCase(FilenameUtils.getExtension(file.getName()), mDropExts)) {
+                        append(file);
+                    }
+                }
+            }
+        });
+    }
 }
