@@ -236,6 +236,7 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
                 if (!layerBundle.isPopulated()) {
                     try {
                         layerBundle.populate();
+                        layerBundle.setPopulated(true);
                         layerBundle.getLayers().forEach((layer) -> {
                             addCustomLayer(layer);
                         });
