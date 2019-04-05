@@ -71,6 +71,7 @@ import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.nbp.dialogs.NbMessage;
+import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.GlobalStateChangeEvent;
 import se.trixon.almond.util.GraphicsHelper;
 
@@ -213,7 +214,6 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         updateScreenLayers();
         updateMode();
         updateProjection();
-        updateStyle();
         updateElevation();
 
         Lookup.getDefault().lookupResult(LayerBundle.class).addLookupListener((LookupEvent ev) -> {
@@ -226,6 +226,8 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
 
         initLayerBundles();
         initWmsService();
+
+        updateStyle();
 
         customElevationModelRefresh();
     }
@@ -348,6 +350,27 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         return getModel().getGlobe() instanceof FlatGlobe;
     }
 
+    private synchronized void orderLayers(String[] styleLayers) {
+        if (styleLayers == null) {
+            return;
+        }
+        LayerList layerList = getLayers();
+
+        int max = Integer.MIN_VALUE;
+        for (String layerName : styleLayers) {
+            max = Math.max(max, layerList.indexOf(layerList.getLayerByName(layerName), 0));
+        }
+
+        for (int i = 0; i < styleLayers.length; i++) {
+            Layer layer = layerList.getLayerByName(styleLayers[i]);
+            try {
+                layerList.add(max - i, layer);
+            } catch (Exception e) {
+                //System.out.println(e.getMessage());
+            }
+        }
+    }
+
     private void updateElevation() {
         wwd.getModel().getGlobe().setElevationModel(mOptions.is(KEY_MAP_ELEVATION) ? mNormalElevationModel : mZeroElevationModel);
         wwd.redraw();
@@ -392,7 +415,7 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         redraw();
     }
 
-    private void updateStyle() {
+    private synchronized void updateStyle() {
         HashSet<String> blacklist = new HashSet<>();
         blacklist.add("Compass");
         blacklist.add("World Map");
@@ -403,9 +426,11 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         blacklist.add("Place Names");
         blacklist.add("Measure Tool");
 
-        String[] styleLayers = MapStyle.getLayers(mOptions.get(KEY_MAP_STYLE));
+        String styleName = mOptions.get(KEY_MAP_STYLE);
+        String[] styleLayers = MapStyle.getLayers(styleName);
+
         try {
-            //NbLog.v(getClass(), String.join(", ", styleLayers));
+            NbLog.i(Dict.DOCUMENT.toString(), String.format("%s: (%s)", styleName, String.join(", ", styleLayers)));
             getLayers().forEach((layer) -> {
                 final String name = layer.getName();
                 if (!blacklist.contains(name) && !mCustomLayers.contains(layer)) {
@@ -416,6 +441,8 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         } catch (NullPointerException e) {
             //nvm
         }
+
+        orderLayers(styleLayers);
 
         redraw();
     }
