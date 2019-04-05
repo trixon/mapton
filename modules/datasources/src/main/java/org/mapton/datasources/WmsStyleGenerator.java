@@ -65,7 +65,7 @@ public class WmsStyleGenerator {
 
     private MWmsStyle createStyle(TreeMap<String, String> categories, TreeMap<String, String> names, String supplier, String description, boolean enabled, String... layers) {
         MWmsStyle style = new MWmsStyle();
-        style.setCategoriess(categories);
+        style.setCategories(categories);
         style.setNames(names);
         style.setEnabled(enabled);
         style.setSupplier(supplier);

@@ -27,6 +27,8 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class MWmsStyle {
 
+    @SerializedName("category")
+    private TreeMap<String, String> mCategories = new TreeMap<>();
     @SerializedName("description")
     private String mDescription;
     @SerializedName("enabled")
@@ -37,6 +39,14 @@ public class MWmsStyle {
     private TreeMap<String, String> mNames = new TreeMap<>();
     @SerializedName("supplier")
     private String mSupplier;
+
+    public TreeMap<String, String> getCategories() {
+        return mCategories;
+    }
+
+    public String getCategory() {
+        return mCategories.getOrDefault(Locale.getDefault().getLanguage(), StringUtils.defaultString(mCategories.get(""), ""));
+    }
 
     public String getDescription() {
         return mDescription;
@@ -60,6 +70,10 @@ public class MWmsStyle {
 
     public boolean isEnabled() {
         return mEnabled;
+    }
+
+    public void setCategories(TreeMap<String, String> categories) {
+        mCategories = categories;
     }
 
     public void setDescription(String description) {
