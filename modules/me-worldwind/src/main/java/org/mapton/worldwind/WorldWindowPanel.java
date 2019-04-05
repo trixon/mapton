@@ -50,6 +50,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.prefs.PreferenceChangeEvent;
 import javafx.collections.FXCollections;
@@ -201,6 +202,8 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
     private void init() {
         Model m = (Model) WorldWind.createConfigurationComponent(AVKey.MODEL_CLASS_NAME);
         setModel(m);
+
+        removeObsoleteLayers();
 
         mRoundGlobe = m.getGlobe();
         mFlatGlobe = new EarthFlat();
@@ -371,6 +374,38 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         }
     }
 
+    private void removeObsoleteLayers() {
+        String[] blackArray = new String[]{
+            //            "Stars",
+            //            "Atmosphere",
+            "NASA Blue Marble Image",
+            "Blue Marble May 2004",
+            "i-cubed Landsat",
+            "USGS NAIP Plus",
+            "Bing Imagery",
+            "USGS Topo Base Map",
+            "USGS Topo Base Map Large Scale",
+            "USGS Topo Scanned Maps 1:250K",
+            "USGS Topo Scanned Maps 1:100K",
+            "USGS Topo Scanned Maps 1:24K",
+            "Political Boundaries",
+            "Open Street Map",
+            "Earth at Night",
+            "Place Names"
+        };
+
+        List<String> blackList = Arrays.asList(blackArray);
+        LayerList layersForRemoval = new LayerList();
+
+        for (Layer layer : getLayers()) {
+            if (blackList.contains(layer.getName())) {
+                layersForRemoval.add(layer);
+            }
+        }
+
+        getLayers().removeAll(layersForRemoval);
+    }
+
     private void updateElevation() {
         wwd.getModel().getGlobe().setElevationModel(mOptions.is(KEY_MAP_ELEVATION) ? mNormalElevationModel : mZeroElevationModel);
         wwd.redraw();
@@ -410,7 +445,7 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         getLayers().getLayerByName("View Controls").setEnabled(mOptions.is(KEY_DISPLAY_CONTROLS, DEFAULT_DISPLAY_CONTROLS));
         getLayers().getLayerByName("Atmosphere").setEnabled(mOptions.is(KEY_DISPLAY_ATMOSPHERE, DEFAULT_DISPLAY_ATMOSPHERE));
         getLayers().getLayerByName("Stars").setEnabled(mOptions.is(KEY_DISPLAY_STARS, DEFAULT_DISPLAY_STARS));
-        getLayers().getLayerByName("Place Names").setEnabled(mOptions.is(KEY_DISPLAY_PLACE_NAMES, DEFAULT_DISPLAY_PLACE_NAMES));
+//        getLayers().getLayerByName("Place Names").setEnabled(mOptions.is(KEY_DISPLAY_PLACE_NAMES, DEFAULT_DISPLAY_PLACE_NAMES));
 
         redraw();
     }
@@ -426,7 +461,7 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         blacklist.add("Place Names");
         blacklist.add("Measure Tool");
 
-        String styleName = mOptions.get(KEY_MAP_STYLE);
+        String styleName = mOptions.get(KEY_MAP_STYLE, DEFAULT_MAP_STYLE);
         String[] styleLayers = MapStyle.getLayers(styleName);
 
         try {
