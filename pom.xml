@@ -39,7 +39,7 @@
         <repository>
             <id>netbeans</id>
             <name>NetBeans</name>
-            <url>https://repository.apache.org/content/repositories/orgapachenetbeans-1012</url>
+            <url>https://repository.apache.org/content/repositories/orgapachenetbeans-1013</url>
         </repository>
     </repositories>
 
@@ -127,7 +127,7 @@
     </modules>
 
     <properties>
-        <netbeans.version>RELEASE100</netbeans.version>
+        <netbeans.version>RELEASE110</netbeans.version>
         <netbeans.compile.on.save>all</netbeans.compile.on.save>
         <brandingToken>mapton</brandingToken>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
