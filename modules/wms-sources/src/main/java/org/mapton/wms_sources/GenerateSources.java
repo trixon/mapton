@@ -25,7 +25,7 @@ import org.mapton.api.MWmsSource;
  */
 public class GenerateSources extends Generator {
 
-    private ArrayList<MWmsSource> mSources = new ArrayList<>();
+    private final ArrayList<MWmsSource> mSources = new ArrayList<>();
 
     /**
      * @param args the command line arguments

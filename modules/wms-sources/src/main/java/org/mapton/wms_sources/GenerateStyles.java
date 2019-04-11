@@ -26,9 +26,9 @@ import org.mapton.api.MWmsStyle;
  */
 public class GenerateStyles extends Generator {
 
-    private TreeMap<String, String> mCategoriesEarth = new TreeMap<>();
-    private TreeMap<String, String> mCategoriesSwe = new TreeMap<>();
-    private ArrayList<MWmsStyle> mStyles = new ArrayList<>();
+    private final TreeMap<String, String> mCategoriesEarth = new TreeMap<>();
+    private final TreeMap<String, String> mCategoriesSwe = new TreeMap<>();
+    private final ArrayList<MWmsStyle> mStyles = new ArrayList<>();
 
     /**
      * @param args the command line arguments
@@ -192,7 +192,7 @@ public class GenerateStyles extends Generator {
                 "Lantmäteriet",
                 "",
                 enabled,
-                "se.lm.orto_025"
+                "se.lm.orto_025", "at.eox.s2cloudless"
         ));
     }
 
@@ -252,7 +252,7 @@ public class GenerateStyles extends Generator {
                 "Lantmäteriet",
                 "",
                 enabled,
-                "se.lm.topoweb_dim"
+                "se.lm.topoweb_dim", "at.eox.terrain-light"
         ));
     }
 
