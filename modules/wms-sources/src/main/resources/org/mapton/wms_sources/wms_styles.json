@@ -1,0 +1,212 @@
+[
+    {
+        "category": {
+            "": "Earth",
+            "sv": "Jorden"
+        },
+        "description": "",
+        "enabled": true,
+        "layers": [
+            "at.eox.blackmarble"
+        ],
+        "name": {
+            "": "Earth by night",
+            "sv": "Jorden på natten"
+        },
+        "supplier": "EOX & ESA"
+    },
+    {
+        "category": {
+            "": "Earth",
+            "sv": "Jorden"
+        },
+        "description": "",
+        "enabled": true,
+        "layers": [
+            "at.eox.coastline",
+            "at.eox.hydrography"
+        ],
+        "name": {
+            "": "Coastline & Hydrography",
+            "sv": "Kustlinje & hydrografi"
+        },
+        "supplier": "EOX"
+    },
+    {
+        "category": {
+            "": "Earth",
+            "sv": "Jorden"
+        },
+        "description": "",
+        "enabled": true,
+        "layers": [
+            "at.eox.osm"
+        ],
+        "name": {
+            "": "OpenStreetMap"
+        },
+        "supplier": "EOX"
+    },
+    {
+        "category": {
+            "": "Earth",
+            "sv": "Jorden"
+        },
+        "description": "",
+        "enabled": true,
+        "layers": [
+            "at.eox.s2cloudless"
+        ],
+        "name": {
+            "": "Satellite, Sentinel-2",
+            "sv": "Satellit, Sentinel-2"
+        },
+        "supplier": "EOX & ESA"
+    },
+    {
+        "category": {
+            "": "Earth",
+            "sv": "Jorden"
+        },
+        "description": "",
+        "enabled": true,
+        "layers": [
+            "at.eox.streets",
+            "at.eox.s2cloudless"
+        ],
+        "name": {
+            "": "Satellite & Street, Sentinel-2",
+            "sv": "Satellit & väg, Sentinel-2"
+        },
+        "supplier": "EOX & ESA"
+    },
+    {
+        "category": {
+            "": "Earth",
+            "sv": "Jorden"
+        },
+        "description": "",
+        "enabled": true,
+        "layers": [
+            "at.eox.terrain"
+        ],
+        "name": {
+            "": "Terrain",
+            "sv": "Terräng"
+        },
+        "supplier": "EOX & ESA"
+    },
+    {
+        "category": {
+            "": "Earth",
+            "sv": "Jorden"
+        },
+        "description": "",
+        "enabled": true,
+        "layers": [
+            "at.eox.terrain-light"
+        ],
+        "name": {
+            "": "Terrain (light)",
+            "sv": "Terräng (ljus)"
+        },
+        "supplier": "EOX & ESA"
+    },
+    {
+        "category": {
+            "": "Swedish",
+            "sv": "Sverige"
+        },
+        "description": "",
+        "enabled": true,
+        "layers": [
+            "se.lm.orto_025"
+        ],
+        "name": {
+            "": "Swe LM Ortho 0.25m",
+            "sv": "Sve LM Orto 0,25m"
+        },
+        "supplier": "Lantmäteriet"
+    },
+    {
+        "category": {
+            "": "Swedish",
+            "sv": "Sverige"
+        },
+        "description": "",
+        "enabled": true,
+        "layers": [
+            "se.lm.hist_orto_60"
+        ],
+        "name": {
+            "": "Swe LM Ortho 1960",
+            "sv": "Sve LM Orto 1960"
+        },
+        "supplier": "Lantmäteriet"
+    },
+    {
+        "category": {
+            "": "Swedish",
+            "sv": "Sverige"
+        },
+        "description": "",
+        "enabled": true,
+        "layers": [
+            "se.lm.hist_orto_75"
+        ],
+        "name": {
+            "": "Swe LM Ortho 1975",
+            "sv": "Sve LM Orto 1975"
+        },
+        "supplier": "Lantmäteriet"
+    },
+    {
+        "category": {
+            "": "Swedish",
+            "sv": "Sverige"
+        },
+        "description": "",
+        "enabled": true,
+        "layers": [
+            "se.lm.topoweb",
+            "at.eox.terrain"
+        ],
+        "name": {
+            "": "Swe LM Topo Web",
+            "sv": "Sve LM Topo Web"
+        },
+        "supplier": "Lantmäteriet"
+    },
+    {
+        "category": {
+            "": "Swedish",
+            "sv": "Sverige"
+        },
+        "description": "",
+        "enabled": true,
+        "layers": [
+            "se.lm.topoweb_dim"
+        ],
+        "name": {
+            "": "Swe LM Topo Dim",
+            "sv": "Sve LM Topo Nedtonad"
+        },
+        "supplier": "Lantmäteriet"
+    },
+    {
+        "category": {
+            "": "Earth",
+            "sv": "Jorden"
+        },
+        "description": "",
+        "enabled": true,
+        "layers": [
+            "gov.nasa.neo.uv"
+        ],
+        "name": {
+            "": "NEO UV Index",
+            "sv": "NEO UV-index"
+        },
+        "supplier": "NASA"
+    }
+]

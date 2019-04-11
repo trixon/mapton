@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.datasources;
+package org.mapton.wms_sources;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,20 +24,20 @@ import org.mapton.api.MWmsStyle;
  *
  * @author Patrik Karlström
  */
-public class WmsStyleGenerator {
+public class GenerateStyles extends Generator {
 
-    private ArrayList<MWmsStyle> mStyles = new ArrayList<>();
     private TreeMap<String, String> mCategoriesEarth = new TreeMap<>();
     private TreeMap<String, String> mCategoriesSwe = new TreeMap<>();
+    private ArrayList<MWmsStyle> mStyles = new ArrayList<>();
 
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        new WmsStyleGenerator();
+        new GenerateStyles();
     }
 
-    public WmsStyleGenerator() {
+    public GenerateStyles() {
         mCategoriesEarth.put("", "Earth");
         mCategoriesEarth.put("sv", "Jorden");
         mCategoriesSwe.put("", "Swedish");
@@ -59,7 +59,7 @@ public class WmsStyleGenerator {
 
         initNasaUV(true);
 
-        String json = Initializer.gson.toJson(mStyles);
+        String json = gson.toJson(mStyles);
         System.out.println(json);
     }
 
@@ -237,7 +237,7 @@ public class WmsStyleGenerator {
                 "Lantmäteriet",
                 "",
                 enabled,
-                "se.lm.topoweb"
+                "se.lm.topoweb", "at.eox.terrain"
         ));
     }
 

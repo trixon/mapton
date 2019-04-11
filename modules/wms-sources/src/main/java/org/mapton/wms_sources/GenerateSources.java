@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.datasources;
+package org.mapton.wms_sources;
 
 import java.util.ArrayList;
 import java.util.TreeMap;
@@ -23,7 +23,7 @@ import org.mapton.api.MWmsSource;
  *
  * @author Patrik Karlström
  */
-public class WmsSourceGenerator {
+public class GenerateSources extends Generator {
 
     private ArrayList<MWmsSource> mSources = new ArrayList<>();
 
@@ -31,16 +31,16 @@ public class WmsSourceGenerator {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        new WmsSourceGenerator();
+        new GenerateSources();
     }
 
-    public WmsSourceGenerator() {
+    public GenerateSources() {
         initLantmateriet(true);
         initSwedGeo(true);
         initEOX(true);
         initNASA(true);
 
-        String json = Initializer.gson.toJson(mSources);
+        String json = gson.toJson(mSources);
         System.out.println(json);
     }
 
@@ -67,7 +67,7 @@ public class WmsSourceGenerator {
 
         mSources.add(createSource(
                 "EOX",
-                "https://tiles.maps.eox.at/wms?service=wms&request=getcapabilities",
+                "http://tiles.maps.eox.at/wms?service=wms&request=getcapabilities",
                 layers,
                 enabled
         ));

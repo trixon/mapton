@@ -110,6 +110,7 @@
         <!--Other-->
         <module>modules/reports</module>
         <module>modules/wikipedia</module>
+        <module>modules/wms-sources</module>
 
         <!--Deprecated-->
         <!--<module>modules/ww-eox</module>-->
@@ -120,10 +121,8 @@
         <!--<module>demo</module>-->
         <!--<module>modules/me-mapjfx</module>-->
         <!--<module>modules/ww-mapollage</module>-->
-
-        <!--Unstable-->
-        <module>modules-ext/gdal</module>
-        <module>modules/ww-datasources</module>
+        <!--<module>modules-ext/gdal</module>-->
+        <!--<module>modules/ww-datasources</module>-->
     </modules>
 
     <properties>
