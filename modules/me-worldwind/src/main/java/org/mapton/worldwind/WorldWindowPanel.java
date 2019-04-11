@@ -25,7 +25,6 @@ import gov.nasa.worldwind.globes.ElevationModel;
 import gov.nasa.worldwind.globes.FlatGlobe;
 import gov.nasa.worldwind.globes.GeographicProjection;
 import gov.nasa.worldwind.globes.Globe;
-import gov.nasa.worldwind.globes.projections.AbstractGeographicProjection;
 import gov.nasa.worldwind.globes.projections.ProjectionEquirectangular;
 import gov.nasa.worldwind.globes.projections.ProjectionMercator;
 import gov.nasa.worldwind.globes.projections.ProjectionModifiedSinusoidal;
@@ -48,9 +47,7 @@ import java.net.SocketTimeoutException;
 import java.nio.BufferUnderflowException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.prefs.PreferenceChangeEvent;
 import javafx.collections.FXCollections;
@@ -59,7 +56,7 @@ import javafx.collections.ObservableList;
 import javax.swing.SwingUtilities;
 import javax.xml.stream.XMLStreamException;
 import org.apache.commons.io.FileUtils;
-import org.mapton.api.MKey;
+import static org.mapton.api.MKey.*;
 import org.mapton.api.MWmsSource;
 import org.mapton.api.Mapton;
 import static org.mapton.worldwind.ModuleOptions.*;
@@ -84,7 +81,6 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
 
     private final ObservableList<Layer> mCustomLayers = FXCollections.observableArrayList();
     private FlatGlobe mFlatGlobe;
-    private HashMap<String, AbstractGeographicProjection> mNameProjections;
     private CompoundElevationModel mNormalElevationModel;
     private final ModuleOptions mOptions = ModuleOptions.getInstance();
     private Globe mRoundGlobe;
@@ -203,8 +199,6 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         Model m = (Model) WorldWind.createConfigurationComponent(AVKey.MODEL_CLASS_NAME);
         setModel(m);
 
-        removeObsoleteLayers();
-
         mRoundGlobe = m.getGlobe();
         mFlatGlobe = new EarthFlat();
         mFlatGlobe.setElevationModel(new ZeroElevationModel());
@@ -301,13 +295,13 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
 
         Mapton.getGlobalState().addListener((GlobalStateChangeEvent evt) -> {
             initWmsService();
-        }, MKey.DATA_SOURCES_WMS_SOURCES);
-
+        }, DATA_SOURCES_WMS_SOURCES);
     }
 
     private void initWmsService() {
         ArrayList< WmsService> wmsServices = new ArrayList<>(Lookup.getDefault().lookupAll(WmsService.class));
-        ArrayList<MWmsSource> wmsSources = Mapton.getGlobalState().get(MKey.DATA_SOURCES_WMS_SOURCES);
+        ArrayList<MWmsSource> wmsSources = Mapton.getGlobalState().get(DATA_SOURCES_WMS_SOURCES);
+
         for (MWmsSource wmsSource : wmsSources) {
             wmsServices.add(WmsService.createFromWmsSource(wmsSource));
         }
@@ -372,38 +366,6 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
                 //System.out.println(e.getMessage());
             }
         }
-    }
-
-    private void removeObsoleteLayers() {
-        String[] blackArray = new String[]{
-            //            "Stars",
-            //            "Atmosphere",
-            "NASA Blue Marble Image",
-            "Blue Marble May 2004",
-            "i-cubed Landsat",
-            "USGS NAIP Plus",
-            "Bing Imagery",
-            "USGS Topo Base Map",
-            "USGS Topo Base Map Large Scale",
-            "USGS Topo Scanned Maps 1:250K",
-            "USGS Topo Scanned Maps 1:100K",
-            "USGS Topo Scanned Maps 1:24K",
-            "Political Boundaries",
-            "Open Street Map",
-            "Earth at Night",
-            "Place Names"
-        };
-
-        List<String> blackList = Arrays.asList(blackArray);
-        LayerList layersForRemoval = new LayerList();
-
-        for (Layer layer : getLayers()) {
-            if (blackList.contains(layer.getName())) {
-                layersForRemoval.add(layer);
-            }
-        }
-
-        getLayers().removeAll(layersForRemoval);
     }
 
     private void updateElevation() {
