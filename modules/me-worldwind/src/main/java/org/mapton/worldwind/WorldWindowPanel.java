@@ -47,7 +47,9 @@ import java.net.SocketTimeoutException;
 import java.nio.BufferUnderflowException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.prefs.PreferenceChangeEvent;
 import javafx.collections.FXCollections;
@@ -349,19 +351,18 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         if (styleLayers == null) {
             return;
         }
-        LayerList layerList = getLayers();
 
-        int max = Integer.MIN_VALUE;
-        for (String layerName : styleLayers) {
-            max = Math.max(max, layerList.indexOf(layerList.getLayerByName(layerName), 0));
-        }
+        LayerList allLayers = getLayers();
+        List<String> documentLayers = Arrays.asList(styleLayers);
+        Collections.reverse(documentLayers);
 
-        for (int i = 0; i < styleLayers.length; i++) {
-            Layer layer = layerList.getLayerByName(styleLayers[i]);
-            try {
-                layerList.add(max - i, layer);
-            } catch (Exception e) {
-                //System.out.println(e.getMessage());
+        for (String layerName : documentLayers) {
+            Layer layer = allLayers.getLayerByName(layerName);
+            if (layer != null) {
+                allLayers.remove(layer);
+                allLayers.add(layer);
+            } else {
+                NbLog.e(Dict.DOCUMENT.toString(), "Layer not found: " + layerName);
             }
         }
     }
