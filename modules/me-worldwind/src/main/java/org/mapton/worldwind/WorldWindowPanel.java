@@ -53,7 +53,6 @@ import java.util.prefs.PreferenceChangeEvent;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javax.swing.SwingUtilities;
 import javax.xml.stream.XMLStreamException;
 import org.apache.commons.io.FileUtils;
 import static org.mapton.api.MKey.*;
@@ -88,13 +87,11 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
 
     public WorldWindowPanel() {
         init();
-        initListeners();
-    }
 
-    public WorldWindowPanel(WorldWindow ww) {
-        super(ww);
-        init();
-        initListeners();
+        new Thread(() -> {
+            initFinalize();
+            initListeners();
+        }).start();
     }
 
     public void addCustomLayer(Layer layer) {
@@ -207,59 +204,52 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         insertLayerBefore(viewControlsLayer, CompassLayer.class);
         addSelectListener(new ViewControlsSelectListener(this, viewControlsLayer));
         mNormalElevationModel = (CompoundElevationModel) wwd.getModel().getGlobe().getElevationModel();
+    }
 
+    private void initFinalize() {
         updateScreenLayers();
         updateMode();
         updateProjection();
         updateElevation();
 
-        Lookup.getDefault().lookupResult(LayerBundle.class).addLookupListener((LookupEvent ev) -> {
-            initLayerBundles();
-        });
-
-        Lookup.getDefault().lookupResult(WmsService.class).addLookupListener((LookupEvent ev) -> {
-            initWmsService();
-        });
-
         initLayerBundles();
         initWmsService();
 
         updateStyle();
-
         customElevationModelRefresh();
     }
 
     private void initLayerBundles() {
-        SwingUtilities.invokeLater(() -> {
-            for (LayerBundle layerBundle : Lookup.getDefault().lookupAll(LayerBundle.class)) {
-                if (!layerBundle.isPopulated()) {
-                    try {
-                        layerBundle.populate();
-                        layerBundle.setPopulated(true);
-                        layerBundle.getLayers().forEach((layer) -> {
-                            addCustomLayer(layer);
-                        });
-                    } catch (Exception ex) {
-                        Exceptions.printStackTrace(ex);
-                    }
-
-                    layerBundle.getLayers().addListener((ListChangeListener.Change<? extends Layer> c) -> {
-                        while (c.next()) {
-                            if (c.wasAdded()) {
-                                c.getAddedSubList().forEach((layer) -> {
-                                    addCustomLayer(layer);
-                                });
-                            }
-                            if (c.wasRemoved()) {
-                                c.getRemoved().forEach((layer) -> {
-                                    removeCustomLayer(layer);
-                                });
-                            }
-                        }
+//        SwingUtilities.invokeLater(() -> {
+        for (LayerBundle layerBundle : Lookup.getDefault().lookupAll(LayerBundle.class)) {
+            if (!layerBundle.isPopulated()) {
+                try {
+                    layerBundle.populate();
+                    layerBundle.setPopulated(true);
+                    layerBundle.getLayers().forEach((layer) -> {
+                        addCustomLayer(layer);
                     });
+                } catch (Exception ex) {
+                    Exceptions.printStackTrace(ex);
                 }
+
+                layerBundle.getLayers().addListener((ListChangeListener.Change<? extends Layer> c) -> {
+                    while (c.next()) {
+                        if (c.wasAdded()) {
+                            c.getAddedSubList().forEach((layer) -> {
+                                addCustomLayer(layer);
+                            });
+                        }
+                        if (c.wasRemoved()) {
+                            c.getRemoved().forEach((layer) -> {
+                                removeCustomLayer(layer);
+                            });
+                        }
+                    }
+                });
             }
-        });
+        }
+//        });
     }
 
     private void initListeners() {
@@ -296,6 +286,14 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         Mapton.getGlobalState().addListener((GlobalStateChangeEvent evt) -> {
             initWmsService();
         }, DATA_SOURCES_WMS_SOURCES);
+
+        Lookup.getDefault().lookupResult(LayerBundle.class).addLookupListener((LookupEvent ev) -> {
+            initLayerBundles();
+        });
+
+        Lookup.getDefault().lookupResult(WmsService.class).addLookupListener((LookupEvent ev) -> {
+            initWmsService();
+        });
     }
 
     private void initWmsService() {
@@ -308,24 +306,24 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
 
         for (WmsService wmsService : wmsServices) {
             if (!wmsService.isPopulated()) {
-                new Thread(() -> {
-                    try {
-                        wmsService.populate();
-                        for (Layer layer : wmsService.getLayers()) {
-                            Mapton.logLoading("WMS Layer", layer.getName());
-                            layer.setEnabled(false);
-                            getLayers().addIfAbsent(layer);
-                        }
-                        updateStyle();
-                    } catch (SocketTimeoutException ex) {
-                        NbMessage.warning("ERROR", "initWmsService");//TODO Remove this once spotted
-                        NbLog.w(LOG_TAG, ex.getMessage());
-                    } catch (XMLStreamException ex) {
-                        NbLog.w(LOG_TAG, ex.getMessage());
-                    } catch (Exception ex) {
-                        Exceptions.printStackTrace(ex);
+//                new Thread(() -> {
+                try {
+                    wmsService.populate();
+                    for (Layer layer : wmsService.getLayers()) {
+                        Mapton.logLoading("WMS Layer", layer.getName());
+                        layer.setEnabled(false);
+                        getLayers().addIfAbsent(layer);
                     }
-                }).start();
+                    updateStyle();
+                } catch (SocketTimeoutException ex) {
+                    NbMessage.warning("ERROR", "initWmsService");//TODO Remove this once spotted
+                    NbLog.w(LOG_TAG, ex.getMessage());
+                } catch (XMLStreamException ex) {
+                    NbLog.w(LOG_TAG, ex.getMessage());
+                } catch (Exception ex) {
+                    Exceptions.printStackTrace(ex);
+                }
+//                }).start();
             }
         }
     }
@@ -426,18 +424,18 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         String styleName = mOptions.get(KEY_MAP_STYLE, DEFAULT_MAP_STYLE);
         String[] styleLayers = MapStyle.getLayers(styleName);
 
-        try {
-            NbLog.i(Dict.DOCUMENT.toString(), String.format("%s: (%s)", styleName, String.join(", ", styleLayers)));
-            getLayers().forEach((layer) -> {
+        NbLog.i(Dict.DOCUMENT.toString(), String.format("%s: (%s)", styleName, String.join(", ", styleLayers)));
+        getLayers().forEach((layer) -> {
+            try {
                 final String name = layer.getName();
                 if (!blacklist.contains(name) && !mCustomLayers.contains(layer)) {
                     layer.setEnabled(Arrays.asList(styleLayers).contains(name));
                     layer.setOpacity(mOptions.getDouble(KEY_MAP_OPACITY, DEFAULT_MAP_OPACITY));
                 }
-            });
-        } catch (NullPointerException e) {
-            //nvm
-        }
+            } catch (NullPointerException e) {
+                //nvm
+            }
+        });
 
         orderLayers(styleLayers);
 
