@@ -147,8 +147,8 @@ public class StyleView extends HBox {
                 mControlsCheckBox,
                 mScaleBarCheckBox,
                 mStarsCheckBox,
-                mAtmosphereCheckBox,
-                mPlaceNameCheckBox
+                mAtmosphereCheckBox
+        //mPlaceNameCheckBox
         );
 
         mModeFlatRadioButton.setMaxWidth(Double.MAX_VALUE);
