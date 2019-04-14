@@ -27,6 +27,8 @@ import org.openide.util.Lookup;
  */
 public abstract class MapStyle {
 
+    private String mCategory;
+    private String mDescription;
     private String[] mLayers;
     private String mName;
     private String mSuppliers;
@@ -38,6 +40,8 @@ public abstract class MapStyle {
         mapStyle.setName(wmsStyle.getName());
         mapStyle.setSuppliers(wmsStyle.getSupplier());
         mapStyle.setLayers(wmsStyle.getLayers().toArray(new String[0]));
+        mapStyle.setCategory(wmsStyle.getCategory());
+        mapStyle.setDescription(wmsStyle.getDescription());
 
         return mapStyle;
     }
@@ -63,6 +67,14 @@ public abstract class MapStyle {
     public MapStyle() {
     }
 
+    public String getCategory() {
+        return mCategory;
+    }
+
+    public String getDescription() {
+        return mDescription;
+    }
+
     public String[] getLayers() {
         return mLayers;
     }
@@ -73,6 +85,14 @@ public abstract class MapStyle {
 
     public String getSuppliers() {
         return mSuppliers;
+    }
+
+    public void setCategory(String category) {
+        mCategory = category;
+    }
+
+    public void setDescription(String description) {
+        mDescription = description;
     }
 
     public void setLayers(String[] value) {
@@ -87,4 +107,8 @@ public abstract class MapStyle {
         mSuppliers = suppliers;
     }
 
+    @Override
+    public String toString() {
+        return mName;
+    }
 }

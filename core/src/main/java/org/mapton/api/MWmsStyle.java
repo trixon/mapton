@@ -30,7 +30,7 @@ public class MWmsStyle {
     @SerializedName("category")
     private TreeMap<String, String> mCategories = new TreeMap<>();
     @SerializedName("description")
-    private String mDescription;
+    private TreeMap<String, String> mDescriptions = new TreeMap<>();
     @SerializedName("enabled")
     private boolean mEnabled;
     @SerializedName("layers")
@@ -45,11 +45,15 @@ public class MWmsStyle {
     }
 
     public String getCategory() {
-        return mCategories.getOrDefault(Locale.getDefault().getLanguage(), StringUtils.defaultString(mCategories.get(""), ""));
+        return getLocalized(mCategories, "");
     }
 
     public String getDescription() {
-        return mDescription;
+        return getLocalized(mDescriptions, "");
+    }
+
+    public TreeMap<String, String> getDescriptions() {
+        return mDescriptions;
     }
 
     public ArrayList<String> getLayers() {
@@ -57,7 +61,7 @@ public class MWmsStyle {
     }
 
     public String getName() {
-        return mNames.getOrDefault(Locale.getDefault().getLanguage(), StringUtils.defaultString(mNames.get(""), "UNKNOWN"));
+        return getLocalized(mNames, "UNKNOWN");
     }
 
     public TreeMap<String, String> getNames() {
@@ -76,8 +80,8 @@ public class MWmsStyle {
         mCategories = categories;
     }
 
-    public void setDescription(String description) {
-        mDescription = description;
+    public void setDescriptions(TreeMap<String, String> descriptions) {
+        mDescriptions = descriptions;
     }
 
     public void setEnabled(boolean enabled) {
@@ -94,5 +98,13 @@ public class MWmsStyle {
 
     public void setSupplier(String supplier) {
         mSupplier = supplier;
+    }
+
+    private String getLocalized(TreeMap<String, String> treeMap, String defaultValue) {
+        if (treeMap == null) {
+            return null;
+        } else {
+            return treeMap.getOrDefault(Locale.getDefault().getLanguage(), StringUtils.defaultString(treeMap.get(""), defaultValue));
+        }
     }
 }

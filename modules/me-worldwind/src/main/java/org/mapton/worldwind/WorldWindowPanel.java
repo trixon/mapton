@@ -424,8 +424,10 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
 
         String styleName = mOptions.get(KEY_MAP_STYLE, DEFAULT_MAP_STYLE);
         String[] styleLayers = MapStyle.getLayers(styleName);
-
-        NbLog.i(Dict.DOCUMENT.toString(), String.format("%s: (%s)", styleName, String.join(", ", styleLayers)));
+        try {
+            NbLog.i(Dict.DOCUMENT.toString(), String.format("%s: (%s)", styleName, String.join(", ", styleLayers)));
+        } catch (NullPointerException e) {
+        }
         getLayers().forEach((layer) -> {
             try {
                 final String name = layer.getName();

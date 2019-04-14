@@ -35,6 +35,7 @@ public enum MDict {
     GRID,
     GRIDS,
     HOLLOW,
+    HOLLOW_DESCRIPTION,
     LINE_WIDTH,
     MAP_ENGINE,
     ORIGIN,

@@ -40,7 +40,7 @@ public class GenerateStyles extends Generator {
     public GenerateStyles() {
         mCategoriesEarth.put("", "Earth");
         mCategoriesEarth.put("sv", "Jorden");
-        mCategoriesSwe.put("", "Swedish");
+        mCategoriesSwe.put("", "Sweden");
         mCategoriesSwe.put("sv", "Sverige");
 
         initEoxEarthByNight(true);
@@ -51,6 +51,8 @@ public class GenerateStyles extends Generator {
         initEoxTerrain(true);
         initEoxTerrainLight(true);
 
+        initLmFastighet(true);
+        initLmHillshade(true);
         initLmOrto025(true);
         initLmOrto1960(true);
         initLmOrto1975(true);
@@ -63,13 +65,13 @@ public class GenerateStyles extends Generator {
         System.out.println(json);
     }
 
-    private MWmsStyle createStyle(TreeMap<String, String> categories, TreeMap<String, String> names, String supplier, String description, boolean enabled, String... layers) {
+    private MWmsStyle createStyle(TreeMap<String, String> categories, TreeMap<String, String> names, TreeMap<String, String> descriptions, String supplier, boolean enabled, String... layers) {
         MWmsStyle style = new MWmsStyle();
         style.setCategories(categories);
         style.setNames(names);
         style.setEnabled(enabled);
         style.setSupplier(supplier);
-        style.setDescription(description);
+        style.setDescriptions(descriptions);
         style.setLayers(new ArrayList<>(Arrays.asList(layers)));
 
         return style;
@@ -80,11 +82,13 @@ public class GenerateStyles extends Generator {
         names.put("", "Earth by night");
         names.put("sv", "Jorden på natten");
 
+        TreeMap<String, String> descriptions = new TreeMap<>();
+
         mStyles.add(createStyle(
                 mCategoriesEarth,
                 names,
+                descriptions,
                 "EOX & ESA",
-                "",
                 enabled,
                 "at.eox.blackmarble"
         ));
@@ -95,11 +99,13 @@ public class GenerateStyles extends Generator {
         names.put("", "Coastline & Hydrography");
         names.put("sv", "Kustlinje & hydrografi");
 
+        TreeMap<String, String> descriptions = new TreeMap<>();
+
         mStyles.add(createStyle(
                 mCategoriesEarth,
                 names,
+                descriptions,
                 "EOX",
-                "",
                 enabled,
                 "at.eox.coastline",
                 "at.eox.hydrography"
@@ -110,11 +116,15 @@ public class GenerateStyles extends Generator {
         TreeMap<String, String> names = new TreeMap<>();
         names.put("", "OpenStreetMap");
 
+        TreeMap<String, String> descriptions = new TreeMap<>();
+        descriptions.put("", "A global road map created by the\nOpenStreetMap (OSM) projekt.");
+        descriptions.put("sv", "En global vägkarta skapad av\nprojektet OpenStreetMap (OSM).");
+
         mStyles.add(createStyle(
-                mCategoriesEarth,
+                null,
                 names,
+                descriptions,
                 "EOX",
-                "",
                 enabled,
                 "at.eox.osm"
         ));
@@ -122,14 +132,18 @@ public class GenerateStyles extends Generator {
 
     private void initEoxSentinel2(boolean enabled) {
         TreeMap<String, String> names = new TreeMap<>();
-        names.put("", "Satellite, Sentinel-2");
-        names.put("sv", "Satellit, Sentinel-2");
+        names.put("", "Satellite");
+        names.put("sv", "Satellit");
+
+        TreeMap<String, String> descriptions = new TreeMap<>();
+        descriptions.put("", "World wide satellite imagery\nfrom ESA & EOX.");
+        descriptions.put("sv", "Världstäckande satellitbild\nfrån ESA & EOX.");
 
         mStyles.add(createStyle(
-                mCategoriesEarth,
+                null,
                 names,
+                descriptions,
                 "EOX & ESA",
-                "",
                 enabled,
                 "at.eox.s2cloudless"
         ));
@@ -137,14 +151,16 @@ public class GenerateStyles extends Generator {
 
     private void initEoxSentinel2Streets(boolean enabled) {
         TreeMap<String, String> names = new TreeMap<>();
-        names.put("", "Satellite & Street, Sentinel-2");
-        names.put("sv", "Satellit & väg, Sentinel-2");
+        names.put("", "Satellite & Street");
+        names.put("sv", "Satellit & väg");
+
+        TreeMap<String, String> descriptions = new TreeMap<>();
 
         mStyles.add(createStyle(
                 mCategoriesEarth,
                 names,
+                descriptions,
                 "EOX & ESA",
-                "",
                 enabled,
                 "at.eox.streets",
                 "at.eox.s2cloudless"
@@ -156,11 +172,13 @@ public class GenerateStyles extends Generator {
         names.put("", "Terrain");
         names.put("sv", "Terräng");
 
+        TreeMap<String, String> descriptions = new TreeMap<>();
+
         mStyles.add(createStyle(
                 mCategoriesEarth,
                 names,
+                descriptions,
                 "EOX & ESA",
-                "",
                 enabled,
                 "at.eox.terrain"
         ));
@@ -171,11 +189,13 @@ public class GenerateStyles extends Generator {
         names.put("", "Terrain (light)");
         names.put("sv", "Terräng (ljus)");
 
+        TreeMap<String, String> descriptions = new TreeMap<>();
+
         mStyles.add(createStyle(
                 mCategoriesEarth,
                 names,
+                descriptions,
                 "EOX & ESA",
-                "",
                 enabled,
                 "at.eox.terrain-light"
         ));
@@ -183,14 +203,18 @@ public class GenerateStyles extends Generator {
 
     private void initLmOrto025(boolean enabled) {
         TreeMap<String, String> names = new TreeMap<>();
-        names.put("", "Swe LM Ortho 0.25m");
-        names.put("sv", "Sve LM Orto 0,25m");
+        names.put("", "Lantmäteriet Ortho photo");
+        names.put("sv", "Lantmäteriet Ortofoto");
+
+        TreeMap<String, String> descriptions = new TreeMap<>();
+        descriptions.put("", "Resolution: 0.25 m.");
+        descriptions.put("sv", "Upplösning: 0,25 m.");
 
         mStyles.add(createStyle(
                 mCategoriesSwe,
                 names,
+                descriptions,
                 "Lantmäteriet",
-                "",
                 enabled,
                 "se.lm.orto_025", "at.eox.s2cloudless"
         ));
@@ -198,14 +222,18 @@ public class GenerateStyles extends Generator {
 
     private void initLmOrto1960(boolean enabled) {
         TreeMap<String, String> names = new TreeMap<>();
-        names.put("", "Swe LM Ortho 1960");
-        names.put("sv", "Sve LM Orto 1960");
+        names.put("", "Lantmäteriet Ortho photo 1960");
+        names.put("sv", "Lantmäteriet Ortofoto 1960");
+
+        TreeMap<String, String> descriptions = new TreeMap<>();
+        descriptions.put("", "Reference year 1960.");
+        descriptions.put("sv", "Referensår 1960.");
 
         mStyles.add(createStyle(
                 mCategoriesSwe,
                 names,
+                descriptions,
                 "Lantmäteriet",
-                "",
                 enabled,
                 "se.lm.hist_orto_60"
         ));
@@ -213,14 +241,18 @@ public class GenerateStyles extends Generator {
 
     private void initLmOrto1975(boolean enabled) {
         TreeMap<String, String> names = new TreeMap<>();
-        names.put("", "Swe LM Ortho 1975");
-        names.put("sv", "Sve LM Orto 1975");
+        names.put("", "Lantmäteriet Ortho photo 1975");
+        names.put("sv", "Lantmäteriet Ortofoto 1975");
+
+        TreeMap<String, String> descriptions = new TreeMap<>();
+        descriptions.put("", "Reference year 1975.");
+        descriptions.put("sv", "Referensår 1975.");
 
         mStyles.add(createStyle(
                 mCategoriesSwe,
                 names,
+                descriptions,
                 "Lantmäteriet",
-                "",
                 enabled,
                 "se.lm.hist_orto_75"
         ));
@@ -228,14 +260,18 @@ public class GenerateStyles extends Generator {
 
     private void initLmTopo(boolean enabled) {
         TreeMap<String, String> names = new TreeMap<>();
-        names.put("", "Swe LM Topo Web");
-        names.put("sv", "Sve LM Topo Web");
+        names.put("", "Lantmäteriet Topo");
+        names.put("sv", "Lantmäteriet Topo");
+
+        TreeMap<String, String> descriptions = new TreeMap<>();
+        descriptions.put("", "Topographic web map.");
+        descriptions.put("sv", "Topografisk webbkarta.");
 
         mStyles.add(createStyle(
                 mCategoriesSwe,
                 names,
+                descriptions,
                 "Lantmäteriet",
-                "",
                 enabled,
                 "se.lm.topoweb", "at.eox.terrain"
         ));
@@ -243,16 +279,58 @@ public class GenerateStyles extends Generator {
 
     private void initLmTopoDim(boolean enabled) {
         TreeMap<String, String> names = new TreeMap<>();
-        names.put("", "Swe LM Topo Dim");
-        names.put("sv", "Sve LM Topo Nedtonad");
+        names.put("", "Lantmäteriet Topo Dim");
+        names.put("sv", "Lantmäteriet Topo Nedtonad");
+
+        TreeMap<String, String> descriptions = new TreeMap<>();
+        descriptions.put("", "Dimmed topographic web map.");
+        descriptions.put("sv", "Nedtonad topografisk webbkarta.");
 
         mStyles.add(createStyle(
                 mCategoriesSwe,
                 names,
+                descriptions,
                 "Lantmäteriet",
-                "",
                 enabled,
                 "se.lm.topoweb_dim", "at.eox.terrain-light"
+        ));
+    }
+
+    private void initLmHillshade(boolean enabled) {
+        TreeMap<String, String> names = new TreeMap<>();
+        names.put("", "Lantmäteriet Hillshade");
+        names.put("sv", "Lantmäteriet Terrängskuggning");
+
+        TreeMap<String, String> descriptions = new TreeMap<>();
+        descriptions.put("", "Terrain model as hillshade.");
+        descriptions.put("sv", "Höjdmodell som terrängskuggning.");
+
+        mStyles.add(createStyle(
+                mCategoriesSwe,
+                names,
+                descriptions,
+                "Lantmäteriet",
+                enabled,
+                "se.lm.terrangskuggning", "at.eox.terrain-light"
+        ));
+    }
+
+    private void initLmFastighet(boolean enabled) {
+        TreeMap<String, String> names = new TreeMap<>();
+        names.put("", "Lantmäteriet Property");
+        names.put("sv", "Lantmäteriet Fastighet");
+
+        TreeMap<String, String> descriptions = new TreeMap<>();
+        descriptions.put("", "Cadastral.");
+        descriptions.put("sv", "Fastighetsgränser.");
+
+        mStyles.add(createStyle(
+                mCategoriesSwe,
+                names,
+                descriptions,
+                "Lantmäteriet",
+                enabled,
+                "se.lm.fastighet_text", "se.lm.fastighet_granser", "se.lm.topoweb_dim", "at.eox.terrain-light"
         ));
     }
 
@@ -261,11 +339,13 @@ public class GenerateStyles extends Generator {
         names.put("", "NEO UV Index");
         names.put("sv", "NEO UV-index");
 
+        TreeMap<String, String> descriptions = new TreeMap<>();
+
         mStyles.add(createStyle(
                 mCategoriesEarth,
                 names,
+                descriptions,
                 "NASA",
-                "",
                 enabled,
                 "gov.nasa.neo.uv"
         ));

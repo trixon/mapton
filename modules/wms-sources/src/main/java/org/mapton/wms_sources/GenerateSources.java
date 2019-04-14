@@ -103,6 +103,9 @@ public class GenerateSources extends Generator {
         layers.put("orto025", "se.lm.orto_025");
         layers.put("topowebbkartan", "se.lm.topoweb");
         layers.put("topowebbkartan_nedtonad", "se.lm.topoweb_dim");
+        layers.put("fastighet_text", "se.lm.fastighet_text");
+        layers.put("fastighet_granser", "se.lm.fastighet_granser");
+        layers.put("terrangskuggning", "se.lm.terrangskuggning");
 
         mSources.add(createSource(
                 "Lantmäteriet",

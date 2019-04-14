@@ -27,6 +27,7 @@ public class Generator {
     private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
     protected final Gson gson = new GsonBuilder()
             .disableHtmlEscaping()
+            .serializeNulls()
             .setVersion(1.0)
             .setPrettyPrinting()
             .setDateFormat(DATE_FORMAT)

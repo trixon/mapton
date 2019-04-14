@@ -11,7 +11,10 @@
     {
         "enabled": true,
         "layers": {
+            "fastighet_granser": "se.lm.fastighet_granser",
+            "fastighet_text": "se.lm.fastighet_text",
             "orto025": "se.lm.orto_025",
+            "terrangskuggning": "se.lm.terrangskuggning",
             "topowebbkartan": "se.lm.topoweb",
             "topowebbkartan_nedtonad": "se.lm.topoweb_dim"
         },

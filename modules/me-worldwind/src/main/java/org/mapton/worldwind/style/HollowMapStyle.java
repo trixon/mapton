@@ -15,9 +15,9 @@
  */
 package org.mapton.worldwind.style;
 
-import org.openide.util.lookup.ServiceProvider;
 import org.mapton.api.MDict;
 import org.mapton.worldwind.api.MapStyle;
+import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
@@ -28,6 +28,7 @@ public class HollowMapStyle extends MapStyle {
 
     public HollowMapStyle() {
         setName(MDict.HOLLOW.toString());
+        setDescription(MDict.HOLLOW_DESCRIPTION.toString());
         setSuppliers("Trixon");
         setLayers(new String[]{});
     }

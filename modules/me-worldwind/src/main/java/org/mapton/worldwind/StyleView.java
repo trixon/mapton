@@ -17,24 +17,38 @@ package org.mapton.worldwind;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.TreeMap;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
+import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
+import javafx.scene.control.MenuButton;
+import javafx.scene.control.MultipleSelectionModel;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.Separator;
 import javafx.scene.control.Slider;
-import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.FontWeight;
+import org.apache.commons.lang3.StringUtils;
+import org.controlsfx.control.PopOver;
 import org.mapton.api.MDict;
 import org.mapton.api.MKey;
 import org.mapton.api.MWmsStyle;
@@ -63,6 +77,7 @@ public class StyleView extends HBox {
     private final Slider mOpacitySlider = new Slider(0, 1, 1);
     private final ModuleOptions mOptions = ModuleOptions.getInstance();
     private CheckBox mPlaceNameCheckBox;
+    private HashMap<PopOver, Long> mPopoverClosingTimes = new HashMap<>();
     private ComboBox<String> mProjComboBox;
     private final ArrayList<String> mProjections = new ArrayList<>();
     private CheckBox mScaleBarCheckBox;
@@ -223,32 +238,97 @@ public class StyleView extends HBox {
 
     private void initStyle() {
         Platform.runLater(() -> {
-            ToggleGroup group = new ToggleGroup();
-
             mStyleBox.getChildren().clear();
-            ArrayList< MapStyle> styles = new ArrayList<>(Lookup.getDefault().lookupAll(MapStyle.class));
+
+            ArrayList<MapStyle> styles = new ArrayList<>(Lookup.getDefault().lookupAll(MapStyle.class));
             ArrayList<MWmsStyle> wmsStyles = Mapton.getGlobalState().get(MKey.DATA_SOURCES_WMS_STYLES);
             for (MWmsStyle wmsStyle : wmsStyles) {
                 styles.add(MapStyle.createFromWmsStyle(wmsStyle));
             }
 
             Collections.sort(styles, (MapStyle o1, MapStyle o2) -> o1.getName().compareTo(o2.getName()));
-
+            TreeMap<String, ObservableList<MapStyle>> categoryStyles = new TreeMap<>();
             for (MapStyle mapStyle : styles) {
-                ToggleButton button = new ToggleButton(mapStyle.getName());
-                button.prefWidthProperty().bind(widthProperty());
-                button.setToggleGroup(group);
-                button.setOnAction((ActionEvent event) -> {
-                    mOptions.put(KEY_MAP_STYLE, mapStyle.getName());
+                if (StringUtils.isBlank(mapStyle.getCategory())) {
+                    Button button = new Button(mapStyle.getName());
+                    button.prefWidthProperty().bind(widthProperty());
+                    button.setOnAction((ActionEvent event) -> {
+                        mOptions.put(KEY_MAP_STYLE, mapStyle.getName());
+                    });
+
+                    if (mapStyle.getSuppliers() != null) {
+                        button.setTooltip(new Tooltip(mapStyle.getDescription()));
+                    }
+
+                    mStyleBox.getChildren().add(button);
+                } else {
+                    categoryStyles.computeIfAbsent(mapStyle.getCategory(), k -> FXCollections.observableArrayList()).add(mapStyle);
+                }
+            }
+
+            mStyleBox.getChildren().add(new Separator());
+
+            for (String category : categoryStyles.keySet()) {
+                ListView<MapStyle> listView = new ListView<>(categoryStyles.get(category));
+                listView.setCellFactory((ListView<MapStyle> param) -> new MapStyleListCell());
+
+                MultipleSelectionModel<MapStyle> selectionModel = listView.getSelectionModel();
+
+                selectionModel.getSelectedItems().addListener((ListChangeListener.Change<? extends MapStyle> change) -> {
+                    if (selectionModel.getSelectedItem() != null) {
+                        mOptions.put(KEY_MAP_STYLE, selectionModel.getSelectedItem().getName());
+                    }
                 });
 
-                if (mapStyle.getSuppliers() != null) {
-                    button.setTooltip(new Tooltip(String.format("%s %s", Dict.FROM.toString().toLowerCase(), mapStyle.getSuppliers())));
-                }
+                PopOver popOver = new PopOver();
+                popOver.setContentNode(listView);
+                popOver.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
+                popOver.setHeaderAlwaysVisible(false);
+                popOver.setCloseButtonEnabled(false);
+                popOver.setDetachable(false);
+                popOver.setAnimated(false);
+                popOver.prefWidthProperty().bind(widthProperty());
+                popOver.setOnHiding((windowEvent -> {
+                    mPopoverClosingTimes.put(popOver, System.currentTimeMillis());
+                }));
+
+                popOver.setOnShowing((windowEvent -> {
+                    MapStyle selectedItem = selectionModel.getSelectedItem();
+                    if (selectedItem != null) {
+                        String selectedName = selectedItem.getName();
+                        if (!StringUtils.equals(mOptions.get(KEY_MAP_STYLE), selectedName)) {
+                            selectionModel.clearSelection();
+                        }
+                    }
+                }));
+
+                MenuButton button = new MenuButton(category) {
+//                    @Override
+//                    public void hide() {
+//                        popOver.hide();
+//                    }
+
+                    @Override
+                    public void show() {
+//                        if (shouldOpen(popOver)) {
+                        popOver.show(this);
+//                        }
+                    }
+
+                };
+
+//                Button button = new Button(category);
+//                button.setOnAction((ActionEvent event) -> {
+//                    if (shouldOpen(popOver)) {
+//                        popOver.show(button);
+//                    }
+//                });
+                button.prefWidthProperty().bind(widthProperty());
 
                 mStyleBox.getChildren().add(button);
             }
 
+            mStyleBox.getChildren().add(new Separator());
             mStyleBox.getChildren().add(mOpacityBox);
         });
     }
@@ -271,5 +351,56 @@ public class StyleView extends HBox {
 
         mOpacitySlider.setValue(mOptions.getDouble(KEY_MAP_OPACITY, DEFAULT_MAP_OPACITY));
         mElevationCheckBox.setSelected(mOptions.is(KEY_MAP_ELEVATION, DEFAULT_MAP_ELEVATION));
+    }
+
+    private boolean shouldOpen(PopOver popOver) {
+        return System.currentTimeMillis() - mPopoverClosingTimes.getOrDefault(popOver, 0L) > 200;
+    }
+
+    class MapStyleListCell extends ListCell<MapStyle> {
+
+        private final VBox mBox = new VBox();
+        private Font mDefaultFont = Font.getDefault();
+        private final Label mDescLabel = new Label();
+        private final Label mNameLabel = new Label();
+
+        public MapStyleListCell() {
+            createUI();
+        }
+
+        @Override
+        protected void updateItem(MapStyle mapStyle, boolean empty) {
+            super.updateItem(mapStyle, empty);
+
+            if (mapStyle == null || empty) {
+                clearContent();
+            } else {
+                addContent(mapStyle);
+            }
+        }
+
+        private void addContent(MapStyle mapStyle) {
+            setText(null);
+
+            mNameLabel.setText(mapStyle.getName());
+            mDescLabel.setText(mapStyle.getDescription());
+
+            setGraphic(mBox);
+        }
+
+        private void clearContent() {
+            setText(null);
+            setGraphic(null);
+        }
+
+        private void createUI() {
+            String fontFamily = mDefaultFont.getFamily();
+            double fontSize = mDefaultFont.getSize();
+            mNameLabel.setFont(Font.font(fontFamily, FontWeight.BOLD, fontSize));
+            mDescLabel.setFont(Font.font(fontFamily, FontPosture.ITALIC, fontSize));
+
+            mBox.setSpacing(4);
+            mBox.getChildren().setAll(mNameLabel, mDescLabel);
+        }
     }
 }
