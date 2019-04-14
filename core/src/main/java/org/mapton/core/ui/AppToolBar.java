@@ -27,6 +27,7 @@ import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.TextField;
@@ -75,6 +76,8 @@ public class AppToolBar extends ToolBar {
     private final AlmondOptions mAlmondOptions = AlmondOptions.INSTANCE;
     private Action mBookmarkAction;
     private PopOver mBookmarkPopOver;
+    private Action mCopyrightAction;
+    private PopOver mCopyrightPopOver;
     private FxActionSwing mHomeAction;
     private Action mLayerAction;
     private PopOver mLayerPopOver;
@@ -182,10 +185,11 @@ public class AppToolBar extends ToolBar {
         actions.addAll(Arrays.asList(
                 mHomeAction,
                 mToolboxAction,
+                mRulerAction,
                 mLayerAction,
                 mBookmarkAction,
                 mStyleAction,
-                mRulerAction,
+                mCopyrightAction,
                 ActionUtils.ACTION_SPAN,
                 mSysViewMapAction,
                 systemActionGroup
@@ -194,14 +198,19 @@ public class AppToolBar extends ToolBar {
         Platform.runLater(() -> {
             ActionUtils.updateToolBar(this, actions, ActionUtils.ActionTextBehavior.HIDE);
 
+            Button copyrightButton = (Button) getItems().get(6);
+            Double w = copyrightButton.prefWidthProperty().getValue();
             FxHelper.adjustButtonWidth(getItems().stream(), getIconSizeContextMenu() * 1.5);
+            copyrightButton.setPrefWidth(w);
+            copyrightButton.textProperty().bind(mCopyrightAction.textProperty());
+
             getItems().stream().filter((item) -> (item instanceof ButtonBase))
                     .map((item) -> (ButtonBase) item).forEachOrdered((buttonBase) -> {
                 FxHelper.undecorateButton(buttonBase);
             });
 
             mSearchView = new SearchView();
-            getItems().add(4, mSearchView.getPresenter());
+            getItems().add(5, mSearchView.getPresenter());
         });
     }
 
@@ -260,6 +269,17 @@ public class AppToolBar extends ToolBar {
         });
         mStyleAction.setGraphic(MaterialIcon._Image.COLOR_LENS.getImageView(getIconSizeToolBar()));
         mStyleAction.setDisabled(true);
+
+        //Copyright
+        mCopyrightAction = new Action("Copyright", (ActionEvent event) -> {
+            if (shouldOpen(mCopyrightPopOver)) {
+                BorderPane pane = (BorderPane) mCopyrightPopOver.getContentNode();
+//                pane.setCenter(Mapton.getEngine().getStyleView());
+                mCopyrightPopOver.show((Node) event.getSource());
+            }
+        });
+        mCopyrightAction.setGraphic(MaterialIcon._Action.COPYRIGHT.getImageView(getIconSizeToolBar()));
+        mCopyrightAction.setDisabled(true);
 
         //Help
         mSysHelpAction = new Action(Dict.HELP.toString(), (ActionEvent event) -> {
@@ -368,6 +388,12 @@ public class AppToolBar extends ToolBar {
 
         Mapton.getGlobalState().addListener((GlobalStateChangeEvent evt) -> {
             Platform.runLater(() -> {
+                updateCopyright(evt);
+            });
+        }, MKey.MAP_STYLE_NAME);
+
+        Mapton.getGlobalState().addListener((GlobalStateChangeEvent evt) -> {
+            Platform.runLater(() -> {
                 Notifications notifications = evt.getValue();
                 notifications.owner(AppToolBar.this).position(Pos.TOP_RIGHT);
 
@@ -428,6 +454,9 @@ public class AppToolBar extends ToolBar {
 
         mStylePopOver = new PopOver();
         initPopOver(mStylePopOver, String.format("%s & %s", Dict.TYPE.toString(), Dict.STYLE.toString()), new BorderPane());
+
+        mCopyrightPopOver = new PopOver();
+        initPopOver(mCopyrightPopOver, "Copyright", new BorderPane());
     }
 
     private boolean shouldOpen(PopOver popOver) {
@@ -452,6 +481,11 @@ public class AppToolBar extends ToolBar {
                         });
             }
         });
+    }
+
+    private void updateCopyright(GlobalStateChangeEvent evt) {
+        mCopyrightAction.setDisabled(false);
+        mCopyrightAction.setText(evt.getValue());
     }
 
     private boolean usePopOver() {

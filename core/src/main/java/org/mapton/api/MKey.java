@@ -24,6 +24,7 @@ public class MKey {
     public static final String DATA_SOURCES_FILES = "data_sources.files";
     public static final String DATA_SOURCES_WMS_SOURCES = "data_sources.wms.sources";
     public static final String DATA_SOURCES_WMS_STYLES = "data_sources.wms.styles";
+    public static final String MAP_STYLE_NAME = "map.style.name";
     public static final String NOTIFICATION = "toolbar.notification";
     public static final String NOTIFICATION_CONFIRM = "toolbar.notification.confirm";
     public static final String NOTIFICATION_ERROR = "toolbar.notification.error";
