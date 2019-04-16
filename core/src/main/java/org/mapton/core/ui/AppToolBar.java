@@ -189,8 +189,8 @@ public class AppToolBar extends ToolBar {
                 mLayerAction,
                 mBookmarkAction,
                 mStyleAction,
-                mCopyrightAction,
                 ActionUtils.ACTION_SPAN,
+                mCopyrightAction,
                 mSysViewMapAction,
                 systemActionGroup
         ));
@@ -198,11 +198,11 @@ public class AppToolBar extends ToolBar {
         Platform.runLater(() -> {
             ActionUtils.updateToolBar(this, actions, ActionUtils.ActionTextBehavior.HIDE);
 
-            Button copyrightButton = (Button) getItems().get(6);
-            Double w = copyrightButton.prefWidthProperty().getValue();
+            Button styleButton = (Button) getItems().get(5);
+            Double w = styleButton.prefWidthProperty().getValue();
             FxHelper.adjustButtonWidth(getItems().stream(), getIconSizeContextMenu() * 1.5);
-            copyrightButton.setPrefWidth(w);
-            copyrightButton.textProperty().bind(mCopyrightAction.textProperty());
+            styleButton.setPrefWidth(w);
+            styleButton.textProperty().bind(mStyleAction.textProperty());
 
             getItems().stream().filter((item) -> (item instanceof ButtonBase))
                     .map((item) -> (ButtonBase) item).forEachOrdered((buttonBase) -> {
@@ -485,7 +485,7 @@ public class AppToolBar extends ToolBar {
 
     private void updateCopyright(GlobalStateChangeEvent evt) {
         mCopyrightAction.setDisabled(false);
-        mCopyrightAction.setText(evt.getValue());
+        mStyleAction.setText(evt.getValue());
     }
 
     private boolean usePopOver() {
