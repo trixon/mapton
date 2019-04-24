@@ -39,7 +39,7 @@
         <repository>
             <id>netbeans</id>
             <name>NetBeans</name>
-            <url>https://repository.apache.org/content/repositories/orgapachenetbeans-1013</url>
+            <url>https://repository.apache.org/content/repositories/orgapachenetbeans-1023</url>
         </repository>
     </repositories>
 

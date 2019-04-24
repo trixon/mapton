@@ -23,6 +23,7 @@
                         <publicPackage>de.micromata.*</publicPackage>
                         <publicPackage>com.github.goober.*</publicPackage>
                         <publicPackage>org.controlsfx.*</publicPackage>
+                        <publicPackage>javax.annotation.*</publicPackage>
                         <publicPackage>javax.xml.*</publicPackage>
                         <publicPackage>com.google.*</publicPackage>
                         <publicPackage>com.sun.xml.*</publicPackage>
