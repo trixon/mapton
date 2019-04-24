@@ -72,10 +72,10 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.8.1</version>
+            <version>${commons-lang3.version}</version>
         </dependency>
     </dependencies>
-    <name>ww-lm</name>
+    <name>wms-sources</name>
     <properties>
         <netbeans.hint.license>apache20</netbeans.hint.license>
     </properties>

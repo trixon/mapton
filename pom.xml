@@ -132,6 +132,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <mapton.version>0.8.0-SNAPSHOT</mapton.version>
         <almond-nbp.version>3.0.0-SNAPSHOT</almond-nbp.version>
+        <commons-csv.version>1.6</commons-csv.version>
+        <commons-io.version>2.6</commons-io.version>
+        <commons-lang3.version>3.9</commons-lang3.version>
     </properties>
     <description>Some kind of map application</description>
 </project>
