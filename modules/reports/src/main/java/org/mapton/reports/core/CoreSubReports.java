@@ -17,17 +17,15 @@ package org.mapton.reports.core;
 
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.api.Mapton;
-import org.mapton.reports.api.MReport;
 import org.mapton.reports.api.MSubReport;
 import org.mapton.reports.api.MSubReports;
 import org.openide.util.Lookup;
-import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
  * @author Patrik Karlström
  */
-@ServiceProvider(service = MReport.class)
+//@ServiceProvider(service = MReport.class)
 public class CoreSubReports extends MSubReports {
 
     @Override
