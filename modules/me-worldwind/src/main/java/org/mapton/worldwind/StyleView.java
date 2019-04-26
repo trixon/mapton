@@ -216,6 +216,7 @@ public class StyleView extends HBox {
         mElevationCheckBox.setOnAction((event) -> {
             mOptions.put(KEY_MAP_ELEVATION, mElevationCheckBox.isSelected());
         });
+        mElevationCheckBox.setVisible(false);
 
         mOpacityBox = new VBox(new Label(Dict.OPACITY.toString()), mOpacitySlider, mElevationCheckBox);
 
