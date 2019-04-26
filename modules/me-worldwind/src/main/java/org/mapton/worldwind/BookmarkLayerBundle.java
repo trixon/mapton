@@ -50,6 +50,8 @@ public class BookmarkLayerBundle extends LayerBundle {
             updatePlacemarks();
         });
 
+        setName(Dict.BOOKMARKS.toString());
+
         mOptions.getPreferences().addPreferenceChangeListener((PreferenceChangeEvent evt) -> {
             switch (evt.getKey()) {
                 case MOptions.KEY_MAP_HOME_LAT:

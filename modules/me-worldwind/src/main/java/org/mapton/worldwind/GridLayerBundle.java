@@ -23,10 +23,10 @@ import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.Path;
 import javafx.collections.ObservableList;
 import javafx.geometry.Point2D;
-import org.mapton.api.MLocalGrid;
-import org.mapton.api.MLocalGridManager;
 import org.mapton.api.MCooTrans;
 import org.mapton.api.MDict;
+import org.mapton.api.MLocalGrid;
+import org.mapton.api.MLocalGridManager;
 import org.mapton.api.MOptions;
 import static org.mapton.api.MOptions.*;
 import org.mapton.worldwind.api.LayerBundle;
@@ -52,6 +52,8 @@ public class GridLayerBundle extends LayerBundle {
 
     public GridLayerBundle() {
         mLayer.setName(MDict.GRID.toString());
+        setName(MDict.GRID.toString());
+
         init();
     }
 
