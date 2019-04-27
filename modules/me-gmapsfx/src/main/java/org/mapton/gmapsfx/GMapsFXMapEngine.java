@@ -40,6 +40,7 @@ import org.mapton.api.MKey;
 import org.mapton.api.MLatLon;
 import org.mapton.api.MLatLonBox;
 import org.mapton.api.Mapton;
+import static org.mapton.gmapsfx.ModuleOptions.*;
 import org.mapton.gmapsfx.api.MapStyle;
 import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
@@ -132,7 +133,7 @@ public class GMapsFXMapEngine extends MEngine {
     }
 
     private void init() {
-        mMapView = new GoogleMapView(Locale.getDefault().getLanguage(), mOptions.getMapKey());
+        mMapView = new GoogleMapView(Locale.getDefault().getLanguage(), mOptions.get(KEY_MAP_KEY, "AIzaSyCdVPck8GWP2piXLjl7XTf4QOaydWWYzFE"));
 
         mMapView.addMapInitializedListener(() -> {
             mInfoWindow = new InfoWindow();
@@ -145,7 +146,7 @@ public class GMapsFXMapEngine extends MEngine {
                     .mapTypeControl(false)
                     .fullscreenControl(false)
                     .scaleControl(true)
-                    .styleString(MapStyle.getStyle(mOptions.getMapStyle()))
+                    .styleString(MapStyle.getStyle(mOptions.get(KEY_MAP_STYLE, DEFAULT_MAP_STYLE)))
                     .zoomControl(false);
 
             initMap();
@@ -205,7 +206,7 @@ public class GMapsFXMapEngine extends MEngine {
     private void initMap() {
         NbLog.v(LOG_TAG, "Initializing map...");
 
-        mMapOptions.styleString(MapStyle.getStyle(mOptions.getMapStyle()));
+        mMapOptions.styleString(MapStyle.getStyle(mOptions.get(KEY_MAP_STYLE, DEFAULT_MAP_STYLE)));
         mMap = mMapView.createMap(mMapOptions);
         mMap.setMapType(mOptions.getMapType());
 

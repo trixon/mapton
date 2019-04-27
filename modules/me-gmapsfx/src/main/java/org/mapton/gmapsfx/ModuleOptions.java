@@ -16,41 +16,33 @@
 package org.mapton.gmapsfx;
 
 import com.lynden.gmapsfx.javascript.object.MapTypeIdEnum;
-import java.util.prefs.Preferences;
 import org.openide.util.NbPreferences;
+import se.trixon.almond.util.OptionsBase;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class ModuleOptions {
+public class ModuleOptions extends OptionsBase {
 
     public static final String KEY_MAP_STYLE = "map_style";
     public static final String KEY_MAP_TYPE = "map_type";
-    private static final String DEFAULT_MAP_STYLE = "Retro";
-    private static final String DEFAULT_MAP_TYPE = "TERRAIN";
-    private static final int DEFAULT_MAP_ZOOM = 12;
-    private static final String KEY_MAP_KEY = "map_key";
-    private static final String KEY_MAP_ZOOM = "map_zoom";
-    private final Preferences mPreferences = NbPreferences.forModule(ModuleOptions.class);
+    static final String DEFAULT_MAP_STYLE = "Retro";
+    static final String DEFAULT_MAP_TYPE = "TERRAIN";
+    static final int DEFAULT_MAP_ZOOM = 12;
+    static final String KEY_MAP_KEY = "map_key";
+    static final String KEY_MAP_ZOOM = "map_zoom";
 
     public static ModuleOptions getInstance() {
         return Holder.INSTANCE;
     }
 
     private ModuleOptions() {
-    }
-
-    public String getMapKey() {
-        return mPreferences.get(KEY_MAP_KEY, "AIzaSyCdVPck8GWP2piXLjl7XTf4QOaydWWYzFE");
-    }
-
-    public String getMapStyle() {
-        return mPreferences.get(KEY_MAP_STYLE, DEFAULT_MAP_STYLE);
+        mPreferences = NbPreferences.forModule(ModuleOptions.class);
     }
 
     public MapTypeIdEnum getMapType() {
-        switch (mPreferences.get(KEY_MAP_TYPE, DEFAULT_MAP_TYPE)) {
+        switch (get(KEY_MAP_TYPE, DEFAULT_MAP_TYPE)) {
             case "HYBRID":
                 return MapTypeIdEnum.HYBRID;
 
@@ -65,28 +57,8 @@ public class ModuleOptions {
         }
     }
 
-    public int getMapZoom() {
-        return mPreferences.getInt(KEY_MAP_ZOOM, DEFAULT_MAP_ZOOM);
-    }
-
-    public Preferences getPreferences() {
-        return mPreferences;
-    }
-
-    public void setMapKey(String value) {
-        mPreferences.put(KEY_MAP_KEY, value);
-    }
-
-    public void setMapStyle(String value) {
-        mPreferences.put(KEY_MAP_STYLE, value);
-    }
-
     public void setMapType(MapTypeIdEnum mapType) {
-        mPreferences.put(KEY_MAP_TYPE, mapType.getName());
-    }
-
-    public void setMapZoom(int value) {
-        mPreferences.putInt(KEY_MAP_ZOOM, value);
+        put(KEY_MAP_TYPE, mapType.getName());
     }
 
     private static class Holder {

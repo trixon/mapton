@@ -27,10 +27,11 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import static org.mapton.gmapsfx.ModuleOptions.*;
+import org.mapton.gmapsfx.api.MapStyle;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import se.trixon.almond.util.Dict;
-import org.mapton.gmapsfx.api.MapStyle;
 
 /**
  *
@@ -72,7 +73,7 @@ public class StyleView extends HBox {
                 button.setToggleGroup(group);
                 button.setOnAction((ActionEvent event) -> {
                     MapTypeIdEnum type = mOptions.getMapType();
-                    mOptions.setMapStyle(mapStyle.getName());
+                    mOptions.put(KEY_MAP_STYLE, mapStyle.getName());
                     if (MapTypeIdEnum.ROADMAP != type) {
                         mOptions.setMapType(MapTypeIdEnum.ROADMAP);
                         mOptions.setMapType(type);
