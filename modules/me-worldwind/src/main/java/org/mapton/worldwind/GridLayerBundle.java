@@ -96,6 +96,7 @@ public class GridLayerBundle extends LayerBundle {
     }
 
     private void init() {
+        mLayer.setPickEnabled(false);
     }
 
     private void initAttributes() {
