@@ -34,7 +34,9 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.Node;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.image.WritableImage;
+import org.mapton.api.MDocumentInfo;
 import org.mapton.api.MEngine;
+import org.mapton.api.MKey;
 import org.mapton.api.MLatLon;
 import org.mapton.api.MLatLonBox;
 import org.mapton.api.Mapton;
@@ -42,6 +44,7 @@ import org.mapton.gmapsfx.api.MapStyle;
 import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.NbLog;
+import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.MathHelper;
 
 /**
@@ -94,6 +97,8 @@ public class GMapsFXMapEngine extends MEngine {
         if (mMapView == null) {
             init();
         }
+
+        updateToolbarDocumentInfo();
 
         return mMapView;
     }
@@ -180,6 +185,7 @@ public class GMapsFXMapEngine extends MEngine {
 
                     case ModuleOptions.KEY_MAP_TYPE:
                         mMap.setMapType(mOptions.getMapType());
+                        updateToolbarDocumentInfo();
                         break;
 
                     default:
@@ -235,4 +241,27 @@ public class GMapsFXMapEngine extends MEngine {
         return globalZoom * 22;
     }
 
+    private void updateToolbarDocumentInfo() {
+        String name = "";
+        switch (mOptions.getMapType().toString()) {
+            case "ROADMAP":
+                name = Dict.MAP_TYPE_ROADMAP.toString();
+                break;
+
+            case "SATELLITE":
+                name = Dict.MAP_TYPE_SATELLITE.toString();
+                break;
+
+            case "HYBRID":
+                name = Dict.MAP_TYPE_HYBRID.toString();
+                break;
+
+            case "TERRAIN":
+                name = Dict.MAP_TYPE_TERRAIN.toString();
+                break;
+        }
+
+        MDocumentInfo documentInfo = new MDocumentInfo(name);
+        Mapton.getGlobalState().put(MKey.MAP_DOCUMENT_INFO, documentInfo);
+    }
 }

@@ -45,6 +45,7 @@ import org.controlsfx.control.PopOver;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionGroup;
 import org.controlsfx.control.action.ActionUtils;
+import org.mapton.api.MDocumentInfo;
 import org.mapton.api.MEngine;
 import org.mapton.api.MKey;
 import org.mapton.api.MOptions;
@@ -388,9 +389,9 @@ public class AppToolBar extends ToolBar {
 
         Mapton.getGlobalState().addListener((GlobalStateChangeEvent evt) -> {
             Platform.runLater(() -> {
-                updateCopyright(evt);
+                updateDocumentInfo(evt);
             });
-        }, MKey.MAP_STYLE_NAME);
+        }, MKey.MAP_DOCUMENT_INFO);
 
         Mapton.getGlobalState().addListener((GlobalStateChangeEvent evt) -> {
             Platform.runLater(() -> {
@@ -483,9 +484,10 @@ public class AppToolBar extends ToolBar {
         });
     }
 
-    private void updateCopyright(GlobalStateChangeEvent evt) {
+    private void updateDocumentInfo(GlobalStateChangeEvent evt) {
+        MDocumentInfo documentInfo = evt.getValue();
         mCopyrightAction.setDisabled(false);
-        mStyleAction.setText(evt.getValue());
+        mStyleAction.setText(documentInfo.getName());
     }
 
     private boolean usePopOver() {

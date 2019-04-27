@@ -27,7 +27,9 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.jxmapviewer.JXMapViewer;
 import org.jxmapviewer.viewer.GeoPosition;
+import org.mapton.api.MDocumentInfo;
 import org.mapton.api.MEngine;
+import org.mapton.api.MKey;
 import org.mapton.api.MLatLon;
 import org.mapton.api.MLatLonBox;
 import org.mapton.api.Mapton;
@@ -74,7 +76,7 @@ public class JxMapViewerMapEngine extends MEngine {
 
     @Override
     public String getName() {
-        return "Open Street Map";
+        return "OpenStreetMap";
     }
 
     @Override
@@ -88,6 +90,8 @@ public class JxMapViewerMapEngine extends MEngine {
             init();
             initListeners();
         }
+
+        updateToolbarDocumentInfo();
 
         return mMapKit;
     }
@@ -192,4 +196,8 @@ public class JxMapViewerMapEngine extends MEngine {
         return steps - steps * globalZoom;
     }
 
+    private void updateToolbarDocumentInfo() {
+        MDocumentInfo documentInfo = new MDocumentInfo(getName());
+        Mapton.getGlobalState().put(MKey.MAP_DOCUMENT_INFO, documentInfo);
+    }
 }

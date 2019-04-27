@@ -34,9 +34,12 @@ import java.awt.event.HierarchyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.logging.Logger;
+import java.util.prefs.PreferenceChangeEvent;
 import javafx.scene.Node;
 import javax.swing.Timer;
+import org.mapton.api.MDocumentInfo;
 import org.mapton.api.MEngine;
+import org.mapton.api.MKey;
 import org.mapton.api.MLatLon;
 import org.mapton.api.MLatLonBox;
 import org.mapton.api.Mapton;
@@ -149,6 +152,8 @@ public class WorldWindMapEngine extends MEngine {
             init();
             initListeners();
         }
+
+        updateToolbarDocumentInfo();
 
         return mMap;
     }
@@ -307,6 +312,17 @@ public class WorldWindMapEngine extends MEngine {
             }
         });
 
+        mOptions.getPreferences().addPreferenceChangeListener((PreferenceChangeEvent evt) -> {
+            switch (evt.getKey()) {
+                case ModuleOptions.KEY_MAP_STYLE:
+                    updateToolbarDocumentInfo();
+                    break;
+
+                default:
+                    break;
+            }
+        });
+
         Timer downloadTimer = new Timer(100, (event) -> {
             boolean inProgress = WorldWind.getRetrievalService().hasActiveTasks();
             if (mInProgress != inProgress) {
@@ -358,5 +374,10 @@ public class WorldWindMapEngine extends MEngine {
                 Angle.fromDegreesLongitude(latLonBox.getSouthWest().getLongitude()),
                 Angle.fromDegreesLongitude(latLonBox.getNorthEast().getLongitude())
         );
+    }
+
+    private void updateToolbarDocumentInfo() {
+        MDocumentInfo documentInfo = new MDocumentInfo(mOptions.get(KEY_MAP_STYLE, DEFAULT_MAP_STYLE));
+        Mapton.getGlobalState().put(MKey.MAP_DOCUMENT_INFO, documentInfo);
     }
 }

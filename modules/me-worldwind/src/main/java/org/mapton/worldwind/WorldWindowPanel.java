@@ -56,7 +56,6 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javax.xml.stream.XMLStreamException;
 import org.apache.commons.io.FileUtils;
-import org.mapton.api.MKey;
 import static org.mapton.api.MKey.*;
 import org.mapton.api.MWmsSource;
 import org.mapton.api.Mapton;
@@ -425,8 +424,6 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         blacklist.add("Measure Tool");
 
         String styleName = mOptions.get(KEY_MAP_STYLE, DEFAULT_MAP_STYLE);
-        Mapton.getGlobalState().put(MKey.MAP_STYLE_NAME, styleName);
-
         String[] styleLayers = MapStyle.getLayers(styleName);
         try {
             NbLog.i(Dict.DOCUMENT.toString(), String.format("%s: (%s)", styleName, String.join(", ", styleLayers)));
