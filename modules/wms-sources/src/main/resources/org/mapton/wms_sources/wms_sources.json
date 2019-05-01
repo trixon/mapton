@@ -9,7 +9,7 @@
         "url": "https://api.lantmateriet.se/historiska-ortofoton/wms/v1/token/6633c97e-a9b3-3f0f-95d1-4b50401ac8cd/?request=getcapabilities&service=wms"
     },
     {
-        "enabled": true,
+        "enabled": false,
         "layers": {
             "fastighet_granser": "se.lm.fastighet_granser",
             "fastighet_text": "se.lm.fastighet_text",

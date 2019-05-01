@@ -36,7 +36,7 @@ public class GenerateSources extends Generator {
 
     public GenerateSources() {
         initLantmateriet(true);
-        initSwedGeo(true);
+        initSwedGeo(false);
         initEOX(true);
         initNASA(true);
 

@@ -51,13 +51,13 @@ public class GenerateStyles extends Generator {
         initEoxTerrain(true);
         initEoxTerrainLight(true);
 
-        initLmFastighet(true);
-        initLmHillshade(true);
-        initLmOrto025(true);
+        initLmFastighet(false);
+        initLmHillshade(false);
+        initLmOrto025(false);
         initLmOrto1960(true);
         initLmOrto1975(true);
-        initLmTopo(true);
-        initLmTopoDim(true);
+        initLmTopo(false);
+        initLmTopoDim(false);
 
         initNasaUV(true);
 
