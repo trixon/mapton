@@ -99,7 +99,6 @@ public class GenerateSources extends Generator {
         attribution.setProviderUrl("https://opendata.lantmateriet.se/#apis?api=Historiska-ortofoton_WMS&version=v1");
         attribution.setLicenseName("Creative Commons - CC0");
         attribution.setLicenseUrl("https://creativecommons.org/publicdomain/zero/1.0/");
-        attribution.setRawHtml("");
 
         TreeMap<String, MAttribution> attributions = new TreeMap<>();
         attributions.put("se.lm.hist_orto_60", attribution);
@@ -119,8 +118,14 @@ public class GenerateSources extends Generator {
         layers.put("AURA_UVI_CLIM_M", "gov.nasa.neo.uv");
 
         MAttribution attribution = new MAttribution();
+        attribution.setProviderName("NASA Earth Observations");
+        attribution.setProviderUrl("https://neo.sci.gsfc.nasa.gov/view.php?datasetId=AURA_UVI_CLIM_M");
+        attribution.setLicenseName("\"Freely available for public use\"");
+        attribution.setLicenseUrl("https://neo.sci.gsfc.nasa.gov/about/");
+        attribution.setRawHtml("Imagery by Jesse Allen, NASA Earth Observatory, based on data provided by Jerry Ziemke from the Ozone Monitoring Instrument (OMI) science team.");
 
         TreeMap<String, MAttribution> attributions = new TreeMap<>();
+        attributions.put("gov.nasa.neo.uv", attribution);
 
         mSources.add(createSource(
                 "NEO",
