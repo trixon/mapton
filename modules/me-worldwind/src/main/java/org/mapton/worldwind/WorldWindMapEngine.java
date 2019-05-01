@@ -387,9 +387,12 @@ public class WorldWindMapEngine extends MEngine {
         TreeMap<String, MAttribution> globalAttributions = globalState.get(MKey.DATA_SOURCES_WMS_ATTRIBUTIONS);
         LinkedHashMap<String, MAttribution> attributions = new LinkedHashMap<>();
 
-        for (String layer : MapStyle.getLayers(styleName)) {
-            if (globalAttributions.containsKey(layer)) {
-                attributions.put(layer, globalAttributions.get(layer));
+        String[] layers = MapStyle.getLayers(styleName);
+        if (layers != null) {
+            for (String layer : layers) {
+                if (globalAttributions.containsKey(layer)) {
+                    attributions.put(layer, globalAttributions.get(layer));
+                }
             }
         }
 
