@@ -17,6 +17,8 @@ package org.mapton.wms_sources;
 
 import java.util.ArrayList;
 import java.util.TreeMap;
+import org.apache.commons.lang3.ObjectUtils;
+import org.mapton.api.MAttribution;
 import org.mapton.api.MWmsSource;
 
 /**
@@ -44,12 +46,13 @@ public class GenerateSources extends Generator {
         System.out.println(json);
     }
 
-    private MWmsSource createSource(String name, String url, TreeMap<String, String> layers, boolean enabled) {
+    private MWmsSource createSource(String name, String url, TreeMap<String, String> layers, TreeMap<String, MAttribution> attributions, boolean enabled) {
         MWmsSource source = new MWmsSource();
         source.setName(name);
         source.setEnabled(enabled);
         source.setUrl(url);
         source.setLayers(layers);
+        source.setAttributions(attributions);
 
         return source;
     }
@@ -65,10 +68,23 @@ public class GenerateSources extends Generator {
         layers.put("terrain", "at.eox.terrain");
         layers.put("terrain-light", "at.eox.terrain-light");
 
+        MAttribution s2Attribution = new MAttribution();
+        s2Attribution.setProviderName("EOX");
+        s2Attribution.setProviderUrl("https://eox.at");
+        s2Attribution.setLicenseName("CC BY-NS-SA 4.0");
+        s2Attribution.setLicenseUrl("https://creativecommons.org/licenses/by-nc-sa/4.0/");
+        s2Attribution.setRawHtml("<a href=\"https://s2maps.eu\">Sentinel-2 cloudless – https://s2maps.eu</a> by <a href=\"https://eox.at/\">EOX IT Services GmbH</a> (Contains modified Copernicus Sentinel data 2017 & 2018)");
+
+        ObjectUtils.clone(s2Attribution);
+
+        TreeMap<String, MAttribution> attributions = new TreeMap<>();
+        attributions.put("at.eox.s2cloudless", s2Attribution);
+
         mSources.add(createSource(
                 "EOX",
                 "http://tiles.maps.eox.at/wms?service=wms&request=getcapabilities",
                 layers,
+                attributions,
                 enabled
         ));
     }
@@ -78,10 +94,22 @@ public class GenerateSources extends Generator {
         layers.put("OI.Histortho_60", "se.lm.hist_orto_60");
         layers.put("OI.Histortho_75", "se.lm.hist_orto_75");
 
+        MAttribution attribution = new MAttribution();
+        attribution.setProviderName("Lantmäteriet");
+        attribution.setProviderUrl("https://opendata.lantmateriet.se/#apis?api=Historiska-ortofoton_WMS&version=v1");
+        attribution.setLicenseName("Creative Commons - CC0");
+        attribution.setLicenseUrl("https://creativecommons.org/publicdomain/zero/1.0/");
+        attribution.setRawHtml("");
+
+        TreeMap<String, MAttribution> attributions = new TreeMap<>();
+        attributions.put("se.lm.hist_orto_60", attribution);
+        attributions.put("se.lm.hist_orto_75", attribution);
+
         mSources.add(createSource(
                 "Lantmäteriet",
                 "https://api.lantmateriet.se/historiska-ortofoton/wms/v1/token/6633c97e-a9b3-3f0f-95d1-4b50401ac8cd/?request=getcapabilities&service=wms",
                 layers,
+                attributions,
                 enabled
         ));
     }
@@ -90,10 +118,15 @@ public class GenerateSources extends Generator {
         TreeMap<String, String> layers = new TreeMap<>();
         layers.put("AURA_UVI_CLIM_M", "gov.nasa.neo.uv");
 
+        MAttribution attribution = new MAttribution();
+
+        TreeMap<String, MAttribution> attributions = new TreeMap<>();
+
         mSources.add(createSource(
                 "NEO",
                 "https://neo.sci.gsfc.nasa.gov/wms/wms?version=1.3.0&service=WMS&request=GetCapabilities",
                 layers,
+                attributions,
                 enabled
         ));
     }
@@ -107,10 +140,15 @@ public class GenerateSources extends Generator {
         layers.put("fastighet_granser", "se.lm.fastighet_granser");
         layers.put("terrangskuggning", "se.lm.terrangskuggning");
 
+        MAttribution attribution = new MAttribution();
+
+        TreeMap<String, MAttribution> attributions = new TreeMap<>();
+
         mSources.add(createSource(
                 "Lantmäteriet",
                 "http://gis.swedgeo.se/geoserver/lantmateriet/wms?",
                 layers,
+                attributions,
                 enabled
         ));
     }

@@ -135,6 +135,7 @@
         <commons-csv.version>1.6</commons-csv.version>
         <commons-io.version>2.6</commons-io.version>
         <commons-lang3.version>3.9</commons-lang3.version>
+        <j2html.version>1.4.0</j2html.version>
     </properties>
     <description>Some kind of map application</description>
 </project>

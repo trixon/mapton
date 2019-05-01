@@ -25,6 +25,8 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class MWmsSource {
 
+    @SerializedName("attributions")
+    private TreeMap<String, MAttribution> mAttributions = new TreeMap<>();
     @SerializedName("enabled")
     private boolean mEnabled;
     @SerializedName("layers")
@@ -35,6 +37,10 @@ public class MWmsSource {
     private String mUrl;
 
     public MWmsSource() {
+    }
+
+    public TreeMap<String, MAttribution> getAttributions() {
+        return mAttributions;
     }
 
     public String getLayerName(String layer) {
@@ -55,6 +61,10 @@ public class MWmsSource {
 
     public boolean isEnabled() {
         return mEnabled;
+    }
+
+    public void setAttributions(TreeMap<String, MAttribution> attributions) {
+        mAttributions = attributions;
     }
 
     public void setEnabled(boolean enabled) {

@@ -185,7 +185,8 @@
         },
         "enabled": true,
         "layers": [
-            "se.lm.hist_orto_60"
+            "se.lm.hist_orto_60",
+            "at.eox.s2cloudless"
         ],
         "name": {
             "": "Lantmäteriet Ortho photo 1960",
@@ -204,7 +205,8 @@
         },
         "enabled": true,
         "layers": [
-            "se.lm.hist_orto_75"
+            "se.lm.hist_orto_75",
+            "at.eox.s2cloudless"
         ],
         "name": {
             "": "Lantmäteriet Ortho photo 1975",

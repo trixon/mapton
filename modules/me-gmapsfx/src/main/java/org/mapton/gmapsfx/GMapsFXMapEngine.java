@@ -25,6 +25,7 @@ import com.lynden.gmapsfx.javascript.object.LatLongBounds;
 import com.lynden.gmapsfx.javascript.object.MapOptions;
 import com.lynden.gmapsfx.javascript.object.MapTypeIdEnum;
 import java.awt.Point;
+import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import java.util.prefs.PreferenceChangeEvent;
@@ -34,6 +35,7 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.Node;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.image.WritableImage;
+import org.mapton.api.MAttribution;
 import org.mapton.api.MDocumentInfo;
 import org.mapton.api.MEngine;
 import org.mapton.api.MKey;
@@ -262,7 +264,16 @@ public class GMapsFXMapEngine extends MEngine {
                 break;
         }
 
-        MDocumentInfo documentInfo = new MDocumentInfo(name);
+        LinkedHashMap<String, MAttribution> attributions = new LinkedHashMap<>();
+
+        MAttribution attribution = new MAttribution();
+        attribution.setProviderName("Google");
+        attribution.setProviderUrl("https://www.google.com/maps");
+        attribution.setLicenseName("GOOGLE TERMS OF SERVICE");
+        attribution.setLicenseUrl("https://www.google.com/help/terms_maps/");
+        attributions.put("com.google.maps", attribution);
+
+        MDocumentInfo documentInfo = new MDocumentInfo(name, attributions);
         Mapton.getGlobalState().put(MKey.MAP_DOCUMENT_INFO, documentInfo);
     }
 }

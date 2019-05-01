@@ -1,5 +1,21 @@
 [
     {
+        "attributions": {
+            "se.lm.hist_orto_60": {
+                "licenseName": "Creative Commons - CC0",
+                "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+                "providerName": "Lantmäteriet",
+                "providerUrl": "https://opendata.lantmateriet.se/#apis?api=Historiska-ortofoton_WMS&version=v1",
+                "rawHtml": ""
+            },
+            "se.lm.hist_orto_75": {
+                "licenseName": "Creative Commons - CC0",
+                "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+                "providerName": "Lantmäteriet",
+                "providerUrl": "https://opendata.lantmateriet.se/#apis?api=Historiska-ortofoton_WMS&version=v1",
+                "rawHtml": ""
+            }
+        },
         "enabled": true,
         "layers": {
             "OI.Histortho_60": "se.lm.hist_orto_60",
@@ -9,6 +25,7 @@
         "url": "https://api.lantmateriet.se/historiska-ortofoton/wms/v1/token/6633c97e-a9b3-3f0f-95d1-4b50401ac8cd/?request=getcapabilities&service=wms"
     },
     {
+        "attributions": {},
         "enabled": false,
         "layers": {
             "fastighet_granser": "se.lm.fastighet_granser",
@@ -22,6 +39,15 @@
         "url": "http://gis.swedgeo.se/geoserver/lantmateriet/wms?"
     },
     {
+        "attributions": {
+            "at.eox.s2cloudless": {
+                "licenseName": "CC BY-NS-SA 4.0",
+                "licenseUrl": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+                "providerName": "EOX",
+                "providerUrl": "https://eox.at",
+                "rawHtml": "<a href=\"https://s2maps.eu\">Sentinel-2 cloudless – https://s2maps.eu</a> by <a href=\"https://eox.at/\">EOX IT Services GmbH</a> (Contains modified Copernicus Sentinel data 2017 & 2018)"
+            }
+        },
         "enabled": true,
         "layers": {
             "blackmarble": "at.eox.blackmarble",
@@ -37,6 +63,7 @@
         "url": "http://tiles.maps.eox.at/wms?service=wms&request=getcapabilities"
     },
     {
+        "attributions": {},
         "enabled": true,
         "layers": {
             "AURA_UVI_CLIM_M": "gov.nasa.neo.uv"

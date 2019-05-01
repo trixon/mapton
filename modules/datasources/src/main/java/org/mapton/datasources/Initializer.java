@@ -24,11 +24,13 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.TreeMap;
 import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.Preferences;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.mapton.api.MAttribution;
 import org.mapton.api.MKey;
 import static org.mapton.api.MKey.*;
 import org.mapton.api.MWmsSource;
@@ -156,6 +158,13 @@ public class Initializer implements Runnable {
         }
 
         Mapton.getGlobalState().put(DATA_SOURCES_WMS_SOURCES, allSources);
+
+        TreeMap<String, MAttribution> attributions = new TreeMap<>();
+        for (MWmsSource wmsSource : allSources) {
+            attributions.putAll(wmsSource.getAttributions());
+        }
+
+        Mapton.getGlobalState().put(DATA_SOURCES_WMS_ATTRIBUTIONS, attributions);
     }
 
     private void applyWmsStyle() {

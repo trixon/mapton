@@ -20,6 +20,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Set;
 import javafx.scene.Node;
 import javax.swing.event.ChangeEvent;
@@ -27,6 +28,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.jxmapviewer.JXMapViewer;
 import org.jxmapviewer.viewer.GeoPosition;
+import org.mapton.api.MAttribution;
 import org.mapton.api.MDocumentInfo;
 import org.mapton.api.MEngine;
 import org.mapton.api.MKey;
@@ -197,7 +199,17 @@ public class JxMapViewerMapEngine extends MEngine {
     }
 
     private void updateToolbarDocumentInfo() {
-        MDocumentInfo documentInfo = new MDocumentInfo(getName());
+        LinkedHashMap<String, MAttribution> attributions = new LinkedHashMap<>();
+
+        MAttribution attribution = new MAttribution();
+        attribution.setProviderName("OpenStreetMap");
+        attribution.setProviderUrl("https://www.openstreetmap.org");
+        attribution.setLicenseName("Open Data Commons Open Database License (ODbL)");
+        attribution.setLicenseUrl("https://opendatacommons.org/licenses/odbl/");
+        attribution.setRawHtml("© OpenStreetMap contributors");
+        attributions.put("OSM", attribution);
+
+        MDocumentInfo documentInfo = new MDocumentInfo(getName(), attributions);
         Mapton.getGlobalState().put(MKey.MAP_DOCUMENT_INFO, documentInfo);
     }
 }

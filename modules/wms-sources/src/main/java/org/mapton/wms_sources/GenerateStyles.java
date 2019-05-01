@@ -201,6 +201,44 @@ public class GenerateStyles extends Generator {
         ));
     }
 
+    private void initLmFastighet(boolean enabled) {
+        TreeMap<String, String> names = new TreeMap<>();
+        names.put("", "Lantmäteriet Property");
+        names.put("sv", "Lantmäteriet Fastighet");
+
+        TreeMap<String, String> descriptions = new TreeMap<>();
+        descriptions.put("", "Cadastral.");
+        descriptions.put("sv", "Fastighetsgränser.");
+
+        mStyles.add(createStyle(
+                mCategoriesSwe,
+                names,
+                descriptions,
+                "Lantmäteriet",
+                enabled,
+                "se.lm.fastighet_text", "se.lm.fastighet_granser", "se.lm.topoweb_dim", "at.eox.terrain-light"
+        ));
+    }
+
+    private void initLmHillshade(boolean enabled) {
+        TreeMap<String, String> names = new TreeMap<>();
+        names.put("", "Lantmäteriet Hillshade");
+        names.put("sv", "Lantmäteriet Terrängskuggning");
+
+        TreeMap<String, String> descriptions = new TreeMap<>();
+        descriptions.put("", "Terrain model as hillshade.");
+        descriptions.put("sv", "Höjdmodell som terrängskuggning.");
+
+        mStyles.add(createStyle(
+                mCategoriesSwe,
+                names,
+                descriptions,
+                "Lantmäteriet",
+                enabled,
+                "se.lm.terrangskuggning", "at.eox.terrain-light"
+        ));
+    }
+
     private void initLmOrto025(boolean enabled) {
         TreeMap<String, String> names = new TreeMap<>();
         names.put("", "Lantmäteriet Ortho photo");
@@ -235,7 +273,8 @@ public class GenerateStyles extends Generator {
                 descriptions,
                 "Lantmäteriet",
                 enabled,
-                "se.lm.hist_orto_60"
+                "se.lm.hist_orto_60",
+                "at.eox.s2cloudless"
         ));
     }
 
@@ -254,7 +293,8 @@ public class GenerateStyles extends Generator {
                 descriptions,
                 "Lantmäteriet",
                 enabled,
-                "se.lm.hist_orto_75"
+                "se.lm.hist_orto_75",
+                "at.eox.s2cloudless"
         ));
     }
 
@@ -293,44 +333,6 @@ public class GenerateStyles extends Generator {
                 "Lantmäteriet",
                 enabled,
                 "se.lm.topoweb_dim", "at.eox.terrain-light"
-        ));
-    }
-
-    private void initLmHillshade(boolean enabled) {
-        TreeMap<String, String> names = new TreeMap<>();
-        names.put("", "Lantmäteriet Hillshade");
-        names.put("sv", "Lantmäteriet Terrängskuggning");
-
-        TreeMap<String, String> descriptions = new TreeMap<>();
-        descriptions.put("", "Terrain model as hillshade.");
-        descriptions.put("sv", "Höjdmodell som terrängskuggning.");
-
-        mStyles.add(createStyle(
-                mCategoriesSwe,
-                names,
-                descriptions,
-                "Lantmäteriet",
-                enabled,
-                "se.lm.terrangskuggning", "at.eox.terrain-light"
-        ));
-    }
-
-    private void initLmFastighet(boolean enabled) {
-        TreeMap<String, String> names = new TreeMap<>();
-        names.put("", "Lantmäteriet Property");
-        names.put("sv", "Lantmäteriet Fastighet");
-
-        TreeMap<String, String> descriptions = new TreeMap<>();
-        descriptions.put("", "Cadastral.");
-        descriptions.put("sv", "Fastighetsgränser.");
-
-        mStyles.add(createStyle(
-                mCategoriesSwe,
-                names,
-                descriptions,
-                "Lantmäteriet",
-                enabled,
-                "se.lm.fastighet_text", "se.lm.fastighet_granser", "se.lm.topoweb_dim", "at.eox.terrain-light"
         ));
     }
 

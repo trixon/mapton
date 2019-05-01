@@ -75,16 +75,17 @@ public class AppToolBar extends ToolBar {
 
     private static final boolean IS_MAC = SystemUtils.IS_OS_MAC;
     private final AlmondOptions mAlmondOptions = AlmondOptions.INSTANCE;
+    private Action mAttributionAction;
+    private PopOver mAttributionPopOver;
+    private AttributionView mAttributionView;
     private Action mBookmarkAction;
     private PopOver mBookmarkPopOver;
-    private Action mCopyrightAction;
-    private PopOver mCopyrightPopOver;
     private FxActionSwing mHomeAction;
     private Action mLayerAction;
     private PopOver mLayerPopOver;
     private final MOptions mOptions = MOptions.getInstance();
     private final HashSet<PopOver> mPopOvers = new HashSet<>();
-    private HashMap<PopOver, Long> mPopoverClosingTimes = new HashMap<>();
+    private final HashMap<PopOver, Long> mPopoverClosingTimes = new HashMap<>();
     private FxActionSwing mRulerAction;
     private SearchView mSearchView;
     private Action mStyleAction;
@@ -191,7 +192,7 @@ public class AppToolBar extends ToolBar {
                 mBookmarkAction,
                 mStyleAction,
                 ActionUtils.ACTION_SPAN,
-                mCopyrightAction,
+                mAttributionAction,
                 mSysViewMapAction,
                 systemActionGroup
         ));
@@ -272,15 +273,13 @@ public class AppToolBar extends ToolBar {
         mStyleAction.setDisabled(true);
 
         //Copyright
-        mCopyrightAction = new Action("Copyright", (ActionEvent event) -> {
-            if (shouldOpen(mCopyrightPopOver)) {
-                BorderPane pane = (BorderPane) mCopyrightPopOver.getContentNode();
-//                pane.setCenter(Mapton.getEngine().getStyleView());
-                mCopyrightPopOver.show((Node) event.getSource());
+        mAttributionAction = new Action("Copyright", (ActionEvent event) -> {
+            if (shouldOpen(mAttributionPopOver)) {
+                mAttributionPopOver.show((Node) event.getSource());
             }
         });
-        mCopyrightAction.setGraphic(MaterialIcon._Action.COPYRIGHT.getImageView(getIconSizeToolBar()));
-        mCopyrightAction.setDisabled(true);
+        mAttributionAction.setGraphic(MaterialIcon._Action.COPYRIGHT.getImageView(getIconSizeToolBar()));
+        mAttributionAction.setDisabled(true);
 
         //Help
         mSysHelpAction = new Action(Dict.HELP.toString(), (ActionEvent event) -> {
@@ -456,8 +455,12 @@ public class AppToolBar extends ToolBar {
         mStylePopOver = new PopOver();
         initPopOver(mStylePopOver, String.format("%s & %s", Dict.TYPE.toString(), Dict.STYLE.toString()), new BorderPane());
 
-        mCopyrightPopOver = new PopOver();
-        initPopOver(mCopyrightPopOver, "Copyright", new BorderPane());
+        Platform.runLater(() -> {
+            mAttributionPopOver = new PopOver();
+            mAttributionView = new AttributionView(mAttributionPopOver);
+            initPopOver(mAttributionPopOver, Dict.COPYRIGHT.toString(), mAttributionView);
+            mAttributionPopOver.setArrowLocation(PopOver.ArrowLocation.TOP_RIGHT);
+        });
     }
 
     private boolean shouldOpen(PopOver popOver) {
@@ -486,8 +489,9 @@ public class AppToolBar extends ToolBar {
 
     private void updateDocumentInfo(GlobalStateChangeEvent evt) {
         MDocumentInfo documentInfo = evt.getValue();
-        mCopyrightAction.setDisabled(false);
+        mAttributionAction.setDisabled(false);
         mStyleAction.setText(documentInfo.getName());
+        mAttributionView.updateDocumentInfo(documentInfo);
     }
 
     private boolean usePopOver() {

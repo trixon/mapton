@@ -15,12 +15,15 @@
  */
 package org.mapton.api;
 
+import java.util.LinkedHashMap;
+
 /**
  *
  * @author Patrik Karlström
  */
 public class MDocumentInfo {
 
+    private LinkedHashMap<String, MAttribution> mAttributions = new LinkedHashMap<>();
     private String mName;
 
     public MDocumentInfo() {
@@ -30,8 +33,21 @@ public class MDocumentInfo {
         mName = name;
     }
 
+    public MDocumentInfo(String name, LinkedHashMap<String, MAttribution> attributions) {
+        mName = name;
+        mAttributions = attributions;
+    }
+
+    public LinkedHashMap<String, MAttribution> getAttributions() {
+        return mAttributions;
+    }
+
     public String getName() {
         return mName;
+    }
+
+    public void setAttributions(LinkedHashMap<String, MAttribution> attributions) {
+        mAttributions = attributions;
     }
 
     public void setName(String name) {

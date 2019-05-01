@@ -79,7 +79,7 @@
         <dependency>
             <groupId>com.j2html</groupId>
             <artifactId>j2html</artifactId>
-            <version>1.3.0</version>
+            <version>${j2html.version}</version>
         </dependency>
     </dependencies>
     <properties>

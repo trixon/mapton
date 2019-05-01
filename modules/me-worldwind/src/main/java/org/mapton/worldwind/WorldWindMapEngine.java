@@ -33,10 +33,13 @@ import java.awt.event.HierarchyBoundsListener;
 import java.awt.event.HierarchyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.LinkedHashMap;
+import java.util.TreeMap;
 import java.util.logging.Logger;
 import java.util.prefs.PreferenceChangeEvent;
 import javafx.scene.Node;
 import javax.swing.Timer;
+import org.mapton.api.MAttribution;
 import org.mapton.api.MDocumentInfo;
 import org.mapton.api.MEngine;
 import org.mapton.api.MKey;
@@ -44,11 +47,13 @@ import org.mapton.api.MLatLon;
 import org.mapton.api.MLatLonBox;
 import org.mapton.api.Mapton;
 import static org.mapton.worldwind.ModuleOptions.*;
+import org.mapton.worldwind.api.MapStyle;
 import org.mapton.worldwind.ruler.RulerTabPane;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.nbp.dialogs.NbMessage;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.GlobalState;
 import se.trixon.almond.util.SystemHelper;
 
 /**
@@ -377,7 +382,19 @@ public class WorldWindMapEngine extends MEngine {
     }
 
     private void updateToolbarDocumentInfo() {
-        MDocumentInfo documentInfo = new MDocumentInfo(mOptions.get(KEY_MAP_STYLE, DEFAULT_MAP_STYLE));
-        Mapton.getGlobalState().put(MKey.MAP_DOCUMENT_INFO, documentInfo);
+        GlobalState globalState = Mapton.getGlobalState();
+        String styleName = mOptions.get(KEY_MAP_STYLE, DEFAULT_MAP_STYLE);
+        TreeMap<String, MAttribution> globalAttributions = globalState.get(MKey.DATA_SOURCES_WMS_ATTRIBUTIONS);
+        LinkedHashMap<String, MAttribution> attributions = new LinkedHashMap<>();
+
+        for (String layer : MapStyle.getLayers(styleName)) {
+            if (globalAttributions.containsKey(layer)) {
+                attributions.put(layer, globalAttributions.get(layer));
+            }
+        }
+
+        MDocumentInfo documentInfo = new MDocumentInfo(styleName, attributions);
+
+        globalState.put(MKey.MAP_DOCUMENT_INFO, documentInfo);
     }
 }
