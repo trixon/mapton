@@ -20,6 +20,8 @@ import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.WorldWindow;
 import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.awt.WorldWindowGLJPanel;
+import gov.nasa.worldwind.event.SelectEvent;
+import gov.nasa.worldwind.event.SelectListener;
 import gov.nasa.worldwind.globes.EarthFlat;
 import gov.nasa.worldwind.globes.ElevationModel;
 import gov.nasa.worldwind.globes.FlatGlobe;
@@ -37,6 +39,7 @@ import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.layers.LayerList;
 import gov.nasa.worldwind.layers.ViewControlsLayer;
 import gov.nasa.worldwind.layers.ViewControlsSelectListener;
+import gov.nasa.worldwind.render.Highlightable;
 import gov.nasa.worldwind.terrain.LocalElevationModel;
 import gov.nasa.worldwind.terrain.ZeroElevationModel;
 import java.awt.image.BufferedImage;
@@ -296,6 +299,33 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
 
         Lookup.getDefault().lookupResult(WmsService.class).addLookupListener((LookupEvent ev) -> {
             initWmsService();
+        });
+
+        getWwd().addSelectListener(new SelectListener() {
+            private Highlightable mLastHighlightObject;
+
+            @Override
+            public void selected(SelectEvent event) {
+                if (event.getEventAction().equals(SelectEvent.ROLLOVER)) {
+                    highlight(event.getTopObject());
+                }
+            }
+
+            private void highlight(Object o) {
+                if (mLastHighlightObject == o) {
+                    return;
+                }
+
+                if (mLastHighlightObject != null) {
+                    mLastHighlightObject.setHighlighted(false);
+                    mLastHighlightObject = null;
+                }
+
+                if (o instanceof Highlightable) {
+                    mLastHighlightObject = (Highlightable) o;
+                    mLastHighlightObject.setHighlighted(true);
+                }
+            }
         });
     }
 
