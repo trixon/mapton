@@ -127,6 +127,10 @@ public class AppToolBar extends ToolBar {
         });
     }
 
+    public void toogleAttributionPopOver() {
+        tooglePopOver(mAttributionPopOver, mAttributionAction);
+    }
+
     public void toogleBookmarkPopOver() {
         tooglePopOver(mBookmarkPopOver, mBookmarkAction);
     }
