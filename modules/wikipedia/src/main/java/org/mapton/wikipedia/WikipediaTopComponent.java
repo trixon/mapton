@@ -37,6 +37,7 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.web.WebView;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.MasterDetailPane;
+import org.mapton.api.MKey;
 import org.mapton.api.MMapMagnet;
 import org.mapton.api.MTopComponent;
 import org.mapton.api.MWikipediaArticle;
@@ -46,6 +47,7 @@ import static org.mapton.wikipedia.Module.LOG_TAG;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.windows.TopComponent;
 import se.trixon.almond.nbp.NbLog;
+import se.trixon.almond.util.GlobalStateChangeEvent;
 
 /**
  * Top component which displays something.
@@ -77,6 +79,7 @@ public final class WikipediaTopComponent extends MTopComponent implements MMapMa
     @Override
     protected void initFX() {
         setScene(createScene());
+        initListeners();
     }
 
     void readProperties(java.util.Properties p) {
@@ -121,6 +124,21 @@ public final class WikipediaTopComponent extends MTopComponent implements MMapMa
         });
 
         return new Scene(mRoot);
+    }
+
+    private void initListeners() {
+        Mapton.getGlobalState().addListener((GlobalStateChangeEvent evt) -> {
+            try {
+                Platform.runLater(() -> {
+                    MWikipediaArticle article = evt.getValue();
+                    mListView.getSelectionModel().select(article);
+                    mListView.getFocusModel().focus(mListView.getItems().indexOf(article));
+                    mListView.scrollTo(article);
+                });
+            } catch (Exception e) {
+
+            }
+        }, MKey.WIKIPEDIA_ARTICLE);
     }
 
     private void select(MWikipediaArticle article) {

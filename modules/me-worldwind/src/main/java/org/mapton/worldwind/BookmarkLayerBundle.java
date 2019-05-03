@@ -97,9 +97,8 @@ public class BookmarkLayerBundle extends LayerBundle {
 
         MLatLon home = mOptions.getMapHome();
         PointPlacemark placemark = new PointPlacemark(Position.fromDegrees(home.getLatitude(), home.getLongitude()));
-        placemark.setLabelText(Dict.HOME.toString());
+        //placemark.setLabelText(Dict.HOME.toString());
         placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
-        placemark.setEnableLabelPicking(true);
 
         PointPlacemarkAttributes attrs = new PointPlacemarkAttributes(placemark.getDefaultAttributes());
         attrs.setImage(GraphicsHelper.toBufferedImage(MaterialIcon._Action.HOME.get(96, IconColor.WHITE).getImage()));
@@ -107,7 +106,7 @@ public class BookmarkLayerBundle extends LayerBundle {
         attrs.setImageOffset(Offset.CENTER);
 
         placemark.setAttributes(attrs);
-        placemark.setHighlightAttributes(WWUtil.createHighlightAttributes(attrs, 1.5));
+        placemark.setHighlightAttributes(WWUtil.createHighlightAttributes(attrs, 1.0));
 
         mBookmarksLayer.addRenderable(placemark);
 

@@ -31,5 +31,6 @@ public class MKey {
     public static final String NOTIFICATION_ERROR = "toolbar.notification.error";
     public static final String NOTIFICATION_INFORMATION = "toolbar.notification.information";
     public static final String NOTIFICATION_WARNING = "toolbar.notification.warning";
+    public static final String WIKIPEDIA_ARTICLE = "wikipedia.article";
 
 }

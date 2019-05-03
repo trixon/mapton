@@ -19,6 +19,7 @@ import gov.nasa.worldwind.Model;
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.WorldWindow;
 import gov.nasa.worldwind.avlist.AVKey;
+import gov.nasa.worldwind.avlist.AVList;
 import gov.nasa.worldwind.awt.WorldWindowGLJPanel;
 import gov.nasa.worldwind.event.SelectEvent;
 import gov.nasa.worldwind.event.SelectListener;
@@ -42,6 +43,8 @@ import gov.nasa.worldwind.layers.ViewControlsSelectListener;
 import gov.nasa.worldwind.render.Highlightable;
 import gov.nasa.worldwind.terrain.LocalElevationModel;
 import gov.nasa.worldwind.terrain.ZeroElevationModel;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -66,6 +69,7 @@ import static org.mapton.worldwind.ModuleOptions.*;
 import static org.mapton.worldwind.WorldWindMapEngine.LOG_TAG;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.MapStyle;
+import org.mapton.worldwind.api.WWUtil;
 import org.mapton.worldwind.api.WmsService;
 import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
@@ -88,6 +92,7 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
     private final ModuleOptions mOptions = ModuleOptions.getInstance();
     private Globe mRoundGlobe;
     private ElevationModel mZeroElevationModel = new ZeroElevationModel();
+    private Highlightable mLastHighlightObject;
 
     public WorldWindowPanel() {
         init();
@@ -209,7 +214,7 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         addSelectListener(new ViewControlsSelectListener(this, viewControlsLayer));
 //        mNormalElevationModel = (CompoundElevationModel) wwd.getModel().getGlobe().getElevationModel();
         wwd.getModel().getGlobe().setElevationModel(mZeroElevationModel);
-
+        wwd.getSceneController().setDeepPickEnabled(true);
     }
 
     private void initFinalize() {
@@ -301,12 +306,30 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
             initWmsService();
         });
 
-        getWwd().addSelectListener(new SelectListener() {
-            private Highlightable mLastHighlightObject;
+        MouseAdapter highlightClickAdapter = new MouseAdapter() {
+
+            @Override
+            public void mouseClicked(MouseEvent mouseEvent) {
+                if (mouseEvent.getButton() == MouseEvent.BUTTON1 && mLastHighlightObject != null) {
+                    if (mouseEvent.getClickCount() == 1) {
+                        if (mLastHighlightObject instanceof AVList) {
+                            AVList avList = (AVList) mLastHighlightObject;
+
+                            Runnable r = (Runnable) avList.getValue(WWUtil.KEY_RUNNABLE_LEFT_CLICK);
+                            if (r != null) {
+                                r.run();
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
+        SelectListener rolloverSelectListener = new SelectListener() {
 
             @Override
             public void selected(SelectEvent event) {
-                if (event.getEventAction().equals(SelectEvent.ROLLOVER)) {
+                if (event.isRollover()) {
                     highlight(event.getTopObject());
                 }
             }
@@ -326,7 +349,10 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
                     mLastHighlightObject.setHighlighted(true);
                 }
             }
-        });
+        };
+
+        getWwd().addSelectListener(rolloverSelectListener);
+        getWwd().getInputHandler().addMouseListener(highlightClickAdapter);
     }
 
     private void initWmsService() {

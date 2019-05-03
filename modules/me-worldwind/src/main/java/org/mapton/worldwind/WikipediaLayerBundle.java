@@ -16,17 +16,21 @@
 package org.mapton.worldwind;
 
 import gov.nasa.worldwind.WorldWind;
+import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.Offset;
 import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
 import javafx.collections.ListChangeListener;
+import org.mapton.api.MKey;
 import org.mapton.api.MOptions;
 import org.mapton.api.MWikipediaArticle;
 import org.mapton.api.MWikipediaArticleManager;
+import org.mapton.api.Mapton;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.LayerBundleManager;
+import org.mapton.worldwind.api.WWUtil;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -66,9 +70,13 @@ public class WikipediaLayerBundle extends LayerBundle {
     private void refresh() {
         mLayer.removeAllRenderables();
 
-        for (MWikipediaArticle bookmark : mWikipediaArticleManager.getItems()) {
-            PointPlacemark placemark = new PointPlacemark(Position.fromDegrees(bookmark.getLatLon().getLatitude(), bookmark.getLatLon().getLongitude()));
-            placemark.setLabelText(bookmark.getTitle());
+        for (MWikipediaArticle article : mWikipediaArticleManager.getItems()) {
+            PointPlacemark placemark = new PointPlacemark(Position.fromDegrees(article.getLatLon().getLatitude(), article.getLatLon().getLongitude()));
+            placemark.setLabelText(article.getTitle());
+            placemark.setValue(AVKey.DISPLAY_NAME, article.getDescription());
+            placemark.setLineEnabled(false);
+            placemark.setEnableLabelPicking(true); // enable label picking for this placemark
+
             placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
             placemark.setEnableLabelPicking(true);
 
@@ -77,11 +85,12 @@ public class WikipediaLayerBundle extends LayerBundle {
             attrs.setLabelScale(1.0);
             attrs.setScale(0.15);
             attrs.setImageOffset(Offset.CENTER);
-            placemark.setAttributes(attrs);
 
-            PointPlacemarkAttributes attrsH = new PointPlacemarkAttributes(attrs);
-            attrsH.setScale(attrsH.getScale() * 1.5);
-            placemark.setHighlightAttributes(attrsH);
+            placemark.setAttributes(attrs);
+            placemark.setHighlightAttributes(WWUtil.createHighlightAttributes(attrs, 2));
+            placemark.setValue(WWUtil.KEY_RUNNABLE_LEFT_CLICK, (Runnable) () -> {
+                Mapton.getGlobalState().put(MKey.WIKIPEDIA_ARTICLE, article);
+            });
 
             mLayer.addRenderable(placemark);
         }
