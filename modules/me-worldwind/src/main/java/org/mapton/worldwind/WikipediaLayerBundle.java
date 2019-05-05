@@ -22,6 +22,7 @@ import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.Offset;
 import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
+import java.awt.Color;
 import javafx.collections.ListChangeListener;
 import org.mapton.api.MKey;
 import org.mapton.api.MOptions;
@@ -82,12 +83,13 @@ public class WikipediaLayerBundle extends LayerBundle {
 
             PointPlacemarkAttributes attrs = new PointPlacemarkAttributes(placemark.getDefaultAttributes());
             attrs.setImageAddress("org/mapton/wikipedia/Wikipedia-logo.png");
+            attrs.setImageColor(Color.decode("#ff8888"));
             attrs.setLabelScale(1.0);
             attrs.setScale(0.15);
             attrs.setImageOffset(Offset.CENTER);
 
             placemark.setAttributes(attrs);
-            placemark.setHighlightAttributes(WWUtil.createHighlightAttributes(attrs, 2));
+            placemark.setHighlightAttributes(WWUtil.createHighlightAttributes(attrs, 1.5));
             placemark.setValue(WWUtil.KEY_RUNNABLE_LEFT_CLICK, (Runnable) () -> {
                 Mapton.getGlobalState().put(MKey.WIKIPEDIA_ARTICLE, article);
             });
