@@ -33,6 +33,7 @@ import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.LayerBundleManager;
 import org.mapton.worldwind.api.WWUtil;
 import org.openide.util.lookup.ServiceProvider;
+import se.trixon.almond.nbp.Almond;
 
 /**
  *
@@ -91,6 +92,7 @@ public class WikipediaLayerBundle extends LayerBundle {
             placemark.setAttributes(attrs);
             placemark.setHighlightAttributes(WWUtil.createHighlightAttributes(attrs, 1.5));
             placemark.setValue(WWUtil.KEY_RUNNABLE_LEFT_CLICK, (Runnable) () -> {
+                Almond.openTopComponent("WikipediaTopComponent");
                 Mapton.getGlobalState().put(MKey.WIKIPEDIA_ARTICLE, article);
             });
 
