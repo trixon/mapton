@@ -66,6 +66,7 @@ public class WikipediaLayerBundle extends LayerBundle {
     private void initListeners() {
         mWikipediaArticleManager.getItems().addListener((ListChangeListener.Change<? extends MWikipediaArticle> c) -> {
             refresh();
+            mLayer.setEnabled(true);
         });
     }
 

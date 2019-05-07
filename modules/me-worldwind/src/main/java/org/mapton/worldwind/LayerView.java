@@ -16,6 +16,8 @@
 package org.mapton.worldwind;
 
 import gov.nasa.worldwind.layers.Layer;
+import java.beans.PropertyChangeEvent;
+import java.util.HashSet;
 import java.util.prefs.Preferences;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
@@ -30,6 +32,7 @@ import org.openide.util.NbPreferences;
  */
 public class LayerView extends BorderPane {
 
+    private final HashSet<Layer> mLayerEnabledListenerSet = new HashSet<>();
     private final CheckListView<Layer> mListView = new CheckListView<>();
     private WorldWindowPanel mMap;
     private final Preferences mPreferences = NbPreferences.forModule(LayerView.class).node("layer_visibility");
@@ -59,6 +62,17 @@ public class LayerView extends BorderPane {
 
         mListView.getItems().addListener((ListChangeListener.Change<? extends Layer> c) -> {
             for (Layer layer : mListView.getItems()) {
+                if (!mLayerEnabledListenerSet.contains(layer)) {
+                    mLayerEnabledListenerSet.add(layer);
+                    layer.addPropertyChangeListener("Enabled", (PropertyChangeEvent evt) -> {
+                        if ((boolean) evt.getNewValue()) {
+                            mListView.getCheckModel().check(layer);
+                        } else {
+                            mListView.getCheckModel().clearCheck(layer);
+                        }
+                    });
+                }
+
                 if (mPreferences.getBoolean(layer.getName(), layer.isEnabled())) {
                     mListView.getCheckModel().check(layer);
                 } else {
