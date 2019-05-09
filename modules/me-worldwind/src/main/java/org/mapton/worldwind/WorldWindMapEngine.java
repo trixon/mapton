@@ -203,7 +203,14 @@ public class WorldWindMapEngine extends MEngine {
 
     @Override
     public void panTo(MLatLon latLon) {
+        View view = mMap.getView();
+        Position eyePosition = view.getCurrentEyePosition();
+        Angle fieldOfView = view.getFieldOfView();
+
         panTo(latLon, toGlobalZoom());
+
+        view.setEyePosition(eyePosition);
+        view.setFieldOfView(fieldOfView);
     }
 
     private void fitToBounds(Sector sector) {
