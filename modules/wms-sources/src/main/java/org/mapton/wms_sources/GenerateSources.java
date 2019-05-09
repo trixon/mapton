@@ -41,6 +41,7 @@ public class GenerateSources extends Generator {
         initSwedGeo(false);
         initEOX(true);
         initNASA(true);
+        initVirtualEarth(true);
 
         String json = gson.toJson(mSources);
         System.out.println(json);
@@ -152,6 +153,32 @@ public class GenerateSources extends Generator {
         mSources.add(createSource(
                 "Lantmäteriet",
                 "http://gis.swedgeo.se/geoserver/lantmateriet/wms?",
+                layers,
+                attributions,
+                enabled
+        ));
+    }
+
+    private void initVirtualEarth(boolean enabled) {
+        TreeMap<String, String> layers = new TreeMap<>();
+        layers.put("ve-a", "net.emxsys.ve-a");
+        layers.put("ve-h", "net.emxsys.ve-h");
+        layers.put("ve-r", "net.emxsys.ve-r");
+
+        MAttribution attribution = new MAttribution();
+        attribution.setProviderName("Virtual Earth");
+        attribution.setProviderUrl("http://emxsys.com");
+        attribution.setLicenseName("\"Unknown\"");
+        attribution.setLicenseUrl("https://example.org/");
+
+        TreeMap<String, MAttribution> attributions = new TreeMap<>();
+        attributions.put("net.emxsys.ve-a", attribution);
+        attributions.put("net.emxsys.ve-h", attribution);
+        attributions.put("net.emxsys.ve-r", attribution);
+
+        mSources.add(createSource(
+                "Virtual Earth",
+                "https://emxsys.net/worldwind27/wms/virtualearth?request=GetCapabilities&service=WMS",
                 layers,
                 attributions,
                 enabled

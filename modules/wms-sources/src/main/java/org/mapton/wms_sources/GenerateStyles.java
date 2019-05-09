@@ -28,6 +28,7 @@ public class GenerateStyles extends Generator {
 
     private final TreeMap<String, String> mCategoriesEarth = new TreeMap<>();
     private final TreeMap<String, String> mCategoriesSwe = new TreeMap<>();
+    private final TreeMap<String, String> mCategoriesVirtualEarth = new TreeMap<>();
     private final ArrayList<MWmsStyle> mStyles = new ArrayList<>();
 
     /**
@@ -42,6 +43,8 @@ public class GenerateStyles extends Generator {
         mCategoriesEarth.put("sv", "Jorden");
         mCategoriesSwe.put("", "Sweden");
         mCategoriesSwe.put("sv", "Sverige");
+        mCategoriesVirtualEarth.put("", "Virtual Earth");
+        mCategoriesVirtualEarth.put("sv", "Virtual Earth");
 
         initEoxEarthByNight(true);
         initEoxHydro(true);
@@ -61,17 +64,22 @@ public class GenerateStyles extends Generator {
 
         initNasaUV(true);
 
+        initVirtualEarthA(true);
+        initVirtualEarthH(true);
+        initVirtualEarthR(true);
+
         String json = gson.toJson(mStyles);
         System.out.println(json);
     }
 
-    private MWmsStyle createStyle(TreeMap<String, String> categories, TreeMap<String, String> names, TreeMap<String, String> descriptions, String supplier, boolean enabled, String... layers) {
+    private MWmsStyle createStyle(TreeMap<String, String> categories, TreeMap<String, String> names, TreeMap<String, String> descriptions, String supplier, boolean enabled, String id, String... layers) {
         MWmsStyle style = new MWmsStyle();
         style.setCategories(categories);
         style.setNames(names);
         style.setEnabled(enabled);
         style.setSupplier(supplier);
         style.setDescriptions(descriptions);
+        style.setId(id);
         style.setLayers(new ArrayList<>(Arrays.asList(layers)));
 
         return style;
@@ -90,6 +98,7 @@ public class GenerateStyles extends Generator {
                 descriptions,
                 "EOX & ESA",
                 enabled,
+                "at.eox.blackmarble",
                 "at.eox.blackmarble"
         ));
     }
@@ -107,6 +116,7 @@ public class GenerateStyles extends Generator {
                 descriptions,
                 "EOX",
                 enabled,
+                "at.eox.coasthydro",
                 "at.eox.coastline",
                 "at.eox.hydrography"
         ));
@@ -126,6 +136,7 @@ public class GenerateStyles extends Generator {
                 descriptions,
                 "EOX",
                 enabled,
+                "at.eox.osm",
                 "at.eox.osm"
         ));
     }
@@ -145,6 +156,7 @@ public class GenerateStyles extends Generator {
                 descriptions,
                 "EOX & ESA",
                 enabled,
+                "at.eox.s2cloudless",
                 "at.eox.s2cloudless"
         ));
     }
@@ -163,6 +175,7 @@ public class GenerateStyles extends Generator {
                 "EOX & ESA",
                 enabled,
                 "at.eox.streets",
+                "at.eox.streets",
                 "at.eox.s2cloudless"
         ));
     }
@@ -180,6 +193,7 @@ public class GenerateStyles extends Generator {
                 descriptions,
                 "EOX & ESA",
                 enabled,
+                "at.eox.terrain",
                 "at.eox.terrain"
         ));
     }
@@ -197,6 +211,7 @@ public class GenerateStyles extends Generator {
                 descriptions,
                 "EOX & ESA",
                 enabled,
+                "at.eox.terrain-light",
                 "at.eox.terrain-light"
         ));
     }
@@ -216,6 +231,7 @@ public class GenerateStyles extends Generator {
                 descriptions,
                 "Lantmäteriet",
                 enabled,
+                "se.lm.fastighet",
                 "se.lm.fastighet_text", "se.lm.fastighet_granser", "se.lm.topoweb_dim", "at.eox.terrain-light"
         ));
     }
@@ -235,6 +251,7 @@ public class GenerateStyles extends Generator {
                 descriptions,
                 "Lantmäteriet",
                 enabled,
+                "se.lm.terrangskuggning",
                 "se.lm.terrangskuggning", "at.eox.terrain-light"
         ));
     }
@@ -254,6 +271,7 @@ public class GenerateStyles extends Generator {
                 descriptions,
                 "Lantmäteriet",
                 enabled,
+                "se.lm.orto_025",
                 "se.lm.orto_025", "at.eox.s2cloudless"
         ));
     }
@@ -273,6 +291,7 @@ public class GenerateStyles extends Generator {
                 descriptions,
                 "Lantmäteriet",
                 enabled,
+                "se.lm.hist_orto_60",
                 "se.lm.hist_orto_60",
                 "at.eox.s2cloudless"
         ));
@@ -294,6 +313,7 @@ public class GenerateStyles extends Generator {
                 "Lantmäteriet",
                 enabled,
                 "se.lm.hist_orto_75",
+                "se.lm.hist_orto_75",
                 "at.eox.s2cloudless"
         ));
     }
@@ -313,6 +333,7 @@ public class GenerateStyles extends Generator {
                 descriptions,
                 "Lantmäteriet",
                 enabled,
+                "se.lm.topoweb",
                 "se.lm.topoweb", "at.eox.terrain"
         ));
     }
@@ -332,6 +353,7 @@ public class GenerateStyles extends Generator {
                 descriptions,
                 "Lantmäteriet",
                 enabled,
+                "se.lm.topoweb_dim",
                 "se.lm.topoweb_dim", "at.eox.terrain-light"
         ));
     }
@@ -349,7 +371,61 @@ public class GenerateStyles extends Generator {
                 descriptions,
                 "NASA",
                 enabled,
+                "gov.nasa.neo.uv",
                 "gov.nasa.neo.uv"
+        ));
+    }
+
+    private void initVirtualEarthA(boolean enabled) {
+        TreeMap<String, String> names = new TreeMap<>();
+        names.put("", "Satellite");
+        names.put("sv", "Satellit");
+        TreeMap<String, String> descriptions = new TreeMap<>();
+
+        mStyles.add(createStyle(
+                mCategoriesVirtualEarth,
+                names,
+                descriptions,
+                "Emxsys",
+                enabled,
+                "net.emxsys.ve-a",
+                "net.emxsys.ve-a"
+        ));
+    }
+
+    private void initVirtualEarthH(boolean enabled) {
+        TreeMap<String, String> names = new TreeMap<>();
+        names.put("", "Hybrid");
+        names.put("sv", "Hybrid");
+
+        TreeMap<String, String> descriptions = new TreeMap<>();
+
+        mStyles.add(createStyle(
+                mCategoriesVirtualEarth,
+                names,
+                descriptions,
+                "Emxsys",
+                enabled,
+                "net.emxsys.ve-h",
+                "net.emxsys.ve-h"
+        ));
+    }
+
+    private void initVirtualEarthR(boolean enabled) {
+        TreeMap<String, String> names = new TreeMap<>();
+        names.put("", "Roadmap");
+        names.put("sv", "Vägkarta");
+
+        TreeMap<String, String> descriptions = new TreeMap<>();
+
+        mStyles.add(createStyle(
+                mCategoriesVirtualEarth,
+                names,
+                descriptions,
+                "Emxsys",
+                enabled,
+                "net.emxsys.ve-r",
+                "net.emxsys.ve-r"
         ));
     }
 }

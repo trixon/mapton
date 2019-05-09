@@ -6,6 +6,7 @@
         },
         "description": {},
         "enabled": true,
+        "id": "at.eox.blackmarble",
         "layers": [
             "at.eox.blackmarble"
         ],
@@ -22,6 +23,7 @@
         },
         "description": {},
         "enabled": true,
+        "id": "at.eox.coasthydro",
         "layers": [
             "at.eox.coastline",
             "at.eox.hydrography"
@@ -39,6 +41,7 @@
             "sv": "En global vägkarta skapad av\nprojektet OpenStreetMap (OSM)."
         },
         "enabled": true,
+        "id": "at.eox.osm",
         "layers": [
             "at.eox.osm"
         ],
@@ -54,6 +57,7 @@
             "sv": "Världstäckande satellitbild\nfrån ESA & EOX."
         },
         "enabled": true,
+        "id": "at.eox.s2cloudless",
         "layers": [
             "at.eox.s2cloudless"
         ],
@@ -70,6 +74,7 @@
         },
         "description": {},
         "enabled": true,
+        "id": "at.eox.streets",
         "layers": [
             "at.eox.streets",
             "at.eox.s2cloudless"
@@ -87,6 +92,7 @@
         },
         "description": {},
         "enabled": true,
+        "id": "at.eox.terrain",
         "layers": [
             "at.eox.terrain"
         ],
@@ -103,6 +109,7 @@
         },
         "description": {},
         "enabled": true,
+        "id": "at.eox.terrain-light",
         "layers": [
             "at.eox.terrain-light"
         ],
@@ -122,6 +129,7 @@
             "sv": "Fastighetsgränser."
         },
         "enabled": false,
+        "id": "se.lm.fastighet",
         "layers": [
             "se.lm.fastighet_text",
             "se.lm.fastighet_granser",
@@ -144,6 +152,7 @@
             "sv": "Höjdmodell som terrängskuggning."
         },
         "enabled": false,
+        "id": "se.lm.terrangskuggning",
         "layers": [
             "se.lm.terrangskuggning",
             "at.eox.terrain-light"
@@ -164,6 +173,7 @@
             "sv": "Upplösning: 0,25 m."
         },
         "enabled": false,
+        "id": "se.lm.orto_025",
         "layers": [
             "se.lm.orto_025",
             "at.eox.s2cloudless"
@@ -184,6 +194,7 @@
             "sv": "Referensår 1960."
         },
         "enabled": true,
+        "id": "se.lm.hist_orto_60",
         "layers": [
             "se.lm.hist_orto_60",
             "at.eox.s2cloudless"
@@ -204,6 +215,7 @@
             "sv": "Referensår 1975."
         },
         "enabled": true,
+        "id": "se.lm.hist_orto_75",
         "layers": [
             "se.lm.hist_orto_75",
             "at.eox.s2cloudless"
@@ -224,6 +236,7 @@
             "sv": "Topografisk webbkarta."
         },
         "enabled": false,
+        "id": "se.lm.topoweb",
         "layers": [
             "se.lm.topoweb",
             "at.eox.terrain"
@@ -244,6 +257,7 @@
             "sv": "Nedtonad topografisk webbkarta."
         },
         "enabled": false,
+        "id": "se.lm.topoweb_dim",
         "layers": [
             "se.lm.topoweb_dim",
             "at.eox.terrain-light"
@@ -261,6 +275,7 @@
         },
         "description": {},
         "enabled": true,
+        "id": "gov.nasa.neo.uv",
         "layers": [
             "gov.nasa.neo.uv"
         ],
@@ -269,5 +284,56 @@
             "sv": "NEO UV-index"
         },
         "supplier": "NASA"
+    },
+    {
+        "category": {
+            "": "Virtual Earth",
+            "sv": "Virtual Earth"
+        },
+        "description": {},
+        "enabled": true,
+        "id": "net.emxsys.ve-a",
+        "layers": [
+            "net.emxsys.ve-a"
+        ],
+        "name": {
+            "": "Satellite",
+            "sv": "Satellit"
+        },
+        "supplier": "Emxsys"
+    },
+    {
+        "category": {
+            "": "Virtual Earth",
+            "sv": "Virtual Earth"
+        },
+        "description": {},
+        "enabled": true,
+        "id": "net.emxsys.ve-h",
+        "layers": [
+            "net.emxsys.ve-h"
+        ],
+        "name": {
+            "": "Hybrid",
+            "sv": "Hybrid"
+        },
+        "supplier": "Emxsys"
+    },
+    {
+        "category": {
+            "": "Virtual Earth",
+            "sv": "Virtual Earth"
+        },
+        "description": {},
+        "enabled": true,
+        "id": "net.emxsys.ve-r",
+        "layers": [
+            "net.emxsys.ve-r"
+        ],
+        "name": {
+            "": "Roadmap",
+            "sv": "Vägkarta"
+        },
+        "supplier": "Emxsys"
     }
 ]
