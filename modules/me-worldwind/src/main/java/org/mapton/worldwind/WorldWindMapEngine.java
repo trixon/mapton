@@ -383,11 +383,12 @@ public class WorldWindMapEngine extends MEngine {
 
     private void updateToolbarDocumentInfo() {
         GlobalState globalState = Mapton.getGlobalState();
-        String styleName = mOptions.get(KEY_MAP_STYLE, DEFAULT_MAP_STYLE);
+        String styleId = mOptions.get(KEY_MAP_STYLE, DEFAULT_MAP_STYLE);
         TreeMap<String, MAttribution> globalAttributions = globalState.get(MKey.DATA_SOURCES_WMS_ATTRIBUTIONS);
         LinkedHashMap<String, MAttribution> attributions = new LinkedHashMap<>();
+        MapStyle mapStyle = MapStyle.getStyle(styleId);
 
-        String[] layers = MapStyle.getLayers(styleName);
+        String[] layers = MapStyle.getLayers(styleId);
         if (layers != null) {
             for (String layer : layers) {
                 if (globalAttributions.containsKey(layer)) {
@@ -396,7 +397,7 @@ public class WorldWindMapEngine extends MEngine {
             }
         }
 
-        MDocumentInfo documentInfo = new MDocumentInfo(styleName, attributions);
+        MDocumentInfo documentInfo = new MDocumentInfo(mapStyle.getName(), attributions);
 
         globalState.put(MKey.MAP_DOCUMENT_INFO, documentInfo);
     }

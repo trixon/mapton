@@ -33,6 +33,8 @@ public class MWmsStyle {
     private TreeMap<String, String> mDescriptions = new TreeMap<>();
     @SerializedName("enabled")
     private boolean mEnabled;
+    @SerializedName("id")
+    private String mId;
     @SerializedName("layers")
     private ArrayList<String> mLayers;
     @SerializedName("name")
@@ -54,6 +56,10 @@ public class MWmsStyle {
 
     public TreeMap<String, String> getDescriptions() {
         return mDescriptions;
+    }
+
+    public String getId() {
+        return mId;
     }
 
     public ArrayList<String> getLayers() {
@@ -86,6 +92,10 @@ public class MWmsStyle {
 
     public void setEnabled(boolean enabled) {
         mEnabled = enabled;
+    }
+
+    public void setId(String id) {
+        mId = id;
     }
 
     public void setLayers(ArrayList<String> layers) {

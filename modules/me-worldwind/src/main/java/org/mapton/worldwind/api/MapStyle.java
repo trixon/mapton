@@ -16,6 +16,7 @@
 package org.mapton.worldwind.api;
 
 import java.util.ArrayList;
+import org.apache.commons.lang3.StringUtils;
 import org.mapton.api.MKey;
 import org.mapton.api.MWmsStyle;
 import org.mapton.api.Mapton;
@@ -29,6 +30,7 @@ public abstract class MapStyle {
 
     private String mCategory;
     private String mDescription;
+    private String mId;
     private String[] mLayers;
     private String mName;
     private String mSuppliers;
@@ -37,6 +39,7 @@ public abstract class MapStyle {
         MapStyle mapStyle = new MapStyle() {
         };
 
+        mapStyle.setId(wmsStyle.getId());
         mapStyle.setName(wmsStyle.getName());
         mapStyle.setSuppliers(wmsStyle.getSupplier());
         mapStyle.setLayers(wmsStyle.getLayers().toArray(new String[0]));
@@ -46,7 +49,7 @@ public abstract class MapStyle {
         return mapStyle;
     }
 
-    public static String[] getLayers(String name) {
+    public static String[] getLayers(String id) {
         String[] layers = null;
         ArrayList<MapStyle> styles = new ArrayList<>(Lookup.getDefault().lookupAll(MapStyle.class));
         ArrayList<MWmsStyle> wmsStyles = Mapton.getGlobalState().get(MKey.DATA_SOURCES_WMS_STYLES);
@@ -55,13 +58,34 @@ public abstract class MapStyle {
         });
 
         for (MapStyle mapStyle : styles) {
-            if (mapStyle.getName().equalsIgnoreCase(name)) {
+            if (mapStyle.getId().equalsIgnoreCase(id)) {
                 layers = mapStyle.getLayers();
                 break;
             }
         }
 
         return layers;
+    }
+
+    public static MapStyle getStyle(String id) {
+        ArrayList<MapStyle> styles = new ArrayList<>(Lookup.getDefault().lookupAll(MapStyle.class));
+        ArrayList<MWmsStyle> wmsStyles = Mapton.getGlobalState().get(MKey.DATA_SOURCES_WMS_STYLES);
+        wmsStyles.forEach((wmsStyle) -> {
+            styles.add(MapStyle.createFromWmsStyle(wmsStyle));
+        });
+
+        for (MapStyle mapStyle : styles) {
+            if (StringUtils.equals(mapStyle.getId(), id)) {
+                return mapStyle;
+            }
+        }
+
+        return new MapStyle() {
+            @Override
+            public String getId() {
+                return "unknown.id";
+            }
+        };
     }
 
     public MapStyle() {
@@ -73,6 +97,10 @@ public abstract class MapStyle {
 
     public String getDescription() {
         return mDescription;
+    }
+
+    public String getId() {
+        return mId;
     }
 
     public String[] getLayers() {
@@ -93,6 +121,10 @@ public abstract class MapStyle {
 
     public void setDescription(String description) {
         mDescription = description;
+    }
+
+    public void setId(String id) {
+        mId = id;
     }
 
     public void setLayers(String[] value) {

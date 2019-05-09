@@ -78,7 +78,7 @@ public class AttributionView extends BorderPane {
                 )
         );
 
-        System.out.println(html.render());
+        //System.out.println(html.render());
         mWebView.getEngine().loadContent(html.render());
     }
 

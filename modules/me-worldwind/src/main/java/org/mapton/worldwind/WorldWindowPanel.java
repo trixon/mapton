@@ -88,11 +88,11 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
 
     private final ObservableList<Layer> mCustomLayers = FXCollections.observableArrayList();
     private FlatGlobe mFlatGlobe;
+    private Highlightable mLastHighlightObject;
 //    private CompoundElevationModel mNormalElevationModel;
     private final ModuleOptions mOptions = ModuleOptions.getInstance();
     private Globe mRoundGlobe;
     private ElevationModel mZeroElevationModel = new ZeroElevationModel();
-    private Highlightable mLastHighlightObject;
 
     public WorldWindowPanel() {
         init();
@@ -479,10 +479,12 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         blacklist.add("Place Names");
         blacklist.add("Measure Tool");
 
-        String styleName = mOptions.get(KEY_MAP_STYLE, DEFAULT_MAP_STYLE);
-        String[] styleLayers = MapStyle.getLayers(styleName);
+        String styleId = mOptions.get(KEY_MAP_STYLE, DEFAULT_MAP_STYLE);
+        String[] styleLayers = MapStyle.getLayers(styleId);
+        MapStyle mapStyle = MapStyle.getStyle(styleId);
+
         try {
-            NbLog.i(Dict.DOCUMENT.toString(), String.format("%s: (%s)", styleName, String.join(", ", styleLayers)));
+            NbLog.i(Dict.DOCUMENT.toString(), String.format("%s: (%s)", mapStyle.getName(), String.join(", ", styleLayers)));
         } catch (NullPointerException e) {
         }
         getLayers().forEach((layer) -> {

@@ -27,6 +27,7 @@ import org.openide.util.lookup.ServiceProvider;
 public class HollowMapStyle extends MapStyle {
 
     public HollowMapStyle() {
+        setId("se.trixon.hollow");
         setName(MDict.HOLLOW.toString());
         setDescription(MDict.HOLLOW_DESCRIPTION.toString());
         setSuppliers("Trixon");

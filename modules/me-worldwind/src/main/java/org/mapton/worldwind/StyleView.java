@@ -254,7 +254,7 @@ public class StyleView extends HBox {
                     Button button = new Button(mapStyle.getName());
                     button.prefWidthProperty().bind(widthProperty());
                     button.setOnAction((ActionEvent event) -> {
-                        mOptions.put(KEY_MAP_STYLE, mapStyle.getName());
+                        mOptions.put(KEY_MAP_STYLE, mapStyle.getId());
                     });
 
                     if (mapStyle.getSuppliers() != null) {
@@ -277,7 +277,7 @@ public class StyleView extends HBox {
 
                 selectionModel.getSelectedItems().addListener((ListChangeListener.Change<? extends MapStyle> change) -> {
                     if (selectionModel.getSelectedItem() != null) {
-                        mOptions.put(KEY_MAP_STYLE, selectionModel.getSelectedItem().getName());
+                        mOptions.put(KEY_MAP_STYLE, selectionModel.getSelectedItem().getId());
                     }
                 });
 
@@ -296,8 +296,8 @@ public class StyleView extends HBox {
                 popOver.setOnShowing((windowEvent -> {
                     MapStyle selectedItem = selectionModel.getSelectedItem();
                     if (selectedItem != null) {
-                        String selectedName = selectedItem.getName();
-                        if (!StringUtils.equals(mOptions.get(KEY_MAP_STYLE), selectedName)) {
+                        String selectedId = selectedItem.getId();
+                        if (!StringUtils.equals(mOptions.get(KEY_MAP_STYLE), selectedId)) {
                             selectionModel.clearSelection();
                         }
                     }
