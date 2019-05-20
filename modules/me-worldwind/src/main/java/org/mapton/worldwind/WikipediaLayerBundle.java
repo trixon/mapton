@@ -25,7 +25,6 @@ import gov.nasa.worldwind.render.PointPlacemarkAttributes;
 import java.awt.Color;
 import javafx.collections.ListChangeListener;
 import org.mapton.api.MKey;
-import org.mapton.api.MOptions;
 import org.mapton.api.MWikipediaArticle;
 import org.mapton.api.MWikipediaArticleManager;
 import org.mapton.api.Mapton;
@@ -33,7 +32,6 @@ import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.LayerBundleManager;
 import org.mapton.worldwind.api.WWUtil;
 import org.openide.util.lookup.ServiceProvider;
-import se.trixon.almond.nbp.Almond;
 
 /**
  *
@@ -43,7 +41,6 @@ import se.trixon.almond.nbp.Almond;
 public class WikipediaLayerBundle extends LayerBundle {
 
     private final RenderableLayer mLayer = new RenderableLayer();
-    private final MOptions mOptions = MOptions.getInstance();
     private final MWikipediaArticleManager mWikipediaArticleManager = MWikipediaArticleManager.getInstance();
 
     public WikipediaLayerBundle() {
@@ -93,7 +90,6 @@ public class WikipediaLayerBundle extends LayerBundle {
             placemark.setAttributes(attrs);
             placemark.setHighlightAttributes(WWUtil.createHighlightAttributes(attrs, 1.5));
             placemark.setValue(WWUtil.KEY_RUNNABLE_LEFT_CLICK, (Runnable) () -> {
-                Almond.openTopComponent("WikipediaTopComponent");
                 Mapton.getGlobalState().put(MKey.WIKIPEDIA_ARTICLE, article);
             });
 

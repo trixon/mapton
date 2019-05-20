@@ -22,7 +22,6 @@ import javafx.collections.ListChangeListener;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.Side;
-import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
@@ -38,63 +37,27 @@ import javafx.scene.web.WebView;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.MasterDetailPane;
 import org.mapton.api.MKey;
-import org.mapton.api.MMapMagnet;
-import org.mapton.api.MTopComponent;
 import org.mapton.api.MWikipediaArticle;
 import org.mapton.api.MWikipediaArticleManager;
 import org.mapton.api.Mapton;
 import static org.mapton.wikipedia.Module.LOG_TAG;
-import org.netbeans.api.settings.ConvertAsProperties;
-import org.openide.windows.TopComponent;
 import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.util.GlobalStateChangeEvent;
 
-/**
- * Top component which displays something.
- */
-@ConvertAsProperties(
-        dtd = "-//org.mapton.wikipedia//Wikipedia//EN",
-        autostore = false
-)
-@TopComponent.Description(
-        preferredID = "WikipediaTopComponent",
-        //iconBase="SET/PATH/TO/ICON/HERE",
-        persistenceType = TopComponent.PERSISTENCE_ALWAYS
-)
-@TopComponent.Registration(mode = "properties", openAtStartup = false)
-public final class WikipediaTopComponent extends MTopComponent implements MMapMagnet {
+public final class WikipediaView extends BorderPane {
 
     private final Font mDefaultFont = Font.getDefault();
     private final HashMap<String, Image> mImageCache = new HashMap<>();
     private ListView<MWikipediaArticle> mListView;
-    private final Options mOptions = Options.getInstance();
-    private BorderPane mRoot;
     private WebView mWebView;
     private final MWikipediaArticleManager mWikipediaArticleManager = MWikipediaArticleManager.getInstance();
 
-    public WikipediaTopComponent() {
-        setName("Wikipedia");
-    }
-
-    @Override
-    protected void initFX() {
-        setScene(createScene());
+    public WikipediaView() {
+        createUI();
         initListeners();
     }
 
-    void readProperties(java.util.Properties p) {
-        String version = p.getProperty("version");
-        // TODO read your settings according to their version
-    }
-
-    void writeProperties(java.util.Properties p) {
-        // better to version settings since initial version as advocated at
-        // http://wiki.apidesign.org/wiki/PropertyFiles
-        p.setProperty("version", "1.0");
-        // TODO store your settings
-    }
-
-    private Scene createScene() {
+    private void createUI() {
         mListView = new ListView<>();
         mListView.setCellFactory((ListView<MWikipediaArticle> param) -> new ArticleListCell());
         mWebView = new WebView();
@@ -102,10 +65,10 @@ public final class WikipediaTopComponent extends MTopComponent implements MMapMa
         MasterDetailPane masterDetailPane = new MasterDetailPane(Side.TOP, mListView, mWebView, true);
         masterDetailPane.setDividerPosition(0.5);
 
-        Label titleLabel = createTitle("Wikipedia");
-        mRoot = new BorderPane(masterDetailPane);
-        mRoot.setTop(titleLabel);
-        titleLabel.prefWidthProperty().bind(mRoot.widthProperty());
+        Label titleLabel = Mapton.createTitle("Wikipedia");
+        setTop(titleLabel);
+        titleLabel.prefWidthProperty().bind(widthProperty());
+        setCenter(masterDetailPane);
 
         mWikipediaArticleManager.getItems().addListener((ListChangeListener.Change<? extends MWikipediaArticle> c) -> {
             Platform.runLater(() -> {
@@ -122,8 +85,6 @@ public final class WikipediaTopComponent extends MTopComponent implements MMapMa
         mListView.getSelectionModel().getSelectedItems().addListener((ListChangeListener.Change<? extends MWikipediaArticle> c) -> {
             select(mListView.getSelectionModel().getSelectedItem());
         });
-
-        return new Scene(mRoot);
     }
 
     private void initListeners() {

@@ -72,6 +72,8 @@ public class Initializer implements Runnable {
                 Actions.forID("Window", "org.netbeans.core.windows.actions.ShowEditorOnlyAction").actionPerformed(null);
             }
 
+            //Pre-load but don't display
+            Almond.getTopComponent("ObjectPropertiesTopComponent");
             //Actions.forID("Window", "org.mapton.core.ui.MapTopComponent").actionPerformed(null);
         });
     }
