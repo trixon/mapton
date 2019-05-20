@@ -25,6 +25,7 @@ import org.mapton.api.MDict;
 import org.mapton.api.MMapMagnet;
 import org.mapton.api.MOptions;
 import org.mapton.api.MTopComponent;
+import org.mapton.api.Mapton;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.windows.TopComponent;
 
@@ -79,7 +80,7 @@ public final class GridTopComponent extends MTopComponent implements MMapMagnet 
         vbox.setPadding(new Insets(8));
         VBox.setVgrow(localGridView, Priority.ALWAYS);
 
-        Label titleLabel = createTitle(MDict.GRID.toString());
+        Label titleLabel = Mapton.createTitle(MDict.GRID.toString());
         mRoot = new BorderPane(vbox);
         mRoot.setTop(titleLabel);
         titleLabel.prefWidthProperty().bind(mRoot.widthProperty());

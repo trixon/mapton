@@ -19,8 +19,11 @@ import java.io.File;
 import java.text.DateFormat;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
+import javafx.geometry.Pos;
+import javafx.scene.control.Label;
 import javafx.scene.layout.Background;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javax.swing.SwingUtilities;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -61,6 +64,21 @@ public class Mapton {
 
     public static void clearStatusText() {
         setStatusText("");
+    }
+
+    public static Label createTitle(String title) {
+        return createTitle(title, Mapton.getThemeBackground());
+    }
+
+    public static Label createTitle(String title, Background background) {
+        Label label = new Label(title);
+        Font defaultFont = Font.getDefault();
+
+        label.setBackground(background);
+        label.setAlignment(Pos.BASELINE_CENTER);
+        label.setFont(new Font(defaultFont.getSize() * 1.4));
+
+        return label;
     }
 
     /**
