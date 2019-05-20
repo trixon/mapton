@@ -69,7 +69,7 @@ public final class WikipediaView extends BorderPane {
         mWebView = new WebView();
         mWebView.setZoom(0.8);
         MasterDetailPane masterDetailPane = new MasterDetailPane(Side.TOP, mListView, mWebView, true);
-        masterDetailPane.setDividerPosition(0.5);
+        masterDetailPane.setDividerPosition(0.7);
 
         Label titleLabel = Mapton.createTitle("Wikipedia");
         setTop(titleLabel);
