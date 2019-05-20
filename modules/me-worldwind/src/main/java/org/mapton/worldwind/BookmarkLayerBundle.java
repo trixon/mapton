@@ -22,12 +22,16 @@ import gov.nasa.worldwind.render.Offset;
 import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
 import java.awt.Color;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.prefs.PreferenceChangeEvent;
 import javafx.collections.ListChangeListener;
 import org.mapton.api.MBookmark;
 import org.mapton.api.MBookmarkManager;
+import org.mapton.api.MKey;
 import org.mapton.api.MLatLon;
 import org.mapton.api.MOptions;
+import org.mapton.api.Mapton;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.LayerBundleManager;
 import org.mapton.worldwind.api.WWUtil;
@@ -46,17 +50,33 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
 public class BookmarkLayerBundle extends LayerBundle {
 
     private final MBookmarkManager mBookmarkManager = MBookmarkManager.getInstance();
-    private final RenderableLayer mBookmarksLayer = new RenderableLayer();
+    private final RenderableLayer mLayer = new RenderableLayer();
     private final MOptions mOptions = MOptions.getInstance();
 
     public BookmarkLayerBundle() {
-        mBookmarksLayer.setName(String.format("- %s -", Dict.BOOKMARKS.toString()));
-        mBookmarksLayer.setEnabled(true);
+        init();
+        initListeners();
+
+        updatePlacemarks();
+    }
+
+    @Override
+    public void populate() throws Exception {
+        getLayers().add(mLayer);
+        setPopulated(true);
+    }
+
+    private void init() {
+        mLayer.setName(String.format("- %s -", Dict.BOOKMARKS.toString()));
+        setName(Dict.BOOKMARKS.toString());
+        mLayer.setEnabled(true);
+        mLayer.setPickEnabled(true);
+    }
+
+    private void initListeners() {
         mBookmarkManager.getItems().addListener((ListChangeListener.Change<? extends MBookmark> c) -> {
             updatePlacemarks();
         });
-
-        setName(Dict.BOOKMARKS.toString());
 
         mOptions.getPreferences().addPreferenceChangeListener((PreferenceChangeEvent evt) -> {
             switch (evt.getKey()) {
@@ -65,18 +85,10 @@ public class BookmarkLayerBundle extends LayerBundle {
                     break;
             }
         });
-
-        updatePlacemarks();
-    }
-
-    @Override
-    public void populate() throws Exception {
-        getLayers().add(mBookmarksLayer);
-        setPopulated(true);
     }
 
     private void updatePlacemarks() {
-        mBookmarksLayer.removeAllRenderables();
+        mLayer.removeAllRenderables();
 
         for (MBookmark bookmark : mBookmarkManager.getItems()) {
             if (bookmark.isDisplayMarker()) {
@@ -91,7 +103,17 @@ public class BookmarkLayerBundle extends LayerBundle {
                 placemark.setAttributes(attrs);
                 placemark.setHighlightAttributes(WWUtil.createHighlightAttributes(attrs, 1.5));
 
-                mBookmarksLayer.addRenderable(placemark);
+                placemark.setValue(WWUtil.KEY_RUNNABLE_LEFT_CLICK, (Runnable) () -> {
+                    Map<String, Object> propertyMap = new LinkedHashMap<>();
+                    propertyMap.put(Dict.NAME.toString(), bookmark.getName());
+                    propertyMap.put(Dict.DESCRIPTION.toString(), bookmark.getDescription());
+                    propertyMap.put(Dict.CATEGORY.toString(), bookmark.getCategory());
+                    propertyMap.put(Dict.COLOR.toString(), javafx.scene.paint.Color.web(bookmark.getColor()));
+
+                    Mapton.getGlobalState().put(MKey.OBJECT_PROPERTIES, propertyMap);
+                });
+
+                mLayer.addRenderable(placemark);
             }
         }
 
@@ -108,7 +130,7 @@ public class BookmarkLayerBundle extends LayerBundle {
         placemark.setAttributes(attrs);
         placemark.setHighlightAttributes(WWUtil.createHighlightAttributes(attrs, 1.0));
 
-        mBookmarksLayer.addRenderable(placemark);
+        mLayer.addRenderable(placemark);
 
         LayerBundleManager.getInstance().redraw();
     }
