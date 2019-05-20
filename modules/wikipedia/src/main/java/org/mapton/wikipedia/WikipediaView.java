@@ -15,6 +15,7 @@
  */
 package org.mapton.wikipedia;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Locale;
 import javafx.application.Platform;
@@ -33,14 +34,19 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.MasterDetailPane;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.mapton.api.MKey;
 import org.mapton.api.MWikipediaArticle;
 import org.mapton.api.MWikipediaArticleManager;
 import org.mapton.api.Mapton;
 import static org.mapton.wikipedia.Module.LOG_TAG;
+import org.openide.util.Exceptions;
 import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.util.GlobalStateChangeEvent;
 
@@ -103,8 +109,10 @@ public final class WikipediaView extends BorderPane {
     }
 
     private void select(MWikipediaArticle article) {
+        WebEngine engine = mWebView.getEngine();
+
         if (article == null) {
-            mWebView.getEngine().loadContent("");
+            engine.loadContent("");
         } else {
             Mapton.getEngine().panTo(article.getLatLon());
             final String url = String.format(Locale.ENGLISH,
@@ -113,7 +121,41 @@ public final class WikipediaView extends BorderPane {
                     article.getTitle());
             NbLog.v(LOG_TAG, url);
             NbLog.v(LOG_TAG, article.getThumbnail());
-            mWebView.getEngine().load(url);
+
+            try {
+                Document doc = Jsoup.connect(url).get();
+
+                for (Element link : doc.select("a")) {
+                    link.attr("href", link.attr("abs:href"));
+                }
+
+                for (Element link : doc.select("link")) {
+                    link.attr("href", link.attr("abs:href"));
+                }
+
+                for (Element link : doc.select("img")) {
+                    link.attr("src", link.attr("abs:src"));
+                    link.attr("srcset", link.attr("abs:srcset"));
+                }
+
+                for (Element element : doc.getElementsByClass("header-container")) {
+                    element.remove();
+                }
+
+                for (Element element : doc.getElementsByClass("page-actions-menu")) {
+                    element.remove();
+                }
+
+                for (Element element : doc.select("#mw-mf-page-left")) {
+                    element.remove();
+                }
+
+                engine.loadContent(doc.outerHtml());
+//                System.out.println(doc.toString());
+            } catch (IOException ex) {
+                Exceptions.printStackTrace(ex);
+            }
+
         }
     }
 
