@@ -208,9 +208,11 @@ public class WorldWindMapEngine extends MEngine {
         Angle fieldOfView = view.getFieldOfView();
 
         panTo(latLon, toGlobalZoom());
-
-        view.setEyePosition(eyePosition);
-        view.setFieldOfView(fieldOfView);
+        try {
+            view.setEyePosition(eyePosition);
+            view.setFieldOfView(fieldOfView);
+        } catch (Exception e) {
+        }
     }
 
     private void fitToBounds(Sector sector) {
