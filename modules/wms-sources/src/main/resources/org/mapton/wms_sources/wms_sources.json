@@ -84,21 +84,21 @@
             "net.emxsys.ve-a": {
                 "licenseName": "\"Unknown\"",
                 "licenseUrl": "https://example.org/",
-                "providerName": "Virtual Earth",
+                "providerName": "Bing",
                 "providerUrl": "http://emxsys.com",
                 "rawHtml": null
             },
             "net.emxsys.ve-h": {
                 "licenseName": "\"Unknown\"",
                 "licenseUrl": "https://example.org/",
-                "providerName": "Virtual Earth",
+                "providerName": "Bing",
                 "providerUrl": "http://emxsys.com",
                 "rawHtml": null
             },
             "net.emxsys.ve-r": {
                 "licenseName": "\"Unknown\"",
                 "licenseUrl": "https://example.org/",
-                "providerName": "Virtual Earth",
+                "providerName": "Bing",
                 "providerUrl": "http://emxsys.com",
                 "rawHtml": null
             }
@@ -109,7 +109,7 @@
             "ve-h": "net.emxsys.ve-h",
             "ve-r": "net.emxsys.ve-r"
         },
-        "name": "Virtual Earth",
+        "name": "Bing",
         "url": "https://emxsys.net/worldwind27/wms/virtualearth?request=GetCapabilities&service=WMS"
     }
 ]

@@ -26,9 +26,9 @@ import org.mapton.api.MWmsStyle;
  */
 public class GenerateStyles extends Generator {
 
+    private final TreeMap<String, String> mCategoriesBing = new TreeMap<>();
     private final TreeMap<String, String> mCategoriesEarth = new TreeMap<>();
     private final TreeMap<String, String> mCategoriesSwe = new TreeMap<>();
-    private final TreeMap<String, String> mCategoriesVirtualEarth = new TreeMap<>();
     private final ArrayList<MWmsStyle> mStyles = new ArrayList<>();
 
     /**
@@ -39,12 +39,12 @@ public class GenerateStyles extends Generator {
     }
 
     public GenerateStyles() {
+        mCategoriesBing.put("", "Bing");
+        mCategoriesBing.put("sv", "Bing");
         mCategoriesEarth.put("", "Earth");
         mCategoriesEarth.put("sv", "Jorden");
         mCategoriesSwe.put("", "Sweden");
         mCategoriesSwe.put("sv", "Sverige");
-        mCategoriesVirtualEarth.put("", "Virtual Earth");
-        mCategoriesVirtualEarth.put("sv", "Virtual Earth");
 
         initEoxEarthByNight(true);
         initEoxHydro(true);
@@ -64,9 +64,9 @@ public class GenerateStyles extends Generator {
 
         initNasaUV(true);
 
-        initVirtualEarthA(true);
-        initVirtualEarthH(true);
-        initVirtualEarthR(true);
+        initBingA(true);
+        initBingH(true);
+        initBingR(true);
 
         String json = gson.toJson(mStyles);
         System.out.println(json);
@@ -83,6 +83,59 @@ public class GenerateStyles extends Generator {
         style.setLayers(new ArrayList<>(Arrays.asList(layers)));
 
         return style;
+    }
+
+    private void initBingA(boolean enabled) {
+        TreeMap<String, String> names = new TreeMap<>();
+        names.put("", "Satellite");
+        names.put("sv", "Satellit");
+        TreeMap<String, String> descriptions = new TreeMap<>();
+
+        mStyles.add(createStyle(
+                mCategoriesBing,
+                names,
+                descriptions,
+                "Emxsys",
+                enabled,
+                "net.emxsys.ve-a",
+                "net.emxsys.ve-a"
+        ));
+    }
+
+    private void initBingH(boolean enabled) {
+        TreeMap<String, String> names = new TreeMap<>();
+        names.put("", "Hybrid");
+        names.put("sv", "Hybrid");
+
+        TreeMap<String, String> descriptions = new TreeMap<>();
+
+        mStyles.add(createStyle(
+                mCategoriesBing,
+                names,
+                descriptions,
+                "Emxsys",
+                enabled,
+                "net.emxsys.ve-h",
+                "net.emxsys.ve-h"
+        ));
+    }
+
+    private void initBingR(boolean enabled) {
+        TreeMap<String, String> names = new TreeMap<>();
+        names.put("", "Roadmap");
+        names.put("sv", "Vägkarta");
+
+        TreeMap<String, String> descriptions = new TreeMap<>();
+
+        mStyles.add(createStyle(
+                mCategoriesBing,
+                names,
+                descriptions,
+                "Emxsys",
+                enabled,
+                "net.emxsys.ve-r",
+                "net.emxsys.ve-r"
+        ));
     }
 
     private void initEoxEarthByNight(boolean enabled) {
@@ -376,56 +429,4 @@ public class GenerateStyles extends Generator {
         ));
     }
 
-    private void initVirtualEarthA(boolean enabled) {
-        TreeMap<String, String> names = new TreeMap<>();
-        names.put("", "Satellite");
-        names.put("sv", "Satellit");
-        TreeMap<String, String> descriptions = new TreeMap<>();
-
-        mStyles.add(createStyle(
-                mCategoriesVirtualEarth,
-                names,
-                descriptions,
-                "Emxsys",
-                enabled,
-                "net.emxsys.ve-a",
-                "net.emxsys.ve-a"
-        ));
-    }
-
-    private void initVirtualEarthH(boolean enabled) {
-        TreeMap<String, String> names = new TreeMap<>();
-        names.put("", "Hybrid");
-        names.put("sv", "Hybrid");
-
-        TreeMap<String, String> descriptions = new TreeMap<>();
-
-        mStyles.add(createStyle(
-                mCategoriesVirtualEarth,
-                names,
-                descriptions,
-                "Emxsys",
-                enabled,
-                "net.emxsys.ve-h",
-                "net.emxsys.ve-h"
-        ));
-    }
-
-    private void initVirtualEarthR(boolean enabled) {
-        TreeMap<String, String> names = new TreeMap<>();
-        names.put("", "Roadmap");
-        names.put("sv", "Vägkarta");
-
-        TreeMap<String, String> descriptions = new TreeMap<>();
-
-        mStyles.add(createStyle(
-                mCategoriesVirtualEarth,
-                names,
-                descriptions,
-                "Emxsys",
-                enabled,
-                "net.emxsys.ve-r",
-                "net.emxsys.ve-r"
-        ));
-    }
 }
