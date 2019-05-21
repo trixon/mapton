@@ -15,15 +15,18 @@
  */
 package org.mapton.core;
 
+import java.beans.PropertyChangeEvent;
 import javafx.application.Platform;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLayeredPane;
 import javax.swing.SwingUtilities;
+import org.mapton.api.MMapMagnet;
 import org.mapton.api.MOptions;
 import org.mapton.core.ui.AppToolBarProvider;
 import org.openide.awt.Actions;
 import org.openide.modules.OnStart;
+import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
 import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.nbp.NbLog;
@@ -75,6 +78,17 @@ public class Initializer implements Runnable {
             //Pre-load but don't display
             Almond.getTopComponent("ObjectPropertiesTopComponent");
             //Actions.forID("Window", "org.mapton.core.ui.MapTopComponent").actionPerformed(null);
+        });
+
+        //Activate MapTopComponent when opening MapMagnets
+        TopComponent.getRegistry().addPropertyChangeListener((PropertyChangeEvent evt) -> {
+            if (evt.getPropertyName().equals("tcOpened")) {
+                TopComponent tc = (TopComponent) evt.getNewValue();
+                if (tc instanceof MMapMagnet) {
+                    Almond.requestActive("MapTopComponent");
+                    //tc.requestActive();
+                }
+            }
         });
     }
 }
