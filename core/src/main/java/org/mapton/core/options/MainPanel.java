@@ -18,6 +18,7 @@ package org.mapton.core.options;
 import java.awt.BorderLayout;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
 import javafx.scene.layout.VBox;
@@ -53,8 +54,8 @@ final class MainPanel extends javax.swing.JPanel {
                 mPopoverCheckBox = new CheckBox(mBundle.getString("popoverCheckBox.text"));
                 mEngineBox = new EngineBox();
 
-                VBox box = new VBox(mCrosshairCheckBox, mPopoverCheckBox, mEngineBox);
-
+                VBox box = new VBox(8, mCrosshairCheckBox, mPopoverCheckBox, mEngineBox);
+                box.setPadding(new Insets(16));
                 return new Scene(box);
             }
         };
