@@ -65,12 +65,12 @@ public class AttributionView extends BorderPane {
                                 each(attributions.values(), attribution
                                         -> div(
                                         h2(keys.get(attribution)),
-                                        p(rawHtml(String.format(mBundle.getString("attribution"),
+                                        p(iff(!attribution.isOnlyRaw(), rawHtml(String.format(mBundle.getString("attribution"),
                                                 attribution.getProviderUrl(),
                                                 attribution.getProviderName(),
                                                 attribution.getLicenseUrl(),
                                                 attribution.getLicenseName()
-                                        ))),
+                                        )))),
                                         p(rawHtml(attribution.getRawHtml())),
                                         hr())
                                 )

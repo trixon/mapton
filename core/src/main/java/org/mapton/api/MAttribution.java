@@ -28,6 +28,8 @@ public class MAttribution {
     private String mLicenseName;
     @SerializedName("licenseUrl")
     private String mLicenseUrl;
+    @SerializedName("onlyRaw")
+    private boolean mOnlyRaw;
     @SerializedName("providerName")
     private String mProviderName;
     @SerializedName("providerUrl")
@@ -58,12 +60,20 @@ public class MAttribution {
         return StringUtils.defaultString(mRawHtml);
     }
 
+    public boolean isOnlyRaw() {
+        return mOnlyRaw;
+    }
+
     public void setLicenseName(String licenseName) {
         mLicenseName = licenseName;
     }
 
     public void setLicenseUrl(String licenseUrl) {
         mLicenseUrl = licenseUrl;
+    }
+
+    public void setOnlyRaw(boolean onlyRaw) {
+        mOnlyRaw = onlyRaw;
     }
 
     public void setProviderName(String providerName) {
