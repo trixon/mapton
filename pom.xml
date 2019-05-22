@@ -4,7 +4,7 @@
 
     <groupId>org.mapton</groupId>
     <artifactId>mapton-parent</artifactId>
-    <version>0.8.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <packaging>pom</packaging>
 
     <name>mapton-parent</name>
@@ -104,10 +104,6 @@
         <module>modules/wikipedia</module>
         <module>modules/wms-sources</module>
 
-        <!--Deprecated-->
-        <!--<module>modules/ww-eox</module>-->
-        <!--<module>modules/ww-lm</module>-->
-        <!--<module>modules/ww-grid</module>-->
 
         <!--Unstable-->
         <!--<module>demo</module>-->
@@ -115,6 +111,8 @@
         <!--<module>modules/ww-mapollage</module>-->
         <!--<module>modules-ext/gdal</module>-->
         <!--<module>modules/ww-datasources</module>-->
+
+        <!--Deprecated-->
     </modules>
 
     <properties>
@@ -122,8 +120,8 @@
         <netbeans.compile.on.save>all</netbeans.compile.on.save>
         <brandingToken>mapton</brandingToken>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <mapton.version>0.8.0-SNAPSHOT</mapton.version>
-        <almond-nbp.version>3.0.0-SNAPSHOT</almond-nbp.version>
+        <mapton.version>1.0.0</mapton.version>
+        <almond-nbp.version>3.0.1</almond-nbp.version>
         <commons-csv.version>1.6</commons-csv.version>
         <commons-io.version>2.6</commons-io.version>
         <commons-lang3.version>3.9</commons-lang3.version>
