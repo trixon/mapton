@@ -17,7 +17,6 @@ package org.mapton.wms_sources;
 
 import java.util.ArrayList;
 import java.util.TreeMap;
-import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.api.MAttribution;
 import org.mapton.api.MWmsSource;
 
@@ -87,6 +86,7 @@ public class GenerateSources extends Generator {
     private void initEOX(boolean enabled) {
         TreeMap<String, String> layers = new TreeMap<>();
         layers.put("blackmarble", "at.eox.blackmarble");
+        layers.put("bluemarble", "at.eox.bluemarble");
         layers.put("coastline", "at.eox.coastline");
         layers.put("hydrography", "at.eox.hydrography");
         layers.put("osm", "at.eox.osm");
@@ -96,15 +96,28 @@ public class GenerateSources extends Generator {
         layers.put("terrain-light", "at.eox.terrain-light");
 
         MAttribution s2Attribution = new MAttribution();
-        s2Attribution.setProviderName("EOX");
-        s2Attribution.setProviderUrl("https://eox.at");
-        s2Attribution.setLicenseName("CC BY-NS-SA 4.0");
-        s2Attribution.setLicenseUrl("https://creativecommons.org/licenses/by-nc-sa/4.0/");
+        s2Attribution.setOnlyRaw(true);
         s2Attribution.setRawHtml("<a href=\"https://s2maps.eu\">Sentinel-2 cloudless – https://s2maps.eu</a> by <a href=\"https://eox.at/\">EOX IT Services GmbH</a> (Contains modified Copernicus Sentinel data 2017 & 2018)");
 
-        ObjectUtils.clone(s2Attribution);
+        MAttribution generalAttribution = new MAttribution();
+        generalAttribution.setOnlyRaw(true);
+        generalAttribution.setRawHtml("Data &copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors and <a href=\"https://maps.eox.at/#data\">others</a>, Rendering &copy; <a href=\"https://eox.at\">EOX</a>");
+
+        MAttribution nasaAttribution = new MAttribution();
+        nasaAttribution.setOnlyRaw(true);
+        nasaAttribution.setRawHtml("Data &copy; <a href=\"https://neo.sci.gsfc.nasa.gov\">NASA</a>, Rendering &copy; <a href=\"https://eox.at\">EOX</a>");
 
         TreeMap<String, MAttribution> attributions = new TreeMap<>();
+        attributions.put("at.eox.blackmarble", nasaAttribution);
+        attributions.put("at.eox.bluemarble", nasaAttribution);
+
+        attributions.put("at.eox.coastline", generalAttribution);
+        attributions.put("at.eox.hydrography", generalAttribution);
+        attributions.put("at.eox.osm", generalAttribution);
+        attributions.put("at.eox.streets", generalAttribution);
+        attributions.put("at.eox.terrain", generalAttribution);
+        attributions.put("at.eox.terrain-light", generalAttribution);
+
         attributions.put("at.eox.s2cloudless", s2Attribution);
 
         mSources.add(createSource(

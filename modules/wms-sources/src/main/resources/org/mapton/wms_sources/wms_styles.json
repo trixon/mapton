@@ -6,6 +6,23 @@
         },
         "description": {},
         "enabled": true,
+        "id": "at.eox.bluemarble",
+        "layers": [
+            "at.eox.bluemarble"
+        ],
+        "name": {
+            "": "Earth by day",
+            "sv": "Jorden på dagen"
+        },
+        "supplier": "EOX & ESA"
+    },
+    {
+        "category": {
+            "": "Earth",
+            "sv": "Jorden"
+        },
+        "description": {},
+        "enabled": true,
         "id": "at.eox.blackmarble",
         "layers": [
             "at.eox.blackmarble"
@@ -287,8 +304,8 @@
     },
     {
         "category": {
-            "": "Bing",
-            "sv": "Bing"
+            "": "Earth",
+            "sv": "Jorden"
         },
         "description": {},
         "enabled": true,
@@ -297,15 +314,15 @@
             "net.emxsys.ve-a"
         ],
         "name": {
-            "": "Satellite",
-            "sv": "Satellit"
+            "": "Bing Satellite",
+            "sv": "Bing Satellit"
         },
         "supplier": "Emxsys"
     },
     {
         "category": {
-            "": "Bing",
-            "sv": "Bing"
+            "": "Earth",
+            "sv": "Jorden"
         },
         "description": {},
         "enabled": true,
@@ -314,15 +331,15 @@
             "net.emxsys.ve-h"
         ],
         "name": {
-            "": "Hybrid",
-            "sv": "Hybrid"
+            "": "Bing Hybrid",
+            "sv": "Bing Hybrid"
         },
         "supplier": "Emxsys"
     },
     {
         "category": {
-            "": "Bing",
-            "sv": "Bing"
+            "": "Earth",
+            "sv": "Jorden"
         },
         "description": {},
         "enabled": true,
@@ -331,8 +348,8 @@
             "net.emxsys.ve-r"
         ],
         "name": {
-            "": "Roadmap",
-            "sv": "Vägkarta"
+            "": "Bing Roadmap",
+            "sv": "Bing Vägkarta"
         },
         "supplier": "Emxsys"
     }

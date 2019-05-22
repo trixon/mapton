@@ -26,7 +26,6 @@ import org.mapton.api.MWmsStyle;
  */
 public class GenerateStyles extends Generator {
 
-    private final TreeMap<String, String> mCategoriesBing = new TreeMap<>();
     private final TreeMap<String, String> mCategoriesEarth = new TreeMap<>();
     private final TreeMap<String, String> mCategoriesSwe = new TreeMap<>();
     private final ArrayList<MWmsStyle> mStyles = new ArrayList<>();
@@ -39,13 +38,12 @@ public class GenerateStyles extends Generator {
     }
 
     public GenerateStyles() {
-        mCategoriesBing.put("", "Bing");
-        mCategoriesBing.put("sv", "Bing");
         mCategoriesEarth.put("", "Earth");
         mCategoriesEarth.put("sv", "Jorden");
         mCategoriesSwe.put("", "Sweden");
         mCategoriesSwe.put("sv", "Sverige");
 
+        initEoxEarthByDay(true);
         initEoxEarthByNight(true);
         initEoxHydro(true);
         initEoxOsm(true);
@@ -87,12 +85,12 @@ public class GenerateStyles extends Generator {
 
     private void initBingA(boolean enabled) {
         TreeMap<String, String> names = new TreeMap<>();
-        names.put("", "Satellite");
-        names.put("sv", "Satellit");
+        names.put("", "Bing Satellite");
+        names.put("sv", "Bing Satellit");
         TreeMap<String, String> descriptions = new TreeMap<>();
 
         mStyles.add(createStyle(
-                mCategoriesBing,
+                mCategoriesEarth,
                 names,
                 descriptions,
                 "Emxsys",
@@ -104,13 +102,13 @@ public class GenerateStyles extends Generator {
 
     private void initBingH(boolean enabled) {
         TreeMap<String, String> names = new TreeMap<>();
-        names.put("", "Hybrid");
-        names.put("sv", "Hybrid");
+        names.put("", "Bing Hybrid");
+        names.put("sv", "Bing Hybrid");
 
         TreeMap<String, String> descriptions = new TreeMap<>();
 
         mStyles.add(createStyle(
-                mCategoriesBing,
+                mCategoriesEarth,
                 names,
                 descriptions,
                 "Emxsys",
@@ -122,19 +120,37 @@ public class GenerateStyles extends Generator {
 
     private void initBingR(boolean enabled) {
         TreeMap<String, String> names = new TreeMap<>();
-        names.put("", "Roadmap");
-        names.put("sv", "Vägkarta");
+        names.put("", "Bing Roadmap");
+        names.put("sv", "Bing Vägkarta");
 
         TreeMap<String, String> descriptions = new TreeMap<>();
 
         mStyles.add(createStyle(
-                mCategoriesBing,
+                mCategoriesEarth,
                 names,
                 descriptions,
                 "Emxsys",
                 enabled,
                 "net.emxsys.ve-r",
                 "net.emxsys.ve-r"
+        ));
+    }
+
+    private void initEoxEarthByDay(boolean enabled) {
+        TreeMap<String, String> names = new TreeMap<>();
+        names.put("", "Earth by day");
+        names.put("sv", "Jorden på dagen");
+
+        TreeMap<String, String> descriptions = new TreeMap<>();
+
+        mStyles.add(createStyle(
+                mCategoriesEarth,
+                names,
+                descriptions,
+                "EOX & ESA",
+                enabled,
+                "at.eox.bluemarble",
+                "at.eox.bluemarble"
         ));
     }
 
