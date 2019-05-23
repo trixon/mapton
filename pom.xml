@@ -115,17 +115,127 @@
         <!--Deprecated-->
     </modules>
 
+    <dependencyManagement>
+        <dependencies>
+            <!-- Mapton -->
+            <dependency>
+                <groupId>org.mapton</groupId>
+                <artifactId>core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mapton</groupId>
+                <artifactId>me-worldwind</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- Trixon -->
+            <dependency>
+                <groupId>se.trixon.almond</groupId>
+                <artifactId>almond-nbp</artifactId>
+                <version>3.0.2-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>se.trixon.almond</groupId>
+                <artifactId>almond-nbp-actions</artifactId>
+                <version>3.0.2-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>se.trixon.almond</groupId>
+                <artifactId>almond-nbp-actions-osx</artifactId>
+                <version>3.0.2-SNAPSHOT</version>
+            </dependency>
+
+            <!-- Other -->
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>3.9</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>2.6</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-csv</artifactId>
+                <version>1.6</version>
+            </dependency>
+            <dependency>
+                <groupId>com.healthmarketscience.sqlbuilder</groupId>
+                <artifactId>sqlbuilder</artifactId>
+                <version>3.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>com.h2database</groupId>
+                <artifactId>h2</artifactId>
+                <version>1.4.196</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>2.8.5</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>27.1-jre</version>
+            </dependency>
+            <dependency>
+                <groupId>org.postgresql</groupId>
+                <artifactId>postgresql</artifactId>
+                <version>42.2.5</version>
+            </dependency>
+            <dependency>
+                <groupId>de.micromata.jak</groupId>
+                <artifactId>JavaAPIforKml</artifactId>
+                <version>2.2.1</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.goober</groupId>
+                <artifactId>coordinate-transformation-library</artifactId>
+                <version>1.1</version>
+            </dependency>
+            <dependency>
+                <groupId>com.j2html</groupId>
+                <artifactId>j2html</artifactId>
+                <version>1.4.0</version>
+            </dependency>
+            <dependency>
+                <groupId>com.lynden</groupId>
+                <artifactId>GMapsFX</artifactId>
+                <version>2.12.2-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jxmapviewer</groupId>
+                <artifactId>jxmapviewer2</artifactId>
+                <version>2.4</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sothawo</groupId>
+                <artifactId>mapjfx</artifactId>
+                <version>1.26.0</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.pcmehlitz</groupId>
+                <artifactId>worldwind-pcm</artifactId>
+                <version>2.1.0.187</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jsoup</groupId>
+                <artifactId>jsoup</artifactId>
+                <version>1.12.1</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <properties>
         <netbeans.version>RELEASE110</netbeans.version>
         <netbeans.compile.on.save>all</netbeans.compile.on.save>
         <brandingToken>mapton</brandingToken>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <mapton.version>1.0.1-SNAPSHOT</mapton.version>
-        <almond-nbp.version>3.0.2-SNAPSHOT</almond-nbp.version>
-        <commons-csv.version>1.6</commons-csv.version>
-        <commons-io.version>2.6</commons-io.version>
-        <commons-lang3.version>3.9</commons-lang3.version>
-        <j2html.version>1.4.0</j2html.version>
     </properties>
     <description>Some kind of map application</description>
 </project>

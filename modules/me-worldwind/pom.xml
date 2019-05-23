@@ -65,21 +65,18 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>core</artifactId>
-            <version>${project.version}</version>
         </dependency>
 
         <!-- Trixon -->
         <dependency>
             <groupId>se.trixon.almond</groupId>
             <artifactId>almond-nbp</artifactId>
-            <version>${almond-nbp.version}</version>
         </dependency>
 
         <!-- Other -->
         <dependency>
             <groupId>com.github.pcmehlitz</groupId>
             <artifactId>worldwind-pcm</artifactId>
-            <version>2.1.0.187</version>
         </dependency>
     </dependencies>
     <properties>

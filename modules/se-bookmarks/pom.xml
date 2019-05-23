@@ -54,14 +54,12 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>core</artifactId>
-            <version>${project.version}</version>
         </dependency>
 
         <!-- Trixon -->
         <dependency>
             <groupId>se.trixon.almond</groupId>
             <artifactId>almond-nbp</artifactId>
-            <version>${almond-nbp.version}</version>
         </dependency>
     </dependencies>
 </project>

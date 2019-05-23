@@ -54,21 +54,18 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>core</artifactId>
-            <version>${project.version}</version>
         </dependency>
 
         <!-- Trixon -->
         <dependency>
             <groupId>se.trixon.almond</groupId>
             <artifactId>almond-nbp</artifactId>
-            <version>${almond-nbp.version}</version>
         </dependency>
 
         <!-- Other -->
         <dependency>
             <groupId>org.jxmapviewer</groupId>
             <artifactId>jxmapviewer2</artifactId>
-            <version>2.4</version>
         </dependency>
     </dependencies>
     <properties>

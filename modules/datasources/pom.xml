@@ -54,14 +54,12 @@
         <dependency>
             <groupId>org.mapton</groupId>
             <artifactId>core</artifactId>
-            <version>${mapton.version}</version>
         </dependency>
 
         <!-- Trixon -->
         <dependency>
             <groupId>se.trixon.almond</groupId>
             <artifactId>almond-nbp</artifactId>
-            <version>${almond-nbp.version}</version>
         </dependency>
     </dependencies>
 </project>
