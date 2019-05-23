@@ -36,8 +36,9 @@ class MPropertyItem implements PropertySheet.Item {
     public MPropertyItem(Map<String, Object> propertyMap, String key) {
         mPropertyMap = propertyMap;
         mKey = key;
+
         if (key.contains("#")) {
-            String[] skey = StringUtils.split(key, "#", 1);
+            String[] skey = StringUtils.split(key, "#", 2);
             mCategory = skey[0];
             if (skey.length > 1) {
                 mName = skey[1];
