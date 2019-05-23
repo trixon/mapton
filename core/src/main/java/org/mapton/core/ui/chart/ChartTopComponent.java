@@ -54,7 +54,7 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
 )
 public final class ChartTopComponent extends MTopComponent implements MMapMagnet {
 
-    private final ResourceBundle mBundle = NbBundle.getBundle(ChartTopComponent.class);
+    private ResourceBundle mBundle;
     private BorderPane mRoot;
 
     public ChartTopComponent() {
@@ -80,6 +80,8 @@ public final class ChartTopComponent extends MTopComponent implements MMapMagnet
     }
 
     private Scene createScene() {
+        mBundle = NbBundle.getBundle(ChartTopComponent.class);
+
         Label label = new Label(mBundle.getString("placeholder"), MaterialIcon._Editor.SHOW_CHART.getImageView(getIconSizeToolBar()));
         label.setDisable(true);
 
