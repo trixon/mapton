@@ -219,7 +219,7 @@ public class BookmarkImportAction extends BookmarkAction {
 
         for (String column : columns) {
             if (records.getHeaderMap().containsKey(column)) {
-                break;
+                continue;
             } else {
                 return false;
             }
