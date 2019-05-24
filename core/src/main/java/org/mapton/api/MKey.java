@@ -22,6 +22,7 @@ package org.mapton.api;
 public class MKey {
 
     public static final String CHART = "chart";
+    public static final String CHART_WAIT = "chart.wait";
     public static final String DATA_SOURCES_FILES = "data_sources.files";
     public static final String DATA_SOURCES_WMS_ATTRIBUTIONS = "data_sources.wms.attributions";
     public static final String DATA_SOURCES_WMS_SOURCES = "data_sources.wms.sources";

@@ -16,10 +16,11 @@
 package org.mapton.core.tool;
 
 import org.controlsfx.control.action.Action;
-import org.mapton.api.MChart;
+import org.mapton.api.MChartLine;
 import org.mapton.api.MKey;
 import org.mapton.api.MTool;
 import org.mapton.api.Mapton;
+import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxActionSwing;
@@ -35,12 +36,35 @@ public class ChartDemoTool implements MTool {
     @Override
     public Action getAction() {
         FxActionSwing action = new FxActionSwing(Dict.CHART.toString() + " Demo", () -> {
-            MChart chart = new MChart();
-            chart.setTitle(getAction().getText());
+            new Thread(() -> {
+                Mapton.getGlobalState().put(MKey.CHART_WAIT, null);
 
-            Mapton.getGlobalState().put(MKey.CHART, chart);
+                MChartLine chartLine = new MChartLine(getAction().getText(), "ratio", "sin", "cos", "sin×cos");
+                chartLine.setPlotSymbols(false);
+
+                for (int g = 0; g < 401; g = g + 10) {
+                    chartLine.getColumns().add(String.valueOf(g));
+                    double phi = g * (Math.PI / 200);
+                    chartLine.getValues()[0].add(Math.sin(phi));
+                    chartLine.getValues()[1].add(Math.cos(phi));
+                    chartLine.getValues()[2].add(Math.sin(phi) * Math.cos(phi));
+                }
+
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException ex) {
+                    Exceptions.printStackTrace(ex);
+                }
+
+                Mapton.getGlobalState().put(MKey.CHART, chartLine);
+            }).start();
         });
 
         return action;
+    }
+
+    @Override
+    public String getParent() {
+        return Dict.SYSTEM.toString();
     }
 }

@@ -19,18 +19,18 @@ package org.mapton.api;
  *
  * @author Patrik Karlström
  */
-public class MChart {
+public abstract class MChart {
 
-    private String mTitle;
+    private String mChartTitle;
 
     public MChart() {
     }
 
-    public String getTitle() {
-        return mTitle;
+    public String getChartTitle() {
+        return mChartTitle;
     }
 
-    public void setTitle(String title) {
-        mTitle = title;
+    public void setChartTitle(String chartTitle) {
+        mChartTitle = chartTitle;
     }
 }

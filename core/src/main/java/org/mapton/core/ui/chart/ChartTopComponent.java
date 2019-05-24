@@ -17,12 +17,12 @@ package org.mapton.core.ui.chart;
 
 import java.util.ResourceBundle;
 import javafx.application.Platform;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.BorderPane;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
-import org.mapton.api.MChart;
+import org.mapton.api.MChartLine;
 import org.mapton.api.MKey;
 import org.mapton.api.MMapMagnet;
 import org.mapton.api.MTopComponent;
@@ -55,7 +55,10 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
 public final class ChartTopComponent extends MTopComponent implements MMapMagnet {
 
     private ResourceBundle mBundle;
+    private Label mInvalidPlaceholderLabel;
+    private Label mPlaceholderLabel;
     private BorderPane mRoot;
+    private ProgressBar mProgressBar;
 
     public ChartTopComponent() {
         setName(Dict.CHART.toString());
@@ -82,10 +85,15 @@ public final class ChartTopComponent extends MTopComponent implements MMapMagnet
     private Scene createScene() {
         mBundle = NbBundle.getBundle(ChartTopComponent.class);
 
-        Label label = new Label(mBundle.getString("placeholder"), MaterialIcon._Editor.SHOW_CHART.getImageView(getIconSizeToolBar()));
-        label.setDisable(true);
+        mPlaceholderLabel = new Label(mBundle.getString("placeholder"), MaterialIcon._Editor.SHOW_CHART.getImageView(getIconSizeToolBar()));
+        mPlaceholderLabel.setDisable(true);
 
-        mRoot = new BorderPane(label);
+        mInvalidPlaceholderLabel = new Label(mBundle.getString("invalid_object"), MaterialIcon._Editor.SHOW_CHART.getImageView(getIconSizeToolBar()));
+        mInvalidPlaceholderLabel.setDisable(true);
+
+        mProgressBar = new ProgressBar(-1);
+        mProgressBar.setPrefWidth(400);
+        mRoot = new BorderPane(mPlaceholderLabel);
 
         return new Scene(mRoot);
     }
@@ -96,10 +104,27 @@ public final class ChartTopComponent extends MTopComponent implements MMapMagnet
                 refresh(evt.getValue());
             });
         }, MKey.CHART);
+
+        Mapton.getGlobalState().addListener((GlobalStateChangeEvent evt) -> {
+            Platform.runLater(() -> {
+                mRoot.setCenter(mProgressBar);
+            });
+        }, MKey.CHART_WAIT);
     }
 
-    private void refresh(MChart chart) {
-        System.out.println(ToStringBuilder.reflectionToString(chart, ToStringStyle.JSON_STYLE));
-    }
+    private void refresh(Object o) {
+        Node centerObject = null;
 
+        if (o == null) {
+            centerObject = mPlaceholderLabel;
+        } else if (o instanceof MChartLine) {
+            centerObject = new LineChartX((MChartLine) o).getNode();
+        } else if (o instanceof Node) {
+            centerObject = (Node) o;
+        } else {
+            centerObject = mInvalidPlaceholderLabel;
+        }
+
+        mRoot.setCenter(centerObject);
+    }
 }
