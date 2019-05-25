@@ -90,12 +90,19 @@ public class SourceView extends BorderPane {
         });
         remAction.setGraphic(MaterialIcon._Content.REMOVE.getImageView(getIconSizeToolBarInt()));
 
+        Action refreshAction = new Action(Dict.REFRESH.toString(), (ActionEvent event) -> {
+            System.out.println("refresh");
+        });
+        refreshAction.setGraphic(MaterialIcon._Navigation.REFRESH.getImageView(getIconSizeToolBarInt()));
+
         Collection<? extends Action> actions = Arrays.asList(
                 new SourceFileImportAction().getAction(),
                 new SourceFileExportAction().getAction(),
                 addAction,
                 remAction,
-                editAction
+                editAction,
+                ActionUtils.ACTION_SPAN,
+                refreshAction
         );
 
         ToolBar toolBar = ActionUtils.createToolBar(actions, ActionUtils.ActionTextBehavior.HIDE);
