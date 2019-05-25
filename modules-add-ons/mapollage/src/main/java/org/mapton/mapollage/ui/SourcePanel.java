@@ -19,13 +19,13 @@ import java.util.ResourceBundle;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
-import javafx.scene.text.Font;
+import javafx.scene.control.Tooltip;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import org.controlsfx.validation.ValidationResult;
 import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
@@ -33,6 +33,8 @@ import org.mapton.mapollage.api.MapollageSource;
 import org.openide.util.NbBundle;
 import se.trixon.almond.nbp.fx.FxDialogPanel;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.fx.FxHelper;
+import se.trixon.almond.util.fx.control.FileChooserPane;
 
 /**
  *
@@ -40,73 +42,97 @@ import se.trixon.almond.util.Dict;
  */
 public class SourcePanel extends FxDialogPanel {
 
-    private final ResourceBundle mBundle = NbBundle.getBundle(SourcePanel.class);
+    private ResourceBundle mBundle;
+    private TextField mDescTextField;
+    private TextField mExcludeTextField;
+    private TextField mFilePatternField;
+    private CheckBox mLinksCheckBox;
     private TextField mNameTextField;
+    private CheckBox mRecursiveCheckBox;
+    private FileChooserPane mSourceChooser;
+    private HBox mhBox;
+    private VBox mvBox;
+
+    public SourcePanel() {
+    }
 
     public void load(MapollageSource source) {
         mNameTextField.setText(source.getName());
+        mDescTextField.setText(source.getDescriptionString());
+
+        mSourceChooser.setPath(source.getDir());
+        mExcludeTextField.setText(source.getExcludePattern());
+        mFilePatternField.setText(source.getFilePattern());
+
+        mRecursiveCheckBox.setSelected(source.isRecursive());
+        mLinksCheckBox.setSelected(source.isFollowLinks());
     }
 
     public void save(MapollageSource source) {
         source.setName(mNameTextField.getText());
+        source.setDescriptionString(mDescTextField.getText());
+
+        source.setDir(mSourceChooser.getPath());
+        source.setExcludePattern(mExcludeTextField.getText());
+        source.setFilePattern(mFilePatternField.getText());
+
+        source.setRecursive(mRecursiveCheckBox.isSelected());
+        source.setFollowLinks(mLinksCheckBox.isSelected());
     }
 
     @Override
     protected void fxConstructor() {
+        mBundle = NbBundle.getBundle(SourcePanel.class);
         setScene(createScene());
     }
 
-    private void autoSizeColumn(GridPane gridPane, int columnCount) {
-        gridPane.getColumnConstraints().clear();
-
-        for (int i = 0; i < columnCount; i++) {
-            ColumnConstraints columnConstraints = new ColumnConstraints();
-            columnConstraints.setPercentWidth(100.0 / columnCount);
-            gridPane.getColumnConstraints().add(columnConstraints);
-        }
-    }
-
-    private void autoSizeRegion(Region... regions) {
-        for (Region region : regions) {
-            GridPane.setHgrow(region, Priority.ALWAYS);
-            GridPane.setFillWidth(region, true);
-            region.setMaxWidth(Double.MAX_VALUE);
-        }
-    }
-
     private Scene createScene() {
+        mhBox = new HBox(8);
+        mvBox = new VBox();
+
         mNameTextField = new TextField();
+        mDescTextField = new TextField();
+        mExcludeTextField = new TextField();
+        mFilePatternField = new TextField();
+        mLinksCheckBox = new CheckBox(Dict.FOLLOW_LINKS.toString());
+        mRecursiveCheckBox = new CheckBox(Dict.SUBDIRECTORIES.toString());
+        mSourceChooser = new FileChooserPane(Dict.SELECT.toString(), Dict.IMAGE_DIRECTORY.toString(), FileChooserPane.ObjectMode.DIRECTORY, SelectionMode.SINGLE);
 
         Label nameLabel = new Label(Dict.NAME.toString());
+        Label descLabel = new Label(Dict.DESCRIPTION.toString());
+        Label filePatternLabel = new Label(Dict.FILE_PATTERN.toString());
+        Label excludeLabel = new Label(mBundle.getString("Source.excludeLabel"));
 
-        Font defaultFont = Font.getDefault();
-        final Font font = new Font(defaultFont.getSize() * 1.4);
+        mExcludeTextField.setTooltip(new Tooltip(mBundle.getString("Source.excludeTextField.toolTip")));
 
-        GridPane gp = new GridPane();
-        int col = 0;
-        int row = 0;
+        mhBox.getChildren().addAll(mRecursiveCheckBox, mLinksCheckBox);
 
-        GridPane headerPane = new GridPane();
-        headerPane.addRow(0, nameLabel);
-        headerPane.addRow(1, mNameTextField);
-        headerPane.setHgap(8);
-        autoSizeRegion(mNameTextField);
-        autoSizeColumn(headerPane, 2);
+        FxHelper.addTopPadding(
+                new Insets(8, 0, 0, 0),
+                descLabel,
+                mSourceChooser,
+                filePatternLabel,
+                excludeLabel,
+                mhBox
+        );
 
-        gp.addRow(row, headerPane);
-
-        autoSizeRegion(headerPane);
-
-        final Insets rowInsets = new Insets(0, 0, 8, 0);
-        GridPane.setMargin(headerPane, rowInsets);
-        GridPane.setMargin(mNameTextField, rowInsets);
+        mvBox.getChildren().addAll(
+                nameLabel,
+                mNameTextField,
+                descLabel,
+                mDescTextField,
+                mSourceChooser,
+                filePatternLabel,
+                mFilePatternField,
+                excludeLabel,
+                mExcludeTextField,
+                mhBox
+        );
+        mvBox.setPadding(new Insets(8, 16, 0, 16));
 
         initValidation();
-        gp.setPadding(new Insets(8, 16, 0, 16));
 
-        final Insets topInsets = new Insets(8, 0, 8, 0);
-
-        return new Scene(gp);
+        return new Scene(mvBox);
     }
 
     private void initValidation() {

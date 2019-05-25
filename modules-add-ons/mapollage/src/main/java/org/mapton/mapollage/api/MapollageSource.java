@@ -16,6 +16,10 @@
 package org.mapton.mapollage.api;
 
 import com.google.gson.annotations.SerializedName;
+import java.io.File;
+import java.nio.file.FileSystems;
+import java.nio.file.PathMatcher;
+import org.apache.commons.lang3.SystemUtils;
 
 /**
  *
@@ -23,8 +27,23 @@ import com.google.gson.annotations.SerializedName;
  */
 public class MapollageSource {
 
+    @SerializedName("descriptionString")
+    private String mDescriptionString;
+    @SerializedName("source")
+    private File mDir = SystemUtils.getUserHome();
+    @SerializedName("exclude_pattern")
+    private String mExcludePattern = "";
+    @SerializedName("file_pattern")
+    private String mFilePattern = "{*.jpg,*.JPG}";
+    @SerializedName("follow_links")
+    private boolean mFollowLinks = true;
+    @SerializedName("include_null_coordinates")
+    private boolean mIncludeNullCoordinate = false;
     @SerializedName("name")
     private String mName;
+    private transient PathMatcher mPathMatcher;
+    @SerializedName("recursive")
+    private boolean mRecursive = true;
     @SerializedName("visible")
     private boolean mVisible = true;
 
@@ -36,16 +55,90 @@ public class MapollageSource {
 //        Mapton.getEngine().fitToBounds(latLonBox);
     }
 
+    public String getDescriptionString() {
+        return mDescriptionString;
+    }
+
+    public File getDir() {
+        return mDir;
+    }
+
+    public String getExcludePattern() {
+        return mExcludePattern;
+    }
+
+    public String getFilePattern() {
+        return mFilePattern;
+    }
+
     public String getName() {
         return mName;
+    }
+
+    public PathMatcher getPathMatcher() {
+        return mPathMatcher;
+    }
+
+    public boolean isFollowLinks() {
+        return mFollowLinks;
+    }
+
+    public boolean isIncludeNullCoordinate() {
+        return mIncludeNullCoordinate;
+    }
+
+    public boolean isRecursive() {
+        return mRecursive;
+    }
+
+    public boolean isValid() {
+        try {
+            mPathMatcher = FileSystems.getDefault().getPathMatcher("glob:" + mFilePattern);
+        } catch (Exception e) {
+            //addValidationError("invalid file pattern: " + mFilePattern);
+        }
+
+        return true;
     }
 
     public boolean isVisible() {
         return mVisible;
     }
 
+    public void setDescriptionString(String descriptionString) {
+        mDescriptionString = descriptionString;
+    }
+
+    public void setDir(File dir) {
+        mDir = dir;
+    }
+
+    public void setExcludePattern(String excludePattern) {
+        mExcludePattern = excludePattern;
+    }
+
+    public void setFilePattern(String filePattern) {
+        mFilePattern = filePattern;
+    }
+
+    public void setFollowLinks(boolean followLinks) {
+        mFollowLinks = followLinks;
+    }
+
+    public void setIncludeNullCoordinate(boolean includeNullCoordinate) {
+        mIncludeNullCoordinate = includeNullCoordinate;
+    }
+
     public void setName(String name) {
         mName = name;
+    }
+
+    public void setPathMatcher(PathMatcher pathMatcher) {
+        mPathMatcher = pathMatcher;
+    }
+
+    public void setRecursive(boolean recursive) {
+        mRecursive = recursive;
     }
 
     public void setVisible(boolean visible) {
