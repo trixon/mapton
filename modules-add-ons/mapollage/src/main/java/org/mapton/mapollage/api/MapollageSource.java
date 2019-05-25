@@ -37,8 +37,6 @@ public class MapollageSource {
     private String mFilePattern = "{*.jpg,*.JPG}";
     @SerializedName("follow_links")
     private boolean mFollowLinks = true;
-    @SerializedName("include_null_coordinates")
-    private boolean mIncludeNullCoordinate = false;
     @SerializedName("name")
     private String mName;
     private transient PathMatcher mPathMatcher;
@@ -83,10 +81,6 @@ public class MapollageSource {
         return mFollowLinks;
     }
 
-    public boolean isIncludeNullCoordinate() {
-        return mIncludeNullCoordinate;
-    }
-
     public boolean isRecursive() {
         return mRecursive;
     }
@@ -123,10 +117,6 @@ public class MapollageSource {
 
     public void setFollowLinks(boolean followLinks) {
         mFollowLinks = followLinks;
-    }
-
-    public void setIncludeNullCoordinate(boolean includeNullCoordinate) {
-        mIncludeNullCoordinate = includeNullCoordinate;
     }
 
     public void setName(String name) {

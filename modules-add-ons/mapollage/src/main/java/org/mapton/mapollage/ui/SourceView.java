@@ -91,6 +91,8 @@ public class SourceView extends BorderPane {
         remAction.setGraphic(MaterialIcon._Content.REMOVE.getImageView(getIconSizeToolBarInt()));
 
         Collection<? extends Action> actions = Arrays.asList(
+                new SourceFileImportAction().getAction(),
+                new SourceFileExportAction().getAction(),
                 addAction,
                 remAction,
                 editAction
