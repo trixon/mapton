@@ -30,6 +30,7 @@ public class Options extends OptionsBase {
     public static final int DEFAULT_THUMBNAIL_SIZE = 1000;
     public static final String KEY_GLOBAL_CLAMP_TO_GROUND = "global_clamp_to_ground";
     public static final String KEY_LOCALE = "locale";
+    public static final String KEY_SOURCES = "sources";
     public static final String KEY_THUMBNAIL_BORDER_SIZE = "thumbnail_border_size";
     public static final String KEY_THUMBNAIL_SIZE = "thumbnail_size";
 

@@ -15,10 +15,15 @@
  */
 package org.mapton.mapollage;
 
+import org.mapton.mapollage.ui.ControlView;
+import org.mapton.mapollage.ui.SourceView;
 import java.util.ResourceBundle;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import org.mapton.api.MMapMagnet;
 import org.mapton.api.MTopComponent;
 import org.mapton.api.Mapton;
@@ -67,9 +72,19 @@ public final class MapollageTopComponent extends MTopComponent implements MMapMa
 
     private Scene createScene() {
         ResourceBundle bundle = NbBundle.getBundle(MapollageTopComponent.class);
-
+        ControlView controlView = new ControlView();
+        SourceView sourceView = new SourceView();
         Label titleLabel = Mapton.createTitle("Mapollage");
-        mRoot = new BorderPane();
+
+        VBox vbox = new VBox(16,
+                controlView,
+                sourceView
+        );
+
+        vbox.setPadding(new Insets(8));
+        VBox.setVgrow(sourceView, Priority.ALWAYS);
+
+        mRoot = new BorderPane(vbox);
         mRoot.setTop(titleLabel);
         titleLabel.prefWidthProperty().bind(mRoot.widthProperty());
 
