@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.ww_mapollage;
+package org.mapton.mapollage;
 
 import org.openide.util.NbPreferences;
 import se.trixon.almond.util.OptionsBase;

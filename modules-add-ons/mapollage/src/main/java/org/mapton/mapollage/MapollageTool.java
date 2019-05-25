@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.ww_mapollage;
+package org.mapton.mapollage;
 
 import org.controlsfx.control.action.Action;
 import org.mapton.api.MTool;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.Almond;
+import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxActionSwing;
 
 /**
@@ -40,7 +41,7 @@ public class MapollageTool implements MTool {
 
     @Override
     public String getParent() {
-        return "WorldWind";
+        return Dict.ADD_ONS.toString();
     }
 
 }

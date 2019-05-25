@@ -159,13 +159,19 @@
             <artifactId>wikipedia</artifactId>
             <version>${project.version}</version>
         </dependency>
-
-        <!--Mapton/Unstable-->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>datasources</artifactId>
             <version>${project.version}</version>
-        </dependency><!--
+        </dependency>
+
+        <!--Mapton/Unstable-->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>mapollage</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!--
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>ww-datasources</artifactId>
@@ -179,11 +185,6 @@
         <!--        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>me-mapjfx</artifactId>
-            <version>${project.version}</version>
-        </dependency>-->
-        <!--        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>ww-mapollage</artifactId>
             <version>${project.version}</version>
         </dependency>-->
 

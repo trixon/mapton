@@ -7,8 +7,8 @@
         <version>1.0.1-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
-    <artifactId>ww-mapollage</artifactId>
-    <description>Mapollage for WorldWind</description>
+    <artifactId>mapollage</artifactId>
+    <description>Displays geotagged photos on the map</description>
     <packaging>nbm</packaging>
     <build>
         <plugins>
@@ -80,31 +80,20 @@
             <artifactId>core</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>me-worldwind</artifactId>
-            <version>${project.version}</version>
-        </dependency>
 
         <!-- Trixon -->
         <dependency>
             <groupId>se.trixon.almond</groupId>
             <artifactId>almond-nbp</artifactId>
         </dependency>
-        <dependency>
-            <groupId>se.trixon</groupId>
-            <artifactId>mapollage</artifactId>
-            <version>2.0.2-SNAPSHOT</version>
-        </dependency>
 
         <!-- Other -->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-text</artifactId>
-            <version>1.6</version>
         </dependency>
     </dependencies>
-    <name>ww-mapollage</name>
+    <name>mapollage</name>
     <properties>
         <netbeans.compile.on.save>all</netbeans.compile.on.save>
         <netbeans.hint.license>apache20</netbeans.hint.license>

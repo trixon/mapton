@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.ww_mapollage;
+package org.mapton.mapollage;
 
 import java.awt.BorderLayout;
 import javafx.application.Platform;
@@ -26,7 +26,6 @@ final class OptionsPanel extends javax.swing.JPanel {
     private final OptionsController controller;
     private final FxPanel mFxPanel;
     private final Options mOptions = Options.getInstance();
-    private se.trixon.mapollage.ui.OptionsPanel mMapollageOptionsPanel = new se.trixon.mapollage.ui.OptionsPanel();
 
     OptionsPanel(OptionsController controller) {
         this.controller = controller;
@@ -38,9 +37,7 @@ final class OptionsPanel extends javax.swing.JPanel {
             }
 
             private Scene createScene() {
-                mMapollageOptionsPanel = new se.trixon.mapollage.ui.OptionsPanel();
-
-                VBox box = new VBox(mMapollageOptionsPanel);
+                VBox box = new VBox();
 
                 return new Scene(box);
             }
@@ -75,7 +72,6 @@ final class OptionsPanel extends javax.swing.JPanel {
     }
 
     private void storeFX() {
-        mMapollageOptionsPanel.save();
     }
 
 }
