@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,6 +15,7 @@
  */
 package org.mapton.mapollage;
 
+import java.util.Locale;
 import org.openide.util.NbPreferences;
 import se.trixon.almond.util.OptionsBase;
 
@@ -24,7 +25,13 @@ import se.trixon.almond.util.OptionsBase;
  */
 public class Options extends OptionsBase {
 
+    public static final Locale DEFAULT_LOCALE = Locale.getDefault();
+    public static final int DEFAULT_THUMBNAIL_BORDER_SIZE = 3;
+    public static final int DEFAULT_THUMBNAIL_SIZE = 1000;
     public static final String KEY_GLOBAL_CLAMP_TO_GROUND = "global_clamp_to_ground";
+    public static final String KEY_LOCALE = "locale";
+    public static final String KEY_THUMBNAIL_BORDER_SIZE = "thumbnail_border_size";
+    public static final String KEY_THUMBNAIL_SIZE = "thumbnail_size";
 
     public static Options getInstance() {
         return Holder.INSTANCE;
@@ -32,6 +39,14 @@ public class Options extends OptionsBase {
 
     private Options() {
         setPreferences(NbPreferences.forModule(Options.class));
+    }
+
+    public Locale getLocale() {
+        return Locale.forLanguageTag(mPreferences.get(KEY_LOCALE, DEFAULT_LOCALE.toLanguageTag()));
+    }
+
+    public void setLocale(Locale locale) {
+        mPreferences.put(KEY_LOCALE, locale.toLanguageTag());
     }
 
     private static class Holder {

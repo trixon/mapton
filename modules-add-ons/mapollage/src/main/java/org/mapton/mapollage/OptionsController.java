@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,11 +25,10 @@ import org.openide.util.Lookup;
 
 @OptionsPanelController.SubRegistration(
         location = "Modules",
-        displayName = "#AdvancedOption_DisplayName_Mapollage",
-        keywords = "#AdvancedOption_Keywords_Mapollage",
+        displayName = "Mapollage",
+        keywords = "Mapollage",
         keywordsCategory = "Modules/Mapollage"
 )
-@org.openide.util.NbBundle.Messages({"AdvancedOption_DisplayName_Mapollage=Mapollage", "AdvancedOption_Keywords_Mapollage=Mapollage"})
 public final class OptionsController extends OptionsPanelController {
 
     private boolean mChanged;
