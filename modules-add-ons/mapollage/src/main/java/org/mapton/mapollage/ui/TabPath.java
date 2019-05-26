@@ -42,9 +42,9 @@ public class TabPath extends TabBase {
     private final ToggleGroup mToggleGroup = new ToggleGroup();
     private final Spinner<Double> mWidthSpinner = new Spinner(1.0, 10.0, 1.0, 0.1);
 
-    public TabPath(Mapo mapollageState) {
+    public TabPath(Mapo mapo) {
         setText(Dict.Geometry.PATH.toString());
-        mMapollageState = mapollageState;
+        mMapo = mapo;
         createUI();
 //        load();
     }

@@ -15,7 +15,9 @@
  */
 package org.mapton.mapollage.ui;
 
+import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
+import org.mapton.api.Mapton;
 import org.mapton.mapollage.api.Mapo;
 import se.trixon.almond.util.Dict;
 
@@ -25,16 +27,21 @@ import se.trixon.almond.util.Dict;
  */
 public class TabSelection extends TabBase {
 
-    public TabSelection(Mapo mapollageState) {
+    public TabSelection(Mapo mapo) {
         setText(Dict.SELECTION.toString());
-        mMapollageState = mapollageState;
+        mMapo = mapo;
         createUI();
 //        initListeners();
 //        load();
     }
 
     private void createUI() {
+        Button refreshButton = new Button(Dict.REFRESH.toString());
+        refreshButton.setOnAction((event) -> {
+            Mapton.getGlobalState().put(Mapo.KEY_MAPO, mMapo);
+        });
         GridPane gp = new GridPane();
+        gp.addRow(0, refreshButton);
         setScrollPaneContent(gp);
     }
 

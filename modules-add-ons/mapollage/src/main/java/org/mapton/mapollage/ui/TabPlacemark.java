@@ -36,7 +36,6 @@ import se.trixon.almond.util.fx.FxHelper;
 public class TabPlacemark extends TabBase {
 
     private final ResourceBundle mBundle = SystemHelper.getBundle(TabPlacemark.class, "Bundle");
-
     private final ComboBox<String> mDatePatternComboBox = new ComboBox<>();
     private final RadioButton mNameByDateRadioButton = new RadioButton(Dict.DATE_PATTERN.toString());
     private final RadioButton mNameByFileRadioButton = new RadioButton(Dict.FILENAME.toString());
@@ -46,9 +45,9 @@ public class TabPlacemark extends TabBase {
     private final RadioButton mSymbolAsPinRadioButton = new RadioButton(Dict.PIN.toString());
     private final ToggleGroup mSymbolToggleGroup = new ToggleGroup();
 
-    public TabPlacemark(Mapo mapollageState) {
+    public TabPlacemark(Mapo mapo) {
         setText(Dict.PLACEMARK.toString());
-        mMapollageState = mapollageState;
+        mMapo = mapo;
         createUI();
 //        load();
     }

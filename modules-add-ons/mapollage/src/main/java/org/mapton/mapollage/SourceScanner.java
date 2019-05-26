@@ -16,8 +16,6 @@
 package org.mapton.mapollage;
 
 import java.io.IOException;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 import org.mapton.mapollage.api.MapoCollection;
 import org.mapton.mapollage.api.MapoPhoto;
 import org.mapton.mapollage.api.MapoSource;
@@ -31,23 +29,18 @@ import org.openide.util.Exceptions;
 public class SourceScanner {
 
     private final MapoSourceManager mManager = MapoSourceManager.getInstance();
-//    private ArrayList<MapoSource> mDisabledSources = new ArrayList<>();
-//    private ArrayList<MapoSource> mScannedSources = new ArrayList<>();
 
     public SourceScanner() {
         System.out.println("new SourceScanner");
 
         new Thread(() -> {
             for (MapoSource source : mManager.getItems()) {
-                System.out.println(ToStringBuilder.reflectionToString(source, ToStringStyle.JSON_STYLE));
                 if (source.isVisible()) {
                     try {
                         scan(source);
                     } catch (IOException ex) {
                         Exceptions.printStackTrace(ex);
                     }
-//                } else {
-//                    mDisabledSources.add(source);
                 }
             }
 

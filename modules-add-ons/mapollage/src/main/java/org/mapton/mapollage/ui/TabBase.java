@@ -36,7 +36,7 @@ public abstract class TabBase extends Tab {
     public static final int ICON_SIZE = 22;
     protected static ValidationSupport sValidationSupport;
     protected final ResourceBundle mBundle = SystemHelper.getBundle(TabBase.class, "Bundle");
-    protected Mapo mMapollageState;
+    protected Mapo mMapo;
     protected final Options mOptions = Options.getInstance();
     private final GlyphFont mFontAwesome = GlyphFontRegistry.font("FontAwesome");
     private final Color mIconColor = Color.BLACK;

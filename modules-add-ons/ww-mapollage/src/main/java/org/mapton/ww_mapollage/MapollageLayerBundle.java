@@ -16,10 +16,15 @@
 package org.mapton.ww_mapollage;
 
 import gov.nasa.worldwind.layers.RenderableLayer;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.mapton.api.Mapton;
 import org.mapton.mapollage.api.Mapo;
+import org.mapton.mapollage.api.MapoSource;
+import org.mapton.mapollage.api.MapoSourceManager;
 import org.mapton.worldwind.api.LayerBundle;
 import org.openide.util.lookup.ServiceProvider;
+import se.trixon.almond.util.GlobalState;
 import se.trixon.almond.util.GlobalStateChangeEvent;
 
 /**
@@ -30,6 +35,8 @@ import se.trixon.almond.util.GlobalStateChangeEvent;
 public class MapollageLayerBundle extends LayerBundle {
 
     private final RenderableLayer mLayer = new RenderableLayer();
+    private final MapoSourceManager mManager = MapoSourceManager.getInstance();
+    private Mapo mMapo;
 
     public MapollageLayerBundle() {
         mLayer.setName("Mapollage-dev");
@@ -39,13 +46,27 @@ public class MapollageLayerBundle extends LayerBundle {
     public void populate() throws Exception {
         getLayers().add(mLayer);
 
-        Mapton.getGlobalState().addListener((GlobalStateChangeEvent evt) -> {
+        GlobalState globalState = Mapton.getGlobalState();
+        globalState.addListener((GlobalStateChangeEvent evt) -> {
+            mMapo = evt.getValue();
             refresh();
-        }, Mapo.KEY_COLLECTION);
+        }, Mapo.KEY_MAPO);
+
+        globalState.addListener((GlobalStateChangeEvent evt) -> {
+            if (mMapo != null) {
+                refresh();
+            }
+        }, Mapo.KEY_SOURCE_MANAGER);
 
         setPopulated(true);
     }
 
     private void refresh() {
+        System.out.println("MapollageLayerBundle#refresh()");
+        for (MapoSource source : mManager.getItems()) {
+            System.out.println(ToStringBuilder.reflectionToString(source, ToStringStyle.JSON_STYLE));
+            System.out.println(ToStringBuilder.reflectionToString(source.getCollection(), ToStringStyle.JSON_STYLE));
+            System.out.println(ToStringBuilder.reflectionToString(source.getCollection().getPhotos(), ToStringStyle.JSON_STYLE));
+        }
     }
 }

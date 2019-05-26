@@ -34,9 +34,9 @@ import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.mapton.mapollage.SourceScanner;
+import org.mapton.mapollage.api.Mapo;
 import org.mapton.mapollage.api.MapoSource;
 import org.mapton.mapollage.api.MapoSourceManager;
-import org.mapton.mapollage.api.Mapo;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import se.trixon.almond.util.Dict;
@@ -52,9 +52,9 @@ public class TabSources extends TabBase {
     private final CheckListView<MapoSource> mListView = new CheckListView<>();
     private final MapoSourceManager mManager = MapoSourceManager.getInstance();
 
-    public TabSources(Mapo mapollageState) {
+    public TabSources(Mapo mapo) {
         setText(Dict.SOURCES.toString());
-        mMapollageState = mapollageState;
+        mMapo = mapo;
 
 //        createUI();
 //        initValidation();

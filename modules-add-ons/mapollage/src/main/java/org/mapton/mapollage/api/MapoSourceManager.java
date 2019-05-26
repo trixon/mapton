@@ -25,6 +25,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javax.swing.SwingUtilities;
 import org.apache.commons.io.FileUtils;
+import org.mapton.api.Mapton;
 import org.mapton.mapollage.Options;
 import static org.mapton.mapollage.Options.KEY_SOURCES;
 import org.mapton.mapollage.ui.SourcePanel;
@@ -91,6 +92,7 @@ public class MapoSourceManager {
             }
         }
 
+        Mapton.getGlobalState().put(Mapo.KEY_SOURCE_MANAGER, null);
     }
 
     public ArrayList<MapoSource> loadItems() {
