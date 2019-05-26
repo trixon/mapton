@@ -107,7 +107,7 @@ public class SourcePanel extends FxDialogPanel {
 
         mhBox.getChildren().addAll(mRecursiveCheckBox, mLinksCheckBox);
 
-        FxHelper.addTopPadding(
+        FxHelper.setPadding(
                 new Insets(8, 0, 0, 0),
                 descLabel,
                 mSourceChooser,

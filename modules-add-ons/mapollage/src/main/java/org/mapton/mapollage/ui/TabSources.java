@@ -18,32 +18,27 @@ package org.mapton.mapollage.ui;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.scene.control.ButtonBase;
-import javafx.scene.control.Label;
 import javafx.scene.control.ToolBar;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import javax.swing.SwingUtilities;
 import org.controlsfx.control.CheckListView;
 import org.controlsfx.control.IndexedCheckModel;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
+import org.controlsfx.glyphfont.FontAwesome;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
-import org.mapton.mapollage.MapollageTopComponent;
 import org.mapton.mapollage.api.MapollageSource;
 import org.mapton.mapollage.api.MapollageSourceManager;
+import org.mapton.mapollage.api.MapollageState;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
-import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.icons.material.MaterialIcon;
@@ -52,12 +47,19 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
  *
  * @author Patrik Karlström
  */
-public class SourceView extends BorderPane {
+public class TabSources extends TabBase {
 
     private final CheckListView<MapollageSource> mListView = new CheckListView<>();
     private final MapollageSourceManager mManager = MapollageSourceManager.getInstance();
 
-    public SourceView() {
+    public TabSources(MapollageState mapollageState) {
+        setText(Dict.SOURCES.toString());
+        setGraphic(FontAwesome.Glyph.FILE_IMAGE_ALT.getChar());
+        mMapollageState = mapollageState;
+
+//        createUI();
+//        initValidation();
+//        load();
         createUI();
         initStates();
         initListeners();
@@ -65,12 +67,6 @@ public class SourceView extends BorderPane {
     }
 
     private void createUI() {
-        Font defaultFont = Font.getDefault();
-        ResourceBundle bundle = NbBundle.getBundle(MapollageTopComponent.class);
-
-        Label titleLabel = new Label(Dict.SOURCES.toString());
-        titleLabel.setFont(Font.font(defaultFont.getFamily(), FontWeight.BOLD, defaultFont.getSize() * 1.2));
-
         Action addAction = new Action(Dict.ADD.toString(), (ActionEvent event) -> {
             mManager.edit(null);
         });
@@ -115,9 +111,9 @@ public class SourceView extends BorderPane {
 
         toolBar.setStyle("-fx-spacing: 0px;");
         toolBar.setPadding(Insets.EMPTY);
-        setTop(new VBox(8, titleLabel, toolBar));
-        setCenter(mListView);
-
+        BorderPane borderPane = new BorderPane(mListView);
+        borderPane.setTop(toolBar);
+        setScrollPaneContent(borderPane);
         mListView.setItems(mManager.getItems());
     }
 

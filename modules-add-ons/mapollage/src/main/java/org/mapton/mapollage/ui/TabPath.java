@@ -15,17 +15,29 @@
  */
 package org.mapton.mapollage.ui;
 
-import javafx.scene.control.Button;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import org.controlsfx.glyphfont.FontAwesome;
+import org.mapton.mapollage.api.MapollageState;
+import se.trixon.almond.util.Dict;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class ControlView extends BorderPane {
+public class TabPath extends TabBase {
 
-    public ControlView() {
-        setCenter(new Button("dummy"));
+    public TabPath(MapollageState mapollageState) {
+        setText(Dict.Geometry.PATH.toString());
+        setGraphic(FontAwesome.Glyph.CODE_FORK.getChar());
+        mMapollageState = mapollageState;
+        createUI();
+//        initListeners();
+//        load();
+    }
+
+    private void createUI() {
+        GridPane gp = new GridPane();
+        setScrollPaneContent(gp);
     }
 
 }
