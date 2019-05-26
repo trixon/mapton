@@ -81,6 +81,10 @@ public class Mapton {
         return label;
     }
 
+    public static Label createTitleDev(String title) {
+        return createTitle(title + "-dev", FxHelper.createBackground(Color.RED));
+    }
+
     /**
      * Run in the thread of the map engine type
      *

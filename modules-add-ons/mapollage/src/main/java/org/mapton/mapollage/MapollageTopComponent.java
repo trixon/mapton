@@ -65,7 +65,7 @@ public final class MapollageTopComponent extends MTopComponent implements MMapMa
     }
 
     private Scene createScene() {
-        Label titleLabel = Mapton.createTitle("Mapollage");
+        Label titleLabel = Mapton.createTitleDev("Mapollage");
         mRoot = new BorderPane(new Tabs());
         mRoot.setTop(titleLabel);
         titleLabel.prefWidthProperty().bind(mRoot.widthProperty());
