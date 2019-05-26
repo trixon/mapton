@@ -107,6 +107,7 @@
 
         <!--Unstable-->
         <module>modules-add-ons/mapollage</module>
+        <module>modules-add-ons/ww-mapollage</module>
         <!--<module>demo</module>-->
         <!--<module>modules/me-mapjfx</module>-->
         <!--<module>modules-ext/gdal</module>-->
