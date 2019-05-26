@@ -16,7 +16,6 @@
 package org.mapton.mapollage.ui;
 
 import javafx.scene.layout.GridPane;
-import org.controlsfx.glyphfont.FontAwesome;
 import org.mapton.mapollage.api.MapollageState;
 import se.trixon.almond.util.Dict;
 
@@ -28,7 +27,6 @@ public class TabSelection extends TabBase {
 
     public TabSelection(MapollageState mapollageState) {
         setText(Dict.SELECTION.toString());
-        setGraphic(FontAwesome.Glyph.COMMENT_ALT.getChar());
         mMapollageState = mapollageState;
         createUI();
 //        initListeners();

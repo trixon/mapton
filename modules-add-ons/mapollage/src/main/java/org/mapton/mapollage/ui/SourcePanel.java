@@ -101,9 +101,9 @@ public class SourcePanel extends FxDialogPanel {
         Label nameLabel = new Label(Dict.NAME.toString());
         Label descLabel = new Label(Dict.DESCRIPTION.toString());
         Label filePatternLabel = new Label(Dict.FILE_PATTERN.toString());
-        Label excludeLabel = new Label(mBundle.getString("Source.excludeLabel"));
+        Label excludeLabel = new Label(mBundle.getString("TabSource.excludeLabel"));
 
-        mExcludeTextField.setTooltip(new Tooltip(mBundle.getString("Source.excludeTextField.toolTip")));
+        mExcludeTextField.setTooltip(new Tooltip(mBundle.getString("TabSource.excludeTextField.toolTip")));
 
         mhBox.getChildren().addAll(mRecursiveCheckBox, mLinksCheckBox);
 

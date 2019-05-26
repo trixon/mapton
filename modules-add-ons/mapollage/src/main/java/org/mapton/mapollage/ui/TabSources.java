@@ -32,7 +32,6 @@ import org.controlsfx.control.CheckListView;
 import org.controlsfx.control.IndexedCheckModel;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
-import org.controlsfx.glyphfont.FontAwesome;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.mapton.mapollage.api.MapollageSource;
 import org.mapton.mapollage.api.MapollageSourceManager;
@@ -54,7 +53,6 @@ public class TabSources extends TabBase {
 
     public TabSources(MapollageState mapollageState) {
         setText(Dict.SOURCES.toString());
-        setGraphic(FontAwesome.Glyph.FILE_IMAGE_ALT.getChar());
         mMapollageState = mapollageState;
 
 //        createUI();

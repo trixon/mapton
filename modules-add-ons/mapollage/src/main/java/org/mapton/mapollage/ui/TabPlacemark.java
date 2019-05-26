@@ -19,14 +19,11 @@ import java.util.Arrays;
 import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
-import javafx.scene.control.Spinner;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.VBox;
-import org.controlsfx.glyphfont.FontAwesome;
 import org.mapton.mapollage.api.MapollageState;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
@@ -43,18 +40,14 @@ public class TabPlacemark extends TabBase {
     private final ComboBox<String> mDatePatternComboBox = new ComboBox<>();
     private final RadioButton mNameByDateRadioButton = new RadioButton(Dict.DATE_PATTERN.toString());
     private final RadioButton mNameByFileRadioButton = new RadioButton(Dict.FILENAME.toString());
-    private final RadioButton mNameByNoRadioButton = new RadioButton(mBundle.getString("Placemark.nameByNoRadioButton"));
+    private final RadioButton mNameByNoRadioButton = new RadioButton(mBundle.getString("TabPlacemark.nameByNoRadioButton"));
     private final ToggleGroup mNameByToggleGroup = new ToggleGroup();
-    private final Spinner<Double> mScaleSpinner = new Spinner(0.5, 10.0, 1.0, 0.1);
     private final RadioButton mSymbolAsPhotoRadioButton = new RadioButton(Dict.PHOTO.toString());
     private final RadioButton mSymbolAsPinRadioButton = new RadioButton(Dict.PIN.toString());
     private final ToggleGroup mSymbolToggleGroup = new ToggleGroup();
-    private final CheckBox mTimestampCheckBox = new CheckBox(mBundle.getString("Placemark.timestampCheckBox"));
-    private final Spinner<Double> mZoomSpinner = new Spinner(1.0, 10.0, 1.0, 0.1);
 
     public TabPlacemark(MapollageState mapollageState) {
         setText(Dict.PLACEMARK.toString());
-        setGraphic(FontAwesome.Glyph.MAP_MARKER.getChar());
         mMapollageState = mapollageState;
         createUI();
 //        load();
@@ -66,10 +59,6 @@ public class TabPlacemark extends TabBase {
         VBox rightBox = new VBox();
         vBox.getChildren().addAll(leftBox, rightBox);
         setScrollPaneContent(vBox);
-
-        mScaleSpinner.setEditable(true);
-        mZoomSpinner.setEditable(true);
-        FxHelper.autoCommitSpinners(mScaleSpinner, mZoomSpinner);
 
         mNameByFileRadioButton.setToggleGroup(mNameByToggleGroup);
         mNameByDateRadioButton.setToggleGroup(mNameByToggleGroup);
@@ -83,7 +72,7 @@ public class TabPlacemark extends TabBase {
         VBox.setMargin(mDatePatternComboBox, leftInsets);
 
         leftBox.getChildren().addAll(
-                new Label(mBundle.getString("Placemark.nameByLabel")),
+                new Label(mBundle.getString("TabPlacemark.nameByLabel")),
                 mNameByFileRadioButton,
                 mNameByDateRadioButton,
                 mDatePatternComboBox,
@@ -92,21 +81,11 @@ public class TabPlacemark extends TabBase {
 
         mSymbolAsPhotoRadioButton.setToggleGroup(mSymbolToggleGroup);
         mSymbolAsPinRadioButton.setToggleGroup(mSymbolToggleGroup);
-        Label scaleLabel = new Label(Dict.SCALE.toString());
-        Label zoomLabel = new Label(Dict.ZOOM.toString());
-
-        Insets topInsets = new Insets(8, 0, 0, 0);
-        VBox.setMargin(mTimestampCheckBox, topInsets);
 
         rightBox.getChildren().addAll(
                 new Label(Dict.SYMBOL.toString()),
                 mSymbolAsPhotoRadioButton,
-                mSymbolAsPinRadioButton,
-                scaleLabel,
-                mScaleSpinner,
-                zoomLabel,
-                mZoomSpinner,
-                mTimestampCheckBox
+                mSymbolAsPinRadioButton
         );
 
         FxHelper.setPadding(
@@ -116,9 +95,7 @@ public class TabPlacemark extends TabBase {
                 mNameByNoRadioButton,
                 rightBox,
                 mSymbolAsPhotoRadioButton,
-                mSymbolAsPinRadioButton,
-                scaleLabel,
-                zoomLabel
+                mSymbolAsPinRadioButton
         );
 
         mDatePatternComboBox.disableProperty().bind(mNameByDateRadioButton.selectedProperty().not());

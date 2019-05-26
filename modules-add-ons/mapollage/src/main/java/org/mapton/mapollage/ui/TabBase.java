@@ -16,12 +16,10 @@
 package org.mapton.mapollage.ui;
 
 import java.util.ResourceBundle;
-import javafx.geometry.Insets;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
-import org.controlsfx.glyphfont.Glyph;
 import org.controlsfx.glyphfont.GlyphFont;
 import org.controlsfx.glyphfont.GlyphFontRegistry;
 import org.controlsfx.validation.ValidationSupport;
@@ -58,9 +56,4 @@ public abstract class TabBase extends Tab {
         setContent(mScrollPane);
     }
 
-    protected void setGraphic(char c) {
-        Glyph g = mFontAwesome.create(c).size(ICON_SIZE).color(mIconColor);
-        g.setPadding(new Insets(8));
-        setGraphic(g);
-    }
 }

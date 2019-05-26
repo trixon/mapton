@@ -42,9 +42,6 @@ public class Tabs extends TabPane {
     }
 
     private void createUI() {
-        final double TAB_SIZE = TabBase.ICON_SIZE * 1.3;
-        setTabMaxHeight(TAB_SIZE);
-        setTabMinHeight(TAB_SIZE);
         setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
 
         TabBase.setValidationSupport(mValidationSupport);
