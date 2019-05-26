@@ -24,7 +24,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.VBox;
-import org.mapton.mapollage.api.MapollageState;
+import org.mapton.mapollage.api.Mapo;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.FxHelper;
@@ -46,7 +46,7 @@ public class TabPlacemark extends TabBase {
     private final RadioButton mSymbolAsPinRadioButton = new RadioButton(Dict.PIN.toString());
     private final ToggleGroup mSymbolToggleGroup = new ToggleGroup();
 
-    public TabPlacemark(MapollageState mapollageState) {
+    public TabPlacemark(Mapo mapollageState) {
         setText(Dict.PLACEMARK.toString());
         mMapollageState = mapollageState;
         createUI();

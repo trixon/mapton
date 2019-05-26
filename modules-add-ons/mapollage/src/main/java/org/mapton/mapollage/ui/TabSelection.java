@@ -16,7 +16,7 @@
 package org.mapton.mapollage.ui;
 
 import javafx.scene.layout.GridPane;
-import org.mapton.mapollage.api.MapollageState;
+import org.mapton.mapollage.api.Mapo;
 import se.trixon.almond.util.Dict;
 
 /**
@@ -25,7 +25,7 @@ import se.trixon.almond.util.Dict;
  */
 public class TabSelection extends TabBase {
 
-    public TabSelection(MapollageState mapollageState) {
+    public TabSelection(Mapo mapollageState) {
         setText(Dict.SELECTION.toString());
         mMapollageState = mapollageState;
         createUI();

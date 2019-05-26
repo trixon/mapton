@@ -23,7 +23,7 @@ import org.controlsfx.control.action.Action;
 import org.mapton.api.MKey;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
-import org.mapton.mapollage.api.MapollageSource;
+import org.mapton.mapollage.api.MapoSource;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.dialogs.SimpleDialog;
@@ -40,7 +40,7 @@ public class SourceFileExportAction extends SourceFileAction {
     @Override
     public Action getAction() {
         Action action = new Action((t) -> {
-            ArrayList<MapollageSource> selectedSources = new ArrayList<>();
+            ArrayList<MapoSource> selectedSources = new ArrayList<>();
             mManager.getItems().stream()
                     .filter((source) -> (source.isVisible()))
                     .forEachOrdered((source) -> {

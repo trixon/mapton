@@ -29,7 +29,7 @@ import javafx.scene.layout.VBox;
 import org.controlsfx.validation.ValidationResult;
 import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
-import org.mapton.mapollage.api.MapollageSource;
+import org.mapton.mapollage.api.MapoSource;
 import org.openide.util.NbBundle;
 import se.trixon.almond.nbp.fx.FxDialogPanel;
 import se.trixon.almond.util.Dict;
@@ -56,7 +56,7 @@ public class SourcePanel extends FxDialogPanel {
     public SourcePanel() {
     }
 
-    public void load(MapollageSource source) {
+    public void load(MapoSource source) {
         mNameTextField.setText(source.getName());
         mDescTextField.setText(source.getDescriptionString());
 
@@ -68,7 +68,7 @@ public class SourcePanel extends FxDialogPanel {
         mLinksCheckBox.setSelected(source.isFollowLinks());
     }
 
-    public void save(MapollageSource source) {
+    public void save(MapoSource source) {
         source.setName(mNameTextField.getText());
         source.setDescriptionString(mDescTextField.getText());
 

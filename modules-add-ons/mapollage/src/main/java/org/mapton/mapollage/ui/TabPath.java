@@ -22,7 +22,7 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.VBox;
-import org.mapton.mapollage.api.MapollageState;
+import org.mapton.mapollage.api.Mapo;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
 
@@ -42,7 +42,7 @@ public class TabPath extends TabBase {
     private final ToggleGroup mToggleGroup = new ToggleGroup();
     private final Spinner<Double> mWidthSpinner = new Spinner(1.0, 10.0, 1.0, 0.1);
 
-    public TabPath(MapollageState mapollageState) {
+    public TabPath(Mapo mapollageState) {
         setText(Dict.Geometry.PATH.toString());
         mMapollageState = mapollageState;
         createUI();

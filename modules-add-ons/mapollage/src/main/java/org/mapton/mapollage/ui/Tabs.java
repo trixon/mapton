@@ -21,7 +21,7 @@ import javafx.scene.control.TabPane;
 import javafx.scene.layout.Region;
 import org.controlsfx.validation.ValidationResult;
 import org.controlsfx.validation.ValidationSupport;
-import org.mapton.mapollage.api.MapollageState;
+import org.mapton.mapollage.api.Mapo;
 import se.trixon.almond.util.fx.FxHelper;
 
 /**
@@ -30,7 +30,7 @@ import se.trixon.almond.util.fx.FxHelper;
  */
 public class Tabs extends TabPane {
 
-    private MapollageState mMapollageState;
+    private Mapo mMapollageState;
     private TabSelection mSelectionTab;
     private final ValidationSupport mValidationSupport = new ValidationSupport();
     private TabSources mSourceTab;
@@ -46,13 +46,18 @@ public class Tabs extends TabPane {
 
         TabBase.setValidationSupport(mValidationSupport);
 
-        mMapollageState = new MapollageState();
+        mMapollageState = new Mapo();
         mSelectionTab = new TabSelection(mMapollageState);
         mPlacemarkTab = new TabPlacemark(mMapollageState);
         mPathTab = new TabPath(mMapollageState);
         mSourceTab = new TabSources(mMapollageState);
 
-        getTabs().setAll(mSelectionTab, mPlacemarkTab, mPathTab, mSourceTab);
+        getTabs().setAll(
+                mSourceTab,
+                mSelectionTab,
+                mPlacemarkTab,
+                mPathTab
+        );
 
         final int size = 8;
         getTabs().forEach((tab) -> {

@@ -17,15 +17,21 @@ package org.mapton.mapollage.api;
 
 import com.google.gson.annotations.SerializedName;
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.PathMatcher;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
+import org.mapton.api.Mapton;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class MapollageSource {
+public class MapoSource {
+
+    private transient File mCacheDir;
+    private transient MapoCollection mCollection;
 
     @SerializedName("descriptionString")
     private String mDescriptionString;
@@ -44,13 +50,27 @@ public class MapollageSource {
     private boolean mRecursive = true;
     @SerializedName("visible")
     private boolean mVisible = true;
+    @SerializedName("id")
+    private Long mId;
 
-    public MapollageSource() {
+    public MapoSource() {
+    }
+
+    public File getCacheDir() {
+        if (mCacheDir == null) {
+            mCacheDir = new File(Mapton.getCacheDir(), "mapollage");
+        }
+
+        return mCacheDir;
     }
 
     public void fitToBounds() {
 //        MLatLonBox latLonBox = new MLatLonBox(southWest, northEast);
 //        Mapton.getEngine().fitToBounds(latLonBox);
+    }
+
+    public MapoCollection getCollection() {
+        return mCollection;
     }
 
     public String getDescriptionString() {
@@ -67,6 +87,10 @@ public class MapollageSource {
 
     public String getFilePattern() {
         return mFilePattern;
+    }
+
+    public Long getId() {
+        return mId;
     }
 
     public String getName() {
@@ -99,6 +123,22 @@ public class MapollageSource {
         return mVisible;
     }
 
+    public void save(MapoCollection collection) throws IOException {
+        FileUtils.write(getCollectionFile(), Mapo.getGson().toJson(collection), "utf-8");
+    }
+
+    public void setCollection(MapoCollection collection) {
+        mCollection = collection;
+    }
+
+    public MapoCollection loadCollection() throws IOException {
+        return Mapo.getGson().fromJson(FileUtils.readFileToString(getCollectionFile(), "utf-8"), MapoCollection.class);
+    }
+
+    private File getCollectionFile() {
+        return new File(getCacheDir(), String.format("%d.json", getId()));
+    }
+
     public void setDescriptionString(String descriptionString) {
         mDescriptionString = descriptionString;
     }
@@ -117,6 +157,10 @@ public class MapollageSource {
 
     public void setFollowLinks(boolean followLinks) {
         mFollowLinks = followLinks;
+    }
+
+    public void setId(Long id) {
+        mId = id;
     }
 
     public void setName(String name) {

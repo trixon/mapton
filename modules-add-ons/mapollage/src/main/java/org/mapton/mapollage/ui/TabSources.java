@@ -33,9 +33,10 @@ import org.controlsfx.control.IndexedCheckModel;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
-import org.mapton.mapollage.api.MapollageSource;
-import org.mapton.mapollage.api.MapollageSourceManager;
-import org.mapton.mapollage.api.MapollageState;
+import org.mapton.mapollage.SourceScanner;
+import org.mapton.mapollage.api.MapoSource;
+import org.mapton.mapollage.api.MapoSourceManager;
+import org.mapton.mapollage.api.Mapo;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import se.trixon.almond.util.Dict;
@@ -48,10 +49,10 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
  */
 public class TabSources extends TabBase {
 
-    private final CheckListView<MapollageSource> mListView = new CheckListView<>();
-    private final MapollageSourceManager mManager = MapollageSourceManager.getInstance();
+    private final CheckListView<MapoSource> mListView = new CheckListView<>();
+    private final MapoSourceManager mManager = MapoSourceManager.getInstance();
 
-    public TabSources(MapollageState mapollageState) {
+    public TabSources(Mapo mapollageState) {
         setText(Dict.SOURCES.toString());
         mMapollageState = mapollageState;
 
@@ -85,7 +86,7 @@ public class TabSources extends TabBase {
         remAction.setGraphic(MaterialIcon._Content.REMOVE.getImageView(getIconSizeToolBarInt()));
 
         Action refreshAction = new Action(Dict.REFRESH.toString(), (ActionEvent event) -> {
-            System.out.println("refresh");
+            new SourceScanner();
         });
         refreshAction.setGraphic(MaterialIcon._Navigation.REFRESH.getImageView(getIconSizeToolBarInt()));
 
@@ -115,7 +116,7 @@ public class TabSources extends TabBase {
         mListView.setItems(mManager.getItems());
     }
 
-    private MapollageSource getSelected() {
+    private MapoSource getSelected() {
         return mListView.getSelectionModel().getSelectedItem();
     }
 
@@ -128,12 +129,13 @@ public class TabSources extends TabBase {
             }
         });
 
-        mListView.getSelectionModel().getSelectedItems().addListener((ListChangeListener.Change<? extends MapollageSource> c) -> {
+        mListView.getSelectionModel().getSelectedItems().addListener((ListChangeListener.Change<? extends MapoSource> c) -> {
             if (getSelected() != null) {
                 getSelected().fitToBounds();
             }
         });
-        mManager.getItems().addListener((ListChangeListener.Change<? extends MapollageSource> c) -> {
+
+        mManager.getItems().addListener((ListChangeListener.Change<? extends MapoSource> c) -> {
             Platform.runLater(() -> {
                 refreshCheckedStates();
                 mManager.save();
@@ -146,12 +148,12 @@ public class TabSources extends TabBase {
     }
 
     private void load() {
-        ArrayList<MapollageSource> sources = mManager.loadItems();
+        ArrayList<MapoSource> sources = mManager.loadItems();
         Platform.runLater(() -> {
-            final IndexedCheckModel<MapollageSource> checkModel = mListView.getCheckModel();
-            final ObservableList<MapollageSource> items = mListView.getItems();
+            final IndexedCheckModel<MapoSource> checkModel = mListView.getCheckModel();
+            final ObservableList<MapoSource> items = mListView.getItems();
 
-            checkModel.getCheckedItems().addListener((ListChangeListener.Change<? extends MapollageSource> c) -> {
+            checkModel.getCheckedItems().addListener((ListChangeListener.Change<? extends MapoSource> c) -> {
                 Platform.runLater(() -> {
                     items.forEach((source) -> {
                         source.setVisible(checkModel.isChecked(source));
@@ -169,10 +171,10 @@ public class TabSources extends TabBase {
     }
 
     private void refreshCheckedStates() {
-        final IndexedCheckModel<MapollageSource> checkModel = mListView.getCheckModel();
-        final ObservableList<MapollageSource> items = mListView.getItems();
+        final IndexedCheckModel<MapoSource> checkModel = mListView.getCheckModel();
+        final ObservableList<MapoSource> items = mListView.getItems();
 
-        for (MapollageSource source : items) {
+        for (MapoSource source : items) {
             if (source.isVisible()) {
                 checkModel.check(source);
             } else {
@@ -182,7 +184,7 @@ public class TabSources extends TabBase {
     }
 
     private void remove() {
-        final MapollageSource source = getSelected();
+        final MapoSource source = getSelected();
 
         SwingUtilities.invokeLater(() -> {
             String[] buttons = new String[]{Dict.CANCEL.toString(), Dict.REMOVE.toString()};

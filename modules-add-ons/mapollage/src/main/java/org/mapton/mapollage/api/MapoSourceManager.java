@@ -15,8 +15,6 @@
  */
 package org.mapton.mapollage.api;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import java.awt.Dimension;
 import java.io.File;
@@ -38,87 +36,93 @@ import se.trixon.almond.util.Dict;
  *
  * @author Patrik Karlström
  */
-public class MapollageSourceManager {
+public class MapoSourceManager {
 
-    private final Gson mGson = new GsonBuilder()
-            .setVersion(1.0)
-            .serializeNulls()
-            .setPrettyPrinting()
-            .create();
-    private final ObservableList<MapollageSource> mItems = FXCollections.observableArrayList();
+    private final ObservableList<MapoSource> mItems = FXCollections.observableArrayList();
     private final Options mOptions = Options.getInstance();
 
-    public static MapollageSourceManager getInstance() {
+    public static MapoSourceManager getInstance() {
         return Holder.INSTANCE;
     }
 
-    private MapollageSourceManager() {
+    private MapoSourceManager() {
     }
 
-    public void edit(final MapollageSource aLocalGrid) {
+    public void edit(final MapoSource aSource) {
         SwingUtilities.invokeLater(() -> {
-            MapollageSource newLocalGrid = aLocalGrid;
-            boolean add = aLocalGrid == null;
+            MapoSource newSource = aSource;
+            boolean add = aSource == null;
             if (add) {
-                newLocalGrid = new MapollageSource();
+                newSource = new MapoSource();
+                newSource.setId(System.currentTimeMillis());
             }
 
-            final MapollageSource localGrid = newLocalGrid;
+            final MapoSource source = newSource;
             SourcePanel localGridPanel = new SourcePanel();
             DialogDescriptor d = new DialogDescriptor(localGridPanel, Dict.SOURCE.toString());
             localGridPanel.setDialogDescriptor(d);
             localGridPanel.initFx(() -> {
-                localGridPanel.load(localGrid);
+                localGridPanel.load(source);
             });
 
             localGridPanel.setPreferredSize(new Dimension(600, 300));
             if (DialogDescriptor.OK_OPTION == DialogDisplayer.getDefault().notify(d)) {
                 Platform.runLater(() -> {
-                    localGridPanel.save(localGrid);
+                    localGridPanel.save(source);
                     if (add) {
-                        mItems.add(localGrid);
+                        mItems.add(source);
                     }
 
-                    FXCollections.sort(mItems, (MapollageSource o1, MapollageSource o2) -> o1.getName().compareTo(o2.getName()));
+                    FXCollections.sort(mItems, (MapoSource o1, MapoSource o2) -> o1.getName().compareTo(o2.getName()));
                 });
             }
         });
     }
 
-    public ObservableList<MapollageSource> getItems() {
+    public ObservableList<MapoSource> getItems() {
         return mItems;
     }
 
-    public ArrayList<MapollageSource> loadItems() {
-        return mGson.fromJson(mOptions.get(KEY_SOURCES), new TypeToken<ArrayList<MapollageSource>>() {
+    public void loadCollections() throws IOException {
+        for (MapoSource source : getItems()) {
+            if (source.isVisible()) {
+                source.setCollection(source.loadCollection());
+            } else {
+            }
+        }
+
+    }
+
+    public ArrayList<MapoSource> loadItems() {
+        return Mapo.getGson().fromJson(mOptions.get(KEY_SOURCES), new TypeToken<ArrayList<MapoSource>>() {
         }.getType());
     }
 
-    public void removeAll(MapollageSource... localGrids) {
+    public void removeAll(MapoSource... localGrids) {
         getItems().removeAll(localGrids);
     }
 
     public void save() {
-        mOptions.put(KEY_SOURCES, mGson.toJson(mItems));
+        mOptions.put(KEY_SOURCES, Mapo.getGson().toJson(mItems));
     }
 
-    public void sourceExport(File file, ArrayList<MapollageSource> selectedSources) throws IOException {
-        FileUtils.writeStringToFile(file, mGson.toJson(selectedSources), "utf-8");
+    public void sourceExport(File file, ArrayList<MapoSource> selectedSources) throws IOException {
+        FileUtils.writeStringToFile(file, Mapo.getGson().toJson(selectedSources), "utf-8");
     }
 
     public void sourceImport(File file) throws IOException {
         String json = FileUtils.readFileToString(file, "utf-8");
-        ArrayList<MapollageSource> sources = mGson.fromJson(json, new TypeToken<ArrayList<MapollageSource>>() {
+        ArrayList<MapoSource> sources = Mapo.getGson().fromJson(json, new TypeToken<ArrayList<MapoSource>>() {
         }.getType());
 
         Platform.runLater(() -> {
             mItems.addAll(sources);
-            FXCollections.sort(mItems, (MapollageSource o1, MapollageSource o2) -> o1.getName().compareTo(o2.getName()));
+            FXCollections.sort(mItems, (MapoSource o1, MapoSource o2) -> o1.getName().compareTo(o2.getName()));
         });
     }
 
     private static class Holder {
 
-        private static final MapollageSourceManager INSTANCE = new MapollageSourceManager();
+        private static final MapoSourceManager INSTANCE = new MapoSourceManager();
     }
 }

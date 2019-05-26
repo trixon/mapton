@@ -15,13 +15,23 @@
  */
 package org.mapton.mapollage.api;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class MapollageState {
+public class Mapo {
+
+    public static final String KEY_COLLECTION = "mapollage.collection";
+
+    private static final Gson sGson = new GsonBuilder()
+            .setVersion(1.0)
+            .serializeNulls()
+            .setPrettyPrinting()
+            .create();
 
     @SerializedName("date_pattern")
     private String mDatePattern = "yyyy-MM-dd HH.mm";
@@ -30,7 +40,11 @@ public class MapollageState {
     @SerializedName("symbol_as")
     private SymbolAs mSymbolAs = SymbolAs.PHOTO;
 
-    public MapollageState() {
+    public static Gson getGson() {
+        return sGson;
+    }
+
+    public Mapo() {
     }
 
     public enum NameBy {

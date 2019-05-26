@@ -24,7 +24,7 @@ import org.controlsfx.glyphfont.GlyphFont;
 import org.controlsfx.glyphfont.GlyphFontRegistry;
 import org.controlsfx.validation.ValidationSupport;
 import org.mapton.mapollage.Options;
-import org.mapton.mapollage.api.MapollageState;
+import org.mapton.mapollage.api.Mapo;
 import se.trixon.almond.util.SystemHelper;
 
 /**
@@ -36,7 +36,7 @@ public abstract class TabBase extends Tab {
     public static final int ICON_SIZE = 22;
     protected static ValidationSupport sValidationSupport;
     protected final ResourceBundle mBundle = SystemHelper.getBundle(TabBase.class, "Bundle");
-    protected MapollageState mMapollageState;
+    protected Mapo mMapollageState;
     protected final Options mOptions = Options.getInstance();
     private final GlyphFont mFontAwesome = GlyphFontRegistry.font("FontAwesome");
     private final Color mIconColor = Color.BLACK;
