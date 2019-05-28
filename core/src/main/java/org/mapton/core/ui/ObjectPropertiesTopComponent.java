@@ -17,11 +17,13 @@ package org.mapton.core.ui;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -31,11 +33,14 @@ import org.mapton.api.MKey;
 import org.mapton.api.MMapMagnet;
 import org.mapton.api.MTopComponent;
 import org.mapton.api.Mapton;
+import static org.mapton.api.Mapton.getIconSizeToolBar;
 import org.netbeans.api.settings.ConvertAsProperties;
+import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.GlobalStateChangeEvent;
 import se.trixon.almond.util.fx.control.LogPanel;
+import se.trixon.almond.util.icons.material.MaterialIcon;
 
 /**
  * Generic Property TopComponent
@@ -56,8 +61,10 @@ import se.trixon.almond.util.fx.control.LogPanel;
 )
 public final class ObjectPropertiesTopComponent extends MTopComponent implements MMapMagnet {
 
+    private ResourceBundle mBundle;
     private final Map<String, Object> mDummyMap = new LinkedHashMap<>();
     private LogPanel mLogPanel;
+    private Label mPlaceholderLabel;
     private PropertySheet mPropertySheet;
     private BorderPane mRoot;
 
@@ -69,6 +76,7 @@ public final class ObjectPropertiesTopComponent extends MTopComponent implements
     protected void initFX() {
         setScene(createScene());
         initListeners();
+        refresh(null);
     }
 
     void readProperties(java.util.Properties p) {
@@ -84,10 +92,14 @@ public final class ObjectPropertiesTopComponent extends MTopComponent implements
     }
 
     private Scene createScene() {
+        mBundle = NbBundle.getBundle(ObjectPropertiesTopComponent.class);
+
         mPropertySheet = new PropertySheet();
         mPropertySheet.setMode(PropertySheet.Mode.NAME);
         mLogPanel = new LogPanel();
         mRoot = new BorderPane(mPropertySheet);
+        mPlaceholderLabel = new Label(mBundle.getString("object_properties_placeholder"), MaterialIcon._Action.ASSIGNMENT.getImageView(getIconSizeToolBar()));
+        mPlaceholderLabel.setDisable(true);
 
         return new Scene(mRoot);
     }
@@ -95,28 +107,12 @@ public final class ObjectPropertiesTopComponent extends MTopComponent implements
     private void initListeners() {
         Mapton.getGlobalState().addListener((GlobalStateChangeEvent evt) -> {
             Platform.runLater(() -> {
-                mRoot.setCenter(mPropertySheet);
-                Object o = evt.getValue();
-
-                if (o == null) {
-                    mPropertySheet.getItems().clear();
-                } else if (o.getClass().isInstance(mPropertySheet.getItems())) {
-                    loadList(evt.getValue());
-                } else if (o.getClass().isInstance(mDummyMap)) {
-                    loadMap(evt.getValue());
-                } else if (o instanceof Node) {
-                    mRoot.setCenter(evt.getValue());
-                } else if (o instanceof String) {
-                    load(evt.getValue());
-                } else {
-                    load(ToStringBuilder.reflectionToString(o, ToStringStyle.MULTI_LINE_STYLE));
-                }
+                refresh(evt.getValue());
             });
         }, MKey.OBJECT_PROPERTIES);
     }
 
     private void load(String text) {
-        mRoot.setCenter(mLogPanel);
         mLogPanel.setText(text);
     }
 
@@ -133,4 +129,27 @@ public final class ObjectPropertiesTopComponent extends MTopComponent implements
         loadList(propertyItems);
     }
 
+    private void refresh(Object o) {
+        Node centerObject = null;
+        mRoot.setCenter(mPropertySheet);
+
+        if (o == null) {
+            centerObject = mPlaceholderLabel;
+        } else if (o.getClass().isInstance(mPropertySheet.getItems())) {
+            centerObject = mPropertySheet;
+            loadList((ObservableList<Item>) o);
+        } else if (o.getClass().isInstance(mDummyMap)) {
+            centerObject = mPropertySheet;
+            loadMap((Map<String, Object>) o);
+        } else if (o instanceof Node) {
+            centerObject = (Node) o;
+        } else if (o instanceof String) {
+            centerObject = mLogPanel;
+            load(o.toString());
+        } else {
+            load(ToStringBuilder.reflectionToString(o, ToStringStyle.MULTI_LINE_STYLE));
+        }
+
+        mRoot.setCenter(centerObject);
+    }
 }
