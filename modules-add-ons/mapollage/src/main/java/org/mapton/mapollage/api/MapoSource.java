@@ -73,6 +73,10 @@ public class MapoSource {
         return mCollection;
     }
 
+    public File getCollectionFile() {
+        return new File(getCacheDir(), String.format("%d.json", getId()));
+    }
+
     public String getDescriptionString() {
         return mDescriptionString;
     }
@@ -180,7 +184,4 @@ public class MapoSource {
         return mName;
     }
 
-    private File getCollectionFile() {
-        return new File(getCacheDir(), String.format("%d.json", getId()));
-    }
 }
