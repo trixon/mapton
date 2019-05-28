@@ -8,6 +8,7 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <artifactId>mapollage</artifactId>
+    <name>Mapollage</name>
     <description>Displays geotagged photos on the map</description>
     <packaging>nbm</packaging>
     <build>
@@ -97,8 +98,11 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-text</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.drewnoakes</groupId>
+            <artifactId>metadata-extractor</artifactId>
+        </dependency>
     </dependencies>
-    <name>mapollage</name>
     <properties>
         <netbeans.compile.on.save>all</netbeans.compile.on.save>
         <netbeans.hint.license>apache20</netbeans.hint.license>

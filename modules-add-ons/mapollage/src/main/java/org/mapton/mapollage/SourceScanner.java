@@ -15,6 +15,7 @@
  */
 package org.mapton.mapollage;
 
+import com.drew.imaging.ImageProcessingException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileVisitOption;
@@ -56,7 +57,7 @@ public class SourceScanner {
             for (MapoSource source : mManager.getItems()) {
                 if (source.isVisible()) {
                     try {
-                        scan(source);
+                        process(source);
                     } catch (IOException ex) {
                         Exceptions.printStackTrace(ex);
                     }
@@ -74,12 +75,26 @@ public class SourceScanner {
     }
 
     private void process(File file) {
-        MapoPhoto mapoPhoto = new MapoPhoto();
-        mapoPhoto.setPath(file.getAbsolutePath());
-        mCurrentCollection.getPhotos().add(mapoPhoto);
+        try {
+            PhotoInfo photoInfo = new PhotoInfo(file);
+
+            if (!photoInfo.isZeroCoordinate()) {
+                MapoPhoto mapoPhoto = new MapoPhoto();
+                mapoPhoto.setPath(file.getAbsolutePath());
+                mapoPhoto.setLat(photoInfo.getLat());
+                mapoPhoto.setLon(photoInfo.getLon());
+                mapoPhoto.setDate(photoInfo.getDate());
+                mapoPhoto.setAltitude(photoInfo.getAltitude());
+                mapoPhoto.setBearing(photoInfo.getBearing());
+
+                mCurrentCollection.getPhotos().add(mapoPhoto);
+            }
+        } catch (ImageProcessingException | IOException ex) {
+            Exceptions.printStackTrace(ex);
+        }
     }
 
-    private boolean scan(MapoSource source) throws IOException {
+    private boolean process(MapoSource source) throws IOException {
         mPrint.out(String.format("%s: %s", "BEGIN SCAN", source));
 
         mFiles.clear();
@@ -125,6 +140,11 @@ public class SourceScanner {
             for (File f : mFiles) {
                 process(f);
             }
+
+            ArrayList<MapoPhoto> photos = mCurrentCollection.getPhotos();
+            Collections.sort(photos, (MapoPhoto o1, MapoPhoto o2) -> o1.getDate().compareTo(o2.getDate()));
+            mCurrentCollection.setDateMin(photos.get(0).getDate());
+            mCurrentCollection.setDateMax(photos.get(photos.size() - 1).getDate());
             mPrint.out("END PROCESSING PHOTOS");
         }
 

@@ -253,6 +253,11 @@
                 <artifactId>jsoup</artifactId>
                 <version>1.12.1</version>
             </dependency>
+            <dependency>
+                <groupId>com.drewnoakes</groupId>
+                <artifactId>metadata-extractor</artifactId>
+                <version>2.11.0</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
