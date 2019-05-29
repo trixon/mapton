@@ -125,7 +125,7 @@ public class BookmarkLayerBundle extends LayerBundle {
         PointPlacemarkAttributes attrs = new PointPlacemarkAttributes(placemark.getDefaultAttributes());
         attrs.setImage(GraphicsHelper.toBufferedImage(MaterialIcon._Action.HOME.get(96, IconColor.WHITE).getImage()));
         attrs.setImageColor(Color.RED);
-        attrs.setImageOffset(Offset.CENTER);
+        attrs.setImageOffset(Offset.BOTTOM_CENTER);
 
         placemark.setAttributes(attrs);
         placemark.setHighlightAttributes(WWUtil.createHighlightAttributes(attrs, 1.0));
