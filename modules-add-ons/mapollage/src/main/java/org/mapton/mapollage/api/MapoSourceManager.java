@@ -31,6 +31,7 @@ import static org.mapton.mapollage.Options.KEY_SOURCES;
 import org.mapton.mapollage.ui.SourcePanel;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
+import org.openide.util.Exceptions;
 import se.trixon.almond.util.Dict;
 
 /**
@@ -82,6 +83,15 @@ public class MapoSourceManager {
 
     public ObservableList<MapoSource> getItems() {
         return mItems;
+    }
+
+    public void load() {
+        mItems.setAll(loadItems());
+        try {
+            loadCollections();
+        } catch (IOException ex) {
+            Exceptions.printStackTrace(ex);
+        }
     }
 
     public void loadCollections() throws IOException {

@@ -15,11 +15,14 @@
  */
 package org.mapton.ww_mapollage;
 
+import gov.nasa.worldwind.WorldWind;
+import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
+import gov.nasa.worldwind.render.PointPlacemark;
+import org.apache.commons.io.FilenameUtils;
 import org.mapton.api.Mapton;
 import org.mapton.mapollage.api.Mapo;
+import org.mapton.mapollage.api.MapoPhoto;
 import org.mapton.mapollage.api.MapoSource;
 import org.mapton.mapollage.api.MapoSourceManager;
 import org.mapton.worldwind.api.LayerBundle;
@@ -62,11 +65,17 @@ public class MapollageLayerBundle extends LayerBundle {
     }
 
     private void refresh() {
-        System.out.println("MapollageLayerBundle#refresh()");
+        mLayer.removeAllRenderables();
+
         for (MapoSource source : mManager.getItems()) {
-            System.out.println(ToStringBuilder.reflectionToString(source, ToStringStyle.JSON_STYLE));
-            System.out.println(ToStringBuilder.reflectionToString(source.getCollection(), ToStringStyle.JSON_STYLE));
-            System.out.println(ToStringBuilder.reflectionToString(source.getCollection().getPhotos(), ToStringStyle.JSON_STYLE));
+            for (MapoPhoto photo : source.getCollection().getPhotos()) {
+                PointPlacemark placemark = new PointPlacemark(Position.fromDegrees(photo.getLat(), photo.getLon()));
+                placemark.setLabelText(FilenameUtils.getBaseName(photo.getPath()));
+                placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
+                placemark.setEnableLabelPicking(true);
+
+                mLayer.addRenderable(placemark);
+            }
         }
     }
 }
