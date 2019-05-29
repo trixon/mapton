@@ -18,14 +18,18 @@ package org.mapton.ww_mapollage;
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
+import gov.nasa.worldwind.render.Offset;
 import gov.nasa.worldwind.render.PointPlacemark;
-import org.apache.commons.io.FilenameUtils;
+import gov.nasa.worldwind.render.PointPlacemarkAttributes;
+import java.io.File;
 import org.mapton.api.Mapton;
 import org.mapton.mapollage.api.Mapo;
 import org.mapton.mapollage.api.MapoPhoto;
 import org.mapton.mapollage.api.MapoSource;
 import org.mapton.mapollage.api.MapoSourceManager;
 import org.mapton.worldwind.api.LayerBundle;
+import org.mapton.worldwind.api.LayerBundleManager;
+import org.mapton.worldwind.api.WWUtil;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.GlobalState;
 import se.trixon.almond.util.GlobalStateChangeEvent;
@@ -70,12 +74,21 @@ public class MapollageLayerBundle extends LayerBundle {
         for (MapoSource source : mManager.getItems()) {
             for (MapoPhoto photo : source.getCollection().getPhotos()) {
                 PointPlacemark placemark = new PointPlacemark(Position.fromDegrees(photo.getLat(), photo.getLon()));
-                placemark.setLabelText(FilenameUtils.getBaseName(photo.getPath()));
                 placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
                 placemark.setEnableLabelPicking(true);
+
+                PointPlacemarkAttributes attrs = new PointPlacemarkAttributes(placemark.getDefaultAttributes());
+                attrs.setImageAddress(new File(source.getThumbnailDir(), String.format("%s.jpg", photo.getChecksum())).getAbsolutePath());
+                attrs.setImageOffset(Offset.BOTTOM_CENTER);
+                attrs.setScale(0.1);
+
+                placemark.setAttributes(attrs);
+                placemark.setHighlightAttributes(WWUtil.createHighlightAttributes(attrs, 1 / attrs.getScale()));
 
                 mLayer.addRenderable(placemark);
             }
         }
+
+        LayerBundleManager.getInstance().redraw();
     }
 }
