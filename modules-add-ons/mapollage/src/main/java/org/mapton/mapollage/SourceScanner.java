@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.concurrent.TimeUnit;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOCase;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.mapollage.api.MapoCollection;
@@ -75,6 +76,7 @@ public class SourceScanner {
     }
 
     private void process(File file) {
+        mPrint.out(file);
         try {
             PhotoInfo photoInfo = new PhotoInfo(file);
 
@@ -86,11 +88,14 @@ public class SourceScanner {
                 mapoPhoto.setDate(photoInfo.getDate());
                 mapoPhoto.setAltitude(photoInfo.getAltitude());
                 mapoPhoto.setBearing(photoInfo.getBearing());
+                mapoPhoto.setChecksum(photoInfo.getChecksum());
+
+                photoInfo.createThumbnail(new File(mCurrentSource.getThumbnailDir(), String.format("%s.jpg", photoInfo.getChecksum())));
 
                 mCurrentCollection.getPhotos().add(mapoPhoto);
             }
         } catch (ImageProcessingException | IOException ex) {
-            Exceptions.printStackTrace(ex);
+            mPrint.err(ex);
         }
     }
 
@@ -136,6 +141,7 @@ public class SourceScanner {
             mPrint.out("EMPTY FILE LIST");
         } else {
             mPrint.out("BEGIN PROCESSING PHOTOS");
+            FileUtils.forceMkdir(source.getThumbnailDir());
             Collections.sort(mFiles);
             for (File f : mFiles) {
                 process(f);

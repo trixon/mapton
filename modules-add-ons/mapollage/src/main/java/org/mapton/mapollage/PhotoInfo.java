@@ -34,6 +34,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Date;
 import java.util.TimeZone;
 import javax.imageio.ImageIO;
+import org.apache.commons.io.FileUtils;
 import static org.mapton.mapollage.Options.*;
 import se.trixon.almond.util.GraphicsHelper;
 import se.trixon.almond.util.ImageScaler;
@@ -43,6 +44,8 @@ import se.trixon.almond.util.ImageScaler;
  * @author Patrik Karlström
  */
 public class PhotoInfo {
+
+    private String mChecksum;
 
     private ExifSubIFDDirectory mExifDirectory;
     private final File mFile;
@@ -60,8 +63,8 @@ public class PhotoInfo {
         init();
     }
 
-    public void createThumbnail(File dest) throws IOException {
-        if (!dest.exists()) {
+    public void createThumbnail(File thumbnail) throws IOException {
+        if (!thumbnail.exists()) {
             int borderSize = mOptions.getInt(KEY_THUMBNAIL_BORDER_SIZE, DEFAULT_THUMBNAIL_BORDER_SIZE);
             int thumbnailSize = mOptions.getInt(KEY_THUMBNAIL_SIZE, DEFAULT_THUMBNAIL_SIZE);
 
@@ -81,9 +84,9 @@ public class PhotoInfo {
             g2.drawImage(scaledImage, borderSize, borderSize, width + borderSize, height + borderSize, 0, 0, width, height, Color.YELLOW, null);
 
             try {
-                ImageIO.write(borderedImage, "jpg", dest);
+                ImageIO.write(borderedImage, "jpg", thumbnail);
             } catch (IOException ex) {
-                throw new IOException(String.format("E000 %s", dest.getAbsolutePath()));
+                throw new IOException(String.format("E000 %s", thumbnail.getAbsolutePath()));
             }
         }
     }
@@ -102,6 +105,10 @@ public class PhotoInfo {
         } else {
             return null;
         }
+    }
+
+    public String getChecksum() {
+        return mChecksum;
     }
 
     public Date getDate() {
@@ -185,6 +192,7 @@ public class PhotoInfo {
     }
 
     private void init() throws ImageProcessingException, IOException, NullPointerException {
+        mChecksum = String.format("%08x", FileUtils.checksumCRC32(mFile));
         mMetadata = ImageMetadataReader.readMetadata(mFile);
         mExifDirectory = mMetadata.getFirstDirectoryOfType(ExifSubIFDDirectory.class);
         mGpsDirectory = mMetadata.getFirstDirectoryOfType(GpsDirectory.class);

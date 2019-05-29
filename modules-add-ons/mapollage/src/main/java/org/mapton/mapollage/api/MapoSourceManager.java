@@ -97,8 +97,11 @@ public class MapoSourceManager {
     public void loadCollections() throws IOException {
         for (MapoSource source : getItems()) {
             if (source.isVisible()) {
-                source.setCollection(source.loadCollection());
-            } else {
+                try {
+                    source.setCollection(source.loadCollection());
+                } catch (IOException ex) {
+                    Exceptions.printStackTrace(ex);
+                }
             }
         }
 

@@ -32,7 +32,6 @@ public class MapoSource {
 
     private transient File mCacheDir;
     private transient MapoCollection mCollection = new MapoCollection();
-
     @SerializedName("descriptionString")
     private String mDescriptionString;
     @SerializedName("source")
@@ -50,6 +49,7 @@ public class MapoSource {
     private transient PathMatcher mPathMatcher;
     @SerializedName("recursive")
     private boolean mRecursive = true;
+    private transient File mThumbnailDir;
     @SerializedName("visible")
     private boolean mVisible = true;
 
@@ -103,6 +103,14 @@ public class MapoSource {
 
     public PathMatcher getPathMatcher() {
         return mPathMatcher;
+    }
+
+    public File getThumbnailDir() {
+        if (mThumbnailDir == null) {
+            mThumbnailDir = new File(getCacheDir(), String.valueOf(getId()));
+        }
+
+        return mThumbnailDir;
     }
 
     public boolean isFollowLinks() {
