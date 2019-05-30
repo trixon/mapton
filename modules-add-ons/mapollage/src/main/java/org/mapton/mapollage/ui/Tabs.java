@@ -32,7 +32,6 @@ public class Tabs extends TabPane {
 
     private Mapo mMapo;
     private TabPath mPathTab;
-    private TabSelection mSelectionTab;
     private TabSources mSourceTab;
     private final ValidationSupport mValidationSupport = new ValidationSupport();
 
@@ -50,13 +49,12 @@ public class Tabs extends TabPane {
         TabBase.setValidationSupport(mValidationSupport);
 
         mMapo = new Mapo();
-        mSelectionTab = new TabSelection(mMapo);
         mPathTab = new TabPath(mMapo);
+        mPathTab.setDisable(true);
         mSourceTab = new TabSources(mMapo);
 
         getTabs().setAll(
                 mSourceTab,
-                mSelectionTab,
                 mPathTab
         );
 

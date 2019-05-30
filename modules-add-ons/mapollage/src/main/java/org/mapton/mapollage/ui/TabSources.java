@@ -53,6 +53,7 @@ public class TabSources extends TabBase {
 
     private final CheckListView<MapoSource> mListView = new CheckListView<>();
     private final MapoSourceManager mManager = MapoSourceManager.getInstance();
+    private final DateSelectionPane mDateSelectionPane = new DateSelectionPane();
 
     public TabSources(Mapo mapo) {
         setText(Dict.SOURCES.toString());
@@ -112,8 +113,11 @@ public class TabSources extends TabBase {
 
         toolBar.setStyle("-fx-spacing: 0px;");
         toolBar.setPadding(Insets.EMPTY);
-        BorderPane borderPane = new BorderPane(mListView);
-        borderPane.setTop(toolBar);
+
+        BorderPane innerBorderPane = new BorderPane(mListView);
+        innerBorderPane.setTop(toolBar);
+        BorderPane borderPane = new BorderPane(innerBorderPane);
+        borderPane.setTop(mDateSelectionPane);
         setScrollPaneContent(borderPane);
         mListView.setItems(mManager.getItems());
     }
