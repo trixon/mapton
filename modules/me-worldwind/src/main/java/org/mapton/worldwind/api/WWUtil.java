@@ -23,6 +23,7 @@ import gov.nasa.worldwind.render.PointPlacemarkAttributes;
  */
 public class WWUtil {
 
+    public static final String KEY_RUNNABLE_HOOVER = "mapton.runnable.hoover";
     public static final String KEY_RUNNABLE_LEFT_CLICK = "mapton.runnable.left_click";
     public static final String KEY_RUNNABLE_LEFT_DOUBLE_CLICK = "mapton.runnable.left_double_click";
 

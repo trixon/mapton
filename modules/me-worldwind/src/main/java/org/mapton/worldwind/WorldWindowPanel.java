@@ -370,6 +370,13 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
                 } else if (o instanceof Highlightable) {
                     ((Highlightable) o).setHighlighted(true);
                 }
+
+                if (mLastHighlightObject instanceof AVList) {
+                    Runnable r = (Runnable) ((AVList) mLastHighlightObject).getValue(WWUtil.KEY_RUNNABLE_HOOVER);
+                    if (r != null) {
+                        r.run();
+                    }
+                }
             }
         };
 
