@@ -15,12 +15,10 @@
  */
 package org.mapton.ww_mapollage;
 
-import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.geom.Position;
-import gov.nasa.worldwind.layers.RenderableLayer;
-import gov.nasa.worldwind.render.Offset;
-import gov.nasa.worldwind.render.PointPlacemark;
-import gov.nasa.worldwind.render.PointPlacemarkAttributes;
+import gov.nasa.worldwind.layers.IconLayer;
+import gov.nasa.worldwind.render.UserFacingIcon;
+import java.awt.Dimension;
 import java.io.File;
 import org.mapton.api.Mapton;
 import org.mapton.mapollage.api.Mapo;
@@ -29,7 +27,6 @@ import org.mapton.mapollage.api.MapoSource;
 import org.mapton.mapollage.api.MapoSourceManager;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.LayerBundleManager;
-import org.mapton.worldwind.api.WWUtil;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.GlobalState;
 import se.trixon.almond.util.GlobalStateChangeEvent;
@@ -41,12 +38,13 @@ import se.trixon.almond.util.GlobalStateChangeEvent;
 @ServiceProvider(service = LayerBundle.class)
 public class MapollageLayerBundle extends LayerBundle {
 
-    private final RenderableLayer mLayer = new RenderableLayer();
+    private final IconLayer mLayer = new IconLayer();
     private final MapoSourceManager mManager = MapoSourceManager.getInstance();
     private Mapo mMapo;
 
     public MapollageLayerBundle() {
-        mLayer.setName("Mapollage-dev");
+        init();
+        initListeners();
     }
 
     @Override
@@ -68,24 +66,27 @@ public class MapollageLayerBundle extends LayerBundle {
         setPopulated(true);
     }
 
+    private void init() {
+        mLayer.setName("Mapollage");
+        mLayer.setEnabled(true);
+        setName("Mapollage");
+    }
+
+    private void initListeners() {
+    }
+
     private void refresh() {
-        mLayer.removeAllRenderables();
+        mLayer.removeAllIcons();
 
         for (MapoSource source : mManager.getItems()) {
             for (MapoPhoto photo : source.getCollection().getPhotos()) {
-                PointPlacemark placemark = new PointPlacemark(Position.fromDegrees(photo.getLat(), photo.getLon()));
-                placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
-                placemark.setEnableLabelPicking(true);
+                String absolutePath = new File(source.getThumbnailDir(), String.format("%s.jpg", photo.getChecksum())).getAbsolutePath();
+                UserFacingIcon icon = new UserFacingIcon(absolutePath, Position.fromDegrees(photo.getLat(), photo.getLon()));
+                int downSample = 10;
+                icon.setSize(new Dimension(photo.getWidth() / downSample, photo.getHeight() / downSample));
+                icon.setHighlightScale(downSample);
 
-                PointPlacemarkAttributes attrs = new PointPlacemarkAttributes(placemark.getDefaultAttributes());
-                attrs.setImageAddress(new File(source.getThumbnailDir(), String.format("%s.jpg", photo.getChecksum())).getAbsolutePath());
-                attrs.setImageOffset(Offset.BOTTOM_CENTER);
-                attrs.setScale(0.1);
-
-                placemark.setAttributes(attrs);
-                placemark.setHighlightAttributes(WWUtil.createHighlightAttributes(attrs, 1 / attrs.getScale()));
-
-                mLayer.addRenderable(placemark);
+                mLayer.addIcon(icon);
             }
         }
 
