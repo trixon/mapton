@@ -58,6 +58,8 @@ public class MapoSource {
     @SerializedName("thumbnail_border_size")
     private int mThumbnailBorderSize = 10;
     private transient File mThumbnailDir;
+    @SerializedName("thumbnail_force_creation")
+    private boolean mThumbnailForceCreation = false;
     @SerializedName("thumbnail_size")
     private int mThumbnailSize = 800;
     @SerializedName("visible")
@@ -143,6 +145,10 @@ public class MapoSource {
         return mRecursive;
     }
 
+    public boolean isThumbnailForceCreation() {
+        return mThumbnailForceCreation;
+    }
+
     public boolean isValid() {
         try {
             mPathMatcher = FileSystems.getDefault().getPathMatcher("glob:" + mFilePattern);
@@ -215,6 +221,10 @@ public class MapoSource {
 
     public void setThumbnailBorderSize(int thumbnailBorderSize) {
         mThumbnailBorderSize = thumbnailBorderSize;
+    }
+
+    public void setThumbnailForceCreation(boolean thumbnailForceCreation) {
+        mThumbnailForceCreation = thumbnailForceCreation;
     }
 
     public void setThumbnailSize(int thumbnailSize) {

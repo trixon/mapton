@@ -64,7 +64,7 @@ public class PhotoInfo {
     }
 
     public void createThumbnail(MapoSource source, File file) throws IOException {
-        if (!file.exists()) {
+        if (source.isThumbnailForceCreation() || !file.exists()) {
             int thumbnailSize = source.getThumbnailSize();
 
             BufferedImage scaledImage = mImageScaler.getScaledImage(mFile, new Dimension(thumbnailSize, thumbnailSize));

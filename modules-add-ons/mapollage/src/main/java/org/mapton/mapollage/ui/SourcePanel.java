@@ -56,6 +56,7 @@ public class SourcePanel extends FxDialogPanel {
     private FileChooserPane mSourceChooser;
     private Spinner<Integer> mThumbnailBorderSizeSpinner;
     private Spinner<Integer> mThumbnailSizeSpinner;
+    private CheckBox mThumnailForceCreation;
     private HBox mhBox;
     private VBox mvBox;
     private ColorPicker mColorPicker;
@@ -73,6 +74,7 @@ public class SourcePanel extends FxDialogPanel {
 
         mRecursiveCheckBox.setSelected(source.isRecursive());
         mLinksCheckBox.setSelected(source.isFollowLinks());
+        mThumnailForceCreation.setSelected(source.isThumbnailForceCreation());
 
         mThumbnailSizeSpinner.getValueFactory().setValue(source.getThumbnailSize());
         mThumbnailBorderSizeSpinner.getValueFactory().setValue(source.getThumbnailBorderSize());
@@ -95,6 +97,7 @@ public class SourcePanel extends FxDialogPanel {
 
         source.setRecursive(mRecursiveCheckBox.isSelected());
         source.setFollowLinks(mLinksCheckBox.isSelected());
+        source.setThumbnailForceCreation(mThumnailForceCreation.isSelected());
 
         source.setThumbnailSize(mThumbnailSizeSpinner.getValue());
         source.setThumbnailBorderSize(mThumbnailBorderSizeSpinner.getValue());
@@ -118,6 +121,7 @@ public class SourcePanel extends FxDialogPanel {
         mLinksCheckBox = new CheckBox(Dict.FOLLOW_LINKS.toString());
         mRecursiveCheckBox = new CheckBox(Dict.SUBDIRECTORIES.toString());
         mSourceChooser = new FileChooserPane(Dict.SELECT.toString(), Dict.IMAGE_DIRECTORY.toString(), FileChooserPane.ObjectMode.DIRECTORY, SelectionMode.SINGLE);
+        mThumnailForceCreation = new CheckBox(mBundle.getString("TabSource.forceThumbnail"));
 
         Label nameLabel = new Label(Dict.NAME.toString());
         Label descLabel = new Label(Dict.DESCRIPTION.toString());
@@ -154,7 +158,11 @@ public class SourcePanel extends FxDialogPanel {
                 mColorPicker
         );
 
-        mhBox.getChildren().addAll(mRecursiveCheckBox, mLinksCheckBox);
+        mhBox.getChildren().addAll(
+                mRecursiveCheckBox,
+                mLinksCheckBox,
+                mThumnailForceCreation
+        );
 
         FxHelper.setPadding(
                 new Insets(8, 0, 0, 0),
