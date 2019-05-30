@@ -313,11 +313,16 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
             @Override
             public void mouseClicked(MouseEvent mouseEvent) {
                 if (mouseEvent.getButton() == MouseEvent.BUTTON1 && mLastHighlightObject != null) {
-                    if (mouseEvent.getClickCount() == 1) {
-                        if (mLastHighlightObject instanceof AVList) {
-                            AVList avList = (AVList) mLastHighlightObject;
+                    if (mLastHighlightObject instanceof AVList) {
+                        AVList avList = (AVList) mLastHighlightObject;
 
+                        if (mouseEvent.getClickCount() == 1) {
                             Runnable r = (Runnable) avList.getValue(WWUtil.KEY_RUNNABLE_LEFT_CLICK);
+                            if (r != null) {
+                                r.run();
+                            }
+                        } else if (mouseEvent.getClickCount() == 2) {
+                            Runnable r = (Runnable) avList.getValue(WWUtil.KEY_RUNNABLE_LEFT_DOUBLE_CLICK);
                             if (r != null) {
                                 r.run();
                             }
