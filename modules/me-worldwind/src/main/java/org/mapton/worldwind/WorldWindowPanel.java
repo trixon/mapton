@@ -41,6 +41,8 @@ import gov.nasa.worldwind.layers.LayerList;
 import gov.nasa.worldwind.layers.ViewControlsLayer;
 import gov.nasa.worldwind.layers.ViewControlsSelectListener;
 import gov.nasa.worldwind.render.Highlightable;
+import gov.nasa.worldwind.render.PointPlacemark;
+import gov.nasa.worldwind.render.WWIcon;
 import gov.nasa.worldwind.terrain.LocalElevationModel;
 import gov.nasa.worldwind.terrain.ZeroElevationModel;
 import java.awt.event.MouseAdapter;
@@ -88,7 +90,7 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
 
     private final ObservableList<Layer> mCustomLayers = FXCollections.observableArrayList();
     private FlatGlobe mFlatGlobe;
-    private Highlightable mLastHighlightObject;
+    private Object mLastHighlightObject;
 //    private CompoundElevationModel mNormalElevationModel;
     private final ModuleOptions mOptions = ModuleOptions.getInstance();
     private Globe mRoundGlobe;
@@ -340,13 +342,28 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
                 }
 
                 if (mLastHighlightObject != null) {
-                    mLastHighlightObject.setHighlighted(false);
+                    if (mLastHighlightObject instanceof PointPlacemark) {
+                        ((PointPlacemark) mLastHighlightObject).setAlwaysOnTop(false);
+                        ((PointPlacemark) mLastHighlightObject).setHighlighted(false);
+                    } else if (mLastHighlightObject instanceof WWIcon) {
+                        ((WWIcon) mLastHighlightObject).setAlwaysOnTop(false);
+                        ((WWIcon) mLastHighlightObject).setHighlighted(false);
+                    } else if (mLastHighlightObject instanceof Highlightable) {
+                        ((Highlightable) mLastHighlightObject).setHighlighted(false);
+                    }
+
                     mLastHighlightObject = null;
                 }
 
-                if (o instanceof Highlightable) {
-                    mLastHighlightObject = (Highlightable) o;
-                    mLastHighlightObject.setHighlighted(true);
+                mLastHighlightObject = o;
+                if (o instanceof PointPlacemark) {
+                    ((PointPlacemark) o).setAlwaysOnTop(true);
+                    ((PointPlacemark) o).setHighlighted(true);
+                } else if (o instanceof WWIcon) {
+                    ((WWIcon) o).setAlwaysOnTop(true);
+                    ((WWIcon) o).setHighlighted(true);
+                } else if (o instanceof Highlightable) {
+                    ((Highlightable) o).setHighlighted(true);
                 }
             }
         };
