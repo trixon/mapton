@@ -36,6 +36,7 @@ import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.GlobalState;
 import se.trixon.almond.util.GlobalStateChangeEvent;
+import se.trixon.almond.util.SystemHelper;
 
 /**
  *
@@ -102,6 +103,10 @@ public class MapollageLayerBundle extends LayerBundle {
                     propertyMap.put(Dict.LONGITUDE.toString(), photo.getLon());
 
                     Mapton.getGlobalState().put(MKey.OBJECT_PROPERTIES, propertyMap);
+                });
+
+                icon.setValue(WWUtil.KEY_RUNNABLE_LEFT_DOUBLE_CLICK, (Runnable) () -> {
+                    SystemHelper.desktopOpen(new File(photo.getPath()));
                 });
 
                 mLayer.addIcon(icon);
