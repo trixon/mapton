@@ -20,6 +20,10 @@ import gov.nasa.worldwind.layers.IconLayer;
 import gov.nasa.worldwind.render.UserFacingIcon;
 import java.awt.Dimension;
 import java.io.File;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import org.apache.commons.io.FilenameUtils;
+import org.mapton.api.MKey;
 import org.mapton.api.Mapton;
 import org.mapton.mapollage.api.Mapo;
 import org.mapton.mapollage.api.MapoPhoto;
@@ -27,7 +31,9 @@ import org.mapton.mapollage.api.MapoSource;
 import org.mapton.mapollage.api.MapoSourceManager;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.LayerBundleManager;
+import org.mapton.worldwind.api.WWUtil;
 import org.openide.util.lookup.ServiceProvider;
+import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.GlobalState;
 import se.trixon.almond.util.GlobalStateChangeEvent;
 
@@ -85,6 +91,18 @@ public class MapollageLayerBundle extends LayerBundle {
                 int downSample = 10;
                 icon.setSize(new Dimension(photo.getWidth() / downSample, photo.getHeight() / downSample));
                 icon.setHighlightScale(downSample);
+
+                icon.setValue(WWUtil.KEY_RUNNABLE_LEFT_CLICK, (Runnable) () -> {
+                    Map<String, Object> propertyMap = new LinkedHashMap<>();
+                    propertyMap.put(Dict.NAME.toString(), FilenameUtils.getBaseName(photo.getPath()));
+                    propertyMap.put(Dict.DATE.toString(), photo.getDate());
+                    propertyMap.put(Dict.ALTITUDE.toString(), photo.getAltitude());
+                    propertyMap.put(Dict.BEARING.toString(), photo.getBearing());
+                    propertyMap.put(Dict.LATITUDE.toString(), photo.getLat());
+                    propertyMap.put(Dict.LONGITUDE.toString(), photo.getLon());
+
+                    Mapton.getGlobalState().put(MKey.OBJECT_PROPERTIES, propertyMap);
+                });
 
                 mLayer.addIcon(icon);
             }

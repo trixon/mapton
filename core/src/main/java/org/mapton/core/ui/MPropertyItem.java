@@ -73,7 +73,8 @@ class MPropertyItem implements PropertySheet.Item {
 
     @Override
     public Class<?> getType() {
-        return mPropertyMap.get(mKey).getClass();
+        Object o = mPropertyMap.get(mKey);
+        return o == null ? Object.class : o.getClass();
     }
 
     @Override
