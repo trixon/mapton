@@ -32,12 +32,18 @@ public class MapoPhoto {
     private String mChecksum;
     @SerializedName("date")
     private Date mDate;
+    @SerializedName("height")
+    private int mHeight;
     @SerializedName("lat")
     private double mLat;
     @SerializedName("lon")
     private double mLon;
+    @SerializedName("orientation")
+    private int mOrientation;
     @SerializedName("path")
     private String mPath;
+    @SerializedName("width")
+    private int mWidth;
 
     public MapoPhoto() {
     }
@@ -58,6 +64,10 @@ public class MapoPhoto {
         return mDate;
     }
 
+    public int getHeight() {
+        return mHeight;
+    }
+
     public double getLat() {
         return mLat;
     }
@@ -66,8 +76,16 @@ public class MapoPhoto {
         return mLon;
     }
 
+    public int getOrientation() {
+        return mOrientation;
+    }
+
     public String getPath() {
         return mPath;
+    }
+
+    public int getWidth() {
+        return mWidth;
     }
 
     public void setAltitude(Double altitude) {
@@ -86,6 +104,10 @@ public class MapoPhoto {
         mDate = date;
     }
 
+    public void setHeight(int height) {
+        mHeight = height;
+    }
+
     public void setLat(double lat) {
         mLat = lat;
     }
@@ -94,8 +116,15 @@ public class MapoPhoto {
         mLon = lon;
     }
 
+    public void setOrientation(int orientation) {
+        mOrientation = orientation;
+    }
+
     public void setPath(String path) {
         mPath = path;
     }
 
+    public void setWidth(int width) {
+        mWidth = width;
+    }
 }

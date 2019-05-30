@@ -17,11 +17,15 @@ package org.mapton.mapollage.api;
 
 import com.google.gson.annotations.SerializedName;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.PathMatcher;
+import java.util.ArrayList;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
+import org.mapton.api.MLatLon;
+import org.mapton.api.MLatLonBox;
 import org.mapton.api.Mapton;
 
 /**
@@ -30,7 +34,6 @@ import org.mapton.api.Mapton;
  */
 public class MapoSource {
 
-    private transient File mCacheDir;
     private transient MapoCollection mCollection = new MapoCollection();
     @SerializedName("descriptionString")
     private String mDescriptionString;
@@ -44,12 +47,19 @@ public class MapoSource {
     private boolean mFollowLinks = true;
     @SerializedName("id")
     private Long mId;
+    private transient final MapoSourceManager mManager = MapoSourceManager.getInstance();
     @SerializedName("name")
     private String mName;
     private transient PathMatcher mPathMatcher;
     @SerializedName("recursive")
     private boolean mRecursive = true;
+    @SerializedName("thumbnail_border_color")
+    private String mThumbnailBorderColor = "FFFF00";
+    @SerializedName("thumbnail_border_size")
+    private int mThumbnailBorderSize = 10;
     private transient File mThumbnailDir;
+    @SerializedName("thumbnail_size")
+    private int mThumbnailSize = 800;
     @SerializedName("visible")
     private boolean mVisible = true;
 
@@ -57,16 +67,16 @@ public class MapoSource {
     }
 
     public void fitToBounds() {
-//        MLatLonBox latLonBox = new MLatLonBox(southWest, northEast);
-//        Mapton.getEngine().fitToBounds(latLonBox);
-    }
+        ArrayList<MLatLon> latLons = new ArrayList<>();
 
-    public File getCacheDir() {
-        if (mCacheDir == null) {
-            mCacheDir = new File(Mapton.getCacheDir(), "mapollage");
+        for (MapoPhoto photo : getCollection().getPhotos()) {
+            latLons.add(new MLatLon(photo.getLat(), photo.getLon()));
         }
 
-        return mCacheDir;
+        if (!latLons.isEmpty()) {
+            MLatLonBox latLonBox = new MLatLonBox(latLons);
+            Mapton.getEngine().fitToBounds(latLonBox);
+        }
     }
 
     public MapoCollection getCollection() {
@@ -74,7 +84,7 @@ public class MapoSource {
     }
 
     public File getCollectionFile() {
-        return new File(getCacheDir(), String.format("%d.json", getId()));
+        return new File(mManager.getCacheDir(), String.format("%d.json", getId()));
     }
 
     public String getDescriptionString() {
@@ -105,12 +115,24 @@ public class MapoSource {
         return mPathMatcher;
     }
 
+    public String getThumbnailBorderColor() {
+        return mThumbnailBorderColor;
+    }
+
+    public int getThumbnailBorderSize() {
+        return mThumbnailBorderSize;
+    }
+
     public File getThumbnailDir() {
         if (mThumbnailDir == null) {
-            mThumbnailDir = new File(getCacheDir(), String.valueOf(getId()));
+            mThumbnailDir = new File(mManager.getCacheDir(), String.valueOf(getId()));
         }
 
         return mThumbnailDir;
+    }
+
+    public int getThumbnailSize() {
+        return mThumbnailSize;
     }
 
     public boolean isFollowLinks() {
@@ -136,7 +158,11 @@ public class MapoSource {
     }
 
     public MapoCollection loadCollection() throws IOException {
-        return Mapo.getGson().fromJson(FileUtils.readFileToString(getCollectionFile(), "utf-8"), MapoCollection.class);
+        try {
+            return Mapo.getGson().fromJson(FileUtils.readFileToString(getCollectionFile(), "utf-8"), MapoCollection.class);
+        } catch (FileNotFoundException e) {
+            return new MapoCollection();
+        }
     }
 
     public void save(MapoCollection collection) throws IOException {
@@ -181,6 +207,18 @@ public class MapoSource {
 
     public void setRecursive(boolean recursive) {
         mRecursive = recursive;
+    }
+
+    public void setThumbnailBorderColor(String thumbnailBorderColor) {
+        mThumbnailBorderColor = thumbnailBorderColor;
+    }
+
+    public void setThumbnailBorderSize(int thumbnailBorderSize) {
+        mThumbnailBorderSize = thumbnailBorderSize;
+    }
+
+    public void setThumbnailSize(int thumbnailSize) {
+        mThumbnailSize = thumbnailSize;
     }
 
     public void setVisible(boolean visible) {

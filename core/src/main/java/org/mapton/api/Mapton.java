@@ -57,7 +57,7 @@ public class Mapton {
     private final DoubleProperty mZoomProperty;
 
     static {
-        CONFIG_DIR = new File(System.getProperty("netbeans.user"));
+        CONFIG_DIR = new File(System.getProperty("netbeans.user"), "mapton-modules");
         CACHE_DIR = new File(FileUtils.getUserDirectory(), ".cache/mapton");
         System.setProperty("mapton.cache", CACHE_DIR.getAbsolutePath());//Used by WorldWind
     }

@@ -19,11 +19,7 @@ import java.util.ResourceBundle;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
 import javafx.scene.layout.Region;
-import javafx.scene.paint.Color;
-import org.controlsfx.glyphfont.GlyphFont;
-import org.controlsfx.glyphfont.GlyphFontRegistry;
 import org.controlsfx.validation.ValidationSupport;
-import org.mapton.mapollage.Options;
 import org.mapton.mapollage.api.Mapo;
 import se.trixon.almond.util.SystemHelper;
 
@@ -37,9 +33,6 @@ public abstract class TabBase extends Tab {
     protected static ValidationSupport sValidationSupport;
     protected final ResourceBundle mBundle = SystemHelper.getBundle(TabBase.class, "Bundle");
     protected Mapo mMapo;
-    protected final Options mOptions = Options.getInstance();
-    private final GlyphFont mFontAwesome = GlyphFontRegistry.font("FontAwesome");
-    private final Color mIconColor = Color.BLACK;
     private final ScrollPane mScrollPane = new ScrollPane();
 
     public static void setValidationSupport(ValidationSupport validationSupport) {

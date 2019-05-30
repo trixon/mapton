@@ -30,15 +30,18 @@ import se.trixon.almond.util.fx.FxHelper;
  */
 public class Tabs extends TabPane {
 
-    private Mapo mMapollageState;
-    private TabSelection mSelectionTab;
-    private final ValidationSupport mValidationSupport = new ValidationSupport();
-    private TabSources mSourceTab;
-    private TabPlacemark mPlacemarkTab;
+    private Mapo mMapo;
     private TabPath mPathTab;
+    private TabSelection mSelectionTab;
+    private TabSources mSourceTab;
+    private final ValidationSupport mValidationSupport = new ValidationSupport();
 
     public Tabs() {
         createUI();
+    }
+
+    public Mapo getMapo() {
+        return mMapo;
     }
 
     private void createUI() {
@@ -46,16 +49,14 @@ public class Tabs extends TabPane {
 
         TabBase.setValidationSupport(mValidationSupport);
 
-        mMapollageState = new Mapo();
-        mSelectionTab = new TabSelection(mMapollageState);
-        mPlacemarkTab = new TabPlacemark(mMapollageState);
-        mPathTab = new TabPath(mMapollageState);
-        mSourceTab = new TabSources(mMapollageState);
+        mMapo = new Mapo();
+        mSelectionTab = new TabSelection(mMapo);
+        mPathTab = new TabPath(mMapo);
+        mSourceTab = new TabSources(mMapo);
 
         getTabs().setAll(
                 mSourceTab,
                 mSelectionTab,
-                mPlacemarkTab,
                 mPathTab
         );
 

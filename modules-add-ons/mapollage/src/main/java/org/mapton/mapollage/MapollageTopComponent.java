@@ -16,14 +16,18 @@
 package org.mapton.mapollage;
 
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import org.mapton.api.MMapMagnet;
 import org.mapton.api.MTopComponent;
 import org.mapton.api.Mapton;
+import org.mapton.mapollage.api.Mapo;
+import org.mapton.mapollage.api.MapoSourceManager;
 import org.mapton.mapollage.ui.Tabs;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.windows.TopComponent;
+import se.trixon.almond.util.Dict;
 
 /**
  * Top component which displays something.
@@ -40,7 +44,6 @@ import org.openide.windows.TopComponent;
 @TopComponent.Registration(mode = "properties", openAtStartup = false)
 public final class MapollageTopComponent extends MTopComponent implements MMapMagnet {
 
-    private final Options mOptions = Options.getInstance();
     private BorderPane mRoot;
 
     public MapollageTopComponent() {
@@ -66,7 +69,18 @@ public final class MapollageTopComponent extends MTopComponent implements MMapMa
 
     private Scene createScene() {
         Label titleLabel = Mapton.createTitleDev("Mapollage");
-        mRoot = new BorderPane(new Tabs());
+        Tabs tabs = new Tabs();
+        BorderPane innerBorderPane = new BorderPane(tabs);
+        Button refreshButton = new Button(Dict.REFRESH.toString());
+        refreshButton.prefWidthProperty().bind(innerBorderPane.widthProperty());
+        refreshButton.setOnAction((event) -> {
+            MapoSourceManager.getInstance().load();
+            Mapton.getGlobalState().put(Mapo.KEY_MAPO, tabs.getMapo());
+        });
+
+        innerBorderPane.setTop(refreshButton);
+
+        mRoot = new BorderPane(innerBorderPane);
         mRoot.setTop(titleLabel);
         titleLabel.prefWidthProperty().bind(mRoot.widthProperty());
 

@@ -20,12 +20,16 @@ import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import org.controlsfx.validation.ValidationResult;
 import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
@@ -50,8 +54,11 @@ public class SourcePanel extends FxDialogPanel {
     private TextField mNameTextField;
     private CheckBox mRecursiveCheckBox;
     private FileChooserPane mSourceChooser;
+    private Spinner<Integer> mThumbnailBorderSizeSpinner;
+    private Spinner<Integer> mThumbnailSizeSpinner;
     private HBox mhBox;
     private VBox mvBox;
+    private ColorPicker mColorPicker;
 
     public SourcePanel() {
     }
@@ -66,6 +73,16 @@ public class SourcePanel extends FxDialogPanel {
 
         mRecursiveCheckBox.setSelected(source.isRecursive());
         mLinksCheckBox.setSelected(source.isFollowLinks());
+
+        mThumbnailSizeSpinner.getValueFactory().setValue(source.getThumbnailSize());
+        mThumbnailBorderSizeSpinner.getValueFactory().setValue(source.getThumbnailBorderSize());
+
+        Color color = Color.YELLOW;
+        try {
+            color = FxHelper.colorFromHexRGBA(source.getThumbnailBorderColor());
+        } catch (Exception e) {
+        }
+        mColorPicker.setValue(color);
     }
 
     public void save(MapoSource source) {
@@ -78,6 +95,10 @@ public class SourcePanel extends FxDialogPanel {
 
         source.setRecursive(mRecursiveCheckBox.isSelected());
         source.setFollowLinks(mLinksCheckBox.isSelected());
+
+        source.setThumbnailSize(mThumbnailSizeSpinner.getValue());
+        source.setThumbnailBorderSize(mThumbnailBorderSizeSpinner.getValue());
+        source.setThumbnailBorderColor(FxHelper.colorToHexRGB(mColorPicker.getValue()));
     }
 
     @Override
@@ -102,8 +123,36 @@ public class SourcePanel extends FxDialogPanel {
         Label descLabel = new Label(Dict.DESCRIPTION.toString());
         Label filePatternLabel = new Label(Dict.FILE_PATTERN.toString());
         Label excludeLabel = new Label(mBundle.getString("TabSource.excludeLabel"));
+        Label thumbnailLabel = new Label(Dict.IMAGE_SIZE.toString());
+        Label borderSizeLabel = new Label(mBundle.getString("TabSource.borderSizeLabel"));
+        Label colorLabel = new Label(Dict.COLOR.toString());
 
         mExcludeTextField.setTooltip(new Tooltip(mBundle.getString("TabSource.excludeTextField.toolTip")));
+
+        mColorPicker = new ColorPicker();
+        mThumbnailBorderSizeSpinner = new Spinner(0, 20, 2, 1);
+        mThumbnailSizeSpinner = new Spinner(100, 1200, 250, 10);
+        mThumbnailSizeSpinner.setEditable(true);
+        mThumbnailBorderSizeSpinner.setEditable(true);
+
+        FxHelper.autoCommitSpinners(
+                mThumbnailBorderSizeSpinner,
+                mThumbnailSizeSpinner
+        );
+
+        GridPane thumbGridPane = new GridPane();
+        thumbGridPane.addColumn(0,
+                thumbnailLabel,
+                mThumbnailSizeSpinner
+        );
+        thumbGridPane.addColumn(1,
+                borderSizeLabel,
+                mThumbnailBorderSizeSpinner
+        );
+        thumbGridPane.addColumn(2,
+                colorLabel,
+                mColorPicker
+        );
 
         mhBox.getChildren().addAll(mRecursiveCheckBox, mLinksCheckBox);
 
@@ -113,7 +162,16 @@ public class SourcePanel extends FxDialogPanel {
                 mSourceChooser,
                 filePatternLabel,
                 excludeLabel,
-                mhBox
+                mhBox,
+                thumbGridPane
+        );
+
+        FxHelper.setMargin(
+                new Insets(0, 0, 0, 16),
+                borderSizeLabel,
+                mThumbnailBorderSizeSpinner,
+                colorLabel,
+                mColorPicker
         );
 
         mvBox.getChildren().addAll(
@@ -126,8 +184,10 @@ public class SourcePanel extends FxDialogPanel {
                 mFilePatternField,
                 excludeLabel,
                 mExcludeTextField,
-                mhBox
+                mhBox,
+                thumbGridPane
         );
+
         mvBox.setPadding(new Insets(8, 16, 0, 16));
 
         initValidation();

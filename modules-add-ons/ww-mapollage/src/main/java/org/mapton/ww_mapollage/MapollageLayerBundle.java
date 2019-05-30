@@ -93,7 +93,7 @@ public class MapollageLayerBundle extends LayerBundle {
                 icon.setSize(new Dimension(photo.getWidth() / downSample, photo.getHeight() / downSample));
                 icon.setHighlightScale(downSample);
 
-                icon.setValue(WWUtil.KEY_RUNNABLE_LEFT_CLICK, (Runnable) () -> {
+                icon.setValue(WWUtil.KEY_RUNNABLE_HOOVER, (Runnable) () -> {
                     Map<String, Object> propertyMap = new LinkedHashMap<>();
                     propertyMap.put(Dict.NAME.toString(), FilenameUtils.getBaseName(photo.getPath()));
                     propertyMap.put(Dict.DATE.toString(), photo.getDate());

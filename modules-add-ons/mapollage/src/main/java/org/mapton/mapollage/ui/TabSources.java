@@ -15,6 +15,7 @@
  */
 package org.mapton.mapollage.ui;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -39,6 +40,7 @@ import org.mapton.mapollage.api.MapoSource;
 import org.mapton.mapollage.api.MapoSourceManager;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
+import org.openide.util.Exceptions;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.icons.material.MaterialIcon;
@@ -138,7 +140,11 @@ public class TabSources extends TabBase {
         mManager.getItems().addListener((ListChangeListener.Change<? extends MapoSource> c) -> {
             Platform.runLater(() -> {
                 refreshCheckedStates();
-                mManager.save();
+                try {
+                    mManager.save();
+                } catch (IOException ex) {
+                    Exceptions.printStackTrace(ex);
+                }
             });
 
         });
@@ -158,7 +164,11 @@ public class TabSources extends TabBase {
                     items.forEach((source) -> {
                         source.setVisible(checkModel.isChecked(source));
                     });
-                    mManager.save();
+                    try {
+                        mManager.save();
+                    } catch (IOException ex) {
+                        Exceptions.printStackTrace(ex);
+                    }
                 });
             });
 

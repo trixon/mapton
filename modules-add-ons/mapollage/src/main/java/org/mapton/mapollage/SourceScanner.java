@@ -89,8 +89,11 @@ public class SourceScanner {
                 mapoPhoto.setAltitude(photoInfo.getAltitude());
                 mapoPhoto.setBearing(photoInfo.getBearing());
                 mapoPhoto.setChecksum(photoInfo.getChecksum());
+                mapoPhoto.setOrientation(photoInfo.getOrientation());
 
-                photoInfo.createThumbnail(new File(mCurrentSource.getThumbnailDir(), String.format("%s.jpg", photoInfo.getChecksum())));
+                photoInfo.createThumbnail(mCurrentSource, new File(mCurrentSource.getThumbnailDir(), String.format("%s.jpg", photoInfo.getChecksum())));
+                mapoPhoto.setHeight(photoInfo.getHeight());
+                mapoPhoto.setWidth(photoInfo.getWidth());
 
                 mCurrentCollection.getPhotos().add(mapoPhoto);
             }

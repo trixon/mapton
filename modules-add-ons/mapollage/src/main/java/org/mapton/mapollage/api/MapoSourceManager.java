@@ -15,6 +15,7 @@
  */
 package org.mapton.mapollage.api;
 
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import java.awt.Dimension;
 import java.io.File;
@@ -26,8 +27,6 @@ import javafx.collections.ObservableList;
 import javax.swing.SwingUtilities;
 import org.apache.commons.io.FileUtils;
 import org.mapton.api.Mapton;
-import org.mapton.mapollage.Options;
-import static org.mapton.mapollage.Options.KEY_SOURCES;
 import org.mapton.mapollage.ui.SourcePanel;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
@@ -40,8 +39,10 @@ import se.trixon.almond.util.Dict;
  */
 public class MapoSourceManager {
 
+    private File mCacheDir;
+    private File mConfigDir;
     private final ObservableList<MapoSource> mItems = FXCollections.observableArrayList();
-    private final Options mOptions = Options.getInstance();
+    private File mSourcesFile;
 
     public static MapoSourceManager getInstance() {
         return Holder.INSTANCE;
@@ -67,7 +68,7 @@ public class MapoSourceManager {
                 localGridPanel.load(source);
             });
 
-            localGridPanel.setPreferredSize(new Dimension(600, 300));
+            localGridPanel.setPreferredSize(new Dimension(600, 400));
             if (DialogDescriptor.OK_OPTION == DialogDisplayer.getDefault().notify(d)) {
                 Platform.runLater(() -> {
                     localGridPanel.save(source);
@@ -79,6 +80,22 @@ public class MapoSourceManager {
                 });
             }
         });
+    }
+
+    public File getCacheDir() {
+        if (mCacheDir == null) {
+            mCacheDir = new File(Mapton.getCacheDir(), "mapollage");
+        }
+
+        return mCacheDir;
+    }
+
+    public File getConfigDir() {
+        if (mConfigDir == null) {
+            mConfigDir = new File(Mapton.getConfigDir(), "mapollage");
+        }
+
+        return mConfigDir;
     }
 
     public ObservableList<MapoSource> getItems() {
@@ -109,16 +126,20 @@ public class MapoSourceManager {
     }
 
     public ArrayList<MapoSource> loadItems() {
-        return Mapo.getGson().fromJson(mOptions.get(KEY_SOURCES), new TypeToken<ArrayList<MapoSource>>() {
-        }.getType());
+        try {
+            return Mapo.getGson().fromJson(FileUtils.readFileToString(getSourcesFile(), "utf-8"), new TypeToken<ArrayList<MapoSource>>() {
+            }.getType());
+        } catch (IOException | JsonSyntaxException ex) {
+            return new ArrayList<>();
+        }
     }
 
     public void removeAll(MapoSource... localGrids) {
         getItems().removeAll(localGrids);
     }
 
-    public void save() {
-        mOptions.put(KEY_SOURCES, Mapo.getGson().toJson(mItems));
+    public void save() throws IOException {
+        FileUtils.writeStringToFile(getSourcesFile(), Mapo.getGson().toJson(mItems), "utf-8");
     }
 
     public void sourceExport(File file, ArrayList<MapoSource> selectedSources) throws IOException {
@@ -134,6 +155,14 @@ public class MapoSourceManager {
             mItems.addAll(sources);
             FXCollections.sort(mItems, (MapoSource o1, MapoSource o2) -> o1.getName().compareTo(o2.getName()));
         });
+    }
+
+    private File getSourcesFile() {
+        if (mSourcesFile == null) {
+            mSourcesFile = new File(getConfigDir(), "sources.json");
+        }
+
+        return mSourcesFile;
     }
 
     private static class Holder {

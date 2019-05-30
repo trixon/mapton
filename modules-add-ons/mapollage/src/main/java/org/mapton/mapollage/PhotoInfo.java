@@ -35,7 +35,7 @@ import java.util.Date;
 import java.util.TimeZone;
 import javax.imageio.ImageIO;
 import org.apache.commons.io.FileUtils;
-import static org.mapton.mapollage.Options.*;
+import org.mapton.mapollage.api.MapoSource;
 import se.trixon.almond.util.GraphicsHelper;
 import se.trixon.almond.util.ImageScaler;
 
@@ -46,47 +46,55 @@ import se.trixon.almond.util.ImageScaler;
 public class PhotoInfo {
 
     private String mChecksum;
-
     private ExifSubIFDDirectory mExifDirectory;
     private final File mFile;
     private final double mFormat = 1000000;
     private GeoLocation mGeoLocation;
     private GpsDirectory mGpsDirectory;
+    private int mHeight;
     private final ImageScaler mImageScaler = ImageScaler.getInstance();
     private Metadata mMetadata;
-    private final Options mOptions = Options.getInstance();
     private int mOrientation;
     private Dimension mOriginalDimension = null;
+    private int mWidth;
 
     public PhotoInfo(File file) throws ImageProcessingException, IOException {
         mFile = file;
         init();
     }
 
-    public void createThumbnail(File thumbnail) throws IOException {
-        if (!thumbnail.exists()) {
-            int borderSize = mOptions.getInt(KEY_THUMBNAIL_BORDER_SIZE, DEFAULT_THUMBNAIL_BORDER_SIZE);
-            int thumbnailSize = mOptions.getInt(KEY_THUMBNAIL_SIZE, DEFAULT_THUMBNAIL_SIZE);
+    public void createThumbnail(MapoSource source, File file) throws IOException {
+        if (!file.exists()) {
+            int thumbnailSize = source.getThumbnailSize();
 
-            BufferedImage scaledImage = mImageScaler.getScaledImage(mFile, new Dimension(thumbnailSize - borderSize * 2, thumbnailSize - borderSize * 2));
+            BufferedImage scaledImage = mImageScaler.getScaledImage(mFile, new Dimension(thumbnailSize, thumbnailSize));
             scaledImage = GraphicsHelper.rotate(scaledImage, mOrientation);
 
-            int width = scaledImage.getWidth();
-            int height = scaledImage.getHeight();
-            int borderedImageWidth = width + borderSize * 2;
-            int borderedImageHeight = height + borderSize * 2;
+            mHeight = scaledImage.getHeight();
+            mWidth = scaledImage.getWidth();
 
-            BufferedImage borderedImage = new BufferedImage(borderedImageWidth, borderedImageHeight, BufferedImage.TYPE_3BYTE_BGR);
+            int borderSize = source.getThumbnailBorderSize();
+            BufferedImage borderedImage = scaledImage;
 
-            Graphics2D g2 = borderedImage.createGraphics();
-            g2.setColor(Color.YELLOW);
-            g2.fillRect(0, 0, borderedImageWidth, borderedImageHeight);
-            g2.drawImage(scaledImage, borderSize, borderSize, width + borderSize, height + borderSize, 0, 0, width, height, Color.YELLOW, null);
+            if (borderSize > 0) {
+                int width = scaledImage.getWidth();
+                int height = scaledImage.getHeight();
+
+                int borderedImageWidth = width + borderSize * 2;
+                int borderedImageHeight = height + borderSize * 2;
+
+                borderedImage = new BufferedImage(borderedImageWidth, borderedImageHeight, BufferedImage.TYPE_3BYTE_BGR);
+
+                Graphics2D g2 = borderedImage.createGraphics();
+                g2.setColor(Color.decode("#" + source.getThumbnailBorderColor()));
+                g2.fillRect(0, 0, borderedImageWidth, borderedImageHeight);
+                g2.drawImage(scaledImage, borderSize, borderSize, width + borderSize, height + borderSize, 0, 0, width, height, Color.YELLOW, null);
+            }
 
             try {
-                ImageIO.write(borderedImage, "jpg", thumbnail);
+                ImageIO.write(borderedImage, "jpg", file);
             } catch (IOException ex) {
-                throw new IOException(String.format("E000 %s", thumbnail.getAbsolutePath()));
+                throw new IOException(String.format("E000 %s", file.getAbsolutePath()));
             }
         }
     }
@@ -139,6 +147,10 @@ public class PhotoInfo {
         return mGpsDirectory;
     }
 
+    public int getHeight() {
+        return mHeight;
+    }
+
     public double getLat() throws NullPointerException {
         int latInt = (int) (mGeoLocation.getLatitude() * mFormat);
 
@@ -175,12 +187,8 @@ public class PhotoInfo {
         return mOriginalDimension;
     }
 
-    public boolean hasExif() {
-        return mExifDirectory != null;
-    }
-
-    public boolean hasGps() {
-        return hasExif() && mGpsDirectory != null;
+    public int getWidth() {
+        return mWidth;
     }
 
     public boolean isZeroCoordinate() {
