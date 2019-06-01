@@ -23,7 +23,6 @@ import org.mapton.api.MMapMagnet;
 import org.mapton.api.MTopComponent;
 import org.mapton.api.Mapton;
 import org.mapton.mapollage.api.Mapo;
-import org.mapton.mapollage.api.MapoSourceManager;
 import org.mapton.mapollage.ui.Tabs;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.windows.TopComponent;
@@ -74,7 +73,6 @@ public final class MapollageTopComponent extends MTopComponent implements MMapMa
         Button refreshButton = new Button(Dict.REFRESH.toString());
         refreshButton.prefWidthProperty().bind(innerBorderPane.widthProperty());
         refreshButton.setOnAction((event) -> {
-            MapoSourceManager.getInstance().load();
             Mapton.getGlobalState().put(Mapo.KEY_MAPO, tabs.getMapo());
         });
 

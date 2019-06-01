@@ -16,12 +16,10 @@
 package org.mapton.mapollage.ui;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.scene.control.ButtonBase;
@@ -33,6 +31,7 @@ import org.controlsfx.control.CheckListView;
 import org.controlsfx.control.IndexedCheckModel;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
+import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.mapton.mapollage.SourceScanner;
 import org.mapton.mapollage.api.Mapo;
@@ -51,21 +50,19 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
  */
 public class TabSources extends TabBase {
 
+    private final DateSelectionPane mDateSelectionPane = new DateSelectionPane();
+
     private final CheckListView<MapoSource> mListView = new CheckListView<>();
     private final MapoSourceManager mManager = MapoSourceManager.getInstance();
-    private final DateSelectionPane mDateSelectionPane = new DateSelectionPane();
 
     public TabSources(Mapo mapo) {
         setText(Dict.SOURCES.toString());
         mMapo = mapo;
 
-//        createUI();
-//        initValidation();
-//        load();
         createUI();
-        initStates();
+        refreshCheckedStates();
         initListeners();
-        load();
+        Mapton.getGlobalState().put(Mapo.KEY_SOURCE_UPDATED, mManager);
     }
 
     private void createUI() {
@@ -119,7 +116,8 @@ public class TabSources extends TabBase {
         BorderPane borderPane = new BorderPane(innerBorderPane);
         borderPane.setTop(mDateSelectionPane);
         setScrollPaneContent(borderPane);
-        mListView.setItems(mManager.getItems());
+
+        mListView.itemsProperty().bind(mManager.itemsProperty());
     }
 
     private MapoSource getSelected() {
@@ -150,45 +148,31 @@ public class TabSources extends TabBase {
                     Exceptions.printStackTrace(ex);
                 }
             });
-
         });
-    }
 
-    private void initStates() {
-    }
+        final IndexedCheckModel<MapoSource> checkModel = mListView.getCheckModel();
 
-    private void load() {
-        ArrayList<MapoSource> sources = mManager.loadItems();
-        Platform.runLater(() -> {
-            final IndexedCheckModel<MapoSource> checkModel = mListView.getCheckModel();
-            final ObservableList<MapoSource> items = mListView.getItems();
-
-            checkModel.getCheckedItems().addListener((ListChangeListener.Change<? extends MapoSource> c) -> {
-                Platform.runLater(() -> {
-                    items.forEach((source) -> {
-                        source.setVisible(checkModel.isChecked(source));
-                    });
-                    try {
-                        mManager.save();
-                    } catch (IOException ex) {
-                        Exceptions.printStackTrace(ex);
-                    }
-                });
+        checkModel.getCheckedItems().addListener((ListChangeListener.Change<? extends MapoSource> c) -> {
+//            Platform.runLater(() -> {
+            mManager.getItems().forEach((source) -> {
+                source.setVisible(checkModel.isChecked(source));
             });
 
-            items.clear();
-            if (sources != null) {
-                items.addAll(sources);
-                refreshCheckedStates();
+            try {
+                mManager.save();
+            } catch (IOException ex) {
+                Exceptions.printStackTrace(ex);
             }
+            Mapton.getGlobalState().put(Mapo.KEY_SOURCE_UPDATED, mManager);
+//            });
         });
+
     }
 
     private void refreshCheckedStates() {
         final IndexedCheckModel<MapoSource> checkModel = mListView.getCheckModel();
-        final ObservableList<MapoSource> items = mListView.getItems();
 
-        for (MapoSource source : items) {
+        for (MapoSource source : mManager.getItems()) {
             if (source.isVisible()) {
                 checkModel.check(source);
             } else {

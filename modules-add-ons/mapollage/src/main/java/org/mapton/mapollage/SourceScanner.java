@@ -65,11 +65,7 @@ public class SourceScanner {
                 }
             }
 
-            try {
-                mManager.loadCollections();
-            } catch (IOException ex) {
-                Exceptions.printStackTrace(ex);
-            }
+            mManager.load();
 
             mPrint.out("END SCAN COLLECTION");
         }).start();

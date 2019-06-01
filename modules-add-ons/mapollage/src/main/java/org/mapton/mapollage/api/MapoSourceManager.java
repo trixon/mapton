@@ -20,8 +20,12 @@ import com.google.gson.reflect.TypeToken;
 import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import javafx.application.Platform;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javax.swing.SwingUtilities;
@@ -41,7 +45,7 @@ public class MapoSourceManager {
 
     private File mCacheDir;
     private File mConfigDir;
-    private final ObservableList<MapoSource> mItems = FXCollections.observableArrayList();
+    private ObjectProperty<ObservableList<MapoSource>> mItems = new SimpleObjectProperty<>();
     private File mSourcesFile;
 
     public static MapoSourceManager getInstance() {
@@ -49,6 +53,7 @@ public class MapoSourceManager {
     }
 
     private MapoSourceManager() {
+        mItems.setValue(FXCollections.observableArrayList());
     }
 
     public void edit(final MapoSource aSource) {
@@ -73,10 +78,10 @@ public class MapoSourceManager {
                 Platform.runLater(() -> {
                     localGridPanel.save(source);
                     if (add) {
-                        mItems.add(source);
+                        mItems.get().add(source);
                     }
 
-                    FXCollections.sort(mItems, (MapoSource o1, MapoSource o2) -> o1.getName().compareTo(o2.getName()));
+                    FXCollections.sort(mItems.get(), (MapoSource o1, MapoSource o2) -> o1.getName().compareTo(o2.getName()));
                 });
             }
         });
@@ -99,47 +104,90 @@ public class MapoSourceManager {
     }
 
     public ObservableList<MapoSource> getItems() {
-        return mItems;
+        return mItems.get();
     }
 
-    public void load() {
-        mItems.setAll(loadItems());
-        try {
-            loadCollections();
-        } catch (IOException ex) {
-            Exceptions.printStackTrace(ex);
-        }
-    }
+    public LocalDate getMaxDate() {
+        LocalDate localDate = LocalDate.MIN;
 
-    public void loadCollections() throws IOException {
-        for (MapoSource source : getItems()) {
+        for (MapoSource source : mItems.get()) {
             if (source.isVisible()) {
                 try {
-                    source.setCollection(source.loadCollection());
-                } catch (IOException ex) {
-                    Exceptions.printStackTrace(ex);
+                    LocalDate collectionDate = source.getCollection().getDateMax().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                    if (collectionDate.isAfter(localDate)) {
+                        localDate = collectionDate;
+                    }
+                } catch (NullPointerException e) {
                 }
             }
         }
 
-        Mapton.getGlobalState().put(Mapo.KEY_SOURCE_MANAGER, null);
+        if (localDate.isEqual(LocalDate.MIN)) {
+            localDate = LocalDate.of(2099, 12, 31);
+        }
+
+        return localDate;
     }
 
-    public ArrayList<MapoSource> loadItems() {
-        try {
-            return Mapo.getGson().fromJson(FileUtils.readFileToString(getSourcesFile(), "utf-8"), new TypeToken<ArrayList<MapoSource>>() {
-            }.getType());
-        } catch (IOException | JsonSyntaxException ex) {
-            return new ArrayList<>();
+    public LocalDate getMinDate() {
+        LocalDate localDate = LocalDate.MAX;
+
+        for (MapoSource source : mItems.get()) {
+            if (source.isVisible()) {
+                try {
+                    LocalDate collectionDate = source.getCollection().getDateMin().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                    if (collectionDate.isBefore(localDate)) {
+                        localDate = collectionDate;
+                    }
+                } catch (NullPointerException e) {
+                }
+            }
         }
+
+        if (localDate.isEqual(LocalDate.MAX)) {
+            localDate = LocalDate.of(1900, 1, 1);
+        }
+
+        return localDate;
+    }
+
+    public final ObjectProperty<ObservableList<MapoSource>> itemsProperty() {
+        if (mItems == null) {
+            mItems = new SimpleObjectProperty<>(this, "items");
+        }
+
+        return mItems;
+    }
+
+    public void load() {
+        ArrayList<MapoSource> loadedItems = new ArrayList<>();
+
+        try {
+            if (getSourcesFile().isFile()) {
+                loadedItems = Mapo.getGson().fromJson(FileUtils.readFileToString(getSourcesFile(), "utf-8"), new TypeToken<ArrayList<MapoSource>>() {
+                }.getType());
+                for (MapoSource source : loadedItems) {
+                    try {
+                        source.setCollection(source.loadCollection());
+                    } catch (IOException ex) {
+                        Exceptions.printStackTrace(ex);
+                    }
+                }
+            }
+        } catch (IOException | JsonSyntaxException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+
+        mItems.get().setAll(loadedItems);
+        Mapton.getGlobalState().put(Mapo.KEY_SOURCE_UPDATED, this);
     }
 
     public void removeAll(MapoSource... localGrids) {
-        getItems().removeAll(localGrids);
+        mItems.get().removeAll(localGrids);
     }
 
     public void save() throws IOException {
-        FileUtils.writeStringToFile(getSourcesFile(), Mapo.getGson().toJson(mItems), "utf-8");
+        FileUtils.writeStringToFile(getSourcesFile(), Mapo.getGson().toJson(mItems.get()), "utf-8");
     }
 
     public void sourceExport(File file, ArrayList<MapoSource> selectedSources) throws IOException {
@@ -152,8 +200,8 @@ public class MapoSourceManager {
         }.getType());
 
         Platform.runLater(() -> {
-            mItems.addAll(sources);
-            FXCollections.sort(mItems, (MapoSource o1, MapoSource o2) -> o1.getName().compareTo(o2.getName()));
+            mItems.get().addAll(sources);
+            FXCollections.sort(mItems.get(), (MapoSource o1, MapoSource o2) -> o1.getName().compareTo(o2.getName()));
         });
     }
 

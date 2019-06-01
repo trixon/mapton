@@ -26,7 +26,8 @@ import com.google.gson.annotations.SerializedName;
 public class Mapo {
 
     public static final String KEY_MAPO = "mapo";
-    public static final String KEY_SOURCE_MANAGER = "mapollage.source_manager";
+    public static final String KEY_SOURCE_UPDATED = "mapollage.source_updated";
+//    public static final String KEY_SOURCE_MANAGER = "mapollage.source_manager";
 
     private static final Gson sGson = new GsonBuilder()
             .setVersion(1.0)
