@@ -20,6 +20,8 @@ import gov.nasa.worldwind.layers.IconLayer;
 import gov.nasa.worldwind.render.UserFacingIcon;
 import java.awt.Dimension;
 import java.io.File;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.apache.commons.io.FilenameUtils;
@@ -27,6 +29,7 @@ import org.mapton.api.MKey;
 import org.mapton.api.Mapton;
 import org.mapton.mapollage.api.Mapo;
 import org.mapton.mapollage.api.MapoPhoto;
+import org.mapton.mapollage.api.MapoSettings;
 import org.mapton.mapollage.api.MapoSource;
 import org.mapton.mapollage.api.MapoSourceManager;
 import org.mapton.worldwind.api.LayerBundle;
@@ -47,7 +50,8 @@ public class MapollageLayerBundle extends LayerBundle {
 
     private final IconLayer mLayer = new IconLayer();
     private final MapoSourceManager mManager = MapoSourceManager.getInstance();
-    private Mapo mMapo;
+    private Mapo mMapo = Mapo.getInstance();
+    private MapoSettings mSettings;
 
     public MapollageLayerBundle() {
         init();
@@ -60,15 +64,13 @@ public class MapollageLayerBundle extends LayerBundle {
 
         GlobalState globalState = Mapton.getGlobalState();
         globalState.addListener((GlobalStateChangeEvent evt) -> {
-            mMapo = evt.getValue();
             refresh();
         }, Mapo.KEY_MAPO);
 
         globalState.addListener((GlobalStateChangeEvent evt) -> {
-            if (mMapo != null) {
-                refresh();
-            }
-        }, Mapo.KEY_SOURCE_MANAGER);
+            mSettings = evt.getValue();
+            refresh();
+        }, Mapo.KEY_SETTINGS_UPDATED);
 
         setPopulated(true);
     }
@@ -86,30 +88,37 @@ public class MapollageLayerBundle extends LayerBundle {
         mLayer.removeAllIcons();
 
         for (MapoSource source : mManager.getItems()) {
-            for (MapoPhoto photo : source.getCollection().getPhotos()) {
-                String absolutePath = new File(source.getThumbnailDir(), String.format("%s.jpg", photo.getChecksum())).getAbsolutePath();
-                UserFacingIcon icon = new UserFacingIcon(absolutePath, Position.fromDegrees(photo.getLat(), photo.getLon()));
-                int downSample = 10;
-                icon.setSize(new Dimension(photo.getWidth() / downSample, photo.getHeight() / downSample));
-                icon.setHighlightScale(downSample);
+            if (source.isVisible()) {
+                for (MapoPhoto photo : source.getCollection().getPhotos()) {
+                    LocalDate localDate = photo.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                    boolean validDate = mSettings.getLowDate().compareTo(localDate) * localDate.compareTo(mSettings.getHighDate()) >= 0;
 
-                icon.setValue(WWUtil.KEY_RUNNABLE_HOOVER, (Runnable) () -> {
-                    Map<String, Object> propertyMap = new LinkedHashMap<>();
-                    propertyMap.put(Dict.NAME.toString(), FilenameUtils.getBaseName(photo.getPath()));
-                    propertyMap.put(Dict.DATE.toString(), photo.getDate());
-                    propertyMap.put(Dict.ALTITUDE.toString(), photo.getAltitude());
-                    propertyMap.put(Dict.BEARING.toString(), photo.getBearing());
-                    propertyMap.put(Dict.LATITUDE.toString(), photo.getLat());
-                    propertyMap.put(Dict.LONGITUDE.toString(), photo.getLon());
+                    if (validDate) {
+                        String absolutePath = new File(source.getThumbnailDir(), String.format("%s.jpg", photo.getChecksum())).getAbsolutePath();
+                        UserFacingIcon icon = new UserFacingIcon(absolutePath, Position.fromDegrees(photo.getLat(), photo.getLon()));
+                        int downSample = 10;
+                        icon.setSize(new Dimension(photo.getWidth() / downSample, photo.getHeight() / downSample));
+                        icon.setHighlightScale(downSample);
 
-                    Mapton.getGlobalState().put(MKey.OBJECT_PROPERTIES, propertyMap);
-                });
+                        icon.setValue(WWUtil.KEY_RUNNABLE_HOOVER, (Runnable) () -> {
+                            Map<String, Object> propertyMap = new LinkedHashMap<>();
+                            propertyMap.put(Dict.NAME.toString(), FilenameUtils.getBaseName(photo.getPath()));
+                            propertyMap.put(Dict.DATE.toString(), photo.getDate());
+                            propertyMap.put(Dict.ALTITUDE.toString(), photo.getAltitude());
+                            propertyMap.put(Dict.BEARING.toString(), photo.getBearing());
+                            propertyMap.put(Dict.LATITUDE.toString(), photo.getLat());
+                            propertyMap.put(Dict.LONGITUDE.toString(), photo.getLon());
 
-                icon.setValue(WWUtil.KEY_RUNNABLE_LEFT_DOUBLE_CLICK, (Runnable) () -> {
-                    SystemHelper.desktopOpen(new File(photo.getPath()));
-                });
+                            Mapton.getGlobalState().put(MKey.OBJECT_PROPERTIES, propertyMap);
+                        });
 
-                mLayer.addIcon(icon);
+                        icon.setValue(WWUtil.KEY_RUNNABLE_LEFT_DOUBLE_CLICK, (Runnable) () -> {
+                            SystemHelper.desktopOpen(new File(photo.getPath()));
+                        });
+
+                        mLayer.addIcon(icon);
+                    }
+                }
             }
         }
 

@@ -16,6 +16,7 @@
 package org.mapton.mapollage.ui;
 
 import java.time.LocalDate;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.scene.control.DateCell;
 import javafx.scene.control.DatePicker;
@@ -40,6 +41,7 @@ public class DateSelectionPane extends GridPane {
     private DateRangeSlider mDateRangeSlider;
     private DatePicker mFromDatePicker;
     private MapoSourceManager mManager = MapoSourceManager.getInstance();
+    private Mapo mMapo = Mapo.getInstance();
     private DatePicker mToDatePicker;
 
     public DateSelectionPane() {
@@ -96,5 +98,15 @@ public class DateSelectionPane extends GridPane {
             mFromDatePicker.setDayCellFactory(selectionLimiter);
             mToDatePicker.setDayCellFactory(selectionLimiter);
         }, Mapo.KEY_SOURCE_UPDATED);
+
+        mFromDatePicker.valueProperty().addListener((ObservableValue<? extends Object> ov, Object t, Object t1) -> {
+            mMapo.getSettings().setLowDate(mFromDatePicker.getValue());
+            Mapton.getGlobalState().put(Mapo.KEY_SETTINGS_UPDATED, mMapo.getSettings());
+        });
+
+        mToDatePicker.valueProperty().addListener((ObservableValue<? extends Object> ov, Object t, Object t1) -> {
+            mMapo.getSettings().setHighDate(mToDatePicker.getValue());
+            Mapton.getGlobalState().put(Mapo.KEY_SETTINGS_UPDATED, mMapo.getSettings());
+        });
     }
 }

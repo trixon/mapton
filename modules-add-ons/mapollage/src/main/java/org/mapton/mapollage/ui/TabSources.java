@@ -51,7 +51,6 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
 public class TabSources extends TabBase {
 
     private final DateSelectionPane mDateSelectionPane = new DateSelectionPane();
-
     private final CheckListView<MapoSource> mListView = new CheckListView<>();
     private final MapoSourceManager mManager = MapoSourceManager.getInstance();
 
@@ -63,6 +62,15 @@ public class TabSources extends TabBase {
         refreshCheckedStates();
         initListeners();
         Mapton.getGlobalState().put(Mapo.KEY_SOURCE_UPDATED, mManager);
+
+        new Thread(() -> {
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException ex) {
+                Exceptions.printStackTrace(ex);
+            }
+            Mapton.getGlobalState().put(Mapo.KEY_SETTINGS_UPDATED, mMapo.getSettings());
+        }).start();
     }
 
     private void createUI() {
@@ -163,7 +171,9 @@ public class TabSources extends TabBase {
             } catch (IOException ex) {
                 Exceptions.printStackTrace(ex);
             }
+
             Mapton.getGlobalState().put(Mapo.KEY_SOURCE_UPDATED, mManager);
+            Mapton.getGlobalState().put(Mapo.KEY_SETTINGS_UPDATED, mMapo.getSettings());
 //            });
         });
 

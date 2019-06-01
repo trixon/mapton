@@ -17,7 +17,6 @@ package org.mapton.mapollage.api;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.annotations.SerializedName;
 
 /**
  *
@@ -26,38 +25,38 @@ import com.google.gson.annotations.SerializedName;
 public class Mapo {
 
     public static final String KEY_MAPO = "mapo";
+    public static final String KEY_SETTINGS_UPDATED = "mapollage.settings_updated";
+    //    public static final String KEY_SOURCE_MANAGER = "mapollage.source_manager";
     public static final String KEY_SOURCE_UPDATED = "mapollage.source_updated";
-//    public static final String KEY_SOURCE_MANAGER = "mapollage.source_manager";
 
     private static final Gson sGson = new GsonBuilder()
             .setVersion(1.0)
             .serializeNulls()
             .setPrettyPrinting()
             .create();
-
-    @SerializedName("date_pattern")
-    private String mDatePattern = "yyyy-MM-dd HH.mm";
-    @SerializedName("name_by")
-    private NameBy mNameBy = NameBy.NONE;
-    @SerializedName("symbol_as")
-    private SymbolAs mSymbolAs = SymbolAs.PHOTO;
+    private MapoSettings mSettings = new MapoSettings();
 
     public static Gson getGson() {
         return sGson;
     }
 
-    public Mapo() {
+    public static Mapo getInstance() {
+        return Holder.INSTANCE;
     }
 
-    public enum NameBy {
-        NONE,
-        FILE,
-        DATE;
+    private Mapo() {
     }
 
-    public enum SymbolAs {
-        PHOTO,
-        PIN;
+    public MapoSettings getSettings() {
+        return mSettings;
     }
 
+    public void setSettings(MapoSettings settings) {
+        mSettings = settings;
+    }
+
+    private static class Holder {
+
+        private static final Mapo INSTANCE = new Mapo();
+    }
 }

@@ -15,12 +15,9 @@
  */
 package org.mapton.mapollage.ui;
 
-import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.Region;
-import org.controlsfx.validation.ValidationResult;
-import org.controlsfx.validation.ValidationSupport;
 import org.mapton.mapollage.api.Mapo;
 import se.trixon.almond.util.fx.FxHelper;
 
@@ -30,10 +27,9 @@ import se.trixon.almond.util.fx.FxHelper;
  */
 public class Tabs extends TabPane {
 
-    private Mapo mMapo;
+    private final Mapo mMapo = Mapo.getInstance();
     private TabPath mPathTab;
     private TabSources mSourceTab;
-    private final ValidationSupport mValidationSupport = new ValidationSupport();
 
     public Tabs() {
         createUI();
@@ -46,9 +42,6 @@ public class Tabs extends TabPane {
     private void createUI() {
         setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
 
-        TabBase.setValidationSupport(mValidationSupport);
-
-        mMapo = new Mapo();
         mPathTab = new TabPath(mMapo);
         mPathTab.setDisable(true);
         mSourceTab = new TabSources(mMapo);
@@ -69,11 +62,5 @@ public class Tabs extends TabPane {
 
             FxHelper.setPadding(insets, (Region) tab.getContent());
         });
-
-        mValidationSupport.validationResultProperty().addListener((ObservableValue<? extends ValidationResult> observable, ValidationResult oldValue, ValidationResult newValue) -> {
-//            mOkButton.setDisable(mValidationSupport.isInvalid());
-        });
-
-        mValidationSupport.initInitialDecoration();
     }
 }
