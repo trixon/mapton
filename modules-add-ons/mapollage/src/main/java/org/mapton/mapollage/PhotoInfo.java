@@ -38,6 +38,7 @@ import org.apache.commons.io.FileUtils;
 import org.mapton.mapollage.api.MapoSource;
 import se.trixon.almond.util.GraphicsHelper;
 import se.trixon.almond.util.ImageScaler;
+import se.trixon.almond.util.Scaler;
 
 /**
  *
@@ -64,9 +65,9 @@ public class PhotoInfo {
     }
 
     public void createThumbnail(MapoSource source, File file) throws IOException {
-        if (source.isThumbnailForceCreation() || !file.exists()) {
-            int thumbnailSize = source.getThumbnailSize();
+        int thumbnailSize = source.getThumbnailSize();
 
+        if (source.isThumbnailForceCreation() || !file.exists()) {
             BufferedImage scaledImage = mImageScaler.getScaledImage(mFile, new Dimension(thumbnailSize, thumbnailSize));
             scaledImage = GraphicsHelper.rotate(scaledImage, mOrientation);
 
@@ -95,6 +96,18 @@ public class PhotoInfo {
                 ImageIO.write(borderedImage, "jpg", file);
             } catch (IOException ex) {
                 throw new IOException(String.format("E000 %s", file.getAbsolutePath()));
+            }
+        } else {
+            Scaler scaler = new Scaler(getOriginalDimension());
+            scaler.setHeight(thumbnailSize);
+            scaler.setWidth(thumbnailSize);
+
+            if (getOrientation() == 6 || getOrientation() == 8) {
+                mWidth = (int) scaler.getDimension().getHeight();
+                mHeight = (int) scaler.getDimension().getWidth();
+            } else {
+                mHeight = (int) scaler.getDimension().getHeight();
+                mWidth = (int) scaler.getDimension().getWidth();
             }
         }
     }
@@ -171,7 +184,19 @@ public class PhotoInfo {
         return mOrientation;
     }
 
-    public Dimension getOriginalDimension() throws IOException {
+    public int getWidth() {
+        return mWidth;
+    }
+
+    public boolean isZeroCoordinate() {
+        return mGpsDirectory == null || mGpsDirectory.getGeoLocation() == null || mGpsDirectory.getGeoLocation().isZero();
+    }
+
+    private GeoLocation getGeoLocation() throws ImageProcessingException {
+        return mGpsDirectory.getGeoLocation();
+    }
+
+    private Dimension getOriginalDimension() throws IOException {
         if (mOriginalDimension == null) {
             try {
                 mOriginalDimension = GraphicsHelper.getImgageDimension(mFile);
@@ -185,18 +210,6 @@ public class PhotoInfo {
         }
 
         return mOriginalDimension;
-    }
-
-    public int getWidth() {
-        return mWidth;
-    }
-
-    public boolean isZeroCoordinate() {
-        return mGpsDirectory == null || mGpsDirectory.getGeoLocation() == null || mGpsDirectory.getGeoLocation().isZero();
-    }
-
-    private GeoLocation getGeoLocation() throws ImageProcessingException {
-        return mGpsDirectory.getGeoLocation();
     }
 
     private void init() throws ImageProcessingException, IOException, NullPointerException {

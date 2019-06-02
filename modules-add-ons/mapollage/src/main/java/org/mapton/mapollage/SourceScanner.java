@@ -27,6 +27,7 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.EnumSet;
 import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.FileUtils;
@@ -148,8 +149,14 @@ public class SourceScanner {
 
             ArrayList<MapoPhoto> photos = mCurrentCollection.getPhotos();
             Collections.sort(photos, (MapoPhoto o1, MapoPhoto o2) -> o1.getDate().compareTo(o2.getDate()));
-            mCurrentCollection.setDateMin(photos.get(0).getDate());
-            mCurrentCollection.setDateMax(photos.get(photos.size() - 1).getDate());
+            try {
+                mCurrentCollection.setDateMin(photos.get(0).getDate());
+                mCurrentCollection.setDateMax(photos.get(photos.size() - 1).getDate());
+            } catch (Exception e) {
+                Date d = new Date();
+                mCurrentCollection.setDateMin(d);
+                mCurrentCollection.setDateMax(d);
+            }
             mPrint.out("END PROCESSING PHOTOS");
         }
 
