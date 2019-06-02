@@ -102,13 +102,8 @@ public class PhotoInfo {
             scaler.setHeight(thumbnailSize);
             scaler.setWidth(thumbnailSize);
 
-            if (getOrientation() == 6 || getOrientation() == 8) {
-                mWidth = (int) scaler.getDimension().getHeight();
-                mHeight = (int) scaler.getDimension().getWidth();
-            } else {
-                mHeight = (int) scaler.getDimension().getHeight();
-                mWidth = (int) scaler.getDimension().getWidth();
-            }
+            mHeight = scaler.getDimension().height;
+            mWidth = scaler.getDimension().width;
         }
     }
 
@@ -200,6 +195,12 @@ public class PhotoInfo {
         if (mOriginalDimension == null) {
             try {
                 mOriginalDimension = GraphicsHelper.getImgageDimension(mFile);
+                if (getOrientation() == 6 || getOrientation() == 8) {
+                    int storedHeight = mOriginalDimension.height;
+                    mOriginalDimension.height = mOriginalDimension.width;
+                    mOriginalDimension.width = storedHeight;
+                }
+
             } catch (IOException ex) {
                 throw new IOException(String.format("E000 %s", mFile.getAbsolutePath()));
             }
