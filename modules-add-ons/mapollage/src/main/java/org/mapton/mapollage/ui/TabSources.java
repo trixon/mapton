@@ -53,6 +53,9 @@ public class TabSources extends TabBase {
     private final DateSelectionPane mDateSelectionPane = new DateSelectionPane();
     private final CheckListView<MapoSource> mListView = new CheckListView<>();
     private final MapoSourceManager mManager = MapoSourceManager.getInstance();
+    private Action mRefreshAction;
+    private Thread mRefreshThread;
+    private RunState mRunState;
 
     public TabSources(Mapo mapo) {
         setText(Dict.SOURCES.toString());
@@ -93,10 +96,21 @@ public class TabSources extends TabBase {
         });
         remAction.setGraphic(MaterialIcon._Content.REMOVE.getImageView(getIconSizeToolBarInt()));
 
-        Action refreshAction = new Action(Dict.REFRESH.toString(), (ActionEvent event) -> {
-            new SourceScanner();
+        mRefreshAction = new Action((ActionEvent event) -> {
+            if (mRunState == RunState.STARTABLE) {
+                setRunningState(RunState.CANCELABLE);
+                mRefreshThread = new Thread(() -> {
+                    new SourceScanner();
+                    Platform.runLater(() -> {
+                        setRunningState(RunState.STARTABLE);
+                    });
+                });
+                mRefreshThread.start();
+            } else {
+                mRefreshThread.interrupt();
+            }
         });
-        refreshAction.setGraphic(MaterialIcon._Navigation.REFRESH.getImageView(getIconSizeToolBarInt()));
+        setRunningState(RunState.STARTABLE);
 
         Collection<? extends Action> actions = Arrays.asList(
                 new SourceFileImportAction().getAction(),
@@ -105,7 +119,7 @@ public class TabSources extends TabBase {
                 remAction,
                 editAction,
                 ActionUtils.ACTION_SPAN,
-                refreshAction
+                mRefreshAction
         );
 
         ToolBar toolBar = ActionUtils.createToolBar(actions, ActionUtils.ActionTextBehavior.HIDE);
@@ -218,5 +232,28 @@ public class TabSources extends TabBase {
                 });
             }
         });
+    }
+
+    private void setRunningState(RunState runState) {
+        mRunState = runState;
+
+        switch (runState) {
+            case CANCELABLE:
+                setDisable(true);
+                mRefreshAction.setText(Dict.CANCEL.toString());
+                mRefreshAction.setGraphic(MaterialIcon._Navigation.CANCEL.getImageView(getIconSizeToolBarInt()));
+                mRefreshAction.setDisabled(false);
+                break;
+
+            case STARTABLE:
+                mRefreshAction.setText(Dict.REFRESH.toString());
+                mRefreshAction.setGraphic(MaterialIcon._Navigation.REFRESH.getImageView(getIconSizeToolBarInt()));
+                setDisable(false);
+                break;
+        }
+    }
+
+    public enum RunState {
+        STARTABLE, CANCELABLE;
     }
 }

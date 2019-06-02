@@ -51,25 +51,31 @@ public class SourceScanner {
     private final ArrayList<File> mFiles = new ArrayList<>();
     private final MapoSourceManager mManager = MapoSourceManager.getInstance();
     private final NbPrint mPrint = new NbPrint("Mapollage");
+    private boolean mInterrupted = false;
 
     public SourceScanner() {
         mPrint.out("BEGIN SCAN COLLECTION");
 
-        new Thread(() -> {
-            for (MapoSource source : mManager.getItems()) {
-                if (source.isVisible()) {
-                    try {
-                        process(source);
-                    } catch (IOException ex) {
-                        Exceptions.printStackTrace(ex);
+        for (MapoSource source : mManager.getItems()) {
+            if (source.isVisible()) {
+                try {
+                    mInterrupted = process(source);
+                    if (mInterrupted) {
+                        break;
                     }
+                } catch (IOException ex) {
+                    Exceptions.printStackTrace(ex);
                 }
             }
+        }
 
-            mManager.load();
+        mManager.load();
 
+        if (mInterrupted) {
+            mPrint.out("INTERRUPTED SCAN COLLECTION");
+        } else {
             mPrint.out("END SCAN COLLECTION");
-        }).start();
+        }
     }
 
     private void process(File file) {
@@ -165,7 +171,7 @@ public class SourceScanner {
         mPrint.out(String.format("%s: %s", "SAVED", source.getCollectionFile().getAbsoluteFile()));
         mPrint.out(String.format("%s: %s", "END SCAN", source));
 
-        return true;
+        return false;
     }
 
     public class FileVisitor extends SimpleFileVisitor<Path> {
