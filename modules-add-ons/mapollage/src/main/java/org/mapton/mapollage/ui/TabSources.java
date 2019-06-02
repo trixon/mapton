@@ -162,8 +162,12 @@ public class TabSources extends TabBase {
 
         checkModel.getCheckedItems().addListener((ListChangeListener.Change<? extends MapoSource> c) -> {
 //            Platform.runLater(() -> {
+            mDateSelectionPane.setDisable(true);
             mManager.getItems().forEach((source) -> {
                 source.setVisible(checkModel.isChecked(source));
+                if (source.isVisible()) {
+                    mDateSelectionPane.setDisable(false);
+                }
             });
 
             try {
@@ -181,14 +185,18 @@ public class TabSources extends TabBase {
 
     private void refreshCheckedStates() {
         final IndexedCheckModel<MapoSource> checkModel = mListView.getCheckModel();
+        boolean disableDateSelection = true;
 
         for (MapoSource source : mManager.getItems()) {
             if (source.isVisible()) {
                 checkModel.check(source);
+                disableDateSelection = false;
             } else {
                 checkModel.clearCheck(source);
             }
         }
+
+        mDateSelectionPane.setDisable(disableDateSelection);
     }
 
     private void remove() {
