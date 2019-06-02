@@ -20,6 +20,7 @@ import gov.nasa.worldwind.layers.IconLayer;
 import gov.nasa.worldwind.render.UserFacingIcon;
 import java.awt.Dimension;
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.LinkedHashMap;
@@ -36,6 +37,7 @@ import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.LayerBundleManager;
 import org.mapton.worldwind.api.WWUtil;
 import org.openide.util.lookup.ServiceProvider;
+import se.trixon.almond.nbp.dialogs.NbMessage;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.GlobalState;
 import se.trixon.almond.util.GlobalStateChangeEvent;
@@ -48,9 +50,9 @@ import se.trixon.almond.util.SystemHelper;
 @ServiceProvider(service = LayerBundle.class)
 public class MapollageLayerBundle extends LayerBundle {
 
+    private final SimpleDateFormat mDateFormat = new SimpleDateFormat("yyyy-MM-dd HH.mm.ss");
     private final IconLayer mLayer = new IconLayer();
     private final MapoSourceManager mManager = MapoSourceManager.getInstance();
-    private Mapo mMapo = Mapo.getInstance();
     private MapoSettings mSettings;
 
     public MapollageLayerBundle() {
@@ -73,6 +75,10 @@ public class MapollageLayerBundle extends LayerBundle {
         }, Mapo.KEY_SETTINGS_UPDATED);
 
         setPopulated(true);
+    }
+
+    private String getCatKey(String category, String value) {
+        return String.format("%s#%s", category, value);
     }
 
     private void init() {
@@ -102,18 +108,27 @@ public class MapollageLayerBundle extends LayerBundle {
 
                         icon.setValue(WWUtil.KEY_RUNNABLE_HOOVER, (Runnable) () -> {
                             Map<String, Object> propertyMap = new LinkedHashMap<>();
-                            propertyMap.put(Dict.NAME.toString(), FilenameUtils.getBaseName(photo.getPath()));
-                            propertyMap.put(Dict.DATE.toString(), photo.getDate());
-                            propertyMap.put(Dict.ALTITUDE.toString(), photo.getAltitude());
-                            propertyMap.put(Dict.BEARING.toString(), photo.getBearing());
-                            propertyMap.put(Dict.LATITUDE.toString(), photo.getLat());
-                            propertyMap.put(Dict.LONGITUDE.toString(), photo.getLon());
+                            propertyMap.put(getCatKey(Dict.PHOTO.toString(), Dict.NAME.toString()), FilenameUtils.getBaseName(photo.getPath()));
+                            propertyMap.put(getCatKey(Dict.PHOTO.toString(), Dict.DATE.toString()), mDateFormat.format(photo.getDate()));
+                            propertyMap.put(getCatKey(Dict.PHOTO.toString(), Dict.PATH.toString()), photo.getPath());
+                            propertyMap.put(getCatKey(Dict.PHOTO.toString(), Dict.LATITUDE.toString()), photo.getLat());
+                            propertyMap.put(getCatKey(Dict.PHOTO.toString(), Dict.LONGITUDE.toString()), photo.getLon());
+                            propertyMap.put(getCatKey(Dict.PHOTO.toString(), Dict.ALTITUDE.toString()), photo.getAltitude());
+                            propertyMap.put(getCatKey(Dict.PHOTO.toString(), Dict.BEARING.toString()), photo.getBearing());
+                            propertyMap.put(getCatKey(Dict.SOURCE.toString(), Dict.SOURCE.toString()), source.getName());
+                            propertyMap.put(getCatKey(Dict.SOURCE.toString(), Dict.DESCRIPTION.toString()), source.getDescriptionString());
+                            propertyMap.put(getCatKey(Dict.SOURCE.toString(), Dict.CACHE.toString()), source.getThumbnailDir().getAbsolutePath());
 
                             Mapton.getGlobalState().put(MKey.OBJECT_PROPERTIES, propertyMap);
                         });
 
                         icon.setValue(WWUtil.KEY_RUNNABLE_LEFT_DOUBLE_CLICK, (Runnable) () -> {
-                            SystemHelper.desktopOpen(new File(photo.getPath()));
+                            File f = new File(photo.getPath());
+                            if (f.isFile()) {
+                                SystemHelper.desktopOpen(new File(photo.getPath()));
+                            } else {
+                                NbMessage.error(Dict.Dialog.TITLE_FILE_NOT_FOUND.toString(), String.format(Dict.Dialog.MESSAGE_FILE_NOT_FOUND.toString(), photo.getPath()));
+                            }
                         });
 
                         mLayer.addIcon(icon);
@@ -124,4 +139,5 @@ public class MapollageLayerBundle extends LayerBundle {
 
         LayerBundleManager.getInstance().redraw();
     }
+
 }
