@@ -39,6 +39,7 @@ import org.mapton.mapollage.api.MapoSource;
 import org.mapton.mapollage.api.MapoSourceManager;
 import org.openide.util.Exceptions;
 import se.trixon.almond.nbp.NbPrint;
+import se.trixon.almond.util.Dict;
 
 /**
  *
@@ -49,9 +50,9 @@ public class SourceScanner {
     private MapoCollection mCurrentCollection;
     private MapoSource mCurrentSource;
     private final ArrayList<File> mFiles = new ArrayList<>();
+    private boolean mInterrupted = false;
     private final MapoSourceManager mManager = MapoSourceManager.getInstance();
     private final NbPrint mPrint = new NbPrint("Mapollage");
-    private boolean mInterrupted = false;
 
     public SourceScanner() {
         mPrint.out("BEGIN SCAN COLLECTION");
@@ -59,7 +60,7 @@ public class SourceScanner {
         for (MapoSource source : mManager.getItems()) {
             if (source.isVisible()) {
                 try {
-                    mInterrupted = process(source);
+                    process(source);
                     if (mInterrupted) {
                         break;
                     }
@@ -69,12 +70,49 @@ public class SourceScanner {
             }
         }
 
-        mManager.load();
-
         if (mInterrupted) {
             mPrint.out("INTERRUPTED SCAN COLLECTION");
         } else {
+            mManager.load();
             mPrint.out("END SCAN COLLECTION");
+        }
+    }
+
+    private void generateFileList(MapoSource source) throws IOException {
+        mPrint.out(Dict.GENERATING_FILELIST.toString());
+        PathMatcher pathMatcher = source.getPathMatcher();
+
+        EnumSet<FileVisitOption> fileVisitOptions;
+        if (source.isFollowLinks()) {
+            fileVisitOptions = EnumSet.of(FileVisitOption.FOLLOW_LINKS);
+        } else {
+            fileVisitOptions = EnumSet.noneOf(FileVisitOption.class);
+        }
+
+        File file = source.getDir();
+        if (file.isDirectory()) {
+            FileVisitor fileVisitor = new FileVisitor(pathMatcher);
+            try {
+                if (source.isRecursive()) {
+                    Files.walkFileTree(file.toPath(), fileVisitOptions, Integer.MAX_VALUE, fileVisitor);
+                } else {
+                    Files.walkFileTree(file.toPath(), fileVisitOptions, 1, fileVisitor);
+                }
+
+                if (mInterrupted) {
+                    return;
+                }
+            } catch (IOException ex) {
+                mPrint.err(ex.toString());
+            }
+        } else if (file.isFile() && pathMatcher.matches(file.toPath().getFileName())) {
+            mFiles.add(file);
+        }
+
+        if (mFiles.isEmpty()) {
+            mPrint.out("EMPTY FILE LIST");
+        } else {
+            Collections.sort(mFiles);
         }
     }
 
@@ -105,7 +143,7 @@ public class SourceScanner {
         }
     }
 
-    private boolean process(MapoSource source) throws IOException {
+    private void process(MapoSource source) throws IOException {
         mPrint.out(String.format("%s: %s", "BEGIN SCAN", source));
 
         mFiles.clear();
@@ -114,47 +152,26 @@ public class SourceScanner {
         mCurrentCollection.setId(source.getId());
         mCurrentCollection.setName(source.getName());
         source.isValid();
-        PathMatcher pathMatcher = source.getPathMatcher();
 
-        EnumSet<FileVisitOption> fileVisitOptions;
-        if (source.isFollowLinks()) {
-            fileVisitOptions = EnumSet.of(FileVisitOption.FOLLOW_LINKS);
-        } else {
-            fileVisitOptions = EnumSet.noneOf(FileVisitOption.class);
-        }
+        generateFileList(source);
 
-        mPrint.out("BUILDING FILE LIST");
-        File file = source.getDir();
-        if (file.isDirectory()) {
-            FileVisitor fileVisitor = new FileVisitor(pathMatcher);
-            try {
-                if (source.isRecursive()) {
-                    Files.walkFileTree(file.toPath(), fileVisitOptions, Integer.MAX_VALUE, fileVisitor);
-                } else {
-                    Files.walkFileTree(file.toPath(), fileVisitOptions, 1, fileVisitor);
-                }
-                if (fileVisitor.isInterrupted()) {
-                    return false;
-                }
-            } catch (IOException ex) {
-                mPrint.err(ex.toString());
-            }
-        } else if (file.isFile() && pathMatcher.matches(file.toPath().getFileName())) {
-            mFiles.add(file);
-        }
-
-        if (mFiles.isEmpty()) {
-            mPrint.out("EMPTY FILE LIST");
-        } else {
+        if (!mInterrupted && !mFiles.isEmpty()) {
             mPrint.out("BEGIN PROCESSING PHOTOS");
             FileUtils.forceMkdir(source.getThumbnailDir());
-            Collections.sort(mFiles);
+
             for (File f : mFiles) {
                 process(f);
+                try {
+                    TimeUnit.NANOSECONDS.sleep(1);
+                } catch (InterruptedException ex) {
+                    mInterrupted = true;
+                    return;
+                }
             }
 
             ArrayList<MapoPhoto> photos = mCurrentCollection.getPhotos();
             Collections.sort(photos, (MapoPhoto o1, MapoPhoto o2) -> o1.getDate().compareTo(o2.getDate()));
+
             try {
                 mCurrentCollection.setDateMin(photos.get(0).getDate());
                 mCurrentCollection.setDateMax(photos.get(photos.size() - 1).getDate());
@@ -163,6 +180,7 @@ public class SourceScanner {
                 mCurrentCollection.setDateMin(d);
                 mCurrentCollection.setDateMax(d);
             }
+
             mPrint.out("END PROCESSING PHOTOS");
         }
 
@@ -170,23 +188,16 @@ public class SourceScanner {
 
         mPrint.out(String.format("%s: %s", "SAVED", source.getCollectionFile().getAbsoluteFile()));
         mPrint.out(String.format("%s: %s", "END SCAN", source));
-
-        return false;
     }
 
     public class FileVisitor extends SimpleFileVisitor<Path> {
 
         private final String[] mExcludePatterns;
-        private boolean mInterrupted;
         private final PathMatcher mPathMatcher;
 
         public FileVisitor(PathMatcher pathMatcher) {
             mPathMatcher = pathMatcher;
             mExcludePatterns = StringUtils.split(mCurrentSource.getExcludePattern(), "::");
-        }
-
-        public boolean isInterrupted() {
-            return mInterrupted;
         }
 
         @Override

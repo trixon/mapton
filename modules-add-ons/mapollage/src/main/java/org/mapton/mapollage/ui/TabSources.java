@@ -17,11 +17,12 @@ package org.mapton.mapollage.ui;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collection;
+import java.util.List;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.ToolBar;
 import javafx.scene.input.MouseButton;
@@ -50,10 +51,13 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
  */
 public class TabSources extends TabBase {
 
+    private List<Action> mActions;
+    private BorderPane mBorderPane;
     private final DateSelectionPane mDateSelectionPane = new DateSelectionPane();
     private final CheckListView<MapoSource> mListView = new CheckListView<>();
     private final MapoSourceManager mManager = MapoSourceManager.getInstance();
     private Action mRefreshAction;
+    private Button mRefreshButton;
     private Thread mRefreshThread;
     private RunState mRunState;
 
@@ -101,18 +105,17 @@ public class TabSources extends TabBase {
                 setRunningState(RunState.CANCELABLE);
                 mRefreshThread = new Thread(() -> {
                     new SourceScanner();
-                    Platform.runLater(() -> {
-                        setRunningState(RunState.STARTABLE);
-                    });
+                    setRunningState(RunState.STARTABLE);
                 });
                 mRefreshThread.start();
             } else {
                 mRefreshThread.interrupt();
+                setRunningState(RunState.STARTABLE);
             }
         });
         setRunningState(RunState.STARTABLE);
 
-        Collection<? extends Action> actions = Arrays.asList(
+        mActions = Arrays.asList(
                 new SourceFileImportAction().getAction(),
                 new SourceFileExportAction().getAction(),
                 addAction,
@@ -122,7 +125,7 @@ public class TabSources extends TabBase {
                 mRefreshAction
         );
 
-        ToolBar toolBar = ActionUtils.createToolBar(actions, ActionUtils.ActionTextBehavior.HIDE);
+        ToolBar toolBar = ActionUtils.createToolBar(mActions, ActionUtils.ActionTextBehavior.HIDE);
 
         FxHelper.adjustButtonWidth(toolBar.getItems().stream(), getIconSizeToolBarInt());
         toolBar.getItems().stream().filter((item) -> (item instanceof ButtonBase))
@@ -132,12 +135,12 @@ public class TabSources extends TabBase {
 
         toolBar.setStyle("-fx-spacing: 0px;");
         toolBar.setPadding(Insets.EMPTY);
-
+        mRefreshButton = (Button) toolBar.getItems().get(toolBar.getItems().size() - 1);
         BorderPane innerBorderPane = new BorderPane(mListView);
         innerBorderPane.setTop(toolBar);
-        BorderPane borderPane = new BorderPane(innerBorderPane);
-        borderPane.setTop(mDateSelectionPane);
-        setScrollPaneContent(borderPane);
+        mBorderPane = new BorderPane(innerBorderPane);
+        mBorderPane.setTop(mDateSelectionPane);
+        setScrollPaneContent(mBorderPane);
 
         mListView.itemsProperty().bind(mManager.itemsProperty());
     }
@@ -235,22 +238,33 @@ public class TabSources extends TabBase {
     }
 
     private void setRunningState(RunState runState) {
-        mRunState = runState;
+        Platform.runLater(() -> {
+            mRunState = runState;
 
-        switch (runState) {
-            case CANCELABLE:
-                setDisable(true);
-                mRefreshAction.setText(Dict.CANCEL.toString());
-                mRefreshAction.setGraphic(MaterialIcon._Navigation.CANCEL.getImageView(getIconSizeToolBarInt()));
-                mRefreshAction.setDisabled(false);
-                break;
+            switch (runState) {
+                case CANCELABLE:
+                    FxHelper.disableControls(mBorderPane.getChildrenUnmodifiable(), true, mRefreshButton);
+                    mRefreshAction.setText(Dict.CANCEL.toString());
+                    mRefreshAction.setGraphic(MaterialIcon._Navigation.CANCEL.getImageView(getIconSizeToolBarInt()));
+                    mActions.forEach((action) -> {
+                        action.setDisabled(true);
+                    });
+                    mRefreshAction.setDisabled(false);
+                    break;
 
-            case STARTABLE:
-                mRefreshAction.setText(Dict.REFRESH.toString());
-                mRefreshAction.setGraphic(MaterialIcon._Navigation.REFRESH.getImageView(getIconSizeToolBarInt()));
-                setDisable(false);
-                break;
-        }
+                case STARTABLE:
+                    mRefreshAction.setText(Dict.REFRESH.toString());
+                    mRefreshAction.setGraphic(MaterialIcon._Navigation.REFRESH.getImageView(getIconSizeToolBarInt()));
+                    try {
+                        mActions.forEach((action) -> {
+                            action.setDisabled(false);
+                        });
+                        FxHelper.disableControls(mBorderPane.getChildrenUnmodifiable(), false, mRefreshButton);
+                    } catch (Exception e) {
+                    }
+                    break;
+            }
+        });
     }
 
     public enum RunState {
