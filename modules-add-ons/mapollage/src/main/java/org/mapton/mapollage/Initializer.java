@@ -17,6 +17,7 @@ package org.mapton.mapollage;
 
 import org.mapton.mapollage.api.MapoSourceManager;
 import org.openide.modules.OnStart;
+import org.openide.windows.WindowManager;
 
 /**
  *
@@ -30,7 +31,9 @@ public class Initializer implements Runnable {
 
     @Override
     public void run() {
-        MapoSourceManager.getInstance().load();
+        WindowManager.getDefault().invokeWhenUIReady(() -> {
+            MapoSourceManager.getInstance().load();
+        });
     }
 
 }

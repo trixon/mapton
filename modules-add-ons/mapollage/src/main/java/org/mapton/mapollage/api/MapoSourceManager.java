@@ -178,8 +178,11 @@ public class MapoSourceManager {
             Exceptions.printStackTrace(ex);
         }
 
-        mItems.get().setAll(loadedItems);
-        Mapton.getGlobalState().put(Mapo.KEY_SOURCE_UPDATED, this);
+        final ArrayList<MapoSource> items = loadedItems;
+        Platform.runLater(() -> {
+            mItems.get().setAll(items);
+            Mapton.getGlobalState().put(Mapo.KEY_SOURCE_UPDATED, this);
+        });
     }
 
     public void removeAll(MapoSource... localGrids) {

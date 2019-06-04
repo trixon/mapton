@@ -237,7 +237,7 @@ public class MapoSource {
 
     @Override
     public String toString() {
-        return mName;
+        return String.format("%s (%d)", mName, getCollection().getPhotos().size());
     }
 
 }

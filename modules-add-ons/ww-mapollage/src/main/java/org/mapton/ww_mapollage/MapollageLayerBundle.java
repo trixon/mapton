@@ -91,6 +91,10 @@ public class MapollageLayerBundle extends LayerBundle {
     }
 
     private void refresh() {
+        if (!mLayer.isEnabled()) {
+            return;
+        }
+
         mLayer.removeAllIcons();
 
         for (MapoSource source : mManager.getItems()) {
