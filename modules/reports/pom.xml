@@ -18,7 +18,6 @@
                 <configuration>
                     <publicPackages>
                         <publicPackage>org.mapton.reports.api</publicPackage>
-                        <publicPackage>j2html.*</publicPackage>
                     </publicPackages>
                 </configuration>
             </plugin>
@@ -69,10 +68,6 @@
         </dependency>
 
         <!-- Other -->
-        <dependency>
-            <groupId>com.j2html</groupId>
-            <artifactId>j2html</artifactId>
-        </dependency>
     </dependencies>
     <properties>
         <netbeans.hint.license>apache20</netbeans.hint.license>

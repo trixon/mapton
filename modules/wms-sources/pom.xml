@@ -29,7 +29,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
                 <configuration>
                     <showDeprecation>true</showDeprecation>
                 </configuration>
@@ -67,10 +66,6 @@
         </dependency>
 
         <!-- Other -->
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-        </dependency>
     </dependencies>
     <name>wms-sources</name>
     <properties>
