@@ -19,6 +19,7 @@ import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.IconLayer;
 import gov.nasa.worldwind.render.UserFacingIcon;
 import java.awt.Dimension;
+import java.beans.PropertyChangeEvent;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -64,16 +65,6 @@ public class MapollageLayerBundle extends LayerBundle {
     public void populate() throws Exception {
         getLayers().add(mLayer);
 
-        GlobalState globalState = Mapton.getGlobalState();
-        globalState.addListener((GlobalStateChangeEvent evt) -> {
-            refresh();
-        }, Mapo.KEY_MAPO);
-
-        globalState.addListener((GlobalStateChangeEvent evt) -> {
-            mSettings = evt.getValue();
-            refresh();
-        }, Mapo.KEY_SETTINGS_UPDATED);
-
         setPopulated(true);
     }
 
@@ -88,6 +79,21 @@ public class MapollageLayerBundle extends LayerBundle {
     }
 
     private void initListeners() {
+        GlobalState globalState = Mapton.getGlobalState();
+        globalState.addListener((GlobalStateChangeEvent evt) -> {
+            refresh();
+        }, Mapo.KEY_MAPO);
+
+        globalState.addListener((GlobalStateChangeEvent evt) -> {
+            mSettings = evt.getValue();
+            refresh();
+        }, Mapo.KEY_SETTINGS_UPDATED);
+
+        mLayer.addPropertyChangeListener((PropertyChangeEvent evt) -> {
+            if (evt.getPropertyName().equals("Enabled") && mLayer.isEnabled()) {
+                refresh();
+            }
+        });
     }
 
     private void refresh() {
