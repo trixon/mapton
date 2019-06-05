@@ -67,7 +67,7 @@ public final class MapollageTopComponent extends MTopComponent implements MMapMa
     }
 
     private Scene createScene() {
-        Label titleLabel = Mapton.createTitleDev("Mapollage");
+        Label titleLabel = Mapton.createTitle("Mapollage");
         Tabs tabs = new Tabs();
         BorderPane innerBorderPane = new BorderPane(tabs);
         Button refreshButton = new Button(Dict.REFRESH.toString());
@@ -76,8 +76,7 @@ public final class MapollageTopComponent extends MTopComponent implements MMapMa
             Mapton.getGlobalState().put(Mapo.KEY_MAPO, tabs.getMapo());
         });
 
-        innerBorderPane.setTop(refreshButton);
-
+        //innerBorderPane.setTop(refreshButton);
         mRoot = new BorderPane(innerBorderPane);
         mRoot.setTop(titleLabel);
         titleLabel.prefWidthProperty().bind(mRoot.widthProperty());

@@ -28,6 +28,15 @@ public class MapoSettings {
     private LocalDate mHighDate;
     @SerializedName("low_date")
     private LocalDate mLowDate;
+    @SerializedName("plot_paths")
+    private boolean mPlotPaths;
+    @SerializedName("split_by")
+    private SplitBy mSplitBy = SplitBy.MONTH;
+    @SerializedName("width")
+    private Double mWidth = 2.0;
+
+    public MapoSettings() {
+    }
 
     public LocalDate getHighDate() {
         return mHighDate;
@@ -35,6 +44,18 @@ public class MapoSettings {
 
     public LocalDate getLowDate() {
         return mLowDate;
+    }
+
+    public SplitBy getSplitBy() {
+        return mSplitBy;
+    }
+
+    public Double getWidth() {
+        return mWidth;
+    }
+
+    public boolean isPlotPaths() {
+        return mPlotPaths;
     }
 
     public void setHighDate(LocalDate highDate) {
@@ -45,4 +66,24 @@ public class MapoSettings {
         mLowDate = lowDate;
     }
 
+    public void setPlotPaths(boolean plotPaths) {
+        mPlotPaths = plotPaths;
+    }
+
+    public void setSplitBy(SplitBy splitBy) {
+        mSplitBy = splitBy;
+    }
+
+    public void setWidth(Double width) {
+        mWidth = width;
+    }
+
+    public enum SplitBy {
+        NONE,
+        HOUR,
+        DAY,
+        WEEK,
+        MONTH,
+        YEAR;
+    }
 }

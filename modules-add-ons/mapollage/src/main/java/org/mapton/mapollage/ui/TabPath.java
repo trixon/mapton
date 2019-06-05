@@ -15,14 +15,25 @@
  */
 package org.mapton.mapollage.ui;
 
+import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
+import javafx.scene.control.ButtonBase;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.Spinner;
+import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import org.mapton.api.Mapton;
+import org.mapton.mapollage.Options;
 import org.mapton.mapollage.api.Mapo;
+import org.mapton.mapollage.api.MapoSettings;
+import org.mapton.mapollage.api.MapoSettings.SplitBy;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
 
@@ -33,6 +44,8 @@ import se.trixon.almond.util.fx.FxHelper;
 public class TabPath extends TabBase {
 
     private final CheckBox mDrawPathCheckBox = new CheckBox(mBundle.getString("TabPath.drawPathCheckBox"));
+    private final Options mOptions = Options.getInstance();
+    private VBox mRoot;
     private final RadioButton mSplitByDayRadioButton = new RadioButton(Dict.Time.DAY.toString());
     private final RadioButton mSplitByHourRadioButton = new RadioButton(Dict.Time.HOUR.toString());
     private final RadioButton mSplitByMonthRadioButton = new RadioButton(Dict.Time.MONTH.toString());
@@ -46,14 +59,15 @@ public class TabPath extends TabBase {
         setText(Dict.Geometry.PATH.toString());
         mMapo = mapo;
         createUI();
-//        load();
+        load();
+        initListeners();
     }
 
     private void createUI() {
-        VBox vbox = new VBox();
+        mRoot = new VBox();
         VBox pathBox = new VBox();
 
-        setScrollPaneContent(vbox);
+        setScrollPaneContent(mRoot);
         Label widthLabel = new Label(Dict.Geometry.WIDTH.toString());
         Label splitByLabel = new Label(Dict.SPLIT_BY.toString());
 
@@ -80,7 +94,7 @@ public class TabPath extends TabBase {
         );
         pathBox.disableProperty().bind(mDrawPathCheckBox.selectedProperty().not());
 
-        vbox.getChildren().addAll(
+        mRoot.getChildren().addAll(
                 mDrawPathCheckBox,
                 pathBox
         );
@@ -99,4 +113,88 @@ public class TabPath extends TabBase {
         );
     }
 
+    private void initListeners() {
+        EventHandler<ActionEvent> event = (evt) -> {
+            MapoSettings settings = mMapo.getSettings();
+            settings.setPlotPaths(mDrawPathCheckBox.isSelected());
+            settings.setWidth(mWidthSpinner.getValue());
+
+            SplitBy splitBy = null;
+            Toggle t = mToggleGroup.getSelectedToggle();
+
+            if (t == mSplitByHourRadioButton) {
+                splitBy = SplitBy.HOUR;
+            } else if (t == mSplitByDayRadioButton) {
+                splitBy = SplitBy.DAY;
+            } else if (t == mSplitByWeekRadioButton) {
+                splitBy = SplitBy.WEEK;
+            } else if (t == mSplitByMonthRadioButton) {
+                splitBy = SplitBy.MONTH;
+            } else if (t == mSplitByYearRadioButton) {
+                splitBy = SplitBy.YEAR;
+            } else if (t == mSplitByNoneRadioButton) {
+                splitBy = SplitBy.NONE;
+            }
+
+            settings.setSplitBy(splitBy);
+
+            mOptions.put(Options.KEY_SETTINGS, Mapo.getGson().toJson(settings));
+            Mapton.getGlobalState().put(Mapo.KEY_SETTINGS_UPDATED, settings);
+        };
+
+        initListeners(mRoot, event);
+        mWidthSpinner.valueProperty().addListener((ObservableValue<? extends Double> ov, Double t, Double t1) -> {
+            event.handle(null);
+        });
+    }
+
+    private void initListeners(Pane pane, EventHandler<ActionEvent> event) {
+        for (Node node : pane.getChildren()) {
+            if (node instanceof Pane) {
+                initListeners((Pane) node, event);
+            } else if (node instanceof ButtonBase) {
+                ((ButtonBase) node).setOnAction(event);
+            }
+        }
+    }
+
+    private void load() {
+        MapoSettings settings = mMapo.getSettings();
+
+        mDrawPathCheckBox.setSelected(settings.isPlotPaths());
+        mWidthSpinner.getValueFactory().setValue(settings.getWidth());
+
+        RadioButton splitByRadioButton;
+
+        switch (settings.getSplitBy()) {
+            case HOUR:
+                splitByRadioButton = mSplitByHourRadioButton;
+                break;
+
+            case DAY:
+                splitByRadioButton = mSplitByDayRadioButton;
+                break;
+
+            case WEEK:
+                splitByRadioButton = mSplitByWeekRadioButton;
+                break;
+
+            case MONTH:
+                splitByRadioButton = mSplitByMonthRadioButton;
+                break;
+
+            case YEAR:
+                splitByRadioButton = mSplitByYearRadioButton;
+                break;
+
+            case NONE:
+                splitByRadioButton = mSplitByNoneRadioButton;
+                break;
+
+            default:
+                throw new AssertionError();
+        }
+
+        splitByRadioButton.setSelected(true);
+    }
 }

@@ -43,7 +43,6 @@ public class Tabs extends TabPane {
         setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
 
         mPathTab = new TabPath(mMapo);
-        mPathTab.setDisable(true);
         mSourceTab = new TabSources(mMapo);
 
         getTabs().setAll(

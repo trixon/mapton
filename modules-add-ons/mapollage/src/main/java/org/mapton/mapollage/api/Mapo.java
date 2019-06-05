@@ -17,6 +17,7 @@ package org.mapton.mapollage.api;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.mapton.mapollage.Options;
 
 /**
  *
@@ -33,6 +34,7 @@ public class Mapo {
             .serializeNulls()
             .setPrettyPrinting()
             .create();
+    private final Options mOptions = Options.getInstance();
     private MapoSettings mSettings = new MapoSettings();
 
     public static Gson getGson() {
@@ -44,14 +46,11 @@ public class Mapo {
     }
 
     private Mapo() {
+        mSettings = getGson().fromJson(mOptions.get(Options.KEY_SETTINGS, getGson().toJson(new MapoSettings())), MapoSettings.class);
     }
 
     public MapoSettings getSettings() {
         return mSettings;
-    }
-
-    public void setSettings(MapoSettings settings) {
-        mSettings = settings;
     }
 
     private static class Holder {

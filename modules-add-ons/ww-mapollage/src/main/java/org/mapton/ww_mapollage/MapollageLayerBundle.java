@@ -96,12 +96,19 @@ public class MapollageLayerBundle extends LayerBundle {
         });
     }
 
+    private void plotPaths() {
+        System.out.println("doPlot");
+    }
+
     private void refresh() {
         if (!mLayer.isEnabled()) {
             return;
         }
 
         mLayer.removeAllIcons();
+        if (mSettings.isPlotPaths()) {
+            plotPaths();
+        }
 
         for (MapoSource source : mManager.getItems()) {
             if (source.isVisible()) {
