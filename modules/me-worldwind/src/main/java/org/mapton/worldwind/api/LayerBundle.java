@@ -60,4 +60,8 @@ public abstract class LayerBundle {
         mPopulated = populated;
     }
 
+    public void setVisibleInLayerManager(Layer layer, boolean visibility) {
+        layer.setValue(WWUtil.KEY_HIDE_FROM_LAYER_MANAGER, !visibility);
+    }
+
 }

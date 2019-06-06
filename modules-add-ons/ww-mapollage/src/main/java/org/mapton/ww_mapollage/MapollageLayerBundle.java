@@ -110,8 +110,8 @@ public class MapollageLayerBundle extends LayerBundle {
         mRenderableLayer.setPickEnabled(false);
         mRenderableLayer.setName(String.format("Mappolage - %s", Dict.Geometry.PATHS.toString()));
         mRenderableLayer.setEnabled(true);
-        mRenderableLayer.setValue(WWUtil.KEY_HIDE_FROM_LAYER_MANAGER, true);
 
+        setVisibleInLayerManager(mRenderableLayer, false);
         setName("Mapollage");
     }
 
