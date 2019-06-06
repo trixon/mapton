@@ -178,24 +178,24 @@ public class TabSources extends TabBase {
         final IndexedCheckModel<MapoSource> checkModel = mListView.getCheckModel();
 
         checkModel.getCheckedItems().addListener((ListChangeListener.Change<? extends MapoSource> c) -> {
-//            Platform.runLater(() -> {
-            mDateSelectionPane.setDisable(true);
-            mManager.getItems().forEach((source) -> {
-                source.setVisible(checkModel.isChecked(source));
-                if (source.isVisible()) {
-                    mDateSelectionPane.setDisable(false);
+            Platform.runLater(() -> {
+                mDateSelectionPane.setDisable(true);
+                mManager.getItems().forEach((source) -> {
+                    source.setVisible(checkModel.isChecked(source));
+                    if (source.isVisible()) {
+                        mDateSelectionPane.setDisable(false);
+                    }
+                });
+
+                try {
+                    mManager.save();
+                } catch (IOException ex) {
+                    Exceptions.printStackTrace(ex);
                 }
+
+                Mapton.getGlobalState().put(Mapo.KEY_SOURCE_UPDATED, mManager);
+                Mapton.getGlobalState().put(Mapo.KEY_SETTINGS_UPDATED, mMapo.getSettings());
             });
-
-            try {
-                mManager.save();
-            } catch (IOException ex) {
-                Exceptions.printStackTrace(ex);
-            }
-
-            Mapton.getGlobalState().put(Mapo.KEY_SOURCE_UPDATED, mManager);
-            Mapton.getGlobalState().put(Mapo.KEY_SETTINGS_UPDATED, mMapo.getSettings());
-//            });
         });
 
     }
