@@ -15,8 +15,13 @@
  */
 package org.mapton.ww_mapollage;
 
+import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.IconLayer;
+import gov.nasa.worldwind.layers.RenderableLayer;
+import gov.nasa.worldwind.render.BasicShapeAttributes;
+import gov.nasa.worldwind.render.Material;
+import gov.nasa.worldwind.render.Path;
 import gov.nasa.worldwind.render.UserFacingIcon;
 import java.awt.Dimension;
 import java.beans.PropertyChangeEvent;
@@ -24,14 +29,18 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.TreeMap;
 import org.apache.commons.io.FilenameUtils;
 import org.mapton.api.MKey;
 import org.mapton.api.Mapton;
 import org.mapton.mapollage.api.Mapo;
 import org.mapton.mapollage.api.MapoPhoto;
 import org.mapton.mapollage.api.MapoSettings;
+import org.mapton.mapollage.api.MapoSettings.SplitBy;
 import org.mapton.mapollage.api.MapoSource;
 import org.mapton.mapollage.api.MapoSourceManager;
 import org.mapton.worldwind.api.LayerBundle;
@@ -52,8 +61,10 @@ import se.trixon.almond.util.SystemHelper;
 public class MapollageLayerBundle extends LayerBundle {
 
     private final SimpleDateFormat mDateFormat = new SimpleDateFormat("yyyy-MM-dd HH.mm.ss");
-    private final IconLayer mLayer = new IconLayer();
+    private final IconLayer mIconLayer = new IconLayer();
+    private final ArrayList<LineNode> mLineNodes = new ArrayList<>();
     private final MapoSourceManager mManager = MapoSourceManager.getInstance();
+    private final RenderableLayer mRenderableLayer = new RenderableLayer();
     private MapoSettings mSettings;
 
     public MapollageLayerBundle() {
@@ -63,7 +74,8 @@ public class MapollageLayerBundle extends LayerBundle {
 
     @Override
     public void populate() throws Exception {
-        getLayers().add(mLayer);
+        getLayers().add(mIconLayer);
+        getLayers().add(mRenderableLayer);
 
         setPopulated(true);
     }
@@ -72,9 +84,33 @@ public class MapollageLayerBundle extends LayerBundle {
         return String.format("%s#%s", category, value);
     }
 
+    private String getPattern(SplitBy splitBy) {
+        switch (splitBy) {
+            case NONE:
+                return "'NO_SPLIT'";
+            case HOUR:
+                return "yyyyMMddHH";
+            case DAY:
+                return "yyyyMMdd";
+            case WEEK:
+                return "yyyyww";
+            case MONTH:
+                return "yyyyMM";
+            case YEAR:
+                return "yyyy";
+            default:
+                return null;
+        }
+    }
+
     private void init() {
-        mLayer.setName("Mapollage");
-        mLayer.setEnabled(true);
+        mIconLayer.setName("Mapollage");
+        mIconLayer.setEnabled(true);
+
+        mRenderableLayer.setPickEnabled(false);
+        mRenderableLayer.setName(String.format("Mappolage - %s", Dict.Geometry.PATHS.toString()));
+        mRenderableLayer.setEnabled(true);
+
         setName("Mapollage");
     }
 
@@ -89,26 +125,77 @@ public class MapollageLayerBundle extends LayerBundle {
             refresh();
         }, Mapo.KEY_SETTINGS_UPDATED);
 
-        mLayer.addPropertyChangeListener((PropertyChangeEvent evt) -> {
-            if (evt.getPropertyName().equals("Enabled") && mLayer.isEnabled()) {
+        mIconLayer.addPropertyChangeListener((PropertyChangeEvent evt) -> {
+            if (evt.getPropertyName().equals("Enabled") && mIconLayer.isEnabled()) {
                 refresh();
             }
         });
     }
 
+    private void plotPath(BasicShapeAttributes attributes, ArrayList<Position> positions) {
+        Path path = new Path(positions);
+        path.setFollowTerrain(true);
+        path.setAttributes(attributes);
+        path.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
+        mRenderableLayer.addRenderable(path);
+    }
+
     private void plotPaths() {
-        System.out.println("doPlot");
+        BasicShapeAttributes pathAttributes = new BasicShapeAttributes();
+        pathAttributes.setDrawOutline(true);
+        pathAttributes.setOutlineOpacity(0.8);
+        pathAttributes.setOutlineWidth(mSettings.getWidth());
+        pathAttributes.setOutlineMaterial(Material.GREEN);
+
+        BasicShapeAttributes gapAttributes = (BasicShapeAttributes) pathAttributes.copy();
+        gapAttributes.setOutlineMaterial(Material.RED);
+
+        Collections.sort(mLineNodes, (LineNode o1, LineNode o2) -> o1.getDate().compareTo(o2.getDate()));
+        SimpleDateFormat dateFormat = new SimpleDateFormat(getPattern(mSettings.getSplitBy()));
+
+        TreeMap<String, ArrayList<LineNode>> periodLineNodeMap = new TreeMap<>();
+        mLineNodes.forEach((node) -> {
+            periodLineNodeMap.computeIfAbsent(dateFormat.format(node.getDate()), k -> new ArrayList<>()).add(node);
+        });
+
+        //Add path
+        for (ArrayList<LineNode> nodes : periodLineNodeMap.values()) {
+            if (nodes.size() > 1) {
+                ArrayList<Position> positions = new ArrayList<>();
+
+                nodes.forEach((node) -> {
+                    positions.add(Position.fromDegrees(node.getLat(), node.getLon()));
+                });
+
+                plotPath(pathAttributes, positions);
+            }
+        }
+
+        //Add path gap
+        ArrayList<LineNode> previousNodes = null;
+        for (ArrayList<LineNode> nodes : periodLineNodeMap.values()) {
+            if (previousNodes != null) {
+                LineNode prevLast = previousNodes.get(previousNodes.size() - 1);
+                LineNode currentFirst = nodes.get(0);
+
+                ArrayList<Position> positions = new ArrayList<>();
+                positions.add(Position.fromDegrees(prevLast.getLat(), prevLast.getLon()));
+                positions.add(Position.fromDegrees(currentFirst.getLat(), currentFirst.getLon()));
+                plotPath(gapAttributes, positions);
+            }
+
+            previousNodes = nodes;
+        }
     }
 
     private void refresh() {
-        if (!mLayer.isEnabled()) {
+        if (!mIconLayer.isEnabled()) {
             return;
         }
 
-        mLayer.removeAllIcons();
-        if (mSettings.isPlotPaths()) {
-            plotPaths();
-        }
+        mIconLayer.removeAllIcons();
+        mRenderableLayer.removeAllRenderables();
+        mLineNodes.clear();
 
         for (MapoSource source : mManager.getItems()) {
             if (source.isVisible()) {
@@ -148,10 +235,16 @@ public class MapollageLayerBundle extends LayerBundle {
                             }
                         });
 
-                        mLayer.addIcon(icon);
+                        mLineNodes.add(new LineNode(photo.getDate(), photo.getLat(), photo.getLon()));
+
+                        mIconLayer.addIcon(icon);
                     }
                 }
             }
+        }
+
+        if (mSettings.isPlotPaths() && mLineNodes.size() > 1) {
+            plotPaths();
         }
 
         LayerBundleManager.getInstance().redraw();
