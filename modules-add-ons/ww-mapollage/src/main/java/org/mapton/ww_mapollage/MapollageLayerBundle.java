@@ -110,6 +110,7 @@ public class MapollageLayerBundle extends LayerBundle {
         mRenderableLayer.setPickEnabled(false);
         mRenderableLayer.setName(String.format("Mappolage - %s", Dict.Geometry.PATHS.toString()));
         mRenderableLayer.setEnabled(true);
+        mRenderableLayer.setValue(WWUtil.KEY_HIDE_FROM_LAYER_MANAGER, true);
 
         setName("Mapollage");
     }
@@ -126,8 +127,11 @@ public class MapollageLayerBundle extends LayerBundle {
         }, Mapo.KEY_SETTINGS_UPDATED);
 
         mIconLayer.addPropertyChangeListener((PropertyChangeEvent evt) -> {
-            if (evt.getPropertyName().equals("Enabled") && mIconLayer.isEnabled()) {
-                refresh();
+            if (evt.getPropertyName().equals("Enabled")) {
+                mRenderableLayer.setEnabled(mIconLayer.isEnabled());
+                if (mIconLayer.isEnabled()) {
+                    refresh();
+                }
             }
         });
     }

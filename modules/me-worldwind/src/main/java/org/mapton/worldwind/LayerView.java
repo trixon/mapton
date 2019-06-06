@@ -20,10 +20,15 @@ import java.beans.PropertyChangeEvent;
 import java.util.HashSet;
 import java.util.prefs.Preferences;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.SortedList;
 import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.scene.layout.BorderPane;
+import org.apache.commons.lang3.BooleanUtils;
 import org.controlsfx.control.CheckListView;
+import org.mapton.worldwind.api.WWUtil;
 import org.openide.util.NbPreferences;
 
 /**
@@ -47,8 +52,31 @@ public class LayerView extends BorderPane {
     }
 
     void refresh(WorldWindowPanel map) {
-        mMap = map;
-        mListView.setItems(mMap.getCustomLayers().sorted((Layer o1, Layer o2) -> o1.getName().compareTo(o2.getName())));
+        if (mMap == null) {
+            mMap = map;
+            mMap.getCustomLayers().addListener((ListChangeListener.Change<? extends Layer> change) -> {
+                refresh(map);
+            });
+        }
+
+        SortedList<Layer> sortedLayers = mMap.getCustomLayers().sorted((Layer o1, Layer o2) -> o1.getName().compareTo(o2.getName()));
+        ObservableList<Layer> layers = FXCollections.observableArrayList();
+
+        for (Layer layer : sortedLayers) {
+            Object hiddenValue = layer.getValue(WWUtil.KEY_HIDE_FROM_LAYER_MANAGER);
+            boolean hidden = hiddenValue != null;
+            if (hidden) {
+                hidden = BooleanUtils.toBoolean(layer.getValue(WWUtil.KEY_HIDE_FROM_LAYER_MANAGER).toString());
+            }
+
+            if (!hidden) {
+                layers.add(layer);
+            }
+        }
+
+        //Don't use setAll...
+        mListView.getItems().clear();
+        mListView.getItems().addAll(layers);
 
         mListView.setCellFactory(lv -> new CheckBoxListCell<Layer>(mListView::getItemBooleanProperty) {
             @Override
