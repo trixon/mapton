@@ -22,6 +22,8 @@ import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ColorPicker;
+import javafx.scene.control.ComboBoxBase;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.Spinner;
@@ -29,6 +31,7 @@ import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import org.mapton.api.Mapton;
 import org.mapton.mapollage.Options;
 import org.mapton.mapollage.api.Mapo;
@@ -43,7 +46,9 @@ import se.trixon.almond.util.fx.FxHelper;
  */
 public class TabPath extends TabBase {
 
-    private final CheckBox mDrawPathCheckBox = new CheckBox(mBundle.getString("TabPath.drawPathCheckBox"));
+    private final CheckBox mDrawGapCheckBox = new CheckBox(mBundle.getString("TabPath.drawGapCheckBox"));
+    private final CheckBox mDrawTrackCheckBox = new CheckBox(mBundle.getString("TabPath.drawTrackCheckBox"));
+    private final ColorPicker mGapColorPicker = new ColorPicker();
     private final Options mOptions = Options.getInstance();
     private VBox mRoot;
     private final RadioButton mSplitByDayRadioButton = new RadioButton(Dict.Time.DAY.toString());
@@ -53,10 +58,11 @@ public class TabPath extends TabBase {
     private final RadioButton mSplitByWeekRadioButton = new RadioButton(Dict.Time.WEEK.toString());
     private final RadioButton mSplitByYearRadioButton = new RadioButton(Dict.Time.YEAR.toString());
     private final ToggleGroup mToggleGroup = new ToggleGroup();
+    private final ColorPicker mTrackColorPicker = new ColorPicker();
     private final Spinner<Double> mWidthSpinner = new Spinner(1.0, 10.0, 1.0, 0.1);
 
     public TabPath(Mapo mapo) {
-        setText(Dict.Geometry.PATH.toString());
+        setText(Dict.TRACKS.toString());
         mMapo = mapo;
         createUI();
         load();
@@ -65,11 +71,13 @@ public class TabPath extends TabBase {
 
     private void createUI() {
         mRoot = new VBox();
-        VBox pathBox = new VBox();
+        VBox trackBox = new VBox();
 
         setScrollPaneContent(mRoot);
         Label widthLabel = new Label(Dict.Geometry.WIDTH.toString());
         Label splitByLabel = new Label(Dict.SPLIT_BY.toString());
+        Label gapColorLabel = new Label(mBundle.getString("TabPath.colorGap"));
+        Label trackColorLabel = new Label(mBundle.getString("TabPath.colorTrack"));
 
         mWidthSpinner.setEditable(true);
         FxHelper.autoCommitSpinners(mWidthSpinner);
@@ -81,9 +89,13 @@ public class TabPath extends TabBase {
         mSplitByYearRadioButton.setToggleGroup(mToggleGroup);
         mSplitByNoneRadioButton.setToggleGroup(mToggleGroup);
 
-        pathBox.getChildren().addAll(
+        trackBox.getChildren().addAll(
                 widthLabel,
                 mWidthSpinner,
+                trackColorLabel,
+                mTrackColorPicker,
+                gapColorLabel,
+                mGapColorPicker,
                 splitByLabel,
                 mSplitByHourRadioButton,
                 mSplitByDayRadioButton,
@@ -92,17 +104,22 @@ public class TabPath extends TabBase {
                 mSplitByYearRadioButton,
                 mSplitByNoneRadioButton
         );
-        pathBox.disableProperty().bind(mDrawPathCheckBox.selectedProperty().not());
+
+        trackBox.disableProperty().bind(mDrawTrackCheckBox.selectedProperty().or(mDrawGapCheckBox.selectedProperty()).not());
 
         mRoot.getChildren().addAll(
-                mDrawPathCheckBox,
-                pathBox
+                mDrawTrackCheckBox,
+                mDrawGapCheckBox,
+                trackBox
         );
 
         FxHelper.setPadding(
                 new Insets(8, 0, 0, 0),
-                mDrawPathCheckBox,
+                mDrawTrackCheckBox,
+                mDrawGapCheckBox,
                 widthLabel,
+                trackColorLabel,
+                gapColorLabel,
                 splitByLabel,
                 mSplitByHourRadioButton,
                 mSplitByDayRadioButton,
@@ -115,31 +132,7 @@ public class TabPath extends TabBase {
 
     private void initListeners() {
         EventHandler<ActionEvent> event = (evt) -> {
-            MapoSettings settings = mMapo.getSettings();
-            settings.setPlotPaths(mDrawPathCheckBox.isSelected());
-            settings.setWidth(mWidthSpinner.getValue());
-
-            SplitBy splitBy = null;
-            Toggle t = mToggleGroup.getSelectedToggle();
-
-            if (t == mSplitByHourRadioButton) {
-                splitBy = SplitBy.HOUR;
-            } else if (t == mSplitByDayRadioButton) {
-                splitBy = SplitBy.DAY;
-            } else if (t == mSplitByWeekRadioButton) {
-                splitBy = SplitBy.WEEK;
-            } else if (t == mSplitByMonthRadioButton) {
-                splitBy = SplitBy.MONTH;
-            } else if (t == mSplitByYearRadioButton) {
-                splitBy = SplitBy.YEAR;
-            } else if (t == mSplitByNoneRadioButton) {
-                splitBy = SplitBy.NONE;
-            }
-
-            settings.setSplitBy(splitBy);
-
-            mOptions.put(Options.KEY_SETTINGS, Mapo.getGson().toJson(settings));
-            Mapton.getGlobalState().put(Mapo.KEY_SETTINGS_UPDATED, settings);
+            save();
         };
 
         initListeners(mRoot, event);
@@ -154,6 +147,8 @@ public class TabPath extends TabBase {
                 initListeners((Pane) node, event);
             } else if (node instanceof ButtonBase) {
                 ((ButtonBase) node).setOnAction(event);
+            } else if (node instanceof ComboBoxBase) {
+                ((ComboBoxBase) node).setOnAction(event);
             }
         }
     }
@@ -161,8 +156,23 @@ public class TabPath extends TabBase {
     private void load() {
         MapoSettings settings = mMapo.getSettings();
 
-        mDrawPathCheckBox.setSelected(settings.isPlotPaths());
+        mDrawTrackCheckBox.setSelected(settings.isPlotTracks());
+        mDrawGapCheckBox.setSelected(settings.isPlotGaps());
         mWidthSpinner.getValueFactory().setValue(settings.getWidth());
+
+        Color colorTrack = Color.RED;
+        try {
+            colorTrack = FxHelper.colorFromHexRGBA(settings.getColorTrack());
+        } catch (Exception e) {
+        }
+        mTrackColorPicker.setValue(colorTrack);
+
+        Color colorGap = Color.BLACK;
+        try {
+            colorGap = FxHelper.colorFromHexRGBA(settings.getColorGap());
+        } catch (Exception e) {
+        }
+        mGapColorPicker.setValue(colorGap);
 
         RadioButton splitByRadioButton;
 
@@ -196,5 +206,36 @@ public class TabPath extends TabBase {
         }
 
         splitByRadioButton.setSelected(true);
+    }
+
+    private void save() {
+        MapoSettings settings = mMapo.getSettings();
+        settings.setPlotTracks(mDrawTrackCheckBox.isSelected());
+        settings.setPlotGaps(mDrawGapCheckBox.isSelected());
+        settings.setWidth(mWidthSpinner.getValue());
+        settings.setColorGap(FxHelper.colorToHexRGB(mGapColorPicker.getValue()));
+        settings.setColorTrack(FxHelper.colorToHexRGB(mTrackColorPicker.getValue()));
+
+        SplitBy splitBy = null;
+        Toggle t = mToggleGroup.getSelectedToggle();
+
+        if (t == mSplitByHourRadioButton) {
+            splitBy = SplitBy.HOUR;
+        } else if (t == mSplitByDayRadioButton) {
+            splitBy = SplitBy.DAY;
+        } else if (t == mSplitByWeekRadioButton) {
+            splitBy = SplitBy.WEEK;
+        } else if (t == mSplitByMonthRadioButton) {
+            splitBy = SplitBy.MONTH;
+        } else if (t == mSplitByYearRadioButton) {
+            splitBy = SplitBy.YEAR;
+        } else if (t == mSplitByNoneRadioButton) {
+            splitBy = SplitBy.NONE;
+        }
+
+        settings.setSplitBy(splitBy);
+
+        mOptions.put(Options.KEY_SETTINGS, Mapo.getGson().toJson(settings));
+        Mapton.getGlobalState().put(Mapo.KEY_SETTINGS_UPDATED, settings);
     }
 }

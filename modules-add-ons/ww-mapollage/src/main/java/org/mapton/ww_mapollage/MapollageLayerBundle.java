@@ -52,6 +52,7 @@ import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.GlobalState;
 import se.trixon.almond.util.GlobalStateChangeEvent;
 import se.trixon.almond.util.SystemHelper;
+import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
@@ -136,7 +137,7 @@ public class MapollageLayerBundle extends LayerBundle {
         });
     }
 
-    private void plotPath(BasicShapeAttributes attributes, ArrayList<Position> positions) {
+    private void plotTrack(BasicShapeAttributes attributes, ArrayList<Position> positions) {
         Path path = new Path(positions);
         path.setFollowTerrain(true);
         path.setAttributes(attributes);
@@ -144,15 +145,15 @@ public class MapollageLayerBundle extends LayerBundle {
         mRenderableLayer.addRenderable(path);
     }
 
-    private void plotPaths() {
-        BasicShapeAttributes pathAttributes = new BasicShapeAttributes();
-        pathAttributes.setDrawOutline(true);
-        pathAttributes.setOutlineOpacity(0.8);
-        pathAttributes.setOutlineWidth(mSettings.getWidth());
-        pathAttributes.setOutlineMaterial(Material.GREEN);
+    private void plotTracks() {
+        BasicShapeAttributes trackAttributes = new BasicShapeAttributes();
+        trackAttributes.setDrawOutline(true);
+        trackAttributes.setOutlineOpacity(0.8);
+        trackAttributes.setOutlineWidth(mSettings.getWidth());
+        trackAttributes.setOutlineMaterial(new Material(FxHelper.colorToColor(FxHelper.colorFromHexRGBA(mSettings.getColorTrack()))));
 
-        BasicShapeAttributes gapAttributes = (BasicShapeAttributes) pathAttributes.copy();
-        gapAttributes.setOutlineMaterial(Material.RED);
+        BasicShapeAttributes gapAttributes = (BasicShapeAttributes) trackAttributes.copy();
+        gapAttributes.setOutlineMaterial(new Material(FxHelper.colorToColor(FxHelper.colorFromHexRGBA(mSettings.getColorGap()))));
 
         Collections.sort(mLineNodes, (LineNode o1, LineNode o2) -> o1.getDate().compareTo(o2.getDate()));
         SimpleDateFormat dateFormat = new SimpleDateFormat(getPattern(mSettings.getSplitBy()));
@@ -162,33 +163,37 @@ public class MapollageLayerBundle extends LayerBundle {
             periodLineNodeMap.computeIfAbsent(dateFormat.format(node.getDate()), k -> new ArrayList<>()).add(node);
         });
 
-        //Add path
-        for (ArrayList<LineNode> nodes : periodLineNodeMap.values()) {
-            if (nodes.size() > 1) {
-                ArrayList<Position> positions = new ArrayList<>();
+        if (mSettings.isPlotTracks()) {
+            //Add track
+            for (ArrayList<LineNode> nodes : periodLineNodeMap.values()) {
+                if (nodes.size() > 1) {
+                    ArrayList<Position> positions = new ArrayList<>();
 
-                nodes.forEach((node) -> {
-                    positions.add(Position.fromDegrees(node.getLat(), node.getLon()));
-                });
+                    nodes.forEach((node) -> {
+                        positions.add(Position.fromDegrees(node.getLat(), node.getLon()));
+                    });
 
-                plotPath(pathAttributes, positions);
+                    plotTrack(trackAttributes, positions);
+                }
             }
         }
 
-        //Add path gap
-        ArrayList<LineNode> previousNodes = null;
-        for (ArrayList<LineNode> nodes : periodLineNodeMap.values()) {
-            if (previousNodes != null) {
-                LineNode prevLast = previousNodes.get(previousNodes.size() - 1);
-                LineNode currentFirst = nodes.get(0);
+        if (mSettings.isPlotGaps()) {
+            //Add gap
+            ArrayList<LineNode> previousNodes = null;
+            for (ArrayList<LineNode> nodes : periodLineNodeMap.values()) {
+                if (previousNodes != null) {
+                    LineNode prevLast = previousNodes.get(previousNodes.size() - 1);
+                    LineNode currentFirst = nodes.get(0);
 
-                ArrayList<Position> positions = new ArrayList<>();
-                positions.add(Position.fromDegrees(prevLast.getLat(), prevLast.getLon()));
-                positions.add(Position.fromDegrees(currentFirst.getLat(), currentFirst.getLon()));
-                plotPath(gapAttributes, positions);
+                    ArrayList<Position> positions = new ArrayList<>();
+                    positions.add(Position.fromDegrees(prevLast.getLat(), prevLast.getLon()));
+                    positions.add(Position.fromDegrees(currentFirst.getLat(), currentFirst.getLon()));
+                    plotTrack(gapAttributes, positions);
+                }
+
+                previousNodes = nodes;
             }
-
-            previousNodes = nodes;
         }
     }
 
@@ -247,8 +252,8 @@ public class MapollageLayerBundle extends LayerBundle {
             }
         }
 
-        if (mSettings.isPlotPaths() && mLineNodes.size() > 1) {
-            plotPaths();
+        if (mLineNodes.size() > 1) {
+            plotTracks();
         }
 
         LayerBundleManager.getInstance().redraw();

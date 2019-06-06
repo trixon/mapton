@@ -60,6 +60,9 @@ public class BookmarkPanel extends FxDialogPanel {
     private CheckBox mPlacemarkCheckBox;
     private Spinner<Double> mZoomSpinner;
 
+    public BookmarkPanel() {
+    }
+
     public void load(MBookmark bookmark) {
         mBookmark = bookmark;
         mNameTextField.setText(bookmark.getName());

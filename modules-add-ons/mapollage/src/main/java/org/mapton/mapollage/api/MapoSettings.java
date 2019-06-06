@@ -24,18 +24,32 @@ import java.time.LocalDate;
  */
 public class MapoSettings {
 
+    @SerializedName("color_gap")
+    private String mColorGap = "000000";
+    @SerializedName("color_track")
+    private String mColorTrack = "FF0000";
     @SerializedName("high_date")
     private LocalDate mHighDate;
     @SerializedName("low_date")
     private LocalDate mLowDate;
-    @SerializedName("plot_paths")
-    private boolean mPlotPaths;
+    @SerializedName("plot_gaps")
+    private boolean mPlotGaps = true;
+    @SerializedName("plot_tracks")
+    private boolean mPlotTracks = true;
     @SerializedName("split_by")
     private SplitBy mSplitBy = SplitBy.MONTH;
     @SerializedName("width")
     private Double mWidth = 2.0;
 
     public MapoSettings() {
+    }
+
+    public String getColorGap() {
+        return mColorGap;
+    }
+
+    public String getColorTrack() {
+        return mColorTrack;
     }
 
     public LocalDate getHighDate() {
@@ -54,8 +68,20 @@ public class MapoSettings {
         return mWidth;
     }
 
-    public boolean isPlotPaths() {
-        return mPlotPaths;
+    public boolean isPlotGaps() {
+        return mPlotGaps;
+    }
+
+    public boolean isPlotTracks() {
+        return mPlotTracks;
+    }
+
+    public void setColorGap(String colorGap) {
+        mColorGap = colorGap;
+    }
+
+    public void setColorTrack(String colorTrack) {
+        mColorTrack = colorTrack;
     }
 
     public void setHighDate(LocalDate highDate) {
@@ -66,8 +92,12 @@ public class MapoSettings {
         mLowDate = lowDate;
     }
 
-    public void setPlotPaths(boolean plotPaths) {
-        mPlotPaths = plotPaths;
+    public void setPlotGaps(boolean plotGaps) {
+        mPlotGaps = plotGaps;
+    }
+
+    public void setPlotTracks(boolean plotTracks) {
+        mPlotTracks = plotTracks;
     }
 
     public void setSplitBy(SplitBy splitBy) {
