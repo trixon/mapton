@@ -91,6 +91,7 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
     private final ObservableList<Layer> mCustomLayers = FXCollections.observableArrayList();
     private FlatGlobe mFlatGlobe;
     private Object mLastHighlightObject;
+    private String mLastHighlightText;
 //    private CompoundElevationModel mNormalElevationModel;
     private final ModuleOptions mOptions = ModuleOptions.getInstance();
     private Globe mRoundGlobe;
@@ -348,8 +349,12 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
 
                 if (mLastHighlightObject != null) {
                     if (mLastHighlightObject instanceof PointPlacemark) {
-                        ((PointPlacemark) mLastHighlightObject).setAlwaysOnTop(false);
-                        ((PointPlacemark) mLastHighlightObject).setHighlighted(false);
+                        PointPlacemark pointPlacemark = (PointPlacemark) mLastHighlightObject;
+                        pointPlacemark.setAlwaysOnTop(false);
+                        pointPlacemark.setHighlighted(false);
+                        if (pointPlacemark.hasKey(WWUtil.KEY_HOOVER_TEXT)) {
+                            pointPlacemark.setLabelText(mLastHighlightText);
+                        }
                     } else if (mLastHighlightObject instanceof WWIcon) {
                         ((WWIcon) mLastHighlightObject).setAlwaysOnTop(false);
                         ((WWIcon) mLastHighlightObject).setHighlighted(false);
@@ -361,14 +366,19 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
                 }
 
                 mLastHighlightObject = o;
-                if (o instanceof PointPlacemark) {
-                    ((PointPlacemark) o).setAlwaysOnTop(true);
-                    ((PointPlacemark) o).setHighlighted(true);
-                } else if (o instanceof WWIcon) {
-                    ((WWIcon) o).setAlwaysOnTop(true);
-                    ((WWIcon) o).setHighlighted(true);
-                } else if (o instanceof Highlightable) {
-                    ((Highlightable) o).setHighlighted(true);
+                if (mLastHighlightObject instanceof PointPlacemark) {
+                    PointPlacemark pointPlacemark = (PointPlacemark) mLastHighlightObject;
+                    pointPlacemark.setAlwaysOnTop(true);
+                    pointPlacemark.setHighlighted(true);
+                    if (pointPlacemark.hasKey(WWUtil.KEY_HOOVER_TEXT)) {
+                        mLastHighlightText = pointPlacemark.getLabelText();
+                        pointPlacemark.setLabelText(pointPlacemark.getStringValue(WWUtil.KEY_HOOVER_TEXT));
+                    }
+                } else if (mLastHighlightObject instanceof WWIcon) {
+                    ((WWIcon) mLastHighlightObject).setAlwaysOnTop(true);
+                    ((WWIcon) mLastHighlightObject).setHighlighted(true);
+                } else if (mLastHighlightObject instanceof Highlightable) {
+                    ((Highlightable) mLastHighlightObject).setHighlighted(true);
                 }
 
                 if (mLastHighlightObject instanceof AVList) {
