@@ -78,6 +78,16 @@ public class LayerView extends BorderPane {
         mListView.getItems().clear();
         mListView.getItems().addAll(layers);
 
+        Platform.runLater(() -> {
+            mListView.requestLayout();
+        });
+    }
+
+    private void createUI() {
+        setCenter(mListView);
+    }
+
+    private void initListeners() {
         mListView.setCellFactory(lv -> new CheckBoxListCell<Layer>(mListView::getItemBooleanProperty) {
             @Override
             public void updateItem(Layer layer, boolean empty) {
@@ -124,13 +134,6 @@ public class LayerView extends BorderPane {
                 }
             }
         });
-    }
-
-    private void createUI() {
-        setCenter(mListView);
-    }
-
-    private void initListeners() {
     }
 
     private static class Holder {
