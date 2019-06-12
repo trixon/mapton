@@ -16,6 +16,9 @@
 package org.mapton.worldwind.api;
 
 import gov.nasa.worldwind.layers.Layer;
+import java.beans.PropertyChangeEvent;
+import java.util.Arrays;
+import java.util.HashSet;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -27,11 +30,29 @@ import javafx.collections.ObservableList;
  */
 public abstract class LayerBundle {
 
+    private HashSet<Layer> mChildLayers = new HashSet<>();
     private final ObservableList<Layer> mLayers = FXCollections.observableArrayList();
     private final StringProperty mName = new SimpleStringProperty();
+    private Layer mParentLayer;
     private boolean mPopulated = false;
 
     public LayerBundle() {
+    }
+
+    public void connectChildLayers(Layer parentLayer, Layer... childLayers) {
+        mParentLayer = parentLayer;
+        mChildLayers = new HashSet<>(Arrays.asList(childLayers));
+        for (Layer childLayer : childLayers) {
+            setVisibleInLayerManager(childLayer, false);
+        }
+
+        mParentLayer.addPropertyChangeListener((PropertyChangeEvent evt) -> {
+            for (Layer childLayer : childLayers) {
+                if (evt.getPropertyName().equals("Enabled")) {
+                    childLayer.setEnabled(mParentLayer.isEnabled());
+                }
+            }
+        });
     }
 
     public ObservableList<Layer> getLayers() {
