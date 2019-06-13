@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import javafx.application.Platform;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
@@ -42,7 +43,9 @@ import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.GlobalStateChangeEvent;
 import se.trixon.almond.util.fx.FxHelper;
+import se.trixon.almond.util.fx.control.DateRangePane;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 
 /**
@@ -53,7 +56,7 @@ public class TabSources extends TabBase {
 
     private List<Action> mActions;
     private BorderPane mBorderPane;
-    private final DateSelectionPane mDateSelectionPane = new DateSelectionPane();
+    private DateRangePane mDateRangePane = new DateRangePane();
     private final CheckListView<MapoSource> mListView = new CheckListView<>();
     private final MapoSourceManager mManager = MapoSourceManager.getInstance();
     private Action mRefreshAction;
@@ -139,7 +142,7 @@ public class TabSources extends TabBase {
         BorderPane innerBorderPane = new BorderPane(mListView);
         innerBorderPane.setTop(toolBar);
         mBorderPane = new BorderPane(innerBorderPane);
-        mBorderPane.setTop(mDateSelectionPane);
+        mBorderPane.setTop(mDateRangePane);
         setScrollPaneContent(mBorderPane);
 
         mListView.itemsProperty().bind(mManager.itemsProperty());
@@ -179,11 +182,11 @@ public class TabSources extends TabBase {
 
         checkModel.getCheckedItems().addListener((ListChangeListener.Change<? extends MapoSource> c) -> {
             Platform.runLater(() -> {
-                mDateSelectionPane.setDisable(true);
+                mDateRangePane.setDisable(true);
                 mManager.getItems().forEach((source) -> {
                     source.setVisible(checkModel.isChecked(source));
                     if (source.isVisible()) {
-                        mDateSelectionPane.setDisable(false);
+                        mDateRangePane.setDisable(false);
                     }
                 });
 
@@ -198,6 +201,19 @@ public class TabSources extends TabBase {
             });
         });
 
+        Mapton.getGlobalState().addListener((GlobalStateChangeEvent evt) -> {
+            mDateRangePane.setMinMaxDate(mManager.getMinDate(), mManager.getMaxDate());
+        }, Mapo.KEY_SOURCE_UPDATED);
+
+        mDateRangePane.addFromDatePickerListener((ObservableValue<? extends Object> ov, Object t, Object t1) -> {
+            mMapo.getSettings().setLowDate(mDateRangePane.getFromDatePicker().getValue());
+            Mapton.getGlobalState().put(Mapo.KEY_SETTINGS_UPDATED, mMapo.getSettings());
+        });
+
+        mDateRangePane.addToDatePickerListener((ObservableValue<? extends Object> ov, Object t, Object t1) -> {
+            mMapo.getSettings().setHighDate(mDateRangePane.getToDatePicker().getValue());
+            Mapton.getGlobalState().put(Mapo.KEY_SETTINGS_UPDATED, mMapo.getSettings());
+        });
     }
 
     private void refreshCheckedStates() {
@@ -213,7 +229,7 @@ public class TabSources extends TabBase {
             }
         }
 
-        mDateSelectionPane.setDisable(disableDateSelection);
+        mDateRangePane.setDisable(disableDateSelection);
     }
 
     private void remove() {
