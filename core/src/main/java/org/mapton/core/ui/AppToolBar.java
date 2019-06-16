@@ -99,6 +99,9 @@ public class AppToolBar extends ToolBar {
     private FxActionSwingCheck mSysViewFullscreenAction;
     private FxActionSwingCheck mSysViewMapAction;
     private FxActionSwing mSysViewResetAction;
+    private Action mTemporalAction;
+    private PopOver mTemporalPopOver;
+    private TemporalView mTemporalView;
     private Action mToolboxAction;
     private PopOver mToolboxPopOver;
 
@@ -143,12 +146,35 @@ public class AppToolBar extends ToolBar {
         tooglePopOver(mStylePopOver, mStyleAction);
     }
 
+    public void toogleTemporalPopOver() {
+        Platform.runLater(() -> {
+            if (mTemporalPopOver.isShowing()) {
+                mTemporalPopOver.hide();
+            } else {
+                mTemporalPopOver.show(getButtonForAction(mTemporalAction));
+            }
+        });
+    }
+
     public void toogleToolboxPopOver() {
         tooglePopOver(mToolboxPopOver, mToolboxAction);
     }
 
     void refreshEngine(MEngine engine) {
         mStyleAction.setDisabled(engine.getStyleView() == null);
+    }
+
+    private Node getButtonForAction(Action action) {
+        for (Node item : getItems()) {
+            if (item instanceof ButtonBase) {
+                ButtonBase buttonBase = (ButtonBase) item;
+                if (buttonBase.getOnAction().equals(action)) {
+                    return buttonBase;
+                }
+            }
+        }
+
+        return null;
     }
 
     private void init() {
@@ -194,6 +220,7 @@ public class AppToolBar extends ToolBar {
                 mRulerAction,
                 mLayerAction,
                 mBookmarkAction,
+                mTemporalAction,
                 mStyleAction,
                 ActionUtils.ACTION_SPAN,
                 mAttributionAction,
@@ -204,7 +231,7 @@ public class AppToolBar extends ToolBar {
         Platform.runLater(() -> {
             ActionUtils.updateToolBar(this, actions, ActionUtils.ActionTextBehavior.HIDE);
 
-            Button styleButton = (Button) getItems().get(5);
+            Button styleButton = (Button) getItems().get(6);
             Double w = styleButton.prefWidthProperty().getValue();
             FxHelper.adjustButtonWidth(getItems().stream(), getIconSizeContextMenu() * 1.5);
             styleButton.setPrefWidth(w);
@@ -275,6 +302,12 @@ public class AppToolBar extends ToolBar {
         });
         mStyleAction.setGraphic(MaterialIcon._Image.COLOR_LENS.getImageView(getIconSizeToolBar()));
         mStyleAction.setDisabled(true);
+
+        //Temporal
+        mTemporalAction = new Action(Dict.Time.TIME.toString(), (ActionEvent event) -> {
+            toogleTemporalPopOver();
+        });
+        mTemporalAction.setGraphic(MaterialIcon._Action.DATE_RANGE.getImageView(getIconSizeToolBar()));
 
         //Copyright
         mAttributionAction = new Action("Copyright", (ActionEvent event) -> {
@@ -458,6 +491,13 @@ public class AppToolBar extends ToolBar {
 
         mStylePopOver = new PopOver();
         initPopOver(mStylePopOver, String.format("%s & %s", Dict.TYPE.toString(), Dict.STYLE.toString()), new BorderPane());
+
+        mTemporalPopOver = new PopOver();
+        mTemporalView = new TemporalView();
+        initPopOver(mTemporalPopOver, Dict.Time.TIME.toString(), mTemporalView);
+        mTemporalPopOver.setArrowLocation(PopOver.ArrowLocation.TOP_CENTER);
+        mTemporalPopOver.setAutoHide(false);
+        mTemporalPopOver.setCloseButtonEnabled(true);
 
         Platform.runLater(() -> {
             mAttributionPopOver = new PopOver();
