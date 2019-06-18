@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core.tool;
+package org.mapton.addon.notes;
 
 import org.controlsfx.control.action.Action;
 import org.mapton.api.MTool;
@@ -36,5 +36,10 @@ public class NotesTool implements MTool {
         });
 
         return action;
+    }
+
+    @Override
+    public String getParent() {
+        return Dict.ADD_ONS.toString();
     }
 }
