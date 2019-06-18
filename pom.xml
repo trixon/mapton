@@ -104,16 +104,18 @@
         <module>modules/wms-sources</module>
 
 
-        <!--Unstable-->
+        <!--Add-ons-->
         <module>modules-add-ons/mapollage</module>
-        <module>modules-add-ons/ww-mapollage</module>
+        <module>modules-add-ons/mapollage-ww</module>
+        <module>modules-add-ons/notes</module>
+
+        <!--Unstable-->
         <!--<module>demo</module>-->
         <!--<module>modules/me-mapjfx</module>-->
         <!--<module>modules-ext/gdal</module>-->
         <!--<module>modules/ww-datasources</module>-->
 
         <!--Deprecated-->
-        <module>modules-add-ons/notes</module>
     </modules>
 
     <dependencyManagement>

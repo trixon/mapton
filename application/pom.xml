@@ -173,12 +173,12 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>mapollage</artifactId>
+            <artifactId>addon-mapollage</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>ww-mapollage</artifactId>
+            <artifactId>addon-mapollage-ww</artifactId>
             <version>${project.version}</version>
         </dependency>
 
