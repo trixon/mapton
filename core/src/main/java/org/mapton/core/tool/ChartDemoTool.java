@@ -21,7 +21,6 @@ import org.mapton.api.MKey;
 import org.mapton.api.MTool;
 import org.mapton.api.Mapton;
 import org.openide.util.Exceptions;
-import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxActionSwing;
 
@@ -29,8 +28,6 @@ import se.trixon.almond.util.fx.FxActionSwing;
  *
  * @author Patrik Karlström
  */
-@ServiceProvider(service = MTool.class)
-
 public class ChartDemoTool implements MTool {
 
     @Override
