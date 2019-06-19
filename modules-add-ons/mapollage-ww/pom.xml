@@ -8,8 +8,8 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <artifactId>addon-mapollage-ww</artifactId>
-    <name>Mapollage WorldWind</name>
-    <description>Mapollage renderer for WorldWind</description>
+    <name>Photos WorldWind</name>
+    <description>Photos renderer for WorldWind</description>
     <packaging>nbm</packaging>
     <build>
         <plugins>

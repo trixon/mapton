@@ -8,7 +8,7 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <artifactId>addon-mapollage</artifactId>
-    <name>Mapollage</name>
+    <name>Photos</name>
     <description>Displays geotagged photos on the map</description>
     <packaging>nbm</packaging>
     <build>
