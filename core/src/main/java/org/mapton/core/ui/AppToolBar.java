@@ -304,7 +304,7 @@ public class AppToolBar extends ToolBar {
         mStyleAction.setDisabled(true);
 
         //Temporal
-        mTemporalAction = new Action(Dict.Time.TIME.toString(), (ActionEvent event) -> {
+        mTemporalAction = new Action(Dict.Time.DATE.toString(), (ActionEvent event) -> {
             toogleTemporalPopOver();
         });
         mTemporalAction.setGraphic(MaterialIcon._Action.DATE_RANGE.getImageView(getIconSizeToolBar()));
@@ -494,7 +494,7 @@ public class AppToolBar extends ToolBar {
 
         mTemporalPopOver = new PopOver();
         mTemporalView = new TemporalView();
-        initPopOver(mTemporalPopOver, Dict.Time.TIME.toString(), mTemporalView);
+        initPopOver(mTemporalPopOver, Dict.Time.DATE.toString(), mTemporalView);
         mTemporalPopOver.setArrowLocation(PopOver.ArrowLocation.TOP_CENTER);
         mTemporalPopOver.setAutoHide(false);
         mTemporalPopOver.setCloseButtonEnabled(true);
