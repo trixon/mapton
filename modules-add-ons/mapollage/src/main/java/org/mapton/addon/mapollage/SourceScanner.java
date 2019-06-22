@@ -37,6 +37,8 @@ import org.mapton.addon.mapollage.api.MapoCollection;
 import org.mapton.addon.mapollage.api.MapoPhoto;
 import org.mapton.addon.mapollage.api.MapoSource;
 import org.mapton.addon.mapollage.api.MapoSourceManager;
+import org.mapton.api.MKey;
+import org.mapton.api.Mapton;
 import org.openide.util.Exceptions;
 import se.trixon.almond.nbp.NbPrint;
 import se.trixon.almond.util.Dict;
@@ -55,6 +57,7 @@ public class SourceScanner {
     private final NbPrint mPrint = new NbPrint("Mapollage");
 
     public SourceScanner() {
+        mPrint.select();
         mPrint.out("BEGIN SCAN COLLECTION");
 
         for (MapoSource source : mManager.getItems()) {
@@ -72,9 +75,11 @@ public class SourceScanner {
 
         if (mInterrupted) {
             mPrint.out("INTERRUPTED SCAN COLLECTION");
+            Mapton.notification(MKey.NOTIFICATION_WARNING, Dict.PHOTOS.toString(), Dict.OPERATION_INTERRUPTED.toString());
         } else {
             mManager.load();
             mPrint.out("END SCAN COLLECTION");
+            Mapton.notification(MKey.NOTIFICATION_INFORMATION, Dict.PHOTOS.toString(), Dict.OPERATION_COMPLETED.toString());
         }
     }
 
