@@ -27,8 +27,6 @@ import java.awt.Dimension;
 import java.beans.PropertyChangeEvent;
 import java.io.File;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -220,8 +218,7 @@ public class MapollageLayerBundle extends LayerBundle {
                     boolean validDate;
 
                     try {
-                        LocalDate localDate = photo.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-                        validDate = mSettings.getLowDate().compareTo(localDate) * localDate.compareTo(mSettings.getHighDate()) >= 0;
+                        validDate = mTemporalManager.isValid(photo.getDate());
                     } catch (NullPointerException e) {
                         continue;
                     }

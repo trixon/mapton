@@ -99,7 +99,7 @@ public class MTemporalManager {
     }
 
     public boolean isValid(LocalDate localDate) {
-        return true;
+        return getLowDate().compareTo(localDate) * localDate.compareTo(getHighDate()) >= 0;
     }
 
     public boolean isValid(LocalDateTime localDateTime) {
