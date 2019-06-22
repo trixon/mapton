@@ -31,6 +31,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.TreeMap;
@@ -42,6 +43,8 @@ import org.mapton.addon.mapollage.api.MapoSettings.SplitBy;
 import org.mapton.addon.mapollage.api.MapoSource;
 import org.mapton.addon.mapollage.api.MapoSourceManager;
 import org.mapton.api.MKey;
+import org.mapton.api.MTemporalManager;
+import org.mapton.api.MTemporalRange;
 import org.mapton.api.Mapton;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.LayerBundleManager;
@@ -67,6 +70,8 @@ public class MapollageLayerBundle extends LayerBundle {
     private final MapoSourceManager mManager = MapoSourceManager.getInstance();
     private final RenderableLayer mRenderableLayer = new RenderableLayer();
     private MapoSettings mSettings;
+    private final MTemporalManager mTemporalManager = MTemporalManager.getInstance();
+    private HashMap<String, MTemporalRange> mTemporalRanges;
 
     public MapollageLayerBundle() {
         init();
@@ -132,6 +137,9 @@ public class MapollageLayerBundle extends LayerBundle {
                 mRenderableLayer.setEnabled(mIconLayer.isEnabled());
                 if (mIconLayer.isEnabled()) {
                     refresh();
+                    mTemporalManager.putAll(mTemporalRanges);
+                } else {
+                    mTemporalRanges = mTemporalManager.getAndRemoveSubSet(Mapo.KEY_TEMPORAL_PREFIX);
                 }
             }
         });

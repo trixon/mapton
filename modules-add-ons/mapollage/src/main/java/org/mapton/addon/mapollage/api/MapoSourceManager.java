@@ -30,8 +30,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javax.swing.SwingUtilities;
 import org.apache.commons.io.FileUtils;
-import org.mapton.api.Mapton;
 import org.mapton.addon.mapollage.ui.SourcePanel;
+import org.mapton.api.Mapton;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 import org.openide.util.Exceptions;
@@ -185,8 +185,8 @@ public class MapoSourceManager {
         });
     }
 
-    public void removeAll(MapoSource... localGrids) {
-        mItems.get().removeAll(localGrids);
+    public void removeAll(MapoSource... mapoSources) {
+        mItems.get().removeAll(mapoSources);
     }
 
     public void save() throws IOException {
