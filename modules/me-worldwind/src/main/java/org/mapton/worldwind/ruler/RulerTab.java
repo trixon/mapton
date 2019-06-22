@@ -46,7 +46,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.PopOver;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
-import static org.mapton.api.Mapton.getIconSizeToolBar;
+import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.mapton.worldwind.ModuleOptions;
 import static org.mapton.worldwind.ModuleOptions.*;
 import se.trixon.almond.util.Dict;
@@ -61,7 +61,6 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
 public class RulerTab extends Tab {
 
     static final int DEFAULT_PATH_TYPE_INDEX = 2;
-    private static final int ICON_SIZE = (int) (getIconSizeToolBar() * 0.8);
     private BorderPane mBorderPane;
     private BorderPane mLowerBorderPane;
     private final MeasureTool mMeasureTool;
@@ -110,13 +109,13 @@ public class RulerTab extends Tab {
     }
 
     private void createUI() {
-        mStartImageView = MaterialIcon._Av.PLAY_ARROW.getImageView(ICON_SIZE);
-        mPauseImageView = MaterialIcon._Av.PAUSE_CIRCLE_OUTLINE.getImageView(ICON_SIZE);
-        mResumeImageView = MaterialIcon._Av.PLAY_CIRCLE_OUTLINE.getImageView(ICON_SIZE);
-        mStopImageView = MaterialIcon._Av.STOP.getImageView(ICON_SIZE);
-        mSaveImageView = MaterialIcon._Content.SAVE.getImageView(ICON_SIZE);
-        mOptionsImageView = MaterialIcon._Action.SETTINGS.getImageView(ICON_SIZE);
-        mShapeImageView = MaterialIcon._Editor.FORMAT_SHAPES.getImageView(ICON_SIZE);
+        mStartImageView = MaterialIcon._Av.PLAY_ARROW.getImageView(getIconSizeToolBarInt());
+        mPauseImageView = MaterialIcon._Av.PAUSE_CIRCLE_OUTLINE.getImageView(getIconSizeToolBarInt());
+        mResumeImageView = MaterialIcon._Av.PLAY_CIRCLE_OUTLINE.getImageView(getIconSizeToolBarInt());
+        mStopImageView = MaterialIcon._Av.STOP.getImageView(getIconSizeToolBarInt());
+        mSaveImageView = MaterialIcon._Content.SAVE.getImageView(getIconSizeToolBarInt());
+        mOptionsImageView = MaterialIcon._Action.SETTINGS.getImageView(getIconSizeToolBarInt());
+        mShapeImageView = MaterialIcon._Editor.FORMAT_SHAPES.getImageView(getIconSizeToolBarInt());
 
         mMetricsTextArea = new TextArea();
         mMetricsTextArea.setEditable(false);
@@ -237,7 +236,7 @@ public class RulerTab extends Tab {
         mToolBar.setPadding(Insets.EMPTY);
 
         Platform.runLater(() -> {
-            FxHelper.adjustButtonWidth(mToolBar.getItems().stream(), ICON_SIZE * 1.5);
+            FxHelper.adjustButtonWidth(mToolBar.getItems().stream(), getIconSizeToolBarInt() * 1.5);
             mToolBar.getItems().stream().filter((item) -> (item instanceof ButtonBase))
                     .map((item) -> (ButtonBase) item).forEachOrdered((buttonBase) -> {
                 FxHelper.undecorateButton(buttonBase);
