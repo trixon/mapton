@@ -19,9 +19,11 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.TreeSet;
 import javafx.beans.property.SimpleObjectProperty;
+import org.apache.commons.lang3.StringUtils;
 import se.trixon.almond.util.fx.control.DateSelectionMode;
 
 /**
@@ -46,10 +48,18 @@ public class MTemporalManager {
 
     public void clear() {
         mRanges.clear();
+        refresh();
     }
 
     public SimpleObjectProperty<DateSelectionMode> dateSelectionModeProperty() {
         return mDateSelectionModeProperty;
+    }
+
+    public HashMap<String, MTemporalRange> getAndRemoveSubSet(String prefix) {
+        HashMap<String, MTemporalRange> subSet = getSubSet(prefix);
+        removeAll(prefix);
+
+        return subSet;
     }
 
     public DateSelectionMode getDateSelectionMode() {
@@ -62,6 +72,26 @@ public class MTemporalManager {
 
     public LocalDate getLowDate() {
         return mLowDateProperty.getValue();
+    }
+
+    public LocalDate getMaxDate() {
+        return mMaxDateProperty.getValue();
+    }
+
+    public LocalDate getMinDate() {
+        return mMinDateProperty.getValue();
+    }
+
+    public HashMap<String, MTemporalRange> getSubSet(String prefix) {
+        HashMap<String, MTemporalRange> subSet = new HashMap<>();
+
+        for (String key : mRanges.keySet()) {
+            if (StringUtils.startsWith(key, prefix)) {
+                subSet.put(key, mRanges.get(key));
+            }
+        }
+
+        return subSet;
     }
 
     public SimpleObjectProperty<LocalDate> highDateProperty() {
@@ -103,11 +133,49 @@ public class MTemporalManager {
 
     public void put(String key, MTemporalRange range) {
         mRanges.put(key, range);
+    }
+
+    public void putAll(HashMap<String, MTemporalRange> subSet) {
+        mRanges.putAll(subSet);
+
         refresh();
+    }
+
+    public void refresh() {
+        TreeSet<MTemporalRange> fromRanges = new TreeSet<>((MTemporalRange o1, MTemporalRange o2) -> o1.getFromLocalDate().compareTo(o2.getFromLocalDate()));
+        TreeSet<MTemporalRange> toRanges = new TreeSet<>((MTemporalRange o1, MTemporalRange o2) -> o1.getToLocalDate().compareTo(o2.getToLocalDate()));
+
+        for (MTemporalRange range : mRanges.values()) {
+            fromRanges.add(range);
+            toRanges.add(range);
+        }
+
+        if (!fromRanges.isEmpty() && !toRanges.isEmpty()) {
+            setMinDate(fromRanges.first().getFromLocalDate());
+            setMaxDate(toRanges.last().getToLocalDate());
+        } else {
+            setMinDate(LocalDate.of(1900, 1, 1));
+            setMaxDate(LocalDate.of(2099, 12, 31));
+        }
     }
 
     public MTemporalRange remove(String key) {
         return mRanges.remove(key);
+    }
+
+    public void removeAll(String prefix) {
+        ArrayList<String> keys = new ArrayList<>();
+        for (String key : mRanges.keySet()) {
+            if (StringUtils.startsWith(key, prefix)) {
+                keys.add(key);
+            }
+        }
+
+        for (String key : keys) {
+            mRanges.remove(key);
+        }
+
+        refresh();
     }
 
     public void setDateSelectionMode(DateSelectionMode dateSelectionMode) {
@@ -128,14 +196,6 @@ public class MTemporalManager {
 
     public void setMinDate(LocalDate localDate) {
         mMinDateProperty.setValue(localDate);
-    }
-
-    private void refresh() {
-        TreeSet<MTemporalRange> fromRanges = new TreeSet<>((MTemporalRange o1, MTemporalRange o2) -> o1.getFromLocalDate().compareTo(o2.getFromLocalDate()));
-        TreeSet<MTemporalRange> toRanges = new TreeSet<>((MTemporalRange o1, MTemporalRange o2) -> o1.getToLocalDate().compareTo(o2.getToLocalDate()));
-
-        setMinDate(fromRanges.first().getFromLocalDate());
-        setMaxDate(toRanges.last().getToLocalDate());
     }
 
     private static class Holder {

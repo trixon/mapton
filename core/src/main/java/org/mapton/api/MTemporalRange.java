@@ -16,6 +16,8 @@
 package org.mapton.api;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
 
 /**
  *
@@ -27,6 +29,16 @@ public class MTemporalRange {
     private LocalDate mToLocalDate;
 
     public MTemporalRange() {
+    }
+
+    public MTemporalRange(LocalDate fromLocalDate, LocalDate toLocalDate) {
+        mFromLocalDate = fromLocalDate;
+        mToLocalDate = toLocalDate;
+    }
+
+    public MTemporalRange(Date fromDate, Date toDate) {
+        mFromLocalDate = fromDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        mToLocalDate = toDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
     }
 
     public LocalDate getFromLocalDate() {
