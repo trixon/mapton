@@ -15,6 +15,7 @@
  */
 package org.mapton.addon.mapollage.ui;
 
+import java.util.ResourceBundle;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -32,23 +33,27 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import org.mapton.api.Mapton;
+import org.controlsfx.control.PopOver;
 import org.mapton.addon.mapollage.Options;
 import org.mapton.addon.mapollage.api.Mapo;
 import org.mapton.addon.mapollage.api.MapoSettings;
 import org.mapton.addon.mapollage.api.MapoSettings.SplitBy;
+import org.mapton.api.Mapton;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class TabPath extends TabBase {
+public class OptionsPopOver extends PopOver {
 
+    private final ResourceBundle mBundle = SystemHelper.getBundle(OptionsPopOver.class, "Bundle");
     private final CheckBox mDrawGapCheckBox = new CheckBox(mBundle.getString("TabPath.drawGapCheckBox"));
     private final CheckBox mDrawTrackCheckBox = new CheckBox(mBundle.getString("TabPath.drawTrackCheckBox"));
     private final ColorPicker mGapColorPicker = new ColorPicker();
+    private final Mapo mMapo = Mapo.getInstance();
     private final Options mOptions = Options.getInstance();
     private VBox mRoot;
     private final RadioButton mSplitByDayRadioButton = new RadioButton(Dict.Time.DAY.toString());
@@ -61,19 +66,23 @@ public class TabPath extends TabBase {
     private final ColorPicker mTrackColorPicker = new ColorPicker();
     private final Spinner<Double> mWidthSpinner = new Spinner(1.0, 10.0, 1.0, 0.1);
 
-    public TabPath(Mapo mapo) {
-        setText(Dict.TRACKS.toString());
-        mMapo = mapo;
-        createUI();
+    public OptionsPopOver() {
+        setTitle(Dict.OPTIONS.toString());
+        setArrowLocation(PopOver.ArrowLocation.TOP_RIGHT);
+        setHeaderAlwaysVisible(true);
+        setCloseButtonEnabled(false);
+        setDetachable(false);
+        setAnimated(true);
+        setContentNode(createUI());
+
         load();
         initListeners();
     }
 
-    private void createUI() {
+    private Node createUI() {
         mRoot = new VBox();
         VBox trackBox = new VBox();
 
-        setScrollPaneContent(mRoot);
         Label widthLabel = new Label(Dict.Geometry.WIDTH.toString());
         Label splitByLabel = new Label(Dict.SPLIT_BY.toString());
         Label gapColorLabel = new Label(mBundle.getString("TabPath.colorGap"));
@@ -128,6 +137,10 @@ public class TabPath extends TabBase {
                 mSplitByYearRadioButton,
                 mSplitByNoneRadioButton
         );
+
+        mRoot.setPadding(new Insets(8));
+
+        return mRoot;
     }
 
     private void initListeners() {

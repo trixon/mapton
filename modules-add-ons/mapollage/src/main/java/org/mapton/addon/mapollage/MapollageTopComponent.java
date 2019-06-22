@@ -16,11 +16,9 @@
 package org.mapton.addon.mapollage;
 
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
-import org.mapton.addon.mapollage.api.Mapo;
-import org.mapton.addon.mapollage.ui.Tabs;
+import org.mapton.addon.mapollage.ui.SourcesPane;
 import org.mapton.api.MMapMagnet;
 import org.mapton.api.MTopComponent;
 import org.mapton.api.Mapton;
@@ -68,16 +66,7 @@ public final class MapollageTopComponent extends MTopComponent implements MMapMa
 
     private Scene createScene() {
         Label titleLabel = Mapton.createTitle(Dict.PHOTOS.toString());
-        Tabs tabs = new Tabs();
-        BorderPane innerBorderPane = new BorderPane(tabs);
-        Button refreshButton = new Button(Dict.REFRESH.toString());
-        refreshButton.prefWidthProperty().bind(innerBorderPane.widthProperty());
-        refreshButton.setOnAction((event) -> {
-            Mapton.getGlobalState().put(Mapo.KEY_MAPO, tabs.getMapo());
-        });
-
-        //innerBorderPane.setTop(refreshButton);
-        mRoot = new BorderPane(innerBorderPane);
+        mRoot = new BorderPane(new SourcesPane());
         mRoot.setTop(titleLabel);
         titleLabel.prefWidthProperty().bind(mRoot.widthProperty());
 

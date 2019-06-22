@@ -56,22 +56,20 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
  *
  * @author Patrik Karlström
  */
-public class TabSources extends TabBase {
+public class SourcesPane extends BorderPane {
 
     private List<Action> mActions;
-    private BorderPane mBorderPane;
     private final CheckListView<MapoSource> mListView = new CheckListView<>();
     private final MapoSourceManager mManager = MapoSourceManager.getInstance();
+    private final Mapo mMapo = Mapo.getInstance();
+    private OptionsPopOver mOptionsPopOver = new OptionsPopOver();
     private Action mRefreshAction;
     private Button mRefreshButton;
     private Thread mRefreshThread;
     private RunState mRunState;
     private final MTemporalManager mTemporalManager = MTemporalManager.getInstance();
 
-    public TabSources(Mapo mapo) {
-        setText(Dict.SOURCES.toString());
-        mMapo = mapo;
-
+    public SourcesPane() {
         createUI();
         refreshCheckedStates();
         initListeners();
@@ -122,6 +120,15 @@ public class TabSources extends TabBase {
         });
         setRunningState(RunState.STARTABLE);
 
+        Action optionsAction = new Action(Dict.OPTIONS.toString(), (event) -> {
+            if (mOptionsPopOver.isShowing()) {
+                mOptionsPopOver.hide();
+            } else {
+                mOptionsPopOver.show(((ButtonBase) event.getSource()));
+            }
+        });
+        optionsAction.setGraphic(MaterialIcon._Action.SETTINGS.getImageView(getIconSizeToolBarInt()));
+
         mActions = Arrays.asList(
                 new SourceFileImportAction().getAction(),
                 new SourceFileExportAction().getAction(),
@@ -129,7 +136,8 @@ public class TabSources extends TabBase {
                 remAction,
                 editAction,
                 ActionUtils.ACTION_SPAN,
-                mRefreshAction
+                mRefreshAction,
+                optionsAction
         );
 
         ToolBar toolBar = ActionUtils.createToolBar(mActions, ActionUtils.ActionTextBehavior.HIDE);
@@ -143,10 +151,8 @@ public class TabSources extends TabBase {
         toolBar.setStyle("-fx-spacing: 0px;");
         toolBar.setPadding(Insets.EMPTY);
         mRefreshButton = (Button) toolBar.getItems().get(toolBar.getItems().size() - 1);
-        BorderPane innerBorderPane = new BorderPane(mListView);
-        innerBorderPane.setTop(toolBar);
-        mBorderPane = new BorderPane(innerBorderPane);
-        setScrollPaneContent(mBorderPane);
+        setTop(toolBar);
+        setCenter(mListView);
 
         mListView.itemsProperty().bind(mManager.itemsProperty());
     }
@@ -273,7 +279,7 @@ public class TabSources extends TabBase {
 
             switch (runState) {
                 case CANCELABLE:
-                    FxHelper.disableControls(mBorderPane.getChildrenUnmodifiable(), true, mRefreshButton);
+                    FxHelper.disableControls(getChildrenUnmodifiable(), true, mRefreshButton);
                     mRefreshAction.setText(Dict.CANCEL.toString());
                     mRefreshAction.setGraphic(MaterialIcon._Navigation.CANCEL.getImageView(getIconSizeToolBarInt()));
                     mActions.forEach((action) -> {
@@ -289,7 +295,7 @@ public class TabSources extends TabBase {
                         mActions.forEach((action) -> {
                             action.setDisabled(false);
                         });
-                        FxHelper.disableControls(mBorderPane.getChildrenUnmodifiable(), false, mRefreshButton);
+                        FxHelper.disableControls(getChildrenUnmodifiable(), false, mRefreshButton);
                     } catch (Exception e) {
                     }
                     break;
