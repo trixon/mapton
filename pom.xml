@@ -56,6 +56,8 @@
                     <configuration>
                         <source>1.8</source>
                         <target>1.8</target>
+                        <showDeprecation>true</showDeprecation>
+                        <compilerArgument>-Xlint:unchecked</compilerArgument>
                     </configuration>
                 </plugin>
                 <plugin>
