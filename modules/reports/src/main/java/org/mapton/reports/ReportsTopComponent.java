@@ -140,18 +140,34 @@ public final class ReportsTopComponent extends MTopComponent {
         TreeItem<MReport> root = new TreeItem<>(rootReport);
         ObservableList<TreeItem<MReport>> treeRootChildrens = root.getChildren();
         TreeMap<String, TreeItem<MReport>> actionParents = new TreeMap<>();
-        ArrayList<TreeItem> tempRootItems = new ArrayList<>();
+        ArrayList<TreeItem<MReport>> tempRootItems = new ArrayList<>();
 
         new Thread(() -> {
             Lookup.getDefault().lookupAll(MReport.class).forEach((reportAction) -> {
-                TreeItem<MReport> treeItem = new TreeItem(reportAction);
+                TreeItem<MReport> treeItem = new TreeItem<>(reportAction);
                 treeItem.setGraphic(MaterialIcon._Action.ASSESSMENT.getImageView((int) (getIconSizeToolBar() / 1.5)));
 
                 final String parentName = reportAction.getParent();
                 if (parentName == null) {
                     tempRootItems.add(treeItem);
                 } else {
-                    actionParents.computeIfAbsent(parentName, k -> new TreeItem(parentName)).getChildren().add(treeItem);
+                    MReport report = new MReport() {
+                        @Override
+                        public String getName() {
+                            return parentName;
+                        }
+
+                        @Override
+                        public Node getNode() {
+                            return null;
+                        }
+
+                        @Override
+                        public String getParent() {
+                            return null;
+                        }
+                    };
+                    actionParents.computeIfAbsent(parentName, k -> new TreeItem<>(report)).getChildren().add(treeItem);
                 }
             });
 
@@ -193,19 +209,8 @@ public final class ReportsTopComponent extends MTopComponent {
             mPreferences.putBoolean(path, newValue);
         });
 
-        Comparator c1 = new Comparator<TreeItem<MReport>>() {
-            @Override
-            public int compare(TreeItem<MReport> o1, TreeItem<MReport> o2) {
-                return Boolean.compare(o1.getChildren().isEmpty(), o2.getChildren().isEmpty());
-            }
-        };
-
-        Comparator c2 = new Comparator<TreeItem<MReport>>() {
-            @Override
-            public int compare(TreeItem<MReport> o1, TreeItem<MReport> o2) {
-                return o1.getValue().getName().compareTo(o2.getValue().getName());
-            }
-        };
+        Comparator<TreeItem<MReport>> c1 = (TreeItem<MReport> o1, TreeItem<MReport> o2) -> Boolean.compare(o1.getChildren().isEmpty(), o2.getChildren().isEmpty());
+        Comparator<TreeItem<MReport>> c2 = (TreeItem<MReport> o1, TreeItem<MReport> o2) -> o1.getValue().getName().compareTo(o2.getValue().getName());
 
         treeItem.getChildren().sort(c1.thenComparing(c2));
 
