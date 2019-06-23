@@ -23,7 +23,7 @@ import com.google.gson.annotations.SerializedName;
  */
 public class Geoname {
 
-    @SerializedName("alernate_names")
+    @SerializedName("alternate_names")
     private String mAlternateNames;
     @SerializedName("ascii_name")
     private String mAsciiName;
