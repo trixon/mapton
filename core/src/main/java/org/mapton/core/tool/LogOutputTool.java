@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,6 +18,7 @@ package org.mapton.core.tool;
 import org.controlsfx.control.action.Action;
 import org.mapton.api.MTool;
 import org.openide.awt.Actions;
+import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.util.Dict;
@@ -32,7 +33,7 @@ public class LogOutputTool implements MTool {
 
     @Override
     public Action getAction() {
-        FxActionSwing action = new FxActionSwing(Dict.LOG_PROGRAM.toString(), () -> {
+        FxActionSwing action = new FxActionSwing(NbBundle.getMessage(getClass(), "log_program"), () -> {
             NbLog.select();
             Actions.forID("Window", "org.netbeans.core.io.ui.IOWindowAction").actionPerformed(null);
         });
@@ -42,6 +43,6 @@ public class LogOutputTool implements MTool {
 
     @Override
     public String getParent() {
-        return String.format("%s/%s", Dict.SYSTEM.toString(), Dict.LOGGING.toString());
+        return Dict.SYSTEM.toString();
     }
 }
