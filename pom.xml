@@ -275,7 +275,7 @@
         <netbeans.compile.on.save>all</netbeans.compile.on.save>
         <brandingToken>mapton</brandingToken>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <almond.version>3.0.2</almond.version>
+        <almond.version>3.0.3-SNAPSHOT</almond.version>
         <mapton.version>1.1.1-SNAPSHOT</mapton.version>
     </properties>
     <description>Some kind of map application</description>
