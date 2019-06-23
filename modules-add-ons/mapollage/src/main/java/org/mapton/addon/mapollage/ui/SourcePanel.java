@@ -134,8 +134,8 @@ public class SourcePanel extends FxDialogPanel {
         mExcludeTextField.setTooltip(new Tooltip(mBundle.getString("TabSource.excludeTextField.toolTip")));
 
         mColorPicker = new ColorPicker();
-        mThumbnailBorderSizeSpinner = new Spinner(0, 20, 2, 1);
-        mThumbnailSizeSpinner = new Spinner(100, 1200, 250, 10);
+        mThumbnailBorderSizeSpinner = new Spinner<>(0, 20, 2, 1);
+        mThumbnailSizeSpinner = new Spinner<>(100, 1200, 250, 10);
         mThumbnailSizeSpinner.setEditable(true);
         mThumbnailBorderSizeSpinner.setEditable(true);
 

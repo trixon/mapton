@@ -64,7 +64,7 @@ public class OptionsPopOver extends PopOver {
     private final RadioButton mSplitByYearRadioButton = new RadioButton(Dict.Time.YEAR.toString());
     private final ToggleGroup mToggleGroup = new ToggleGroup();
     private final ColorPicker mTrackColorPicker = new ColorPicker();
-    private final Spinner<Double> mWidthSpinner = new Spinner(1.0, 10.0, 1.0, 0.1);
+    private final Spinner<Double> mWidthSpinner = new Spinner<>(1.0, 10.0, 1.0, 0.1);
 
     public OptionsPopOver() {
         setTitle(Dict.OPTIONS.toString());
@@ -154,6 +154,7 @@ public class OptionsPopOver extends PopOver {
         });
     }
 
+    @SuppressWarnings("unchecked")
     private void initListeners(Pane pane, EventHandler<ActionEvent> event) {
         for (Node node : pane.getChildren()) {
             if (node instanceof Pane) {
