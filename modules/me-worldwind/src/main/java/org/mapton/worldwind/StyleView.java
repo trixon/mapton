@@ -125,7 +125,7 @@ public class StyleView extends HBox {
         mModeFlatRadioButton.setToggleGroup(modeToggleGroup);
         GridPane.setMargin(mModeFlatRadioButton, topInsets);
 
-        mProjComboBox = new ComboBox();
+        mProjComboBox = new ComboBox<>();
 
         mWorldMapCheckBox = new CheckBox(MDict.WORLD_MAP.toString());
         GridPane.setMargin(mWorldMapCheckBox, topInsets);
