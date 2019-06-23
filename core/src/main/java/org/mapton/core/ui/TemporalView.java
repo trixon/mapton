@@ -25,7 +25,7 @@ import javafx.scene.layout.HBox;
 import org.controlsfx.control.ToggleSwitch;
 import org.mapton.api.MTemporalManager;
 import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.fx.control.DateRangePane;
+import se.trixon.almond.util.fx.control.DatePane;
 import se.trixon.almond.util.fx.control.DateSelectionMode;
 
 /**
@@ -34,7 +34,7 @@ import se.trixon.almond.util.fx.control.DateSelectionMode;
  */
 public class TemporalView extends BorderPane {
 
-    private DateRangePane mDateRangePane;
+    private DatePane mDatePane;
     private final MTemporalManager mManager = MTemporalManager.getInstance();
     private ToggleSwitch mToggleSwitch;
 
@@ -50,19 +50,19 @@ public class TemporalView extends BorderPane {
         setPrefWidth(300);
         setPadding(new Insets(8));
 
-        mDateRangePane = new DateRangePane();
+        mDatePane = new DatePane();
         mToggleSwitch = new ToggleSwitch(Dict.INTERVAL.toString());
 
         HBox hBox = new HBox(mToggleSwitch);
         hBox.setAlignment(Pos.CENTER_RIGHT);
 
         setBottom(hBox);
-        setCenter(mDateRangePane);
+        setCenter(mDatePane);
     }
 
     private void initListeners() {
         ChangeListener<LocalDate> minMaxChangeListener = (ObservableValue<? extends LocalDate> ov, LocalDate t, LocalDate t1) -> {
-            mDateRangePane.setMinMaxDate(mManager.getMinDate(), mManager.getMaxDate());
+            mDatePane.setMinMaxDate(mManager.getMinDate(), mManager.getMaxDate());
             try {
                 setDisable(mManager.getMinDate().equals(LocalDate.of(1900, 1, 1)) && mManager.getMaxDate().equals(LocalDate.of(2099, 12, 31)));
             } catch (Exception e) {
@@ -73,11 +73,11 @@ public class TemporalView extends BorderPane {
         mManager.minDateProperty().addListener(minMaxChangeListener);
         mManager.maxDateProperty().addListener(minMaxChangeListener);
 
-        mManager.lowDateProperty().bindBidirectional(mDateRangePane.getFromDatePicker().valueProperty());
-        mManager.highDateProperty().bindBidirectional(mDateRangePane.getToDatePicker().valueProperty());
+        mManager.lowDateProperty().bindBidirectional(mDatePane.getFromDatePicker().valueProperty());
+        mManager.highDateProperty().bindBidirectional(mDatePane.getToDatePicker().valueProperty());
 
         mToggleSwitch.selectedProperty().addListener((ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1) -> {
-            mDateRangePane.setDateSelectionMode(t1 ? DateSelectionMode.INTERVAL : DateSelectionMode.POINT_IN_TIME);
+            mDatePane.setDateSelectionMode(t1 ? DateSelectionMode.INTERVAL : DateSelectionMode.POINT_IN_TIME);
         });
     }
 }
