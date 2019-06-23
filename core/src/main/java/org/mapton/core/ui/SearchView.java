@@ -72,7 +72,7 @@ public class SearchView {
     private final ArrayList<MSearchEngine> mRegularEngines = new ArrayList<>();
     private int mRegularProviderCount;
     private PopOver mResultPopOver;
-    private final ListView<MBookmark> mResultView = new ListView();
+    private final ListView<MBookmark> mResultView = new ListView<>();
     private CustomTextField mSearchTextField;
 
     public SearchView() {

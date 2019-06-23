@@ -129,6 +129,7 @@ public final class ObjectPropertiesTopComponent extends MTopComponent implements
         loadList(propertyItems);
     }
 
+    @SuppressWarnings("unchecked")
     private void refresh(Object o) {
         Node centerObject = null;
         mRoot.setCenter(mPropertySheet);

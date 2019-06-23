@@ -43,7 +43,7 @@ public class BookmarkZoomPanel extends FxDialogPanel {
 
     private Scene createScene() {
         Label colorLabel = new Label(Dict.ZOOM.toString());
-        mZoomSpinner = new Spinner(0.0, 1.0, 0.5, 0.1);
+        mZoomSpinner = new Spinner<>(0.0, 1.0, 0.5, 0.1);
         mZoomSpinner.setEditable(true);
         FxHelper.autoCommitSpinner(mZoomSpinner);
 

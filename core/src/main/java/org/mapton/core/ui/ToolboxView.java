@@ -109,7 +109,7 @@ public class ToolboxView extends BorderPane {
                 Action action = new Action(segment, (event) -> {
                 });
 
-                parent.getChildren().add(parent = mToolParents.computeIfAbsent(sb.toString(), k -> new TreeItem(action)));
+                parent.getChildren().add(parent = mToolParents.computeIfAbsent(sb.toString(), k -> new TreeItem<>(action)));
             }
 
             sb.append("/");
@@ -134,10 +134,10 @@ public class ToolboxView extends BorderPane {
             String s = tool.getParent() + "/" + tool.getAction().getText();
             mActionParents.put(tool.getAction(), tool.getParent());
             if (StringUtils.containsIgnoreCase(s, mFilterTextField.getText())) {
-                TreeItem<Action> actionTreeItem = new TreeItem(tool.getAction());
+                TreeItem<Action> actionTreeItem = new TreeItem<>(tool.getAction());
                 String category = StringUtils.defaultString(tool.getParent());
 
-                TreeItem parent = mToolParents.computeIfAbsent(category, k -> getParent(root, category));
+                TreeItem<Action> parent = mToolParents.computeIfAbsent(category, k -> getParent(root, category));
                 parent.getChildren().add(actionTreeItem);
             }
         }
@@ -172,8 +172,8 @@ public class ToolboxView extends BorderPane {
 //                return o1.getValue().getText().compareTo(o2.getValue().getText());
 //            }
 //        };
-        Comparator c1 = (Comparator<TreeItem<Action>>) (TreeItem<Action> o1, TreeItem<Action> o2) -> Boolean.compare(o1.getChildren().isEmpty(), o2.getChildren().isEmpty());
-        Comparator c2 = (Comparator<TreeItem<Action>>) (TreeItem<Action> o1, TreeItem<Action> o2) -> o1.getValue().getText().compareTo(o2.getValue().getText());
+        Comparator<TreeItem<Action>> c1 = (TreeItem<Action> o1, TreeItem<Action> o2) -> Boolean.compare(o1.getChildren().isEmpty(), o2.getChildren().isEmpty());
+        Comparator<TreeItem<Action>> c2 = (TreeItem<Action> o1, TreeItem<Action> o2) -> o1.getValue().getText().compareTo(o2.getValue().getText());
 
         treeItem.getChildren().sort(c1.thenComparing(c2));
 

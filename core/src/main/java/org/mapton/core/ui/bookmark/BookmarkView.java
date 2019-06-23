@@ -229,7 +229,7 @@ public class BookmarkView extends BorderPane {
                 bookmark.setCategory(path);
                 bookmark.setName(segment);
 
-                parent.getChildren().add(parent = mBookmarkParents.computeIfAbsent(sb.toString(), k -> new TreeItem(bookmark)));
+                parent.getChildren().add(parent = mBookmarkParents.computeIfAbsent(sb.toString(), k -> new TreeItem<>(bookmark)));
             }
 
             sb.append("/");
@@ -251,9 +251,9 @@ public class BookmarkView extends BorderPane {
         TreeItem<MBookmark> root = new TreeItem<>(rootMark);
 
         for (MBookmark bookmark : mManager.getItems()) {
-            TreeItem<MBookmark> bookmarkTreeItem = new TreeItem(bookmark);
+            TreeItem<MBookmark> bookmarkTreeItem = new TreeItem<>(bookmark);
             String category = bookmark.getCategory();
-            TreeItem parent = mBookmarkParents.computeIfAbsent(category, k -> getParent(root, category));
+            TreeItem<MBookmark> parent = mBookmarkParents.computeIfAbsent(category, k -> getParent(root, category));
             parent.getChildren().add(bookmarkTreeItem);
         }
 
@@ -287,8 +287,8 @@ public class BookmarkView extends BorderPane {
 //                return o1.getValue().getName().compareTo(o2.getValue().getName());
 //            }
 //        };
-        Comparator c1 = (Comparator<TreeItem<MBookmark>>) (TreeItem<MBookmark> o1, TreeItem<MBookmark> o2) -> Boolean.compare(o1.getChildren().isEmpty(), o2.getChildren().isEmpty());
-        Comparator c2 = (Comparator<TreeItem<MBookmark>>) (TreeItem<MBookmark> o1, TreeItem<MBookmark> o2) -> o1.getValue().getName().compareTo(o2.getValue().getName());
+        Comparator<TreeItem<MBookmark>> c1 = (TreeItem<MBookmark> o1, TreeItem<MBookmark> o2) -> Boolean.compare(o1.getChildren().isEmpty(), o2.getChildren().isEmpty());
+        Comparator<TreeItem<MBookmark>> c2 = (TreeItem<MBookmark> o1, TreeItem<MBookmark> o2) -> o1.getValue().getName().compareTo(o2.getValue().getName());
 
         treeItem.getChildren().sort(c1.thenComparing(c2));
 

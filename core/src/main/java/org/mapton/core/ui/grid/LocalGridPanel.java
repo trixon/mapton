@@ -15,7 +15,6 @@
  */
 package org.mapton.core.ui.grid;
 
-import org.mapton.api.MLocalGrid;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.ResourceBundle;
@@ -39,6 +38,7 @@ import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
 import org.mapton.api.MCooTrans;
 import org.mapton.api.MDict;
+import org.mapton.api.MLocalGrid;
 import org.openide.util.NbBundle;
 import se.trixon.almond.nbp.fx.FxDialogPanel;
 import se.trixon.almond.util.Dict;
@@ -52,8 +52,7 @@ public class LocalGridPanel extends FxDialogPanel {
 
     private final ResourceBundle mBundle = NbBundle.getBundle(LocalGridPanel.class);
     private ColorPicker mColorPicker;
-    private final ComboBox<MCooTrans> mCooTransComboBox = new ComboBox();
-
+    private final ComboBox<MCooTrans> mCooTransComboBox = new ComboBox<>();
     private Spinner<Integer> mLatCountSpinner;
     private Spinner<Double> mLatStartSpinner;
     private Spinner<Double> mLatStepSpinner;
@@ -91,7 +90,7 @@ public class LocalGridPanel extends FxDialogPanel {
     public void save(MLocalGrid grid) {
         grid.setName(mNameTextField.getText());
         grid.setCooTrans(mCooTransComboBox.getSelectionModel().getSelectedItem().getName());
-        grid.setColor(FxHelper.colorToHex(mColorPicker.getValue()));
+        grid.setColor(FxHelper.colorToHexRGB(mColorPicker.getValue()));
         grid.setLineWidth(mLineWidthSpinner.getValue());
 
         grid.setLatStart(mLatStartSpinner.getValue());
@@ -134,7 +133,7 @@ public class LocalGridPanel extends FxDialogPanel {
         mLatStepSpinner = new Spinner<>(1, Double.MAX_VALUE, 1);
         mLatCountSpinner = new Spinner<>(1, Integer.MAX_VALUE, 1);
 
-        mLonStartSpinner = new Spinner(Integer.MIN_VALUE, Double.MAX_VALUE, 0, 1);
+        mLonStartSpinner = new Spinner<>(Integer.MIN_VALUE, Double.MAX_VALUE, 0, 1);
         mLonStepSpinner = new Spinner<>(1, Double.MAX_VALUE, 1);
         mLonCountSpinner = new Spinner<>(1, Integer.MAX_VALUE, 1);
 

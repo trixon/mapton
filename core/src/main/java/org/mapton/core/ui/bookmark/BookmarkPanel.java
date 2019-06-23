@@ -102,9 +102,9 @@ public class BookmarkPanel extends FxDialogPanel {
         mNameTextField = new TextField();
         mCategoryComboBox = new ComboBox<>();
         mDescTextArea = new TextArea();
-        mZoomSpinner = new Spinner(0.0, 1.0, 0.25, 0.1);
-        mLatitudeSpinner = new Spinner(-90, 90, 0, 0.000001);
-        mLongitudeSpinner = new Spinner(-180, 180, 0, 0.000001);
+        mZoomSpinner = new Spinner<>(0.0, 1.0, 0.25, 0.1);
+        mLatitudeSpinner = new Spinner<>(-90, 90, 0, 0.000001);
+        mLongitudeSpinner = new Spinner<>(-180, 180, 0, 0.000001);
         mColorPicker = new ColorPicker();
         mCategoryComboBox.prefWidthProperty().bind(mNameTextField.widthProperty());
         mCategoryComboBox.setEditable(true);

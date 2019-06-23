@@ -43,15 +43,15 @@ import se.trixon.almond.util.GlobalStateChangeEvent;
  */
 public class AppStatusView extends StatusBar {
 
-    private final ComboBox<MCooTrans> mComboBox = new ComboBox();
+    private final ComboBox<MCooTrans> mComboBox = new ComboBox<>();
     private MCooTrans mCooTrans;
-    private final Label mRightLabel = new Label();
     private final MOptions mOptions = MOptions.getInstance();
+    private final Label mRightLabel = new Label();
     private StatusWindowMode mWindowMode = StatusWindowMode.OTHER;
     private Slider mZoomAbsoluteSlider;
     private MStatusZoomMode mZoomMode = MStatusZoomMode.ABSOLUTE;
-    private PlusMinusSlider mZoomRelativeSlider;
     private StackPane mZoomRelativePane;
+    private PlusMinusSlider mZoomRelativeSlider;
 
     public static AppStatusView getInstance() {
         return Holder.INSTANCE;
