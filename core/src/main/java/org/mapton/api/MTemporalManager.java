@@ -98,6 +98,10 @@ public class MTemporalManager {
         return mHighDateProperty;
     }
 
+    public boolean isValid(String string) {
+        return isValid(LocalDate.parse(string));
+    }
+
     public boolean isValid(LocalDate localDate) {
         return getLowDate().compareTo(localDate) * localDate.compareTo(getHighDate()) >= 0;
     }
