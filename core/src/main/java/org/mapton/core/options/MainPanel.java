@@ -33,6 +33,7 @@ final class MainPanel extends javax.swing.JPanel {
     private final MainOptionsPanelController controller;
     private final ResourceBundle mBundle = NbBundle.getBundle(MainPanel.class);
     private CheckBox mCrosshairCheckBox;
+    private CheckBox mDarkThemeCheckBox;
     private EngineBox mEngineBox;
     private final FxPanel mFxPanel;
     private final MOptions mOptions = MOptions.getInstance();
@@ -52,10 +53,18 @@ final class MainPanel extends javax.swing.JPanel {
 
                 mCrosshairCheckBox = new CheckBox(mBundle.getString("croshairCheckBox.text"));
                 mPopoverCheckBox = new CheckBox(mBundle.getString("popoverCheckBox.text"));
+                mDarkThemeCheckBox = new CheckBox(mBundle.getString("darkThemeCheckBox.text"));
                 mEngineBox = new EngineBox();
 
-                VBox box = new VBox(8, mCrosshairCheckBox, mPopoverCheckBox, mEngineBox);
+                VBox box = new VBox(8,
+                        mCrosshairCheckBox,
+                        mPopoverCheckBox,
+                        mDarkThemeCheckBox,
+                        mEngineBox
+                );
+
                 box.setPadding(new Insets(16));
+
                 return new Scene(box);
             }
         };
@@ -87,10 +96,12 @@ final class MainPanel extends javax.swing.JPanel {
     private void loadFX() {
         mCrosshairCheckBox.setSelected(mOptions.is(KEY_DISPLAY_CROSSHAIR));
         mPopoverCheckBox.setSelected(mOptions.isPreferPopover());
+        mDarkThemeCheckBox.setSelected(mOptions.isDarkThemeEnabled());
     }
 
     private void storeFX() {
         mOptions.put(KEY_DISPLAY_CROSSHAIR, mCrosshairCheckBox.isSelected());
         mOptions.setPreferPopover(mPopoverCheckBox.isSelected());
+        mOptions.put(MOptions.KEY_DARK_THEME, mDarkThemeCheckBox.isSelected());
     }
 }

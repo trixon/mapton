@@ -148,6 +148,7 @@ public class AppStatusView extends StatusBar {
         mRightLabel.setFont(Font.font("monospaced"));
 
         getRightItems().addAll(mRightLabel, mComboBox);
+        setStyle("-fx-background-insets: 0, 0;");
     }
 
     private void initListeners() {

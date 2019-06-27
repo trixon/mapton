@@ -32,6 +32,7 @@ import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.nbp.swing.RootPaneLayout;
 import se.trixon.almond.util.SystemHelper;
+import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.icons.IconColor;
 
 /**
@@ -53,9 +54,10 @@ public class Initializer implements Runnable {
         System.setProperty("netbeans.winsys.status_line.path", "AppStatusPanel.instance");
 
         boolean fullscreen = mOptions.isFullscreen();
+        FxHelper.setDarkThemeEnabled(mOptions.isDarkThemeEnabled());
 
         SwingUtilities.invokeLater(() -> {
-            IconColor.initFx();
+            IconColor.setDefault(FxHelper.isDarkThemeEnabled() ? IconColor.WHITE : IconColor.BLACK);
             JFrame frame = (JFrame) Almond.getFrame();
             JComponent toolbar = AppToolBarProvider.getDefault().createToolbar();
             frame.getRootPane().setLayout(new RootPaneLayout(toolbar));

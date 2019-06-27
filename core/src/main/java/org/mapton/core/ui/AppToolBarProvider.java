@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,9 +19,10 @@ import java.awt.Dimension;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Scene;
 import javax.swing.JComponent;
-import org.openide.util.Lookup;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBar;
+import org.openide.util.Lookup;
+import se.trixon.almond.util.fx.FxHelper;
 
 /**
  * From https://dzone.com/articles/how-create-tabbed-toolbar-on-nb
@@ -55,6 +56,7 @@ public abstract class AppToolBarProvider {
             Scene scene = new Scene(appToolBar);
             fxPanel.setScene(scene);
             fxPanel.setVisible(true);
+            FxHelper.loadDarkTheme(fxPanel.getScene());
 
             return fxPanel;
         }
