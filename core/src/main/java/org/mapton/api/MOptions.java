@@ -24,8 +24,8 @@ import se.trixon.almond.util.OptionsBase;
  */
 public class MOptions extends OptionsBase {
 
-    public static final boolean DEFAULT_DARK_THEME = false;
-    public static final String KEY_DARK_THEME = "ui.dark_theme";
+    public static final boolean DEFAULT_UI_LAF_DARK = true;
+
     public static final String KEY_DISPLAY_CROSSHAIR = "display_crosshair";
     public static final String KEY_GRID_GLOBAL_CLAMP_TO_GROUND = "global_clamp_to_ground";
     public static final String KEY_GRID_GLOBAL_EQUATOR = "grid.global.equator";
@@ -43,6 +43,7 @@ public class MOptions extends OptionsBase {
     public static final String KEY_MAP_HOME_LON = "map_home_lon";
     public static final String KEY_MAP_ONLY = "map_only";
     public static final String KEY_PREFER_POPOVER = "prefer_popover";
+    public static final String KEY_UI_LAF_DARK = "ui.laf.dark";
 
     private static final boolean DEFAULT_FULL_SCREEN = false;
     private static final String DEFAULT_MAP_ENGINE = "org.mapton.worldwind.WorldWindMapEngine";
@@ -107,10 +108,6 @@ public class MOptions extends OptionsBase {
 
     public boolean isBookmarkVisible() {
         return mPreferences.getBoolean(KEY_DISPLAY_BOOKMARK, true);
-    }
-
-    public boolean isDarkThemeEnabled() {
-        return is(MOptions.KEY_DARK_THEME, MOptions.DEFAULT_DARK_THEME);
     }
 
     public boolean isFullscreen() {

@@ -22,11 +22,18 @@ import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
 import javafx.scene.layout.VBox;
+import javax.swing.UIManager;
+import org.controlsfx.control.action.Action;
+import org.mapton.api.MKey;
 import org.mapton.api.MOptions;
-import static org.mapton.api.MOptions.KEY_DISPLAY_CROSSHAIR;
+import static org.mapton.api.MOptions.*;
+import org.mapton.api.Mapton;
 import org.mapton.core.ui.EngineBox;
+import org.openide.LifecycleManager;
 import org.openide.util.NbBundle;
+import org.openide.util.NbPreferences;
 import se.trixon.almond.nbp.fx.FxPanel;
+import se.trixon.almond.util.Dict;
 
 final class MainPanel extends javax.swing.JPanel {
 
@@ -36,6 +43,7 @@ final class MainPanel extends javax.swing.JPanel {
     private CheckBox mDarkThemeCheckBox;
     private EngineBox mEngineBox;
     private final FxPanel mFxPanel;
+    private boolean mOldDark;
     private final MOptions mOptions = MOptions.getInstance();
 
     private CheckBox mPopoverCheckBox;
@@ -96,12 +104,32 @@ final class MainPanel extends javax.swing.JPanel {
     private void loadFX() {
         mCrosshairCheckBox.setSelected(mOptions.is(KEY_DISPLAY_CROSSHAIR));
         mPopoverCheckBox.setSelected(mOptions.isPreferPopover());
-        mDarkThemeCheckBox.setSelected(mOptions.isDarkThemeEnabled());
+        mOldDark = mOptions.is(KEY_UI_LAF_DARK, DEFAULT_UI_LAF_DARK);
+        mDarkThemeCheckBox.setSelected(mOldDark);
     }
 
     private void storeFX() {
         mOptions.put(KEY_DISPLAY_CROSSHAIR, mCrosshairCheckBox.isSelected());
         mOptions.setPreferPopover(mPopoverCheckBox.isSelected());
-        mOptions.put(MOptions.KEY_DARK_THEME, mDarkThemeCheckBox.isSelected());
+        boolean newDark = mDarkThemeCheckBox.isSelected();
+        mOptions.put(KEY_UI_LAF_DARK, newDark);
+
+        if (mOldDark != newDark) {
+            String laf;
+            if (newDark) {
+                laf = "com.bulenkov.darcula.DarculaLaf";
+            } else {
+                laf = UIManager.getSystemLookAndFeelClassName();
+            }
+
+            NbPreferences.root().node("laf").put("laf", laf);
+
+            Action restartAction = new Action(Dict.RESTART.toString(), (eventHandler) -> {
+                LifecycleManager.getDefault().markForRestart();
+                LifecycleManager.getDefault().exit();
+            });
+
+            Mapton.notification(MKey.NOTIFICATION_INFORMATION, mBundle.getString("actionRequired"), mBundle.getString("restartRequired"), restartAction);
+        }
     }
 }

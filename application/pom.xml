@@ -216,6 +216,11 @@
             <groupId>se.trixon.almond</groupId>
             <artifactId>almond-nbp-actions-osx</artifactId>
         </dependency>
+        <dependency>
+            <groupId>se.trixon.almond</groupId>
+            <artifactId>almond-nbp-darcula</artifactId>
+            <version>3.1.6</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -230,6 +235,8 @@
                     <etcConfFile>src/main/resources/mapton.conf</etcConfFile>
                     <installerPack200Enable>false</installerPack200Enable>
                     <!--<additionalArguments>-J-Xmx2048m</additionalArguments>-->
+                    <!--<additionalArguments>- -locale en:US</additionalArguments>-->
+                    <!--<additionalArguments>- -nosplash</additionalArguments>-->
                 </configuration>
             </plugin>
             <plugin>

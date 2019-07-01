@@ -23,12 +23,14 @@ import javax.swing.JLayeredPane;
 import javax.swing.SwingUtilities;
 import org.mapton.api.MMapMagnet;
 import org.mapton.api.MOptions;
+import static org.mapton.api.MOptions.*;
 import org.mapton.core.ui.AppToolBarProvider;
 import org.openide.awt.Actions;
 import org.openide.modules.OnStart;
 import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
 import se.trixon.almond.nbp.Almond;
+import se.trixon.almond.nbp.DarculaDefaultsManager;
 import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.nbp.swing.RootPaneLayout;
 import se.trixon.almond.util.SystemHelper;
@@ -49,12 +51,13 @@ public class Initializer implements Runnable {
         NbLog.i("System", SystemHelper.getSystemInfo());
         Platform.setImplicitExit(false);
 
+        DarculaDefaultsManager.getInstance().putIfAbsent("invertIcons", "true");
         System.setProperty("netbeans.winsys.no_help_in_dialogs", "true");
         System.setProperty("netbeans.winsys.no_toolbars", "true");
         System.setProperty("netbeans.winsys.status_line.path", "AppStatusPanel.instance");
 
         boolean fullscreen = mOptions.isFullscreen();
-        FxHelper.setDarkThemeEnabled(mOptions.isDarkThemeEnabled());
+        FxHelper.setDarkThemeEnabled(mOptions.is(KEY_UI_LAF_DARK, DEFAULT_UI_LAF_DARK));
 
         SwingUtilities.invokeLater(() -> {
             IconColor.setDefault(FxHelper.isDarkThemeEnabled() ? IconColor.WHITE : IconColor.BLACK);

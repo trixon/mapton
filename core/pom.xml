@@ -157,6 +157,11 @@
             <groupId>com.j2html</groupId>
             <artifactId>j2html</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-modules</artifactId>
+            <version>${netbeans.version}</version>
+        </dependency>
     </dependencies>
     <properties>
         <netbeans.hint.license>apache20</netbeans.hint.license>
