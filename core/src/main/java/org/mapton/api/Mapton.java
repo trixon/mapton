@@ -24,10 +24,12 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.Background;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.util.Duration;
 import javax.swing.SwingUtilities;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.Notifications;
+import org.controlsfx.control.action.Action;
 import org.mapton.core.ui.AppStatusView;
 import org.mapton.core.ui.AppToolBar;
 import org.openide.awt.StatusDisplayer;
@@ -170,6 +172,16 @@ public class Mapton {
 
     public static void notification(String type, String title, String text) {
         getGlobalState().send(type, Notifications.create().title(title).text(text));
+    }
+
+    public static void notification(String type, String title, String text, Action... actions) {
+        Notifications notifications = Notifications.create()
+                .title(title)
+                .text(text)
+                .hideAfter(Duration.INDEFINITE)
+                .action(actions);
+
+        getGlobalState().send(type, notifications);
     }
 
     public static void setStatusText(String text, int importance) {
