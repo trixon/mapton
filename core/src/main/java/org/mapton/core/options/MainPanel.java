@@ -129,7 +129,7 @@ final class MainPanel extends javax.swing.JPanel {
                 LifecycleManager.getDefault().exit();
             });
 
-            Mapton.notification(MKey.NOTIFICATION_INFORMATION, mBundle.getString("actionRequired"), mBundle.getString("restartRequired"), restartAction);
+            Mapton.notification(MKey.NOTIFICATION_WARNING, mBundle.getString("actionRequired"), mBundle.getString("restartRequired"), restartAction);
         }
     }
 }
