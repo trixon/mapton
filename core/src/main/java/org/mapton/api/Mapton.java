@@ -41,6 +41,7 @@ import org.openide.util.Lookup;
 import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.util.GlobalState;
 import se.trixon.almond.util.fx.FxHelper;
+import se.trixon.almond.util.swing.SwingHelper;
 
 /**
  *
@@ -55,9 +56,7 @@ public class Mapton {
     private static final File CACHE_DIR;
     private static final File CONFIG_DIR;
     private static final Color ICON_COLOR = Color.BLACK;
-    private static final int ICON_SIZE_CONTEXT_MENU = 16;
     private static final int ICON_SIZE_TOOLBAR = 36;
-    private static final int ICON_SIZE_TOOLBAR_INT = 24;
     private static AppToolBar sAppToolBar;
     private static final GlobalState sGlobalState = new GlobalState();
     private static MOptions sOptions = MOptions.getInstance();
@@ -155,15 +154,15 @@ public class Mapton {
     }
 
     public static int getIconSizeContextMenu() {
-        return ICON_SIZE_CONTEXT_MENU;
+        return (int) (getIconSizeToolBar() / 2.0);
     }
 
     public static int getIconSizeToolBar() {
-        return ICON_SIZE_TOOLBAR;
+        return (int) (ICON_SIZE_TOOLBAR * SwingHelper.getFontScale());
     }
 
     public static int getIconSizeToolBarInt() {
-        return ICON_SIZE_TOOLBAR_INT;
+        return (int) (getIconSizeToolBar() / 1.5);
     }
 
     public static Mapton getInstance() {
