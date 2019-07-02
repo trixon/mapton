@@ -57,6 +57,7 @@ import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.nbp.dialogs.NbMessage;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxActionSwing;
+import se.trixon.almond.util.swing.SwingHelper;
 
 /**
  *
@@ -276,7 +277,7 @@ public class MBookmarkManager extends DbBaseManager {
                 bookmarkPanel.load(bookmark);
             });
 
-            bookmarkPanel.setPreferredSize(new Dimension(300, 500));
+            bookmarkPanel.setPreferredSize(SwingHelper.getUIScaledDim(300, 500));
             if (DialogDescriptor.OK_OPTION == DialogDisplayer.getDefault().notify(d)) {
                 bookmarkPanel.save(bookmark);
                 Platform.runLater(() -> {
@@ -305,7 +306,7 @@ public class MBookmarkManager extends DbBaseManager {
                 bookmarkCategoryPanel.setCategory(category);
             });
 
-            bookmarkCategoryPanel.setPreferredSize(new Dimension(400, 100));
+            bookmarkCategoryPanel.setPreferredSize(SwingHelper.getUIScaledDim(400, 100));
 
             if (DialogDescriptor.OK_OPTION == DialogDisplayer.getDefault().notify(d)) {
                 String newCategory = bookmarkCategoryPanel.getCategory();
@@ -349,7 +350,7 @@ public class MBookmarkManager extends DbBaseManager {
             bookmarkColorPanel.initFx(() -> {
             });
 
-            bookmarkColorPanel.setPreferredSize(new Dimension(200, 100));
+            bookmarkColorPanel.setPreferredSize(SwingHelper.getUIScaledDim(200, 100));
             if (DialogDescriptor.OK_OPTION == DialogDisplayer.getDefault().notify(d)) {
                 String color = bookmarkColorPanel.getColor();
                 Timestamp timestamp = new Timestamp(System.currentTimeMillis());

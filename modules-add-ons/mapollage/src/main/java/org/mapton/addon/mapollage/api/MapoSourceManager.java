@@ -17,7 +17,6 @@ package org.mapton.addon.mapollage.api;
 
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
-import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -36,6 +35,7 @@ import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.swing.SwingHelper;
 
 /**
  *
@@ -73,7 +73,7 @@ public class MapoSourceManager {
                 localGridPanel.load(source);
             });
 
-            localGridPanel.setPreferredSize(new Dimension(600, 400));
+            localGridPanel.setPreferredSize(SwingHelper.getUIScaledDim(600, 400));
             if (DialogDescriptor.OK_OPTION == DialogDisplayer.getDefault().notify(d)) {
                 Platform.runLater(() -> {
                     localGridPanel.save(source);

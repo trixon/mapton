@@ -33,6 +33,7 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.web.WebView;
 import org.mapton.api.Mapton;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
@@ -78,6 +79,7 @@ public abstract class MSubReports extends MReport {
         mWebView = new WebView();
         Mapton.applyHtmlCss(mWebView);
         mListView = new ListView<>();
+        mListView.setPrefWidth(FxHelper.getUIScaled(200));
         mBorderPane = new BorderPane(mWebView);
         mBorderPane.setLeft(mListView);
         mNotificationPane.setContent(mBorderPane);
@@ -157,7 +159,7 @@ public abstract class MSubReports extends MReport {
 
         private void createUI() {
             String fontFamily = mDefaultFont.getFamily();
-            double fontSize = mDefaultFont.getSize();
+            double fontSize = FxHelper.getScaledFontSize();
 
             mGroupLabel.setFont(Font.font(fontFamily, FontWeight.NORMAL, fontSize * 0.8));
             mNameLabel.setFont(Font.font(fontFamily, FontWeight.BOLD, fontSize * 1));

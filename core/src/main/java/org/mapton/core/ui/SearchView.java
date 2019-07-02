@@ -53,6 +53,7 @@ import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 
 /**
@@ -331,8 +332,8 @@ public class SearchView {
     class SearchResultListCell extends ListCell<MBookmark> {
 
         private final VBox mBox = new VBox();
-        private final Font mDefaultFont = Font.getDefault();
-        private final Font mHeaderFont = new Font(mDefaultFont.getSize() * 1.5);
+        private final Font mDefaultFont = Font.font(FxHelper.getScaledFontSize());
+        private final Font mHeaderFont = new Font(FxHelper.getScaledFontSize() * 1.5);
         private final Label mLabel = new Label();
 
         public SearchResultListCell() {

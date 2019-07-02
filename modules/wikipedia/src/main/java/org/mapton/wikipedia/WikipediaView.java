@@ -49,10 +49,10 @@ import static org.mapton.wikipedia.Module.LOG_TAG;
 import org.openide.util.Exceptions;
 import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.util.GlobalStateChangeEvent;
+import se.trixon.almond.util.fx.FxHelper;
 
 public final class WikipediaView extends BorderPane {
 
-    private final Font mDefaultFont = Font.getDefault();
     private final HashMap<String, Image> mImageCache = new HashMap<>();
     private ListView<MWikipediaArticle> mListView;
     private WebView mWebView;
@@ -67,7 +67,7 @@ public final class WikipediaView extends BorderPane {
         mListView = new ListView<>();
         mListView.setCellFactory((ListView<MWikipediaArticle> param) -> new ArticleListCell());
         mWebView = new WebView();
-        mWebView.setZoom(0.8);
+        mWebView.setZoom(FxHelper.getUIScaled(0.8));
         MasterDetailPane masterDetailPane = new MasterDetailPane(Side.TOP, mListView, mWebView, true);
         masterDetailPane.setDividerPosition(0.7);
 
@@ -164,7 +164,7 @@ public final class WikipediaView extends BorderPane {
         private final BorderPane mBorderPane = new BorderPane();
         private final Label mDescLabel = new Label();
         private final ImageView mImageView = new ImageView();
-        private final int mMaxSize = 50;
+        private final int mMaxSize = FxHelper.getUIScaled(50);
         private final StackPane mStackPane = new StackPane();
         private final Label mTitleLabel = new Label();
 
@@ -207,7 +207,7 @@ public final class WikipediaView extends BorderPane {
 
             String thumbnail = article.getThumbnail();
             if (StringUtils.isBlank(thumbnail)) {
-                mStackPane.setPadding(new Insets(0, mMaxSize, 0, 0));
+                mStackPane.setPadding(new Insets(0, mMaxSize, 0, 0));//Already scaled, don't scale again!
                 mImageView.setImage(null);
             } else {
                 Image image = mImageCache.computeIfAbsent(thumbnail, k -> new Image(article.getThumbnail(), mMaxSize, mMaxSize, true, true, true));
@@ -250,8 +250,8 @@ public final class WikipediaView extends BorderPane {
         }
 
         private void createUI() {
-            String fontFamily = mDefaultFont.getFamily();
-            double fontSize = mDefaultFont.getSize();
+            String fontFamily = Font.getDefault().getFamily();
+            double fontSize = FxHelper.getScaledFontSize();
 
             mTitleLabel.setFont(Font.font(fontFamily, FontWeight.NORMAL, fontSize * 1.2));
             mDescLabel.setFont(Font.font(fontFamily, FontWeight.NORMAL, fontSize * 0.9));
@@ -263,7 +263,7 @@ public final class WikipediaView extends BorderPane {
             mStackPane.getChildren().add(mImageView);
             mBorderPane.setLeft(mStackPane);
             mBorderPane.setCenter(centerBox);
-            BorderPane.setMargin(centerBox, new Insets(0, 0, 0, 8));
+            BorderPane.setMargin(centerBox, FxHelper.getUIScaledInsets(0, 0, 0, 8));
         }
     }
 }

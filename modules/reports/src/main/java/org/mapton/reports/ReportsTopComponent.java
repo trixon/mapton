@@ -42,6 +42,7 @@ import org.openide.util.LookupEvent;
 import org.openide.util.NbPreferences;
 import org.openide.windows.TopComponent;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 
 /**
@@ -94,6 +95,7 @@ public final class ReportsTopComponent extends MTopComponent {
         mPlaceholderLabel = new Label();
 
         mTreeView = new TreeView<>();
+        mTreeView.setPrefWidth(FxHelper.getUIScaled(200));
         mTreeView.setShowRoot(false);
         mTreeView.getSelectionModel().getSelectedItems().addListener((ListChangeListener.Change<? extends TreeItem<MReport>> c) -> {
             TreeItem<MReport> selectedItem = mTreeView.getSelectionModel().getSelectedItem();

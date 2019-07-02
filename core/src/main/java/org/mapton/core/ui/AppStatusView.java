@@ -19,7 +19,6 @@ import java.util.prefs.PreferenceChangeEvent;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
-import javafx.geometry.Insets;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
@@ -36,6 +35,7 @@ import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.GlobalStateChangeEvent;
+import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
@@ -129,10 +129,10 @@ public class AppStatusView extends StatusBar {
     }
 
     private void createUI() {
-        final int sliderWidth = 200;
+        final int sliderWidth = FxHelper.getUIScaled(200);
 
         mZoomAbsoluteSlider = new Slider(0, 1, 0.5);
-        mZoomAbsoluteSlider.setPadding(new Insets(4, 0, 0, 0));
+        mZoomAbsoluteSlider.setPadding(FxHelper.getUIScaledInsets(4, 0, 0, 0));
         mZoomAbsoluteSlider.setPrefWidth(sliderWidth);
         mZoomAbsoluteSlider.setBlockIncrement(0.05);
 
@@ -141,11 +141,11 @@ public class AppStatusView extends StatusBar {
         mZoomRelativeSlider.setDisable(true);
 
         mZoomRelativePane = new StackPane(mZoomRelativeSlider);
-        mZoomRelativePane.setPadding(new Insets(2, 0, 2, 0));
+        mZoomRelativePane.setPadding(FxHelper.getUIScaledInsets(2, 0, 2, 0));
 
         mRightLabel.prefHeightProperty().bind(heightProperty());
-        mRightLabel.setPadding(new Insets(0, 8, 0, 8));
-        mRightLabel.setFont(Font.font("monospaced"));
+        mRightLabel.setPadding(FxHelper.getUIScaledInsets(0, 8, 0, 8));
+        mRightLabel.setFont(Font.font("monospaced", FxHelper.getScaledFontSize()));
 
         getRightItems().addAll(mRightLabel, mComboBox);
         setStyle("-fx-background-insets: 0, 0;");

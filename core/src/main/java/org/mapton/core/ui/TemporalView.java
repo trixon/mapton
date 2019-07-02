@@ -18,13 +18,13 @@ package org.mapton.core.ui;
 import java.time.LocalDate;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import org.controlsfx.control.ToggleSwitch;
 import org.mapton.api.MTemporalManager;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.control.DatePane;
 import se.trixon.almond.util.fx.control.DateSelectionMode;
 
@@ -47,8 +47,8 @@ public class TemporalView extends BorderPane {
     }
 
     private void createUI() {
-        setPrefWidth(300);
-        setPadding(new Insets(8));
+        setPrefWidth(FxHelper.getUIScaled(300));
+        setPadding(FxHelper.getUIScaledInsets(8));
 
         mDatePane = new DatePane();
         mToggleSwitch = new ToggleSwitch(Dict.INTERVAL.toString());

@@ -77,6 +77,7 @@ public class Mapton {
         final String codeNameBase = Mapton.class.getPackage().getName();
         File file = InstalledFileLocator.getDefault().locate(path, codeNameBase, false);
         webView.getEngine().setUserStyleSheetLocation(file.toURI().toString());
+        webView.setFontScale(SwingHelper.getUIScale());
     }
 
     public static void clearStatusText() {
@@ -93,7 +94,7 @@ public class Mapton {
 
         label.setBackground(background);
         label.setAlignment(Pos.BASELINE_CENTER);
-        label.setFont(new Font(defaultFont.getSize() * 1.4));
+        label.setFont(new Font(FxHelper.getScaledFontSize() * 1.4));
 
         return label;
     }
@@ -158,7 +159,7 @@ public class Mapton {
     }
 
     public static int getIconSizeToolBar() {
-        return (int) (ICON_SIZE_TOOLBAR * SwingHelper.getFontScale());
+        return (int) (ICON_SIZE_TOOLBAR * SwingHelper.getUIScale());
     }
 
     public static int getIconSizeToolBarInt() {
