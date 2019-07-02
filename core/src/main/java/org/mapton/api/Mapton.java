@@ -24,15 +24,19 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.Background;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.web.WebView;
 import javafx.util.Duration;
 import javax.swing.SwingUtilities;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.Notifications;
 import org.controlsfx.control.action.Action;
+import static org.mapton.api.MOptions.DEFAULT_UI_LAF_DARK;
+import static org.mapton.api.MOptions.KEY_UI_LAF_DARK;
 import org.mapton.core.ui.AppStatusView;
 import org.mapton.core.ui.AppToolBar;
 import org.openide.awt.StatusDisplayer;
+import org.openide.modules.InstalledFileLocator;
 import org.openide.util.Lookup;
 import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.util.GlobalState;
@@ -56,12 +60,24 @@ public class Mapton {
     private static final int ICON_SIZE_TOOLBAR_INT = 24;
     private static AppToolBar sAppToolBar;
     private static final GlobalState sGlobalState = new GlobalState();
+    private static MOptions sOptions = MOptions.getInstance();
     private final DoubleProperty mZoomProperty;
 
     static {
         CONFIG_DIR = new File(System.getProperty("netbeans.user"), "mapton-modules");
         CACHE_DIR = new File(FileUtils.getUserDirectory(), ".cache/mapton");
         System.setProperty("mapton.cache", CACHE_DIR.getAbsolutePath());//Used by WorldWind
+    }
+
+    public static void applyHtmlCss(WebView webView) {
+        String path = "resources/css/attribution_dark.css";
+        if (!isDarkThemed()) {
+            path = StringUtils.remove(path, "_dark");
+        }
+
+        final String codeNameBase = Mapton.class.getPackage().getName();
+        File file = InstalledFileLocator.getDefault().locate(path, codeNameBase, false);
+        webView.getEngine().setUserStyleSheetLocation(file.toURI().toString());
     }
 
     public static void clearStatusText() {
@@ -160,6 +176,10 @@ public class Mapton {
 
     public static Color getThemeColor() {
         return Color.web("#006680").brighter().brighter();
+    }
+
+    public static boolean isDarkThemed() {
+        return sOptions.is(KEY_UI_LAF_DARK, DEFAULT_UI_LAF_DARK);
     }
 
     public static void logLoading(String category, String item) {

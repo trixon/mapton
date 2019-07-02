@@ -27,6 +27,7 @@ import javafx.scene.web.WebView;
 import org.controlsfx.control.PopOver;
 import org.mapton.api.MAttribution;
 import org.mapton.api.MDocumentInfo;
+import org.mapton.api.Mapton;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.SystemHelper;
 
@@ -84,6 +85,7 @@ public class AttributionView extends BorderPane {
 
     private void createUI() {
         mWebView = new WebView();
+        Mapton.applyHtmlCss(mWebView);
         //mWebView.setFontScale(1.0);
         setCenter(mWebView);
     }

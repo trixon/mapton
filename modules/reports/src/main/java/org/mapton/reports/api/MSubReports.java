@@ -31,6 +31,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.web.WebView;
+import org.mapton.api.Mapton;
 import se.trixon.almond.util.Dict;
 
 /**
@@ -75,6 +76,7 @@ public abstract class MSubReports extends MReport {
 
     private void createUI() {
         mWebView = new WebView();
+        Mapton.applyHtmlCss(mWebView);
         mListView = new ListView<>();
         mBorderPane = new BorderPane(mWebView);
         mBorderPane.setLeft(mListView);
