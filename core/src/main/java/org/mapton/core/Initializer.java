@@ -51,7 +51,10 @@ public class Initializer implements Runnable {
         NbLog.i("System", SystemHelper.getSystemInfo());
         Platform.setImplicitExit(false);
 
-        DarculaDefaultsManager.getInstance().putIfAbsent("invertIcons", "true");
+        DarculaDefaultsManager darculaDefaultsManager = DarculaDefaultsManager.getInstance();
+        darculaDefaultsManager.putIfAbsent("invertIcons", "true");
+        darculaDefaultsManager.putIfAbsent("stretchedTabs", "true");
+
         System.setProperty("netbeans.winsys.no_help_in_dialogs", "true");
         System.setProperty("netbeans.winsys.no_toolbars", "true");
         System.setProperty("netbeans.winsys.status_line.path", "AppStatusPanel.instance");
