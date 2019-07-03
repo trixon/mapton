@@ -90,7 +90,6 @@ public class Mapton {
 
     public static Label createTitle(String title, Background background) {
         Label label = new Label(title);
-        Font defaultFont = Font.getDefault();
 
         label.setBackground(background);
         label.setAlignment(Pos.BASELINE_CENTER);

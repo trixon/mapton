@@ -69,11 +69,10 @@ public class LocalGridView extends BorderPane {
     }
 
     private void createUI() {
-        Font defaultFont = Font.getDefault();
         ResourceBundle bundle = NbBundle.getBundle(GridTopComponent.class);
 
         mPlotCheckBox = new CheckBox(Dict.LOCAL.toString());
-        mPlotCheckBox.setFont(Font.font(defaultFont.getFamily(), FontWeight.BOLD, defaultFont.getSize() * 1.2));
+        mPlotCheckBox.setFont(Font.font(Font.getDefault().getFamily(), FontWeight.BOLD, FxHelper.getScaledFontSize() * 1.2));
 
         Action addAction = new Action(Dict.ADD.toString(), (ActionEvent event) -> {
             mManager.edit(null);

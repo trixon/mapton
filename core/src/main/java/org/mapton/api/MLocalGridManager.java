@@ -18,7 +18,6 @@ package org.mapton.api;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -31,6 +30,7 @@ import static org.mapton.api.MOptions.KEY_LOCAL_GRIDS;
 import org.mapton.core.ui.grid.LocalGridPanel;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
+import se.trixon.almond.util.swing.SwingHelper;
 
 /**
  *
@@ -69,7 +69,7 @@ public class MLocalGridManager {
                 localGridPanel.load(localGrid);
             });
 
-            localGridPanel.setPreferredSize(new Dimension(600, 300));
+            localGridPanel.setPreferredSize(SwingHelper.getUIScaledDim(600, 380));
             if (DialogDescriptor.OK_OPTION == DialogDisplayer.getDefault().notify(d)) {
                 Platform.runLater(() -> {
                     localGridPanel.save(localGrid);

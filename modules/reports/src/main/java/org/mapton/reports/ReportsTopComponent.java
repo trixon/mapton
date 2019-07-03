@@ -95,7 +95,7 @@ public final class ReportsTopComponent extends MTopComponent {
         mPlaceholderLabel = new Label();
 
         mTreeView = new TreeView<>();
-        mTreeView.setPrefWidth(FxHelper.getUIScaled(200));
+        mTreeView.setPrefWidth(FxHelper.getUIScaled(250));
         mTreeView.setShowRoot(false);
         mTreeView.getSelectionModel().getSelectedItems().addListener((ListChangeListener.Change<? extends TreeItem<MReport>> c) -> {
             TreeItem<MReport> selectedItem = mTreeView.getSelectionModel().getSelectedItem();

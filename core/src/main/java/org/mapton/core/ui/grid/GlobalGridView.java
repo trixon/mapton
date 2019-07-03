@@ -26,6 +26,7 @@ import org.mapton.api.MOptions;
 import static org.mapton.api.MOptions.*;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
@@ -51,10 +52,9 @@ public class GlobalGridView extends VBox {
     }
 
     private void createUI() {
-        Font defaultFont = Font.getDefault();
         ResourceBundle bundle = NbBundle.getBundle(GridTopComponent.class);
         mPlotCheckBox = new CheckBox(Dict.GLOBAL.toString());
-        mPlotCheckBox.setFont(Font.font(defaultFont.getFamily(), FontWeight.BOLD, defaultFont.getSize() * 1.2));
+        mPlotCheckBox.setFont(Font.font(Font.getDefault().getFamily(), FontWeight.BOLD, FxHelper.getScaledFontSize() * 1.2));
 
         mClampToGroundCheckBox = new CheckBox("CLAMP TO GROUND");
 
@@ -68,7 +68,7 @@ public class GlobalGridView extends VBox {
         mPolarAntarticCheckBox = new CheckBox(bundle.getString("antarctic_circle"));
 
         Label presentationLabel = new Label(bundle.getString("major_latitudes"));
-        presentationLabel.setFont(new Font(defaultFont.getSize() * 1.2));
+        presentationLabel.setFont(new Font(FxHelper.getScaledFontSize() * 1.2));
 
         VBox vbox = new VBox(8,
                 //mClampToGroundCheckBox,
