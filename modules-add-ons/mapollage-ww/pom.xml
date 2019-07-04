@@ -77,6 +77,11 @@
             <groupId>se.trixon.almond</groupId>
             <artifactId>almond-nbp</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.gdal</groupId>
+            <artifactId>gdal</artifactId>
+            <version>3.0.0</version>
+        </dependency>
     </dependencies>
     <properties>
         <netbeans.hint.license>apache20</netbeans.hint.license>
