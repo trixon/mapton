@@ -130,7 +130,6 @@ public class RulerTab extends Tab {
         );
 
         mTopBox.setAlignment(Pos.CENTER);
-        mTopBox.setPadding(new Insets(8, 0, 8, 0));
 
         mLowerBorderPane.setTop(mTopBox);
         mBorderPane = new BorderPane(mLowerBorderPane);
