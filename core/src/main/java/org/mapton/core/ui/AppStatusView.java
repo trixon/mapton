@@ -19,10 +19,11 @@ import java.util.prefs.PreferenceChangeEvent;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
+import javafx.geometry.Pos;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.text.Font;
 import org.controlsfx.control.PlusMinusSlider;
 import org.controlsfx.control.StatusBar;
@@ -45,12 +46,13 @@ public class AppStatusView extends StatusBar {
 
     private final ComboBox<MCooTrans> mComboBox = new ComboBox<>();
     private MCooTrans mCooTrans;
+    private HBox mLeftItemsBox;
     private final MOptions mOptions = MOptions.getInstance();
+    private HBox mRightItemsBox;
     private final Label mRightLabel = new Label();
     private StatusWindowMode mWindowMode = StatusWindowMode.OTHER;
     private Slider mZoomAbsoluteSlider;
     private MStatusZoomMode mZoomMode = MStatusZoomMode.ABSOLUTE;
-    private StackPane mZoomRelativePane;
     private PlusMinusSlider mZoomRelativeSlider;
 
     public static AppStatusView getInstance() {
@@ -140,14 +142,18 @@ public class AppStatusView extends StatusBar {
         mZoomRelativeSlider.setPrefWidth(sliderWidth);
         mZoomRelativeSlider.setDisable(true);
 
-        mZoomRelativePane = new StackPane(mZoomRelativeSlider);
-        mZoomRelativePane.setPadding(FxHelper.getUIScaledInsets(2, 0, 2, 0));
+        mLeftItemsBox = new HBox(FxHelper.getUIScaled(16));
+        mLeftItemsBox.setFillHeight(true);
+        mLeftItemsBox.setAlignment(Pos.CENTER_LEFT);
 
-        mRightLabel.prefHeightProperty().bind(heightProperty());
-        mRightLabel.setPadding(FxHelper.getUIScaledInsets(0, 8, 0, 8));
+        mRightItemsBox = new HBox(FxHelper.getUIScaled(16), new Label(""), mRightLabel, mComboBox);
+        mRightItemsBox.setFillHeight(true);
+        mRightItemsBox.setAlignment(Pos.CENTER_RIGHT);
+        mRightItemsBox.prefHeightProperty().bind(heightProperty());
+
         mRightLabel.setFont(Font.font("monospaced", FxHelper.getScaledFontSize()));
-
-        getRightItems().addAll(mRightLabel, mComboBox);
+        getLeftItems().addAll(mLeftItemsBox);
+        getRightItems().addAll(mRightItemsBox);
         setStyle("-fx-background-insets: 0, 0;");
     }
 
@@ -214,14 +220,14 @@ public class AppStatusView extends StatusBar {
     }
 
     private void updateZoomMode() {
-        getLeftItems().clear();
+        mLeftItemsBox.getChildren().clear();
 
         mZoomMode = Mapton.getEngine().getStatusZoomMode();
         if (mWindowMode == StatusWindowMode.MAP) {
             if (mZoomMode == MStatusZoomMode.ABSOLUTE) {
-                getLeftItems().add(mZoomAbsoluteSlider);
+                mLeftItemsBox.getChildren().add(mZoomAbsoluteSlider);
             } else {
-                getLeftItems().add(mZoomRelativePane);
+                mLeftItemsBox.getChildren().add(mZoomRelativeSlider);
             }
         }
     }

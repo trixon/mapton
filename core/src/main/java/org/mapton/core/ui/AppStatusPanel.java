@@ -53,7 +53,7 @@ public class AppStatusPanel extends JPanel {
         };
 
         mFxPanel.initFx(null);
-        mFxPanel.setPreferredSize(SwingHelper.getUIScaledDim(0, 30));
+        mFxPanel.setPreferredSize(SwingHelper.getUIScaledDim(0, 32));
 
         setLayout(new BorderLayout());
         resetSwing();
