@@ -24,7 +24,6 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.HBox;
-import javafx.scene.text.Font;
 import org.controlsfx.control.PlusMinusSlider;
 import org.controlsfx.control.StatusBar;
 import org.mapton.api.MCooTrans;
@@ -151,7 +150,7 @@ public class AppStatusView extends StatusBar {
         mRightItemsBox.setAlignment(Pos.CENTER_RIGHT);
         mRightItemsBox.prefHeightProperty().bind(heightProperty());
 
-        mRightLabel.setFont(Font.font("monospaced", FxHelper.getScaledFontSize()));
+        mRightLabel.setStyle("-fx-font-family: 'monospaced';");
         getLeftItems().addAll(mLeftItemsBox);
         getRightItems().addAll(mRightItemsBox);
         setStyle("-fx-background-insets: 0, 0;");
