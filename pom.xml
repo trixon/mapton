@@ -4,7 +4,7 @@
 
     <groupId>org.mapton</groupId>
     <artifactId>mapton-parent</artifactId>
-    <version>1.1.1</version>
+    <version>1.1.2-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>mapton-parent</name>
@@ -275,8 +275,8 @@
         <netbeans.compile.on.save>all</netbeans.compile.on.save>
         <brandingToken>mapton</brandingToken>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <almond.version>3.0.3</almond.version>
-        <mapton.version>1.1.1</mapton.version>
+        <almond.version>3.0.4-SNAPSHOT</almond.version>
+        <mapton.version>1.1.2-SNAPSHOT</mapton.version>
     </properties>
     <description>Some kind of map application</description>
 </project>
