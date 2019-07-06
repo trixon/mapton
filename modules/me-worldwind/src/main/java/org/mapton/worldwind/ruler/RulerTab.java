@@ -120,7 +120,7 @@ public class RulerTab extends Tab {
         mMetricsTextArea = new TextArea();
         mMetricsTextArea.setEditable(false);
         mMetricsTextArea.setPrefRowCount(7);
-        mMetricsTextArea.setFont(Font.font("monospaced"));
+        mMetricsTextArea.setFont(Font.font("monospaced", FxHelper.getScaledFontSize()));
 
         mPointListTextArea = new TextArea();
         mPointListTextArea.setEditable(false);
@@ -130,7 +130,6 @@ public class RulerTab extends Tab {
         );
 
         mTopBox.setAlignment(Pos.CENTER);
-        mTopBox.setPadding(new Insets(8, 0, 8, 0));
 
         mLowerBorderPane.setTop(mTopBox);
         mBorderPane = new BorderPane(mLowerBorderPane);

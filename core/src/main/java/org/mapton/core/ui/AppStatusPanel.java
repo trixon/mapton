@@ -20,6 +20,7 @@ import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javax.swing.JPanel;
 import se.trixon.almond.nbp.fx.FxPanel;
+import se.trixon.almond.util.swing.SwingHelper;
 
 /**
  *
@@ -28,7 +29,7 @@ import se.trixon.almond.nbp.fx.FxPanel;
 public class AppStatusPanel extends JPanel {
 
     private static AppStatusPanel sAppStatusPanel;
-    private BorderPane mBox;
+    private BorderPane mBorderPane;
     private final FxPanel mFxPanel;
 
     public static AppStatusPanel getInstance() {
@@ -45,14 +46,14 @@ public class AppStatusPanel extends JPanel {
             }
 
             private Scene createScene() {
-                mBox = new BorderPane();
+                mBorderPane = new BorderPane();
                 resetFx();
-                return new Scene(mBox);
+                return new Scene(mBorderPane);
             }
         };
 
         mFxPanel.initFx(null);
-        mFxPanel.setPreferredSize(null);
+        mFxPanel.setPreferredSize(SwingHelper.getUIScaledDim(0, 32));
 
         setLayout(new BorderLayout());
         resetSwing();
@@ -63,7 +64,7 @@ public class AppStatusPanel extends JPanel {
     }
 
     public void resetFx() {
-        mBox.setCenter(AppStatusView.getInstance());
+        mBorderPane.setCenter(AppStatusView.getInstance());
     }
 
     public void resetSwing() {

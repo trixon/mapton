@@ -59,6 +59,7 @@ import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.GlobalStateChangeEvent;
+import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
@@ -107,12 +108,13 @@ public class StyleView extends HBox {
     }
 
     private void createUI() {
-        setSpacing(16);
-        setPadding(new Insets(8, 16, 16, 16));
-        mLeftPane.setPrefWidth(200);
-        mStyleBox.setPrefWidth(200);
+        setSpacing(FxHelper.getUIScaled(16));
+        setPadding(FxHelper.getUIScaledInsets(8, 16, 16, 16));
+        double width = FxHelper.getUIScaled(200);
+        mLeftPane.setPrefWidth(width);
+        mStyleBox.setPrefWidth(width);
 
-        Insets topInsets = new Insets(12, 0, 0, 0);
+        Insets topInsets = FxHelper.getUIScaledInsets(12, 0, 0, 0);
         Label modeLabel = new Label(Dict.MODE.toString());
         Label projLabel = new Label(MDict.PROJECTION.toString());
         GridPane.setMargin(projLabel, topInsets);
@@ -271,6 +273,7 @@ public class StyleView extends HBox {
 
             for (String category : categoryStyles.keySet()) {
                 ListView<MapStyle> listView = new ListView<>(categoryStyles.get(category));
+                listView.setPrefWidth(FxHelper.getUIScaled(300));
                 listView.setCellFactory((ListView<MapStyle> param) -> new MapStyleListCell());
 
                 MultipleSelectionModel<MapStyle> selectionModel = listView.getSelectionModel();
@@ -361,7 +364,6 @@ public class StyleView extends HBox {
     class MapStyleListCell extends ListCell<MapStyle> {
 
         private final VBox mBox = new VBox();
-        private Font mDefaultFont = Font.getDefault();
         private final Label mDescLabel = new Label();
         private final Label mNameLabel = new Label();
 
@@ -395,12 +397,12 @@ public class StyleView extends HBox {
         }
 
         private void createUI() {
-            String fontFamily = mDefaultFont.getFamily();
-            double fontSize = mDefaultFont.getSize();
+            String fontFamily = Font.getDefault().getFamily();
+            double fontSize = FxHelper.getScaledFontSize();
             mNameLabel.setFont(Font.font(fontFamily, FontWeight.BOLD, fontSize));
             mDescLabel.setFont(Font.font(fontFamily, FontPosture.ITALIC, fontSize));
 
-            mBox.setSpacing(4);
+            mBox.setSpacing(FxHelper.getUIScaled(4));
             mBox.getChildren().setAll(mNameLabel, mDescLabel);
         }
     }

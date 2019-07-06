@@ -19,12 +19,11 @@ import java.util.prefs.PreferenceChangeEvent;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
-import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
-import javafx.scene.layout.StackPane;
-import javafx.scene.text.Font;
+import javafx.scene.layout.HBox;
 import org.controlsfx.control.PlusMinusSlider;
 import org.controlsfx.control.StatusBar;
 import org.mapton.api.MCooTrans;
@@ -36,6 +35,7 @@ import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.GlobalStateChangeEvent;
+import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
@@ -45,12 +45,13 @@ public class AppStatusView extends StatusBar {
 
     private final ComboBox<MCooTrans> mComboBox = new ComboBox<>();
     private MCooTrans mCooTrans;
+    private HBox mLeftItemsBox;
     private final MOptions mOptions = MOptions.getInstance();
+    private HBox mRightItemsBox;
     private final Label mRightLabel = new Label();
     private StatusWindowMode mWindowMode = StatusWindowMode.OTHER;
     private Slider mZoomAbsoluteSlider;
     private MStatusZoomMode mZoomMode = MStatusZoomMode.ABSOLUTE;
-    private StackPane mZoomRelativePane;
     private PlusMinusSlider mZoomRelativeSlider;
 
     public static AppStatusView getInstance() {
@@ -129,10 +130,10 @@ public class AppStatusView extends StatusBar {
     }
 
     private void createUI() {
-        final int sliderWidth = 200;
+        final int sliderWidth = FxHelper.getUIScaled(200);
 
         mZoomAbsoluteSlider = new Slider(0, 1, 0.5);
-        mZoomAbsoluteSlider.setPadding(new Insets(4, 0, 0, 0));
+        mZoomAbsoluteSlider.setPadding(FxHelper.getUIScaledInsets(4, 0, 0, 0));
         mZoomAbsoluteSlider.setPrefWidth(sliderWidth);
         mZoomAbsoluteSlider.setBlockIncrement(0.05);
 
@@ -140,14 +141,19 @@ public class AppStatusView extends StatusBar {
         mZoomRelativeSlider.setPrefWidth(sliderWidth);
         mZoomRelativeSlider.setDisable(true);
 
-        mZoomRelativePane = new StackPane(mZoomRelativeSlider);
-        mZoomRelativePane.setPadding(new Insets(2, 0, 2, 0));
+        mLeftItemsBox = new HBox(FxHelper.getUIScaled(16));
+        mLeftItemsBox.setFillHeight(true);
+        mLeftItemsBox.setAlignment(Pos.CENTER_LEFT);
 
-        mRightLabel.prefHeightProperty().bind(heightProperty());
-        mRightLabel.setPadding(new Insets(0, 8, 0, 8));
-        mRightLabel.setFont(Font.font("monospaced"));
+        mRightItemsBox = new HBox(FxHelper.getUIScaled(16), new Label(""), mRightLabel, mComboBox);
+        mRightItemsBox.setFillHeight(true);
+        mRightItemsBox.setAlignment(Pos.CENTER_RIGHT);
+        mRightItemsBox.prefHeightProperty().bind(heightProperty());
 
-        getRightItems().addAll(mRightLabel, mComboBox);
+        mRightLabel.setStyle("-fx-font-family: 'monospaced';");
+        getLeftItems().addAll(mLeftItemsBox);
+        getRightItems().addAll(mRightItemsBox);
+        setStyle("-fx-background-insets: 0, 0;");
     }
 
     private void initListeners() {
@@ -213,14 +219,14 @@ public class AppStatusView extends StatusBar {
     }
 
     private void updateZoomMode() {
-        getLeftItems().clear();
+        mLeftItemsBox.getChildren().clear();
 
         mZoomMode = Mapton.getEngine().getStatusZoomMode();
         if (mWindowMode == StatusWindowMode.MAP) {
             if (mZoomMode == MStatusZoomMode.ABSOLUTE) {
-                getLeftItems().add(mZoomAbsoluteSlider);
+                mLeftItemsBox.getChildren().add(mZoomAbsoluteSlider);
             } else {
-                getLeftItems().add(mZoomRelativePane);
+                mLeftItemsBox.getChildren().add(mZoomRelativeSlider);
             }
         }
     }

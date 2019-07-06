@@ -23,15 +23,18 @@ import javax.swing.JLayeredPane;
 import javax.swing.SwingUtilities;
 import org.mapton.api.MMapMagnet;
 import org.mapton.api.MOptions;
+import static org.mapton.api.MOptions.*;
 import org.mapton.core.ui.AppToolBarProvider;
 import org.openide.awt.Actions;
 import org.openide.modules.OnStart;
 import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
 import se.trixon.almond.nbp.Almond;
+import se.trixon.almond.nbp.DarculaDefaultsManager;
 import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.nbp.swing.RootPaneLayout;
 import se.trixon.almond.util.SystemHelper;
+import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.icons.IconColor;
 
 /**
@@ -48,14 +51,19 @@ public class Initializer implements Runnable {
         NbLog.i("System", SystemHelper.getSystemInfo());
         Platform.setImplicitExit(false);
 
+        DarculaDefaultsManager darculaDefaultsManager = DarculaDefaultsManager.getInstance();
+        darculaDefaultsManager.putIfAbsent("invertIcons", "true");
+        darculaDefaultsManager.putIfAbsent("stretchedTabs", "true");
+
         System.setProperty("netbeans.winsys.no_help_in_dialogs", "true");
         System.setProperty("netbeans.winsys.no_toolbars", "true");
         System.setProperty("netbeans.winsys.status_line.path", "AppStatusPanel.instance");
 
         boolean fullscreen = mOptions.isFullscreen();
+        FxHelper.setDarkThemeEnabled(mOptions.is(KEY_UI_LAF_DARK, DEFAULT_UI_LAF_DARK));
 
         SwingUtilities.invokeLater(() -> {
-            IconColor.initFx();
+            IconColor.setDefault(FxHelper.isDarkThemeEnabled() ? IconColor.WHITE : IconColor.BLACK);
             JFrame frame = (JFrame) Almond.getFrame();
             JComponent toolbar = AppToolBarProvider.getDefault().createToolbar();
             frame.getRootPane().setLayout(new RootPaneLayout(toolbar));

@@ -103,6 +103,7 @@ public class BookmarkReport extends MReport {
     public Node getNode() {
         if (mWebView == null) {
             mWebView = new WebView();
+            Mapton.applyHtmlCss(mWebView);
         }
 
         Platform.runLater(() -> {

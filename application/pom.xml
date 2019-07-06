@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.mapton</groupId>
         <artifactId>mapton-parent</artifactId>
-        <version>1.1.0</version>
+        <version>1.1.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -216,6 +216,11 @@
             <groupId>se.trixon.almond</groupId>
             <artifactId>almond-nbp-actions-osx</artifactId>
         </dependency>
+        <dependency>
+            <groupId>se.trixon.almond</groupId>
+            <artifactId>almond-nbp-darcula</artifactId>
+            <version>3.1.6</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -230,6 +235,9 @@
                     <etcConfFile>src/main/resources/mapton.conf</etcConfFile>
                     <installerPack200Enable>false</installerPack200Enable>
                     <!--<additionalArguments>-J-Xmx2048m</additionalArguments>-->
+                    <!--<additionalArguments>&#045;&#045;locale en:US</additionalArguments>-->
+                    <!--<additionalArguments>&#045;&#045;nosplash</additionalArguments>-->
+                    <!--<additionalArguments>&#045;&#045;fontsize 32</additionalArguments>-->
                 </configuration>
             </plugin>
             <plugin>

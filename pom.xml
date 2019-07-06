@@ -4,7 +4,7 @@
 
     <groupId>org.mapton</groupId>
     <artifactId>mapton-parent</artifactId>
-    <version>1.1.0</version>
+    <version>1.1.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>mapton-parent</name>
@@ -185,7 +185,7 @@
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-text</artifactId>
-                <version>1.6</version>
+                <version>1.7</version>
             </dependency>
             <dependency>
                 <groupId>commons-logging</groupId>
@@ -220,7 +220,7 @@
             <dependency>
                 <groupId>org.postgresql</groupId>
                 <artifactId>postgresql</artifactId>
-                <version>42.2.5</version>
+                <version>42.2.6</version>
             </dependency>
             <dependency>
                 <groupId>de.micromata.jak</groupId>
@@ -250,7 +250,7 @@
             <dependency>
                 <groupId>com.sothawo</groupId>
                 <artifactId>mapjfx</artifactId>
-                <version>1.26.1</version>
+                <version>1.26.2</version>
             </dependency>
             <dependency>
                 <groupId>com.github.pcmehlitz</groupId>
@@ -275,8 +275,8 @@
         <netbeans.compile.on.save>all</netbeans.compile.on.save>
         <brandingToken>mapton</brandingToken>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <almond.version>3.0.2</almond.version>
-        <mapton.version>1.1.0</mapton.version>
+        <almond.version>3.0.3-SNAPSHOT</almond.version>
+        <mapton.version>1.1.1-SNAPSHOT</mapton.version>
     </properties>
     <description>Some kind of map application</description>
 </project>

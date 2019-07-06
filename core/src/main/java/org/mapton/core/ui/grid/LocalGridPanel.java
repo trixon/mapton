@@ -188,8 +188,7 @@ public class LocalGridPanel extends FxDialogPanel {
 
         Label latLabel = new Label(mBundle.getString("lat"));
         Label lonLabel = new Label(mBundle.getString("lon"));
-        Font defaultFont = Font.getDefault();
-        final Font font = new Font(defaultFont.getSize() * 1.4);
+        final Font font = new Font(FxHelper.getScaledFontSize() * 1.4);
         latLabel.setFont(font);
         lonLabel.setFont(font);
 

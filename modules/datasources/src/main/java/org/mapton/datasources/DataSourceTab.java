@@ -26,6 +26,7 @@ import javafx.scene.text.Font;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openide.util.NbPreferences;
+import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
@@ -66,7 +67,7 @@ public class DataSourceTab extends Tab {
 
     private void init() {
         mTextArea = new TextArea();
-        mTextArea.setFont(Font.font("monospaced", Font.getDefault().getSize() * 1.3));
+        mTextArea.setFont(Font.font("monospaced", FxHelper.getScaledFontSize() * 1.3));
         setContent(mTextArea);
     }
 

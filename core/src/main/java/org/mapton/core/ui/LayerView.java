@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,6 +20,7 @@ import javafx.application.Platform;
 import javafx.scene.layout.BorderPane;
 import org.mapton.api.MOptions;
 import org.mapton.api.Mapton;
+import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
@@ -46,6 +47,7 @@ public class LayerView extends BorderPane {
     }
 
     private void createUI() {
+        setPrefWidth(FxHelper.getUIScaled(300));
         loadLayerView();
     }
 
