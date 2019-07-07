@@ -26,6 +26,7 @@ import org.mapton.api.MMapMagnet;
 import org.mapton.api.MOptions;
 import static org.mapton.api.MOptions.*;
 import org.mapton.core.ui.AppToolBarProvider;
+import org.mapton.core.updater.UpdateNotificator;
 import org.openide.awt.Actions;
 import org.openide.modules.OnStart;
 import org.openide.windows.TopComponent;
@@ -94,6 +95,8 @@ public class Initializer implements Runnable {
             //Pre-load but don't display
             Almond.getTopComponent("ObjectPropertiesTopComponent");
             //Actions.forID("Window", "org.mapton.core.ui.MapTopComponent").actionPerformed(null);
+
+            new UpdateNotificator();
         });
 
         //Activate MapTopComponent when opening MapMagnets

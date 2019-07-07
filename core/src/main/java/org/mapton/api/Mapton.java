@@ -203,6 +203,16 @@ public class Mapton {
         getGlobalState().send(type, notifications);
     }
 
+    public static void notification(String type, String title, String text, Duration hideDuration, Action... actions) {
+        Notifications notifications = Notifications.create()
+                .title(title)
+                .text(text)
+                .hideAfter(hideDuration)
+                .action(actions);
+
+        getGlobalState().send(type, notifications);
+    }
+
     public static void setStatusText(String text, int importance) {
         StatusDisplayer.getDefault().setStatusText(text, importance);
     }
