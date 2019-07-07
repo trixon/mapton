@@ -19,11 +19,14 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.TreeMap;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.api.MBookmark;
 import org.mapton.api.MSearchEngine;
+import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.SystemHelper;
 
@@ -35,28 +38,38 @@ import se.trixon.almond.util.SystemHelper;
 public class GeonamesSearchEngine implements MSearchEngine {
 
     private static final TreeMap<String, String> sCountries = new TreeMap<>();
+    private static final GeonamesGenerator sGenerator = GeonamesGenerator.getInstance();
     private static ArrayList<Geoname> sGeonames;
 
     static {
         init();
     }
 
-    private static void init() {
-        Gson gson = new GsonBuilder().create();
-        String json;
+    public static void init() {
+        new Thread(() -> {
+            Gson gson = new GsonBuilder().create();
+            String json = "[]";
 
-        json = SystemHelper.getResourceAsString(GeonamesSearchEngine.class, "geonames.json");
-        sGeonames = gson.fromJson(json, new TypeToken<ArrayList<Geoname>>() {
-        }.getType());
+            if (sGenerator.getSearchEngineFile().isFile()) {
+                try {
+                    json = FileUtils.readFileToString(sGenerator.getSearchEngineFile(), "utf-8");
+                } catch (IOException ex) {
+                    Exceptions.printStackTrace(ex);
+                }
+            }
 
-        sGeonames.sort((Geoname o1, Geoname o2) -> o1.getName().compareTo(o2.getName()));
-        json = SystemHelper.getResourceAsString(GeonamesSearchEngine.class, "country_codes.json");
-        ArrayList<Country> countries = gson.fromJson(json, new TypeToken<ArrayList<Country>>() {
-        }.getType());
+            sGeonames = gson.fromJson(json, new TypeToken<ArrayList<Geoname>>() {
+            }.getType());
 
-        countries.forEach((country) -> {
-            sCountries.put(country.mCode, country.mName);
-        });
+            sGeonames.sort((Geoname o1, Geoname o2) -> o1.getName().compareTo(o2.getName()));
+            json = SystemHelper.getResourceAsString(GeonamesSearchEngine.class, "country_codes.json");
+            ArrayList<Country> countries = gson.fromJson(json, new TypeToken<ArrayList<Country>>() {
+            }.getType());
+
+            countries.forEach((country) -> {
+                sCountries.put(country.mCode, country.mName);
+            });
+        }).start();
     }
 
     public GeonamesSearchEngine() {
