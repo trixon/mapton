@@ -123,9 +123,9 @@ public class BookmarkLayerBundle extends LayerBundle {
         placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
 
         PointPlacemarkAttributes attrs = new PointPlacemarkAttributes(placemark.getDefaultAttributes());
-        attrs.setImage(GraphicsHelper.toBufferedImage(MaterialIcon._Action.HOME.get(96, IconColor.WHITE).getImage()));
+        attrs.setImage(GraphicsHelper.toBufferedImage(MaterialIcon._Action.HOME.get(Mapton.getIconSizeToolBar() * 2, IconColor.WHITE).getImage()));
         attrs.setImageColor(Color.RED);
-        attrs.setImageOffset(Offset.BOTTOM_CENTER);
+        attrs.setImageOffset(Offset.CENTER);
 
         placemark.setAttributes(attrs);
         placemark.setHighlightAttributes(WWUtil.createHighlightAttributes(attrs, 1.0));
