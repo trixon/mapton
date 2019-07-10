@@ -165,6 +165,16 @@
                 <artifactId>almond-nbp-actions-osx</artifactId>
                 <version>${almond.version}</version>
             </dependency>
+            <dependency>
+                <groupId>se.trixon.almond</groupId>
+                <artifactId>almond-nbp-darcula</artifactId>
+                <version>${almond.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>se.trixon</groupId>
+                <artifactId>GMapsFX-txn</artifactId>
+                <version>2.12.200-SNAPSHOT</version>
+            </dependency>
 
             <!-- Other -->
             <dependency>
@@ -238,11 +248,6 @@
                 <version>1.4.0</version>
             </dependency>
             <dependency>
-                <groupId>com.lynden</groupId>
-                <artifactId>GMapsFX</artifactId>
-                <version>2.12.2-SNAPSHOT</version>
-            </dependency>
-            <dependency>
                 <groupId>org.jxmapviewer</groupId>
                 <artifactId>jxmapviewer2</artifactId>
                 <version>2.4</version>
@@ -265,7 +270,7 @@
             <dependency>
                 <groupId>com.drewnoakes</groupId>
                 <artifactId>metadata-extractor</artifactId>
-                <version>2.11.0</version>
+                <version>2.12.0</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

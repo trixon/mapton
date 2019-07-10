@@ -71,12 +71,12 @@
             <groupId>se.trixon.almond</groupId>
             <artifactId>almond-nbp</artifactId>
         </dependency>
+        <dependency>
+            <groupId>se.trixon</groupId>
+            <artifactId>GMapsFX-txn</artifactId>
+        </dependency>
 
         <!-- Other -->
-        <dependency>
-            <groupId>com.lynden</groupId>
-            <artifactId>GMapsFX</artifactId>
-        </dependency>
     </dependencies>
     <properties>
         <netbeans.hint.license>apache20</netbeans.hint.license>

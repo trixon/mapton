@@ -219,7 +219,6 @@
         <dependency>
             <groupId>se.trixon.almond</groupId>
             <artifactId>almond-nbp-darcula</artifactId>
-            <version>3.1.6</version>
         </dependency>
     </dependencies>
 
