@@ -25,11 +25,13 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
 import javafx.scene.control.cell.CheckBoxListCell;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
 import org.apache.commons.lang3.BooleanUtils;
 import org.controlsfx.control.CheckListView;
 import org.mapton.worldwind.api.WWUtil;
 import org.openide.util.NbPreferences;
+import se.trixon.almond.nbp.Almond;
 
 /**
  *
@@ -132,6 +134,13 @@ public class LayerView extends BorderPane {
                         mPreferences.putBoolean(layer.getName(), false);
                     });
                 }
+            }
+        });
+
+        mListView.setOnMouseClicked((event) -> {
+            Layer layer = mListView.getSelectionModel().getSelectedItem();
+            if (layer != null && layer.hasKey(WWUtil.KEY_FAST_OPEN) && event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
+                Almond.openAndActivateTopComponent((String) layer.getValue(WWUtil.KEY_FAST_OPEN));
             }
         });
     }

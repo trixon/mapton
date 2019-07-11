@@ -23,6 +23,7 @@ import gov.nasa.worldwind.render.PointPlacemarkAttributes;
  */
 public class WWUtil {
 
+    public static final String KEY_FAST_OPEN = "mapton.layer.fast_open";
     public static final String KEY_HIDE_FROM_LAYER_MANAGER = "mapton.layer.hide";
     public static final String KEY_RUNNABLE_HOOVER = "mapton.runnable.hoover";
     public static final String KEY_HOOVER_TEXT = "mapton.hoover.text";
