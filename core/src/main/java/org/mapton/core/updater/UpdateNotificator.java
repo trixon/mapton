@@ -52,8 +52,8 @@ public class UpdateNotificator {
 
     private void alert(MUpdater.ByFile updater) {
         String name = updater.getName();
-        if (updater.getParent() != null) {
-            name = String.format("%s/%s", updater.getParent(), updater.getName());
+        if (updater.getCategory() != null) {
+            name = String.format("%s/%s", updater.getCategory(), updater.getName());
         }
 
         Action action = new Action(mBundle.getString("updater_tool"), (eventHandler) -> {

@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 import org.mapton.api.MUpdater;
 import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
+import se.trixon.almond.util.Dict;
 
 /**
  *
@@ -32,7 +33,7 @@ public class GeonamesUpdater extends MUpdater.ByFile {
 
     public GeonamesUpdater() {
         setFile(mGenerator.getCities1000zipFile());
-        setTooltipText("Search engine data from geonames.org");
+        setComment("Search engine data from geonames.org");
         setRunnable(() -> {
             try {
                 mGenerator.update(mPrint);
@@ -49,12 +50,12 @@ public class GeonamesUpdater extends MUpdater.ByFile {
     }
 
     @Override
-    public String getName() {
-        return "GeoNames";
+    public String getCategory() {
+        return Dict.SYSTEM.toString();
     }
 
     @Override
-    public String getParent() {
-        return null;
+    public String getName() {
+        return "GeoNames";
     }
 }

@@ -16,32 +16,40 @@
 package org.mapton.core.updater;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.Comparator;
-import java.util.TreeMap;
-import java.util.prefs.Preferences;
+import java.util.List;
+import java.util.ResourceBundle;
 import javafx.application.Platform;
-import javafx.beans.property.BooleanProperty;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
-import javafx.scene.Node;
+import javafx.event.ActionEvent;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
+import javafx.scene.control.ButtonBase;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
+import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.FontWeight;
+import org.controlsfx.control.action.Action;
+import org.controlsfx.control.action.ActionUtils;
+import org.mapton.api.MMaskerPaneBase;
 import org.mapton.api.MTopComponent;
 import org.mapton.api.MUpdater;
-import static org.mapton.api.Mapton.getIconSizeToolBar;
+import org.mapton.api.Mapton;
+import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.util.NbBundle;
-import org.openide.util.NbPreferences;
 import org.openide.windows.TopComponent;
+import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 
@@ -57,7 +65,7 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
         //iconBase="SET/PATH/TO/ICON/HERE",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
-@TopComponent.Registration(mode = "editor", openAtStartup = false, position = 99)
+@TopComponent.Registration(mode = "properties", openAtStartup = false)
 @ActionID(category = "Mapton", id = "org.mapton.updater.UpdaterTopComponent")
 @TopComponent.OpenActionRegistration(
         displayName = "Updater",
@@ -65,18 +73,25 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
 )
 public final class UpdaterTopComponent extends MTopComponent {
 
-    private Label mPlaceholderLabel;
-    private final Preferences mPreferences = NbPreferences.forModule(UpdaterTopComponent.class).node("expanded_state");
+    private final ResourceBundle mBundle = NbBundle.getBundle(UpdaterTopComponent.class);
+    private BorderPane mInnerBorderPane;
+    private ListView<MUpdater> mListView;
     private BorderPane mRoot;
-    private TreeView<MUpdater> mTreeView;
+    private UpdaterMaskerPane mUpdaterMaskerPane;
 
     public UpdaterTopComponent() {
-        setName(NbBundle.getMessage(UpdaterTool.class, "updater_tool"));
+        setName(mBundle.getString("updater_tool"));
     }
 
     @Override
     protected void initFX() {
         setScene(createScene());
+
+        Lookup.getDefault().lookupResult(MUpdater.class).addLookupListener((LookupEvent ev) -> {
+            populate();
+        });
+
+        populate();
     }
 
     void readProperties(java.util.Properties p) {
@@ -92,156 +107,149 @@ public final class UpdaterTopComponent extends MTopComponent {
     }
 
     private Scene createScene() {
-        mPlaceholderLabel = new Label();
+        Label titleLabel = Mapton.createTitle(mBundle.getString("updater_tool"));
+        mUpdaterMaskerPane = new UpdaterMaskerPane();
 
-        mTreeView = new TreeView<>();
-        mTreeView.setPrefWidth(FxHelper.getUIScaled(250));
-        mTreeView.setShowRoot(false);
-        mTreeView.getSelectionModel().getSelectedItems().addListener((ListChangeListener.Change<? extends TreeItem<MUpdater>> c) -> {
-            TreeItem<MUpdater> selectedItem = mTreeView.getSelectionModel().getSelectedItem();
-
-            if (selectedItem == null) {
-                mRoot.setCenter(mPlaceholderLabel);
-            } else {
-                MUpdater selectedUpdater = selectedItem.getValue();
-                mRoot.setCenter(selectedUpdater.getNode());
-                selectedUpdater.onSelect();
-            }
-        });
-
-        Lookup.getDefault().lookupResult(MUpdater.class).addLookupListener((LookupEvent ev) -> {
+        Action refreshAction = new Action(Dict.REFRESH.toString(), (ActionEvent event) -> {
             populate();
         });
+        refreshAction.setGraphic(MaterialIcon._Navigation.REFRESH.getImageView(getIconSizeToolBarInt()));
 
-        populate();
-        mRoot = new BorderPane(mPlaceholderLabel);
-        mRoot.setLeft(mTreeView);
+        Action updateAction = new Action(Dict.UPDATE.toString(), (ActionEvent event) -> {
+            mUpdaterMaskerPane.update();
+        });
+        updateAction.setGraphic(MaterialIcon._Action.SYSTEM_UPDATE_ALT.getImageView(getIconSizeToolBarInt()));
+
+        List<Action> actions = Arrays.asList(
+                refreshAction,
+                ActionUtils.ACTION_SPAN,
+                updateAction
+        );
+
+        ToolBar toolBar = ActionUtils.createToolBar(actions, ActionUtils.ActionTextBehavior.HIDE);
+        FxHelper.adjustButtonWidth(toolBar.getItems().stream(), getIconSizeToolBarInt());
+        toolBar.getItems().stream().filter((item) -> (item instanceof ButtonBase))
+                .map((item) -> (ButtonBase) item).forEachOrdered((buttonBase) -> {
+            FxHelper.undecorateButton(buttonBase);
+        });
+
+        toolBar.setStyle("-fx-spacing: 0px;");
+        toolBar.setPadding(Insets.EMPTY);
+
+        mListView = new ListView<>();
+        mListView.setCellFactory((ListView<MUpdater> param) -> new UpdaterListCell());
+        mInnerBorderPane = new BorderPane(mListView);
+        mInnerBorderPane.setTop(toolBar);
+        mUpdaterMaskerPane.setContent(mInnerBorderPane);
+        mRoot = new BorderPane(mUpdaterMaskerPane.getNode());
+        mRoot.setTop(titleLabel);
+        titleLabel.prefWidthProperty().bind(mRoot.widthProperty());
 
         return new Scene(mRoot);
     }
 
     private void populate() {
-        //TODO Refactor to the style of BookmarkView#populate()
-        MUpdater rootUpdater = new MUpdater() {
-            @Override
-            public String getName() {
-                return "";
-            }
-
-            @Override
-            public Node getNode() {
-                return null;
-            }
-
-            @Override
-            public String getParent() {
-                return "";
-            }
-        };
-
-        TreeItem<MUpdater> root = new TreeItem<>(rootUpdater);
-        ObservableList<TreeItem<MUpdater>> treeRootChildrens = root.getChildren();
-        TreeMap<String, TreeItem<MUpdater>> actionParents = new TreeMap<>();
-        ArrayList<TreeItem<MUpdater>> tempRootItems = new ArrayList<>();
-
         new Thread(() -> {
-            Lookup.getDefault().lookupAll(MUpdater.class).forEach((updaterAction) -> {
-                TreeItem<MUpdater> treeItem = new TreeItem<>(updaterAction);
-                treeItem.setGraphic(MaterialIcon._Action.UPDATE.getImageView((int) (getIconSizeToolBar() / 1.5)));
+            ArrayList<MUpdater> updaters = new ArrayList<>(Lookup.getDefault().lookupAll(MUpdater.class));
+            for (MUpdater updater : updaters) {
+                updater.setMarkedForUpdate(updater.isOutOfDate());
+            }
 
-                final String parentName = updaterAction.getParent();
-                if (parentName == null) {
-                    tempRootItems.add(treeItem);
-                } else {
-                    MUpdater updater = new MUpdater() {
-                        @Override
-                        public String getName() {
-                            return parentName;
-                        }
+            Comparator<MUpdater> c1 = (MUpdater o1, MUpdater o2) -> Boolean.compare(o2.isOutOfDate(), o1.isMarkedForUpdate());
+            Comparator<MUpdater> c2 = (MUpdater o1, MUpdater o2) -> o1.getCategory().compareTo(o2.getCategory());
+            Comparator<MUpdater> c3 = (MUpdater o1, MUpdater o2) -> o1.getName().compareTo(o2.getName());
 
-                        @Override
-                        public Node getNode() {
-                            return null;
-                        }
-
-                        @Override
-                        public String getParent() {
-                            return null;
-                        }
-                    };
-                    actionParents.computeIfAbsent(parentName, k -> new TreeItem<>(updater)).getChildren().add(treeItem);
-                }
-            });
-
-            Comparator<TreeItem> treeItemComparator = (TreeItem o1, TreeItem o2) -> ((MUpdater) o1.getValue()).getName().compareTo(((MUpdater) o2.getValue()).getName());
-
-            actionParents.keySet().stream().map((key) -> {
-                TreeItem<MUpdater> parentItem = new TreeItem<>(new ParentUpdater(key));
-                parentItem.setGraphic(MaterialIcon._File.FOLDER_OPEN.getImageView((int) (getIconSizeToolBar() / 1.5)));
-                FXCollections.sort(actionParents.get(key).getChildren(), treeItemComparator);
-                actionParents.get(key).getChildren().forEach((item) -> {
-                    parentItem.getChildren().add(item);
-                });
-                return parentItem;
-            }).forEachOrdered((parentItem) -> {
-                treeRootChildrens.add(parentItem);
-            });
-
-            Collections.sort(tempRootItems, treeItemComparator);
-            tempRootItems.forEach((rootItem) -> {
-                treeRootChildrens.add(rootItem);
-            });
+            updaters.sort(c1.thenComparing(c2).thenComparing(c3));
 
             Platform.runLater(() -> {
-                postPopulate(root, "");
-                mTreeView.setRoot(root);
+                mListView.getItems().setAll(updaters);
             });
         }).start();
     }
 
-    private void postPopulate(TreeItem<MUpdater> treeItem, String level) {
-        final MUpdater value = treeItem.getValue();
-        final String path = String.format("%s/%s", value.getParent(), value.getName());
-        treeItem.setExpanded(mPreferences.getBoolean(path, false));
+    class UpdaterListCell extends ListCell<MUpdater> {
 
-        treeItem.expandedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
-            BooleanProperty booleanProperty = (BooleanProperty) observable;
-            TreeItem ti = (TreeItem) booleanProperty.getBean();
-            MUpdater updater = (MUpdater) ti.getValue();
-            mPreferences.putBoolean(path, newValue);
-        });
+        private final Label mCategoryLabel = new Label();
+        private final Label mCommentLabel = new Label();
+        private final Font mHeaderFont;
+        private final Label mLastUpdatedLabel = new Label();
+        private final CheckBox mNameCheckBox = new CheckBox();
+        private VBox mVBox;
 
-        Comparator<TreeItem<MUpdater>> c1 = (TreeItem<MUpdater> o1, TreeItem<MUpdater> o2) -> Boolean.compare(o1.getChildren().isEmpty(), o2.getChildren().isEmpty());
-        Comparator<TreeItem<MUpdater>> c2 = (TreeItem<MUpdater> o1, TreeItem<MUpdater> o2) -> o1.getValue().getName().compareTo(o2.getValue().getName());
+        public UpdaterListCell() {
+            mHeaderFont = Font.font(Font.getDefault().getFamily(), FontWeight.BOLD, FxHelper.getScaledFontSize() * 1.1);
+            createUI();
+        }
 
-        treeItem.getChildren().sort(c1.thenComparing(c2));
+        @Override
+        protected void updateItem(MUpdater updater, boolean empty) {
+            super.updateItem(updater, empty);
+            if (updater == null || empty) {
+                clearContent();
+            } else {
+                addContent(updater);
+            }
+        }
 
-        for (TreeItem<MUpdater> childTreeItem : treeItem.getChildren()) {
-            postPopulate(childTreeItem, level + "-");
+        private void addContent(MUpdater updater) {
+            setText(null);
+
+            mNameCheckBox.setText(updater.getName());
+            mNameCheckBox.setSelected(updater.isOutOfDate());
+            mNameCheckBox.selectedProperty().addListener((ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1) -> {
+                updater.setMarkedForUpdate(t1);
+            });
+
+            mCategoryLabel.setText(updater.getCategory());
+            mCommentLabel.setText(updater.getComment());
+            mLastUpdatedLabel.setText(updater.getLastUpdated());
+
+            setGraphic(mVBox);
+        }
+
+        private void clearContent() {
+            setText(null);
+            setGraphic(null);
+        }
+
+        private void createUI() {
+            mNameCheckBox.setFont(mHeaderFont);
+            Font font = Font.font(FxHelper.getScaledFontSize() * 0.9);
+            Font italicFont = Font.font(font.getFamily(), FontPosture.ITALIC, font.getSize());
+            mCategoryLabel.setFont(font);
+            mCommentLabel.setFont(italicFont);
+            mLastUpdatedLabel.setFont(font);
+
+            mVBox = new VBox(
+                    FxHelper.getUIScaled(2),
+                    mCategoryLabel,
+                    mNameCheckBox,
+                    mCommentLabel,
+                    mLastUpdatedLabel
+            );
+
+            mVBox.setPadding(FxHelper.getUIScaledInsets(4));
         }
     }
 
-    class ParentUpdater extends MUpdater {
+    class UpdaterMaskerPane extends MMaskerPaneBase {
 
-        private final String mName;
+        void update() {
+            mMaskerPane.setVisible(true);
 
-        public ParentUpdater(String name) {
-            mName = name;
-        }
+            new Thread(() -> {
+                for (MUpdater updater : mListView.getItems()) {
+                    if (updater.isMarkedForUpdate()) {
+                        updater.run();
+                    }
+                }
 
-        @Override
-        public String getName() {
-            return mName;
-        }
-
-        @Override
-        public Node getNode() {
-            return null;
-        }
-
-        @Override
-        public String getParent() {
-            return null;
+                Platform.runLater(() -> {
+                    populate();
+                    mMaskerPane.setVisible(false);
+                    notify(Dict.OPERATION_COMPLETED.toString());
+                });
+            }).start();
         }
     }
 }
