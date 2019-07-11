@@ -88,10 +88,10 @@ public final class UpdaterTopComponent extends MTopComponent {
         setScene(createScene());
 
         Lookup.getDefault().lookupResult(MUpdater.class).addLookupListener((LookupEvent ev) -> {
-            populate();
+            refresh();
         });
 
-        populate();
+        refresh();
     }
 
     void readProperties(java.util.Properties p) {
@@ -111,12 +111,17 @@ public final class UpdaterTopComponent extends MTopComponent {
         mUpdaterMaskerPane = new UpdaterMaskerPane();
 
         Action refreshAction = new Action(Dict.REFRESH.toString(), (ActionEvent event) -> {
-            populate();
+            refresh();
         });
         refreshAction.setGraphic(MaterialIcon._Navigation.REFRESH.getImageView(getIconSizeToolBarInt()));
 
         Action updateAction = new Action(Dict.UPDATE.toString(), (ActionEvent event) -> {
-            mUpdaterMaskerPane.update();
+            for (MUpdater updater : mListView.getItems()) {
+                if (updater.isMarkedForUpdate()) {
+                    mUpdaterMaskerPane.update();
+                    break;
+                }
+            }
         });
         updateAction.setGraphic(MaterialIcon._Action.SYSTEM_UPDATE_ALT.getImageView(getIconSizeToolBarInt()));
 
@@ -148,7 +153,7 @@ public final class UpdaterTopComponent extends MTopComponent {
         return new Scene(mRoot);
     }
 
-    private void populate() {
+    private void refresh() {
         new Thread(() -> {
             ArrayList<MUpdater> updaters = new ArrayList<>(Lookup.getDefault().lookupAll(MUpdater.class));
             for (MUpdater updater : updaters) {
@@ -245,7 +250,7 @@ public final class UpdaterTopComponent extends MTopComponent {
                 }
 
                 Platform.runLater(() -> {
-                    populate();
+                    refresh();
                     mMaskerPane.setVisible(false);
                     notify(Dict.OPERATION_COMPLETED.toString());
                 });
