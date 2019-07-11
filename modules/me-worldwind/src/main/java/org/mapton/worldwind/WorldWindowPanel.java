@@ -23,6 +23,7 @@ import gov.nasa.worldwind.avlist.AVList;
 import gov.nasa.worldwind.awt.WorldWindowGLJPanel;
 import gov.nasa.worldwind.event.SelectEvent;
 import gov.nasa.worldwind.event.SelectListener;
+import gov.nasa.worldwind.exception.WWRuntimeException;
 import gov.nasa.worldwind.globes.EarthFlat;
 import gov.nasa.worldwind.globes.ElevationModel;
 import gov.nasa.worldwind.globes.FlatGlobe;
@@ -64,6 +65,7 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javax.xml.stream.XMLStreamException;
 import org.apache.commons.io.FileUtils;
+import org.mapton.api.MKey;
 import static org.mapton.api.MKey.*;
 import org.mapton.api.MWmsSource;
 import org.mapton.api.Mapton;
@@ -418,6 +420,9 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
                     NbLog.w(LOG_TAG, ex.getMessage());
                 } catch (XMLStreamException ex) {
                     NbLog.w(LOG_TAG, ex.getMessage());
+                } catch (WWRuntimeException ex) {
+                    Mapton.notification(MKey.NOTIFICATION_ERROR, Dict.Dialog.TITLE_IO_ERROR.toString(), "WMS error: " + wmsService.getName());
+                    NbLog.e(LOG_TAG, ex.getMessage());
                 } catch (Exception ex) {
                     Exceptions.printStackTrace(ex);
                 }
