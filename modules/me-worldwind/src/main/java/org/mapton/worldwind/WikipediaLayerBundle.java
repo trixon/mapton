@@ -30,7 +30,7 @@ import org.mapton.api.MWikipediaArticleManager;
 import org.mapton.api.Mapton;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.LayerBundleManager;
-import org.mapton.worldwind.api.WWUtil;
+import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -58,7 +58,7 @@ public class WikipediaLayerBundle extends LayerBundle {
 
     private void init() {
         mLayer.setPickEnabled(true);
-        mLayer.setValue(WWUtil.KEY_FAST_OPEN, "ObjectPropertiesTopComponent");
+        mLayer.setValue(WWHelper.KEY_FAST_OPEN, "ObjectPropertiesTopComponent");
     }
 
     private void initListeners() {
@@ -89,8 +89,8 @@ public class WikipediaLayerBundle extends LayerBundle {
             attrs.setImageOffset(Offset.CENTER);
 
             placemark.setAttributes(attrs);
-            placemark.setHighlightAttributes(WWUtil.createHighlightAttributes(attrs, 1.5));
-            placemark.setValue(WWUtil.KEY_RUNNABLE_LEFT_CLICK, (Runnable) () -> {
+            placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(attrs, 1.5));
+            placemark.setValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK, (Runnable) () -> {
                 Mapton.getGlobalState().put(MKey.WIKIPEDIA_ARTICLE, article);
             });
 

@@ -82,7 +82,7 @@ public abstract class LayerBundle {
     }
 
     public void setVisibleInLayerManager(Layer layer, boolean visibility) {
-        layer.setValue(WWUtil.KEY_HIDE_FROM_LAYER_MANAGER, !visibility);
+        layer.setValue(WWHelper.KEY_HIDE_FROM_LAYER_MANAGER, !visibility);
     }
 
 }

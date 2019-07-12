@@ -34,7 +34,7 @@ import org.mapton.api.MOptions;
 import org.mapton.api.Mapton;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.LayerBundleManager;
-import org.mapton.worldwind.api.WWUtil;
+import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.GraphicsHelper;
@@ -101,9 +101,9 @@ public class BookmarkLayerBundle extends LayerBundle {
                 attrs.setImageAddress("images/pushpins/plain-white.png");
                 attrs.setImageColor(FxHelper.colorToColor(FxHelper.colorFromHexRGBA(bookmark.getColor())));
                 placemark.setAttributes(attrs);
-                placemark.setHighlightAttributes(WWUtil.createHighlightAttributes(attrs, 1.5));
+                placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(attrs, 1.5));
 
-                placemark.setValue(WWUtil.KEY_RUNNABLE_LEFT_CLICK, (Runnable) () -> {
+                placemark.setValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK, (Runnable) () -> {
                     Map<String, Object> propertyMap = new LinkedHashMap<>();
                     propertyMap.put(Dict.NAME.toString(), bookmark.getName());
                     propertyMap.put(Dict.DESCRIPTION.toString(), bookmark.getDescription());
@@ -128,7 +128,7 @@ public class BookmarkLayerBundle extends LayerBundle {
         attrs.setImageOffset(Offset.CENTER);
 
         placemark.setAttributes(attrs);
-        placemark.setHighlightAttributes(WWUtil.createHighlightAttributes(attrs, 1.0));
+        placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(attrs, 1.0));
 
         mLayer.addRenderable(placemark);
 

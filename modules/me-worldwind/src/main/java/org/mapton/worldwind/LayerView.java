@@ -29,7 +29,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
 import org.apache.commons.lang3.BooleanUtils;
 import org.controlsfx.control.CheckListView;
-import org.mapton.worldwind.api.WWUtil;
+import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.NbPreferences;
 import se.trixon.almond.nbp.Almond;
 
@@ -65,10 +65,10 @@ public class LayerView extends BorderPane {
         ObservableList<Layer> layers = FXCollections.observableArrayList();
 
         for (Layer layer : sortedLayers) {
-            Object hiddenValue = layer.getValue(WWUtil.KEY_HIDE_FROM_LAYER_MANAGER);
+            Object hiddenValue = layer.getValue(WWHelper.KEY_HIDE_FROM_LAYER_MANAGER);
             boolean hidden = hiddenValue != null;
             if (hidden) {
-                hidden = BooleanUtils.toBoolean(layer.getValue(WWUtil.KEY_HIDE_FROM_LAYER_MANAGER).toString());
+                hidden = BooleanUtils.toBoolean(layer.getValue(WWHelper.KEY_HIDE_FROM_LAYER_MANAGER).toString());
             }
 
             if (!hidden) {
@@ -139,8 +139,8 @@ public class LayerView extends BorderPane {
 
         mListView.setOnMouseClicked((event) -> {
             Layer layer = mListView.getSelectionModel().getSelectedItem();
-            if (layer != null && layer.hasKey(WWUtil.KEY_FAST_OPEN) && event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
-                Almond.openAndActivateTopComponent((String) layer.getValue(WWUtil.KEY_FAST_OPEN));
+            if (layer != null && layer.hasKey(WWHelper.KEY_FAST_OPEN) && event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
+                Almond.openAndActivateTopComponent((String) layer.getValue(WWHelper.KEY_FAST_OPEN));
             }
         });
     }

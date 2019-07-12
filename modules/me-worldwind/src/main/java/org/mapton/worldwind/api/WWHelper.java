@@ -21,7 +21,7 @@ import gov.nasa.worldwind.render.PointPlacemarkAttributes;
  *
  * @author Patrik Karlström
  */
-public class WWUtil {
+public class WWHelper {
 
     public static final String KEY_FAST_OPEN = "mapton.layer.fast_open";
     public static final String KEY_HIDE_FROM_LAYER_MANAGER = "mapton.layer.hide";

@@ -46,7 +46,7 @@ import org.mapton.api.MTemporalRange;
 import org.mapton.api.Mapton;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.LayerBundleManager;
-import org.mapton.worldwind.api.WWUtil;
+import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.dialogs.NbMessage;
 import se.trixon.almond.util.Dict;
@@ -110,7 +110,7 @@ public class MapollageLayerBundle extends LayerBundle {
     private void init() {
         mIconLayer.setName(Dict.PHOTOS.toString());
         mIconLayer.setEnabled(true);
-        mIconLayer.setValue(WWUtil.KEY_FAST_OPEN, "MapollageTopComponent");
+        mIconLayer.setValue(WWHelper.KEY_FAST_OPEN, "MapollageTopComponent");
 
         mRenderableLayer.setPickEnabled(false);
         mRenderableLayer.setName(String.format("Mappolage - %s", Dict.Geometry.PATHS.toString()));
@@ -231,7 +231,7 @@ public class MapollageLayerBundle extends LayerBundle {
                         icon.setSize(new Dimension(photo.getWidth() / downSample, photo.getHeight() / downSample));
                         icon.setHighlightScale(downSample);
 
-                        icon.setValue(WWUtil.KEY_RUNNABLE_HOOVER, (Runnable) () -> {
+                        icon.setValue(WWHelper.KEY_RUNNABLE_HOOVER, (Runnable) () -> {
                             Map<String, Object> propertyMap = new LinkedHashMap<>();
                             propertyMap.put(getCatKey(Dict.PHOTO.toString(), Dict.NAME.toString()), FilenameUtils.getBaseName(photo.getPath()));
                             propertyMap.put(getCatKey(Dict.PHOTO.toString(), Dict.DATE.toString()), mDateFormat.format(photo.getDate()));
@@ -247,7 +247,7 @@ public class MapollageLayerBundle extends LayerBundle {
                             Mapton.getGlobalState().put(MKey.OBJECT_PROPERTIES, propertyMap);
                         });
 
-                        icon.setValue(WWUtil.KEY_RUNNABLE_LEFT_DOUBLE_CLICK, (Runnable) () -> {
+                        icon.setValue(WWHelper.KEY_RUNNABLE_LEFT_DOUBLE_CLICK, (Runnable) () -> {
                             File f = new File(photo.getPath());
                             if (f.isFile()) {
                                 SystemHelper.desktopOpen(new File(photo.getPath()));
