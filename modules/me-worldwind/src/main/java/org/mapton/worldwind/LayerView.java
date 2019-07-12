@@ -141,6 +141,10 @@ public class LayerView extends BorderPane {
             Layer layer = mListView.getSelectionModel().getSelectedItem();
             if (layer != null && layer.hasKey(WWHelper.KEY_FAST_OPEN) && event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
                 Almond.openAndActivateTopComponent((String) layer.getValue(WWHelper.KEY_FAST_OPEN));
+
+                if (!event.isAltDown()) {
+                    mListView.getCheckModel().check(layer);
+                }
             }
         });
     }
