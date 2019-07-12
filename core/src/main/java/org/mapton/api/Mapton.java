@@ -93,7 +93,7 @@ public class Mapton {
 
         label.setBackground(background);
         label.setAlignment(Pos.BASELINE_CENTER);
-        label.setFont(new Font(FxHelper.getScaledFontSize() * 1.4));
+        label.setFont(new Font(FxHelper.getScaledFontSize() * 1.2));
         label.setTextFill(Color.WHITE);
 
         return label;
@@ -175,7 +175,7 @@ public class Mapton {
     }
 
     public static Color getThemeColor() {
-        return Color.DARKBLUE;
+        return Color.web("#102039");
     }
 
     public static boolean isDarkThemed() {
