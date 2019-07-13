@@ -33,6 +33,7 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.io.FileUtils;
 import org.mapton.api.Mapton;
+import org.mapton.geonames.api.Geoname;
 import se.trixon.almond.nbp.NbPrint;
 import se.trixon.almond.util.MathHelper;
 
@@ -110,6 +111,8 @@ public class GeonamesGenerator {
                 Double lat = MathHelper.convertStringToDouble(record.get(4));
                 Double lon = MathHelper.convertStringToDouble(record.get(5));
                 String countryCode = record.get(8);
+                Integer population = MathHelper.convertStringToInteger(record.get(14));
+                Integer elevation = MathHelper.convertStringToInteger(record.get(15));
 
                 Geoname geoname = new Geoname();
 
@@ -119,9 +122,13 @@ public class GeonamesGenerator {
                 geoname.setCountryCode(countryCode);
                 geoname.setLatitude(lat);
                 geoname.setLongitude(lon);
+                geoname.setPopulation(population);
+                geoname.setElevation(elevation);
 
                 mGeonames.add(geoname);
             }
+
+            mGeonames.sort((Geoname o1, Geoname o2) -> o1.getName().compareTo(o2.getName()));
         }
     }
 

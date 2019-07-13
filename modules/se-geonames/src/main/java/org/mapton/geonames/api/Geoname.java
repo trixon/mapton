@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.geonames;
+package org.mapton.geonames.api;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -29,12 +29,16 @@ public class Geoname {
     private String mAsciiName;
     @SerializedName("country_code")
     private String mCountryCode;
+    @SerializedName("elevation")
+    private Integer mElevation;
     @SerializedName("lat")
     private Double mLatitude;
     @SerializedName("lon")
     private Double mLongitude;
     @SerializedName("name")
     private String mName;
+    @SerializedName("population")
+    private Integer mPopulation;
 
     public Geoname() {
     }
@@ -47,8 +51,16 @@ public class Geoname {
         return mAsciiName;
     }
 
+    public String getCountry() {
+        return CountryManager.getInstance().getCountries().getOrDefault(getCountryCode(), "");
+    }
+
     public String getCountryCode() {
         return mCountryCode;
+    }
+
+    public Integer getElevation() {
+        return mElevation;
     }
 
     public Double getLatitude() {
@@ -63,6 +75,10 @@ public class Geoname {
         return mName;
     }
 
+    public Integer getPopulation() {
+        return mPopulation;
+    }
+
     public void setAlternateNames(String alternateNames) {
         mAlternateNames = alternateNames;
     }
@@ -75,6 +91,10 @@ public class Geoname {
         mCountryCode = countryCode;
     }
 
+    public void setElevation(Integer elevation) {
+        mElevation = elevation;
+    }
+
     public void setLatitude(Double latitude) {
         mLatitude = latitude;
     }
@@ -85,5 +105,9 @@ public class Geoname {
 
     public void setName(String name) {
         mName = name;
+    }
+
+    public void setPopulation(Integer population) {
+        mPopulation = population;
     }
 }

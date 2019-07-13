@@ -18,6 +18,7 @@ package org.mapton.geonames;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import org.mapton.api.MUpdater;
+import org.mapton.geonames.api.GeonamesManager;
 import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
@@ -37,7 +38,7 @@ public class GeonamesUpdater extends MUpdater.ByFile {
         setRunnable(() -> {
             try {
                 mGenerator.update(mPrint);
-                GeonamesSearchEngine.init();
+                GeonamesManager.getInstance().init();
             } catch (IOException ex) {
                 Exceptions.printStackTrace(ex);
             }
