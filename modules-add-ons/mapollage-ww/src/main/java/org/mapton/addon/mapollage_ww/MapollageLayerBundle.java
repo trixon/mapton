@@ -113,7 +113,7 @@ public class MapollageLayerBundle extends LayerBundle {
         mIconLayer.setValue(WWHelper.KEY_FAST_OPEN, "MapollageTopComponent");
 
         mRenderableLayer.setPickEnabled(false);
-        mRenderableLayer.setName(String.format("Mappolage - %s", Dict.Geometry.PATHS.toString()));
+        mRenderableLayer.setName(String.format("Mapollage - %s", Dict.Geometry.PATHS.toString()));
         mRenderableLayer.setEnabled(true);
 
         setVisibleInLayerManager(mRenderableLayer, false);
