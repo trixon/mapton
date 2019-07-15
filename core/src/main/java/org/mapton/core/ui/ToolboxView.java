@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.prefs.Preferences;
-import javafx.beans.property.BooleanProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeCell;
@@ -152,26 +151,9 @@ public class ToolboxView extends BorderPane {
         treeItem.setExpanded(mPreferences.getBoolean(path, false));
 
         treeItem.expandedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
-            BooleanProperty booleanProperty = (BooleanProperty) observable;
-            TreeItem ti = (TreeItem) booleanProperty.getBean();
-            Action action = (Action) ti.getValue();
             mPreferences.putBoolean(path, newValue);
         });
-//TODO Remove and submit bug report
-//Causes trouble with NetBeans Compile on Save
-//        Comparator c1 = new Comparator<TreeItem<Action>>() {
-//            @Override
-//            public int compare(TreeItem<Action> o1, TreeItem<Action> o2) {
-//                return Boolean.compare(o1.getChildren().isEmpty(), o2.getChildren().isEmpty());
-//            }
-//        };
-//
-//        Comparator c2 = new Comparator<TreeItem<Action>>() {
-//            @Override
-//            public int compare(TreeItem<Action> o1, TreeItem<Action> o2) {
-//                return o1.getValue().getText().compareTo(o2.getValue().getText());
-//            }
-//        };
+
         Comparator<TreeItem<Action>> c1 = (TreeItem<Action> o1, TreeItem<Action> o2) -> Boolean.compare(o1.getChildren().isEmpty(), o2.getChildren().isEmpty());
         Comparator<TreeItem<Action>> c2 = (TreeItem<Action> o1, TreeItem<Action> o2) -> o1.getValue().getText().compareTo(o2.getValue().getText());
 
