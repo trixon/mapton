@@ -15,12 +15,18 @@
  */
 package org.mapton.addon.geonames_ww;
 
+import javafx.collections.ListChangeListener;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
+import org.controlsfx.control.CheckListView;
+import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.MMapMagnet;
 import org.mapton.api.MTopComponent;
 import org.mapton.api.Mapton;
+import org.mapton.geonames.api.Country;
+import org.mapton.geonames.api.CountryManager;
+import org.mapton.geonames.api.GeonamesManager;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.windows.TopComponent;
 
@@ -39,15 +45,18 @@ import org.openide.windows.TopComponent;
 @TopComponent.Registration(mode = "properties", openAtStartup = false)
 public final class GeoNamesTopComponent extends MTopComponent implements MMapMagnet {
 
+    private CheckListView<Country> mListView;
     private BorderPane mRoot;
 
     public GeoNamesTopComponent() {
         setName(GeoNamesTool.NAME);
+        GeonamesManager.getInstance().init();
     }
 
     @Override
     protected void initFX() {
         setScene(createScene());
+        initListeners();
     }
 
     void readProperties(java.util.Properties p) {
@@ -64,10 +73,31 @@ public final class GeoNamesTopComponent extends MTopComponent implements MMapMag
 
     private Scene createScene() {
         Label titleLabel = Mapton.createTitle(GeoNamesTool.NAME);
-        mRoot = new BorderPane();
+
+        mListView = new CheckListView<>();
+        mListView.getItems().setAll(CountryManager.getInstance().getCountryList());
+        mRoot = new BorderPane(mListView);
         mRoot.setTop(titleLabel);
         titleLabel.prefWidthProperty().bind(mRoot.widthProperty());
 
         return new Scene(mRoot);
+    }
+
+    private Country getSelected() {
+        return mListView.getSelectionModel().getSelectedItem();
+    }
+
+    private void initListeners() {
+        mListView.getSelectionModel().getSelectedItems().addListener((ListChangeListener.Change<? extends Country> c) -> {
+            if (getSelected() != null) {
+                Mapton.getEngine().fitToBounds(getSelected().getLatLonBox());
+            }
+        });
+
+        final IndexedCheckModel<Country> checkModel = mListView.getCheckModel();
+
+        checkModel.getCheckedItems().addListener((ListChangeListener.Change<? extends Country> c) -> {
+            Mapton.getGlobalState().put(GeoN.KEY_LIST_SELECTION, checkModel.getCheckedItems());
+        });
     }
 }
