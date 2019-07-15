@@ -29,7 +29,9 @@ import se.trixon.almond.util.SystemHelper;
  */
 public class CountryManager {
 
-    private final TreeMap<String, String> mCountries = new TreeMap<>();
+    private final TreeMap<String, Country> mCodeCountryMap = new TreeMap<>();
+    private final TreeMap<String, String> mCodeNameMap = new TreeMap<>();
+    private ArrayList<Country> mCountryList;
 
     public static CountryManager getInstance() {
         return Holder.INSTANCE;
@@ -38,17 +40,27 @@ public class CountryManager {
     private CountryManager() {
         Gson gson = new GsonBuilder().create();
         String json = SystemHelper.getResourceAsString(GeonamesSearchEngine.class, "country_codes.json");
-        ArrayList<Country> countries = gson.fromJson(json, new TypeToken<ArrayList<Country>>() {
+        mCountryList = gson.fromJson(json, new TypeToken<ArrayList<Country>>() {
         }.getType());
 
-        countries.forEach((country) -> {
-            mCountries.put(country.getCode(), country.getName());
-        });
+        mCountryList.sort((Country o1, Country o2) -> o1.getName().compareTo(o2.getName()));
 
+        mCountryList.forEach((country) -> {
+            mCodeCountryMap.put(country.getCode(), country);
+            mCodeNameMap.put(country.getCode(), country.getName());
+        });
     }
 
-    public TreeMap<String, String> getCountries() {
-        return mCountries;
+    public TreeMap<String, Country> getCodeCountryMap() {
+        return mCodeCountryMap;
+    }
+
+    public TreeMap<String, String> getCodeNameMap() {
+        return mCodeNameMap;
+    }
+
+    public ArrayList<Country> getCountryList() {
+        return mCountryList;
     }
 
     private static class Holder {

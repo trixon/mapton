@@ -43,7 +43,7 @@ public class GeonamesSearchEngine implements MSearchEngine {
         ArrayList<MBookmark> bookmarks = new ArrayList<>();
         int limit = StringUtils.isBlank(searchString) ? Integer.MAX_VALUE : 20;
         GeonamesManager.getInstance().getGeonames().stream()
-                .filter((g) -> (StringUtils.containsIgnoreCase(String.join("/", g.getAsciiName(), g.getName(), g.getAlternateNames(), CountryManager.getInstance().getCountries().getOrDefault(g.getCountryCode(), "")), searchString)))
+                .filter((g) -> (StringUtils.containsIgnoreCase(String.join("/", g.getAsciiName(), g.getName(), g.getAlternateNames(), CountryManager.getInstance().getCodeNameMap().getOrDefault(g.getCountryCode(), "")), searchString)))
                 //                .limit(limit)
                 .forEachOrdered((g) -> {
                     MBookmark b = new MBookmark();

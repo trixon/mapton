@@ -51,12 +51,16 @@ public class Geoname {
         return mAsciiName;
     }
 
-    public String getCountry() {
-        return CountryManager.getInstance().getCountries().getOrDefault(getCountryCode(), "");
+    public Country getCountry() {
+        return CountryManager.getInstance().getCodeCountryMap().get(getCountryCode());
     }
 
     public String getCountryCode() {
         return mCountryCode;
+    }
+
+    public String getCountryName() {
+        return CountryManager.getInstance().getCodeNameMap().getOrDefault(getCountryCode(), "");
     }
 
     public Integer getElevation() {

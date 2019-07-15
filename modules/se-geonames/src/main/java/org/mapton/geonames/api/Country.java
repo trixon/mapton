@@ -16,6 +16,8 @@
 package org.mapton.geonames.api;
 
 import com.google.gson.annotations.SerializedName;
+import java.util.ArrayList;
+import org.mapton.api.MLatLonBox;
 
 /**
  *
@@ -25,6 +27,8 @@ public class Country {
 
     @SerializedName(value = "Code")
     private String mCode;
+    private ArrayList<Geoname> mGeonames = new ArrayList<>();
+    private transient MLatLonBox mLatLonBox = new MLatLonBox();
     @SerializedName(value = "Name")
     private String mName;
 
@@ -35,6 +39,14 @@ public class Country {
         return mCode;
     }
 
+    public ArrayList<Geoname> getGeonames() {
+        return mGeonames;
+    }
+
+    public MLatLonBox getLatLonBox() {
+        return mLatLonBox;
+    }
+
     public String getName() {
         return mName;
     }
@@ -43,8 +55,20 @@ public class Country {
         mCode = code;
     }
 
+    public void setGeonames(ArrayList<Geoname> geonames) {
+        mGeonames = geonames;
+    }
+
+    public void setLatLonBox(MLatLonBox latLonBox) {
+        mLatLonBox = latLonBox;
+    }
+
     public void setName(String name) {
         mName = name;
     }
 
+    @Override
+    public String toString() {
+        return getName();
+    }
 }

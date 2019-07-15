@@ -20,7 +20,10 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.TreeMap;
 import org.apache.commons.io.FileUtils;
+import org.mapton.api.MLatLon;
+import org.mapton.api.MLatLonBox;
 import org.mapton.geonames.GeonamesGenerator;
 import org.openide.util.Exceptions;
 
@@ -54,6 +57,27 @@ public class GeonamesManager {
                     String json = FileUtils.readFileToString(mGenerator.getSearchEngineFile(), "utf-8");
                     mGeonames = gson.fromJson(json, new TypeToken<ArrayList<Geoname>>() {
                     }.getType());
+
+                    final TreeMap<String, ArrayList<Geoname>> countries = new TreeMap<>();
+                    for (Geoname geoname : mGeonames) {
+                        countries.computeIfAbsent(geoname.getCountryCode(), k -> new ArrayList<>()).add(geoname);
+                    }
+
+                    for (String countryCode : countries.keySet()) {
+                        Country country = CountryManager.getInstance().getCodeCountryMap().get(countryCode);
+                        try {
+                            ArrayList<Geoname> geonames = countries.get(countryCode);
+                            country.setGeonames(geonames);
+                            ArrayList<MLatLon> latLons = new ArrayList<>();
+                            for (Geoname geoname : geonames) {
+                                latLons.add(new MLatLon(geoname.getLatitude(), geoname.getLongitude()));
+                            }
+
+                            country.setLatLonBox(new MLatLonBox(latLons));
+                        } catch (NullPointerException e) {
+                            //nvm
+                        }
+                    }
                 } catch (IOException ex) {
                     Exceptions.printStackTrace(ex);
                 }
