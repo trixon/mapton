@@ -32,6 +32,7 @@ import java.text.FieldPosition;
 import java.text.Format;
 import java.util.ArrayList;
 import javax.swing.Timer;
+import org.mapton.api.MLatLonBox;
 import org.mapton.worldwind.api.worldwind.AnalyticSurface;
 import org.mapton.worldwind.api.worldwind.AnalyticSurfaceAttributes;
 import org.mapton.worldwind.api.worldwind.AnalyticSurfaceLegend;
@@ -47,15 +48,74 @@ public class AnalyticGrid {
     private final double DEFAULT_RANDOM_SMOOTHING = 0.5d;
     private final double HUE_BLUE = 240d / 360d;
     private final double HUE_RED = 0d / 360d;
+    private final AnalyticSurfaceAttributes mAttributes = new AnalyticSurfaceAttributes();
+    private final RenderableLayer mLayer;
+    private Renderable mLegend;
+    private final AnalyticSurface mSurface = new AnalyticSurface();
 
-    private AnalyticSurface mAnalyticSurface;
-    private AnalyticSurfaceAttributes mAnalyticSurfaceAttributes;
+    public AnalyticGrid(RenderableLayer layer, MLatLonBox latLonBox, double altitude, int width, int height) {
+        mLayer = layer;
 
-    public AnalyticGrid() {
+        mSurface.setSector(Sector.fromDegrees(
+                latLonBox.getSouthWest().getLatitude(),
+                latLonBox.getNorthEast().getLatitude(),
+                latLonBox.getSouthWest().getLongitude(),
+                latLonBox.getNorthEast().getLongitude()
+        ));
+
+        mSurface.setAltitude(altitude);
+        mSurface.setDimensions(width, height);
+        mSurface.setClientLayer(mLayer);
     }
 
-    public void createRandomAltitudeSurface(RenderableLayer layer) {
-        wwCreateRandomAltitudeSurface(HUE_RED, HUE_BLUE, 400, 400, layer);
+    public AnalyticSurfaceAttributes getAttributes() {
+        return mAttributes;
+    }
+
+    public AnalyticSurface getSurface() {
+        return mSurface;
+    }
+
+    public void setLegendVisible(boolean visible) {
+        if (visible) {
+            mLayer.addRenderable(mLegend);
+        } else {
+            mLayer.removeRenderable(mLegend);
+        }
+    }
+
+    public void wwCreateRandomAltitudeSurface(double minValue, double maxValue) {
+        int width = mSurface.getDimensions()[0];
+        int height = mSurface.getDimensions()[1];
+
+        BufferWrapper firstBuffer = wwRandomGridValues(width, height, minValue, maxValue);
+        BufferWrapper secondBuffer = wwRandomGridValues(width, height, minValue * 2d, maxValue / 2d);
+
+        wwMixValuesOverTime(2000L, firstBuffer, secondBuffer, minValue, maxValue);
+
+        mAttributes.setShadowOpacity(0.5);
+        mSurface.setSurfaceAttributes(mAttributes);
+
+        final double altitude = mSurface.getAltitude();
+        final double verticalScale = mSurface.getVerticalScale();
+
+        Format legendLabelFormat = new DecimalFormat("# m") {
+            public StringBuffer format(double number, StringBuffer result, FieldPosition fieldPosition) {
+                double altitudeMeters = altitude + verticalScale * number;
+//                double altitudeKm = altitudeMeters * WWMath.METERS_TO_KILOMETERS;
+                double altitudeKm = altitudeMeters;
+                return super.format(altitudeKm, result, fieldPosition);
+            }
+        };
+
+        AnalyticSurfaceLegend legend = AnalyticSurfaceLegend.fromColorGradient(minValue, maxValue, HUE_RED, HUE_BLUE,
+                AnalyticSurfaceLegend.createDefaultColorGradientLabels(minValue, maxValue, legendLabelFormat),
+                AnalyticSurfaceLegend.createDefaultTitle("Legend"));
+
+        legend.setOpacity(0.8);
+        legend.setScreenLocation(new Point(50, 200));
+
+        mLegend = wwCreateLegendRenderable(mSurface, 300, legend);
     }
 
     private Renderable wwCreateLegendRenderable(final AnalyticSurface surface, final double surfaceMinScreenSize, final AnalyticSurfaceLegend legend) {
@@ -73,64 +133,22 @@ public class AnalyticGrid {
         };
     }
 
-    private Iterable<? extends AnalyticSurface.GridPointAttributes> wwCreateMixedColorGradientGridValues(double a, BufferWrapper firstBuffer, BufferWrapper secondBuffer, double minValue, double maxValue, double minHue, double maxHue) {
+    private Iterable<? extends AnalyticSurface.GridPointAttributes> wwCreateMixedColorGradientGridValues(double a, BufferWrapper firstBuffer, BufferWrapper secondBuffer, double minValue, double maxValue) {
         ArrayList<AnalyticSurface.GridPointAttributes> attributesList = new ArrayList<>();
 
         long length = Math.min(firstBuffer.length(), secondBuffer.length());
         for (int i = 0; i < length; i++) {
             double value = WWMath.mixSmooth(a, firstBuffer.getDouble(i), secondBuffer.getDouble(i));
-            attributesList.add(
-                    AnalyticSurface.createColorGradientAttributes(value, minValue, maxValue, minHue, maxHue));
+            attributesList.add(AnalyticSurface.createColorGradientAttributes(value, minValue, maxValue, HUE_RED, HUE_BLUE));
         }
 
         return attributesList;
     }
 
-    private void wwCreateRandomAltitudeSurface(double minHue, double maxHue, int width, int height, RenderableLayer outLayer) {
-        double minValue = -40;
-        double maxValue = 40;
-
-        AnalyticSurface surface = new AnalyticSurface();
-        surface.setSector(Sector.fromDegrees(-90, 90, -180, 180));
-        surface.setAltitude(40);
-        surface.setDimensions(width, height);
-        surface.setClientLayer(outLayer);
-        outLayer.addRenderable(surface);
-
-        BufferWrapper firstBuffer = wwRandomGridValues(width, height, minValue, maxValue);
-        BufferWrapper secondBuffer = wwRandomGridValues(width, height, minValue * 2d, maxValue / 2d);
-        wwMixValuesOverTime(2000L, firstBuffer, secondBuffer, minValue, maxValue, minHue, maxHue, surface);
-
-        AnalyticSurfaceAttributes attr = new AnalyticSurfaceAttributes();
-        attr.setShadowOpacity(0.5);
-        surface.setSurfaceAttributes(attr);
-
-        final double altitude = surface.getAltitude();
-        final double verticalScale = surface.getVerticalScale();
-
-        Format legendLabelFormat = new DecimalFormat("# m") {
-            public StringBuffer format(double number, StringBuffer result, FieldPosition fieldPosition) {
-                double altitudeMeters = altitude + verticalScale * number;
-//                double altitudeKm = altitudeMeters * WWMath.METERS_TO_KILOMETERS;
-                double altitudeKm = altitudeMeters;
-                return super.format(altitudeKm, result, fieldPosition);
-            }
-        };
-
-        AnalyticSurfaceLegend legend = AnalyticSurfaceLegend.fromColorGradient(minValue, maxValue, minHue, maxHue,
-                AnalyticSurfaceLegend.createDefaultColorGradientLabels(minValue, maxValue, legendLabelFormat),
-                AnalyticSurfaceLegend.createDefaultTitle("Skala"));
-
-        legend.setOpacity(0.8);
-        legend.setScreenLocation(new Point(50, 200));
-        outLayer.addRenderable(wwCreateLegendRenderable(surface, 300, legend));
-    }
-
     private void wwMixValuesOverTime(
             final long timeToMix,
             final BufferWrapper firstBuffer, final BufferWrapper secondBuffer,
-            final double minValue, final double maxValue, final double minHue, final double maxHue,
-            final AnalyticSurface surface) {
+            final double minValue, final double maxValue) {
         Timer timer = new Timer(20, new ActionListener() {
             protected long startTime = -1;
 
@@ -147,10 +165,10 @@ public class AnalyticGrid {
                     a = 1d - a;
                 }
 
-                surface.setValues(wwCreateMixedColorGradientGridValues(a, firstBuffer, secondBuffer, minValue, maxValue, minHue, maxHue));
+                mSurface.setValues(wwCreateMixedColorGradientGridValues(a, firstBuffer, secondBuffer, minValue, maxValue));
 
-                if (surface.getClientLayer() != null) {
-                    surface.getClientLayer().firePropertyChange(AVKey.LAYER, null, surface.getClientLayer());
+                if (mSurface.getClientLayer() != null) {
+                    mSurface.getClientLayer().firePropertyChange(AVKey.LAYER, null, mSurface.getClientLayer());
                 }
             }
         });
