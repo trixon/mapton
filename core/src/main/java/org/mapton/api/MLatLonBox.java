@@ -61,6 +61,14 @@ public class MLatLonBox {
         );
     }
 
+    public double getLatitudeSpan() {
+        return getNorthEast().getLatitude() - getSouthWest().getLatitude();
+    }
+
+    public double getLongitudeSpan() {
+        return getNorthEast().getLongitude() - getSouthWest().getLongitude();
+    }
+
     public MLatLon getNorthEast() {
         return mNorthEast;
     }

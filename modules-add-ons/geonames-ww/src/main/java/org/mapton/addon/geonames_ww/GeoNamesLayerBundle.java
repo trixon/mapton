@@ -16,6 +16,7 @@
 package org.mapton.addon.geonames_ww;
 
 import gov.nasa.worldwind.layers.RenderableLayer;
+import java.util.ArrayList;
 import javafx.collections.ObservableList;
 import org.mapton.api.Mapton;
 import org.mapton.geonames.api.Country;
@@ -23,6 +24,8 @@ import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.LayerBundleManager;
 import org.mapton.worldwind.api.WWHelper;
 import org.mapton.worldwind.api.analytic.AnalyticGrid;
+import org.mapton.worldwind.api.analytic.GridData;
+import org.mapton.worldwind.api.analytic.GridValue;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.GlobalStateChangeEvent;
 
@@ -47,6 +50,18 @@ public class GeoNamesLayerBundle extends LayerBundle {
         setPopulated(true);
     }
 
+    private GridData getGridData(Country country) {
+        ArrayList<GridValue> values = new ArrayList<>();
+        country.getGeonames().forEach((geoname) -> {
+            values.add(new GridValue(geoname.getLatLon(), new Double(geoname.getPopulation())));
+        });
+
+        int width = 40;
+        int height = 40;
+
+        return new GridData(width, height, values);
+    }
+
     private void init() {
         mLayer.setPickEnabled(false);
         mLayer.setValue(WWHelper.KEY_FAST_OPEN, "GeoNamesTopComponent");
@@ -64,10 +79,12 @@ public class GeoNamesLayerBundle extends LayerBundle {
 
     private void refresh() {
         mLayer.removeAllRenderables();
+
         ObservableList<Country> countries = Mapton.getGlobalState().get(GeoN.KEY_LIST_SELECTION);
+
         for (Country country : countries) {
-            AnalyticGrid analyticGrid = new AnalyticGrid(mLayer, country.getLatLonBox(), 10000, 40, 40);
-            analyticGrid.wwCreateRandomAltitudeSurface(0, 20000);
+            AnalyticGrid analyticGrid = new AnalyticGrid(mLayer, getGridData(country), 10000);
+
             mLayer.addRenderable(analyticGrid.getSurface());
         }
 

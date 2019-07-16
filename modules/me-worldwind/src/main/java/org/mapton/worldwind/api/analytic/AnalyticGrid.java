@@ -51,16 +51,18 @@ public class AnalyticGrid {
     private final AnalyticSurfaceAttributes mAttributes = new AnalyticSurfaceAttributes();
     private GridData mGridData;
     private final int mHeight;
+    private final int mWidth;
     private final RenderableLayer mLayer;
     private Renderable mLegend;
     private final AnalyticSurface mSurface = new AnalyticSurface();
-    private final int mWidth;
 
-    public AnalyticGrid(RenderableLayer layer, MLatLonBox latLonBox, double altitude, int width, int height) {
+    public AnalyticGrid(RenderableLayer layer, GridData gridData, double altitude) {
         mLayer = layer;
-        mWidth = width;
-        mHeight = height;
 
+        mWidth = gridData.getWidth();
+        mHeight = gridData.getHeight();
+
+        MLatLonBox latLonBox = gridData.getLatLonBox();
         mSurface.setSector(Sector.fromDegrees(
                 latLonBox.getSouthWest().getLatitude(),
                 latLonBox.getNorthEast().getLatitude(),
@@ -69,11 +71,13 @@ public class AnalyticGrid {
         ));
 
         mSurface.setAltitude(altitude);
-        mSurface.setDimensions(width, height);
+        mSurface.setDimensions(mWidth, mHeight);
         mSurface.setClientLayer(mLayer);
 
         mAttributes.setShadowOpacity(0.5);
         mSurface.setSurfaceAttributes(mAttributes);
+
+        setGridData(gridData);
     }
 
     public AnalyticSurfaceAttributes getAttributes() {
@@ -99,6 +103,7 @@ public class AnalyticGrid {
     }
 
     public void wwCreateRandomAltitudeSurface(double minValue, double maxValue) {
+        // 1
         BufferWrapper firstBuffer = wwRandomGridValues(mWidth, mHeight, minValue, maxValue);
         BufferWrapper secondBuffer = wwRandomGridValues(mWidth, mHeight, minValue * 2d, maxValue / 2d);
 
@@ -146,6 +151,7 @@ public class AnalyticGrid {
     }
 
     private Iterable<? extends AnalyticSurface.GridPointAttributes> wwCreateMixedColorGradientGridValues(double a, BufferWrapper firstBuffer, BufferWrapper secondBuffer, double minValue, double maxValue) {
+        // 6
         ArrayList<AnalyticSurface.GridPointAttributes> attributesList = new ArrayList<>();
 
         long length = Math.min(firstBuffer.length(), secondBuffer.length());
@@ -157,10 +163,8 @@ public class AnalyticGrid {
         return attributesList;
     }
 
-    private void wwMixValuesOverTime(
-            final long timeToMix,
-            final BufferWrapper firstBuffer, final BufferWrapper secondBuffer,
-            final double minValue, final double maxValue) {
+    private void wwMixValuesOverTime(final long timeToMix, final BufferWrapper firstBuffer, final BufferWrapper secondBuffer, final double minValue, final double maxValue) {
+        // 5
         Timer timer = new Timer(20, new ActionListener() {
             protected long startTime = -1;
 
@@ -188,6 +192,7 @@ public class AnalyticGrid {
     }
 
     private BufferWrapper wwRandomGridValues(int width, int height, double min, double max, int numIterations, double smoothness, BufferFactory factory) {
+        // 3
         double[] values = WWExampleUtil.createRandomGridValues(width, height, min, max, numIterations, smoothness);
         BufferWrapper wrapper = factory.newBuffer(values.length);
 
@@ -197,6 +202,7 @@ public class AnalyticGrid {
     }
 
     private BufferWrapper wwRandomGridValues(int width, int height, double min, double max) {
+        // 2
         return wwRandomGridValues(width, height, min, max, DEFAULT_RANDOM_ITERATIONS, DEFAULT_RANDOM_SMOOTHING, new BufferFactory.DoubleBufferFactory());
     }
 }

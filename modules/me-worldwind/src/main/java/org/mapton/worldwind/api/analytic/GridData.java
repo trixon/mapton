@@ -15,7 +15,12 @@
  */
 package org.mapton.worldwind.api.analytic;
 
+import java.awt.Point;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.DoubleStream;
+import org.mapton.api.MLatLon;
+import org.mapton.api.MLatLonBox;
 
 /**
  *
@@ -23,17 +28,87 @@ import java.util.ArrayList;
  */
 public class GridData {
 
-    private double mMax;
-    private double mMin;
+    private ArrayList<Double>[][] mCellValues;
+    private int mHeight;
+    private MLatLonBox mLatLonBox;
+    private double mMax = Double.MIN_VALUE;
+    private double mMin = Double.MAX_VALUE;
     private ArrayList<GridValue> mValues;
+    private int mWidth;
+//    private Table<Integer, Integer, ArrayList<Double>> mCellTable = HashBasedTable.create();
 
     public GridData() {
     }
 
-    public GridData(double min, double max, ArrayList<GridValue> values) {
-        mMin = min;
-        mMax = max;
-        mValues = values;
+    public GridData(int width, int height, ArrayList<GridValue> values) {
+        //TODO Replace width & height with some calculated resulotion variant...?
+        ArrayList<MLatLon> latLons = new ArrayList<>();
+        values.forEach((gridValue) -> {
+            latLons.add(gridValue.getLatLon());
+            if (gridValue.getValue() != null) {
+                mMin = Math.min(mMin, gridValue.getValue());
+                mMax = Math.max(mMax, gridValue.getValue());
+            }
+        });
+
+        mLatLonBox = new MLatLonBox(latLons);
+        mWidth = width;
+        mHeight = height;
+
+        mCellValues = new ArrayList[width][height];
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < width; j++) {
+                mCellValues[i][j] = new ArrayList<>();
+            }
+        }
+
+        setValues(values);
+    }
+
+    public Double getCellAverage(Point p) {
+        return getCellDoubles(p).average().orElse(0);
+    }
+
+    public Double getCellMax(Point p) {
+        return getCellDoubles(p).max().orElse(0);
+    }
+
+    public Double getCellMedian(Point p) {
+        List<Double> list = getCellValues(p);
+        DoubleStream sortedValues = list.stream().mapToDouble(Double::doubleValue).sorted();
+
+        double median = list.size() % 2 == 0
+                ? sortedValues.skip(list.size() / 2 - 1).limit(2).average().getAsDouble()
+                : sortedValues.skip(list.size() / 2).findFirst().getAsDouble();
+
+        return median;
+    }
+
+    public Double getCellMin(Point p) {
+        return getCellDoubles(p).min().orElse(0);
+    }
+
+    public Double getCellSum(Point p) {
+        return getCellDoubles(p).sum();
+    }
+
+    public ArrayList<Double> getCellValues(Point p) {
+//        if (!mCellTable.contains(p.y, p.x)) {
+//            mCellTable.put(p.y, p.x, new ArrayList<>());
+//        }
+        return mCellValues[p.x][p.y];
+    }
+
+    public ArrayList<Double> getCellValues(int col, int row) {
+        return mCellValues[col][row];
+    }
+
+    public int getHeight() {
+        return mHeight;
+    }
+
+    public MLatLonBox getLatLonBox() {
+        return mLatLonBox;
     }
 
     public double getMax() {
@@ -48,6 +123,14 @@ public class GridData {
         return mValues;
     }
 
+    public int getWidth() {
+        return mWidth;
+    }
+
+    public void setLatLonBox(MLatLonBox latLonBox) {
+        mLatLonBox = latLonBox;
+    }
+
     public void setMax(double max) {
         mMax = max;
     }
@@ -58,5 +141,24 @@ public class GridData {
 
     public void setValues(ArrayList<GridValue> values) {
         mValues = values;
+
+        for (GridValue value : values) {
+            Point p = getCellPoint(value.getLatLon());
+            getCellValues(p).add(value.getValue());
+        }
+    }
+
+    private DoubleStream getCellDoubles(Point p) {
+        return getCellValues(p).stream().mapToDouble(Double::doubleValue);
+    }
+
+    private Point getCellPoint(MLatLon latLon) {
+        double deltaLat = latLon.getLatitude() - mLatLonBox.getSouthWest().getLatitude();
+        double deltaLon = latLon.getLongitude() - mLatLonBox.getSouthWest().getLongitude();
+
+        int y = (int) (deltaLat / (mLatLonBox.getLatitudeSpan() / mHeight));
+        int x = (int) (deltaLon / (mLatLonBox.getLongitudeSpan() / mWidth));
+
+        return new Point(x, y);
     }
 }

@@ -16,6 +16,7 @@
 package org.mapton.geonames.api;
 
 import com.google.gson.annotations.SerializedName;
+import org.mapton.api.MLatLon;
 
 /**
  *
@@ -65,6 +66,10 @@ public class Geoname {
 
     public Integer getElevation() {
         return mElevation;
+    }
+
+    public MLatLon getLatLon() {
+        return new MLatLon(getLatitude(), getLongitude());
     }
 
     public Double getLatitude() {
