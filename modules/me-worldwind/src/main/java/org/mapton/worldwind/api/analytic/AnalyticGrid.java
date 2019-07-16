@@ -49,12 +49,17 @@ public class AnalyticGrid {
     private final double HUE_BLUE = 240d / 360d;
     private final double HUE_RED = 0d / 360d;
     private final AnalyticSurfaceAttributes mAttributes = new AnalyticSurfaceAttributes();
+    private GridData mGridData;
+    private final int mHeight;
     private final RenderableLayer mLayer;
     private Renderable mLegend;
     private final AnalyticSurface mSurface = new AnalyticSurface();
+    private final int mWidth;
 
     public AnalyticGrid(RenderableLayer layer, MLatLonBox latLonBox, double altitude, int width, int height) {
         mLayer = layer;
+        mWidth = width;
+        mHeight = height;
 
         mSurface.setSector(Sector.fromDegrees(
                 latLonBox.getSouthWest().getLatitude(),
@@ -66,6 +71,9 @@ public class AnalyticGrid {
         mSurface.setAltitude(altitude);
         mSurface.setDimensions(width, height);
         mSurface.setClientLayer(mLayer);
+
+        mAttributes.setShadowOpacity(0.5);
+        mSurface.setSurfaceAttributes(mAttributes);
     }
 
     public AnalyticSurfaceAttributes getAttributes() {
@@ -74,6 +82,12 @@ public class AnalyticGrid {
 
     public AnalyticSurface getSurface() {
         return mSurface;
+    }
+
+    public void setGridData(GridData gridData) {
+        mGridData = gridData;
+        BufferWrapper firstBuffer = wwRandomGridValues(mWidth, mHeight, gridData.getMin(), gridData.getMax());
+        wwCreateRandomAltitudeSurface(-0.1, 0.1);
     }
 
     public void setLegendVisible(boolean visible) {
@@ -85,11 +99,8 @@ public class AnalyticGrid {
     }
 
     public void wwCreateRandomAltitudeSurface(double minValue, double maxValue) {
-        int width = mSurface.getDimensions()[0];
-        int height = mSurface.getDimensions()[1];
-
-        BufferWrapper firstBuffer = wwRandomGridValues(width, height, minValue, maxValue);
-        BufferWrapper secondBuffer = wwRandomGridValues(width, height, minValue * 2d, maxValue / 2d);
+        BufferWrapper firstBuffer = wwRandomGridValues(mWidth, mHeight, minValue, maxValue);
+        BufferWrapper secondBuffer = wwRandomGridValues(mWidth, mHeight, minValue * 2d, maxValue / 2d);
 
         wwMixValuesOverTime(2000L, firstBuffer, secondBuffer, minValue, maxValue);
 
@@ -100,6 +111,7 @@ public class AnalyticGrid {
         final double verticalScale = mSurface.getVerticalScale();
 
         Format legendLabelFormat = new DecimalFormat("# m") {
+            @Override
             public StringBuffer format(double number, StringBuffer result, FieldPosition fieldPosition) {
                 double altitudeMeters = altitude + verticalScale * number;
 //                double altitudeKm = altitudeMeters * WWMath.METERS_TO_KILOMETERS;
