@@ -32,6 +32,7 @@ import se.trixon.almond.util.MathHelper;
  */
 public class GridData {
 
+    private CellAggregate mCellAggregate;
     private ArrayList<Double>[][] mCellValues;
     private int mHeight;
     private MLatLonBox mLatLonBox;
@@ -39,13 +40,13 @@ public class GridData {
     private double mMin = Double.MAX_VALUE;
     private ArrayList<GridValue> mValues;
     private int mWidth;
-//    private Table<Integer, Integer, ArrayList<Double>> mCellTable = HashBasedTable.create();
 
     public GridData() {
     }
 
-    public GridData(int width, int height, ArrayList<GridValue> values) {
+    public GridData(int width, int height, ArrayList<GridValue> values, CellAggregate cellAggregate) {
         //TODO Replace width & height with some calculated resulotion variant...?
+        mCellAggregate = cellAggregate;
         ArrayList<MLatLon> latLons = new ArrayList<>();
         values.forEach((gridValue) -> {
             latLons.add(gridValue.getLatLon());
@@ -69,8 +70,16 @@ public class GridData {
         setValues(values);
     }
 
+    public CellAggregate getCellAggregate() {
+        return mCellAggregate;
+    }
+
     public Double getCellAverage(Point p) {
         return getCellDoubles(p).average().orElse(0);
+    }
+
+    public int getCellCount(Point p) {
+        return getCellValues(p).size();
     }
 
     public Double getCellMax(Point p) {
@@ -79,6 +88,9 @@ public class GridData {
 
     public Double getCellMedian(Point p) {
         List<Double> list = getCellValues(p);
+        if (list.size() == 0) {
+            return 0d;
+        }
         DoubleStream sortedValues = list.stream().mapToDouble(Double::doubleValue).sorted();
 
         double median = list.size() % 2 == 0
@@ -97,14 +109,58 @@ public class GridData {
     }
 
     public ArrayList<Double> getCellValues(Point p) {
-//        if (!mCellTable.contains(p.y, p.x)) {
-//            mCellTable.put(p.y, p.x, new ArrayList<>());
-//        }
         return mCellValues[p.x][p.y];
     }
 
     public ArrayList<Double> getCellValues(int col, int row) {
         return mCellValues[col][row];
+    }
+
+    public double[] getGridAggregates() {
+        return getGridAggregates(mCellAggregate);
+    }
+
+    public double[] getGridAggregates(CellAggregate cellAggregate) {
+        Dimension dimension = new Dimension(mWidth, mHeight);
+        double[] values = new double[mWidth * mHeight];
+
+        for (int x = 0; x < mWidth; x++) {
+            for (int y = 0; y < mHeight; y++) {
+                final int valueIndex = MathHelper.pointToIndex(new Point(x, y), dimension);
+                final Point cellPoint = new Point(x, mHeight - 1 - y);
+
+                switch (cellAggregate) {
+                    case AVG:
+                        values[valueIndex] = getCellAverage(cellPoint);
+                        break;
+
+                    case COUNT:
+                        values[valueIndex] = getCellCount(cellPoint);
+                        break;
+
+                    case MAX:
+                        values[valueIndex] = getCellMax(cellPoint);
+                        break;
+
+                    case MEDIAN:
+                        values[valueIndex] = getCellMedian(cellPoint);
+                        break;
+
+                    case MIN:
+                        values[valueIndex] = getCellMin(cellPoint);
+                        break;
+
+                    case SUM:
+                        values[valueIndex] = getCellSum(cellPoint);
+                        break;
+
+                    default:
+                        throw new AssertionError();
+                }
+            }
+        }
+
+        return values;
     }
 
     public BufferWrapper getGridWrapperAverages() {
@@ -145,6 +201,10 @@ public class GridData {
 
     public int getWidth() {
         return mWidth;
+    }
+
+    public void setCellAggregate(CellAggregate cellAggregate) {
+        mCellAggregate = cellAggregate;
     }
 
     public void setLatLonBox(MLatLonBox latLonBox) {

@@ -24,6 +24,7 @@ import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.LayerBundleManager;
 import org.mapton.worldwind.api.WWHelper;
 import org.mapton.worldwind.api.analytic.AnalyticGrid;
+import org.mapton.worldwind.api.analytic.CellAggregate;
 import org.mapton.worldwind.api.analytic.GridData;
 import org.mapton.worldwind.api.analytic.GridValue;
 import org.openide.util.lookup.ServiceProvider;
@@ -56,10 +57,10 @@ public class GeoNamesLayerBundle extends LayerBundle {
             values.add(new GridValue(geoname.getLatLon(), new Double(geoname.getPopulation())));
         });
 
-        int width = 40;
-        int height = 40;
+        int width = 10;
+        int height = 10;
 
-        return new GridData(width, height, values);
+        return new GridData(width, height, values, CellAggregate.SUM);
     }
 
     private void init() {

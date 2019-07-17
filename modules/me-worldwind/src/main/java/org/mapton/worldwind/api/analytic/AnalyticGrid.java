@@ -24,6 +24,7 @@ import gov.nasa.worldwind.render.Renderable;
 import gov.nasa.worldwind.util.BufferFactory;
 import gov.nasa.worldwind.util.BufferWrapper;
 import gov.nasa.worldwind.util.WWMath;
+import java.awt.Color;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -49,18 +50,29 @@ public class AnalyticGrid {
     private final double HUE_BLUE = 240d / 360d;
     private final double HUE_RED = 0d / 360d;
     private final AnalyticSurfaceAttributes mAttributes = new AnalyticSurfaceAttributes();
+    private boolean mDynamicMinMax;
     private GridData mGridData;
     private final int mHeight;
-    private final int mWidth;
     private final RenderableLayer mLayer;
     private Renderable mLegend;
+    private double mMax;
+    private double mMin;
     private final AnalyticSurface mSurface = new AnalyticSurface();
+    private final int mWidth;
 
     public AnalyticGrid(RenderableLayer layer, GridData gridData, double altitude) {
+        this(layer, gridData, altitude, gridData.getMin(), gridData.getMax());
+        mDynamicMinMax = true;
+    }
+
+    public AnalyticGrid(RenderableLayer layer, GridData gridData, double altitude, double min, double max) {
         mLayer = layer;
 
         mWidth = gridData.getWidth();
         mHeight = gridData.getHeight();
+
+        mMin = min;
+        mMax = max;
 
         MLatLonBox latLonBox = gridData.getLatLonBox();
         mSurface.setSector(Sector.fromDegrees(
@@ -90,19 +102,20 @@ public class AnalyticGrid {
 
     public void setGridData(GridData gridData) {
         mGridData = gridData;
-        ArrayList<AnalyticSurface.GridPointAttributes> attributesList = new ArrayList<>();
-        BufferWrapper buf = gridData.getGridWrapperAverages();
 
-        for (int i = 0; i < buf.length(); i++) {
-            double value = buf.getDouble(i);
-            double min = mGridData.getMin();
-            double max = mGridData.getMax();
-            //min = -10;
-            //max = 10;
-            attributesList.add(AnalyticSurface.createColorGradientAttributes(value, min, max, HUE_RED, HUE_BLUE));
+        if (mDynamicMinMax) {
+            mMin = gridData.getMin();
+            mMax = gridData.getMax();
         }
 
-        mSurface.setValues(attributesList);
+        ArrayList<AnalyticSurface.GridPointAttributes> gridPointAttributeses = new ArrayList<>();
+        double[] values = gridData.getGridAggregates();
+
+        for (int i = 0; i < values.length; i++) {
+            gridPointAttributeses.add(createColorGradientAttributes(values[i], mMin, mMax, HUE_RED, HUE_BLUE));
+        }
+
+        mSurface.setValues(gridPointAttributeses);
 
         if (mLayer != null) {
             mLayer.firePropertyChange(AVKey.LAYER, null, mLayer);
@@ -145,6 +158,16 @@ public class AnalyticGrid {
         legend.setScreenLocation(new Point(50, 200));
 
         mLegend = wwCreateLegendRenderable(mSurface, 300, legend);
+    }
+
+    private AnalyticSurface.GridPointAttributes createColorGradientAttributes(final double value, double minValue, double maxValue, double minHue, double maxHue) {
+        double hueFactor = WWMath.computeInterpolationFactor(value, minValue, maxValue);
+        Color color = Color.getHSBColor((float) WWMath.mixSmooth(hueFactor, minHue, maxHue), 1f, 1f);
+        double opacity = value == 0 ? 0.1 : 1.0;
+
+        Color rgbaColor = new Color(color.getRed(), color.getGreen(), color.getBlue(), (int) (255 * opacity));
+
+        return AnalyticSurface.createGridPointAttributes(value, rgbaColor);
     }
 
     private Renderable wwCreateLegendRenderable(final AnalyticSurface surface, final double surfaceMinScreenSize, final AnalyticSurfaceLegend legend) {
