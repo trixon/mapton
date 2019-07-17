@@ -90,8 +90,23 @@ public class AnalyticGrid {
 
     public void setGridData(GridData gridData) {
         mGridData = gridData;
-        BufferWrapper firstBuffer = wwRandomGridValues(mWidth, mHeight, gridData.getMin(), gridData.getMax());
-        wwCreateRandomAltitudeSurface(-0.1, 0.1);
+        ArrayList<AnalyticSurface.GridPointAttributes> attributesList = new ArrayList<>();
+        BufferWrapper buf = gridData.getGridWrapperAverages();
+
+        for (int i = 0; i < buf.length(); i++) {
+            double value = buf.getDouble(i);
+            double min = mGridData.getMin();
+            double max = mGridData.getMax();
+            //min = -10;
+            //max = 10;
+            attributesList.add(AnalyticSurface.createColorGradientAttributes(value, min, max, HUE_RED, HUE_BLUE));
+        }
+
+        mSurface.setValues(attributesList);
+
+        if (mLayer != null) {
+            mLayer.firePropertyChange(AVKey.LAYER, null, mLayer);
+        }
     }
 
     public void setLegendVisible(boolean visible) {
@@ -108,9 +123,6 @@ public class AnalyticGrid {
         BufferWrapper secondBuffer = wwRandomGridValues(mWidth, mHeight, minValue * 2d, maxValue / 2d);
 
         wwMixValuesOverTime(2000L, firstBuffer, secondBuffer, minValue, maxValue);
-
-        mAttributes.setShadowOpacity(0.5);
-        mSurface.setSurfaceAttributes(mAttributes);
 
         final double altitude = mSurface.getAltitude();
         final double verticalScale = mSurface.getVerticalScale();

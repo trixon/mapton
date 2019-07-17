@@ -15,12 +15,16 @@
  */
 package org.mapton.worldwind.api.analytic;
 
+import gov.nasa.worldwind.util.BufferFactory;
+import gov.nasa.worldwind.util.BufferWrapper;
+import java.awt.Dimension;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.DoubleStream;
 import org.mapton.api.MLatLon;
 import org.mapton.api.MLatLonBox;
+import se.trixon.almond.util.MathHelper;
 
 /**
  *
@@ -56,9 +60,9 @@ public class GridData {
         mHeight = height;
 
         mCellValues = new ArrayList[width][height];
-        for (int i = 0; i < width; i++) {
-            for (int j = 0; j < width; j++) {
-                mCellValues[i][j] = new ArrayList<>();
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                mCellValues[x][y] = new ArrayList<>();
             }
         }
 
@@ -101,6 +105,22 @@ public class GridData {
 
     public ArrayList<Double> getCellValues(int col, int row) {
         return mCellValues[col][row];
+    }
+
+    public BufferWrapper getGridWrapperAverages() {
+        Dimension dimension = new Dimension(mWidth, mHeight);
+        double[] values = new double[mWidth * mHeight];
+
+        for (int x = 0; x < mWidth; x++) {
+            for (int y = 0; y < mHeight; y++) {
+                values[MathHelper.pointToIndex(new Point(x, y), dimension)] = getCellAverage(new Point(x, mHeight - 1 - y));
+            }
+        }
+
+        BufferWrapper wrapper = new BufferFactory.DoubleBufferFactory().newBuffer(values.length);
+        wrapper.putDouble(0, values, 0, values.length);
+
+        return wrapper;
     }
 
     public int getHeight() {
