@@ -156,8 +156,14 @@ public class GridData {
         double deltaLat = latLon.getLatitude() - mLatLonBox.getSouthWest().getLatitude();
         double deltaLon = latLon.getLongitude() - mLatLonBox.getSouthWest().getLongitude();
 
-        int y = (int) (deltaLat / (mLatLonBox.getLatitudeSpan() / mHeight));
-        int x = (int) (deltaLon / (mLatLonBox.getLongitudeSpan() / mWidth));
+        int xRaw = (int) (deltaLon / (mLatLonBox.getLongitudeSpan() / mWidth));
+        int yRaw = (int) (deltaLat / (mLatLonBox.getLatitudeSpan() / mHeight));
+
+        int xMax = Math.min(xRaw, mWidth - 1);
+        int yMax = Math.min(yRaw, mHeight - 1);
+
+        int x = Math.max(xMax, 0);
+        int y = Math.max(yMax, 0);
 
         return new Point(x, y);
     }
