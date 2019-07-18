@@ -109,8 +109,9 @@ public class MapollageLayerBundle extends LayerBundle {
 
     private void init() {
         mIconLayer.setName(Dict.PHOTOS.toString());
-        mIconLayer.setEnabled(true);
+        setCategoryAddOns(mIconLayer);
         mIconLayer.setValue(WWHelper.KEY_FAST_OPEN, "MapollageTopComponent");
+        mIconLayer.setEnabled(true);
 
         mRenderableLayer.setPickEnabled(false);
         mRenderableLayer.setName(String.format("Mapollage - %s", Dict.Geometry.PATHS.toString()));

@@ -45,6 +45,7 @@ public class WikipediaLayerBundle extends LayerBundle {
 
     public WikipediaLayerBundle() {
         mLayer.setName("Wikipedia");
+        setCategoryAddOns(mLayer);
         setName("Wikipedia");
 
         init();

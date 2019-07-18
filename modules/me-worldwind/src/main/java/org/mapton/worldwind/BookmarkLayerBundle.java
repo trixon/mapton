@@ -67,7 +67,8 @@ public class BookmarkLayerBundle extends LayerBundle {
     }
 
     private void init() {
-        mLayer.setName(String.format("- %s -", Dict.BOOKMARKS.toString()));
+        mLayer.setName(Dict.BOOKMARKS.toString());
+        setCategorySystem(mLayer);
         setName(Dict.BOOKMARKS.toString());
         mLayer.setEnabled(true);
         mLayer.setPickEnabled(true);

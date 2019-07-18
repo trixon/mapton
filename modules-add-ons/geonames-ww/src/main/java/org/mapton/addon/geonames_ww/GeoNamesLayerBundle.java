@@ -64,9 +64,10 @@ public class GeoNamesLayerBundle extends LayerBundle {
     }
 
     private void init() {
-        mLayer.setPickEnabled(false);
-        mLayer.setValue(WWHelper.KEY_FAST_OPEN, "GeoNamesTopComponent");
         mLayer.setName("GeoNames Visualizer");
+        setCategoryAddOns(mLayer);
+        mLayer.setValue(WWHelper.KEY_FAST_OPEN, "GeoNamesTopComponent");
+        mLayer.setPickEnabled(false);
         mLayer.setEnabled(true);
 
         setName("GeoNames");

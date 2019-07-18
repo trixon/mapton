@@ -53,6 +53,7 @@ public class GridLayerBundle extends LayerBundle {
 
     public GridLayerBundle() {
         mLayer.setName(MDict.GRID.toString());
+        setCategorySystem(mLayer);
         setName(MDict.GRID.toString());
 
         init();
