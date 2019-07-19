@@ -39,47 +39,18 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * AnalyticSurface represents a connected grid of geographic locations, covering
- * a specified {@link Sector} at a specified base altitude in meters. The number
- * of grid locations is defined by the AnalyticSurface's dimensions. The default
- * dimensions are <code>(10, 10)</code>. Callers specify the dimensions by using
- * one of the constructors accepting <code>width</code> and <code>height</code>,
- * or by invoking {@link #setDimensions(int, int)}. Each grid point has the
- * following set of attributes: <ul> <li>Scalar value : the grid point's height
- * relative to the surface's base altitude, both in meters</li> <li>Color : the
- * grid point's RGBA color components</li> </ul> Callers specify the attributes
- * at each grid point by invoking {@link #setValues(Iterable)} with an
- * {@link Iterable} of {@link
- * GridPointAttributes}. Grid points are assigned attributes from this iterable
- * staring at the upper left hand corner, and proceeding in row-first order
- * across the grid. The iterable should contain at least
- * <code>width * height</code> values, where width and height are the
- * AnalyticSurface's grid dimensions. If the caller does not specify any
- * GridPointAttributes, or the caller specified iterable contains too few
- * values, the unassigned grid points are given default attributes: the default
- * scalar value is 0, and the default color is {@link java.awt.Color#BLACK}.
+ * AnalyticSurface represents a connected grid of geographic locations, covering a specified {@link Sector} at a specified base altitude in meters. The number of grid locations is defined by the AnalyticSurface's dimensions. The default dimensions are <code>(10, 10)</code>. Callers specify the dimensions by using one of the constructors accepting <code>width</code> and <code>height</code>, or by invoking {@link #setDimensions(int, int)}. Each grid point has the following set of attributes: <ul> <li>Scalar value : the grid point's height relative to the surface's base altitude, both in meters</li> <li>Color : the grid point's RGBA color components</li> </ul> Callers specify the attributes at each grid point by invoking {@link #setValues(Iterable)} with an {@link Iterable} of {@link
+ * GridPointAttributes}. Grid points are assigned attributes from this iterable staring at the upper left hand corner, and proceeding in row-first order across the grid. The iterable should contain at least <code>width * height</code> values, where width and height are the AnalyticSurface's grid dimensions. If the caller does not specify any GridPointAttributes, or the caller specified iterable contains too few values, the unassigned grid points are given default attributes: the default scalar value is 0, and the default color is {@link java.awt.Color#BLACK}.
  * <p/>
  * <h2>Surface Altitude</h2>
  * <p/>
- * AnalyticSurface's altitude can vary at each grid point. The altitude of each
- * grid point depends on four properties: the altitude mode, the surface
- * altitude, the vertical scale, and the scalar value from GridPointAttributes.
- * The following table outlines how the altitude at each grid point is computed
- * for each altitude mode:
+ * AnalyticSurface's altitude can vary at each grid point. The altitude of each grid point depends on four properties: the altitude mode, the surface altitude, the vertical scale, and the scalar value from GridPointAttributes. The following table outlines how the altitude at each grid point is computed for each altitude mode:
  * <p/>
- * <table border="1"> <tr><th>Altitude Mode</th><th>Grid Point
- * Altitude</th></tr> <tr><td>WorldWind.ABSOLUTE (default)</td><td>surface
- * altitude + (vertical scale * scalar value from GridPointAttributes)</td></tr>
- * <tr><td>WorldWind.RELATIVE_TO_GROUND</td><td>terrain height at grid point +
- * surface altitude + (vertical scale * scalar value from
- * GridPointAttributes)</td></tr>
- * <tr><td>WorldWind.CLAMP_TO_GROUND</td><td>terrain height at grid
- * point</td></tr> </table>
+ * <table border="1"> <tr><th>Altitude Mode</th><th>Grid Point Altitude</th></tr> <tr><td>WorldWind.ABSOLUTE (default)</td><td>surface altitude + (vertical scale * scalar value from GridPointAttributes)</td></tr>
+ * <tr><td>WorldWind.RELATIVE_TO_GROUND</td><td>terrain height at grid point + surface altitude + (vertical scale * scalar value from GridPointAttributes)</td></tr>
+ * <tr><td>WorldWind.CLAMP_TO_GROUND</td><td>terrain height at grid point</td></tr> </table>
  * <p/>
- * Note that when the altitude mode is WorldWind.CLAMP_TO_GROUND the surface
- * altitude, vertical scale, and the scalar value from GridPointAttributes are
- * ignored. In this altitude mode only the Sector, dimensions, and color from
- * GridPointAttributes are used.
+ * Note that when the altitude mode is WorldWind.CLAMP_TO_GROUND the surface altitude, vertical scale, and the scalar value from GridPointAttributes are ignored. In this altitude mode only the Sector, dimensions, and color from GridPointAttributes are used.
  *
  * @author dcollins
  * @version $Id: AnalyticSurface.java 3020 2015-04-14 21:23:03Z dcollins $
@@ -87,24 +58,19 @@ import java.util.List;
 public class AnalyticSurface implements Renderable, PreRenderable {
 
     /**
-     * GridPointAttributes defines the properties associated with a single grid
-     * point of an AnalyticSurface.
+     * GridPointAttributes defines the properties associated with a single grid point of an AnalyticSurface.
      */
     public interface GridPointAttributes {
 
         /**
-         * Returns the scalar value associated with a grid point. By default,
-         * AnalyticSurface interprets this value as the grid point's height
-         * relative to the AnalyticSurface's base altitude, both in meters.
+         * Returns the scalar value associated with a grid point. By default, AnalyticSurface interprets this value as the grid point's height relative to the AnalyticSurface's base altitude, both in meters.
          *
          * @return the grid point's scalar value.
          */
         double getValue();
 
         /**
-         * Returns the {@link java.awt.Color} associated with a grid point. By
-         * default, AnalyticSurface interprets this Color as the RGBA components
-         * of a grid point's RGBA color.
+         * Returns the {@link java.awt.Color} associated with a grid point. By default, AnalyticSurface interprets this Color as the RGBA components of a grid point's RGBA color.
          *
          * @return the grid point's RGB color components.
          */
@@ -122,8 +88,7 @@ public class AnalyticSurface implements Renderable, PreRenderable {
     protected static final GridPointAttributes DEFAULT_GRID_POINT_ATTRIBUTES = createGridPointAttributes(
             DEFAULT_VALUE, DEFAULT_COLOR);
     /**
-     * The time period between surface regeneration when altitude mode is
-     * relative-to-ground.
+     * The time period between surface regeneration when altitude mode is relative-to-ground.
      */
     protected static final long RELATIVE_TO_GROUND_REGEN_PERIOD = 2000;
 
@@ -153,10 +118,7 @@ public class AnalyticSurface implements Renderable, PreRenderable {
     protected final PickSupport pickSupport = new PickSupport();
 
     /**
-     * Constructs a new AnalyticSurface with the specified {@link Sector}, base
-     * altitude in meters, grid dimensions, and iterable of GridPointAttributes.
-     * The iterable should contain at least <code>with * height</code> non-null
-     * GridPointAttributes.
+     * Constructs a new AnalyticSurface with the specified {@link Sector}, base altitude in meters, grid dimensions, and iterable of GridPointAttributes. The iterable should contain at least <code>with * height</code> non-null GridPointAttributes.
      *
      * @param sector the Sector which defines the surface's geographic region.
      * @param altitude the base altitude to place the surface at, in meters.
@@ -164,8 +126,7 @@ public class AnalyticSurface implements Renderable, PreRenderable {
      * @param height the surface grid height, in number of grid points.
      * @param iterable the attributes associated with each grid point.
      *
-     * @throws IllegalArgumentException if the sector is null, if the width is
-     * less than 1, if the height is less than 1, or if the iterable is null.
+     * @throws IllegalArgumentException if the sector is null, if the width is less than 1, if the height is less than 1, or if the iterable is null.
      */
     public AnalyticSurface(Sector sector, double altitude, int width, int height,
             Iterable<? extends GridPointAttributes> iterable) {
@@ -202,26 +163,21 @@ public class AnalyticSurface implements Renderable, PreRenderable {
     }
 
     /**
-     * Constructs a new AnalyticSurface with the specified {@link Sector}, base
-     * altitude in meters, and grid dimensions. The new AnalyticSurface has the
-     * default {@link GridPointAttributes}.
+     * Constructs a new AnalyticSurface with the specified {@link Sector}, base altitude in meters, and grid dimensions. The new AnalyticSurface has the default {@link GridPointAttributes}.
      *
      * @param sector the Sector which defines the surface's geographic region.
      * @param altitude the base altitude to place the surface at, in meters.
      * @param width the surface grid width, in number of grid points.
      * @param height the surface grid height, in number of grid points.
      *
-     * @throws IllegalArgumentException if the sector is null, if the width is
-     * less than 1, or if the height is less than 1.
+     * @throws IllegalArgumentException if the sector is null, if the width is less than 1, or if the height is less than 1.
      */
     public AnalyticSurface(Sector sector, double altitude, int width, int height) {
         this(sector, altitude, width, height, createDefaultValues(width * height));
     }
 
     /**
-     * Constructs a new AnalyticSurface with the specified {@link Sector} and
-     * base altitude in meters. The new AnalyticSurface has default dimensions
-     * of <code>(10, 10)</code>, and default {@link GridPointAttributes}.
+     * Constructs a new AnalyticSurface with the specified {@link Sector} and base altitude in meters. The new AnalyticSurface has default dimensions of <code>(10, 10)</code>, and default {@link GridPointAttributes}.
      *
      * @param sector the Sector which defines the surface's geographic region.
      * @param altitude the base altitude to place the surface at, in meters.
@@ -233,10 +189,7 @@ public class AnalyticSurface implements Renderable, PreRenderable {
     }
 
     /**
-     * Constructs a new AnalyticSurface with the specified grid dimensions. The
-     * new AnalyticSurface is has the default Sector
-     * {@link Sector#EMPTY_SECTOR}, the default altitude of 0 meters, and
-     * default {@link GridPointAttributes}.
+     * Constructs a new AnalyticSurface with the specified grid dimensions. The new AnalyticSurface is has the default Sector {@link Sector#EMPTY_SECTOR}, the default altitude of 0 meters, and default {@link GridPointAttributes}.
      *
      * @param width the surface grid width, in number of grid points.
      * @param height the surface grid height, in number of grid points.
@@ -248,10 +201,7 @@ public class AnalyticSurface implements Renderable, PreRenderable {
     }
 
     /**
-     * Constructs a new AnalyticSurface with the default Sector
-     * {@link Sector#EMPTY_SECTOR}, the default altitude of 0 meters, default
-     * dimensions of <code>(10, 10)</code>, and default
-     * {@link GridPointAttributes}.
+     * Constructs a new AnalyticSurface with the default Sector {@link Sector#EMPTY_SECTOR}, the default altitude of 0 meters, default dimensions of <code>(10, 10)</code>, and default {@link GridPointAttributes}.
      */
     public AnalyticSurface() {
         this(DEFAULT_DIMENSION, DEFAULT_DIMENSION);
@@ -269,16 +219,14 @@ public class AnalyticSurface implements Renderable, PreRenderable {
     /**
      * Sets whether or not the surface is visible in the scene.
      *
-     * @param visible true to make the surface visible, and false to make it
-     * hidden.
+     * @param visible true to make the surface visible, and false to make it hidden.
      */
     public void setVisible(boolean visible) {
         this.visible = visible;
     }
 
     /**
-     * Returns the {@link Sector} defining the geographic boundary of this
-     * surface.
+     * Returns the {@link Sector} defining the geographic boundary of this surface.
      *
      * @return this surface's geographic boundary, as a Sector.
      */
@@ -316,8 +264,7 @@ public class AnalyticSurface implements Renderable, PreRenderable {
     }
 
     /**
-     * Sets this surface's base altitude, in meters. See the AnalyticSurface
-     * class documentation for information on how the altitude is interpreted.
+     * Sets this surface's base altitude, in meters. See the AnalyticSurface class documentation for information on how the altitude is interpreted.
      *
      * @param altitude the new base altitude, in meters.
      */
@@ -328,8 +275,7 @@ public class AnalyticSurface implements Renderable, PreRenderable {
 
     /**
      * Returns the surface's altitude mode, one of {@link gov.nasa.worldwind.WorldWind#CLAMP_TO_GROUND}, {@link
-     * gov.nasa.worldwind.WorldWind#RELATIVE_TO_GROUND}, or
-     * {@link gov.nasa.worldwind.WorldWind#ABSOLUTE}.
+     * gov.nasa.worldwind.WorldWind#RELATIVE_TO_GROUND}, or {@link gov.nasa.worldwind.WorldWind#ABSOLUTE}.
      *
      * @return the surface's altitude mode.
      *
@@ -341,12 +287,8 @@ public class AnalyticSurface implements Renderable, PreRenderable {
 
     /**
      * Specifies the surface's altitude mode, one of {@link gov.nasa.worldwind.WorldWind#CLAMP_TO_GROUND}, {@link
-     * gov.nasa.worldwind.WorldWind#RELATIVE_TO_GROUND}, or
-     * {@link gov.nasa.worldwind.WorldWind#ABSOLUTE}. The altitude mode
-     * {@link gov.nasa.worldwind.WorldWind#CONSTANT} is not supported and {@link
-     * gov.nasa.worldwind.WorldWind#ABSOLUTE} is used if specified. See the
-     * AnalyticSurface class documentation for information on how the altitude
-     * mode is interpreted.
+     * gov.nasa.worldwind.WorldWind#RELATIVE_TO_GROUND}, or {@link gov.nasa.worldwind.WorldWind#ABSOLUTE}. The altitude mode {@link gov.nasa.worldwind.WorldWind#CONSTANT} is not supported and {@link
+     * gov.nasa.worldwind.WorldWind#ABSOLUTE} is used if specified. See the AnalyticSurface class documentation for information on how the altitude mode is interpreted.
      *
      * @param altitudeMode the surface's altitude mode.
      */
@@ -356,9 +298,7 @@ public class AnalyticSurface implements Renderable, PreRenderable {
     }
 
     /**
-     * Returns the number of horizontal and vertical points composing this
-     * surface as an array with two values. The value at index 0 indicates the
-     * grid width, and the value at index 1 indicates the grid height.
+     * Returns the number of horizontal and vertical points composing this surface as an array with two values. The value at index 0 indicates the grid width, and the value at index 1 indicates the grid height.
      *
      * @return the dimensions of this surface's grid.
      */
@@ -372,8 +312,7 @@ public class AnalyticSurface implements Renderable, PreRenderable {
      * @param width the new grid width.
      * @param height the new grid height.
      *
-     * @throws IllegalArgumentException if either width or heigth are less than
-     * 1.
+     * @throws IllegalArgumentException if either width or heigth are less than 1.
      */
     public void setDimensions(int width, int height) {
         if (width <= 0) {
@@ -394,9 +333,7 @@ public class AnalyticSurface implements Renderable, PreRenderable {
     }
 
     /**
-     * Returns the surface's iterable of {@link GridPointAttributes}. See
-     * {@link #setValues(Iterable)} for details on how this iterable is
-     * interpreted by AnalyticSurface.
+     * Returns the surface's iterable of {@link GridPointAttributes}. See {@link #setValues(Iterable)} for details on how this iterable is interpreted by AnalyticSurface.
      *
      * @return this surface's GridPointAttributes.
      */
@@ -405,14 +342,7 @@ public class AnalyticSurface implements Renderable, PreRenderable {
     }
 
     /**
-     * Sets this surface's iterable of {@link GridPointAttributes}. Grid points
-     * are assigned attributes from this iterable staring at the upper left hand
-     * corner, and proceeding in row-first order across the grid. The iterable
-     * should contain at least <code>width * height</code> values, where width
-     * and height are the AnalyticSurface's grid dimensions. If the iterable
-     * contains too few values, the unassigned grid points are given default
-     * attributes: the default scalar value is 0, and the default color is
-     * {@link java.awt.Color#BLACK}.
+     * Sets this surface's iterable of {@link GridPointAttributes}. Grid points are assigned attributes from this iterable staring at the upper left hand corner, and proceeding in row-first order across the grid. The iterable should contain at least <code>width * height</code> values, where width and height are the AnalyticSurface's grid dimensions. If the iterable contains too few values, the unassigned grid points are given default attributes: the default scalar value is 0, and the default color is {@link java.awt.Color#BLACK}.
      *
      * @param iterable the new grid point attributes.
      *
@@ -440,10 +370,7 @@ public class AnalyticSurface implements Renderable, PreRenderable {
     }
 
     /**
-     * Sets the scale applied to the value at each grid point. Before rendering,
-     * this value is applied to each grid points scalar value, thus increasing
-     * or decreasing it's height relative to the surface's base altitude, both
-     * in meters.
+     * Sets the scale applied to the value at each grid point. Before rendering, this value is applied to each grid points scalar value, thus increasing or decreasing it's height relative to the surface's base altitude, both in meters.
      *
      * @param scale the surface's vertical scale coefficient.
      */
@@ -453,11 +380,8 @@ public class AnalyticSurface implements Renderable, PreRenderable {
     }
 
     /**
-     * Returns a copy of the rendering attributes associated with this surface.
-     * Modifying the contents of the returned reference has no effect on this
-     * surface. In order to make an attribute change take effect, invoke {@link
-     * #setSurfaceAttributes(AnalyticSurfaceAttributes)} with the modified
-     * attributes.
+     * Returns a copy of the rendering attributes associated with this surface. Modifying the contents of the returned reference has no effect on this surface. In order to make an attribute change take effect, invoke {@link
+     * #setSurfaceAttributes(AnalyticSurfaceAttributes)} with the modified attributes.
      *
      * @return a copy of this surface's rendering attributes.
      */
@@ -466,13 +390,7 @@ public class AnalyticSurface implements Renderable, PreRenderable {
     }
 
     /**
-     * Sets the rendering attributes associated with this surface. The caller
-     * cannot assume that modifying the attribute reference after calling
-     * setSurfaceAttributes() will have any effect, as the implementation may
-     * defensively copy the attribute reference. In order to make an attribute
-     * change take effect, invoke
-     * setSurfaceAttributes(AnalyticSurfaceAttributes) again with the modified
-     * attributes.
+     * Sets the rendering attributes associated with this surface. The caller cannot assume that modifying the attribute reference after calling setSurfaceAttributes() will have any effect, as the implementation may defensively copy the attribute reference. In order to make an attribute change take effect, invoke setSurfaceAttributes(AnalyticSurfaceAttributes) again with the modified attributes.
      *
      * @param attributes this surface's new rendering attributes.
      *
@@ -490,9 +408,7 @@ public class AnalyticSurface implements Renderable, PreRenderable {
     }
 
     /**
-     * Returns the object which is associated with this surface during picking.
-     * A null value is permitted and indicates that the surface itself will be
-     * the object returned during picking.
+     * Returns the object which is associated with this surface during picking. A null value is permitted and indicates that the surface itself will be the object returned during picking.
      *
      * @return this surface's pick object.
      */
@@ -501,13 +417,9 @@ public class AnalyticSurface implements Renderable, PreRenderable {
     }
 
     /**
-     * Sets the object associated with this surface during picking. A null value
-     * is permitted and indicates that the surface itself will be the object
-     * returned during picking.
+     * Sets the object associated with this surface during picking. A null value is permitted and indicates that the surface itself will be the object returned during picking.
      *
-     * @param pickObject the object to associated with this surface during
-     * picking. A null value is permitted and indicates that the surface itself
-     * will be the object returned during picking.
+     * @param pickObject the object to associated with this surface during picking. A null value is permitted and indicates that the surface itself will be the object returned during picking.
      */
     public void setPickObject(Object pickObject) {
         this.pickObject = pickObject;
@@ -523,9 +435,7 @@ public class AnalyticSurface implements Renderable, PreRenderable {
     }
 
     /**
-     * Sets the layer associated with this surface during picking. A null value
-     * is permitted, and indicates that no layer is associated with this
-     * surface.
+     * Sets the layer associated with this surface during picking. A null value is permitted, and indicates that no layer is associated with this surface.
      *
      * @param layer this surface's pick layer.
      */
@@ -644,15 +554,11 @@ public class AnalyticSurface implements Renderable, PreRenderable {
     }
 
     /**
-     * Test if this AnalyticSurface intersects the specified draw context's
-     * frustum. During picking mode, this tests intersection against all of the
-     * draw context's pick frustums. During rendering mode, this tests
-     * intersection against the draw context's viewing frustum.
+     * Test if this AnalyticSurface intersects the specified draw context's frustum. During picking mode, this tests intersection against all of the draw context's pick frustums. During rendering mode, this tests intersection against the draw context's viewing frustum.
      *
      * @param dc the current draw context.
      *
-     * @return true if this AnalyticSurface intersects the draw context's
-     * frustum; false otherwise.
+     * @return true if this AnalyticSurface intersects the draw context's frustum; false otherwise.
      */
     protected boolean intersectsFrustum(DrawContext dc) {
         // A null extent indicates an object which has no location.
@@ -674,19 +580,12 @@ public class AnalyticSurface implements Renderable, PreRenderable {
     //********************  Attribute Construction  ****************//
     //**************************************************************//
     /**
-     * Returns the minimum and maximum values in the specified iterable of
-     * {@link GridPointAttributes}. Values equivalent to the specified
-     * <code>missingDataSignal</code> are ignored. This returns null if the
-     * iterable is empty or contains only missing values.
+     * Returns the minimum and maximum values in the specified iterable of {@link GridPointAttributes}. Values equivalent to the specified <code>missingDataSignal</code> are ignored. This returns null if the iterable is empty or contains only missing values.
      *
-     * @param iterable the GridPointAttributes to search for the minimum and
-     * maximum value.
-     * @param missingDataSignal the number indicating a specific value to
-     * ignore.
+     * @param iterable the GridPointAttributes to search for the minimum and maximum value.
+     * @param missingDataSignal the number indicating a specific value to ignore.
      *
-     * @return an array containing the minimum value in index 0 and the maximum
-     * value in index 1, or null if the iterable is empty or contains only
-     * missing values.
+     * @return an array containing the minimum value in index 0 and the maximum value in index 1, or null if the iterable is empty or contains only missing values.
      *
      * @throws IllegalArgumentException if the iterable is null.
      */
@@ -723,17 +622,11 @@ public class AnalyticSurface implements Renderable, PreRenderable {
     }
 
     /**
-     * Returns the minimum and maximum values in the specified iterable of
-     * {@link GridPointAttributes}. Values equivalent to <code>Double.NaN</code>
-     * are ignored. This returns null if the buffer is empty or contains only
-     * NaN values.
+     * Returns the minimum and maximum values in the specified iterable of {@link GridPointAttributes}. Values equivalent to <code>Double.NaN</code> are ignored. This returns null if the buffer is empty or contains only NaN values.
      *
-     * @param iterable the GridPointAttributes to search for the minimum and
-     * maximum value.
+     * @param iterable the GridPointAttributes to search for the minimum and maximum value.
      *
-     * @return an array containing the minimum value in index 0 and the maximum
-     * value in index 1, or null if the iterable is empty or contains only NaN
-     * values.
+     * @return an array containing the minimum value in index 0 and the maximum value in index 1, or null if the iterable is empty or contains only NaN values.
      *
      * @throws IllegalArgumentException if the iterable is null.
      */
@@ -748,14 +641,12 @@ public class AnalyticSurface implements Renderable, PreRenderable {
     }
 
     /**
-     * Returns a new instance of {@link GridPointAttributes} with the specified
-     * value and color.
+     * Returns a new instance of {@link GridPointAttributes} with the specified value and color.
      *
      * @param value the new GridPointAttributes' value.
      * @param color the new GridPointAttributes' color.
      *
-     * @return a new GridPointAttributes defined by the specified value and
-     * color.
+     * @return a new GridPointAttributes defined by the specified value and color.
      */
     public static GridPointAttributes createGridPointAttributes(final double value, final java.awt.Color color) {
         return new AnalyticSurface.GridPointAttributes() {
@@ -770,14 +661,9 @@ public class AnalyticSurface implements Renderable, PreRenderable {
     }
 
     /**
-     * Returns a new instance of {@link GridPointAttributes} with a Color
-     * computed from the specified value and value range. The color's RGB
-     * components are computed by mapping value's relative position in the range <code>[minValue,
-     * maxValue]</code> to the range of color hues
-     * <code>[minHue, maxHue]</code>. The color's Alpha component is computed by
-     * mapping the values's relative position in the range <code>[minValue, minValue + (maxValue - minValue)
-     * / 10]</code> to the range <code>[0, 1]</code>. This has the effect of
-     * interpolating hue and alpha based on the grid point value.
+     * Returns a new instance of {@link GridPointAttributes} with a Color computed from the specified value and value range. The color's RGB components are computed by mapping value's relative position in the range <code>[minValue,
+     * maxValue]</code> to the range of color hues <code>[minHue, maxHue]</code>. The color's Alpha component is computed by mapping the values's relative position in the range <code>[minValue, minValue + (maxValue - minValue)
+     * / 10]</code> to the range <code>[0, 1]</code>. This has the effect of interpolating hue and alpha based on the grid point value.
      *
      * @param value the new GridPointAttributes' value.
      * @param minValue the minimum value.
@@ -785,8 +671,7 @@ public class AnalyticSurface implements Renderable, PreRenderable {
      * @param minHue the mimimum color hue, corresponding to the minimum value.
      * @param maxHue the maximum color hue, corresponding to the maximum value.
      *
-     * @return a new GridPointAttributes defined by the specified value, value
-     * range, and color hue range.
+     * @return a new GridPointAttributes defined by the specified value, value range, and color hue range.
      */
     public static AnalyticSurface.GridPointAttributes createColorGradientAttributes(final double value,
             double minValue, double maxValue, double minHue, double maxHue) {
@@ -799,14 +684,11 @@ public class AnalyticSurface implements Renderable, PreRenderable {
     }
 
     /**
-     * Returns a new iterable populated with the default
-     * {@link GridPointAttributes}. The default GridPointAttributes have a value
-     * of 0, and the color {@link java.awt.Color#BLACK}.
+     * Returns a new iterable populated with the default {@link GridPointAttributes}. The default GridPointAttributes have a value of 0, and the color {@link java.awt.Color#BLACK}.
      *
      * @param count the desired number of GridPointAttributes to return.
      *
-     * @return an iterable containing <code>count</code> default
-     * GridPointAttributes.
+     * @return an iterable containing <code>count</code> default GridPointAttributes.
      */
     public static Iterable<? extends GridPointAttributes> createDefaultValues(int count) {
         ArrayList<GridPointAttributes> list = new ArrayList<GridPointAttributes>(count);
@@ -815,23 +697,17 @@ public class AnalyticSurface implements Renderable, PreRenderable {
     }
 
     /**
-     * Returns a new iterable populated with {@link GridPointAttributes}
-     * computed by invoking {@link
-     * #createColorGradientAttributes(double, double, double, double, double)}
-     * for each double value in the speicfied {@link BufferWrapper}. Values
-     * equivalent to the specified <code>missingDataSignal</code> are replaced
-     * with the specified <code>minValue</code>.
+     * Returns a new iterable populated with {@link GridPointAttributes} computed by invoking {@link
+     * #createColorGradientAttributes(double, double, double, double, double)} for each double value in the speicfied {@link BufferWrapper}. Values equivalent to the specified <code>missingDataSignal</code> are replaced with the specified <code>minValue</code>.
      *
      * @param values the buffer of values.
-     * @param missingDataSignal the number indicating a specific value to
-     * ignore.
+     * @param missingDataSignal the number indicating a specific value to ignore.
      * @param minValue the minimum value.
      * @param maxValue the maximum value.
      * @param minHue the mimimum color hue, corresponding to the minimum value.
      * @param maxHue the maximum color hue, corresponding to the maximum value.
      *
-     * @return an iiterable GridPointAttributes defined by the specified buffer
-     * of values.
+     * @return an iiterable GridPointAttributes defined by the specified buffer of values.
      */
     public static Iterable<? extends AnalyticSurface.GridPointAttributes> createColorGradientValues(
             BufferWrapper values, double missingDataSignal, double minValue, double maxValue, double minHue, double maxHue) {
