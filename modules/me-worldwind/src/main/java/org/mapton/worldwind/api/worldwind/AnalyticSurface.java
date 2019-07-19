@@ -1154,7 +1154,7 @@ public class AnalyticSurface implements Renderable, PreRenderable {
 
     protected void drawSurfaceObjects(DrawContext dc) {
         if (this.surfaceAttributes.isDrawShadow()) {
-            if (!dc.isPickingMode()) {
+            if (!dc.isPickingMode() && shadowSurface != null) {
                 this.shadowSurface.render(dc);
             }
         }

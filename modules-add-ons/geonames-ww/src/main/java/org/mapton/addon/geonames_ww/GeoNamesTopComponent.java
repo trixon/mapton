@@ -15,12 +15,18 @@
  */
 package org.mapton.addon.geonames_ww;
 
+import java.util.Arrays;
+import java.util.Collection;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
+import org.apache.commons.lang3.RandomUtils;
 import org.controlsfx.control.CheckListView;
 import org.controlsfx.control.IndexedCheckModel;
+import org.controlsfx.control.action.Action;
+import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.MMapMagnet;
 import org.mapton.api.MTopComponent;
 import org.mapton.api.Mapton;
@@ -29,6 +35,7 @@ import org.mapton.geonames.api.CountryManager;
 import org.mapton.geonames.api.GeonamesManager;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.windows.TopComponent;
+import se.trixon.almond.util.Dict;
 
 /**
  * Top component which displays something.
@@ -45,6 +52,8 @@ import org.openide.windows.TopComponent;
 @TopComponent.Registration(mode = "properties", openAtStartup = false)
 public final class GeoNamesTopComponent extends MTopComponent implements MMapMagnet {
 
+    private IndexedCheckModel<Country> mCheckModel;
+    private ListChangeListener<Country> mListChangeListener;
     private CheckListView<Country> mListView;
     private BorderPane mRoot;
 
@@ -79,8 +88,34 @@ public final class GeoNamesTopComponent extends MTopComponent implements MMapMag
 
         mListView = new CheckListView<>();
         mListView.getItems().setAll(CountryManager.getInstance().getCountryList());
+        mCheckModel = mListView.getCheckModel();
+
+        Collection<? extends Action> actions = Arrays.asList(
+                new Action(Dict.RANDOM.toString(), (event) -> {
+                    mListView.getCheckModel().getCheckedItems().removeListener(mListChangeListener);
+                    int randomSpan = 10;
+                    int offset = RandomUtils.nextInt(0, randomSpan);
+                    for (int i = offset; i < mListView.getItems().size(); i = i + randomSpan) {
+                        mListView.getCheckModel().check(i);
+                    }
+
+                    Mapton.getGlobalState().put(GeoN.KEY_LIST_SELECTION, mCheckModel.getCheckedItems());
+                    mCheckModel.getCheckedItems().addListener(mListChangeListener);
+                }),
+                new Action(Dict.CLEAR_SELECTION.toString(), (event) -> {
+                    mListView.getCheckModel().getCheckedItems().removeListener(mListChangeListener);
+                    mListView.getCheckModel().clearChecks();
+                    Mapton.getGlobalState().put(GeoN.KEY_LIST_SELECTION, mCheckModel.getCheckedItems());
+                    mCheckModel.getCheckedItems().addListener(mListChangeListener);
+                })
+        );
+
+        ToolBar toolBar = ActionUtils.createToolBar(actions, ActionUtils.ActionTextBehavior.SHOW);
+
+        BorderPane innerPane = new BorderPane(toolBar);
         mRoot = new BorderPane(mListView);
-        mRoot.setTop(titleLabel);
+        innerPane.setTop(titleLabel);
+        mRoot.setTop(innerPane);
         titleLabel.prefWidthProperty().bind(mRoot.widthProperty());
 
         return new Scene(mRoot);
@@ -97,10 +132,10 @@ public final class GeoNamesTopComponent extends MTopComponent implements MMapMag
             }
         });
 
-        final IndexedCheckModel<Country> checkModel = mListView.getCheckModel();
+        mListChangeListener = (ListChangeListener.Change<? extends Country> c) -> {
+            Mapton.getGlobalState().put(GeoN.KEY_LIST_SELECTION, mCheckModel.getCheckedItems());
+        };
 
-        checkModel.getCheckedItems().addListener((ListChangeListener.Change<? extends Country> c) -> {
-            Mapton.getGlobalState().put(GeoN.KEY_LIST_SELECTION, checkModel.getCheckedItems());
-        });
+        mCheckModel.getCheckedItems().addListener(mListChangeListener);
     }
 }

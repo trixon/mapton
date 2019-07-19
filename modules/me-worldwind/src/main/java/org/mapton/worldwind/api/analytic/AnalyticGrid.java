@@ -21,10 +21,14 @@ import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.Renderable;
 import gov.nasa.worldwind.util.WWMath;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Point;
 import java.util.ArrayList;
 import org.mapton.api.MLatLonBox;
 import org.mapton.worldwind.api.worldwind.AnalyticSurface;
+import org.mapton.worldwind.api.worldwind.AnalyticSurface.GridPointAttributes;
 import org.mapton.worldwind.api.worldwind.AnalyticSurfaceAttributes;
+import se.trixon.almond.util.MathHelper;
 
 /**
  *
@@ -32,49 +36,44 @@ import org.mapton.worldwind.api.worldwind.AnalyticSurfaceAttributes;
  */
 public class AnalyticGrid {
 
-    private final double HUE_BLUE = 240d / 360d;
-    private final double HUE_RED = 0d / 360d;
+    public static final double HUE_BLUE = 240d / 360d;
+    public static final double HUE_RED = 0d / 360d;
+
     private final AnalyticSurfaceAttributes mAttributes = new AnalyticSurfaceAttributes();
+    private Dimension mDimension;
     private boolean mDynamicMinMax;
     private GridData mGridData;
-    private final int mHeight;
+    private int mHeight;
     private final RenderableLayer mLayer;
     private Renderable mLegend;
     private double mMax;
+    private double mMaxHue = HUE_RED;
     private double mMin;
+    private double mMinHue = HUE_BLUE;
+    private double mNullOpacity = 0.0;
     private final AnalyticSurface mSurface = new AnalyticSurface();
-    private final int mWidth;
+    private int mWidth;
+    private double mZeroOpacity = 1.0;
+    private int mZeroValueSearchRange = 4;
 
-    public AnalyticGrid(RenderableLayer layer, GridData gridData, double altitude) {
-        this(layer, gridData, altitude, gridData.getMin(), gridData.getMax());
+    public AnalyticGrid(RenderableLayer layer, double altitude) {
+        this(layer, altitude, -1, -1);
         mDynamicMinMax = true;
     }
 
-    public AnalyticGrid(RenderableLayer layer, GridData gridData, double altitude, double min, double max) {
+    public AnalyticGrid(RenderableLayer layer, double altitude, double min, double max) {
         mLayer = layer;
-
-        mWidth = gridData.getWidth();
-        mHeight = gridData.getHeight();
 
         mMin = min;
         mMax = max;
 
-        MLatLonBox latLonBox = gridData.getLatLonBox();
-        mSurface.setSector(Sector.fromDegrees(
-                latLonBox.getSouthWest().getLatitude(),
-                latLonBox.getNorthEast().getLatitude(),
-                latLonBox.getSouthWest().getLongitude(),
-                latLonBox.getNorthEast().getLongitude()
-        ));
-
         mSurface.setAltitude(altitude);
-        mSurface.setDimensions(mWidth, mHeight);
         mSurface.setClientLayer(mLayer);
 
         mAttributes.setShadowOpacity(0.5);
-        mSurface.setSurfaceAttributes(mAttributes);
+        mAttributes.setDrawOutline(false);
 
-        setGridData(gridData);
+        mSurface.setSurfaceAttributes(mAttributes);
     }
 
     public AnalyticSurfaceAttributes getAttributes() {
@@ -87,6 +86,19 @@ public class AnalyticGrid {
 
     public void setGridData(GridData gridData) {
         mGridData = gridData;
+        mWidth = gridData.getWidth();
+        mHeight = gridData.getHeight();
+
+        MLatLonBox latLonBox = gridData.getLatLonBox();
+        mSurface.setSector(Sector.fromDegrees(
+                latLonBox.getSouthWest().getLatitude(),
+                latLonBox.getNorthEast().getLatitude(),
+                latLonBox.getSouthWest().getLongitude(),
+                latLonBox.getNorthEast().getLongitude()
+        ));
+
+        mSurface.setDimensions(mWidth, mHeight);
+        mDimension = new Dimension(mWidth, mHeight);
 
         if (mDynamicMinMax) {
             mMin = gridData.getMin();
@@ -97,7 +109,7 @@ public class AnalyticGrid {
         double[] values = gridData.getGridAggregates();
 
         for (int i = 0; i < values.length; i++) {
-            gridPointAttributeses.add(createColorGradientAttributes(values[i], mMin, mMax, HUE_RED, HUE_BLUE));
+            gridPointAttributeses.add(createColorGradientAttributes(i, values, mMin, mMax));
         }
 
         mSurface.setValues(gridPointAttributeses);
@@ -115,10 +127,53 @@ public class AnalyticGrid {
         }
     }
 
-    private AnalyticSurface.GridPointAttributes createColorGradientAttributes(final double value, double minValue, double maxValue, double minHue, double maxHue) {
+    public void setMaxHue(double maxHue) {
+        mMaxHue = maxHue;
+    }
+
+    public void setMinHue(double minHue) {
+        mMinHue = minHue;
+    }
+
+    public void setNullOpacity(double nullOpacity) {
+        mNullOpacity = nullOpacity;
+    }
+
+    public void setZeroOpacity(double zeroOpacity) {
+        mZeroOpacity = zeroOpacity;
+    }
+
+    public void setZeroValueSearchRange(int zeroValueSearchRange) {
+        mZeroValueSearchRange = zeroValueSearchRange;
+    }
+
+    private GridPointAttributes createColorGradientAttributes(final int pos, double[] values, double minValue, double maxValue) {
+        double value = values[pos];
         double hueFactor = WWMath.computeInterpolationFactor(value, minValue, maxValue);
-        Color color = Color.getHSBColor((float) WWMath.mixSmooth(hueFactor, minHue, maxHue), 1f, 1f);
-        double opacity = value == 0 ? 0.1 : 1.0;
+        double opacity = 1.0;
+        Color color = Color.getHSBColor((float) WWMath.mixSmooth(hueFactor, mMinHue, mMaxHue), 1f, 1f);
+
+        if (value == 0) {
+            Point valuePoint = MathHelper.indexToPoint(pos, mDimension);
+            opacity = mNullOpacity;
+            someValueFound:
+            for (int x = -mZeroValueSearchRange; x < mZeroValueSearchRange + 1; x++) {
+                for (int y = -mZeroValueSearchRange; y < mZeroValueSearchRange + 1; y++) {
+                    Point neighborPoint = new Point(valuePoint.x + x, valuePoint.y + y);
+                    if (neighborPoint.x > -1 && neighborPoint.x < mWidth) {
+                        int idx = MathHelper.pointToIndex(neighborPoint, mDimension);
+                        try {
+                            if (values[idx] != 0) {
+                                opacity = mZeroOpacity;
+                                break someValueFound;
+                            }
+                        } catch (ArrayIndexOutOfBoundsException e) {
+                            //
+                        }
+                    }
+                }
+            }
+        }
 
         Color rgbaColor = new Color(color.getRed(), color.getGreen(), color.getBlue(), (int) (255 * opacity));
 

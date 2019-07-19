@@ -54,11 +54,12 @@ public class GeoNamesLayerBundle extends LayerBundle {
     private GridData getGridData(Country country) {
         ArrayList<GridValue> values = new ArrayList<>();
         country.getGeonames().forEach((geoname) -> {
-            values.add(new GridValue(geoname.getLatLon(), new Double(geoname.getPopulation())));
+            Double value = new Double(geoname.getPopulation());
+            values.add(new GridValue(geoname.getLatLon(), value));
         });
 
-        int width = 10;
-        int height = 10;
+        int width = 100;
+        int height = 100;
 
         return new GridData(width, height, values, CellAggregate.SUM);
     }
@@ -84,9 +85,16 @@ public class GeoNamesLayerBundle extends LayerBundle {
 
         ObservableList<Country> countries = Mapton.getGlobalState().get(GeoN.KEY_LIST_SELECTION);
 
-        for (Country country : countries) {
-            AnalyticGrid analyticGrid = new AnalyticGrid(mLayer, getGridData(country), 10000);
+        int altitude = 50000;
+        int minValue = 0;
+        int maxValue = 100000;
 
+        for (Country country : countries) {
+            AnalyticGrid analyticGrid = new AnalyticGrid(mLayer, altitude, minValue, maxValue);
+            analyticGrid.setNullOpacity(0.0);
+            analyticGrid.setZeroOpacity(0.3);
+            analyticGrid.setZeroValueSearchRange(5);
+            analyticGrid.setGridData(getGridData(country));
             mLayer.addRenderable(analyticGrid.getSurface());
         }
 
