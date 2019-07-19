@@ -18,6 +18,8 @@ package org.mapton.worldwind;
 import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import java.beans.PropertyChangeEvent;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Map;
@@ -29,19 +31,32 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
+import javafx.geometry.Insets;
 import javafx.scene.control.CheckBoxTreeItem;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ToolBar;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.CheckBoxTreeCell;
 import javafx.scene.input.MouseButton;
+import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.CheckModel;
 import org.controlsfx.control.CheckTreeView;
+import org.controlsfx.control.action.Action;
+import org.controlsfx.control.action.ActionGroup;
+import org.controlsfx.control.action.ActionUtils;
+import org.controlsfx.control.textfield.TextFields;
+import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.NbPreferences;
 import se.trixon.almond.nbp.Almond;
+import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.StringHelper;
+import se.trixon.almond.util.fx.FxHelper;
+import se.trixon.almond.util.icons.material.MaterialIcon;
 
 /**
  *
@@ -51,6 +66,7 @@ public class LayerView extends BorderPane {
 
     private CheckModel<TreeItem<Layer>> mCheckModel;
     private final Preferences mExpandedPreferences;
+    private TextField mFilterTextField;
     private final HashSet<Layer> mLayerEnabledListenerSet;
     private final Map<String, CheckBoxTreeItem<Layer>> mLayerParents;
     private WorldWindowPanel mMap;
@@ -101,7 +117,12 @@ public class LayerView extends BorderPane {
                     hidden = BooleanUtils.toBoolean(layer.getValue(WWHelper.KEY_LAYER_HIDE_FROM_MANAGER).toString());
                 }
 
-                if (!hidden) {
+                final String filter = mFilterTextField.getText();
+                final boolean validFilter
+                        = StringHelper.matchesSimpleGlob(getCategory(layer), filter, true, true)
+                        || StringHelper.matchesSimpleGlob(layer.getName(), filter, true, true);
+
+                if (!hidden && validFilter) {
                     filteredLayers.add(layer);
                 }
             }
@@ -131,6 +152,42 @@ public class LayerView extends BorderPane {
         mTreeView.setCellFactory((TreeView<Layer> param) -> new LayerTreeCell());
 
         setCenter(mTreeView);
+
+        mFilterTextField = TextFields.createClearableTextField();
+        mFilterTextField.setPromptText(Dict.LAYER_SEARCH.toString());
+        mFilterTextField.setMinWidth(20);
+        final int iconSize = (int) (getIconSizeToolBarInt() * 0.8);
+
+        ActionGroup selectActionGroup = new ActionGroup(Dict.SHOW.toString(), MaterialIcon._Image.REMOVE_RED_EYE.getImageView(iconSize),
+                new Action(Dict.SHOW.toString(), (event) -> {
+                    setChecked(mRootItem, true);
+                }),
+                new Action(Dict.HIDE.toString(), (event) -> {
+                    setChecked(mRootItem, false);
+                }),
+                ActionUtils.ACTION_SEPARATOR,
+                new Action(Dict.EXPAND.toString(), (event) -> {
+                    setExpanded(mRootItem, true);
+                }),
+                new Action(Dict.COLLAPSE.toString(), (event) -> {
+                    setExpanded(mRootItem, false);
+                })
+        );
+
+        Collection<? extends Action> actions = Arrays.asList(
+                selectActionGroup
+        );
+
+        ToolBar toolBar = ActionUtils.createToolBar(actions, ActionUtils.ActionTextBehavior.HIDE);
+        FxHelper.adjustButtonWidth(toolBar.getItems().stream(), iconSize);
+        FxHelper.undecorateButtons(toolBar.getItems().stream());
+        BorderPane topBorderPane = new BorderPane(mFilterTextField);
+        topBorderPane.setRight(toolBar);
+        toolBar.setMinWidth(iconSize * 3);
+        toolBar.setStyle("-fx-spacing: 0px; -fx-background-insets: 0, 0 0 0 0;");
+        toolBar.setPadding(Insets.EMPTY);
+        toolBar.setBorder(Border.EMPTY);
+        setTop(topBorderPane);
     }
 
     private String getCategory(Layer layer) {
@@ -166,6 +223,10 @@ public class LayerView extends BorderPane {
     }
 
     private void initListeners() {
+        mFilterTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+            refresh(mMap);
+        });
+
         mCheckModel.getCheckedItems().addListener((ListChangeListener.Change<? extends TreeItem<Layer>> c) -> {
             while (c.next()) {
                 if (c.wasAdded()) {
@@ -249,6 +310,32 @@ public class LayerView extends BorderPane {
             } else {
                 mCheckModel.clearCheck(treeItem);
                 layer.setEnabled(false);
+            }
+        }
+    }
+
+    private void setChecked(CheckBoxTreeItem<Layer> treeItem, boolean checked) {
+        if (!isCategoryTreeItem(treeItem)) {
+            if (checked) {
+                mCheckModel.check(treeItem);
+            } else {
+                mCheckModel.clearCheck(treeItem);
+            }
+        }
+
+        for (TreeItem<Layer> childTreeItem : treeItem.getChildren()) {
+            setChecked((CheckBoxTreeItem<Layer>) childTreeItem, checked);
+        }
+    }
+
+    private void setExpanded(CheckBoxTreeItem<Layer> treeItem, boolean expanded) {
+        if (isCategoryTreeItem(treeItem)) {
+            if (treeItem != mRootItem) {
+                treeItem.setExpanded(expanded);
+            }
+
+            for (TreeItem<Layer> childTreeItem : treeItem.getChildren()) {
+                setExpanded((CheckBoxTreeItem<Layer>) childTreeItem, expanded);
             }
         }
     }
