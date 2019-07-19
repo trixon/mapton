@@ -37,6 +37,7 @@ import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.util.NbPreferences;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.StringHelper;
 
 /**
  *
@@ -130,9 +131,13 @@ public class ToolboxView extends BorderPane {
         TreeItem<Action> root = new TreeItem<>(rootMark);
 
         for (MTool tool : mTools) {
-            String s = tool.getParent() + "/" + tool.getAction().getText();
             mActionParents.put(tool.getAction(), tool.getParent());
-            if (StringUtils.containsIgnoreCase(s, mFilterTextField.getText())) {
+            final String filter = mFilterTextField.getText();
+            final boolean validFilter
+                    = StringHelper.matchesSimpleGlob(tool.getParent(), filter, true, true)
+                    || StringHelper.matchesSimpleGlob(tool.getAction().getText(), filter, true, true);
+
+            if (validFilter) {
                 TreeItem<Action> actionTreeItem = new TreeItem<>(tool.getAction());
                 String category = StringUtils.defaultString(tool.getParent());
 
