@@ -39,7 +39,7 @@ import se.trixon.almond.nbp.swing.RootPaneLayout;
 import se.trixon.almond.util.AboutModel;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.FxHelper;
-import se.trixon.almond.util.icons.IconColor;
+import se.trixon.almond.util.icons.material.MaterialIcon;
 
 /**
  *
@@ -67,7 +67,7 @@ public class Initializer implements Runnable {
         FxHelper.setDarkThemeEnabled(mOptions.is(KEY_UI_LAF_DARK, DEFAULT_UI_LAF_DARK));
 
         SwingUtilities.invokeLater(() -> {
-            IconColor.setDefault(FxHelper.isDarkThemeEnabled() ? IconColor.WHITE : IconColor.BLACK);
+            MaterialIcon.setDefaultColor(mOptions.getIconColor());
             JFrame frame = (JFrame) Almond.getFrame();
             JComponent toolbar = AppToolBarProvider.getDefault().createToolbar();
             frame.getRootPane().setLayout(new RootPaneLayout(toolbar));

@@ -15,8 +15,10 @@
  */
 package org.mapton.api;
 
+import javafx.scene.paint.Color;
 import org.openide.util.NbPreferences;
 import se.trixon.almond.util.OptionsBase;
+import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
@@ -44,6 +46,8 @@ public class MOptions extends OptionsBase {
     public static final String KEY_MAP_ONLY = "map_only";
     public static final String KEY_PREFER_POPOVER = "prefer_popover";
     public static final String KEY_UI_LAF_DARK = "ui.laf.dark";
+    public static final String KEY_UI_LAF_ICON_COLOR_BRIGHT = "ui.laf.icon_color_bright";
+    public static final String KEY_UI_LAF_ICON_COLOR_DARK = "ui.laf.icon_color_dark";
 
     private static final boolean DEFAULT_FULL_SCREEN = false;
     private static final String DEFAULT_MAP_ENGINE = "org.mapton.worldwind.WorldWindMapEngine";
@@ -52,6 +56,8 @@ public class MOptions extends OptionsBase {
     private static final boolean DEFAULT_MAP_ONLY = false;
     private static final double DEFAULT_MAP_ZOOM = 0.8f;
     private static final boolean DEFAULT_PREFER_POPOVER = false;
+    private static final String DEFAULT_UI_LAF_ICON_COLOR_BRIGHT = "1A1A1A";
+    private static final String DEFAULT_UI_LAF_ICON_COLOR_DARK = "D3D3D3";
     private static final String KEY_DISPLAY_BOOKMARK = "display_bookmark";
     private static final String KEY_FULL_SCREEN = "fullscreen";
     private static final String KEY_MAP_CENTER_LAT = "map_center_lat";
@@ -70,6 +76,22 @@ public class MOptions extends OptionsBase {
 
     public String getEngine() {
         return mPreferences.get(KEY_MAP_ENGINE, DEFAULT_MAP_ENGINE);
+    }
+
+    public Color getIconColor() {
+        if (is(KEY_UI_LAF_DARK, DEFAULT_UI_LAF_DARK)) {
+            return getIconColorDark();
+        } else {
+            return getIconColorBright();
+        }
+    }
+
+    public Color getIconColorBright() {
+        return FxHelper.colorFromHexRGBA(get(KEY_UI_LAF_ICON_COLOR_BRIGHT, DEFAULT_UI_LAF_ICON_COLOR_BRIGHT));
+    }
+
+    public Color getIconColorDark() {
+        return FxHelper.colorFromHexRGBA(get(KEY_UI_LAF_ICON_COLOR_DARK, DEFAULT_UI_LAF_ICON_COLOR_DARK));
     }
 
     public MLatLon getMapCenter() {
@@ -132,6 +154,22 @@ public class MOptions extends OptionsBase {
 
     public void setFullscreen(boolean value) {
         mPreferences.putBoolean(KEY_FULL_SCREEN, value);
+    }
+
+    public void setIconColor(Color color) {
+        if (is(KEY_UI_LAF_DARK, DEFAULT_UI_LAF_DARK)) {
+            setIconColorDark(color);
+        } else {
+            setIconColorBright(color);
+        }
+    }
+
+    public void setIconColorBright(Color color) {
+        put(KEY_UI_LAF_ICON_COLOR_BRIGHT, FxHelper.colorToHexRGB(color));
+    }
+
+    public void setIconColorDark(Color color) {
+        put(KEY_UI_LAF_ICON_COLOR_DARK, FxHelper.colorToHexRGB(color));
     }
 
     public void setMapCenter(MLatLon value) {

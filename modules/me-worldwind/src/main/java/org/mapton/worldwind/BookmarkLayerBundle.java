@@ -39,7 +39,6 @@ import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.GraphicsHelper;
 import se.trixon.almond.util.fx.FxHelper;
-import se.trixon.almond.util.icons.IconColor;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 
 /**
@@ -124,8 +123,7 @@ public class BookmarkLayerBundle extends LayerBundle {
         placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
 
         PointPlacemarkAttributes attrs = new PointPlacemarkAttributes(placemark.getDefaultAttributes());
-        attrs.setImage(GraphicsHelper.toBufferedImage(MaterialIcon._Action.HOME.get(Mapton.getIconSizeToolBar() * 2, IconColor.WHITE).getImage()));
-        attrs.setImageColor(Color.RED);
+        attrs.setImage(GraphicsHelper.toBufferedImage(MaterialIcon._Action.HOME.getImageIcon(Mapton.getIconSizeToolBar() * 2, Color.RED).getImage()));
         attrs.setImageOffset(Offset.CENTER);
 
         placemark.setAttributes(attrs);
