@@ -32,7 +32,7 @@ public class NotesTool implements MTool {
     @Override
     public Action getAction() {
         FxActionSwing action = new FxActionSwing(Dict.NOTES.toString(), () -> {
-            Almond.openAndActivateTopComponent("NotesHtmlTopComponent");
+            Almond.openAndActivateTopComponent("NotesTopComponent");
         });
 
         return action;
