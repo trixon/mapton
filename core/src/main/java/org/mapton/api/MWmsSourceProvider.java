@@ -19,7 +19,6 @@ package org.mapton.api;
  *
  * @author Patrik Karlström
  */
-public abstract class MWmsSourceProvider {
+public abstract class MWmsSourceProvider extends MWmsProvider {
 
-    public abstract String getJson();
 }

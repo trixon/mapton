@@ -24,6 +24,8 @@ import org.mapton.api.MEngine;
 import org.mapton.api.MSearchEngine;
 import org.mapton.api.MUpdater;
 import org.mapton.api.MWhatsHereEngine;
+import org.mapton.api.MWmsSourceProvider;
+import org.mapton.api.MWmsStyleProvider;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
 
@@ -93,6 +95,18 @@ public class ApiReports implements MApiReport {
             implementations.add(implementation.getName());
         }
         items.put(category + "MUpdater", implementations);
+
+        implementations = new TreeSet<>();
+        for (MWmsSourceProvider implementation : Lookup.getDefault().lookupAll(MWmsSourceProvider.class)) {
+            implementations.add(implementation.getClass().getCanonicalName());
+        }
+        items.put(category + "MWmsSourceProvider", implementations);
+
+        implementations = new TreeSet<>();
+        for (MWmsStyleProvider implementation : Lookup.getDefault().lookupAll(MWmsStyleProvider.class)) {
+            implementations.add(implementation.getClass().getCanonicalName());
+        }
+        items.put(category + "MWmsStylusProvider", implementations);
 
         return items;
     }

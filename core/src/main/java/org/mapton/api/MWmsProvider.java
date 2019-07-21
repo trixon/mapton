@@ -15,10 +15,31 @@
  */
 package org.mapton.api;
 
+import java.io.IOException;
+import java.io.InputStream;
+import org.apache.commons.io.IOUtils;
+import org.openide.util.Exceptions;
+import se.trixon.almond.util.SystemHelper;
+
 /**
  *
  * @author Patrik Karlström
  */
-public abstract class MWmsStyleProvider extends MWmsProvider {
+public abstract class MWmsProvider {
+
+    public abstract String getJson();
+
+    protected String loadFromResource(String filename) {
+        String json = "[]";
+
+        try {
+            InputStream inputStream = getClass().getResourceAsStream("/" + SystemHelper.getPackageAsPath(getClass()) + filename);
+            json = IOUtils.toString(inputStream, "UTF-8");
+        } catch (IOException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+
+        return json;
+    }
 
 }

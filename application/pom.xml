@@ -143,12 +143,29 @@
             <version>${project.version}</version>
         </dependency>
 
-        <!--Mapton/Other-->
+        <!--Mapton/WMS sources-->
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>wms-sources</artifactId>
+            <artifactId>wms-eox</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>wms-emxsys</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>wms-lantmateriet</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>wms-nasa</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!--Mapton/Other-->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>reports</artifactId>
@@ -240,7 +257,7 @@
                     <installerPack200Enable>false</installerPack200Enable>
                     <!--<additionalArguments>-J-Xmx2048m</additionalArguments>-->
                     <!--<additionalArguments>&#045;&#045;locale en:US</additionalArguments>-->
-                    <!--<additionalArguments>&#045;&#045;nosplash</additionalArguments>-->
+                    <additionalArguments>&#045;&#045;nosplash</additionalArguments>
                     <!--<additionalArguments>&#045;&#045;fontsize 32</additionalArguments>-->
                 </configuration>
             </plugin>

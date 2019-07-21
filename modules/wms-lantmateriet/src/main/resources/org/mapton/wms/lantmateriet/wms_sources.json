@@ -1,0 +1,29 @@
+[
+    {
+        "attributions": {
+            "se.lm.hist_orto_60": {
+                "licenseName": "Creative Commons - CC0",
+                "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+                "onlyRaw": false,
+                "providerName": "Lantmäteriet",
+                "providerUrl": "https://opendata.lantmateriet.se/#apis?api=Historiska-ortofoton_WMS&version=v1",
+                "rawHtml": null
+            },
+            "se.lm.hist_orto_75": {
+                "licenseName": "Creative Commons - CC0",
+                "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+                "onlyRaw": false,
+                "providerName": "Lantmäteriet",
+                "providerUrl": "https://opendata.lantmateriet.se/#apis?api=Historiska-ortofoton_WMS&version=v1",
+                "rawHtml": null
+            }
+        },
+        "enabled": true,
+        "layers": {
+            "OI.Histortho_60": "se.lm.hist_orto_60",
+            "OI.Histortho_75": "se.lm.hist_orto_75"
+        },
+        "name": "Lantmäteriet",
+        "url": "https://api.lantmateriet.se/historiska-ortofoton/wms/v1/token/6633c97e-a9b3-3f0f-95d1-4b50401ac8cd/?request=getcapabilities&service=wms"
+    }
+]
