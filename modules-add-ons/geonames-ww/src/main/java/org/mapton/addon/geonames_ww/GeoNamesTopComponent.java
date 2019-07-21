@@ -66,9 +66,6 @@ public final class GeoNamesTopComponent extends MTopComponent implements MMapMag
     protected void initFX() {
         setScene(createScene());
         initListeners();
-
-        int index = mListView.getItems().size() - 1;
-        mListView.scrollTo(index);
     }
 
     void readProperties(java.util.Properties p) {

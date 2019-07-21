@@ -17,6 +17,7 @@ package org.mapton.addon.geonames_ww;
 
 import org.controlsfx.control.action.Action;
 import org.mapton.api.MTool;
+import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.Dict;
@@ -27,10 +28,9 @@ import se.trixon.almond.util.fx.FxActionSwing;
  * @author Patrik Karlström
  */
 @ServiceProvider(service = MTool.class)
-
 public class GeoNamesTool implements MTool {
 
-    public static final String NAME = "GeoNames";
+    public static final String NAME = NbBundle.getMessage(GeoNamesTool.class, "name_population");
 
     @Override
     public Action getAction() {
