@@ -39,11 +39,13 @@
         <pluginManagement>
             <plugins>
                 <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
+                    <groupId>org.apache.netbeans.utilities</groupId>
                     <artifactId>nbm-maven-plugin</artifactId>
-                    <version>4.1</version>
+                    <version>4.2</version>
                     <extensions>true</extensions>
                     <configuration>
+                        <!--TODO Fix it-->
+                        <verifyRuntime>false</verifyRuntime>
                         <brandingToken>${brandingToken}</brandingToken>
                         <cluster>${brandingToken}</cluster>
                         <additionalArguments>-J-Xmx768m</additionalArguments>
