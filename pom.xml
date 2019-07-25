@@ -4,7 +4,7 @@
 
     <groupId>org.mapton</groupId>
     <artifactId>mapton-parent</artifactId>
-    <version>1.1.2-SNAPSHOT</version>
+    <version>1.1.2</version>
     <packaging>pom</packaging>
 
     <name>mapton-parent</name>
@@ -228,7 +228,7 @@
             <dependency>
                 <groupId>com.h2database</groupId>
                 <artifactId>h2</artifactId>
-                <version>1.4.196</version>
+                <version>1.4.199</version>
             </dependency>
             <dependency>
                 <groupId>com.google.code.gson</groupId>
@@ -288,13 +288,27 @@
         </dependencies>
     </dependencyManagement>
 
+    <repositories>
+        <repository>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>bintray-trixon-maven</id>
+            <url>https://dl.bintray.com/trixon/maven</url>
+        </repository>
+        <repository>
+            <id>netbeans111</id>
+            <url>https://repository.apache.org/content/repositories/orgapachenetbeans-1034</url>
+        </repository>
+    </repositories>
+
     <properties>
-        <netbeans.version>RELEASE110</netbeans.version>
+        <netbeans.version>RELEASE111</netbeans.version>
         <netbeans.compile.on.save>all</netbeans.compile.on.save>
         <brandingToken>mapton</brandingToken>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <almond.version>3.0.4-SNAPSHOT</almond.version>
-        <mapton.version>1.1.2-SNAPSHOT</mapton.version>
+        <almond.version>3.0.4</almond.version>
+        <mapton.version>1.1.2</mapton.version>
     </properties>
     <description>Some kind of map application</description>
 </project>
