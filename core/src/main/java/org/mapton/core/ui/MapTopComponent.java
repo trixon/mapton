@@ -76,6 +76,7 @@ import org.openide.windows.WindowManager;
 import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
+import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.dialogs.SimpleDialog;
 
 /**
@@ -162,15 +163,11 @@ public final class MapTopComponent extends MTopComponent {
                 Graphics2D g2 = (Graphics2D) g;
                 int x = getWidth() / 2;
                 int y = getHeight() / 2;
-                final int gap = 6;
-                final int length = 4 + gap;
+                final int gap = FxHelper.getUIScaled(6);
+                final int length = FxHelper.getUIScaled(6) + gap;
 
-//        Stroke[] strokes = {new BasicStroke(3, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER), new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER)};
-//        Stroke[] strokes = {new BasicStroke(5, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER), new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER)};
-                Stroke[] strokes = {new BasicStroke(5), new BasicStroke(1)};
-//        Color[] colors = {Color.BLACK, Color.WHITE};
+                Stroke[] strokes = {new BasicStroke(FxHelper.getUIScaled(5)), new BasicStroke(FxHelper.getUIScaled(2))};
                 Color[] colors = {new Color(0f, 0f, 0f, 0.4f), Color.WHITE};
-//        int[] pads = {0, 2};
 
                 for (int i = 0; i < 2; i++) {
                     g2.setStroke(strokes[i]);

@@ -23,6 +23,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import se.trixon.almond.util.Dict;
 
 /**
  *
@@ -73,6 +74,18 @@ public abstract class LayerBundle {
 
     public abstract void populate() throws Exception;
 
+    public void setCategory(Layer layer, String category) {
+        layer.setValue(WWHelper.KEY_LAYER_CATEGORY, category);
+    }
+
+    public void setCategoryAddOns(Layer layer) {
+        setCategory(layer, String.format("- %s -", Dict.ADD_ONS.toString()));
+    }
+
+    public void setCategorySystem(Layer layer) {
+        setCategory(layer, String.format("- %s -", Dict.SYSTEM.toString()));
+    }
+
     public final void setName(String value) {
         mName.set(value);
     }
@@ -82,7 +95,7 @@ public abstract class LayerBundle {
     }
 
     public void setVisibleInLayerManager(Layer layer, boolean visibility) {
-        layer.setValue(WWUtil.KEY_HIDE_FROM_LAYER_MANAGER, !visibility);
+        layer.setValue(WWHelper.KEY_LAYER_HIDE_FROM_MANAGER, !visibility);
     }
 
 }

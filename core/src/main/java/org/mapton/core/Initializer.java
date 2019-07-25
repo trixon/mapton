@@ -21,10 +21,12 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLayeredPane;
 import javax.swing.SwingUtilities;
+import org.apache.commons.lang3.SystemUtils;
 import org.mapton.api.MMapMagnet;
 import org.mapton.api.MOptions;
 import static org.mapton.api.MOptions.*;
 import org.mapton.core.ui.AppToolBarProvider;
+import org.mapton.core.updater.UpdateNotificator;
 import org.openide.awt.Actions;
 import org.openide.modules.OnStart;
 import org.openide.windows.TopComponent;
@@ -32,10 +34,12 @@ import org.openide.windows.WindowManager;
 import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.nbp.DarculaDefaultsManager;
 import se.trixon.almond.nbp.NbLog;
+import se.trixon.almond.nbp.about.AboutAction;
 import se.trixon.almond.nbp.swing.RootPaneLayout;
+import se.trixon.almond.util.AboutModel;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.FxHelper;
-import se.trixon.almond.util.icons.IconColor;
+import se.trixon.almond.util.icons.material.MaterialIcon;
 
 /**
  *
@@ -63,12 +67,17 @@ public class Initializer implements Runnable {
         FxHelper.setDarkThemeEnabled(mOptions.is(KEY_UI_LAF_DARK, DEFAULT_UI_LAF_DARK));
 
         SwingUtilities.invokeLater(() -> {
-            IconColor.setDefault(FxHelper.isDarkThemeEnabled() ? IconColor.WHITE : IconColor.BLACK);
+            MaterialIcon.setDefaultColor(mOptions.getIconColor());
             JFrame frame = (JFrame) Almond.getFrame();
             JComponent toolbar = AppToolBarProvider.getDefault().createToolbar();
             frame.getRootPane().setLayout(new RootPaneLayout(toolbar));
             toolbar.putClientProperty(JLayeredPane.LAYER_PROPERTY, 0);
             frame.getRootPane().getLayeredPane().add(toolbar, 0);
+
+            if (SystemUtils.IS_OS_MAC) {
+                AboutAction.setFx(true);
+                AboutAction.setAboutModel(new AboutModel(SystemHelper.getBundle(Initializer.class, "about"), SystemHelper.getResourceAsImageView(Initializer.class, "logo.png")));
+            }
         });
 
         final WindowManager windowManager = WindowManager.getDefault();
@@ -86,6 +95,8 @@ public class Initializer implements Runnable {
             //Pre-load but don't display
             Almond.getTopComponent("ObjectPropertiesTopComponent");
             //Actions.forID("Window", "org.mapton.core.ui.MapTopComponent").actionPerformed(null);
+
+            new UpdateNotificator();
         });
 
         //Activate MapTopComponent when opening MapMagnets

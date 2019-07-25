@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.mapton</groupId>
         <artifactId>mapton-parent</artifactId>
-        <version>1.1.1</version>
+        <version>1.1.2</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <artifactId>me-gmapsfx</artifactId>
@@ -14,7 +14,7 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
+                <groupId>org.apache.netbeans.utilities</groupId>
                 <artifactId>nbm-maven-plugin</artifactId>
                 <extensions>true</extensions>
                 <configuration>
@@ -71,12 +71,12 @@
             <groupId>se.trixon.almond</groupId>
             <artifactId>almond-nbp</artifactId>
         </dependency>
+        <dependency>
+            <groupId>se.trixon</groupId>
+            <artifactId>GMapsFX-txn</artifactId>
+        </dependency>
 
         <!-- Other -->
-        <dependency>
-            <groupId>com.lynden</groupId>
-            <artifactId>GMapsFX</artifactId>
-        </dependency>
     </dependencies>
     <properties>
         <netbeans.hint.license>apache20</netbeans.hint.license>

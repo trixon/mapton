@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,7 +22,10 @@ import org.mapton.api.MContextMenuItem;
 import org.mapton.api.MCooTrans;
 import org.mapton.api.MEngine;
 import org.mapton.api.MSearchEngine;
+import org.mapton.api.MUpdater;
 import org.mapton.api.MWhatsHereEngine;
+import org.mapton.api.MWmsSourceProvider;
+import org.mapton.api.MWmsStyleProvider;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
 
@@ -86,6 +89,24 @@ public class ApiReports implements MApiReport {
             implementations.add(implementation.getName());
         }
         items.put(category + "MWhatsHereEngine", implementations);
+
+        implementations = new TreeSet<>();
+        for (MUpdater implementation : Lookup.getDefault().lookupAll(MUpdater.class)) {
+            implementations.add(implementation.getName());
+        }
+        items.put(category + "MUpdater", implementations);
+
+        implementations = new TreeSet<>();
+        for (MWmsSourceProvider implementation : Lookup.getDefault().lookupAll(MWmsSourceProvider.class)) {
+            implementations.add(implementation.getClass().getCanonicalName());
+        }
+        items.put(category + "MWmsSourceProvider", implementations);
+
+        implementations = new TreeSet<>();
+        for (MWmsStyleProvider implementation : Lookup.getDefault().lookupAll(MWmsStyleProvider.class)) {
+            implementations.add(implementation.getClass().getCanonicalName());
+        }
+        items.put(category + "MWmsStylusProvider", implementations);
 
         return items;
     }

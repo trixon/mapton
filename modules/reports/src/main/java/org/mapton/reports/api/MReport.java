@@ -15,45 +15,12 @@
  */
 package org.mapton.reports.api;
 
-import javafx.scene.Node;
-import javafx.scene.layout.StackPane;
-import org.controlsfx.control.MaskerPane;
-import org.controlsfx.control.NotificationPane;
-import static org.mapton.api.Mapton.getIconSizeToolBar;
-import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.fx.FxHelper;
+import org.mapton.api.MMaskerPaneReport;
 
 /**
  *
  * @author Patrik Karlström
  */
-public abstract class MReport {
+public abstract class MReport extends MMaskerPaneReport {
 
-    protected StackPane mBody = new StackPane();
-    protected MaskerPane mMaskerPane = new MaskerPane();
-    protected NotificationPane mNotificationPane = new NotificationPane();
-
-    public MReport() {
-        mBody.getChildren().addAll(mNotificationPane, mMaskerPane);
-        mMaskerPane.setText(Dict.PLEASE_WAIT.toString());
-        mMaskerPane.setVisible(false);
-    }
-
-    public abstract String getName();
-
-    public abstract Node getNode();
-
-    public abstract String getParent();
-
-    public void notify(String message) {
-        FxHelper.notify(message, mNotificationPane, mMaskerPane, getIconSizeToolBar());
-    }
-
-    public void onSelect() {
-    }
-
-    @Override
-    public String toString() {
-        return getName();
-    }
 }

@@ -23,6 +23,7 @@ import gov.nasa.worldwind.avlist.AVList;
 import gov.nasa.worldwind.awt.WorldWindowGLJPanel;
 import gov.nasa.worldwind.event.SelectEvent;
 import gov.nasa.worldwind.event.SelectListener;
+import gov.nasa.worldwind.exception.WWRuntimeException;
 import gov.nasa.worldwind.globes.EarthFlat;
 import gov.nasa.worldwind.globes.ElevationModel;
 import gov.nasa.worldwind.globes.FlatGlobe;
@@ -64,6 +65,7 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javax.xml.stream.XMLStreamException;
 import org.apache.commons.io.FileUtils;
+import org.mapton.api.MKey;
 import static org.mapton.api.MKey.*;
 import org.mapton.api.MWmsSource;
 import org.mapton.api.Mapton;
@@ -71,7 +73,7 @@ import static org.mapton.worldwind.ModuleOptions.*;
 import static org.mapton.worldwind.WorldWindMapEngine.LOG_TAG;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.MapStyle;
-import org.mapton.worldwind.api.WWUtil;
+import org.mapton.worldwind.api.WWHelper;
 import org.mapton.worldwind.api.WmsService;
 import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
@@ -318,12 +320,12 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
                         AVList avList = (AVList) mLastHighlightObject;
 
                         if (mouseEvent.getClickCount() == 1) {
-                            Runnable r = (Runnable) avList.getValue(WWUtil.KEY_RUNNABLE_LEFT_CLICK);
+                            Runnable r = (Runnable) avList.getValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK);
                             if (r != null) {
                                 r.run();
                             }
                         } else if (mouseEvent.getClickCount() == 2) {
-                            Runnable r = (Runnable) avList.getValue(WWUtil.KEY_RUNNABLE_LEFT_DOUBLE_CLICK);
+                            Runnable r = (Runnable) avList.getValue(WWHelper.KEY_RUNNABLE_LEFT_DOUBLE_CLICK);
                             if (r != null) {
                                 r.run();
                             }
@@ -352,7 +354,7 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
                         PointPlacemark pointPlacemark = (PointPlacemark) mLastHighlightObject;
                         pointPlacemark.setAlwaysOnTop(false);
                         pointPlacemark.setHighlighted(false);
-                        if (pointPlacemark.hasKey(WWUtil.KEY_HOOVER_TEXT)) {
+                        if (pointPlacemark.hasKey(WWHelper.KEY_HOOVER_TEXT)) {
                             pointPlacemark.setLabelText(mLastHighlightText);
                         }
                     } else if (mLastHighlightObject instanceof WWIcon) {
@@ -370,9 +372,9 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
                     PointPlacemark pointPlacemark = (PointPlacemark) mLastHighlightObject;
                     pointPlacemark.setAlwaysOnTop(true);
                     pointPlacemark.setHighlighted(true);
-                    if (pointPlacemark.hasKey(WWUtil.KEY_HOOVER_TEXT)) {
+                    if (pointPlacemark.hasKey(WWHelper.KEY_HOOVER_TEXT)) {
                         mLastHighlightText = pointPlacemark.getLabelText();
-                        pointPlacemark.setLabelText(pointPlacemark.getStringValue(WWUtil.KEY_HOOVER_TEXT));
+                        pointPlacemark.setLabelText(pointPlacemark.getStringValue(WWHelper.KEY_HOOVER_TEXT));
                     }
                 } else if (mLastHighlightObject instanceof WWIcon) {
                     ((WWIcon) mLastHighlightObject).setAlwaysOnTop(true);
@@ -382,7 +384,7 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
                 }
 
                 if (mLastHighlightObject instanceof AVList) {
-                    Runnable r = (Runnable) ((AVList) mLastHighlightObject).getValue(WWUtil.KEY_RUNNABLE_HOOVER);
+                    Runnable r = (Runnable) ((AVList) mLastHighlightObject).getValue(WWHelper.KEY_RUNNABLE_HOOVER);
                     if (r != null) {
                         r.run();
                     }
@@ -418,6 +420,9 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
                     NbLog.w(LOG_TAG, ex.getMessage());
                 } catch (XMLStreamException ex) {
                     NbLog.w(LOG_TAG, ex.getMessage());
+                } catch (WWRuntimeException ex) {
+                    Mapton.notification(MKey.NOTIFICATION_ERROR, Dict.Dialog.TITLE_IO_ERROR.toString(), "WMS error: " + wmsService.getName());
+                    NbLog.e(LOG_TAG, ex.getMessage());
                 } catch (Exception ex) {
                     Exceptions.printStackTrace(ex);
                 }

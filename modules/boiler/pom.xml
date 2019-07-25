@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.mapton</groupId>
         <artifactId>mapton-parent</artifactId>
-        <version>1.1.1</version>
+        <version>1.1.2</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <artifactId>boiler</artifactId>
@@ -12,7 +12,7 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
+                <groupId>org.apache.netbeans.utilities</groupId>
                 <artifactId>nbm-maven-plugin</artifactId>
                 <extensions>true</extensions>
             </plugin>

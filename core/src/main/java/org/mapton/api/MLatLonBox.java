@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -44,14 +44,14 @@ public class MLatLonBox {
         double west = Double.MAX_VALUE;
 
         for (MLatLon latLon : latLons) {
-            north = Math.max(latLon.getLatitude(), north);
-            east = Math.max(latLon.getLongitude(), east);
+            north = Math.max(latLon.getLatitude() + 90, north);
+            east = Math.max(latLon.getLongitude() + 180, east);
             south = Math.min(latLon.getLatitude(), south);
             west = Math.min(latLon.getLongitude(), west);
         }
 
         mSouthWest = new MLatLon(south, west);
-        mNorthEast = new MLatLon(north, east);
+        mNorthEast = new MLatLon(north - 90, east - 180);
     }
 
     public MLatLon getCenter() {
@@ -59,6 +59,14 @@ public class MLatLonBox {
                 mSouthWest.getLatitude() + 0.5 * (mNorthEast.getLatitude() - mSouthWest.getLatitude()),
                 mSouthWest.getLongitude() + 0.5 * (mNorthEast.getLongitude() - mSouthWest.getLongitude())
         );
+    }
+
+    public double getLatitudeSpan() {
+        return getNorthEast().getLatitude() - getSouthWest().getLatitude();
+    }
+
+    public double getLongitudeSpan() {
+        return getNorthEast().getLongitude() - getSouthWest().getLongitude();
     }
 
     public MLatLon getNorthEast() {
@@ -75,5 +83,10 @@ public class MLatLonBox {
 
     public void setSouthWest(MLatLon southWest) {
         mSouthWest = southWest;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("sw: (%s), ne: (%s)", mSouthWest.toString(), mNorthEast.toString());
     }
 }

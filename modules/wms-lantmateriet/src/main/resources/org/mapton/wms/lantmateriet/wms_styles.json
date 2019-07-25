@@ -1,0 +1,151 @@
+[
+    {
+        "category": {
+            "": "Sweden",
+            "sv": "Sverige"
+        },
+        "description": {
+            "": "Cadastral.",
+            "sv": "Fastighetsgränser."
+        },
+        "enabled": false,
+        "id": "se.lm.fastighet",
+        "layers": [
+            "se.lm.fastighet_text",
+            "se.lm.fastighet_granser",
+            "se.lm.topoweb_dim",
+            "at.eox.terrain-light"
+        ],
+        "name": {
+            "": "Lantmäteriet Property",
+            "sv": "Lantmäteriet Fastighet"
+        },
+        "supplier": "Lantmäteriet"
+    },
+    {
+        "category": {
+            "": "Sweden",
+            "sv": "Sverige"
+        },
+        "description": {
+            "": "Terrain model as hillshade.",
+            "sv": "Höjdmodell som terrängskuggning."
+        },
+        "enabled": false,
+        "id": "se.lm.terrangskuggning",
+        "layers": [
+            "se.lm.terrangskuggning",
+            "at.eox.terrain-light"
+        ],
+        "name": {
+            "": "Lantmäteriet Hillshade",
+            "sv": "Lantmäteriet Terrängskuggning"
+        },
+        "supplier": "Lantmäteriet"
+    },
+    {
+        "category": {
+            "": "Sweden",
+            "sv": "Sverige"
+        },
+        "description": {
+            "": "Resolution: 0.25 m.",
+            "sv": "Upplösning: 0,25 m."
+        },
+        "enabled": false,
+        "id": "se.lm.orto_025",
+        "layers": [
+            "se.lm.orto_025",
+            "at.eox.s2cloudless"
+        ],
+        "name": {
+            "": "Lantmäteriet Ortho photo",
+            "sv": "Lantmäteriet Ortofoto"
+        },
+        "supplier": "Lantmäteriet"
+    },
+    {
+        "category": {
+            "": "Sweden",
+            "sv": "Sverige"
+        },
+        "description": {
+            "": "Reference year 1960.",
+            "sv": "Referensår 1960."
+        },
+        "enabled": true,
+        "id": "se.lm.hist_orto_60",
+        "layers": [
+            "se.lm.hist_orto_60",
+            "at.eox.s2cloudless"
+        ],
+        "name": {
+            "": "Lantmäteriet Ortho photo 1960",
+            "sv": "Lantmäteriet Ortofoto 1960"
+        },
+        "supplier": "Lantmäteriet"
+    },
+    {
+        "category": {
+            "": "Sweden",
+            "sv": "Sverige"
+        },
+        "description": {
+            "": "Reference year 1975.",
+            "sv": "Referensår 1975."
+        },
+        "enabled": true,
+        "id": "se.lm.hist_orto_75",
+        "layers": [
+            "se.lm.hist_orto_75",
+            "at.eox.s2cloudless"
+        ],
+        "name": {
+            "": "Lantmäteriet Ortho photo 1975",
+            "sv": "Lantmäteriet Ortofoto 1975"
+        },
+        "supplier": "Lantmäteriet"
+    },
+    {
+        "category": {
+            "": "Sweden",
+            "sv": "Sverige"
+        },
+        "description": {
+            "": "Topographic web map.",
+            "sv": "Topografisk webbkarta."
+        },
+        "enabled": false,
+        "id": "se.lm.topoweb",
+        "layers": [
+            "se.lm.topoweb",
+            "at.eox.terrain"
+        ],
+        "name": {
+            "": "Lantmäteriet Topo",
+            "sv": "Lantmäteriet Topo"
+        },
+        "supplier": "Lantmäteriet"
+    },
+    {
+        "category": {
+            "": "Sweden",
+            "sv": "Sverige"
+        },
+        "description": {
+            "": "Dimmed topographic web map.",
+            "sv": "Nedtonad topografisk webbkarta."
+        },
+        "enabled": false,
+        "id": "se.lm.topoweb_dim",
+        "layers": [
+            "se.lm.topoweb_dim",
+            "at.eox.terrain-light"
+        ],
+        "name": {
+            "": "Lantmäteriet Topo Dim",
+            "sv": "Lantmäteriet Topo Nedtonad"
+        },
+        "supplier": "Lantmäteriet"
+    }
+]

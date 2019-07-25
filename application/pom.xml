@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.mapton</groupId>
         <artifactId>mapton-parent</artifactId>
-        <version>1.1.1</version>
+        <version>1.1.2</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -143,12 +143,29 @@
             <version>${project.version}</version>
         </dependency>
 
-        <!--Mapton/Other-->
+        <!--Mapton/WMS sources-->
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>wms-sources</artifactId>
+            <artifactId>wms-eox</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>wms-emxsys</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>wms-lantmateriet</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>wms-nasa</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!--Mapton/Other-->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>reports</artifactId>
@@ -166,6 +183,11 @@
         </dependency>
 
         <!--Mapton/Add-ons-->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>addon-geonames-ww</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>addon-notes</artifactId>
@@ -219,14 +241,13 @@
         <dependency>
             <groupId>se.trixon.almond</groupId>
             <artifactId>almond-nbp-darcula</artifactId>
-            <version>3.1.6</version>
         </dependency>
     </dependencies>
 
     <build>
         <plugins>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
+                <groupId>org.apache.netbeans.utilities</groupId>
                 <artifactId>nbm-maven-plugin</artifactId>
                 <configuration>
                     <installerOsSolaris>false</installerOsSolaris>
@@ -256,7 +277,7 @@
             <build>
                 <plugins>
                     <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
+                        <groupId>org.apache.netbeans.utilities</groupId>
                         <artifactId>nbm-maven-plugin</artifactId>
                         <executions>
                             <execution>

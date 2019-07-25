@@ -1,0 +1,53 @@
+[
+    {
+        "category": {
+            "": "Earth",
+            "sv": "Jorden"
+        },
+        "description": {},
+        "enabled": true,
+        "id": "net.emxsys.ve-a",
+        "layers": [
+            "net.emxsys.ve-a"
+        ],
+        "name": {
+            "": "Bing Satellite",
+            "sv": "Bing Satellit"
+        },
+        "supplier": "Emxsys"
+    },
+    {
+        "category": {
+            "": "Earth",
+            "sv": "Jorden"
+        },
+        "description": {},
+        "enabled": true,
+        "id": "net.emxsys.ve-h",
+        "layers": [
+            "net.emxsys.ve-h"
+        ],
+        "name": {
+            "": "Bing Hybrid",
+            "sv": "Bing Hybrid"
+        },
+        "supplier": "Emxsys"
+    },
+    {
+        "category": {
+            "": "Earth",
+            "sv": "Jorden"
+        },
+        "description": {},
+        "enabled": true,
+        "id": "net.emxsys.ve-r",
+        "layers": [
+            "net.emxsys.ve-r"
+        ],
+        "name": {
+            "": "Bing Roadmap",
+            "sv": "Bing Vägkarta"
+        },
+        "supplier": "Emxsys"
+    }
+]

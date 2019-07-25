@@ -24,7 +24,6 @@ import java.util.ResourceBundle;
 import java.util.TreeMap;
 import java.util.prefs.Preferences;
 import javafx.application.Platform;
-import javafx.beans.property.BooleanProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
@@ -40,7 +39,6 @@ import javafx.scene.control.TreeView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.text.Font;
 import javax.swing.SwingUtilities;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.action.Action;
@@ -74,8 +72,6 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
 public class BookmarkView extends BorderPane {
 
     private final Map<String, TreeItem<MBookmark>> mBookmarkParents = new TreeMap<>();
-    private final ResourceBundle mBundle = NbBundle.getBundle(BookmarkView.class);
-    private final Font mDefaultFont = Font.getDefault();
     private TextField mFilterTextField;
     private final MBookmarkManager mManager = MBookmarkManager.getInstance();
     private final Preferences mPreferences = NbPreferences.forModule(ToolboxView.class).node("expanded_state");
@@ -267,26 +263,9 @@ public class BookmarkView extends BorderPane {
         treeItem.setExpanded(mPreferences.getBoolean(path, false));
 
         treeItem.expandedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
-            BooleanProperty booleanProperty = (BooleanProperty) observable;
-            TreeItem ti = (TreeItem) booleanProperty.getBean();
-            MBookmark bookmark = (MBookmark) ti.getValue();
             mPreferences.putBoolean(path, newValue);
         });
-//TODO Remove and submit bug report
-//Causes trouble with NetBeans Compile on Save
-//        Comparator c1 = new Comparator<TreeItem<MBookmark>>() {
-//            @Override
-//            public int compare(TreeItem<MBookmark> o1, TreeItem<MBookmark> o2) {
-//                return Boolean.compare(o1.getChildren().isEmpty(), o2.getChildren().isEmpty());
-//            }
-//        };
-//
-//        Comparator c2 = new Comparator<TreeItem<MBookmark>>() {
-//            @Override
-//            public int compare(TreeItem<MBookmark> o1, TreeItem<MBookmark> o2) {
-//                return o1.getValue().getName().compareTo(o2.getValue().getName());
-//            }
-//        };
+
         Comparator<TreeItem<MBookmark>> c1 = (TreeItem<MBookmark> o1, TreeItem<MBookmark> o2) -> Boolean.compare(o1.getChildren().isEmpty(), o2.getChildren().isEmpty());
         Comparator<TreeItem<MBookmark>> c2 = (TreeItem<MBookmark> o1, TreeItem<MBookmark> o2) -> o1.getValue().getName().compareTo(o2.getValue().getName());
 

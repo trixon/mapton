@@ -93,7 +93,8 @@ public class Mapton {
 
         label.setBackground(background);
         label.setAlignment(Pos.BASELINE_CENTER);
-        label.setFont(new Font(FxHelper.getScaledFontSize() * 1.4));
+        label.setFont(new Font(FxHelper.getScaledFontSize() * 1.2));
+        label.setTextFill(Color.WHITE);
 
         return label;
     }
@@ -174,7 +175,7 @@ public class Mapton {
     }
 
     public static Color getThemeColor() {
-        return Color.web("#006680").brighter().brighter();
+        return Color.web("#102039");
     }
 
     public static boolean isDarkThemed() {
@@ -198,6 +199,16 @@ public class Mapton {
                 .title(title)
                 .text(text)
                 .hideAfter(Duration.INDEFINITE)
+                .action(actions);
+
+        getGlobalState().send(type, notifications);
+    }
+
+    public static void notification(String type, String title, String text, Duration hideDuration, Action... actions) {
+        Notifications notifications = Notifications.create()
+                .title(title)
+                .text(text)
+                .hideAfter(hideDuration)
                 .action(actions);
 
         getGlobalState().send(type, notifications);

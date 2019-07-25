@@ -1,0 +1,139 @@
+[
+    {
+        "category": {
+            "": "Earth",
+            "sv": "Jorden"
+        },
+        "description": {},
+        "enabled": true,
+        "id": "at.eox.bluemarble",
+        "layers": [
+            "at.eox.bluemarble"
+        ],
+        "name": {
+            "": "Earth by day",
+            "sv": "Jorden på dagen"
+        },
+        "supplier": "EOX & ESA"
+    },
+    {
+        "category": {
+            "": "Earth",
+            "sv": "Jorden"
+        },
+        "description": {},
+        "enabled": true,
+        "id": "at.eox.blackmarble",
+        "layers": [
+            "at.eox.blackmarble"
+        ],
+        "name": {
+            "": "Earth by night",
+            "sv": "Jorden på natten"
+        },
+        "supplier": "EOX & ESA"
+    },
+    {
+        "category": {
+            "": "Earth",
+            "sv": "Jorden"
+        },
+        "description": {},
+        "enabled": true,
+        "id": "at.eox.coasthydro",
+        "layers": [
+            "at.eox.coastline",
+            "at.eox.hydrography"
+        ],
+        "name": {
+            "": "Coastline & Hydrography",
+            "sv": "Kustlinje & hydrografi"
+        },
+        "supplier": "EOX"
+    },
+    {
+        "category": null,
+        "description": {
+            "": "A global road map created by the\nOpenStreetMap (OSM) projekt.",
+            "sv": "En global vägkarta skapad av\nprojektet OpenStreetMap (OSM)."
+        },
+        "enabled": true,
+        "id": "at.eox.osm",
+        "layers": [
+            "at.eox.osm"
+        ],
+        "name": {
+            "": "OpenStreetMap"
+        },
+        "supplier": "EOX"
+    },
+    {
+        "category": null,
+        "description": {
+            "": "World wide satellite imagery\nfrom ESA & EOX.",
+            "sv": "Världstäckande satellitbild\nfrån ESA & EOX."
+        },
+        "enabled": true,
+        "id": "at.eox.s2cloudless",
+        "layers": [
+            "at.eox.s2cloudless"
+        ],
+        "name": {
+            "": "Satellite",
+            "sv": "Satellit"
+        },
+        "supplier": "EOX & ESA"
+    },
+    {
+        "category": {
+            "": "Earth",
+            "sv": "Jorden"
+        },
+        "description": {},
+        "enabled": true,
+        "id": "at.eox.streets",
+        "layers": [
+            "at.eox.streets",
+            "at.eox.s2cloudless"
+        ],
+        "name": {
+            "": "Satellite & Street",
+            "sv": "Satellit & väg"
+        },
+        "supplier": "EOX & ESA"
+    },
+    {
+        "category": {
+            "": "Earth",
+            "sv": "Jorden"
+        },
+        "description": {},
+        "enabled": true,
+        "id": "at.eox.terrain",
+        "layers": [
+            "at.eox.terrain"
+        ],
+        "name": {
+            "": "Terrain",
+            "sv": "Terräng"
+        },
+        "supplier": "EOX & ESA"
+    },
+    {
+        "category": {
+            "": "Earth",
+            "sv": "Jorden"
+        },
+        "description": {},
+        "enabled": true,
+        "id": "at.eox.terrain-light",
+        "layers": [
+            "at.eox.terrain-light"
+        ],
+        "name": {
+            "": "Terrain (light)",
+            "sv": "Terräng (ljus)"
+        },
+        "supplier": "EOX & ESA"
+    }
+]

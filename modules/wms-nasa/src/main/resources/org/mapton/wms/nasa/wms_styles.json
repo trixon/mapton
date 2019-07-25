@@ -1,0 +1,19 @@
+[
+    {
+        "category": {
+            "": "Earth",
+            "sv": "Jorden"
+        },
+        "description": {},
+        "enabled": true,
+        "id": "gov.nasa.neo.uv",
+        "layers": [
+            "gov.nasa.neo.uv"
+        ],
+        "name": {
+            "": "NEO UV Index",
+            "sv": "NEO UV-index"
+        },
+        "supplier": "NASA"
+    }
+]

@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.prefs.Preferences;
-import javafx.beans.property.BooleanProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeCell;
@@ -38,6 +37,7 @@ import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.util.NbPreferences;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.StringHelper;
 
 /**
  *
@@ -131,9 +131,13 @@ public class ToolboxView extends BorderPane {
         TreeItem<Action> root = new TreeItem<>(rootMark);
 
         for (MTool tool : mTools) {
-            String s = tool.getParent() + "/" + tool.getAction().getText();
             mActionParents.put(tool.getAction(), tool.getParent());
-            if (StringUtils.containsIgnoreCase(s, mFilterTextField.getText())) {
+            final String filter = mFilterTextField.getText();
+            final boolean validFilter
+                    = StringHelper.matchesSimpleGlob(tool.getParent(), filter, true, true)
+                    || StringHelper.matchesSimpleGlob(tool.getAction().getText(), filter, true, true);
+
+            if (validFilter) {
                 TreeItem<Action> actionTreeItem = new TreeItem<>(tool.getAction());
                 String category = StringUtils.defaultString(tool.getParent());
 
@@ -152,26 +156,9 @@ public class ToolboxView extends BorderPane {
         treeItem.setExpanded(mPreferences.getBoolean(path, false));
 
         treeItem.expandedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
-            BooleanProperty booleanProperty = (BooleanProperty) observable;
-            TreeItem ti = (TreeItem) booleanProperty.getBean();
-            Action action = (Action) ti.getValue();
             mPreferences.putBoolean(path, newValue);
         });
-//TODO Remove and submit bug report
-//Causes trouble with NetBeans Compile on Save
-//        Comparator c1 = new Comparator<TreeItem<Action>>() {
-//            @Override
-//            public int compare(TreeItem<Action> o1, TreeItem<Action> o2) {
-//                return Boolean.compare(o1.getChildren().isEmpty(), o2.getChildren().isEmpty());
-//            }
-//        };
-//
-//        Comparator c2 = new Comparator<TreeItem<Action>>() {
-//            @Override
-//            public int compare(TreeItem<Action> o1, TreeItem<Action> o2) {
-//                return o1.getValue().getText().compareTo(o2.getValue().getText());
-//            }
-//        };
+
         Comparator<TreeItem<Action>> c1 = (TreeItem<Action> o1, TreeItem<Action> o2) -> Boolean.compare(o1.getChildren().isEmpty(), o2.getChildren().isEmpty());
         Comparator<TreeItem<Action>> c2 = (TreeItem<Action> o1, TreeItem<Action> o2) -> o1.getValue().getText().compareTo(o2.getValue().getText());
 

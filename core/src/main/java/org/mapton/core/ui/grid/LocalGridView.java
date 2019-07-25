@@ -18,7 +18,6 @@ package org.mapton.core.ui.grid;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -45,7 +44,6 @@ import static org.mapton.api.MOptions.*;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
-import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.icons.material.MaterialIcon;
@@ -69,8 +67,6 @@ public class LocalGridView extends BorderPane {
     }
 
     private void createUI() {
-        ResourceBundle bundle = NbBundle.getBundle(GridTopComponent.class);
-
         mPlotCheckBox = new CheckBox(Dict.LOCAL.toString());
         mPlotCheckBox.setFont(Font.font(Font.getDefault().getFamily(), FontWeight.BOLD, FxHelper.getScaledFontSize() * 1.2));
 

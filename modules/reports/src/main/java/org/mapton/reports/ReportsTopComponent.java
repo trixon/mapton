@@ -15,25 +15,20 @@
  */
 package org.mapton.reports;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.TreeMap;
 import java.util.prefs.Preferences;
 import javafx.application.Platform;
-import javafx.beans.property.BooleanProperty;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.BorderPane;
+import org.apache.commons.lang3.StringUtils;
 import org.mapton.api.MTopComponent;
-import static org.mapton.api.Mapton.getIconSizeToolBar;
 import org.mapton.reports.api.MReport;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
@@ -43,7 +38,6 @@ import org.openide.util.NbPreferences;
 import org.openide.windows.TopComponent;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
-import se.trixon.almond.util.icons.material.MaterialIcon;
 
 /**
  * Top component which displays something.
@@ -67,6 +61,7 @@ public final class ReportsTopComponent extends MTopComponent {
 
     private Label mPlaceholderLabel;
     private final Preferences mPreferences = NbPreferences.forModule(ReportsTopComponent.class).node("expanded_state");
+    private TreeMap<String, TreeItem<MReport>> mReportParents = new TreeMap<>();
     private BorderPane mRoot;
     private TreeView<MReport> mTreeView;
 
@@ -120,8 +115,46 @@ public final class ReportsTopComponent extends MTopComponent {
         return new Scene(mRoot);
     }
 
+    private TreeItem<MReport> getParent(TreeItem<MReport> parent, String category) {
+        String[] categorySegments = StringUtils.split(category, "/");
+        StringBuilder sb = new StringBuilder();
+
+        for (String segment : categorySegments) {
+            sb.append(segment);
+            String path = sb.toString();
+
+            if (mReportParents.containsKey(path)) {
+                parent = mReportParents.get(path);
+            } else {
+                MReport report = new MReport() {
+                    @Override
+                    public String getName() {
+                        return segment;
+                    }
+
+                    @Override
+                    public Node getNode() {
+                        return null;
+                    }
+
+                    @Override
+                    public String getParent() {
+                        return path;
+                    }
+                };
+
+                parent.getChildren().add(parent = mReportParents.computeIfAbsent(sb.toString(), k -> new TreeItem<>(report)));
+            }
+
+            sb.append("/");
+        }
+
+        return parent;
+    }
+
     private void populate() {
-        //TODO Refactor to the style of BookmarkView#populate()
+        mReportParents.clear();
+
         MReport rootReport = new MReport() {
             @Override
             public String getName() {
@@ -140,56 +173,12 @@ public final class ReportsTopComponent extends MTopComponent {
         };
 
         TreeItem<MReport> root = new TreeItem<>(rootReport);
-        ObservableList<TreeItem<MReport>> treeRootChildrens = root.getChildren();
-        TreeMap<String, TreeItem<MReport>> actionParents = new TreeMap<>();
-        ArrayList<TreeItem<MReport>> tempRootItems = new ArrayList<>();
-
         new Thread(() -> {
-            Lookup.getDefault().lookupAll(MReport.class).forEach((reportAction) -> {
-                TreeItem<MReport> treeItem = new TreeItem<>(reportAction);
-                treeItem.setGraphic(MaterialIcon._Action.ASSESSMENT.getImageView((int) (getIconSizeToolBar() / 1.5)));
-
-                final String parentName = reportAction.getParent();
-                if (parentName == null) {
-                    tempRootItems.add(treeItem);
-                } else {
-                    MReport report = new MReport() {
-                        @Override
-                        public String getName() {
-                            return parentName;
-                        }
-
-                        @Override
-                        public Node getNode() {
-                            return null;
-                        }
-
-                        @Override
-                        public String getParent() {
-                            return null;
-                        }
-                    };
-                    actionParents.computeIfAbsent(parentName, k -> new TreeItem<>(report)).getChildren().add(treeItem);
-                }
-            });
-
-            Comparator<TreeItem> treeItemComparator = (TreeItem o1, TreeItem o2) -> ((MReport) o1.getValue()).getName().compareTo(((MReport) o2.getValue()).getName());
-
-            actionParents.keySet().stream().map((key) -> {
-                TreeItem<MReport> parentItem = new TreeItem<>(new ParentReport(key));
-                parentItem.setGraphic(MaterialIcon._File.FOLDER_OPEN.getImageView((int) (getIconSizeToolBar() / 1.5)));
-                FXCollections.sort(actionParents.get(key).getChildren(), treeItemComparator);
-                actionParents.get(key).getChildren().forEach((item) -> {
-                    parentItem.getChildren().add(item);
-                });
-                return parentItem;
-            }).forEachOrdered((parentItem) -> {
-                treeRootChildrens.add(parentItem);
-            });
-
-            Collections.sort(tempRootItems, treeItemComparator);
-            tempRootItems.forEach((rootItem) -> {
-                treeRootChildrens.add(rootItem);
+            Lookup.getDefault().lookupAll(MReport.class).forEach((report) -> {
+                TreeItem<MReport> reportTreeItem = new TreeItem<>(report);
+                String category = report.getParent();
+                TreeItem<MReport> parent = mReportParents.computeIfAbsent(category, k -> getParent(root, category));
+                parent.getChildren().add(reportTreeItem);
             });
 
             Platform.runLater(() -> {
@@ -205,9 +194,6 @@ public final class ReportsTopComponent extends MTopComponent {
         treeItem.setExpanded(mPreferences.getBoolean(path, false));
 
         treeItem.expandedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
-            BooleanProperty booleanProperty = (BooleanProperty) observable;
-            TreeItem ti = (TreeItem) booleanProperty.getBean();
-            MReport report = (MReport) ti.getValue();
             mPreferences.putBoolean(path, newValue);
         });
 
