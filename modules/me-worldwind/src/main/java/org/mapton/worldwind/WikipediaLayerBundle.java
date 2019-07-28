@@ -59,7 +59,7 @@ public class WikipediaLayerBundle extends LayerBundle {
 
     private void init() {
         mLayer.setPickEnabled(true);
-        mLayer.setValue(WWHelper.KEY_FAST_OPEN, "ObjectPropertiesTopComponent");
+        attachTopComponentToLayer("ObjectPropertiesTopComponent", mLayer);
     }
 
     private void initListeners() {
