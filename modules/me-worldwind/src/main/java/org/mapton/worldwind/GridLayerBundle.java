@@ -31,7 +31,6 @@ import org.mapton.api.MOptions;
 import static org.mapton.api.MOptions.*;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.LayerBundleManager;
-import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.fx.FxHelper;
 
@@ -99,7 +98,7 @@ public class GridLayerBundle extends LayerBundle {
 
     private void init() {
         mLayer.setPickEnabled(false);
-        mLayer.setValue(WWHelper.KEY_FAST_OPEN, "GridTopComponent");
+        attachTopComponentToLayer("GridTopComponent", mLayer);
     }
 
     private void initAttributes() {

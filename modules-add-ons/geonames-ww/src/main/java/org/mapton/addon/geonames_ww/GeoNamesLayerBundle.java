@@ -22,7 +22,6 @@ import org.mapton.api.Mapton;
 import org.mapton.geonames.api.Country;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.LayerBundleManager;
-import org.mapton.worldwind.api.WWHelper;
 import org.mapton.worldwind.api.analytic.AnalyticGrid;
 import org.mapton.worldwind.api.analytic.CellAggregate;
 import org.mapton.worldwind.api.analytic.GridData;
@@ -67,7 +66,7 @@ public class GeoNamesLayerBundle extends LayerBundle {
     private void init() {
         mLayer.setName(GeoNamesTool.NAME);
         setCategoryAddOns(mLayer);
-        mLayer.setValue(WWHelper.KEY_FAST_OPEN, "GeoNamesTopComponent");
+        attachTopComponentToLayer("GeoNamesTopComponent", mLayer);
         mLayer.setPickEnabled(false);
         mLayer.setEnabled(true);
 

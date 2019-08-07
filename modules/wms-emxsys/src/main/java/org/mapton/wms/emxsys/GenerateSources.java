@@ -57,7 +57,7 @@ public class GenerateSources extends MWmsGenerator {
 
         mSources.add(createSource(
                 "Bing",
-                "https://emxsys.net/worldwind27/wms/virtualearth?request=GetCapabilities&service=WMS",
+                "http://emxsys.net/worldwind27/wms/virtualearth?request=GetCapabilities&service=WMS",
                 layers,
                 attributions,
                 enabled

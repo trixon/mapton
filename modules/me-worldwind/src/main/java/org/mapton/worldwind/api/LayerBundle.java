@@ -40,6 +40,10 @@ public abstract class LayerBundle {
     public LayerBundle() {
     }
 
+    public void attachTopComponentToLayer(String topComponentID, Layer layer) {
+        layer.setValue(WWHelper.KEY_FAST_OPEN, topComponentID);
+    }
+
     public void connectChildLayers(Layer parentLayer, Layer... childLayers) {
         mParentLayer = parentLayer;
         mChildLayers = new HashSet<>(Arrays.asList(childLayers));
