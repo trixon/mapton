@@ -85,3 +85,4 @@ $RECYCLE.BIN/
 
 
 # End of https://www.gitignore.io/api/java,linux,maven,netbeans,windows
+!/application/lib/com/bulenkov/darcula/1.0.0/darcula-1.0.0.jar
