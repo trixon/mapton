@@ -123,7 +123,6 @@
         <!--<module>demo</module>-->
         <!--<module>modules/me-mapjfx</module>-->
         <!--<module>modules-ext/gdal</module>-->
-        <!--<module>modules/ww-datasources</module>-->
 
         <!--Deprecated-->
     </modules>

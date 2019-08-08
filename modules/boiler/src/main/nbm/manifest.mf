@@ -1,4 +1,0 @@
-Manifest-Version: 1.0
-OpenIDE-Module-Localizing-Bundle: org/mapton/boiler/Bundle.properties
-OpenIDE-Module-Requires: org.openide.windows.WindowManager
-
