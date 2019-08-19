@@ -19,19 +19,30 @@ import com.sothawo.mapjfx.Coordinate;
 import com.sothawo.mapjfx.Extent;
 import com.sothawo.mapjfx.MapType;
 import com.sothawo.mapjfx.MapView;
+import com.sothawo.mapjfx.XYZParam;
 import com.sothawo.mapjfx.event.MapLabelEvent;
 import com.sothawo.mapjfx.event.MapViewEvent;
 import com.sothawo.mapjfx.event.MarkerEvent;
+import com.sothawo.mapjfx.offline.OfflineCache;
 import java.awt.Point;
+import java.io.File;
+import java.io.IOException;
+import java.util.LinkedHashMap;
 import java.util.concurrent.TimeUnit;
 import javafx.application.Platform;
+import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.Node;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.image.WritableImage;
+import org.apache.commons.io.FileUtils;
+import org.mapton.api.MAttribution;
+import org.mapton.api.MDocumentInfo;
 import org.mapton.api.MEngine;
+import org.mapton.api.MKey;
 import org.mapton.api.MLatLon;
 import org.mapton.api.MLatLonBox;
+import org.mapton.api.Mapton;
 import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.NbLog;
@@ -45,8 +56,10 @@ import se.trixon.almond.util.MathHelper;
 public class MapJfxMapEngine extends MEngine {
 
     public static final String LOG_TAG = "OpenLayers";
-
+    private BookmarkPlotter mBookmarkPlotter;
+    private File mCacheDir;
     private MapView mMapView;
+    private final OfflineCache mOfflineCache = OfflineCache.INSTANCE;
 
     public MapJfxMapEngine() {
     }
@@ -56,14 +69,22 @@ public class MapJfxMapEngine extends MEngine {
         mMapView.setExtent(Extent.forCoordinates(toCoordinate(latLonBox.getSouthWest()), toCoordinate(latLonBox.getNorthEast())));
     }
 
+    public File getCacheDir() {
+        return mCacheDir;
+    }
+
     @Override
     public MLatLon getCenter() {
         return toLatLon(mMapView.getCenter());
     }
 
+    public MapView getMapView() {
+        return mMapView;
+    }
+
     @Override
     public String getName() {
-        return "OpenLayers (mapjfx) EXPERIMENTAL";
+        return "OpenLayers (mapjfx)";
     }
 
     @Override
@@ -76,6 +97,8 @@ public class MapJfxMapEngine extends MEngine {
         if (mMapView == null) {
             init();
         }
+
+        updateToolbarDocumentInfo();
 
         return mMapView;
     }
@@ -107,6 +130,16 @@ public class MapJfxMapEngine extends MEngine {
     }
 
     private void init() {
+        mCacheDir = new File(Mapton.getCacheDir(), "mapjfx");
+
+        try {
+            FileUtils.forceMkdir(mCacheDir);
+            mOfflineCache.setCacheDirectory(mCacheDir.toPath());
+            NbLog.v(LOG_TAG, OfflineCache.INSTANCE.getCacheDirectory().toString());
+        } catch (IOException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+
         mMapView = new MapView();
         mMapView.setOnContextMenuRequested((e) -> {
             displayContextMenu(new Point((int) e.getScreenX(), (int) e.getScreenY()));
@@ -116,7 +149,7 @@ public class MapJfxMapEngine extends MEngine {
             if (newValue) {
                 new Thread(() -> {
                     try {
-                        TimeUnit.MILLISECONDS.sleep(2000);
+                        TimeUnit.MILLISECONDS.sleep(2);
                         Platform.runLater(() -> {
                             initMap();
                         });
@@ -129,7 +162,7 @@ public class MapJfxMapEngine extends MEngine {
 
         new Thread(() -> {
             try {
-                TimeUnit.MILLISECONDS.sleep(2000);
+                TimeUnit.MILLISECONDS.sleep(2);
                 Platform.runLater(() -> {
                     initListeners();
                     mMapView.initialize();
@@ -174,28 +207,28 @@ public class MapJfxMapEngine extends MEngine {
         // add an event handler for extent changes and display them in the status label
         mMapView.addEventHandler(MapViewEvent.MAP_BOUNDING_EXTENT, event -> {
             event.consume();
-            System.out.println(event.getExtent().toString());
+//            System.out.println(event.getExtent().toString());
         });
 
         mMapView.addEventHandler(MapViewEvent.MAP_RIGHTCLICKED, event -> {
             event.consume();
-            System.out.println("Event: map right clicked at: " + event.getCoordinate());
+//            System.out.println("Event: map right clicked at: " + event.getCoordinate());
         });
         mMapView.addEventHandler(MarkerEvent.MARKER_CLICKED, event -> {
             event.consume();
-            System.out.println("Event: marker clicked: " + event.getMarker().getId());
+//            System.out.println("Event: marker clicked: " + event.getMarker().getId());
         });
         mMapView.addEventHandler(MarkerEvent.MARKER_RIGHTCLICKED, event -> {
             event.consume();
-            System.out.println("Event: marker right clicked: " + event.getMarker().getId());
+//            System.out.println("Event: marker right clicked: " + event.getMarker().getId());
         });
         mMapView.addEventHandler(MapLabelEvent.MAPLABEL_CLICKED, event -> {
             event.consume();
-            System.out.println("Event: label clicked: " + event.getMapLabel().getText());
+//            System.out.println("Event: label clicked: " + event.getMapLabel().getText());
         });
         mMapView.addEventHandler(MapLabelEvent.MAPLABEL_RIGHTCLICKED, event -> {
             event.consume();
-            System.out.println("Event: label right clicked: " + event.getMapLabel().getText());
+//            System.out.println("Event: label right clicked: " + event.getMapLabel().getText());
         });
 
         mMapView.addEventHandler(MapViewEvent.MAP_POINTER_MOVED, event -> {
@@ -203,12 +236,21 @@ public class MapJfxMapEngine extends MEngine {
         });
 
 //        logger.trace("map handlers initialized");
+        mMapView.zoomProperty().addListener((ObservableValue<? extends Number> ov, Number t, Number t1) -> {
+            Mapton.getInstance().zoomProperty().set(toGlobalZoom());
+        });
     }
 
     private void initMap() {
         NbLog.v(LOG_TAG, "Initializing map...");
+        XYZParam xyzParams = new XYZParam()
+                .withUrl("https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x})")
+                .withAttributions(
+                        "'Tiles &copy; <a href=\"https://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer\">ArcGIS</a>'");
+        mMapView.setXYZParam(xyzParams);
+        mMapView.setMapType(MapType.XYZ);
 
-        mMapView.setMapType(MapType.OSM);
+        mBookmarkPlotter = new BookmarkPlotter(this);
 
         NbLog.v(LOG_TAG, "Map initialized");
     }
@@ -236,5 +278,20 @@ public class MapJfxMapEngine extends MEngine {
 
     private double toLocalZoom(double globalZoom) {
         return globalZoom * 28;
+    }
+
+    private void updateToolbarDocumentInfo() {
+        LinkedHashMap<String, MAttribution> attributions = new LinkedHashMap<>();
+
+        MAttribution attribution = new MAttribution();
+        attribution.setProviderName("OpenStreetMap");
+        attribution.setProviderUrl("https://www.openstreetmap.org");
+        attribution.setLicenseName("Open Data Commons Open Database License (ODbL)");
+        attribution.setLicenseUrl("https://opendatacommons.org/licenses/odbl/");
+        attribution.setRawHtml("© OpenStreetMap contributors");
+        attributions.put("OSM", attribution);
+
+        MDocumentInfo documentInfo = new MDocumentInfo(getName(), attributions);
+        Mapton.getGlobalState().put(MKey.MAP_DOCUMENT_INFO, documentInfo);
     }
 }

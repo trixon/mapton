@@ -90,6 +90,7 @@
         <!--Map engines-->
         <module>modules/me-gmapsfx</module>
         <module>modules/me-jxmapviewer2</module>
+        <module>modules/me-mapjfx</module>
         <module>modules/me-worldwind</module>
         <module>modules/datasources</module>
 
@@ -121,7 +122,6 @@
 
         <!--Unstable-->
         <!--<module>demo</module>-->
-        <!--<module>modules/me-mapjfx</module>-->
         <!--<module>modules-ext/gdal</module>-->
 
         <!--Deprecated-->
@@ -267,7 +267,7 @@
             <dependency>
                 <groupId>com.sothawo</groupId>
                 <artifactId>mapjfx</artifactId>
-                <version>1.26.2</version>
+                <version>1.26.3</version>
             </dependency>
             <dependency>
                 <groupId>com.github.pcmehlitz</groupId>
