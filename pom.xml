@@ -267,7 +267,7 @@
             <dependency>
                 <groupId>com.sothawo</groupId>
                 <artifactId>mapjfx</artifactId>
-                <version>1.26.3</version>
+                <version>1.27.0</version>
             </dependency>
             <dependency>
                 <groupId>com.github.pcmehlitz</groupId>

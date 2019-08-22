@@ -15,6 +15,7 @@
  */
 package org.mapton.mapjfx;
 
+import com.sothawo.mapjfx.Configuration;
 import com.sothawo.mapjfx.Coordinate;
 import com.sothawo.mapjfx.Extent;
 import com.sothawo.mapjfx.MapType;
@@ -165,7 +166,10 @@ public class MapJfxMapEngine extends MEngine {
                 TimeUnit.MILLISECONDS.sleep(2);
                 Platform.runLater(() -> {
                     initListeners();
-                    mMapView.initialize();
+                    mMapView.initialize(Configuration.builder()
+                            .showZoomControls(false)
+                            .build()
+                    );
                     NbLog.i(LOG_TAG, "Loaded and ready");
                 });
             } catch (InterruptedException ex) {
