@@ -31,7 +31,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.ResourceBundle;
 import java.util.logging.Logger;
 import java.util.prefs.PreferenceChangeEvent;
 import javafx.application.Platform;
@@ -69,7 +68,6 @@ import org.openide.awt.ActionReferences;
 import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
-import org.openide.util.NbBundle;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
@@ -107,7 +105,6 @@ public final class MapTopComponent extends MTopComponent {
     private static final Logger LOGGER = Logger.getLogger(MEngine.class.getName());
     private final HashSet<TopComponent> mActiveMapMagnets = new HashSet<>();
     private AppStatusPanel mAppStatusPanel;
-    private final ResourceBundle mBundle = NbBundle.getBundle(MapTopComponent.class);
     private Menu mContextCopyMenu;
     private Menu mContextExtrasMenu;
     private ContextMenu mContextMenu;
@@ -298,7 +295,7 @@ public final class MapTopComponent extends MTopComponent {
         SimpleDialog.addFilter(filter);
         SimpleDialog.setFilter(filter);
         //SimpleDialog.setOwner(mStage);
-        SimpleDialog.setTitle(mBundle.getString("export_view"));
+        SimpleDialog.setTitle(getBundleString("export_view"));
 
         SimpleDialog.setPath(mDestination == null ? FileUtils.getUserDirectory() : mDestination.getParentFile());
         SimpleDialog.setSelectedFile(new File(new SimpleDateFormat("'Mapton_'yyyyMMdd_HHmmss").format(new Date())));
@@ -329,16 +326,16 @@ public final class MapTopComponent extends MTopComponent {
             mMOptions.setMapHomeZoom(mEngine.getZoom());
         });
 
-        Action whatsHereAction = new Action(mBundle.getString("whats_here"), (ActionEvent t) -> {
+        Action whatsHereAction = new Action(getBundleString("whats_here"), (ActionEvent t) -> {
             whatsHere();
         });
 
-        Action copyImageAction = new Action(mBundle.getString("copy_image"), (ActionEvent t) -> {
+        Action copyImageAction = new Action(getBundleString("copy_image"), (ActionEvent t) -> {
             copyImage();
         });
         copyImageAction.setDisabled(true);
 
-        Action exportImageAction = new Action(mBundle.getString("export_image"), (ActionEvent t) -> {
+        Action exportImageAction = new Action(getBundleString("export_image"), (ActionEvent t) -> {
             exportImage();
         });
         exportImageAction.setDisabled(true);
@@ -354,9 +351,9 @@ public final class MapTopComponent extends MTopComponent {
                 setHomeAction
         );
 
-        mContextCopyMenu = new Menu(mBundle.getString("copy_location"));
-        mContextOpenMenu = new Menu(mBundle.getString("open_location"));
-        mContextExtrasMenu = new Menu(mBundle.getString("extras"));
+        mContextCopyMenu = new Menu(getBundleString("copy_location"));
+        mContextOpenMenu = new Menu(getBundleString("open_location"));
+        mContextExtrasMenu = new Menu(getBundleString("extras"));
         mContextMenu = ActionUtils.createContextMenu(actions);
 
         int insertPos = mContextMenu.getItems().size() - 2;

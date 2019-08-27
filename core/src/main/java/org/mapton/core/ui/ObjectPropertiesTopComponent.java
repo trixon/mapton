@@ -17,7 +17,6 @@ package org.mapton.core.ui;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -35,7 +34,6 @@ import org.mapton.api.MTopComponent;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBar;
 import org.netbeans.api.settings.ConvertAsProperties;
-import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.GlobalStateChangeEvent;
@@ -61,7 +59,6 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
 )
 public final class ObjectPropertiesTopComponent extends MTopComponent implements MMapMagnet {
 
-    private ResourceBundle mBundle;
     private final Map<String, Object> mDummyMap = new LinkedHashMap<>();
     private LogPanel mLogPanel;
     private Label mPlaceholderLabel;
@@ -92,13 +89,11 @@ public final class ObjectPropertiesTopComponent extends MTopComponent implements
     }
 
     private Scene createScene() {
-        mBundle = NbBundle.getBundle(ObjectPropertiesTopComponent.class);
-
         mPropertySheet = new PropertySheet();
         mPropertySheet.setMode(PropertySheet.Mode.NAME);
         mLogPanel = new LogPanel();
         mRoot = new BorderPane(mPropertySheet);
-        mPlaceholderLabel = new Label(mBundle.getString("object_properties_placeholder"), MaterialIcon._Action.ASSIGNMENT.getImageView(getIconSizeToolBar()));
+        mPlaceholderLabel = new Label(getBundleString("object_properties_placeholder"), MaterialIcon._Action.ASSIGNMENT.getImageView(getIconSizeToolBar()));
         mPlaceholderLabel.setDisable(true);
 
         return new Scene(mRoot);

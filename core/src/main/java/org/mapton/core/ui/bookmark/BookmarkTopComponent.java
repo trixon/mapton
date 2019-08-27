@@ -18,7 +18,6 @@ package org.mapton.core.ui.bookmark;
 import javafx.scene.Scene;
 import org.mapton.api.MOptions;
 import org.mapton.api.MTopComponent;
-import org.mapton.core.ui.bookmark.BookmarkView;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;

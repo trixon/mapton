@@ -15,7 +15,6 @@
  */
 package org.mapton.core.ui.chart;
 
-import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -29,7 +28,6 @@ import org.mapton.api.MTopComponent;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBar;
 import org.netbeans.api.settings.ConvertAsProperties;
-import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.GlobalStateChangeEvent;
@@ -54,7 +52,6 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
 )
 public final class ChartTopComponent extends MTopComponent implements MMapMagnet {
 
-    private ResourceBundle mBundle;
     private Label mInvalidPlaceholderLabel;
     private Label mPlaceholderLabel;
     private BorderPane mRoot;
@@ -83,12 +80,10 @@ public final class ChartTopComponent extends MTopComponent implements MMapMagnet
     }
 
     private Scene createScene() {
-        mBundle = NbBundle.getBundle(ChartTopComponent.class);
-
-        mPlaceholderLabel = new Label(mBundle.getString("placeholder"), MaterialIcon._Editor.SHOW_CHART.getImageView(getIconSizeToolBar()));
+        mPlaceholderLabel = new Label(getBundleString("placeholder"), MaterialIcon._Editor.SHOW_CHART.getImageView(getIconSizeToolBar()));
         mPlaceholderLabel.setDisable(true);
 
-        mInvalidPlaceholderLabel = new Label(mBundle.getString("invalid_object"), MaterialIcon._Editor.SHOW_CHART.getImageView(getIconSizeToolBar()));
+        mInvalidPlaceholderLabel = new Label(getBundleString("invalid_object"), MaterialIcon._Editor.SHOW_CHART.getImageView(getIconSizeToolBar()));
         mInvalidPlaceholderLabel.setDisable(true);
 
         mProgressBar = new ProgressBar(-1);
