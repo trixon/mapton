@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -47,7 +46,6 @@ import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
-import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
@@ -73,14 +71,13 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
 )
 public final class UpdaterTopComponent extends MTopComponent {
 
-    private final ResourceBundle mBundle = NbBundle.getBundle(UpdaterTopComponent.class);
     private BorderPane mInnerBorderPane;
     private ListView<MUpdater> mListView;
     private BorderPane mRoot;
     private UpdaterMaskerPane mUpdaterMaskerPane;
 
     public UpdaterTopComponent() {
-        setName(mBundle.getString("updater_tool"));
+        setName(getBundleString("updater_tool"));
     }
 
     @Override
@@ -107,7 +104,7 @@ public final class UpdaterTopComponent extends MTopComponent {
     }
 
     private Scene createScene() {
-        Label titleLabel = Mapton.createTitle(mBundle.getString("updater_tool"));
+        Label titleLabel = Mapton.createTitle(getBundleString("updater_tool"));
         mUpdaterMaskerPane = new UpdaterMaskerPane();
 
         Action refreshAction = new Action(Dict.REFRESH.toString(), (ActionEvent event) -> {
