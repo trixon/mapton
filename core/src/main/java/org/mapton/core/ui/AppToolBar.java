@@ -57,6 +57,7 @@ import org.mapton.core.ui.bookmark.BookmarkView;
 import org.openide.awt.Actions;
 import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.nbp.AlmondOptions;
+import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.nbp.dialogs.NbAboutFx;
 import se.trixon.almond.util.AboutModel;
 import se.trixon.almond.util.Dict;
@@ -92,6 +93,8 @@ public class AppToolBar extends ToolBar {
     private PopOver mStylePopOver;
     private FxActionSwing mSysAboutAction;
     private Action mSysHelpAction;
+    private FxActionSwing mSysLogAppAction;
+    private FxActionSwing mSysLogSysAction;
     private FxActionSwing mSysOptionsAction;
     private FxActionSwing mSysPluginsAction;
     private FxActionSwing mSysQuitAction;
@@ -180,6 +183,11 @@ public class AppToolBar extends ToolBar {
     private void init() {
         setStyle("-fx-spacing: 0px;");
         setPadding(Insets.EMPTY);
+        ActionGroup logActionGroup = new ActionGroup(Dict.LOG.toString(),
+                mSysLogAppAction,
+                mSysLogSysAction
+        );
+
         ActionGroup viewActionGroup = new ActionGroup(Dict.VIEW.toString(),
                 mSysViewAlwaysOnTopAction,
                 ActionUtils.ACTION_SEPARATOR,
@@ -194,6 +202,7 @@ public class AppToolBar extends ToolBar {
         if (IS_MAC) {
             systemActionGroup = new ActionGroup(Dict.MENU.toString(), MaterialIcon._Navigation.MENU.getImageView(getIconSizeToolBar()),
                     viewActionGroup,
+                    logActionGroup,
                     ActionUtils.ACTION_SEPARATOR,
                     mSysPluginsAction,
                     ActionUtils.ACTION_SEPARATOR,
@@ -202,6 +211,7 @@ public class AppToolBar extends ToolBar {
         } else {
             systemActionGroup = new ActionGroup(Dict.MENU.toString(), MaterialIcon._Navigation.MENU.getImageView(getIconSizeToolBar()),
                     viewActionGroup,
+                    logActionGroup,
                     ActionUtils.ACTION_SEPARATOR,
                     mSysOptionsAction,
                     mSysPluginsAction,
@@ -367,6 +377,16 @@ public class AppToolBar extends ToolBar {
         //Reset
         mSysViewResetAction = new FxActionSwing(Dict.RESET_WINDOWS.toString(), () -> {
             Actions.forID("Window", "org.netbeans.core.windows.actions.ResetWindowsAction").actionPerformed(null);
+        });
+
+        mSysLogAppAction = new FxActionSwing(Dict.APPLICATION.toString(), () -> {
+            NbLog.select();
+            Actions.forID("Window", "org.netbeans.core.io.ui.IOWindowAction").actionPerformed(null);
+        });
+
+        mSysLogSysAction = new FxActionSwing(Dict.SYSTEM.toString(), () -> {
+            Actions.forID("View", "org.netbeans.core.actions.LogAction").actionPerformed(null);
+            Actions.forID("Window", "org.netbeans.core.io.ui.IOWindowAction").actionPerformed(null);
         });
 //
 //
