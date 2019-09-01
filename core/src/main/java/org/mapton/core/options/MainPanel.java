@@ -70,7 +70,7 @@ final class MainPanel extends javax.swing.JPanel {
 
                 mCrosshairCheckBox = new CheckBox(mBundle.getString("croshairCheckBox.text"));
                 mPopoverCheckBox = new CheckBox(mBundle.getString("popoverCheckBox.text"));
-                mDarkThemeCheckBox = new CheckBox(Dict.DARK_THEME.toString());
+                mDarkThemeCheckBox = new CheckBox(Dict.NIGHT_MODE.toString());
                 mEngineBox = new EngineBox();
                 mIconColorPicker = new ColorPicker();
                 Label iconColorLabel = new Label(mBundle.getString("iconColorLabel.text"));
