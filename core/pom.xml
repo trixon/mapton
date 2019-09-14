@@ -17,17 +17,18 @@
                 <extensions>true</extensions>
                 <configuration>
                     <publicPackages>
-                        <publicPackage>org.mapton.api.*</publicPackage>
-                        <publicPackage>org.apache.commons.*</publicPackage>
-                        <publicPackage>org.postgresql.*</publicPackage>
-                        <publicPackage>de.micromata.*</publicPackage>
+                        <!--<publicPackage>com.dlsc.*</publicPackage>-->
                         <publicPackage>com.github.goober.*</publicPackage>
-                        <publicPackage>org.controlsfx.*</publicPackage>
-                        <publicPackage>javax.annotation.*</publicPackage>
-                        <publicPackage>javax.xml.*</publicPackage>
-                        <publicPackage>j2html.*</publicPackage>
                         <publicPackage>com.google.*</publicPackage>
                         <publicPackage>com.sun.xml.*</publicPackage>
+                        <publicPackage>de.micromata.*</publicPackage>
+                        <publicPackage>j2html.*</publicPackage>
+                        <publicPackage>javax.annotation.*</publicPackage>
+                        <publicPackage>javax.xml.*</publicPackage>
+                        <publicPackage>org.apache.commons.*</publicPackage>
+                        <publicPackage>org.controlsfx.*</publicPackage>
+                        <publicPackage>org.mapton.api.*</publicPackage>
+                        <publicPackage>org.postgresql.*</publicPackage>
                     </publicPackages>
                     <nbmResources>
                         <nbmResource>
@@ -170,6 +171,16 @@
         <dependency>
             <groupId>com.j2html</groupId>
             <artifactId>j2html</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.dlsc.preferencesfx</groupId>
+            <artifactId>preferencesfx-core</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.controlsfx</groupId>
+                    <artifactId>controlsfx</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
     <properties>

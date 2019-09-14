@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,11 +17,19 @@ package org.mapton.core.actions;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javafx.scene.Scene;
+import javafx.scene.layout.BorderPane;
+import org.mapton.api.MOptions2;
+import org.openide.DialogDescriptor;
+import org.openide.DialogDisplayer;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
-import org.openide.awt.Actions;
 import org.openide.util.NbBundle.Messages;
+import se.trixon.almond.nbp.fx.FxDialogPanel;
+import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.swing.DelayedResetRunner;
+import se.trixon.almond.util.swing.SwingHelper;
 
 @ActionID(
         category = "Mapton",
@@ -34,8 +42,44 @@ import org.openide.util.NbBundle.Messages;
 @Messages("CTL_OptionsAction=Options")
 public final class OptionsAction implements ActionListener {
 
+    private DelayedResetRunner mDelayedResetRunner;
+    private OptionsPanel optionsPanel = new OptionsPanel();
+
+    public OptionsAction() {
+        optionsPanel.initFx(() -> {
+        });
+        optionsPanel.setPreferredSize(SwingHelper.getUIScaledDim(800, 500));
+
+        //Use this one to trap double triggers
+        mDelayedResetRunner = new DelayedResetRunner(10, () -> {
+            DialogDescriptor d = new DialogDescriptor(optionsPanel, Dict.OPTIONS.toString());
+            optionsPanel.setDialogDescriptor(d);
+
+            if (DialogDescriptor.OK_OPTION == DialogDisplayer.getDefault().notify(d)) {
+                MOptions2.getInstance().save();
+            } else {
+                MOptions2.getInstance().discardChanges();
+            }
+        });
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
-        Actions.forID("Window", "org.netbeans.modules.options.OptionsWindowAction").actionPerformed(null);
+        mDelayedResetRunner.reset();
+    }
+
+    class OptionsPanel extends FxDialogPanel {
+
+        public OptionsPanel() {
+        }
+
+        @Override
+        protected void fxConstructor() {
+            setScene(createScene());
+        }
+
+        private Scene createScene() {
+            return new Scene(new BorderPane(MOptions2.getInstance().getPreferencesFxView()));
+        }
     }
 }

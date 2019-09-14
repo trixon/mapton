@@ -96,6 +96,7 @@ public class AppToolBar extends ToolBar {
     private FxActionSwing mSysLogAppAction;
     private FxActionSwing mSysLogSysAction;
     private FxActionSwing mSysOptionsAction;
+    private FxActionSwing mSysOptionsPlatformAction;
     private FxActionSwing mSysPluginsAction;
     private FxActionSwing mSysQuitAction;
     private FxActionSwingCheck mSysViewAlwaysOnTopAction;
@@ -214,6 +215,7 @@ public class AppToolBar extends ToolBar {
                     logActionGroup,
                     ActionUtils.ACTION_SEPARATOR,
                     mSysOptionsAction,
+                    mSysOptionsPlatformAction,
                     mSysPluginsAction,
                     ActionUtils.ACTION_SEPARATOR,
                     mSysHelpAction,
@@ -404,6 +406,11 @@ public class AppToolBar extends ToolBar {
         if (!IS_MAC) {
             mSysOptionsAction.setAccelerator(new KeyCodeCombination(KeyCode.COMMA, KeyCombination.SHORTCUT_DOWN));
         }
+
+        //options - platform
+        mSysOptionsPlatformAction = new FxActionSwing(String.format("%s (%s)", Dict.OPTIONS.toString(), Dict.PLATFORM.toString()), () -> {
+            Actions.forID("Mapton", "org.mapton.core.actions.OptionsPlatformAction").actionPerformed(null);
+        });
 
         //About
         mSysAboutAction = new FxActionSwing(String.format(Dict.ABOUT_S.toString(), "Mapton"), () -> {
