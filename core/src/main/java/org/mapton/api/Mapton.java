@@ -31,8 +31,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.Notifications;
 import org.controlsfx.control.action.Action;
-import static org.mapton.api.MOptions.DEFAULT_UI_LAF_DARK;
-import static org.mapton.api.MOptions.KEY_UI_LAF_DARK;
 import org.mapton.core.ui.AppStatusView;
 import org.mapton.core.ui.AppToolBar;
 import org.openide.awt.StatusDisplayer;
@@ -70,7 +68,7 @@ public class Mapton {
 
     public static void applyHtmlCss(WebView webView) {
         String path = "resources/css/attribution_dark.css";
-        if (!isDarkThemed()) {
+        if (!isNightMode()) {
             path = StringUtils.remove(path, "_dark");
         }
 
@@ -178,8 +176,8 @@ public class Mapton {
         return Color.web("#102039");
     }
 
-    public static boolean isDarkThemed() {
-        return sOptions.is(KEY_UI_LAF_DARK, DEFAULT_UI_LAF_DARK);
+    public static boolean isNightMode() {
+        return MOptions2.getInstance().general().isNightMode();
     }
 
     public static void logLoading(String category, String item) {

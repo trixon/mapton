@@ -64,7 +64,7 @@ public class Initializer implements Runnable {
         System.setProperty("netbeans.winsys.status_line.path", "AppStatusPanel.instance");
 
         boolean fullscreen = mOptions.isFullscreen();
-        FxHelper.setDarkThemeEnabled(mOptions.is(KEY_UI_LAF_DARK, DEFAULT_UI_LAF_DARK));
+        FxHelper.setDarkThemeEnabled(mOptions.is(KEY_UI_LAF_DARK));
 
         SwingUtilities.invokeLater(() -> {
             MaterialIcon.setDefaultColor(mOptions.getIconColor());

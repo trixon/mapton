@@ -20,7 +20,12 @@ import com.dlsc.preferencesfx.model.Group;
 import com.dlsc.preferencesfx.model.Setting;
 import java.util.ResourceBundle;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ObservableValue;
+import javafx.scene.paint.Color;
+import static org.mapton.api.MOptions.*;
 import org.mapton.core.ui.options.OptionsPanel;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
@@ -31,22 +36,31 @@ import se.trixon.almond.util.Dict;
  */
 public class MOptionsGeneral {
 
-    private final ResourceBundle mBundle = NbBundle.getBundle(OptionsPanel.class);
+    public static final String DEFAULT_UI_LAF_ICON_COLOR_BRIGHT = "D3D3D3";
+    public static final String DEFAULT_UI_LAF_ICON_COLOR_DARK = "1A1A1A";
 
+    private final ResourceBundle mBundle = NbBundle.getBundle(OptionsPanel.class);
     private final Category mCategory;
     private final BooleanProperty mDisplayCrosshairProperty = new SimpleBooleanProperty(true);
+    private final ObjectProperty<Color> mIconColorBrightProperty = new SimpleObjectProperty<>(Color.valueOf(DEFAULT_UI_LAF_ICON_COLOR_BRIGHT));
+    private final ObjectProperty<Color> mIconColorDarkProperty = new SimpleObjectProperty<>(Color.valueOf(DEFAULT_UI_LAF_ICON_COLOR_DARK));
     private final BooleanProperty mNightModeProperty = new SimpleBooleanProperty(true);
+    private final MOptions mOptions = MOptions.getInstance();
     private final BooleanProperty mPreferPopoverProperty = new SimpleBooleanProperty(false);
 
     public MOptionsGeneral() {
         mCategory = Category.of(Dict.GENERAL.toString(),
                 Group.of(
                         Dict.LOOK_AND_FEEL.toString(), Setting.of(mBundle.getString("popover"), mPreferPopoverProperty).customKey("general.popover"),
+                        Setting.of(mBundle.getString("croshair"), mDisplayCrosshairProperty).customKey("general.crosshair"),
                         Setting.of(Dict.NIGHT_MODE.toString(), mNightModeProperty).customKey("general.nightMode"),
-                        Setting.of(mBundle.getString("croshair"), mDisplayCrosshairProperty).customKey("general.crosshair")
+                        Setting.of(mBundle.getString("iconColor"), mIconColorDarkProperty).customKey("general.iconColor11"),
+                        Setting.of(mBundle.getString("iconColorNightMode"), mIconColorBrightProperty).customKey("general.iconColorNightMode11")
                 ),
-                Group.of()
+                Group.of(MDict.MAP_ENGINE.toString())
         );
+
+        initListeners();
     }
 
     public BooleanProperty displayCrosshairProperty() {
@@ -55,6 +69,22 @@ public class MOptionsGeneral {
 
     public Category getCategory() {
         return mCategory;
+    }
+
+    public Color getIconColorBright() {
+        return mIconColorBrightProperty.getValue();
+    }
+
+    public Color getIconColorDark() {
+        return mIconColorDarkProperty.getValue();
+    }
+
+    public ObjectProperty iconColorBrightProperty() {
+        return mIconColorBrightProperty;
+    }
+
+    public ObjectProperty iconColorDarkProperty() {
+        return mIconColorDarkProperty;
     }
 
     public boolean isDisplayCrosshair() {
@@ -77,4 +107,17 @@ public class MOptionsGeneral {
         return mPreferPopoverProperty;
     }
 
+    private void initListeners() {
+        mNightModeProperty.addListener((ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1) -> {
+            mOptions.put(KEY_UI_LAF_DARK, t1);
+        });
+
+        mIconColorBrightProperty.addListener((ObservableValue<? extends Color> ov, Color t, Color t1) -> {
+            mOptions.setIconColorBright(t1);
+        });
+
+        mIconColorDarkProperty.addListener((ObservableValue<? extends Color> ov, Color t, Color t1) -> {
+            mOptions.setIconColorDark(t1);
+        });
+    }
 }

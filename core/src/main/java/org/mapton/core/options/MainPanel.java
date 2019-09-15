@@ -16,41 +16,19 @@
 package org.mapton.core.options;
 
 import java.awt.BorderLayout;
-import java.util.ResourceBundle;
 import javafx.application.Platform;
-import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ColorPicker;
-import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javax.swing.UIManager;
-import org.controlsfx.control.action.Action;
-import org.mapton.api.MKey;
 import org.mapton.api.MOptions;
-import static org.mapton.api.MOptions.*;
-import org.mapton.api.Mapton;
 import org.mapton.core.ui.EngineBox;
-import org.openide.LifecycleManager;
-import org.openide.util.NbBundle;
-import org.openide.util.NbPreferences;
 import se.trixon.almond.nbp.fx.FxPanel;
-import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.fx.FxHelper;
 
 final class MainPanel extends javax.swing.JPanel {
 
     private final MainOptionsPanelController controller;
-    private final ResourceBundle mBundle = NbBundle.getBundle(MainPanel.class);
-    private CheckBox mDarkThemeCheckBox;
     private EngineBox mEngineBox;
     private final FxPanel mFxPanel;
-    private ColorPicker mIconColorPicker;
-    private boolean mOldDark;
-    private Color mOldIconColorBright;
-    private Color mOldIconColorDark;
     private final MOptions mOptions = MOptions.getInstance();
 
     MainPanel(MainOptionsPanelController controller) {
@@ -60,34 +38,19 @@ final class MainPanel extends javax.swing.JPanel {
             @Override
             protected void fxConstructor() {
                 setScene(createScene());
-                initListeners();
             }
 
             private Scene createScene() {
 
-                mDarkThemeCheckBox = new CheckBox(Dict.NIGHT_MODE.toString());
                 mEngineBox = new EngineBox();
-                mIconColorPicker = new ColorPicker();
-                Label iconColorLabel = new Label(mBundle.getString("iconColorLabel.text"));
 
                 VBox box = new VBox(8,
-                        mDarkThemeCheckBox,
-                        new VBox(
-                                iconColorLabel,
-                                mIconColorPicker
-                        ),
                         mEngineBox
                 );
 
                 box.setPadding(new Insets(16));
 
                 return new Scene(box);
-            }
-
-            private void initListeners() {
-                mDarkThemeCheckBox.selectedProperty().addListener((ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1) -> {
-                    mIconColorPicker.setValue(t1 ? mOldIconColorDark : mOldIconColorBright);
-                });
             }
         };
 
@@ -116,39 +79,8 @@ final class MainPanel extends javax.swing.JPanel {
     }
 
     private void loadFX() {
-        mOldDark = mOptions.is(KEY_UI_LAF_DARK, DEFAULT_UI_LAF_DARK);
-        mDarkThemeCheckBox.setSelected(mOldDark);
-
-        mOldIconColorBright = mOptions.getIconColorBright();
-        mOldIconColorDark = mOptions.getIconColorDark();
-
-        mIconColorPicker.setValue(mOldDark ? mOldIconColorDark : mOldIconColorBright);
     }
 
     private void storeFX() {
-        boolean newDark = mDarkThemeCheckBox.isSelected();
-        mOptions.put(KEY_UI_LAF_DARK, newDark);
-
-        Color newColor = mIconColorPicker.getValue();
-        boolean colorChanged = FxHelper.colorToHexInt(newColor) != FxHelper.colorToHexInt(mOptions.getIconColor());
-        mOptions.setIconColor(newColor);
-
-        if (mOldDark != newDark || colorChanged) {
-            String laf;
-            if (newDark) {
-                laf = "com.bulenkov.darcula.DarculaLaf";
-            } else {
-                laf = UIManager.getSystemLookAndFeelClassName();
-            }
-
-            NbPreferences.root().node("laf").put("laf", laf);
-
-            Action restartAction = new Action(Dict.RESTART.toString(), (eventHandler) -> {
-                LifecycleManager.getDefault().markForRestart();
-                LifecycleManager.getDefault().exit();
-            });
-
-            Mapton.notification(MKey.NOTIFICATION_WARNING, mBundle.getString("actionRequired"), mBundle.getString("restartRequired"), restartAction);
-        }
     }
 }

@@ -64,10 +64,6 @@ public class MOptions2 {
         return mGeneralOptions;
     }
 
-    public <T> T getForClass(Class c) {
-        return (T) (Lookup.getDefault().lookup(c));
-    }
-
     public PreferencesFxView getPreferencesFxView() {
         return mPreferencesFx.getView();
     }
