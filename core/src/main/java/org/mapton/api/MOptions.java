@@ -48,7 +48,7 @@ public class MOptions extends OptionsBase {
     public static final String KEY_UI_LAF_ICON_COLOR_DARK = "ui.laf.icon_color_dark";
 
     private static final boolean DEFAULT_FULL_SCREEN = false;
-    private static final String DEFAULT_MAP_ENGINE = "org.mapton.worldwind.WorldWindMapEngine";
+    private static final String DEFAULT_MAP_ENGINE = "WorldWind";
     private static final double DEFAULT_MAP_LAT = 57.661509;
     private static final double DEFAULT_MAP_LON = 11.999312;
     private static final boolean DEFAULT_MAP_ONLY = false;

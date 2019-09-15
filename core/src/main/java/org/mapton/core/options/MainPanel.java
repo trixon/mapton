@@ -20,16 +20,12 @@ import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
-import org.mapton.api.MOptions;
-import org.mapton.core.ui.EngineBox;
 import se.trixon.almond.nbp.fx.FxPanel;
 
 final class MainPanel extends javax.swing.JPanel {
 
     private final MainOptionsPanelController controller;
-    private EngineBox mEngineBox;
     private final FxPanel mFxPanel;
-    private final MOptions mOptions = MOptions.getInstance();
 
     MainPanel(MainOptionsPanelController controller) {
         this.controller = controller;
@@ -42,11 +38,7 @@ final class MainPanel extends javax.swing.JPanel {
 
             private Scene createScene() {
 
-                mEngineBox = new EngineBox();
-
-                VBox box = new VBox(8,
-                        mEngineBox
-                );
+                VBox box = new VBox(8);
 
                 box.setPadding(new Insets(16));
 

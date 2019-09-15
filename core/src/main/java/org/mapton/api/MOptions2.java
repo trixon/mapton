@@ -24,7 +24,8 @@ import org.openide.util.Lookup;
 import se.trixon.almond.util.Dict;
 
 /**
- * Model object for MOptions2.
+ *
+ * @author Patrik Karlström
  */
 public class MOptions2 {
 

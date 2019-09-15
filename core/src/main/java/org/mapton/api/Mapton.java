@@ -134,7 +134,7 @@ public class Mapton {
         MEngine defaultEngine = null;
 
         for (MEngine mapEngine : Lookup.getDefault().lookupAll(MEngine.class)) {
-            if (StringUtils.equalsIgnoreCase(mapEngine.getClass().getName(), MOptions.getInstance().getEngine())) {
+            if (StringUtils.equalsIgnoreCase(mapEngine.getName(), MOptions.getInstance().getEngine())) {
                 return mapEngine;
             } else {
                 defaultEngine = mapEngine;

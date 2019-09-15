@@ -15,7 +15,6 @@
  */
 package org.mapton.core.ui;
 
-import java.util.prefs.PreferenceChangeEvent;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -29,6 +28,7 @@ import org.controlsfx.control.StatusBar;
 import org.mapton.api.MCooTrans;
 import org.mapton.api.MEngine;
 import org.mapton.api.MOptions;
+import org.mapton.api.MOptions2;
 import org.mapton.api.MStatusZoomMode;
 import org.mapton.api.Mapton;
 import org.openide.util.Lookup;
@@ -167,13 +167,11 @@ public class AppStatusView extends StatusBar {
             updateMousePositionData();
         });
 
-        mOptions.getPreferences().addPreferenceChangeListener((PreferenceChangeEvent evt) -> {
-            if (evt.getKey().equals(MOptions.KEY_MAP_ENGINE)) {
-                setMessage("");
-                Platform.runLater(() -> {
-                    updateZoomMode();
-                });
-            }
+        MOptions2.getInstance().general().engineProperty().addListener((ObservableValue ov, Object t, Object t1) -> {
+            setMessage("");
+            Platform.runLater(() -> {
+                updateZoomMode();
+            });
         });
 
         Mapton.getGlobalState().addListener((GlobalStateChangeEvent evt) -> {

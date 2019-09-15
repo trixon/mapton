@@ -15,10 +15,10 @@
  */
 package org.mapton.core.ui;
 
-import java.util.prefs.PreferenceChangeEvent;
 import javafx.application.Platform;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.layout.BorderPane;
-import org.mapton.api.MOptions;
+import org.mapton.api.MOptions2;
 import org.mapton.api.Mapton;
 
 /**
@@ -27,20 +27,11 @@ import org.mapton.api.Mapton;
  */
 public class RulerView extends BorderPane {
 
-    private final MOptions mMOptions = MOptions.getInstance();
-
     public RulerView() {
         createUI();
 
-        mMOptions.getPreferences().addPreferenceChangeListener((PreferenceChangeEvent evt) -> {
-            switch (evt.getKey()) {
-                case MOptions.KEY_MAP_ENGINE:
-                    loadRulerView();
-                    break;
-
-                default:
-                    break;
-            }
+        MOptions2.getInstance().general().engineProperty().addListener((ObservableValue ov, Object t, Object t1) -> {
+            loadRulerView();
         });
 
     }

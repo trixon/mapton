@@ -32,7 +32,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.logging.Logger;
-import java.util.prefs.PreferenceChangeEvent;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -57,7 +56,6 @@ import org.mapton.api.MContextMenuItem;
 import org.mapton.api.MDict;
 import org.mapton.api.MEngine;
 import org.mapton.api.MMapMagnet;
-import org.mapton.api.MOptions;
 import org.mapton.api.MOptions2;
 import org.mapton.api.MTopComponent;
 import org.mapton.api.MWhatsHereEngine;
@@ -126,12 +124,8 @@ public final class MapTopComponent extends MTopComponent {
         putClientProperty(PROP_MAXIMIZATION_DISABLED, Boolean.TRUE);
         putClientProperty(PROP_UNDOCKING_DISABLED, Boolean.TRUE);
 
-        mMOptions.getPreferences().addPreferenceChangeListener((PreferenceChangeEvent evt) -> {
-            switch (evt.getKey()) {
-                case MOptions.KEY_MAP_ENGINE:
-                    setEngine(Mapton.getEngine());
-                    break;
-            }
+        MOptions2.getInstance().general().engineProperty().addListener((ObservableValue ov, Object t, Object t1) -> {
+            setEngine(Mapton.getEngine());
         });
     }
 
