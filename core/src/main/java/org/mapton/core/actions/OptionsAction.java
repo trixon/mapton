@@ -17,16 +17,14 @@ package org.mapton.core.actions;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
 import org.mapton.api.MOptions2;
+import org.mapton.core.ui.options.OptionsPanel;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle.Messages;
-import se.trixon.almond.nbp.fx.FxDialogPanel;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.swing.DelayedResetRunner;
 import se.trixon.almond.util.swing.SwingHelper;
@@ -42,7 +40,7 @@ import se.trixon.almond.util.swing.SwingHelper;
 @Messages("CTL_OptionsAction=Options")
 public final class OptionsAction implements ActionListener {
 
-    private DelayedResetRunner mDelayedResetRunner;
+    private final DelayedResetRunner mDelayedResetRunner;
     private OptionsPanel optionsPanel = new OptionsPanel();
 
     public OptionsAction() {
@@ -68,18 +66,4 @@ public final class OptionsAction implements ActionListener {
         mDelayedResetRunner.reset();
     }
 
-    class OptionsPanel extends FxDialogPanel {
-
-        public OptionsPanel() {
-        }
-
-        @Override
-        protected void fxConstructor() {
-            setScene(createScene());
-        }
-
-        private Scene createScene() {
-            return new Scene(new BorderPane(MOptions2.getInstance().getPreferencesFxView()));
-        }
-    }
 }

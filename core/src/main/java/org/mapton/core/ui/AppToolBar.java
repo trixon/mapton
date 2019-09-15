@@ -49,6 +49,7 @@ import org.mapton.api.MDocumentInfo;
 import org.mapton.api.MEngine;
 import org.mapton.api.MKey;
 import org.mapton.api.MOptions;
+import org.mapton.api.MOptions2;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeContextMenu;
 import static org.mapton.api.Mapton.getIconSizeToolBar;
@@ -566,6 +567,6 @@ public class AppToolBar extends ToolBar {
     }
 
     private boolean usePopOver() {
-        return mOptions.isPreferPopover() || mOptions.isMapOnly();
+        return MOptions2.getInstance().general().isPreferPopover() || mOptions.isMapOnly();
     }
 }

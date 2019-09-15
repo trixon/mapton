@@ -18,6 +18,8 @@ package org.mapton.api;
 import com.dlsc.preferencesfx.PreferencesFx;
 import com.dlsc.preferencesfx.model.Category;
 import com.dlsc.preferencesfx.view.PreferencesFxView;
+import javafx.application.Platform;
+import javafx.embed.swing.JFXPanel;
 import org.openide.util.Lookup;
 import se.trixon.almond.util.Dict;
 
@@ -34,7 +36,10 @@ public class MOptions2 {
     }
 
     private MOptions2() {
-        createPreferences();
+        new JFXPanel();
+        Platform.runLater(() -> {
+            createPreferences();
+        });
     }
 
     public void createPreferences() {

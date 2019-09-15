@@ -44,7 +44,6 @@ final class MainPanel extends javax.swing.JPanel {
 
     private final MainOptionsPanelController controller;
     private final ResourceBundle mBundle = NbBundle.getBundle(MainPanel.class);
-    private CheckBox mCrosshairCheckBox;
     private CheckBox mDarkThemeCheckBox;
     private EngineBox mEngineBox;
     private final FxPanel mFxPanel;
@@ -53,8 +52,6 @@ final class MainPanel extends javax.swing.JPanel {
     private Color mOldIconColorBright;
     private Color mOldIconColorDark;
     private final MOptions mOptions = MOptions.getInstance();
-
-    private CheckBox mPopoverCheckBox;
 
     MainPanel(MainOptionsPanelController controller) {
         this.controller = controller;
@@ -68,16 +65,12 @@ final class MainPanel extends javax.swing.JPanel {
 
             private Scene createScene() {
 
-                mCrosshairCheckBox = new CheckBox(mBundle.getString("croshairCheckBox.text"));
-                mPopoverCheckBox = new CheckBox(mBundle.getString("popoverCheckBox.text"));
                 mDarkThemeCheckBox = new CheckBox(Dict.NIGHT_MODE.toString());
                 mEngineBox = new EngineBox();
                 mIconColorPicker = new ColorPicker();
                 Label iconColorLabel = new Label(mBundle.getString("iconColorLabel.text"));
 
                 VBox box = new VBox(8,
-                        mCrosshairCheckBox,
-                        mPopoverCheckBox,
                         mDarkThemeCheckBox,
                         new VBox(
                                 iconColorLabel,
@@ -123,8 +116,6 @@ final class MainPanel extends javax.swing.JPanel {
     }
 
     private void loadFX() {
-        mCrosshairCheckBox.setSelected(mOptions.is(KEY_DISPLAY_CROSSHAIR));
-        mPopoverCheckBox.setSelected(mOptions.isPreferPopover());
         mOldDark = mOptions.is(KEY_UI_LAF_DARK, DEFAULT_UI_LAF_DARK);
         mDarkThemeCheckBox.setSelected(mOldDark);
 
@@ -135,8 +126,6 @@ final class MainPanel extends javax.swing.JPanel {
     }
 
     private void storeFX() {
-        mOptions.put(KEY_DISPLAY_CROSSHAIR, mCrosshairCheckBox.isSelected());
-        mOptions.setPreferPopover(mPopoverCheckBox.isSelected());
         boolean newDark = mDarkThemeCheckBox.isSelected();
         mOptions.put(KEY_UI_LAF_DARK, newDark);
 

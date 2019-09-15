@@ -34,6 +34,7 @@ import java.util.HashSet;
 import java.util.logging.Logger;
 import java.util.prefs.PreferenceChangeEvent;
 import javafx.application.Platform;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -57,6 +58,7 @@ import org.mapton.api.MDict;
 import org.mapton.api.MEngine;
 import org.mapton.api.MMapMagnet;
 import org.mapton.api.MOptions;
+import org.mapton.api.MOptions2;
 import org.mapton.api.MTopComponent;
 import org.mapton.api.MWhatsHereEngine;
 import org.mapton.api.Mapton;
@@ -113,7 +115,6 @@ public final class MapTopComponent extends MTopComponent {
     private MEngine mEngine;
     private final HashSet<TopComponent> mMapMagnets = new HashSet<>();
     private final Mapton mMapton = Mapton.getInstance();
-    private final MOptions mOptions = MOptions.getInstance();
     private BorderPane mRoot;
 
     public MapTopComponent() {
@@ -129,13 +130,6 @@ public final class MapTopComponent extends MTopComponent {
             switch (evt.getKey()) {
                 case MOptions.KEY_MAP_ENGINE:
                     setEngine(Mapton.getEngine());
-
-                case MOptions.KEY_DISPLAY_CROSSHAIR:
-                    repaint();
-                    revalidate();
-                    break;
-
-                default:
                     break;
             }
         });
@@ -156,7 +150,7 @@ public final class MapTopComponent extends MTopComponent {
         try {
             super.paint(g);
 
-            if (mOptions.is(MOptions.KEY_DISPLAY_CROSSHAIR)) {
+            if (mMOptions2.general().isDisplayCrosshair()) {
                 Graphics2D g2 = (Graphics2D) g;
                 int x = getWidth() / 2;
                 int y = getHeight() / 2;
@@ -230,6 +224,12 @@ public final class MapTopComponent extends MTopComponent {
     protected void initFX() {
         setScene(createScene());
         initContextMenu();
+        mMOptions2 = MOptions2.getInstance();
+        mMOptions2.general().displayCrosshairProperty().addListener((ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1) -> {
+            repaint();
+            revalidate();
+        });
+
     }
 
     void readProperties(java.util.Properties p) {

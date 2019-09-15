@@ -27,8 +27,6 @@ import se.trixon.almond.util.fx.FxHelper;
 public class MOptions extends OptionsBase {
 
     public static final boolean DEFAULT_UI_LAF_DARK = true;
-
-    public static final String KEY_DISPLAY_CROSSHAIR = "display_crosshair";
     public static final String KEY_GRID_GLOBAL_CLAMP_TO_GROUND = "global_clamp_to_ground";
     public static final String KEY_GRID_GLOBAL_EQUATOR = "grid.global.equator";
     public static final String KEY_GRID_GLOBAL_LATITUDES = "grid.global.latitudes";
@@ -44,7 +42,7 @@ public class MOptions extends OptionsBase {
     public static final String KEY_MAP_HOME_LAT = "map_home_lat";
     public static final String KEY_MAP_HOME_LON = "map_home_lon";
     public static final String KEY_MAP_ONLY = "map_only";
-    public static final String KEY_PREFER_POPOVER = "prefer_popover";
+    @Deprecated
     public static final String KEY_UI_LAF_DARK = "ui.laf.dark";
     public static final String KEY_UI_LAF_ICON_COLOR_BRIGHT = "ui.laf.icon_color_bright";
     public static final String KEY_UI_LAF_ICON_COLOR_DARK = "ui.laf.icon_color_dark";
@@ -55,7 +53,6 @@ public class MOptions extends OptionsBase {
     private static final double DEFAULT_MAP_LON = 11.999312;
     private static final boolean DEFAULT_MAP_ONLY = false;
     private static final double DEFAULT_MAP_ZOOM = 0.8f;
-    private static final boolean DEFAULT_PREFER_POPOVER = false;
     private static final String DEFAULT_UI_LAF_ICON_COLOR_BRIGHT = "1A1A1A";
     private static final String DEFAULT_UI_LAF_ICON_COLOR_DARK = "D3D3D3";
     private static final String KEY_DISPLAY_BOOKMARK = "display_bookmark";
@@ -140,10 +137,6 @@ public class MOptions extends OptionsBase {
         return mPreferences.getBoolean(KEY_MAP_ONLY, DEFAULT_MAP_ONLY);
     }
 
-    public boolean isPreferPopover() {
-        return mPreferences.getBoolean(KEY_PREFER_POPOVER, DEFAULT_PREFER_POPOVER);
-    }
-
     public void setBookmarkVisible(boolean value) {
         mPreferences.putBoolean(KEY_DISPLAY_BOOKMARK, value);
     }
@@ -196,10 +189,6 @@ public class MOptions extends OptionsBase {
 
     public void setMapZoom(double value) {
         mPreferences.putDouble(KEY_MAP_ZOOM, value);
-    }
-
-    public void setPreferPopover(boolean value) {
-        mPreferences.putBoolean(KEY_PREFER_POPOVER, value);
     }
 
     private static class Holder {

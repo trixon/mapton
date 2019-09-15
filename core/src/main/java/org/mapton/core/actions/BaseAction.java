@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,10 +16,11 @@
 package org.mapton.core.actions;
 
 import java.awt.event.ActionListener;
+import org.mapton.api.MOptions;
+import org.mapton.api.MOptions2;
 import org.openide.awt.Actions;
 import org.openide.windows.WindowManager;
 import se.trixon.almond.nbp.fx.FxTopComponent;
-import org.mapton.api.MOptions;
 
 /**
  *
@@ -28,6 +29,7 @@ import org.mapton.api.MOptions;
 public abstract class BaseAction implements ActionListener {
 
     protected MOptions mOptions = MOptions.getInstance();
+    protected MOptions2 mOptions2 = MOptions2.getInstance();
 
     protected void toggleTopComponent(String id) {
         FxTopComponent tc = (FxTopComponent) WindowManager.getDefault().findTopComponent(id);
@@ -47,7 +49,7 @@ public abstract class BaseAction implements ActionListener {
     }
 
     protected boolean usePopover() {
-        return mOptions.isPreferPopover() || mOptions.isMapOnly();
+        return mOptions2.general().isPreferPopover() || mOptions.isMapOnly();
     }
 
 }
