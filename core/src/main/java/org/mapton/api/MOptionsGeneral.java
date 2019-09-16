@@ -46,6 +46,7 @@ public class MOptionsGeneral {
     private final ResourceBundle mBundle = NbBundle.getBundle(OptionsPanel.class);
     private final Category mCategory;
     private final BooleanProperty mDisplayCrosshairProperty = new SimpleBooleanProperty(true);
+    private final BooleanProperty mDisplayHomeIconProperty = new SimpleBooleanProperty(false);
     private final ObjectProperty<String> mEngineProperty = new SimpleObjectProperty<>("WorldWind");
     private final ObjectProperty<Color> mIconColorBrightProperty = new SimpleObjectProperty<>(Color.valueOf(DEFAULT_UI_LAF_ICON_COLOR_BRIGHT));
     private final ObjectProperty<Color> mIconColorDarkProperty = new SimpleObjectProperty<>(Color.valueOf(DEFAULT_UI_LAF_ICON_COLOR_DARK));
@@ -72,7 +73,8 @@ public class MOptionsGeneral {
                 ),
                 Group.of(Dict.MAP.toString(),
                         Setting.of(MDict.MAP_ENGINE.toString(), engineItems, mEngineProperty).customKey("general.mapEngine"),
-                        Setting.of(mBundle.getString("croshair"), mDisplayCrosshairProperty).customKey("general.crosshair")
+                        Setting.of(mBundle.getString("croshair"), mDisplayCrosshairProperty).customKey("general.crosshair"),
+                        Setting.of(mBundle.getString("homeIcon"), mDisplayHomeIconProperty).customKey("general.homeIcon")
                 )
         );
 
@@ -81,6 +83,10 @@ public class MOptionsGeneral {
 
     public BooleanProperty displayCrosshairProperty() {
         return mDisplayCrosshairProperty;
+    }
+
+    public BooleanProperty displayHomeIconProperty() {
+        return mDisplayHomeIconProperty;
     }
 
     public ObjectProperty<String> engineProperty() {
@@ -113,6 +119,10 @@ public class MOptionsGeneral {
 
     public boolean isDisplayCrosshair() {
         return mDisplayCrosshairProperty.get();
+    }
+
+    public boolean isDisplayHomeIcon() {
+        return mDisplayHomeIconProperty.get();
     }
 
     public boolean isNightMode() {

@@ -18,28 +18,21 @@ package org.mapton.worldwind;
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
-import gov.nasa.worldwind.render.Offset;
 import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
-import java.awt.Color;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.prefs.PreferenceChangeEvent;
 import javafx.collections.ListChangeListener;
 import org.mapton.api.MBookmark;
 import org.mapton.api.MBookmarkManager;
 import org.mapton.api.MKey;
-import org.mapton.api.MLatLon;
-import org.mapton.api.MOptions;
 import org.mapton.api.Mapton;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.LayerBundleManager;
 import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.GraphicsHelper;
 import se.trixon.almond.util.fx.FxHelper;
-import se.trixon.almond.util.icons.material.MaterialIcon;
 
 /**
  *
@@ -50,7 +43,6 @@ public class BookmarkLayerBundle extends LayerBundle {
 
     private final MBookmarkManager mBookmarkManager = MBookmarkManager.getInstance();
     private final RenderableLayer mLayer = new RenderableLayer();
-    private final MOptions mOptions = MOptions.getInstance();
 
     public BookmarkLayerBundle() {
         init();
@@ -76,14 +68,6 @@ public class BookmarkLayerBundle extends LayerBundle {
     private void initListeners() {
         mBookmarkManager.getItems().addListener((ListChangeListener.Change<? extends MBookmark> c) -> {
             updatePlacemarks();
-        });
-
-        mOptions.getPreferences().addPreferenceChangeListener((PreferenceChangeEvent evt) -> {
-            switch (evt.getKey()) {
-                case MOptions.KEY_MAP_HOME_LAT:
-                    updatePlacemarks();
-                    break;
-            }
         });
     }
 
@@ -116,20 +100,6 @@ public class BookmarkLayerBundle extends LayerBundle {
                 mLayer.addRenderable(placemark);
             }
         }
-
-        MLatLon home = mOptions.getMapHome();
-        PointPlacemark placemark = new PointPlacemark(Position.fromDegrees(home.getLatitude(), home.getLongitude()));
-        //placemark.setLabelText(Dict.HOME.toString());
-        placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
-
-        PointPlacemarkAttributes attrs = new PointPlacemarkAttributes(placemark.getDefaultAttributes());
-        attrs.setImage(GraphicsHelper.toBufferedImage(MaterialIcon._Action.HOME.getImageIcon(Mapton.getIconSizeToolBar() * 2, Color.RED).getImage()));
-        attrs.setImageOffset(Offset.CENTER);
-
-        placemark.setAttributes(attrs);
-        placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(attrs, 1.0));
-
-        mLayer.addRenderable(placemark);
 
         LayerBundleManager.getInstance().redraw();
     }
