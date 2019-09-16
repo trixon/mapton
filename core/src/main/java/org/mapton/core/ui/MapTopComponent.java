@@ -124,7 +124,7 @@ public final class MapTopComponent extends MTopComponent {
         putClientProperty(PROP_MAXIMIZATION_DISABLED, Boolean.TRUE);
         putClientProperty(PROP_UNDOCKING_DISABLED, Boolean.TRUE);
 
-        MOptions2.getInstance().general().engineProperty().addListener((ObservableValue ov, Object t, Object t1) -> {
+        MOptions2.getInstance().general().engineProperty().addListener((ObservableValue<? extends String> ov, String t, String t1) -> {
             setEngine(Mapton.getEngine());
         });
     }

@@ -30,7 +30,7 @@ public class RulerView extends BorderPane {
     public RulerView() {
         createUI();
 
-        MOptions2.getInstance().general().engineProperty().addListener((ObservableValue ov, Object t, Object t1) -> {
+        MOptions2.getInstance().general().engineProperty().addListener((ObservableValue<? extends String> ov, String t, String t1) -> {
             loadRulerView();
         });
 

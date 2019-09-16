@@ -61,7 +61,7 @@ public class MOptionsGeneral {
                     engineNames.add(engine.getName());
                 });
 
-        ObservableList engineItems = FXCollections.observableList(engineNames);
+        ObservableList<String> engineItems = FXCollections.observableList(engineNames);
 
         mCategory = Category.of(Dict.GENERAL.toString(),
                 Group.of(
@@ -83,7 +83,7 @@ public class MOptionsGeneral {
         return mDisplayCrosshairProperty;
     }
 
-    public ObjectProperty engineProperty() {
+    public ObjectProperty<String> engineProperty() {
         return mEngineProperty;
     }
 

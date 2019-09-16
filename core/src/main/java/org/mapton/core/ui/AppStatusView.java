@@ -167,7 +167,7 @@ public class AppStatusView extends StatusBar {
             updateMousePositionData();
         });
 
-        MOptions2.getInstance().general().engineProperty().addListener((ObservableValue ov, Object t, Object t1) -> {
+        MOptions2.getInstance().general().engineProperty().addListener((ObservableValue<? extends String> ov, String t, String t1) -> {
             setMessage("");
             Platform.runLater(() -> {
                 updateZoomMode();
