@@ -146,7 +146,7 @@ public class LayerView extends BorderPane {
         Layer rootLayer = new RenderableLayer();
         rootLayer.setName("");
         mRootItem = new CheckBoxTreeItem<>(rootLayer);
-        mTreeView = new CheckTreeView(mRootItem);
+        mTreeView = new CheckTreeView<>(mRootItem);
         mCheckModel = mTreeView.getCheckModel();
         mTreeView.setShowRoot(false);
         mTreeView.setCellFactory((TreeView<Layer> param) -> new LayerTreeCell());
