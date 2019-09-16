@@ -30,9 +30,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <showDeprecation>true</showDeprecation>
-                </configuration>
             </plugin>
         </plugins>
     </build>
@@ -65,7 +62,7 @@
         <dependency>
             <groupId>fr.dudie</groupId>
             <artifactId>nominatim-api</artifactId>
-            <version>3.3</version>
+            <version>3.4</version>
         </dependency>
     </dependencies>
 </project>

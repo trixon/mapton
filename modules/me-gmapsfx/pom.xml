@@ -36,9 +36,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <showDeprecation>true</showDeprecation>
-                </configuration>
             </plugin>
         </plugins>
     </build>
@@ -74,6 +71,16 @@
         <dependency>
             <groupId>se.trixon</groupId>
             <artifactId>GMapsFX-txn</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>sl4j-impl</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- Other -->
