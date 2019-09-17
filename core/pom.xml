@@ -17,7 +17,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <publicPackages>
-                        <!--<publicPackage>com.dlsc.*</publicPackage>-->
+                        <publicPackage>com.dlsc.*</publicPackage>
                         <publicPackage>com.github.goober.*</publicPackage>
                         <publicPackage>com.google.*</publicPackage>
                         <publicPackage>com.sun.xml.*</publicPackage>

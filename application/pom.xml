@@ -110,6 +110,11 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>me-mapjfx</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>me-worldwind</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -205,14 +210,9 @@
         </dependency>
 
         <!--Mapton/Unstable-->
-        <!--        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>demo</artifactId>
-            <version>${project.version}</version>
-        </dependency>-->
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>me-mapjfx</artifactId>
+            <artifactId>demo</artifactId>
             <version>${project.version}</version>
         </dependency>
 

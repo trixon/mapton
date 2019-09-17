@@ -116,7 +116,7 @@
         <module>modules/wms-nasa</module>
 
         <!--Unstable-->
-        <!--<module>demo</module>-->
+        <module>demo</module>
         <!--<module>modules-ext/gdal</module>-->
 
         <!--Deprecated-->

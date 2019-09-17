@@ -13,24 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.demo.ww;
+package org.mapton.demo;
 
-import org.mapton.worldwind.api.MapStyle;
+import com.dlsc.preferencesfx.model.Category;
+import com.dlsc.preferencesfx.model.Group;
+import com.dlsc.preferencesfx.model.Setting;
+import javafx.scene.control.Label;
+import org.mapton.api.MOptionsModule;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
  * @author Patrik Karlström
  */
-@ServiceProvider(service = MapStyle.class)
-public class TrixonMapStyle extends MapStyle {
+@ServiceProvider(service = MOptionsModule.class)
+public class DemoOptions extends MOptionsModule {
 
-    public TrixonMapStyle() {
-        setId("demo.styleId");
-        setName("Trixon");
-        setSuppliers("Trixon");
-        setLayers(new String[]{
-            "trixon"
-        });
+    public DemoOptions() {
+
+        mCategory = Category.of("Demo Category",
+                Group.of(
+                        Setting.of(new Label("Demo Setting"))
+                ).description("Demo Group")
+        );
     }
+
 }
