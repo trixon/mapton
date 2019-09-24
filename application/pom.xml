@@ -210,11 +210,11 @@
         </dependency>
 
         <!--Mapton/Unstable-->
-        <dependency>
+        <!--        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>demo</artifactId>
             <version>${project.version}</version>
-        </dependency>
+        </dependency>-->
 
         <!--Mapton/Ext-->
         <!--        <dependency>
@@ -232,10 +232,10 @@
             <groupId>se.trixon.almond</groupId>
             <artifactId>almond-nbp-actions-osx</artifactId>
         </dependency>
-        <dependency>
+        <!--        <dependency>
             <groupId>se.trixon.almond</groupId>
             <artifactId>almond-nbp-darcula</artifactId>
-        </dependency>
+        </dependency>-->
     </dependencies>
 
     <repositories>
@@ -259,6 +259,7 @@
                 <groupId>org.apache.netbeans.utilities</groupId>
                 <artifactId>nbm-maven-plugin</artifactId>
                 <configuration>
+                    <!--<verifyRuntime>false</verifyRuntime>-->
                     <installerOsSolaris>false</installerOsSolaris>
                     <installerOsMacosx>false</installerOsMacosx>
                     <installerLicenseFile>../LICENSE</installerLicenseFile>

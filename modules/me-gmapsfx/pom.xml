@@ -40,6 +40,12 @@
         </plugins>
     </build>
     <dependencies>
+        <!-- javafx -->
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-swing</artifactId>
+        </dependency>
+        
         <!-- NetBeans -->
         <dependency>
             <groupId>org.netbeans.api</groupId>
