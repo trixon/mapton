@@ -66,9 +66,21 @@
                     <artifactId>maven-jar-plugin</artifactId>
                     <version>3.1.2</version>
                 </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>versions-maven-plugin</artifactId>
+                    <version>2.7</version>
+                    <configuration>
+                        <generateBackupPoms>false</generateBackupPoms>
+                    </configuration>
+                </plugin>
             </plugins>
         </pluginManagement>
         <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>versions-maven-plugin</artifactId>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -138,6 +150,11 @@
             </dependency>
             <dependency>
                 <groupId>org.openjfx</groupId>
+                <artifactId>javafx-fxml</artifactId>
+                <version>${openjfx.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.openjfx</groupId>
                 <artifactId>javafx-graphics</artifactId>
                 <version>${openjfx.version}</version>
             </dependency>
@@ -148,17 +165,12 @@
             </dependency>
             <dependency>
                 <groupId>org.openjfx</groupId>
-                <artifactId>javafx-web</artifactId>
-                <version>${openjfx.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.openjfx</groupId>
-                <artifactId>javafx-fxml</artifactId>
-                <version>${openjfx.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.openjfx</groupId>
                 <artifactId>javafx-swing</artifactId>
+                <version>${openjfx.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-web</artifactId>
                 <version>${openjfx.version}</version>
             </dependency>
 
@@ -173,6 +185,7 @@
                 <artifactId>mapton-workbench</artifactId>
                 <version>${mapton.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>org.mapton</groupId>
                 <artifactId>core</artifactId>
@@ -218,16 +231,6 @@
             <dependency>
                 <groupId>se.trixon.almond</groupId>
                 <artifactId>almond-nbp-actions</artifactId>
-                <version>${almond.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>se.trixon.almond</groupId>
-                <artifactId>almond-nbp-actions-osx</artifactId>
-                <version>${almond.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>se.trixon.almond</groupId>
-                <artifactId>almond-nbp-darcula</artifactId>
                 <version>${almond.version}</version>
             </dependency>
             <dependency>

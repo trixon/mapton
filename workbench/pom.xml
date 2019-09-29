@@ -16,7 +16,7 @@
                 <artifactId>nbm-maven-plugin</artifactId>
                 <extensions>true</extensions>
                 <configuration>
-                    <verifyRuntime>false</verifyRuntime>
+                    <!--<verifyRuntime>false</verifyRuntime>-->
                     <moduleDependencies>
                         <dependency>
                             <!--Private Package Reference-->
@@ -240,7 +240,7 @@
             <artifactId>javafx-web</artifactId>
         </dependency>
 
-        <!-- Other -->
+        <!-- UI -->
         <dependency>
             <groupId>org.controlsfx</groupId>
             <artifactId>controlsfx</artifactId>
@@ -259,6 +259,11 @@
             <version>2.1.6</version>
         </dependency>
 
+        <!-- Apache -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-csv</artifactId>
@@ -267,6 +272,8 @@
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
         </dependency>
+
+        <!-- Other -->
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
