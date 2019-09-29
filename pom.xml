@@ -79,43 +79,45 @@
     <modules>
         <module>application</module>
         <module>branding</module>
-        <module>core</module>
+        <module>api</module>
+        <module>workbench</module>
+        <!--<module>core</module>-->
 
         <!--Map engines-->
-        <module>modules/me-gmapsfx</module>
+        <!--        <module>modules/me-gmapsfx</module>
         <module>modules/me-jxmapviewer2</module>
         <module>modules/me-mapjfx</module>
         <module>modules/me-worldwind</module>
-        <module>modules/datasources</module>
+        <module>modules/datasources</module>-->
 
         <!--Search engines-->
-        <module>modules/se-bookmarks</module>
+        <!--        <module>modules/se-bookmarks</module>
         <module>modules/se-geonames</module>
         <module>modules/se-google</module>
-        <module>modules/se-nominatim</module>
+        <module>modules/se-nominatim</module>-->
 
         <!--Transformation engines-->
-        <module>modules/te-swetrans</module>
+        <!--<module>modules/te-swetrans</module>-->
 
         <!--Other-->
-        <module>modules/reports</module>
-        <module>modules/wikipedia</module>
+        <!--        <module>modules/reports</module>
+        <module>modules/wikipedia</module>-->
 
 
         <!--Add-ons-->
-        <module>modules-add-ons/geonames-ww</module>
+        <!--        <module>modules-add-ons/geonames-ww</module>
         <module>modules-add-ons/mapollage</module>
         <module>modules-add-ons/mapollage-ww</module>
-        <module>modules-add-ons/notes</module>
+        <module>modules-add-ons/notes</module>-->
 
         <!--WMS-->
-        <module>modules/wms-emxsys</module>
+        <!--        <module>modules/wms-emxsys</module>
         <module>modules/wms-eox</module>
         <module>modules/wms-lantmateriet</module>
-        <module>modules/wms-nasa</module>
+        <module>modules/wms-nasa</module>-->
 
         <!--Unstable-->
-        <module>demo</module>
+        <!--<module>demo</module>-->
         <!--<module>modules-ext/gdal</module>-->
 
         <!--Deprecated-->
@@ -128,46 +130,49 @@
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-base</artifactId>
                 <version>${openjfx.version}</version>
-                <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-controls</artifactId>
                 <version>${openjfx.version}</version>
-                <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-graphics</artifactId>
                 <version>${openjfx.version}</version>
-                <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-media</artifactId>
                 <version>${openjfx.version}</version>
-                <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-web</artifactId>
                 <version>${openjfx.version}</version>
-                <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-fxml</artifactId>
                 <version>${openjfx.version}</version>
-                <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-swing</artifactId>
                 <version>${openjfx.version}</version>
-                <scope>provided</scope>
             </dependency>
 
             <!-- Mapton -->
+            <dependency>
+                <groupId>org.mapton</groupId>
+                <artifactId>mapton-api</artifactId>
+                <version>${mapton.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mapton</groupId>
+                <artifactId>mapton-workbench</artifactId>
+                <version>${mapton.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.mapton</groupId>
                 <artifactId>core</artifactId>
@@ -202,6 +207,11 @@
             </dependency>
             <dependency>
                 <groupId>se.trixon.almond</groupId>
+                <artifactId>almond-nbp-core</artifactId>
+                <version>${almond.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>se.trixon.almond</groupId>
                 <artifactId>almond-nbp</artifactId>
                 <version>${almond.version}</version>
             </dependency>
@@ -227,6 +237,22 @@
             </dependency>
 
             <!-- Other -->
+            <dependency>
+                <groupId>org.controlsfx</groupId>
+                <artifactId>controlsfx</artifactId>
+                <version>11.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>com.dlsc.workbenchfx</groupId>
+                <artifactId>workbenchfx-core</artifactId>
+                <version>11.0.2</version>
+            </dependency>
+            <dependency>
+                <groupId>com.dlsc.preferencesfx</groupId>
+                <artifactId>preferencesfx-core</artifactId>
+                <version>11.6.0</version>
+            </dependency>
+
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
@@ -321,26 +347,6 @@
                 <groupId>com.drewnoakes</groupId>
                 <artifactId>metadata-extractor</artifactId>
                 <version>2.12.0</version>
-            </dependency>
-            <dependency>
-                <groupId>com.dlsc.preferencesfx</groupId>
-                <artifactId>preferencesfx-core</artifactId>
-                <version>11.6.0</version>
-                <!--                <exclusions>
-                    <exclusion>
-                        <groupId>org.controlsfx</groupId>
-                        <artifactId>controlsfx</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.openjfx</groupId>
-                        <artifactId>*</artifactId>
-                    </exclusion>
-                </exclusions>-->
-            </dependency>
-            <dependency>
-                <groupId>org.controlsfx</groupId>
-                <artifactId>controlsfx</artifactId>
-                <version>11.0.0</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

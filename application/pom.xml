@@ -20,68 +20,19 @@
     <dependencies>
         <!-- NetBeans -->
         <dependency>
-            <groupId>org.netbeans.cluster</groupId>
-            <artifactId>platform</artifactId>
+            <groupId>org.netbeans.modules</groupId>
+            <artifactId>org-netbeans-core-startup</artifactId>
             <version>${netbeans.version}</version>
-            <type>pom</type>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.netbeans.modules</groupId>
-                    <artifactId>org-netbeans-modules-junitlib</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.netbeans.api</groupId>
-                    <artifactId>org-netbeans-api-htmlui</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.netbeans.modules</groupId>
-                    <artifactId>org-netbeans-modules-templatesui</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.netbeans.api</groupId>
-                    <artifactId>org-netbeans-api-progress-compat8</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.netbeans.api</groupId>
-                    <artifactId>org-netbeans-api-visual</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.netbeans.api</groupId>
-                    <artifactId>org-netbeans-libs-junit4</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.netbeans.api</groupId>
-                    <artifactId>org-netbeans-libs-testng</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.netbeans.api</groupId>
-                    <artifactId>org-openide-execution-compat8</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.netbeans.api</groupId>
-                    <artifactId>org-jdesktop-layout</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.netbeans.api</groupId>
-                    <artifactId>org-netbeans-libs-javafx</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.netbeans.api</groupId>
-                    <artifactId>org-netbeans-libs-jsr223</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.netbeans.api</groupId>
-                    <artifactId>org-openide-compat</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.netbeans.modules</groupId>
-                    <artifactId>org-netbeans-modules-core-kit</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.netbeans.modules</groupId>
-                    <artifactId>org-netbeans-modules-favorites</artifactId>
-                </exclusion>
-            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-awt</artifactId>
+            <version>${netbeans.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-netbeans-modules-autoupdate-ui</artifactId>
+            <version>${netbeans.version}</version>
         </dependency>
 
         <!-- Mapton -->
@@ -90,15 +41,24 @@
             <artifactId>mapton-branding</artifactId>
             <version>${project.version}</version>
         </dependency>
-
         <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>mapton-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>mapton-workbench</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!--        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>core</artifactId>
             <version>${project.version}</version>
-        </dependency>
+        </dependency>-->
 
         <!--Mapton/Map engines-->
-        <dependency>
+        <!--        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>me-gmapsfx</artifactId>
             <version>${project.version}</version>
@@ -117,10 +77,10 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>me-worldwind</artifactId>
             <version>${project.version}</version>
-        </dependency>
+        </dependency>-->
 
         <!--Mapton/Search engines-->
-        <dependency>
+        <!--        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>se-bookmarks</artifactId>
             <version>${project.version}</version>
@@ -139,17 +99,16 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>se-nominatim</artifactId>
             <version>${project.version}</version>
-        </dependency>
+        </dependency>-->
 
         <!--Mapton/Transformation engines-->
-        <dependency>
+        <!--        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>te-swetrans</artifactId>
             <version>${project.version}</version>
-        </dependency>
-
+        </dependency>-->
         <!--Mapton/WMS sources-->
-        <dependency>
+        <!--        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>wms-eox</artifactId>
             <version>${project.version}</version>
@@ -168,10 +127,10 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>wms-nasa</artifactId>
             <version>${project.version}</version>
-        </dependency>
+        </dependency>-->
 
         <!--Mapton/Other-->
-        <dependency>
+        <!--        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>reports</artifactId>
             <version>${project.version}</version>
@@ -185,10 +144,10 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>datasources</artifactId>
             <version>${project.version}</version>
-        </dependency>
+        </dependency>-->
 
         <!--Mapton/Add-ons-->
-        <dependency>
+        <!--        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>addon-geonames-ww</artifactId>
             <version>${project.version}</version>
@@ -207,7 +166,7 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>addon-mapollage-ww</artifactId>
             <version>${project.version}</version>
-        </dependency>
+        </dependency>-->
 
         <!--Mapton/Unstable-->
         <!--        <dependency>
@@ -224,14 +183,14 @@
         </dependency>-->
 
         <!-- Trixon -->
-        <dependency>
+        <!--        <dependency>
             <groupId>se.trixon.almond</groupId>
             <artifactId>almond-nbp-actions</artifactId>
         </dependency>
         <dependency>
             <groupId>se.trixon.almond</groupId>
             <artifactId>almond-nbp-actions-osx</artifactId>
-        </dependency>
+        </dependency>-->
         <!--        <dependency>
             <groupId>se.trixon.almond</groupId>
             <artifactId>almond-nbp-darcula</artifactId>
@@ -269,6 +228,7 @@
                     <!--<additionalArguments>&#045;&#045;locale en:US</additionalArguments>-->
                     <!--<additionalArguments>&#045;&#045;nosplash</additionalArguments>-->
                     <!--<additionalArguments>&#045;&#045;fontsize 32</additionalArguments>-->
+                    <additionalArguments>&#045;&#045;nogui</additionalArguments>
                 </configuration>
             </plugin>
             <plugin>
