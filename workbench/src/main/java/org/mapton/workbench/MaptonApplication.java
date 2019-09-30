@@ -39,7 +39,6 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -50,6 +49,7 @@ import org.apache.commons.lang3.SystemUtils;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
 import static org.mapton.api.Mapton.*;
+import org.mapton.workbench.modules.PreferencesModule;
 import org.netbeans.modules.autoupdate.ui.PluginManagerUI;
 import org.netbeans.modules.autoupdate.ui.api.PluginManager;
 import org.openide.LifecycleManager;
@@ -74,7 +74,7 @@ public class MaptonApplication extends Application {
     private ToolbarItem mOptionsToolbarItem;
     private Action mPluginAction;
     private SwingNode mPluginManagerUiNode;
-//    private PreferencesModule mPreferencesModule;
+    private PreferencesModule mPreferencesModule;
     private Stage mStage;
     private Workbench mWorkbench;
 
@@ -141,18 +141,28 @@ public class MaptonApplication extends Application {
     }
 
     private void createUI() {
-//        mPreferencesModule = new PreferencesModule();
-//        mNewsModule = new NewsModule();
 
         mWorkbench = Workbench.builder().build();
 
         mWorkbench.getStylesheets().add(MaptonApplication.class.getResource("customTheme.css").toExternalForm());
-        initToolbar();
-        initWorkbenchDrawer();
+        initActions();
 
         populateTools();
 
-        mStage.setScene(new Scene(mWorkbench));
+        Scene scene = new Scene(mWorkbench);
+        mStage.setScene(scene);
+
+//        mNewsModule = new NewsModule();
+        mPreferencesModule = new PreferencesModule(scene);
+
+        mWorkbench.getModules().addAll(mPreferencesModule);
+
+        mWorkbench.getNavigationDrawerItems().setAll(
+                ActionUtils.createMenuItem(mOptionsAction),
+                ActionUtils.createMenuItem(mPluginAction),
+                ActionUtils.createMenuItem(mHelpAction),
+                ActionUtils.createMenuItem(mAboutAction)
+        );
 
         Platform.runLater(() -> {
             mAlmondFX.addStageWatcher(mStage, MaptonApplication.class);
@@ -161,7 +171,7 @@ public class MaptonApplication extends Application {
     }
 
     private void displayOptions() {
-//        mWorkbench.openModule(mPreferencesModule);
+        mWorkbench.openModule(mPreferencesModule);
     }
 
     private void initAccelerators() {
@@ -199,6 +209,71 @@ public class MaptonApplication extends Application {
             accelerators.put(new KeyCodeCombination(KeyCode.COMMA, KeyCombination.SHORTCUT_DOWN), (Runnable) () -> {
                 displayOptions();
             });
+        }
+    }
+
+    private void initActions() {
+        //options
+        mOptionsAction = new Action(Dict.OPTIONS.toString(), (ActionEvent event) -> {
+            mWorkbench.hideNavigationDrawer();
+            displayOptions();
+        });
+        mOptionsAction.setAccelerator(new KeyCodeCombination(KeyCode.COMMA, KeyCombination.SHORTCUT_DOWN));
+        mOptionsAction.setGraphic(MaterialIcon._Action.SETTINGS.getImageView(ICON_SIZE_DRAWER));
+
+        //plugins
+        mPluginAction = new Action(Dict.PLUGINS.toString(), (ActionEvent event) -> {
+            mWorkbench.hideNavigationDrawer();
+            Alert alert = new Alert(Alert.AlertType.NONE);
+            alert.setTitle("Plugins");
+
+            alert.getDialogPane().setContent(mPluginManagerUiNode);
+            alert.setResizable(true);
+            alert.showAndWait();
+        });
+
+        //help
+        mHelpAction = new Action(Dict.HELP.toString(), (ActionEvent event) -> {
+            mWorkbench.hideNavigationDrawer();
+            SystemHelper.desktopBrowse("https://mapton.org/help/");
+        });
+        //mHelpAction.setAccelerator(new KeyCodeCombination(KeyCode.F1, KeyCombination.SHORTCUT_ANY));
+        mHelpAction.setAccelerator(KeyCombination.keyCombination("F1"));
+
+        //about
+        mAboutAction = new Action(Dict.ABOUT.toString(), (ActionEvent event) -> {
+            mWorkbench.hideNavigationDrawer();
+
+            AboutModel aboutModel = new AboutModel(
+                    SystemHelper.getBundle(getClass(), "about"),
+                    SystemHelper.getResourceAsImageView(MaptonApplication.class, "logo.png")
+            );
+
+            AboutPane aboutPane = new AboutPane(aboutModel);
+
+            double scaledFontSize = FxHelper.getScaledFontSize();
+            Label appLabel = new Label(aboutModel.getAppName());
+            appLabel.setFont(new Font(scaledFontSize * 1.8));
+            Label verLabel = new Label(String.format("%s %s", Dict.VERSION.toString(), aboutModel.getAppVersion()));
+            verLabel.setFont(new Font(scaledFontSize * 1.2));
+            Label dateLabel = new Label(aboutModel.getAppDate());
+            dateLabel.setFont(new Font(scaledFontSize * 1.2));
+
+            VBox box = new VBox(appLabel, verLabel, dateLabel);
+            box.setAlignment(Pos.CENTER_LEFT);
+            box.setPadding(new Insets(0, 0, 0, 22));
+            BorderPane topBorderPane = new BorderPane(box);
+            topBorderPane.setLeft(aboutModel.getImageView());
+            topBorderPane.setPadding(new Insets(22));
+            BorderPane mainBorderPane = new BorderPane(aboutPane);
+            mainBorderPane.setTop(topBorderPane);
+
+            WorkbenchDialog dialog = WorkbenchDialog.builder(Dict.ABOUT.toString(), mainBorderPane, ButtonType.CLOSE).build();
+            mWorkbench.showDialog(dialog);
+        });
+
+        if (!IS_MAC) {
+            mOptionsAction.setAccelerator(new KeyCodeCombination(KeyCode.COMMA, KeyCombination.SHORTCUT_DOWN));
         }
     }
 
@@ -244,87 +319,6 @@ public class MaptonApplication extends Application {
             swingNode.setContent(pluginManagerUI);
             PluginManager p;
         });
-    }
-
-    private void initToolbar() {
-        mOptionsToolbarItem = new ToolbarItem(Dict.OPTIONS.toString(), MaterialIcon._Action.SETTINGS.getImageView(ICON_SIZE_TOOLBAR, Color.LIGHTGRAY),
-                event -> {
-                    displayOptions();
-                }
-        );
-
-        mWorkbench.getToolbarControlsRight().addAll(mOptionsToolbarItem);
-    }
-
-    private void initWorkbenchDrawer() {
-        //options
-        mOptionsAction = new Action(Dict.OPTIONS.toString(), (ActionEvent event) -> {
-            mWorkbench.hideNavigationDrawer();
-            displayOptions();
-        });
-        mOptionsAction.setAccelerator(new KeyCodeCombination(KeyCode.COMMA, KeyCombination.SHORTCUT_DOWN));
-        mOptionsAction.setGraphic(MaterialIcon._Action.SETTINGS.getImageView(ICON_SIZE_DRAWER));
-
-        //plugins
-        mPluginAction = new Action(Dict.PLUGINS.toString(), (ActionEvent event) -> {
-            mWorkbench.hideNavigationDrawer();
-            Alert alert = new Alert(Alert.AlertType.NONE);
-            alert.setTitle("Plugins");
-
-            alert.getDialogPane().setContent(mPluginManagerUiNode);
-            alert.setResizable(true);
-            alert.showAndWait();
-        });
-
-        //help
-        mHelpAction = new Action(Dict.HELP.toString(), (ActionEvent event) -> {
-            mWorkbench.hideNavigationDrawer();
-            SystemHelper.desktopBrowse("https://mapton.org/help/");
-        });
-        //mHelpAction.setAccelerator(new KeyCodeCombination(KeyCode.F1, KeyCombination.SHORTCUT_ANY));
-        mHelpAction.setAccelerator(KeyCombination.keyCombination("F1"));
-
-        //about
-        Action aboutAction = new Action(Dict.ABOUT.toString(), (ActionEvent event) -> {
-            mWorkbench.hideNavigationDrawer();
-
-            AboutModel aboutModel = new AboutModel(
-                    SystemHelper.getBundle(getClass(), "about"),
-                    SystemHelper.getResourceAsImageView(MaptonApplication.class, "logo.png")
-            );
-
-            AboutPane aboutPane = new AboutPane(aboutModel);
-
-            double scaledFontSize = FxHelper.getScaledFontSize();
-            Label appLabel = new Label(aboutModel.getAppName());
-            appLabel.setFont(new Font(scaledFontSize * 1.8));
-            Label verLabel = new Label(String.format("%s %s", Dict.VERSION.toString(), aboutModel.getAppVersion()));
-            verLabel.setFont(new Font(scaledFontSize * 1.2));
-            Label dateLabel = new Label(aboutModel.getAppDate());
-            dateLabel.setFont(new Font(scaledFontSize * 1.2));
-
-            VBox box = new VBox(appLabel, verLabel, dateLabel);
-            box.setAlignment(Pos.CENTER_LEFT);
-            box.setPadding(new Insets(0, 0, 0, 22));
-            BorderPane topBorderPane = new BorderPane(box);
-            topBorderPane.setLeft(aboutModel.getImageView());
-            topBorderPane.setPadding(new Insets(22));
-            BorderPane mainBorderPane = new BorderPane(aboutPane);
-            mainBorderPane.setTop(topBorderPane);
-
-            WorkbenchDialog dialog = WorkbenchDialog.builder(Dict.ABOUT.toString(), mainBorderPane, ButtonType.CLOSE).build();
-            mWorkbench.showDialog(dialog);
-        });
-
-        mWorkbench.getNavigationDrawerItems().setAll(
-                ActionUtils.createMenuItem(mPluginAction),
-                ActionUtils.createMenuItem(mHelpAction),
-                ActionUtils.createMenuItem(aboutAction)
-        );
-
-        if (!IS_MAC) {
-            mOptionsAction.setAccelerator(new KeyCodeCombination(KeyCode.COMMA, KeyCombination.SHORTCUT_DOWN));
-        }
     }
 
     private void populateTools() {

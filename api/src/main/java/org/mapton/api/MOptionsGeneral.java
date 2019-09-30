@@ -29,7 +29,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.paint.Color;
 import static org.mapton.api.MOptions.*;
-import org.mapton.core.ui.options.OptionsPanel;
 import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
@@ -43,7 +42,7 @@ public class MOptionsGeneral {
     public static final String DEFAULT_UI_LAF_ICON_COLOR_BRIGHT = "D3D3D3";
     public static final String DEFAULT_UI_LAF_ICON_COLOR_DARK = "1A1A1A";
 
-    private final ResourceBundle mBundle = NbBundle.getBundle(OptionsPanel.class);
+    private final ResourceBundle mBundle = NbBundle.getBundle(MOptions.class);
     private final Category mCategory;
     private final BooleanProperty mDisplayCrosshairProperty = new SimpleBooleanProperty(true);
     private final BooleanProperty mDisplayHomeIconProperty = new SimpleBooleanProperty(false);

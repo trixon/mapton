@@ -22,12 +22,8 @@ import java.util.concurrent.Callable;
 import java.util.logging.Logger;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
-import javax.swing.SwingUtilities;
-import org.mapton.core.ui.MapTopComponent;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
-import org.openide.windows.WindowManager;
-import se.trixon.almond.nbp.NbLog;
 
 /**
  *
@@ -78,14 +74,14 @@ public abstract class MEngine {
         mLockedLatitude = mLatitude;
         mLockedLongitude = mLongitude;
 
-        SwingUtilities.invokeLater(() -> {
-            MapTopComponent tc = (MapTopComponent) WindowManager.getDefault().findTopComponent("MapTopComponent");
-            tc.displayContextMenu(screenXY);
-        });
+//        aaaSwingUtilities.invokeLater(() -> {
+//            MapTopComponent tc = (MapTopComponent) WindowManager.getDefault().findTopComponent("MapTopComponent");
+//            tc.displayContextMenu(screenXY);
+//        });
     }
 
     public void fitToBounds(MLatLonBox latLonBox) {
-        NbLog.i(getClass().getSimpleName(), "fitToBounds not implemented");
+//        aaaNbLog.i(getClass().getSimpleName(), "fitToBounds not implemented");
     }
 
     public Double getAltitude() {
@@ -93,7 +89,7 @@ public abstract class MEngine {
     }
 
     public MLatLon getCenter() {
-        NbLog.i(getClass().getSimpleName(), "getCenter not implemented");
+//        aaaNbLog.i(getClass().getSimpleName(), "getCenter not implemented");
         return new MLatLon(0, 0);
     }
 
@@ -118,11 +114,12 @@ public abstract class MEngine {
     }
 
     public double getLatitudeProj() {
-        return mMaptonOptions.getMapCooTrans().getLatitude(mLatitude, mLongitude);
+//        aaareturn mMaptonOptions.getMapCooTrans().getLatitude(mLatitude, mLongitude);
+        return 0;
     }
 
     public Node getLayerView() {
-        NbLog.i(getClass().getSimpleName(), "getLayerView not implemented");
+//        aaaNbLog.i(getClass().getSimpleName(), "getLayerView not implemented");
 
         return new Pane();
     }
@@ -136,7 +133,8 @@ public abstract class MEngine {
     }
 
     public double getLockedLatitudeProj() {
-        return mMaptonOptions.getMapCooTrans().getLatitude(mLockedLatitude, mLockedLongitude);
+//        aaareturn mMaptonOptions.getMapCooTrans().getLatitude(mLockedLatitude, mLockedLongitude);
+        return 0;
     }
 
     public Double getLockedLongitude() {
@@ -144,7 +142,8 @@ public abstract class MEngine {
     }
 
     public double getLockedLongitudeProj() {
-        return mMaptonOptions.getMapCooTrans().getLongitude(mLockedLatitude, mLockedLongitude);
+//        aaareturn mMaptonOptions.getMapCooTrans().getLongitude(mLockedLatitude, mLockedLongitude);
+        return 0;
     }
 
     public Double getLongitude() {
@@ -152,13 +151,14 @@ public abstract class MEngine {
     }
 
     public double getLongitudeProj() {
-        return mMaptonOptions.getMapCooTrans().getLongitude(mLatitude, mLongitude);
+//        aaareturn mMaptonOptions.getMapCooTrans().getLongitude(mLatitude, mLongitude);
+        return 0;
     }
 
     public abstract String getName();
 
     public Node getRulerView() {
-        NbLog.i(getClass().getSimpleName(), "getRulerView not implemented");
+//        aaaNbLog.i(getClass().getSimpleName(), "getRulerView not implemented");
 
         return new Pane();
     }
@@ -172,7 +172,7 @@ public abstract class MEngine {
     public abstract Object getUI();
 
     public double getZoom() {
-        NbLog.i(getClass().getSimpleName(), "getZoom not implemented");
+//        aaaNbLog.i(getClass().getSimpleName(), "getZoom not implemented");
         return 0.2;
     }
 
@@ -194,7 +194,7 @@ public abstract class MEngine {
     }
 
     public void log(String message) {
-        NbLog.v(getClass().getSimpleName(), message);
+//        aaaNbLog.v(getClass().getSimpleName(), message);
     }
 
     public void onActivate() {
@@ -210,15 +210,15 @@ public abstract class MEngine {
     }
 
     public void onWhatsHere(String s) {
-        NbLog.i(getClass().getSimpleName(), "displayWhatsHere not implemented");
+//        aaaNbLog.i(getClass().getSimpleName(), "displayWhatsHere not implemented");
     }
 
     public void panTo(MLatLon latLon) {
-        NbLog.i(getClass().getSimpleName(), "panTo not implemented");
+//        aaaNbLog.i(getClass().getSimpleName(), "panTo not implemented");
     }
 
     public void panTo(MLatLon latLon, double zoom) {
-        NbLog.i(getClass().getSimpleName(), "panTo(Zoom) not implemented");
+//        aaaNbLog.i(getClass().getSimpleName(), "panTo(Zoom) not implemented");
     }
 
     public void setImageRenderer(Callable<BufferedImage> imageRenderer) {

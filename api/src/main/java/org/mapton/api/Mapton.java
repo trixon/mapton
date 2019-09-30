@@ -18,6 +18,8 @@ package org.mapton.api;
 import java.io.File;
 import javafx.scene.paint.Color;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.openide.util.Lookup;
 import se.trixon.almond.util.GlobalState;
 
 /**
@@ -26,6 +28,8 @@ import se.trixon.almond.util.GlobalState;
  */
 public class Mapton {
 
+    public static final int ICON_SIZE_MODULE = 32;
+    public static final int ICON_SIZE_MODULE_TOOLBAR = 40;
     public static final int ICON_SIZE_PROFILE = 32;
     public static final int ICON_SIZE_TOOLBAR = 36;
     public static final int ICON_SIZE_DRAWER = ICON_SIZE_TOOLBAR / 2;
@@ -43,6 +47,27 @@ public class Mapton {
         CONFIG_DIR = new File(System.getProperty("netbeans.user"), "mapton-modules");
         CACHE_DIR = new File(FileUtils.getUserDirectory(), ".cache/mapton");
         System.setProperty("mapton.cache", CACHE_DIR.getAbsolutePath());//Used by WorldWind
+    }
+
+    public static GlobalState getGlobalState() {
+        return sGlobalState;
+    }
+
+    public static MEngine getEngine() {
+        MEngine defaultEngine = null;
+
+        for (MEngine mapEngine : Lookup.getDefault().lookupAll(MEngine.class)) {
+            if (StringUtils.equalsIgnoreCase(mapEngine.getName(), MOptions.getInstance().getEngine())) {
+                return mapEngine;
+            } else {
+                defaultEngine = mapEngine;
+            }
+        }
+
+        return defaultEngine;
+    }
+
+    private Mapton() {
     }
 
     private static class Holder {

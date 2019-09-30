@@ -120,6 +120,12 @@
             <version>${netbeans.version}</version>
         </dependency>
 
+        <!-- Mapton -->
+        <dependency>
+            <groupId>org.mapton</groupId>
+            <artifactId>mapton-api</artifactId>
+        </dependency>
+
         <!-- Trixon -->
         <dependency>
             <groupId>se.trixon.almond</groupId>

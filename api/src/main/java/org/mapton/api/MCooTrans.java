@@ -17,6 +17,7 @@ package org.mapton.api;
 
 import java.util.ArrayList;
 import javafx.geometry.Point2D;
+import org.mapton.api.MBounds;
 import org.openide.util.Lookup;
 
 /**
