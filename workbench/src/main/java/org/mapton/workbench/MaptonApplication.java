@@ -96,15 +96,16 @@ public class MaptonApplication extends Application {
         mStage = stage;
         stage.getIcons().add(new Image(MaptonApplication.class.getResourceAsStream("logo.png")));
 
-        mAlmondFX.addStageWatcher(stage, MaptonApplication.class);
         createUI();
+
         if (IS_MAC) {
             initMac();
         }
+
         mStage.setTitle(APP_TITLE);
-        mStage.show();
         initAccelerators();
         initListeners();
+
         //mWorkbench.openModule(mPreferencesModule);
     }
 
@@ -150,9 +151,13 @@ public class MaptonApplication extends Application {
         initWorkbenchDrawer();
 
         populateTools();
-        Scene scene = new Scene(mWorkbench);
-//        scene.getStylesheets().add("css/modena_dark.css");
-        mStage.setScene(scene);
+
+        mStage.setScene(new Scene(mWorkbench));
+
+        Platform.runLater(() -> {
+            mAlmondFX.addStageWatcher(mStage, MaptonApplication.class);
+            mStage.show();
+        });
     }
 
     private void displayOptions() {
