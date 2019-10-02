@@ -88,7 +88,6 @@ public class MaptonApplication extends Application {
     private Action mWindowFullscreenAction;
     private Action mWindowOnTopAction;
     private Workbench mWorkbench;
-    private ArrayList<MWorkbenchModule> mModules;
 
     public static void main(String[] args) {
         launch(args);
@@ -396,17 +395,28 @@ public class MaptonApplication extends Application {
     }
 
     private void populateModules() {
-        mModules = new ArrayList<>(Lookup.getDefault().lookupAll(MWorkbenchModule.class));
-        Collections.sort(mModules, (MWorkbenchModule o1, MWorkbenchModule o2) -> o1.getName().compareToIgnoreCase(o2.getName()));
+        var lookupModules = new ArrayList<>(Lookup.getDefault().lookupAll(MWorkbenchModule.class));
+        Collections.sort(lookupModules, (MWorkbenchModule o1, MWorkbenchModule o2) -> o1.getName().compareToIgnoreCase(o2.getName()));
 
-        mWorkbench.getModules().setAll(
-                mMapModule,
-                mPreferencesModule
-        );
+        MWorkbenchModule reportsModule = null;
 
-        for (MWorkbenchModule module : mModules) {
+        for (MWorkbenchModule module : lookupModules) {
+            if (module.getClass().getName().equalsIgnoreCase("org.mapton.reports.ReportsModule")) {
+                reportsModule = module;
+            }
+        }
+
+        ArrayList<MWorkbenchModule> fixModules = new ArrayList<>();
+        fixModules.add(mMapModule);
+
+        if (reportsModule != null) {
+            lookupModules.remove(reportsModule);
+            fixModules.add(reportsModule);
+        }
+
+        fixModules.addAll(lookupModules);
+        for (MWorkbenchModule module : fixModules) {
             mWorkbench.getModules().add(module);
         }
     }
-
 }
