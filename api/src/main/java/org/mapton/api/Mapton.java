@@ -49,10 +49,6 @@ public class Mapton {
         System.setProperty("mapton.cache", CACHE_DIR.getAbsolutePath());//Used by WorldWind
     }
 
-    public static GlobalState getGlobalState() {
-        return sGlobalState;
-    }
-
     public static MEngine getEngine() {
         MEngine defaultEngine = null;
 
@@ -65,6 +61,20 @@ public class Mapton {
         }
 
         return defaultEngine;
+    }
+
+    public static GlobalState getGlobalState() {
+        return sGlobalState;
+    }
+
+    public static void logLoading(String category, String item) {
+        //NbLog.i("Loading", String.format("%s: %s ", category, item));
+        System.out.println(String.format("Loading %s: %s ", category, item));
+    }
+
+    public static void logRemoving(String category, String item) {
+        //NbLog.i("Removing", String.format("%s: %s ", category, item));
+        System.out.println(String.format("Removing %s: %s ", category, item));
     }
 
     private Mapton() {

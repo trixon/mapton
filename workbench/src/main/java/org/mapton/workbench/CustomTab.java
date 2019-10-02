@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,21 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.api;
+package org.mapton.workbench;
 
-import java.util.ArrayList;
+import com.dlsc.workbenchfx.Workbench;
+import com.dlsc.workbenchfx.view.controls.module.Tab;
+import javafx.scene.control.Skin;
 
 /**
  *
  * @author Patrik Karlström
  */
-public interface MSearchEngine {
+public class CustomTab extends Tab {
 
-    public String getName();
+    public CustomTab(Workbench workbench) {
+        super(workbench);
 
-    public ArrayList<MBookmark> getResults(String searchString);
+    }
 
-    public default boolean isInstantSearch() {
-        return true;
+    @Override
+    protected Skin<?> createDefaultSkin() {
+        return new CustomTabSkin(this);
     }
 }

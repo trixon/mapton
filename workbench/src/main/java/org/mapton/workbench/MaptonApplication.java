@@ -51,6 +51,7 @@ import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
 import static org.mapton.api.Mapton.*;
 import org.mapton.workbench.modules.PreferencesModule;
+import org.mapton.workbench.modules.MapModule;
 import org.netbeans.modules.autoupdate.ui.PluginManagerUI;
 import org.netbeans.modules.autoupdate.ui.api.PluginManager;
 import org.openide.LifecycleManager;
@@ -72,6 +73,7 @@ public class MaptonApplication extends Application {
     private long mFullScreenChanged;
     private Action mHelpAction;
     private Action mLogAction;
+    private MapModule mMapModule;
 //    private NewsModule mNewsModule;
     private Action mOptionsAction;
     private ToolbarItem mOptionsToolbarItem;
@@ -152,7 +154,9 @@ public class MaptonApplication extends Application {
     }
 
     private void createUI() {
-        mWorkbench = Workbench.builder().build();
+        mWorkbench = Workbench.builder()
+                .tabFactory(CustomTab::new)
+                .build();
 
         mWorkbench.getStylesheets().add(MaptonApplication.class.getResource("customTheme.css").toExternalForm());
 
@@ -162,10 +166,11 @@ public class MaptonApplication extends Application {
         Scene scene = new Scene(mWorkbench);
         mStage.setScene(scene);
 
+        mMapModule = new MapModule(scene);
 //        mNewsModule = new NewsModule();
         mPreferencesModule = new PreferencesModule(scene);
 
-        mWorkbench.getModules().addAll(mPreferencesModule);
+        mWorkbench.getModules().addAll(mMapModule, mPreferencesModule);
 
         Menu viewMenu = new Menu(Dict.VIEW.toString());
         viewMenu.getItems().setAll(
@@ -192,6 +197,7 @@ public class MaptonApplication extends Application {
         Platform.runLater(() -> {
             mAlmondFX.addStageWatcher(mStage, MaptonApplication.class);
             mStage.show();
+            mWorkbench.openModule(mMapModule);
         });
     }
 
@@ -203,14 +209,6 @@ public class MaptonApplication extends Application {
         final ObservableMap<KeyCombination, Runnable> accelerators = mStage.getScene().getAccelerators();
         for (int i = 0; i < 10; i++) {
             final int index = i;
-            accelerators.put(new KeyCodeCombination(KeyCode.valueOf("DIGIT" + i), KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN), () -> {
-                activateModule(index);
-            });
-
-            accelerators.put(new KeyCodeCombination(KeyCode.valueOf("NUMPAD" + i), KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN), () -> {
-                activateModule(index);
-            });
-
             accelerators.put(new KeyCodeCombination(KeyCode.valueOf("DIGIT" + i), KeyCombination.SHORTCUT_DOWN), () -> {
                 activateOpenModule(index);
             });
@@ -236,7 +234,7 @@ public class MaptonApplication extends Application {
         });
 
         accelerators.put(new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN), () -> {
-            if (mWorkbench.getActiveModule() != null) {
+            if (mWorkbench.getActiveModule() != null && mWorkbench.getActiveModule() != mMapModule) {
                 mWorkbench.closeModule(mWorkbench.getActiveModule());
             }
         });

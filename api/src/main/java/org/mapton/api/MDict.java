@@ -50,8 +50,9 @@ public enum MDict {
     PROJ_UPS_NORTH,
     PROJ_UPS_SOUTH,
     SCALE_BAR,
-    SPHERE,
+    SEARCH_PROMPT,
     SET_HOME,
+    SPHERE,
     STARS,
     VIEW_CONTROLS,
     WORLD_MAP;
