@@ -39,15 +39,15 @@ import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 
 @ServiceProvider(service = MWorkbenchModule.class)
-public final class ReportsTopComponent extends MWorkbenchModule {
+public final class ReportsModule extends MWorkbenchModule {
 
     private Label mPlaceholderLabel;
-    private final Preferences mPreferences = NbPreferences.forModule(ReportsTopComponent.class).node("expanded_state");
+    private final Preferences mPreferences = NbPreferences.forModule(ReportsModule.class).node("expanded_state");
     private TreeMap<String, TreeItem<MReport>> mReportParents = new TreeMap<>();
     private BorderPane mRoot;
     private TreeView<MReport> mTreeView;
 
-    public ReportsTopComponent() {
+    public ReportsModule() {
         super(Dict.REPORTS.toString(), MaterialIcon._Action.BUILD.getImageView(ICON_SIZE_MODULE).getImage());
 
         createUI();
