@@ -19,7 +19,6 @@ import com.dlsc.workbenchfx.Workbench;
 import com.dlsc.workbenchfx.view.controls.ToolbarItem;
 import javafx.application.Platform;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
@@ -43,8 +42,8 @@ public class MapModule extends MWorkbenchModule {
     private BorderPane mRoot;
     private SearchView mSearchView;
 
-    public MapModule(Scene scene) {
-        super(scene, Dict.MAP.toString(), MaterialIcon._Maps.MAP.getImageView(ICON_SIZE_MODULE).getImage());
+    public MapModule() {
+        super(Dict.MAP.toString(), MaterialIcon._Maps.MAP.getImageView(ICON_SIZE_MODULE).getImage());
     }
 
     @Override
@@ -56,10 +55,10 @@ public class MapModule extends MWorkbenchModule {
 
     @Override
     public void deactivate() {
-        for (KeyCodeCombination keyCodeCombination : mKeyCodeCombinations) {
-            mAccelerators.remove(keyCodeCombination);
+        for (KeyCodeCombination keyCodeCombination : getKeyCodeCombinations()) {
+            getAccelerators().remove(keyCodeCombination);
         }
-        mKeyCodeCombinations.clear();
+        getKeyCodeCombinations().clear();
 
         super.deactivate();
     }
@@ -87,8 +86,8 @@ public class MapModule extends MWorkbenchModule {
 
     private void initAccelerators() {
         KeyCodeCombination keyCodeCombination = new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN);
-        mKeyCodeCombinations.add(keyCodeCombination);
-        mAccelerators.put(keyCodeCombination, () -> {
+        getKeyCodeCombinations().add(keyCodeCombination);
+        getAccelerators().put(keyCodeCombination, () -> {
             activateSearch();
         });
     }

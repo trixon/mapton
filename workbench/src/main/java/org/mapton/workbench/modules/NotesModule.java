@@ -18,7 +18,6 @@ package org.mapton.workbench.modules;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.TextArea;
 import org.mapton.api.MWorkbenchModule;
 import static org.mapton.api.Mapton.ICON_SIZE_MODULE;
@@ -34,8 +33,8 @@ public class NotesModule extends MWorkbenchModule {
     private static final String KEY_NOTES = "notes";
     private TextArea mTextArea;
 
-    public NotesModule(Scene scene) {
-        super(scene, Dict.NOTES.toString(), MaterialIcon._Editor.MODE_EDIT.getImageView(ICON_SIZE_MODULE).getImage());
+    public NotesModule() {
+        super(Dict.NOTES.toString(), MaterialIcon._Editor.MODE_EDIT.getImageView(ICON_SIZE_MODULE).getImage());
 
         mTextArea = new TextArea();
         mTextArea.setText(mPreferences.get(KEY_NOTES, ""));

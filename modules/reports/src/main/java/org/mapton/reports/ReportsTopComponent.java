@@ -22,42 +22,24 @@ import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.BorderPane;
 import org.apache.commons.lang3.StringUtils;
-import org.mapton.api.MTopComponent;
+import org.mapton.api.MWorkbenchModule;
+import static org.mapton.api.Mapton.ICON_SIZE_MODULE;
 import org.mapton.reports.api.MReport;
-import org.netbeans.api.settings.ConvertAsProperties;
-import org.openide.awt.ActionID;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.util.NbPreferences;
-import org.openide.windows.TopComponent;
+import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
+import se.trixon.almond.util.icons.material.MaterialIcon;
 
-/**
- * Top component which displays something.
- */
-@ConvertAsProperties(
-        dtd = "-//org.mapton.reports//Reports//EN",
-        autostore = false
-)
-@TopComponent.Description(
-        preferredID = "ReportsTopComponent",
-        //iconBase="SET/PATH/TO/ICON/HERE",
-        persistenceType = TopComponent.PERSISTENCE_ALWAYS
-)
-@TopComponent.Registration(mode = "editor", openAtStartup = false, position = 99)
-@ActionID(category = "Mapton", id = "org.mapton.reports.ReportsTopComponent")
-@TopComponent.OpenActionRegistration(
-        displayName = "Reports",
-        preferredID = "ReportsTopComponent"
-)
-public final class ReportsTopComponent extends MTopComponent {
+@ServiceProvider(service = MWorkbenchModule.class)
+public final class ReportsTopComponent extends MWorkbenchModule {
 
     private Label mPlaceholderLabel;
     private final Preferences mPreferences = NbPreferences.forModule(ReportsTopComponent.class).node("expanded_state");
@@ -66,27 +48,17 @@ public final class ReportsTopComponent extends MTopComponent {
     private TreeView<MReport> mTreeView;
 
     public ReportsTopComponent() {
-        setName(Dict.REPORTS.toString());
+        super(Dict.REPORTS.toString(), MaterialIcon._Action.BUILD.getImageView(ICON_SIZE_MODULE).getImage());
+
+        createUI();
     }
 
     @Override
-    protected void initFX() {
-        setScene(createScene());
+    public Node activate() {
+        return mRoot;
     }
 
-    void readProperties(java.util.Properties p) {
-        String version = p.getProperty("version");
-        // TODO read your settings according to their version
-    }
-
-    void writeProperties(java.util.Properties p) {
-        // better to version settings since initial version as advocated at
-        // http://wiki.apidesign.org/wiki/PropertyFiles
-        p.setProperty("version", "1.0");
-        // TODO store your settings
-    }
-
-    private Scene createScene() {
+    private void createUI() {
         mPlaceholderLabel = new Label();
 
         mTreeView = new TreeView<>();
@@ -109,10 +81,9 @@ public final class ReportsTopComponent extends MTopComponent {
         });
 
         populate();
+
         mRoot = new BorderPane(mPlaceholderLabel);
         mRoot.setLeft(mTreeView);
-
-        return new Scene(mRoot);
     }
 
     private TreeItem<MReport> getParent(TreeItem<MReport> parent, String category) {

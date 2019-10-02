@@ -25,7 +25,6 @@ import com.healthmarketscience.sqlbuilder.custom.postgresql.PgBinaryCondition;
 import com.healthmarketscience.sqlbuilder.dbspec.Constraint;
 import com.healthmarketscience.sqlbuilder.dbspec.basic.DbColumn;
 import com.healthmarketscience.sqlbuilder.dbspec.basic.DbConstraint;
-import java.awt.Dimension;
 import java.awt.Point;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -40,24 +39,14 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javax.swing.SwingUtilities;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import org.mapton.core.db.DbBaseManager;
-import org.mapton.core.ui.bookmark.BookmarkCategoryPanel;
-import org.mapton.core.ui.bookmark.BookmarkColorPanel;
-import org.mapton.core.ui.bookmark.BookmarkPanel;
-import org.mapton.core.ui.bookmark.BookmarkZoomPanel;
-import org.openide.DialogDescriptor;
-import org.openide.DialogDisplayer;
+import org.mapton.api.db.DbBaseManager;
 import org.openide.util.Exceptions;
 import org.openide.util.NbBundle;
-import se.trixon.almond.nbp.Almond;
-import se.trixon.almond.nbp.dialogs.NbMessage;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxActionSwing;
-import se.trixon.almond.util.swing.SwingHelper;
 
 /**
  *
@@ -259,152 +248,151 @@ public class MBookmarkManager extends DbBaseManager {
     }
 
     public void editBookmark(final MBookmark aBookmark) {
-        SwingUtilities.invokeLater(() -> {
-            MBookmark newBookmark = aBookmark;
-            boolean add = aBookmark == null;
-            if (add) {
-                newBookmark = new MBookmark();
-                newBookmark.setZoom(Mapton.getEngine().getZoom());
-                newBookmark.setLatitude(Mapton.getEngine().getLockedLatitude());
-                newBookmark.setLongitude(Mapton.getEngine().getLockedLongitude());
-            }
-
-            final MBookmark bookmark = newBookmark;
-            BookmarkPanel bookmarkPanel = new BookmarkPanel();
-            DialogDescriptor d = new DialogDescriptor(bookmarkPanel, Dict.BOOKMARK.toString());
-            bookmarkPanel.setDialogDescriptor(d);
-            bookmarkPanel.initFx(() -> {
-                bookmarkPanel.load(bookmark);
-            });
-
-            bookmarkPanel.setPreferredSize(SwingHelper.getUIScaledDim(300, 500));
-            if (DialogDescriptor.OK_OPTION == DialogDisplayer.getDefault().notify(d)) {
-                bookmarkPanel.save(bookmark);
-                Platform.runLater(() -> {
-                    try {
-                        if (add) {
-                            dbInsert(bookmark);
-                        } else {
-                            bookmark.setTimeModified(new Timestamp(System.currentTimeMillis()));
-                            dbUpdate(bookmark);
-                            dbLoad();
-                        }
-                    } catch (ClassNotFoundException | SQLException ex) {
-                        Exceptions.printStackTrace(ex);
-                    }
-                });
-            }
-        });
+//        SwingUtilities.invokeLater(() -> {
+//            MBookmark newBookmark = aBookmark;
+//            boolean add = aBookmark == null;
+//            if (add) {
+//                newBookmark = new MBookmark();
+//                newBookmark.setZoom(Mapton.getEngine().getZoom());
+//                newBookmark.setLatitude(Mapton.getEngine().getLockedLatitude());
+//                newBookmark.setLongitude(Mapton.getEngine().getLockedLongitude());
+//            }
+//
+//            final MBookmark bookmark = newBookmark;
+//            BookmarkPanel bookmarkPanel = new BookmarkPanel();
+//            DialogDescriptor d = new DialogDescriptor(bookmarkPanel, Dict.BOOKMARK.toString());
+//            bookmarkPanel.setDialogDescriptor(d);
+//            bookmarkPanel.initFx(() -> {
+//                bookmarkPanel.load(bookmark);
+//            });
+//
+//            bookmarkPanel.setPreferredSize(SwingHelper.getUIScaledDim(300, 500));
+//            if (DialogDescriptor.OK_OPTION == DialogDisplayer.getDefault().notify(d)) {
+//                bookmarkPanel.save(bookmark);
+//                Platform.runLater(() -> {
+//                    try {
+//                        if (add) {
+//                            dbInsert(bookmark);
+//                        } else {
+//                            bookmark.setTimeModified(new Timestamp(System.currentTimeMillis()));
+//                            dbUpdate(bookmark);
+//                            dbLoad();
+//                        }
+//                    } catch (ClassNotFoundException | SQLException ex) {
+//                        Exceptions.printStackTrace(ex);
+//                    }
+//                });
+//            }
+//        });
     }
 
     public void editCategory(final String category) {
-        SwingUtilities.invokeLater(() -> {
-            BookmarkCategoryPanel bookmarkCategoryPanel = new BookmarkCategoryPanel();
-            DialogDescriptor d = new DialogDescriptor(bookmarkCategoryPanel, Dict.EDIT.toString());
-            bookmarkCategoryPanel.setDialogDescriptor(d);
-            bookmarkCategoryPanel.initFx(() -> {
-                bookmarkCategoryPanel.setCategory(category);
-            });
-
-            bookmarkCategoryPanel.setPreferredSize(SwingHelper.getUIScaledDim(400, 100));
-
-            if (DialogDescriptor.OK_OPTION == DialogDisplayer.getDefault().notify(d)) {
-                String newCategory = bookmarkCategoryPanel.getCategory();
-                if (!StringUtils.equals(category, newCategory)) {
-                    Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-
-                    TreeSet<String> bookmarkNames = new TreeSet<>();
-                    for (MBookmark bookmark : mItems.get()) {
-                        if (StringUtils.startsWith(bookmark.getCategory(), category)) {
-                            String oldCategory = bookmark.getCategory();
-                            bookmark.setCategory(StringUtils.replaceOnce(bookmark.getCategory(), category, newCategory));
-                            bookmark.setTimeModified(timestamp);
-                            try {
-                                dbUpdate(bookmark);
-                            } catch (SQLException ex) {
-                                bookmarkNames.add(String.format("%s/%s", oldCategory, bookmark.getName()));
-                            }
-                        }
-                    }
-
-                    Platform.runLater(() -> {
-                        dbLoad();
-                    });
-
-                    if (!bookmarkNames.isEmpty()) {
-                        String delim = "\n ◆ ";
-                        NbMessage.error(Dict.Dialog.ERROR.toString(),
-                                String.format("%s\n%s%s", mBundle.getString("bookmark_rename_category_error"), delim, String.join(delim, bookmarkNames))
-                        );
-                    }
-                }
-            }
-        });
+//        SwingUtilities.invokeLater(() -> {
+//            BookmarkCategoryPanel bookmarkCategoryPanel = new BookmarkCategoryPanel();
+//            DialogDescriptor d = new DialogDescriptor(bookmarkCategoryPanel, Dict.EDIT.toString());
+//            bookmarkCategoryPanel.setDialogDescriptor(d);
+//            bookmarkCategoryPanel.initFx(() -> {
+//                bookmarkCategoryPanel.setCategory(category);
+//            });
+//
+//            bookmarkCategoryPanel.setPreferredSize(SwingHelper.getUIScaledDim(400, 100));
+//
+//            if (DialogDescriptor.OK_OPTION == DialogDisplayer.getDefault().notify(d)) {
+//                String newCategory = bookmarkCategoryPanel.getCategory();
+//                if (!StringUtils.equals(category, newCategory)) {
+//                    Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+//
+//                    TreeSet<String> bookmarkNames = new TreeSet<>();
+//                    for (MBookmark bookmark : mItems.get()) {
+//                        if (StringUtils.startsWith(bookmark.getCategory(), category)) {
+//                            String oldCategory = bookmark.getCategory();
+//                            bookmark.setCategory(StringUtils.replaceOnce(bookmark.getCategory(), category, newCategory));
+//                            bookmark.setTimeModified(timestamp);
+//                            try {
+//                                dbUpdate(bookmark);
+//                            } catch (SQLException ex) {
+//                                bookmarkNames.add(String.format("%s/%s", oldCategory, bookmark.getName()));
+//                            }
+//                        }
+//                    }
+//
+//                    Platform.runLater(() -> {
+//                        dbLoad();
+//                    });
+//
+//                    if (!bookmarkNames.isEmpty()) {
+//                        String delim = "\n ◆ ";
+//                        NbMessage.error(Dict.Dialog.ERROR.toString(),
+//                                String.format("%s\n%s%s", mBundle.getString("bookmark_rename_category_error"), delim, String.join(delim, bookmarkNames))
+//                        );
+//                    }
+//                }
+//            }
+//        });
     }
 
     public void editColor(final String category) {
-        SwingUtilities.invokeLater(() -> {
-            BookmarkColorPanel bookmarkColorPanel = new BookmarkColorPanel();
-            DialogDescriptor d = new DialogDescriptor(bookmarkColorPanel, Dict.EDIT.toString());
-            bookmarkColorPanel.setDialogDescriptor(d);
-            bookmarkColorPanel.initFx(() -> {
-            });
-
-            bookmarkColorPanel.setPreferredSize(SwingHelper.getUIScaledDim(200, 100));
-            if (DialogDescriptor.OK_OPTION == DialogDisplayer.getDefault().notify(d)) {
-                String color = bookmarkColorPanel.getColor();
-                Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-
-                for (MBookmark bookmark : mItems.get()) {
-                    if (StringUtils.startsWith(bookmark.getCategory(), category)) {
-                        bookmark.setColor(color);
-                        bookmark.setTimeModified(timestamp);
-                        try {
-                            dbUpdate(bookmark);
-                        } catch (SQLException ex) {
-                            Exceptions.printStackTrace(ex);
-                        }
-                    }
-                }
-
-                Platform.runLater(() -> {
-                    dbLoad();
-                });
-            }
-        });
-
+//        SwingUtilities.invokeLater(() -> {
+//            BookmarkColorPanel bookmarkColorPanel = new BookmarkColorPanel();
+//            DialogDescriptor d = new DialogDescriptor(bookmarkColorPanel, Dict.EDIT.toString());
+//            bookmarkColorPanel.setDialogDescriptor(d);
+//            bookmarkColorPanel.initFx(() -> {
+//            });
+//
+//            bookmarkColorPanel.setPreferredSize(SwingHelper.getUIScaledDim(200, 100));
+//            if (DialogDescriptor.OK_OPTION == DialogDisplayer.getDefault().notify(d)) {
+//                String color = bookmarkColorPanel.getColor();
+//                Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+//
+//                for (MBookmark bookmark : mItems.get()) {
+//                    if (StringUtils.startsWith(bookmark.getCategory(), category)) {
+//                        bookmark.setColor(color);
+//                        bookmark.setTimeModified(timestamp);
+//                        try {
+//                            dbUpdate(bookmark);
+//                        } catch (SQLException ex) {
+//                            Exceptions.printStackTrace(ex);
+//                        }
+//                    }
+//                }
+//
+//                Platform.runLater(() -> {
+//                    dbLoad();
+//                });
+//            }
+//        });
     }
 
     public void editZoom(final String category) {
-        SwingUtilities.invokeLater(() -> {
-            BookmarkZoomPanel bookmarkZoomPanel = new BookmarkZoomPanel();
-            DialogDescriptor d = new DialogDescriptor(bookmarkZoomPanel, Dict.EDIT.toString());
-            bookmarkZoomPanel.setDialogDescriptor(d);
-            bookmarkZoomPanel.initFx(() -> {
-            });
-
-            bookmarkZoomPanel.setPreferredSize(new Dimension(200, 100));
-            if (DialogDescriptor.OK_OPTION == DialogDisplayer.getDefault().notify(d)) {
-                double zoom = bookmarkZoomPanel.getZoom();
-                Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-
-                for (MBookmark bookmark : mItems.get()) {
-                    if (StringUtils.startsWith(bookmark.getCategory(), category)) {
-                        bookmark.setZoom(zoom);
-                        bookmark.setTimeModified(timestamp);
-                        try {
-                            dbUpdate(bookmark);
-                        } catch (SQLException ex) {
-                            Exceptions.printStackTrace(ex);
-                        }
-                    }
-                }
-
-                Platform.runLater(() -> {
-                    dbLoad();
-                });
-            }
-        });
+//        SwingUtilities.invokeLater(() -> {
+//            BookmarkZoomPanel bookmarkZoomPanel = new BookmarkZoomPanel();
+//            DialogDescriptor d = new DialogDescriptor(bookmarkZoomPanel, Dict.EDIT.toString());
+//            bookmarkZoomPanel.setDialogDescriptor(d);
+//            bookmarkZoomPanel.initFx(() -> {
+//            });
+//
+//            bookmarkZoomPanel.setPreferredSize(new Dimension(200, 100));
+//            if (DialogDescriptor.OK_OPTION == DialogDisplayer.getDefault().notify(d)) {
+//                double zoom = bookmarkZoomPanel.getZoom();
+//                Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+//
+//                for (MBookmark bookmark : mItems.get()) {
+//                    if (StringUtils.startsWith(bookmark.getCategory(), category)) {
+//                        bookmark.setZoom(zoom);
+//                        bookmark.setTimeModified(timestamp);
+//                        try {
+//                            dbUpdate(bookmark);
+//                        } catch (SQLException ex) {
+//                            Exceptions.printStackTrace(ex);
+//                        }
+//                    }
+//                }
+//
+//                Platform.runLater(() -> {
+//                    dbLoad();
+//                });
+//            }
+//        });
     }
 
     public boolean exists(Object exceptForValue, String name, String category) {
@@ -465,7 +453,6 @@ public class MBookmarkManager extends DbBaseManager {
     }
 
     public void goTo(MBookmark bookmark) throws ClassNotFoundException, SQLException {
-        Almond.requestActive("MapTopComponent");
         Mapton.getEngine().panTo(new MLatLon(bookmark.getLatitude(), bookmark.getLongitude()), bookmark.getZoom());
     }
 

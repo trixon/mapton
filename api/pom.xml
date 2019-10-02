@@ -30,6 +30,7 @@
                         <publicPackage>org.apache.commons.*</publicPackage>
                         <publicPackage>org.controlsfx.*</publicPackage>
                         <publicPackage>org.postgresql.*</publicPackage>
+                        <publicPackage>org.openide.*</publicPackage>
                         <publicPackage>se.trixon.*</publicPackage>
                     </publicPackages>
                     <nbmResources>
@@ -107,6 +108,12 @@
             <version>${netbeans.version}</version>
             <type>nbm</type>
         </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-modules</artifactId>
+            <version>${netbeans.version}</version>
+            <type>nbm</type>
+        </dependency>
 
         <!-- Trixon -->
         <dependency>
@@ -166,6 +173,22 @@
         <dependency>
             <groupId>com.j2html</groupId>
             <artifactId>j2html</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.sourceforge.jtds</groupId>
+            <artifactId>jtds</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.healthmarketscience.sqlbuilder</groupId>
+            <artifactId>sqlbuilder</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
         </dependency>
     </dependencies>
 

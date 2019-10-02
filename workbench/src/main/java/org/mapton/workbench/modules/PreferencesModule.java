@@ -17,7 +17,6 @@ package org.mapton.workbench.modules;
 
 import com.dlsc.workbenchfx.view.controls.ToolbarItem;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.ButtonType;
 import org.mapton.api.MOptions2;
 import org.mapton.api.MWorkbenchModule;
@@ -32,8 +31,8 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
  */
 public class PreferencesModule extends MWorkbenchModule {
 
-    public PreferencesModule(Scene scene) {
-        super(scene, Dict.OPTIONS.toString(), MaterialIcon._Action.SETTINGS.getImageView(ICON_SIZE_MODULE).getImage());
+    public PreferencesModule() {
+        super(Dict.OPTIONS.toString(), MaterialIcon._Action.SETTINGS.getImageView(ICON_SIZE_MODULE).getImage());
 
         createUI();
     }

@@ -103,17 +103,17 @@
         <module>modules/datasources</module>-->
 
         <!--Search engines-->
-        <!--        <module>modules/se-bookmarks</module>
-        <module>modules/se-geonames</module>
-        <module>modules/se-google</module>
-        <module>modules/se-nominatim</module>-->
+        <module>modules/se-bookmarks</module>
+        <!--<module>modules/se-geonames</module>-->
+        <!--<module>modules/se-google</module>-->
+        <!--<module>modules/se-nominatim</module>-->
 
         <!--Transformation engines-->
         <!--<module>modules/te-swetrans</module>-->
 
         <!--Other-->
-        <!--        <module>modules/reports</module>
-        <module>modules/wikipedia</module>-->
+        <module>modules/reports</module>
+        <!--<module>modules/wikipedia</module>-->
 
 
         <!--Add-ons-->

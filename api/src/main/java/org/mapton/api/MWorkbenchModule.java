@@ -38,23 +38,47 @@ import org.openide.util.NbPreferences;
 public abstract class MWorkbenchModule extends WorkbenchModule {
 
     protected final Logger LOGGER = Logger.getLogger(getClass().getName());
-    protected final ObservableMap<KeyCombination, Runnable> mAccelerators;
-    protected final HashSet<KeyCodeCombination> mKeyCodeCombinations;
+    private ObservableMap<KeyCombination, Runnable> mAccelerators;
+    private final HashSet<KeyCodeCombination> mKeyCodeCombinations = new HashSet<>();
     protected final MOptions2 mOptions2 = MOptions2.getInstance();
     protected final Preferences mPreferences;
-    protected Stage mStage;
+    private Stage mStage;
     private ResourceBundle mBundle;
-    private final Scene mScene;
+    private Scene mScene;
 
-    public MWorkbenchModule(Scene scene, String name, Image icon) {
+    public MWorkbenchModule(String name, Image icon) {
         super(name, icon);
-        mScene = scene;
-        mStage = (Stage) scene.getWindow();
-        mKeyCodeCombinations = new HashSet<>();
-        mAccelerators = mStage.getScene().getAccelerators();
         mPreferences = NbPreferences.forModule(getClass()).node(getClass().getCanonicalName());
 
         initListeners();
+    }
+
+    public ObservableMap<KeyCombination, Runnable> getAccelerators() {
+        if (mAccelerators == null) {
+            mAccelerators = getScene().getAccelerators();
+        }
+
+        return mAccelerators;
+    }
+
+    public HashSet<KeyCodeCombination> getKeyCodeCombinations() {
+        return mKeyCodeCombinations;
+    }
+
+    public Stage getStage() {
+        if (mStage == null) {
+            mStage = (Stage) getScene().getWindow();
+        }
+
+        return mStage;
+    }
+
+    public Scene getScene() {
+        if (mScene == null) {
+            mScene = getWorkbench().getScene();
+        }
+
+        return mScene;
     }
 
     public ResourceBundle getBundle() {
@@ -68,14 +92,6 @@ public abstract class MWorkbenchModule extends WorkbenchModule {
 
     public String getBundleString(String key) {
         return getBundle().getString(key);
-    }
-
-    public Scene getScene() {
-        return mScene;
-    }
-
-    public Stage getStage() {
-        return (Stage) getWorkbench().getScene().getWindow();
     }
 
     public void postInit() {

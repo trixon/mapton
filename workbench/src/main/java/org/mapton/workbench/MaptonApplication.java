@@ -19,6 +19,8 @@ import com.dlsc.workbenchfx.Workbench;
 import com.dlsc.workbenchfx.model.WorkbenchDialog;
 import com.dlsc.workbenchfx.view.controls.ToolbarItem;
 import de.codecentric.centerdevice.MenuToolkit;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -49,13 +51,15 @@ import javax.swing.SwingUtilities;
 import org.apache.commons.lang3.SystemUtils;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
+import org.mapton.api.MWorkbenchModule;
 import static org.mapton.api.Mapton.*;
 import org.mapton.workbench.modules.MapModule;
-import org.mapton.workbench.modules.NotesModule;
 import org.mapton.workbench.modules.PreferencesModule;
 import org.netbeans.modules.autoupdate.ui.PluginManagerUI;
 import org.netbeans.modules.autoupdate.ui.api.PluginManager;
 import org.openide.LifecycleManager;
+import org.openide.util.Lookup;
+import org.openide.util.LookupEvent;
 import se.trixon.almond.util.AboutModel;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
@@ -87,6 +91,7 @@ public class MaptonApplication extends Application {
     private Action mWindowFullscreenAction;
     private Action mWindowOnTopAction;
     private Workbench mWorkbench;
+    private ArrayList<MWorkbenchModule> mModules;
 
     public static void main(String[] args) {
         launch(args);
@@ -154,20 +159,20 @@ public class MaptonApplication extends Application {
         mWorkbench.getStylesheets().add(MaptonApplication.class.getResource("customTheme.css").toExternalForm());
 
         initActions();
-        populateTools();
 
         Scene scene = new Scene(mWorkbench);
         mStage.setScene(scene);
 
-        mMapModule = new MapModule(scene);
+        mMapModule = new MapModule();
 //        mNewsModule = new NewsModule();
-        mPreferencesModule = new PreferencesModule(scene);
+        mPreferencesModule = new PreferencesModule();
 
-        mWorkbench.getModules().addAll(
-                mMapModule,
-                mPreferencesModule,
-                new NotesModule(scene)
-        );
+//        mWorkbench.getModules().addAll(
+//                mMapModule,
+//                mPreferencesModule,
+//                new NotesModule(scene)
+//        );
+        populateModules();
 
         Menu viewMenu = new Menu(Dict.VIEW.toString());
         viewMenu.getItems().setAll(
@@ -352,10 +357,10 @@ public class MaptonApplication extends Application {
     }
 
     private void initListeners() {
-//        Lookup.getDefault().lookupResult(TbTool.class).addLookupListener((LookupEvent ev) -> {
-//            populateTools();
-//        });
-//        mWindowFullscreenAction.selectedProperty().bind(mStage.fullScreenProperty());
+        Lookup.getDefault().lookupResult(MWorkbenchModule.class).addLookupListener((LookupEvent ev) -> {
+            populateModules();
+        });
+
         mStage.fullScreenProperty().addListener((ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1) -> {
             mFullScreenChanged = System.currentTimeMillis();
         });
@@ -399,22 +404,18 @@ public class MaptonApplication extends Application {
         });
     }
 
-    private void populateTools() {
-//        mTools = new ArrayList<>(Lookup.getDefault().lookupAll(TbTool.class));
-//        Collections.sort(mTools, (TbTool o1, TbTool o2) -> o1.getName().compareToIgnoreCase(o2.getName()));
-//
-//        mWorkbench.getModules().clear();
-//        for (TbTool tool : mTools) {
-//            mWorkbench.getModules().add(tool.getModule());
-//        }
-//
-//        TbPreferences.getInstance();
-////        try {
-////            TbPreferences.getInstance().createPreferences();
-////        } catch (Exception e) {
-////            Exceptions.printStackTrace(e);
-////        }
-//        mWorkbench.getModules().addAll(mNewsModule, mPreferencesModule);
+    private void populateModules() {
+        mModules = new ArrayList<>(Lookup.getDefault().lookupAll(MWorkbenchModule.class));
+        Collections.sort(mModules, (MWorkbenchModule o1, MWorkbenchModule o2) -> o1.getName().compareToIgnoreCase(o2.getName()));
+
+        mWorkbench.getModules().setAll(
+                mMapModule,
+                mPreferencesModule
+        );
+
+        for (MWorkbenchModule module : mModules) {
+            mWorkbench.getModules().add(module);
+        }
     }
 
 }

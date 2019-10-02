@@ -80,12 +80,12 @@
         </dependency>-->
 
         <!--Mapton/Search engines-->
-        <!--        <dependency>
+        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>se-bookmarks</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
+        <!--        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>se-geonames</artifactId>
             <version>${project.version}</version>
@@ -130,12 +130,12 @@
         </dependency>-->
 
         <!--Mapton/Other-->
-        <!--        <dependency>
+        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>reports</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
+        <!--        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>wikipedia</artifactId>
             <version>${project.version}</version>

@@ -17,10 +17,13 @@ package org.mapton.api;
 
 import java.io.File;
 import javafx.scene.paint.Color;
+import javafx.scene.web.WebView;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.openide.modules.InstalledFileLocator;
 import org.openide.util.Lookup;
 import se.trixon.almond.util.GlobalState;
+import se.trixon.almond.util.swing.SwingHelper;
 
 /**
  *
@@ -49,6 +52,18 @@ public class Mapton {
         System.setProperty("mapton.cache", CACHE_DIR.getAbsolutePath());//Used by WorldWind
     }
 
+    public static void applyHtmlCss(WebView webView) {
+        String path = "resources/css/attribution_dark.css";
+        if (!isNightMode()) {
+            path = StringUtils.remove(path, "_dark");
+        }
+
+        final String codeNameBase = Mapton.class.getPackage().getName();
+        File file = InstalledFileLocator.getDefault().locate(path, codeNameBase, false);
+        webView.getEngine().setUserStyleSheetLocation(file.toURI().toString());
+        webView.setFontScale(SwingHelper.getUIScale());
+    }
+
     public static MEngine getEngine() {
         MEngine defaultEngine = null;
 
@@ -65,6 +80,22 @@ public class Mapton {
 
     public static GlobalState getGlobalState() {
         return sGlobalState;
+    }
+
+    public static int getIconSizeContextMenu() {
+        return (int) (getIconSizeToolBar() / 2.0);
+    }
+
+    public static int getIconSizeToolBar() {
+        return ICON_SIZE_TOOLBAR;
+    }
+
+    public static int getIconSizeToolBarInt() {
+        return (int) (getIconSizeToolBar() / 1.5);
+    }
+
+    public static boolean isNightMode() {
+        return MOptions2.getInstance().general().isNightMode();
     }
 
     public static void logLoading(String category, String item) {
