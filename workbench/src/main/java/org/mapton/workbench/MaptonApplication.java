@@ -22,6 +22,7 @@ import de.codecentric.centerdevice.MenuToolkit;
 import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableMap;
 import javafx.embed.swing.SwingNode;
 import javafx.event.ActionEvent;
@@ -68,18 +69,27 @@ public class MaptonApplication extends Application {
     private static final Logger LOGGER = Logger.getLogger(MaptonApplication.class.getName());
     private Action mAboutAction;
     private final AlmondFx mAlmondFX = AlmondFx.getInstance();
+    private long mFullScreenChanged;
     private Action mHelpAction;
+    private Action mLogAction;
 //    private NewsModule mNewsModule;
     private Action mOptionsAction;
     private ToolbarItem mOptionsToolbarItem;
     private Action mPluginAction;
     private SwingNode mPluginManagerUiNode;
     private PreferencesModule mPreferencesModule;
+    private Action mQuitAction;
     private Stage mStage;
+    private Action mUpdateManagerAction;
+    private Action mWindowFullscreenAction;
+    private Action mWindowOnTopAction;
     private Workbench mWorkbench;
 
     /**
-     * The main() method is ignored in correctly deployed JavaFX application. main() serves only as fallback in case the application can not be launched through deployment artifacts, e.g., in IDEs with limited FX support. NetBeans ignores main().
+     * The main() method is ignored in correctly deployed JavaFX application.
+     * main() serves only as fallback in case the application can not be
+     * launched through deployment artifacts, e.g., in IDEs with limited FX
+     * support. NetBeans ignores main().
      *
      * @param args the command line arguments
      */
@@ -94,7 +104,8 @@ public class MaptonApplication extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         mStage = stage;
-        stage.getIcons().add(new Image(MaptonApplication.class.getResourceAsStream("logo.png")));
+        mStage.getIcons().add(new Image(MaptonApplication.class.getResourceAsStream("logo.png")));
+        mStage.setFullScreenExitKeyCombination(KeyCombination.valueOf("F11"));
 
         createUI();
 
@@ -141,12 +152,11 @@ public class MaptonApplication extends Application {
     }
 
     private void createUI() {
-
         mWorkbench = Workbench.builder().build();
 
         mWorkbench.getStylesheets().add(MaptonApplication.class.getResource("customTheme.css").toExternalForm());
-        initActions();
 
+        initActions();
         populateTools();
 
         Scene scene = new Scene(mWorkbench);
@@ -157,11 +167,26 @@ public class MaptonApplication extends Application {
 
         mWorkbench.getModules().addAll(mPreferencesModule);
 
+        Menu viewMenu = new Menu(Dict.VIEW.toString());
+        viewMenu.getItems().setAll(
+                ActionUtils.createCheckMenuItem(mWindowFullscreenAction),
+                ActionUtils.createCheckMenuItem(mWindowOnTopAction)
+        );
+
+        Menu systemMenu = new Menu(Dict.SYSTEM.toString());
+        systemMenu.getItems().setAll(
+                ActionUtils.createMenuItem(mUpdateManagerAction),
+                ActionUtils.createMenuItem(mLogAction),
+                ActionUtils.createMenuItem(mPluginAction)
+        );
+
         mWorkbench.getNavigationDrawerItems().setAll(
                 ActionUtils.createMenuItem(mOptionsAction),
-                ActionUtils.createMenuItem(mPluginAction),
+                viewMenu,
+                systemMenu,
                 ActionUtils.createMenuItem(mHelpAction),
-                ActionUtils.createMenuItem(mAboutAction)
+                ActionUtils.createMenuItem(mAboutAction),
+                ActionUtils.createMenuItem(mQuitAction)
         );
 
         Platform.runLater(() -> {
@@ -178,41 +203,83 @@ public class MaptonApplication extends Application {
         final ObservableMap<KeyCombination, Runnable> accelerators = mStage.getScene().getAccelerators();
         for (int i = 0; i < 10; i++) {
             final int index = i;
-            accelerators.put(new KeyCodeCombination(KeyCode.valueOf("DIGIT" + i), KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN), (Runnable) () -> {
+            accelerators.put(new KeyCodeCombination(KeyCode.valueOf("DIGIT" + i), KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN), () -> {
                 activateModule(index);
             });
 
-            accelerators.put(new KeyCodeCombination(KeyCode.valueOf("NUMPAD" + i), KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN), (Runnable) () -> {
+            accelerators.put(new KeyCodeCombination(KeyCode.valueOf("NUMPAD" + i), KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN), () -> {
                 activateModule(index);
             });
 
-            accelerators.put(new KeyCodeCombination(KeyCode.valueOf("DIGIT" + i), KeyCombination.SHORTCUT_DOWN), (Runnable) () -> {
+            accelerators.put(new KeyCodeCombination(KeyCode.valueOf("DIGIT" + i), KeyCombination.SHORTCUT_DOWN), () -> {
                 activateOpenModule(index);
             });
 
-            accelerators.put(new KeyCodeCombination(KeyCode.valueOf("NUMPAD" + i), KeyCombination.SHORTCUT_DOWN), (Runnable) () -> {
+            accelerators.put(new KeyCodeCombination(KeyCode.valueOf("NUMPAD" + i), KeyCombination.SHORTCUT_DOWN), () -> {
                 activateOpenModule(index);
             });
         }
 
-        accelerators.put(new KeyCodeCombination(KeyCode.Q, KeyCombination.SHORTCUT_DOWN), (Runnable) () -> {
+        accelerators.put(new KeyCodeCombination(KeyCode.Q, KeyCombination.SHORTCUT_DOWN), () -> {
             mStage.fireEvent(new WindowEvent(mStage, WindowEvent.WINDOW_CLOSE_REQUEST));
         });
 
-        accelerators.put(new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN), (Runnable) () -> {
+        accelerators.put(new KeyCodeCombination(KeyCode.CONTEXT_MENU, KeyCombination.CONTROL_ANY), () -> {
+            mWorkbench.showNavigationDrawer();
+        });
+
+        accelerators.put(new KeyCodeCombination(KeyCode.F11, KeyCombination.CONTROL_ANY), () -> {
+            if (SystemHelper.age(mFullScreenChanged) > 10) {
+                mWindowFullscreenAction.handle(null);
+            }
+            mWindowFullscreenAction.setSelected(mStage.isFullScreen());
+        });
+
+        accelerators.put(new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN), () -> {
             if (mWorkbench.getActiveModule() != null) {
                 mWorkbench.closeModule(mWorkbench.getActiveModule());
             }
         });
 
         if (!IS_MAC) {
-            accelerators.put(new KeyCodeCombination(KeyCode.COMMA, KeyCombination.SHORTCUT_DOWN), (Runnable) () -> {
+            accelerators.put(new KeyCodeCombination(KeyCode.COMMA, KeyCombination.SHORTCUT_DOWN), () -> {
                 displayOptions();
             });
         }
     }
 
     private void initActions() {
+        //Window OnTop
+        mWindowOnTopAction = new Action(Dict.ALWAYS_ON_TOP.toString(), (ActionEvent event) -> {
+            mWorkbench.hideNavigationDrawer();
+            mStage.setAlwaysOnTop(!mStage.isAlwaysOnTop());
+        });
+
+        //Window Full screen
+        mWindowFullscreenAction = new Action(Dict.FULL_SCREEN.toString(), (ActionEvent event) -> {
+            mWorkbench.hideNavigationDrawer();
+            mStage.setFullScreen(!mStage.isFullScreen());
+            mWindowFullscreenAction.setSelected(mStage.isFullScreen());
+        });
+
+        //log
+        mLogAction = new Action(Dict.LOG.toString(), (ActionEvent event) -> {
+            mWorkbench.hideNavigationDrawer();
+        });
+
+        //update manager
+        mUpdateManagerAction = new Action(Dict.UPDATE_MANAGER.toString(), (ActionEvent event) -> {
+            mWorkbench.hideNavigationDrawer();
+        });
+
+        //quit
+        mQuitAction = new Action(Dict.QUIT.toString(), (ActionEvent event) -> {
+            mWorkbench.hideNavigationDrawer();
+            mStage.fireEvent(new WindowEvent(mStage, WindowEvent.WINDOW_CLOSE_REQUEST));
+        });
+        mQuitAction.setAccelerator(new KeyCodeCombination(KeyCode.Q, KeyCombination.SHORTCUT_DOWN));
+        //mQuitAction.setGraphic(MaterialIcon._Action.SETTINGS.getImageView(ICON_SIZE_DRAWER));
+
         //options
         mOptionsAction = new Action(Dict.OPTIONS.toString(), (ActionEvent event) -> {
             mWorkbench.hideNavigationDrawer();
@@ -281,6 +348,10 @@ public class MaptonApplication extends Application {
 //        Lookup.getDefault().lookupResult(TbTool.class).addLookupListener((LookupEvent ev) -> {
 //            populateTools();
 //        });
+//        mWindowFullscreenAction.selectedProperty().bind(mStage.fullScreenProperty());
+        mStage.fullScreenProperty().addListener((ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1) -> {
+            mFullScreenChanged = System.currentTimeMillis();
+        });
     }
 
     private void initMac() {
