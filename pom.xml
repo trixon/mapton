@@ -120,7 +120,8 @@
         <!--        <module>modules-add-ons/geonames-ww</module>
         <module>modules-add-ons/mapollage</module>
         <module>modules-add-ons/mapollage-ww</module>
-        <module>modules-add-ons/notes</module>-->
+        -->
+        <module>modules-add-ons/notes</module>
 
         <!--WMS-->
         <!--        <module>modules/wms-emxsys</module>

@@ -48,7 +48,7 @@ public final class ReportsModule extends MWorkbenchModule {
     private TreeView<MReport> mTreeView;
 
     public ReportsModule() {
-        super(Dict.REPORTS.toString(), MaterialIcon._Action.BUILD.getImageView(ICON_SIZE_MODULE).getImage());
+        super(Dict.REPORTS.toString(), MaterialIcon._Communication.IMPORT_CONTACTS.getImageView(ICON_SIZE_MODULE).getImage());
 
         createUI();
     }

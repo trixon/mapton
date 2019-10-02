@@ -17,7 +17,6 @@ package org.mapton.workbench;
 
 import com.dlsc.workbenchfx.Workbench;
 import com.dlsc.workbenchfx.model.WorkbenchDialog;
-import com.dlsc.workbenchfx.view.controls.ToolbarItem;
 import de.codecentric.centerdevice.MenuToolkit;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -79,9 +78,7 @@ public class MaptonApplication extends Application {
     private Action mHelpAction;
     private Action mLogAction;
     private MapModule mMapModule;
-//    private NewsModule mNewsModule;
     private Action mOptionsAction;
-    private ToolbarItem mOptionsToolbarItem;
     private Action mPluginAction;
     private SwingNode mPluginManagerUiNode;
     private PreferencesModule mPreferencesModule;
@@ -164,14 +161,8 @@ public class MaptonApplication extends Application {
         mStage.setScene(scene);
 
         mMapModule = new MapModule();
-//        mNewsModule = new NewsModule();
         mPreferencesModule = new PreferencesModule();
 
-//        mWorkbench.getModules().addAll(
-//                mMapModule,
-//                mPreferencesModule,
-//                new NotesModule(scene)
-//        );
         populateModules();
 
         Menu viewMenu = new Menu(Dict.VIEW.toString());

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.workbench.modules;
+package org.mapton.addon.notes;
 
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
@@ -21,6 +21,7 @@ import javafx.scene.Node;
 import javafx.scene.control.TextArea;
 import org.mapton.api.MWorkbenchModule;
 import static org.mapton.api.Mapton.ICON_SIZE_MODULE;
+import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 
@@ -28,6 +29,7 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
  *
  * @author Patrik Karlström
  */
+@ServiceProvider(service = MWorkbenchModule.class)
 public class NotesModule extends MWorkbenchModule {
 
     private static final String KEY_NOTES = "notes";
