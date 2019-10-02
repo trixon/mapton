@@ -50,8 +50,9 @@ import org.apache.commons.lang3.SystemUtils;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
 import static org.mapton.api.Mapton.*;
-import org.mapton.workbench.modules.PreferencesModule;
 import org.mapton.workbench.modules.MapModule;
+import org.mapton.workbench.modules.NotesModule;
+import org.mapton.workbench.modules.PreferencesModule;
 import org.netbeans.modules.autoupdate.ui.PluginManagerUI;
 import org.netbeans.modules.autoupdate.ui.api.PluginManager;
 import org.openide.LifecycleManager;
@@ -87,14 +88,6 @@ public class MaptonApplication extends Application {
     private Action mWindowOnTopAction;
     private Workbench mWorkbench;
 
-    /**
-     * The main() method is ignored in correctly deployed JavaFX application.
-     * main() serves only as fallback in case the application can not be
-     * launched through deployment artifacts, e.g., in IDEs with limited FX
-     * support. NetBeans ignores main().
-     *
-     * @param args the command line arguments
-     */
     public static void main(String[] args) {
         launch(args);
     }
@@ -170,7 +163,11 @@ public class MaptonApplication extends Application {
 //        mNewsModule = new NewsModule();
         mPreferencesModule = new PreferencesModule(scene);
 
-        mWorkbench.getModules().addAll(mMapModule, mPreferencesModule);
+        mWorkbench.getModules().addAll(
+                mMapModule,
+                mPreferencesModule,
+                new NotesModule(scene)
+        );
 
         Menu viewMenu = new Menu(Dict.VIEW.toString());
         viewMenu.getItems().setAll(
@@ -209,6 +206,14 @@ public class MaptonApplication extends Application {
         final ObservableMap<KeyCombination, Runnable> accelerators = mStage.getScene().getAccelerators();
         for (int i = 0; i < 10; i++) {
             final int index = i;
+            accelerators.put(new KeyCodeCombination(KeyCode.valueOf("DIGIT" + i), KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN), () -> {
+                activateModule(index);
+            });
+
+            accelerators.put(new KeyCodeCombination(KeyCode.valueOf("NUMPAD" + i), KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN), () -> {
+                activateModule(index);
+            });
+
             accelerators.put(new KeyCodeCombination(KeyCode.valueOf("DIGIT" + i), KeyCombination.SHORTCUT_DOWN), () -> {
                 activateOpenModule(index);
             });
@@ -231,6 +236,10 @@ public class MaptonApplication extends Application {
                 mWindowFullscreenAction.handle(null);
             }
             mWindowFullscreenAction.setSelected(mStage.isFullScreen());
+        });
+
+        accelerators.put(new KeyCodeCombination(KeyCode.N, KeyCombination.SHORTCUT_DOWN), () -> {
+            mWorkbench.openAddModulePage();
         });
 
         accelerators.put(new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN), () -> {

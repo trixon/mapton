@@ -19,6 +19,7 @@ import com.dlsc.workbenchfx.model.WorkbenchModule;
 import java.util.HashSet;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
+import java.util.prefs.Preferences;
 import javafx.collections.ObservableMap;
 import javafx.scene.Scene;
 import javafx.scene.control.Control;
@@ -28,6 +29,7 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.stage.Stage;
 import org.openide.util.NbBundle;
+import org.openide.util.NbPreferences;
 
 /**
  *
@@ -36,12 +38,13 @@ import org.openide.util.NbBundle;
 public abstract class MWorkbenchModule extends WorkbenchModule {
 
     protected final Logger LOGGER = Logger.getLogger(getClass().getName());
-    protected final MOptions2 mPreferences = MOptions2.getInstance();
+    protected final ObservableMap<KeyCombination, Runnable> mAccelerators;
+    protected final HashSet<KeyCodeCombination> mKeyCodeCombinations;
+    protected final MOptions2 mOptions2 = MOptions2.getInstance();
+    protected final Preferences mPreferences;
     protected Stage mStage;
     private ResourceBundle mBundle;
     private final Scene mScene;
-    protected final ObservableMap<KeyCombination, Runnable> mAccelerators;
-    protected final HashSet<KeyCodeCombination> mKeyCodeCombinations;
 
     public MWorkbenchModule(Scene scene, String name, Image icon) {
         super(name, icon);
@@ -49,6 +52,7 @@ public abstract class MWorkbenchModule extends WorkbenchModule {
         mStage = (Stage) scene.getWindow();
         mKeyCodeCombinations = new HashSet<>();
         mAccelerators = mStage.getScene().getAccelerators();
+        mPreferences = NbPreferences.forModule(getClass()).node(getClass().getCanonicalName());
 
         initListeners();
     }
@@ -60,10 +64,6 @@ public abstract class MWorkbenchModule extends WorkbenchModule {
         }
 
         return mBundle;
-    }
-
-    public void setTooltip(Control control, String string) {
-        control.setTooltip(new Tooltip(string));
     }
 
     public String getBundleString(String key) {
@@ -79,15 +79,19 @@ public abstract class MWorkbenchModule extends WorkbenchModule {
     }
 
     public void postInit() {
-        setNightMode(mPreferences.general().isNightMode());
+        setNightMode(mOptions2.general().isNightMode());
     }
 
     public void setNightMode(boolean state) {
     }
 
+    public void setTooltip(Control control, String string) {
+        control.setTooltip(new Tooltip(string));
+    }
+
     private void initListeners() {
 
-        mPreferences.general().nightModeProperty().addListener((observable, oldValue, newValue) -> setNightMode(newValue));
+        mOptions2.general().nightModeProperty().addListener((observable, oldValue, newValue) -> setNightMode(newValue));
     }
 
 }
