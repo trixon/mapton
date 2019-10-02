@@ -42,7 +42,6 @@ import org.openide.modules.OnStart;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.util.NbPreferences;
-import se.trixon.almond.nbp.NbLog;
 
 /**
  *
@@ -59,7 +58,7 @@ public class Initializer implements Runnable {
             .setDateFormat(DATE_FORMAT)
             .create();
     private static final String LOG_TAG = "DataSources";
-    private final Preferences mPreferences = NbPreferences.forModule(DataSourcesPane.class);
+    private final Preferences mPreferences = NbPreferences.forModule(DataSourcesModule.class);
 
     static String getDefaultSources() {
         try {
@@ -139,7 +138,7 @@ public class Initializer implements Runnable {
             } catch (NullPointerException ex) {
                 //nvm
             } catch (JsonSyntaxException ex) {
-                NbLog.i(LOG_TAG, ex.toString());
+                //aaaNbLog.i(LOG_TAG, ex.toString());
             }
         }
 
@@ -153,7 +152,7 @@ public class Initializer implements Runnable {
             } catch (NullPointerException ex) {
                 //nvm
             } catch (JsonSyntaxException ex) {
-                NbLog.i(LOG_TAG, ex.toString());
+                //aaaNbLog.i(LOG_TAG, ex.toString());
             }
         }
 
@@ -178,7 +177,7 @@ public class Initializer implements Runnable {
                             allStyles.add(wmsStyle);
                         });
             } catch (NullPointerException | JsonSyntaxException ex) {
-                NbLog.i(LOG_TAG, ex.toString());
+                //aaaNbLog.i(LOG_TAG, ex.toString());
             }
         }
 
@@ -190,7 +189,7 @@ public class Initializer implements Runnable {
                             allStyles.add(wmsStyle);
                         });
             } catch (JsonSyntaxException ex) {
-                NbLog.i(LOG_TAG, ex.toString());
+                //aaaNbLog.i(LOG_TAG, ex.toString());
             }
         }
 
@@ -224,7 +223,7 @@ public class Initializer implements Runnable {
                     json = FileUtils.readFileToString(file, "utf-8");
                 }
             } catch (URISyntaxException | IOException ex) {
-                NbLog.i(LOG_TAG, ex.toString());
+                //aaaNbLog.i(LOG_TAG, ex.toString());
             }
 
             jsons.add(json);

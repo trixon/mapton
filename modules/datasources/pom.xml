@@ -53,13 +53,7 @@
         <!-- Mapton -->
         <dependency>
             <groupId>org.mapton</groupId>
-            <artifactId>core</artifactId>
-        </dependency>
-
-        <!-- Trixon -->
-        <dependency>
-            <groupId>se.trixon.almond</groupId>
-            <artifactId>almond-nbp</artifactId>
+            <artifactId>mapton-api</artifactId>
         </dependency>
     </dependencies>
 </project>

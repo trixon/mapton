@@ -37,7 +37,7 @@ public class DataSourceTab extends Tab {
     private String mDefaults;
     private final String[] mDropExts;
     private final String mKey;
-    private final Preferences mPreferences = NbPreferences.forModule(DataSourcesPane.class);
+    private final Preferences mPreferences = NbPreferences.forModule(DataSourcesModule.class);
     private TextArea mTextArea;
 
     public DataSourceTab(String text, String key, String[] dropExts) {

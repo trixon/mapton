@@ -15,37 +15,41 @@
  */
 package org.mapton.datasources;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import com.dlsc.workbenchfx.view.controls.ToolbarItem;
 import javafx.application.Platform;
-import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import javafx.scene.control.ToolBar;
-import javafx.scene.layout.BorderPane;
-import org.controlsfx.control.action.Action;
-import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.MKey;
+import org.mapton.api.MWorkbenchModule;
+import static org.mapton.api.Mapton.ICON_SIZE_MODULE;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
+import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class DataSourcesPane extends BorderPane {
+@ServiceProvider(service = MWorkbenchModule.class)
+public class DataSourcesModule extends MWorkbenchModule {
 
     private DataSourceTab mFileTab;
     private TabPane mTabPane;
-    private ToolBar mToolBar;
     private DataSourceTab mWmsSourceTab;
     private DataSourceTab mWmsStyleTab;
 
-    public DataSourcesPane() {
+    public DataSourcesModule() {
+        super(Dict.DATA_SOURCES.toString(), MaterialIcon._File.CLOUD.getImageView(ICON_SIZE_MODULE).getImage());
+
         createUI();
         init();
+    }
+
+    @Override
+    public Node activate() {
+        return mTabPane;
     }
 
     void save() {
@@ -61,8 +65,20 @@ public class DataSourcesPane extends BorderPane {
     }
 
     private void createUI() {
-        initToolBar();
-        String[] wmsExts = new String[]{"json"};
+        var applyToolbarItem = new ToolbarItem(MaterialIcon._Navigation.CHECK.getImageView(getIconSizeToolBarInt()), event -> {
+            apply();
+        });
+        setTooltip(applyToolbarItem, Dict.APPLY.toString());
+
+        var discardToolbarItem = new ToolbarItem(MaterialIcon._Action.SETTINGS_BACKUP_RESTORE.getImageView(getIconSizeToolBarInt()), event -> {
+            DataSourceTab t = (DataSourceTab) mTabPane.getSelectionModel().getSelectedItem();
+            t.restoreDefaults();
+        });
+        setTooltip(discardToolbarItem, Dict.RESTORE_DEFAULTS.toString());
+
+        getToolbarControlsLeft().addAll(applyToolbarItem, discardToolbarItem);
+
+        var wmsExts = new String[]{"json"};
 
         mFileTab = new DataSourceTab(Dict.FILE.toString(), MKey.DATA_SOURCES_FILES, null);
         mWmsSourceTab = new DataSourceTab("WMS " + Dict.SOURCE.toString(), MKey.DATA_SOURCES_WMS_SOURCES, wmsExts);
@@ -72,8 +88,6 @@ public class DataSourcesPane extends BorderPane {
         for (Tab tab : mTabPane.getTabs()) {
             tab.setClosable(false);
         }
-
-        setCenter(mTabPane);
     }
 
     private void init() {
@@ -82,35 +96,5 @@ public class DataSourcesPane extends BorderPane {
         mWmsStyleTab.load(Initializer.getDefaultStyles());
 
         apply();
-    }
-
-    private void initToolBar() {
-        Action applyAction = new Action(Dict.APPLY.toString(), (event) -> {
-            apply();
-        });
-        applyAction.setGraphic(MaterialIcon._Navigation.CHECK.getImageView(getIconSizeToolBarInt()));
-
-        Action restoreDefaultsAction = new Action(Dict.RESTORE_DEFAULTS.toString(), (event) -> {
-            DataSourceTab t = (DataSourceTab) mTabPane.getSelectionModel().getSelectedItem();
-            t.restoreDefaults();
-        });
-        restoreDefaultsAction.setGraphic(MaterialIcon._Action.SETTINGS_BACKUP_RESTORE.getImageView(getIconSizeToolBarInt()));
-
-        ArrayList<Action> actions = new ArrayList<>();
-        actions.addAll(Arrays.asList(
-                applyAction,
-                restoreDefaultsAction
-        ));
-
-        mToolBar = ActionUtils.createToolBar(actions, ActionUtils.ActionTextBehavior.HIDE);
-        mToolBar.setStyle("-fx-spacing: 0px;");
-        mToolBar.setPadding(Insets.EMPTY);
-
-        Platform.runLater(() -> {
-            FxHelper.undecorateButtons(mToolBar.getItems().stream());
-
-        });
-
-        setTop(mToolBar);
     }
 }

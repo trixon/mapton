@@ -135,16 +135,16 @@
             <artifactId>reports</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!--        <dependency>
+        <!--<dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>wikipedia</artifactId>
             <version>${project.version}</version>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>datasources</artifactId>
             <version>${project.version}</version>
-        </dependency>-->
+        </dependency>
 
         <!--Mapton/Add-ons-->
         <dependency>

@@ -18,6 +18,7 @@ package org.mapton.api;
 import com.google.gson.annotations.SerializedName;
 import java.util.TreeMap;
 import org.apache.commons.lang3.StringUtils;
+import org.mapton.api.MAttribution;
 
 /**
  *

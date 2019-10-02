@@ -20,6 +20,7 @@ import com.google.gson.GsonBuilder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.TreeMap;
+import org.mapton.api.MAttribution;
 
 /**
  *

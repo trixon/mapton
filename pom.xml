@@ -99,8 +99,8 @@
         <!--        <module>modules/me-gmapsfx</module>
         <module>modules/me-jxmapviewer2</module>
         <module>modules/me-mapjfx</module>
-        <module>modules/me-worldwind</module>
-        <module>modules/datasources</module>-->
+        <module>modules/me-worldwind</module>-->
+        <module>modules/datasources</module>
 
         <!--Search engines-->
         <module>modules/se-bookmarks</module>
