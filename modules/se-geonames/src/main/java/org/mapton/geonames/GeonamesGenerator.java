@@ -33,8 +33,8 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.io.FileUtils;
 import org.mapton.api.Mapton;
+import org.mapton.api.NbPrint;
 import org.mapton.geonames.api.Geoname;
-import se.trixon.almond.nbp.NbPrint;
 import se.trixon.almond.util.MathHelper;
 
 /**

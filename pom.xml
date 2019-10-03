@@ -104,9 +104,9 @@
 
         <!--Search engines-->
         <module>modules/se-bookmarks</module>
-        <!--<module>modules/se-geonames</module>-->
+        <module>modules/se-geonames</module>
         <!--<module>modules/se-google</module>-->
-        <!--<module>modules/se-nominatim</module>-->
+        <module>modules/se-nominatim</module>
 
         <!--Transformation engines-->
         <module>modules/te-swetrans</module>

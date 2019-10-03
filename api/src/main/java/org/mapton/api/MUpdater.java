@@ -18,9 +18,6 @@ package org.mapton.api;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import org.mapton.core.updater.UpdaterTool;
-import org.openide.util.NbBundle;
-import se.trixon.almond.nbp.NbPrint;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
 
@@ -30,7 +27,7 @@ import se.trixon.almond.util.SystemHelper;
  */
 public abstract class MUpdater {
 
-    protected NbPrint mPrint = new NbPrint(NbBundle.getMessage(UpdaterTool.class, "updater_tool"));
+    protected NbPrint mPrint = new NbPrint(Dict.UPDATE_MANAGER.toString());
 
     private String mCategory = null;
     private String mComment;
