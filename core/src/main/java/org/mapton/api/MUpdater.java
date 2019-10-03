@@ -117,6 +117,7 @@ public abstract class MUpdater {
             return String.format(Dict.UPDATED_S.toString(), lastUpdate);
         }
 
+        @Override
         public boolean isOutOfDate() {
             return mFile != null && (!mFile.exists() || SystemHelper.age(mFile.lastModified()) >= getAgeLimit());
         }

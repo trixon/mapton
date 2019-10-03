@@ -17,6 +17,8 @@ package org.mapton.api;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import org.mapton.api.MEngine;
+import org.mapton.api.Mapton;
 
 /**
  *

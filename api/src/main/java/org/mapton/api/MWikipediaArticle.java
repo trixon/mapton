@@ -15,6 +15,8 @@
  */
 package org.mapton.api;
 
+import org.mapton.api.MLatLon;
+
 /**
  *
  * @author Patrik Karlström

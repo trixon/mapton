@@ -17,6 +17,10 @@ package org.mapton.api;
 
 import com.google.gson.annotations.SerializedName;
 import javafx.geometry.Point2D;
+import org.mapton.api.MCooTrans;
+import org.mapton.api.MLatLon;
+import org.mapton.api.MLatLonBox;
+import org.mapton.api.Mapton;
 
 /**
  *

@@ -46,6 +46,7 @@ import java.util.logging.Logger;
 import javafx.geometry.Point3D;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.mapton.api.MLatLon;
 import se.trixon.almond.util.ext.GrahamScan;
 
 /**

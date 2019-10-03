@@ -24,13 +24,8 @@ import java.util.ArrayList;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javax.swing.SwingUtilities;
 import org.apache.commons.io.FileUtils;
 import static org.mapton.api.MOptions.KEY_LOCAL_GRIDS;
-import org.mapton.core.ui.grid.LocalGridPanel;
-import org.openide.DialogDescriptor;
-import org.openide.DialogDisplayer;
-import se.trixon.almond.util.swing.SwingHelper;
 
 /**
  *
@@ -54,33 +49,33 @@ public class MLocalGridManager {
     }
 
     public void edit(final MLocalGrid aLocalGrid) {
-        SwingUtilities.invokeLater(() -> {
-            MLocalGrid newLocalGrid = aLocalGrid;
-            boolean add = aLocalGrid == null;
-            if (add) {
-                newLocalGrid = new MLocalGrid();
-            }
-
-            final MLocalGrid localGrid = newLocalGrid;
-            LocalGridPanel localGridPanel = new LocalGridPanel();
-            DialogDescriptor d = new DialogDescriptor(localGridPanel, MDict.GRID.toString());
-            localGridPanel.setDialogDescriptor(d);
-            localGridPanel.initFx(() -> {
-                localGridPanel.load(localGrid);
-            });
-
-            localGridPanel.setPreferredSize(SwingHelper.getUIScaledDim(600, 380));
-            if (DialogDescriptor.OK_OPTION == DialogDisplayer.getDefault().notify(d)) {
-                Platform.runLater(() -> {
-                    localGridPanel.save(localGrid);
-                    if (add) {
-                        mItems.add(localGrid);
-                    }
-
-                    FXCollections.sort(mItems, (MLocalGrid o1, MLocalGrid o2) -> o1.getName().compareTo(o2.getName()));
-                });
-            }
-        });
+//aaa        SwingUtilities.invokeLater(() -> {
+//            MLocalGrid newLocalGrid = aLocalGrid;
+//            boolean add = aLocalGrid == null;
+//            if (add) {
+//                newLocalGrid = new MLocalGrid();
+//            }
+//
+//            final MLocalGrid localGrid = newLocalGrid;
+//            LocalGridPanel localGridPanel = new LocalGridPanel();
+//            DialogDescriptor d = new DialogDescriptor(localGridPanel, MDict.GRID.toString());
+//            localGridPanel.setDialogDescriptor(d);
+//            localGridPanel.initFx(() -> {
+//                localGridPanel.load(localGrid);
+//            });
+//
+//            localGridPanel.setPreferredSize(SwingHelper.getUIScaledDim(600, 380));
+//            if (DialogDescriptor.OK_OPTION == DialogDisplayer.getDefault().notify(d)) {
+//                Platform.runLater(() -> {
+//                    localGridPanel.save(localGrid);
+//                    if (add) {
+//                        mItems.add(localGrid);
+//                    }
+//
+//                    FXCollections.sort(mItems, (MLocalGrid o1, MLocalGrid o2) -> o1.getName().compareTo(o2.getName()));
+//                });
+//            }
+//        });
     }
 
     public ObservableList<MLocalGrid> getItems() {
