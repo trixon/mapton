@@ -45,6 +45,8 @@ public class PreferencesModule extends MWorkbenchModule {
     @Override
     public boolean destroy() {
         MOptions2.getInstance().save();
+        getWorkbench().getModules().remove(this);
+
         return true;
     }
 

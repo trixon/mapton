@@ -194,6 +194,7 @@ public class MaptonApplication extends Application {
     }
 
     private void displayOptions() {
+        mWorkbench.getModules().add(mPreferencesModule);
         mWorkbench.openModule(mPreferencesModule);
     }
 
