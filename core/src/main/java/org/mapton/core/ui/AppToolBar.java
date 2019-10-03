@@ -15,8 +15,6 @@
  */
 package org.mapton.core.ui;
 
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -25,10 +23,10 @@ import java.util.prefs.PreferenceChangeEvent;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBase;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToolBar;
@@ -37,17 +35,13 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import org.apache.commons.lang3.SystemUtils;
-import org.controlsfx.control.Notifications;
 import org.controlsfx.control.PopOver;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionGroup;
 import org.controlsfx.control.action.ActionUtils;
-import org.mapton.api.MDocumentInfo;
 import org.mapton.api.MEngine;
-import org.mapton.api.MKey;
 import org.mapton.api.MOptions;
 import org.mapton.api.MOptions2;
 import org.mapton.api.Mapton;
@@ -56,13 +50,11 @@ import static org.mapton.api.Mapton.getIconSizeToolBar;
 import org.mapton.core.Initializer;
 import org.mapton.core.ui.bookmark.BookmarkView;
 import org.openide.awt.Actions;
-import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.nbp.AlmondOptions;
 import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.nbp.dialogs.NbAboutFx;
 import se.trixon.almond.util.AboutModel;
 import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.GlobalStateChangeEvent;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.FxActionSwing;
 import se.trixon.almond.util.fx.FxActionSwingCheck;
@@ -79,7 +71,7 @@ public class AppToolBar extends ToolBar {
     private final AlmondOptions mAlmondOptions = AlmondOptions.INSTANCE;
     private Action mAttributionAction;
     private PopOver mAttributionPopOver;
-    private AttributionView mAttributionView;
+    private Label mAttributionView;
     private Action mBookmarkAction;
     private PopOver mBookmarkPopOver;
     private FxActionSwing mHomeAction;
@@ -428,18 +420,6 @@ public class AppToolBar extends ToolBar {
     }
 
     private void initListeners() {
-        SwingUtilities.invokeLater(() -> {
-            final JFrame frame = (JFrame) Almond.getFrame();
-            frame.addWindowListener(new WindowAdapter() {
-                @Override
-                public void windowActivated(WindowEvent e) {
-                    final boolean fullscreen = frame.isUndecorated();
-                    mOptions.setFullscreen(fullscreen);
-                    mSysViewFullscreenAction.setSelected(fullscreen);
-                }
-            });
-        });
-
         mOptions.getPreferences().addPreferenceChangeListener((PreferenceChangeEvent evt) -> {
             switch (evt.getKey()) {
                 case MOptions.KEY_MAP_ONLY:
@@ -450,44 +430,6 @@ public class AppToolBar extends ToolBar {
                     break;
             }
         });
-
-        Mapton.getGlobalState().addListener((GlobalStateChangeEvent evt) -> {
-            Platform.runLater(() -> {
-                updateDocumentInfo(evt);
-            });
-        }, MKey.MAP_DOCUMENT_INFO);
-
-        Mapton.getGlobalState().addListener((GlobalStateChangeEvent evt) -> {
-            Platform.runLater(() -> {
-                Notifications notifications = evt.getValue();
-                notifications.owner(AppToolBar.this).position(Pos.TOP_RIGHT);
-
-                switch (evt.getKey()) {
-                    case MKey.NOTIFICATION:
-                        notifications.show();
-                        break;
-
-                    case MKey.NOTIFICATION_CONFIRM:
-                        notifications.showConfirm();
-                        break;
-
-                    case MKey.NOTIFICATION_ERROR:
-                        notifications.showError();
-                        break;
-
-                    case MKey.NOTIFICATION_INFORMATION:
-                        notifications.showInformation();
-                        break;
-
-                    case MKey.NOTIFICATION_WARNING:
-                        notifications.showWarning();
-                        break;
-
-                    default:
-                        throw new AssertionError();
-                }
-            });
-        }, MKey.NOTIFICATION, MKey.NOTIFICATION_CONFIRM, MKey.NOTIFICATION_ERROR, MKey.NOTIFICATION_INFORMATION, MKey.NOTIFICATION_WARNING);
     }
 
     private void initPopOver(PopOver popOver, String title, Node content) {
@@ -529,7 +471,7 @@ public class AppToolBar extends ToolBar {
 
         Platform.runLater(() -> {
             mAttributionPopOver = new PopOver();
-            mAttributionView = new AttributionView(mAttributionPopOver);
+            mAttributionView = new Label(mAttributionPopOver.toString());
             initPopOver(mAttributionPopOver, Dict.COPYRIGHT.toString(), mAttributionView);
             mAttributionPopOver.setArrowLocation(PopOver.ArrowLocation.TOP_RIGHT);
         });
@@ -557,13 +499,6 @@ public class AppToolBar extends ToolBar {
                         });
             }
         });
-    }
-
-    private void updateDocumentInfo(GlobalStateChangeEvent evt) {
-        MDocumentInfo documentInfo = evt.getValue();
-        mAttributionAction.setDisabled(false);
-        mStyleAction.setText(documentInfo.getName());
-        mAttributionView.updateDocumentInfo(documentInfo);
     }
 
     private boolean usePopOver() {

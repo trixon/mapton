@@ -48,9 +48,12 @@ import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.SwingUtilities;
 import org.apache.commons.lang3.SystemUtils;
+import org.controlsfx.control.Notifications;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
+import org.mapton.api.MKey;
 import org.mapton.api.MWorkbenchModule;
+import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.*;
 import org.mapton.workbench.modules.MapModule;
 import org.mapton.workbench.modules.PreferencesModule;
@@ -61,6 +64,7 @@ import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import se.trixon.almond.util.AboutModel;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.GlobalStateChangeEvent;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.AlmondFx;
 import se.trixon.almond.util.fx.FxHelper;
@@ -355,6 +359,38 @@ public class MaptonApplication extends Application {
         mStage.fullScreenProperty().addListener((ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1) -> {
             mFullScreenChanged = System.currentTimeMillis();
         });
+
+        Mapton.getGlobalState().addListener((GlobalStateChangeEvent evt) -> {
+            Platform.runLater(() -> {
+                Notifications notifications = evt.getValue();
+                notifications.owner(MaptonApplication.this).position(Pos.TOP_RIGHT);
+
+                switch (evt.getKey()) {
+                    case MKey.NOTIFICATION:
+                        notifications.show();
+                        break;
+
+                    case MKey.NOTIFICATION_CONFIRM:
+                        notifications.showConfirm();
+                        break;
+
+                    case MKey.NOTIFICATION_ERROR:
+                        notifications.showError();
+                        break;
+
+                    case MKey.NOTIFICATION_INFORMATION:
+                        notifications.showInformation();
+                        break;
+
+                    case MKey.NOTIFICATION_WARNING:
+                        notifications.showWarning();
+                        break;
+
+                    default:
+                        throw new AssertionError();
+                }
+            });
+        }, MKey.NOTIFICATION, MKey.NOTIFICATION_CONFIRM, MKey.NOTIFICATION_ERROR, MKey.NOTIFICATION_INFORMATION, MKey.NOTIFICATION_WARNING);
     }
 
     private void initMac() {

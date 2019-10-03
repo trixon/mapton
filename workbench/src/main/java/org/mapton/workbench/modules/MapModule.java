@@ -17,21 +17,28 @@ package org.mapton.workbench.modules;
 
 import com.dlsc.workbenchfx.Workbench;
 import com.dlsc.workbenchfx.view.controls.ToolbarItem;
+import java.util.HashMap;
+import java.util.HashSet;
 import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
+import org.controlsfx.control.PopOver;
 import org.mapton.api.MDict;
+import org.mapton.api.MDocumentInfo;
+import org.mapton.api.MKey;
 import org.mapton.api.MWorkbenchModule;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.ICON_SIZE_MODULE;
 import static org.mapton.api.Mapton.ICON_SIZE_MODULE_TOOLBAR;
+import org.mapton.workbench.modules.map.AttributionView;
 import org.mapton.workbench.modules.map.SearchView;
 import org.mapton.workbench.modules.map.StatusBar;
 import org.mapton.workbench.window.WindowManager;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.GlobalStateChangeEvent;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 
 /**
@@ -40,10 +47,13 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
  */
 public class MapModule extends MWorkbenchModule {
 
+    private PopOver mAttributionPopOver;
+    private AttributionView mAttributionView;
     private ToolbarItem mGoHomeToolbarItem;
-
-    private WindowManager mWindowManager;
+    private final HashSet<PopOver> mPopOvers = new HashSet<>();
+    private final HashMap<PopOver, Long> mPopoverClosingTimes = new HashMap<>();
     private SearchView mSearchView;
+    private WindowManager mWindowManager;
 
     public MapModule() {
         super(Dict.MAP.toString(), MaterialIcon._Maps.MAP.getImageView(ICON_SIZE_MODULE).getImage());
@@ -72,6 +82,7 @@ public class MapModule extends MWorkbenchModule {
 
         createUI();
         initToolbars();
+        initListeners();
     }
 
     private void activateSearch() {
@@ -86,6 +97,13 @@ public class MapModule extends MWorkbenchModule {
         mSearchView = new SearchView();
         mWindowManager = new WindowManager();
         mWindowManager.setBottom(StatusBar.getInstance());
+
+        Platform.runLater(() -> {
+            mAttributionPopOver = new PopOver();
+            mAttributionView = new AttributionView(mAttributionPopOver);
+            initPopOver(mAttributionPopOver, Dict.COPYRIGHT.toString(), mAttributionView);
+            mAttributionPopOver.setArrowLocation(PopOver.ArrowLocation.TOP_RIGHT);
+        });
     }
 
     private void initAccelerators() {
@@ -101,6 +119,28 @@ public class MapModule extends MWorkbenchModule {
         getAccelerators().put(kcc, () -> {
             mGoHomeToolbarItem.onClickProperty().get().handle(null);
         });
+    }
+
+    private void initListeners() {
+        Mapton.getGlobalState().addListener((GlobalStateChangeEvent evt) -> {
+            Platform.runLater(() -> {
+                updateDocumentInfo(evt);
+            });
+        }, MKey.MAP_DOCUMENT_INFO);
+    }
+
+    private void initPopOver(PopOver popOver, String title, Node content) {
+        popOver.setTitle(title);
+        popOver.setContentNode(content);
+        popOver.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
+        popOver.setHeaderAlwaysVisible(true);
+        popOver.setCloseButtonEnabled(false);
+        popOver.setDetachable(false);
+        popOver.setAnimated(false);
+        popOver.setOnHiding((windowEvent -> {
+            mPopoverClosingTimes.put(popOver, System.currentTimeMillis());
+        }));
+        mPopOvers.add(popOver);
     }
 
     private void initToolbars() {
@@ -142,6 +182,7 @@ public class MapModule extends MWorkbenchModule {
         setTooltip(mapOnlyToolbarItem, Dict.MAP.toString());
 
         var attributionToolbarItem = new ToolbarItem(MaterialIcon._Action.COPYRIGHT.getImageView(ICON_SIZE_MODULE_TOOLBAR), event -> {
+            mAttributionPopOver.show((Node) event.getSource());
         });
         setTooltip(attributionToolbarItem, Dict.COPYRIGHT.toString());
 
@@ -168,5 +209,12 @@ public class MapModule extends MWorkbenchModule {
                 attributionToolbarItem,
                 toolboxToolbarItem
         );
+    }
+
+    private void updateDocumentInfo(GlobalStateChangeEvent evt) {
+        MDocumentInfo documentInfo = evt.getValue();
+        //aaamAttributionAction.setDisabled(false);
+        //mStyleAction.setText(documentInfo.getName());
+        mAttributionView.updateDocumentInfo(documentInfo);
     }
 }

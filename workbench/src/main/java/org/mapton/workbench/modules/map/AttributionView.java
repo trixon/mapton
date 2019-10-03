@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core.ui;
+package org.mapton.workbench.modules.map;
 
 import static j2html.TagCreator.*;
 import j2html.tags.ContainerTag;
