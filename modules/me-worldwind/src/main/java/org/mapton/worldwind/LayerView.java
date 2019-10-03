@@ -52,7 +52,6 @@ import org.controlsfx.control.textfield.TextFields;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.NbPreferences;
-import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.StringHelper;
 import se.trixon.almond.util.fx.FxHelper;
@@ -252,7 +251,7 @@ public class LayerView extends BorderPane {
             if (selectedItem != null) {
                 Layer layer = selectedItem.getValue();
                 if (layer != null && layer.hasKey(WWHelper.KEY_FAST_OPEN) && event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
-                    Almond.openAndActivateTopComponent((String) layer.getValue(WWHelper.KEY_FAST_OPEN));
+                    //aaaAlmond.openAndActivateTopComponent((String) layer.getValue(WWHelper.KEY_FAST_OPEN));
                     if (!event.isAltDown()) {
                         mCheckModel.check(selectedItem);
                     }

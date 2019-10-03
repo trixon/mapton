@@ -46,7 +46,6 @@ import static org.mapton.gmapsfx.ModuleOptions.*;
 import org.mapton.gmapsfx.api.MapStyle;
 import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
-import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.MathHelper;
 
@@ -162,7 +161,7 @@ public class GMapsFXMapEngine extends MEngine {
             });
 
             mBookmarkPlotter = new BookmarkPlotter(this);
-            NbLog.i(LOG_TAG, "Loaded and ready");
+            //aaaNbLog.i(LOG_TAG, "Loaded and ready");
         });
     }
 
@@ -197,7 +196,7 @@ public class GMapsFXMapEngine extends MEngine {
         });
 
         mMap.zoomProperty().addListener((ObservableValue<? extends Number> ov, Number t, Number t1) -> {
-            Mapton.getInstance().zoomProperty().set(toGlobalZoom());
+            //aaaMapton.getInstance().zoomProperty().set(toGlobalZoom());
         });
 
         mMapView.setOnContextMenuRequested((e) -> {
@@ -206,7 +205,7 @@ public class GMapsFXMapEngine extends MEngine {
     }
 
     private void initMap() {
-        NbLog.v(LOG_TAG, "Initializing map...");
+        //aaaNbLog.v(LOG_TAG, "Initializing map...");
 
         mMapOptions.styleString(MapStyle.getStyle(mOptions.get(KEY_MAP_STYLE, DEFAULT_MAP_STYLE)));
         mMap = mMapView.createMap(mMapOptions);
@@ -216,7 +215,7 @@ public class GMapsFXMapEngine extends MEngine {
             setStatusMousePositionData(toLatLon(event.getLatLong()), null, null);
         });
 
-        NbLog.v(LOG_TAG, "Map initialized");
+        //aaaNbLog.v(LOG_TAG, "Map initialized");
     }
 
     private double toGlobalZoom() {

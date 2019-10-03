@@ -13,25 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.workbench.window;
+package org.mapton.workbench.modules.map;
 
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
-import org.mapton.workbench.modules.map.MapWindow;
-import se.trixon.almond.util.Dict;
+import javafx.beans.value.ObservableValue;
+import javafx.scene.layout.StackPane;
+import org.mapton.api.MOptions2;
+import org.mapton.api.Mapton;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class WindowSectionMiddle extends WindowSectionBase {
+public class MapWindow extends StackPane {
 
-    private TabPane mTabPane = new TabPane();
-    private MapWindow mMapWindow = new MapWindow();
+    public MapWindow() {
+        getChildren().setAll(Mapton.getEngine().getUI());
 
-    public WindowSectionMiddle() {
-        getItems().setAll(mMapWindow, mTabPane);
-        Tab tab = new Tab(Dict.CHART.toString());
-        mTabPane.getTabs().add(tab);
+        MOptions2.getInstance().general().engineProperty().addListener((ObservableValue<? extends String> ov, String t, String t1) -> {
+            getChildren().setAll(Mapton.getEngine().getUI());
+        });
     }
 }

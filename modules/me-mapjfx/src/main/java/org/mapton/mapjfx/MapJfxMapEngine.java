@@ -46,7 +46,6 @@ import org.mapton.api.MLatLonBox;
 import org.mapton.api.Mapton;
 import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
-import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.util.MathHelper;
 
 /**
@@ -116,7 +115,7 @@ public class MapJfxMapEngine extends MEngine {
 
     @Override
     public void onWhatsHere(String s) {
-        NbLog.i(LOG_TAG, s);
+        //aaaNbLog.i(LOG_TAG, s);
     }
 
     @Override
@@ -136,7 +135,7 @@ public class MapJfxMapEngine extends MEngine {
         try {
             FileUtils.forceMkdir(mCacheDir);
             mOfflineCache.setCacheDirectory(mCacheDir.toPath());
-            NbLog.v(LOG_TAG, OfflineCache.INSTANCE.getCacheDirectory().toString());
+            //aaaNbLog.v(LOG_TAG, OfflineCache.INSTANCE.getCacheDirectory().toString());
         } catch (IOException ex) {
             Exceptions.printStackTrace(ex);
         }
@@ -170,7 +169,7 @@ public class MapJfxMapEngine extends MEngine {
                             .showZoomControls(false)
                             .build()
                     );
-                    NbLog.i(LOG_TAG, "Loaded and ready");
+                    //aaaNbLog.i(LOG_TAG, "Loaded and ready");
                 });
             } catch (InterruptedException ex) {
                 Exceptions.printStackTrace(ex);
@@ -241,12 +240,12 @@ public class MapJfxMapEngine extends MEngine {
 
 //        logger.trace("map handlers initialized");
         mMapView.zoomProperty().addListener((ObservableValue<? extends Number> ov, Number t, Number t1) -> {
-            Mapton.getInstance().zoomProperty().set(toGlobalZoom());
+            //aaaMapton.getInstance().zoomProperty().set(toGlobalZoom());
         });
     }
 
     private void initMap() {
-        NbLog.v(LOG_TAG, "Initializing map...");
+        //aaaNbLog.v(LOG_TAG, "Initializing map...");
         XYZParam xyzParams = new XYZParam()
                 .withUrl("https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x})")
                 .withAttributions(
@@ -256,7 +255,7 @@ public class MapJfxMapEngine extends MEngine {
 
         mBookmarkPlotter = new BookmarkPlotter(this);
 
-        NbLog.v(LOG_TAG, "Map initialized");
+        //aaaNbLog.v(LOG_TAG, "Map initialized");
     }
 
     private Coordinate toCoordinate(MLatLon latLon) {

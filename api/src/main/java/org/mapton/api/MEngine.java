@@ -169,7 +169,7 @@ public abstract class MEngine {
 
     public abstract Node getStyleView();
 
-    public abstract Object getUI();
+    public abstract Node getUI();
 
     public double getZoom() {
 //        aaaNbLog.i(getClass().getSimpleName(), "getZoom not implemented");

@@ -22,7 +22,9 @@ import java.awt.image.BufferedImage;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Set;
+import javafx.embed.swing.SwingNode;
 import javafx.scene.Node;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -36,8 +38,6 @@ import org.mapton.api.MLatLon;
 import org.mapton.api.MLatLonBox;
 import org.mapton.api.Mapton;
 import org.openide.util.lookup.ServiceProvider;
-import se.trixon.almond.nbp.NbLog;
-import se.trixon.almond.nbp.dialogs.NbMessage;
 import se.trixon.almond.util.GraphicsHelper;
 import se.trixon.almond.util.MathHelper;
 
@@ -52,6 +52,7 @@ public class JxMapViewerMapEngine extends MEngine {
     private BookmarkPlotter mBookmarkPlotter;
     private JXMapViewer mMap;
     private MapKit mMapKit;
+    private SwingNode mSwingNode;
 
     public JxMapViewerMapEngine() {
     }
@@ -87,15 +88,19 @@ public class JxMapViewerMapEngine extends MEngine {
     }
 
     @Override
-    public Object getUI() {
+    public Node getUI() {
         if (mMapKit == null) {
             init();
             initListeners();
+            mSwingNode = new SwingNode();
+            SwingUtilities.invokeLater(() -> {
+                mSwingNode.setContent(mMapKit);
+            });
         }
 
         updateToolbarDocumentInfo();
 
-        return mMapKit;
+        return mSwingNode;
     }
 
     @Override
@@ -105,7 +110,7 @@ public class JxMapViewerMapEngine extends MEngine {
 
     @Override
     public void onWhatsHere(String s) {
-        NbMessage.information("WHATS HERE?", s);
+        //aaaNbMessage.information("WHATS HERE?", s);
     }
 
     @Override
@@ -129,7 +134,7 @@ public class JxMapViewerMapEngine extends MEngine {
 
         mBookmarkPlotter = new BookmarkPlotter(this);
 
-        NbLog.i(LOG_TAG, "Loaded and ready");
+        //aaaNbLog.i(LOG_TAG, "Loaded and ready");
     }
 
     private void initListeners() {

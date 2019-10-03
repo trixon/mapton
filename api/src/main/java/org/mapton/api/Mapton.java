@@ -16,13 +16,25 @@
 package org.mapton.api;
 
 import java.io.File;
+import java.text.DateFormat;
+import javafx.application.Platform;
+import javafx.beans.property.DoubleProperty;
+import javafx.geometry.Pos;
+import javafx.scene.control.Label;
+import javafx.scene.layout.Background;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.scene.web.WebView;
+import javafx.util.Duration;
+import javax.swing.SwingUtilities;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.controlsfx.control.Notifications;
+import org.controlsfx.control.action.Action;
 import org.openide.modules.InstalledFileLocator;
 import org.openide.util.Lookup;
 import se.trixon.almond.util.GlobalState;
+import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.swing.SwingHelper;
 
 /**
@@ -45,6 +57,8 @@ public class Mapton {
     private static final File CONFIG_DIR;
     private static final Color ICON_COLOR = Color.BLACK;
     private static final GlobalState sGlobalState = new GlobalState();
+    private static MOptions sOptions = MOptions.getInstance();
+    private DoubleProperty mZoomProperty;
 
     static {
         CONFIG_DIR = new File(System.getProperty("netbeans.user"), "mapton-modules");
@@ -62,6 +76,50 @@ public class Mapton {
         File file = InstalledFileLocator.getDefault().locate(path, codeNameBase, false);
         webView.getEngine().setUserStyleSheetLocation(file.toURI().toString());
         webView.setFontScale(SwingHelper.getUIScale());
+    }
+
+    public static Label createTitle(String title) {
+        return createTitle(title, Mapton.getThemeBackground());
+    }
+
+    public static Label createTitle(String title, Background background) {
+        Label label = new Label(title);
+
+        label.setBackground(background);
+        label.setAlignment(Pos.BASELINE_CENTER);
+        label.setFont(new Font(FxHelper.getScaledFontSize() * 1.2));
+        label.setTextFill(Color.WHITE);
+
+        return label;
+    }
+
+    public static Label createTitleDev(String title) {
+        return createTitle(title + "-dev", FxHelper.createBackground(Color.RED));
+    }
+
+    /**
+     * Run in the thread of the map engine type
+     *
+     * @param runnable
+     */
+    public static void execute(Runnable runnable) {
+        if (getEngine().isSwing()) {
+            SwingUtilities.invokeLater(runnable);
+        } else {
+            Platform.runLater(runnable);
+        }
+    }
+
+    public static File getCacheDir() {
+        return CACHE_DIR;
+    }
+
+    public static File getConfigDir() {
+        return CONFIG_DIR;
+    }
+
+    public static DateFormat getDefaultDateFormat() {
+        return DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM);
     }
 
     public static MEngine getEngine() {
@@ -82,6 +140,10 @@ public class Mapton {
         return sGlobalState;
     }
 
+    public static Color getIconColor() {
+        return ICON_COLOR;
+    }
+
     public static int getIconSizeContextMenu() {
         return (int) (getIconSizeToolBar() / 2.0);
     }
@@ -92,6 +154,18 @@ public class Mapton {
 
     public static int getIconSizeToolBarInt() {
         return (int) (getIconSizeToolBar() / 1.5);
+    }
+
+    public static Mapton getInstance() {
+        return Holder.INSTANCE;
+    }
+
+    public static Background getThemeBackground() {
+        return FxHelper.createBackground(getThemeColor());
+    }
+
+    public static Color getThemeColor() {
+        return Color.web("#102039");
     }
 
     public static boolean isNightMode() {
@@ -108,7 +182,36 @@ public class Mapton {
         System.out.println(String.format("Removing %s: %s ", category, item));
     }
 
+    public static void notification(String type, String title, String text) {
+        getGlobalState().send(type, Notifications.create().title(title).text(text));
+    }
+
+    public static void notification(String type, String title, String text, Action... actions) {
+        Notifications notifications = Notifications.create()
+                .title(title)
+                .text(text)
+                .hideAfter(Duration.INDEFINITE)
+                .action(actions);
+
+        getGlobalState().send(type, notifications);
+    }
+
+    public static void notification(String type, String title, String text, Duration hideDuration, Action... actions) {
+        Notifications notifications = Notifications.create()
+                .title(title)
+                .text(text)
+                .hideAfter(hideDuration)
+                .action(actions);
+
+        getGlobalState().send(type, notifications);
+    }
+
     private Mapton() {
+        //aaa  mZoomProperty = AppStatusView.getInstance().getZoomAbsoluteSlider().valueProperty();
+    }
+
+    public DoubleProperty zoomProperty() {
+        return mZoomProperty;
     }
 
     private static class Holder {

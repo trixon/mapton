@@ -60,41 +60,7 @@
         <!-- Mapton -->
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>core</artifactId>
-        </dependency>
-
-        <!-- Trixon -->
-        <dependency>
-            <groupId>se.trixon.almond</groupId>
-            <artifactId>almond-nbp</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.controlsfx</groupId>
-                    <artifactId>controlsfx</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <!--javafx-->
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-base</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-controls</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-graphics</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-swing</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-web</artifactId>
+            <artifactId>mapton-api</artifactId>
         </dependency>
 
         <!-- Other -->

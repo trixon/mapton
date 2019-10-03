@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +19,6 @@ import java.awt.event.ActionEvent;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
-import org.mapton.api.Mapton;
 
 @ActionID(
         category = "Mapton",
@@ -34,7 +33,7 @@ public final class LayerAction extends BaseAction {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (usePopover()) {
-            Mapton.getAppToolBar().toogleLayerPopOver();
+            //aaaMapton.getAppToolBar().toogleLayerPopOver();
         } else {
             toggleTopComponent("LayerTopComponent");
         }

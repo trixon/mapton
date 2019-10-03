@@ -16,7 +16,6 @@
 package org.mapton.core.ui;
 
 import java.awt.BasicStroke;
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -35,7 +34,6 @@ import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
@@ -43,7 +41,6 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.FileChooser;
 import javax.imageio.ImageIO;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLayeredPane;
 import javax.swing.SwingUtilities;
@@ -426,50 +423,50 @@ public final class MapTopComponent extends MTopComponent {
     }
 
     private void setEngine(MEngine engine) {
-        mEngine = engine;
-        SwingUtilities.invokeLater(() -> {
-            setToolTipText(String.format("%s: %s", MDict.MAP_ENGINE.toString(), engine.getName()));
-        });
-
-        if (engine.isSwing()) {
-            SwingUtilities.invokeLater(() -> {
-                removeAll();
-                final JComponent engineUI = (JComponent) engine.getUI();
-                engineUI.setMinimumSize(new Dimension(1, 1));
-                engineUI.setPreferredSize(new Dimension(1, 1));
-                add(getFxPanel(), BorderLayout.NORTH);
-                getFxPanel().setVisible(false);
-                add(engineUI, BorderLayout.CENTER);
-                attachStatusbar();
-                revalidate();
-                repaint();
-
-                try {
-                    engine.onActivate();
-                    engine.panTo(mMOptions.getMapCenter(), mMOptions.getMapZoom());
-                    Mapton.getAppToolBar().refreshEngine(engine);
-                } catch (NullPointerException e) {
-                }
-            });
-        } else {
-            Platform.runLater(() -> {
-                resetFx();
-                mRoot.setCenter((Node) engine.getUI());
-                attachStatusbar();
-                try {
-                    engine.onActivate();
-                    engine.panTo(mMOptions.getMapCenter(), mMOptions.getMapZoom());
-                } catch (Exception e) {
-                }
-                SwingUtilities.invokeLater(() -> {
-                    revalidate();
-                    repaint();
-                    Mapton.getAppToolBar().refreshEngine(engine);
-                });
-            });
-        }
-
-        Mapton.logLoading("Map Engine", engine.getName());
+//        mEngine = engine;
+//        SwingUtilities.invokeLater(() -> {
+//            setToolTipText(String.format("%s: %s", MDict.MAP_ENGINE.toString(), engine.getName()));
+//        });
+//
+//        if (engine.isSwing()) {
+//            SwingUtilities.invokeLater(() -> {
+//                removeAll();
+//                final JComponent engineUI = (JComponent) engine.getUI();
+//                engineUI.setMinimumSize(new Dimension(1, 1));
+//                engineUI.setPreferredSize(new Dimension(1, 1));
+//                add(getFxPanel(), BorderLayout.NORTH);
+//                getFxPanel().setVisible(false);
+//                add(engineUI, BorderLayout.CENTER);
+//                attachStatusbar();
+//                revalidate();
+//                repaint();
+//
+//                try {
+//                    engine.onActivate();
+//                    engine.panTo(mMOptions.getMapCenter(), mMOptions.getMapZoom());
+//                    //aaaMapton.getAppToolBar().refreshEngine(engine);
+//                } catch (NullPointerException e) {
+//                }
+//            });
+//        } else {
+//            Platform.runLater(() -> {
+//                resetFx();
+//                mRoot.setCenter((Node) engine.getUI());
+//                attachStatusbar();
+//                try {
+//                    engine.onActivate();
+//                    engine.panTo(mMOptions.getMapCenter(), mMOptions.getMapZoom());
+//                } catch (Exception e) {
+//                }
+//                SwingUtilities.invokeLater(() -> {
+//                    revalidate();
+//                    repaint();
+//                    //aaaMapton.getAppToolBar().refreshEngine(engine);
+//                });
+//            });
+//        }
+//
+//        Mapton.logLoading("Map Engine", engine.getName());
     }
 
     private void whatsHere() {

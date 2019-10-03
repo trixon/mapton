@@ -17,7 +17,6 @@ package org.mapton.core.actions;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import org.mapton.api.Mapton;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
@@ -34,6 +33,6 @@ public final class AttributionAction implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        Mapton.getAppToolBar().toogleAttributionPopOver();
+        //aaaMapton.getAppToolBar().toogleAttributionPopOver();
     }
 }

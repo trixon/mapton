@@ -40,12 +40,6 @@
         </plugins>
     </build>
     <dependencies>
-        <!-- javafx -->
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-swing</artifactId>
-        </dependency>
-        
         <!-- NetBeans -->
         <dependency>
             <groupId>org.netbeans.api</groupId>
@@ -66,14 +60,10 @@
         <!-- Mapton -->
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>core</artifactId>
+            <artifactId>mapton-api</artifactId>
         </dependency>
 
         <!-- Trixon -->
-        <dependency>
-            <groupId>se.trixon.almond</groupId>
-            <artifactId>almond-nbp</artifactId>
-        </dependency>
         <dependency>
             <groupId>se.trixon</groupId>
             <artifactId>GMapsFX-txn</artifactId>
@@ -88,8 +78,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
-        <!-- Other -->
     </dependencies>
     <properties>
         <netbeans.hint.license>apache20</netbeans.hint.license>

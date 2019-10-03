@@ -51,16 +51,16 @@
             <artifactId>mapton-workbench</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!--        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>core</artifactId>
-            <version>${project.version}</version>
-        </dependency>-->
 
         <!--Mapton/Map engines-->
         <!--        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>me-gmapsfx</artifactId>
+            <version>${project.version}</version>
+        </dependency>-->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>me-mapjfx</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -70,14 +70,9 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>me-mapjfx</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>me-worldwind</artifactId>
             <version>${project.version}</version>
-        </dependency>-->
+        </dependency>
 
         <!--Mapton/Search engines-->
         <dependency>

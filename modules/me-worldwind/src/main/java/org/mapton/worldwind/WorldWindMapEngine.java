@@ -37,7 +37,9 @@ import java.util.LinkedHashMap;
 import java.util.TreeMap;
 import java.util.logging.Logger;
 import java.util.prefs.PreferenceChangeEvent;
+import javafx.embed.swing.SwingNode;
 import javafx.scene.Node;
+import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import org.mapton.api.MAttribution;
 import org.mapton.api.MDocumentInfo;
@@ -50,9 +52,6 @@ import static org.mapton.worldwind.ModuleOptions.*;
 import org.mapton.worldwind.api.MapStyle;
 import org.mapton.worldwind.ruler.RulerTabPane;
 import org.openide.util.lookup.ServiceProvider;
-import se.trixon.almond.nbp.NbLog;
-import se.trixon.almond.nbp.dialogs.NbMessage;
-import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.GlobalState;
 import se.trixon.almond.util.SystemHelper;
 
@@ -74,6 +73,7 @@ public class WorldWindMapEngine extends MEngine {
     private final ModuleOptions mOptions = ModuleOptions.getInstance();
     private RulerTabPane mRulerTabPane;
     private final StyleView mStyleView;
+    private SwingNode mSwingNode;
     private long mZoomEpoch = System.currentTimeMillis();
     private final double[] mZoomLevels;
 
@@ -152,15 +152,19 @@ public class WorldWindMapEngine extends MEngine {
     }
 
     @Override
-    public Object getUI() {
+    public Node getUI() {
         if (mMap == null) {
             init();
             initListeners();
+            mSwingNode = new SwingNode();
+            SwingUtilities.invokeLater(() -> {
+                mSwingNode.setContent(mMap);
+            });
         }
 
         updateToolbarDocumentInfo();
 
-        return mMap;
+        return mSwingNode;
     }
 
     @Override
@@ -191,7 +195,7 @@ public class WorldWindMapEngine extends MEngine {
 
     @Override
     public void onWhatsHere(String s) {
-        NbMessage.information(Dict.INFORMATION.toString(), s);
+        //aaaNbMessage.information(Dict.INFORMATION.toString(), s);
     }
 
     @Override
@@ -241,7 +245,7 @@ public class WorldWindMapEngine extends MEngine {
         mRulerTabPane.refresh(mMap);
         setImageRenderer(mMap.getImageRenderer());
 
-        NbLog.i(LOG_TAG, "Loaded and ready");
+        //aaaNbLog.i(LOG_TAG, "Loaded and ready");
     }
 
     private void initListeners() {

@@ -70,7 +70,6 @@ import static org.mapton.api.MKey.*;
 import org.mapton.api.MWmsSource;
 import org.mapton.api.Mapton;
 import static org.mapton.worldwind.ModuleOptions.*;
-import static org.mapton.worldwind.WorldWindMapEngine.LOG_TAG;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.MapStyle;
 import org.mapton.worldwind.api.WWHelper;
@@ -78,8 +77,6 @@ import org.mapton.worldwind.api.WmsService;
 import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
-import se.trixon.almond.nbp.NbLog;
-import se.trixon.almond.nbp.dialogs.NbMessage;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.GlobalStateChangeEvent;
 import se.trixon.almond.util.GraphicsHelper;
@@ -416,13 +413,13 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
                     }
                     updateStyle();
                 } catch (SocketTimeoutException ex) {
-                    NbMessage.warning("ERROR", "initWmsService");//TODO Remove this once spotted
-                    NbLog.w(LOG_TAG, ex.getMessage());
+                    //aaaNbMessage.warning("ERROR", "initWmsService");//TODO Remove this once spotted
+                    //aaaNbLog.w(LOG_TAG, ex.getMessage());
                 } catch (XMLStreamException ex) {
-                    NbLog.w(LOG_TAG, ex.getMessage());
+                    //aaaNbLog.w(LOG_TAG, ex.getMessage());
                 } catch (WWRuntimeException ex) {
                     Mapton.notification(MKey.NOTIFICATION_ERROR, Dict.Dialog.TITLE_IO_ERROR.toString(), "WMS error: " + wmsService.getName());
-                    NbLog.e(LOG_TAG, ex.getMessage());
+                    //aaaNbLog.e(LOG_TAG, ex.getMessage());
                 } catch (Exception ex) {
                     Exceptions.printStackTrace(ex);
                 }
@@ -463,7 +460,7 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
                 allLayers.remove(layer);
                 allLayers.add(layer);
             } else {
-                NbLog.e(Dict.DOCUMENT.toString(), "Layer not found: " + layerName);
+                //aaaNbLog.e(Dict.DOCUMENT.toString(), "Layer not found: " + layerName);
             }
         }
     }
@@ -528,7 +525,7 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         MapStyle mapStyle = MapStyle.getStyle(styleId);
 
         try {
-            NbLog.i(Dict.DOCUMENT.toString(), String.format("%s: (%s)", mapStyle.getName(), String.join(", ", styleLayers)));
+            //aaaNbLog.i(Dict.DOCUMENT.toString(), String.format("%s: (%s)", mapStyle.getName(), String.join(", ", styleLayers)));
         } catch (NullPointerException e) {
         }
         getLayers().forEach((layer) -> {
