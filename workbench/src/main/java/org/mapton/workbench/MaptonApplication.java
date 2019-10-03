@@ -116,8 +116,6 @@ public class MaptonApplication extends Application {
         mStage.setTitle(APP_TITLE);
         initAccelerators();
         initListeners();
-
-        //mWorkbench.openModule(mPreferencesModule);
     }
 
     @Override
@@ -193,6 +191,8 @@ public class MaptonApplication extends Application {
         Platform.runLater(() -> {
             mAlmondFX.addStageWatcher(mStage, MaptonApplication.class);
             mStage.show();
+            mWindowOnTopAction.setSelected(mStage.isAlwaysOnTop());
+            mWindowFullscreenAction.setSelected(mStage.isFullScreen());
             mWorkbench.openModule(mMapModule);
         });
     }
