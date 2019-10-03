@@ -13,18 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.workbench.modules.map;
+package org.mapton.workbench.window;
 
-import javafx.scene.layout.BorderPane;
+import javafx.scene.control.Label;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
+import javafx.scene.layout.StackPane;
+import se.trixon.almond.util.Dict;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class WindowManager extends BorderPane {
+public class WindowSectionMiddle extends WindowSectionBase {
 
-    public WindowManager() {
-        setBottom(MapStatusBar.getInstance());
+    private StackPane mStackPane = new StackPane();
+    private TabPane mTabPane = new TabPane();
+
+    public WindowSectionMiddle() {
+        getItems().setAll(mStackPane, mTabPane);
+        mStackPane.getChildren().add(new Label("map"));
+        Tab tab = new Tab(Dict.CHART.toString());
+        mTabPane.getTabs().add(tab);
     }
-
 }

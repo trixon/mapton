@@ -27,8 +27,9 @@ import org.mapton.api.MDict;
 import org.mapton.api.MWorkbenchModule;
 import static org.mapton.api.Mapton.ICON_SIZE_MODULE;
 import static org.mapton.api.Mapton.ICON_SIZE_MODULE_TOOLBAR;
+import org.mapton.workbench.modules.map.MapStatusBar;
 import org.mapton.workbench.modules.map.SearchView;
-import org.mapton.workbench.modules.map.WindowManager;
+import org.mapton.workbench.window.WindowManager;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 
@@ -81,6 +82,7 @@ public class MapModule extends MWorkbenchModule {
     private void createUI() {
         mSearchView = new SearchView();
         mWindowManager = new WindowManager();
+        mWindowManager.setBottom(MapStatusBar.getInstance());
     }
 
     private void initAccelerators() {
