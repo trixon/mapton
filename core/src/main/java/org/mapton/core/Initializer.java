@@ -61,7 +61,6 @@ public class Initializer implements Runnable {
 
         System.setProperty("netbeans.winsys.no_help_in_dialogs", "true");
         System.setProperty("netbeans.winsys.no_toolbars", "true");
-        System.setProperty("netbeans.winsys.status_line.path", "AppStatusPanel.instance");
 
         boolean fullscreen = mOptions.isFullscreen();
         FxHelper.setDarkThemeEnabled(mOptions.is(KEY_UI_LAF_DARK));

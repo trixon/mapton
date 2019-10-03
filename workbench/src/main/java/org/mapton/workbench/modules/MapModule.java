@@ -19,17 +19,16 @@ import com.dlsc.workbenchfx.Workbench;
 import com.dlsc.workbenchfx.view.controls.ToolbarItem;
 import javafx.application.Platform;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
-import javafx.scene.layout.BorderPane;
 import org.mapton.api.MDict;
 import org.mapton.api.MWorkbenchModule;
 import static org.mapton.api.Mapton.ICON_SIZE_MODULE;
 import static org.mapton.api.Mapton.ICON_SIZE_MODULE_TOOLBAR;
 import org.mapton.workbench.modules.map.SearchView;
+import org.mapton.workbench.modules.map.WindowManager;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 
@@ -39,7 +38,7 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
  */
 public class MapModule extends MWorkbenchModule {
 
-    private BorderPane mRoot;
+    private WindowManager mWindowManager;
     private SearchView mSearchView;
 
     public MapModule() {
@@ -50,7 +49,7 @@ public class MapModule extends MWorkbenchModule {
     public Node activate() {
         initAccelerators();
 
-        return mRoot;
+        return mWindowManager;
     }
 
     @Override
@@ -81,7 +80,7 @@ public class MapModule extends MWorkbenchModule {
 
     private void createUI() {
         mSearchView = new SearchView();
-        mRoot = new BorderPane(new Label("m.a.p"));
+        mWindowManager = new WindowManager();
     }
 
     private void initAccelerators() {

@@ -60,7 +60,6 @@ import org.mapton.api.MOptions2;
 import org.mapton.api.MTopComponent;
 import org.mapton.api.MWhatsHereEngine;
 import org.mapton.api.Mapton;
-import org.mapton.core.ui.AppStatusView.StatusWindowMode;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -104,7 +103,6 @@ public final class MapTopComponent extends MTopComponent {
 
     private static final Logger LOGGER = Logger.getLogger(MEngine.class.getName());
     private final HashSet<TopComponent> mActiveMapMagnets = new HashSet<>();
-    private AppStatusPanel mAppStatusPanel;
     private Menu mContextCopyMenu;
     private Menu mContextExtrasMenu;
     private ContextMenu mContextMenu;
@@ -131,11 +129,11 @@ public final class MapTopComponent extends MTopComponent {
 
     public void displayContextMenu(Point screenXY) {
         Platform.runLater(() -> {
-            Node rootNode = AppStatusView.getInstance();
-            rootNode.getScene().getWindow().requestFocus();
-            rootNode.requestFocus();
-
-            mContextMenu.show(rootNode, screenXY.x, screenXY.y);
+//aaa            Node rootNode = AppStatusView.getInstance();
+//            rootNode.getScene().getWindow().requestFocus();
+//            rootNode.requestFocus();
+//
+//            mContextMenu.show(rootNode, screenXY.x, screenXY.y);
         });
     }
 
@@ -191,7 +189,7 @@ public final class MapTopComponent extends MTopComponent {
             }
         });
 
-        AppStatusView.getInstance().setWindowMode(StatusWindowMode.OTHER);
+        //aaaAppStatusView.getInstance().setWindowMode(StatusWindowMode.OTHER);
     }
 
     @Override
@@ -211,7 +209,7 @@ public final class MapTopComponent extends MTopComponent {
             tc.requestActive();
         }
 
-        AppStatusView.getInstance().setWindowMode(StatusWindowMode.MAP);
+        //aaaAppStatusView.getInstance().setWindowMode(StatusWindowMode.MAP);
     }
 
     @Override
@@ -244,9 +242,9 @@ public final class MapTopComponent extends MTopComponent {
         if (mEngine.isSwing()) {
             try {
                 if (showOnlyMap) {
-                    add(getStatusPanel().getFxPanel(), BorderLayout.SOUTH);
+//                    add(getStatusPanel().getFxPanel(), BorderLayout.SOUTH);
                 } else {
-                    getStatusPanel().resetSwing();
+//                    getStatusPanel().resetSwing();
                 }
             } catch (NullPointerException e) {
                 // nvm
@@ -254,11 +252,11 @@ public final class MapTopComponent extends MTopComponent {
         } else {
             Platform.runLater(() -> {
                 if (showOnlyMap) {
-                    mRoot.setBottom(AppStatusView.getInstance());
+                    //aaamRoot.setBottom(AppStatusView.getInstance());
                 } else {
                     if (mRoot.getBottom() != null) {
                         mRoot.setBottom(null);
-                        getStatusPanel().resetFx();
+//                        getStatusPanel().resetFx();
                     }
                 }
             });
@@ -304,14 +302,6 @@ public final class MapTopComponent extends MTopComponent {
             }
 
         }
-    }
-
-    private AppStatusPanel getStatusPanel() {
-        if (mAppStatusPanel == null) {
-            mAppStatusPanel = AppStatusPanel.getInstance();
-        }
-
-        return mAppStatusPanel;
     }
 
     private void initContextMenu() {

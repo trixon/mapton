@@ -31,7 +31,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.Notifications;
 import org.controlsfx.control.action.Action;
-import org.mapton.core.ui.AppStatusView;
 import org.mapton.core.ui.AppToolBar;
 import org.openide.awt.StatusDisplayer;
 import org.openide.modules.InstalledFileLocator;
@@ -58,7 +57,7 @@ public class Mapton {
     private static AppToolBar sAppToolBar;
     private static final GlobalState sGlobalState = new GlobalState();
     private static MOptions sOptions = MOptions.getInstance();
-    private final DoubleProperty mZoomProperty;
+    private DoubleProperty mZoomProperty;
 
     static {
         CONFIG_DIR = new File(System.getProperty("netbeans.user"), "mapton-modules");
@@ -225,7 +224,7 @@ public class Mapton {
     }
 
     private Mapton() {
-        mZoomProperty = AppStatusView.getInstance().getZoomAbsoluteSlider().valueProperty();
+        //aaa  mZoomProperty = AppStatusView.getInstance().getZoomAbsoluteSlider().valueProperty();
     }
 
     public DoubleProperty zoomProperty() {

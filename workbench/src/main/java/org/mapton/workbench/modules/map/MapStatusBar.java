@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core.ui;
+package org.mapton.workbench.modules.map;
 
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
@@ -41,7 +41,7 @@ import se.trixon.almond.util.fx.FxHelper;
  *
  * @author Patrik Karlström
  */
-public class AppStatusView extends StatusBar {
+public class MapStatusBar extends StatusBar {
 
     private final ComboBox<MCooTrans> mComboBox = new ComboBox<>();
     private MCooTrans mCooTrans;
@@ -54,11 +54,11 @@ public class AppStatusView extends StatusBar {
     private MStatusZoomMode mZoomMode = MStatusZoomMode.ABSOLUTE;
     private PlusMinusSlider mZoomRelativeSlider;
 
-    public static AppStatusView getInstance() {
+    public static MapStatusBar getInstance() {
         return Holder.INSTANCE;
     }
 
-    private AppStatusView() {
+    private MapStatusBar() {
         super.setText("");
         createUI();
         initListeners();
@@ -219,19 +219,19 @@ public class AppStatusView extends StatusBar {
     private void updateZoomMode() {
         mLeftItemsBox.getChildren().clear();
 
-        mZoomMode = Mapton.getEngine().getStatusZoomMode();
-        if (mWindowMode == StatusWindowMode.MAP) {
-            if (mZoomMode == MStatusZoomMode.ABSOLUTE) {
-                mLeftItemsBox.getChildren().add(mZoomAbsoluteSlider);
-            } else {
-                mLeftItemsBox.getChildren().add(mZoomRelativeSlider);
-            }
-        }
+        //aaamZoomMode = Mapton.getEngine().getStatusZoomMode();
+//        if (mWindowMode == StatusWindowMode.MAP) {
+//            if (mZoomMode == MStatusZoomMode.ABSOLUTE) {
+//                mLeftItemsBox.getChildren().add(mZoomAbsoluteSlider);
+//            } else {
+//                mLeftItemsBox.getChildren().add(mZoomRelativeSlider);
+//            }
+//        }
     }
 
     private static class Holder {
 
-        private static final AppStatusView INSTANCE = new AppStatusView();
+        private static final MapStatusBar INSTANCE = new MapStatusBar();
     }
 
     public enum StatusWindowMode {
