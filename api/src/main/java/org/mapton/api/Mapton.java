@@ -19,6 +19,7 @@ import java.io.File;
 import java.text.DateFormat;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Background;
@@ -58,7 +59,7 @@ public class Mapton {
     private static final Color ICON_COLOR = Color.BLACK;
     private static final GlobalState sGlobalState = new GlobalState();
     private static MOptions sOptions = MOptions.getInstance();
-    private DoubleProperty mZoomProperty;
+    private DoubleProperty mZoomProperty = new SimpleDoubleProperty();
 
     static {
         CONFIG_DIR = new File(System.getProperty("netbeans.user"), "mapton-modules");
@@ -207,7 +208,6 @@ public class Mapton {
     }
 
     private Mapton() {
-        //aaa  mZoomProperty = AppStatusView.getInstance().getZoomAbsoluteSlider().valueProperty();
     }
 
     public DoubleProperty zoomProperty() {

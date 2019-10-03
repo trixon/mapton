@@ -25,10 +25,11 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import org.mapton.api.MDict;
 import org.mapton.api.MWorkbenchModule;
+import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.ICON_SIZE_MODULE;
 import static org.mapton.api.Mapton.ICON_SIZE_MODULE_TOOLBAR;
-import org.mapton.workbench.modules.map.StatusBar;
 import org.mapton.workbench.modules.map.SearchView;
+import org.mapton.workbench.modules.map.StatusBar;
 import org.mapton.workbench.window.WindowManager;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.icons.material.MaterialIcon;
@@ -38,6 +39,8 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
  * @author Patrik Karlström
  */
 public class MapModule extends MWorkbenchModule {
+
+    private ToolbarItem mGoHomeToolbarItem;
 
     private WindowManager mWindowManager;
     private SearchView mSearchView;
@@ -86,17 +89,25 @@ public class MapModule extends MWorkbenchModule {
     }
 
     private void initAccelerators() {
-        KeyCodeCombination keyCodeCombination = new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN);
-        getKeyCodeCombinations().add(keyCodeCombination);
-        getAccelerators().put(keyCodeCombination, () -> {
+        KeyCodeCombination kcc;
+        kcc = new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN);
+        getKeyCodeCombinations().add(kcc);
+        getAccelerators().put(kcc, () -> {
             activateSearch();
+        });
+
+        kcc = new KeyCodeCombination(KeyCode.H, KeyCombination.SHORTCUT_DOWN);
+        getKeyCodeCombinations().add(kcc);
+        getAccelerators().put(kcc, () -> {
+            mGoHomeToolbarItem.onClickProperty().get().handle(null);
         });
     }
 
     private void initToolbars() {
-        var goHomeToolbarItem = new ToolbarItem(MaterialIcon._Action.HOME.getImageView(ICON_SIZE_MODULE_TOOLBAR), event -> {
+        mGoHomeToolbarItem = new ToolbarItem(MaterialIcon._Action.HOME.getImageView(ICON_SIZE_MODULE_TOOLBAR), event -> {
+            Mapton.getEngine().goHome();
         });
-        setTooltip(goHomeToolbarItem, Dict.HOME.toString());
+        setTooltip(mGoHomeToolbarItem, Dict.HOME.toString());
 
         var measureToolbarItem = new ToolbarItem(MaterialIcon._Editor.SPACE_BAR.getImageView(ICON_SIZE_MODULE_TOOLBAR), event -> {
         });
@@ -141,7 +152,7 @@ public class MapModule extends MWorkbenchModule {
         ToolbarItem searchToolbarItem = new ToolbarItem(mSearchView.getPresenter());
 
         getToolbarControlsLeft().setAll(
-                goHomeToolbarItem,
+                mGoHomeToolbarItem,
                 measureToolbarItem,
                 layerToolbarItem,
                 bookmarkToolbarItem,
