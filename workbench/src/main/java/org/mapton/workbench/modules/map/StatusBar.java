@@ -24,7 +24,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.HBox;
 import org.controlsfx.control.PlusMinusSlider;
-import org.controlsfx.control.StatusBar;
 import org.mapton.api.MCooTrans;
 import org.mapton.api.MEngine;
 import org.mapton.api.MOptions;
@@ -41,7 +40,7 @@ import se.trixon.almond.util.fx.FxHelper;
  *
  * @author Patrik Karlström
  */
-public class MapStatusBar extends StatusBar {
+public class StatusBar extends org.controlsfx.control.StatusBar {
 
     private final ComboBox<MCooTrans> mComboBox = new ComboBox<>();
     private MCooTrans mCooTrans;
@@ -54,11 +53,11 @@ public class MapStatusBar extends StatusBar {
     private MStatusZoomMode mZoomMode = MStatusZoomMode.ABSOLUTE;
     private PlusMinusSlider mZoomRelativeSlider;
 
-    public static MapStatusBar getInstance() {
+    public static StatusBar getInstance() {
         return Holder.INSTANCE;
     }
 
-    private MapStatusBar() {
+    private StatusBar() {
         super.setText("");
         createUI();
         initListeners();
@@ -231,7 +230,7 @@ public class MapStatusBar extends StatusBar {
 
     private static class Holder {
 
-        private static final MapStatusBar INSTANCE = new MapStatusBar();
+        private static final StatusBar INSTANCE = new StatusBar();
     }
 
     public enum StatusWindowMode {
