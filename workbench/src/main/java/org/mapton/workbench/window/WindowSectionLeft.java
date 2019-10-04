@@ -17,6 +17,7 @@ package org.mapton.workbench.window;
 
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import org.mapton.api.MDict;
 import se.trixon.almond.util.Dict;
 
 /**
@@ -40,7 +41,7 @@ public class WindowSectionLeft extends WindowSectionBase {
         mTabPane1.getTabs().add(bookmarkTab);
 
         Tab layersTab = new Tab(Dict.LAYERS.toString());
-        mTabPane2.getTabs().add(layersTab);
+        Tab gridsTab = new Tab(MDict.GRIDS.toString());
+        mTabPane2.getTabs().addAll(layersTab, gridsTab);
     }
-
 }

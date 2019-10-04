@@ -84,7 +84,7 @@ public class MaptonApplication extends Application {
     private MapModule mMapModule;
     private Action mOptionsAction;
     private Action mPluginAction;
-    private SwingNode mPluginManagerUiNode;
+    private final SwingNode mPluginManagerUiNode;
     private PreferencesModule mPreferencesModule;
     private Action mQuitAction;
     private Stage mStage;
@@ -227,6 +227,10 @@ public class MaptonApplication extends Application {
             mStage.fireEvent(new WindowEvent(mStage, WindowEvent.WINDOW_CLOSE_REQUEST));
         });
 
+        accelerators.put(new KeyCodeCombination(KeyCode.M, KeyCombination.SHORTCUT_DOWN), () -> {
+            mWorkbench.openModule(mMapModule);
+        });
+
         accelerators.put(new KeyCodeCombination(KeyCode.CONTEXT_MENU, KeyCombination.CONTROL_ANY), () -> {
             mWorkbench.showNavigationDrawer();
         });
@@ -238,9 +242,11 @@ public class MaptonApplication extends Application {
             mWindowFullscreenAction.setSelected(mStage.isFullScreen());
         });
 
-        accelerators.put(new KeyCodeCombination(KeyCode.N, KeyCombination.SHORTCUT_DOWN), () -> {
+        final Runnable openModulePage = () -> {
             mWorkbench.openAddModulePage();
-        });
+        };
+        accelerators.put(new KeyCodeCombination(KeyCode.ADD, KeyCombination.SHORTCUT_DOWN), openModulePage);
+        accelerators.put(new KeyCodeCombination(KeyCode.PLUS, KeyCombination.SHORTCUT_DOWN), openModulePage);
 
         accelerators.put(new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN), () -> {
             if (mWorkbench.getActiveModule() != null && mWorkbench.getActiveModule() != mMapModule) {

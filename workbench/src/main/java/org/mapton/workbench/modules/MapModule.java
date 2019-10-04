@@ -21,11 +21,14 @@ import java.util.HashMap;
 import java.util.HashSet;
 import javafx.application.Platform;
 import javafx.scene.Node;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import org.controlsfx.control.PopOver;
+import org.controlsfx.control.action.Action;
+import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.MDict;
 import org.mapton.api.MDocumentInfo;
 import org.mapton.api.MKey;
@@ -50,10 +53,14 @@ public class MapModule extends MWorkbenchModule {
     private PopOver mAttributionPopOver;
     private AttributionView mAttributionView;
     private ToolbarItem mGoHomeToolbarItem;
+    private ToolbarItem mMapOnlyToolbarItem;
     private final HashSet<PopOver> mPopOvers = new HashSet<>();
     private final HashMap<PopOver, Long> mPopoverClosingTimes = new HashMap<>();
     private SearchView mSearchView;
+    private ToolbarItem mStyleToolbarItem;
+    private ToolbarItem mToolboxToolbarItem;
     private WindowManager mWindowManager;
+    private ToolbarItem mWindowToolbarItem;
 
     public MapModule() {
         super(Dict.MAP.toString(), MaterialIcon._Maps.MAP.getImageView(ICON_SIZE_MODULE).getImage());
@@ -119,6 +126,31 @@ public class MapModule extends MWorkbenchModule {
         getAccelerators().put(kcc, () -> {
             mGoHomeToolbarItem.onClickProperty().get().handle(null);
         });
+
+        kcc = new KeyCodeCombination(KeyCode.S, KeyCombination.SHORTCUT_DOWN);
+        getKeyCodeCombinations().add(kcc);
+        getAccelerators().put(kcc, () -> {
+            mStyleToolbarItem.fire();
+        });
+
+        kcc = new KeyCodeCombination(KeyCode.T, KeyCombination.SHORTCUT_DOWN);
+        getKeyCodeCombinations().add(kcc);
+        getAccelerators().put(kcc, () -> {
+            mToolboxToolbarItem.fire();
+        });
+
+        kcc = new KeyCodeCombination(KeyCode.Y, KeyCombination.SHORTCUT_DOWN);
+        getKeyCodeCombinations().add(kcc);
+        getAccelerators().put(kcc, () -> {
+            mWindowToolbarItem.fire();
+        });
+
+        kcc = new KeyCodeCombination(KeyCode.F12, KeyCombination.SHORTCUT_DOWN);
+        getKeyCodeCombinations().add(kcc);
+        getAccelerators().put(kcc, () -> {
+            System.out.println("dsf");
+            mMapOnlyToolbarItem.onClickProperty().get().handle(null);
+        });
     }
 
     private void initListeners() {
@@ -149,65 +181,82 @@ public class MapModule extends MWorkbenchModule {
         });
         setTooltip(mGoHomeToolbarItem, Dict.HOME.toString());
 
-        var measureToolbarItem = new ToolbarItem(MaterialIcon._Editor.SPACE_BAR.getImageView(ICON_SIZE_MODULE_TOOLBAR), event -> {
+        Action measureAction = new Action(Dict.MEASURE.toString(), (event) -> {
+            System.out.println(event);
         });
-        setTooltip(measureToolbarItem, Dict.MEASURE.toString());
+        Action layerAction = new Action(Dict.LAYERS.toString(), (event) -> {
+            System.out.println(event);
+        });
+        Action bookmarkAction = new Action(Dict.BOOKMARKS.toString(), (event) -> {
+            System.out.println(event);
+        });
+        Action diagramAction = new Action(Dict.CHART.toString(), (event) -> {
+            System.out.println(event);
+        });
+        Action temporalAction = new Action(Dict.Time.DATE.toString(), (event) -> {
+            System.out.println(event);
+        });
+        Action gridAction = new Action(MDict.GRIDS.toString(), (event) -> {
+            System.out.println(event);
+        });
+        Action objectPropertiesAction = new Action(Dict.OBJECT_PROPERTIES.toString(), (event) -> {
+            System.out.println(event);
+        });
+        Action toolsAction = new Action(Dict.TOOLS.toString(), (event) -> {
+            System.out.println(event);
+        });
 
-        var layerToolbarItem = new ToolbarItem(MaterialIcon._Maps.LAYERS.getImageView(ICON_SIZE_MODULE_TOOLBAR), event -> {
-        });
-        setTooltip(layerToolbarItem, Dict.LAYERS.toString());
-
-        var bookmarkToolbarItem = new ToolbarItem(MaterialIcon._Action.BOOKMARK_BORDER.getImageView(ICON_SIZE_MODULE_TOOLBAR), event -> {
-        });
-        setTooltip(bookmarkToolbarItem, Dict.BOOKMARKS.toString());
-
-        var diagramToolbarItem = new ToolbarItem(MaterialIcon._Editor.SHOW_CHART.getImageView(ICON_SIZE_MODULE_TOOLBAR), event -> {
-        });
-        setTooltip(diagramToolbarItem, Dict.CHART.toString());
-
-        var temporalToolbarItem = new ToolbarItem(MaterialIcon._Action.DATE_RANGE.getImageView(ICON_SIZE_MODULE_TOOLBAR), event -> {
-        });
-        setTooltip(temporalToolbarItem, Dict.Time.DATE.toString());
-
-        var styleToolbarItem = new ToolbarItem("OpenStreetMap", MaterialIcon._Image.COLOR_LENS.getImageView(ICON_SIZE_MODULE_TOOLBAR), event -> {
-        });
-        setTooltip(styleToolbarItem, Dict.STYLE.toString());
-
-        var gridToolbarItem = new ToolbarItem(MaterialIcon._Image.GRID_ON.getImageView(ICON_SIZE_MODULE_TOOLBAR), event -> {
-        });
-        setTooltip(gridToolbarItem, MDict.GRIDS.toString());
-
-        var mapOnlyToolbarItem = new ToolbarItem(MaterialIcon._Navigation.FULLSCREEN.getImageView(ICON_SIZE_MODULE_TOOLBAR), event -> {
-        });
-        setTooltip(mapOnlyToolbarItem, Dict.MAP.toString());
+        mStyleToolbarItem = new ToolbarItem(
+                "OpenStreetMap",
+                MaterialIcon._Image.COLOR_LENS.getImageView(ICON_SIZE_MODULE_TOOLBAR),
+                new MenuItem("")
+        );
+        setTooltip(mStyleToolbarItem, Dict.STYLE.toString());
 
         var attributionToolbarItem = new ToolbarItem(MaterialIcon._Action.COPYRIGHT.getImageView(ICON_SIZE_MODULE_TOOLBAR), event -> {
             mAttributionPopOver.show((Node) event.getSource());
         });
         setTooltip(attributionToolbarItem, Dict.COPYRIGHT.toString());
 
-        var toolboxToolbarItem = new ToolbarItem(MaterialIcon._Places.BUSINESS_CENTER.getImageView(ICON_SIZE_MODULE_TOOLBAR), event -> {
-        });
-        setTooltip(toolboxToolbarItem, Dict.TOOLBOX.toString());
-
         ToolbarItem searchToolbarItem = new ToolbarItem(mSearchView.getPresenter());
+
+        mToolboxToolbarItem = new ToolbarItem(
+                Dict.TOOLBOX.toString(),
+                MaterialIcon._Places.BUSINESS_CENTER.getImageView(ICON_SIZE_MODULE_TOOLBAR),
+                new MenuItem("")
+        );
+
+        mWindowToolbarItem = new ToolbarItem(
+                Dict.WINDOW.toString(),
+                MaterialIcon._Av.WEB_ASSET.getImageView(ICON_SIZE_MODULE_TOOLBAR),
+                ActionUtils.createMenuItem(measureAction),
+                ActionUtils.createMenuItem(temporalAction),
+                ActionUtils.createMenuItem(bookmarkAction),
+                ActionUtils.createMenuItem(gridAction),
+                ActionUtils.createMenuItem(layerAction),
+                ActionUtils.createMenuItem(toolsAction),
+                ActionUtils.createMenuItem(objectPropertiesAction),
+                ActionUtils.createMenuItem(diagramAction)
+        );
+
+        mMapOnlyToolbarItem = new ToolbarItem(
+                MaterialIcon._Navigation.FULLSCREEN.getImageView(ICON_SIZE_MODULE_TOOLBAR),
+                event -> {
+                    System.out.println(event);
+                });
+        setTooltip(mMapOnlyToolbarItem, Dict.MAP.toString());
 
         getToolbarControlsLeft().setAll(
                 mGoHomeToolbarItem,
-                measureToolbarItem,
-                layerToolbarItem,
-                bookmarkToolbarItem,
-                diagramToolbarItem,
                 searchToolbarItem,
-                temporalToolbarItem,
-                styleToolbarItem
+                attributionToolbarItem,
+                mStyleToolbarItem
         );
 
         getToolbarControlsRight().setAll(
-                gridToolbarItem,
-                //mapOnlyToolbarItem,
-                attributionToolbarItem,
-                toolboxToolbarItem
+                mToolboxToolbarItem,
+                mWindowToolbarItem,
+                mMapOnlyToolbarItem
         );
     }
 
