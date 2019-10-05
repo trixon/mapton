@@ -51,7 +51,6 @@ import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeContextMenu;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.mapton.core.ui.MapTopComponent;
-import org.mapton.core.ui.ToolboxView;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.util.Exceptions;

@@ -17,15 +17,16 @@ package org.mapton.workbench.modules;
 
 import com.dlsc.workbenchfx.Workbench;
 import com.dlsc.workbenchfx.view.controls.ToolbarItem;
-import java.util.HashMap;
 import java.util.HashSet;
 import javafx.application.Platform;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
-import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
 import org.controlsfx.control.PopOver;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
@@ -39,6 +40,7 @@ import static org.mapton.api.Mapton.ICON_SIZE_MODULE_TOOLBAR;
 import org.mapton.workbench.modules.map.AttributionView;
 import org.mapton.workbench.modules.map.SearchView;
 import org.mapton.workbench.modules.map.StatusBar;
+import org.mapton.workbench.modules.map.ToolboxView;
 import org.mapton.workbench.window.WindowManager;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.GlobalStateChangeEvent;
@@ -51,13 +53,18 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
 public class MapModule extends MWorkbenchModule {
 
     private PopOver mAttributionPopOver;
+    private ToolbarItem mAttributionToolbarItem;
     private AttributionView mAttributionView;
+    private BorderPane mBorderPane;
     private ToolbarItem mGoHomeToolbarItem;
     private ToolbarItem mMapOnlyToolbarItem;
     private final HashSet<PopOver> mPopOvers = new HashSet<>();
-    private final HashMap<PopOver, Long> mPopoverClosingTimes = new HashMap<>();
     private SearchView mSearchView;
+    private StackPane mStackPane;
+    private StackPane mStyleHolderPane;
+    private PopOver mStylePopOver;
     private ToolbarItem mStyleToolbarItem;
+    private PopOver mToolboxPopOver;
     private ToolbarItem mToolboxToolbarItem;
     private WindowManager mWindowManager;
     private ToolbarItem mWindowToolbarItem;
@@ -70,7 +77,7 @@ public class MapModule extends MWorkbenchModule {
     public Node activate() {
         initAccelerators();
 
-        return mWindowManager;
+        return mStackPane;
     }
 
     @Override
@@ -88,8 +95,11 @@ public class MapModule extends MWorkbenchModule {
         super.init(workbench);
 
         createUI();
+        initPopOvers();
         initToolbars();
         initListeners();
+
+        refreshEngine();
     }
 
     private void activateSearch() {
@@ -101,16 +111,15 @@ public class MapModule extends MWorkbenchModule {
     }
 
     private void createUI() {
+        mBorderPane = new BorderPane();
+        mStackPane = new StackPane();
         mSearchView = new SearchView();
         mWindowManager = new WindowManager();
         mWindowManager.setBottom(StatusBar.getInstance());
-
-        Platform.runLater(() -> {
-            mAttributionPopOver = new PopOver();
-            mAttributionView = new AttributionView(mAttributionPopOver);
-            initPopOver(mAttributionPopOver, Dict.COPYRIGHT.toString(), mAttributionView);
-            mAttributionPopOver.setArrowLocation(PopOver.ArrowLocation.TOP_RIGHT);
-        });
+        mBorderPane.setCenter(Mapton.getEngine().getUI());
+        mBorderPane.setBottom(StatusBar.getInstance());
+        mStackPane.getChildren().add(mBorderPane);
+        mStyleHolderPane = new StackPane();
     }
 
     private void initAccelerators() {
@@ -124,19 +133,25 @@ public class MapModule extends MWorkbenchModule {
         kcc = new KeyCodeCombination(KeyCode.H, KeyCombination.SHORTCUT_DOWN);
         getKeyCodeCombinations().add(kcc);
         getAccelerators().put(kcc, () -> {
-            mGoHomeToolbarItem.onClickProperty().get().handle(null);
+            mGoHomeToolbarItem.getOnClick().handle(null);
         });
 
         kcc = new KeyCodeCombination(KeyCode.S, KeyCombination.SHORTCUT_DOWN);
         getKeyCodeCombinations().add(kcc);
         getAccelerators().put(kcc, () -> {
-            mStyleToolbarItem.fire();
+            tooglePopOver(mStylePopOver, mStyleToolbarItem);
+        });
+
+        kcc = new KeyCodeCombination(KeyCode.I, KeyCombination.SHORTCUT_DOWN);
+        getKeyCodeCombinations().add(kcc);
+        getAccelerators().put(kcc, () -> {
+            tooglePopOver(mAttributionPopOver, mAttributionToolbarItem);
         });
 
         kcc = new KeyCodeCombination(KeyCode.T, KeyCombination.SHORTCUT_DOWN);
         getKeyCodeCombinations().add(kcc);
         getAccelerators().put(kcc, () -> {
-            mToolboxToolbarItem.fire();
+            tooglePopOver(mToolboxPopOver, mToolboxToolbarItem);
         });
 
         kcc = new KeyCodeCombination(KeyCode.Y, KeyCombination.SHORTCUT_DOWN);
@@ -148,8 +163,7 @@ public class MapModule extends MWorkbenchModule {
         kcc = new KeyCodeCombination(KeyCode.F12, KeyCombination.SHORTCUT_DOWN);
         getKeyCodeCombinations().add(kcc);
         getAccelerators().put(kcc, () -> {
-            System.out.println("dsf");
-            mMapOnlyToolbarItem.onClickProperty().get().handle(null);
+            mMapOnlyToolbarItem.getOnClick().handle(null);
         });
     }
 
@@ -159,6 +173,10 @@ public class MapModule extends MWorkbenchModule {
                 updateDocumentInfo(evt);
             });
         }, MKey.MAP_DOCUMENT_INFO);
+
+        mOptions2.general().engineProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
+            refreshEngine();
+        });
     }
 
     private void initPopOver(PopOver popOver, String title, Node content) {
@@ -169,10 +187,24 @@ public class MapModule extends MWorkbenchModule {
         popOver.setCloseButtonEnabled(false);
         popOver.setDetachable(false);
         popOver.setAnimated(false);
-        popOver.setOnHiding((windowEvent -> {
-            mPopoverClosingTimes.put(popOver, System.currentTimeMillis());
-        }));
+
         mPopOvers.add(popOver);
+    }
+
+    private void initPopOvers() {
+        mToolboxPopOver = new PopOver();
+        initPopOver(mToolboxPopOver, Dict.TOOLBOX.toString(), new ToolboxView());
+        mToolboxPopOver.setArrowLocation(PopOver.ArrowLocation.TOP_RIGHT);
+
+        mStylePopOver = new PopOver();
+        initPopOver(mStylePopOver, String.format("%s & %s", Dict.TYPE.toString(), Dict.STYLE.toString()), new BorderPane());
+
+//        Platform.runLater(() -> {
+        mAttributionPopOver = new PopOver();
+        mAttributionView = new AttributionView(mAttributionPopOver);
+        initPopOver(mAttributionPopOver, Dict.COPYRIGHT.toString(), mAttributionView);
+        mAttributionPopOver.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
+//        });
     }
 
     private void initToolbars() {
@@ -209,22 +241,33 @@ public class MapModule extends MWorkbenchModule {
         mStyleToolbarItem = new ToolbarItem(
                 "OpenStreetMap",
                 MaterialIcon._Image.COLOR_LENS.getImageView(ICON_SIZE_MODULE_TOOLBAR),
-                new MenuItem("")
-        );
+                event -> {
+                    if (shouldOpen(mStylePopOver)) {
+                        BorderPane pane = (BorderPane) mStylePopOver.getContentNode();
+                        pane.setCenter(Mapton.getEngine().getStyleView());
+                        mStylePopOver.show(mStyleToolbarItem);
+                    }
+                });
         setTooltip(mStyleToolbarItem, Dict.STYLE.toString());
+        mStyleToolbarItem.setDisable(true);
 
-        var attributionToolbarItem = new ToolbarItem(MaterialIcon._Action.COPYRIGHT.getImageView(ICON_SIZE_MODULE_TOOLBAR), event -> {
-            mAttributionPopOver.show((Node) event.getSource());
+        mAttributionToolbarItem = new ToolbarItem(MaterialIcon._Action.COPYRIGHT.getImageView(ICON_SIZE_MODULE_TOOLBAR), event -> {
+            if (shouldOpen(mAttributionPopOver)) {
+                mAttributionPopOver.show(mAttributionToolbarItem);
+            }
         });
-        setTooltip(attributionToolbarItem, Dict.COPYRIGHT.toString());
+        //mAttributionToolbarItem.setDisable(true);
+        setTooltip(mAttributionToolbarItem, Dict.COPYRIGHT.toString());
 
         ToolbarItem searchToolbarItem = new ToolbarItem(mSearchView.getPresenter());
 
         mToolboxToolbarItem = new ToolbarItem(
                 Dict.TOOLBOX.toString(),
-                MaterialIcon._Places.BUSINESS_CENTER.getImageView(ICON_SIZE_MODULE_TOOLBAR),
-                new MenuItem("")
-        );
+                MaterialIcon._Places.BUSINESS_CENTER.getImageView(ICON_SIZE_MODULE_TOOLBAR), event -> {
+            if (shouldOpen(mToolboxPopOver)) {
+                mToolboxPopOver.show(mToolboxToolbarItem);
+            }
+        });
 
         mWindowToolbarItem = new ToolbarItem(
                 Dict.WINDOW.toString(),
@@ -249,7 +292,7 @@ public class MapModule extends MWorkbenchModule {
         getToolbarControlsLeft().setAll(
                 mGoHomeToolbarItem,
                 searchToolbarItem,
-                attributionToolbarItem,
+                mAttributionToolbarItem,
                 mStyleToolbarItem
         );
 
@@ -260,10 +303,35 @@ public class MapModule extends MWorkbenchModule {
         );
     }
 
+    private void refreshEngine() {
+        mStyleToolbarItem.setDisable(Mapton.getEngine().getStyleView() == null);
+    }
+
+    private boolean shouldOpen(PopOver popOver) {
+        boolean shouldOpen = !popOver.isShowing();
+        popOver.hide();
+
+        return shouldOpen;
+    }
+
+    private void tooglePopOver(PopOver popOver, ToolbarItem toolbarItem) {
+        Platform.runLater(() -> {
+            if (popOver.isShowing()) {
+                popOver.hide();
+            } else {
+                mPopOvers.forEach((item) -> {
+                    item.hide();
+                });
+
+                toolbarItem.getOnClick().handle(null);
+            }
+        });
+    }
+
     private void updateDocumentInfo(GlobalStateChangeEvent evt) {
         MDocumentInfo documentInfo = evt.getValue();
-        //aaamAttributionAction.setDisabled(false);
-        //mStyleAction.setText(documentInfo.getName());
+        mAttributionToolbarItem.setDisable(false);
+        mStyleToolbarItem.setText(documentInfo.getName());
         mAttributionView.updateDocumentInfo(documentInfo);
     }
 }
