@@ -16,8 +16,6 @@
 package org.mapton.api;
 
 import javafx.scene.paint.Color;
-import org.mapton.api.MCooTrans;
-import org.mapton.api.MLatLon;
 import static org.mapton.api.MOptionsGeneral.DEFAULT_UI_LAF_ICON_COLOR_BRIGHT;
 import static org.mapton.api.MOptionsGeneral.DEFAULT_UI_LAF_ICON_COLOR_DARK;
 import org.openide.util.NbPreferences;

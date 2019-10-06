@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core;
+package org.mapton.impl;
 
 import org.mapton.api.MEngine;
 import org.mapton.api.MOptions;
@@ -39,6 +39,7 @@ public class Finalizer implements Runnable {
                 mOptions.setMapZoom(engine.getZoom());
                 mOptions.setMapCenter(engine.getCenter());
             } catch (Exception e) {
+                System.err.println(e);
             }
         });
 
@@ -48,5 +49,4 @@ public class Finalizer implements Runnable {
             }
         });
     }
-
 }
