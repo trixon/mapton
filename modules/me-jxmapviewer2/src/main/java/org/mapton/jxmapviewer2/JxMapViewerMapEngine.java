@@ -134,7 +134,7 @@ public class JxMapViewerMapEngine extends MEngine {
 
         mBookmarkPlotter = new BookmarkPlotter(this);
 
-        //aaaNbLog.i(LOG_TAG, "Loaded and ready");
+        Mapton.getLog().i(LOG_TAG, "Loaded and ready");
     }
 
     private void initListeners() {

@@ -55,6 +55,7 @@ import org.mapton.api.MKey;
 import org.mapton.api.MWorkbenchModule;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.*;
+import org.mapton.workbench.modules.LogModule;
 import org.mapton.workbench.modules.MapModule;
 import org.mapton.workbench.modules.PreferencesModule;
 import org.netbeans.modules.autoupdate.ui.PluginManagerUI;
@@ -81,6 +82,7 @@ public class MaptonApplication extends Application {
     private long mFullScreenChanged;
     private Action mHelpAction;
     private Action mLogAction;
+    private LogModule mLogModule;
     private MapModule mMapModule;
     private Action mOptionsAction;
     private Action mPluginAction;
@@ -161,8 +163,12 @@ public class MaptonApplication extends Application {
         Scene scene = new Scene(mWorkbench);
         mStage.setScene(scene);
 
-        mMapModule = new MapModule();
+        mLogModule = new LogModule();
+        Mapton.getLog().setOut(mLogModule);
+        Mapton.getLog().setErr(mLogModule);
+        Mapton.log(SystemHelper.getSystemInfo());
         mPreferencesModule = new PreferencesModule();
+        mMapModule = new MapModule();
 
         populateModules();
 
@@ -242,6 +248,10 @@ public class MaptonApplication extends Application {
             mWindowFullscreenAction.setSelected(mStage.isFullScreen());
         });
 
+        accelerators.put(new KeyCodeCombination(KeyCode.L, KeyCombination.CONTROL_DOWN), () -> {
+            mLogAction.handle(null);
+        });
+
         final Runnable openModulePage = () -> {
             mWorkbench.openAddModulePage();
         };
@@ -278,6 +288,8 @@ public class MaptonApplication extends Application {
         //log
         mLogAction = new Action(Dict.LOG.toString(), (ActionEvent event) -> {
             mWorkbench.hideNavigationDrawer();
+            mWorkbench.getModules().add(mLogModule);
+            mWorkbench.openModule(mLogModule);
         });
 
         //update manager
@@ -451,6 +463,7 @@ public class MaptonApplication extends Application {
 
         ArrayList<MWorkbenchModule> fixModules = new ArrayList<>();
         fixModules.add(mMapModule);
+        fixModules.add(mLogModule);
 
         if (reportsModule != null) {
             lookupModules.remove(reportsModule);

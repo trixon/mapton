@@ -161,7 +161,7 @@ public class GMapsFXMapEngine extends MEngine {
             });
 
             mBookmarkPlotter = new BookmarkPlotter(this);
-            //aaaNbLog.i(LOG_TAG, "Loaded and ready");
+            Mapton.getLog().i(LOG_TAG, "Loaded and ready");
         });
     }
 
@@ -205,7 +205,7 @@ public class GMapsFXMapEngine extends MEngine {
     }
 
     private void initMap() {
-        //aaaNbLog.v(LOG_TAG, "Initializing map...");
+        Mapton.getLog().v(LOG_TAG, "Initializing map...");
 
         mMapOptions.styleString(MapStyle.getStyle(mOptions.get(KEY_MAP_STYLE, DEFAULT_MAP_STYLE)));
         mMap = mMapView.createMap(mMapOptions);
@@ -215,7 +215,7 @@ public class GMapsFXMapEngine extends MEngine {
             setStatusMousePositionData(toLatLon(event.getLatLong()), null, null);
         });
 
-        //aaaNbLog.v(LOG_TAG, "Map initialized");
+        Mapton.getLog().v(LOG_TAG, "Map initialized");
     }
 
     private double toGlobalZoom() {

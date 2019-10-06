@@ -138,7 +138,7 @@ public class Initializer implements Runnable {
             } catch (NullPointerException ex) {
                 //nvm
             } catch (JsonSyntaxException ex) {
-                //aaaNbLog.i(LOG_TAG, ex.toString());
+                Mapton.getLog().i(LOG_TAG, ex.toString());
             }
         }
 
@@ -152,7 +152,7 @@ public class Initializer implements Runnable {
             } catch (NullPointerException ex) {
                 //nvm
             } catch (JsonSyntaxException ex) {
-                //aaaNbLog.i(LOG_TAG, ex.toString());
+                Mapton.getLog().i(LOG_TAG, ex.toString());
             }
         }
 
@@ -177,7 +177,7 @@ public class Initializer implements Runnable {
                             allStyles.add(wmsStyle);
                         });
             } catch (NullPointerException | JsonSyntaxException ex) {
-                //aaaNbLog.i(LOG_TAG, ex.toString());
+                Mapton.getLog().i(LOG_TAG, ex.toString());
             }
         }
 
@@ -189,7 +189,7 @@ public class Initializer implements Runnable {
                             allStyles.add(wmsStyle);
                         });
             } catch (JsonSyntaxException ex) {
-                //aaaNbLog.i(LOG_TAG, ex.toString());
+                Mapton.getLog().i(LOG_TAG, ex.toString());
             }
         }
 
@@ -223,7 +223,7 @@ public class Initializer implements Runnable {
                     json = FileUtils.readFileToString(file, "utf-8");
                 }
             } catch (URISyntaxException | IOException ex) {
-                //aaaNbLog.i(LOG_TAG, ex.toString());
+                Mapton.getLog().i(LOG_TAG, ex.toString());
             }
 
             jsons.add(json);

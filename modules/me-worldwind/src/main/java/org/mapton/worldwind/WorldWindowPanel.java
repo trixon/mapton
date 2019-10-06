@@ -70,6 +70,7 @@ import static org.mapton.api.MKey.*;
 import org.mapton.api.MWmsSource;
 import org.mapton.api.Mapton;
 import static org.mapton.worldwind.ModuleOptions.*;
+import static org.mapton.worldwind.WorldWindMapEngine.LOG_TAG;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.MapStyle;
 import org.mapton.worldwind.api.WWHelper;
@@ -414,12 +415,12 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
                     updateStyle();
                 } catch (SocketTimeoutException ex) {
                     //aaaNbMessage.warning("ERROR", "initWmsService");//TODO Remove this once spotted
-                    //aaaNbLog.w(LOG_TAG, ex.getMessage());
+                    Mapton.getLog().w(LOG_TAG, ex.getMessage());
                 } catch (XMLStreamException ex) {
-                    //aaaNbLog.w(LOG_TAG, ex.getMessage());
+                    Mapton.getLog().w(LOG_TAG, ex.getMessage());
                 } catch (WWRuntimeException ex) {
                     Mapton.notification(MKey.NOTIFICATION_ERROR, Dict.Dialog.TITLE_IO_ERROR.toString(), "WMS error: " + wmsService.getName());
-                    //aaaNbLog.e(LOG_TAG, ex.getMessage());
+                    Mapton.getLog().e(LOG_TAG, ex.getMessage());
                 } catch (Exception ex) {
                     Exceptions.printStackTrace(ex);
                 }
@@ -460,7 +461,7 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
                 allLayers.remove(layer);
                 allLayers.add(layer);
             } else {
-                //aaaNbLog.e(Dict.DOCUMENT.toString(), "Layer not found: " + layerName);
+                Mapton.getLog().e(Dict.DOCUMENT.toString(), "Layer not found: " + layerName);
             }
         }
     }
@@ -525,7 +526,7 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         MapStyle mapStyle = MapStyle.getStyle(styleId);
 
         try {
-            //aaaNbLog.i(Dict.DOCUMENT.toString(), String.format("%s: (%s)", mapStyle.getName(), String.join(", ", styleLayers)));
+            Mapton.getLog().i(Dict.DOCUMENT.toString(), String.format("%s: (%s)", mapStyle.getName(), String.join(", ", styleLayers)));
         } catch (NullPointerException e) {
         }
         getLayers().forEach((layer) -> {

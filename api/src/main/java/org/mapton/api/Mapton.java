@@ -35,6 +35,7 @@ import org.controlsfx.control.action.Action;
 import org.openide.modules.InstalledFileLocator;
 import org.openide.util.Lookup;
 import se.trixon.almond.util.GlobalState;
+import se.trixon.almond.util.Log;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.swing.SwingHelper;
 
@@ -58,6 +59,7 @@ public class Mapton {
     private static final File CONFIG_DIR;
     private static final Color ICON_COLOR = Color.BLACK;
     private static final GlobalState sGlobalState = new GlobalState();
+    private static final Log sLog = new Log();
     private static MOptions sOptions = MOptions.getInstance();
     private DoubleProperty mZoomProperty = new SimpleDoubleProperty();
 
@@ -161,6 +163,10 @@ public class Mapton {
         return Holder.INSTANCE;
     }
 
+    public static Log getLog() {
+        return sLog;
+    }
+
     public static Background getThemeBackground() {
         return FxHelper.createBackground(getThemeColor());
     }
@@ -173,14 +179,20 @@ public class Mapton {
         return MOptions2.getInstance().general().isNightMode();
     }
 
+    public static void log(String line) {
+        sLog.timedOut(line);
+    }
+
+    public static void log(String category, String item) {
+        sLog.timedOut(String.format("%s: %s ", category, item));
+    }
+
     public static void logLoading(String category, String item) {
-        //NbLog.i("Loading", String.format("%s: %s ", category, item));
-        System.out.println(String.format("Loading %s: %s ", category, item));
+        sLog.timedOut(String.format("Loading %s: %s ", category, item));
     }
 
     public static void logRemoving(String category, String item) {
-        //NbLog.i("Removing", String.format("%s: %s ", category, item));
-        System.out.println(String.format("Removing %s: %s ", category, item));
+        sLog.timedOut(String.format("Removing %s: %s ", category, item));
     }
 
     public static void notification(String type, String title, String text) {

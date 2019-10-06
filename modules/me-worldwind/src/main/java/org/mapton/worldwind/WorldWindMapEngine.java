@@ -245,7 +245,7 @@ public class WorldWindMapEngine extends MEngine {
         mRulerTabPane.refresh(mMap);
         setImageRenderer(mMap.getImageRenderer());
 
-        //aaaNbLog.i(LOG_TAG, "Loaded and ready");
+        Mapton.getLog().i(LOG_TAG, "Loaded and ready");
     }
 
     private void initListeners() {

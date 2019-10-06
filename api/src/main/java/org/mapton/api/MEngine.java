@@ -81,7 +81,7 @@ public abstract class MEngine {
     }
 
     public void fitToBounds(MLatLonBox latLonBox) {
-//        aaaNbLog.i(getClass().getSimpleName(), "fitToBounds not implemented");
+        Mapton.getLog().i(getClass().getSimpleName(), "fitToBounds not implemented");
     }
 
     public Double getAltitude() {
@@ -89,7 +89,7 @@ public abstract class MEngine {
     }
 
     public MLatLon getCenter() {
-//        aaaNbLog.i(getClass().getSimpleName(), "getCenter not implemented");
+        Mapton.getLog().i(getClass().getSimpleName(), "getCenter not implemented");
         return new MLatLon(0, 0);
     }
 
@@ -119,7 +119,7 @@ public abstract class MEngine {
     }
 
     public Node getLayerView() {
-//        aaaNbLog.i(getClass().getSimpleName(), "getLayerView not implemented");
+        Mapton.getLog().i(getClass().getSimpleName(), "getLayerView not implemented");
 
         return new Pane();
     }
@@ -158,7 +158,7 @@ public abstract class MEngine {
     public abstract String getName();
 
     public Node getRulerView() {
-//        aaaNbLog.i(getClass().getSimpleName(), "getRulerView not implemented");
+        Mapton.getLog().i(getClass().getSimpleName(), "getRulerView not implemented");
 
         return new Pane();
     }
@@ -172,7 +172,7 @@ public abstract class MEngine {
     public abstract Node getUI();
 
     public double getZoom() {
-//        aaaNbLog.i(getClass().getSimpleName(), "getZoom not implemented");
+        Mapton.getLog().i(getClass().getSimpleName(), "getZoom not implemented");
         return 0.2;
     }
 
@@ -194,7 +194,7 @@ public abstract class MEngine {
     }
 
     public void log(String message) {
-//        aaaNbLog.v(getClass().getSimpleName(), message);
+        Mapton.getLog().v(getClass().getSimpleName(), message);
     }
 
     public void onActivate() {
@@ -210,15 +210,15 @@ public abstract class MEngine {
     }
 
     public void onWhatsHere(String s) {
-//        aaaNbLog.i(getClass().getSimpleName(), "displayWhatsHere not implemented");
+        Mapton.getLog().i(getClass().getSimpleName(), "displayWhatsHere not implemented");
     }
 
     public void panTo(MLatLon latLon) {
-//        aaaNbLog.i(getClass().getSimpleName(), "panTo not implemented");
+        Mapton.getLog().i(getClass().getSimpleName(), "panTo not implemented");
     }
 
     public void panTo(MLatLon latLon, double zoom) {
-//        aaaNbLog.i(getClass().getSimpleName(), "panTo(Zoom) not implemented");
+        Mapton.getLog().i(getClass().getSimpleName(), "panTo(Zoom) not implemented");
     }
 
     public void setImageRenderer(Callable<BufferedImage> imageRenderer) {

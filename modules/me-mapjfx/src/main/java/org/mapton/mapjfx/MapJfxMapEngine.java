@@ -115,7 +115,7 @@ public class MapJfxMapEngine extends MEngine {
 
     @Override
     public void onWhatsHere(String s) {
-        //aaaNbLog.i(LOG_TAG, s);
+        Mapton.getLog().i(LOG_TAG, s);
     }
 
     @Override
@@ -135,7 +135,7 @@ public class MapJfxMapEngine extends MEngine {
         try {
             FileUtils.forceMkdir(mCacheDir);
             mOfflineCache.setCacheDirectory(mCacheDir.toPath());
-            //aaaNbLog.v(LOG_TAG, OfflineCache.INSTANCE.getCacheDirectory().toString());
+            Mapton.getLog().v(LOG_TAG, OfflineCache.INSTANCE.getCacheDirectory().toString());
         } catch (IOException ex) {
             Exceptions.printStackTrace(ex);
         }
@@ -169,7 +169,7 @@ public class MapJfxMapEngine extends MEngine {
                             .showZoomControls(false)
                             .build()
                     );
-                    //aaaNbLog.i(LOG_TAG, "Loaded and ready");
+                    Mapton.getLog().i(LOG_TAG, "Loaded and ready");
                 });
             } catch (InterruptedException ex) {
                 Exceptions.printStackTrace(ex);
@@ -245,7 +245,7 @@ public class MapJfxMapEngine extends MEngine {
     }
 
     private void initMap() {
-        //aaaNbLog.v(LOG_TAG, "Initializing map...");
+        Mapton.getLog().v(LOG_TAG, "Initializing map...");
         XYZParam xyzParams = new XYZParam()
                 .withUrl("https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x})")
                 .withAttributions(
@@ -255,7 +255,7 @@ public class MapJfxMapEngine extends MEngine {
 
         mBookmarkPlotter = new BookmarkPlotter(this);
 
-        //aaaNbLog.v(LOG_TAG, "Map initialized");
+        Mapton.getLog().v(LOG_TAG, "Map initialized");
     }
 
     private Coordinate toCoordinate(MLatLon latLon) {
