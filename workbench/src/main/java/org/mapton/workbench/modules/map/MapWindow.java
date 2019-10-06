@@ -26,11 +26,20 @@ import org.mapton.api.Mapton;
  */
 public class MapWindow extends StackPane {
 
-    public MapWindow() {
+    public static MapWindow getInstance() {
+        return Holder.INSTANCE;
+    }
+
+    private MapWindow() {
         getChildren().setAll(Mapton.getEngine().getUI());
 
         MOptions2.getInstance().general().engineProperty().addListener((ObservableValue<? extends String> ov, String t, String t1) -> {
             getChildren().setAll(Mapton.getEngine().getUI());
         });
+    }
+
+    private static class Holder {
+
+        private static final MapWindow INSTANCE = new MapWindow();
     }
 }

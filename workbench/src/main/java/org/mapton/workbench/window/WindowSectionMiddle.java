@@ -27,7 +27,7 @@ import se.trixon.almond.util.Dict;
 public class WindowSectionMiddle extends WindowSectionBase {
 
     private TabPane mTabPane = new TabPane();
-    private MapWindow mMapWindow = new MapWindow();
+    private MapWindow mMapWindow = MapWindow.getInstance();
 
     public WindowSectionMiddle() {
         getItems().setAll(mMapWindow, mTabPane);

@@ -49,6 +49,7 @@ public class MOptionsGeneral {
     private final ObjectProperty<String> mEngineProperty = new SimpleObjectProperty<>("WorldWind");
     private final ObjectProperty<Color> mIconColorBrightProperty = new SimpleObjectProperty<>(Color.valueOf(DEFAULT_UI_LAF_ICON_COLOR_BRIGHT));
     private final ObjectProperty<Color> mIconColorDarkProperty = new SimpleObjectProperty<>(Color.valueOf(DEFAULT_UI_LAF_ICON_COLOR_DARK));
+    private final BooleanProperty mMaximizedMapProperty = new SimpleBooleanProperty(false);
     private final BooleanProperty mNightModeProperty = new SimpleBooleanProperty(true);
     private final MOptions mOptions = MOptions.getInstance();
     private final BooleanProperty mPreferPopoverProperty = new SimpleBooleanProperty(false);
@@ -65,15 +66,16 @@ public class MOptionsGeneral {
 
         mCategory = Category.of(Dict.GENERAL.toString(),
                 Group.of(
-                        Dict.LOOK_AND_FEEL.toString(), Setting.of(mBundle.getString("popover"), mPreferPopoverProperty).customKey("general.popover"),
-                        Setting.of(Dict.NIGHT_MODE.toString(), mNightModeProperty).customKey("general.nightMode"),
-                        Setting.of(mBundle.getString("iconColor"), mIconColorDarkProperty).customKey("general.iconColor"),
-                        Setting.of(mBundle.getString("iconColorNightMode"), mIconColorBrightProperty).customKey("general.iconColorNightMode")
+                        Dict.LOOK_AND_FEEL.toString(), Setting.of(mBundle.getString("popover"), mPreferPopoverProperty).customKey("general.map.popover"),
+                        Setting.of(Dict.NIGHT_MODE.toString(), mNightModeProperty).customKey("general.map.nightMode"),
+                        Setting.of(mBundle.getString("iconColor"), mIconColorDarkProperty).customKey("general.map.iconColor"),
+                        Setting.of(mBundle.getString("iconColorNightMode"), mIconColorBrightProperty).customKey("general.map.iconColorNightMode")
                 ),
                 Group.of(Dict.MAP.toString(),
-                        Setting.of(MDict.MAP_ENGINE.toString(), engineItems, mEngineProperty).customKey("general.mapEngine"),
-                        Setting.of(mBundle.getString("croshair"), mDisplayCrosshairProperty).customKey("general.crosshair"),
-                        Setting.of(mBundle.getString("homeIcon"), mDisplayHomeIconProperty).customKey("general.homeIcon")
+                        Setting.of(MDict.MAP_ENGINE.toString(), engineItems, mEngineProperty).customKey("general.map.engine"),
+                        Setting.of(mBundle.getString("maximize_map"), mMaximizedMapProperty).customKey("general.map.maximized"),
+                        Setting.of(mBundle.getString("crosshair"), mDisplayCrosshairProperty).customKey("general.map.crosshair"),
+                        Setting.of(mBundle.getString("homeIcon"), mDisplayHomeIconProperty).customKey("general.map.homeIcon")
                 )
         );
 
@@ -124,12 +126,20 @@ public class MOptionsGeneral {
         return mDisplayHomeIconProperty.get();
     }
 
+    public boolean isMaximizedMap() {
+        return mMaximizedMapProperty.get();
+    }
+
     public boolean isNightMode() {
         return mNightModeProperty.get();
     }
 
     public boolean isPreferPopover() {
         return mPreferPopoverProperty.get();
+    }
+
+    public BooleanProperty maximizedMapProperty() {
+        return mMaximizedMapProperty;
     }
 
     public BooleanProperty nightModeProperty() {

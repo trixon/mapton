@@ -26,22 +26,24 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.StackPane;
 import org.controlsfx.control.PopOver;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.MDict;
 import org.mapton.api.MDocumentInfo;
 import org.mapton.api.MKey;
+import org.mapton.api.MOptions2;
 import org.mapton.api.MWorkbenchModule;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.ICON_SIZE_MODULE;
 import static org.mapton.api.Mapton.ICON_SIZE_MODULE_TOOLBAR;
 import org.mapton.workbench.modules.map.AttributionView;
+import org.mapton.workbench.modules.map.MapWindow;
 import org.mapton.workbench.modules.map.SearchView;
 import org.mapton.workbench.modules.map.StatusBar;
 import org.mapton.workbench.modules.map.ToolboxView;
 import org.mapton.workbench.window.WindowManager;
+import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.GlobalStateChangeEvent;
 import se.trixon.almond.util.icons.material.MaterialIcon;
@@ -55,13 +57,11 @@ public class MapModule extends MWorkbenchModule {
     private PopOver mAttributionPopOver;
     private ToolbarItem mAttributionToolbarItem;
     private AttributionView mAttributionView;
-    private BorderPane mBorderPane;
     private ToolbarItem mGoHomeToolbarItem;
     private ToolbarItem mMapOnlyToolbarItem;
     private final HashSet<PopOver> mPopOvers = new HashSet<>();
+    private BorderPane mRoot;
     private SearchView mSearchView;
-    private StackPane mStackPane;
-    private StackPane mStyleHolderPane;
     private PopOver mStylePopOver;
     private ToolbarItem mStyleToolbarItem;
     private PopOver mToolboxPopOver;
@@ -77,7 +77,7 @@ public class MapModule extends MWorkbenchModule {
     public Node activate() {
         initAccelerators();
 
-        return mStackPane;
+        return mRoot;
     }
 
     @Override
@@ -99,6 +99,7 @@ public class MapModule extends MWorkbenchModule {
         initToolbars();
         initListeners();
 
+        refreshUI();
         refreshEngine();
     }
 
@@ -111,15 +112,9 @@ public class MapModule extends MWorkbenchModule {
     }
 
     private void createUI() {
-        mBorderPane = new BorderPane();
-        mStackPane = new StackPane();
+        mRoot = new BorderPane();
         mSearchView = new SearchView();
         mWindowManager = new WindowManager();
-        mWindowManager.setBottom(StatusBar.getInstance());
-        mBorderPane.setCenter(Mapton.getEngine().getUI());
-        mBorderPane.setBottom(StatusBar.getInstance());
-        mStackPane.getChildren().add(mBorderPane);
-        mStyleHolderPane = new StackPane();
     }
 
     private void initAccelerators() {
@@ -160,7 +155,7 @@ public class MapModule extends MWorkbenchModule {
             mWindowToolbarItem.fire();
         });
 
-        kcc = new KeyCodeCombination(KeyCode.F12, KeyCombination.SHORTCUT_DOWN);
+        kcc = new KeyCodeCombination(KeyCode.F12, KeyCombination.SHORTCUT_ANY);
         getKeyCodeCombinations().add(kcc);
         getAccelerators().put(kcc, () -> {
             mMapOnlyToolbarItem.getOnClick().handle(null);
@@ -176,6 +171,10 @@ public class MapModule extends MWorkbenchModule {
 
         mOptions2.general().engineProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
             refreshEngine();
+        });
+
+        mOptions2.general().maximizedMapProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
+            refreshUI();
         });
     }
 
@@ -283,11 +282,11 @@ public class MapModule extends MWorkbenchModule {
         );
 
         mMapOnlyToolbarItem = new ToolbarItem(
-                MaterialIcon._Navigation.FULLSCREEN.getImageView(ICON_SIZE_MODULE_TOOLBAR),
+                mOptions2.general().isMaximizedMap() ? MaterialIcon._Navigation.FULLSCREEN_EXIT.getImageView(ICON_SIZE_MODULE_TOOLBAR) : MaterialIcon._Navigation.FULLSCREEN.getImageView(ICON_SIZE_MODULE_TOOLBAR),
                 event -> {
-                    System.out.println(event);
+                    mOptions2.general().maximizedMapProperty().set(!mOptions2.general().isMaximizedMap());
                 });
-        setTooltip(mMapOnlyToolbarItem, Dict.MAP.toString());
+        setTooltip(mMapOnlyToolbarItem, NbBundle.getMessage(MOptions2.class, "maximize_map"));
 
         getToolbarControlsLeft().setAll(
                 mGoHomeToolbarItem,
@@ -305,6 +304,19 @@ public class MapModule extends MWorkbenchModule {
 
     private void refreshEngine() {
         mStyleToolbarItem.setDisable(Mapton.getEngine().getStyleView() == null);
+    }
+
+    private void refreshUI() {
+        if (mOptions2.general().isMaximizedMap()) {
+            mMapOnlyToolbarItem.setGraphic(MaterialIcon._Navigation.FULLSCREEN_EXIT.getImageView(ICON_SIZE_MODULE_TOOLBAR));
+            mRoot.setCenter(MapWindow.getInstance());
+            mRoot.setBottom(StatusBar.getInstance());
+        } else {
+            mMapOnlyToolbarItem.setGraphic(MaterialIcon._Navigation.FULLSCREEN.getImageView(ICON_SIZE_MODULE_TOOLBAR));
+            mWindowManager.setBottom(StatusBar.getInstance());
+            mRoot.setCenter(mWindowManager);
+            mRoot.setBottom(null);
+        }
     }
 
     private boolean shouldOpen(PopOver popOver) {
