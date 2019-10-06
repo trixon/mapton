@@ -249,7 +249,7 @@
             <dependency>
                 <groupId>com.dlsc.workbenchfx</groupId>
                 <artifactId>workbenchfx-core</artifactId>
-                <version>11.0.3</version>
+                <version>11.1.0</version>
             </dependency>
             <dependency>
                 <groupId>com.dlsc.preferencesfx</groupId>
