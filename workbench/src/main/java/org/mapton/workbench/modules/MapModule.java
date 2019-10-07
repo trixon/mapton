@@ -26,6 +26,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
+import org.controlsfx.control.MaskerPane;
 import org.controlsfx.control.PopOver;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
@@ -37,6 +38,7 @@ import org.mapton.api.MWorkbenchModule;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.ICON_SIZE_MODULE;
 import static org.mapton.api.Mapton.ICON_SIZE_MODULE_TOOLBAR;
+import org.mapton.workbench.MaptonApplication;
 import org.mapton.workbench.modules.map.AttributionView;
 import org.mapton.workbench.modules.map.MapWindow;
 import org.mapton.workbench.modules.map.SearchView;
@@ -60,7 +62,7 @@ public class MapModule extends MWorkbenchModule {
     private ToolbarItem mGoHomeToolbarItem;
     private ToolbarItem mMapOnlyToolbarItem;
     private final HashSet<PopOver> mPopOvers = new HashSet<>();
-    private BorderPane mRoot;
+    private final BorderPane mRoot;
     private SearchView mSearchView;
     private PopOver mStylePopOver;
     private ToolbarItem mStyleToolbarItem;
@@ -71,6 +73,21 @@ public class MapModule extends MWorkbenchModule {
 
     public MapModule() {
         super(Dict.MAP.toString(), MaterialIcon._Maps.MAP.getImageView(ICON_SIZE_MODULE).getImage());
+        MaskerPane maskerPane = new MaskerPane();
+        maskerPane.setText(NbBundle.getMessage(MaptonApplication.class, "loading_map"));
+        mRoot = new BorderPane(maskerPane);
+
+        new Thread(() -> {
+            createUI();
+            initPopOvers();
+            initListeners();
+
+            Platform.runLater(() -> {
+                initToolbars();
+                refreshUI();
+                refreshEngine();
+            });
+        }).start();
     }
 
     @Override
@@ -94,13 +111,6 @@ public class MapModule extends MWorkbenchModule {
     public void init(Workbench workbench) {
         super.init(workbench);
 
-        createUI();
-        initPopOvers();
-        initToolbars();
-        initListeners();
-
-        refreshUI();
-        refreshEngine();
     }
 
     private void activateSearch() {
@@ -112,7 +122,6 @@ public class MapModule extends MWorkbenchModule {
     }
 
     private void createUI() {
-        mRoot = new BorderPane();
         mSearchView = new SearchView();
         mWindowManager = new WindowManager();
     }
@@ -198,12 +207,12 @@ public class MapModule extends MWorkbenchModule {
         mStylePopOver = new PopOver();
         initPopOver(mStylePopOver, String.format("%s & %s", Dict.TYPE.toString(), Dict.STYLE.toString()), new BorderPane());
 
-//        Platform.runLater(() -> {
-        mAttributionPopOver = new PopOver();
-        mAttributionView = new AttributionView(mAttributionPopOver);
-        initPopOver(mAttributionPopOver, Dict.COPYRIGHT.toString(), mAttributionView);
-        mAttributionPopOver.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
-//        });
+        Platform.runLater(() -> {
+            mAttributionPopOver = new PopOver();
+            mAttributionView = new AttributionView(mAttributionPopOver);
+            initPopOver(mAttributionPopOver, Dict.COPYRIGHT.toString(), mAttributionView);
+            mAttributionPopOver.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
+        });
     }
 
     private void initToolbars() {

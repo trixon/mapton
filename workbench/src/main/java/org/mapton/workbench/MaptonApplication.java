@@ -78,6 +78,7 @@ public class MaptonApplication extends Application {
     private static final boolean IS_MAC = SystemUtils.IS_OS_MAC;
     private static final Logger LOGGER = Logger.getLogger(MaptonApplication.class.getName());
     private Action mAboutAction;
+    private boolean mAllowModulePopulation = false;
     private final AlmondFx mAlmondFX = AlmondFx.getInstance();
     private long mFullScreenChanged;
     private Action mHelpAction;
@@ -168,9 +169,6 @@ public class MaptonApplication extends Application {
         Mapton.getLog().setErr(mLogModule);
         Mapton.log(SystemHelper.getSystemInfo());
         mPreferencesModule = new PreferencesModule();
-        mMapModule = new MapModule();
-
-        populateModules();
 
         Menu viewMenu = new Menu(Dict.VIEW.toString());
         viewMenu.getItems().setAll(
@@ -196,10 +194,16 @@ public class MaptonApplication extends Application {
 
         Platform.runLater(() -> {
             mAlmondFX.addStageWatcher(mStage, MaptonApplication.class);
-            mStage.show();
             mWindowOnTopAction.setSelected(mStage.isAlwaysOnTop());
             mWindowFullscreenAction.setSelected(mStage.isFullScreen());
-            mWorkbench.openModule(mMapModule);
+            mStage.show();
+            mMapModule = new MapModule();
+
+            Platform.runLater(() -> {
+                mAllowModulePopulation = true;
+                populateModules();
+                mWorkbench.openModule(mMapModule);
+            });
         });
     }
 
@@ -450,6 +454,10 @@ public class MaptonApplication extends Application {
     }
 
     private void populateModules() {
+        if (!mAllowModulePopulation) {
+            return;
+        }
+
         var lookupModules = new ArrayList<>(Lookup.getDefault().lookupAll(MWorkbenchModule.class));
         Collections.sort(lookupModules, (MWorkbenchModule o1, MWorkbenchModule o2) -> o1.getName().compareToIgnoreCase(o2.getName()));
 
