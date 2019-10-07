@@ -27,7 +27,6 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.MenuButton;
-import javafx.scene.control.TextField;
 import javafx.scene.control.ToolBar;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -74,7 +73,6 @@ public class AppToolBar extends ToolBar {
     private final HashSet<PopOver> mPopOvers = new HashSet<>();
     private final HashMap<PopOver, Long> mPopoverClosingTimes = new HashMap<>();
     private FxActionSwing mRulerAction;
-    private SearchView mSearchView;
     private FxActionSwing mSysAboutAction;
     private Action mSysHelpAction;
     private FxActionSwing mSysLogAppAction;
@@ -97,14 +95,6 @@ public class AppToolBar extends ToolBar {
         initActionsSwing();
         init();
         initListeners();
-    }
-
-    public void activateSearch() {
-        Platform.runLater(() -> {
-            getScene().getWindow().requestFocus();
-            mSearchView.getPresenter().requestFocus();
-            ((TextField) mSearchView.getPresenter()).clear();
-        });
     }
 
     public void displayMenu() {
@@ -215,9 +205,6 @@ public class AppToolBar extends ToolBar {
                     .map((item) -> (ButtonBase) item).forEachOrdered((buttonBase) -> {
                 FxHelper.undecorateButton(buttonBase);
             });
-
-            mSearchView = new SearchView();
-            getItems().add(5, mSearchView.getPresenter());
         });
     }
 

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core.ui.context.copy;
+package org.mapton.base.context_menu.copy;
 
 import java.util.Locale;
 import org.openide.util.lookup.ServiceProvider;
@@ -24,11 +24,11 @@ import org.mapton.api.MContextMenuItem;
  * @author Patrik Karlström
  */
 @ServiceProvider(service = MContextMenuItem.class)
-public class ProjectedLonLat extends MContextMenuItem {
+public class GeoUri extends MContextMenuItem {
 
     @Override
     public String getName() {
-        return "Proj: lon, lat";
+        return "Geo URI";
     }
 
     @Override
@@ -38,9 +38,10 @@ public class ProjectedLonLat extends MContextMenuItem {
 
     @Override
     public String getUrl() {
-        return String.format(Locale.ENGLISH, "%.6f, %.6f",
-                getLongitudeProj(),
-                getLatitudeProj()
+        return String.format(Locale.ENGLISH, "geo:%.6f,%.6f;crs=wgs84",
+                getLatitude(),
+                getLongitude()
         );
     }
+
 }

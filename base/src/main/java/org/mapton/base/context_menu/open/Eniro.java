@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core.ui.context.open;
+package org.mapton.base.context_menu.open;
 
 import java.util.Locale;
 import org.openide.util.lookup.ServiceProvider;
+import se.trixon.almond.util.MathHelper;
 import org.mapton.api.MContextMenuItem;
 
 /**
@@ -24,11 +25,11 @@ import org.mapton.api.MContextMenuItem;
  * @author Patrik Karlström
  */
 @ServiceProvider(service = MContextMenuItem.class)
-public class GoogleEarthWeb extends MContextMenuItem {
+public class Eniro extends MContextMenuItem {
 
     @Override
     public String getName() {
-        return "Google Earth Web";
+        return "Eniro";
     }
 
     @Override
@@ -38,10 +39,10 @@ public class GoogleEarthWeb extends MContextMenuItem {
 
     @Override
     public String getUrl() {
-        return String.format(Locale.ENGLISH, "https://earth.google.com/web/@%f,%f,%fd,35y,0h,0t,0r",
+        return String.format(Locale.ENGLISH, "https://kartor.eniro.se/?c=%f,%f&z=%d",
                 getLatitude(),
                 getLongitude(),
-                10000f
+                MathHelper.round(3 + 14 * getZoom())
         );
     }
 }

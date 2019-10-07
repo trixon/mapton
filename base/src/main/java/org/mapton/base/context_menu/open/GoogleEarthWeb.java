@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core.ui.context.copy;
+package org.mapton.base.context_menu.open;
 
 import java.util.Locale;
 import org.openide.util.lookup.ServiceProvider;
@@ -24,23 +24,24 @@ import org.mapton.api.MContextMenuItem;
  * @author Patrik Karlström
  */
 @ServiceProvider(service = MContextMenuItem.class)
-public class Wgs84LatLon extends MContextMenuItem {
+public class GoogleEarthWeb extends MContextMenuItem {
 
     @Override
     public String getName() {
-        return "WGS 84: lat, lon";
+        return "Google Earth Web";
     }
 
     @Override
     public ContextType getType() {
-        return ContextType.COPY;
+        return ContextType.OPEN;
     }
 
     @Override
     public String getUrl() {
-        return String.format(Locale.ENGLISH, "%.6f, %.6f",
+        return String.format(Locale.ENGLISH, "https://earth.google.com/web/@%f,%f,%fd,35y,0h,0t,0r",
                 getLatitude(),
-                getLongitude()
+                getLongitude(),
+                10000f
         );
     }
 }

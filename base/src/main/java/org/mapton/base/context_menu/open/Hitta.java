@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core.ui.context.copy;
+package org.mapton.base.context_menu.open;
 
 import java.util.Locale;
 import org.openide.util.lookup.ServiceProvider;
+import se.trixon.almond.util.MathHelper;
 import org.mapton.api.MContextMenuItem;
 
 /**
@@ -24,24 +25,24 @@ import org.mapton.api.MContextMenuItem;
  * @author Patrik Karlström
  */
 @ServiceProvider(service = MContextMenuItem.class)
-public class GeoUri extends MContextMenuItem {
+public class Hitta extends MContextMenuItem {
 
     @Override
     public String getName() {
-        return "Geo URI";
+        return "Hitta.se";
     }
 
     @Override
     public ContextType getType() {
-        return ContextType.COPY;
+        return ContextType.OPEN;
     }
 
     @Override
     public String getUrl() {
-        return String.format(Locale.ENGLISH, "geo:%.6f,%.6f;crs=wgs84",
+        return String.format(Locale.ENGLISH, "https://www.hitta.se/kartan!~%f,%f,%dz/",
                 getLatitude(),
-                getLongitude()
+                getLongitude(),
+                MathHelper.round(5 + 15 * getZoom())
         );
     }
-
 }

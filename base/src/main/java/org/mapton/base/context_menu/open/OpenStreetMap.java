@@ -13,14 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core.ui.context.open;
+package org.mapton.base.context_menu.open;
 
-import de.micromata.opengis.kml.v_2_2_0.Kml;
-import java.io.File;
-import java.io.IOException;
-import org.openide.util.Exceptions;
+import java.util.Locale;
 import org.openide.util.lookup.ServiceProvider;
-import se.trixon.almond.util.SystemHelper;
+import se.trixon.almond.util.MathHelper;
 import org.mapton.api.MContextMenuItem;
 
 /**
@@ -28,11 +25,11 @@ import org.mapton.api.MContextMenuItem;
  * @author Patrik Karlström
  */
 @ServiceProvider(service = MContextMenuItem.class)
-public class GoogleEarth extends MContextMenuItem {
+public class OpenStreetMap extends MContextMenuItem {
 
     @Override
     public String getName() {
-        return "Google Earth";
+        return "OpenStreetMap";
     }
 
     @Override
@@ -42,19 +39,10 @@ public class GoogleEarth extends MContextMenuItem {
 
     @Override
     public String getUrl() {
-        try {
-            File file = File.createTempFile("mapton", ".kml");
-            file.deleteOnExit();
-
-            Kml kml = new Kml();
-            kml.createAndSetPlacemark().withName("Mapton").createAndSetPoint().addToCoordinates(getLongitude(), getLatitude());
-            kml.marshal(file);
-
-            SystemHelper.desktopOpen(file);
-        } catch (IOException ex) {
-            Exceptions.printStackTrace(ex);
-        }
-
-        return null;
+        return String.format(Locale.ENGLISH, "https://www.openstreetmap.org/#map=%d/%f/%f",
+                MathHelper.round(3 + 16 * getZoom()),
+                getLatitude(),
+                getLongitude()
+        );
     }
 }

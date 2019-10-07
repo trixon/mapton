@@ -13,11 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core.ui.context.open;
+package org.mapton.base.context_menu.copy;
 
 import java.util.Locale;
 import org.openide.util.lookup.ServiceProvider;
-import se.trixon.almond.util.MathHelper;
 import org.mapton.api.MContextMenuItem;
 
 /**
@@ -25,24 +24,23 @@ import org.mapton.api.MContextMenuItem;
  * @author Patrik Karlström
  */
 @ServiceProvider(service = MContextMenuItem.class)
-public class Bing extends MContextMenuItem {
+public class Wgs84LonLat extends MContextMenuItem {
 
     @Override
     public String getName() {
-        return "Bing";
+        return "WGS 84: lon, lat";
     }
 
     @Override
     public ContextType getType() {
-        return ContextType.OPEN;
+        return ContextType.COPY;
     }
 
     @Override
     public String getUrl() {
-        return String.format(Locale.ENGLISH, "https://www.bing.com/maps?cp=%f~%f&lvl=%d",
-                getLatitude(),
+        return String.format(Locale.ENGLISH, "%.6f, %.6f",
                 getLongitude(),
-                MathHelper.round(3 + 17 * getZoom())
+                getLatitude()
         );
     }
 }

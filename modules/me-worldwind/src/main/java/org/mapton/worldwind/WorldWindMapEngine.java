@@ -255,7 +255,7 @@ public class WorldWindMapEngine extends MEngine {
             @Override
             public void mousePressed(MouseEvent e) {
                 mPoint = e.getPoint();
-//                maybeShowPopup(e);
+                hideContextMenu();
             }
 
             @Override

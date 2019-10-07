@@ -92,8 +92,8 @@
         <module>application</module>
         <module>branding</module>
         <module>api</module>
+        <module>base</module>
         <module>workbench</module>
-        <!--<module>core</module>-->
 
         <!--Map engines-->
         <!--<module>modules/me-gmapsfx</module>-->
@@ -179,6 +179,11 @@
             <dependency>
                 <groupId>org.mapton</groupId>
                 <artifactId>mapton-api</artifactId>
+                <version>${mapton.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mapton</groupId>
+                <artifactId>mapton-base</artifactId>
                 <version>${mapton.version}</version>
             </dependency>
             <dependency>

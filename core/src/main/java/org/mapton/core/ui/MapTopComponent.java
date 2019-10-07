@@ -17,61 +17,28 @@ package org.mapton.core.ui;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Point;
 import java.awt.Stroke;
-import java.awt.event.HierarchyEvent;
-import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.logging.Logger;
-import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
 import javafx.scene.Scene;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuItem;
 import javafx.scene.layout.BorderPane;
-import javafx.stage.FileChooser;
-import javax.imageio.ImageIO;
-import javax.swing.JFrame;
-import javax.swing.JLayeredPane;
-import javax.swing.SwingUtilities;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.controlsfx.control.action.Action;
-import org.controlsfx.control.action.ActionUtils;
-import org.mapton.api.MBookmarkManager;
-import org.mapton.api.MContextMenuItem;
-import org.mapton.api.MDict;
 import org.mapton.api.MEngine;
 import org.mapton.api.MMapMagnet;
 import org.mapton.api.MOptions2;
 import org.mapton.api.MTopComponent;
-import org.mapton.api.MWhatsHereEngine;
 import org.mapton.api.Mapton;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
-import org.openide.util.Exceptions;
-import org.openide.util.Lookup;
-import org.openide.util.LookupEvent;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
-import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.FxHelper;
-import se.trixon.almond.util.fx.dialogs.SimpleDialog;
 
 /**
  * Top component which displays something.
@@ -100,11 +67,6 @@ public final class MapTopComponent extends MTopComponent {
 
     private static final Logger LOGGER = Logger.getLogger(MEngine.class.getName());
     private final HashSet<TopComponent> mActiveMapMagnets = new HashSet<>();
-    private Menu mContextCopyMenu;
-    private Menu mContextExtrasMenu;
-    private ContextMenu mContextMenu;
-    private Menu mContextOpenMenu;
-    private File mDestination;
     private MEngine mEngine;
     private final HashSet<TopComponent> mMapMagnets = new HashSet<>();
     private final Mapton mMapton = Mapton.getInstance();
@@ -118,20 +80,6 @@ public final class MapTopComponent extends MTopComponent {
         putClientProperty(PROP_DRAGGING_DISABLED, Boolean.TRUE);
         putClientProperty(PROP_MAXIMIZATION_DISABLED, Boolean.TRUE);
         putClientProperty(PROP_UNDOCKING_DISABLED, Boolean.TRUE);
-
-        MOptions2.getInstance().general().engineProperty().addListener((ObservableValue<? extends String> ov, String t, String t1) -> {
-            setEngine(Mapton.getEngine());
-        });
-    }
-
-    public void displayContextMenu(Point screenXY) {
-        Platform.runLater(() -> {
-//aaa            Node rootNode = AppStatusView.getInstance();
-//            rootNode.getScene().getWindow().requestFocus();
-//            rootNode.requestFocus();
-//
-//            mContextMenu.show(rootNode, screenXY.x, screenXY.y);
-        });
     }
 
     @Override
@@ -190,12 +138,6 @@ public final class MapTopComponent extends MTopComponent {
     }
 
     @Override
-    protected void componentOpened() {
-        super.componentOpened();
-        setEngine(Mapton.getEngine());
-    }
-
-    @Override
     protected void componentShowing() {
         super.componentShowing();
         for (TopComponent tc : mMapMagnets) {
@@ -212,7 +154,6 @@ public final class MapTopComponent extends MTopComponent {
     @Override
     protected void initFX() {
         setScene(createScene());
-        initContextMenu();
         mMOptions2 = MOptions2.getInstance();
         mMOptions2.general().displayCrosshairProperty().addListener((ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1) -> {
             repaint();
@@ -233,263 +174,10 @@ public final class MapTopComponent extends MTopComponent {
         // TODO store your settings
     }
 
-    private void attachStatusbar() {
-        boolean showOnlyMap = mMOptions.isMapOnly();
-
-        if (mEngine.isSwing()) {
-            try {
-                if (showOnlyMap) {
-//                    add(getStatusPanel().getFxPanel(), BorderLayout.SOUTH);
-                } else {
-//                    getStatusPanel().resetSwing();
-                }
-            } catch (NullPointerException e) {
-                // nvm
-            }
-        } else {
-            Platform.runLater(() -> {
-                if (showOnlyMap) {
-                    //aaamRoot.setBottom(AppStatusView.getInstance());
-                } else {
-                    if (mRoot.getBottom() != null) {
-                        mRoot.setBottom(null);
-//                        getStatusPanel().resetFx();
-                    }
-                }
-            });
-        }
-    }
-
-    private void copyImage() {
-        mContextMenu.hide();
-        try {
-            SystemHelper.copyToClipboard(mEngine.getImageRenderer().call());
-        } catch (Exception ex) {
-            Exceptions.printStackTrace(ex);
-        }
-    }
-
     private Scene createScene() {
         mRoot = new BorderPane();
-
-        initListeners();
 
         return new Scene(mRoot);
     }
 
-    private void exportImage() {
-        FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter("Image (*.png)", "*.png");
-        SimpleDialog.clearFilters();
-        SimpleDialog.addFilter(new FileChooser.ExtensionFilter(Dict.ALL_FILES.toString(), "*"));
-        SimpleDialog.addFilter(filter);
-        SimpleDialog.setFilter(filter);
-        //SimpleDialog.setOwner(mStage);
-        SimpleDialog.setTitle(getBundleString("export_view"));
-
-        SimpleDialog.setPath(mDestination == null ? FileUtils.getUserDirectory() : mDestination.getParentFile());
-        SimpleDialog.setSelectedFile(new File(new SimpleDateFormat("'Mapton_'yyyyMMdd_HHmmss").format(new Date())));
-
-        mContextMenu.hide();
-        if (SimpleDialog.saveFile(new String[]{"png"})) {
-            mDestination = SimpleDialog.getPath();
-            try {
-                ImageIO.write(mEngine.getImageRenderer().call(), "png", mDestination);
-            } catch (Exception ex) {
-                Exceptions.printStackTrace(ex);
-            }
-
-        }
-    }
-
-    private void initContextMenu() {
-        Action setHomeAction = new Action(MDict.SET_HOME.toString(), (ActionEvent t) -> {
-            mMOptions.setMapHome(mEngine.getCenter());
-            mMOptions.setMapHomeZoom(mEngine.getZoom());
-        });
-
-        Action whatsHereAction = new Action(getBundleString("whats_here"), (ActionEvent t) -> {
-            whatsHere();
-        });
-
-        Action copyImageAction = new Action(getBundleString("copy_image"), (ActionEvent t) -> {
-            copyImage();
-        });
-        copyImageAction.setDisabled(true);
-
-        Action exportImageAction = new Action(getBundleString("export_image"), (ActionEvent t) -> {
-            exportImage();
-        });
-        exportImageAction.setDisabled(true);
-
-        Collection<? extends Action> actions = Arrays.asList(
-                whatsHereAction,
-                MBookmarkManager.getInstance().getAddBookmarkAction(),
-                ActionUtils.ACTION_SEPARATOR,
-                copyImageAction,
-                exportImageAction,
-                ActionUtils.ACTION_SEPARATOR,
-                ActionUtils.ACTION_SEPARATOR,
-                setHomeAction
-        );
-
-        mContextCopyMenu = new Menu(getBundleString("copy_location"));
-        mContextOpenMenu = new Menu(getBundleString("open_location"));
-        mContextExtrasMenu = new Menu(getBundleString("extras"));
-        mContextMenu = ActionUtils.createContextMenu(actions);
-
-        int insertPos = mContextMenu.getItems().size() - 2;
-        mContextMenu.getItems().add(insertPos, mContextExtrasMenu);
-        mContextMenu.getItems().add(insertPos, mContextOpenMenu);
-        mContextMenu.getItems().add(insertPos, mContextCopyMenu);
-        mContextMenu.setOnShowing((event) -> {
-            copyImageAction.setDisabled(mEngine.getImageRenderer() == null);
-            exportImageAction.setDisabled(mEngine.getImageRenderer() == null);
-        });
-
-        Lookup.getDefault().lookupResult(MContextMenuItem.class).addLookupListener((LookupEvent ev) -> {
-            populateContextProviders();
-        });
-
-        populateContextProviders();
-    }
-
-    private void initListeners() {
-        SwingUtilities.invokeLater(() -> {
-            addHierarchyListener((HierarchyEvent hierarchyEvent) -> {
-                if (hierarchyEvent.getChangedParent() instanceof JLayeredPane) {
-                    Dimension d = ((JFrame) WindowManager.getDefault().getMainWindow()).getContentPane().getPreferredSize();
-                    final boolean showOnlyMap = 1 == d.height && 1 == d.width;
-                    mMOptions.setMapOnly(showOnlyMap);
-                    try {
-                        attachStatusbar();
-                    } catch (NullPointerException e) {
-                    }
-                }
-            });
-        });
-    }
-
-    private void populateContextProviders() {
-        Platform.runLater(() -> {
-            mContextCopyMenu.getItems().clear();
-            mContextOpenMenu.getItems().clear();
-            mContextExtrasMenu.getItems().clear();
-
-            ArrayList<MContextMenuItem> contextMenues = new ArrayList<>(Lookup.getDefault().lookupAll(MContextMenuItem.class));
-            contextMenues.sort((MContextMenuItem o1, MContextMenuItem o2) -> o1.getName().compareTo(o2.getName()));
-
-            for (MContextMenuItem provider : contextMenues) {
-                MenuItem item = new MenuItem(provider.getName());
-                switch (provider.getType()) {
-                    case COPY:
-                        mContextCopyMenu.getItems().add(item);
-                        item.setOnAction((ActionEvent event) -> {
-                            String s = provider.getUrl();
-                            NbLog.v("Copy location", s);
-                            SystemHelper.copyToClipboard(s);
-                        });
-                        break;
-
-                    case EXTRAS:
-                        mContextExtrasMenu.getItems().add(item);
-                        item.setOnAction(provider.getAction());
-                        break;
-
-                    case OPEN:
-                        mContextOpenMenu.getItems().add(item);
-                        item.setOnAction((ActionEvent event) -> {
-                            String s = provider.getUrl();
-                            if (!StringUtils.isBlank(s)) {
-                                NbLog.v("Open location", s);
-                                SystemHelper.desktopBrowse(s);
-                            }
-                        });
-                        break;
-
-                    default:
-                        throw new AssertionError();
-                }
-            }
-
-            mContextCopyMenu.getItems().sorted((MenuItem o1, MenuItem o2) -> o1.getText().compareToIgnoreCase(o2.getText()));
-            mContextCopyMenu.setVisible(!mContextCopyMenu.getItems().isEmpty());
-
-            mContextOpenMenu.getItems().sorted((MenuItem o1, MenuItem o2) -> o1.getText().compareToIgnoreCase(o2.getText()));
-            mContextOpenMenu.setVisible(!mContextOpenMenu.getItems().isEmpty());
-
-            mContextExtrasMenu.getItems().sorted((MenuItem o1, MenuItem o2) -> o1.getText().compareToIgnoreCase(o2.getText()));
-            mContextExtrasMenu.setVisible(!mContextExtrasMenu.getItems().isEmpty());
-        });
-    }
-
-    private void setEngine(MEngine engine) {
-//        mEngine = engine;
-//        SwingUtilities.invokeLater(() -> {
-//            setToolTipText(String.format("%s: %s", MDict.MAP_ENGINE.toString(), engine.getName()));
-//        });
-//
-//        if (engine.isSwing()) {
-//            SwingUtilities.invokeLater(() -> {
-//                removeAll();
-//                final JComponent engineUI = (JComponent) engine.getUI();
-//                engineUI.setMinimumSize(new Dimension(1, 1));
-//                engineUI.setPreferredSize(new Dimension(1, 1));
-//                add(getFxPanel(), BorderLayout.NORTH);
-//                getFxPanel().setVisible(false);
-//                add(engineUI, BorderLayout.CENTER);
-//                attachStatusbar();
-//                revalidate();
-//                repaint();
-//
-//                try {
-//                    engine.onActivate();
-//                    engine.panTo(mMOptions.getMapCenter(), mMOptions.getMapZoom());
-//                    //aaaMapton.getAppToolBar().refreshEngine(engine);
-//                } catch (NullPointerException e) {
-//                }
-//            });
-//        } else {
-//            Platform.runLater(() -> {
-//                resetFx();
-//                mRoot.setCenter((Node) engine.getUI());
-//                attachStatusbar();
-//                try {
-//                    engine.onActivate();
-//                    engine.panTo(mMOptions.getMapCenter(), mMOptions.getMapZoom());
-//                } catch (Exception e) {
-//                }
-//                SwingUtilities.invokeLater(() -> {
-//                    revalidate();
-//                    repaint();
-//                    //aaaMapton.getAppToolBar().refreshEngine(engine);
-//                });
-//            });
-//        }
-//
-//        Mapton.logLoading("Map Engine", engine.getName());
-    }
-
-    private void whatsHere() {
-        Mapton.getGlobalState().put(MEngine.KEY_STATUS_PROGRESS, -1d);
-
-        new Thread(() -> {
-            ArrayList< MWhatsHereEngine> engines = new ArrayList<>(Lookup.getDefault().lookupAll(MWhatsHereEngine.class));
-
-            if (!engines.isEmpty()) {
-                MWhatsHereEngine whatsHereEngine = engines.get(0);
-                int zoom = (int) (5 + mEngine.getZoom() * 18);
-                String s = whatsHereEngine.getResult(mEngine.getLatLonMouse(), zoom);
-                if (StringUtils.isNotBlank(s)) {
-                    NbLog.i(MapTopComponent.class, "WhatsHere: " + s);
-                    Mapton.execute(() -> {
-                        mEngine.onWhatsHere(s);
-                    });
-                }
-
-                Mapton.getGlobalState().put(MEngine.KEY_STATUS_PROGRESS, 1d);
-            } else {
-                //TODO err inf dialog
-            }
-        }).start();
-    }
 }

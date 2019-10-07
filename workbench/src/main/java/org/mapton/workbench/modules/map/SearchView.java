@@ -46,7 +46,7 @@ import org.mapton.api.MLatLon;
 import org.mapton.api.MOptions;
 import org.mapton.api.MSearchEngine;
 import org.mapton.api.Mapton;
-import org.mapton.impl.Wgs84DMS;
+import org.mapton.base.cootrans.Wgs84DMS;
 import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;

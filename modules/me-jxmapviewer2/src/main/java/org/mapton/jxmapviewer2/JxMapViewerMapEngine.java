@@ -142,6 +142,7 @@ public class JxMapViewerMapEngine extends MEngine {
 
             @Override
             public void mousePressed(MouseEvent e) {
+                hideContextMenu();
                 maybeShowPopup(e);
             }
 

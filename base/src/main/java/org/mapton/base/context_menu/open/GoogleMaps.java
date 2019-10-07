@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core.ui.context.open;
+package org.mapton.base.context_menu.open;
 
 import java.util.Locale;
 import org.openide.util.lookup.ServiceProvider;

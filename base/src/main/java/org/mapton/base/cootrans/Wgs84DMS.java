@@ -13,19 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.impl;
+package org.mapton.base.cootrans;
 
 import javafx.geometry.Point2D;
+import org.openide.util.lookup.ServiceProvider;
+import org.mapton.api.MDecDegDMS;
 import org.mapton.api.MBounds;
 import org.mapton.api.MCooTrans;
-import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
  * @author Patrik Karlström
  */
 @ServiceProvider(service = MCooTrans.class)
-public class Wgs84 implements MCooTrans {
+public class Wgs84DMS implements MCooTrans {
 
     private final MBounds mBoundsProjected = new MBounds(-180, -90, 180, 90);
     private final MBounds mBoundsWgs84 = new MBounds(-180, -90, 180, 90);
@@ -52,7 +53,9 @@ public class Wgs84 implements MCooTrans {
 
     @Override
     public String getLatitudeString(double latitude, double longitude) {
-        return String.format("%2.6f", latitude);
+        MDecDegDMS dddms = new MDecDegDMS(latitude, true);
+
+        return dddms.format("%2d°%2d'%4.1f\"%s", "N", "S");
     }
 
     @Override
@@ -62,12 +65,14 @@ public class Wgs84 implements MCooTrans {
 
     @Override
     public String getLongitudeString(double latitude, double longitude) {
-        return String.format("%3.6f", longitude);
+        MDecDegDMS dddms = new MDecDegDMS(longitude, true);
+
+        return dddms.format("%3d°%2d'%4.1f\"%s", "E", "W");
     }
 
     @Override
     public String getName() {
-        return "WGS 84";
+        return "WGS 84 DMS";
     }
 
     @Override

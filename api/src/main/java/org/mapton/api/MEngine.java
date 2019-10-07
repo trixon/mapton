@@ -17,9 +17,11 @@ package org.mapton.api;
 
 import java.awt.Point;
 import java.awt.image.BufferedImage;
+import java.util.HashSet;
 import java.util.TreeMap;
 import java.util.concurrent.Callable;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import org.openide.util.Lookup;
@@ -36,6 +38,7 @@ public abstract class MEngine {
 
     protected static final Logger LOGGER = Logger.getLogger(MEngine.class.getName());
     private static final TreeMap<String, MEngine> ENGINES = new TreeMap<>();
+    private static final HashSet<MEngineListener> sEngineListeners = new HashSet<>();
 
     protected final MOptions mMaptonOptions = MOptions.getInstance();
     private Double mAltitude;
@@ -56,8 +59,20 @@ public abstract class MEngine {
         populateEngines();
     }
 
+    public static boolean addEngineListener(MEngineListener engineListener) {
+        return sEngineListeners.add(engineListener);
+    }
+
     public static MEngine byName(String name) {
         return ENGINES.getOrDefault(name, null);
+    }
+
+    public static void clearEngineListener(MEngineListener engineListener) {
+        sEngineListeners.clear();
+    }
+
+    public static boolean removeEngineListener(MEngineListener engineListener) {
+        return sEngineListeners.remove(engineListener);
     }
 
     private static void populateEngines() {
@@ -74,10 +89,23 @@ public abstract class MEngine {
         mLockedLatitude = mLatitude;
         mLockedLongitude = mLongitude;
 
-//        aaaSwingUtilities.invokeLater(() -> {
-//            MapTopComponent tc = (MapTopComponent) WindowManager.getDefault().findTopComponent("MapTopComponent");
-//            tc.displayContextMenu(screenXY);
-//        });
+        Runnable r = () -> {
+            for (MEngineListener engineListener : sEngineListeners) {
+                try {
+                    engineListener.displayContextMenu(screenXY);
+                } catch (Exception e) {
+                    Mapton.getLog().e(getClass().getSimpleName(), e.getMessage());
+                }
+            }
+        };
+
+        if (Platform.isFxApplicationThread()) {
+            r.run();
+        } else {
+            Platform.runLater(() -> {
+                r.run();
+            });
+        }
     }
 
     public void fitToBounds(MLatLonBox latLonBox) {
@@ -114,8 +142,7 @@ public abstract class MEngine {
     }
 
     public double getLatitudeProj() {
-//        aaareturn mMaptonOptions.getMapCooTrans().getLatitude(mLatitude, mLongitude);
-        return 0;
+        return mMaptonOptions.getMapCooTrans().getLatitude(mLatitude, mLongitude);
     }
 
     public Node getLayerView() {
@@ -133,8 +160,7 @@ public abstract class MEngine {
     }
 
     public double getLockedLatitudeProj() {
-//        aaareturn mMaptonOptions.getMapCooTrans().getLatitude(mLockedLatitude, mLockedLongitude);
-        return 0;
+        return mMaptonOptions.getMapCooTrans().getLatitude(mLockedLatitude, mLockedLongitude);
     }
 
     public Double getLockedLongitude() {
@@ -142,8 +168,7 @@ public abstract class MEngine {
     }
 
     public double getLockedLongitudeProj() {
-//        aaareturn mMaptonOptions.getMapCooTrans().getLongitude(mLockedLatitude, mLockedLongitude);
-        return 0;
+        return mMaptonOptions.getMapCooTrans().getLongitude(mLockedLatitude, mLockedLongitude);
     }
 
     public Double getLongitude() {
@@ -151,8 +176,7 @@ public abstract class MEngine {
     }
 
     public double getLongitudeProj() {
-//        aaareturn mMaptonOptions.getMapCooTrans().getLongitude(mLatitude, mLongitude);
-        return 0;
+        return mMaptonOptions.getMapCooTrans().getLongitude(mLatitude, mLongitude);
     }
 
     public abstract String getName();
@@ -178,6 +202,26 @@ public abstract class MEngine {
 
     public final void goHome() {
         panTo(mMaptonOptions.getMapHome(), mMaptonOptions.getMapHomeZoom());
+    }
+
+    public void hideContextMenu() {
+        Runnable r = () -> {
+            for (MEngineListener engineListener : sEngineListeners) {
+                try {
+                    engineListener.hideContextMenu();
+                } catch (Exception e) {
+                    Mapton.getLog().e(getClass().getSimpleName(), e.getMessage());
+                }
+            }
+        };
+
+        if (Platform.isFxApplicationThread()) {
+            r.run();
+        } else {
+            Platform.runLater(() -> {
+                r.run();
+            });
+        }
     }
 
     public final void initialized() {

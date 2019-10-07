@@ -13,11 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core.ui.context.open;
+package org.mapton.base.context_menu.copy;
 
 import java.util.Locale;
 import org.openide.util.lookup.ServiceProvider;
-import se.trixon.almond.util.MathHelper;
 import org.mapton.api.MContextMenuItem;
 
 /**
@@ -25,24 +24,23 @@ import org.mapton.api.MContextMenuItem;
  * @author Patrik Karlström
  */
 @ServiceProvider(service = MContextMenuItem.class)
-public class Eniro extends MContextMenuItem {
+public class ProjectedLatLon extends MContextMenuItem {
 
     @Override
     public String getName() {
-        return "Eniro";
+        return "Proj: lat, lon";
     }
 
     @Override
     public ContextType getType() {
-        return ContextType.OPEN;
+        return ContextType.COPY;
     }
 
     @Override
     public String getUrl() {
-        return String.format(Locale.ENGLISH, "https://kartor.eniro.se/?c=%f,%f&z=%d",
-                getLatitude(),
-                getLongitude(),
-                MathHelper.round(3 + 14 * getZoom())
+        return String.format(Locale.ENGLISH, "%.6f, %.6f",
+                getLatitudeProj(),
+                getLongitudeProj()
         );
     }
 }

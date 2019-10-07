@@ -196,7 +196,7 @@ public class GMapsFXMapEngine extends MEngine {
         });
 
         mMap.zoomProperty().addListener((ObservableValue<? extends Number> ov, Number t, Number t1) -> {
-            //aaaMapton.getInstance().zoomProperty().set(toGlobalZoom());
+            Mapton.getInstance().zoomProperty().set(toGlobalZoom());
         });
 
         mMapView.setOnContextMenuRequested((e) -> {
