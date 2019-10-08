@@ -20,6 +20,8 @@ import com.dlsc.workbenchfx.model.WorkbenchDialog;
 import de.codecentric.centerdevice.MenuToolkit;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.MissingResourceException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -63,6 +65,7 @@ import org.netbeans.modules.autoupdate.ui.api.PluginManager;
 import org.openide.LifecycleManager;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
+import org.openide.util.NbBundle;
 import se.trixon.almond.util.AboutModel;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.GlobalStateChangeEvent;
@@ -116,7 +119,18 @@ public class MaptonApplication extends Application {
             initMac();
         }
 
-        mStage.setTitle(APP_TITLE);
+        try {
+            String title = NbBundle.getBundle("org.netbeans.core.startup.Bundle").getString("currentVersion");
+            if (title.isEmpty()) {
+                mStage.setTitle(APP_TITLE);
+            } else {
+                mStage.setTitle(title);
+            }
+        } catch (MissingResourceException e) {
+            LOGGER.log(Level.SEVERE, e.getMessage());
+            mStage.setTitle(APP_TITLE);
+        }
+
         initAccelerators();
         initListeners();
     }
