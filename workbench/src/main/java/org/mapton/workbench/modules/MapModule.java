@@ -16,11 +16,14 @@
 package org.mapton.workbench.modules;
 
 import com.dlsc.workbenchfx.Workbench;
+import com.dlsc.workbenchfx.model.WorkbenchDialog;
 import com.dlsc.workbenchfx.view.controls.ToolbarItem;
 import java.util.HashSet;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -41,6 +44,7 @@ import static org.mapton.api.Mapton.ICON_SIZE_MODULE_TOOLBAR;
 import org.mapton.workbench.MaptonApplication;
 import org.mapton.workbench.modules.map.AttributionView;
 import org.mapton.workbench.modules.map.MapWindow;
+import org.mapton.workbench.modules.map.RulerStage;
 import org.mapton.workbench.modules.map.SearchView;
 import org.mapton.workbench.modules.map.StatusBar;
 import org.mapton.workbench.modules.map.ToolboxView;
@@ -59,10 +63,14 @@ public class MapModule extends MWorkbenchModule {
     private PopOver mAttributionPopOver;
     private ToolbarItem mAttributionToolbarItem;
     private AttributionView mAttributionView;
+    private ToolbarItem mBookmarkToolbarItem;
     private ToolbarItem mGoHomeToolbarItem;
+    private ToolbarItem mLayerToolbarItem;
     private ToolbarItem mMapOnlyToolbarItem;
     private final HashSet<PopOver> mPopOvers = new HashSet<>();
     private final BorderPane mRoot;
+    private RulerStage mRulerStage;
+    private ToolbarItem mRulerToolbarItem;
     private SearchView mSearchView;
     private PopOver mStylePopOver;
     private ToolbarItem mStyleToolbarItem;
@@ -70,12 +78,15 @@ public class MapModule extends MWorkbenchModule {
     private ToolbarItem mToolboxToolbarItem;
     private WindowManager mWindowManager;
     private ToolbarItem mWindowToolbarItem;
+    private WorkbenchDialog mWorkbenchDialog;
 
     public MapModule() {
         super(Dict.MAP.toString(), MaterialIcon._Maps.MAP.getImageView(ICON_SIZE_MODULE).getImage());
         MaskerPane maskerPane = new MaskerPane();
         maskerPane.setText(NbBundle.getMessage(MaptonApplication.class, "loading_map"));
         mRoot = new BorderPane(maskerPane);
+        mWorkbenchDialog = WorkbenchDialog.builder("", new Label(), WorkbenchDialog.Type.INFORMATION).build();
+        mRulerStage = new RulerStage();
 
         new Thread(() -> {
             createUI();
@@ -128,28 +139,46 @@ public class MapModule extends MWorkbenchModule {
 
     private void initAccelerators() {
         KeyCodeCombination kcc;
+
+        kcc = new KeyCodeCombination(KeyCode.B, KeyCombination.SHORTCUT_DOWN);
+        getKeyCodeCombinations().add(kcc);
+        getAccelerators().put(kcc, () -> {
+            mBookmarkToolbarItem.getOnClick().handle(null);
+        });
+
         kcc = new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN);
         getKeyCodeCombinations().add(kcc);
         getAccelerators().put(kcc, () -> {
             activateSearch();
         });
-
         kcc = new KeyCodeCombination(KeyCode.H, KeyCombination.SHORTCUT_DOWN);
         getKeyCodeCombinations().add(kcc);
         getAccelerators().put(kcc, () -> {
             mGoHomeToolbarItem.getOnClick().handle(null);
         });
 
-        kcc = new KeyCodeCombination(KeyCode.S, KeyCombination.SHORTCUT_DOWN);
-        getKeyCodeCombinations().add(kcc);
-        getAccelerators().put(kcc, () -> {
-            tooglePopOver(mStylePopOver, mStyleToolbarItem);
-        });
-
         kcc = new KeyCodeCombination(KeyCode.I, KeyCombination.SHORTCUT_DOWN);
         getKeyCodeCombinations().add(kcc);
         getAccelerators().put(kcc, () -> {
-            tooglePopOver(mAttributionPopOver, mAttributionToolbarItem);
+            mAttributionToolbarItem.getOnClick().handle(null);
+        });
+
+        kcc = new KeyCodeCombination(KeyCode.L, KeyCombination.SHORTCUT_DOWN);
+        getKeyCodeCombinations().add(kcc);
+        getAccelerators().put(kcc, () -> {
+            mLayerToolbarItem.getOnClick().handle(null);
+        });
+
+        kcc = new KeyCodeCombination(KeyCode.R, KeyCombination.SHORTCUT_DOWN);
+        getKeyCodeCombinations().add(kcc);
+        getAccelerators().put(kcc, () -> {
+            mRulerToolbarItem.getOnClick().handle(null);
+        });
+
+        kcc = new KeyCodeCombination(KeyCode.S, KeyCombination.SHORTCUT_DOWN);
+        getKeyCodeCombinations().add(kcc);
+        getAccelerators().put(kcc, () -> {
+            mStyleToolbarItem.getOnClick().handle(null);
         });
 
         kcc = new KeyCodeCombination(KeyCode.T, KeyCombination.SHORTCUT_DOWN);
@@ -219,20 +248,48 @@ public class MapModule extends MWorkbenchModule {
         mGoHomeToolbarItem = new ToolbarItem(MaterialIcon._Action.HOME.getImageView(ICON_SIZE_MODULE_TOOLBAR), event -> {
             Mapton.getEngine().goHome();
         });
-        setTooltip(mGoHomeToolbarItem, Dict.HOME.toString());
+        setTooltip(mGoHomeToolbarItem, Dict.HOME.toString(), new KeyCodeCombination(KeyCode.H, KeyCombination.SHORTCUT_DOWN));
 
-        Action measureAction = new Action(Dict.MEASURE.toString(), (event) -> {
-            System.out.println(event);
+        ToolbarItem searchToolbarItem = new ToolbarItem(mSearchView.getPresenter());
+        setTooltip(searchToolbarItem, Dict.SEARCH.toString(), new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN));
+
+        mRulerToolbarItem = new ToolbarItem(
+                Dict.RULER.toString(),
+                MaterialIcon._Editor.SPACE_BAR.getImageView(ICON_SIZE_MODULE_TOOLBAR),
+                event -> {
+                    mRulerStage.show();
+                });
+        setTooltip(mRulerToolbarItem, Dict.RULER.toString(), new KeyCodeCombination(KeyCode.R, KeyCombination.SHORTCUT_DOWN));
+
+        mLayerToolbarItem = new ToolbarItem(MaterialIcon._Maps.LAYERS.getImageView(ICON_SIZE_MODULE_TOOLBAR), event -> {
+            showDialog(Dict.LAYERS.toString(), Mapton.getEngine().getLayerView());
         });
-        Action layerAction = new Action(Dict.LAYERS.toString(), (event) -> {
-            System.out.println(event);
+        setTooltip(mLayerToolbarItem, Dict.LAYERS.toString(), new KeyCodeCombination(KeyCode.L, KeyCombination.SHORTCUT_DOWN));
+
+        mBookmarkToolbarItem = new ToolbarItem(MaterialIcon._Action.BOOKMARK_BORDER.getImageView(ICON_SIZE_MODULE_TOOLBAR), event -> {
+            showDialog(Dict.BOOKMARKS.toString(), new Button());
         });
-        Action bookmarkAction = new Action(Dict.BOOKMARKS.toString(), (event) -> {
-            System.out.println(event);
+        setTooltip(mBookmarkToolbarItem, Dict.BOOKMARKS.toString(), new KeyCodeCombination(KeyCode.B, KeyCombination.SHORTCUT_DOWN));
+
+        mStyleToolbarItem = new ToolbarItem(
+                "OpenStreetMap",
+                MaterialIcon._Image.COLOR_LENS.getImageView(ICON_SIZE_MODULE_TOOLBAR),
+                event -> {
+                    showDialog(String.format("%s & %s", Dict.TYPE.toString(), Dict.STYLE.toString()), Mapton.getEngine().getStyleView());
+                });
+        setTooltip(mStyleToolbarItem, Dict.STYLE.toString(), new KeyCodeCombination(KeyCode.S, KeyCombination.SHORTCUT_DOWN));
+        mStyleToolbarItem.setDisable(true);
+
+        mAttributionToolbarItem = new ToolbarItem(MaterialIcon._Action.COPYRIGHT.getImageView(ICON_SIZE_MODULE_TOOLBAR), event -> {
+            showDialog(Dict.COPYRIGHT.toString(), mAttributionView);
         });
+        //mAttributionToolbarItem.setDisable(true);
+        setTooltip(mAttributionToolbarItem, Dict.COPYRIGHT.toString(), new KeyCodeCombination(KeyCode.I, KeyCombination.SHORTCUT_DOWN));
+
         Action diagramAction = new Action(Dict.CHART.toString(), (event) -> {
             System.out.println(event);
         });
+
         Action temporalAction = new Action(Dict.Time.DATE.toString(), (event) -> {
             System.out.println(event);
         });
@@ -246,29 +303,6 @@ public class MapModule extends MWorkbenchModule {
             System.out.println(event);
         });
 
-        mStyleToolbarItem = new ToolbarItem(
-                "OpenStreetMap",
-                MaterialIcon._Image.COLOR_LENS.getImageView(ICON_SIZE_MODULE_TOOLBAR),
-                event -> {
-                    if (shouldOpen(mStylePopOver)) {
-                        BorderPane pane = (BorderPane) mStylePopOver.getContentNode();
-                        pane.setCenter(Mapton.getEngine().getStyleView());
-                        mStylePopOver.show(mStyleToolbarItem);
-                    }
-                });
-        setTooltip(mStyleToolbarItem, Dict.STYLE.toString());
-        mStyleToolbarItem.setDisable(true);
-
-        mAttributionToolbarItem = new ToolbarItem(MaterialIcon._Action.COPYRIGHT.getImageView(ICON_SIZE_MODULE_TOOLBAR), event -> {
-            if (shouldOpen(mAttributionPopOver)) {
-                mAttributionPopOver.show(mAttributionToolbarItem);
-            }
-        });
-        //mAttributionToolbarItem.setDisable(true);
-        setTooltip(mAttributionToolbarItem, Dict.COPYRIGHT.toString());
-
-        ToolbarItem searchToolbarItem = new ToolbarItem(mSearchView.getPresenter());
-
         mToolboxToolbarItem = new ToolbarItem(
                 Dict.TOOLBOX.toString(),
                 MaterialIcon._Places.BUSINESS_CENTER.getImageView(ICON_SIZE_MODULE_TOOLBAR), event -> {
@@ -280,11 +314,8 @@ public class MapModule extends MWorkbenchModule {
         mWindowToolbarItem = new ToolbarItem(
                 Dict.WINDOW.toString(),
                 MaterialIcon._Av.WEB_ASSET.getImageView(ICON_SIZE_MODULE_TOOLBAR),
-                ActionUtils.createMenuItem(measureAction),
                 ActionUtils.createMenuItem(temporalAction),
-                ActionUtils.createMenuItem(bookmarkAction),
                 ActionUtils.createMenuItem(gridAction),
-                ActionUtils.createMenuItem(layerAction),
                 ActionUtils.createMenuItem(toolsAction),
                 ActionUtils.createMenuItem(objectPropertiesAction),
                 ActionUtils.createMenuItem(diagramAction)
@@ -300,11 +331,14 @@ public class MapModule extends MWorkbenchModule {
         getToolbarControlsLeft().setAll(
                 mGoHomeToolbarItem,
                 searchToolbarItem,
+                mBookmarkToolbarItem,
+                mLayerToolbarItem,
                 mAttributionToolbarItem,
                 mStyleToolbarItem
         );
 
         getToolbarControlsRight().setAll(
+                mRulerToolbarItem,
                 mToolboxToolbarItem,
                 mWindowToolbarItem,
                 mMapOnlyToolbarItem
@@ -313,6 +347,8 @@ public class MapModule extends MWorkbenchModule {
 
     private void refreshEngine() {
         mStyleToolbarItem.setDisable(Mapton.getEngine().getStyleView() == null);
+        mLayerToolbarItem.setDisable(Mapton.getEngine().getLayerView() == null);
+        mRulerToolbarItem.setDisable(Mapton.getEngine().getRulerView() == null);
     }
 
     private void refreshUI() {
@@ -333,6 +369,18 @@ public class MapModule extends MWorkbenchModule {
         popOver.hide();
 
         return shouldOpen;
+    }
+
+    private void showDialog(String title, Node content) {
+        if (mWorkbenchDialog.getTitle().equalsIgnoreCase(title)) {
+            getWorkbench().hideDialog(mWorkbenchDialog);
+            mWorkbenchDialog.setTitle("xxx");
+            return;
+        }
+        getWorkbench().hideDialog(mWorkbenchDialog);
+        mWorkbenchDialog = WorkbenchDialog.builder(title, content, WorkbenchDialog.Type.INFORMATION).showButtonsBar(false).build();
+
+        getWorkbench().showDialog(mWorkbenchDialog);
     }
 
     private void tooglePopOver(PopOver popOver, ToolbarItem toolbarItem) {
