@@ -105,6 +105,10 @@ public abstract class MWorkbenchModule extends WorkbenchModule {
         control.setTooltip(new Tooltip(string));
     }
 
+    public void setTooltip(Control control, String string, KeyCodeCombination keyCodeCombination) {
+        control.setTooltip(new Tooltip(String.format("%s (%s)", string, keyCodeCombination.getDisplayText())));
+    }
+
     private void initListeners() {
 
         mOptions2.general().nightModeProperty().addListener((observable, oldValue, newValue) -> setNightMode(newValue));

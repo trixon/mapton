@@ -106,6 +106,10 @@ public class MOptionsGeneral {
         return mIconColorBrightProperty.getValue();
     }
 
+    public Color getIconColorForBackground() {
+        return mNightModeProperty.get() ? mIconColorBrightProperty.getValue() : mIconColorDarkProperty.getValue();
+    }
+
     public Color getIconColorDark() {
         return mIconColorDarkProperty.getValue();
     }

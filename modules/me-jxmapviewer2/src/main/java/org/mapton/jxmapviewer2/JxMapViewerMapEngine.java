@@ -73,6 +73,11 @@ public class JxMapViewerMapEngine extends MEngine {
         return toLatLon(mMapKit.getCenterPosition());
     }
 
+    @Override
+    public Node getLayerView() {
+        return null;
+    }
+
     public JXMapViewer getMap() {
         return mMap;
     }
@@ -80,6 +85,11 @@ public class JxMapViewerMapEngine extends MEngine {
     @Override
     public String getName() {
         return "OpenStreetMap";
+    }
+
+    @Override
+    public Node getRulerView() {
+        return null;
     }
 
     @Override
