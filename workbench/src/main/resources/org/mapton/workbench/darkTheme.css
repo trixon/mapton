@@ -1,0 +1,14 @@
+.root > * {
+    -primary-color: #102039;
+    -background-color: #3c3f41;
+    -secondary-color: #ff00ff;
+    /*-surface-color: #2e3540;*/
+    -surface-color: derive(-fx-background, 0%);
+    -secondary-variant-color: #005fa3;
+    -error-color: #B00020;
+    -on-secondary-color: -fx-light-text-color;
+    -on-surface-color: -fx-light-text-color;
+    -on-error-color: #FFFFFF;
+}
+
+

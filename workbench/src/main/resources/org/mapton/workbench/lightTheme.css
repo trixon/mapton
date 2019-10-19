@@ -1,0 +1,10 @@
+.root > * {
+    -primary-color: #7a87a7;
+    -background-color: #3c3f41;
+    -secondary-color: #0000ff;
+    /*-secondary-color: #6300ff;*/
+    -secondary-variant-color: #1e005f;
+    -error-color: #B00020;
+    -on-secondary-color: #FFFFFF;
+    -on-error-color: #FFFFFF;
+}

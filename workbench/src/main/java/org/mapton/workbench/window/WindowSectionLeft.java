@@ -15,10 +15,13 @@
  */
 package org.mapton.workbench.window;
 
+import javafx.application.Platform;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import org.mapton.api.MDict;
+import org.mapton.api.MOptions2;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.icons.material.MaterialIcon;
 
 /**
  *
@@ -29,11 +32,15 @@ public class WindowSectionLeft extends WindowSectionBase {
     private final TabPane mTabPane0 = new TabPane();
     private final TabPane mTabPane1 = new TabPane();
     private final TabPane mTabPane2 = new TabPane();
+    private MOptions2 mOptions2 = MOptions2.getInstance();
 
     public WindowSectionLeft() {
         getItems().setAll(mTabPane0, mTabPane1, mTabPane2);
 
         Tab measureTab = new Tab(Dict.MEASURE.toString());
+        Platform.runLater(() -> {
+            measureTab.setGraphic(MaterialIcon._Action.HOME.getImageView(16, mOptions2.general().getIconColorForBackground()));
+        });
         Tab temporalTab = new Tab(Dict.Time.DATE.toString());
         mTabPane0.getTabs().addAll(measureTab, temporalTab);
 

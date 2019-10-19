@@ -1,0 +1,31 @@
+.root > * {
+    -primary-color: #102039;
+    -on-primary-color: -fx-light-text-color;
+    -primary-variant-color: #006600;
+
+    -background-color: #3c3f41;
+    -background-variant-color: #33FF33;
+    -on-background-color: -fx-light-text-color;
+
+    /*
+        -secondary-color: #6300ff;
+        -secondary-variant-color: #1e005f;
+        -error-color: #B00020;
+        -on-secondary-color: #FFFFFF;
+        -on-background-color: #000000;
+        -on-surface-color: #000000;
+        -on-error-color: #FFFFFF;
+    */
+}
+
+.logo {
+    -fx-graphic: url("logo.png");
+}
+
+.progress-bar > .track {
+    -fx-text-box-border: lightgray;
+    -fx-control-inner-background: dimgray;
+}
+.progress-bar > .bar {
+    -fx-background-color: linear-gradient(to bottom, derive(#cccccc, -7%), derive(#cccccc, 0%), derive(#cccccc, -3%), derive(#cccccc, -9%) );
+}

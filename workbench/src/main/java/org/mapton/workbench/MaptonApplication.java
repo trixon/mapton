@@ -26,6 +26,7 @@ import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.embed.swing.SwingNode;
 import javafx.event.ActionEvent;
@@ -54,6 +55,7 @@ import org.controlsfx.control.Notifications;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.MKey;
+import org.mapton.api.MOptions2;
 import org.mapton.api.MWorkbenchModule;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.*;
@@ -88,6 +90,7 @@ public class MaptonApplication extends Application {
     private Action mLogAction;
     private LogModule mLogModule;
     private MapModule mMapModule;
+    private MOptions2 mOptions2 = MOptions2.getInstance();
     private Action mOptionsAction;
     private Action mPluginAction;
     private final SwingNode mPluginManagerUiNode;
@@ -171,8 +174,10 @@ public class MaptonApplication extends Application {
                 .tabFactory(CustomTab::new)
                 .build();
 
-        mWorkbench.getStylesheets().add(MaptonApplication.class.getResource("customTheme.css").toExternalForm());
-
+        //mWorkbench.getStylesheets().add(MaptonApplication.class.getResource("customTheme.css").toExternalForm());
+        mWorkbench.getStylesheets().add(getClass().getResource("baseTheme.css").toExternalForm());
+        setNightMode(mOptions2.general().isNightMode());
+        MaterialIcon.setDefaultColor(mOptions2.general().getIconColorBright());
         initActions();
 
         Scene scene = new Scene(mWorkbench);
@@ -266,7 +271,7 @@ public class MaptonApplication extends Application {
             mWindowFullscreenAction.setSelected(mStage.isFullScreen());
         });
 
-        accelerators.put(new KeyCodeCombination(KeyCode.L, KeyCombination.CONTROL_DOWN), () -> {
+        accelerators.put(new KeyCodeCombination(KeyCode.L, KeyCombination.CONTROL_DOWN, KeyCombination.SHIFT_DOWN), () -> {
             mLogAction.handle(null);
         });
 
@@ -388,8 +393,12 @@ public class MaptonApplication extends Application {
     }
 
     private void initListeners() {
+        mOptions2.general().nightModeProperty().addListener((observable, oldValue, newValue) -> setNightMode(newValue));
+
         Lookup.getDefault().lookupResult(MWorkbenchModule.class).addLookupListener((LookupEvent ev) -> {
-            populateModules();
+            Platform.runLater(() -> {
+                populateModules();
+            });
         });
 
         mStage.fullScreenProperty().addListener((ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1) -> {
@@ -496,5 +505,26 @@ public class MaptonApplication extends Application {
         for (MWorkbenchModule module : fixModules) {
             mWorkbench.getModules().add(module);
         }
+    }
+
+    private void setNightMode(boolean state) {
+        String lightTheme = getClass().getResource("lightTheme.css").toExternalForm();
+        String darkTheme = getClass().getResource("darkTheme.css").toExternalForm();
+        String darculaTheme = FxHelper.class.getResource("darcula.css").toExternalForm();
+
+        ObservableList<String> stylesheets = mWorkbench.getStylesheets();
+
+        if (state) {
+            stylesheets.remove(lightTheme);
+            stylesheets.add(darkTheme);
+            stylesheets.add(darculaTheme);
+        } else {
+            stylesheets.remove(darkTheme);
+            stylesheets.remove(darculaTheme);
+            stylesheets.add(lightTheme);
+        }
+
+//        mHistoryAction.setGraphic(MaterialIcon._Action.INFO_OUTLINE.getImageView(ICON_SIZE_DRAWER, mPreferences.getThemedIconColor()));
+//        mOptionsAction.setGraphic(MaterialIcon._Action.SETTINGS.getImageView(ICON_SIZE_DRAWER, mPreferences.getThemedIconColor()));
     }
 }
