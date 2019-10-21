@@ -38,6 +38,7 @@ public enum MDict {
     HOLLOW_DESCRIPTION,
     LINE_WIDTH,
     MAP_ENGINE,
+    OPEN_LOCATION,
     ORIGIN,
     PROJECTION,
     PROJ_LAT_LON,

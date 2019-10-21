@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core.ui.bookmark;
+package org.mapton.api.bookmark;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -36,7 +36,6 @@ import org.mapton.api.MKey;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.openide.util.Exceptions;
-import se.trixon.almond.nbp.dialogs.NbMessage;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.MathHelper;
 import se.trixon.almond.util.fx.dialogs.SimpleDialog;
@@ -99,7 +98,6 @@ public class BookmarkImportAction extends BookmarkAction {
                         }
 
                         if (mImports + mErrors > 0) {
-                            String message = String.format(mBundle.getString("bookmark_import_completed_message"), mImports, mErrors);
                             Mapton.notification(MKey.NOTIFICATION_INFORMATION, dialogTitle, Dict.OPERATION_COMPLETED.toString());
                         }
                     } catch (IOException ex) {
@@ -172,7 +170,11 @@ public class BookmarkImportAction extends BookmarkAction {
                 mErrors = result.y;
             } else {
                 String message = String.format(mBundle.getString("bookmark_import_error_csv_message"), String.join("\n ▶ ", requiredColumns));
-                NbMessage.error(mBundle.getString("bookmark_import_error_csv_title"), message);
+                Mapton.notification(
+                        MKey.NOTIFICATION_ERROR,
+                        mBundle.getString("bookmark_import_error_csv_title"),
+                        message
+                );
             }
         }
     }

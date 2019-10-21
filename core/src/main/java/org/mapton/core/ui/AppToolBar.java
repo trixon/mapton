@@ -43,7 +43,7 @@ import org.mapton.api.MOptions2;
 import static org.mapton.api.Mapton.getIconSizeContextMenu;
 import static org.mapton.api.Mapton.getIconSizeToolBar;
 import org.mapton.core.Initializer;
-import org.mapton.core.ui.bookmark.BookmarkView;
+import org.mapton.api.bookmark.BookmarksView;
 import org.openide.awt.Actions;
 import se.trixon.almond.nbp.AlmondOptions;
 import se.trixon.almond.nbp.NbLog;
@@ -370,7 +370,7 @@ public class AppToolBar extends ToolBar {
 
     private void initPopOvers() {
         mBookmarkPopOver = new PopOver();
-        initPopOver(mBookmarkPopOver, Dict.BOOKMARKS.toString(), new BookmarkView());
+        initPopOver(mBookmarkPopOver, Dict.BOOKMARKS.toString(), new BookmarksView());
 
         mLayerPopOver = new PopOver();
         initPopOver(mLayerPopOver, Dict.LAYERS.toString(), null);

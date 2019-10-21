@@ -131,6 +131,10 @@
             <artifactId>controlsfx</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.dlsc.formsfx</groupId>
+            <artifactId>formsfx-core</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.dlsc.workbenchfx</groupId>
             <artifactId>workbenchfx-core</artifactId>
         </dependency>

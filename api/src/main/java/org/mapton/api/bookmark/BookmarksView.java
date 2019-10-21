@@ -13,17 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core.ui.bookmark;
+package org.mapton.api.bookmark;
 
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Map;
-import java.util.ResourceBundle;
 import java.util.TreeMap;
 import java.util.prefs.Preferences;
-import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
@@ -39,7 +37,6 @@ import javafx.scene.control.TreeView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
-import javax.swing.SwingUtilities;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
@@ -47,16 +44,13 @@ import org.controlsfx.control.textfield.TextFields;
 import org.mapton.api.MBookmark;
 import org.mapton.api.MBookmarkManager;
 import org.mapton.api.MContextMenuItem;
+import org.mapton.api.MDict;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeContextMenu;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
-import org.mapton.core.ui.MapTopComponent;
-import org.openide.DialogDisplayer;
-import org.openide.NotifyDescriptor;
 import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
-import org.openide.util.NbBundle;
 import org.openide.util.NbPreferences;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
@@ -67,15 +61,15 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
  *
  * @author Patrik Karlström
  */
-public class BookmarkView extends BorderPane {
+public class BookmarksView extends BorderPane {
 
     private final Map<String, TreeItem<MBookmark>> mBookmarkParents = new TreeMap<>();
     private TextField mFilterTextField;
     private final MBookmarkManager mManager = MBookmarkManager.getInstance();
-    private final Preferences mPreferences = NbPreferences.forModule(ToolboxView.class).node("expanded_state");
+    private final Preferences mPreferences = NbPreferences.forModule(BookmarksView.class).node("expanded_state");
     private final TreeView<MBookmark> mTreeView = new TreeView<>();
 
-    public BookmarkView() {
+    public BookmarksView() {
         createUI();
 
         mManager.dbLoad(mFilterTextField.getText(), true);
@@ -133,53 +127,53 @@ public class BookmarkView extends BorderPane {
     private void bookmarkRemove() {
         final MBookmark bookmark = getSelectedBookmark();
 
-        SwingUtilities.invokeLater(() -> {
-            String[] buttons = new String[]{Dict.CANCEL.toString(), Dict.REMOVE.toString()};
-            NotifyDescriptor d = new NotifyDescriptor(
-                    String.format(Dict.Dialog.MESSAGE_PROFILE_REMOVE.toString(), bookmark.getName()),
-                    Dict.Dialog.TITLE_BOOKMARK_REMOVE.toString() + "?",
-                    NotifyDescriptor.OK_CANCEL_OPTION,
-                    NotifyDescriptor.WARNING_MESSAGE,
-                    buttons,
-                    Dict.REMOVE.toString());
-
-            if (Dict.REMOVE.toString() == DialogDisplayer.getDefault().notify(d)) {
-                Platform.runLater(() -> {
-                    try {
-                        if (bookmark.isCategory()) {
-                            mManager.dbDelete(bookmark.getCategory());
-                        } else {
-                            mManager.dbDelete(bookmark);
-                        }
-                    } catch (ClassNotFoundException | SQLException ex) {
-                        Exceptions.printStackTrace(ex);
-                    }
-                });
-            }
-        });
+//        SwingUtilities.invokeLater(() -> {
+//            String[] buttons = new String[]{Dict.CANCEL.toString(), Dict.REMOVE.toString()};
+//            NotifyDescriptor d = new NotifyDescriptor(
+//                    String.format(Dict.Dialog.MESSAGE_PROFILE_REMOVE.toString(), bookmark.getName()),
+//                    Dict.Dialog.TITLE_BOOKMARK_REMOVE.toString() + "?",
+//                    NotifyDescriptor.OK_CANCEL_OPTION,
+//                    NotifyDescriptor.WARNING_MESSAGE,
+//                    buttons,
+//                    Dict.REMOVE.toString());
+//
+//            if (Dict.REMOVE.toString() == DialogDisplayer.getDefault().notify(d)) {
+//                Platform.runLater(() -> {
+//                    try {
+//                        if (bookmark.isCategory()) {
+//                            mManager.dbDelete(bookmark.getCategory());
+//                        } else {
+//                            mManager.dbDelete(bookmark);
+//                        }
+//                    } catch (ClassNotFoundException | SQLException ex) {
+//                        Exceptions.printStackTrace(ex);
+//                    }
+//                });
+//            }
+//        });
     }
 
     private void bookmarkRemoveAll() {
-        SwingUtilities.invokeLater(() -> {
-            String[] buttons = new String[]{Dict.CANCEL.toString(), Dict.REMOVE_ALL.toString()};
-            NotifyDescriptor d = new NotifyDescriptor(
-                    Dict.Dialog.MESSAGE_BOOKMARK_REMOVE_ALL.toString(),
-                    Dict.Dialog.TITLE_BOOKMARK_REMOVE_ALL.toString() + "?",
-                    NotifyDescriptor.OK_CANCEL_OPTION,
-                    NotifyDescriptor.WARNING_MESSAGE,
-                    buttons,
-                    Dict.REMOVE_ALL.toString());
-
-            if (Dict.REMOVE_ALL.toString() == DialogDisplayer.getDefault().notify(d)) {
-                Platform.runLater(() -> {
-                    try {
-                        mManager.dbDelete();
-                    } catch (ClassNotFoundException | SQLException ex) {
-                        Exceptions.printStackTrace(ex);
-                    }
-                });
-            }
-        });
+//        SwingUtilities.invokeLater(() -> {
+//            String[] buttons = new String[]{Dict.CANCEL.toString(), Dict.REMOVE_ALL.toString()};
+//            NotifyDescriptor d = new NotifyDescriptor(
+//                    Dict.Dialog.MESSAGE_BOOKMARK_REMOVE_ALL.toString(),
+//                    Dict.Dialog.TITLE_BOOKMARK_REMOVE_ALL.toString() + "?",
+//                    NotifyDescriptor.OK_CANCEL_OPTION,
+//                    NotifyDescriptor.WARNING_MESSAGE,
+//                    buttons,
+//                    Dict.REMOVE_ALL.toString());
+//
+//            if (Dict.REMOVE_ALL.toString() == DialogDisplayer.getDefault().notify(d)) {
+//                Platform.runLater(() -> {
+//                    try {
+//                        mManager.dbDelete();
+//                    } catch (ClassNotFoundException | SQLException ex) {
+//                        Exceptions.printStackTrace(ex);
+//                    }
+//                });
+//            }
+//        });
     }
 
     private void createUI() {
@@ -342,10 +336,9 @@ public class BookmarkView extends BorderPane {
             );
 
             ContextMenu contextMenu = ActionUtils.createContextMenu(actions);
-            ResourceBundle bundle = NbBundle.getBundle(MapTopComponent.class);
+            mContextCopyMenu = new Menu(MDict.COPY_LOCATION.toString());
+            mContextOpenMenu = new Menu(MDict.OPEN_LOCATION.toString());
 
-            mContextCopyMenu = new Menu(bundle.getString("copy_location"));
-            mContextOpenMenu = new Menu(bundle.getString("open_location"));
             contextMenu.getItems().add(4, mContextOpenMenu);
             contextMenu.getItems().add(4, mContextCopyMenu);
 

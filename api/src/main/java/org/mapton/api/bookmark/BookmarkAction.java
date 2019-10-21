@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core.ui.bookmark;
+package org.mapton.api.bookmark;
 
 import java.util.ResourceBundle;
 import javafx.stage.FileChooser.ExtensionFilter;

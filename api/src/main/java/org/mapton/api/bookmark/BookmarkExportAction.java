@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core.ui.bookmark;
+package org.mapton.api.bookmark;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -100,7 +100,6 @@ public class BookmarkExportAction extends BookmarkAction {
                             default:
                                 throw new AssertionError();
                         }
-                        String message = String.format(mBundle.getString("bookmark_export_completed_message"), mManager.getItems().size());
                         Mapton.notification(MKey.NOTIFICATION_INFORMATION, dialogTitle, Dict.OPERATION_COMPLETED.toString());
                     } catch (IOException ex) {
                         Exceptions.printStackTrace(ex);
