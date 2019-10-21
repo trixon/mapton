@@ -408,8 +408,10 @@ public class MaptonApplication extends Application {
         Mapton.getGlobalState().addListener((GlobalStateChangeEvent evt) -> {
             Platform.runLater(() -> {
                 Notifications notifications = evt.getValue();
-                notifications.owner(MaptonApplication.this).position(Pos.TOP_RIGHT);
-
+                notifications.owner(MaptonApplication.this.mWorkbench).position(Pos.TOP_RIGHT);
+                if (mOptions2.general().isNightMode()) {
+                    notifications.darkStyle();
+                }
                 switch (evt.getKey()) {
                     case MKey.NOTIFICATION:
                         notifications.show();
