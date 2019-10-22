@@ -90,7 +90,7 @@ public class MaptonApplication extends Application {
     private Action mLogAction;
     private LogModule mLogModule;
     private MapModule mMapModule;
-    private MOptions2 mOptions2 = MOptions2.getInstance();
+    private final MOptions2 mOptions2 = MOptions2.getInstance();
     private Action mOptionsAction;
     private Action mPluginAction;
     private final SwingNode mPluginManagerUiNode;
@@ -202,6 +202,7 @@ public class MaptonApplication extends Application {
                 ActionUtils.createMenuItem(mPluginAction)
         );
 
+        mWorkbench.getNavigationDrawer().setVisible(false);
         mWorkbench.getNavigationDrawerItems().setAll(
                 ActionUtils.createMenuItem(mOptionsAction),
                 viewMenu,
@@ -261,7 +262,11 @@ public class MaptonApplication extends Application {
         });
 
         accelerators.put(new KeyCodeCombination(KeyCode.CONTEXT_MENU, KeyCombination.CONTROL_ANY), () -> {
-            mWorkbench.showNavigationDrawer();
+            if (mWorkbench.getNavigationDrawer().isVisible()) {
+                mWorkbench.hideNavigationDrawer();
+            } else {
+                mWorkbench.showNavigationDrawer();
+            }
         });
 
         accelerators.put(new KeyCodeCombination(KeyCode.F11, KeyCombination.CONTROL_ANY), () -> {
