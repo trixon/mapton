@@ -18,19 +18,18 @@ package org.mapton.workbench.modules;
 import com.dlsc.workbenchfx.Workbench;
 import com.dlsc.workbenchfx.model.WorkbenchDialog;
 import com.dlsc.workbenchfx.view.controls.ToolbarItem;
-import java.util.HashSet;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
+import javafx.geometry.Side;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Region;
 import org.controlsfx.control.MaskerPane;
-import org.controlsfx.control.PopOver;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.MDict;
@@ -41,7 +40,9 @@ import org.mapton.api.MWorkbenchModule;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.ICON_SIZE_MODULE;
 import static org.mapton.api.Mapton.ICON_SIZE_MODULE_TOOLBAR;
+import org.mapton.api.bookmark.BookmarksView;
 import org.mapton.workbench.MaptonApplication;
+import org.mapton.workbench.TitledDrawerContent;
 import org.mapton.workbench.modules.map.AttributionView;
 import org.mapton.workbench.modules.map.MapWindow;
 import org.mapton.workbench.modules.map.RulerStage;
@@ -60,21 +61,21 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
  */
 public class MapModule extends MWorkbenchModule {
 
-    private PopOver mAttributionPopOver;
     private ToolbarItem mAttributionToolbarItem;
     private AttributionView mAttributionView;
     private ToolbarItem mBookmarkToolbarItem;
+    private TitledDrawerContent mBookmarksDrawerContent;
+    private Node mDrawerContent;
     private ToolbarItem mGoHomeToolbarItem;
     private ToolbarItem mLayerToolbarItem;
+    private TitledDrawerContent mLayersDrawerContent;
     private ToolbarItem mMapOnlyToolbarItem;
-    private final HashSet<PopOver> mPopOvers = new HashSet<>();
     private final BorderPane mRoot;
     private RulerStage mRulerStage;
     private ToolbarItem mRulerToolbarItem;
     private SearchView mSearchView;
-    private PopOver mStylePopOver;
     private ToolbarItem mStyleToolbarItem;
-    private PopOver mToolboxPopOver;
+    private TitledDrawerContent mToolDrawerContent;
     private ToolbarItem mToolboxToolbarItem;
     private WindowManager mWindowManager;
     private ToolbarItem mWindowToolbarItem;
@@ -87,10 +88,10 @@ public class MapModule extends MWorkbenchModule {
         mRoot = new BorderPane(maskerPane);
         mWorkbenchDialog = WorkbenchDialog.builder("", new Label(), WorkbenchDialog.Type.INFORMATION).build();
         mRulerStage = new RulerStage();
+        mAttributionView = new AttributionView();
 
         new Thread(() -> {
             createUI();
-            initPopOvers();
             initListeners();
 
             Platform.runLater(() -> {
@@ -121,19 +122,12 @@ public class MapModule extends MWorkbenchModule {
     @Override
     public void init(Workbench workbench) {
         super.init(workbench);
-
-    }
-
-    private void activateSearch() {
-        Platform.runLater(() -> {
-            getScene().getWindow().requestFocus();
-            mSearchView.getPresenter().requestFocus();
-            ((TextField) mSearchView.getPresenter()).clear();
-        });
     }
 
     private void createUI() {
         mSearchView = new SearchView();
+        mBookmarksDrawerContent = new TitledDrawerContent(Dict.BOOKMARKS.toString(), new BookmarksView());
+        mToolDrawerContent = new TitledDrawerContent(Dict.TOOLBOX.toString(), new ToolboxView());
         mWindowManager = new WindowManager();
     }
 
@@ -149,7 +143,8 @@ public class MapModule extends MWorkbenchModule {
         kcc = new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN);
         getKeyCodeCombinations().add(kcc);
         getAccelerators().put(kcc, () -> {
-            activateSearch();
+            mSearchView.getPresenter().requestFocus();
+            ((TextField) mSearchView.getPresenter()).clear();
         });
         kcc = new KeyCodeCombination(KeyCode.H, KeyCombination.SHORTCUT_DOWN);
         getKeyCodeCombinations().add(kcc);
@@ -184,7 +179,7 @@ public class MapModule extends MWorkbenchModule {
         kcc = new KeyCodeCombination(KeyCode.T, KeyCombination.SHORTCUT_DOWN);
         getKeyCodeCombinations().add(kcc);
         getAccelerators().put(kcc, () -> {
-            tooglePopOver(mToolboxPopOver, mToolboxToolbarItem);
+            mToolboxToolbarItem.getOnClick().handle(null);
         });
 
         kcc = new KeyCodeCombination(KeyCode.Y, KeyCombination.SHORTCUT_DOWN);
@@ -214,33 +209,9 @@ public class MapModule extends MWorkbenchModule {
         mOptions2.general().maximizedMapProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
             refreshUI();
         });
-    }
 
-    private void initPopOver(PopOver popOver, String title, Node content) {
-        popOver.setTitle(title);
-        popOver.setContentNode(content);
-        popOver.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
-        popOver.setHeaderAlwaysVisible(true);
-        popOver.setCloseButtonEnabled(false);
-        popOver.setDetachable(false);
-        popOver.setAnimated(false);
-
-        mPopOvers.add(popOver);
-    }
-
-    private void initPopOvers() {
-        mToolboxPopOver = new PopOver();
-        initPopOver(mToolboxPopOver, Dict.TOOLBOX.toString(), new ToolboxView());
-        mToolboxPopOver.setArrowLocation(PopOver.ArrowLocation.TOP_RIGHT);
-
-        mStylePopOver = new PopOver();
-        initPopOver(mStylePopOver, String.format("%s & %s", Dict.TYPE.toString(), Dict.STYLE.toString()), new BorderPane());
-
-        Platform.runLater(() -> {
-            mAttributionPopOver = new PopOver();
-            mAttributionView = new AttributionView(mAttributionPopOver);
-            initPopOver(mAttributionPopOver, Dict.COPYRIGHT.toString(), mAttributionView);
-            mAttributionPopOver.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
+        getWorkbench().drawerShownProperty().addListener((ObservableValue<? extends Region> observable, Region oldValue, Region newValue) -> {
+            mDrawerContent = newValue;
         });
     }
 
@@ -262,12 +233,12 @@ public class MapModule extends MWorkbenchModule {
         setTooltip(mRulerToolbarItem, Dict.RULER.toString(), new KeyCodeCombination(KeyCode.R, KeyCombination.SHORTCUT_DOWN));
 
         mLayerToolbarItem = new ToolbarItem(MaterialIcon._Maps.LAYERS.getImageView(ICON_SIZE_MODULE_TOOLBAR), event -> {
-            showDialog(Dict.LAYERS.toString(), Mapton.getEngine().getLayerView());
+            showDrawer(mLayersDrawerContent, Side.LEFT);
         });
         setTooltip(mLayerToolbarItem, Dict.LAYERS.toString(), new KeyCodeCombination(KeyCode.L, KeyCombination.SHORTCUT_DOWN));
 
         mBookmarkToolbarItem = new ToolbarItem(MaterialIcon._Action.BOOKMARK_BORDER.getImageView(ICON_SIZE_MODULE_TOOLBAR), event -> {
-            showDialog(Dict.BOOKMARKS.toString(), new Button());
+            showDrawer(mBookmarksDrawerContent, Side.LEFT);
         });
         setTooltip(mBookmarkToolbarItem, Dict.BOOKMARKS.toString(), new KeyCodeCombination(KeyCode.B, KeyCombination.SHORTCUT_DOWN));
 
@@ -306,9 +277,7 @@ public class MapModule extends MWorkbenchModule {
         mToolboxToolbarItem = new ToolbarItem(
                 Dict.TOOLBOX.toString(),
                 MaterialIcon._Places.BUSINESS_CENTER.getImageView(ICON_SIZE_MODULE_TOOLBAR), event -> {
-            if (shouldOpen(mToolboxPopOver)) {
-                mToolboxPopOver.show(mToolboxToolbarItem);
-            }
+            showDrawer(mToolDrawerContent, Side.RIGHT);
         });
 
         mWindowToolbarItem = new ToolbarItem(
@@ -346,6 +315,7 @@ public class MapModule extends MWorkbenchModule {
     }
 
     private void refreshEngine() {
+        mLayersDrawerContent = new TitledDrawerContent(Dict.LAYERS.toString(), Mapton.getEngine().getLayerView());
         mStyleToolbarItem.setDisable(Mapton.getEngine().getStyleView() == null);
         mLayerToolbarItem.setDisable(Mapton.getEngine().getLayerView() == null);
         mRulerToolbarItem.setDisable(Mapton.getEngine().getRulerView() == null);
@@ -364,37 +334,30 @@ public class MapModule extends MWorkbenchModule {
         }
     }
 
-    private boolean shouldOpen(PopOver popOver) {
-        boolean shouldOpen = !popOver.isShowing();
-        popOver.hide();
-
-        return shouldOpen;
-    }
-
     private void showDialog(String title, Node content) {
-        if (mWorkbenchDialog.getTitle().equalsIgnoreCase(title)) {
+        if (content == mWorkbenchDialog.getContent()) {
             getWorkbench().hideDialog(mWorkbenchDialog);
-            mWorkbenchDialog.setTitle("xxx");
             return;
         }
+
         getWorkbench().hideDialog(mWorkbenchDialog);
         mWorkbenchDialog = WorkbenchDialog.builder(title, content, WorkbenchDialog.Type.INFORMATION).showButtonsBar(false).build();
+        mWorkbenchDialog.showingProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
+            if (!newValue) {
+                mWorkbenchDialog.setContent(null);
+            }
+        });
 
         getWorkbench().showDialog(mWorkbenchDialog);
     }
 
-    private void tooglePopOver(PopOver popOver, ToolbarItem toolbarItem) {
-        Platform.runLater(() -> {
-            if (popOver.isShowing()) {
-                popOver.hide();
-            } else {
-                mPopOvers.forEach((item) -> {
-                    item.hide();
-                });
+    private void showDrawer(Node content, Side side) {
+        if (content == mDrawerContent) {
+            getWorkbench().hideDrawer();
+            return;
+        }
 
-                toolbarItem.getOnClick().handle(null);
-            }
-        });
+        getWorkbench().showDrawer((Region) content, side, 20);
     }
 
     private void updateDocumentInfo(GlobalStateChangeEvent evt) {

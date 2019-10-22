@@ -24,7 +24,6 @@ import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Worker;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.web.WebView;
-import org.controlsfx.control.PopOver;
 import org.mapton.api.MAttribution;
 import org.mapton.api.MDocumentInfo;
 import org.mapton.api.Mapton;
@@ -38,11 +37,9 @@ import se.trixon.almond.util.SystemHelper;
 public class AttributionView extends BorderPane {
 
     private final ResourceBundle mBundle = NbBundle.getBundle(AttributionView.class);
-    private PopOver mPopOver;
     private WebView mWebView;
 
-    public AttributionView(PopOver popOver) {
-        mPopOver = popOver;
+    public AttributionView() {
         createUI();
         initListeners();
     }
@@ -101,7 +98,6 @@ public class AttributionView extends BorderPane {
                         org.w3c.dom.events.EventTarget target = evt.getCurrentTarget();
                         org.w3c.dom.html.HTMLAnchorElement anchorElement = (org.w3c.dom.html.HTMLAnchorElement) target;
                         String href = anchorElement.getHref();
-                        mPopOver.hide();
                         SystemHelper.desktopBrowse(href);
                         evt.preventDefault();
                     }, false);

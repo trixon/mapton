@@ -138,6 +138,10 @@ public class MapWindow extends StackPane {
             mMOptions.setMapHomeZoom(mEngine.getZoom());
         });
 
+        Action bookmarkAction = new Action(Dict.ADD_BOOKMARK.toString(), (ActionEvent t) -> {
+            //TODO FIXME
+        });
+
         Action whatsHereAction = new Action(getBundleString("whats_here"), (ActionEvent t) -> {
             whatsHere();
         });
@@ -154,6 +158,7 @@ public class MapWindow extends StackPane {
 
         Collection<? extends Action> actions = Arrays.asList(
                 whatsHereAction,
+                bookmarkAction,
                 MBookmarkManager.getInstance().getAddBookmarkAction(),
                 ActionUtils.ACTION_SEPARATOR,
                 copyImageAction,
@@ -163,8 +168,8 @@ public class MapWindow extends StackPane {
                 setHomeAction
         );
 
-        mContextCopyMenu = new Menu(getBundleString("copy_location"));
-        mContextOpenMenu = new Menu(getBundleString("open_location"));
+        mContextCopyMenu = new Menu(MDict.COPY_LOCATION.toString());
+        mContextOpenMenu = new Menu(MDict.OPEN_LOCATION.toString());
         mContextExtrasMenu = new Menu(getBundleString("extras"));
         mContextMenu = ActionUtils.createContextMenu(actions);
 
