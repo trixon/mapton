@@ -252,6 +252,11 @@
                 <version>11.0.0</version>
             </dependency>
             <dependency>
+                <groupId>com.dlsc.formsfx</groupId>
+                <artifactId>formsfx-core</artifactId>
+                <version>11.4.1</version>
+            </dependency>
+            <dependency>
                 <groupId>com.dlsc.workbenchfx</groupId>
                 <artifactId>workbenchfx-core</artifactId>
                 <version>11.1.0</version>
