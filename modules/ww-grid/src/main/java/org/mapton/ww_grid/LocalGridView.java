@@ -23,7 +23,6 @@ import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.geometry.Insets;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ToolBar;
@@ -39,7 +38,6 @@ import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.MDict;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
-import static org.mapton.ww_grid.Options.*;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.util.NbBundle;
@@ -104,8 +102,7 @@ public class LocalGridView extends BorderPane {
             FxHelper.undecorateButton(buttonBase);
         });
 
-        toolBar.setStyle("-fx-spacing: 0px;");
-        toolBar.setPadding(Insets.EMPTY);
+        FxHelper.slimToolBar(toolBar);
         setTop(new VBox(8, mPlotCheckBox, toolBar));
         setCenter(mListView);
         toolBar.disableProperty().bind(mPlotCheckBox.selectedProperty().not());

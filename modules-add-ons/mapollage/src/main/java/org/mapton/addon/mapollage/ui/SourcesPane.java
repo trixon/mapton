@@ -23,7 +23,6 @@ import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
-import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.ToolBar;
@@ -148,8 +147,7 @@ public class SourcesPane extends BorderPane {
             FxHelper.undecorateButton(buttonBase);
         });
 
-        toolBar.setStyle("-fx-spacing: 0px;");
-        toolBar.setPadding(Insets.EMPTY);
+        FxHelper.slimToolBar(toolBar);
         mRefreshButton = (Button) toolBar.getItems().get(toolBar.getItems().size() - 1);
         setTop(toolBar);
         setCenter(mListView);

@@ -31,7 +31,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
-import javafx.geometry.Insets;
 import javafx.scene.control.CheckBoxTreeItem;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToolBar;
@@ -39,7 +38,6 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.CheckBoxTreeCell;
 import javafx.scene.input.MouseButton;
-import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -49,6 +47,7 @@ import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionGroup;
 import org.controlsfx.control.action.ActionUtils;
 import org.controlsfx.control.textfield.TextFields;
+import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.NbPreferences;
@@ -157,7 +156,7 @@ public class LayerView extends BorderPane {
         mFilterTextField.setMinWidth(20);
         final int iconSize = (int) (getIconSizeToolBarInt() * 0.8);
 
-        ActionGroup selectActionGroup = new ActionGroup(Dict.SHOW.toString(), MaterialIcon._Image.REMOVE_RED_EYE.getImageView(iconSize),
+        ActionGroup selectActionGroup = new ActionGroup(Dict.SHOW.toString(), MaterialIcon._Image.REMOVE_RED_EYE.getImageView(iconSize, Mapton.optionsGeneral().getIconColorForBackground()),
                 new Action(Dict.SHOW.toString(), (event) -> {
                     setChecked(mRootItem, true);
                 }),
@@ -183,9 +182,7 @@ public class LayerView extends BorderPane {
         BorderPane topBorderPane = new BorderPane(mFilterTextField);
         topBorderPane.setRight(toolBar);
         toolBar.setMinWidth(iconSize * 3);
-        toolBar.setStyle("-fx-spacing: 0px; -fx-background-insets: 0, 0 0 0 0;");
-        toolBar.setPadding(Insets.EMPTY);
-        toolBar.setBorder(Border.EMPTY);
+        FxHelper.slimToolBar(toolBar);
         setTop(topBorderPane);
     }
 

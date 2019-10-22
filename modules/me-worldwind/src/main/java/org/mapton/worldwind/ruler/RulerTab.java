@@ -32,7 +32,6 @@ import java.util.Map;
 import java.util.prefs.PreferenceChangeEvent;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.Tab;
@@ -231,8 +230,7 @@ public class RulerTab extends Tab {
         ));
 
         mToolBar = ActionUtils.createToolBar(actions, ActionUtils.ActionTextBehavior.HIDE);
-        mToolBar.setStyle("-fx-spacing: 0px;");
-        mToolBar.setPadding(Insets.EMPTY);
+        FxHelper.slimToolBar(mToolBar);
 
         Platform.runLater(() -> {
             FxHelper.adjustButtonWidth(mToolBar.getItems().stream(), getIconSizeToolBarInt() * 1.5);
