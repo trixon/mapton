@@ -16,9 +16,11 @@
 package org.mapton.api.bookmark;
 
 import java.util.ResourceBundle;
+import javafx.scene.paint.Color;
 import javafx.stage.FileChooser.ExtensionFilter;
 import org.controlsfx.control.action.Action;
 import org.mapton.api.MBookmarkManager;
+import org.mapton.api.Mapton;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
 
@@ -36,6 +38,7 @@ public abstract class BookmarkAction {
     protected ExtensionFilter mExtKml = new ExtensionFilter("Keyhole Markup Language (*.kml)", "*.kml");
     protected final MBookmarkManager mManager = MBookmarkManager.getInstance();
     protected final String mTitle = Dict.BOOKMARKS.toString();
+    protected Color mIconColor = Mapton.optionsGeneral().getIconColorForBackground();
 
     public abstract Action getAction();
 }

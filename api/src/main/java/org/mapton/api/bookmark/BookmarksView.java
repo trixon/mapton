@@ -25,7 +25,6 @@ import java.util.prefs.Preferences;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
-import javafx.geometry.Insets;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
@@ -35,8 +34,8 @@ import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.paint.Color;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
@@ -45,6 +44,7 @@ import org.mapton.api.MBookmark;
 import org.mapton.api.MBookmarkManager;
 import org.mapton.api.MContextMenuItem;
 import org.mapton.api.MDict;
+import org.mapton.api.MOptions2;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeContextMenu;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
@@ -68,6 +68,7 @@ public class BookmarksView extends BorderPane {
     private final MBookmarkManager mManager = MBookmarkManager.getInstance();
     private final Preferences mPreferences = NbPreferences.forModule(BookmarksView.class).node("expanded_state");
     private final TreeView<MBookmark> mTreeView = new TreeView<>();
+    private final MOptions2 mOptions2 = MOptions2.getInstance();
 
     public BookmarksView() {
         createUI();
@@ -195,9 +196,7 @@ public class BookmarksView extends BorderPane {
         BorderPane topBorderPane = new BorderPane(mFilterTextField);
         topBorderPane.setRight(toolBar);
         toolBar.setMinWidth(getIconSizeToolBarInt() * 3.5);
-        toolBar.setStyle("-fx-spacing: 0px; -fx-background-insets: 0, 0 0 0 0;");
-        toolBar.setPadding(Insets.EMPTY);
-        toolBar.setBorder(Border.EMPTY);
+        FxHelper.slimToolBar(toolBar);
         setTop(topBorderPane);
         setCenter(mTreeView);
     }
@@ -298,20 +297,21 @@ public class BookmarksView extends BorderPane {
         }
 
         private void createUI() {
+            Color color = mOptions2.general().getIconColorForBackground();
             Action editAction = new Action(Dict.EDIT.toString(), (ActionEvent event) -> {
                 bookmarkEdit();
             });
-            editAction.setGraphic(MaterialIcon._Content.CREATE.getImageView(getIconSizeContextMenu()));
+            editAction.setGraphic(MaterialIcon._Content.CREATE.getImageView(getIconSizeContextMenu(), color));
 
             Action editColorAction = new Action(Dict.COLOR.toString(), (ActionEvent event) -> {
                 bookmarkEditColor();
             });
-            editColorAction.setGraphic(MaterialIcon._Image.COLORIZE.getImageView(getIconSizeContextMenu()));
+            editColorAction.setGraphic(MaterialIcon._Image.COLORIZE.getImageView(getIconSizeContextMenu(), color));
 
             Action editZoomAction = new Action(Dict.ZOOM.toString(), (ActionEvent event) -> {
                 bookmarkEditZoom();
             });
-            editZoomAction.setGraphic(MaterialIcon._Editor.FORMAT_SIZE.getImageView(getIconSizeContextMenu()));
+            editZoomAction.setGraphic(MaterialIcon._Editor.FORMAT_SIZE.getImageView(getIconSizeContextMenu(), color));
 
             Action zoomExtentAction = new Action(Dict.ZOOM_EXTENTS.toString(), (ActionEvent event) -> {
                 Mapton.getEngine().fitToBounds(mManager.getExtents(getSelectedBookmark().getCategory()));

@@ -108,7 +108,7 @@ public class BookmarkImportAction extends BookmarkAction {
             }
         });
 
-        action.setGraphic(MaterialIcon._File.FOLDER_OPEN.getImageView(getIconSizeToolBarInt()));
+        action.setGraphic(MaterialIcon._File.FOLDER_OPEN.getImageView(getIconSizeToolBarInt(), mIconColor));
 
         return action;
     }

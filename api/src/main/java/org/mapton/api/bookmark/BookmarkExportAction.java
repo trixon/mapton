@@ -108,7 +108,7 @@ public class BookmarkExportAction extends BookmarkAction {
             }
         });
 
-        action.setGraphic(MaterialIcon._Content.SAVE.getImageView(getIconSizeToolBarInt()));
+        action.setGraphic(MaterialIcon._Content.SAVE.getImageView(getIconSizeToolBarInt(), mIconColor));
 
         return action;
     }

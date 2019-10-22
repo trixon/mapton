@@ -219,6 +219,14 @@ public class Mapton {
         getGlobalState().send(type, notifications);
     }
 
+    public static MOptions2 options() {
+        return MOptions2.getInstance();
+    }
+
+    public static MOptionsGeneral optionsGeneral() {
+        return options().general();
+    }
+
     private Mapton() {
     }
 
