@@ -22,7 +22,6 @@ import java.util.List;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
-import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.CheckBox;
@@ -135,8 +134,7 @@ public final class UpdaterTopComponent extends MTopComponent {
             FxHelper.undecorateButton(buttonBase);
         });
 
-        toolBar.setStyle("-fx-spacing: 0px;");
-        toolBar.setPadding(Insets.EMPTY);
+        FxHelper.slimToolBar(toolBar);
 
         mListView = new ListView<>();
         mListView.setCellFactory((ListView<MUpdater> param) -> new UpdaterListCell());
