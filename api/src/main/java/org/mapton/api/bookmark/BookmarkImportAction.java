@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import javafx.scene.Node;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -54,13 +55,14 @@ public class BookmarkImportAction extends BookmarkAction {
     private int mImports;
 
     @Override
-    public Action getAction() {
+    public Action getAction(Node owner) {
         Action action = new Action(Dict.IMPORT.toString(), (t) -> {
             SimpleDialog.clearFilters();
             SimpleDialog.addFilter(mExtCsv);
             SimpleDialog.addFilter(mExtGeo);
             SimpleDialog.addFilter(mExtJson);
             SimpleDialog.setFilter(mExtCsv);
+            SimpleDialog.setOwner(owner.getScene().getWindow());
             final String dialogTitle = String.format("%s %s", Dict.IMPORT.toString(), mTitle.toLowerCase());
             SimpleDialog.setTitle(dialogTitle);
 

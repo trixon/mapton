@@ -16,6 +16,7 @@
 package org.mapton.api.bookmark;
 
 import java.util.ResourceBundle;
+import javafx.scene.Node;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser.ExtensionFilter;
 import org.controlsfx.control.action.Action;
@@ -40,5 +41,5 @@ public abstract class BookmarkAction {
     protected final String mTitle = Dict.BOOKMARKS.toString();
     protected Color mIconColor = Mapton.optionsGeneral().getIconColorForBackground();
 
-    public abstract Action getAction();
+    public abstract Action getAction(Node owner);
 }

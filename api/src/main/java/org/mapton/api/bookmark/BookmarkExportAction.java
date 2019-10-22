@@ -27,6 +27,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.TreeMap;
+import javafx.scene.Node;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.io.FileUtils;
@@ -57,7 +58,7 @@ public class BookmarkExportAction extends BookmarkAction {
     private File mFile;
 
     @Override
-    public Action getAction() {
+    public Action getAction(Node owner) {
         Action action = new Action(Dict.EXPORT.toString(), (t) -> {
             SimpleDialog.clearFilters();
             SimpleDialog.addFilter(mExtCsv);
@@ -65,6 +66,7 @@ public class BookmarkExportAction extends BookmarkAction {
             SimpleDialog.addFilter(mExtJson);
             SimpleDialog.addFilter(mExtKml);
             SimpleDialog.setFilter(mExtCsv);
+            SimpleDialog.setOwner(owner.getScene().getWindow());
             final String dialogTitle = String.format("%s %s", Dict.EXPORT.toString(), mTitle.toLowerCase());
             SimpleDialog.setTitle(dialogTitle);
 
