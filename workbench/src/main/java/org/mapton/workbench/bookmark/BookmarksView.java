@@ -44,7 +44,6 @@ import org.mapton.api.MBookmark;
 import org.mapton.api.MBookmarkManager;
 import org.mapton.api.MContextMenuItem;
 import org.mapton.api.MDict;
-import org.mapton.api.MOptions2;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeContextMenu;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
@@ -68,7 +67,7 @@ public class BookmarksView extends BorderPane {
     private final MBookmarkManager mManager = MBookmarkManager.getInstance();
     private final Preferences mPreferences = NbPreferences.forModule(BookmarksView.class).node("expanded_state");
     private final TreeView<MBookmark> mTreeView = new TreeView<>();
-    private final MOptions2 mOptions2 = MOptions2.getInstance();
+    private BookmarkEditor mEditor = BookmarkEditor.getInstance();
 
     public BookmarksView() {
         createUI();
@@ -107,14 +106,6 @@ public class BookmarksView extends BorderPane {
         }
     }
 
-    private void bookmarkEditColor() {
-        mManager.editColor(getSelectedBookmark().getCategory());
-    }
-
-    private void bookmarkEditZoom() {
-        mManager.editZoom(getSelectedBookmark().getCategory());
-    }
-
     private void bookmarkGoTo(MBookmark bookmark) {
         try {
             mManager.goTo(bookmark);
@@ -123,58 +114,6 @@ public class BookmarksView extends BorderPane {
         } catch (ClassNotFoundException | SQLException ex) {
             Exceptions.printStackTrace(ex);
         }
-    }
-
-    private void bookmarkRemove() {
-        final MBookmark bookmark = getSelectedBookmark();
-
-//        SwingUtilities.invokeLater(() -> {
-//            String[] buttons = new String[]{Dict.CANCEL.toString(), Dict.REMOVE.toString()};
-//            NotifyDescriptor d = new NotifyDescriptor(
-//                    String.format(Dict.Dialog.MESSAGE_PROFILE_REMOVE.toString(), bookmark.getName()),
-//                    Dict.Dialog.TITLE_BOOKMARK_REMOVE.toString() + "?",
-//                    NotifyDescriptor.OK_CANCEL_OPTION,
-//                    NotifyDescriptor.WARNING_MESSAGE,
-//                    buttons,
-//                    Dict.REMOVE.toString());
-//
-//            if (Dict.REMOVE.toString() == DialogDisplayer.getDefault().notify(d)) {
-//                Platform.runLater(() -> {
-//                    try {
-//                        if (bookmark.isCategory()) {
-//                            mManager.dbDelete(bookmark.getCategory());
-//                        } else {
-//                            mManager.dbDelete(bookmark);
-//                        }
-//                    } catch (ClassNotFoundException | SQLException ex) {
-//                        Exceptions.printStackTrace(ex);
-//                    }
-//                });
-//            }
-//        });
-    }
-
-    private void bookmarkRemoveAll() {
-//        SwingUtilities.invokeLater(() -> {
-//            String[] buttons = new String[]{Dict.CANCEL.toString(), Dict.REMOVE_ALL.toString()};
-//            NotifyDescriptor d = new NotifyDescriptor(
-//                    Dict.Dialog.MESSAGE_BOOKMARK_REMOVE_ALL.toString(),
-//                    Dict.Dialog.TITLE_BOOKMARK_REMOVE_ALL.toString() + "?",
-//                    NotifyDescriptor.OK_CANCEL_OPTION,
-//                    NotifyDescriptor.WARNING_MESSAGE,
-//                    buttons,
-//                    Dict.REMOVE_ALL.toString());
-//
-//            if (Dict.REMOVE_ALL.toString() == DialogDisplayer.getDefault().notify(d)) {
-//                Platform.runLater(() -> {
-//                    try {
-//                        mManager.dbDelete();
-//                    } catch (ClassNotFoundException | SQLException ex) {
-//                        Exceptions.printStackTrace(ex);
-//                    }
-//                });
-//            }
-//        });
     }
 
     private void createUI() {
@@ -297,19 +236,19 @@ public class BookmarksView extends BorderPane {
         }
 
         private void createUI() {
-            Color color = mOptions2.general().getIconColorForBackground();
+            Color color = Mapton.optionsGeneral().getIconColorForBackground();
             Action editAction = new Action(Dict.EDIT.toString(), (ActionEvent event) -> {
                 bookmarkEdit();
             });
             editAction.setGraphic(MaterialIcon._Content.CREATE.getImageView(getIconSizeContextMenu(), color));
 
             Action editColorAction = new Action(Dict.COLOR.toString(), (ActionEvent event) -> {
-                bookmarkEditColor();
+                mEditor.editColor(getSelectedBookmark());
             });
             editColorAction.setGraphic(MaterialIcon._Image.COLORIZE.getImageView(getIconSizeContextMenu(), color));
 
             Action editZoomAction = new Action(Dict.ZOOM.toString(), (ActionEvent event) -> {
-                bookmarkEditZoom();
+                mEditor.editZoom(getSelectedBookmark());
             });
             editZoomAction.setGraphic(MaterialIcon._Editor.FORMAT_SIZE.getImageView(getIconSizeContextMenu(), color));
 
@@ -318,11 +257,11 @@ public class BookmarksView extends BorderPane {
             });
 
             Action removeAction = new Action(Dict.REMOVE.toString(), (ActionEvent event) -> {
-                bookmarkRemove();
+                mEditor.remove(getSelectedBookmark());
             });
 
             Action removeAllAction = new Action(Dict.REMOVE_ALL.toString(), (ActionEvent event) -> {
-                bookmarkRemoveAll();
+                mEditor.removeAll();
             });
 
             Collection<? extends Action> actions = Arrays.asList(
