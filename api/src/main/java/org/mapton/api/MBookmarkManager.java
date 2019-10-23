@@ -45,8 +45,6 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.mapton.api.db.DbBaseManager;
 import org.openide.util.Exceptions;
 import org.openide.util.NbBundle;
-import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.fx.FxActionSwing;
 
 /**
  *
@@ -294,59 +292,12 @@ public class MBookmarkManager extends DbBaseManager {
         mUpdatePreparedStatement.executeUpdate();
     }
 
-    public void editBookmark(final MBookmark aBookmark) {
-//        SwingUtilities.invokeLater(() -> {
-//            MBookmark newBookmark = aBookmark;
-//            boolean add = aBookmark == null;
-//            if (add) {
-//                newBookmark = new MBookmark();
-//                newBookmark.setZoom(Mapton.getEngine().getZoom());
-//                newBookmark.setLatitude(Mapton.getEngine().getLockedLatitude());
-//                newBookmark.setLongitude(Mapton.getEngine().getLockedLongitude());
-//            }
-//
-//            final MBookmark bookmark = newBookmark;
-//            BookmarkPanel bookmarkPanel = new BookmarkPanel();
-//            DialogDescriptor d = new DialogDescriptor(bookmarkPanel, Dict.BOOKMARK.toString());
-//            bookmarkPanel.setDialogDescriptor(d);
-//            bookmarkPanel.initFx(() -> {
-//                bookmarkPanel.load(bookmark);
-//            });
-//
-//            bookmarkPanel.setPreferredSize(SwingHelper.getUIScaledDim(300, 500));
-//            if (DialogDescriptor.OK_OPTION == DialogDisplayer.getDefault().notify(d)) {
-//                bookmarkPanel.save(bookmark);
-//                Platform.runLater(() -> {
-//                    try {
-//                        if (add) {
-//                            dbInsert(bookmark);
-//                        } else {
-//                            bookmark.setTimeModified(new Timestamp(System.currentTimeMillis()));
-//                            dbUpdate(bookmark);
-//                            dbLoad();
-//                        }
-//                    } catch (ClassNotFoundException | SQLException ex) {
-//                        Exceptions.printStackTrace(ex);
-//                    }
-//                });
-//            }
-//        });
-    }
-
     public boolean exists(Object exceptForValue, String name, String category) {
         HashMap<DbColumn, Object> map = new HashMap<>();
         map.put(mName, name);
         map.put(mCategory, category);
 
         return exists(mId, exceptForValue, map);
-    }
-
-    public FxActionSwing getAddBookmarkAction() {
-        FxActionSwing action = new FxActionSwing(Dict.ADD_BOOKMARK.toString(), () -> {
-            editBookmark(null);
-        });
-
-        return action;
     }
 
     public TreeSet<String> getCategories() {

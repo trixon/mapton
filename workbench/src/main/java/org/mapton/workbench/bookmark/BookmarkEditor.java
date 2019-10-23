@@ -21,11 +21,14 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ResourceBundle;
 import java.util.TreeSet;
+import javafx.event.ActionEvent;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import org.apache.commons.lang3.StringUtils;
+import org.controlsfx.control.action.Action;
 import org.mapton.api.MBookmark;
 import org.mapton.api.MBookmarkManager;
+import org.mapton.api.Mapton;
 import org.mapton.workbench.api.WorkbenchManager;
 import org.openide.util.Exceptions;
 import org.openide.util.NbBundle;
@@ -37,17 +40,56 @@ import se.trixon.almond.util.Dict;
  */
 public class BookmarkEditor {
 
-    private final MBookmarkManager mManager = MBookmarkManager.getInstance();
-    private final Workbench mWorkbench = WorkbenchManager.getInstance().getWorkbench();
-    private final ButtonType mOkButtonType = new ButtonType(Dict.SAVE.toString(), ButtonBar.ButtonData.OK_DONE);
-    private final ButtonType mCancelButtonType = new ButtonType(Dict.CANCEL.toString(), ButtonBar.ButtonData.CANCEL_CLOSE);
     private final ResourceBundle mBundle = NbBundle.getBundle(MBookmarkManager.class);
+    private final ButtonType mCancelButtonType = new ButtonType(Dict.CANCEL.toString(), ButtonBar.ButtonData.CANCEL_CLOSE);
+    private final MBookmarkManager mManager = MBookmarkManager.getInstance();
+    private final ButtonType mOkButtonType = new ButtonType(Dict.SAVE.toString(), ButtonBar.ButtonData.OK_DONE);
+    private final Workbench mWorkbench = WorkbenchManager.getInstance().getWorkbench();
 
     public static BookmarkEditor getInstance() {
         return Holder.INSTANCE;
     }
 
     private BookmarkEditor() {
+    }
+
+    public void editBookmark(final MBookmark aBookmark) {
+        MBookmark newBookmark = aBookmark;
+        boolean add = aBookmark == null;
+        if (add) {
+            newBookmark = new MBookmark();
+            newBookmark.setZoom(Mapton.getEngine().getZoom());
+            newBookmark.setLatitude(Mapton.getEngine().getLockedLatitude());
+            newBookmark.setLongitude(Mapton.getEngine().getLockedLongitude());
+        }
+
+        final MBookmark bookmark = newBookmark;
+        BookmarkPanel editPanel = new BookmarkPanel();
+        editPanel.load(bookmark);
+        String title = Dict.BOOKMARK.toString();
+
+        WorkbenchDialog dialog = WorkbenchDialog.builder(
+                title,
+                editPanel,
+                mOkButtonType, mCancelButtonType)
+                .onResult(buttonType -> {
+                    if (buttonType == mOkButtonType) {
+                        editPanel.save(bookmark);
+                        try {
+                            if (add) {
+                                mManager.dbInsert(bookmark);
+                            } else {
+                                bookmark.setTimeModified(new Timestamp(System.currentTimeMillis()));
+                                mManager.dbUpdate(bookmark);
+                                mManager.dbLoad();
+                            }
+                        } catch (ClassNotFoundException | SQLException ex) {
+                            Exceptions.printStackTrace(ex);
+                        }
+                    }
+                }).build();
+
+        mWorkbench.showDialog(dialog);
     }
 
     public void editCategory(final String category) {
@@ -157,6 +199,14 @@ public class BookmarkEditor {
                 }).build();
 
         mWorkbench.showDialog(dialog);
+    }
+
+    public Action getAddBookmarkAction() {
+        Action action = new Action(Dict.ADD_BOOKMARK.toString(), (ActionEvent t) -> {
+            editBookmark(null);
+        });
+
+        return action;
     }
 
     public void remove(MBookmark bookmark) {

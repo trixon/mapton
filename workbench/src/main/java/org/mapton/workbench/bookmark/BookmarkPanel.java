@@ -13,14 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core.ui.bookmark;
+package org.mapton.workbench.bookmark;
 
 import java.text.DecimalFormat;
 import java.text.ParseException;
-import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
-import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ComboBox;
@@ -29,6 +27,7 @@ import javafx.scene.control.Spinner;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.util.StringConverter;
@@ -39,7 +38,6 @@ import org.controlsfx.validation.Validator;
 import org.mapton.api.MBookmark;
 import org.mapton.api.MBookmarkManager;
 import org.mapton.api.MDict;
-import se.trixon.almond.nbp.fx.FxDialogPanel;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
 
@@ -47,7 +45,7 @@ import se.trixon.almond.util.fx.FxHelper;
  *
  * @author Patrik Karlström
  */
-public class BookmarkPanel extends FxDialogPanel {
+public class BookmarkPanel extends StackPane {
 
     private MBookmark mBookmark;
     private ComboBox<String> mCategoryComboBox;
@@ -61,6 +59,7 @@ public class BookmarkPanel extends FxDialogPanel {
     private Spinner<Double> mZoomSpinner;
 
     public BookmarkPanel() {
+        createUI();
     }
 
     public void load(MBookmark bookmark) {
@@ -81,24 +80,17 @@ public class BookmarkPanel extends FxDialogPanel {
     }
 
     public void save(MBookmark bookmark) {
-        Platform.runLater(() -> {
-            bookmark.setName(mNameTextField.getText());
-            bookmark.setCategory(StringUtils.defaultString(mCategoryComboBox.getSelectionModel().getSelectedItem()));
-            bookmark.setDescription(StringUtils.defaultString(mDescTextArea.getText()));
-            bookmark.setZoom(mZoomSpinner.getValue());
-            bookmark.setLatitude(mLatitudeSpinner.getValue());
-            bookmark.setLongitude(mLongitudeSpinner.getValue());
-            bookmark.setDisplayMarker(mPlacemarkCheckBox.isSelected());
-            bookmark.setColor(FxHelper.colorToHexRGB(mColorPicker.getValue()));
-        });
+        bookmark.setName(mNameTextField.getText());
+        bookmark.setCategory(StringUtils.defaultString(mCategoryComboBox.getSelectionModel().getSelectedItem()));
+        bookmark.setDescription(StringUtils.defaultString(mDescTextArea.getText()));
+        bookmark.setZoom(mZoomSpinner.getValue());
+        bookmark.setLatitude(mLatitudeSpinner.getValue());
+        bookmark.setLongitude(mLongitudeSpinner.getValue());
+        bookmark.setDisplayMarker(mPlacemarkCheckBox.isSelected());
+        bookmark.setColor(FxHelper.colorToHexRGB(mColorPicker.getValue()));
     }
 
-    @Override
-    protected void fxConstructor() {
-        setScene(createScene());
-    }
-
-    private Scene createScene() {
+    private void createUI() {
         mNameTextField = new TextField();
         mCategoryComboBox = new ComboBox<>();
         mDescTextArea = new TextArea();
@@ -194,7 +186,7 @@ public class BookmarkPanel extends FxDialogPanel {
         VBox.setMargin(colorLabel, topInsets);
         VBox.setMargin(mPlacemarkCheckBox, topInsets);
 
-        return new Scene(box);
+        getChildren().setAll(box);
     }
 
     private void initValidation() {
@@ -210,9 +202,10 @@ public class BookmarkPanel extends FxDialogPanel {
 
         validationSupport.registerValidator(mCategoryComboBox, indicateRequired, uniqueValidator);
         validationSupport.validationResultProperty().addListener((ObservableValue<? extends ValidationResult> observable, ValidationResult oldValue, ValidationResult newValue) -> {
-            mDialogDescriptor.setValid(!validationSupport.isInvalid()
-                    && !mManager.exists(mBookmark.getId(), mNameTextField.getText().trim(), mCategoryComboBox.getSelectionModel().getSelectedItem().trim())
-            );
+            //TODO
+//            mDialogDescriptor.setValid(!validationSupport.isInvalid()
+//                    && !mManager.exists(mBookmark.getId(), mNameTextField.getText().trim(), mCategoryComboBox.getSelectionModel().getSelectedItem().trim())
+//            );
         });
 
         validationSupport.initInitialDecoration();

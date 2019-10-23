@@ -42,7 +42,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
-import org.mapton.api.MBookmarkManager;
 import org.mapton.api.MContextMenuItem;
 import org.mapton.api.MDict;
 import org.mapton.api.MEngine;
@@ -51,6 +50,7 @@ import org.mapton.api.MOptions;
 import org.mapton.api.MOptions2;
 import org.mapton.api.MWhatsHereEngine;
 import org.mapton.api.Mapton;
+import org.mapton.workbench.bookmark.BookmarkEditor;
 import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
@@ -179,10 +179,6 @@ public class MapWindow extends StackPane {
             mMOptions.setMapHomeZoom(mEngine.getZoom());
         });
 
-        Action bookmarkAction = new Action(Dict.ADD_BOOKMARK.toString(), (ActionEvent t) -> {
-            //TODO FIXME
-        });
-
         Action whatsHereAction = new Action(getBundleString("whats_here"), (ActionEvent t) -> {
             whatsHere();
         });
@@ -199,8 +195,7 @@ public class MapWindow extends StackPane {
 
         Collection<? extends Action> actions = Arrays.asList(
                 whatsHereAction,
-                bookmarkAction,
-                MBookmarkManager.getInstance().getAddBookmarkAction(),
+                BookmarkEditor.getInstance().getAddBookmarkAction(),
                 ActionUtils.ACTION_SEPARATOR,
                 copyImageAction,
                 exportImageAction,
