@@ -40,7 +40,7 @@ import org.mapton.api.MWorkbenchModule;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.ICON_SIZE_MODULE;
 import static org.mapton.api.Mapton.ICON_SIZE_MODULE_TOOLBAR;
-import org.mapton.api.bookmark.BookmarksView;
+import org.mapton.workbench.bookmark.BookmarksView;
 import org.mapton.workbench.MaptonApplication;
 import org.mapton.workbench.TitledDrawerContent;
 import org.mapton.workbench.modules.map.AttributionView;

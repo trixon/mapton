@@ -15,7 +15,7 @@
  */
 package org.mapton.core.ui.bookmark;
 
-import org.mapton.api.bookmark.BookmarksView;
+import org.mapton.base.bookmark.BookmarksView;
 import javafx.scene.Scene;
 import org.mapton.api.MOptions;
 import org.mapton.api.MTopComponent;
