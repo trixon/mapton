@@ -269,6 +269,10 @@ public class MaptonApplication extends Application {
             }
         });
 
+        accelerators.put(new KeyCodeCombination(KeyCode.F1, KeyCombination.CONTROL_ANY), () -> {
+            mHelpAction.handle(null);
+        });
+
         accelerators.put(new KeyCodeCombination(KeyCode.F11, KeyCombination.CONTROL_ANY), () -> {
             if (SystemHelper.age(mFullScreenChanged) > 10) {
                 mWindowFullscreenAction.handle(null);
