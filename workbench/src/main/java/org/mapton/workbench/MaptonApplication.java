@@ -18,15 +18,12 @@ package org.mapton.workbench;
 import com.dlsc.workbenchfx.Workbench;
 import com.dlsc.workbenchfx.model.WorkbenchDialog;
 import de.codecentric.centerdevice.MenuToolkit;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.MissingResourceException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.embed.swing.SwingNode;
 import javafx.event.ActionEvent;
@@ -51,26 +48,21 @@ import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.SwingUtilities;
 import org.apache.commons.lang3.SystemUtils;
-import org.controlsfx.control.Notifications;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
-import org.mapton.api.MKey;
 import org.mapton.api.MOptions2;
-import org.mapton.api.MWorkbenchModule;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.*;
+import org.mapton.workbench.api.WorkbenchManager;
 import org.mapton.workbench.modules.LogModule;
 import org.mapton.workbench.modules.MapModule;
 import org.mapton.workbench.modules.PreferencesModule;
 import org.netbeans.modules.autoupdate.ui.PluginManagerUI;
 import org.netbeans.modules.autoupdate.ui.api.PluginManager;
 import org.openide.LifecycleManager;
-import org.openide.util.Lookup;
-import org.openide.util.LookupEvent;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.AboutModel;
 import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.GlobalStateChangeEvent;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.AlmondFx;
 import se.trixon.almond.util.fx.FxHelper;
@@ -83,7 +75,6 @@ public class MaptonApplication extends Application {
     private static final boolean IS_MAC = SystemUtils.IS_OS_MAC;
     private static final Logger LOGGER = Logger.getLogger(MaptonApplication.class.getName());
     private Action mAboutAction;
-    private boolean mAllowModulePopulation = false;
     private final AlmondFx mAlmondFX = AlmondFx.getInstance();
     private long mFullScreenChanged;
     private Action mHelpAction;
@@ -101,6 +92,7 @@ public class MaptonApplication extends Application {
     private Action mWindowFullscreenAction;
     private Action mWindowOnTopAction;
     private Workbench mWorkbench;
+    private WorkbenchManager mWorkbenchManager;
 
     public static void main(String[] args) {
         launch(args);
@@ -113,7 +105,7 @@ public class MaptonApplication extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         mStage = stage;
-        mStage.getIcons().add(new Image(MaptonApplication.class.getResourceAsStream("logo.png")));
+        mStage.getIcons().add(new Image(WorkbenchManager.class.getResourceAsStream("logo.png")));
         mStage.setFullScreenExitKeyCombination(KeyCombination.valueOf("F11"));
 
         createUI();
@@ -143,40 +135,10 @@ public class MaptonApplication extends Application {
         LifecycleManager.getDefault().exit();
     }
 
-    private void activateModule(int moduleIndexOnPage) {
-        if (moduleIndexOnPage == 0) {
-            moduleIndexOnPage = 10;
-        }
-
-        int pageIndex = 0;//TODO get actual page index
-        int moduleIndex = pageIndex * mWorkbench.getModulesPerPage() + moduleIndexOnPage - 1;
-        try {
-            mWorkbench.openModule(mWorkbench.getModules().get(moduleIndex));
-        } catch (IndexOutOfBoundsException e) {
-            //nvm
-        }
-    }
-
-    private void activateOpenModule(int moduleIndexOnPage) {
-        if (moduleIndexOnPage == 0) {
-            moduleIndexOnPage = 10;
-        }
-
-        try {
-            mWorkbench.openModule(mWorkbench.getOpenModules().get(moduleIndexOnPage - 1));
-        } catch (IndexOutOfBoundsException e) {
-            //nvm
-        }
-    }
-
     private void createUI() {
-        mWorkbench = Workbench.builder()
-                .tabFactory(CustomTab::new)
-                .build();
+        mWorkbenchManager = WorkbenchManager.getInstance();
+        mWorkbench = mWorkbenchManager.getWorkbench();
 
-        //mWorkbench.getStylesheets().add(MaptonApplication.class.getResource("customTheme.css").toExternalForm());
-        mWorkbench.getStylesheets().add(getClass().getResource("baseTheme.css").toExternalForm());
-        setNightMode(mOptions2.general().isNightMode());
         MaterialIcon.setDefaultColor(mOptions2.general().getIconColorBright());
         initActions();
 
@@ -202,7 +164,6 @@ public class MaptonApplication extends Application {
                 ActionUtils.createMenuItem(mPluginAction)
         );
 
-        mWorkbench.getNavigationDrawer().setVisible(false);
         mWorkbench.getNavigationDrawerItems().setAll(
                 ActionUtils.createMenuItem(mOptionsAction),
                 viewMenu,
@@ -218,10 +179,12 @@ public class MaptonApplication extends Application {
             mWindowFullscreenAction.setSelected(mStage.isFullScreen());
             mStage.show();
             mMapModule = new MapModule();
+            mWorkbenchManager.getFixModules().add(mMapModule);
+            mWorkbenchManager.getFixModules().add(mLogModule);
 
             Platform.runLater(() -> {
-                mAllowModulePopulation = true;
-                populateModules();
+                mWorkbenchManager.setAllowModulePopulation(true);
+                mWorkbenchManager.populateModules();
                 mWorkbench.openModule(mMapModule);
             });
         });
@@ -237,19 +200,19 @@ public class MaptonApplication extends Application {
         for (int i = 0; i < 10; i++) {
             final int index = i;
             accelerators.put(new KeyCodeCombination(KeyCode.valueOf("DIGIT" + i), KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN), () -> {
-                activateModule(index);
+                mWorkbenchManager.activateModule(index);
             });
 
             accelerators.put(new KeyCodeCombination(KeyCode.valueOf("NUMPAD" + i), KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN), () -> {
-                activateModule(index);
+                mWorkbenchManager.activateModule(index);
             });
 
             accelerators.put(new KeyCodeCombination(KeyCode.valueOf("DIGIT" + i), KeyCombination.SHORTCUT_DOWN), () -> {
-                activateOpenModule(index);
+                mWorkbenchManager.activateOpenModule(index);
             });
 
             accelerators.put(new KeyCodeCombination(KeyCode.valueOf("NUMPAD" + i), KeyCombination.SHORTCUT_DOWN), () -> {
-                activateOpenModule(index);
+                mWorkbenchManager.activateOpenModule(index);
             });
         }
 
@@ -262,11 +225,7 @@ public class MaptonApplication extends Application {
         });
 
         accelerators.put(new KeyCodeCombination(KeyCode.CONTEXT_MENU, KeyCombination.CONTROL_ANY), () -> {
-            if (mWorkbench.getNavigationDrawer().isVisible()) {
-                mWorkbench.hideNavigationDrawer();
-            } else {
-                mWorkbench.showNavigationDrawer();
-            }
+            mWorkbenchManager.toggleNavigationDrawer();
         });
 
         accelerators.put(new KeyCodeCombination(KeyCode.F1, KeyCombination.CONTROL_ANY), () -> {
@@ -291,9 +250,7 @@ public class MaptonApplication extends Application {
         accelerators.put(new KeyCodeCombination(KeyCode.PLUS, KeyCombination.SHORTCUT_DOWN), openModulePage);
 
         accelerators.put(new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN), () -> {
-            if (mWorkbench.getActiveModule() != null && mWorkbench.getActiveModule() != mMapModule) {
-                mWorkbench.closeModule(mWorkbench.getActiveModule());
-            }
+            mWorkbenchManager.closeActiveModule();
         });
 
         if (!IS_MAC) {
@@ -402,51 +359,9 @@ public class MaptonApplication extends Application {
     }
 
     private void initListeners() {
-        mOptions2.general().nightModeProperty().addListener((observable, oldValue, newValue) -> setNightMode(newValue));
-
-        Lookup.getDefault().lookupResult(MWorkbenchModule.class).addLookupListener((LookupEvent ev) -> {
-            Platform.runLater(() -> {
-                populateModules();
-            });
-        });
-
         mStage.fullScreenProperty().addListener((ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1) -> {
             mFullScreenChanged = System.currentTimeMillis();
         });
-
-        Mapton.getGlobalState().addListener((GlobalStateChangeEvent evt) -> {
-            Platform.runLater(() -> {
-                Notifications notifications = evt.getValue();
-                notifications.owner(MaptonApplication.this.mWorkbench).position(Pos.TOP_RIGHT);
-                if (mOptions2.general().isNightMode()) {
-                    notifications.darkStyle();
-                }
-                switch (evt.getKey()) {
-                    case MKey.NOTIFICATION:
-                        notifications.show();
-                        break;
-
-                    case MKey.NOTIFICATION_CONFIRM:
-                        notifications.showConfirm();
-                        break;
-
-                    case MKey.NOTIFICATION_ERROR:
-                        notifications.showError();
-                        break;
-
-                    case MKey.NOTIFICATION_INFORMATION:
-                        notifications.showInformation();
-                        break;
-
-                    case MKey.NOTIFICATION_WARNING:
-                        notifications.showWarning();
-                        break;
-
-                    default:
-                        throw new AssertionError();
-                }
-            });
-        }, MKey.NOTIFICATION, MKey.NOTIFICATION_CONFIRM, MKey.NOTIFICATION_ERROR, MKey.NOTIFICATION_INFORMATION, MKey.NOTIFICATION_WARNING);
     }
 
     private void initMac() {
@@ -485,57 +400,5 @@ public class MaptonApplication extends Application {
             swingNode.setContent(pluginManagerUI);
             PluginManager p;
         });
-    }
-
-    private void populateModules() {
-        if (!mAllowModulePopulation) {
-            return;
-        }
-
-        var lookupModules = new ArrayList<>(Lookup.getDefault().lookupAll(MWorkbenchModule.class));
-        Collections.sort(lookupModules, (MWorkbenchModule o1, MWorkbenchModule o2) -> o1.getName().compareToIgnoreCase(o2.getName()));
-
-        MWorkbenchModule reportsModule = null;
-
-        for (MWorkbenchModule module : lookupModules) {
-            if (module.getClass().getName().equalsIgnoreCase("org.mapton.reports.ReportsModule")) {
-                reportsModule = module;
-            }
-        }
-
-        ArrayList<MWorkbenchModule> fixModules = new ArrayList<>();
-        fixModules.add(mMapModule);
-        fixModules.add(mLogModule);
-
-        if (reportsModule != null) {
-            lookupModules.remove(reportsModule);
-            fixModules.add(reportsModule);
-        }
-
-        fixModules.addAll(lookupModules);
-        for (MWorkbenchModule module : fixModules) {
-            mWorkbench.getModules().add(module);
-        }
-    }
-
-    private void setNightMode(boolean state) {
-        String lightTheme = getClass().getResource("lightTheme.css").toExternalForm();
-        String darkTheme = getClass().getResource("darkTheme.css").toExternalForm();
-        String darculaTheme = FxHelper.class.getResource("darcula.css").toExternalForm();
-
-        ObservableList<String> stylesheets = mWorkbench.getStylesheets();
-
-        if (state) {
-            stylesheets.remove(lightTheme);
-            stylesheets.add(darkTheme);
-            stylesheets.add(darculaTheme);
-        } else {
-            stylesheets.remove(darkTheme);
-            stylesheets.remove(darculaTheme);
-            stylesheets.add(lightTheme);
-        }
-
-//        mHistoryAction.setGraphic(MaterialIcon._Action.INFO_OUTLINE.getImageView(ICON_SIZE_DRAWER, mPreferences.getThemedIconColor()));
-//        mOptionsAction.setGraphic(MaterialIcon._Action.SETTINGS.getImageView(ICON_SIZE_DRAWER, mPreferences.getThemedIconColor()));
     }
 }

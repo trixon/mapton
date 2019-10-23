@@ -16,6 +16,9 @@
                 <artifactId>nbm-maven-plugin</artifactId>
                 <extensions>true</extensions>
                 <configuration>
+                    <publicPackages>
+                        <publicPackage>org.mapton.workbench.api.*</publicPackage>
+                    </publicPackages>
                     <!--<verifyRuntime>false</verifyRuntime>-->
                     <moduleDependencies>
                         <dependency>
