@@ -99,7 +99,7 @@ public class BookmarksView extends BorderPane {
         MBookmark bookmark = getSelectedBookmark();
         if (bookmark != null) {
             if (bookmark.isCategory()) {
-                mManager.editCategory(bookmark.getCategory());
+                mEditor.editCategory(bookmark.getCategory());
             } else {
                 mManager.editBookmark(bookmark);
             }

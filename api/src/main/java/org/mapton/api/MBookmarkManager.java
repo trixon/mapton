@@ -333,51 +333,6 @@ public class MBookmarkManager extends DbBaseManager {
 //        });
     }
 
-    public void editCategory(final String category) {
-//        SwingUtilities.invokeLater(() -> {
-//            BookmarkCategoryPanel bookmarkCategoryPanel = new BookmarkCategoryPanel();
-//            DialogDescriptor d = new DialogDescriptor(bookmarkCategoryPanel, Dict.EDIT.toString());
-//            bookmarkCategoryPanel.setDialogDescriptor(d);
-//            bookmarkCategoryPanel.initFx(() -> {
-//                bookmarkCategoryPanel.setCategory(category);
-//            });
-//
-//            bookmarkCategoryPanel.setPreferredSize(SwingHelper.getUIScaledDim(400, 100));
-//
-//            if (DialogDescriptor.OK_OPTION == DialogDisplayer.getDefault().notify(d)) {
-//                String newCategory = bookmarkCategoryPanel.getCategory();
-//                if (!StringUtils.equals(category, newCategory)) {
-//                    Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-//
-//                    TreeSet<String> bookmarkNames = new TreeSet<>();
-//                    for (MBookmark bookmark : mItems.get()) {
-//                        if (StringUtils.startsWith(bookmark.getCategory(), category)) {
-//                            String oldCategory = bookmark.getCategory();
-//                            bookmark.setCategory(StringUtils.replaceOnce(bookmark.getCategory(), category, newCategory));
-//                            bookmark.setTimeModified(timestamp);
-//                            try {
-//                                dbUpdate(bookmark);
-//                            } catch (SQLException ex) {
-//                                bookmarkNames.add(String.format("%s/%s", oldCategory, bookmark.getName()));
-//                            }
-//                        }
-//                    }
-//
-//                    Platform.runLater(() -> {
-//                        dbLoad();
-//                    });
-//
-//                    if (!bookmarkNames.isEmpty()) {
-//                        String delim = "\n ◆ ";
-//                        NbMessage.error(Dict.Dialog.ERROR.toString(),
-//                                String.format("%s\n%s%s", mBundle.getString("bookmark_rename_category_error"), delim, String.join(delim, bookmarkNames))
-//                        );
-//                    }
-//                }
-//            }
-//        });
-    }
-
     public boolean exists(Object exceptForValue, String name, String category) {
         HashMap<DbColumn, Object> map = new HashMap<>();
         map.put(mName, name);

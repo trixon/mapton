@@ -19,6 +19,8 @@ import com.dlsc.workbenchfx.Workbench;
 import com.dlsc.workbenchfx.model.WorkbenchDialog;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ResourceBundle;
+import java.util.TreeSet;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import org.apache.commons.lang3.StringUtils;
@@ -26,6 +28,7 @@ import org.mapton.api.MBookmark;
 import org.mapton.api.MBookmarkManager;
 import org.mapton.workbench.api.WorkbenchManager;
 import org.openide.util.Exceptions;
+import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
 
 /**
@@ -36,6 +39,9 @@ public class BookmarkEditor {
 
     private final MBookmarkManager mManager = MBookmarkManager.getInstance();
     private final Workbench mWorkbench = WorkbenchManager.getInstance().getWorkbench();
+    private final ButtonType mOkButtonType = new ButtonType(Dict.SAVE.toString(), ButtonBar.ButtonData.OK_DONE);
+    private final ButtonType mCancelButtonType = new ButtonType(Dict.CANCEL.toString(), ButtonBar.ButtonData.CANCEL_CLOSE);
+    private final ResourceBundle mBundle = NbBundle.getBundle(MBookmarkManager.class);
 
     public static BookmarkEditor getInstance() {
         return Holder.INSTANCE;
@@ -44,19 +50,61 @@ public class BookmarkEditor {
     private BookmarkEditor() {
     }
 
-    public void editColor(final String category) {
-        BookmarkColorPanel editPanel = new BookmarkColorPanel();
-        ButtonType okButtonType = new ButtonType(Dict.SAVE.toString(), ButtonBar.ButtonData.OK_DONE);
-        ButtonType cancelButtonType = new ButtonType(Dict.CANCEL.toString(), ButtonBar.ButtonData.CANCEL_CLOSE);
-
+    public void editCategory(final String category) {
+        BookmarkCategoryPanel editPanel = new BookmarkCategoryPanel();
+        editPanel.setCategory(category);
         String title = Dict.EDIT.toString();
 
         WorkbenchDialog dialog = WorkbenchDialog.builder(
                 title,
                 editPanel,
-                okButtonType, cancelButtonType)
+                mOkButtonType, mCancelButtonType)
                 .onResult(buttonType -> {
-                    if (buttonType == okButtonType) {
+                    if (buttonType == mOkButtonType) {
+                        String newCategory = editPanel.getCategory();
+                        if (!StringUtils.equals(category, newCategory)) {
+                            Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+
+                            TreeSet<String> bookmarkNames = new TreeSet<>();
+                            for (MBookmark bookmark : mManager.getItems()) {
+                                if (StringUtils.startsWith(bookmark.getCategory(), category)) {
+                                    String oldCategory = bookmark.getCategory();
+                                    bookmark.setCategory(StringUtils.replaceOnce(bookmark.getCategory(), category, newCategory));
+                                    bookmark.setTimeModified(timestamp);
+                                    try {
+                                        mManager.dbUpdate(bookmark);
+                                    } catch (SQLException ex) {
+                                        bookmarkNames.add(String.format("%s/%s", oldCategory, bookmark.getName()));
+                                    }
+                                }
+                            }
+
+                            mManager.dbLoad();
+                            if (!bookmarkNames.isEmpty()) {
+                                String delim = "\n ◆ ";
+                                mWorkbench.showErrorDialog(
+                                        Dict.Dialog.ERROR.toString(),
+                                        String.format("%s\n%s%s", mBundle.getString("bookmark_rename_category_error"), delim, String.join(delim, bookmarkNames)),
+                                        null
+                                );
+                            }
+                        }
+                    }
+                }).build();
+
+        mWorkbench.showDialog(dialog);
+    }
+
+    public void editColor(final String category) {
+        BookmarkColorPanel editPanel = new BookmarkColorPanel();
+        String title = Dict.EDIT.toString();
+
+        WorkbenchDialog dialog = WorkbenchDialog.builder(
+                title,
+                editPanel,
+                mOkButtonType, mCancelButtonType)
+                .onResult(buttonType -> {
+                    if (buttonType == mOkButtonType) {
                         String color = editPanel.getColor();
                         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
@@ -81,17 +129,14 @@ public class BookmarkEditor {
 
     public void editZoom(final String category) {
         BookmarkZoomPanel editPanel = new BookmarkZoomPanel();
-        ButtonType okButtonType = new ButtonType(Dict.SAVE.toString(), ButtonBar.ButtonData.OK_DONE);
-        ButtonType cancelButtonType = new ButtonType(Dict.CANCEL.toString(), ButtonBar.ButtonData.CANCEL_CLOSE);
-
         String title = Dict.EDIT.toString();
 
         WorkbenchDialog dialog = WorkbenchDialog.builder(
                 title,
                 editPanel,
-                okButtonType, cancelButtonType)
+                mOkButtonType, mCancelButtonType)
                 .onResult(buttonType -> {
-                    if (buttonType == okButtonType) {
+                    if (buttonType == mOkButtonType) {
                         double zoom = editPanel.getZoom();
                         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 

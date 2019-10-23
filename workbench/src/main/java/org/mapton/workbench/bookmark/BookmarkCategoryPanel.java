@@ -13,25 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core.ui.bookmark;
+package org.mapton.workbench.bookmark;
 
 import javafx.geometry.Insets;
-import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import org.mapton.api.MBookmarkManager;
-import se.trixon.almond.nbp.fx.FxDialogPanel;
 import se.trixon.almond.util.Dict;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class BookmarkCategoryPanel extends FxDialogPanel {
+public class BookmarkCategoryPanel extends StackPane {
 
     private ComboBox<String> mCategoryComboBox;
     private MBookmarkManager mManager = MBookmarkManager.getInstance();
+
+    public BookmarkCategoryPanel() {
+        createUI();
+    }
 
     public String getCategory() {
         return mCategoryComboBox.getSelectionModel().getSelectedItem();
@@ -41,12 +44,7 @@ public class BookmarkCategoryPanel extends FxDialogPanel {
         mCategoryComboBox.getSelectionModel().select(category);
     }
 
-    @Override
-    protected void fxConstructor() {
-        setScene(createScene());
-    }
-
-    private Scene createScene() {
+    private void createUI() {
         Label label = new Label(Dict.CATEGORY.toString());
         mCategoryComboBox = new ComboBox<>();
         mCategoryComboBox.getItems().setAll(mManager.getCategories());
@@ -63,6 +61,6 @@ public class BookmarkCategoryPanel extends FxDialogPanel {
         Insets topInsets = new Insets(8, 0, 8, 0);
         VBox.setMargin(label, topInsets);
 
-        return new Scene(box);
+        getChildren().setAll(box);
     }
 }
