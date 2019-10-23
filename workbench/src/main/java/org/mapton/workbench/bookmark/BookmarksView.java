@@ -248,7 +248,7 @@ public class BookmarksView extends BorderPane {
             editColorAction.setGraphic(MaterialIcon._Image.COLORIZE.getImageView(getIconSizeContextMenu(), color));
 
             Action editZoomAction = new Action(Dict.ZOOM.toString(), (ActionEvent event) -> {
-                mEditor.editZoom(getSelectedBookmark());
+                mEditor.editZoom(getSelectedBookmark().getCategory());
             });
             editZoomAction.setGraphic(MaterialIcon._Editor.FORMAT_SIZE.getImageView(getIconSizeContextMenu(), color));
 

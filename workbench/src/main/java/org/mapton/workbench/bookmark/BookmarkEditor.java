@@ -44,8 +44,8 @@ public class BookmarkEditor {
     private BookmarkEditor() {
     }
 
-    public void editColor(String category) {
-        BookmarkColorPanel bookmarkColorPanel = new BookmarkColorPanel();
+    public void editColor(final String category) {
+        BookmarkColorPanel editPanel = new BookmarkColorPanel();
         ButtonType okButtonType = new ButtonType(Dict.SAVE.toString(), ButtonBar.ButtonData.OK_DONE);
         ButtonType cancelButtonType = new ButtonType(Dict.CANCEL.toString(), ButtonBar.ButtonData.CANCEL_CLOSE);
 
@@ -53,11 +53,11 @@ public class BookmarkEditor {
 
         WorkbenchDialog dialog = WorkbenchDialog.builder(
                 title,
-                bookmarkColorPanel,
+                editPanel,
                 okButtonType, cancelButtonType)
                 .onResult(buttonType -> {
                     if (buttonType == okButtonType) {
-                        String color = bookmarkColorPanel.getColor();
+                        String color = editPanel.getColor();
                         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
                         for (MBookmark bookmark : mManager.getItems()) {
@@ -77,13 +77,41 @@ public class BookmarkEditor {
                 }).build();
 
         mWorkbench.showDialog(dialog);
-
-//            if (DialogDescriptor.OK_OPTION == DialogDisplayer.getDefault().notify(d)) {
-//            }
     }
 
-    public void editZoom(MBookmark bookmark) {
-        mManager.editZoom(bookmark.getCategory());
+    public void editZoom(final String category) {
+        BookmarkZoomPanel editPanel = new BookmarkZoomPanel();
+        ButtonType okButtonType = new ButtonType(Dict.SAVE.toString(), ButtonBar.ButtonData.OK_DONE);
+        ButtonType cancelButtonType = new ButtonType(Dict.CANCEL.toString(), ButtonBar.ButtonData.CANCEL_CLOSE);
+
+        String title = Dict.EDIT.toString();
+
+        WorkbenchDialog dialog = WorkbenchDialog.builder(
+                title,
+                editPanel,
+                okButtonType, cancelButtonType)
+                .onResult(buttonType -> {
+                    if (buttonType == okButtonType) {
+                        double zoom = editPanel.getZoom();
+                        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+
+                        for (MBookmark bookmark : mManager.getItems()) {
+                            if (StringUtils.startsWith(bookmark.getCategory(), category)) {
+                                bookmark.setZoom(zoom);
+                                bookmark.setTimeModified(timestamp);
+                                try {
+                                    mManager.dbUpdate(bookmark);
+                                } catch (SQLException ex) {
+                                    Exceptions.printStackTrace(ex);
+                                }
+                            }
+                        }
+
+                        mManager.dbLoad();
+                    }
+                }).build();
+
+        mWorkbench.showDialog(dialog);
     }
 
     public void remove(MBookmark bookmark) {

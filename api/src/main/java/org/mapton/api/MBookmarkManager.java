@@ -378,38 +378,6 @@ public class MBookmarkManager extends DbBaseManager {
 //        });
     }
 
-    public void editZoom(final String category) {
-//        SwingUtilities.invokeLater(() -> {
-//            BookmarkZoomPanel bookmarkZoomPanel = new BookmarkZoomPanel();
-//            DialogDescriptor d = new DialogDescriptor(bookmarkZoomPanel, Dict.EDIT.toString());
-//            bookmarkZoomPanel.setDialogDescriptor(d);
-//            bookmarkZoomPanel.initFx(() -> {
-//            });
-//
-//            bookmarkZoomPanel.setPreferredSize(new Dimension(200, 100));
-//            if (DialogDescriptor.OK_OPTION == DialogDisplayer.getDefault().notify(d)) {
-//                double zoom = bookmarkZoomPanel.getZoom();
-//                Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-//
-//                for (MBookmark bookmark : mItems.get()) {
-//                    if (StringUtils.startsWith(bookmark.getCategory(), category)) {
-//                        bookmark.setZoom(zoom);
-//                        bookmark.setTimeModified(timestamp);
-//                        try {
-//                            dbUpdate(bookmark);
-//                        } catch (SQLException ex) {
-//                            Exceptions.printStackTrace(ex);
-//                        }
-//                    }
-//                }
-//
-//                Platform.runLater(() -> {
-//                    dbLoad();
-//                });
-//            }
-//        });
-    }
-
     public boolean exists(Object exceptForValue, String name, String category) {
         HashMap<DbColumn, Object> map = new HashMap<>();
         map.put(mName, name);
