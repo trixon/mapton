@@ -18,8 +18,10 @@ package org.mapton.workbench.bookmark;
 import com.dlsc.workbenchfx.Workbench;
 import com.dlsc.workbenchfx.model.WorkbenchDialog;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
+import org.apache.commons.lang3.StringUtils;
 import org.mapton.api.MBookmark;
 import org.mapton.api.MBookmarkManager;
 import org.mapton.workbench.api.WorkbenchManager;
@@ -42,8 +44,42 @@ public class BookmarkEditor {
     private BookmarkEditor() {
     }
 
-    public void editColor(MBookmark bookmark) {
-        mManager.editColor(bookmark.getCategory());
+    public void editColor(String category) {
+        BookmarkColorPanel bookmarkColorPanel = new BookmarkColorPanel();
+        ButtonType okButtonType = new ButtonType(Dict.SAVE.toString(), ButtonBar.ButtonData.OK_DONE);
+        ButtonType cancelButtonType = new ButtonType(Dict.CANCEL.toString(), ButtonBar.ButtonData.CANCEL_CLOSE);
+
+        String title = Dict.EDIT.toString();
+
+        WorkbenchDialog dialog = WorkbenchDialog.builder(
+                title,
+                bookmarkColorPanel,
+                okButtonType, cancelButtonType)
+                .onResult(buttonType -> {
+                    if (buttonType == okButtonType) {
+                        String color = bookmarkColorPanel.getColor();
+                        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+
+                        for (MBookmark bookmark : mManager.getItems()) {
+                            if (StringUtils.startsWith(bookmark.getCategory(), category)) {
+                                bookmark.setColor(color);
+                                bookmark.setTimeModified(timestamp);
+                                try {
+                                    mManager.dbUpdate(bookmark);
+                                } catch (SQLException ex) {
+                                    Exceptions.printStackTrace(ex);
+                                }
+                            }
+                        }
+
+                        mManager.dbLoad();
+                    }
+                }).build();
+
+        mWorkbench.showDialog(dialog);
+
+//            if (DialogDescriptor.OK_OPTION == DialogDisplayer.getDefault().notify(d)) {
+//            }
     }
 
     public void editZoom(MBookmark bookmark) {

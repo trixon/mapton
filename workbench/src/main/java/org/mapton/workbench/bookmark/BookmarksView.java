@@ -243,7 +243,7 @@ public class BookmarksView extends BorderPane {
             editAction.setGraphic(MaterialIcon._Content.CREATE.getImageView(getIconSizeContextMenu(), color));
 
             Action editColorAction = new Action(Dict.COLOR.toString(), (ActionEvent event) -> {
-                mEditor.editColor(getSelectedBookmark());
+                mEditor.editColor(getSelectedBookmark().getCategory());
             });
             editColorAction.setGraphic(MaterialIcon._Image.COLORIZE.getImageView(getIconSizeContextMenu(), color));
 

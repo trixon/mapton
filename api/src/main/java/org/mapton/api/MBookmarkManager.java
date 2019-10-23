@@ -247,6 +247,53 @@ public class MBookmarkManager extends DbBaseManager {
         dbLoad();
     }
 
+    public void dbUpdate(MBookmark bookmark) throws SQLException {
+        if (mUpdatePreparedStatement == null) {
+            mUpdatePlaceHolders.init(
+                    mId,
+                    mName,
+                    mCategory,
+                    mDescription,
+                    mColor,
+                    mDisplayMarker,
+                    mLatitude,
+                    mLongitude,
+                    mZoom,
+                    mTimeModified
+            );
+
+            UpdateQuery updateQuery = new UpdateQuery(mTable)
+                    .addCondition(BinaryCondition.equalTo(mId, mUpdatePlaceHolders.get(mId)))
+                    .addSetClause(mName, mUpdatePlaceHolders.get(mName))
+                    .addSetClause(mCategory, mUpdatePlaceHolders.get(mCategory))
+                    .addSetClause(mDescription, mUpdatePlaceHolders.get(mDescription))
+                    .addSetClause(mColor, mUpdatePlaceHolders.get(mColor))
+                    .addSetClause(mDisplayMarker, mUpdatePlaceHolders.get(mDisplayMarker))
+                    .addSetClause(mLatitude, mUpdatePlaceHolders.get(mLatitude))
+                    .addSetClause(mLongitude, mUpdatePlaceHolders.get(mLongitude))
+                    .addSetClause(mZoom, mUpdatePlaceHolders.get(mZoom))
+                    .addSetClause(mTimeModified, mUpdatePlaceHolders.get(mTimeModified))
+                    .validate();
+
+            String sql = updateQuery.toString();
+            mUpdatePreparedStatement = mDb.getAutoCommitConnection().prepareStatement(sql);
+        }
+
+        mUpdatePlaceHolders.get(mId).setLong(bookmark.getId(), mUpdatePreparedStatement);
+        mUpdatePlaceHolders.get(mName).setString(bookmark.getName(), mUpdatePreparedStatement);
+        mUpdatePlaceHolders.get(mCategory).setString(bookmark.getCategory(), mUpdatePreparedStatement);
+        mUpdatePlaceHolders.get(mDescription).setString(bookmark.getDescription(), mUpdatePreparedStatement);
+        mUpdatePlaceHolders.get(mColor).setString(bookmark.getColor(), mUpdatePreparedStatement);
+        mUpdatePlaceHolders.get(mDisplayMarker).setBoolean(bookmark.isDisplayMarker(), mUpdatePreparedStatement);
+        mUpdatePlaceHolders.get(mLatitude).setObject(bookmark.getLatitude(), mUpdatePreparedStatement);
+        mUpdatePlaceHolders.get(mLongitude).setObject(bookmark.getLongitude(), mUpdatePreparedStatement);
+        mUpdatePlaceHolders.get(mZoom).setObject(bookmark.getZoom(), mUpdatePreparedStatement);
+
+        mUpdatePreparedStatement.setTimestamp(mUpdatePlaceHolders.get(mTimeModified).getIndex(), bookmark.getTimeModified());
+
+        mUpdatePreparedStatement.executeUpdate();
+    }
+
     public void editBookmark(final MBookmark aBookmark) {
 //        SwingUtilities.invokeLater(() -> {
 //            MBookmark newBookmark = aBookmark;
@@ -327,38 +374,6 @@ public class MBookmarkManager extends DbBaseManager {
 //                        );
 //                    }
 //                }
-//            }
-//        });
-    }
-
-    public void editColor(final String category) {
-//        SwingUtilities.invokeLater(() -> {
-//            BookmarkColorPanel bookmarkColorPanel = new BookmarkColorPanel();
-//            DialogDescriptor d = new DialogDescriptor(bookmarkColorPanel, Dict.EDIT.toString());
-//            bookmarkColorPanel.setDialogDescriptor(d);
-//            bookmarkColorPanel.initFx(() -> {
-//            });
-//
-//            bookmarkColorPanel.setPreferredSize(SwingHelper.getUIScaledDim(200, 100));
-//            if (DialogDescriptor.OK_OPTION == DialogDisplayer.getDefault().notify(d)) {
-//                String color = bookmarkColorPanel.getColor();
-//                Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-//
-//                for (MBookmark bookmark : mItems.get()) {
-//                    if (StringUtils.startsWith(bookmark.getCategory(), category)) {
-//                        bookmark.setColor(color);
-//                        bookmark.setTimeModified(timestamp);
-//                        try {
-//                            dbUpdate(bookmark);
-//                        } catch (SQLException ex) {
-//                            Exceptions.printStackTrace(ex);
-//                        }
-//                    }
-//                }
-//
-//                Platform.runLater(() -> {
-//                    dbLoad();
-//                });
 //            }
 //        });
     }
@@ -518,53 +533,6 @@ public class MBookmarkManager extends DbBaseManager {
             Exceptions.printStackTrace(new SQLException("Creating bookmark failed"));
         }
 
-    }
-
-    private void dbUpdate(MBookmark bookmark) throws SQLException {
-        if (mUpdatePreparedStatement == null) {
-            mUpdatePlaceHolders.init(
-                    mId,
-                    mName,
-                    mCategory,
-                    mDescription,
-                    mColor,
-                    mDisplayMarker,
-                    mLatitude,
-                    mLongitude,
-                    mZoom,
-                    mTimeModified
-            );
-
-            UpdateQuery updateQuery = new UpdateQuery(mTable)
-                    .addCondition(BinaryCondition.equalTo(mId, mUpdatePlaceHolders.get(mId)))
-                    .addSetClause(mName, mUpdatePlaceHolders.get(mName))
-                    .addSetClause(mCategory, mUpdatePlaceHolders.get(mCategory))
-                    .addSetClause(mDescription, mUpdatePlaceHolders.get(mDescription))
-                    .addSetClause(mColor, mUpdatePlaceHolders.get(mColor))
-                    .addSetClause(mDisplayMarker, mUpdatePlaceHolders.get(mDisplayMarker))
-                    .addSetClause(mLatitude, mUpdatePlaceHolders.get(mLatitude))
-                    .addSetClause(mLongitude, mUpdatePlaceHolders.get(mLongitude))
-                    .addSetClause(mZoom, mUpdatePlaceHolders.get(mZoom))
-                    .addSetClause(mTimeModified, mUpdatePlaceHolders.get(mTimeModified))
-                    .validate();
-
-            String sql = updateQuery.toString();
-            mUpdatePreparedStatement = mDb.getAutoCommitConnection().prepareStatement(sql);
-        }
-
-        mUpdatePlaceHolders.get(mId).setLong(bookmark.getId(), mUpdatePreparedStatement);
-        mUpdatePlaceHolders.get(mName).setString(bookmark.getName(), mUpdatePreparedStatement);
-        mUpdatePlaceHolders.get(mCategory).setString(bookmark.getCategory(), mUpdatePreparedStatement);
-        mUpdatePlaceHolders.get(mDescription).setString(bookmark.getDescription(), mUpdatePreparedStatement);
-        mUpdatePlaceHolders.get(mColor).setString(bookmark.getColor(), mUpdatePreparedStatement);
-        mUpdatePlaceHolders.get(mDisplayMarker).setBoolean(bookmark.isDisplayMarker(), mUpdatePreparedStatement);
-        mUpdatePlaceHolders.get(mLatitude).setObject(bookmark.getLatitude(), mUpdatePreparedStatement);
-        mUpdatePlaceHolders.get(mLongitude).setObject(bookmark.getLongitude(), mUpdatePreparedStatement);
-        mUpdatePlaceHolders.get(mZoom).setObject(bookmark.getZoom(), mUpdatePreparedStatement);
-
-        mUpdatePreparedStatement.setTimestamp(mUpdatePlaceHolders.get(mTimeModified).getIndex(), bookmark.getTimeModified());
-
-        mUpdatePreparedStatement.executeUpdate();
     }
 
     private void debugPrint() {
