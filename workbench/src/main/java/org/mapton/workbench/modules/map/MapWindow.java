@@ -26,12 +26,16 @@ import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
+import javafx.geometry.Insets;
+import javafx.geometry.Side;
+import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.StrokeLineCap;
 import javafx.stage.FileChooser;
 import javax.imageio.ImageIO;
 import org.apache.commons.io.FileUtils;
@@ -53,6 +57,7 @@ import org.openide.util.LookupEvent;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
+import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.dialogs.SimpleDialog;
 
 /**
@@ -65,7 +70,6 @@ public class MapWindow extends StackPane {
     private Menu mContextExtrasMenu;
     private ContextMenu mContextMenu;
     private Menu mContextOpenMenu;
-    private Circle mCrosshair;
     private File mDestination;
     private MEngine mEngine;
     private final MOptions mMOptions = MOptions.getInstance();
@@ -92,17 +96,54 @@ public class MapWindow extends StackPane {
     }
 
     private void createUI() {
-        mCrosshair = new Circle(20);
-        mCrosshair.setFill(Color.TRANSPARENT);
-        mCrosshair.setStroke(Color.RED);
-        mCrosshair.setStrokeWidth(2.0);
-        mCrosshair.visibleProperty().bind(MOptions2.getInstance().general().displayCrosshairProperty());
-        mCrosshair.setDisable(true);
-
         getChildren().setAll(
                 Mapton.getEngine().getUI(),
-                mCrosshair
+                crosshairSegment(Side.TOP),
+                crosshairSegment(Side.RIGHT),
+                crosshairSegment(Side.BOTTOM),
+                crosshairSegment(Side.LEFT)
         );
+    }
+
+    private Node crosshairSegment(Side side) {
+        final var gap = FxHelper.getUIScaled(6);
+        final var length = FxHelper.getUIScaled(6) + gap;
+        final var pad = length * 1.8;
+        final var h = length / 4;
+
+        Rectangle r = new Rectangle();
+        r.visibleProperty().bind(MOptions2.getInstance().general().displayCrosshairProperty());
+        r.setDisable(true);
+
+        if (side == Side.BOTTOM || side == Side.TOP) {
+            r.setWidth(h);
+            r.setHeight(length);
+        } else {
+            r.setWidth(length);
+            r.setHeight(h);
+        }
+
+        r.setStroke(Color.BLACK);
+        r.setFill(Color.WHITE);
+        r.setStrokeWidth(1.0);
+        r.setStrokeLineCap(StrokeLineCap.BUTT);
+
+        switch (side) {
+            case TOP:
+                StackPane.setMargin(r, new Insets(pad, 0, 0, 0));
+                break;
+            case RIGHT:
+                StackPane.setMargin(r, new Insets(0, pad, 0, 0));
+                break;
+            case BOTTOM:
+                StackPane.setMargin(r, new Insets(0, 0, pad, 0));
+                break;
+            case LEFT:
+                StackPane.setMargin(r, new Insets(0, 0, 0, pad));
+                break;
+        }
+
+        return r;
     }
 
     private void exportImage() {
