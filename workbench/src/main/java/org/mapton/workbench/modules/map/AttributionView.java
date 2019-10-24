@@ -20,14 +20,17 @@ import j2html.tags.ContainerTag;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
+import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Worker;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.web.WebView;
 import org.mapton.api.MAttribution;
 import org.mapton.api.MDocumentInfo;
+import org.mapton.api.MKey;
 import org.mapton.api.Mapton;
 import org.openide.util.NbBundle;
+import se.trixon.almond.util.GlobalStateChangeEvent;
 import se.trixon.almond.util.SystemHelper;
 
 /**
@@ -44,7 +47,40 @@ public class AttributionView extends BorderPane {
         initListeners();
     }
 
-    public void updateDocumentInfo(MDocumentInfo documentInfo) {
+    private void createUI() {
+        mWebView = new WebView();
+        Mapton.applyHtmlCss(mWebView);
+        //mWebView.setFontScale(1.0);
+        setCenter(mWebView);
+    }
+
+    private void initListeners() {
+        Mapton.getGlobalState().addListener((GlobalStateChangeEvent evt) -> {
+            Platform.runLater(() -> {
+                MDocumentInfo documentInfo = evt.getValue();
+                updateDocumentInfo(documentInfo);
+            });
+        }, MKey.MAP_DOCUMENT_INFO);
+
+        mWebView.getEngine().getLoadWorker().stateProperty().addListener((ObservableValue<? extends Worker.State> ov, Worker.State t, Worker.State t1) -> {
+            if (t1 == Worker.State.SUCCEEDED) {
+                org.w3c.dom.NodeList nodeList = mWebView.getEngine().getDocument().getElementsByTagName("a");
+                for (int i = 0; i < nodeList.getLength(); i++) {
+                    org.w3c.dom.Node node = nodeList.item(i);
+                    org.w3c.dom.events.EventTarget eventTarget = (org.w3c.dom.events.EventTarget) node;
+                    eventTarget.addEventListener("click", (org.w3c.dom.events.Event evt) -> {
+                        org.w3c.dom.events.EventTarget target = evt.getCurrentTarget();
+                        org.w3c.dom.html.HTMLAnchorElement anchorElement = (org.w3c.dom.html.HTMLAnchorElement) target;
+                        String href = anchorElement.getHref();
+                        SystemHelper.desktopBrowse(href);
+                        evt.preventDefault();
+                    }, false);
+                }
+            }
+        });
+    }
+
+    private void updateDocumentInfo(MDocumentInfo documentInfo) {
         LinkedHashMap<MAttribution, String> keys = new LinkedHashMap<>();
 
         LinkedHashMap<String, MAttribution> attributions = documentInfo.getAttributions();
@@ -78,31 +114,5 @@ public class AttributionView extends BorderPane {
 
         //System.out.println(html.render());
         mWebView.getEngine().loadContent(html.render());
-    }
-
-    private void createUI() {
-        mWebView = new WebView();
-        Mapton.applyHtmlCss(mWebView);
-        //mWebView.setFontScale(1.0);
-        setCenter(mWebView);
-    }
-
-    private void initListeners() {
-        mWebView.getEngine().getLoadWorker().stateProperty().addListener((ObservableValue<? extends Worker.State> ov, Worker.State t, Worker.State t1) -> {
-            if (t1 == Worker.State.SUCCEEDED) {
-                org.w3c.dom.NodeList nodeList = mWebView.getEngine().getDocument().getElementsByTagName("a");
-                for (int i = 0; i < nodeList.getLength(); i++) {
-                    org.w3c.dom.Node node = nodeList.item(i);
-                    org.w3c.dom.events.EventTarget eventTarget = (org.w3c.dom.events.EventTarget) node;
-                    eventTarget.addEventListener("click", (org.w3c.dom.events.Event evt) -> {
-                        org.w3c.dom.events.EventTarget target = evt.getCurrentTarget();
-                        org.w3c.dom.html.HTMLAnchorElement anchorElement = (org.w3c.dom.html.HTMLAnchorElement) target;
-                        String href = anchorElement.getHref();
-                        SystemHelper.desktopBrowse(href);
-                        evt.preventDefault();
-                    }, false);
-                }
-            }
-        });
     }
 }

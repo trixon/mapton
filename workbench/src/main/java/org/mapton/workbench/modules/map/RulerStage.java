@@ -16,11 +16,13 @@
 package org.mapton.workbench.modules.map;
 
 import javafx.beans.value.ObservableValue;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import org.mapton.api.MOptions2;
 import org.mapton.api.Mapton;
 import se.trixon.almond.util.Dict;
 
@@ -30,20 +32,28 @@ import se.trixon.almond.util.Dict;
  */
 public class RulerStage extends Stage {
 
+    private final Scene mScene;
+
     public RulerStage() {
         initStyle(StageStyle.UTILITY);
         setTitle(Dict.RULER.toString());
         setAlwaysOnTop(true);
-
+        mScene = new Scene(new Pane());
+        setScene(mScene);
         updateScene();
-        MOptions2.getInstance().general().engineProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
+
+        Mapton.optionsGeneral().engineProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
             updateScene();
         });
 
     }
 
     private void updateScene() {
-        setScene(new Scene((Parent) Mapton.getEngine().getRulerView()));
+        Node rulerView = Mapton.getEngine().getRulerView();
+        if (rulerView != null) {
+            mScene.setRoot((Parent) rulerView);
+        } else {
+            mScene.setRoot(new Label());
+        }
     }
-
 }

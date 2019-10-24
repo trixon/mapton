@@ -34,15 +34,16 @@ import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.MDict;
 import org.mapton.api.MDocumentInfo;
+import org.mapton.api.MEngine;
 import org.mapton.api.MKey;
 import org.mapton.api.MOptions2;
 import org.mapton.api.MWorkbenchModule;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.ICON_SIZE_MODULE;
 import static org.mapton.api.Mapton.ICON_SIZE_MODULE_TOOLBAR;
-import org.mapton.workbench.bookmark.BookmarksView;
 import org.mapton.workbench.MaptonApplication;
 import org.mapton.workbench.TitledDrawerContent;
+import org.mapton.workbench.bookmark.BookmarksView;
 import org.mapton.workbench.modules.map.AttributionView;
 import org.mapton.workbench.modules.map.MapWindow;
 import org.mapton.workbench.modules.map.RulerStage;
@@ -161,7 +162,9 @@ public class MapModule extends MWorkbenchModule {
         kcc = new KeyCodeCombination(KeyCode.L, KeyCombination.SHORTCUT_DOWN);
         getKeyCodeCombinations().add(kcc);
         getAccelerators().put(kcc, () -> {
-            mLayerToolbarItem.getOnClick().handle(null);
+            if (!mLayerToolbarItem.isDisabled()) {
+                mLayerToolbarItem.getOnClick().handle(null);
+            }
         });
 
         kcc = new KeyCodeCombination(KeyCode.R, KeyCombination.SHORTCUT_DOWN);
@@ -198,7 +201,7 @@ public class MapModule extends MWorkbenchModule {
     private void initListeners() {
         Mapton.getGlobalState().addListener((GlobalStateChangeEvent evt) -> {
             Platform.runLater(() -> {
-                updateDocumentInfo(evt);
+                updateDocumentInfo(evt.getValue());
             });
         }, MKey.MAP_DOCUMENT_INFO);
 
@@ -315,10 +318,17 @@ public class MapModule extends MWorkbenchModule {
     }
 
     private void refreshEngine() {
-        mLayersDrawerContent = new TitledDrawerContent(Dict.LAYERS.toString(), Mapton.getEngine().getLayerView());
-        mStyleToolbarItem.setDisable(Mapton.getEngine().getStyleView() == null);
-        mLayerToolbarItem.setDisable(Mapton.getEngine().getLayerView() == null);
-        mRulerToolbarItem.setDisable(Mapton.getEngine().getRulerView() == null);
+        MEngine engine = Mapton.getEngine();
+        Node layerView = engine.getLayerView();
+        if (layerView != null) {
+            mLayersDrawerContent = new TitledDrawerContent(Dict.LAYERS.toString(), layerView);
+        }
+
+        mStyleToolbarItem.setDisable(engine.getStyleView() == null);
+        mLayerToolbarItem.setDisable(layerView == null);
+        mRulerToolbarItem.setDisable(engine.getRulerView() == null);
+
+        Mapton.getGlobalState().put(MKey.MAP_DOCUMENT_INFO, Mapton.getGlobalState().get(MKey.MAP_DOCUMENT_INFO));
     }
 
     private void refreshUI() {
@@ -360,10 +370,8 @@ public class MapModule extends MWorkbenchModule {
         getWorkbench().showDrawer((Region) content, side, 20);
     }
 
-    private void updateDocumentInfo(GlobalStateChangeEvent evt) {
-        MDocumentInfo documentInfo = evt.getValue();
+    private void updateDocumentInfo(MDocumentInfo documentInfo) {
         mAttributionToolbarItem.setDisable(false);
         mStyleToolbarItem.setText(documentInfo.getName());
-        mAttributionView.updateDocumentInfo(documentInfo);
     }
 }

@@ -37,7 +37,6 @@ import org.openide.util.Lookup;
 import se.trixon.almond.util.GlobalState;
 import se.trixon.almond.util.Log;
 import se.trixon.almond.util.fx.FxHelper;
-import se.trixon.almond.util.swing.SwingHelper;
 
 /**
  *
@@ -78,7 +77,7 @@ public class Mapton {
         final String codeNameBase = Mapton.class.getPackage().getName();
         File file = InstalledFileLocator.getDefault().locate(path, codeNameBase, false);
         webView.getEngine().setUserStyleSheetLocation(file.toURI().toString());
-        webView.setFontScale(SwingHelper.getUIScale());
+        //webView.setFontScale(SwingHelper.getUIScale());
     }
 
     public static Label createTitle(String title) {

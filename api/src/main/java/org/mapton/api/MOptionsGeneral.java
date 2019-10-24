@@ -66,7 +66,8 @@ public class MOptionsGeneral {
 
         mCategory = Category.of(Dict.GENERAL.toString(),
                 Group.of(
-                        Dict.LOOK_AND_FEEL.toString(), Setting.of(mBundle.getString("popover"), mPreferPopoverProperty).customKey("general.map.popover"),
+                        Dict.LOOK_AND_FEEL.toString(),
+                        Setting.of(mBundle.getString("popover"), mPreferPopoverProperty).customKey("general.map.popover"),
                         Setting.of(Dict.NIGHT_MODE.toString(), mNightModeProperty).customKey("general.map.nightMode"),
                         Setting.of(mBundle.getString("iconColor"), mIconColorDarkProperty).customKey("general.map.iconColor"),
                         Setting.of(mBundle.getString("iconColorNightMode"), mIconColorBrightProperty).customKey("general.map.iconColorNightMode")
@@ -106,12 +107,12 @@ public class MOptionsGeneral {
         return mIconColorBrightProperty.getValue();
     }
 
-    public Color getIconColorForBackground() {
-        return mNightModeProperty.get() ? mIconColorBrightProperty.getValue() : mIconColorDarkProperty.getValue();
-    }
-
     public Color getIconColorDark() {
         return mIconColorDarkProperty.getValue();
+    }
+
+    public Color getIconColorForBackground() {
+        return mNightModeProperty.get() ? mIconColorBrightProperty.getValue() : mIconColorDarkProperty.getValue();
     }
 
     public ObjectProperty iconColorBrightProperty() {
