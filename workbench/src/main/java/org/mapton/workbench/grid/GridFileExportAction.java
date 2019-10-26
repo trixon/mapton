@@ -18,6 +18,7 @@ package org.mapton.workbench.grid;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import javafx.scene.Node;
 import org.apache.commons.io.FileUtils;
 import org.controlsfx.control.action.Action;
 import org.mapton.api.MKey;
@@ -38,7 +39,7 @@ public class GridFileExportAction extends GridFileAction {
     private File mFile;
 
     @Override
-    public Action getAction() {
+    public Action getAction(Node owner) {
         Action action = new Action((t) -> {
             ArrayList<MLocalGrid> selectedGrids = new ArrayList<>();
             mManager.getItems().stream()
@@ -51,6 +52,7 @@ public class GridFileExportAction extends GridFileAction {
                 SimpleDialog.addFilter(mExtGrid);
                 final String dialogTitle = String.format("%s %s", Dict.EXPORT.toString(), mTitle.toLowerCase());
                 SimpleDialog.setTitle(dialogTitle);
+                SimpleDialog.setOwner(owner.getScene().getWindow());
 
                 if (mFile == null) {
                     SimpleDialog.setPath(FileUtils.getUserDirectory());
@@ -73,7 +75,7 @@ public class GridFileExportAction extends GridFileAction {
             }
         });
 
-        action.setGraphic(MaterialIcon._Content.SAVE.getImageView(getIconSizeToolBarInt()));
+        action.setGraphic(MaterialIcon._Content.SAVE.getImageView(getIconSizeToolBarInt(), mIconColor));
 
         return action;
     }

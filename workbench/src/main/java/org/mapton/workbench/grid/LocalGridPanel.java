@@ -193,7 +193,6 @@ public class LocalGridPanel extends GridPane {
         Label cooTransLabel = new Label(MDict.COORDINATE_SYSTEM.toString());
         Label colorLabel = new Label(Dict.COLOR.toString());
 
-//        GridPane gp = new GridPane();
         int col = 0;
         int row = 0;
 

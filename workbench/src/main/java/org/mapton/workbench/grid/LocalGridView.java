@@ -54,6 +54,7 @@ public class LocalGridView extends BorderPane {
     private final MLocalGridManager mManager = MLocalGridManager.getInstance();
     private final MOptions mOptions = MOptions.getInstance();
     private CheckBox mPlotCheckBox;
+    private LocalGridEditor mEditor = LocalGridEditor.getInstance();
 
     public LocalGridView() {
         createUI();
@@ -68,27 +69,27 @@ public class LocalGridView extends BorderPane {
         mPlotCheckBox.setPadding(new Insets(0, 0, 0, 8));
 
         Action addAction = new Action(Dict.ADD.toString(), (ActionEvent event) -> {
-            mManager.edit(null);
+            mEditor.edit(null);
         });
         addAction.setGraphic(MaterialIcon._Content.ADD.getImageView(getIconSizeToolBarInt()));
 
         Action editAction = new Action(Dict.EDIT.toString(), (ActionEvent event) -> {
             if (getSelected() != null) {
-                mManager.edit(getSelected());
+                mEditor.edit(getSelected());
             }
         });
         editAction.setGraphic(MaterialIcon._Editor.MODE_EDIT.getImageView(getIconSizeToolBarInt()));
 
         Action remAction = new Action(Dict.REMOVE.toString(), (ActionEvent event) -> {
             if (getSelected() != null) {
-                remove();
+                mEditor.remove(getSelected());
             }
         });
         remAction.setGraphic(MaterialIcon._Content.REMOVE.getImageView(getIconSizeToolBarInt()));
 
         Collection<? extends Action> actions = Arrays.asList(
-                new GridFileImportAction().getAction(),
-                new GridFileExportAction().getAction(),
+                new GridFileImportAction().getAction(this),
+                new GridFileExportAction().getAction(this),
                 addAction,
                 remAction,
                 editAction
@@ -124,7 +125,7 @@ public class LocalGridView extends BorderPane {
             if (getSelected() != null
                     && mouseEvent.getButton() == MouseButton.PRIMARY
                     && mouseEvent.getClickCount() == 2) {
-                mManager.edit(getSelected());
+                mEditor.edit(getSelected());
             }
         });
 
@@ -181,26 +182,5 @@ public class LocalGridView extends BorderPane {
                 checkModel.clearCheck(grid);
             }
         }
-    }
-
-    private void remove() {
-        final MLocalGrid localGrid = getSelected();
-
-//        SwingUtilities.invokeLater(() -> {
-//            String[] buttons = new String[]{Dict.CANCEL.toString(), Dict.REMOVE.toString()};
-//            NotifyDescriptor d = new NotifyDescriptor(
-//                    String.format(Dict.Dialog.MESSAGE_PROFILE_REMOVE.toString(), localGrid.getName()),
-//                    String.format(Dict.Dialog.TITLE_REMOVE_S.toString(), MDict.GRID.toString().toLowerCase()) + "?",
-//                    NotifyDescriptor.OK_CANCEL_OPTION,
-//                    NotifyDescriptor.WARNING_MESSAGE,
-//                    buttons,
-//                    Dict.REMOVE.toString());
-//
-//            if (Dict.REMOVE.toString() == DialogDisplayer.getDefault().notify(d)) {
-//                Platform.runLater(() -> {
-//                    mManager.removeAll(localGrid);
-//                });
-//            }
-//        });
     }
 }

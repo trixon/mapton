@@ -17,6 +17,7 @@ package org.mapton.workbench.grid;
 
 import java.io.File;
 import java.io.IOException;
+import javafx.scene.Node;
 import org.apache.commons.io.FileUtils;
 import org.controlsfx.control.action.Action;
 import org.mapton.api.MKey;
@@ -36,12 +37,13 @@ public class GridFileImportAction extends GridFileAction {
     private File mFile;
 
     @Override
-    public Action getAction() {
+    public Action getAction(Node owner) {
         Action action = new Action((t) -> {
             SimpleDialog.clearFilters();
             SimpleDialog.addFilter(mExtGrid);
             final String dialogTitle = String.format("%s %s", Dict.IMPORT.toString(), mTitle.toLowerCase());
             SimpleDialog.setTitle(dialogTitle);
+            SimpleDialog.setOwner(owner.getScene().getWindow());
 
             if (mFile == null) {
                 SimpleDialog.setPath(FileUtils.getUserDirectory());
@@ -63,7 +65,7 @@ public class GridFileImportAction extends GridFileAction {
             }
         });
 
-        action.setGraphic(MaterialIcon._File.FOLDER_OPEN.getImageView(getIconSizeToolBarInt()));
+        action.setGraphic(MaterialIcon._File.FOLDER_OPEN.getImageView(getIconSizeToolBarInt(), mIconColor));
 
         return action;
     }

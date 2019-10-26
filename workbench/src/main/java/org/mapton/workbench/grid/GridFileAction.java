@@ -15,10 +15,13 @@
  */
 package org.mapton.workbench.grid;
 
+import javafx.scene.Node;
+import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import org.controlsfx.control.action.Action;
 import org.mapton.api.MDict;
 import org.mapton.api.MLocalGridManager;
+import org.mapton.api.Mapton;
 
 /**
  *
@@ -29,6 +32,7 @@ public abstract class GridFileAction {
     protected final FileChooser.ExtensionFilter mExtGrid = new FileChooser.ExtensionFilter("Mapton Grid (*.grid)", "*.grid");
     protected final MLocalGridManager mManager = MLocalGridManager.getInstance();
     protected final String mTitle = MDict.GRIDS.toString();
+    protected Color mIconColor = Mapton.optionsGeneral().getIconColorForBackground();
 
-    public abstract Action getAction();
+    public abstract Action getAction(Node owner);
 }
