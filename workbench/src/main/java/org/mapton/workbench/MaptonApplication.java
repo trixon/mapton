@@ -52,7 +52,6 @@ import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.MOptions2;
 import org.mapton.api.Mapton;
-import static org.mapton.api.Mapton.*;
 import org.mapton.workbench.api.WorkbenchManager;
 import org.mapton.workbench.modules.LogModule;
 import org.mapton.workbench.modules.MapModule;
@@ -187,8 +186,9 @@ public class MaptonApplication extends Application {
             mStage.show();
             mMapModule = new MapModule();
             mWorkbenchManager.getFixModules().add(mMapModule);
-            mWorkbenchManager.getFixModules().add(mLogModule);
+            mWorkbenchManager.getFixModules().add(mPreferencesModule);
             mWorkbenchManager.getFixModules().add(mUpdaterModule);
+            mWorkbenchManager.getFixModules().add(mLogModule);
 
             Platform.runLater(() -> {
                 mWorkbenchManager.setAllowModulePopulation(true);
@@ -199,7 +199,6 @@ public class MaptonApplication extends Application {
     }
 
     private void displayOptions() {
-        mWorkbench.getModules().add(mPreferencesModule);
         mWorkbench.openModule(mPreferencesModule);
     }
 
@@ -292,7 +291,6 @@ public class MaptonApplication extends Application {
         //update manager
         mUpdateManagerAction = new Action(Dict.UPDATE_MANAGER.toString(), (ActionEvent event) -> {
             mWorkbench.hideNavigationDrawer();
-//            mWorkbench.getModules().add(mLogModule);
             mWorkbench.openModule(mUpdaterModule);
         });
 
@@ -302,7 +300,6 @@ public class MaptonApplication extends Application {
             mStage.fireEvent(new WindowEvent(mStage, WindowEvent.WINDOW_CLOSE_REQUEST));
         });
         mQuitAction.setAccelerator(new KeyCodeCombination(KeyCode.Q, KeyCombination.SHORTCUT_DOWN));
-        //mQuitAction.setGraphic(MaterialIcon._Action.SETTINGS.getImageView(ICON_SIZE_DRAWER));
 
         //options
         mOptionsAction = new Action(Dict.OPTIONS.toString(), (ActionEvent event) -> {
@@ -310,7 +307,6 @@ public class MaptonApplication extends Application {
             displayOptions();
         });
         mOptionsAction.setAccelerator(new KeyCodeCombination(KeyCode.COMMA, KeyCombination.SHORTCUT_DOWN));
-        mOptionsAction.setGraphic(MaterialIcon._Action.SETTINGS.getImageView(ICON_SIZE_DRAWER));
 
         //plugins
         mPluginAction = new Action(Dict.PLUGINS.toString(), (ActionEvent event) -> {
@@ -328,7 +324,6 @@ public class MaptonApplication extends Application {
             mWorkbench.hideNavigationDrawer();
             SystemHelper.desktopBrowse("https://mapton.org/help/");
         });
-        //mHelpAction.setAccelerator(new KeyCodeCombination(KeyCode.F1, KeyCombination.SHORTCUT_ANY));
         mHelpAction.setAccelerator(KeyCombination.keyCombination("F1"));
 
         //about

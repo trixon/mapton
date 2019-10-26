@@ -51,6 +51,7 @@ public class WorkbenchManager {
     private WorkbenchManager() {
         mWorkbench = Workbench.builder()
                 .tabFactory(CustomTab::new)
+                .modulesPerPage(24)
                 .build();
 
         mWorkbench.getStylesheets().add(getClass().getResource("baseTheme.css").toExternalForm());
@@ -140,7 +141,7 @@ public class WorkbenchManager {
     }
 
     public void setAllowModulePopulation(boolean allowModulePopulation) {
-        this.mAllowModulePopulation = allowModulePopulation;
+        mAllowModulePopulation = allowModulePopulation;
     }
 
     public void toggleNavigationDrawer() {

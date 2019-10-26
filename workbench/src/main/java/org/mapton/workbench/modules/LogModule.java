@@ -19,9 +19,9 @@ import javafx.scene.Node;
 import org.mapton.api.MWorkbenchModule;
 import static org.mapton.api.Mapton.ICON_SIZE_MODULE;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.LogListener;
 import se.trixon.almond.util.fx.control.LogPanel;
 import se.trixon.almond.util.icons.material.MaterialIcon;
-import se.trixon.almond.util.LogListener;
 
 /**
  *
@@ -44,8 +44,6 @@ public class LogModule extends MWorkbenchModule implements LogListener {
 
     @Override
     public boolean destroy() {
-        getWorkbench().getModules().remove(this);
-
         return true;
     }
 
