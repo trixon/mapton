@@ -53,7 +53,7 @@ import se.trixon.almond.util.io.GeoPoint;
  *
  * @author Patrik Karlström
  */
-public class BookmarkExportAction extends BookmarkAction {
+public class BookmarkFileExportAction extends BookmarkFileAction {
 
     private File mFile;
 

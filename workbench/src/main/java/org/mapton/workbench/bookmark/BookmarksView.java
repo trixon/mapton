@@ -125,8 +125,8 @@ public class BookmarksView extends BorderPane {
         mTreeView.setCellFactory((TreeView<MBookmark> param) -> new BookmarkTreeCell());
 
         Collection<? extends Action> actions = Arrays.asList(
-                new BookmarkImportAction().getAction(this),
-                new BookmarkExportAction().getAction(this)
+                new BookmarkFileImportAction().getAction(this),
+                new BookmarkFileExportAction().getAction(this)
         );
 
         ToolBar toolBar = ActionUtils.createToolBar(actions, ActionUtils.ActionTextBehavior.HIDE);
