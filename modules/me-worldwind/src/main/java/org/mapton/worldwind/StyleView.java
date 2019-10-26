@@ -245,8 +245,11 @@ public class StyleView extends HBox {
 
             ArrayList<MapStyle> styles = new ArrayList<>(Lookup.getDefault().lookupAll(MapStyle.class));
             ArrayList<MWmsStyle> wmsStyles = Mapton.getGlobalState().get(MKey.DATA_SOURCES_WMS_STYLES);
-            for (MWmsStyle wmsStyle : wmsStyles) {
-                styles.add(MapStyle.createFromWmsStyle(wmsStyle));
+
+            if (wmsStyles != null) {
+                for (MWmsStyle wmsStyle : wmsStyles) {
+                    styles.add(MapStyle.createFromWmsStyle(wmsStyle));
+                }
             }
 
             Collections.sort(styles, (MapStyle o1, MapStyle o2) -> o1.getName().compareTo(o2.getName()));
