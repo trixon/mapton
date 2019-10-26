@@ -70,9 +70,11 @@ public abstract class MapStyle {
     public static MapStyle getStyle(String id) {
         ArrayList<MapStyle> styles = new ArrayList<>(Lookup.getDefault().lookupAll(MapStyle.class));
         ArrayList<MWmsStyle> wmsStyles = Mapton.getGlobalState().get(MKey.DATA_SOURCES_WMS_STYLES);
-        wmsStyles.forEach((wmsStyle) -> {
-            styles.add(MapStyle.createFromWmsStyle(wmsStyle));
-        });
+        if (wmsStyles != null) {
+            wmsStyles.forEach((wmsStyle) -> {
+                styles.add(MapStyle.createFromWmsStyle(wmsStyle));
+            });
+        }
 
         for (MapStyle mapStyle : styles) {
             if (StringUtils.equals(mapStyle.getId(), id)) {
