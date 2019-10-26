@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core.ui.grid;
+package org.mapton.workbench.grid;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,6 +22,7 @@ import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.geometry.Insets;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ToolBar;
@@ -30,19 +31,15 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import javax.swing.SwingUtilities;
 import org.controlsfx.control.CheckListView;
 import org.controlsfx.control.IndexedCheckModel;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
-import org.mapton.api.MDict;
 import org.mapton.api.MLocalGrid;
 import org.mapton.api.MLocalGridManager;
 import org.mapton.api.MOptions;
 import static org.mapton.api.MOptions.*;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
-import org.openide.DialogDisplayer;
-import org.openide.NotifyDescriptor;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.icons.material.MaterialIcon;
@@ -68,6 +65,7 @@ public class LocalGridView extends BorderPane {
     private void createUI() {
         mPlotCheckBox = new CheckBox(Dict.LOCAL.toString());
         mPlotCheckBox.setFont(Font.font(Font.getDefault().getFamily(), FontWeight.BOLD, FxHelper.getScaledFontSize() * 1.2));
+        mPlotCheckBox.setPadding(new Insets(0, 0, 0, 8));
 
         Action addAction = new Action(Dict.ADD.toString(), (ActionEvent event) -> {
             mManager.edit(null);
@@ -188,21 +186,21 @@ public class LocalGridView extends BorderPane {
     private void remove() {
         final MLocalGrid localGrid = getSelected();
 
-        SwingUtilities.invokeLater(() -> {
-            String[] buttons = new String[]{Dict.CANCEL.toString(), Dict.REMOVE.toString()};
-            NotifyDescriptor d = new NotifyDescriptor(
-                    String.format(Dict.Dialog.MESSAGE_PROFILE_REMOVE.toString(), localGrid.getName()),
-                    String.format(Dict.Dialog.TITLE_REMOVE_S.toString(), MDict.GRID.toString().toLowerCase()) + "?",
-                    NotifyDescriptor.OK_CANCEL_OPTION,
-                    NotifyDescriptor.WARNING_MESSAGE,
-                    buttons,
-                    Dict.REMOVE.toString());
-
-            if (Dict.REMOVE.toString() == DialogDisplayer.getDefault().notify(d)) {
-                Platform.runLater(() -> {
-                    mManager.removeAll(localGrid);
-                });
-            }
-        });
+//        SwingUtilities.invokeLater(() -> {
+//            String[] buttons = new String[]{Dict.CANCEL.toString(), Dict.REMOVE.toString()};
+//            NotifyDescriptor d = new NotifyDescriptor(
+//                    String.format(Dict.Dialog.MESSAGE_PROFILE_REMOVE.toString(), localGrid.getName()),
+//                    String.format(Dict.Dialog.TITLE_REMOVE_S.toString(), MDict.GRID.toString().toLowerCase()) + "?",
+//                    NotifyDescriptor.OK_CANCEL_OPTION,
+//                    NotifyDescriptor.WARNING_MESSAGE,
+//                    buttons,
+//                    Dict.REMOVE.toString());
+//
+//            if (Dict.REMOVE.toString() == DialogDisplayer.getDefault().notify(d)) {
+//                Platform.runLater(() -> {
+//                    mManager.removeAll(localGrid);
+//                });
+//            }
+//        });
     }
 }

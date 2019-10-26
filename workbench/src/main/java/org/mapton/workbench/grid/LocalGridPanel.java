@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core.ui.grid;
+package org.mapton.workbench.grid;
 
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.ResourceBundle;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
-import javafx.scene.Scene;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -40,7 +39,6 @@ import org.mapton.api.MCooTrans;
 import org.mapton.api.MDict;
 import org.mapton.api.MLocalGrid;
 import org.openide.util.NbBundle;
-import se.trixon.almond.nbp.fx.FxDialogPanel;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
 
@@ -48,7 +46,7 @@ import se.trixon.almond.util.fx.FxHelper;
  *
  * @author Patrik Karlström
  */
-public class LocalGridPanel extends FxDialogPanel {
+public class LocalGridPanel extends GridPane {
 
     private final ResourceBundle mBundle = NbBundle.getBundle(LocalGridPanel.class);
     private ColorPicker mColorPicker;
@@ -61,6 +59,10 @@ public class LocalGridPanel extends FxDialogPanel {
     private Spinner<Double> mLonStartSpinner;
     private Spinner<Double> mLonStepSpinner;
     private TextField mNameTextField;
+
+    public LocalGridPanel() {
+        createUI();
+    }
 
     public void load(MLocalGrid grid) {
         mNameTextField.setText(grid.getName());
@@ -102,11 +104,6 @@ public class LocalGridPanel extends FxDialogPanel {
         grid.setLonCount(mLonCountSpinner.getValue());
     }
 
-    @Override
-    protected void fxConstructor() {
-        setScene(createScene());
-    }
-
     private void autoSizeColumn(GridPane gridPane, int columnCount) {
         gridPane.getColumnConstraints().clear();
 
@@ -125,7 +122,7 @@ public class LocalGridPanel extends FxDialogPanel {
         }
     }
 
-    private Scene createScene() {
+    private void createUI() {
         mNameTextField = new TextField();
         mColorPicker = new ColorPicker();
 
@@ -196,7 +193,7 @@ public class LocalGridPanel extends FxDialogPanel {
         Label cooTransLabel = new Label(MDict.COORDINATE_SYSTEM.toString());
         Label colorLabel = new Label(Dict.COLOR.toString());
 
-        GridPane gp = new GridPane();
+//        GridPane gp = new GridPane();
         int col = 0;
         int row = 0;
 
@@ -209,7 +206,7 @@ public class LocalGridPanel extends FxDialogPanel {
         autoSizeRegion(mNameTextField, mCooTransComboBox, mColorPicker, mLineWidthSpinner);
         autoSizeColumn(headerPane, 2);
 
-        gp.addRow(row, headerPane);
+        addRow(row, headerPane);
 
         GridPane latPane = new GridPane();
         latPane.add(latLabel, 0, 0);
@@ -219,7 +216,7 @@ public class LocalGridPanel extends FxDialogPanel {
         autoSizeRegion(mLatStartSpinner, mLatStepSpinner, mLatCountSpinner);
         autoSizeColumn(latPane, 3);
 
-        gp.addRow(++row, latPane);
+        addRow(++row, latPane);
 
         GridPane lonPane = new GridPane();
         lonPane.add(lonLabel, 0, 0);
@@ -229,7 +226,7 @@ public class LocalGridPanel extends FxDialogPanel {
         autoSizeRegion(mLonStartSpinner, mLonStepSpinner, mLonCountSpinner);
         autoSizeColumn(lonPane, 3);
 
-        gp.addRow(++row, lonPane);
+        addRow(++row, lonPane);
 
         autoSizeRegion(headerPane, latPane, lonPane);
 
@@ -241,7 +238,7 @@ public class LocalGridPanel extends FxDialogPanel {
         GridPane.setMargin(mCooTransComboBox, rowInsets);
 
         initValidation();
-        gp.setPadding(new Insets(8, 16, 0, 16));
+        setPadding(new Insets(8, 16, 0, 16));
 
         final Insets topInsets = new Insets(8, 0, 8, 0);
         VBox.setMargin(latStartLabel, topInsets);
@@ -249,8 +246,6 @@ public class LocalGridPanel extends FxDialogPanel {
 
         mCooTransComboBox.getItems().setAll(MCooTrans.getCooTrans());
         mCooTransComboBox.setItems(mCooTransComboBox.getItems().sorted());
-
-        return new Scene(gp);
     }
 
     private void initValidation() {
@@ -262,7 +257,7 @@ public class LocalGridPanel extends FxDialogPanel {
         validationSupport.registerValidator(mNameTextField, indicateRequired, emptyValidator);
 
         validationSupport.validationResultProperty().addListener((ObservableValue<? extends ValidationResult> observable, ValidationResult oldValue, ValidationResult newValue) -> {
-            mDialogDescriptor.setValid(!validationSupport.isInvalid());
+//aaa            mDialogDescriptor.setValid(!validationSupport.isInvalid());
         });
 
         validationSupport.initInitialDecoration();

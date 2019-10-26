@@ -44,6 +44,7 @@ import static org.mapton.api.Mapton.ICON_SIZE_MODULE_TOOLBAR;
 import org.mapton.workbench.MaptonApplication;
 import org.mapton.workbench.TitledDrawerContent;
 import org.mapton.workbench.bookmark.BookmarksView;
+import org.mapton.workbench.grid.GridForm;
 import org.mapton.workbench.modules.map.AttributionView;
 import org.mapton.workbench.modules.map.MapWindow;
 import org.mapton.workbench.modules.map.RulerStage;
@@ -68,8 +69,10 @@ public class MapModule extends MWorkbenchModule {
     private TitledDrawerContent mBookmarksDrawerContent;
     private Node mDrawerContent;
     private ToolbarItem mGoHomeToolbarItem;
+    private ToolbarItem mGridToolbarItem;
     private ToolbarItem mLayerToolbarItem;
     private TitledDrawerContent mLayersDrawerContent;
+    private TitledDrawerContent mGridDrawerContent;
     private ToolbarItem mMapOnlyToolbarItem;
     private final BorderPane mRoot;
     private RulerStage mRulerStage;
@@ -128,6 +131,8 @@ public class MapModule extends MWorkbenchModule {
     private void createUI() {
         mSearchView = new SearchView();
         mBookmarksDrawerContent = new TitledDrawerContent(Dict.BOOKMARKS.toString(), new BookmarksView());
+
+        mGridDrawerContent = new TitledDrawerContent(MDict.GRID.toString(), new GridForm());
         mToolDrawerContent = new TitledDrawerContent(Dict.TOOLBOX.toString(), new ToolboxView());
         mWindowManager = new WindowManager();
     }
@@ -147,6 +152,13 @@ public class MapModule extends MWorkbenchModule {
             mSearchView.getPresenter().requestFocus();
             ((TextField) mSearchView.getPresenter()).clear();
         });
+
+        kcc = new KeyCodeCombination(KeyCode.G, KeyCombination.SHORTCUT_DOWN);
+        getKeyCodeCombinations().add(kcc);
+        getAccelerators().put(kcc, () -> {
+            mGridToolbarItem.getOnClick().handle(null);
+        });
+
         kcc = new KeyCodeCombination(KeyCode.H, KeyCombination.SHORTCUT_DOWN);
         getKeyCodeCombinations().add(kcc);
         getAccelerators().put(kcc, () -> {
@@ -240,6 +252,11 @@ public class MapModule extends MWorkbenchModule {
         });
         setTooltip(mLayerToolbarItem, Dict.LAYERS.toString(), new KeyCodeCombination(KeyCode.L, KeyCombination.SHORTCUT_DOWN));
 
+        mGridToolbarItem = new ToolbarItem(MaterialIcon._Image.GRID_ON.getImageView(ICON_SIZE_MODULE_TOOLBAR), event -> {
+            showDrawer(mGridDrawerContent, Side.LEFT);
+        });
+        setTooltip(mGridToolbarItem, MDict.GRID.toString(), new KeyCodeCombination(KeyCode.G, KeyCombination.SHORTCUT_DOWN));
+
         mBookmarkToolbarItem = new ToolbarItem(MaterialIcon._Action.BOOKMARK_BORDER.getImageView(ICON_SIZE_MODULE_TOOLBAR), event -> {
             showDrawer(mBookmarksDrawerContent, Side.LEFT);
         });
@@ -267,9 +284,6 @@ public class MapModule extends MWorkbenchModule {
         Action temporalAction = new Action(Dict.Time.DATE.toString(), (event) -> {
             System.out.println(event);
         });
-        Action gridAction = new Action(MDict.GRIDS.toString(), (event) -> {
-            System.out.println(event);
-        });
         Action objectPropertiesAction = new Action(Dict.OBJECT_PROPERTIES.toString(), (event) -> {
             System.out.println(event);
         });
@@ -287,7 +301,6 @@ public class MapModule extends MWorkbenchModule {
                 Dict.WINDOW.toString(),
                 MaterialIcon._Av.WEB_ASSET.getImageView(ICON_SIZE_MODULE_TOOLBAR),
                 ActionUtils.createMenuItem(temporalAction),
-                ActionUtils.createMenuItem(gridAction),
                 ActionUtils.createMenuItem(toolsAction),
                 ActionUtils.createMenuItem(objectPropertiesAction),
                 ActionUtils.createMenuItem(diagramAction)
@@ -305,6 +318,7 @@ public class MapModule extends MWorkbenchModule {
                 searchToolbarItem,
                 mBookmarkToolbarItem,
                 mLayerToolbarItem,
+                mGridToolbarItem,
                 mAttributionToolbarItem,
                 mStyleToolbarItem
         );
