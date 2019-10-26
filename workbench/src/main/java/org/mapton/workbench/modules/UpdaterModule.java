@@ -32,7 +32,9 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
+import org.mapton.api.MKey;
 import org.mapton.api.MMaskerPaneBase;
+import org.mapton.api.MPrint;
 import org.mapton.api.MUpdater;
 import org.mapton.api.MWorkbenchModule;
 import static org.mapton.api.Mapton.ICON_SIZE_MODULE;
@@ -40,6 +42,7 @@ import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.GlobalStateChangeEvent;
 import se.trixon.almond.util.LogListener;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.control.LogPanel;
@@ -56,14 +59,20 @@ public class UpdaterModule extends MWorkbenchModule implements LogListener {
     private LogPanel mLogPanel;
     private final BooleanProperty mRunningProperty = new SimpleBooleanProperty(false);
     private UpdaterMaskerPane mUpdaterMaskerPane;
+    private MPrint mPrint = new MPrint(MKey.UPDATER_LOGGER);
 
     public UpdaterModule() {
         super(Dict.UPDATER.toString(), MaterialIcon._Action.SYSTEM_UPDATE_ALT.getImageView(ICON_SIZE_MODULE).getImage());
 
         createUI();
+
         Lookup.getDefault().lookupResult(MUpdater.class).addLookupListener((LookupEvent ev) -> {
             refresh();
         });
+
+        mGlobalState.addListener((GlobalStateChangeEvent evt) -> {
+            mLogPanel.println((String) evt.getObject());
+        }, MKey.UPDATER_LOGGER);
 
         refresh();
     }
@@ -117,6 +126,14 @@ public class UpdaterModule extends MWorkbenchModule implements LogListener {
             ArrayList<MUpdater> updaters = new ArrayList<>(Lookup.getDefault().lookupAll(MUpdater.class));
             for (MUpdater updater : updaters) {
                 updater.setMarkedForUpdate(updater.isOutOfDate());
+                String status;
+                if (updater.isOutOfDate()) {
+                    status = "is out of date";
+                } else {
+                    status = "OK";
+                }
+
+                mPrint.out(String.format("%s: %s %s", Dict.UPDATER.toString(), updater.getName(), status));
             }
 
             Comparator<MUpdater> c1 = (MUpdater o1, MUpdater o2) -> Boolean.compare(o2.isOutOfDate(), o1.isMarkedForUpdate());
@@ -205,7 +222,9 @@ public class UpdaterModule extends MWorkbenchModule implements LogListener {
             new Thread(() -> {
                 for (MUpdater updater : mListView.getItems()) {
                     if (updater.isMarkedForUpdate()) {
+                        mPrint.out(String.format("%s: %s", updater.getName(), "UPDATE BEGIN"));
                         updater.run();
+                        mPrint.out(String.format("%s: %s", updater.getName(), "UPDATE END"));
                     }
                 }
 

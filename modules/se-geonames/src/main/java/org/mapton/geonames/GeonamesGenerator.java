@@ -32,8 +32,8 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.io.FileUtils;
+import org.mapton.api.MPrint;
 import org.mapton.api.Mapton;
-import org.mapton.api.NbPrint;
 import org.mapton.geonames.api.Geoname;
 import se.trixon.almond.util.MathHelper;
 
@@ -47,7 +47,7 @@ public class GeonamesGenerator {
     private final File mCities1000txtFile;
     private final File mCities1000zipFile;
     private final ArrayList<Geoname> mGeonames = new ArrayList<>();
-    private NbPrint mPrint;
+    private MPrint mPrint;
     private final File mSearchEngineFile;
 
     public static GeonamesGenerator getInstance() {
@@ -75,7 +75,7 @@ public class GeonamesGenerator {
         return mSearchEngineFile;
     }
 
-    public void update(NbPrint print) throws IOException {
+    public void update(MPrint print) throws IOException {
         mPrint = print;
         mPrint.out("GeoNames: Download https://download.geonames.org/export/dump/cities1000.zip");
         FileUtils.copyURLToFile(new URL("https://download.geonames.org/export/dump/cities1000.zip"), mCities1000zipFile, 5000, 5000);

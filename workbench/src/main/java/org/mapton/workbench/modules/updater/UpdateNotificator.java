@@ -17,19 +17,18 @@ package org.mapton.workbench.modules.updater;
 
 import java.awt.event.ActionEvent;
 import java.io.File;
-import java.util.ResourceBundle;
 import java.util.concurrent.TimeUnit;
 import javafx.util.Duration;
 import javax.swing.Timer;
 import org.apache.commons.lang3.ObjectUtils;
 import org.controlsfx.control.action.Action;
 import org.mapton.api.MKey;
+import org.mapton.api.MPrint;
 import org.mapton.api.MUpdater;
 import org.mapton.api.Mapton;
 import org.mapton.workbench.api.WorkbenchManager;
 import org.mapton.workbench.modules.UpdaterModule;
 import org.openide.util.Lookup;
-import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
 
@@ -39,7 +38,7 @@ import se.trixon.almond.util.SystemHelper;
  */
 public class UpdateNotificator {
 
-    private final ResourceBundle mBundle = NbBundle.getBundle(UpdateNotificator.class);
+    private MPrint mPrint = new MPrint(MKey.UPDATER_LOGGER);
     private final Timer mTimer;
 
     public UpdateNotificator() {
@@ -47,7 +46,7 @@ public class UpdateNotificator {
             check();
         });
 
-        mTimer.setInitialDelay((int) TimeUnit.SECONDS.toMillis(5));
+        mTimer.setInitialDelay((int) TimeUnit.SECONDS.toMillis(15));
         mTimer.start();
     }
 
@@ -57,7 +56,7 @@ public class UpdateNotificator {
             name = String.format("%s/%s", updater.getCategory(), updater.getName());
         }
 
-        Action action = new Action(mBundle.getString("updater_tool"), (eventHandler) -> {
+        Action action = new Action(Dict.UPDATER.toString(), (eventHandler) -> {
             WorkbenchManager.getInstance().openModule(UpdaterModule.class);
         });
 
@@ -70,6 +69,7 @@ public class UpdateNotificator {
                     final File file = updater.getFile();
                     if (ObjectUtils.allNotNull(updater.getAgeLimit(), file)) {
                         if (!file.exists() || SystemHelper.age(file.lastModified()) >= updater.getAgeLimit()) {
+                            mPrint.out(String.format("%s: %s is out of date", Dict.UPDATER.toString(), updater.getName()));
                             alert(updater);
                         }
                     }

@@ -30,6 +30,7 @@ import javafx.scene.input.KeyCombination;
 import javafx.stage.Stage;
 import org.openide.util.NbBundle;
 import org.openide.util.NbPreferences;
+import se.trixon.almond.util.GlobalState;
 
 /**
  *
@@ -38,13 +39,14 @@ import org.openide.util.NbPreferences;
 public abstract class MWorkbenchModule extends WorkbenchModule {
 
     protected final Logger LOGGER = Logger.getLogger(getClass().getName());
-    private ObservableMap<KeyCombination, Runnable> mAccelerators;
-    private final HashSet<KeyCodeCombination> mKeyCodeCombinations = new HashSet<>();
+    protected final GlobalState mGlobalState = Mapton.getGlobalState();
     protected final MOptions2 mOptions2 = MOptions2.getInstance();
     protected final Preferences mPreferences;
-    private Stage mStage;
+    private ObservableMap<KeyCombination, Runnable> mAccelerators;
     private ResourceBundle mBundle;
+    private final HashSet<KeyCodeCombination> mKeyCodeCombinations = new HashSet<>();
     private Scene mScene;
+    private Stage mStage;
 
     public MWorkbenchModule(String name, Image icon) {
         super(name, icon);
@@ -61,16 +63,20 @@ public abstract class MWorkbenchModule extends WorkbenchModule {
         return mAccelerators;
     }
 
-    public HashSet<KeyCodeCombination> getKeyCodeCombinations() {
-        return mKeyCodeCombinations;
-    }
-
-    public Stage getStage() {
-        if (mStage == null) {
-            mStage = (Stage) getScene().getWindow();
+    public ResourceBundle getBundle() {
+        if (mBundle == null) {
+            mBundle = NbBundle.getBundle(getClass());
         }
 
-        return mStage;
+        return mBundle;
+    }
+
+    public String getBundleString(String key) {
+        return getBundle().getString(key);
+    }
+
+    public HashSet<KeyCodeCombination> getKeyCodeCombinations() {
+        return mKeyCodeCombinations;
     }
 
     public Scene getScene() {
@@ -81,17 +87,12 @@ public abstract class MWorkbenchModule extends WorkbenchModule {
         return mScene;
     }
 
-    public ResourceBundle getBundle() {
-        if (mBundle == null) {
-            mBundle = NbBundle.getBundle(getClass());
-
+    public Stage getStage() {
+        if (mStage == null) {
+            mStage = (Stage) getScene().getWindow();
         }
 
-        return mBundle;
-    }
-
-    public String getBundleString(String key) {
-        return getBundle().getString(key);
+        return mStage;
     }
 
     public void postInit() {
@@ -113,5 +114,4 @@ public abstract class MWorkbenchModule extends WorkbenchModule {
 
         mOptions2.general().nightModeProperty().addListener((observable, oldValue, newValue) -> setNightMode(newValue));
     }
-
 }

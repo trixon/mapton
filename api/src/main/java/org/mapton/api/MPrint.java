@@ -16,14 +16,22 @@
 package org.mapton.api;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import se.trixon.almond.util.GlobalState;
 
-public class NbPrint {
-//aaa
+public class MPrint {
 
-    public NbPrint(String title) {
+    private SimpleDateFormat mDateFormat = new SimpleDateFormat("yyyy-MM-dd HH.mm.ss.SSS: ");
+    private final GlobalState mGlobalState = Mapton.getGlobalState();
+    private final String mKey;
+    private boolean mUseTimestamps = true;
+
+    public MPrint(String key) {
+        mKey = key;
     }
 
     public void err(String x) {
+        mGlobalState.put(mKey, getDatedString("* " + x));
     }
 
     public void err(Object x) {
@@ -34,27 +42,35 @@ public class NbPrint {
         }
     }
 
-    public synchronized boolean isUseTimestamps() {
-        return false;
+    public boolean isUseTimestamps() {
+        return mUseTimestamps;
     }
 
     public void out(String x) {
+        mGlobalState.put(mKey, getDatedString(x));
     }
 
     public void out(Object x) {
         if (x == null) {
-            NbPrint.this.out("NULL");
+            out("NULL");
         } else {
-            NbPrint.this.out(String.valueOf(x));
+            out(String.valueOf(x));
         }
     }
 
-    public synchronized void select() {
-    }
-
     public void setDateFormat(SimpleDateFormat dateFormat) {
+        mDateFormat = dateFormat;
     }
 
     public void setUseTimestamps(boolean useTimestamps) {
+        mUseTimestamps = useTimestamps;
+    }
+
+    private String getDatedString(String s) {
+        if (mUseTimestamps) {
+            return mDateFormat.format(Calendar.getInstance().getTime()) + s;
+        } else {
+            return s;
+        }
     }
 }

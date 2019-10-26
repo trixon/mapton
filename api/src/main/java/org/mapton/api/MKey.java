@@ -34,6 +34,7 @@ public class MKey {
     public static final String NOTIFICATION_INFORMATION = "toolbar.notification.information";
     public static final String NOTIFICATION_WARNING = "toolbar.notification.warning";
     public static final String OBJECT_PROPERTIES = "object.properties";
+    public static final String UPDATER_LOGGER = "updater.logger";
     public static final String WIKIPEDIA_ARTICLE = "wikipedia.article";
 
 }

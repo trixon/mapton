@@ -27,7 +27,7 @@ import se.trixon.almond.util.SystemHelper;
  */
 public abstract class MUpdater {
 
-    protected NbPrint mPrint = new NbPrint(Dict.UPDATE_MANAGER.toString());
+    protected MPrint mPrint = new MPrint(MKey.UPDATER_LOGGER);
 
     private String mCategory = null;
     private String mComment;
@@ -49,7 +49,7 @@ public abstract class MUpdater {
         return mName;
     }
 
-    public NbPrint getPrint() {
+    public MPrint getPrint() {
         return mPrint;
     }
 
@@ -83,7 +83,7 @@ public abstract class MUpdater {
         mName = name;
     }
 
-    public void setPrint(NbPrint print) {
+    public void setPrint(MPrint print) {
         mPrint = print;
     }
 
