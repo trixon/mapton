@@ -16,6 +16,7 @@
 package org.mapton.workbench.api;
 
 import com.dlsc.workbenchfx.Workbench;
+import com.dlsc.workbenchfx.model.WorkbenchModule;
 import java.util.ArrayList;
 import java.util.Collections;
 import javafx.application.Platform;
@@ -27,6 +28,7 @@ import org.mapton.api.MWorkbenchModule;
 import org.mapton.api.Mapton;
 import org.mapton.workbench.CustomTab;
 import org.mapton.workbench.modules.MapModule;
+import org.mapton.workbench.modules.UpdaterModule;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import se.trixon.almond.util.GlobalStateChangeEvent;
@@ -98,6 +100,14 @@ public class WorkbenchManager {
 
     public Workbench getWorkbench() {
         return mWorkbench;
+    }
+
+    public void openModule(Class<UpdaterModule> clazz) {
+        for (WorkbenchModule module : mWorkbench.getModules()) {
+            if (clazz.isInstance(module)) {
+                mWorkbench.openModule(module);
+            }
+        }
     }
 
     public void populateModules() {

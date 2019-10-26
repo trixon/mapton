@@ -57,6 +57,8 @@ import org.mapton.workbench.api.WorkbenchManager;
 import org.mapton.workbench.modules.LogModule;
 import org.mapton.workbench.modules.MapModule;
 import org.mapton.workbench.modules.PreferencesModule;
+import org.mapton.workbench.modules.UpdaterModule;
+import org.mapton.workbench.modules.updater.UpdateNotificator;
 import org.netbeans.modules.autoupdate.ui.PluginManagerUI;
 import org.netbeans.modules.autoupdate.ui.api.PluginManager;
 import org.openide.LifecycleManager;
@@ -80,6 +82,7 @@ public class MaptonApplication extends Application {
     private Action mHelpAction;
     private Action mLogAction;
     private LogModule mLogModule;
+    private UpdaterModule mUpdaterModule;
     private MapModule mMapModule;
     private final MOptions2 mOptions2 = MOptions2.getInstance();
     private Action mOptionsAction;
@@ -128,6 +131,8 @@ public class MaptonApplication extends Application {
 
         initAccelerators();
         initListeners();
+
+        new UpdateNotificator();
     }
 
     @Override
@@ -144,6 +149,8 @@ public class MaptonApplication extends Application {
 
         Scene scene = new Scene(mWorkbench);
         mStage.setScene(scene);
+
+        mUpdaterModule = new UpdaterModule();
 
         mLogModule = new LogModule();
         Mapton.getLog().setOut(mLogModule);
@@ -181,6 +188,7 @@ public class MaptonApplication extends Application {
             mMapModule = new MapModule();
             mWorkbenchManager.getFixModules().add(mMapModule);
             mWorkbenchManager.getFixModules().add(mLogModule);
+            mWorkbenchManager.getFixModules().add(mUpdaterModule);
 
             Platform.runLater(() -> {
                 mWorkbenchManager.setAllowModulePopulation(true);
@@ -284,6 +292,8 @@ public class MaptonApplication extends Application {
         //update manager
         mUpdateManagerAction = new Action(Dict.UPDATE_MANAGER.toString(), (ActionEvent event) -> {
             mWorkbench.hideNavigationDrawer();
+//            mWorkbench.getModules().add(mLogModule);
+            mWorkbench.openModule(mUpdaterModule);
         });
 
         //quit

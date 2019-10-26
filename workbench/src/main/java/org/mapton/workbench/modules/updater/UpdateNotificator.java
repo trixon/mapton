@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core.updater;
+package org.mapton.workbench.modules.updater;
 
 import java.awt.event.ActionEvent;
 import java.io.File;
@@ -26,9 +26,10 @@ import org.controlsfx.control.action.Action;
 import org.mapton.api.MKey;
 import org.mapton.api.MUpdater;
 import org.mapton.api.Mapton;
+import org.mapton.workbench.api.WorkbenchManager;
+import org.mapton.workbench.modules.UpdaterModule;
 import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
-import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
 
@@ -46,7 +47,7 @@ public class UpdateNotificator {
             check();
         });
 
-        mTimer.setInitialDelay((int) TimeUnit.MINUTES.toMillis(1));
+        mTimer.setInitialDelay((int) TimeUnit.SECONDS.toMillis(5));
         mTimer.start();
     }
 
@@ -57,7 +58,7 @@ public class UpdateNotificator {
         }
 
         Action action = new Action(mBundle.getString("updater_tool"), (eventHandler) -> {
-            Almond.openAndActivateTopComponent("UpdaterTopComponent");
+            WorkbenchManager.getInstance().openModule(UpdaterModule.class);
         });
 
         Mapton.notification(MKey.NOTIFICATION_WARNING, Dict.UPDATE.toString(), name, Duration.seconds(10), action);
