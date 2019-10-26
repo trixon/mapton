@@ -332,7 +332,7 @@ public class MaptonApplication extends Application {
 
             AboutModel aboutModel = new AboutModel(
                     SystemHelper.getBundle(getClass(), "about"),
-                    SystemHelper.getResourceAsImageView(MaptonApplication.class, "logo.png")
+                    SystemHelper.getResourceAsImageView(WorkbenchManager.class, "logo.png")
             );
 
             AboutPane aboutPane = new AboutPane(aboutModel);
