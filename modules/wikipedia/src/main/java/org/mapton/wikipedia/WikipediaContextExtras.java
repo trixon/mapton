@@ -40,7 +40,6 @@ import org.mapton.wikipedia.result.Terms;
 import org.mapton.wikipedia.result.Thumbnail;
 import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
-import se.trixon.almond.nbp.Almond;
 
 /**
  *
@@ -58,7 +57,7 @@ public class WikipediaContextExtras extends MContextMenuItem {
     @Override
     public EventHandler<ActionEvent> getAction() {
         return (event) -> {
-            Almond.openAndActivateTopComponent("WikipediaTopComponent");
+//aaa            Almond.openAndActivateTopComponent("WikipediaTopComponent");
             String base = String.format(Locale.ENGLISH,
                     "https://%s.wikipedia.org/w/api.php?action=query",
                     mLocale.getLanguage()

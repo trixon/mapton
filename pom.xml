@@ -113,7 +113,7 @@
 
         <!--Other-->
         <module>modules/reports</module>
-        <!--<module>modules/wikipedia</module>-->
+        <module>modules/wikipedia</module>
 
 
         <!--Add-ons-->
