@@ -15,6 +15,7 @@
  */
 package org.mapton.core.ui;
 
+import org.mapton.workbench.modules.map.TemporalView;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;

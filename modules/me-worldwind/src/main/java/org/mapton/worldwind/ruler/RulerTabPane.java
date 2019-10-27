@@ -66,6 +66,7 @@ public class RulerTabPane extends TabPane {
         SimpleDialog.addFilter(mExtKml);
         SimpleDialog.setFilter(mExtKml);
         SimpleDialog.setTitle(String.format("%s %s", Dict.SAVE.toString(), Dict.Geometry.GEOMETRIES.toString().toLowerCase()));
+        SimpleDialog.setOwner(this.getScene().getWindow());
 
         String epoch = mSdf.format(new Date());
 
@@ -109,6 +110,7 @@ public class RulerTabPane extends TabPane {
         Tab plusTab = new Tab("+");
         plusTab.setClosable(false);
         getTabs().add(plusTab);
+        setPrefWidth(300);
     }
 
     private void initListeners() {

@@ -18,6 +18,7 @@ package org.mapton.workbench.modules;
 import com.dlsc.workbenchfx.Workbench;
 import com.dlsc.workbenchfx.model.WorkbenchDialog;
 import com.dlsc.workbenchfx.view.controls.ToolbarItem;
+import java.util.HashSet;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Side;
@@ -30,6 +31,7 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Region;
 import org.controlsfx.control.MaskerPane;
+import org.controlsfx.control.PopOver;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.MDict;
@@ -47,9 +49,9 @@ import org.mapton.workbench.bookmark.BookmarksView;
 import org.mapton.workbench.grid.GridForm;
 import org.mapton.workbench.modules.map.AttributionView;
 import org.mapton.workbench.modules.map.MapWindow;
-import org.mapton.workbench.modules.map.RulerStage;
 import org.mapton.workbench.modules.map.SearchView;
 import org.mapton.workbench.modules.map.StatusBar;
+import org.mapton.workbench.modules.map.TemporalView;
 import org.mapton.workbench.modules.map.ToolboxView;
 import org.mapton.workbench.window.WindowManager;
 import org.openide.util.NbBundle;
@@ -69,16 +71,19 @@ public class MapModule extends MWorkbenchModule {
     private TitledDrawerContent mBookmarksDrawerContent;
     private Node mDrawerContent;
     private ToolbarItem mGoHomeToolbarItem;
+    private TitledDrawerContent mGridDrawerContent;
     private ToolbarItem mGridToolbarItem;
     private ToolbarItem mLayerToolbarItem;
     private TitledDrawerContent mLayersDrawerContent;
-    private TitledDrawerContent mGridDrawerContent;
     private ToolbarItem mMapOnlyToolbarItem;
+    private final HashSet<PopOver> mPopOvers = new HashSet<>();
     private final BorderPane mRoot;
-    private RulerStage mRulerStage;
+    private PopOver mRulerPopOver;
     private ToolbarItem mRulerToolbarItem;
     private SearchView mSearchView;
     private ToolbarItem mStyleToolbarItem;
+    private PopOver mTemporalPopOver;
+    private ToolbarItem mTemporalToolbarItem;
     private TitledDrawerContent mToolDrawerContent;
     private ToolbarItem mToolboxToolbarItem;
     private WindowManager mWindowManager;
@@ -91,11 +96,11 @@ public class MapModule extends MWorkbenchModule {
         maskerPane.setText(NbBundle.getMessage(MaptonApplication.class, "loading_map"));
         mRoot = new BorderPane(maskerPane);
         mWorkbenchDialog = WorkbenchDialog.builder("", new Label(), WorkbenchDialog.Type.INFORMATION).build();
-        mRulerStage = new RulerStage();
         mAttributionView = new AttributionView();
 
         new Thread(() -> {
             createUI();
+            initPopOvers();
             initListeners();
 
             Platform.runLater(() -> {
@@ -144,6 +149,12 @@ public class MapModule extends MWorkbenchModule {
         getKeyCodeCombinations().add(kcc);
         getAccelerators().put(kcc, () -> {
             mBookmarkToolbarItem.getOnClick().handle(null);
+        });
+
+        kcc = new KeyCodeCombination(KeyCode.D, KeyCombination.SHORTCUT_DOWN);
+        getKeyCodeCombinations().add(kcc);
+        getAccelerators().put(kcc, () -> {
+            mTemporalToolbarItem.getOnClick().handle(null);
         });
 
         kcc = new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN);
@@ -230,6 +241,25 @@ public class MapModule extends MWorkbenchModule {
         });
     }
 
+    private void initPopOver(PopOver popOver, String title, Node content) {
+        popOver.setTitle(title);
+        popOver.setContentNode(content);
+        popOver.setArrowLocation(PopOver.ArrowLocation.TOP_RIGHT);
+        popOver.setHeaderAlwaysVisible(true);
+        popOver.setCloseButtonEnabled(true);
+        popOver.setDetachable(true);
+        popOver.setAnimated(true);
+        popOver.setAutoHide(false);
+
+        mPopOvers.add(popOver);
+    }
+
+    private void initPopOvers() {
+        initPopOver(mRulerPopOver = new PopOver(), Dict.RULER.toString(), Mapton.getEngine().getRulerView());
+        initPopOver(mTemporalPopOver = new PopOver(), Dict.DATE.toString(), new TemporalView());
+        mTemporalPopOver.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
+    }
+
     private void initToolbars() {
         mGoHomeToolbarItem = new ToolbarItem(MaterialIcon._Action.HOME.getImageView(ICON_SIZE_MODULE_TOOLBAR), event -> {
             Mapton.getEngine().goHome();
@@ -241,10 +271,11 @@ public class MapModule extends MWorkbenchModule {
 
         mRulerToolbarItem = new ToolbarItem(
                 Dict.RULER.toString(),
-                MaterialIcon._Editor.SPACE_BAR.getImageView(ICON_SIZE_MODULE_TOOLBAR),
-                event -> {
-                    mRulerStage.show();
-                });
+                MaterialIcon._Editor.SPACE_BAR.getImageView(ICON_SIZE_MODULE_TOOLBAR), event -> {
+            if (shouldOpen(mRulerPopOver)) {
+                mRulerPopOver.show(mRulerToolbarItem);
+            }
+        });
         setTooltip(mRulerToolbarItem, Dict.RULER.toString(), new KeyCodeCombination(KeyCode.R, KeyCombination.SHORTCUT_DOWN));
 
         mLayerToolbarItem = new ToolbarItem(MaterialIcon._Maps.LAYERS.getImageView(ICON_SIZE_MODULE_TOOLBAR), event -> {
@@ -263,7 +294,6 @@ public class MapModule extends MWorkbenchModule {
         setTooltip(mBookmarkToolbarItem, Dict.BOOKMARKS.toString(), new KeyCodeCombination(KeyCode.B, KeyCombination.SHORTCUT_DOWN));
 
         mStyleToolbarItem = new ToolbarItem(
-                "OpenStreetMap",
                 MaterialIcon._Image.COLOR_LENS.getImageView(ICON_SIZE_MODULE_TOOLBAR),
                 event -> {
                     showDialog(String.format("%s & %s", Dict.TYPE.toString(), Dict.STYLE.toString()), Mapton.getEngine().getStyleView());
@@ -281,9 +311,6 @@ public class MapModule extends MWorkbenchModule {
             System.out.println(event);
         });
 
-        Action temporalAction = new Action(Dict.Time.DATE.toString(), (event) -> {
-            System.out.println(event);
-        });
         Action objectPropertiesAction = new Action(Dict.OBJECT_PROPERTIES.toString(), (event) -> {
             System.out.println(event);
         });
@@ -297,10 +324,17 @@ public class MapModule extends MWorkbenchModule {
             showDrawer(mToolDrawerContent, Side.RIGHT);
         });
 
+        mTemporalToolbarItem = new ToolbarItem(
+                Dict.DATE.toString(),
+                MaterialIcon._Action.DATE_RANGE.getImageView(ICON_SIZE_MODULE_TOOLBAR), event -> {
+            if (shouldOpen(mTemporalPopOver)) {
+                mTemporalPopOver.show(mTemporalToolbarItem);
+            }
+        });
+
         mWindowToolbarItem = new ToolbarItem(
                 Dict.WINDOW.toString(),
                 MaterialIcon._Av.WEB_ASSET.getImageView(ICON_SIZE_MODULE_TOOLBAR),
-                ActionUtils.createMenuItem(temporalAction),
                 ActionUtils.createMenuItem(toolsAction),
                 ActionUtils.createMenuItem(objectPropertiesAction),
                 ActionUtils.createMenuItem(diagramAction)
@@ -325,6 +359,7 @@ public class MapModule extends MWorkbenchModule {
 
         getToolbarControlsRight().setAll(
                 mRulerToolbarItem,
+                mTemporalToolbarItem,
                 mToolboxToolbarItem,
                 mWindowToolbarItem,
                 mMapOnlyToolbarItem
@@ -341,6 +376,7 @@ public class MapModule extends MWorkbenchModule {
         mStyleToolbarItem.setDisable(engine.getStyleView() == null);
         mLayerToolbarItem.setDisable(layerView == null);
         mRulerToolbarItem.setDisable(engine.getRulerView() == null);
+        mRulerPopOver.setContentNode(engine.getRulerView());
 
         Mapton.getGlobalState().put(MKey.MAP_DOCUMENT_INFO, Mapton.getGlobalState().get(MKey.MAP_DOCUMENT_INFO));
     }
@@ -356,6 +392,13 @@ public class MapModule extends MWorkbenchModule {
             mRoot.setCenter(mWindowManager);
             mRoot.setBottom(null);
         }
+    }
+
+    private boolean shouldOpen(PopOver popOver) {
+        boolean shouldOpen = !popOver.isShowing();
+        popOver.hide();
+
+        return shouldOpen;
     }
 
     private void showDialog(String title, Node content) {
@@ -382,6 +425,20 @@ public class MapModule extends MWorkbenchModule {
         }
 
         getWorkbench().showDrawer((Region) content, side, 20);
+    }
+
+    private void tooglePopOver(PopOver popOver, ToolbarItem toolbarItem) {
+        Platform.runLater(() -> {
+            if (popOver.isShowing()) {
+                popOver.hide();
+            } else {
+                mPopOvers.forEach((item) -> {
+                    item.hide();
+                });
+
+                toolbarItem.getOnClick().handle(null);
+            }
+        });
     }
 
     private void updateDocumentInfo(MDocumentInfo documentInfo) {
