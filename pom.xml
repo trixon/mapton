@@ -244,6 +244,11 @@
                 <artifactId>GMapsFX-txn</artifactId>
                 <version>2.12.201</version>
             </dependency>
+            <dependency>
+                <groupId>se.trixon.windowsystemfx</groupId>
+                <artifactId>windowsystemfx-core</artifactId>
+                <version>0.0.1-SNAPSHOT</version>
+            </dependency>
 
             <!-- Other -->
             <dependency>

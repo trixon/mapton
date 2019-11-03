@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core.ui;
+package org.mapton.workbench.modules.map;
 
 import java.util.Map;
 import java.util.Optional;
@@ -26,14 +26,14 @@ import se.trixon.almond.util.Dict;
  *
  * @author Patrik Karlström
  */
-class MPropertyItem implements PropertySheet.Item {
+class PropertyItem implements PropertySheet.Item {
 
     private final String mCategory;
     private final String mKey;
     private final String mName;
     private final Map<String, Object> mPropertyMap;
 
-    public MPropertyItem(Map<String, Object> propertyMap, String key) {
+    public PropertyItem(Map<String, Object> propertyMap, String key) {
         mPropertyMap = propertyMap;
         mKey = key;
 

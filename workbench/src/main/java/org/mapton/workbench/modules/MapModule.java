@@ -48,16 +48,15 @@ import org.mapton.workbench.TitledDrawerContent;
 import org.mapton.workbench.bookmark.BookmarksView;
 import org.mapton.workbench.grid.GridForm;
 import org.mapton.workbench.modules.map.AttributionView;
-import org.mapton.workbench.modules.map.MapWindow;
 import org.mapton.workbench.modules.map.SearchView;
 import org.mapton.workbench.modules.map.StatusBar;
 import org.mapton.workbench.modules.map.TemporalView;
 import org.mapton.workbench.modules.map.ToolboxView;
-import org.mapton.workbench.window.WindowManager;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.GlobalStateChangeEvent;
 import se.trixon.almond.util.icons.material.MaterialIcon;
+import se.trixon.windowsystemfx.WindowManager;
 
 /**
  *
@@ -86,7 +85,7 @@ public class MapModule extends MWorkbenchModule {
     private ToolbarItem mTemporalToolbarItem;
     private TitledDrawerContent mToolDrawerContent;
     private ToolbarItem mToolboxToolbarItem;
-    private WindowManager mWindowManager;
+    private WindowManager mWindowManager = WindowManager.getInstance();
     private ToolbarItem mWindowToolbarItem;
     private WorkbenchDialog mWorkbenchDialog;
 
@@ -97,14 +96,17 @@ public class MapModule extends MWorkbenchModule {
         mRoot = new BorderPane(maskerPane);
         mWorkbenchDialog = WorkbenchDialog.builder("", new Label(), WorkbenchDialog.Type.INFORMATION).build();
         mAttributionView = new AttributionView();
+        mWindowManager.init();
 
         new Thread(() -> {
             createUI();
             initPopOvers();
-            initListeners();
 
             Platform.runLater(() -> {
+                initListeners();
                 initToolbars();
+                mRoot.setCenter(mWindowManager.getRoot());
+                mRoot.setBottom(StatusBar.getInstance());
                 refreshUI();
                 refreshEngine();
             });
@@ -139,7 +141,6 @@ public class MapModule extends MWorkbenchModule {
 
         mGridDrawerContent = new TitledDrawerContent(MDict.GRID.toString(), new GridForm());
         mToolDrawerContent = new TitledDrawerContent(Dict.TOOLBOX.toString(), new ToolboxView());
-        mWindowManager = new WindowManager();
     }
 
     private void initAccelerators() {
@@ -382,16 +383,16 @@ public class MapModule extends MWorkbenchModule {
     }
 
     private void refreshUI() {
-        if (mOptions2.general().isMaximizedMap()) {
-            mMapOnlyToolbarItem.setGraphic(MaterialIcon._Navigation.FULLSCREEN_EXIT.getImageView(ICON_SIZE_MODULE_TOOLBAR));
-            mRoot.setCenter(MapWindow.getInstance());
-            mRoot.setBottom(StatusBar.getInstance());
-        } else {
-            mMapOnlyToolbarItem.setGraphic(MaterialIcon._Navigation.FULLSCREEN.getImageView(ICON_SIZE_MODULE_TOOLBAR));
-            mWindowManager.setBottom(StatusBar.getInstance());
-            mRoot.setCenter(mWindowManager);
-            mRoot.setBottom(null);
-        }
+//        if (mOptions2.general().isMaximizedMap()) {
+//            mMapOnlyToolbarItem.setGraphic(MaterialIcon._Navigation.FULLSCREEN_EXIT.getImageView(ICON_SIZE_MODULE_TOOLBAR));
+//            mRoot.setCenter(MapWindow.getInstance());
+//            mRoot.setBottom(StatusBar.getInstance());
+//        } else {
+//            mMapOnlyToolbarItem.setGraphic(MaterialIcon._Navigation.FULLSCREEN.getImageView(ICON_SIZE_MODULE_TOOLBAR));
+//            mWindowManager.setBottom(StatusBar.getInstance());
+//            mRoot.setCenter(mWindowManager);
+//            mRoot.setBottom(null);
+//        }
     }
 
     private boolean shouldOpen(PopOver popOver) {

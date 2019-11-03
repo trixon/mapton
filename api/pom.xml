@@ -124,6 +124,10 @@
             <groupId>se.trixon.almond</groupId>
             <artifactId>almond-util</artifactId>
         </dependency>
+        <dependency>
+            <groupId>se.trixon.windowsystemfx</groupId>
+            <artifactId>windowsystemfx-core</artifactId>
+        </dependency>
 
         <!-- UI -->
         <dependency>

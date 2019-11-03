@@ -55,16 +55,26 @@ import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.util.NbBundle;
+import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.dialogs.SimpleDialog;
+import se.trixon.windowsystemfx.Window;
+import se.trixon.windowsystemfx.WindowSystemComponent;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class MapWindow extends StackPane {
+@WindowSystemComponent.Description(
+        iconBase = "",
+        preferredId = "org.mapton.workbench.modules.map.MapWindow",
+        parentId = "editor",
+        position = 1
+)
+@ServiceProvider(service = Window.class)
+public class MapWindow extends Window {
 
     private Menu mContextCopyMenu;
     private Menu mContextExtrasMenu;
@@ -73,17 +83,21 @@ public class MapWindow extends StackPane {
     private File mDestination;
     private MEngine mEngine;
     private final MOptions mMOptions = MOptions.getInstance();
+    private StackPane mNode;
 
-    public static MapWindow getInstance() {
-        return Holder.INSTANCE;
+    public MapWindow() {
+        mEngine = Mapton.getEngine();
     }
 
-    private MapWindow() {
-        mEngine = Mapton.getEngine();
+    @Override
+    public Node getNode() {
+        if ((mNode == null)) {
+            createUI();
+            initContextMenu();
+            initListeners();
+        }
 
-        createUI();
-        initContextMenu();
-        initListeners();
+        return mNode;
     }
 
     private void copyImage() {
@@ -96,7 +110,7 @@ public class MapWindow extends StackPane {
     }
 
     private void createUI() {
-        getChildren().setAll(
+        mNode = new StackPane(
                 Mapton.getEngine().getUI(),
                 crosshairSegment(Side.TOP),
                 crosshairSegment(Side.RIGHT),
@@ -152,7 +166,7 @@ public class MapWindow extends StackPane {
         SimpleDialog.addFilter(new FileChooser.ExtensionFilter(Dict.ALL_FILES.toString(), "*"));
         SimpleDialog.addFilter(filter);
         SimpleDialog.setFilter(filter);
-        SimpleDialog.setOwner(getScene().getWindow());
+        SimpleDialog.setOwner(mNode.getScene().getWindow());
         SimpleDialog.setTitle(getBundleString("export_view"));
 
         SimpleDialog.setPath(mDestination == null ? FileUtils.getUserDirectory() : mDestination.getParentFile());
@@ -228,7 +242,7 @@ public class MapWindow extends StackPane {
     private void initListeners() {
         final ObjectProperty<String> engineProperty = MOptions2.getInstance().general().engineProperty();
         engineProperty.addListener((ObservableValue<? extends String> ov, String t, String t1) -> {
-            getChildren().setAll(Mapton.getEngine().getUI());
+            mNode.getChildren().setAll(Mapton.getEngine().getUI());
         });
 
         engineProperty.addListener((ObservableValue<? extends String> ov, String t, String t1) -> {
@@ -238,7 +252,7 @@ public class MapWindow extends StackPane {
         MEngine.addEngineListener(new MEngineListener() {
             @Override
             public void displayContextMenu(Point screenXY) {
-                mContextMenu.show(MapWindow.this, screenXY.x, screenXY.y);
+                mContextMenu.show(mNode, screenXY.x, screenXY.y);
             }
 
             @Override
@@ -325,10 +339,5 @@ public class MapWindow extends StackPane {
                 //TODO err inf dialog
             }
         }).start();
-    }
-
-    private static class Holder {
-
-        private static final MapWindow INSTANCE = new MapWindow();
     }
 }

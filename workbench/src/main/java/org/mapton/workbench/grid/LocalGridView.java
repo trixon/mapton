@@ -105,7 +105,7 @@ public class LocalGridView extends BorderPane {
 
         FxHelper.slimToolBar(toolBar);
         setTop(new VBox(8, mPlotCheckBox, toolBar));
-        setCenter(mListView);
+//        setCenter(mListView);
         toolBar.disableProperty().bind(mPlotCheckBox.selectedProperty().not());
         mListView.disableProperty().bind(mPlotCheckBox.selectedProperty().not());
 

@@ -15,7 +15,6 @@
  */
 package org.mapton.core.ui;
 
-import org.mapton.workbench.modules.map.TemporalView;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -85,9 +84,6 @@ public class AppToolBar extends ToolBar {
     private FxActionSwingCheck mSysViewFullscreenAction;
     private FxActionSwingCheck mSysViewMapAction;
     private FxActionSwing mSysViewResetAction;
-    private Action mTemporalAction;
-    private PopOver mTemporalPopOver;
-    private TemporalView mTemporalView;
 
     public AppToolBar() {
         initPopOvers();
@@ -112,16 +108,6 @@ public class AppToolBar extends ToolBar {
 
     public void toogleLayerPopOver() {
         tooglePopOver(mLayerPopOver, mLayerAction);
-    }
-
-    public void toogleTemporalPopOver() {
-        Platform.runLater(() -> {
-            if (mTemporalPopOver.isShowing()) {
-                mTemporalPopOver.hide();
-            } else {
-                mTemporalPopOver.show(getButtonForAction(mTemporalAction));
-            }
-        });
     }
 
     private Node getButtonForAction(Action action) {
@@ -187,7 +173,6 @@ public class AppToolBar extends ToolBar {
                 mRulerAction,
                 mLayerAction,
                 mBookmarkAction,
-                mTemporalAction,
                 ActionUtils.ACTION_SPAN,
                 mSysViewMapAction,
                 systemActionGroup
@@ -238,12 +223,6 @@ public class AppToolBar extends ToolBar {
         });
         mLayerAction.setGraphic(MaterialIcon._Maps.LAYERS.getImageView(getIconSizeToolBar()));
         mLayerAction.setSelected(mOptions.isBookmarkVisible());
-
-        //Temporal
-        mTemporalAction = new Action(Dict.Time.DATE.toString(), (ActionEvent event) -> {
-            toogleTemporalPopOver();
-        });
-        mTemporalAction.setGraphic(MaterialIcon._Action.DATE_RANGE.getImageView(getIconSizeToolBar()));
 
         //Help
         mSysHelpAction = new Action(Dict.HELP.toString(), (ActionEvent event) -> {
@@ -376,13 +355,6 @@ public class AppToolBar extends ToolBar {
         mLayerPopOver.setOnShowing((event) -> {
             mLayerPopOver.setContentNode(new LayerView());
         });
-
-        mTemporalPopOver = new PopOver();
-        mTemporalView = new TemporalView();
-        initPopOver(mTemporalPopOver, Dict.Time.DATE.toString(), mTemporalView);
-        mTemporalPopOver.setArrowLocation(PopOver.ArrowLocation.TOP_CENTER);
-        mTemporalPopOver.setAutoHide(false);
-        mTemporalPopOver.setCloseButtonEnabled(true);
     }
 
     private boolean shouldOpen(PopOver popOver) {

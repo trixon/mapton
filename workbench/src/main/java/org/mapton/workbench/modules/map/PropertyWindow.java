@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core.ui;
+package org.mapton.workbench.modules.map;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -21,7 +21,6 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -29,74 +28,54 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.controlsfx.control.PropertySheet;
 import org.controlsfx.control.PropertySheet.Item;
 import org.mapton.api.MKey;
-import org.mapton.api.MMapMagnet;
-import org.mapton.api.MTopComponent;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBar;
-import org.netbeans.api.settings.ConvertAsProperties;
-import org.openide.windows.TopComponent;
+import org.openide.util.NbBundle;
+import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.GlobalStateChangeEvent;
 import se.trixon.almond.util.fx.control.LogPanel;
 import se.trixon.almond.util.icons.material.MaterialIcon;
+import se.trixon.windowsystemfx.Window;
+import se.trixon.windowsystemfx.WindowSystemComponent;
 
-/**
- * Generic Property TopComponent
- */
-@ConvertAsProperties(
-        dtd = "-//org.mapton.core.ui//ObjectProperties//EN",
-        autostore = false
+@WindowSystemComponent.Description(
+        iconBase = "",
+        preferredId = "org.mapton.workbench.modules.map.PropertyWindow",
+        parentId = "property",
+        position = 1
 )
-@TopComponent.Description(
-        preferredID = "ObjectPropertiesTopComponent",
-        //iconBase="SET/PATH/TO/ICON/HERE",
-        persistenceType = TopComponent.PERSISTENCE_ALWAYS
-)
-@TopComponent.Registration(mode = "properties", openAtStartup = false)
-@TopComponent.OpenActionRegistration(
-        displayName = "#CTL_ObjectPropertiesAction",
-        preferredID = "ObjectPropertiesTopComponent"
-)
-public final class ObjectPropertiesTopComponent extends MTopComponent implements MMapMagnet {
+@ServiceProvider(service = Window.class)
+public final class PropertyWindow extends Window {
 
     private final Map<String, Object> mDummyMap = new LinkedHashMap<>();
     private LogPanel mLogPanel;
+    private BorderPane mNode;
     private Label mPlaceholderLabel;
     private PropertySheet mPropertySheet;
-    private BorderPane mRoot;
 
-    public ObjectPropertiesTopComponent() {
+    public PropertyWindow() {
         setName(Dict.OBJECT_PROPERTIES.toString());
     }
 
     @Override
-    protected void initFX() {
-        setScene(createScene());
-        initListeners();
-        refresh(null);
+    public Node getNode() {
+        if ((mNode == null)) {
+            createUI();
+            initListeners();
+            refresh(null);
+        }
+
+        return mNode;
     }
 
-    void readProperties(java.util.Properties p) {
-        String version = p.getProperty("version");
-        // TODO read your settings according to their version
-    }
-
-    void writeProperties(java.util.Properties p) {
-        // better to version settings since initial version as advocated at
-        // http://wiki.apidesign.org/wiki/PropertyFiles
-        p.setProperty("version", "1.0");
-        // TODO store your settings
-    }
-
-    private Scene createScene() {
+    private void createUI() {
         mPropertySheet = new PropertySheet();
         mPropertySheet.setMode(PropertySheet.Mode.NAME);
         mLogPanel = new LogPanel();
-        mRoot = new BorderPane(mPropertySheet);
-        mPlaceholderLabel = new Label(getBundleString("object_properties_placeholder"), MaterialIcon._Action.ASSIGNMENT.getImageView(getIconSizeToolBar()));
+        mNode = new BorderPane(mPropertySheet);
+        mPlaceholderLabel = new Label(NbBundle.getMessage(ChartWindow.class, "object_properties_placeholder"), MaterialIcon._Action.ASSIGNMENT.getImageView(getIconSizeToolBar()));
         mPlaceholderLabel.setDisable(true);
-
-        return new Scene(mRoot);
     }
 
     private void initListeners() {
@@ -118,7 +97,7 @@ public final class ObjectPropertiesTopComponent extends MTopComponent implements
     private void loadMap(Map<String, Object> propertiesMap) {
         ObservableList<Item> propertyItems = FXCollections.observableArrayList();
         propertiesMap.keySet().forEach((key) -> {
-            propertyItems.add(new MPropertyItem(propertiesMap, key));
+            propertyItems.add(new PropertyItem(propertiesMap, key));
         });
 
         loadList(propertyItems);
@@ -127,7 +106,7 @@ public final class ObjectPropertiesTopComponent extends MTopComponent implements
     @SuppressWarnings("unchecked")
     private void refresh(Object o) {
         Node centerObject = null;
-        mRoot.setCenter(mPropertySheet);
+        mNode.setCenter(mPropertySheet);
 
         if (o == null) {
             centerObject = mPlaceholderLabel;
@@ -146,6 +125,6 @@ public final class ObjectPropertiesTopComponent extends MTopComponent implements
             load(ToStringBuilder.reflectionToString(o, ToStringStyle.MULTI_LINE_STYLE));
         }
 
-        mRoot.setCenter(centerObject);
+        mNode.setCenter(centerObject);
     }
 }

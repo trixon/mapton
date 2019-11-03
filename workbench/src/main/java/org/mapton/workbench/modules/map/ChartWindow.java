@@ -13,84 +13,63 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core.ui.chart;
+package org.mapton.workbench.modules.map;
 
 import javafx.application.Platform;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.BorderPane;
 import org.mapton.api.MChartLine;
 import org.mapton.api.MKey;
-import org.mapton.api.MMapMagnet;
-import org.mapton.api.MTopComponent;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBar;
-import org.netbeans.api.settings.ConvertAsProperties;
-import org.openide.windows.TopComponent;
+import org.openide.util.NbBundle;
+import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.GlobalStateChangeEvent;
 import se.trixon.almond.util.icons.material.MaterialIcon;
+import se.trixon.windowsystemfx.Window;
+import se.trixon.windowsystemfx.WindowSystemComponent;
 
-/**
- * Generic Property TopComponent
- */
-@ConvertAsProperties(
-        dtd = "-//org.mapton.core.ui.chart//Chart//EN",
-        autostore = false
+@WindowSystemComponent.Description(
+        iconBase = "",
+        preferredId = "org.mapton.workbench.modules.map.ChartWindow",
+        parentId = "chart",
+        position = 1
 )
-@TopComponent.Description(
-        preferredID = "ChartTopComponent",
-        //iconBase="SET/PATH/TO/ICON/HERE",
-        persistenceType = TopComponent.PERSISTENCE_ALWAYS
-)
-@TopComponent.Registration(mode = "output", openAtStartup = false)
-@TopComponent.OpenActionRegistration(
-        displayName = "#CTL_ChartAction",
-        preferredID = "ChartTopComponent"
-)
-public final class ChartTopComponent extends MTopComponent implements MMapMagnet {
+@ServiceProvider(service = Window.class)
+public final class ChartWindow extends Window {
 
     private Label mInvalidPlaceholderLabel;
+    private BorderPane mNode;
     private Label mPlaceholderLabel;
-    private BorderPane mRoot;
     private ProgressBar mProgressBar;
 
-    public ChartTopComponent() {
+    public ChartWindow() {
         setName(Dict.CHART.toString());
     }
 
     @Override
-    protected void initFX() {
-        setScene(createScene());
-        initListeners();
+    public Node getNode() {
+        if ((mNode == null)) {
+            createUI();
+            initListeners();
+        }
+
+        return mNode;
     }
 
-    void readProperties(java.util.Properties p) {
-        String version = p.getProperty("version");
-        // TODO read your settings according to their version
-    }
-
-    void writeProperties(java.util.Properties p) {
-        // better to version settings since initial version as advocated at
-        // http://wiki.apidesign.org/wiki/PropertyFiles
-        p.setProperty("version", "1.0");
-        // TODO store your settings
-    }
-
-    private Scene createScene() {
-        mPlaceholderLabel = new Label(getBundleString("placeholder"), MaterialIcon._Editor.SHOW_CHART.getImageView(getIconSizeToolBar()));
+    private void createUI() {
+        mPlaceholderLabel = new Label(NbBundle.getMessage(ChartWindow.class, "chart_placeholder"), MaterialIcon._Editor.SHOW_CHART.getImageView(getIconSizeToolBar()));
         mPlaceholderLabel.setDisable(true);
 
-        mInvalidPlaceholderLabel = new Label(getBundleString("invalid_object"), MaterialIcon._Editor.SHOW_CHART.getImageView(getIconSizeToolBar()));
+        mInvalidPlaceholderLabel = new Label(NbBundle.getMessage(ChartWindow.class, "chart_invalid_object"), MaterialIcon._Editor.SHOW_CHART.getImageView(getIconSizeToolBar()));
         mInvalidPlaceholderLabel.setDisable(true);
 
         mProgressBar = new ProgressBar(-1);
         mProgressBar.setPrefWidth(400);
-        mRoot = new BorderPane(mPlaceholderLabel);
-
-        return new Scene(mRoot);
+        mNode = new BorderPane(mPlaceholderLabel);
     }
 
     private void initListeners() {
@@ -102,7 +81,7 @@ public final class ChartTopComponent extends MTopComponent implements MMapMagnet
 
         Mapton.getGlobalState().addListener((GlobalStateChangeEvent evt) -> {
             Platform.runLater(() -> {
-                mRoot.setCenter(mProgressBar);
+                mNode.setCenter(mProgressBar);
             });
         }, MKey.CHART_WAIT);
     }
@@ -120,6 +99,6 @@ public final class ChartTopComponent extends MTopComponent implements MMapMagnet
             centerObject = mInvalidPlaceholderLabel;
         }
 
-        mRoot.setCenter(centerObject);
+        mNode.setCenter(centerObject);
     }
 }
