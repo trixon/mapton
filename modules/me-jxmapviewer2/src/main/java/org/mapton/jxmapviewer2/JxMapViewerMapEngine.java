@@ -103,9 +103,7 @@ public class JxMapViewerMapEngine extends MEngine {
             init();
             initListeners();
             mSwingNode = new SwingNode();
-            SwingUtilities.invokeLater(() -> {
-                mSwingNode.setContent(mMapKit);
-            });
+            refreshUI();
         }
 
         updateToolbarDocumentInfo();
@@ -131,6 +129,13 @@ public class JxMapViewerMapEngine extends MEngine {
     @Override
     public void panTo(MLatLon latLon, double zoom) {
         panAndZoomTo(toGeoPosition(latLon), MathHelper.round(toLocalZoom(zoom)));
+    }
+
+    @Override
+    public void refreshUI() {
+        SwingUtilities.invokeLater(() -> {
+            mSwingNode.setContent(mMapKit);
+        });
     }
 
     private void init() {

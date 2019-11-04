@@ -48,6 +48,7 @@ import org.mapton.workbench.TitledDrawerContent;
 import org.mapton.workbench.bookmark.BookmarksView;
 import org.mapton.workbench.grid.GridForm;
 import org.mapton.workbench.modules.map.AttributionView;
+import org.mapton.workbench.modules.map.MapWindow;
 import org.mapton.workbench.modules.map.SearchView;
 import org.mapton.workbench.modules.map.StatusBar;
 import org.mapton.workbench.modules.map.TemporalView;
@@ -137,8 +138,8 @@ public class MapModule extends MWorkbenchModule {
 
     private void createUI() {
         mSearchView = new SearchView();
-        mBookmarksDrawerContent = new TitledDrawerContent(Dict.BOOKMARKS.toString(), new BookmarksView());
 
+        mBookmarksDrawerContent = new TitledDrawerContent(Dict.BOOKMARKS.toString(), new BookmarksView());
         mGridDrawerContent = new TitledDrawerContent(MDict.GRID.toString(), new GridForm());
         mToolDrawerContent = new TitledDrawerContent(Dict.TOOLBOX.toString(), new ToolboxView());
     }
@@ -383,16 +384,14 @@ public class MapModule extends MWorkbenchModule {
     }
 
     private void refreshUI() {
-//        if (mOptions2.general().isMaximizedMap()) {
-//            mMapOnlyToolbarItem.setGraphic(MaterialIcon._Navigation.FULLSCREEN_EXIT.getImageView(ICON_SIZE_MODULE_TOOLBAR));
-//            mRoot.setCenter(MapWindow.getInstance());
-//            mRoot.setBottom(StatusBar.getInstance());
-//        } else {
-//            mMapOnlyToolbarItem.setGraphic(MaterialIcon._Navigation.FULLSCREEN.getImageView(ICON_SIZE_MODULE_TOOLBAR));
-//            mWindowManager.setBottom(StatusBar.getInstance());
-//            mRoot.setCenter(mWindowManager);
-//            mRoot.setBottom(null);
-//        }
+        if (mOptions2.general().isMaximizedMap()) {
+            mMapOnlyToolbarItem.setGraphic(MaterialIcon._Navigation.FULLSCREEN_EXIT.getImageView(ICON_SIZE_MODULE_TOOLBAR));
+            mWindowManager.showOnlyWindowById(MapWindow.ID);
+        } else {
+            mMapOnlyToolbarItem.setGraphic(MaterialIcon._Navigation.FULLSCREEN.getImageView(ICON_SIZE_MODULE_TOOLBAR));
+            mWindowManager.showRoot();
+        }
+        Mapton.getEngine().refreshUI();
     }
 
     private boolean shouldOpen(PopOver popOver) {

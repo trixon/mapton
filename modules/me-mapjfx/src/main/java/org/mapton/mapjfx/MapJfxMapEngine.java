@@ -84,7 +84,7 @@ public class MapJfxMapEngine extends MEngine {
 
     @Override
     public String getName() {
-        return "OpenLayers (mapjfx)";
+        return "OpenLayers";
     }
 
     @Override

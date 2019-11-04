@@ -157,9 +157,7 @@ public class WorldWindMapEngine extends MEngine {
             init();
             initListeners();
             mSwingNode = new SwingNode();
-            SwingUtilities.invokeLater(() -> {
-                mSwingNode.setContent(mMap);
-            });
+            refreshUI();
         }
 
         updateToolbarDocumentInfo();
@@ -217,6 +215,13 @@ public class WorldWindMapEngine extends MEngine {
             view.setFieldOfView(fieldOfView);
         } catch (Exception e) {
         }
+    }
+
+    @Override
+    public void refreshUI() {
+        SwingUtilities.invokeLater(() -> {
+            mSwingNode.setContent(mMap);
+        });
     }
 
     private void fitToBounds(Sector sector) {

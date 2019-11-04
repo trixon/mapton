@@ -69,13 +69,14 @@ import se.trixon.windowsystemfx.WindowSystemComponent;
  */
 @WindowSystemComponent.Description(
         iconBase = "",
-        preferredId = "org.mapton.workbench.modules.map.MapWindow",
+        preferredId = MapWindow.ID,
         parentId = "editor",
         position = 1
 )
 @ServiceProvider(service = Window.class)
 public class MapWindow extends Window {
 
+    public static final String ID = "org.mapton.workbench.modules.map.MapWindow";
     private Menu mContextCopyMenu;
     private Menu mContextExtrasMenu;
     private ContextMenu mContextMenu;
@@ -242,7 +243,7 @@ public class MapWindow extends Window {
     private void initListeners() {
         final ObjectProperty<String> engineProperty = MOptions2.getInstance().general().engineProperty();
         engineProperty.addListener((ObservableValue<? extends String> ov, String t, String t1) -> {
-            mNode.getChildren().setAll(Mapton.getEngine().getUI());
+            mNode.getChildren().set(0, Mapton.getEngine().getUI());
         });
 
         engineProperty.addListener((ObservableValue<? extends String> ov, String t, String t1) -> {

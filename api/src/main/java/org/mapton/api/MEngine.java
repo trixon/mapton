@@ -265,6 +265,12 @@ public abstract class MEngine {
         Mapton.getLog().i(getClass().getSimpleName(), "panTo(Zoom) not implemented");
     }
 
+    /**
+     * Used to re-parent SwingNodes
+     */
+    public void refreshUI() {
+    }
+
     public void setImageRenderer(Callable<BufferedImage> imageRenderer) {
         mImageRenderer = imageRenderer;
     }
