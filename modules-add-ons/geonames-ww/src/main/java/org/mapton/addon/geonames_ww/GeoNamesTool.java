@@ -19,7 +19,6 @@ import org.controlsfx.control.action.Action;
 import org.mapton.api.MTool;
 import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
-import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxActionSwing;
 
@@ -35,7 +34,7 @@ public class GeoNamesTool implements MTool {
     @Override
     public Action getAction() {
         FxActionSwing action = new FxActionSwing(NAME, () -> {
-            Almond.openAndActivateTopComponent("GeoNamesTopComponent");
+//            Almond.openAndActivateTopComponent("GeoNamesTopComponent");
         });
 
         return action;
