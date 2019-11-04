@@ -47,6 +47,7 @@ import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionGroup;
 import org.controlsfx.control.action.ActionUtils;
 import org.controlsfx.control.textfield.TextFields;
+import org.mapton.api.MActivatable;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.mapton.worldwind.api.WWHelper;
@@ -60,7 +61,7 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
  *
  * @author Patrik Karlström
  */
-public class LayerView extends BorderPane {
+public class LayerView extends BorderPane implements MActivatable {
 
     private CheckModel<TreeItem<Layer>> mCheckModel;
     private final Preferences mExpandedPreferences;
@@ -90,6 +91,11 @@ public class LayerView extends BorderPane {
             createUI();
             initListeners();
         });
+    }
+
+    @Override
+    public void activate() {
+        mFilterTextField.requestFocus();
     }
 
     void refresh(WorldWindowPanel map) {

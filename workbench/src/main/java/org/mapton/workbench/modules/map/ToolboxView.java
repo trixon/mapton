@@ -32,6 +32,7 @@ import javafx.scene.layout.BorderPane;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.textfield.TextFields;
+import org.mapton.api.MActivatable;
 import org.mapton.api.MTool;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
@@ -43,7 +44,7 @@ import se.trixon.almond.util.StringHelper;
  *
  * @author Patrik Karlström
  */
-public class ToolboxView extends BorderPane {
+public class ToolboxView extends BorderPane implements MActivatable {
 
     private final Map<Action, String> mActionParents = new HashMap<>();
     private TextField mFilterTextField;
@@ -58,6 +59,11 @@ public class ToolboxView extends BorderPane {
 
         initTools();
         populate();
+    }
+
+    @Override
+    public void activate() {
+        mFilterTextField.requestFocus();
     }
 
     private void addListeners() {

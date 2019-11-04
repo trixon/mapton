@@ -34,6 +34,7 @@ import org.controlsfx.control.MaskerPane;
 import org.controlsfx.control.PopOver;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
+import org.mapton.api.MActivatable;
 import org.mapton.api.MDict;
 import org.mapton.api.MDocumentInfo;
 import org.mapton.api.MEngine;
@@ -425,6 +426,9 @@ public class MapModule extends MWorkbenchModule {
         }
 
         getWorkbench().showDrawer((Region) content, side, 20);
+        if (content instanceof MActivatable) {
+            ((MActivatable) content).activate();
+        }
     }
 
     private void tooglePopOver(PopOver popOver, ToolbarItem toolbarItem) {

@@ -40,6 +40,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
 import org.controlsfx.control.textfield.TextFields;
+import org.mapton.api.MActivatable;
 import org.mapton.api.MBookmark;
 import org.mapton.api.MBookmarkManager;
 import org.mapton.api.MContextMenuItem;
@@ -60,14 +61,14 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
  *
  * @author Patrik Karlström
  */
-public class BookmarksView extends BorderPane {
+public class BookmarksView extends BorderPane implements MActivatable {
 
     private final Map<String, TreeItem<MBookmark>> mBookmarkParents = new TreeMap<>();
+    private BookmarkEditor mEditor = BookmarkEditor.getInstance();
     private TextField mFilterTextField;
     private final MBookmarkManager mManager = MBookmarkManager.getInstance();
     private final Preferences mPreferences = NbPreferences.forModule(BookmarksView.class).node("expanded_state");
     private final TreeView<MBookmark> mTreeView = new TreeView<>();
-    private BookmarkEditor mEditor = BookmarkEditor.getInstance();
 
     public BookmarksView() {
         createUI();
@@ -75,6 +76,11 @@ public class BookmarksView extends BorderPane {
         mManager.dbLoad(mFilterTextField.getText(), true);
         populate();
         addListeners();
+    }
+
+    @Override
+    public void activate() {
+        mFilterTextField.requestFocus();
     }
 
     private void addListeners() {

@@ -21,12 +21,13 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Font;
+import org.mapton.api.MActivatable;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class TitledDrawerContent extends BorderPane {
+public class TitledDrawerContent extends BorderPane implements MActivatable {
 
     private final Node mNode;
     private final String mTitle;
@@ -44,6 +45,13 @@ public class TitledDrawerContent extends BorderPane {
         stackPane.setPadding(new Insets(2));
         setCenter(stackPane);
 
+    }
+
+    @Override
+    public void activate() {
+        if (mNode instanceof MActivatable) {
+            ((MActivatable) mNode).activate();
+        }
     }
 
     public Node getNode() {
