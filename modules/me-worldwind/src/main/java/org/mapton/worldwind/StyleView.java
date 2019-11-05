@@ -17,7 +17,6 @@ package org.mapton.worldwind;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.TreeMap;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
@@ -27,9 +26,12 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
+import javafx.geometry.Side;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.CustomMenuItem;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
@@ -40,15 +42,16 @@ import javafx.scene.control.Separator;
 import javafx.scene.control.Slider;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
+import javafx.scene.layout.Border;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import org.apache.commons.lang3.StringUtils;
-import org.controlsfx.control.PopOver;
 import org.mapton.api.MDict;
 import org.mapton.api.MKey;
 import org.mapton.api.MWmsStyle;
@@ -78,7 +81,6 @@ public class StyleView extends HBox {
     private final Slider mOpacitySlider = new Slider(0, 1, 1);
     private final ModuleOptions mOptions = ModuleOptions.getInstance();
     private CheckBox mPlaceNameCheckBox;
-    private HashMap<PopOver, Long> mPopoverClosingTimes = new HashMap<>();
     private ComboBox<String> mProjComboBox;
     private final ArrayList<String> mProjections = new ArrayList<>();
     private CheckBox mScaleBarCheckBox;
@@ -276,63 +278,29 @@ public class StyleView extends HBox {
 
             for (String category : categoryStyles.keySet()) {
                 ListView<MapStyle> listView = new ListView<>(categoryStyles.get(category));
-                listView.setPrefWidth(FxHelper.getUIScaled(300));
+                listView.setPrefWidth(FxHelper.getUIScaled(250));
                 listView.setCellFactory((ListView<MapStyle> param) -> new MapStyleListCell());
+                listView.parentProperty().addListener((ObservableValue<? extends Parent> observable, Parent oldValue, Parent newValue) -> {
+                    Region region = (Region) newValue;
+                    region.setPadding(Insets.EMPTY);
+                    region.setBorder(Border.EMPTY);
+                });
 
                 MultipleSelectionModel<MapStyle> selectionModel = listView.getSelectionModel();
-
                 selectionModel.getSelectedItems().addListener((ListChangeListener.Change<? extends MapStyle> change) -> {
                     if (selectionModel.getSelectedItem() != null) {
                         mOptions.put(KEY_MAP_STYLE, selectionModel.getSelectedItem().getId());
                     }
                 });
 
-                PopOver popOver = new PopOver();
-                popOver.setContentNode(listView);
-                popOver.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
-                popOver.setHeaderAlwaysVisible(false);
-                popOver.setCloseButtonEnabled(false);
-                popOver.setDetachable(false);
-                popOver.setAnimated(false);
-                popOver.prefWidthProperty().bind(widthProperty());
-                popOver.setOnHiding((windowEvent -> {
-                    mPopoverClosingTimes.put(popOver, System.currentTimeMillis());
-                }));
+                MenuButton menuButton = new MenuButton(category);
+                menuButton.setPopupSide(Side.RIGHT);
+                CustomMenuItem menuItem = new CustomMenuItem(listView);
+                menuItem.setHideOnClick(false);
+                menuButton.getItems().add(menuItem);
+                menuButton.prefWidthProperty().bind(widthProperty());
 
-                popOver.setOnShowing((windowEvent -> {
-                    MapStyle selectedItem = selectionModel.getSelectedItem();
-                    if (selectedItem != null) {
-                        String selectedId = selectedItem.getId();
-                        if (!StringUtils.equals(mOptions.get(KEY_MAP_STYLE), selectedId)) {
-                            selectionModel.clearSelection();
-                        }
-                    }
-                }));
-
-                MenuButton button = new MenuButton(category) {
-//                    @Override
-//                    public void hide() {
-//                        popOver.hide();
-//                    }
-
-                    @Override
-                    public void show() {
-//                        if (shouldOpen(popOver)) {
-                        popOver.show(this);
-//                        }
-                    }
-
-                };
-
-//                Button button = new Button(category);
-//                button.setOnAction((ActionEvent event) -> {
-//                    if (shouldOpen(popOver)) {
-//                        popOver.show(button);
-//                    }
-//                });
-                button.prefWidthProperty().bind(widthProperty());
-
-                mStyleBox.getChildren().add(button);
+                mStyleBox.getChildren().add(menuButton);
             }
 
             mStyleBox.getChildren().add(new Separator());
@@ -358,10 +326,6 @@ public class StyleView extends HBox {
 
         mOpacitySlider.setValue(mOptions.getDouble(KEY_MAP_OPACITY, DEFAULT_MAP_OPACITY));
         mElevationCheckBox.setSelected(mOptions.is(KEY_MAP_ELEVATION, DEFAULT_MAP_ELEVATION));
-    }
-
-    private boolean shouldOpen(PopOver popOver) {
-        return System.currentTimeMillis() - mPopoverClosingTimes.getOrDefault(popOver, 0L) > 200;
     }
 
     class MapStyleListCell extends ListCell<MapStyle> {
