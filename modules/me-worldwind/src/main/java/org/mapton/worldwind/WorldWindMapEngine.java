@@ -37,10 +37,12 @@ import java.util.LinkedHashMap;
 import java.util.TreeMap;
 import java.util.logging.Logger;
 import java.util.prefs.PreferenceChangeEvent;
+import javafx.application.Platform;
 import javafx.embed.swing.SwingNode;
 import javafx.scene.Node;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
+import org.apache.commons.lang3.SystemUtils;
 import org.mapton.api.MAttribution;
 import org.mapton.api.MDocumentInfo;
 import org.mapton.api.MEngine;
@@ -51,6 +53,7 @@ import org.mapton.api.Mapton;
 import static org.mapton.worldwind.ModuleOptions.*;
 import org.mapton.worldwind.api.MapStyle;
 import org.mapton.worldwind.ruler.RulerTabPane;
+import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.GlobalState;
 import se.trixon.almond.util.SystemHelper;
@@ -221,6 +224,25 @@ public class WorldWindMapEngine extends MEngine {
     public void refreshUI() {
         SwingUtilities.invokeLater(() -> {
             mSwingNode.setContent(mMap);
+
+            /*
+            The map doesn't resize itself well on Windows so we have to force that.
+             */
+            if (SystemUtils.IS_OS_WINDOWS) {
+                //FIXME Can this be done in a proper way?
+                new Thread(() -> {
+                    mSwingNode.setVisible(false);
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException ex) {
+                        Exceptions.printStackTrace(ex);
+                    }
+                    Platform.runLater(() -> {
+                        mSwingNode.resize(1, 1);
+                        mSwingNode.setVisible(true);
+                    });
+                }).start();;
+            }
         });
     }
 
