@@ -382,6 +382,14 @@
             <id>bintray-trixon-maven</id>
             <url>https://dl.bintray.com/trixon/maven</url>
         </repository>
+        <repository>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>bintray-jerady-maven</id>
+            <name>bintray</name>
+            <url>https://dl.bintray.com/jerady/maven</url>
+        </repository>
     </repositories>
 
     <properties>
