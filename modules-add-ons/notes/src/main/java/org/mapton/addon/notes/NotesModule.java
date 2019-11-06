@@ -15,15 +15,14 @@
  */
 package org.mapton.addon.notes;
 
+import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
 import javafx.scene.control.TextArea;
 import org.mapton.api.MWorkbenchModule;
-import static org.mapton.api.Mapton.ICON_SIZE_MODULE;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.icons.material.MaterialIcon;
 
 /**
  *
@@ -36,7 +35,7 @@ public class NotesModule extends MWorkbenchModule {
     private TextArea mTextArea;
 
     public NotesModule() {
-        super(Dict.NOTES.toString(), MaterialIcon._Editor.MODE_EDIT.getImageView(ICON_SIZE_MODULE).getImage());
+        super(Dict.NOTES.toString(), MaterialDesignIcon.PEN);
 
         mTextArea = new TextArea();
         mTextArea.setText(mPreferences.get(KEY_NOTES, ""));

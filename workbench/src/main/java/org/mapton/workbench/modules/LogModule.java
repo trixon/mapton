@@ -15,13 +15,12 @@
  */
 package org.mapton.workbench.modules;
 
+import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import javafx.scene.Node;
 import org.mapton.api.MWorkbenchModule;
-import static org.mapton.api.Mapton.ICON_SIZE_MODULE;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.LogListener;
 import se.trixon.almond.util.fx.control.LogPanel;
-import se.trixon.almond.util.icons.material.MaterialIcon;
 
 /**
  *
@@ -32,7 +31,7 @@ public class LogModule extends MWorkbenchModule implements LogListener {
     private LogPanel mLogPanel;
 
     public LogModule() {
-        super(Dict.LOG.toString(), MaterialIcon._Communication.CHAT.getImageView(ICON_SIZE_MODULE).getImage());
+        super(Dict.LOG.toString(), MaterialDesignIcon.MESSAGE);
 
         createUI();
     }

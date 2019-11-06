@@ -16,6 +16,8 @@
 package org.mapton.workbench.modules;
 
 import com.dlsc.workbenchfx.view.controls.ToolbarItem;
+import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
+import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
 import java.util.ArrayList;
 import java.util.Comparator;
 import javafx.application.Platform;
@@ -37,8 +39,6 @@ import org.mapton.api.MMaskerPaneBase;
 import org.mapton.api.MPrint;
 import org.mapton.api.MUpdater;
 import org.mapton.api.MWorkbenchModule;
-import static org.mapton.api.Mapton.ICON_SIZE_MODULE;
-import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import se.trixon.almond.util.Dict;
@@ -46,7 +46,6 @@ import se.trixon.almond.util.GlobalStateChangeEvent;
 import se.trixon.almond.util.LogListener;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.control.LogPanel;
-import se.trixon.almond.util.icons.material.MaterialIcon;
 
 /**
  *
@@ -62,7 +61,7 @@ public class UpdaterModule extends MWorkbenchModule implements LogListener {
     private MPrint mPrint = new MPrint(MKey.UPDATER_LOGGER);
 
     public UpdaterModule() {
-        super(Dict.UPDATER.toString(), MaterialIcon._Action.SYSTEM_UPDATE_ALT.getImageView(ICON_SIZE_MODULE).getImage());
+        super(Dict.UPDATER.toString(), MaterialDesignIcon.DOWNLOAD);
 
         createUI();
 
@@ -89,12 +88,12 @@ public class UpdaterModule extends MWorkbenchModule implements LogListener {
 
     private void createUI() {
         mUpdaterMaskerPane = new UpdaterMaskerPane();
-        var refreshToolbarItem = new ToolbarItem(MaterialIcon._Navigation.REFRESH.getImageView(getIconSizeToolBarInt()), event -> {
+        var refreshToolbarItem = new ToolbarItem(new MaterialDesignIconView(MaterialDesignIcon.SYNC), event -> {
             refresh();
         });
         setTooltip(refreshToolbarItem, Dict.REFRESH.toString());
 
-        var updateToolbarItem = new ToolbarItem(MaterialIcon._Action.SYSTEM_UPDATE_ALT.getImageView(getIconSizeToolBarInt()), event -> {
+        var updateToolbarItem = new ToolbarItem(new MaterialDesignIconView(MaterialDesignIcon.DOWNLOAD), event -> {
             for (MUpdater updater : mListView.getItems()) {
                 if (updater.isMarkedForUpdate()) {
                     mUpdaterMaskerPane.update();

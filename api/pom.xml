@@ -32,6 +32,7 @@
                         <publicPackage>org.postgresql.*</publicPackage>
                         <publicPackage>org.openide.*</publicPackage>
                         <publicPackage>se.trixon.*</publicPackage>
+                        <publicPackage>de.jensd.fx.glyphs.*</publicPackage>
                     </publicPackages>
                     <nbmResources>
                         <nbmResource>
@@ -145,6 +146,10 @@
         <dependency>
             <groupId>com.dlsc.preferencesfx</groupId>
             <artifactId>preferencesfx-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.jensd</groupId>
+            <artifactId>fontawesomefx-commons</artifactId>
         </dependency>
 
         <!-- Apache -->

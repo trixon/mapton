@@ -15,6 +15,7 @@
  */
 package org.mapton.reports;
 
+import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import java.util.Comparator;
 import java.util.TreeMap;
 import java.util.prefs.Preferences;
@@ -28,7 +29,6 @@ import javafx.scene.control.TreeView;
 import javafx.scene.layout.BorderPane;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.api.MWorkbenchModule;
-import static org.mapton.api.Mapton.ICON_SIZE_MODULE;
 import org.mapton.reports.api.MReport;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
@@ -36,7 +36,6 @@ import org.openide.util.NbPreferences;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
-import se.trixon.almond.util.icons.material.MaterialIcon;
 
 @ServiceProvider(service = MWorkbenchModule.class)
 public final class ReportsModule extends MWorkbenchModule {
@@ -48,7 +47,7 @@ public final class ReportsModule extends MWorkbenchModule {
     private TreeView<MReport> mTreeView;
 
     public ReportsModule() {
-        super(Dict.REPORTS.toString(), MaterialIcon._Communication.IMPORT_CONTACTS.getImageView(ICON_SIZE_MODULE).getImage());
+        super(Dict.REPORTS.toString(), MaterialDesignIcon.BOOK_OPEN);
 
         createUI();
     }

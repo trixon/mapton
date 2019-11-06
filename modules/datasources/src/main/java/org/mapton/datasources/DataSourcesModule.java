@@ -16,17 +16,16 @@
 package org.mapton.datasources;
 
 import com.dlsc.workbenchfx.view.controls.ToolbarItem;
+import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
+import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
 import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import org.mapton.api.MKey;
 import org.mapton.api.MWorkbenchModule;
-import static org.mapton.api.Mapton.ICON_SIZE_MODULE;
-import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.icons.material.MaterialIcon;
 
 /**
  *
@@ -41,7 +40,7 @@ public class DataSourcesModule extends MWorkbenchModule {
     private DataSourceTab mWmsStyleTab;
 
     public DataSourcesModule() {
-        super(Dict.DATA_SOURCES.toString(), MaterialIcon._File.CLOUD.getImageView(ICON_SIZE_MODULE).getImage());
+        super(Dict.DATA_SOURCES.toString(), MaterialDesignIcon.CLOUD);
 
         createUI();
         init();
@@ -65,12 +64,12 @@ public class DataSourcesModule extends MWorkbenchModule {
     }
 
     private void createUI() {
-        var applyToolbarItem = new ToolbarItem(MaterialIcon._Navigation.CHECK.getImageView(getIconSizeToolBarInt()), event -> {
+        var applyToolbarItem = new ToolbarItem(new MaterialDesignIconView(MaterialDesignIcon.CHECK_CIRCLE_OUTLINE), event -> {
             apply();
         });
         setTooltip(applyToolbarItem, Dict.APPLY.toString());
 
-        var discardToolbarItem = new ToolbarItem(MaterialIcon._Action.SETTINGS_BACKUP_RESTORE.getImageView(getIconSizeToolBarInt()), event -> {
+        var discardToolbarItem = new ToolbarItem(new MaterialDesignIconView(MaterialDesignIcon.UNDO), event -> {
             DataSourceTab t = (DataSourceTab) mTabPane.getSelectionModel().getSelectedItem();
             t.restoreDefaults();
         });

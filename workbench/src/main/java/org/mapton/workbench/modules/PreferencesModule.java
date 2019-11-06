@@ -16,14 +16,13 @@
 package org.mapton.workbench.modules;
 
 import com.dlsc.workbenchfx.view.controls.ToolbarItem;
+import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
+import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
 import javafx.scene.Node;
 import javafx.scene.control.ButtonType;
 import org.mapton.api.MOptions2;
 import org.mapton.api.MWorkbenchModule;
-import static org.mapton.api.Mapton.ICON_SIZE_MODULE;
-import static org.mapton.api.Mapton.ICON_SIZE_MODULE_TOOLBAR;
 import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.icons.material.MaterialIcon;
 
 /**
  *
@@ -32,7 +31,7 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
 public class PreferencesModule extends MWorkbenchModule {
 
     public PreferencesModule() {
-        super(Dict.OPTIONS.toString(), MaterialIcon._Action.SETTINGS.getImageView(ICON_SIZE_MODULE).getImage());
+        super(Dict.OPTIONS.toString(), MaterialDesignIcon.SETTINGS);
 
         createUI();
     }
@@ -50,10 +49,10 @@ public class PreferencesModule extends MWorkbenchModule {
     }
 
     private void createUI() {
-        var saveToolbarItem = new ToolbarItem(MaterialIcon._Content.SAVE.getImageView(ICON_SIZE_MODULE_TOOLBAR),
+        var saveToolbarItem = new ToolbarItem(new MaterialDesignIconView(MaterialDesignIcon.CONTENT_SAVE),
                 event -> MOptions2.getInstance().save());
 
-        var discardToolbarItem = new ToolbarItem(MaterialIcon._Action.DELETE.getImageView(ICON_SIZE_MODULE_TOOLBAR),
+        var discardToolbarItem = new ToolbarItem(new MaterialDesignIconView(MaterialDesignIcon.DELETE),
                 event -> getWorkbench().showConfirmationDialog(getBundleString("prefs.ui.discard_title"),
                         getBundleString("prefs.ui.discard_message"),
                         buttonType -> {

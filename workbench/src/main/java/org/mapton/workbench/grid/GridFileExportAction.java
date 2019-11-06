@@ -21,14 +21,13 @@ import java.util.ArrayList;
 import javafx.scene.Node;
 import org.apache.commons.io.FileUtils;
 import org.controlsfx.control.action.Action;
+import org.controlsfx.glyphfont.FontAwesome;
 import org.mapton.api.MKey;
 import org.mapton.api.MLocalGrid;
 import org.mapton.api.Mapton;
-import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.dialogs.SimpleDialog;
-import se.trixon.almond.util.icons.material.MaterialIcon;
 
 /**
  *
@@ -75,7 +74,7 @@ public class GridFileExportAction extends GridFileAction {
             }
         });
 
-        action.setGraphic(MaterialIcon._Content.SAVE.getImageView(getIconSizeToolBarInt(), mIconColor));
+        action.setGraphic(Mapton.createGlyphToolbarForm(FontAwesome.Glyph.SAVE));
 
         return action;
     }

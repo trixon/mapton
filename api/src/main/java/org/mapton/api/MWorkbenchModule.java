@@ -16,6 +16,8 @@
 package org.mapton.api;
 
 import com.dlsc.workbenchfx.model.WorkbenchModule;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import java.util.HashSet;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
@@ -41,7 +43,7 @@ public abstract class MWorkbenchModule extends WorkbenchModule {
     protected final Logger LOGGER = Logger.getLogger(getClass().getName());
     protected final GlobalState mGlobalState = Mapton.getGlobalState();
     protected final MOptions2 mOptions2 = MOptions2.getInstance();
-    protected final Preferences mPreferences;
+    protected Preferences mPreferences;
     private ObservableMap<KeyCombination, Runnable> mAccelerators;
     private ResourceBundle mBundle;
     private final HashSet<KeyCodeCombination> mKeyCodeCombinations = new HashSet<>();
@@ -50,9 +52,17 @@ public abstract class MWorkbenchModule extends WorkbenchModule {
 
     public MWorkbenchModule(String name, Image icon) {
         super(name, icon);
-        mPreferences = NbPreferences.forModule(getClass()).node(getClass().getCanonicalName());
+        init();
+    }
 
-        initListeners();
+    public MWorkbenchModule(String name, MaterialDesignIcon icon) {
+        super(name, icon);
+        init();
+    }
+
+    public MWorkbenchModule(String name, FontAwesomeIcon icon) {
+        super(name, icon);
+        init();
     }
 
     public ObservableMap<KeyCombination, Runnable> getAccelerators() {
@@ -108,6 +118,12 @@ public abstract class MWorkbenchModule extends WorkbenchModule {
 
     public void setTooltip(Control control, String string, KeyCodeCombination keyCodeCombination) {
         control.setTooltip(new Tooltip(String.format("%s (%s)", string, keyCodeCombination.getDisplayText())));
+    }
+
+    private void init() {
+        mPreferences = NbPreferences.forModule(getClass()).node(getClass().getCanonicalName());
+
+        initListeners();
     }
 
     private void initListeners() {

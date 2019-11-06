@@ -32,6 +32,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.Notifications;
 import org.controlsfx.control.action.Action;
+import org.controlsfx.glyphfont.FontAwesome;
+import org.controlsfx.glyphfont.Glyph;
 import org.openide.modules.InstalledFileLocator;
 import org.openide.util.Lookup;
 import se.trixon.almond.util.GlobalState;
@@ -78,6 +80,14 @@ public class Mapton {
         File file = InstalledFileLocator.getDefault().locate(path, codeNameBase, false);
         webView.getEngine().setUserStyleSheetLocation(file.toURI().toString());
         //webView.setFontScale(SwingHelper.getUIScale());
+    }
+
+    public static Glyph createGlyph(FontAwesome.Glyph glyphFont, double size, Color color) {
+        return new Glyph("FontAwesome", glyphFont).size(size).color(color);
+    }
+
+    public static Glyph createGlyphToolbarForm(FontAwesome.Glyph glyphFont) {
+        return createGlyph(glyphFont, getIconSizeToolBarInt(), optionsGeneral().getIconColorForBackground());
     }
 
     public static Label createTitle(String title) {

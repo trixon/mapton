@@ -18,6 +18,8 @@ package org.mapton.workbench.modules;
 import com.dlsc.workbenchfx.Workbench;
 import com.dlsc.workbenchfx.model.WorkbenchDialog;
 import com.dlsc.workbenchfx.view.controls.ToolbarItem;
+import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
+import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
 import java.util.HashSet;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
@@ -42,8 +44,6 @@ import org.mapton.api.MKey;
 import org.mapton.api.MOptions2;
 import org.mapton.api.MWorkbenchModule;
 import org.mapton.api.Mapton;
-import static org.mapton.api.Mapton.ICON_SIZE_MODULE;
-import static org.mapton.api.Mapton.ICON_SIZE_MODULE_TOOLBAR;
 import org.mapton.workbench.MaptonApplication;
 import org.mapton.workbench.TitledDrawerContent;
 import org.mapton.workbench.bookmark.BookmarksView;
@@ -57,7 +57,6 @@ import org.mapton.workbench.modules.map.ToolboxView;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.GlobalStateChangeEvent;
-import se.trixon.almond.util.icons.material.MaterialIcon;
 import se.trixon.windowsystemfx.WindowManager;
 
 /**
@@ -92,7 +91,7 @@ public class MapModule extends MWorkbenchModule {
     private WorkbenchDialog mWorkbenchDialog;
 
     public MapModule() {
-        super(Dict.MAP.toString(), MaterialIcon._Maps.MAP.getImageView(ICON_SIZE_MODULE).getImage());
+        super(Dict.MAP.toString(), MaterialDesignIcon.MAP);
         MaskerPane maskerPane = new MaskerPane();
         maskerPane.setText(NbBundle.getMessage(MaptonApplication.class, "loading_map"));
         mRoot = new BorderPane(maskerPane);
@@ -264,47 +263,42 @@ public class MapModule extends MWorkbenchModule {
     }
 
     private void initToolbars() {
-        mGoHomeToolbarItem = new ToolbarItem(MaterialIcon._Action.HOME.getImageView(ICON_SIZE_MODULE_TOOLBAR), event -> {
+        mGoHomeToolbarItem = new ToolbarItem(new MaterialDesignIconView(MaterialDesignIcon.HOME), event -> {
             Mapton.getEngine().goHome();
         });
         setTooltip(mGoHomeToolbarItem, Dict.HOME.toString(), new KeyCodeCombination(KeyCode.H, KeyCombination.SHORTCUT_DOWN));
 
         ToolbarItem searchToolbarItem = new ToolbarItem(mSearchView.getPresenter());
         setTooltip(searchToolbarItem, Dict.SEARCH.toString(), new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN));
-
-        mRulerToolbarItem = new ToolbarItem(
-                Dict.RULER.toString(),
-                MaterialIcon._Editor.SPACE_BAR.getImageView(ICON_SIZE_MODULE_TOOLBAR), event -> {
+        mRulerToolbarItem = new ToolbarItem(Dict.RULER.toString(), new MaterialDesignIconView(MaterialDesignIcon.RULER), event -> {
             if (shouldOpen(mRulerPopOver)) {
                 mRulerPopOver.show(mRulerToolbarItem);
             }
         });
         setTooltip(mRulerToolbarItem, Dict.RULER.toString(), new KeyCodeCombination(KeyCode.R, KeyCombination.SHORTCUT_DOWN));
 
-        mLayerToolbarItem = new ToolbarItem(MaterialIcon._Maps.LAYERS.getImageView(ICON_SIZE_MODULE_TOOLBAR), event -> {
+        mLayerToolbarItem = new ToolbarItem(new MaterialDesignIconView(MaterialDesignIcon.LAYERS), event -> {
             showDrawer(mLayersDrawerContent, Side.LEFT);
         });
         setTooltip(mLayerToolbarItem, Dict.LAYERS.toString(), new KeyCodeCombination(KeyCode.L, KeyCombination.SHORTCUT_DOWN));
 
-        mGridToolbarItem = new ToolbarItem(MaterialIcon._Image.GRID_ON.getImageView(ICON_SIZE_MODULE_TOOLBAR), event -> {
+        mGridToolbarItem = new ToolbarItem(new MaterialDesignIconView(MaterialDesignIcon.GRID), event -> {
             showDrawer(mGridDrawerContent, Side.LEFT);
         });
         setTooltip(mGridToolbarItem, MDict.GRID.toString(), new KeyCodeCombination(KeyCode.G, KeyCombination.SHORTCUT_DOWN));
 
-        mBookmarkToolbarItem = new ToolbarItem(MaterialIcon._Action.BOOKMARK_BORDER.getImageView(ICON_SIZE_MODULE_TOOLBAR), event -> {
+        mBookmarkToolbarItem = new ToolbarItem(new MaterialDesignIconView(MaterialDesignIcon.BOOKMARK), event -> {
             showDrawer(mBookmarksDrawerContent, Side.LEFT);
         });
         setTooltip(mBookmarkToolbarItem, Dict.BOOKMARKS.toString(), new KeyCodeCombination(KeyCode.B, KeyCombination.SHORTCUT_DOWN));
 
-        mStyleToolbarItem = new ToolbarItem(
-                MaterialIcon._Image.COLOR_LENS.getImageView(ICON_SIZE_MODULE_TOOLBAR),
-                event -> {
-                    showDialog(String.format("%s & %s", Dict.TYPE.toString(), Dict.STYLE.toString()), Mapton.getEngine().getStyleView());
-                });
+        mStyleToolbarItem = new ToolbarItem(new MaterialDesignIconView(MaterialDesignIcon.PALETTE), event -> {
+            showDialog(String.format("%s & %s", Dict.TYPE.toString(), Dict.STYLE.toString()), Mapton.getEngine().getStyleView());
+        });
         setTooltip(mStyleToolbarItem, Dict.STYLE.toString(), new KeyCodeCombination(KeyCode.S, KeyCombination.SHORTCUT_DOWN));
         mStyleToolbarItem.setDisable(true);
 
-        mAttributionToolbarItem = new ToolbarItem(MaterialIcon._Action.COPYRIGHT.getImageView(ICON_SIZE_MODULE_TOOLBAR), event -> {
+        mAttributionToolbarItem = new ToolbarItem(new MaterialDesignIconView(MaterialDesignIcon.COPYRIGHT), event -> {
             showDialog(Dict.COPYRIGHT.toString(), mAttributionView);
         });
         //mAttributionToolbarItem.setDisable(true);
@@ -321,33 +315,26 @@ public class MapModule extends MWorkbenchModule {
             System.out.println(event);
         });
 
-        mToolboxToolbarItem = new ToolbarItem(
-                Dict.TOOLBOX.toString(),
-                MaterialIcon._Places.BUSINESS_CENTER.getImageView(ICON_SIZE_MODULE_TOOLBAR), event -> {
+        mToolboxToolbarItem = new ToolbarItem(Dict.TOOLBOX.toString(), new MaterialDesignIconView(MaterialDesignIcon.BRIEFCASE), event -> {
             showDrawer(mToolDrawerContent, Side.RIGHT);
         });
 
-        mTemporalToolbarItem = new ToolbarItem(
-                Dict.DATE.toString(),
-                MaterialIcon._Action.DATE_RANGE.getImageView(ICON_SIZE_MODULE_TOOLBAR), event -> {
+        mTemporalToolbarItem = new ToolbarItem(Dict.DATE.toString(), new MaterialDesignIconView(MaterialDesignIcon.CALENDAR_RANGE), event -> {
             if (shouldOpen(mTemporalPopOver)) {
                 mTemporalPopOver.show(mTemporalToolbarItem);
             }
         });
 
-        mWindowToolbarItem = new ToolbarItem(
-                Dict.WINDOW.toString(),
-                MaterialIcon._Av.WEB_ASSET.getImageView(ICON_SIZE_MODULE_TOOLBAR),
+        mWindowToolbarItem = new ToolbarItem(Dict.WINDOW.toString(), new MaterialDesignIconView(MaterialDesignIcon.WINDOW_MAXIMIZE),
                 ActionUtils.createMenuItem(toolsAction),
                 ActionUtils.createMenuItem(objectPropertiesAction),
                 ActionUtils.createMenuItem(diagramAction)
         );
 
         mMapOnlyToolbarItem = new ToolbarItem(
-                mOptions2.general().isMaximizedMap() ? MaterialIcon._Navigation.FULLSCREEN_EXIT.getImageView(ICON_SIZE_MODULE_TOOLBAR) : MaterialIcon._Navigation.FULLSCREEN.getImageView(ICON_SIZE_MODULE_TOOLBAR),
-                event -> {
-                    mOptions2.general().maximizedMapProperty().set(!mOptions2.general().isMaximizedMap());
-                });
+                mOptions2.general().isMaximizedMap() ? new MaterialDesignIconView(MaterialDesignIcon.FULLSCREEN_EXIT) : new MaterialDesignIconView(MaterialDesignIcon.FULLSCREEN), event -> {
+            mOptions2.general().maximizedMapProperty().set(!mOptions2.general().isMaximizedMap());
+        });
         setTooltip(mMapOnlyToolbarItem, NbBundle.getMessage(MOptions2.class, "maximize_map"));
 
         getToolbarControlsLeft().setAll(
@@ -386,10 +373,10 @@ public class MapModule extends MWorkbenchModule {
 
     private void refreshUI() {
         if (mOptions2.general().isMaximizedMap()) {
-            mMapOnlyToolbarItem.setGraphic(MaterialIcon._Navigation.FULLSCREEN_EXIT.getImageView(ICON_SIZE_MODULE_TOOLBAR));
+            mMapOnlyToolbarItem.setGraphic(new MaterialDesignIconView(MaterialDesignIcon.FULLSCREEN_EXIT));
             mWindowManager.showOnlyWindowById(MapWindow.ID);
         } else {
-            mMapOnlyToolbarItem.setGraphic(MaterialIcon._Navigation.FULLSCREEN.getImageView(ICON_SIZE_MODULE_TOOLBAR));
+            mMapOnlyToolbarItem.setGraphic(new MaterialDesignIconView(MaterialDesignIcon.FULLSCREEN));
             mWindowManager.showRoot();
         }
         Mapton.getEngine().refreshUI();
