@@ -399,7 +399,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <almond.version>11.0.5-SNAPSHOT</almond.version>
         <mapton.version>2.0.0-SNAPSHOT</mapton.version>
-        <openjfx.version>13.0.1</openjfx.version>
+        <openjfx.version>11.0.2</openjfx.version>
     </properties>
     <description>Some kind of map application</description>
 </project>
