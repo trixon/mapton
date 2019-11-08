@@ -18,7 +18,6 @@ package org.mapton.workbench;
 import com.dlsc.workbenchfx.Workbench;
 import com.dlsc.workbenchfx.model.WorkbenchDialog;
 import de.codecentric.centerdevice.MenuToolkit;
-import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import java.util.MissingResourceException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -51,7 +50,6 @@ import javax.swing.SwingUtilities;
 import org.apache.commons.lang3.SystemUtils;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
-import org.controlsfx.glyphfont.FontAwesome;
 import org.mapton.api.MOptions2;
 import org.mapton.api.Mapton;
 import org.mapton.workbench.api.WorkbenchManager;
@@ -83,6 +81,7 @@ public class MaptonApplication extends Application {
     private Action mHelpAction;
     private Action mLogAction;
     private LogModule mLogModule;
+    private Action mRestartAction;
     private UpdaterModule mUpdaterModule;
     private MapModule mMapModule;
     private final MOptions2 mOptions2 = MOptions2.getInstance();
@@ -178,6 +177,7 @@ public class MaptonApplication extends Application {
                 systemMenu,
                 ActionUtils.createMenuItem(mHelpAction),
                 ActionUtils.createMenuItem(mAboutAction),
+                ActionUtils.createMenuItem(mRestartAction),
                 ActionUtils.createMenuItem(mQuitAction)
         );
 
@@ -294,6 +294,12 @@ public class MaptonApplication extends Application {
         mUpdateManagerAction = new Action(Dict.UPDATE_MANAGER.toString(), (ActionEvent event) -> {
             mWorkbench.hideNavigationDrawer();
             mWorkbench.openModule(mUpdaterModule);
+        });
+
+        //restart
+        mRestartAction = new Action(Dict.RESTART.toString(), (ActionEvent event) -> {
+            LifecycleManager.getDefault().markForRestart();
+            LifecycleManager.getDefault().exit();
         });
 
         //quit
