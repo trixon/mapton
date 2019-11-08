@@ -22,6 +22,22 @@
     -fx-graphic: url("logo.png");
 }
 
+.tab-control .glyph-icon {
+    -fx-font-size: 2em !important;
+}
+
+.toolbar-control .glyph-icon {
+    -fx-font-size: 1.5em !important;
+}
+
+.tile-box .glyph-icon {
+    -fx-font-size: 3em !important;
+}
+
+/*#tile-karta .tile-box .glyph-icon {
+    -fx-fill: red;
+}*/
+
 .progress-bar > .track {
     -fx-text-box-border: lightgray;
     -fx-control-inner-background: dimgray;
