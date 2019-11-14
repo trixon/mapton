@@ -20,10 +20,10 @@ limitations under the License.
 
 
 body {
-    background-color: rgb(43, 43, 43);
+    background-color: #3c3f41;
     color: #ebebeb;
 }
 
 a {
-    color: aqua;
+    color: #00aaff;
 }

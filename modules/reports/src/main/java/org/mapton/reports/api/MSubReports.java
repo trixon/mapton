@@ -77,7 +77,7 @@ public abstract class MSubReports extends MReport {
 
     private void createUI() {
         mWebView = new WebView();
-        Mapton.applyHtmlCss(mWebView);
+        Mapton.applyHtmlCss(mWebView, "report.css");
         mListView = new ListView<>();
         mListView.setPrefWidth(FxHelper.getUIScaled(250));
         mBorderPane = new BorderPane(mWebView);

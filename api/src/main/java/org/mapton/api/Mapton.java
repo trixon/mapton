@@ -17,14 +17,18 @@ package org.mapton.api;
 
 import java.io.File;
 import java.text.DateFormat;
+import java.util.HashMap;
+import java.util.Map;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Background;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.util.Duration;
 import javax.swing.SwingUtilities;
@@ -59,6 +63,7 @@ public class Mapton {
     private static final File CACHE_DIR;
     private static final File CONFIG_DIR;
     private static final Color ICON_COLOR = Color.BLACK;
+    private static final HashMap<WebEngine, String> WEB_ENGINE_TO_STYLE = new HashMap<>();
     private static final GlobalState sGlobalState = new GlobalState();
     private static final Log sLog = new Log();
     private static MOptions sOptions = MOptions.getInstance();
@@ -68,18 +73,29 @@ public class Mapton {
         CONFIG_DIR = new File(System.getProperty("netbeans.user"), "mapton-modules");
         CACHE_DIR = new File(FileUtils.getUserDirectory(), ".cache/mapton");
         System.setProperty("mapton.cache", CACHE_DIR.getAbsolutePath());//Used by WorldWind
+
+        optionsGeneral().nightModeProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
+            for (Map.Entry<WebEngine, String> entry : WEB_ENGINE_TO_STYLE.entrySet()) {
+                applyHtmlCss(entry.getKey(), entry.getValue());
+            }
+        });
     }
 
-    public static void applyHtmlCss(WebView webView) {
-        String path = "resources/css/attribution_dark.css";
-        if (!isNightMode()) {
-            path = StringUtils.remove(path, "_dark");
+    public static void applyHtmlCss(WebView webView, String filename) {
+        WEB_ENGINE_TO_STYLE.put(webView.getEngine(), filename);
+        applyHtmlCss(webView.getEngine(), filename);
+        //webView.setFontScale(SwingHelper.getUIScale());
+    }
+
+    public static void applyHtmlCss(WebEngine webEngine, String filename) {
+        String path = String.format("resources/css/%s", filename);
+        if (isNightMode()) {
+            path = StringUtils.replace(path, ".css", "_dark.css");
         }
 
         final String codeNameBase = Mapton.class.getPackage().getName();
         File file = InstalledFileLocator.getDefault().locate(path, codeNameBase, false);
-        webView.getEngine().setUserStyleSheetLocation(file.toURI().toString());
-        //webView.setFontScale(SwingHelper.getUIScale());
+        webEngine.setUserStyleSheetLocation(file.toURI().toString());
     }
 
     public static Glyph createGlyph(FontAwesome.Glyph glyphFont, double size, Color color) {
@@ -185,7 +201,7 @@ public class Mapton {
     }
 
     public static boolean isNightMode() {
-        return MOptions2.getInstance().general().isNightMode();
+        return optionsGeneral().isNightMode();
     }
 
     public static void log(String line) {

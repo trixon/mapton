@@ -49,7 +49,7 @@ public class AttributionView extends BorderPane {
 
     private void createUI() {
         mWebView = new WebView();
-        Mapton.applyHtmlCss(mWebView);
+        Mapton.applyHtmlCss(mWebView, "attribution.css");
         //mWebView.setFontScale(1.0);
         setCenter(mWebView);
     }
