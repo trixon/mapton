@@ -1,14 +1,82 @@
+* {
+    -ws-split-color: gray;
+}
+
 .root > * {
-    -primary-color: #102039;
+    -primary-color: #102040;
+    -primary-variant-color: #3c476b;
     -background-color: #3c3f41;
-    -secondary-color: #ff00ff;
+    -on-primary-color: -fx-light-text-color;
+    -on-secondary-color: -fx-light-text-color;
+
+
     /*-surface-color: #2e3540;*/
     -surface-color: derive(-fx-background, 0%);
-    -secondary-variant-color: #005fa3;
     -error-color: #B00020;
-    -on-secondary-color: -fx-light-text-color;
     -on-surface-color: -fx-light-text-color;
     -on-error-color: #FFFFFF;
 }
+.tab-control:selected .text,
+.tab-control:selected .glyph-icon {
+    -fx-fill: -fx-light-text-color !important;
+}
+/*.tab-control .text,
+.tab-control .glyph-icon {
+    -fx-fill: -fx-mid-text-color !important;
+}*/
+
+.toolbar-control .glyph-icon {
+    -fx-fill: -fx-light-text-color;
+}
+.toolbar-button:pressed{
+    /*-fx-background-color: #102040;*/
+}
+.toolbar-menu-button:pressed{
+    /*-fx-background-color: #102040;*/
+}
+
+/*.tile-box .glyph-icon {
+    -fx-fill: red;
+}*/
 
 
+.progress-bar > .track {
+    -fx-text-box-border: lightgray;
+    -fx-control-inner-background: dimgray;
+}
+
+.progress-bar > .bar {
+    -fx-background-color: linear-gradient(to bottom, derive(#cccccc, -7%), derive(#cccccc, 0%), derive(#cccccc, -3%), derive(#cccccc, -9%) );
+}
+
+.button-bar .button {
+    -fx-text-fill: orange;
+}
+
+.arrow-button .arrow {
+    -fx-background-color: -fx-light-text-color !important;
+}
+
+#add-button .shape{
+    -fx-background-color: orange !important;
+}
+
+/*.glyph-font{
+    -fx-text-fill: orange !important;
+}*/
+
+.check-menu-item:checked > .left-container > .check {
+    -fx-background-color: -fx-light-text-color;
+}
+
+.check-menu-item:focused:checked > .left-container > .check {
+    -fx-background-color: -fx-light-text-color;
+}
+
+.tab-control:selected .shape {
+    -fx-background-color: -fx-light-text-color !important; /* The close icon */
+}
+
+.tab-control .shape:hover {
+    -fx-background-color: red !important; /* The close icon */
+}
