@@ -18,25 +18,34 @@ package org.mapton.workbench.grid;
 import javafx.geometry.Insets;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import org.mapton.api.MActivatable;
 
-public final class GridForm extends VBox {
+public final class GridForm extends VBox implements MActivatable {
+
+    private GlobalGridView mGlobalGridView;
+    private LocalGridView mLocalGridView;
 
     public GridForm() {
         createUI();
     }
 
-    private void createUI() {
-        GlobalGridView globalGridView = new GlobalGridView();
-        LocalGridView localGridView = new LocalGridView();
+    @Override
+    public void activate() {
+        mLocalGridView.activate();
+    }
 
-        globalGridView.setPadding(new Insets(8));
+    private void createUI() {
+        mGlobalGridView = new GlobalGridView();
+        mLocalGridView = new LocalGridView();
+
+        mGlobalGridView.setPadding(new Insets(8));
         setSpacing(8);
 
         getChildren().setAll(
-                globalGridView,
-                localGridView
+                mGlobalGridView,
+                mLocalGridView
         );
 
-        VBox.setVgrow(localGridView, Priority.ALWAYS);
+        VBox.setVgrow(mLocalGridView, Priority.ALWAYS);
     }
 }

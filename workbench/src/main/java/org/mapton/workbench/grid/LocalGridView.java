@@ -42,6 +42,7 @@ import org.mapton.api.MOptions;
 import static org.mapton.api.MOptions.*;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
+import org.openide.util.Exceptions;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
 
@@ -51,17 +52,33 @@ import se.trixon.almond.util.fx.FxHelper;
  */
 public class LocalGridView extends BorderPane {
 
+    private LocalGridEditor mEditor = LocalGridEditor.getInstance();
+
     private final CheckListView<MLocalGrid> mListView = new CheckListView<>();
     private final MLocalGridManager mManager = MLocalGridManager.getInstance();
     private final MOptions mOptions = MOptions.getInstance();
     private CheckBox mPlotCheckBox;
-    private LocalGridEditor mEditor = LocalGridEditor.getInstance();
 
     public LocalGridView() {
         createUI();
         initStates();
         initListeners();
         load();
+    }
+
+    void activate() {
+        //This is a workaround for a system deep NPE
+        new Thread(() -> {
+            try {
+                Thread.sleep(2);
+            } catch (InterruptedException ex) {
+                Exceptions.printStackTrace(ex);
+            }
+
+            Platform.runLater(() -> {
+                mListView.requestFocus();
+            });
+        }).start();
     }
 
     private void createUI() {
@@ -106,7 +123,7 @@ public class LocalGridView extends BorderPane {
 
         FxHelper.slimToolBar(toolBar);
         setTop(new VBox(8, mPlotCheckBox, toolBar));
-//        setCenter(mListView);
+        setCenter(mListView);
         toolBar.disableProperty().bind(mPlotCheckBox.selectedProperty().not());
         mListView.disableProperty().bind(mPlotCheckBox.selectedProperty().not());
 
