@@ -88,12 +88,11 @@ public class UpdaterModule extends MWorkbenchModule implements LogListener {
 
     private void createUI() {
         mUpdaterMaskerPane = new UpdaterMaskerPane();
-        var refreshToolbarItem = new ToolbarItem(new MaterialDesignIconView(MaterialDesignIcon.SYNC), event -> {
+        var refreshToolbarItem = new ToolbarItem(Dict.REFRESH.toString(), new MaterialDesignIconView(MaterialDesignIcon.SYNC), event -> {
             refresh();
         });
-        setTooltip(refreshToolbarItem, Dict.REFRESH.toString());
 
-        var updateToolbarItem = new ToolbarItem(new MaterialDesignIconView(MaterialDesignIcon.DOWNLOAD), event -> {
+        var updateToolbarItem = new ToolbarItem(Dict.UPDATE.toString(), new MaterialDesignIconView(MaterialDesignIcon.DOWNLOAD), event -> {
             for (MUpdater updater : mListView.getItems()) {
                 if (updater.isMarkedForUpdate()) {
                     mUpdaterMaskerPane.update();
@@ -101,7 +100,6 @@ public class UpdaterModule extends MWorkbenchModule implements LogListener {
                 }
             }
         });
-        setTooltip(updateToolbarItem, Dict.UPDATE.toString());
 
         refreshToolbarItem.disableProperty().bind(mRunningProperty);
         updateToolbarItem.disableProperty().bind(mRunningProperty);
