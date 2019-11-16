@@ -61,6 +61,12 @@
         <dependency>
             <groupId>com.sothawo</groupId>
             <artifactId>mapjfx</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.openjfx</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
     <properties>
