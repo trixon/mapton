@@ -49,7 +49,7 @@ public class MOptionsGeneral {
     private final ObjectProperty<String> mEngineProperty = new SimpleObjectProperty<>("WorldWind");
     private final ObjectProperty<Color> mIconColorBrightProperty = new SimpleObjectProperty<>(Color.valueOf(DEFAULT_UI_LAF_ICON_COLOR_BRIGHT));
     private final ObjectProperty<Color> mIconColorDarkProperty = new SimpleObjectProperty<>(Color.valueOf(DEFAULT_UI_LAF_ICON_COLOR_DARK));
-    private final BooleanProperty mMaximizedMapProperty = new SimpleBooleanProperty(false);
+    private final BooleanProperty mMaximizedMapProperty = new SimpleBooleanProperty(true);
     private final BooleanProperty mNightModeProperty = new SimpleBooleanProperty(true);
     private final MOptions mOptions = MOptions.getInstance();
     private final BooleanProperty mPreferPopoverProperty = new SimpleBooleanProperty(false);
