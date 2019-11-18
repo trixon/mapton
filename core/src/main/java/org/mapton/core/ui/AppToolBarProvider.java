@@ -16,9 +16,11 @@
 package org.mapton.core.ui;
 
 import java.awt.Dimension;
+import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Scene;
 import javax.swing.JComponent;
+import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBar;
 import org.openide.util.Lookup;
 import se.trixon.almond.util.fx.FxHelper;
@@ -51,11 +53,13 @@ public abstract class AppToolBarProvider {
 
             fxPanel.setPreferredSize(new Dimension(100, (int) (getIconSizeToolBar() * 1.2)));
             AppToolBar appToolBar = new AppToolBar();
-            //aaaMapton.setToolBar(appToolBar);
-            Scene scene = new Scene(appToolBar);
-            fxPanel.setScene(scene);
-            fxPanel.setVisible(true);
-            FxHelper.loadDarkTheme(fxPanel.getScene());
+            Mapton.setToolBar(appToolBar);
+            Platform.runLater(() -> {
+                Scene scene = new Scene(appToolBar);
+                fxPanel.setScene(scene);
+                fxPanel.setVisible(true);
+                FxHelper.loadDarkTheme(fxPanel.getScene());
+            });
 
             return fxPanel;
         }

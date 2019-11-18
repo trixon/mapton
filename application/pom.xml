@@ -8,10 +8,8 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>mapton</artifactId>
+    <artifactId>mapton-app-fx</artifactId>
     <packaging>nbm-application</packaging>
-
-    <name>mapton</name>
 
     <properties>
         <all.clusters>${project.build.directory}/${brandingToken}</all.clusters>

@@ -90,9 +90,11 @@
 
     <modules>
         <module>application</module>
+        <module>app-sw</module>
         <module>branding</module>
         <module>api</module>
         <module>base</module>
+        <module>core</module>
         <module>workbench</module>
 
         <!--Map engines-->
@@ -118,8 +120,8 @@
 
         <!--Add-ons-->
         <module>modules-add-ons/geonames-ww</module>
-        <!--<module>modules-add-ons/mapollage</module>-->
-        <!--<module>modules-add-ons/mapollage-ww</module>-->
+        <module>modules-add-ons/mapollage</module>
+        <module>modules-add-ons/mapollage-ww</module>
         <module>modules-add-ons/notes</module>
 
         <!--WMS-->
@@ -269,7 +271,7 @@
                 <classifier>win</classifier>
             </dependency>
 
-            <!--            <dependency>
+            <dependency>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-base</artifactId>
                 <version>${openjfx.version}</version>
@@ -303,7 +305,7 @@
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-web</artifactId>
                 <version>${openjfx.version}</version>
-            </dependency>-->
+            </dependency>
 
             <!-- Mapton -->
             <dependency>
@@ -368,6 +370,16 @@
                 <groupId>se.trixon.almond</groupId>
                 <artifactId>almond-nbp-actions</artifactId>
                 <version>${almond.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>se.trixon.almond</groupId>
+                <artifactId>almond-nbp-actions-osx</artifactId>
+                <version>${almond.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>se.trixon.almond</groupId>
+                <artifactId>almond-nbp-darcula</artifactId>
+                <version>3.0.4</version>
             </dependency>
             <dependency>
                 <groupId>se.trixon</groupId>

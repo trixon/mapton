@@ -17,6 +17,7 @@ package org.mapton.core;
 
 import java.beans.PropertyChangeEvent;
 import javafx.application.Platform;
+import javafx.embed.swing.JFXPanel;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLayeredPane;
@@ -26,6 +27,7 @@ import org.mapton.api.MMapMagnet;
 import org.mapton.api.MOptions;
 import static org.mapton.api.MOptions.*;
 import org.mapton.core.ui.AppToolBarProvider;
+import org.mapton.core.updater.UpdateNotificator;
 import org.openide.awt.Actions;
 import org.openide.modules.OnStart;
 import org.openide.windows.TopComponent;
@@ -53,6 +55,7 @@ public class Initializer implements Runnable {
     public void run() {
         NbLog.i("System", SystemHelper.getSystemInfo());
         Platform.setImplicitExit(false);
+        new JFXPanel();
 
         DarculaDefaultsManager darculaDefaultsManager = DarculaDefaultsManager.getInstance();
         darculaDefaultsManager.putIfAbsent("invertIcons", "true");
@@ -60,6 +63,7 @@ public class Initializer implements Runnable {
 
         System.setProperty("netbeans.winsys.no_help_in_dialogs", "true");
         System.setProperty("netbeans.winsys.no_toolbars", "true");
+        System.setProperty("netbeans.winsys.status_line.path", "AppStatusPanel.instance");
 
         boolean fullscreen = mOptions.isFullscreen();
         FxHelper.setDarkThemeEnabled(mOptions.is(KEY_UI_LAF_DARK));
@@ -93,6 +97,8 @@ public class Initializer implements Runnable {
             //Pre-load but don't display
             Almond.getTopComponent("ObjectPropertiesTopComponent");
             //Actions.forID("Window", "org.mapton.core.ui.MapTopComponent").actionPerformed(null);
+
+            new UpdateNotificator();
         });
 
         //Activate MapTopComponent when opening MapMagnets

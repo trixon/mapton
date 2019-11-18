@@ -15,6 +15,8 @@
  */
 package org.mapton.core.ui;
 
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -23,32 +25,44 @@ import java.util.prefs.PreferenceChangeEvent;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.MenuButton;
+import javafx.scene.control.TextField;
 import javafx.scene.control.ToolBar;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
+import javafx.scene.layout.BorderPane;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import org.apache.commons.lang3.SystemUtils;
+import org.controlsfx.control.Notifications;
 import org.controlsfx.control.PopOver;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionGroup;
 import org.controlsfx.control.action.ActionUtils;
+import org.mapton.api.MDocumentInfo;
+import org.mapton.api.MEngine;
+import org.mapton.api.MKey;
 import org.mapton.api.MOptions;
 import org.mapton.api.MOptions2;
+import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeContextMenu;
 import static org.mapton.api.Mapton.getIconSizeToolBar;
 import org.mapton.core.Initializer;
+import org.mapton.core.ui.bookmark.BookmarkView;
 import org.openide.awt.Actions;
+import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.nbp.AlmondOptions;
 import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.nbp.dialogs.NbAboutFx;
 import se.trixon.almond.util.AboutModel;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.GlobalStateChangeEvent;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.FxActionSwing;
 import se.trixon.almond.util.fx.FxActionSwingCheck;
@@ -63,6 +77,9 @@ public class AppToolBar extends ToolBar {
 
     private static final boolean IS_MAC = SystemUtils.IS_OS_MAC;
     private final AlmondOptions mAlmondOptions = AlmondOptions.INSTANCE;
+    private Action mAttributionAction;
+    private PopOver mAttributionPopOver;
+    private AttributionView mAttributionView;
     private Action mBookmarkAction;
     private PopOver mBookmarkPopOver;
     private FxActionSwing mHomeAction;
@@ -72,6 +89,9 @@ public class AppToolBar extends ToolBar {
     private final HashSet<PopOver> mPopOvers = new HashSet<>();
     private final HashMap<PopOver, Long> mPopoverClosingTimes = new HashMap<>();
     private FxActionSwing mRulerAction;
+    private SearchView mSearchView;
+    private Action mStyleAction;
+    private PopOver mStylePopOver;
     private FxActionSwing mSysAboutAction;
     private Action mSysHelpAction;
     private FxActionSwing mSysLogAppAction;
@@ -84,6 +104,11 @@ public class AppToolBar extends ToolBar {
     private FxActionSwingCheck mSysViewFullscreenAction;
     private FxActionSwingCheck mSysViewMapAction;
     private FxActionSwing mSysViewResetAction;
+    private Action mTemporalAction;
+    private PopOver mTemporalPopOver;
+    private TemporalView mTemporalView;
+    private Action mToolboxAction;
+    private PopOver mToolboxPopOver;
 
     public AppToolBar() {
         initPopOvers();
@@ -91,6 +116,14 @@ public class AppToolBar extends ToolBar {
         initActionsSwing();
         init();
         initListeners();
+    }
+
+    public void activateSearch() {
+        Platform.runLater(() -> {
+            getScene().getWindow().requestFocus();
+            mSearchView.getPresenter().requestFocus();
+            ((TextField) mSearchView.getPresenter()).clear();
+        });
     }
 
     public void displayMenu() {
@@ -102,12 +135,38 @@ public class AppToolBar extends ToolBar {
         });
     }
 
+    public void toogleAttributionPopOver() {
+        tooglePopOver(mAttributionPopOver, mAttributionAction);
+    }
+
     public void toogleBookmarkPopOver() {
         tooglePopOver(mBookmarkPopOver, mBookmarkAction);
     }
 
     public void toogleLayerPopOver() {
         tooglePopOver(mLayerPopOver, mLayerAction);
+    }
+
+    public void toogleStylePopOver() {
+        tooglePopOver(mStylePopOver, mStyleAction);
+    }
+
+    public void toogleTemporalPopOver() {
+        Platform.runLater(() -> {
+            if (mTemporalPopOver.isShowing()) {
+                mTemporalPopOver.hide();
+            } else {
+                mTemporalPopOver.show(getButtonForAction(mTemporalAction));
+            }
+        });
+    }
+
+    public void toogleToolboxPopOver() {
+        tooglePopOver(mToolboxPopOver, mToolboxAction);
+    }
+
+    void refreshEngine(MEngine engine) {
+        mStyleAction.setDisabled(engine.getStyleView() == null);
     }
 
     private Node getButtonForAction(Action action) {
@@ -170,10 +229,14 @@ public class AppToolBar extends ToolBar {
         ArrayList<Action> actions = new ArrayList<>();
         actions.addAll(Arrays.asList(
                 mHomeAction,
+                mToolboxAction,
                 mRulerAction,
                 mLayerAction,
                 mBookmarkAction,
+                mTemporalAction,
+                mStyleAction,
                 ActionUtils.ACTION_SPAN,
+                mAttributionAction,
                 mSysViewMapAction,
                 systemActionGroup
         ));
@@ -185,11 +248,15 @@ public class AppToolBar extends ToolBar {
             Double w = styleButton.prefWidthProperty().getValue();
             FxHelper.adjustButtonWidth(getItems().stream(), getIconSizeContextMenu() * 1.5);
             styleButton.setPrefWidth(w);
+            styleButton.textProperty().bind(mStyleAction.textProperty());
 
             getItems().stream().filter((item) -> (item instanceof ButtonBase))
                     .map((item) -> (ButtonBase) item).forEachOrdered((buttonBase) -> {
                 FxHelper.undecorateButton(buttonBase);
             });
+
+            mSearchView = new SearchView();
+            getItems().add(5, mSearchView.getPresenter());
         });
     }
 
@@ -223,6 +290,46 @@ public class AppToolBar extends ToolBar {
         });
         mLayerAction.setGraphic(MaterialIcon._Maps.LAYERS.getImageView(getIconSizeToolBar()));
         mLayerAction.setSelected(mOptions.isBookmarkVisible());
+
+        //mToolbox
+        mToolboxAction = new Action(Dict.TOOLBOX.toString(), (event) -> {
+            if (usePopOver()) {
+                if (shouldOpen(mToolboxPopOver)) {
+                    mToolboxPopOver.show((Node) event.getSource());
+                }
+            } else {
+                SwingUtilities.invokeLater(() -> {
+                    Actions.forID("Mapton", "org.mapton.core.actions.ToolboxAction").actionPerformed(null);
+                });
+            }
+        });
+        mToolboxAction.setGraphic(MaterialIcon._Places.BUSINESS_CENTER.getImageView(getIconSizeToolBar()));
+
+        //Style
+        mStyleAction = new Action(String.format("%s & %s", Dict.TYPE.toString(), Dict.STYLE.toString()), (ActionEvent event) -> {
+            if (shouldOpen(mStylePopOver)) {
+                BorderPane pane = (BorderPane) mStylePopOver.getContentNode();
+                pane.setCenter(Mapton.getEngine().getStyleView());
+                mStylePopOver.show((Node) event.getSource());
+            }
+        });
+        mStyleAction.setGraphic(MaterialIcon._Image.COLOR_LENS.getImageView(getIconSizeToolBar()));
+        mStyleAction.setDisabled(true);
+
+        //Temporal
+        mTemporalAction = new Action(Dict.Time.DATE.toString(), (ActionEvent event) -> {
+            toogleTemporalPopOver();
+        });
+        mTemporalAction.setGraphic(MaterialIcon._Action.DATE_RANGE.getImageView(getIconSizeToolBar()));
+
+        //Copyright
+        mAttributionAction = new Action("Copyright", (ActionEvent event) -> {
+            if (shouldOpen(mAttributionPopOver)) {
+                mAttributionPopOver.show((Node) event.getSource());
+            }
+        });
+        mAttributionAction.setGraphic(MaterialIcon._Action.COPYRIGHT.getImageView(getIconSizeToolBar()));
+        mAttributionAction.setDisabled(true);
 
         //Help
         mSysHelpAction = new Action(Dict.HELP.toString(), (ActionEvent event) -> {
@@ -321,6 +428,18 @@ public class AppToolBar extends ToolBar {
     }
 
     private void initListeners() {
+        SwingUtilities.invokeLater(() -> {
+            final JFrame frame = (JFrame) Almond.getFrame();
+            frame.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowActivated(WindowEvent e) {
+                    final boolean fullscreen = frame.isUndecorated();
+                    mOptions.setFullscreen(fullscreen);
+                    mSysViewFullscreenAction.setSelected(fullscreen);
+                }
+            });
+        });
+
         mOptions.getPreferences().addPreferenceChangeListener((PreferenceChangeEvent evt) -> {
             switch (evt.getKey()) {
                 case MOptions.KEY_MAP_ONLY:
@@ -331,6 +450,44 @@ public class AppToolBar extends ToolBar {
                     break;
             }
         });
+
+        Mapton.getGlobalState().addListener((GlobalStateChangeEvent evt) -> {
+            Platform.runLater(() -> {
+                updateDocumentInfo(evt);
+            });
+        }, MKey.MAP_DOCUMENT_INFO);
+
+        Mapton.getGlobalState().addListener((GlobalStateChangeEvent evt) -> {
+            Platform.runLater(() -> {
+                Notifications notifications = evt.getValue();
+                notifications.owner(AppToolBar.this).position(Pos.TOP_RIGHT);
+
+                switch (evt.getKey()) {
+                    case MKey.NOTIFICATION:
+                        notifications.show();
+                        break;
+
+                    case MKey.NOTIFICATION_CONFIRM:
+                        notifications.showConfirm();
+                        break;
+
+                    case MKey.NOTIFICATION_ERROR:
+                        notifications.showError();
+                        break;
+
+                    case MKey.NOTIFICATION_INFORMATION:
+                        notifications.showInformation();
+                        break;
+
+                    case MKey.NOTIFICATION_WARNING:
+                        notifications.showWarning();
+                        break;
+
+                    default:
+                        throw new AssertionError();
+                }
+            });
+        }, MKey.NOTIFICATION, MKey.NOTIFICATION_CONFIRM, MKey.NOTIFICATION_ERROR, MKey.NOTIFICATION_INFORMATION, MKey.NOTIFICATION_WARNING);
     }
 
     private void initPopOver(PopOver popOver, String title, Node content) {
@@ -349,11 +506,32 @@ public class AppToolBar extends ToolBar {
 
     private void initPopOvers() {
         mBookmarkPopOver = new PopOver();
+        initPopOver(mBookmarkPopOver, Dict.BOOKMARKS.toString(), new BookmarkView());
 
         mLayerPopOver = new PopOver();
         initPopOver(mLayerPopOver, Dict.LAYERS.toString(), null);
         mLayerPopOver.setOnShowing((event) -> {
             mLayerPopOver.setContentNode(new LayerView());
+        });
+
+        mToolboxPopOver = new PopOver();
+        initPopOver(mToolboxPopOver, Dict.TOOLBOX.toString(), new ToolboxView());
+
+        mStylePopOver = new PopOver();
+        initPopOver(mStylePopOver, String.format("%s & %s", Dict.TYPE.toString(), Dict.STYLE.toString()), new BorderPane());
+
+        mTemporalPopOver = new PopOver();
+        mTemporalView = new TemporalView();
+        initPopOver(mTemporalPopOver, Dict.Time.DATE.toString(), mTemporalView);
+        mTemporalPopOver.setArrowLocation(PopOver.ArrowLocation.TOP_CENTER);
+        mTemporalPopOver.setAutoHide(false);
+        mTemporalPopOver.setCloseButtonEnabled(true);
+
+        Platform.runLater(() -> {
+            mAttributionPopOver = new PopOver();
+            mAttributionView = new AttributionView(mAttributionPopOver);
+            initPopOver(mAttributionPopOver, Dict.COPYRIGHT.toString(), mAttributionView);
+            mAttributionPopOver.setArrowLocation(PopOver.ArrowLocation.TOP_RIGHT);
         });
     }
 
@@ -379,6 +557,13 @@ public class AppToolBar extends ToolBar {
                         });
             }
         });
+    }
+
+    private void updateDocumentInfo(GlobalStateChangeEvent evt) {
+        MDocumentInfo documentInfo = evt.getValue();
+        mAttributionAction.setDisabled(false);
+        mStyleAction.setText(documentInfo.getName());
+        mAttributionView.updateDocumentInfo(documentInfo);
     }
 
     private boolean usePopOver() {
