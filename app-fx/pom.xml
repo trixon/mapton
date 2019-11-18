@@ -51,7 +51,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>mapton-workbench</artifactId>
+            <artifactId>core-fx</artifactId>
             <version>${project.version}</version>
         </dependency>
 
