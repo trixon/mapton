@@ -64,7 +64,7 @@
         <!-- Mapton -->
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>core</artifactId>
+            <artifactId>core-sw</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

@@ -320,13 +320,12 @@
             </dependency>
             <dependency>
                 <groupId>org.mapton</groupId>
-                <artifactId>mapton-workbench</artifactId>
+                <artifactId>core-fx</artifactId>
                 <version>${mapton.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>org.mapton</groupId>
-                <artifactId>core</artifactId>
+                <artifactId>core-sw</artifactId>
                 <version>${mapton.version}</version>
             </dependency>
             <dependency>
