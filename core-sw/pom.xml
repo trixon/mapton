@@ -7,7 +7,7 @@
         <version>2.0.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    <artifactId>core</artifactId>
+    <artifactId>core-sw</artifactId>
     <packaging>nbm</packaging>
     <build>
         <plugins>
@@ -358,4 +358,5 @@
     <properties>
         <netbeans.hint.license>apache20</netbeans.hint.license>
     </properties>
+    <name>core-sw</name>
 </project>

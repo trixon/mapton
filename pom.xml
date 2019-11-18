@@ -94,7 +94,7 @@
         <module>branding</module>
         <module>api</module>
         <module>base</module>
-        <module>core</module>
+        <module>core-sw</module>
         <module>workbench</module>
 
         <!--Map engines-->
