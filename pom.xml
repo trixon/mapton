@@ -89,7 +89,7 @@
     </build>
 
     <modules>
-        <module>application</module>
+        <module>app-fx</module>
         <module>app-sw</module>
         <module>branding</module>
         <module>api</module>
