@@ -28,7 +28,8 @@
                         <publicPackage>javax.xml.*</publicPackage>
                         <publicPackage>org.apache.commons.*</publicPackage>
                         <publicPackage>org.controlsfx.*</publicPackage>
-                        <publicPackage>org.mapton.api.*</publicPackage>
+                        <!--<publicPackage>org.mapton.api.*</publicPackage>-->
+                        <publicPackage>org.mapton.core.api.*</publicPackage>
                         <publicPackage>org.postgresql.*</publicPackage>
                         <publicPackage>javafx</publicPackage>
                         <publicPackage>javafx.*</publicPackage>
@@ -174,7 +175,7 @@
         </dependency>-->
 
         <!--javafx-->
-        <dependency>
+        <!--        <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
         </dependency>
@@ -201,7 +202,7 @@
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-media</artifactId>
-        </dependency>
+        </dependency>-->
 
         <!-- NetBeans -->
         <!--        <dependency>
@@ -274,6 +275,12 @@
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-io</artifactId>
             <version>${netbeans.version}</version>
+        </dependency>
+
+        <!-- Mapton -->
+        <dependency>
+            <groupId>org.mapton</groupId>
+            <artifactId>mapton-api</artifactId>
         </dependency>
 
         <!-- Trixon -->

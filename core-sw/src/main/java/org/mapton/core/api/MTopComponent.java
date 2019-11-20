@@ -13,10 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.api;
+package org.mapton.core.api;
 
 import javafx.beans.value.ObservableValue;
 import javax.swing.SwingUtilities;
+import org.mapton.api.MOptions;
+import org.mapton.api.MOptions2;
 import se.trixon.almond.nbp.fx.FxTopComponent;
 
 /**

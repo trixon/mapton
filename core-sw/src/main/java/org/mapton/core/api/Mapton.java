@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.api;
+package org.mapton.core.api;
 
 import java.io.File;
 import java.text.DateFormat;
@@ -31,13 +31,14 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.Notifications;
 import org.controlsfx.control.action.Action;
+import org.mapton.api.MEngine;
+import org.mapton.api.MOptions;
 import org.mapton.core.ui.AppStatusView;
 import org.mapton.core.ui.AppToolBar;
 import org.openide.awt.StatusDisplayer;
 import org.openide.modules.InstalledFileLocator;
 import org.openide.util.Lookup;
 import se.trixon.almond.nbp.NbLog;
-import se.trixon.almond.util.GlobalState;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.swing.SwingHelper;
 
@@ -45,19 +46,18 @@ import se.trixon.almond.util.swing.SwingHelper;
  *
  * @author Patrik Karlström
  */
-public class Mapton {
+public class Mapton extends org.mapton.api.Mapton {
 
-    public static final String LOG_TAG = "Mapton";
-    public static final double MYLAT = 57.66;
-    public static final double MYLON = 12.0;
-
+//    public static final String LOG_TAG = "Mapton";
+//    public static final double MYLAT = 57.66;
+//    public static final double MYLON = 12.0;
     private static final File CACHE_DIR;
     private static final File CONFIG_DIR;
     private static final Color ICON_COLOR = Color.BLACK;
-    private static final int ICON_SIZE_TOOLBAR = 36;
+//    private static final int ICON_SIZE_TOOLBAR = 36;
     private static AppToolBar sAppToolBar;
-    private static final GlobalState sGlobalState = new GlobalState();
-    private static MOptions sOptions = MOptions.getInstance();
+//    private static final GlobalState sGlobalState = new GlobalState();
+//    private static MOptions sOptions = MOptions.getInstance();
     private final DoubleProperty mZoomProperty;
 
     static {
@@ -144,10 +144,9 @@ public class Mapton {
         return defaultEngine;
     }
 
-    public static GlobalState getGlobalState() {
-        return sGlobalState;
-    }
-
+//    public static GlobalState getGlobalState() {
+//        return sGlobalState;
+//    }
     public static Color getIconColor() {
         return ICON_COLOR;
     }
@@ -176,10 +175,9 @@ public class Mapton {
         return Color.web("#102039");
     }
 
-    public static boolean isNightMode() {
-        return MOptions2.getInstance().general().isNightMode();
-    }
-
+//    public static boolean isNightMode() {
+//        return MOptions2.getInstance().general().isNightMode();
+//    }
     public static void logLoading(String category, String item) {
         NbLog.i("Loading", String.format("%s: %s ", category, item));
     }
@@ -224,7 +222,7 @@ public class Mapton {
         sAppToolBar = appToolBar;
     }
 
-    private Mapton() {
+    protected Mapton() {
         mZoomProperty = AppStatusView.getInstance().getZoomAbsoluteSlider().valueProperty();
     }
 

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.api;
+package org.mapton.core.api.old;
 
 import javafx.scene.paint.Color;
 import static org.mapton.api.MOptionsGeneral.DEFAULT_UI_LAF_ICON_COLOR_BRIGHT;
