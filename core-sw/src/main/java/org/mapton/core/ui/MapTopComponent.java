@@ -51,15 +51,14 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
-import org.mapton.api.MBookmarkManager;
 import org.mapton.api.MContextMenuItem;
 import org.mapton.api.MDict;
 import org.mapton.api.MEngine;
-import org.mapton.api.MMapMagnet;
 import org.mapton.api.MOptions2;
-import org.mapton.api.MTopComponent;
 import org.mapton.api.MWhatsHereEngine;
-import org.mapton.api.Mapton;
+import org.mapton.core.api.MMapMagnet;
+import org.mapton.core.api.MTopComponent;
+import org.mapton.core.api.Mapton;
 import org.mapton.core.ui.AppStatusView.StatusWindowMode;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
@@ -336,7 +335,7 @@ public final class MapTopComponent extends MTopComponent {
 
         Collection<? extends Action> actions = Arrays.asList(
                 whatsHereAction,
-                MBookmarkManager.getInstance().getAddBookmarkAction(),
+                //aaa                MBookmarkManager.getInstance().getAddBookmarkAction(),
                 ActionUtils.ACTION_SEPARATOR,
                 copyImageAction,
                 exportImageAction,

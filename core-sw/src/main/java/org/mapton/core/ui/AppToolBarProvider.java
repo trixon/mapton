@@ -20,8 +20,8 @@ import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Scene;
 import javax.swing.JComponent;
-import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBar;
+import org.mapton.core.api.Mapton;
 import org.openide.util.Lookup;
 import se.trixon.almond.util.fx.FxHelper;
 
