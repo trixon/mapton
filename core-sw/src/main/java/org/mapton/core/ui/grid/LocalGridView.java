@@ -71,13 +71,13 @@ public class LocalGridView extends BorderPane {
         mPlotCheckBox.setFont(Font.font(Font.getDefault().getFamily(), FontWeight.BOLD, FxHelper.getScaledFontSize() * 1.2));
 
         Action addAction = new Action(Dict.ADD.toString(), (ActionEvent event) -> {
-            mManager.edit(null);
+//aaa            mManager.edit(null);
         });
         addAction.setGraphic(MaterialIcon._Content.ADD.getImageView(getIconSizeToolBarInt()));
 
         Action editAction = new Action(Dict.EDIT.toString(), (ActionEvent event) -> {
             if (getSelected() != null) {
-                mManager.edit(getSelected());
+//aaa                mManager.edit(getSelected());
             }
         });
         editAction.setGraphic(MaterialIcon._Editor.MODE_EDIT.getImageView(getIconSizeToolBarInt()));
@@ -128,7 +128,7 @@ public class LocalGridView extends BorderPane {
             if (getSelected() != null
                     && mouseEvent.getButton() == MouseButton.PRIMARY
                     && mouseEvent.getClickCount() == 2) {
-                mManager.edit(getSelected());
+//aaa                mManager.edit(getSelected());
             }
         });
 

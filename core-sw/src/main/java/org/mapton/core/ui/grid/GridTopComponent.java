@@ -22,10 +22,10 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import org.mapton.api.MDict;
-import org.mapton.api.MMapMagnet;
 import org.mapton.api.MOptions;
-import org.mapton.api.MTopComponent;
 import org.mapton.api.Mapton;
+import org.mapton.core.api.MMapMagnet;
+import org.mapton.core.api.MTopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.windows.TopComponent;
 
