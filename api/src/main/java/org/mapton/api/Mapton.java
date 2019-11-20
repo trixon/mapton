@@ -252,7 +252,7 @@ public class Mapton {
         return options().general();
     }
 
-    private Mapton() {
+    protected Mapton() {
     }
 
     public DoubleProperty zoomProperty() {
