@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,8 +17,6 @@ package org.mapton.api;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import org.mapton.api.MEngine;
-import org.mapton.api.Mapton;
 
 /**
  *

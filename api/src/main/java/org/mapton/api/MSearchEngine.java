@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,6 @@
 package org.mapton.api;
 
 import java.util.ArrayList;
-import org.mapton.api.MBookmark;
 
 /**
  *

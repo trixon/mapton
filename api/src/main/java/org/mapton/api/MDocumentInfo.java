@@ -16,7 +16,6 @@
 package org.mapton.api;
 
 import java.util.LinkedHashMap;
-import org.mapton.api.MAttribution;
 
 /**
  *
