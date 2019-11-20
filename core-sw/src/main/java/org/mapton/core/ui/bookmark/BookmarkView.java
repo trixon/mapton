@@ -107,19 +107,19 @@ public class BookmarkView extends BorderPane {
         MBookmark bookmark = getSelectedBookmark();
         if (bookmark != null) {
             if (bookmark.isCategory()) {
-                mManager.editCategory(bookmark.getCategory());
+//aaa                mManager.editCategory(bookmark.getCategory());
             } else {
-                mManager.editBookmark(bookmark);
+//aaa                mManager.editBookmark(bookmark);
             }
         }
     }
 
     private void bookmarkEditColor() {
-        mManager.editColor(getSelectedBookmark().getCategory());
+//aaa        mManager.editColor(getSelectedBookmark().getCategory());
     }
 
     private void bookmarkEditZoom() {
-        mManager.editZoom(getSelectedBookmark().getCategory());
+//aaa        mManager.editZoom(getSelectedBookmark().getCategory());
     }
 
     private void bookmarkGoTo(MBookmark bookmark) {
