@@ -88,7 +88,16 @@
             <artifactId>mapton-branding</artifactId>
             <version>${project.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>mapton-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>mapton-base</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>core-sw</artifactId>
@@ -106,7 +115,7 @@
             <artifactId>me-jxmapviewer2</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!--        <dependency>
+        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>me-worldwind</artifactId>
             <version>${project.version}</version>
@@ -115,11 +124,11 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>me-mapjfx</artifactId>
             <version>${project.version}</version>
-        </dependency>-->
+        </dependency>
 
 
         <!--Mapton/Search engines-->
-        <!--        <dependency>
+        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>se-bookmarks</artifactId>
             <version>${project.version}</version>
@@ -128,27 +137,27 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>se-geonames</artifactId>
             <version>${project.version}</version>
-        </dependency>-->
+        </dependency>
         <!--        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>se-google</artifactId>
             <version>${project.version}</version>
         </dependency>-->
-        <!--        <dependency>
+        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>se-nominatim</artifactId>
             <version>${project.version}</version>
-        </dependency>-->
+        </dependency>
 
         <!--Mapton/Transformation engines-->
-        <!--        <dependency>
+        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>te-swetrans</artifactId>
             <version>${project.version}</version>
-        </dependency>-->
+        </dependency>
 
         <!--Mapton/WMS sources-->
-        <!--        <dependency>
+        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>wms-eox</artifactId>
             <version>${project.version}</version>
@@ -167,27 +176,24 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>wms-nasa</artifactId>
             <version>${project.version}</version>
-        </dependency>-->
+        </dependency>
 
         <!--Mapton/Other-->
-        <!--        <dependency>
+        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>reports</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>wikipedia</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>datasources</artifactId>
-            <version>${project.version}</version>
-        </dependency>-->
+        </dependency>
 
         <!--Mapton/Add-ons-->
-        <!--        <dependency>
+        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>addon-geonames-ww</artifactId>
             <version>${project.version}</version>
@@ -206,7 +212,7 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>addon-mapollage-ww</artifactId>
             <version>${project.version}</version>
-        </dependency>-->
+        </dependency>
 
         <!--Mapton/Unstable-->
         <!--        <dependency>
@@ -237,7 +243,7 @@
         </dependency>
     </dependencies>
 
-    <!--    <repositories>
+    <repositories>
         <repository>
             <id>lib</id>
             <name>lib</name>
@@ -250,7 +256,7 @@
             </snapshots>
             <url>file:${project.basedir}/lib</url>
         </repository>
-    </repositories>-->
+    </repositories>
 
     <build>
         <plugins>

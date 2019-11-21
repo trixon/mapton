@@ -34,6 +34,7 @@ import java.util.HashSet;
 import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
+import javafx.embed.swing.SwingNode;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -443,7 +444,11 @@ public final class MapTopComponent extends MTopComponent {
         if (engine.isSwing()) {
             SwingUtilities.invokeLater(() -> {
                 removeAll();
-                final JComponent engineUI = (JComponent) engine.getUI();
+                //aaa
+                //TODO Optimize me
+                SwingNode engineNode = (SwingNode) engine.getUI();
+                final JComponent engineUI = engineNode.getContent();
+//                final JComponent engineUI = (JComponent) engine.getUI();
                 engineUI.setMinimumSize(new Dimension(1, 1));
                 engineUI.setPreferredSize(new Dimension(1, 1));
                 add(getFxPanel(), BorderLayout.NORTH);

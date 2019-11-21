@@ -15,20 +15,12 @@
  */
 package org.mapton.core.api.old;
 
-import com.dlsc.preferencesfx.PreferencesFx;
-import com.dlsc.preferencesfx.model.Category;
-import com.dlsc.preferencesfx.view.PreferencesFxView;
-import javafx.application.Platform;
-import javafx.embed.swing.JFXPanel;
-import org.openide.util.Lookup;
-import se.trixon.almond.util.Dict;
-
 /**
  *
  * @author Patrik Karlström
  */
 public class MOptions2 {
-
+    /*
     private final MOptionsGeneral mGeneralOptions = new MOptionsGeneral();
     private PreferencesFx mPreferencesFx;
 
@@ -77,4 +69,5 @@ public class MOptions2 {
 
         private static final MOptions2 INSTANCE = new MOptions2();
     }
+     */
 }

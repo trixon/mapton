@@ -15,55 +15,12 @@
  */
 package org.mapton.core.api.old;
 
-import com.healthmarketscience.sqlbuilder.BinaryCondition;
-import com.healthmarketscience.sqlbuilder.ComboCondition;
-import com.healthmarketscience.sqlbuilder.InsertQuery;
-import com.healthmarketscience.sqlbuilder.OrderObject;
-import com.healthmarketscience.sqlbuilder.SelectQuery;
-import com.healthmarketscience.sqlbuilder.UpdateQuery;
-import com.healthmarketscience.sqlbuilder.custom.postgresql.PgBinaryCondition;
-import com.healthmarketscience.sqlbuilder.dbspec.Constraint;
-import com.healthmarketscience.sqlbuilder.dbspec.basic.DbColumn;
-import com.healthmarketscience.sqlbuilder.dbspec.basic.DbConstraint;
-import java.awt.Dimension;
-import java.awt.Point;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.ResourceBundle;
-import java.util.TreeSet;
-import javafx.application.Platform;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javax.swing.SwingUtilities;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
-import org.mapton.core.db.DbBaseManager;
-import org.mapton.core.ui.bookmark.BookmarkCategoryPanel;
-import org.mapton.core.ui.bookmark.BookmarkColorPanel;
-import org.mapton.core.ui.bookmark.BookmarkPanel;
-import org.mapton.core.ui.bookmark.BookmarkZoomPanel;
-import org.openide.DialogDescriptor;
-import org.openide.DialogDisplayer;
-import org.openide.util.Exceptions;
-import org.openide.util.NbBundle;
-import se.trixon.almond.nbp.Almond;
-import se.trixon.almond.nbp.dialogs.NbMessage;
-import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.fx.FxActionSwing;
-import se.trixon.almond.util.swing.SwingHelper;
-
 /**
  *
  * @author Patrik Karlström
  */
-public class MBookmarkManager extends DbBaseManager {
+public class MBookmarkManager {
+    /*
 
     public static final String COL_CATEGORY = "category";
     public static final String COL_COLOR = "color";
@@ -591,4 +548,5 @@ public class MBookmarkManager extends DbBaseManager {
 
         private static final MBookmarkManager INSTANCE = new MBookmarkManager();
     }
+     */
 }

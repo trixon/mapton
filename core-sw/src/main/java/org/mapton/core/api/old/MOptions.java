@@ -15,18 +15,14 @@
  */
 package org.mapton.core.api.old;
 
-import javafx.scene.paint.Color;
-import static org.mapton.api.MOptionsGeneral.DEFAULT_UI_LAF_ICON_COLOR_BRIGHT;
-import static org.mapton.api.MOptionsGeneral.DEFAULT_UI_LAF_ICON_COLOR_DARK;
-import org.openide.util.NbPreferences;
 import se.trixon.almond.util.OptionsBase;
-import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
  * @author Patrik Karlström
  */
 public class MOptions extends OptionsBase {
+    /*
 
     public static final String KEY_GRID_GLOBAL_CLAMP_TO_GROUND = "global_clamp_to_ground";
     public static final String KEY_GRID_GLOBAL_EQUATOR = "grid.global.equator";
@@ -185,4 +181,5 @@ public class MOptions extends OptionsBase {
 
         private static final MOptions INSTANCE = new MOptions();
     }
+     */
 }

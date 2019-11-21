@@ -15,28 +15,12 @@
  */
 package org.mapton.core.api.old;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import javafx.application.Platform;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javax.swing.SwingUtilities;
-import org.apache.commons.io.FileUtils;
-import static org.mapton.api.MOptions.KEY_LOCAL_GRIDS;
-import org.mapton.core.ui.grid.LocalGridPanel;
-import org.openide.DialogDescriptor;
-import org.openide.DialogDisplayer;
-import se.trixon.almond.util.swing.SwingHelper;
-
 /**
  *
  * @author Patrik Karlström
  */
 public class MLocalGridManager {
+    /*
 
     private final Gson mGson = new GsonBuilder()
             .setVersion(1.0)
@@ -119,4 +103,5 @@ public class MLocalGridManager {
 
         private static final MLocalGridManager INSTANCE = new MLocalGridManager();
     }
+     */
 }

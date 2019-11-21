@@ -15,31 +15,12 @@
  */
 package org.mapton.core.api.old;
 
-import com.dlsc.preferencesfx.model.Category;
-import com.dlsc.preferencesfx.model.Group;
-import com.dlsc.preferencesfx.model.Setting;
-import java.util.ArrayList;
-import java.util.ResourceBundle;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.scene.paint.Color;
-import static org.mapton.api.MOptions.*;
-import org.mapton.core.ui.options.OptionsPanel;
-import org.openide.util.Lookup;
-import org.openide.util.NbBundle;
-import se.trixon.almond.util.Dict;
-
 /**
  *
  * @author Patrik Karlström
  */
 public class MOptionsGeneral {
-
+    /*
     public static final String DEFAULT_UI_LAF_ICON_COLOR_BRIGHT = "D3D3D3";
     public static final String DEFAULT_UI_LAF_ICON_COLOR_DARK = "1A1A1A";
 
@@ -166,4 +147,5 @@ public class MOptionsGeneral {
             mOptions.setEngine(t1);
         });
     }
+     */
 }

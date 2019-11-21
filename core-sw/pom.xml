@@ -282,6 +282,10 @@
             <groupId>org.mapton</groupId>
             <artifactId>mapton-api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.mapton</groupId>
+            <artifactId>mapton-base</artifactId>
+        </dependency>
 
         <!-- Trixon -->
         <dependency>
@@ -315,10 +319,6 @@
         <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -365,5 +365,4 @@
     <properties>
         <netbeans.hint.license>apache20</netbeans.hint.license>
     </properties>
-    <name>core-sw</name>
 </project>

@@ -64,7 +64,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.1.2</version>
+                    <version>3.2.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
@@ -348,6 +348,16 @@
                 <artifactId>se-geonames</artifactId>
                 <version>${mapton.version}</version>
             </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>wikipedia</artifactId>
+                <version>${mapton.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>datasources</artifactId>
+                <version>${mapton.version}</version>
+            </dependency>
 
             <!-- Trixon -->
             <dependency>
@@ -417,7 +427,6 @@
                 <artifactId>fontawesomefx-commons</artifactId>
                 <version>11.0</version>
             </dependency>
-
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>

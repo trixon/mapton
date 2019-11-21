@@ -53,9 +53,14 @@ public abstract class MapStyle {
         String[] layers = null;
         ArrayList<MapStyle> styles = new ArrayList<>(Lookup.getDefault().lookupAll(MapStyle.class));
         ArrayList<MWmsStyle> wmsStyles = Mapton.getGlobalState().get(MKey.DATA_SOURCES_WMS_STYLES);
-        wmsStyles.forEach((wmsStyle) -> {
-            styles.add(MapStyle.createFromWmsStyle(wmsStyle));
-        });
+
+        try {
+            wmsStyles.forEach((wmsStyle) -> {
+                styles.add(MapStyle.createFromWmsStyle(wmsStyle));
+            });
+        } catch (Exception e) {
+            //nvm
+        }
 
         for (MapStyle mapStyle : styles) {
             if (mapStyle.getId().equalsIgnoreCase(id)) {

@@ -15,25 +15,13 @@
  */
 package org.mapton.core.api.old;
 
-import java.awt.Point;
-import java.awt.image.BufferedImage;
-import java.util.TreeMap;
-import java.util.concurrent.Callable;
-import java.util.logging.Logger;
-import javafx.scene.Node;
-import javafx.scene.layout.Pane;
-import javax.swing.SwingUtilities;
-import org.mapton.core.ui.MapTopComponent;
-import org.openide.util.Lookup;
-import org.openide.util.LookupEvent;
-import org.openide.windows.WindowManager;
-import se.trixon.almond.nbp.NbLog;
-
 /**
  *
  * @author Patrik Karlström
  */
 public abstract class MEngine {
+
+    /*
 
     public static final String KEY_STATUS_COORDINATE = "Status.Coordinate";
     public static final String KEY_STATUS_PROGRESS = "Status.Progress";
@@ -254,12 +242,8 @@ public abstract class MEngine {
         Mapton.getGlobalState().put(KEY_STATUS_PROGRESS, progress);
     }
 
-    /**
-     * Zoom to the specified zoom value. 0=fully zoomed out 1=fully zoomed in
-     *
-     * @param zoom
-     */
     public void zoomTo(double zoom) {
         panTo(getCenter(), zoom);
     }
+     */
 }
