@@ -59,6 +59,10 @@
 
         <!-- Mapton -->
         <dependency>
+            <groupId>org.mapton</groupId>
+            <artifactId>mapton-api</artifactId>
+        </dependency>
+        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>core-sw</artifactId>
         </dependency>

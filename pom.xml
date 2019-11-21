@@ -89,12 +89,12 @@
     </build>
 
     <modules>
-        <module>app-fx</module>
+        <!--<module>app-fx</module>-->
         <module>app-sw</module>
         <module>branding</module>
         <module>api</module>
         <module>base</module>
-        <module>core-fx</module>
+        <!--<module>core-fx</module>-->
         <module>core-sw</module>
 
         <!--Map engines-->
@@ -312,6 +312,12 @@
                 <groupId>org.mapton</groupId>
                 <artifactId>mapton-api</artifactId>
                 <version>${mapton.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.netbeans.api</groupId>
+                        <artifactId>org-netbeans-libs-javafx</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.mapton</groupId>
@@ -374,6 +380,12 @@
                 <groupId>se.trixon.almond</groupId>
                 <artifactId>almond-nbp</artifactId>
                 <version>${almond.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.openjfx</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>se.trixon.almond</groupId>
@@ -421,6 +433,12 @@
                 <groupId>com.dlsc.preferencesfx</groupId>
                 <artifactId>preferencesfx-core</artifactId>
                 <version>11.6.0</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.openjfx</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>de.jensd</groupId>
