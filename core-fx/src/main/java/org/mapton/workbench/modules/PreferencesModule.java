@@ -21,7 +21,7 @@ import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
 import javafx.scene.Node;
 import javafx.scene.control.ButtonType;
 import org.mapton.api.MOptions2;
-import org.mapton.api.MWorkbenchModule;
+import org.mapton.workbench.api.MWorkbenchModule;
 import se.trixon.almond.util.Dict;
 
 /**

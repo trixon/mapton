@@ -18,18 +18,6 @@
                 <configuration>
                     <publicPackages>
                         <publicPackage>com.dlsc.*</publicPackage>
-                        <publicPackage>com.github.goober.*</publicPackage>
-                        <publicPackage>com.google.*</publicPackage>
-                        <publicPackage>com.sun.*</publicPackage>
-                        <publicPackage>com.sun.xml.*</publicPackage>
-                        <publicPackage>de.micromata.*</publicPackage>
-                        <publicPackage>j2html.*</publicPackage>
-                        <publicPackage>javax.annotation.*</publicPackage>
-                        <publicPackage>javax.xml.*</publicPackage>
-                        <publicPackage>org.apache.commons.*</publicPackage>
-                        <publicPackage>org.controlsfx.*</publicPackage>
-                        <publicPackage>org.mapton.core.api.*</publicPackage>
-                        <publicPackage>org.postgresql.*</publicPackage>
                         <publicPackage>org.openide.*</publicPackage>
                         <publicPackage>se.trixon.*</publicPackage>
                     </publicPackages>
@@ -143,53 +131,8 @@
             <artifactId>almond-nbp</artifactId>
         </dependency>
 
-        <!-- Database -->
-        <dependency>
-            <groupId>net.sourceforge.jtds</groupId>
-            <artifactId>jtds</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.healthmarketscience.sqlbuilder</groupId>
-            <artifactId>sqlbuilder</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-        </dependency>
 
         <!-- Other -->
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-csv</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>de.micromata.jak</groupId>
-            <artifactId>JavaAPIforKml</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.github.goober</groupId>
-            <artifactId>coordinate-transformation-library</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.j2html</groupId>
-            <artifactId>j2html</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.dlsc.preferencesfx</groupId>
-            <artifactId>preferencesfx-core</artifactId>
-        </dependency>
     </dependencies>
     <properties>
         <netbeans.hint.license>apache20</netbeans.hint.license>

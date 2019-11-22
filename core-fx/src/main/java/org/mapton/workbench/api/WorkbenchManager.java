@@ -24,7 +24,6 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import org.controlsfx.control.Notifications;
 import org.mapton.api.MKey;
-import org.mapton.api.MWorkbenchModule;
 import org.mapton.api.Mapton;
 import org.mapton.workbench.CustomTab;
 import org.mapton.workbench.modules.MapModule;

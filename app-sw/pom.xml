@@ -179,18 +179,18 @@
         </dependency>
 
         <!--Mapton/Other-->
-        <dependency>
+        <!--        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>reports</artifactId>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>wikipedia</artifactId>
         </dependency>
-        <dependency>
+        <!--        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>datasources</artifactId>
-        </dependency>
+        </dependency>-->
 
         <!--Mapton/Add-ons-->
         <dependency>
@@ -198,11 +198,11 @@
             <artifactId>addon-geonames-ww</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
+        <!--        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>addon-notes</artifactId>
             <version>${project.version}</version>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>addon-mapollage</artifactId>

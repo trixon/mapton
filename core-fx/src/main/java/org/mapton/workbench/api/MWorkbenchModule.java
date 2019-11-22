@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.api;
+package org.mapton.workbench.api;
 
 import com.dlsc.workbenchfx.model.WorkbenchModule;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
@@ -30,6 +30,8 @@ import javafx.scene.image.Image;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.stage.Stage;
+import org.mapton.api.MOptions2;
+import org.mapton.api.Mapton;
 import org.openide.util.NbBundle;
 import org.openide.util.NbPreferences;
 import se.trixon.almond.util.GlobalState;

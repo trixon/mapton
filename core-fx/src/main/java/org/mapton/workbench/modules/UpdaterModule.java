@@ -38,7 +38,7 @@ import org.mapton.api.MKey;
 import org.mapton.api.MMaskerPaneBase;
 import org.mapton.api.MPrint;
 import org.mapton.api.MUpdater;
-import org.mapton.api.MWorkbenchModule;
+import org.mapton.workbench.api.MWorkbenchModule;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import se.trixon.almond.util.Dict;

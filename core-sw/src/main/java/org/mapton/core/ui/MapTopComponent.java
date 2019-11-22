@@ -442,28 +442,30 @@ public final class MapTopComponent extends MTopComponent {
         });
 
         if (engine.isSwing()) {
-            SwingUtilities.invokeLater(() -> {
-                removeAll();
-                //aaa
-                //TODO Optimize me
-                SwingNode engineNode = (SwingNode) engine.getUI();
-                final JComponent engineUI = engineNode.getContent();
+            Platform.runLater(() -> {
+                SwingUtilities.invokeLater(() -> {
+                    removeAll();
+                    //aaa
+                    //TODO Optimize me
+                    SwingNode engineNode = (SwingNode) engine.getUI();
+                    final JComponent engineUI = engineNode.getContent();
 //                final JComponent engineUI = (JComponent) engine.getUI();
-                engineUI.setMinimumSize(new Dimension(1, 1));
-                engineUI.setPreferredSize(new Dimension(1, 1));
-                add(getFxPanel(), BorderLayout.NORTH);
-                getFxPanel().setVisible(false);
-                add(engineUI, BorderLayout.CENTER);
-                attachStatusbar();
-                revalidate();
-                repaint();
+                    engineUI.setMinimumSize(new Dimension(1, 1));
+                    engineUI.setPreferredSize(new Dimension(1, 1));
+                    add(getFxPanel(), BorderLayout.NORTH);
+                    getFxPanel().setVisible(false);
+                    add(engineUI, BorderLayout.CENTER);
+                    attachStatusbar();
+                    revalidate();
+                    repaint();
 
-                try {
-                    engine.onActivate();
-                    engine.panTo(mMOptions.getMapCenter(), mMOptions.getMapZoom());
-                    Mapton.getAppToolBar().refreshEngine(engine);
-                } catch (NullPointerException e) {
-                }
+                    try {
+                        engine.onActivate();
+                        engine.panTo(mMOptions.getMapCenter(), mMOptions.getMapZoom());
+                        Mapton.getAppToolBar().refreshEngine(engine);
+                    } catch (NullPointerException e) {
+                    }
+                });
             });
         } else {
             Platform.runLater(() -> {

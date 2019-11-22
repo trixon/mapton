@@ -19,7 +19,7 @@
                     <!--<moduleType>eager</moduleType>-->
                     <publicPackages>
                         <publicPackage>org.mapton.api.*</publicPackage>
-                        <publicPackage>com.dlsc.*</publicPackage>
+                        <publicPackage>com.dlsc.preferencesfx.*</publicPackage>
                         <publicPackage>com.github.goober.*</publicPackage>
                         <publicPackage>com.google.*</publicPackage>
                         <publicPackage>com.sun.*</publicPackage>
@@ -257,10 +257,6 @@
         <dependency>
             <groupId>com.dlsc.formsfx</groupId>
             <artifactId>formsfx-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.dlsc.workbenchfx</groupId>
-            <artifactId>workbenchfx-core</artifactId>
         </dependency>
         <dependency>
             <groupId>com.dlsc.preferencesfx</groupId>

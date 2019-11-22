@@ -20,7 +20,7 @@ import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
 import javafx.scene.control.TextArea;
-import org.mapton.api.MWorkbenchModule;
+import org.mapton.workbench.api.MWorkbenchModule;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
 

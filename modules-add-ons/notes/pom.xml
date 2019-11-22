@@ -52,6 +52,10 @@
             <artifactId>mapton-api</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.mapton</groupId>
+            <artifactId>core-fx</artifactId>
+        </dependency>
     </dependencies>
     <properties>
         <netbeans.compile.on.save>all</netbeans.compile.on.save>

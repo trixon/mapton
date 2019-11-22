@@ -18,6 +18,7 @@
                 <configuration>
                     <publicPackages>
                         <publicPackage>org.mapton.workbench.api.*</publicPackage>
+                        <publicPackage>com.dlsc.workbenchfx.*</publicPackage>
                     </publicPackages>
                     <!--<verifyRuntime>false</verifyRuntime>-->
                     <moduleDependencies>
@@ -102,28 +103,14 @@
             <artifactId>mapton-base</artifactId>
         </dependency>
 
-        <!-- Database -->
-        <dependency>
-            <groupId>net.sourceforge.jtds</groupId>
-            <artifactId>jtds</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.healthmarketscience.sqlbuilder</groupId>
-            <artifactId>sqlbuilder</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-        </dependency>
-
         <dependency>
             <groupId>de.codecentric.centerdevice</groupId>
             <artifactId>centerdevice-nsmenufx</artifactId>
             <version>2.1.6</version>
+        </dependency>
+        <dependency>
+            <groupId>com.dlsc.workbenchfx</groupId>
+            <artifactId>workbenchfx-core</artifactId>
         </dependency>
     </dependencies>
 

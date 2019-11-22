@@ -398,8 +398,10 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         ArrayList< WmsService> wmsServices = new ArrayList<>(Lookup.getDefault().lookupAll(WmsService.class));
         ArrayList<MWmsSource> wmsSources = Mapton.getGlobalState().get(DATA_SOURCES_WMS_SOURCES);
 
-        for (MWmsSource wmsSource : wmsSources) {
-            wmsServices.add(WmsService.createFromWmsSource(wmsSource));
+        if (wmsSources != null) {
+            for (MWmsSource wmsSource : wmsSources) {
+                wmsServices.add(WmsService.createFromWmsSource(wmsSource));
+            }
         }
 
         for (WmsService wmsService : wmsServices) {

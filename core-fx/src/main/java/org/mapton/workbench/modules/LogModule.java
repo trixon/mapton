@@ -17,7 +17,7 @@ package org.mapton.workbench.modules;
 
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import javafx.scene.Node;
-import org.mapton.api.MWorkbenchModule;
+import org.mapton.workbench.api.MWorkbenchModule;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.LogListener;
 import se.trixon.almond.util.fx.control.LogPanel;
