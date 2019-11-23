@@ -105,7 +105,7 @@
             <artifactId>te-swetrans</artifactId>
             <version>${project.version}</version>
         </dependency>
-        
+
         <!--Mapton/WMS sources-->
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -129,11 +129,11 @@
         </dependency>
 
         <!--Mapton/Other-->
-        <!--        <dependency>
+        <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>reports</artifactId>
+            <artifactId>reports-wb</artifactId>
             <version>${project.version}</version>
-        </dependency>-->
+        </dependency>
         <!--        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>wikipedia</artifactId>

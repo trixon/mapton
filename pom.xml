@@ -121,18 +121,19 @@
         <module>app-nb/application</module>
         <module>app-nb/core-nb</module>
 
-        <!--Add-ons NB-->
+        <!--Modules NB-->
+        <module>app-nb/modules/reports-nb</module>
         <module>app-nb/modules-add-ons/notes-nb</module>
 
         <!--GUI WorkbenchFX-->
         <module>app-wb/application</module>
         <module>app-wb/core-wb</module>
 
-        <!--Add-ons WB-->
+        <!--Modules WB-->
+        <module>app-wb/modules/reports-wb</module>
         <module>app-wb/modules-add-ons/notes-wb</module>
-        
+
         <!--Other-->
-        <module>modules/reports</module>
         <module>modules/wikipedia</module>
 
         <!--Add-ons-->

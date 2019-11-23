@@ -184,10 +184,11 @@
         </dependency>
 
         <!--Mapton/Other-->
-        <!--        <dependency>
+        <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>reports</artifactId>
-        </dependency>-->
+            <artifactId>reports-nb</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>wikipedia</artifactId>
@@ -204,7 +205,7 @@
             <artifactId>addon-notes-nb</artifactId>
             <version>${project.version}</version>
         </dependency>
-<!--        <dependency>
+        <!--        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>addon-mapollage</artifactId>
             <version>${project.version}</version>
