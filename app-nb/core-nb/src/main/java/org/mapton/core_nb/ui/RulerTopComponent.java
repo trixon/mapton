@@ -13,16 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.addon.mapollage;
+package org.mapton.core_nb.ui;
 
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.layout.BorderPane;
-import org.mapton.addon.mapollage.ui.SourcesPane;
-import org.mapton.core_nb.api.MMapMagnet;
 import org.mapton.core_nb.api.MTopComponent;
-import org.mapton.core_nb.api.Mapton;
 import org.netbeans.api.settings.ConvertAsProperties;
+import org.openide.awt.ActionID;
+import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
 import se.trixon.almond.util.Dict;
 
@@ -30,21 +27,30 @@ import se.trixon.almond.util.Dict;
  * Top component which displays something.
  */
 @ConvertAsProperties(
-        dtd = "-//org.mapton.addon.mapollage//Mapollage//EN",
+        dtd = "-//org.mapton.core.bookmark//Ruler//EN",
         autostore = false
 )
 @TopComponent.Description(
-        preferredID = "MapollageTopComponent",
-        //iconBase="SET/PATH/TO/ICON/HERE",
+        preferredID = "RulerTopComponent",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
-@TopComponent.Registration(mode = "properties", openAtStartup = false)
-public final class MapollageTopComponent extends MTopComponent implements MMapMagnet {
+@TopComponent.Registration(mode = "explorer", openAtStartup = true, position = 99)
+@ActionID(category = "Window", id = "org.mapton.core.bookmark.RulerTopComponent")
+@TopComponent.OpenActionRegistration(
+        displayName = "#CTL_RulerAction",
+        preferredID = "RulerTopComponent"
+)
+@Messages({
+    "CTL_RulerAction=Measure"
+})
+public final class RulerTopComponent extends MTopComponent {
 
-    private BorderPane mRoot;
+    private RulerView mRulerView;
 
-    public MapollageTopComponent() {
-        setName(Dict.PHOTOS.toString());
+    public RulerTopComponent() {
+        putClientProperty(PROP_MAXIMIZATION_DISABLED, Boolean.TRUE);
+
+        setName(Dict.MEASURE.toString());
     }
 
     @Override
@@ -52,24 +58,19 @@ public final class MapollageTopComponent extends MTopComponent implements MMapMa
         setScene(createScene());
     }
 
+    private Scene createScene() {
+        mRulerView = new RulerView();
+
+        return new Scene(mRulerView);
+    }
+
     void readProperties(java.util.Properties p) {
         String version = p.getProperty("version");
-        // TODO read your settings according to their version
     }
 
     void writeProperties(java.util.Properties p) {
         // better to version settings since initial version as advocated at
         // http://wiki.apidesign.org/wiki/PropertyFiles
         p.setProperty("version", "1.0");
-        // TODO store your settings
-    }
-
-    private Scene createScene() {
-        Label titleLabel = Mapton.createTitle(Dict.PHOTOS.toString());
-        mRoot = new BorderPane(new SourcesPane());
-        mRoot.setTop(titleLabel);
-        titleLabel.prefWidthProperty().bind(mRoot.widthProperty());
-
-        return new Scene(mRoot);
     }
 }

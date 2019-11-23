@@ -13,38 +13,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.addon.mapollage;
+package org.mapton.core_nb.ui.grid;
 
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
-import org.mapton.addon.mapollage.ui.SourcesPane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
+import org.mapton.api.MDict;
+import org.mapton.api.MOptions;
+import org.mapton.api.Mapton;
 import org.mapton.core_nb.api.MMapMagnet;
 import org.mapton.core_nb.api.MTopComponent;
-import org.mapton.core_nb.api.Mapton;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.windows.TopComponent;
-import se.trixon.almond.util.Dict;
 
 /**
  * Top component which displays something.
  */
 @ConvertAsProperties(
-        dtd = "-//org.mapton.addon.mapollage//Mapollage//EN",
+        dtd = "-//org.mapton.core//Grid//EN",
         autostore = false
 )
 @TopComponent.Description(
-        preferredID = "MapollageTopComponent",
+        preferredID = "GridTopComponent",
         //iconBase="SET/PATH/TO/ICON/HERE",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(mode = "properties", openAtStartup = false)
-public final class MapollageTopComponent extends MTopComponent implements MMapMagnet {
+public final class GridTopComponent extends MTopComponent implements MMapMagnet {
 
+    private final MOptions mOptions = MOptions.getInstance();
     private BorderPane mRoot;
 
-    public MapollageTopComponent() {
-        setName(Dict.PHOTOS.toString());
+    public GridTopComponent() {
+        setName(MDict.GRID.toString());
     }
 
     @Override
@@ -65,8 +69,19 @@ public final class MapollageTopComponent extends MTopComponent implements MMapMa
     }
 
     private Scene createScene() {
-        Label titleLabel = Mapton.createTitle(Dict.PHOTOS.toString());
-        mRoot = new BorderPane(new SourcesPane());
+        GlobalGridView globalGridView = new GlobalGridView();
+        LocalGridView localGridView = new LocalGridView();
+
+        VBox vbox = new VBox(16,
+                globalGridView,
+                localGridView
+        );
+
+        vbox.setPadding(new Insets(8));
+        VBox.setVgrow(localGridView, Priority.ALWAYS);
+
+        Label titleLabel = Mapton.createTitle(MDict.GRID.toString());
+        mRoot = new BorderPane(vbox);
         mRoot.setTop(titleLabel);
         titleLabel.prefWidthProperty().bind(mRoot.widthProperty());
 

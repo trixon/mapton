@@ -92,8 +92,8 @@
         <!--Applications-->
         <module>branding</module>
 
-        <module>app-sw/application</module>
-        <module>app-sw/core-sw</module>
+        <module>app-nb/application</module>
+        <module>app-nb/core-nb</module>
         <module>app-wb/application</module>
         <module>app-wb/core-wb</module>
 
@@ -334,7 +334,7 @@
             </dependency>
             <dependency>
                 <groupId>org.mapton</groupId>
-                <artifactId>core-sw</artifactId>
+                <artifactId>core-nb</artifactId>
                 <version>${mapton.version}</version>
             </dependency>
             <dependency>
