@@ -22,7 +22,7 @@ limitations under the License.
         <file name="F12.shadow_hidden"/>
     </folder>-->
     <file name="AppStatusPanel.instance">
-        <attr name="instanceClass" stringvalue="org.mapton.core.ui.AppStatusPanel"/>
+        <attr name="instanceClass" stringvalue="org.mapton.core_nb.ui.AppStatusPanel"/>
     </file>
     <folder name="OptionsDialog">
         <folder name="Advanced">
