@@ -89,13 +89,7 @@
     </build>
 
     <modules>
-        <!--Applications-->
         <module>branding</module>
-
-        <module>app-nb/application</module>
-        <module>app-nb/core-nb</module>
-        <module>app-wb/application</module>
-        <module>app-wb/core-wb</module>
 
         <!--Shared-->
         <module>shared/api</module>
@@ -122,6 +116,21 @@
         <module>shared/wms-lantmateriet</module>
         <module>shared/wms-nasa</module>
 
+        <!--Applications-->
+        <!--GUI NetBeans-->
+        <module>app-nb/application</module>
+        <module>app-nb/core-nb</module>
+
+        <!--Add-ons NB-->
+        <module>app-nb/modules-add-ons/notes-nb</module>
+
+        <!--GUI WorkbenchFX-->
+        <module>app-wb/application</module>
+        <module>app-wb/core-wb</module>
+
+        <!--Add-ons WB-->
+        <module>app-wb/modules-add-ons/notes-wb</module>
+        
         <!--Other-->
         <module>modules/reports</module>
         <module>modules/wikipedia</module>
@@ -130,7 +139,6 @@
         <module>modules-add-ons/geonames-ww</module>
         <module>modules-add-ons/mapollage</module>
         <module>modules-add-ons/mapollage-ww</module>
-        <module>modules-add-ons/notes</module>
 
         <!--Unstable-->
         <!--<module>demo</module>-->

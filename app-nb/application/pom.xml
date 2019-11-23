@@ -192,10 +192,6 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>wikipedia</artifactId>
         </dependency>
-        <!--        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>datasources</artifactId>
-        </dependency>-->
 
         <!--Mapton/Add-ons-->
         <dependency>
@@ -203,12 +199,12 @@
             <artifactId>addon-geonames-ww</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!--        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>addon-notes</artifactId>
-            <version>${project.version}</version>
-        </dependency>-->
         <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>addon-notes-nb</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+<!--        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>addon-mapollage</artifactId>
             <version>${project.version}</version>
@@ -217,7 +213,7 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>addon-mapollage-ww</artifactId>
             <version>${project.version}</version>
-        </dependency>
+        </dependency>-->
 
         <!--Mapton/Unstable-->
         <!--        <dependency>

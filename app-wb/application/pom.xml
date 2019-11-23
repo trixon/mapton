@@ -105,6 +105,7 @@
             <artifactId>te-swetrans</artifactId>
             <version>${project.version}</version>
         </dependency>
+        
         <!--Mapton/WMS sources-->
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -140,11 +141,11 @@
         </dependency>-->
 
         <!--Mapton/Add-ons-->
-        <!--        <dependency>
+        <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>addon-notes</artifactId>
+            <artifactId>addon-notes-wb</artifactId>
             <version>${project.version}</version>
-        </dependency>-->
+        </dependency>
         <!--        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>addon-geonames-ww</artifactId>
