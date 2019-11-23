@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.datasources;
+package org.mapton.api.ui;
 
 import java.io.File;
 import java.util.prefs.Preferences;
@@ -37,7 +37,7 @@ public class DataSourceTab extends Tab {
     private String mDefaults;
     private final String[] mDropExts;
     private final String mKey;
-    private final Preferences mPreferences = NbPreferences.forModule(DataSourcesModule.class);
+    private final Preferences mPreferences = NbPreferences.forModule(DataSourceTab.class);
     private TextArea mTextArea;
 
     public DataSourceTab(String text, String key, String[] dropExts) {
@@ -48,16 +48,16 @@ public class DataSourceTab extends Tab {
         initListeners();
     }
 
-    void load(String defaults) {
+    public void load(String defaults) {
         mDefaults = defaults;
         mTextArea.setText(mPreferences.get(mKey, defaults));
     }
 
-    void restoreDefaults() {
+    public void restoreDefaults() {
         mTextArea.setText(mDefaults);
     }
 
-    void save() {
+    public void save() {
         mPreferences.put(mKey, mTextArea.getText());
     }
 

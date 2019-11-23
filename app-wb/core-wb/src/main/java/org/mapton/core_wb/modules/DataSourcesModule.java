@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.datasources;
+package org.mapton.core_wb.modules;
 
 import com.dlsc.workbenchfx.view.controls.ToolbarItem;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
@@ -22,7 +22,9 @@ import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import org.mapton.api.MDataSourceInitializer;
 import org.mapton.api.MKey;
+import org.mapton.api.ui.DataSourceTab;
 import org.mapton.core_wb.api.MWorkbenchModule;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
@@ -91,8 +93,8 @@ public class DataSourcesModule extends MWorkbenchModule {
 
     private void init() {
         mFileTab.load("");
-        mWmsSourceTab.load(Initializer.getDefaultSources());
-        mWmsStyleTab.load(Initializer.getDefaultStyles());
+        mWmsSourceTab.load(MDataSourceInitializer.getDefaultSources());
+        mWmsStyleTab.load(MDataSourceInitializer.getDefaultStyles());
 
         apply();
     }

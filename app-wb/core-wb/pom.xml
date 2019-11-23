@@ -19,6 +19,7 @@
                     <publicPackages>
                         <publicPackage>org.mapton.core_wb.api.*</publicPackage>
                         <publicPackage>com.dlsc.workbenchfx.*</publicPackage>
+                        <publicPackage>de.jensd.*</publicPackage>
                     </publicPackages>
                     <!--<verifyRuntime>false</verifyRuntime>-->
                     <moduleDependencies>

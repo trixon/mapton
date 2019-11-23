@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.datasources;
+package org.mapton.api;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -30,14 +30,7 @@ import java.util.prefs.Preferences;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.mapton.api.MAttribution;
-import org.mapton.api.MKey;
 import static org.mapton.api.MKey.*;
-import org.mapton.api.MWmsSource;
-import org.mapton.api.MWmsSourceProvider;
-import org.mapton.api.MWmsStyle;
-import org.mapton.api.MWmsStyleProvider;
-import org.mapton.api.Mapton;
 import org.openide.modules.OnStart;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
@@ -48,7 +41,7 @@ import org.openide.util.NbPreferences;
  * @author Patrik Karlström
  */
 @OnStart
-public class Initializer implements Runnable {
+public class MDataSourceInitializer implements Runnable {
 
     private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
     static final Gson gson = new GsonBuilder()
@@ -58,9 +51,9 @@ public class Initializer implements Runnable {
             .setDateFormat(DATE_FORMAT)
             .create();
     private static final String LOG_TAG = "DataSources";
-    private final Preferences mPreferences = NbPreferences.forModule(DataSourcesModule.class);
+    private final Preferences mPreferences = NbPreferences.forModule(MDataSourceInitializer.class);
 
-    static String getDefaultSources() {
+    public static String getDefaultSources() {
         try {
             return IOUtils.toString(new URI("https://mapton.org/files/data_sources_wms_sources_defaults"), "utf-8") + "\n";
         } catch (IOException | URISyntaxException ex) {
@@ -68,7 +61,7 @@ public class Initializer implements Runnable {
         }
     }
 
-    static String getDefaultStyles() {
+    public static String getDefaultStyles() {
         try {
             return IOUtils.toString(new URI("https://mapton.org/files/data_sources_wms_styles_defaults"), "utf-8") + "\n";
         } catch (IOException | URISyntaxException ex) {
@@ -76,7 +69,7 @@ public class Initializer implements Runnable {
         }
     }
 
-    public Initializer() {
+    public MDataSourceInitializer() {
         mPreferences.addPreferenceChangeListener((PreferenceChangeEvent evt) -> {
             switch (evt.getKey()) {
                 case DATA_SOURCES_FILES:
