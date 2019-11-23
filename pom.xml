@@ -89,46 +89,48 @@
     </build>
 
     <modules>
-        <!--<module>app-fx</module>-->
+        <!--Applications-->
+        <module>app-fx</module>
         <module>app-sw</module>
         <module>branding</module>
-        <module>api</module>
-        <module>base</module>
-        <!--<module>core-fx</module>-->
+        <module>core-fx</module>
         <module>core-sw</module>
 
-        <!--Map engines-->
+        <!--Shared-->
+        <module>shared/api</module>
+        <module>shared/base</module>
+
+        <!--Shared Map engines-->
         <!--<module>modules/me-gmapsfx</module>-->
-        <module>modules/me-jxmapviewer2</module>
-        <module>modules/me-mapjfx</module>
-        <module>modules/me-worldwind</module>
-        <module>modules/datasources</module>
+        <module>shared/me-jxmapviewer2</module>
+        <module>shared/me-mapjfx</module>
+        <module>shared/me-worldwind</module>
 
-        <!--Search engines-->
-        <module>modules/se-bookmarks</module>
-        <module>modules/se-geonames</module>
-        <!--<module>modules/se-google</module>-->
-        <module>modules/se-nominatim</module>
+        <!--Shared Search engines-->
+        <module>shared/se-bookmarks</module>
+        <module>shared/se-geonames</module>
+        <!--<module>shared/se-google</module>-->
+        <module>shared/se-nominatim</module>
 
-        <!--Transformation engines-->
-        <module>modules/te-swetrans</module>
+        <!--Shared Transformation engines-->
+        <module>shared/te-swetrans</module>
+
+        <!--Shared WMS-->
+        <module>shared/wms-emxsys</module>
+        <module>shared/wms-eox</module>
+        <module>shared/wms-lantmateriet</module>
+        <module>shared/wms-nasa</module>
 
         <!--Other-->
+        <module>modules/datasources</module>
         <module>modules/reports</module>
         <module>modules/wikipedia</module>
-
 
         <!--Add-ons-->
         <module>modules-add-ons/geonames-ww</module>
         <module>modules-add-ons/mapollage</module>
         <module>modules-add-ons/mapollage-ww</module>
         <module>modules-add-ons/notes</module>
-
-        <!--WMS-->
-        <module>modules/wms-emxsys</module>
-        <module>modules/wms-eox</module>
-        <module>modules/wms-lantmateriet</module>
-        <module>modules/wms-nasa</module>
 
         <!--Unstable-->
         <!--<module>demo</module>-->

@@ -5,7 +5,7 @@
         <groupId>org.mapton</groupId>
         <artifactId>mapton-parent</artifactId>
         <version>2.0.0-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
     <artifactId>mapton-api</artifactId>
     <packaging>nbm</packaging>
@@ -19,7 +19,7 @@
                     <!--<moduleType>eager</moduleType>-->
                     <publicPackages>
                         <publicPackage>org.mapton.api.*</publicPackage>
-                        <publicPackage>com.dlsc.preferencesfx.*</publicPackage>
+                        <publicPackage>com.dlsc.*</publicPackage>
                         <publicPackage>com.github.goober.*</publicPackage>
                         <publicPackage>com.google.*</publicPackage>
                         <publicPackage>com.sun.*</publicPackage>
@@ -265,6 +265,11 @@
         <dependency>
             <groupId>de.jensd</groupId>
             <artifactId>fontawesomefx-commons</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.jensd</groupId>
+            <artifactId>fontawesomefx-fontawesome</artifactId>
+            <version>4.7.0-11</version>
         </dependency>
 
         <!-- Apache -->

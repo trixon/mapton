@@ -128,33 +128,33 @@
         </dependency>
 
         <!--Mapton/Other-->
-        <dependency>
+        <!--        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>reports</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        <dependency>
+        </dependency>-->
+        <!--        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>wikipedia</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        <dependency>
+        </dependency>-->
+        <!--        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>datasources</artifactId>
             <version>${project.version}</version>
-        </dependency>
+        </dependency>-->
 
         <!--Mapton/Add-ons-->
-        <dependency>
+        <!--        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>addon-notes</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        <dependency>
+        </dependency>-->
+        <!--        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>addon-geonames-ww</artifactId>
             <version>${project.version}</version>
-        </dependency>
+        </dependency>-->
         <!--
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -193,6 +193,15 @@
         <!--        <dependency>
             <groupId>se.trixon.almond</groupId>
             <artifactId>almond-nbp-darcula</artifactId>
+        </dependency>-->
+        <!--        <dependency>
+            <groupId>de.jensd</groupId>
+            <artifactId>fontawesomefx-commons</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.jensd</groupId>
+            <artifactId>fontawesomefx-fontawesome</artifactId>
+            <version>4.7.0-11</version>
         </dependency>-->
     </dependencies>
 

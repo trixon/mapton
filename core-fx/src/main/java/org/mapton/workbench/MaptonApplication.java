@@ -25,6 +25,7 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableMap;
+import javafx.embed.swing.JFXPanel;
 import javafx.embed.swing.SwingNode;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
@@ -98,6 +99,8 @@ public class MaptonApplication extends Application {
     private WorkbenchManager mWorkbenchManager;
 
     public static void main(String[] args) {
+        new JFXPanel();//TODO Why was this needed on 2019-11-23
+        Mapton.getInstance();//TODO Why was this needed on 2019-11-23
         launch(args);
     }
 
