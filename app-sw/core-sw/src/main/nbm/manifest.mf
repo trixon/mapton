@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 OpenIDE-Module-Module: org.mapton.core
-OpenIDE-Module-Layer: org/mapton/core/layer.xml
-OpenIDE-Module-Localizing-Bundle: org/mapton/core/Bundle.properties
+OpenIDE-Module-Layer: org/mapton/core_sw/layer.xml
+OpenIDE-Module-Localizing-Bundle: org/mapton/core_sw/Bundle.properties
 AutoUpdate-Essential-Module: true
 AutoUpdate-Show-In-Client: false
 OpenIDE-Module-Requires: org.openide.windows.WindowManager

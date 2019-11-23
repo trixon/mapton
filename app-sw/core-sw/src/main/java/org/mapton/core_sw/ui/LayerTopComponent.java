@@ -13,16 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.addon.mapollage;
+package org.mapton.core_sw.ui;
 
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import javafx.application.Platform;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
-import org.mapton.addon.mapollage.ui.SourcesPane;
-import org.mapton.core_sw.api.MMapMagnet;
 import org.mapton.core_sw.api.MTopComponent;
-import org.mapton.core_sw.api.Mapton;
 import org.netbeans.api.settings.ConvertAsProperties;
+import org.openide.awt.ActionID;
+import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
 import se.trixon.almond.util.Dict;
 
@@ -30,21 +31,40 @@ import se.trixon.almond.util.Dict;
  * Top component which displays something.
  */
 @ConvertAsProperties(
-        dtd = "-//org.mapton.addon.mapollage//Mapollage//EN",
+        dtd = "-//org.mapton.core.layer//Layer//EN",
         autostore = false
 )
 @TopComponent.Description(
-        preferredID = "MapollageTopComponent",
-        //iconBase="SET/PATH/TO/ICON/HERE",
+        preferredID = "LayerTopComponent",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
-@TopComponent.Registration(mode = "properties", openAtStartup = false)
-public final class MapollageTopComponent extends MTopComponent implements MMapMagnet {
+@TopComponent.Registration(mode = "navigator", openAtStartup = true)
+@ActionID(category = "Mapton", id = "org.mapton.core.layer.LayerTopComponent")
+@TopComponent.OpenActionRegistration(
+        displayName = "#CTL_LayerAction",
+        preferredID = "LayerTopComponent"
+)
+@Messages({
+    "CTL_LayerAction=Layer"
+})
+public final class LayerTopComponent extends MTopComponent {
 
-    private BorderPane mRoot;
+    private BorderPane mBorderPane;
 
-    public MapollageTopComponent() {
-        setName(Dict.PHOTOS.toString());
+    public LayerTopComponent() {
+        putClientProperty(PROP_MAXIMIZATION_DISABLED, Boolean.TRUE);
+        putClientProperty(PROP_SLIDING_DISABLED, Boolean.TRUE);
+        putClientProperty(PROP_UNDOCKING_DISABLED, Boolean.TRUE);
+        putClientProperty(PROP_KEEP_PREFERRED_SIZE_WHEN_SLIDED_IN, Boolean.TRUE);
+
+        setName(Dict.LAYERS.toString());
+        setPopOverHolder(true);
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentShown(ComponentEvent e) {
+                reInitFX();
+            }
+        });
     }
 
     @Override
@@ -65,11 +85,15 @@ public final class MapollageTopComponent extends MTopComponent implements MMapMa
     }
 
     private Scene createScene() {
-        Label titleLabel = Mapton.createTitle(Dict.PHOTOS.toString());
-        mRoot = new BorderPane(new SourcesPane());
-        mRoot.setTop(titleLabel);
-        titleLabel.prefWidthProperty().bind(mRoot.widthProperty());
+        mBorderPane = new BorderPane();
+        reInitFX();
 
-        return new Scene(mRoot);
+        return new Scene(mBorderPane);
+    }
+
+    private void reInitFX() {
+        Platform.runLater(() -> {
+            mBorderPane.setCenter(new LayerView());
+        });
     }
 }

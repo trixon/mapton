@@ -13,16 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.addon.mapollage;
+package org.mapton.core_sw.ui;
 
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.layout.BorderPane;
-import org.mapton.addon.mapollage.ui.SourcesPane;
-import org.mapton.core_sw.api.MMapMagnet;
 import org.mapton.core_sw.api.MTopComponent;
-import org.mapton.core_sw.api.Mapton;
 import org.netbeans.api.settings.ConvertAsProperties;
+import org.openide.awt.ActionID;
+import org.openide.awt.ActionReference;
+import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
 import se.trixon.almond.util.Dict;
 
@@ -30,21 +28,34 @@ import se.trixon.almond.util.Dict;
  * Top component which displays something.
  */
 @ConvertAsProperties(
-        dtd = "-//org.mapton.addon.mapollage//Mapollage//EN",
+        dtd = "-//org.mapton.core.ui//Toolbox//EN",
         autostore = false
 )
 @TopComponent.Description(
-        preferredID = "MapollageTopComponent",
+        preferredID = "ToolboxTopComponent",
         //iconBase="SET/PATH/TO/ICON/HERE",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
-@TopComponent.Registration(mode = "properties", openAtStartup = false)
-public final class MapollageTopComponent extends MTopComponent implements MMapMagnet {
+@TopComponent.Registration(mode = "explorer", openAtStartup = true, position = 1)
+@ActionID(category = "Window", id = "org.mapton.core.ui.ToolboxTopComponent")
+@ActionReference(path = "Menu/Window" /*, position = 333 */)
+@TopComponent.OpenActionRegistration(
+        displayName = "#CTL_ToolboxAction",
+        preferredID = "ToolboxTopComponent"
+)
+@Messages({
+    "CTL_ToolboxAction=Toolbox"
+})
+public final class ToolboxTopComponent extends MTopComponent {
 
-    private BorderPane mRoot;
+    public ToolboxTopComponent() {
+        putClientProperty(PROP_MAXIMIZATION_DISABLED, Boolean.TRUE);
+        putClientProperty(PROP_SLIDING_DISABLED, Boolean.TRUE);
+        putClientProperty(PROP_UNDOCKING_DISABLED, Boolean.TRUE);
+        putClientProperty(PROP_KEEP_PREFERRED_SIZE_WHEN_SLIDED_IN, Boolean.TRUE);
 
-    public MapollageTopComponent() {
-        setName(Dict.PHOTOS.toString());
+        setName(Dict.TOOLBOX.toString());
+        setPopOverHolder(true);
     }
 
     @Override
@@ -65,11 +76,6 @@ public final class MapollageTopComponent extends MTopComponent implements MMapMa
     }
 
     private Scene createScene() {
-        Label titleLabel = Mapton.createTitle(Dict.PHOTOS.toString());
-        mRoot = new BorderPane(new SourcesPane());
-        mRoot.setTop(titleLabel);
-        titleLabel.prefWidthProperty().bind(mRoot.widthProperty());
-
-        return new Scene(mRoot);
+        return new Scene(new ToolboxView());
     }
 }
