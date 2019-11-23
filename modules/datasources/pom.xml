@@ -52,7 +52,7 @@
         </dependency>
         <dependency>
             <groupId>org.mapton</groupId>
-            <artifactId>core-fx</artifactId>
+            <artifactId>core-wb</artifactId>
         </dependency>
     </dependencies>
 </project>

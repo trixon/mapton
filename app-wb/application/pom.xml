@@ -8,7 +8,7 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>mapton-app-fx</artifactId>
+    <artifactId>mapton-app-wb</artifactId>
     <packaging>nbm-application</packaging>
 
     <properties>
@@ -51,7 +51,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>core-fx</artifactId>
+            <artifactId>core-wb</artifactId>
             <version>${project.version}</version>
         </dependency>
 

@@ -92,10 +92,10 @@
         <!--Applications-->
         <module>branding</module>
 
-        <module>app-fx/application</module>
-        <module>app-fx/core-fx</module>
         <module>app-sw/application</module>
         <module>app-sw/core-sw</module>
+        <module>app-wb/application</module>
+        <module>app-wb/core-wb</module>
 
         <!--Shared-->
         <module>shared/api</module>
@@ -329,7 +329,7 @@
             </dependency>
             <dependency>
                 <groupId>org.mapton</groupId>
-                <artifactId>core-fx</artifactId>
+                <artifactId>core-wb</artifactId>
                 <version>${mapton.version}</version>
             </dependency>
             <dependency>

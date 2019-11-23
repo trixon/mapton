@@ -7,7 +7,7 @@
         <version>2.0.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
-    <artifactId>core-fx</artifactId>
+    <artifactId>core-wb</artifactId>
     <packaging>nbm</packaging>
     <build>
         <plugins>
