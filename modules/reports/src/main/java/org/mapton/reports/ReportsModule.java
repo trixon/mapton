@@ -29,7 +29,7 @@ import javafx.scene.control.TreeView;
 import javafx.scene.layout.BorderPane;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.reports.api.MReport;
-import org.mapton.workbench.api.MWorkbenchModule;
+import org.mapton.core_wb.api.MWorkbenchModule;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.util.NbPreferences;

@@ -13,43 +13,46 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.addon.notes;
+package org.mapton.core_wb.modules;
 
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
-import javafx.application.Platform;
-import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
-import javafx.scene.control.TextArea;
 import org.mapton.core_wb.api.MWorkbenchModule;
-import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.LogListener;
+import se.trixon.almond.util.fx.control.LogPanel;
 
 /**
  *
  * @author Patrik Karlström
  */
-@ServiceProvider(service = MWorkbenchModule.class)
-public class NotesModule extends MWorkbenchModule {
+public class LogModule extends MWorkbenchModule implements LogListener {
 
-    private static final String KEY_NOTES = "notes";
-    private TextArea mTextArea;
+    private LogPanel mLogPanel;
 
-    public NotesModule() {
-        super(Dict.NOTES.toString(), MaterialDesignIcon.PEN);
+    public LogModule() {
+        super(Dict.LOG.toString(), MaterialDesignIcon.MESSAGE);
 
-        mTextArea = new TextArea();
-        mTextArea.setText(mPreferences.get(KEY_NOTES, ""));
-        mTextArea.textProperty().addListener((ObservableValue<? extends String> ov, String t, String t1) -> {
-            mPreferences.put(KEY_NOTES, mTextArea.getText());
-        });
+        createUI();
     }
 
     @Override
     public Node activate() {
-        Platform.runLater(() -> {
-            mTextArea.requestFocus();
-        });
+        return mLogPanel;
+    }
 
-        return mTextArea;
+    @Override
+    public boolean destroy() {
+        return true;
+    }
+
+    @Override
+    public void println(String s) {
+        mLogPanel.println(s);
+    }
+
+    private void createUI() {
+        mLogPanel = new LogPanel();
+        mLogPanel.setMonospaced();
     }
 }

@@ -23,7 +23,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import org.mapton.api.MKey;
-import org.mapton.workbench.api.MWorkbenchModule;
+import org.mapton.core_wb.api.MWorkbenchModule;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
 

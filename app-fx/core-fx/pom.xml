@@ -17,7 +17,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <publicPackages>
-                        <publicPackage>org.mapton.workbench.api.*</publicPackage>
+                        <publicPackage>org.mapton.core_wb.api.*</publicPackage>
                         <publicPackage>com.dlsc.workbenchfx.*</publicPackage>
                     </publicPackages>
                     <!--<verifyRuntime>false</verifyRuntime>-->
