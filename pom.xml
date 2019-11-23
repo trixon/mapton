@@ -90,11 +90,12 @@
 
     <modules>
         <!--Applications-->
-        <module>app-fx</module>
-        <module>app-sw</module>
         <module>branding</module>
-        <module>core-fx</module>
-        <module>core-sw</module>
+
+        <module>app-fx/application</module>
+        <module>app-fx/core-fx</module>
+        <module>app-sw/application</module>
+        <module>app-sw/core-sw</module>
 
         <!--Shared-->
         <module>shared/api</module>
