@@ -76,7 +76,7 @@ import se.trixon.windowsystemfx.WindowSystemComponent;
 @ServiceProvider(service = Window.class)
 public class MapWindow extends Window {
 
-    public static final String ID = "org.mapton.workbench.modules.map.MapWindow";
+    public static final String ID = "org.mapton.core_wb.modules.map.MapWindow";
     private Menu mContextCopyMenu;
     private Menu mContextExtrasMenu;
     private ContextMenu mContextMenu;

@@ -34,7 +34,7 @@ import se.trixon.windowsystemfx.WindowSystemComponent;
 
 @WindowSystemComponent.Description(
         iconBase = "",
-        preferredId = "org.mapton.workbench.modules.map.ChartWindow",
+        preferredId = "org.mapton.core_wb.modules.map.ChartWindow",
         parentId = "chart",
         position = 1
 )

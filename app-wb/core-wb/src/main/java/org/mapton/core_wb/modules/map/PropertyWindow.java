@@ -41,7 +41,7 @@ import se.trixon.windowsystemfx.WindowSystemComponent;
 
 @WindowSystemComponent.Description(
         iconBase = "",
-        preferredId = "org.mapton.workbench.modules.map.PropertyWindow",
+        preferredId = "org.mapton.core_wb.modules.map.PropertyWindow",
         parentId = "property",
         position = 1
 )
