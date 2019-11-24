@@ -53,6 +53,7 @@ import org.mapton.api.MOptions2;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeContextMenu;
 import static org.mapton.api.Mapton.getIconSizeToolBar;
+import org.mapton.base.ui.AttributionView;
 import org.mapton.base.ui.SearchView;
 import org.mapton.core_nb.Initializer;
 import org.mapton.core_nb.ui.bookmark.BookmarkView;
@@ -564,7 +565,6 @@ public class AppToolBar extends ToolBar {
         MDocumentInfo documentInfo = evt.getValue();
         mAttributionAction.setDisabled(false);
         mStyleAction.setText(documentInfo.getName());
-        mAttributionView.updateDocumentInfo(documentInfo);
     }
 
     private boolean usePopOver() {

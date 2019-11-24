@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core_nb.ui;
+package org.mapton.base.ui;
 
 import static j2html.TagCreator.*;
 import j2html.tags.ContainerTag;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
+import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Worker;
 import javafx.scene.layout.BorderPane;
@@ -27,8 +28,10 @@ import javafx.scene.web.WebView;
 import org.controlsfx.control.PopOver;
 import org.mapton.api.MAttribution;
 import org.mapton.api.MDocumentInfo;
+import org.mapton.api.MKey;
 import org.mapton.api.Mapton;
 import org.openide.util.NbBundle;
+import se.trixon.almond.util.GlobalStateChangeEvent;
 import se.trixon.almond.util.SystemHelper;
 
 /**
@@ -38,8 +41,13 @@ import se.trixon.almond.util.SystemHelper;
 public class AttributionView extends BorderPane {
 
     private final ResourceBundle mBundle = NbBundle.getBundle(AttributionView.class);
-    private PopOver mPopOver;
     private WebView mWebView;
+    private PopOver mPopOver;
+
+    public AttributionView() {
+        createUI();
+        initListeners();
+    }
 
     public AttributionView(PopOver popOver) {
         mPopOver = popOver;
@@ -47,7 +55,43 @@ public class AttributionView extends BorderPane {
         initListeners();
     }
 
-    public void updateDocumentInfo(MDocumentInfo documentInfo) {
+    private void createUI() {
+        mWebView = new WebView();
+        Mapton.applyHtmlCss(mWebView, "attribution.css");
+        //mWebView.setFontScale(1.0);
+        setCenter(mWebView);
+    }
+
+    private void initListeners() {
+        Mapton.getGlobalState().addListener((GlobalStateChangeEvent evt) -> {
+            Platform.runLater(() -> {
+                MDocumentInfo documentInfo = evt.getValue();
+                updateDocumentInfo(documentInfo);
+            });
+        }, MKey.MAP_DOCUMENT_INFO);
+
+        mWebView.getEngine().getLoadWorker().stateProperty().addListener((ObservableValue<? extends Worker.State> ov, Worker.State t, Worker.State t1) -> {
+            if (t1 == Worker.State.SUCCEEDED) {
+                org.w3c.dom.NodeList nodeList = mWebView.getEngine().getDocument().getElementsByTagName("a");
+                for (int i = 0; i < nodeList.getLength(); i++) {
+                    org.w3c.dom.Node node = nodeList.item(i);
+                    org.w3c.dom.events.EventTarget eventTarget = (org.w3c.dom.events.EventTarget) node;
+                    eventTarget.addEventListener("click", (org.w3c.dom.events.Event evt) -> {
+                        org.w3c.dom.events.EventTarget target = evt.getCurrentTarget();
+                        org.w3c.dom.html.HTMLAnchorElement anchorElement = (org.w3c.dom.html.HTMLAnchorElement) target;
+                        String href = anchorElement.getHref();
+                        if (mPopOver != null) {
+                            mPopOver.hide();
+                        }
+                        SystemHelper.desktopBrowse(href);
+                        evt.preventDefault();
+                    }, false);
+                }
+            }
+        });
+    }
+
+    private void updateDocumentInfo(MDocumentInfo documentInfo) {
         LinkedHashMap<MAttribution, String> keys = new LinkedHashMap<>();
 
         LinkedHashMap<String, MAttribution> attributions = documentInfo.getAttributions();
@@ -81,32 +125,5 @@ public class AttributionView extends BorderPane {
 
         //System.out.println(html.render());
         mWebView.getEngine().loadContent(html.render());
-    }
-
-    private void createUI() {
-        mWebView = new WebView();
-        Mapton.applyHtmlCss(mWebView, "attribution.css");
-        //mWebView.setFontScale(1.0);
-        setCenter(mWebView);
-    }
-
-    private void initListeners() {
-        mWebView.getEngine().getLoadWorker().stateProperty().addListener((ObservableValue<? extends Worker.State> ov, Worker.State t, Worker.State t1) -> {
-            if (t1 == Worker.State.SUCCEEDED) {
-                org.w3c.dom.NodeList nodeList = mWebView.getEngine().getDocument().getElementsByTagName("a");
-                for (int i = 0; i < nodeList.getLength(); i++) {
-                    org.w3c.dom.Node node = nodeList.item(i);
-                    org.w3c.dom.events.EventTarget eventTarget = (org.w3c.dom.events.EventTarget) node;
-                    eventTarget.addEventListener("click", (org.w3c.dom.events.Event evt) -> {
-                        org.w3c.dom.events.EventTarget target = evt.getCurrentTarget();
-                        org.w3c.dom.html.HTMLAnchorElement anchorElement = (org.w3c.dom.html.HTMLAnchorElement) target;
-                        String href = anchorElement.getHref();
-                        mPopOver.hide();
-                        SystemHelper.desktopBrowse(href);
-                        evt.preventDefault();
-                    }, false);
-                }
-            }
-        });
     }
 }
