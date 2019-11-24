@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core_wb.modules.map;
+package org.mapton.base.ui;
 
 import java.time.LocalDate;
 import javafx.beans.value.ChangeListener;
