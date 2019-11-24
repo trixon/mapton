@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core_nb.ui;
+package org.mapton.api;
 
 import java.util.Map;
 import java.util.Optional;
@@ -26,7 +26,7 @@ import se.trixon.almond.util.Dict;
  *
  * @author Patrik Karlström
  */
-class MPropertyItem implements PropertySheet.Item {
+public class MPropertyItem implements PropertySheet.Item {
 
     private final String mCategory;
     private final String mKey;
