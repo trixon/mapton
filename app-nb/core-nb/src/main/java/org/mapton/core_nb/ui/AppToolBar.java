@@ -53,6 +53,7 @@ import org.mapton.api.MOptions2;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeContextMenu;
 import static org.mapton.api.Mapton.getIconSizeToolBar;
+import org.mapton.base.ui.SearchView;
 import org.mapton.core_nb.Initializer;
 import org.mapton.core_nb.ui.bookmark.BookmarkView;
 import org.openide.awt.Actions;

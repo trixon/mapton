@@ -17,7 +17,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <publicPackages>
-                        <publicPackage>org.mapton.base.cootrans</publicPackage>
+                        <publicPackage>org.mapton.base.*</publicPackage>
                     </publicPackages>
                 </configuration>
             </plugin>

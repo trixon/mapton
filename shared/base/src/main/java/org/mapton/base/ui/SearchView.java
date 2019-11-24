@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core_wb.modules.map;
+package org.mapton.base.ui;
 
 import java.util.ArrayList;
 import java.util.logging.Logger;
@@ -46,6 +46,7 @@ import org.mapton.api.MLatLon;
 import org.mapton.api.MOptions;
 import org.mapton.api.MSearchEngine;
 import org.mapton.api.Mapton;
+import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.mapton.base.cootrans.Wgs84DMS;
 import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
@@ -98,7 +99,8 @@ public class SearchView {
 
     private void createUI() {
         mSearchTextField = (CustomTextField) TextFields.createClearableTextField();
-        mSearchTextField.setLeft(MaterialIcon._Action.SEARCH.getImageView((int) (Mapton.ICON_SIZE_TOOLBAR / 1.5 - 4)));
+        mSearchTextField.setLeft(MaterialIcon._Action.SEARCH.getImageView(getIconSizeToolBarInt() - 4));
+//        mSearchTextField.setLeft(MaterialIcon._Action.SEARCH.getImageView((int) (Mapton.ICON_SIZE_TOOLBAR / 1.5 - 4)));
         mSearchTextField.setPromptText(MDict.SEARCH_PROMPT.toString());
         mSearchTextField.setPrefColumnCount(20);
         mSearchTextField.setText("");
