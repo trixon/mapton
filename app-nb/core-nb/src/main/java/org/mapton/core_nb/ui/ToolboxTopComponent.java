@@ -28,7 +28,7 @@ import se.trixon.almond.util.Dict;
  * Top component which displays something.
  */
 @ConvertAsProperties(
-        dtd = "-//org.mapton.core.ui//Toolbox//EN",
+        dtd = "-//org.mapton.core_nb.ui//Toolbox//EN",
         autostore = false
 )
 @TopComponent.Description(
@@ -37,7 +37,7 @@ import se.trixon.almond.util.Dict;
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(mode = "explorer", openAtStartup = true, position = 1)
-@ActionID(category = "Window", id = "org.mapton.core.ui.ToolboxTopComponent")
+@ActionID(category = "Window", id = "org.mapton.core_nb.ui.ToolboxTopComponent")
 @ActionReference(path = "Menu/Window" /*, position = 333 */)
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_ToolboxAction",

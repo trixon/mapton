@@ -79,7 +79,7 @@ import se.trixon.almond.util.fx.dialogs.SimpleDialog;
  * Top component which displays something.
  */
 @ConvertAsProperties(
-        dtd = "-//org.mapton.core.ui//Map//EN",
+        dtd = "-//org.mapton.core_nb.ui//Map//EN",
         autostore = false
 )
 @TopComponent.Description(
@@ -87,7 +87,7 @@ import se.trixon.almond.util.fx.dialogs.SimpleDialog;
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(mode = "editor", openAtStartup = true, position = Integer.MIN_VALUE)
-@ActionID(category = "Window", id = "org.mapton.core.ui.MapTopComponent")
+@ActionID(category = "Window", id = "org.mapton.core_nb.ui.MapTopComponent")
 @ActionReferences({
     @ActionReference(path = "Shortcuts", name = "D-M")
 })

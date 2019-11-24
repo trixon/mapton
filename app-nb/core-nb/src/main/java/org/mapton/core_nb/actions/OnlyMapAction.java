@@ -36,7 +36,7 @@ public final class OnlyMapAction implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        Actions.forID("Window", "org.mapton.core.ui.MapTopComponent").actionPerformed(null);
+        Actions.forID("Window", "org.mapton.core_nb.ui.MapTopComponent").actionPerformed(null);
         Actions.forID("Window", "org.netbeans.core.windows.actions.ShowEditorOnlyAction").actionPerformed(null);
     }
 }

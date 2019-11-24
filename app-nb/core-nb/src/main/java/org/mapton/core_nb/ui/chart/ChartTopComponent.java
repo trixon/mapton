@@ -37,7 +37,7 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
  * Generic Property TopComponent
  */
 @ConvertAsProperties(
-        dtd = "-//org.mapton.core.ui.chart//Chart//EN",
+        dtd = "-//org.mapton.core_nb.ui.chart//Chart//EN",
         autostore = false
 )
 @TopComponent.Description(

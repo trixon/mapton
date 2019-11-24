@@ -43,7 +43,7 @@ public abstract class BaseAction implements ActionListener {
         if (tc.isOpened()) {
             tc.requestActive();
         } else {
-            Actions.forID("Window", "org.mapton.core.ui.MapTopComponent").actionPerformed(null);
+            Actions.forID("Window", "org.mapton.core_nb.ui.MapTopComponent").actionPerformed(null);
         }
 
     }
