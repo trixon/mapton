@@ -16,7 +16,7 @@
 package org.mapton.core_nb.actions;
 
 import java.awt.event.ActionEvent;
-import org.mapton.core_nb.api.Mapton;
+import org.mapton.core_nb.ui.AppToolBarProvider;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
@@ -34,7 +34,7 @@ public final class LayerAction extends BaseAction {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (usePopover()) {
-            Mapton.getAppToolBar().toogleLayerPopOver();
+            AppToolBarProvider.getDefault().getAppToolBar().toogleLayerPopOver();
         } else {
             toggleTopComponent("LayerTopComponent");
         }

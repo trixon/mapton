@@ -57,9 +57,9 @@ import org.mapton.api.MDict;
 import org.mapton.api.MEngine;
 import org.mapton.api.MOptions2;
 import org.mapton.api.MWhatsHereEngine;
+import org.mapton.api.Mapton;
 import org.mapton.core_nb.api.MMapMagnet;
 import org.mapton.core_nb.api.MTopComponent;
-import org.mapton.core_nb.api.Mapton;
 import org.mapton.core_nb.ui.AppStatusView.StatusWindowMode;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
@@ -461,7 +461,7 @@ public final class MapTopComponent extends MTopComponent {
                     try {
                         engine.onActivate();
                         engine.panTo(mMOptions.getMapCenter(), mMOptions.getMapZoom());
-                        Mapton.getAppToolBar().refreshEngine(engine);
+                        AppToolBarProvider.getDefault().getAppToolBar().refreshEngine(engine);
                     } catch (NullPointerException e) {
                     }
                 });
@@ -479,7 +479,7 @@ public final class MapTopComponent extends MTopComponent {
                 SwingUtilities.invokeLater(() -> {
                     revalidate();
                     repaint();
-                    Mapton.getAppToolBar().refreshEngine(engine);
+                    AppToolBarProvider.getDefault().getAppToolBar().refreshEngine(engine);
                 });
             });
         }

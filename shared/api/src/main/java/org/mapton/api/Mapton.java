@@ -183,6 +183,13 @@ public class Mapton {
     public static int getIconSizeToolBarInt() {
         return (int) (getIconSizeToolBar() / 1.5);
     }
+//    public static int getIconSizeToolBar() {
+//        return (int) (ICON_SIZE_TOOLBAR * SwingHelper.getUIScale());
+//    }
+//
+//    public static int getIconSizeToolBarInt() {
+//        return (int) (getIconSizeToolBar() / 1.5);
+//    }
 
     public static Mapton getInstance() {
         return Holder.INSTANCE;

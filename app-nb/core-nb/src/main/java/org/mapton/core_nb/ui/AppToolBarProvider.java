@@ -21,7 +21,6 @@ import javafx.embed.swing.JFXPanel;
 import javafx.scene.Scene;
 import javax.swing.JComponent;
 import static org.mapton.api.Mapton.getIconSizeToolBar;
-import org.mapton.core_nb.api.Mapton;
 import org.openide.util.Lookup;
 import se.trixon.almond.util.fx.FxHelper;
 
@@ -31,6 +30,8 @@ import se.trixon.almond.util.fx.FxHelper;
  * @author Patrik Karlström
  */
 public abstract class AppToolBarProvider {
+
+    private AppToolBar mAppToolBar;
 
     public static AppToolBarProvider getDefault() {
         AppToolBarProvider provider = Lookup.getDefault().lookup(AppToolBarProvider.class);
@@ -44,6 +45,14 @@ public abstract class AppToolBarProvider {
 
     public abstract JComponent createToolbar();
 
+    public AppToolBar getAppToolBar() {
+        return mAppToolBar;
+    }
+
+    public void setToolBar(AppToolBar appToolBar) {
+        mAppToolBar = appToolBar;
+    }
+
     private static class DefaultToolbarComponentProvider extends AppToolBarProvider {
 
         @Override
@@ -53,7 +62,7 @@ public abstract class AppToolBarProvider {
 
             fxPanel.setPreferredSize(new Dimension(100, (int) (getIconSizeToolBar() * 1.2)));
             AppToolBar appToolBar = new AppToolBar();
-            Mapton.setToolBar(appToolBar);
+            setToolBar(appToolBar);
             Platform.runLater(() -> {
                 Scene scene = new Scene(appToolBar);
                 fxPanel.setScene(scene);

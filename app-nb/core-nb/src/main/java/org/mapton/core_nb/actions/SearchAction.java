@@ -17,7 +17,7 @@ package org.mapton.core_nb.actions;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import org.mapton.core_nb.api.Mapton;
+import org.mapton.core_nb.ui.AppToolBarProvider;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
@@ -34,6 +34,6 @@ public final class SearchAction implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        Mapton.getAppToolBar().activateSearch();
+        AppToolBarProvider.getDefault().getAppToolBar().activateSearch();
     }
 }
