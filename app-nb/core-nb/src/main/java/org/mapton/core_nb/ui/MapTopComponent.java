@@ -54,6 +54,7 @@ import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.MContextMenuItem;
 import org.mapton.api.MDict;
 import org.mapton.api.MEngine;
+import org.mapton.api.MEngineListener;
 import org.mapton.api.MOptions2;
 import org.mapton.api.MWhatsHereEngine;
 import org.mapton.api.Mapton;
@@ -110,7 +111,6 @@ public final class MapTopComponent extends MTopComponent {
     private File mDestination;
     private MEngine mEngine;
     private final HashSet<TopComponent> mMapMagnets = new HashSet<>();
-    private final Mapton mMapton = Mapton.getInstance();
     private BorderPane mRoot;
 
     public MapTopComponent() {
@@ -124,16 +124,6 @@ public final class MapTopComponent extends MTopComponent {
 
         MOptions2.getInstance().general().engineProperty().addListener((ObservableValue<? extends String> ov, String t, String t1) -> {
             setEngine(Mapton.getEngine());
-        });
-    }
-
-    public void displayContextMenu(Point screenXY) {
-        Platform.runLater(() -> {
-            Node rootNode = AppStatusView.getInstance();
-            rootNode.getScene().getWindow().requestFocus();
-            rootNode.requestFocus();
-
-            mContextMenu.show(rootNode, screenXY.x, screenXY.y);
         });
     }
 
@@ -377,6 +367,24 @@ public final class MapTopComponent extends MTopComponent {
                     }
                 }
             });
+        });
+
+        MEngine.addEngineListener(new MEngineListener() {
+            @Override
+            public void displayContextMenu(Point screenXY) {
+                Node rootNode = AppStatusView.getInstance();
+                rootNode.getScene().getWindow().requestFocus();
+                rootNode.requestFocus();
+
+                mContextMenu.show(rootNode, screenXY.x, screenXY.y);
+            }
+
+            @Override
+            public void hideContextMenu() {
+                if (mContextMenu.isShowing()) {
+                    mContextMenu.hide();
+                }
+            }
         });
     }
 
