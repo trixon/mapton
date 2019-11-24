@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core_wb.modules.map;
+package org.mapton.base.ui;
 
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
@@ -40,7 +40,7 @@ import se.trixon.almond.util.fx.FxHelper;
  *
  * @author Patrik Karlström
  */
-public class StatusBar extends org.controlsfx.control.StatusBar {
+public class StatusBarView extends org.controlsfx.control.StatusBar {
 
     private final ComboBox<MCooTrans> mComboBox = new ComboBox<>();
     private MCooTrans mCooTrans;
@@ -48,15 +48,16 @@ public class StatusBar extends org.controlsfx.control.StatusBar {
     private final MOptions mOptions = MOptions.getInstance();
     private HBox mRightItemsBox;
     private final Label mRightLabel = new Label();
+    private StatusWindowMode mWindowMode = StatusWindowMode.OTHER;
     private Slider mZoomAbsoluteSlider;
     private MStatusZoomMode mZoomMode = MStatusZoomMode.ABSOLUTE;
     private PlusMinusSlider mZoomRelativeSlider;
 
-    public static StatusBar getInstance() {
+    public static StatusBarView getInstance() {
         return Holder.INSTANCE;
     }
 
-    private StatusBar() {
+    private StatusBarView() {
         super.setText("");
         createUI();
         initListeners();
@@ -107,6 +108,20 @@ public class StatusBar extends org.controlsfx.control.StatusBar {
                 setProgress(0);
             }
         }
+    }
+
+    public void setWindowMode(StatusWindowMode windowMode) {
+        mWindowMode = windowMode;
+
+        Platform.runLater(() -> {
+            boolean mapMode = windowMode == StatusWindowMode.MAP;
+            mRightLabel.setVisible(mapMode);
+            mComboBox.setVisible(mapMode);
+
+            updateZoomMode();
+
+            setProgress(0);
+        });
     }
 
     private void createUI() {
@@ -204,15 +219,21 @@ public class StatusBar extends org.controlsfx.control.StatusBar {
         mLeftItemsBox.getChildren().clear();
 
         mZoomMode = Mapton.getEngine().getStatusZoomMode();
-        if (mZoomMode == MStatusZoomMode.ABSOLUTE) {
-            mLeftItemsBox.getChildren().add(mZoomAbsoluteSlider);
-        } else {
-            mLeftItemsBox.getChildren().add(mZoomRelativeSlider);
+        if (mWindowMode == StatusWindowMode.MAP) {
+            if (mZoomMode == MStatusZoomMode.ABSOLUTE) {
+                mLeftItemsBox.getChildren().add(mZoomAbsoluteSlider);
+            } else {
+                mLeftItemsBox.getChildren().add(mZoomRelativeSlider);
+            }
         }
     }
 
     private static class Holder {
 
-        private static final StatusBar INSTANCE = new StatusBar();
+        private static final StatusBarView INSTANCE = new StatusBarView();
+    }
+
+    public static enum StatusWindowMode {
+        MAP, OTHER;
     }
 }

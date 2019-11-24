@@ -21,6 +21,7 @@ import javafx.scene.layout.BorderPane;
 import javax.swing.JPanel;
 import se.trixon.almond.nbp.fx.FxPanel;
 import se.trixon.almond.util.swing.SwingHelper;
+import org.mapton.base.ui.StatusBarView;
 
 /**
  *
@@ -64,7 +65,7 @@ public class AppStatusPanel extends JPanel {
     }
 
     public void resetFx() {
-        mBorderPane.setCenter(AppStatusView.getInstance());
+        mBorderPane.setCenter(StatusBarView.getInstance());
     }
 
     public void resetSwing() {

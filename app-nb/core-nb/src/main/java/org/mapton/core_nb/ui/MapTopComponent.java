@@ -58,9 +58,10 @@ import org.mapton.api.MEngineListener;
 import org.mapton.api.MOptions2;
 import org.mapton.api.MWhatsHereEngine;
 import org.mapton.api.Mapton;
+import org.mapton.base.ui.StatusBarView;
+import org.mapton.base.ui.StatusBarView.StatusWindowMode;
 import org.mapton.core_nb.api.MMapMagnet;
 import org.mapton.core_nb.api.MTopComponent;
-import org.mapton.core_nb.ui.AppStatusView.StatusWindowMode;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -179,7 +180,7 @@ public final class MapTopComponent extends MTopComponent {
             }
         });
 
-        AppStatusView.getInstance().setWindowMode(StatusWindowMode.OTHER);
+        StatusBarView.getInstance().setWindowMode(StatusWindowMode.OTHER);
     }
 
     @Override
@@ -199,7 +200,7 @@ public final class MapTopComponent extends MTopComponent {
             tc.requestActive();
         }
 
-        AppStatusView.getInstance().setWindowMode(StatusWindowMode.MAP);
+        StatusBarView.getInstance().setWindowMode(StatusWindowMode.MAP);
     }
 
     @Override
@@ -242,7 +243,7 @@ public final class MapTopComponent extends MTopComponent {
         } else {
             Platform.runLater(() -> {
                 if (showOnlyMap) {
-                    mRoot.setBottom(AppStatusView.getInstance());
+                    mRoot.setBottom(StatusBarView.getInstance());
                 } else {
                     if (mRoot.getBottom() != null) {
                         mRoot.setBottom(null);
@@ -372,7 +373,7 @@ public final class MapTopComponent extends MTopComponent {
         MEngine.addEngineListener(new MEngineListener() {
             @Override
             public void displayContextMenu(Point screenXY) {
-                Node rootNode = AppStatusView.getInstance();
+                Node rootNode = StatusBarView.getInstance();
                 rootNode.getScene().getWindow().requestFocus();
                 rootNode.requestFocus();
 
