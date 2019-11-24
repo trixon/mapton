@@ -71,7 +71,6 @@ import org.openide.util.LookupEvent;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
-import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.FxHelper;
@@ -398,7 +397,7 @@ public final class MapTopComponent extends MTopComponent {
                         mContextCopyMenu.getItems().add(item);
                         item.setOnAction((ActionEvent event) -> {
                             String s = provider.getUrl();
-                            NbLog.v("Copy location", s);
+                            Mapton.getLog().v("Copy location", s);
                             SystemHelper.copyToClipboard(s);
                         });
                         break;
@@ -413,7 +412,7 @@ public final class MapTopComponent extends MTopComponent {
                         item.setOnAction((ActionEvent event) -> {
                             String s = provider.getUrl();
                             if (!StringUtils.isBlank(s)) {
-                                NbLog.v("Open location", s);
+                                Mapton.getLog().v("Open location", s);
                                 SystemHelper.desktopBrowse(s);
                             }
                         });
@@ -499,7 +498,7 @@ public final class MapTopComponent extends MTopComponent {
                 int zoom = (int) (5 + mEngine.getZoom() * 18);
                 String s = whatsHereEngine.getResult(mEngine.getLatLonMouse(), zoom);
                 if (StringUtils.isNotBlank(s)) {
-                    NbLog.i(MapTopComponent.class, "WhatsHere: " + s);
+                    Mapton.getLog().i(MapTopComponent.class, "WhatsHere: " + s);
                     Mapton.execute(() -> {
                         mEngine.onWhatsHere(s);
                     });

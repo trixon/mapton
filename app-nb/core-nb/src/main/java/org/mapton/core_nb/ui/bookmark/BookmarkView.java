@@ -59,7 +59,6 @@ import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.util.NbBundle;
 import org.openide.util.NbPreferences;
-import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.FxHelper;
@@ -393,7 +392,7 @@ public class BookmarkView extends BorderPane {
                         mContextCopyMenu.getItems().add(item);
                         item.setOnAction((ActionEvent event) -> {
                             String s = provider.getUrl();
-                            NbLog.v("Open location", s);
+                            Mapton.getLog().v("Open location", s);
                             SystemHelper.copyToClipboard(s);
                         });
                         break;
@@ -402,7 +401,7 @@ public class BookmarkView extends BorderPane {
                         mContextOpenMenu.getItems().add(item);
                         item.setOnAction((ActionEvent event) -> {
                             String s = provider.getUrl();
-                            NbLog.v("Copy location", s);
+                            Mapton.getLog().v("Copy location", s);
                             SystemHelper.desktopBrowse(s);
                         });
                         break;

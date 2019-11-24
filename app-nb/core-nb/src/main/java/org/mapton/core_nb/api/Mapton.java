@@ -38,7 +38,6 @@ import org.mapton.core_nb.ui.AppToolBar;
 import org.openide.awt.StatusDisplayer;
 import org.openide.modules.InstalledFileLocator;
 import org.openide.util.Lookup;
-import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.swing.SwingHelper;
 
@@ -178,14 +177,6 @@ public class Mapton extends org.mapton.api.Mapton {
 //    public static boolean isNightMode() {
 //        return MOptions2.getInstance().general().isNightMode();
 //    }
-    public static void logLoading(String category, String item) {
-        NbLog.i("Loading", String.format("%s: %s ", category, item));
-    }
-
-    public static void logRemoving(String category, String item) {
-        NbLog.i("Removing", String.format("%s: %s ", category, item));
-    }
-
     public static void notification(String type, String title, String text) {
         getGlobalState().send(type, Notifications.create().title(title).text(text));
     }

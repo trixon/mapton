@@ -25,6 +25,7 @@ import javax.swing.SwingUtilities;
 import org.apache.commons.lang3.SystemUtils;
 import org.mapton.api.MOptions;
 import static org.mapton.api.MOptions.*;
+import org.mapton.api.Mapton;
 import org.mapton.core_nb.api.MMapMagnet;
 import org.mapton.core_nb.ui.AppToolBarProvider;
 import org.mapton.core_nb.updater.UpdateNotificator;
@@ -53,7 +54,16 @@ public class Initializer implements Runnable {
 
     @Override
     public void run() {
-        NbLog.i("System", SystemHelper.getSystemInfo());
+        Mapton.getLog().setUseTimestamps(false);
+        NbLog.setUseGlobalTag(false);
+        Mapton.getLog().setOut((String s) -> {
+            NbLog.i("", s);
+        });
+        Mapton.getLog().setErr((String s) -> {
+            NbLog.e("", s);
+        });
+        Mapton.log(SystemHelper.getSystemInfo());
+
         Platform.setImplicitExit(false);
         new JFXPanel();
 
