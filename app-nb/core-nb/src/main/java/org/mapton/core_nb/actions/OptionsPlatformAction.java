@@ -24,7 +24,7 @@ import org.openide.util.NbBundle.Messages;
 
 @ActionID(
         category = "Mapton",
-        id = "org.mapton.core.actions.OptionsPlatformAction"
+        id = "org.mapton.core_nb.actions.OptionsPlatformAction"
 )
 @ActionRegistration(
         displayName = "#CTL_OptionsPlatformAction"

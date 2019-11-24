@@ -24,7 +24,7 @@ import org.openide.awt.ActionRegistration;
 
 @ActionID(
         category = "Mapton",
-        id = "org.mapton.core.actions.MenuAction"
+        id = "org.mapton.core_nb.actions.MenuAction"
 )
 @ActionRegistration(
         displayName = "Menu"

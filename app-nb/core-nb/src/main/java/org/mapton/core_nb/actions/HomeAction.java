@@ -27,7 +27,7 @@ import org.mapton.api.Mapton;
 
 @ActionID(
         category = "Mapton",
-        id = "org.mapton.core.actions.HomeAction"
+        id = "org.mapton.core_nb.actions.HomeAction"
 )
 @ActionRegistration(
         displayName = "#CTL_HomeAction"

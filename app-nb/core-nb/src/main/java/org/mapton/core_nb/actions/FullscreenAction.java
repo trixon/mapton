@@ -26,7 +26,7 @@ import org.openide.util.NbBundle.Messages;
 
 @ActionID(
         category = "Mapton",
-        id = "org.mapton.core.actions.FullscreenAction"
+        id = "org.mapton.core_nb.actions.FullscreenAction"
 )
 @ActionRegistration(
         displayName = "#CTL_FullscreenAction"

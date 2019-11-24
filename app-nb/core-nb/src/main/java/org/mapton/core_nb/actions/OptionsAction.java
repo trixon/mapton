@@ -39,7 +39,7 @@ import se.trixon.almond.util.swing.SwingHelper;
 
 @ActionID(
         category = "Mapton",
-        id = "org.mapton.core.actions.OptionsAction"
+        id = "org.mapton.core_nb.actions.OptionsAction"
 )
 @ActionRegistration(
         displayName = "#CTL_OptionsAction"

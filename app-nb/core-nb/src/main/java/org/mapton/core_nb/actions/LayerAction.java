@@ -23,7 +23,7 @@ import org.openide.awt.ActionRegistration;
 
 @ActionID(
         category = "Mapton",
-        id = "org.mapton.core.actions.LayerAction"
+        id = "org.mapton.core_nb.actions.LayerAction"
 )
 @ActionRegistration(
         displayName = "Layer"

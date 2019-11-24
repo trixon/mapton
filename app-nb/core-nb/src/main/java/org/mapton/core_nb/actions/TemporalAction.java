@@ -24,7 +24,7 @@ import org.openide.awt.ActionRegistration;
 
 @ActionID(
         category = "Mapton",
-        id = "org.mapton.core.actions.TemporalAction"
+        id = "org.mapton.core_nb.actions.TemporalAction"
 )
 @ActionRegistration(
         displayName = "Style"

@@ -269,7 +269,7 @@ public class AppToolBar extends ToolBar {
                 }
             } else {
                 SwingUtilities.invokeLater(() -> {
-                    Actions.forID("Mapton", "org.mapton.core.actions.BookmarkAction").actionPerformed(null);
+                    Actions.forID("Mapton", "org.mapton.core_nb.actions.BookmarkAction").actionPerformed(null);
                 });
             }
         });
@@ -284,7 +284,7 @@ public class AppToolBar extends ToolBar {
                 }
             } else {
                 SwingUtilities.invokeLater(() -> {
-                    Actions.forID("Mapton", "org.mapton.core.actions.LayerAction").actionPerformed(null);
+                    Actions.forID("Mapton", "org.mapton.core_nb.actions.LayerAction").actionPerformed(null);
                 });
             }
         });
@@ -299,7 +299,7 @@ public class AppToolBar extends ToolBar {
                 }
             } else {
                 SwingUtilities.invokeLater(() -> {
-                    Actions.forID("Mapton", "org.mapton.core.actions.ToolboxAction").actionPerformed(null);
+                    Actions.forID("Mapton", "org.mapton.core_nb.actions.ToolboxAction").actionPerformed(null);
                 });
             }
         });
@@ -341,13 +341,13 @@ public class AppToolBar extends ToolBar {
     private void initActionsSwing() {
         //Home
         mHomeAction = new FxActionSwing(Dict.HOME.toString(), () -> {
-            Actions.forID("Mapton", "org.mapton.core.actions.HomeAction").actionPerformed(null);
+            Actions.forID("Mapton", "org.mapton.core_nb.actions.HomeAction").actionPerformed(null);
         });
         mHomeAction.setGraphic(MaterialIcon._Action.HOME.getImageView(getIconSizeToolBar()));
 
         //Ruler
         mRulerAction = new FxActionSwing(Dict.MEASURE.toString(), () -> {
-            Actions.forID("Mapton", "org.mapton.core.actions.RulerAction").actionPerformed(null);
+            Actions.forID("Mapton", "org.mapton.core_nb.actions.RulerAction").actionPerformed(null);
         });
         mRulerAction.setGraphic(MaterialIcon._Editor.SPACE_BAR.getImageView(getIconSizeToolBar()));
 //
@@ -365,7 +365,7 @@ public class AppToolBar extends ToolBar {
 
         //Map
         mSysViewMapAction = new FxActionSwingCheck(Dict.MAP.toString(), () -> {
-            Actions.forID("Mapton", "org.mapton.core.actions.OnlyMapAction").actionPerformed(null);
+            Actions.forID("Mapton", "org.mapton.core_nb.actions.OnlyMapAction").actionPerformed(null);
         });
         mSysViewMapAction.setGraphic(MaterialIcon._Maps.MAP.getImageView(getIconSizeToolBar()));
         mSysViewMapAction.setAccelerator(KeyCombination.keyCombination("F12"));
@@ -402,7 +402,7 @@ public class AppToolBar extends ToolBar {
 
         //options
         mSysOptionsAction = new FxActionSwing(Dict.OPTIONS.toString(), () -> {
-            Actions.forID("Mapton", "org.mapton.core.actions.OptionsAction").actionPerformed(null);
+            Actions.forID("Mapton", "org.mapton.core_nb.actions.OptionsAction").actionPerformed(null);
         });
         if (!IS_MAC) {
             mSysOptionsAction.setAccelerator(new KeyCodeCombination(KeyCode.COMMA, KeyCombination.SHORTCUT_DOWN));
@@ -410,7 +410,7 @@ public class AppToolBar extends ToolBar {
 
         //options - platform
         mSysOptionsPlatformAction = new FxActionSwing(String.format("%s (%s)", Dict.OPTIONS.toString(), Dict.PLATFORM.toString()), () -> {
-            Actions.forID("Mapton", "org.mapton.core.actions.OptionsPlatformAction").actionPerformed(null);
+            Actions.forID("Mapton", "org.mapton.core_nb.actions.OptionsPlatformAction").actionPerformed(null);
         });
 
         //About

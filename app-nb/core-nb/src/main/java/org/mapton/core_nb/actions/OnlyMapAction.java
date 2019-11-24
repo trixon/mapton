@@ -25,7 +25,7 @@ import org.openide.util.NbBundle.Messages;
 
 @ActionID(
         category = "Mapton",
-        id = "org.mapton.core.actions.OnlyMapAction"
+        id = "org.mapton.core_nb.actions.OnlyMapAction"
 )
 @ActionRegistration(
         displayName = "#CTL_OnlyMapAction"

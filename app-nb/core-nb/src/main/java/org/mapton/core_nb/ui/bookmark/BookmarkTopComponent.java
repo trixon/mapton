@@ -29,7 +29,7 @@ import se.trixon.almond.util.Dict;
  * Top component which displays something.
  */
 @ConvertAsProperties(
-        dtd = "-//org.mapton.core.bookmark//Bookmark//EN",
+        dtd = "-//org.mapton.core_nb.bookmark//Bookmark//EN",
         autostore = false
 )
 @TopComponent.Description(
@@ -37,7 +37,7 @@ import se.trixon.almond.util.Dict;
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(mode = "topLeft", openAtStartup = true)
-@ActionID(category = "Window", id = "org.mapton.core.bookmark.BookmarkTopComponent")
+@ActionID(category = "Window", id = "org.mapton.core_nb.bookmark.BookmarkTopComponent")
 @ActionReference(path = "Menu/Window" /*, position = 333 */)
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_BookmarkAction",

@@ -24,7 +24,7 @@ import org.openide.awt.ActionRegistration;
 
 @ActionID(
         category = "Mapton",
-        id = "org.mapton.core.actions.AttributionAction"
+        id = "org.mapton.core_nb.actions.AttributionAction"
 )
 @ActionRegistration(
         displayName = "Attribution"

@@ -31,7 +31,7 @@ import se.trixon.almond.util.Dict;
  * Top component which displays something.
  */
 @ConvertAsProperties(
-        dtd = "-//org.mapton.core.layer//Layer//EN",
+        dtd = "-//org.mapton.core_nb.layer//Layer//EN",
         autostore = false
 )
 @TopComponent.Description(
@@ -39,7 +39,7 @@ import se.trixon.almond.util.Dict;
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(mode = "navigator", openAtStartup = true)
-@ActionID(category = "Mapton", id = "org.mapton.core.layer.LayerTopComponent")
+@ActionID(category = "Mapton", id = "org.mapton.core_nb.layer.LayerTopComponent")
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_LayerAction",
         preferredID = "LayerTopComponent"

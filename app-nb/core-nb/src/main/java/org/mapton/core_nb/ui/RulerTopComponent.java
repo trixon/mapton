@@ -27,7 +27,7 @@ import se.trixon.almond.util.Dict;
  * Top component which displays something.
  */
 @ConvertAsProperties(
-        dtd = "-//org.mapton.core.bookmark//Ruler//EN",
+        dtd = "-//org.mapton.core_nb.bookmark//Ruler//EN",
         autostore = false
 )
 @TopComponent.Description(
@@ -35,7 +35,7 @@ import se.trixon.almond.util.Dict;
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(mode = "explorer", openAtStartup = true, position = 99)
-@ActionID(category = "Window", id = "org.mapton.core.bookmark.RulerTopComponent")
+@ActionID(category = "Window", id = "org.mapton.core_nb.bookmark.RulerTopComponent")
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_RulerAction",
         preferredID = "RulerTopComponent"

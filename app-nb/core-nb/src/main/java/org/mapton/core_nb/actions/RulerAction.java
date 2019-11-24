@@ -26,7 +26,7 @@ import se.trixon.almond.util.Dict;
 
 @ActionID(
         category = "Mapton",
-        id = "org.mapton.core.actions.RulerAction"
+        id = "org.mapton.core_nb.actions.RulerAction"
 )
 @ActionRegistration(
         displayName = "Measure"
