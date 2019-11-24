@@ -36,6 +36,7 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.Node;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.image.WritableImage;
+import javax.swing.JComponent;
 import org.apache.commons.io.FileUtils;
 import org.mapton.api.MAttribution;
 import org.mapton.api.MDocumentInfo;
@@ -78,6 +79,22 @@ public class MapJfxMapEngine extends MEngine {
         return toLatLon(mMapView.getCenter());
     }
 
+    @Override
+    public JComponent getMapComponent() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public Node getMapNode() {
+        if (mMapView == null) {
+            init();
+        }
+
+        updateToolbarDocumentInfo();
+
+        return mMapView;
+    }
+
     public MapView getMapView() {
         return mMapView;
     }
@@ -90,17 +107,6 @@ public class MapJfxMapEngine extends MEngine {
     @Override
     public Node getStyleView() {
         return null;
-    }
-
-    @Override
-    public Node getUI() {
-        if (mMapView == null) {
-            init();
-        }
-
-        updateToolbarDocumentInfo();
-
-        return mMapView;
     }
 
     @Override
