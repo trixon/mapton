@@ -34,6 +34,6 @@ public final class AttributionAction implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        AppToolBarProvider.getDefault().getAppToolBar().toogleAttributionPopOver();
+        AppToolBarProvider.getInstance().getToolBar().toogleAttributionPopOver();
     }
 }

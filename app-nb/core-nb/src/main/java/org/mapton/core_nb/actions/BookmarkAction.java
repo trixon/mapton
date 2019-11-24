@@ -34,7 +34,7 @@ public final class BookmarkAction extends BaseAction {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (usePopover()) {
-            AppToolBarProvider.getDefault().getAppToolBar().toogleBookmarkPopOver();
+            AppToolBarProvider.getInstance().getToolBar().toogleBookmarkPopOver();
         } else {
             toggleTopComponent("BookmarkTopComponent");
         }

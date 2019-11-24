@@ -34,6 +34,6 @@ public final class SearchAction implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        AppToolBarProvider.getDefault().getAppToolBar().activateSearch();
+        AppToolBarProvider.getInstance().getToolBar().activateSearch();
     }
 }

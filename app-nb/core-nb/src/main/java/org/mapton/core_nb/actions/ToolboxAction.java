@@ -34,7 +34,7 @@ public final class ToolboxAction extends BaseAction {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (usePopover()) {
-            AppToolBarProvider.getDefault().getAppToolBar().toogleToolboxPopOver();
+            AppToolBarProvider.getInstance().getToolBar().toogleToolboxPopOver();
         } else {
             toggleTopComponent("ToolboxTopComponent");
         }

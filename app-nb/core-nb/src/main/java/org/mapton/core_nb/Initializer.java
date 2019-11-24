@@ -81,7 +81,7 @@ public class Initializer implements Runnable {
         SwingUtilities.invokeLater(() -> {
             MaterialIcon.setDefaultColor(mOptions.getIconColor());
             JFrame frame = (JFrame) Almond.getFrame();
-            JComponent toolbar = AppToolBarProvider.getDefault().createToolbar();
+            JComponent toolbar = AppToolBarProvider.getInstance().getToolBarPanel();
             frame.getRootPane().setLayout(new RootPaneLayout(toolbar));
             toolbar.putClientProperty(JLayeredPane.LAYER_PROPERTY, 0);
             frame.getRootPane().getLayeredPane().add(toolbar, 0);

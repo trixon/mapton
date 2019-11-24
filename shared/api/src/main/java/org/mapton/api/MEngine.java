@@ -24,6 +24,7 @@ import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
+import javax.swing.JComponent;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 
@@ -179,6 +180,10 @@ public abstract class MEngine {
         return mMaptonOptions.getMapCooTrans().getLongitude(mLatitude, mLongitude);
     }
 
+    public abstract JComponent getMapComponent();
+
+    public abstract Node getMapNode();
+
     public abstract String getName();
 
     public Node getRulerView() {
@@ -192,8 +197,6 @@ public abstract class MEngine {
     }
 
     public abstract Node getStyleView();
-
-    public abstract Node getUI();
 
     public double getZoom() {
         Mapton.getLog().i(getClass().getSimpleName(), "getZoom not implemented");

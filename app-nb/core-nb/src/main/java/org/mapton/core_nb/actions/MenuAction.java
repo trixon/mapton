@@ -34,6 +34,6 @@ public final class MenuAction implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        AppToolBarProvider.getDefault().getAppToolBar().displayMenu();
+        AppToolBarProvider.getInstance().getToolBar().displayMenu();
     }
 }

@@ -112,7 +112,7 @@ public class MapWindow extends Window {
 
     private void createUI() {
         mNode = new StackPane(
-                Mapton.getEngine().getUI(),
+                Mapton.getEngine().getMapNode(),
                 crosshairSegment(Side.TOP),
                 crosshairSegment(Side.RIGHT),
                 crosshairSegment(Side.BOTTOM),
@@ -243,10 +243,7 @@ public class MapWindow extends Window {
     private void initListeners() {
         final ObjectProperty<String> engineProperty = MOptions2.getInstance().general().engineProperty();
         engineProperty.addListener((ObservableValue<? extends String> ov, String t, String t1) -> {
-            mNode.getChildren().set(0, Mapton.getEngine().getUI());
-        });
-
-        engineProperty.addListener((ObservableValue<? extends String> ov, String t, String t1) -> {
+            mNode.getChildren().set(0, Mapton.getEngine().getMapNode());
             mEngine = Mapton.getEngine();
         });
 

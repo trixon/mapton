@@ -40,6 +40,7 @@ import java.util.prefs.PreferenceChangeEvent;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingNode;
 import javafx.scene.Node;
+import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import org.apache.commons.lang3.SystemUtils;
@@ -140,6 +141,29 @@ public class WorldWindMapEngine extends MEngine {
     }
 
     @Override
+    public JComponent getMapComponent() {
+        if (mMap == null) {
+            init();
+            initListeners();
+        }
+
+        updateToolbarDocumentInfo();
+
+        return mMap;
+    }
+
+    @Override
+    public Node getMapNode() {
+        if (mSwingNode == null) {
+            mSwingNode = new SwingNode();
+            getMapComponent();
+            refreshUI();
+        }
+
+        return mSwingNode;
+    }
+
+    @Override
     public String getName() {
         return "WorldWind";
     }
@@ -152,20 +176,6 @@ public class WorldWindMapEngine extends MEngine {
     @Override
     public Node getStyleView() {
         return mStyleView;
-    }
-
-    @Override
-    public Node getUI() {
-        if (mMap == null) {
-            init();
-            initListeners();
-            mSwingNode = new SwingNode();
-            refreshUI();
-        }
-
-        updateToolbarDocumentInfo();
-
-        return mSwingNode;
     }
 
     @Override

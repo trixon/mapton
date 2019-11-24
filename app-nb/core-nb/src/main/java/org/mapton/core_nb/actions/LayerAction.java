@@ -34,7 +34,7 @@ public final class LayerAction extends BaseAction {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (usePopover()) {
-            AppToolBarProvider.getDefault().getAppToolBar().toogleLayerPopOver();
+            AppToolBarProvider.getInstance().getToolBar().toogleLayerPopOver();
         } else {
             toggleTopComponent("LayerTopComponent");
         }

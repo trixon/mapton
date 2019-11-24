@@ -34,6 +34,6 @@ public final class TemporalAction implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        AppToolBarProvider.getDefault().getAppToolBar().toogleTemporalPopOver();
+        AppToolBarProvider.getInstance().getToolBar().toogleTemporalPopOver();
     }
 }

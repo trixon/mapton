@@ -19,58 +19,45 @@ import java.awt.Dimension;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Scene;
-import javax.swing.JComponent;
 import static org.mapton.api.Mapton.getIconSizeToolBar;
-import org.openide.util.Lookup;
 import se.trixon.almond.util.fx.FxHelper;
 
 /**
- * From https://dzone.com/articles/how-create-tabbed-toolbar-on-nb
  *
  * @author Patrik Karlström
  */
-public abstract class AppToolBarProvider {
+public class AppToolBarProvider {
 
-    private AppToolBar mAppToolBar;
+    private final AppToolBar mToolBar;
+    private final JFXPanel mToolBarPanel = new JFXPanel();
 
-    public static AppToolBarProvider getDefault() {
-        AppToolBarProvider provider = Lookup.getDefault().lookup(AppToolBarProvider.class);
-
-        if (provider == null) {
-            provider = new DefaultToolbarComponentProvider();
-        }
-
-        return provider;
+    public static AppToolBarProvider getInstance() {
+        return Holder.INSTANCE;
     }
 
-    public abstract JComponent createToolbar();
+    private AppToolBarProvider() {
+        mToolBarPanel.setVisible(false);
+        mToolBarPanel.setPreferredSize(new Dimension(100, (int) (getIconSizeToolBar() * 1.2)));
 
-    public AppToolBar getAppToolBar() {
-        return mAppToolBar;
+        mToolBar = new AppToolBar();
+        Platform.runLater(() -> {
+            Scene scene = new Scene(mToolBar);
+            mToolBarPanel.setScene(scene);
+            mToolBarPanel.setVisible(true);
+            FxHelper.loadDarkTheme(mToolBarPanel.getScene());
+        });
     }
 
-    public void setToolBar(AppToolBar appToolBar) {
-        mAppToolBar = appToolBar;
+    public AppToolBar getToolBar() {
+        return mToolBar;
     }
 
-    private static class DefaultToolbarComponentProvider extends AppToolBarProvider {
+    public JFXPanel getToolBarPanel() {
+        return mToolBarPanel;
+    }
 
-        @Override
-        public JComponent createToolbar() {
-            JFXPanel fxPanel = new JFXPanel();
-            fxPanel.setVisible(false);
+    private static class Holder {
 
-            fxPanel.setPreferredSize(new Dimension(100, (int) (getIconSizeToolBar() * 1.2)));
-            AppToolBar appToolBar = new AppToolBar();
-            setToolBar(appToolBar);
-            Platform.runLater(() -> {
-                Scene scene = new Scene(appToolBar);
-                fxPanel.setScene(scene);
-                fxPanel.setVisible(true);
-                FxHelper.loadDarkTheme(fxPanel.getScene());
-            });
-
-            return fxPanel;
-        }
+        private static final AppToolBarProvider INSTANCE = new AppToolBarProvider();
     }
 }

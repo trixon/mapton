@@ -34,6 +34,6 @@ public final class StyleAction implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        AppToolBarProvider.getDefault().getAppToolBar().toogleStylePopOver();
+        AppToolBarProvider.getInstance().getToolBar().toogleStylePopOver();
     }
 }

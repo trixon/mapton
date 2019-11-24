@@ -24,6 +24,7 @@ import java.util.LinkedHashMap;
 import java.util.Set;
 import javafx.embed.swing.SwingNode;
 import javafx.scene.Node;
+import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -83,6 +84,29 @@ public class JxMapViewerMapEngine extends MEngine {
     }
 
     @Override
+    public JComponent getMapComponent() {
+        if (mMapKit == null) {
+            init();
+            initListeners();
+        }
+
+        updateToolbarDocumentInfo();
+
+        return mMapKit;
+    }
+
+    @Override
+    public Node getMapNode() {
+        if (mSwingNode == null) {
+            mSwingNode = new SwingNode();
+            getMapComponent();
+            refreshUI();
+        }
+
+        return mSwingNode;
+    }
+
+    @Override
     public String getName() {
         return "OpenStreetMap";
     }
@@ -95,20 +119,6 @@ public class JxMapViewerMapEngine extends MEngine {
     @Override
     public Node getStyleView() {
         return null;
-    }
-
-    @Override
-    public Node getUI() {
-        if (mMapKit == null) {
-            init();
-            initListeners();
-            mSwingNode = new SwingNode();
-            refreshUI();
-        }
-
-        updateToolbarDocumentInfo();
-
-        return mSwingNode;
     }
 
     @Override
