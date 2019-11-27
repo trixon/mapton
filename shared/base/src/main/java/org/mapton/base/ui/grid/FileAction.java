@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core_wb.grid;
+package org.mapton.base.ui.grid;
 
 import javafx.scene.Node;
 import javafx.scene.paint.Color;
@@ -27,7 +27,7 @@ import org.mapton.api.Mapton;
  *
  * @author Patrik Karlström
  */
-public abstract class GridFileAction {
+public abstract class FileAction {
 
     protected final FileChooser.ExtensionFilter mExtGrid = new FileChooser.ExtensionFilter("Mapton Grid (*.grid)", "*.grid");
     protected final MLocalGridManager mManager = MLocalGridManager.getInstance();

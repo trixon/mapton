@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core_wb.grid;
+package org.mapton.base.ui.grid;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,16 +50,19 @@ import se.trixon.almond.util.fx.FxHelper;
  *
  * @author Patrik Karlström
  */
-public class LocalGridView extends BorderPane {
+public class LocalGridsView extends BorderPane {
 
-    private LocalGridEditor mEditor = LocalGridEditor.getInstance();
 
     private final CheckListView<MLocalGrid> mListView = new CheckListView<>();
     private final MLocalGridManager mManager = MLocalGridManager.getInstance();
     private final MOptions mOptions = MOptions.getInstance();
     private CheckBox mPlotCheckBox;
+private static LocalGridEditor sLocalGridEditor;
 
-    public LocalGridView() {
+    public static void setLocalGridEditor(LocalGridEditor localGridEditor) {
+        LocalGridsView.sLocalGridEditor = localGridEditor;
+    }
+    public LocalGridsView() {
         createUI();
         initStates();
         initListeners();
@@ -87,27 +90,27 @@ public class LocalGridView extends BorderPane {
         mPlotCheckBox.setPadding(new Insets(0, 0, 0, 8));
 
         Action addAction = new Action(Dict.ADD.toString(), (ActionEvent event) -> {
-            mEditor.edit(null);
+            sLocalGridEditor.edit(null);
         });
         addAction.setGraphic(Mapton.createGlyphToolbarForm(FontAwesome.Glyph.PLUS));
 
         Action editAction = new Action(Dict.EDIT.toString(), (ActionEvent event) -> {
             if (getSelected() != null) {
-                mEditor.edit(getSelected());
+                sLocalGridEditor.edit(getSelected());
             }
         });
         editAction.setGraphic(Mapton.createGlyphToolbarForm(FontAwesome.Glyph.PENCIL));
 
         Action remAction = new Action(Dict.REMOVE.toString(), (ActionEvent event) -> {
             if (getSelected() != null) {
-                mEditor.remove(getSelected());
+                sLocalGridEditor.remove(getSelected());
             }
         });
         remAction.setGraphic(Mapton.createGlyphToolbarForm(FontAwesome.Glyph.MINUS));
 
         Collection<? extends Action> actions = Arrays.asList(
-                new GridFileImportAction().getAction(this),
-                new GridFileExportAction().getAction(this),
+                new FileImportAction().getAction(this),
+                new FileExportAction().getAction(this),
                 addAction,
                 remAction,
                 editAction
@@ -143,7 +146,7 @@ public class LocalGridView extends BorderPane {
             if (getSelected() != null
                     && mouseEvent.getButton() == MouseButton.PRIMARY
                     && mouseEvent.getClickCount() == 2) {
-                mEditor.edit(getSelected());
+                sLocalGridEditor.edit(getSelected());
             }
         });
 

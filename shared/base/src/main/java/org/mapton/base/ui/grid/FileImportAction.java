@@ -13,35 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core_nb.ui.grid;
+package org.mapton.base.ui.grid;
 
 import java.io.File;
 import java.io.IOException;
+import javafx.scene.Node;
 import org.apache.commons.io.FileUtils;
 import org.controlsfx.control.action.Action;
+import org.controlsfx.glyphfont.FontAwesome;
 import org.mapton.api.MKey;
 import org.mapton.api.Mapton;
-import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.dialogs.SimpleDialog;
-import se.trixon.almond.util.icons.material.MaterialIcon;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class GridFileImportAction extends GridFileAction {
+public class FileImportAction extends FileAction {
 
     private File mFile;
 
     @Override
-    public Action getAction() {
+    public Action getAction(Node owner) {
         Action action = new Action((t) -> {
             SimpleDialog.clearFilters();
             SimpleDialog.addFilter(mExtGrid);
             final String dialogTitle = String.format("%s %s", Dict.IMPORT.toString(), mTitle.toLowerCase());
             SimpleDialog.setTitle(dialogTitle);
+            SimpleDialog.setOwner(owner.getScene().getWindow());
 
             if (mFile == null) {
                 SimpleDialog.setPath(FileUtils.getUserDirectory());
@@ -63,7 +64,7 @@ public class GridFileImportAction extends GridFileAction {
             }
         });
 
-        action.setGraphic(MaterialIcon._File.FOLDER_OPEN.getImageView(getIconSizeToolBarInt()));
+        action.setGraphic(Mapton.createGlyphToolbarForm(FontAwesome.Glyph.FOLDER_ALT));
 
         return action;
     }

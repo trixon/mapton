@@ -31,7 +31,7 @@ import se.trixon.almond.util.Dict;
  */
 public abstract class FileAction {
 
-    protected final ResourceBundle mBundle = NbBundle.getBundle(BookmarkFileAction.class);
+    protected final ResourceBundle mBundle = NbBundle.getBundle(FileAction.class);
     protected ExtensionFilter mExtAll = new ExtensionFilter(Dict.ALL_FILES.toString(), "*");
     protected ExtensionFilter mExtCsv = new ExtensionFilter("Comma-separated value (*.csv)", "*.csv");
     protected ExtensionFilter mExtGeo = new ExtensionFilter("SBG Geo (*.geo)", "*.geo");

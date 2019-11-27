@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core_wb.grid;
+package org.mapton.base.ui.grid;
 
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -46,9 +46,9 @@ import se.trixon.almond.util.fx.FxHelper;
  *
  * @author Patrik Karlström
  */
-public class LocalGridPanel extends GridPane {
+public class LocalGridView extends GridPane {
 
-    private final ResourceBundle mBundle = NbBundle.getBundle(LocalGridPanel.class);
+    private final ResourceBundle mBundle = NbBundle.getBundle(LocalGridView.class);
     private ColorPicker mColorPicker;
     private final ComboBox<MCooTrans> mCooTransComboBox = new ComboBox<>();
     private Spinner<Integer> mLatCountSpinner;
@@ -60,7 +60,7 @@ public class LocalGridPanel extends GridPane {
     private Spinner<Double> mLonStepSpinner;
     private TextField mNameTextField;
 
-    public LocalGridPanel() {
+    public LocalGridView() {
         createUI();
     }
 

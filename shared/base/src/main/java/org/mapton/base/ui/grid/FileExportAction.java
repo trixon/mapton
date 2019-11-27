@@ -13,32 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core_nb.ui.grid;
+package org.mapton.base.ui.grid;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import javafx.scene.Node;
 import org.apache.commons.io.FileUtils;
 import org.controlsfx.control.action.Action;
+import org.controlsfx.glyphfont.FontAwesome;
 import org.mapton.api.MKey;
 import org.mapton.api.MLocalGrid;
 import org.mapton.api.Mapton;
-import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.dialogs.SimpleDialog;
-import se.trixon.almond.util.icons.material.MaterialIcon;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class GridFileExportAction extends GridFileAction {
+public class FileExportAction extends FileAction {
 
     private File mFile;
 
     @Override
-    public Action getAction() {
+    public Action getAction(Node owner) {
         Action action = new Action((t) -> {
             ArrayList<MLocalGrid> selectedGrids = new ArrayList<>();
             mManager.getItems().stream()
@@ -51,6 +51,7 @@ public class GridFileExportAction extends GridFileAction {
                 SimpleDialog.addFilter(mExtGrid);
                 final String dialogTitle = String.format("%s %s", Dict.EXPORT.toString(), mTitle.toLowerCase());
                 SimpleDialog.setTitle(dialogTitle);
+                SimpleDialog.setOwner(owner.getScene().getWindow());
 
                 if (mFile == null) {
                     SimpleDialog.setPath(FileUtils.getUserDirectory());
@@ -73,7 +74,7 @@ public class GridFileExportAction extends GridFileAction {
             }
         });
 
-        action.setGraphic(MaterialIcon._Content.SAVE.getImageView(getIconSizeToolBarInt()));
+        action.setGraphic(Mapton.createGlyphToolbarForm(FontAwesome.Glyph.SAVE));
 
         return action;
     }

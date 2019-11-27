@@ -15,15 +15,12 @@
  */
 package org.mapton.core_nb.ui.grid;
 
-import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
 import org.mapton.api.MDict;
-import org.mapton.api.MOptions;
 import org.mapton.api.Mapton;
+import org.mapton.base.ui.grid.GridView;
 import org.mapton.core_nb.api.MMapMagnet;
 import org.mapton.core_nb.api.MTopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
@@ -44,8 +41,8 @@ import org.openide.windows.TopComponent;
 @TopComponent.Registration(mode = "properties", openAtStartup = false)
 public final class GridTopComponent extends MTopComponent implements MMapMagnet {
 
-    private final MOptions mOptions = MOptions.getInstance();
     private BorderPane mRoot;
+    private GridView mGridForm;
 
     public GridTopComponent() {
         setName(MDict.GRID.toString());
@@ -69,19 +66,9 @@ public final class GridTopComponent extends MTopComponent implements MMapMagnet 
     }
 
     private Scene createScene() {
-        GlobalGridView globalGridView = new GlobalGridView();
-        LocalGridView localGridView = new LocalGridView();
-
-        VBox vbox = new VBox(16,
-                globalGridView,
-                localGridView
-        );
-
-        vbox.setPadding(new Insets(8));
-        VBox.setVgrow(localGridView, Priority.ALWAYS);
-
+        mGridForm = new GridView();
         Label titleLabel = Mapton.createTitle(MDict.GRID.toString());
-        mRoot = new BorderPane(vbox);
+        mRoot = new BorderPane(mGridForm);
         mRoot.setTop(titleLabel);
         titleLabel.prefWidthProperty().bind(mRoot.widthProperty());
 

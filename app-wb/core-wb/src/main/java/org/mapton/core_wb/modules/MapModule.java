@@ -48,10 +48,12 @@ import org.mapton.base.ui.SearchView;
 import org.mapton.base.ui.StatusBarView;
 import org.mapton.base.ui.TemporalView;
 import org.mapton.base.ui.bookmark.BookmarksView;
+import org.mapton.base.ui.grid.GridView;
+import org.mapton.base.ui.grid.LocalGridsView;
 import org.mapton.core_wb.MaptonApplication;
 import org.mapton.core_wb.TitledDrawerContent;
 import org.mapton.core_wb.api.MWorkbenchModule;
-import org.mapton.core_wb.grid.GridForm;
+import org.mapton.core_wb.modules.map.LocalGridEditor;
 import org.mapton.core_wb.modules.map.MapWindow;
 import org.mapton.core_wb.modules.map.ToolboxView;
 import org.openide.util.NbBundle;
@@ -140,8 +142,10 @@ public class MapModule extends MWorkbenchModule {
         mSearchView = new SearchView();
 
         mBookmarksDrawerContent = new TitledDrawerContent(Dict.BOOKMARKS.toString(), new BookmarksView());
-        mGridDrawerContent = new TitledDrawerContent(MDict.GRID.toString(), new GridForm());
+        mGridDrawerContent = new TitledDrawerContent(MDict.GRID.toString(), new GridView());
         mToolDrawerContent = new TitledDrawerContent(Dict.TOOLBOX.toString(), new ToolboxView());
+
+        LocalGridsView.setLocalGridEditor(LocalGridEditor.getInstance());
     }
 
     private void initAccelerators() {

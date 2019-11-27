@@ -13,19 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core_wb.grid;
+package org.mapton.base.ui.grid;
 
 import javafx.geometry.Insets;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import org.mapton.api.MActivatable;
 
-public final class GridForm extends VBox implements MActivatable {
+public final class GridView extends VBox implements MActivatable {
 
     private GlobalGridView mGlobalGridView;
-    private LocalGridView mLocalGridView;
+    private LocalGridsView mLocalGridView;
 
-    public GridForm() {
+    public GridView() {
         createUI();
     }
 
@@ -36,7 +36,7 @@ public final class GridForm extends VBox implements MActivatable {
 
     private void createUI() {
         mGlobalGridView = new GlobalGridView();
-        mLocalGridView = new LocalGridView();
+        mLocalGridView = new LocalGridsView();
 
         mGlobalGridView.setPadding(new Insets(8));
         setSpacing(8);

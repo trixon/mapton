@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core_wb.grid;
+package org.mapton.base.ui.grid;
 
 import java.util.ResourceBundle;
 import javafx.geometry.Insets;
@@ -52,7 +52,7 @@ public class GlobalGridView extends VBox {
     }
 
     private void createUI() {
-        ResourceBundle bundle = NbBundle.getBundle(GridForm.class);
+        ResourceBundle bundle = NbBundle.getBundle(GridView.class);
         mPlotCheckBox = new CheckBox(Dict.GLOBAL.toString());
         mPlotCheckBox.setFont(Font.font(Font.getDefault().getFamily(), FontWeight.BOLD, FxHelper.getScaledFontSize() * 1.2));
 

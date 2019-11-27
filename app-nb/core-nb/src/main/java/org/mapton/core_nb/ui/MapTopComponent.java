@@ -60,9 +60,11 @@ import org.mapton.api.MWhatsHereEngine;
 import org.mapton.api.Mapton;
 import org.mapton.base.ui.StatusBarView;
 import org.mapton.base.ui.StatusBarView.StatusWindowMode;
+import org.mapton.base.ui.grid.LocalGridsView;
 import org.mapton.core_nb.api.MMapMagnet;
 import org.mapton.core_nb.api.MTopComponent;
 import org.mapton.core_nb.ui.bookmark.BookmarkEditor;
+import org.mapton.core_nb.ui.grid.LocalGridEditor;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -268,6 +270,7 @@ public final class MapTopComponent extends MTopComponent {
         mRoot = new BorderPane();
 
         initListeners();
+        LocalGridsView.setLocalGridEditor(LocalGridEditor.getInstance());
 
         return new Scene(mRoot);
     }
