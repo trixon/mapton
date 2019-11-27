@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core_wb.bookmark;
+package org.mapton.base.ui.bookmark;
 
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -45,9 +45,8 @@ import se.trixon.almond.util.fx.FxHelper;
  *
  * @author Patrik Karlström
  */
-public class BookmarkPanel extends StackPane {
+public class BookmarkView extends StackPane {
 
-    private MBookmark mBookmark;
     private ComboBox<String> mCategoryComboBox;
     private ColorPicker mColorPicker;
     private TextArea mDescTextArea;
@@ -58,12 +57,11 @@ public class BookmarkPanel extends StackPane {
     private CheckBox mPlacemarkCheckBox;
     private Spinner<Double> mZoomSpinner;
 
-    public BookmarkPanel() {
+    public BookmarkView() {
         createUI();
     }
 
     public void load(MBookmark bookmark) {
-        mBookmark = bookmark;
         mNameTextField.setText(bookmark.getName());
         mCategoryComboBox.getSelectionModel().select(bookmark.getCategory());
         mDescTextArea.setText(bookmark.getDescription());

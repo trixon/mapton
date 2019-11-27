@@ -56,8 +56,8 @@ import static org.mapton.api.Mapton.getIconSizeToolBar;
 import org.mapton.base.ui.AttributionView;
 import org.mapton.base.ui.SearchView;
 import org.mapton.base.ui.TemporalView;
+import org.mapton.base.ui.bookmark.BookmarksView;
 import org.mapton.core_nb.Initializer;
-import org.mapton.core_nb.ui.bookmark.BookmarkView;
 import org.openide.awt.Actions;
 import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.nbp.AlmondOptions;
@@ -501,19 +501,19 @@ public class AppToolBar extends ToolBar {
         popOver.setCloseButtonEnabled(false);
         popOver.setDetachable(false);
         popOver.setAnimated(false);
-        popOver.setOnHiding((windowEvent -> {
+        popOver.setOnHiding(windowEvent -> {
             mPopoverClosingTimes.put(popOver, System.currentTimeMillis());
-        }));
+        });
         mPopOvers.add(popOver);
     }
 
     private void initPopOvers() {
         mBookmarkPopOver = new PopOver();
-        initPopOver(mBookmarkPopOver, Dict.BOOKMARKS.toString(), new BookmarkView());
+        initPopOver(mBookmarkPopOver, Dict.BOOKMARKS.toString(), new BookmarksView());
 
         mLayerPopOver = new PopOver();
         initPopOver(mLayerPopOver, Dict.LAYERS.toString(), null);
-        mLayerPopOver.setOnShowing((event) -> {
+        mLayerPopOver.setOnShowing(event -> {
             mLayerPopOver.setContentNode(new LayerView());
         });
 

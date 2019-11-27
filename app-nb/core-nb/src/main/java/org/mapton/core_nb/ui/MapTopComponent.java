@@ -62,6 +62,7 @@ import org.mapton.base.ui.StatusBarView;
 import org.mapton.base.ui.StatusBarView.StatusWindowMode;
 import org.mapton.core_nb.api.MMapMagnet;
 import org.mapton.core_nb.api.MTopComponent;
+import org.mapton.core_nb.ui.bookmark.BookmarkEditor;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -325,7 +326,7 @@ public final class MapTopComponent extends MTopComponent {
 
         Collection<? extends Action> actions = Arrays.asList(
                 whatsHereAction,
-                //aaa                MBookmarkManager.getInstance().getAddBookmarkAction(),
+                BookmarkEditor.getInstance().getAddBookmarkAction(),
                 ActionUtils.ACTION_SEPARATOR,
                 copyImageAction,
                 exportImageAction,

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core_wb.bookmark;
+package org.mapton.core_wb.modules.map;
 
 import com.dlsc.workbenchfx.Workbench;
 import com.dlsc.workbenchfx.model.WorkbenchDialog;
@@ -21,14 +21,16 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ResourceBundle;
 import java.util.TreeSet;
-import javafx.event.ActionEvent;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import org.apache.commons.lang3.StringUtils;
-import org.controlsfx.control.action.Action;
 import org.mapton.api.MBookmark;
 import org.mapton.api.MBookmarkManager;
 import org.mapton.api.Mapton;
+import org.mapton.base.ui.bookmark.BookmarkView;
+import org.mapton.base.ui.bookmark.CategoryView;
+import org.mapton.base.ui.bookmark.ColorView;
+import org.mapton.base.ui.bookmark.ZoomView;
 import org.mapton.core_wb.api.WorkbenchManager;
 import org.openide.util.Exceptions;
 import org.openide.util.NbBundle;
@@ -38,7 +40,7 @@ import se.trixon.almond.util.Dict;
  *
  * @author Patrik Karlström
  */
-public class BookmarkEditor {
+public class BookmarkEditor implements org.mapton.base.ui.bookmark.BookmarkEditor {
 
     private final ResourceBundle mBundle = NbBundle.getBundle(MBookmarkManager.class);
     private final ButtonType mCancelButtonType = new ButtonType(Dict.CANCEL.toString(), ButtonBar.ButtonData.CANCEL_CLOSE);
@@ -53,6 +55,7 @@ public class BookmarkEditor {
     private BookmarkEditor() {
     }
 
+    @Override
     public void editBookmark(final MBookmark aBookmark) {
         MBookmark newBookmark = aBookmark;
         boolean add = aBookmark == null;
@@ -64,7 +67,7 @@ public class BookmarkEditor {
         }
 
         final MBookmark bookmark = newBookmark;
-        BookmarkPanel editPanel = new BookmarkPanel();
+        BookmarkView editPanel = new BookmarkView();
         editPanel.load(bookmark);
         String title = Dict.BOOKMARK.toString();
 
@@ -92,8 +95,9 @@ public class BookmarkEditor {
         mWorkbench.showDialog(dialog);
     }
 
+    @Override
     public void editCategory(final String category) {
-        BookmarkCategoryPanel editPanel = new BookmarkCategoryPanel();
+        CategoryView editPanel = new CategoryView();
         editPanel.setCategory(category);
         String title = Dict.EDIT.toString();
 
@@ -137,8 +141,9 @@ public class BookmarkEditor {
         mWorkbench.showDialog(dialog);
     }
 
+    @Override
     public void editColor(final String category) {
-        BookmarkColorPanel editPanel = new BookmarkColorPanel();
+        ColorView editPanel = new ColorView();
         String title = Dict.EDIT.toString();
 
         WorkbenchDialog dialog = WorkbenchDialog.builder(
@@ -169,8 +174,9 @@ public class BookmarkEditor {
         mWorkbench.showDialog(dialog);
     }
 
+    @Override
     public void editZoom(final String category) {
-        BookmarkZoomPanel editPanel = new BookmarkZoomPanel();
+        ZoomView editPanel = new ZoomView();
         String title = Dict.EDIT.toString();
 
         WorkbenchDialog dialog = WorkbenchDialog.builder(
@@ -201,14 +207,15 @@ public class BookmarkEditor {
         mWorkbench.showDialog(dialog);
     }
 
-    public Action getAddBookmarkAction() {
-        Action action = new Action(Dict.ADD_BOOKMARK.toString(), (ActionEvent t) -> {
-            editBookmark(null);
-        });
-
-        return action;
-    }
-
+//    @Override
+//    public Action getAddBookmarkAction() {
+//        Action action = new Action(Dict.ADD_BOOKMARK.toString(), (ActionEvent t) -> {
+//            editBookmark(null);
+//        });
+//
+//        return action;
+//    }
+    @Override
     public void remove(MBookmark bookmark) {
         ButtonType okButtonType = new ButtonType(Dict.REMOVE.toString(), ButtonBar.ButtonData.OK_DONE);
         ButtonType cancelButtonType = new ButtonType(Dict.CANCEL.toString(), ButtonBar.ButtonData.CANCEL_CLOSE);
@@ -237,6 +244,7 @@ public class BookmarkEditor {
         mWorkbench.showDialog(dialog);
     }
 
+    @Override
     public void removeAll() {
         ButtonType okButtonType = new ButtonType(Dict.REMOVE_ALL.toString(), ButtonBar.ButtonData.OK_DONE);
         ButtonType cancelButtonType = new ButtonType(Dict.CANCEL.toString(), ButtonBar.ButtonData.CANCEL_CLOSE);

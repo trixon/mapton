@@ -13,35 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core_nb.ui.bookmark;
+package org.mapton.base.ui.bookmark;
 
-import javafx.scene.Scene;
+import javafx.event.ActionEvent;
+import org.controlsfx.control.action.Action;
 import org.mapton.api.MBookmark;
-import org.mapton.base.ui.bookmark.BookmarkView;
-import se.trixon.almond.nbp.fx.FxDialogPanel;
+import se.trixon.almond.util.Dict;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class BookmarkPanel extends FxDialogPanel {
+public interface BookmarkEditor {
 
-    private BookmarkView mBookmarkView;
+    void editBookmark(final MBookmark aBookmark);
 
-    public BookmarkPanel() {
+    void editCategory(final String category);
+
+    void editColor(final String category);
+
+    void editZoom(final String category);
+
+    default Action getAddBookmarkAction() {
+        Action action = new Action(Dict.ADD_BOOKMARK.toString(), (ActionEvent t) -> {
+            editBookmark(null);
+        });
+
+        return action;
     }
 
-    public void load(MBookmark bookmark) {
-        mBookmarkView.load(bookmark);
-    }
+    void remove(MBookmark bookmark);
 
-    public void save(MBookmark bookmark) {
-        mBookmarkView.save(bookmark);
-    }
+    void removeAll();
 
-    @Override
-    protected void fxConstructor() {
-        mBookmarkView = new BookmarkView();
-        setScene(new Scene(mBookmarkView));
-    }
 }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core_wb.bookmark;
+package org.mapton.base.ui.bookmark;
 
 import javafx.geometry.Insets;
 import javafx.scene.control.ColorPicker;
@@ -27,11 +27,11 @@ import se.trixon.almond.util.fx.FxHelper;
  *
  * @author Patrik Karlström
  */
-public class BookmarkColorPanel extends StackPane {
+public class ColorView extends StackPane {
 
     private ColorPicker mColorPicker;
 
-    public BookmarkColorPanel() {
+    public ColorView() {
         createUI();
     }
 

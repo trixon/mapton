@@ -15,47 +15,25 @@
  */
 package org.mapton.core_nb.ui.bookmark;
 
-import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.control.ColorPicker;
-import javafx.scene.control.Label;
-import javafx.scene.layout.VBox;
+import org.mapton.base.ui.bookmark.ColorView;
 import se.trixon.almond.nbp.fx.FxDialogPanel;
-import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class BookmarkColorPanel extends FxDialogPanel {
+public class ColorPanel extends FxDialogPanel {
 
-    private ColorPicker mColorPicker;
+    private ColorView mColorView;
 
     public String getColor() {
-        return FxHelper.colorToHexRGB(mColorPicker.getValue());
+        return mColorView.getColor();
     }
 
     @Override
     protected void fxConstructor() {
-        setScene(createScene());
-    }
-
-    private Scene createScene() {
-        mColorPicker = new ColorPicker();
-
-        Label colorLabel = new Label(Dict.COLOR.toString());
-
-        VBox box = new VBox(
-                colorLabel,
-                mColorPicker
-        );
-
-        box.setPadding(new Insets(8, 16, 0, 16));
-
-        final Insets topInsets = new Insets(8, 0, 8, 0);
-        VBox.setMargin(colorLabel, topInsets);
-
-        return new Scene(box);
+        mColorView = new ColorView();
+        setScene(new Scene(mColorView));
     }
 }

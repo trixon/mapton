@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core_nb.ui.bookmark;
+package org.mapton.base.ui.bookmark;
 
 import javafx.geometry.Insets;
-import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import se.trixon.almond.nbp.fx.FxDialogPanel;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
 
@@ -28,20 +27,19 @@ import se.trixon.almond.util.fx.FxHelper;
  *
  * @author Patrik Karlström
  */
-public class BookmarkZoomPanel extends FxDialogPanel {
+public class ZoomView extends StackPane {
 
     private Spinner<Double> mZoomSpinner;
+
+    public ZoomView() {
+        createUI();
+    }
 
     public double getZoom() {
         return mZoomSpinner.getValue();
     }
 
-    @Override
-    protected void fxConstructor() {
-        setScene(createScene());
-    }
-
-    private Scene createScene() {
+    private void createUI() {
         Label colorLabel = new Label(Dict.ZOOM.toString());
         mZoomSpinner = new Spinner<>(0.0, 1.0, 0.5, 0.1);
         mZoomSpinner.setEditable(true);
@@ -57,6 +55,6 @@ public class BookmarkZoomPanel extends FxDialogPanel {
         Insets topInsets = new Insets(8, 0, 8, 0);
         VBox.setMargin(colorLabel, topInsets);
 
-        return new Scene(box);
+        getChildren().setAll(box);
     }
 }

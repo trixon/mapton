@@ -16,32 +16,28 @@
 package org.mapton.core_nb.ui.bookmark;
 
 import javafx.scene.Scene;
-import org.mapton.api.MBookmark;
-import org.mapton.base.ui.bookmark.BookmarkView;
+import org.mapton.base.ui.bookmark.CategoryView;
 import se.trixon.almond.nbp.fx.FxDialogPanel;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class BookmarkPanel extends FxDialogPanel {
+public class CategoryPanel extends FxDialogPanel {
 
-    private BookmarkView mBookmarkView;
+    private CategoryView mCategoryView;
 
-    public BookmarkPanel() {
+    public String getCategory() {
+        return mCategoryView.getCategory();
     }
 
-    public void load(MBookmark bookmark) {
-        mBookmarkView.load(bookmark);
-    }
-
-    public void save(MBookmark bookmark) {
-        mBookmarkView.save(bookmark);
+    public void setCategory(String category) {
+        mCategoryView.setCategory(category);
     }
 
     @Override
     protected void fxConstructor() {
-        mBookmarkView = new BookmarkView();
-        setScene(new Scene(mBookmarkView));
+        mCategoryView = new CategoryView();
+        setScene(new Scene(mCategoryView));
     }
 }

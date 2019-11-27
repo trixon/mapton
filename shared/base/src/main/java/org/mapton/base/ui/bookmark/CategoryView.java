@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core_wb.bookmark;
+package org.mapton.base.ui.bookmark;
 
 import javafx.geometry.Insets;
 import javafx.scene.control.ComboBox;
@@ -27,12 +27,12 @@ import se.trixon.almond.util.Dict;
  *
  * @author Patrik Karlström
  */
-public class BookmarkCategoryPanel extends StackPane {
+public class CategoryView extends StackPane {
 
     private ComboBox<String> mCategoryComboBox;
     private MBookmarkManager mManager = MBookmarkManager.getInstance();
 
-    public BookmarkCategoryPanel() {
+    public CategoryView() {
         createUI();
     }
 

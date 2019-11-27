@@ -17,6 +17,7 @@ package org.mapton.core_nb.ui.bookmark;
 
 import javafx.scene.Scene;
 import org.mapton.api.MOptions;
+import org.mapton.base.ui.bookmark.BookmarksView;
 import org.mapton.core_nb.api.MTopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
@@ -76,7 +77,9 @@ public final class BookmarkTopComponent extends MTopComponent {
     }
 
     private Scene createScene() {
-        return new Scene(new BookmarkView());
+        BookmarksView.setEditor(BookmarkEditor.getInstance());
+
+        return new Scene(new BookmarksView());
     }
 
     void readProperties(java.util.Properties p) {

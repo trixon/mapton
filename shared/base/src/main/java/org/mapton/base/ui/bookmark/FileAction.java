@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core_wb.bookmark;
+package org.mapton.base.ui.bookmark;
 
 import java.util.ResourceBundle;
 import javafx.scene.Node;
@@ -29,7 +29,7 @@ import se.trixon.almond.util.Dict;
  *
  * @author Patrik Karlström
  */
-public abstract class BookmarkFileAction {
+public abstract class FileAction {
 
     protected final ResourceBundle mBundle = NbBundle.getBundle(BookmarkFileAction.class);
     protected ExtensionFilter mExtAll = new ExtensionFilter(Dict.ALL_FILES.toString(), "*");

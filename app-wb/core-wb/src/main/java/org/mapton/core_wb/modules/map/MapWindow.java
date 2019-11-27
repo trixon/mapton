@@ -50,7 +50,7 @@ import org.mapton.api.MOptions;
 import org.mapton.api.MOptions2;
 import org.mapton.api.MWhatsHereEngine;
 import org.mapton.api.Mapton;
-import org.mapton.core_wb.bookmark.BookmarkEditor;
+import org.mapton.base.ui.bookmark.BookmarksView;
 import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
@@ -77,6 +77,7 @@ import se.trixon.windowsystemfx.WindowSystemComponent;
 public class MapWindow extends Window {
 
     public static final String ID = "org.mapton.core_wb.modules.map.MapWindow";
+//    private BookmarkEditor mBookmarkEditor;
     private Menu mContextCopyMenu;
     private Menu mContextExtrasMenu;
     private ContextMenu mContextMenu;
@@ -88,6 +89,7 @@ public class MapWindow extends Window {
 
     public MapWindow() {
         mEngine = Mapton.getEngine();
+        BookmarksView.setEditor(BookmarkEditor.getInstance());
     }
 
     @Override

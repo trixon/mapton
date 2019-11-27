@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core_wb.bookmark;
+package org.mapton.base.ui.bookmark;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -47,7 +47,7 @@ import se.trixon.almond.util.io.GeoPoint;
  *
  * @author Patrik Karlström
  */
-public class BookmarkFileImportAction extends BookmarkFileAction {
+public class FileImportAction extends FileAction {
 
     private File mFile;
     private int mErrors;
