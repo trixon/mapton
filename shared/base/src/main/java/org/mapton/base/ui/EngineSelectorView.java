@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core_nb.ui;
+package org.mapton.base.ui;
 
 import java.util.stream.Stream;
 import javafx.collections.ObservableList;
@@ -35,12 +35,12 @@ import org.openide.util.LookupEvent;
  *
  * @author Patrik Karlström
  */
-public class EngineBox extends VBox {
+public class EngineSelectorView extends VBox {
 
     private Label mEngineLabel = new Label(MDict.MAP_ENGINE.toString());
     private final MOptions mOptions = MOptions.getInstance();
 
-    public EngineBox() {
+    public EngineSelectorView() {
         setSpacing(8);
         setPadding(new Insets(8));
         Lookup.getDefault().lookupResult(MEngine.class).addLookupListener((LookupEvent ev) -> {
