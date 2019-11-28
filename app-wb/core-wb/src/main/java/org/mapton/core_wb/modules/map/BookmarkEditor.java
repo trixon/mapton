@@ -34,12 +34,14 @@ import org.mapton.base.ui.bookmark.ZoomView;
 import org.mapton.core_wb.api.WorkbenchManager;
 import org.openide.util.Exceptions;
 import org.openide.util.NbBundle;
+import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
 
 /**
  *
  * @author Patrik Karlström
  */
+@ServiceProvider(service = org.mapton.base.ui.bookmark.BookmarkEditor.class)
 public class BookmarkEditor implements org.mapton.base.ui.bookmark.BookmarkEditor {
 
     private final ResourceBundle mBundle = NbBundle.getBundle(MBookmarkManager.class);
@@ -48,11 +50,7 @@ public class BookmarkEditor implements org.mapton.base.ui.bookmark.BookmarkEdito
     private final ButtonType mOkButtonType = new ButtonType(Dict.SAVE.toString(), ButtonBar.ButtonData.OK_DONE);
     private final Workbench mWorkbench = WorkbenchManager.getInstance().getWorkbench();
 
-    public static BookmarkEditor getInstance() {
-        return Holder.INSTANCE;
-    }
-
-    private BookmarkEditor() {
+    public BookmarkEditor() {
     }
 
     @Override
@@ -207,14 +205,6 @@ public class BookmarkEditor implements org.mapton.base.ui.bookmark.BookmarkEdito
         mWorkbench.showDialog(dialog);
     }
 
-//    @Override
-//    public Action getAddBookmarkAction() {
-//        Action action = new Action(Dict.ADD_BOOKMARK.toString(), (ActionEvent t) -> {
-//            editBookmark(null);
-//        });
-//
-//        return action;
-//    }
     @Override
     public void remove(MBookmark bookmark) {
         ButtonType okButtonType = new ButtonType(Dict.REMOVE.toString(), ButtonBar.ButtonData.OK_DONE);
@@ -267,10 +257,5 @@ public class BookmarkEditor implements org.mapton.base.ui.bookmark.BookmarkEdito
                 }).build();
 
         mWorkbench.showDialog(dialog);
-    }
-
-    private static class Holder {
-
-        private static final BookmarkEditor INSTANCE = new BookmarkEditor();
     }
 }

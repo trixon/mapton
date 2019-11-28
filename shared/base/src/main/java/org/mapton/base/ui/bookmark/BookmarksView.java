@@ -64,17 +64,14 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
 public class BookmarksView extends BorderPane implements MActivatable {
 
     private final Map<String, TreeItem<MBookmark>> mBookmarkParents = new TreeMap<>();
-    private static BookmarkEditor sEditor;
+    private BookmarkEditor mEditor;
     private TextField mFilterTextField;
     private final MBookmarkManager mManager = MBookmarkManager.getInstance();
     private final Preferences mPreferences = NbPreferences.forModule(BookmarksView.class).node("expanded_state");
     private final TreeView<MBookmark> mTreeView = new TreeView<>();
 
-    public static void setEditor(BookmarkEditor mEditor) {
-        BookmarksView.sEditor = mEditor;
-    }
-
     public BookmarksView() {
+        mEditor = BookmarkEditor.getDefault();
         createUI();
 
         mManager.dbLoad(mFilterTextField.getText(), true);
@@ -109,9 +106,9 @@ public class BookmarksView extends BorderPane implements MActivatable {
         MBookmark bookmark = getSelectedBookmark();
         if (bookmark != null) {
             if (bookmark.isCategory()) {
-                sEditor.editCategory(bookmark.getCategory());
+                mEditor.editCategory(bookmark.getCategory());
             } else {
-                sEditor.editBookmark(bookmark);
+                mEditor.editBookmark(bookmark);
             }
         }
     }
@@ -253,12 +250,12 @@ public class BookmarksView extends BorderPane implements MActivatable {
             editAction.setGraphic(MaterialIcon._Content.CREATE.getImageView(getIconSizeContextMenu(), color));
 
             Action editColorAction = new Action(Dict.COLOR.toString(), (ActionEvent event) -> {
-                sEditor.editColor(getSelectedBookmark().getCategory());
+                mEditor.editColor(getSelectedBookmark().getCategory());
             });
             editColorAction.setGraphic(MaterialIcon._Image.COLORIZE.getImageView(getIconSizeContextMenu(), color));
 
             Action editZoomAction = new Action(Dict.ZOOM.toString(), (ActionEvent event) -> {
-                sEditor.editZoom(getSelectedBookmark().getCategory());
+                mEditor.editZoom(getSelectedBookmark().getCategory());
             });
             editZoomAction.setGraphic(MaterialIcon._Editor.FORMAT_SIZE.getImageView(getIconSizeContextMenu(), color));
 
@@ -267,11 +264,11 @@ public class BookmarksView extends BorderPane implements MActivatable {
             });
 
             Action removeAction = new Action(Dict.REMOVE.toString(), (ActionEvent event) -> {
-                sEditor.remove(getSelectedBookmark());
+                mEditor.remove(getSelectedBookmark());
             });
 
             Action removeAllAction = new Action(Dict.REMOVE_ALL.toString(), (ActionEvent event) -> {
-                sEditor.removeAll();
+                mEditor.removeAll();
             });
 
             Collection<? extends Action> actions = Arrays.asList(

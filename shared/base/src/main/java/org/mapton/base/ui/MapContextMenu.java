@@ -64,8 +64,8 @@ public class MapContextMenu {
     private File mExportFile;
     private final MOptions mMOptions = MOptions.getInstance();
 
-    public MapContextMenu(BookmarkEditor bookmarkEditor) {
-        mBookmarkEditor = bookmarkEditor;
+    public MapContextMenu() {
+        mBookmarkEditor = BookmarkEditor.getDefault();
 
         initContextMenu();
         initListeners();

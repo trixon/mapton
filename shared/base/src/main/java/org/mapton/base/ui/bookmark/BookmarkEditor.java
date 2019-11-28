@@ -18,6 +18,7 @@ package org.mapton.base.ui.bookmark;
 import javafx.event.ActionEvent;
 import org.controlsfx.control.action.Action;
 import org.mapton.api.MBookmark;
+import org.openide.util.Lookup;
 import se.trixon.almond.util.Dict;
 
 /**
@@ -25,6 +26,10 @@ import se.trixon.almond.util.Dict;
  * @author Patrik Karlström
  */
 public interface BookmarkEditor {
+
+    static BookmarkEditor getDefault() {
+        return Lookup.getDefault().lookup(BookmarkEditor.class);
+    }
 
     void editBookmark(final MBookmark aBookmark);
 

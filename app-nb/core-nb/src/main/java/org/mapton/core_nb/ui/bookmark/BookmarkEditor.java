@@ -31,6 +31,7 @@ import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.util.Exceptions;
 import org.openide.util.NbBundle;
+import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.dialogs.NbMessage;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.swing.SwingHelper;
@@ -39,16 +40,13 @@ import se.trixon.almond.util.swing.SwingHelper;
  *
  * @author Patrik Karlström
  */
+@ServiceProvider(service = org.mapton.base.ui.bookmark.BookmarkEditor.class)
 public class BookmarkEditor implements org.mapton.base.ui.bookmark.BookmarkEditor {
 
     private final ResourceBundle mBundle = NbBundle.getBundle(MBookmarkManager.class);
     private final MBookmarkManager mManager = MBookmarkManager.getInstance();
 
-    public static BookmarkEditor getInstance() {
-        return Holder.INSTANCE;
-    }
-
-    private BookmarkEditor() {
+    public BookmarkEditor() {
     }
 
     @Override
@@ -253,10 +251,5 @@ public class BookmarkEditor implements org.mapton.base.ui.bookmark.BookmarkEdito
                 });
             }
         });
-    }
-
-    private static class Holder {
-
-        private static final BookmarkEditor INSTANCE = new BookmarkEditor();
     }
 }

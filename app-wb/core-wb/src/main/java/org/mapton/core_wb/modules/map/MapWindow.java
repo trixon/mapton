@@ -24,11 +24,9 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeLineCap;
-import org.mapton.api.MOptions;
 import org.mapton.api.MOptions2;
 import org.mapton.api.Mapton;
 import org.mapton.base.ui.MapContextMenu;
-import org.mapton.base.ui.bookmark.BookmarksView;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.windowsystemfx.Window;
@@ -48,18 +46,16 @@ import se.trixon.windowsystemfx.WindowSystemComponent;
 public class MapWindow extends Window {
 
     public static final String ID = "org.mapton.core_wb.modules.map.MapWindow";
-    private final MOptions mMOptions = MOptions.getInstance();
     private StackPane mNode;
 
     public MapWindow() {
-        BookmarksView.setEditor(BookmarkEditor.getInstance());
     }
 
     @Override
     public Node getNode() {
         if ((mNode == null)) {
             createUI();
-            new MapContextMenu(BookmarkEditor.getInstance());
+            new MapContextMenu();
             initListeners();
         }
 

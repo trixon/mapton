@@ -42,7 +42,6 @@ import org.mapton.base.ui.StatusBarView.StatusWindowMode;
 import org.mapton.base.ui.grid.LocalGridsView;
 import org.mapton.core_nb.api.MMapMagnet;
 import org.mapton.core_nb.api.MTopComponent;
-import org.mapton.core_nb.ui.bookmark.BookmarkEditor;
 import org.mapton.core_nb.ui.grid.LocalGridEditor;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
@@ -177,7 +176,7 @@ public final class MapTopComponent extends MTopComponent {
     @Override
     protected void initFX() {
         setScene(createScene());
-        new MapContextMenu(BookmarkEditor.getInstance());
+        new MapContextMenu();
         mMOptions2 = MOptions2.getInstance();
         mMOptions2.general().displayCrosshairProperty().addListener((ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1) -> {
             repaint();

@@ -77,8 +77,6 @@ public final class BookmarkTopComponent extends MTopComponent {
     }
 
     private Scene createScene() {
-        BookmarksView.setEditor(BookmarkEditor.getInstance());
-
         return new Scene(new BookmarksView());
     }
 
