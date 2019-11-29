@@ -52,16 +52,16 @@ import se.trixon.almond.util.fx.FxHelper;
  */
 public class LocalGridsView extends BorderPane {
 
-
     private final CheckListView<MLocalGrid> mListView = new CheckListView<>();
     private final MLocalGridManager mManager = MLocalGridManager.getInstance();
     private final MOptions mOptions = MOptions.getInstance();
     private CheckBox mPlotCheckBox;
-private static LocalGridEditor sLocalGridEditor;
+    private static LocalGridEditor sLocalGridEditor;
 
     public static void setLocalGridEditor(LocalGridEditor localGridEditor) {
         LocalGridsView.sLocalGridEditor = localGridEditor;
     }
+
     public LocalGridsView() {
         createUI();
         initStates();
@@ -129,6 +129,7 @@ private static LocalGridEditor sLocalGridEditor;
         setCenter(mListView);
         toolBar.disableProperty().bind(mPlotCheckBox.selectedProperty().not());
         mListView.disableProperty().bind(mPlotCheckBox.selectedProperty().not());
+        mListView.setPrefHeight(FxHelper.getUIScaled(150.0));
 
         mListView.setItems(mManager.getItems());
     }

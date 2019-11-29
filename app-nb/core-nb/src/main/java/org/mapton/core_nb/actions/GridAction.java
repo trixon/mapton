@@ -23,24 +23,20 @@ import org.openide.awt.ActionRegistration;
 
 @ActionID(
         category = "Mapton",
-        id = "org.mapton.core_nb.actions.RulerAction"
+        id = "org.mapton.core_nb.actions.GridAction"
 )
 @ActionRegistration(
-        displayName = "Measure"
+        displayName = "Grids"
 )
-@ActionReference(path = "Shortcuts", name = "D-R")
-public final class RulerAction extends BaseAction {
-
-    public RulerAction() {
-    }
+@ActionReference(path = "Shortcuts", name = "D-G")
+public final class GridAction extends BaseAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
         if (usePopover()) {
-            MapToolBarPanel.getInstance().getToolBar().toogleRulerPopOver();
+            MapToolBarPanel.getInstance().getToolBar().toogleGridPopOver();
         } else {
-            toggleTopComponent("RulerTopComponent");
+            toggleTopComponent("GridTopComponent");
         }
     }
-
 }

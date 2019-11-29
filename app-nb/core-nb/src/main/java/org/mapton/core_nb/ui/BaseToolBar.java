@@ -1,0 +1,134 @@
+/*
+ * Copyright 2019 Patrik Karlström.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.mapton.core_nb.ui;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import javafx.application.Platform;
+import javafx.scene.Node;
+import javafx.scene.control.ButtonBase;
+import javafx.scene.control.ToolBar;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.layout.Region;
+import org.controlsfx.control.PopOver;
+import org.controlsfx.control.action.Action;
+import org.mapton.api.MOptions;
+import org.mapton.api.MOptions2;
+
+/**
+ *
+ * @author Patrik Karlström
+ */
+public abstract class BaseToolBar extends ToolBar {
+
+    public static final int DEFAULT_POP_OVER_WIDTH = 350;
+    protected final MOptions mOptions = MOptions.getInstance();
+    protected final HashSet<PopOver> mPopOvers = new HashSet<>();
+    private final HashMap<Action, Double> mButtonWidths = new HashMap<>();
+    private final HashMap<PopOver, Long> mPopoverClosingTimes = new HashMap<>();
+
+    public BaseToolBar() {
+    }
+
+    protected ButtonBase getButtonForAction(Action action) {
+        for (Node item : getItems()) {
+            if (item instanceof ButtonBase) {
+                ButtonBase buttonBase = (ButtonBase) item;
+                if (buttonBase.getOnAction().equals(action)) {
+                    return buttonBase;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    protected void initPopOver(PopOver popOver, String title, Node content) {
+        popOver.setTitle(title);
+        popOver.setContentNode(content);
+        popOver.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
+        popOver.setHeaderAlwaysVisible(true);
+        popOver.setCloseButtonEnabled(false);
+        popOver.setDetachable(false);
+        popOver.setAnimated(false);
+        popOver.setOnHiding(windowEvent -> {
+            mPopoverClosingTimes.put(popOver, System.currentTimeMillis());
+        });
+        mPopOvers.add(popOver);
+    }
+
+    protected void setPopOverWidths(double width, PopOver... popOvers) {
+        for (PopOver popOver : popOvers) {
+            ((Region) popOver.getContentNode()).setPrefWidth(width);
+        }
+    }
+
+    protected void setTextFromActions() {
+        for (Map.Entry<Action, Double> entry : mButtonWidths.entrySet()) {
+            ButtonBase b = getButtonForAction(entry.getKey());
+            b.setPrefWidth(entry.getValue());
+            b.textProperty().bind(entry.getKey().textProperty());
+        }
+    }
+
+    protected void setTooltip(Action action, KeyCodeCombination keyCodeCombination) {
+        action.setLongText(String.format("%s (%s)", action.getText(), keyCodeCombination.getDisplayText()));
+    }
+
+    protected boolean shouldOpen(PopOver popOver) {
+        return System.currentTimeMillis() - mPopoverClosingTimes.getOrDefault(popOver, 0L) > 200;
+    }
+
+    protected void storeButtonWidths(Action... actions) {
+        for (Action action : actions) {
+            mButtonWidths.put(action, getButtonForAction(action).prefWidthProperty().getValue());
+        }
+    }
+
+    protected void tooglePopOver(PopOver popOver, Action action) {
+        Platform.runLater(() -> {
+            if (popOver.isAutoHide()) {
+                if (popOver.isShowing()) {
+                    popOver.hide();
+                } else {
+                    mPopOvers.forEach((item) -> {
+                        item.hide();
+                    });
+
+                    getItems().stream()
+                            .filter((item) -> (item instanceof ButtonBase))
+                            .map((item) -> (ButtonBase) item)
+                            .filter((buttonBase) -> (buttonBase.getOnAction() == action))
+                            .forEachOrdered((buttonBase) -> {
+                                buttonBase.fire();
+                            });
+                }
+            } else {
+                if (popOver.isShowing()) {
+                    popOver.hide();
+                } else {
+                    popOver.show(getButtonForAction(action));
+                }
+            }
+        });
+    }
+
+    protected boolean usePopOver() {
+        return MOptions2.getInstance().general().isPreferPopover() || mOptions.isMapOnly();
+    }
+
+}

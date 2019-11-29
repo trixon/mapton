@@ -19,8 +19,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.prefs.PreferenceChangeEvent;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -29,7 +27,6 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.MenuButton;
-import javafx.scene.control.ToolBar;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -38,13 +35,11 @@ import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import org.apache.commons.lang3.SystemUtils;
 import org.controlsfx.control.Notifications;
-import org.controlsfx.control.PopOver;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionGroup;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.MKey;
 import org.mapton.api.MOptions;
-import org.mapton.api.MOptions2;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeContextMenu;
 import static org.mapton.api.Mapton.getIconSizeToolBar;
@@ -67,13 +62,10 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
  *
  * @author Patrik Karlström
  */
-public class AppToolBar extends ToolBar {
+public class AppToolBar extends BaseToolBar {
 
     private static final boolean IS_MAC = SystemUtils.IS_OS_MAC;
     private final AlmondOptions mAlmondOptions = AlmondOptions.INSTANCE;
-    private final MOptions mOptions = MOptions.getInstance();
-    private final HashSet<PopOver> mPopOvers = new HashSet<>();
-    private final HashMap<PopOver, Long> mPopoverClosingTimes = new HashMap<>();
     private FxActionSwing mSysAboutAction;
     private Action mSysHelpAction;
     private FxActionSwing mSysLogAppAction;
@@ -102,19 +94,6 @@ public class AppToolBar extends ToolBar {
                 ((MenuButton) node).show();
             }
         });
-    }
-
-    private ButtonBase getButtonForAction(Action action) {
-        for (Node item : getItems()) {
-            if (item instanceof ButtonBase) {
-                ButtonBase buttonBase = (ButtonBase) item;
-                if (buttonBase.getOnAction().equals(action)) {
-                    return buttonBase;
-                }
-            }
-        }
-
-        return null;
     }
 
     private void init() {
@@ -320,48 +299,7 @@ public class AppToolBar extends ToolBar {
         }, MKey.NOTIFICATION, MKey.NOTIFICATION_CONFIRM, MKey.NOTIFICATION_ERROR, MKey.NOTIFICATION_INFORMATION, MKey.NOTIFICATION_WARNING);
     }
 
-    private void initPopOver(PopOver popOver, String title, Node content) {
-        popOver.setTitle(title);
-        popOver.setContentNode(content);
-        popOver.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
-        popOver.setHeaderAlwaysVisible(true);
-        popOver.setCloseButtonEnabled(false);
-        popOver.setDetachable(false);
-        popOver.setAnimated(false);
-        popOver.setOnHiding(windowEvent -> {
-            mPopoverClosingTimes.put(popOver, System.currentTimeMillis());
-        });
-        mPopOvers.add(popOver);
-    }
-
     private void initPopOvers() {
     }
 
-    private boolean shouldOpen(PopOver popOver) {
-        return System.currentTimeMillis() - mPopoverClosingTimes.getOrDefault(popOver, 0L) > 200;
-    }
-
-    private void tooglePopOver(PopOver popOver, Action action) {
-        Platform.runLater(() -> {
-            if (popOver.isShowing()) {
-                popOver.hide();
-            } else {
-                mPopOvers.forEach((item) -> {
-                    item.hide();
-                });
-
-                getItems().stream()
-                        .filter((item) -> (item instanceof ButtonBase))
-                        .map((item) -> (ButtonBase) item)
-                        .filter((buttonBase) -> (buttonBase.getOnAction() == action))
-                        .forEachOrdered((buttonBase) -> {
-                            buttonBase.fire();
-                        });
-            }
-        });
-    }
-
-    private boolean usePopOver() {
-        return MOptions2.getInstance().general().isPreferPopover() || mOptions.isMapOnly();
-    }
 }

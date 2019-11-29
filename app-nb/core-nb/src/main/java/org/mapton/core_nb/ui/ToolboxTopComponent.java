@@ -36,7 +36,7 @@ import se.trixon.almond.util.Dict;
         //iconBase="SET/PATH/TO/ICON/HERE",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
-@TopComponent.Registration(mode = "explorer", openAtStartup = true, position = 1)
+@TopComponent.Registration(mode = "explorer", openAtStartup = false, position = 1)
 @ActionID(category = "Window", id = "org.mapton.core_nb.ui.ToolboxTopComponent")
 @ActionReference(path = "Menu/Window" /*, position = 333 */)
 @TopComponent.OpenActionRegistration(

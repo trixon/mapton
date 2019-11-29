@@ -38,7 +38,7 @@ import se.trixon.almond.util.Dict;
         preferredID = "LayerTopComponent",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
-@TopComponent.Registration(mode = "navigator", openAtStartup = true)
+@TopComponent.Registration(mode = "navigator", openAtStartup = false)
 @ActionID(category = "Mapton", id = "org.mapton.core_nb.layer.LayerTopComponent")
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_LayerAction",

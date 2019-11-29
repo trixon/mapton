@@ -17,17 +17,14 @@ package org.mapton.core_nb.ui;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
 import java.util.prefs.PreferenceChangeEvent;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.TextField;
-import javafx.scene.control.ToolBar;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
 import javax.swing.SwingUtilities;
@@ -35,11 +32,11 @@ import org.controlsfx.control.PopOver;
 import org.controlsfx.control.PopOver.ArrowLocation;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
+import org.mapton.api.MDict;
 import org.mapton.api.MDocumentInfo;
 import org.mapton.api.MEngine;
 import org.mapton.api.MKey;
 import org.mapton.api.MOptions;
-import org.mapton.api.MOptions2;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeContextMenu;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
@@ -47,6 +44,7 @@ import org.mapton.base.ui.AttributionView;
 import org.mapton.base.ui.SearchView;
 import org.mapton.base.ui.TemporalView;
 import org.mapton.base.ui.bookmark.BookmarksView;
+import org.mapton.base.ui.grid.GridView;
 import org.openide.awt.Actions;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.GlobalStateChangeEvent;
@@ -59,20 +57,18 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
  *
  * @author Patrik Karlström
  */
-public class MapToolBar extends ToolBar {
+public class MapToolBar extends BaseToolBar {
 
     private Action mAttributionAction;
     private PopOver mAttributionPopOver;
     private AttributionView mAttributionView;
     private Action mBookmarkAction;
     private PopOver mBookmarkPopOver;
-    private final HashMap<Action, Double> mButtonWidths = new HashMap<>();
+    private Action mGridAction;
+    private PopOver mGridPopOver;
     private FxActionSwing mHomeAction;
     private Action mLayerAction;
     private PopOver mLayerPopOver;
-    private final MOptions mOptions = MOptions.getInstance();
-    private final HashSet<PopOver> mPopOvers = new HashSet<>();
-    private final HashMap<PopOver, Long> mPopoverClosingTimes = new HashMap<>();
     private Action mRulerAction;
     private PopOver mRulerPopOver;
     private SearchView mSearchView;
@@ -109,6 +105,10 @@ public class MapToolBar extends ToolBar {
         tooglePopOver(mBookmarkPopOver, mBookmarkAction);
     }
 
+    public void toogleGridPopOver() {
+        tooglePopOver(mGridPopOver, mGridAction);
+    }
+
     public void toogleLayerPopOver() {
         tooglePopOver(mLayerPopOver, mLayerAction);
     }
@@ -133,19 +133,6 @@ public class MapToolBar extends ToolBar {
         mStyleAction.setDisabled(engine.getStyleView() == null);
     }
 
-    private ButtonBase getButtonForAction(Action action) {
-        for (Node item : getItems()) {
-            if (item instanceof ButtonBase) {
-                ButtonBase buttonBase = (ButtonBase) item;
-                if (buttonBase.getOnAction().equals(action)) {
-                    return buttonBase;
-                }
-            }
-        }
-
-        return null;
-    }
-
     private void init() {
         setStyle("-fx-spacing: 0px;");
         setPadding(Insets.EMPTY);
@@ -155,6 +142,7 @@ public class MapToolBar extends ToolBar {
                 mHomeAction,
                 mBookmarkAction,
                 mLayerAction,
+                mGridAction,
                 mAttributionAction,
                 mStyleAction,
                 ActionUtils.ACTION_SPAN,
@@ -183,9 +171,9 @@ public class MapToolBar extends ToolBar {
 
     private void initActionsFx() {
         //Bookmark
-        mBookmarkAction = new Action(Dict.BOOKMARKS.toString(), (ActionEvent event) -> {
+        mBookmarkAction = new Action(Dict.BOOKMARKS.toString(), event -> {
             if (usePopOver()) {
-                if (shouldOpen(mLayerPopOver)) {
+                if (shouldOpen(mBookmarkPopOver)) {
                     mBookmarkPopOver.show((Node) event.getSource());
                 }
             } else {
@@ -196,9 +184,10 @@ public class MapToolBar extends ToolBar {
         });
         mBookmarkAction.setGraphic(MaterialIcon._Action.BOOKMARK_BORDER.getImageView(getIconSizeToolBarInt()));
         mBookmarkAction.setSelected(mOptions.isBookmarkVisible());
+        setTooltip(mBookmarkAction, new KeyCodeCombination(KeyCode.B, KeyCombination.SHORTCUT_DOWN));
 
         //Layer
-        mLayerAction = new Action(Dict.LAYERS.toString(), (ActionEvent event) -> {
+        mLayerAction = new Action(Dict.LAYERS.toString(), event -> {
             if (usePopOver()) {
                 if (shouldOpen(mLayerPopOver)) {
                     mLayerPopOver.show((Node) event.getSource());
@@ -211,9 +200,25 @@ public class MapToolBar extends ToolBar {
         });
         mLayerAction.setGraphic(MaterialIcon._Maps.LAYERS.getImageView(getIconSizeToolBarInt()));
         mLayerAction.setSelected(mOptions.isBookmarkVisible());
+        setTooltip(mLayerAction, new KeyCodeCombination(KeyCode.L, KeyCombination.SHORTCUT_DOWN));
+
+        //Grid
+        mGridAction = new Action(MDict.GRIDS.toString(), event -> {
+            if (usePopOver()) {
+                if (shouldOpen(mGridPopOver)) {
+                    mGridPopOver.show((Node) event.getSource());
+                }
+            } else {
+                SwingUtilities.invokeLater(() -> {
+                    Actions.forID("Mapton", "org.mapton.core_nb.actions.GridAction").actionPerformed(null);
+                });
+            }
+        });
+        mGridAction.setGraphic(MaterialIcon._Image.GRID_ON.getImageView(getIconSizeToolBarInt()));
+        setTooltip(mGridAction, new KeyCodeCombination(KeyCode.G, KeyCombination.SHORTCUT_DOWN));
 
         //mToolbox
-        mToolboxAction = new Action(Dict.TOOLBOX.toString(), (event) -> {
+        mToolboxAction = new Action(Dict.TOOLBOX.toString(), event -> {
             if (usePopOver()) {
                 if (shouldOpen(mToolboxPopOver)) {
                     mToolboxPopOver.show((Node) event.getSource());
@@ -225,9 +230,10 @@ public class MapToolBar extends ToolBar {
             }
         });
         mToolboxAction.setGraphic(MaterialIcon._Places.BUSINESS_CENTER.getImageView(getIconSizeToolBarInt()));
+        setTooltip(mToolboxAction, new KeyCodeCombination(KeyCode.T, KeyCombination.SHORTCUT_DOWN));
 
         //Style
-        mStyleAction = new Action(String.format("%s & %s", Dict.TYPE.toString(), Dict.STYLE.toString()), (ActionEvent event) -> {
+        mStyleAction = new Action(String.format("%s & %s", Dict.TYPE.toString(), Dict.STYLE.toString()), event -> {
             if (shouldOpen(mStylePopOver)) {
                 BorderPane pane = (BorderPane) mStylePopOver.getContentNode();
                 pane.setCenter(Mapton.getEngine().getStyleView());
@@ -236,27 +242,31 @@ public class MapToolBar extends ToolBar {
         });
         mStyleAction.setGraphic(MaterialIcon._Image.COLOR_LENS.getImageView(getIconSizeToolBarInt()));
         mStyleAction.setDisabled(true);
+        setTooltip(mStyleAction, new KeyCodeCombination(KeyCode.S, KeyCombination.SHORTCUT_DOWN));
 
         //Ruler
-        mRulerAction = new Action(Dict.MEASURE.toString(), (event) -> {
+        mRulerAction = new Action(Dict.RULER.toString(), event -> {
             toogleRulerPopOver();
         });
         mRulerAction.setGraphic(MaterialIcon._Editor.SPACE_BAR.getImageView(getIconSizeToolBarInt()));
+        setTooltip(mRulerAction, new KeyCodeCombination(KeyCode.R, KeyCombination.SHORTCUT_DOWN));
 
         //Temporal
-        mTemporalAction = new Action(Dict.Time.DATE.toString(), (ActionEvent event) -> {
+        mTemporalAction = new Action(Dict.Time.DATE.toString(), event -> {
             toogleTemporalPopOver();
         });
         mTemporalAction.setGraphic(MaterialIcon._Action.DATE_RANGE.getImageView(getIconSizeToolBarInt()));
+        setTooltip(mTemporalAction, new KeyCodeCombination(KeyCode.D, KeyCombination.SHORTCUT_DOWN));
 
         //Copyright
-        mAttributionAction = new Action("Copyright", (ActionEvent event) -> {
+        mAttributionAction = new Action("Copyright", event -> {
             if (shouldOpen(mAttributionPopOver)) {
                 mAttributionPopOver.show((Node) event.getSource());
             }
         });
         mAttributionAction.setGraphic(MaterialIcon._Action.COPYRIGHT.getImageView(getIconSizeToolBarInt()));
         mAttributionAction.setDisabled(true);
+        setTooltip(mAttributionAction, new KeyCodeCombination(KeyCode.I, KeyCombination.SHORTCUT_DOWN));
     }
 
     private void initActionsSwing() {
@@ -265,6 +275,7 @@ public class MapToolBar extends ToolBar {
             Actions.forID("Mapton", "org.mapton.core_nb.actions.HomeAction").actionPerformed(null);
         });
         mHomeAction.setGraphic(MaterialIcon._Action.HOME.getImageView(getIconSizeToolBarInt()));
+        setTooltip(mHomeAction, new KeyCodeCombination(KeyCode.H, KeyCombination.SHORTCUT_DOWN));
 
         //Map
         mSysViewMapAction = new FxActionSwingCheck(Dict.MAP.toString(), () -> {
@@ -294,28 +305,18 @@ public class MapToolBar extends ToolBar {
         }, MKey.MAP_DOCUMENT_INFO);
     }
 
-    private void initPopOver(PopOver popOver, String title, Node content) {
-        popOver.setTitle(title);
-        popOver.setContentNode(content);
-        popOver.setArrowLocation(ArrowLocation.TOP_LEFT);
-        popOver.setHeaderAlwaysVisible(true);
-        popOver.setCloseButtonEnabled(false);
-        popOver.setDetachable(false);
-        popOver.setAnimated(false);
-        popOver.setOnHiding(windowEvent -> {
-            mPopoverClosingTimes.put(popOver, System.currentTimeMillis());
-        });
-        mPopOvers.add(popOver);
-    }
-
     private void initPopOvers() {
         mBookmarkPopOver = new PopOver();
         initPopOver(mBookmarkPopOver, Dict.BOOKMARKS.toString(), new BookmarksView());
 
+        mGridPopOver = new PopOver();
+        initPopOver(mGridPopOver, MDict.GRIDS.toString(), new GridView());
+
         mLayerPopOver = new PopOver();
         initPopOver(mLayerPopOver, Dict.LAYERS.toString(), null);
         mLayerPopOver.setOnShowing(event -> {
-            mLayerPopOver.setContentNode(new LayerView());
+            mLayerPopOver.setContentNode(new LayerView());//TODO Why this?
+            setPopOverWidths(FxHelper.getUIScaled(DEFAULT_POP_OVER_WIDTH), mLayerPopOver);
         });
 
         mStylePopOver = new PopOver();
@@ -340,57 +341,13 @@ public class MapToolBar extends ToolBar {
         mTemporalPopOver.setCloseButtonEnabled(true);
         mTemporalPopOver.setDetachable(true);
 
+        setPopOverWidths(FxHelper.getUIScaled(DEFAULT_POP_OVER_WIDTH), mBookmarkPopOver, mGridPopOver, mToolboxPopOver);
+
         Platform.runLater(() -> {
             mAttributionPopOver = new PopOver();
             mAttributionView = new AttributionView(mAttributionPopOver);
             initPopOver(mAttributionPopOver, Dict.COPYRIGHT.toString(), mAttributionView);
-            mAttributionPopOver.setArrowLocation(ArrowLocation.TOP_RIGHT);
-        });
-    }
-
-    private void setTextFromActions() {
-        for (Map.Entry<Action, Double> entry : mButtonWidths.entrySet()) {
-            ButtonBase b = getButtonForAction(entry.getKey());
-            b.setPrefWidth(entry.getValue());
-            b.textProperty().bind(entry.getKey().textProperty());
-        }
-    }
-
-    private boolean shouldOpen(PopOver popOver) {
-        return System.currentTimeMillis() - mPopoverClosingTimes.getOrDefault(popOver, 0L) > 200;
-    }
-
-    private void storeButtonWidths(Action... actions) {
-        for (Action action : actions) {
-            mButtonWidths.put(action, getButtonForAction(mStyleAction).prefWidthProperty().getValue());
-        }
-    }
-
-    private void tooglePopOver(PopOver popOver, Action action) {
-        Platform.runLater(() -> {
-            if (popOver.isAutoHide()) {
-                if (popOver.isShowing()) {
-                    popOver.hide();
-                } else {
-                    mPopOvers.forEach((item) -> {
-                        item.hide();
-                    });
-
-                    getItems().stream()
-                            .filter((item) -> (item instanceof ButtonBase))
-                            .map((item) -> (ButtonBase) item)
-                            .filter((buttonBase) -> (buttonBase.getOnAction() == action))
-                            .forEachOrdered((buttonBase) -> {
-                                buttonBase.fire();
-                            });
-                }
-            } else {
-                if (popOver.isShowing()) {
-                    popOver.hide();
-                } else {
-                    popOver.show(getButtonForAction(action));
-                }
-            }
+            mAttributionPopOver.setArrowLocation(ArrowLocation.TOP_LEFT);
         });
     }
 
@@ -398,9 +355,5 @@ public class MapToolBar extends ToolBar {
         MDocumentInfo documentInfo = evt.getValue();
         mAttributionAction.setDisabled(false);
         mStyleAction.setText(documentInfo.getName());
-    }
-
-    private boolean usePopOver() {
-        return MOptions2.getInstance().general().isPreferPopover() || mOptions.isMapOnly();
     }
 }
