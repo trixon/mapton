@@ -27,15 +27,12 @@ import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.MenuButton;
-import javafx.scene.control.TextField;
 import javafx.scene.control.ToolBar;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
-import javafx.scene.layout.BorderPane;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
@@ -45,18 +42,12 @@ import org.controlsfx.control.PopOver;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionGroup;
 import org.controlsfx.control.action.ActionUtils;
-import org.mapton.api.MDocumentInfo;
-import org.mapton.api.MEngine;
 import org.mapton.api.MKey;
 import org.mapton.api.MOptions;
 import org.mapton.api.MOptions2;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeContextMenu;
 import static org.mapton.api.Mapton.getIconSizeToolBar;
-import org.mapton.base.ui.AttributionView;
-import org.mapton.base.ui.SearchView;
-import org.mapton.base.ui.TemporalView;
-import org.mapton.base.ui.bookmark.BookmarksView;
 import org.mapton.core_nb.Initializer;
 import org.openide.awt.Actions;
 import se.trixon.almond.nbp.Almond;
@@ -80,21 +71,9 @@ public class AppToolBar extends ToolBar {
 
     private static final boolean IS_MAC = SystemUtils.IS_OS_MAC;
     private final AlmondOptions mAlmondOptions = AlmondOptions.INSTANCE;
-    private Action mAttributionAction;
-    private PopOver mAttributionPopOver;
-    private AttributionView mAttributionView;
-    private Action mBookmarkAction;
-    private PopOver mBookmarkPopOver;
-    private FxActionSwing mHomeAction;
-    private Action mLayerAction;
-    private PopOver mLayerPopOver;
     private final MOptions mOptions = MOptions.getInstance();
     private final HashSet<PopOver> mPopOvers = new HashSet<>();
     private final HashMap<PopOver, Long> mPopoverClosingTimes = new HashMap<>();
-    private FxActionSwing mRulerAction;
-    private SearchView mSearchView;
-    private Action mStyleAction;
-    private PopOver mStylePopOver;
     private FxActionSwing mSysAboutAction;
     private Action mSysHelpAction;
     private FxActionSwing mSysLogAppAction;
@@ -107,11 +86,6 @@ public class AppToolBar extends ToolBar {
     private FxActionSwingCheck mSysViewFullscreenAction;
     private FxActionSwingCheck mSysViewMapAction;
     private FxActionSwing mSysViewResetAction;
-    private Action mTemporalAction;
-    private PopOver mTemporalPopOver;
-    private TemporalView mTemporalView;
-    private Action mToolboxAction;
-    private PopOver mToolboxPopOver;
 
     public AppToolBar() {
         initPopOvers();
@@ -121,58 +95,16 @@ public class AppToolBar extends ToolBar {
         initListeners();
     }
 
-    public void activateSearch() {
-        Platform.runLater(() -> {
-            getScene().getWindow().requestFocus();
-            mSearchView.getPresenter().requestFocus();
-            ((TextField) mSearchView.getPresenter()).clear();
-        });
-    }
-
     public void displayMenu() {
         Platform.runLater(() -> {
-            Node node = getItems().get(getItems().size() - 1);
+            Node node = getItems().get(0);
             if (node instanceof MenuButton) {
                 ((MenuButton) node).show();
             }
         });
     }
 
-    public void toogleAttributionPopOver() {
-        tooglePopOver(mAttributionPopOver, mAttributionAction);
-    }
-
-    public void toogleBookmarkPopOver() {
-        tooglePopOver(mBookmarkPopOver, mBookmarkAction);
-    }
-
-    public void toogleLayerPopOver() {
-        tooglePopOver(mLayerPopOver, mLayerAction);
-    }
-
-    public void toogleStylePopOver() {
-        tooglePopOver(mStylePopOver, mStyleAction);
-    }
-
-    public void toogleTemporalPopOver() {
-        Platform.runLater(() -> {
-            if (mTemporalPopOver.isShowing()) {
-                mTemporalPopOver.hide();
-            } else {
-                mTemporalPopOver.show(getButtonForAction(mTemporalAction));
-            }
-        });
-    }
-
-    public void toogleToolboxPopOver() {
-        tooglePopOver(mToolboxPopOver, mToolboxAction);
-    }
-
-    void refreshEngine(MEngine engine) {
-        mStyleAction.setDisabled(engine.getStyleView() == null);
-    }
-
-    private Node getButtonForAction(Action action) {
+    private ButtonBase getButtonForAction(Action action) {
         for (Node item : getItems()) {
             if (item instanceof ButtonBase) {
                 ButtonBase buttonBase = (ButtonBase) item;
@@ -231,109 +163,24 @@ public class AppToolBar extends ToolBar {
 
         ArrayList<Action> actions = new ArrayList<>();
         actions.addAll(Arrays.asList(
-                mHomeAction,
-                mToolboxAction,
-                mRulerAction,
-                mLayerAction,
-                mBookmarkAction,
-                mTemporalAction,
-                mStyleAction,
+                systemActionGroup,
                 ActionUtils.ACTION_SPAN,
-                mAttributionAction,
-                mSysViewMapAction,
-                systemActionGroup
+                mSysViewMapAction
         ));
 
         Platform.runLater(() -> {
             ActionUtils.updateToolBar(this, actions, ActionUtils.ActionTextBehavior.HIDE);
 
-            Button styleButton = (Button) getItems().get(6);
-            Double w = styleButton.prefWidthProperty().getValue();
             FxHelper.adjustButtonWidth(getItems().stream(), getIconSizeContextMenu() * 1.5);
-            styleButton.setPrefWidth(w);
-            styleButton.textProperty().bind(mStyleAction.textProperty());
 
             getItems().stream().filter((item) -> (item instanceof ButtonBase))
                     .map((item) -> (ButtonBase) item).forEachOrdered((buttonBase) -> {
                 FxHelper.undecorateButton(buttonBase);
             });
-
-            mSearchView = new SearchView();
-            getItems().add(5, mSearchView.getPresenter());
         });
     }
 
     private void initActionsFx() {
-        //Bookmark
-        mBookmarkAction = new Action(Dict.BOOKMARKS.toString(), (ActionEvent event) -> {
-            if (usePopOver()) {
-                if (shouldOpen(mLayerPopOver)) {
-                    mBookmarkPopOver.show((Node) event.getSource());
-                }
-            } else {
-                SwingUtilities.invokeLater(() -> {
-                    Actions.forID("Mapton", "org.mapton.core_nb.actions.BookmarkAction").actionPerformed(null);
-                });
-            }
-        });
-        mBookmarkAction.setGraphic(MaterialIcon._Action.BOOKMARK_BORDER.getImageView(getIconSizeToolBar()));
-        mBookmarkAction.setSelected(mOptions.isBookmarkVisible());
-
-        //Layer
-        mLayerAction = new Action(Dict.LAYERS.toString(), (ActionEvent event) -> {
-            if (usePopOver()) {
-                if (shouldOpen(mLayerPopOver)) {
-                    mLayerPopOver.show((Node) event.getSource());
-                }
-            } else {
-                SwingUtilities.invokeLater(() -> {
-                    Actions.forID("Mapton", "org.mapton.core_nb.actions.LayerAction").actionPerformed(null);
-                });
-            }
-        });
-        mLayerAction.setGraphic(MaterialIcon._Maps.LAYERS.getImageView(getIconSizeToolBar()));
-        mLayerAction.setSelected(mOptions.isBookmarkVisible());
-
-        //mToolbox
-        mToolboxAction = new Action(Dict.TOOLBOX.toString(), (event) -> {
-            if (usePopOver()) {
-                if (shouldOpen(mToolboxPopOver)) {
-                    mToolboxPopOver.show((Node) event.getSource());
-                }
-            } else {
-                SwingUtilities.invokeLater(() -> {
-                    Actions.forID("Mapton", "org.mapton.core_nb.actions.ToolboxAction").actionPerformed(null);
-                });
-            }
-        });
-        mToolboxAction.setGraphic(MaterialIcon._Places.BUSINESS_CENTER.getImageView(getIconSizeToolBar()));
-
-        //Style
-        mStyleAction = new Action(String.format("%s & %s", Dict.TYPE.toString(), Dict.STYLE.toString()), (ActionEvent event) -> {
-            if (shouldOpen(mStylePopOver)) {
-                BorderPane pane = (BorderPane) mStylePopOver.getContentNode();
-                pane.setCenter(Mapton.getEngine().getStyleView());
-                mStylePopOver.show((Node) event.getSource());
-            }
-        });
-        mStyleAction.setGraphic(MaterialIcon._Image.COLOR_LENS.getImageView(getIconSizeToolBar()));
-        mStyleAction.setDisabled(true);
-
-        //Temporal
-        mTemporalAction = new Action(Dict.Time.DATE.toString(), (ActionEvent event) -> {
-            toogleTemporalPopOver();
-        });
-        mTemporalAction.setGraphic(MaterialIcon._Action.DATE_RANGE.getImageView(getIconSizeToolBar()));
-
-        //Copyright
-        mAttributionAction = new Action("Copyright", (ActionEvent event) -> {
-            if (shouldOpen(mAttributionPopOver)) {
-                mAttributionPopOver.show((Node) event.getSource());
-            }
-        });
-        mAttributionAction.setGraphic(MaterialIcon._Action.COPYRIGHT.getImageView(getIconSizeToolBar()));
-        mAttributionAction.setDisabled(true);
-
         //Help
         mSysHelpAction = new Action(Dict.HELP.toString(), (ActionEvent event) -> {
             SystemHelper.desktopBrowse("https://mapton.org/help/");
@@ -342,20 +189,6 @@ public class AppToolBar extends ToolBar {
     }
 
     private void initActionsSwing() {
-        //Home
-        mHomeAction = new FxActionSwing(Dict.HOME.toString(), () -> {
-            Actions.forID("Mapton", "org.mapton.core_nb.actions.HomeAction").actionPerformed(null);
-        });
-        mHomeAction.setGraphic(MaterialIcon._Action.HOME.getImageView(getIconSizeToolBar()));
-
-        //Ruler
-        mRulerAction = new FxActionSwing(Dict.MEASURE.toString(), () -> {
-            Actions.forID("Mapton", "org.mapton.core_nb.actions.RulerAction").actionPerformed(null);
-        });
-        mRulerAction.setGraphic(MaterialIcon._Editor.SPACE_BAR.getImageView(getIconSizeToolBar()));
-//
-//
-//
         //Full screen
         mSysViewFullscreenAction = new FxActionSwingCheck(Dict.FULL_SCREEN.toString(), () -> {
             if (IS_MAC) {
@@ -456,12 +289,6 @@ public class AppToolBar extends ToolBar {
 
         Mapton.getGlobalState().addListener((GlobalStateChangeEvent evt) -> {
             Platform.runLater(() -> {
-                updateDocumentInfo(evt);
-            });
-        }, MKey.MAP_DOCUMENT_INFO);
-
-        Mapton.getGlobalState().addListener((GlobalStateChangeEvent evt) -> {
-            Platform.runLater(() -> {
                 Notifications notifications = evt.getValue();
                 notifications.owner(AppToolBar.this).position(Pos.TOP_RIGHT);
 
@@ -508,34 +335,6 @@ public class AppToolBar extends ToolBar {
     }
 
     private void initPopOvers() {
-        mBookmarkPopOver = new PopOver();
-        initPopOver(mBookmarkPopOver, Dict.BOOKMARKS.toString(), new BookmarksView());
-
-        mLayerPopOver = new PopOver();
-        initPopOver(mLayerPopOver, Dict.LAYERS.toString(), null);
-        mLayerPopOver.setOnShowing(event -> {
-            mLayerPopOver.setContentNode(new LayerView());
-        });
-
-        mToolboxPopOver = new PopOver();
-        initPopOver(mToolboxPopOver, Dict.TOOLBOX.toString(), new ToolboxView());
-
-        mStylePopOver = new PopOver();
-        initPopOver(mStylePopOver, String.format("%s & %s", Dict.TYPE.toString(), Dict.STYLE.toString()), new BorderPane());
-
-        mTemporalPopOver = new PopOver();
-        mTemporalView = new TemporalView();
-        initPopOver(mTemporalPopOver, Dict.Time.DATE.toString(), mTemporalView);
-        mTemporalPopOver.setArrowLocation(PopOver.ArrowLocation.TOP_CENTER);
-        mTemporalPopOver.setAutoHide(false);
-        mTemporalPopOver.setCloseButtonEnabled(true);
-
-        Platform.runLater(() -> {
-            mAttributionPopOver = new PopOver();
-            mAttributionView = new AttributionView(mAttributionPopOver);
-            initPopOver(mAttributionPopOver, Dict.COPYRIGHT.toString(), mAttributionView);
-            mAttributionPopOver.setArrowLocation(PopOver.ArrowLocation.TOP_RIGHT);
-        });
     }
 
     private boolean shouldOpen(PopOver popOver) {
@@ -560,12 +359,6 @@ public class AppToolBar extends ToolBar {
                         });
             }
         });
-    }
-
-    private void updateDocumentInfo(GlobalStateChangeEvent evt) {
-        MDocumentInfo documentInfo = evt.getValue();
-        mAttributionAction.setDisabled(false);
-        mStyleAction.setText(documentInfo.getName());
     }
 
     private boolean usePopOver() {

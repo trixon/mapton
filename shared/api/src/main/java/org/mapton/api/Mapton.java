@@ -53,7 +53,7 @@ public class Mapton {
     public static final int ICON_SIZE_MODULE = 32;
     public static final int ICON_SIZE_MODULE_TOOLBAR = 40;
     public static final int ICON_SIZE_PROFILE = 32;
-    public static final int ICON_SIZE_TOOLBAR = 36;
+    public static final int ICON_SIZE_TOOLBAR = 32;
     public static final int ICON_SIZE_DRAWER = ICON_SIZE_TOOLBAR / 2;
     public static final String LOG_TAG = "Mapton";
     public static final int MODULE_ICON_SIZE = 32;
@@ -181,7 +181,7 @@ public class Mapton {
     }
 
     public static int getIconSizeToolBarInt() {
-        return (int) (getIconSizeToolBar() / 1.5);
+        return (int) (getIconSizeToolBar() / 1.2);
     }
 //    public static int getIconSizeToolBar() {
 //        return (int) (ICON_SIZE_TOOLBAR * SwingHelper.getUIScale());

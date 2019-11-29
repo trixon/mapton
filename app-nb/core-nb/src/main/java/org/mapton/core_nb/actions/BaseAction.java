@@ -49,7 +49,7 @@ public abstract class BaseAction implements ActionListener {
     }
 
     protected boolean usePopover() {
-        return mOptions2.general().isPreferPopover() || mOptions.isMapOnly();
+        return mOptions2.general().isPreferPopover() || mOptions2.general().isMaximizedMap();
     }
 
 }

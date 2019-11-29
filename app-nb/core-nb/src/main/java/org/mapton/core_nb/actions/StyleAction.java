@@ -17,7 +17,7 @@ package org.mapton.core_nb.actions;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import org.mapton.core_nb.ui.AppToolBarProvider;
+import org.mapton.core_nb.ui.MapToolBarPanel;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
@@ -34,6 +34,6 @@ public final class StyleAction implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        AppToolBarProvider.getInstance().getToolBar().toogleStylePopOver();
+        MapToolBarPanel.getInstance().getToolBar().toogleStylePopOver();
     }
 }

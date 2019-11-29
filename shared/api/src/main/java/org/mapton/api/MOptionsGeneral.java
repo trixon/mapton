@@ -52,7 +52,7 @@ public class MOptionsGeneral {
     private final BooleanProperty mMaximizedMapProperty = new SimpleBooleanProperty(true);
     private final BooleanProperty mNightModeProperty = new SimpleBooleanProperty(true);
     private final MOptions mOptions = MOptions.getInstance();
-    private final BooleanProperty mPreferPopoverProperty = new SimpleBooleanProperty(false);
+    private final BooleanProperty mPreferPopoverProperty = new SimpleBooleanProperty(true);
 
     public MOptionsGeneral() {
         ArrayList<String> engineNames = new ArrayList<>();

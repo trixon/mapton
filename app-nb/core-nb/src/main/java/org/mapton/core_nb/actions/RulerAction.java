@@ -15,14 +15,13 @@
  */
 package org.mapton.core_nb.actions;
 
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
+import org.mapton.core_nb.ui.MapToolBarPanel;
 import org.mapton.core_nb.ui.RulerPanel;
 import org.openide.DialogDescriptor;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
-import se.trixon.almond.util.Dict;
 
 @ActionID(
         category = "Mapton",
@@ -42,23 +41,11 @@ public final class RulerAction extends BaseAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        //org.openide.DialogDisplayer.getDefault().notify(getDialogDescriptor());
-        toggleTopComponent("RulerTopComponent");
-    }
-
-    private DialogDescriptor getDialogDescriptor() {
-        if (mDialogDescriptor == null) {
-            mRulerPanel = new RulerPanel();
-            mDialogDescriptor = new DialogDescriptor(mRulerPanel, Dict.MEASURE.toString(), false, (ActionEvent e1) -> {
-                System.out.println(e1);
-            });
-            mRulerPanel.setDialogDescriptor(mDialogDescriptor);
-            mRulerPanel.initFx(() -> {
-            });
-
-            mRulerPanel.setPreferredSize(new Dimension(300, 300));
+        if (usePopover()) {
+            MapToolBarPanel.getInstance().getToolBar().toogleRulerPopOver();
+        } else {
+            toggleTopComponent("RulerTopComponent");
         }
-
-        return mDialogDescriptor;
     }
+
 }

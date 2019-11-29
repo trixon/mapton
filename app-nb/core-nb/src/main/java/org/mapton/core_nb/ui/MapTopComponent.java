@@ -269,8 +269,9 @@ public final class MapTopComponent extends MTopComponent {
                 JComponent engineUI = engine.getMapComponent();
                 engineUI.setMinimumSize(new Dimension(1, 1));
                 engineUI.setPreferredSize(new Dimension(1, 1));
-                add(getFxPanel(), BorderLayout.NORTH);
-                getFxPanel().setVisible(false);
+                add(MapToolBarPanel.getInstance().getToolBarPanel(), BorderLayout.NORTH);
+//                add(getFxPanel(), BorderLayout.NORTH);
+//                getFxPanel().setVisible(false);
                 add(engineUI, BorderLayout.CENTER);
                 attachStatusbar();
                 revalidate();
@@ -279,13 +280,14 @@ public final class MapTopComponent extends MTopComponent {
                 try {
                     engine.onActivate();
                     engine.panTo(mMOptions.getMapCenter(), mMOptions.getMapZoom());
-                    AppToolBarProvider.getInstance().getToolBar().refreshEngine(engine);
+                    MapToolBarPanel.getInstance().getToolBar().refreshEngine(engine);
                 } catch (NullPointerException e) {
                 }
             });
         } else {
             Platform.runLater(() -> {
                 resetFx();
+                mRoot.setTop(MapToolBarPanel.getInstance().getToolBar());
                 mRoot.setCenter(engine.getMapNode());
                 attachStatusbar();
                 try {
@@ -296,7 +298,7 @@ public final class MapTopComponent extends MTopComponent {
                 SwingUtilities.invokeLater(() -> {
                     revalidate();
                     repaint();
-                    AppToolBarProvider.getInstance().getToolBar().refreshEngine(engine);
+                    MapToolBarPanel.getInstance().getToolBar().refreshEngine(engine);
                 });
             });
         }
