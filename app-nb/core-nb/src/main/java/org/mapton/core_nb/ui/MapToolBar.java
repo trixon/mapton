@@ -17,8 +17,8 @@ package org.mapton.core_nb.ui;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.prefs.PreferenceChangeEvent;
 import javafx.application.Platform;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.ButtonBase;
@@ -34,9 +34,8 @@ import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.MDict;
 import org.mapton.api.MDocumentInfo;
-import org.mapton.api.MEngine;
 import org.mapton.api.MKey;
-import org.mapton.api.MOptions;
+import org.mapton.api.MOptions2;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeContextMenu;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
@@ -49,7 +48,6 @@ import org.openide.awt.Actions;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.GlobalStateChangeEvent;
 import se.trixon.almond.util.fx.FxActionSwing;
-import se.trixon.almond.util.fx.FxActionSwingCheck;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 
@@ -74,7 +72,6 @@ public class MapToolBar extends BaseToolBar {
     private SearchView mSearchView;
     private Action mStyleAction;
     private PopOver mStylePopOver;
-    private FxActionSwingCheck mSysViewMapAction;
     private Action mTemporalAction;
     private PopOver mTemporalPopOver;
     private TemporalView mTemporalView;
@@ -87,6 +84,9 @@ public class MapToolBar extends BaseToolBar {
         initActionsSwing();
         init();
         initListeners();
+
+        refreshEngine();
+        Mapton.getGlobalState().put(MKey.MAP_DOCUMENT_INFO, Mapton.getGlobalState().get(MKey.MAP_DOCUMENT_INFO));
     }
 
     public void activateSearch() {
@@ -129,10 +129,6 @@ public class MapToolBar extends BaseToolBar {
         tooglePopOver(mToolboxPopOver, mToolboxAction);
     }
 
-    void refreshEngine(MEngine engine) {
-        mStyleAction.setDisabled(engine.getStyleView() == null);
-    }
-
     private void init() {
         setStyle("-fx-spacing: 0px;");
         setPadding(Insets.EMPTY);
@@ -148,8 +144,7 @@ public class MapToolBar extends BaseToolBar {
                 ActionUtils.ACTION_SPAN,
                 mRulerAction,
                 mTemporalAction,
-                mToolboxAction,
-                mSysViewMapAction
+                mToolboxAction
         ));
 
         Platform.runLater(() -> {
@@ -276,31 +271,16 @@ public class MapToolBar extends BaseToolBar {
         });
         mHomeAction.setGraphic(MaterialIcon._Action.HOME.getImageView(getIconSizeToolBarInt()));
         setTooltip(mHomeAction, new KeyCodeCombination(KeyCode.H, KeyCombination.SHORTCUT_DOWN));
-
-        //Map
-        mSysViewMapAction = new FxActionSwingCheck(Dict.MAP.toString(), () -> {
-            Actions.forID("Mapton", "org.mapton.core_nb.actions.OnlyMapAction").actionPerformed(null);
-        });
-        mSysViewMapAction.setGraphic(MaterialIcon._Maps.MAP.getImageView(getIconSizeToolBarInt()));
-        mSysViewMapAction.setAccelerator(KeyCombination.keyCombination("F12"));
-        mSysViewMapAction.setSelected(mOptions.isMapOnly());
     }
 
     private void initListeners() {
-        mOptions.getPreferences().addPreferenceChangeListener((PreferenceChangeEvent evt) -> {
-            switch (evt.getKey()) {
-                case MOptions.KEY_MAP_ONLY:
-                    mSysViewMapAction.setSelected(mOptions.isMapOnly());
-                    break;
-
-                default:
-                    break;
-            }
+        MOptions2.getInstance().general().engineProperty().addListener((ObservableValue<? extends String> ov, String t, String t1) -> {
+            refreshEngine();
         });
 
         Mapton.getGlobalState().addListener((GlobalStateChangeEvent evt) -> {
             Platform.runLater(() -> {
-                updateDocumentInfo(evt);
+                updateDocumentInfo(evt.getValue());
             });
         }, MKey.MAP_DOCUMENT_INFO);
     }
@@ -351,8 +331,11 @@ public class MapToolBar extends BaseToolBar {
         });
     }
 
-    private void updateDocumentInfo(GlobalStateChangeEvent evt) {
-        MDocumentInfo documentInfo = evt.getValue();
+    private void refreshEngine() {
+        mStyleAction.setDisabled(Mapton.getEngine().getStyleView() == null);
+    }
+
+    private void updateDocumentInfo(MDocumentInfo documentInfo) {
         mAttributionAction.setDisabled(false);
         mStyleAction.setText(documentInfo.getName());
     }

@@ -33,7 +33,6 @@ import javafx.scene.input.KeyCombination;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
-import org.apache.commons.lang3.SystemUtils;
 import org.controlsfx.control.Notifications;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionGroup;
@@ -64,7 +63,6 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
  */
 public class AppToolBar extends BaseToolBar {
 
-    private static final boolean IS_MAC = SystemUtils.IS_OS_MAC;
     private final AlmondOptions mAlmondOptions = AlmondOptions.INSTANCE;
     private FxActionSwing mSysAboutAction;
     private Action mSysHelpAction;
@@ -110,10 +108,6 @@ public class AppToolBar extends BaseToolBar {
                 mSysViewResetAction
         );
 
-        if (!IS_MAC) {
-            viewActionGroup.getActions().add(0, mSysViewFullscreenAction);
-        }
-
         ActionGroup systemActionGroup;
         if (IS_MAC) {
             systemActionGroup = new ActionGroup(Dict.MENU.toString(), MaterialIcon._Navigation.MENU.getImageView(getIconSizeToolBar()),
@@ -147,6 +141,12 @@ public class AppToolBar extends BaseToolBar {
                 mSysViewMapAction
         ));
 
+        setTooltip(systemActionGroup, new KeyCodeCombination(KeyCode.CONTEXT_MENU));
+
+        if (!IS_MAC) {
+            actions.add(mSysViewFullscreenAction);
+        }
+
         Platform.runLater(() -> {
             ActionUtils.updateToolBar(this, actions, ActionUtils.ActionTextBehavior.HIDE);
 
@@ -177,6 +177,8 @@ public class AppToolBar extends BaseToolBar {
             }
         });
         mSysViewFullscreenAction.setAccelerator(KeyCombination.keyCombination("F11"));
+        mSysViewFullscreenAction.setGraphic(MaterialIcon._Navigation.FULLSCREEN.getImageView(getIconSizeToolBar()));
+        setTooltip(mSysViewFullscreenAction, new KeyCodeCombination(KeyCode.F11));
 
         //Map
         mSysViewMapAction = new FxActionSwingCheck(Dict.MAP.toString(), () -> {
@@ -185,6 +187,7 @@ public class AppToolBar extends BaseToolBar {
         mSysViewMapAction.setGraphic(MaterialIcon._Maps.MAP.getImageView(getIconSizeToolBar()));
         mSysViewMapAction.setAccelerator(KeyCombination.keyCombination("F12"));
         mSysViewMapAction.setSelected(mOptions.isMapOnly());
+        setTooltip(mSysViewMapAction, new KeyCodeCombination(KeyCode.F12));
 
         //OnTop
         mSysViewAlwaysOnTopAction = new FxActionSwingCheck(Dict.ALWAYS_ON_TOP.toString(), () -> {
@@ -251,6 +254,10 @@ public class AppToolBar extends BaseToolBar {
                     final boolean fullscreen = frame.isUndecorated();
                     mOptions.setFullscreen(fullscreen);
                     mSysViewFullscreenAction.setSelected(fullscreen);
+                    Platform.runLater(() -> {
+                        MaterialIcon._Navigation fullscreenIcon = fullscreen == true ? MaterialIcon._Navigation.FULLSCREEN_EXIT : MaterialIcon._Navigation.FULLSCREEN;
+                        mSysViewFullscreenAction.setGraphic(fullscreenIcon.getImageView(getIconSizeToolBar()));
+                    });
                 }
             });
         });

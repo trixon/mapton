@@ -280,7 +280,6 @@ public final class MapTopComponent extends MTopComponent {
                 try {
                     engine.onActivate();
                     engine.panTo(mMOptions.getMapCenter(), mMOptions.getMapZoom());
-                    MapToolBarPanel.getInstance().getToolBar().refreshEngine(engine);
                 } catch (NullPointerException e) {
                 }
             });
@@ -298,7 +297,6 @@ public final class MapTopComponent extends MTopComponent {
                 SwingUtilities.invokeLater(() -> {
                     revalidate();
                     repaint();
-                    MapToolBarPanel.getInstance().getToolBar().refreshEngine(engine);
                 });
             });
         }

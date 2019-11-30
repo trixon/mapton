@@ -24,6 +24,7 @@ import javafx.scene.control.ButtonBase;
 import javafx.scene.control.ToolBar;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.layout.Region;
+import org.apache.commons.lang3.SystemUtils;
 import org.controlsfx.control.PopOver;
 import org.controlsfx.control.action.Action;
 import org.mapton.api.MOptions;
@@ -36,6 +37,8 @@ import org.mapton.api.MOptions2;
 public abstract class BaseToolBar extends ToolBar {
 
     public static final int DEFAULT_POP_OVER_WIDTH = 350;
+    public static final boolean IS_MAC = SystemUtils.IS_OS_MAC;
+
     protected final MOptions mOptions = MOptions.getInstance();
     protected final HashSet<PopOver> mPopOvers = new HashSet<>();
     private final HashMap<Action, Double> mButtonWidths = new HashMap<>();
