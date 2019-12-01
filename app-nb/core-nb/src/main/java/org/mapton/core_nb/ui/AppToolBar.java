@@ -71,6 +71,7 @@ public class AppToolBar extends BaseToolBar {
     private FxActionSwing mSysOptionsAction;
     private FxActionSwing mSysOptionsPlatformAction;
     private FxActionSwing mSysPluginsAction;
+    private FxActionSwing mSysRestartAction;
     private FxActionSwing mSysQuitAction;
     private FxActionSwingCheck mSysViewAlwaysOnTopAction;
     private FxActionSwingCheck mSysViewFullscreenAction;
@@ -130,6 +131,7 @@ public class AppToolBar extends BaseToolBar {
                     mSysHelpAction,
                     mSysAboutAction,
                     ActionUtils.ACTION_SEPARATOR,
+                    mSysRestartAction,
                     mSysQuitAction
             );
         }
@@ -236,6 +238,11 @@ public class AppToolBar extends BaseToolBar {
             AboutModel aboutModel = new AboutModel(SystemHelper.getBundle(Initializer.class, "about"), SystemHelper.getResourceAsImageView(Initializer.class, "logo.png"));
             NbAboutFx nbAboutFx = new NbAboutFx(aboutModel);
             nbAboutFx.display();
+        });
+
+        //restart
+        mSysRestartAction = new FxActionSwing(Dict.RESTART.toString(), () -> {
+            Actions.forID("File", "se.trixon.almond.nbp.actions.RestartAction").actionPerformed(null);
         });
 
         //quit
