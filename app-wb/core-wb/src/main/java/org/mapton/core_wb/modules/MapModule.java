@@ -220,11 +220,11 @@ public class MapModule extends MWorkbenchModule {
             mWindowToolbarItem.fire();
         });
 
-        kcc = new KeyCodeCombination(KeyCode.F12, KeyCombination.SHORTCUT_ANY);
-        getKeyCodeCombinations().add(kcc);
-        getAccelerators().put(kcc, () -> {
-            mMapOnlyToolbarItem.getOnClick().handle(null);
-        });
+//        kcc = new KeyCodeCombination(KeyCode.F12, KeyCombination.SHORTCUT_ANY);
+//        getKeyCodeCombinations().add(kcc);
+//        getAccelerators().put(kcc, () -> {
+//            mMapOnlyToolbarItem.getOnClick().handle(null);
+//        });
     }
 
     private void initListeners() {
@@ -353,10 +353,10 @@ public class MapModule extends MWorkbenchModule {
 
         getToolbarControlsRight().setAll(
                 mRulerToolbarItem,
-                mTemporalToolbarItem,
-                mToolboxToolbarItem,
-                mWindowToolbarItem,
-                mMapOnlyToolbarItem
+                mTemporalToolbarItem
+        //                mToolboxToolbarItem,
+        //                mWindowToolbarItem,
+        //                mMapOnlyToolbarItem
         );
     }
 
