@@ -16,18 +16,19 @@
 package org.mapton.addon.notes_nb;
 
 import org.controlsfx.control.action.Action;
-import org.mapton.api.MTool;
+import org.mapton.api.MToolApp;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxActionSwing;
+import org.mapton.api.MToolMap;
 
 /**
  *
  * @author Patrik Karlström
  */
-@ServiceProvider(service = MTool.class)
-public class NotesTool implements MTool {
+@ServiceProvider(service = MToolApp.class)
+public class NotesTool implements MToolApp {
 
     @Override
     public Action getAction() {

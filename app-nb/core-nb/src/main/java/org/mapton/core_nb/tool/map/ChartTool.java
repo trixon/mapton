@@ -13,27 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core_nb.tool;
+package org.mapton.core_nb.tool.map;
 
 import org.controlsfx.control.action.Action;
-import org.mapton.api.MTool;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxActionSwing;
+import org.mapton.api.MToolMap;
 
 /**
  *
  * @author Patrik Karlström
  */
-@ServiceProvider(service = MTool.class)
+@ServiceProvider(service = MToolMap.class)
 
-public class ObjectPropertiesTool implements MTool {
+public class ChartTool implements MToolMap {
 
     @Override
     public Action getAction() {
-        FxActionSwing action = new FxActionSwing(Dict.OBJECT_PROPERTIES.toString(), () -> {
-            Almond.openAndActivateTopComponent("ObjectPropertiesTopComponent");
+        FxActionSwing action = new FxActionSwing(Dict.CHART.toString(), () -> {
+            Almond.openAndActivateTopComponent("ChartTopComponent");
         });
 
         return action;

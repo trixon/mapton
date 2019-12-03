@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.addon.geonames_ww;
+package org.mapton.core_nb.tool.map;
 
 import org.controlsfx.control.action.Action;
-import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.Dict;
@@ -28,22 +27,15 @@ import org.mapton.api.MToolMap;
  * @author Patrik Karlström
  */
 @ServiceProvider(service = MToolMap.class)
-public class GeoNamesTool implements MToolMap {
 
-    public static final String NAME = NbBundle.getMessage(GeoNamesTool.class, "name_population");
+public class ObjectPropertiesTool implements MToolMap {
 
     @Override
     public Action getAction() {
-        FxActionSwing action = new FxActionSwing(NAME, () -> {
-            Almond.openAndActivateTopComponent("GeoNamesTopComponent");
+        FxActionSwing action = new FxActionSwing(Dict.OBJECT_PROPERTIES.toString(), () -> {
+            Almond.openAndActivateTopComponent("ObjectPropertiesTopComponent");
         });
 
         return action;
     }
-
-    @Override
-    public String getParent() {
-        return Dict.ADD_ONS.toString();
-    }
-
 }

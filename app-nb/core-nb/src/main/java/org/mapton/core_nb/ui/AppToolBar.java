@@ -34,6 +34,8 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import org.controlsfx.control.Notifications;
+import org.controlsfx.control.PopOver;
+import org.controlsfx.control.PopOver.ArrowLocation;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionGroup;
 import org.controlsfx.control.action.ActionUtils;
@@ -42,11 +44,11 @@ import org.mapton.api.MOptions;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeContextMenu;
 import static org.mapton.api.Mapton.getIconSizeToolBar;
+import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.mapton.core_nb.Initializer;
 import org.openide.awt.Actions;
 import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.nbp.AlmondOptions;
-import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.nbp.dialogs.NbAboutFx;
 import se.trixon.almond.util.AboutModel;
 import se.trixon.almond.util.Dict;
@@ -66,8 +68,6 @@ public class AppToolBar extends BaseToolBar {
     private final AlmondOptions mAlmondOptions = AlmondOptions.INSTANCE;
     private FxActionSwing mSysAboutAction;
     private Action mSysHelpAction;
-    private FxActionSwing mSysLogAppAction;
-    private FxActionSwing mSysLogSysAction;
     private FxActionSwing mSysOptionsAction;
     private FxActionSwing mSysOptionsPlatformAction;
     private FxActionSwing mSysPluginsAction;
@@ -77,6 +77,8 @@ public class AppToolBar extends BaseToolBar {
     private FxActionSwingCheck mSysViewFullscreenAction;
     private FxActionSwingCheck mSysViewMapAction;
     private FxActionSwing mSysViewResetAction;
+    private Action mToolboxAction;
+    private PopOver mToolboxPopOver;
 
     public AppToolBar() {
         initPopOvers();
@@ -98,10 +100,6 @@ public class AppToolBar extends BaseToolBar {
     private void init() {
         setStyle("-fx-spacing: 0px;");
         setPadding(Insets.EMPTY);
-        ActionGroup logActionGroup = new ActionGroup(Dict.LOG.toString(),
-                mSysLogAppAction,
-                mSysLogSysAction
-        );
 
         ActionGroup viewActionGroup = new ActionGroup(Dict.VIEW.toString(),
                 mSysViewAlwaysOnTopAction,
@@ -113,7 +111,6 @@ public class AppToolBar extends BaseToolBar {
         if (IS_MAC) {
             systemActionGroup = new ActionGroup(Dict.MENU.toString(), MaterialIcon._Navigation.MENU.getImageView(getIconSizeToolBar()),
                     viewActionGroup,
-                    logActionGroup,
                     ActionUtils.ACTION_SEPARATOR,
                     mSysPluginsAction,
                     ActionUtils.ACTION_SEPARATOR,
@@ -122,7 +119,6 @@ public class AppToolBar extends BaseToolBar {
         } else {
             systemActionGroup = new ActionGroup(Dict.MENU.toString(), MaterialIcon._Navigation.MENU.getImageView(getIconSizeToolBar()),
                     viewActionGroup,
-                    logActionGroup,
                     ActionUtils.ACTION_SEPARATOR,
                     mSysOptionsAction,
                     mSysOptionsPlatformAction,
@@ -140,13 +136,14 @@ public class AppToolBar extends BaseToolBar {
         actions.addAll(Arrays.asList(
                 systemActionGroup,
                 ActionUtils.ACTION_SPAN,
-                mSysViewMapAction
+                mSysViewMapAction,
+                mToolboxAction
         ));
 
         setTooltip(systemActionGroup, new KeyCodeCombination(KeyCode.CONTEXT_MENU));
 
         if (!IS_MAC) {
-            actions.add(mSysViewFullscreenAction);
+            actions.add(actions.size() - 1, mSysViewFullscreenAction);
         }
 
         Platform.runLater(() -> {
@@ -167,6 +164,15 @@ public class AppToolBar extends BaseToolBar {
             SystemHelper.desktopBrowse("https://mapton.org/help/");
         });
         mSysHelpAction.setAccelerator(KeyCombination.keyCombination("F1"));
+
+        //mToolbox
+        mToolboxAction = new Action(Dict.APPLICATION_TOOLS.toString(), event -> {
+            if (shouldOpen(mToolboxPopOver)) {
+                mToolboxPopOver.show((Node) event.getSource());
+            }
+        });
+        mToolboxAction.setGraphic(MaterialIcon._Content.ADD.getImageView(getIconSizeToolBarInt()));
+        setTooltip(mToolboxAction, new KeyCodeCombination(KeyCode.PLUS, KeyCombination.SHORTCUT_DOWN));
     }
 
     private void initActionsSwing() {
@@ -202,17 +208,6 @@ public class AppToolBar extends BaseToolBar {
             Actions.forID("Window", "org.netbeans.core.windows.actions.ResetWindowsAction").actionPerformed(null);
         });
 
-        mSysLogAppAction = new FxActionSwing(Dict.APPLICATION.toString(), () -> {
-            NbLog.select();
-            Actions.forID("Window", "org.netbeans.core.io.ui.IOWindowAction").actionPerformed(null);
-        });
-
-        mSysLogSysAction = new FxActionSwing(Dict.SYSTEM.toString(), () -> {
-            Actions.forID("View", "org.netbeans.core.actions.LogAction").actionPerformed(null);
-            Actions.forID("Window", "org.netbeans.core.io.ui.IOWindowAction").actionPerformed(null);
-        });
-//
-//
 //
         //Plugins
         mSysPluginsAction = new FxActionSwing(Dict.PLUGINS.toString(), () -> {
@@ -313,7 +308,14 @@ public class AppToolBar extends BaseToolBar {
         }, MKey.NOTIFICATION, MKey.NOTIFICATION_CONFIRM, MKey.NOTIFICATION_ERROR, MKey.NOTIFICATION_INFORMATION, MKey.NOTIFICATION_WARNING);
     }
 
+    public void toogleToolboxPopOver() {
+        tooglePopOver(mToolboxPopOver, mToolboxAction);
+    }
+
     private void initPopOvers() {
+        mToolboxPopOver = new PopOver();
+        initPopOver(mToolboxPopOver, Dict.APPLICATION_TOOLS.toString(), new AppToolboxView());
+        mToolboxPopOver.setArrowLocation(ArrowLocation.TOP_RIGHT);
     }
 
 }

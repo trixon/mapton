@@ -16,19 +16,19 @@
 package org.mapton.addon.mapollage;
 
 import org.controlsfx.control.action.Action;
-import org.mapton.api.MTool;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxActionSwing;
+import org.mapton.api.MToolMap;
 
 /**
  *
  * @author Patrik Karlström
  */
-@ServiceProvider(service = MTool.class)
+@ServiceProvider(service = MToolMap.class)
 
-public class MapollageTool implements MTool {
+public class MapollageTool implements MToolMap {
 
     @Override
     public Action getAction() {

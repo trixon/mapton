@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.datasources;
+package org.mapton.core_nb.ui.datasources;
 
 import org.controlsfx.control.action.Action;
-import org.mapton.api.MTool;
+import org.mapton.api.MToolApp;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.Dict;
@@ -26,8 +26,8 @@ import se.trixon.almond.util.fx.FxActionSwing;
  *
  * @author Patrik Karlström
  */
-@ServiceProvider(service = MTool.class)
-public class DataSourcesTool implements MTool {
+@ServiceProvider(service = MToolApp.class)
+public class DataSourcesTool implements MToolApp {
 
     @Override
     public Action getAction() {

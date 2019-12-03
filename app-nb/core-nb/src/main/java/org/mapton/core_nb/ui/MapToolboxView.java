@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core_wb.modules.map;
+package org.mapton.core_nb.ui;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -32,38 +32,32 @@ import javafx.scene.layout.BorderPane;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.textfield.TextFields;
-import org.mapton.api.MActivatable;
+import org.mapton.api.MToolMap;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.util.NbPreferences;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.StringHelper;
-import org.mapton.api.MToolMap;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class ToolboxView extends BorderPane implements MActivatable {
+public class MapToolboxView extends BorderPane {
 
     private final Map<Action, String> mActionParents = new HashMap<>();
     private TextField mFilterTextField;
-    private final Preferences mPreferences = NbPreferences.forModule(ToolboxView.class).node("expanded_state");
+    private final Preferences mPreferences = NbPreferences.forModule(MapToolboxView.class).node("maptools_expanded_state");
     private final Map<String, TreeItem<Action>> mToolParents = new TreeMap<>();
     private final ArrayList<MToolMap> mTools = new ArrayList<>();
     private final TreeView<Action> mTreeView = new TreeView<>();
 
-    public ToolboxView() {
+    public MapToolboxView() {
         createUI();
         addListeners();
 
         initTools();
         populate();
-    }
-
-    @Override
-    public void activate() {
-        mFilterTextField.requestFocus();
     }
 
     private void addListeners() {

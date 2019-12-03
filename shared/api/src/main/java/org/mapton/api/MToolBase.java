@@ -17,15 +17,16 @@ package org.mapton.api;
 
 import org.controlsfx.control.action.Action;
 
+
 /**
  *
  * @author Patrik Karlström
  */
-public abstract interface MTool {
-
-    Action getAction();
+public interface MToolBase {
+     Action getAction();
 
     default String getParent() {
         return null;
     }
+   
 }

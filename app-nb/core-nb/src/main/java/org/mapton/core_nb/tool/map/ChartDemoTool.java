@@ -13,22 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core_nb.tool;
+package org.mapton.core_nb.tool.map;
 
 import org.controlsfx.control.action.Action;
 import org.mapton.api.MChartLine;
 import org.mapton.api.MKey;
-import org.mapton.api.MTool;
 import org.mapton.api.Mapton;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxActionSwing;
+import org.mapton.api.MToolMap;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class ChartDemoTool implements MTool {
+public class ChartDemoTool implements MToolMap {
 
     @Override
     public Action getAction() {

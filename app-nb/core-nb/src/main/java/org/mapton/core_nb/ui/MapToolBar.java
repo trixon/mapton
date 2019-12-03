@@ -213,7 +213,7 @@ public class MapToolBar extends BaseToolBar {
         setTooltip(mGridAction, new KeyCodeCombination(KeyCode.G, KeyCombination.SHORTCUT_DOWN));
 
         //mToolbox
-        mToolboxAction = new Action(Dict.TOOLBOX.toString(), event -> {
+        mToolboxAction = new Action(MDict.MAP_TOOLS.toString(), event -> {
             if (usePopOver()) {
                 if (shouldOpen(mToolboxPopOver)) {
                     mToolboxPopOver.show((Node) event.getSource());
@@ -303,7 +303,7 @@ public class MapToolBar extends BaseToolBar {
         initPopOver(mStylePopOver, String.format("%s & %s", Dict.TYPE.toString(), Dict.STYLE.toString()), new BorderPane());
 
         mToolboxPopOver = new PopOver();
-        initPopOver(mToolboxPopOver, Dict.TOOLBOX.toString(), new ToolboxView());
+        initPopOver(mToolboxPopOver, MDict.MAP_TOOLS.toString(), new MapToolboxView());
         mToolboxPopOver.setArrowLocation(ArrowLocation.TOP_RIGHT);
 
         mRulerPopOver = new PopOver();

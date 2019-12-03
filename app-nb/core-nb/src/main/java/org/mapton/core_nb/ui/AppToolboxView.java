@@ -32,7 +32,7 @@ import javafx.scene.layout.BorderPane;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.textfield.TextFields;
-import org.mapton.api.MTool;
+import org.mapton.api.MToolApp;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.util.NbPreferences;
@@ -43,16 +43,16 @@ import se.trixon.almond.util.StringHelper;
  *
  * @author Patrik Karlström
  */
-public class ToolboxView extends BorderPane {
+public class AppToolboxView extends BorderPane {
 
     private final Map<Action, String> mActionParents = new HashMap<>();
     private TextField mFilterTextField;
-    private final Preferences mPreferences = NbPreferences.forModule(ToolboxView.class).node("expanded_state");
+    private final Preferences mPreferences = NbPreferences.forModule(AppToolboxView.class).node("apptools_expanded_state");
     private final Map<String, TreeItem<Action>> mToolParents = new TreeMap<>();
-    private final ArrayList<MTool> mTools = new ArrayList<>();
+    private final ArrayList<MToolApp> mTools = new ArrayList<>();
     private final TreeView<Action> mTreeView = new TreeView<>();
 
-    public ToolboxView() {
+    public AppToolboxView() {
         createUI();
         addListeners();
 
@@ -79,7 +79,7 @@ public class ToolboxView extends BorderPane {
             }
         });
 
-        Lookup.getDefault().lookupResult(MTool.class).addLookupListener((LookupEvent ev) -> {
+        Lookup.getDefault().lookupResult(MToolApp.class).addLookupListener((LookupEvent ev) -> {
             initTools();
         });
     }
@@ -120,7 +120,7 @@ public class ToolboxView extends BorderPane {
 
     private void initTools() {
         mTools.clear();
-        Lookup.getDefault().lookupAll(MTool.class).forEach((tool) -> {
+        Lookup.getDefault().lookupAll(MToolApp.class).forEach((tool) -> {
             mTools.add(tool);
         });
     }
@@ -130,7 +130,7 @@ public class ToolboxView extends BorderPane {
         Action rootMark = new Action("");
         TreeItem<Action> root = new TreeItem<>(rootMark);
 
-        for (MTool tool : mTools) {
+        for (MToolApp tool : mTools) {
             mActionParents.put(tool.getAction(), tool.getParent());
             final String filter = mFilterTextField.getText();
             final boolean validFilter

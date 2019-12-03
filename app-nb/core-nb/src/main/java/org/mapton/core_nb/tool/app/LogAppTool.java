@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core_nb.tool;
+package org.mapton.core_nb.tool.app;
 
 import org.controlsfx.control.action.Action;
-import org.mapton.api.MTool;
+import org.mapton.api.MToolApp;
+import org.openide.awt.Actions;
 import org.openide.util.lookup.ServiceProvider;
-import se.trixon.almond.nbp.Almond;
+import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxActionSwing;
 
@@ -26,16 +27,21 @@ import se.trixon.almond.util.fx.FxActionSwing;
  *
  * @author Patrik Karlström
  */
-@ServiceProvider(service = MTool.class)
-
-public class ChartTool implements MTool {
+@ServiceProvider(service = MToolApp.class)
+public class LogAppTool implements MToolApp {
 
     @Override
     public Action getAction() {
-        FxActionSwing action = new FxActionSwing(Dict.CHART.toString(), () -> {
-            Almond.openAndActivateTopComponent("ChartTopComponent");
+        FxActionSwing action = new FxActionSwing(Dict.LOG_PROGRAM.toString(), () -> {
+            NbLog.select();
+            Actions.forID("Window", "org.netbeans.core.io.ui.IOWindowAction").actionPerformed(null);
         });
 
         return action;
+    }
+
+    @Override
+    public String getParent() {
+        return Dict.SYSTEM.toString();
     }
 }

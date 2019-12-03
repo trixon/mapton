@@ -16,7 +16,7 @@
 package org.mapton.reports_nb;
 
 import org.controlsfx.control.action.Action;
-import org.mapton.api.MTool;
+import org.mapton.api.MToolApp;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.Dict;
@@ -26,8 +26,8 @@ import se.trixon.almond.util.fx.FxActionSwing;
  *
  * @author Patrik Karlström
  */
-@ServiceProvider(service = MTool.class)
-public class ReportsTool implements MTool {
+@ServiceProvider(service = MToolApp.class)
+public class ReportsTool implements MToolApp {
 
     @Override
     public Action getAction() {

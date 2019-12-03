@@ -13,27 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core_nb.tool;
+package org.mapton.core_nb.tool.app;
 
 import org.controlsfx.control.action.Action;
-import org.mapton.api.MDict;
-import org.mapton.api.MTool;
-import se.trixon.almond.nbp.Almond;
+import org.mapton.api.MToolApp;
+import org.openide.awt.Actions;
+import org.openide.util.lookup.ServiceProvider;
+import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxActionSwing;
 
 /**
  *
  * @author Patrik Karlström
  */
-//@ServiceProvider(service = MTool.class)
-public class GridTool implements MTool {
+@ServiceProvider(service = MToolApp.class)
+public class LogSysTool implements MToolApp {
 
     @Override
     public Action getAction() {
-        FxActionSwing action = new FxActionSwing(MDict.GRID.toString(), () -> {
-            Almond.openAndActivateTopComponent("GridTopComponent");
+        FxActionSwing action = new FxActionSwing(Dict.LOG_SYSTEM.toString(), () -> {
+            Actions.forID("View", "org.netbeans.core.actions.LogAction").actionPerformed(null);
+            Actions.forID("Window", "org.netbeans.core.io.ui.IOWindowAction").actionPerformed(null);
         });
 
         return action;
+    }
+
+    @Override
+    public String getParent() {
+        return Dict.SYSTEM.toString();
     }
 }

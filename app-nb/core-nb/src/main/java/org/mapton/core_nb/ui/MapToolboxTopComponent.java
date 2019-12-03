@@ -46,9 +46,9 @@ import se.trixon.almond.util.Dict;
 @Messages({
     "CTL_ToolboxAction=Toolbox"
 })
-public final class ToolboxTopComponent extends MTopComponent {
+public final class MapToolboxTopComponent extends MTopComponent {
 
-    public ToolboxTopComponent() {
+    public MapToolboxTopComponent() {
         putClientProperty(PROP_MAXIMIZATION_DISABLED, Boolean.TRUE);
         putClientProperty(PROP_SLIDING_DISABLED, Boolean.TRUE);
         putClientProperty(PROP_UNDOCKING_DISABLED, Boolean.TRUE);
@@ -76,6 +76,6 @@ public final class ToolboxTopComponent extends MTopComponent {
     }
 
     private Scene createScene() {
-        return new Scene(new ToolboxView());
+        return new Scene(new MapToolboxView());
     }
 }
