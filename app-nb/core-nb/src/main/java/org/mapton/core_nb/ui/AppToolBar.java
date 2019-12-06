@@ -316,6 +316,8 @@ public class AppToolBar extends BaseToolBar {
         mToolboxPopOver = new PopOver();
         initPopOver(mToolboxPopOver, Dict.APPLICATION_TOOLS.toString(), new AppToolboxView());
         mToolboxPopOver.setArrowLocation(ArrowLocation.TOP_RIGHT);
+        mToolboxPopOver.setCloseButtonEnabled(true);
+        mToolboxPopOver.setDetachable(true);
     }
 
 }

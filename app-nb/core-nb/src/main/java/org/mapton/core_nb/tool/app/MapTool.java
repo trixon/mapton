@@ -17,7 +17,6 @@ package org.mapton.core_nb.tool.app;
 
 import org.controlsfx.control.action.Action;
 import org.mapton.api.MToolApp;
-import static org.mapton.api.MToolApp.ICON_SIZE;
 import org.openide.awt.Actions;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
@@ -29,21 +28,15 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
  * @author Patrik Karlström
  */
 @ServiceProvider(service = MToolApp.class)
-public class LogSysTool implements MToolApp {
+public class MapTool implements MToolApp {
 
     @Override
     public Action getAction() {
-        FxActionSwing action = new FxActionSwing(Dict.LOG_SYSTEM.toString(), () -> {
-            Actions.forID("View", "org.netbeans.core.actions.LogAction").actionPerformed(null);
-            Actions.forID("Window", "org.netbeans.core.io.ui.IOWindowAction").actionPerformed(null);
+        FxActionSwing action = new FxActionSwing(Dict.MAP.toString(), () -> {
+            Actions.forID("Window", "org.mapton.core_nb.ui.MapTopComponent").actionPerformed(null);
         });
-        action.setGraphic(MaterialIcon._Action.ANNOUNCEMENT.getImageView(ICON_SIZE));
+        action.setGraphic(MaterialIcon._Maps.MAP.getImageView(ICON_SIZE));
 
         return action;
-    }
-
-    @Override
-    public String getParent() {
-        return Dict.SYSTEM.toString();
     }
 }

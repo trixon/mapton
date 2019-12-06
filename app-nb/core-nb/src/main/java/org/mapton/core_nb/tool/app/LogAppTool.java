@@ -22,6 +22,7 @@ import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxActionSwing;
+import se.trixon.almond.util.icons.material.MaterialIcon;
 
 /**
  *
@@ -36,6 +37,7 @@ public class LogAppTool implements MToolApp {
             NbLog.select();
             Actions.forID("Window", "org.netbeans.core.io.ui.IOWindowAction").actionPerformed(null);
         });
+        action.setGraphic(MaterialIcon._Communication.CHAT_BUBBLE.getImageView(ICON_SIZE));
 
         return action;
     }

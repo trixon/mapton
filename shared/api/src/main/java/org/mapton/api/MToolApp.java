@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,11 +15,13 @@
  */
 package org.mapton.api;
 
+import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
  * @author Patrik Karlström
  */
-public  interface MToolApp extends MToolBase{
+public interface MToolApp extends MToolBase {
 
+    static final int ICON_SIZE = FxHelper.getUIScaled(44);
 }

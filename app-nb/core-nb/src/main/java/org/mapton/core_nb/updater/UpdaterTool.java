@@ -17,11 +17,12 @@ package org.mapton.core_nb.updater;
 
 import org.controlsfx.control.action.Action;
 import org.mapton.api.MToolApp;
-import org.openide.util.NbBundle;
+import static org.mapton.api.MToolApp.ICON_SIZE;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxActionSwing;
+import se.trixon.almond.util.icons.material.MaterialIcon;
 
 /**
  *
@@ -32,9 +33,10 @@ public class UpdaterTool implements MToolApp {
 
     @Override
     public Action getAction() {
-        FxActionSwing action = new FxActionSwing(NbBundle.getMessage(UpdaterTool.class, "updater_tool"), () -> {
+        FxActionSwing action = new FxActionSwing(Dict.UPDATER.toString(), () -> {
             Almond.openAndActivateTopComponent("UpdaterTopComponent");
         });
+        action.setGraphic(MaterialIcon._Action.SYSTEM_UPDATE_ALT.getImageView(ICON_SIZE));
 
         return action;
     }

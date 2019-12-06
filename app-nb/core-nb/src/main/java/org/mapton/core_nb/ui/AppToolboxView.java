@@ -17,27 +17,25 @@ package org.mapton.core_nb.ui;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.prefs.Preferences;
-import javafx.beans.value.ObservableValue;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TreeCell;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
-import javafx.scene.input.KeyCode;
+import java.util.Locale;
+import java.util.TreeSet;
+import javafx.geometry.Pos;
+import javafx.scene.control.Button;
+import javafx.scene.control.ContentDisplay;
+import javafx.scene.control.Label;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.text.Font;
 import org.apache.commons.lang3.StringUtils;
+import org.controlsfx.control.GridCell;
+import org.controlsfx.control.GridView;
 import org.controlsfx.control.action.Action;
-import org.controlsfx.control.textfield.TextFields;
+import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.MToolApp;
+import org.mapton.api.Mapton;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
-import org.openide.util.NbPreferences;
-import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.StringHelper;
+import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
@@ -45,77 +43,32 @@ import se.trixon.almond.util.StringHelper;
  */
 public class AppToolboxView extends BorderPane {
 
-    private final Map<Action, String> mActionParents = new HashMap<>();
-    private TextField mFilterTextField;
-    private final Preferences mPreferences = NbPreferences.forModule(AppToolboxView.class).node("apptools_expanded_state");
-    private final Map<String, TreeItem<Action>> mToolParents = new TreeMap<>();
+    private static final int CELL_WIDTH = FxHelper.getUIScaled(192);
+    private static final int CELL_HEIGHT = FxHelper.getUIScaled(118);
+
     private final ArrayList<MToolApp> mTools = new ArrayList<>();
-    private final TreeView<Action> mTreeView = new TreeView<>();
+    private final GridView<MToolApp> mGridView = new GridView<>();
 
     public AppToolboxView() {
         createUI();
         addListeners();
 
         initTools();
-        populate();
     }
 
     private void addListeners() {
-        mFilterTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-            populate();
-        });
-
-        mTreeView.setOnMouseClicked((event) -> {
-            final TreeItem<Action> selectedItem = mTreeView.getSelectionModel().getSelectedItem();
-            if (selectedItem != null && event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
-                selectedItem.getValue().handle(null);
-            }
-        });
-
-        mTreeView.setOnKeyPressed((event) -> {
-            final TreeItem<Action> selectedItem = mTreeView.getSelectionModel().getSelectedItem();
-            if (selectedItem != null && event.getCode() == KeyCode.ENTER) {
-                mTreeView.getSelectionModel().getSelectedItem().getValue().handle(null);
-            }
-        });
-
         Lookup.getDefault().lookupResult(MToolApp.class).addLookupListener((LookupEvent ev) -> {
             initTools();
         });
     }
 
     private void createUI() {
-        mFilterTextField = TextFields.createClearableTextField();
-        mFilterTextField.setPromptText(Dict.TOOLS_SEARCH.toString());
-
-        mTreeView.setShowRoot(false);
-        mTreeView.setCellFactory((TreeView<Action> param) -> new ActionTreeCell());
-
-        setTop(mFilterTextField);
-        setCenter(mTreeView);
-    }
-
-    private TreeItem<Action> getParent(TreeItem<Action> parent, String category) {
-        String[] categorySegments = StringUtils.split(category, "/");
-        StringBuilder sb = new StringBuilder();
-
-        for (String segment : categorySegments) {
-            sb.append(segment);
-            String path = sb.toString();
-
-            if (mToolParents.containsKey(path)) {
-                parent = mToolParents.get(path);
-            } else {
-                Action action = new Action(segment, (event) -> {
-                });
-
-                parent.getChildren().add(parent = mToolParents.computeIfAbsent(sb.toString(), k -> new TreeItem<>(action)));
-            }
-
-            sb.append("/");
-        }
-
-        return parent;
+        setCenter(mGridView);
+        mGridView.setCellFactory((GridView<MToolApp> gridView) -> new ActionGridCell());
+        mGridView.setPrefWidth(CELL_WIDTH * 4.6);
+        mGridView.setCellHeight(CELL_HEIGHT);
+        mGridView.setCellWidth(CELL_WIDTH);
+        setMaxHeight(CELL_HEIGHT * 3.65);
     }
 
     private void initTools() {
@@ -123,80 +76,92 @@ public class AppToolboxView extends BorderPane {
         Lookup.getDefault().lookupAll(MToolApp.class).forEach((tool) -> {
             mTools.add(tool);
         });
+
+        Comparator<MToolApp> c1 = (MToolApp o1, MToolApp o2) -> StringUtils.defaultString(o1.getParent()).compareToIgnoreCase(StringUtils.defaultString(o2.getParent()));
+        Comparator<MToolApp> c2 = (MToolApp o1, MToolApp o2) -> o1.getAction().getText().compareToIgnoreCase(o2.getAction().getText());
+
+        mTools.sort(c1.thenComparing(c2));
+
+        populate();
     }
 
     private void populate() {
-        mToolParents.clear();
-        Action rootMark = new Action("");
-        TreeItem<Action> root = new TreeItem<>(rootMark);
+        mGridView.getItems().clear();
 
+        TreeSet<String> categories = new TreeSet<>();
         for (MToolApp tool : mTools) {
-            mActionParents.put(tool.getAction(), tool.getParent());
-            final String filter = mFilterTextField.getText();
-            final boolean validFilter
-                    = StringHelper.matchesSimpleGlob(tool.getParent(), filter, true, true)
-                    || StringHelper.matchesSimpleGlob(tool.getAction().getText(), filter, true, true);
+            mGridView.getItems().add(tool);
+            final String parent = StringUtils.defaultString(tool.getParent());
+            categories.add(parent);
+        }
 
-            if (validFilter) {
-                TreeItem<Action> actionTreeItem = new TreeItem<>(tool.getAction());
-                String category = StringUtils.defaultString(tool.getParent());
+        for (String category : categories) {
+            MToolApp tool = new MToolApp() {
+                @Override
+                public Action getAction() {
+                    return null;
+                }
 
-                TreeItem<Action> parent = mToolParents.computeIfAbsent(category, k -> getParent(root, category));
-                parent.getChildren().add(actionTreeItem);
+                @Override
+                public String getParent() {
+                    return category;
+                }
+
+            };
+
+            mGridView.getItems().add(getFirstIndex(category), tool);
+        }
+
+    }
+
+    private int getFirstIndex(String s) {
+        for (int i = 0; i < mGridView.getItems().size(); i++) {
+            final String parent = StringUtils.defaultString(mGridView.getItems().get(i).getParent(), "?");
+
+            if (parent.equalsIgnoreCase(s)) {
+                return i;
             }
         }
 
-        postPopulate(root, "");
-        mTreeView.setRoot(root);
+        return 0;
     }
 
-    private void postPopulate(TreeItem<Action> treeItem, String level) {
-        final Action value = treeItem.getValue();
-        final String path = String.format("%s/%s", mActionParents.get(value), value.getText());
-        treeItem.setExpanded(mPreferences.getBoolean(path, false));
+    public class ActionGridCell extends GridCell<MToolApp> {
 
-        treeItem.expandedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
-            mPreferences.putBoolean(path, newValue);
-        });
+        private Button mButton;
 
-        Comparator<TreeItem<Action>> c1 = (TreeItem<Action> o1, TreeItem<Action> o2) -> Boolean.compare(o1.getChildren().isEmpty(), o2.getChildren().isEmpty());
-        Comparator<TreeItem<Action>> c2 = (TreeItem<Action> o1, TreeItem<Action> o2) -> o1.getValue().getText().compareTo(o2.getValue().getText());
-
-        treeItem.getChildren().sort(c1.thenComparing(c2));
-
-        for (TreeItem<Action> childTreeItem : treeItem.getChildren()) {
-            postPopulate(childTreeItem, level + "-");
-        }
-    }
-
-    class ActionTreeCell extends TreeCell<Action> {
-
-        public ActionTreeCell() {
-            createUI();
+        public ActionGridCell() {
+            mButton = new Button();
+            setOnMouseClicked(event -> {
+                if (event.getClickCount() == 1 && event.getButton() == MouseButton.PRIMARY) {
+                    mButton.fire();
+                }
+            });
         }
 
         @Override
-        protected void updateItem(Action action, boolean empty) {
-            super.updateItem(action, empty);
+        protected void updateItem(MToolApp item, boolean empty) {
+            super.updateItem(item, empty);
 
-            if (action == null || empty) {
-                clearContent();
+            if (empty) {
+                setGraphic(null);
             } else {
-                addContent(action);
+                if (item.getAction() == null) {
+                    Label label = new Label(item.getParent().toUpperCase(Locale.getDefault()));
+                    label.setAlignment(Pos.CENTER);
+                    label.setBackground(Mapton.getThemeBackground());
+                    label.setFont(Font.font(Font.getDefault().getSize() * 1.6));
+                    label.setMinSize(CELL_WIDTH, CELL_HEIGHT);
+                    label.setMaxWidth(Double.MAX_VALUE);
+
+                    setGraphic(label);
+                } else {
+                    mButton = ActionUtils.createButton(item.getAction());
+                    mButton.setContentDisplay(ContentDisplay.TOP);
+                    mButton.setMinSize(CELL_WIDTH, CELL_HEIGHT);
+                    setGraphic(mButton);
+                }
             }
-        }
-
-        private void addContent(Action action) {
-            setText(action.getText());
-            setGraphic(action.getGraphic());
-        }
-
-        private void clearContent() {
-            setText(null);
-            setGraphic(null);
-        }
-
-        private void createUI() {
         }
     }
 }

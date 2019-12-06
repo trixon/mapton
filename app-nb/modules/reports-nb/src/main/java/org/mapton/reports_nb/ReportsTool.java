@@ -17,10 +17,12 @@ package org.mapton.reports_nb;
 
 import org.controlsfx.control.action.Action;
 import org.mapton.api.MToolApp;
+import static org.mapton.api.MToolApp.ICON_SIZE;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxActionSwing;
+import se.trixon.almond.util.icons.material.MaterialIcon;
 
 /**
  *
@@ -34,6 +36,7 @@ public class ReportsTool implements MToolApp {
         FxActionSwing action = new FxActionSwing(Dict.REPORTS.toString(), () -> {
             Almond.openAndActivateTopComponent("ReportsTopComponent");
         });
+        action.setGraphic(MaterialIcon._Action.CHROME_READER_MODE.getImageView(ICON_SIZE));
 
         return action;
     }

@@ -17,10 +17,12 @@ package org.mapton.core_nb.ui.datasources;
 
 import org.controlsfx.control.action.Action;
 import org.mapton.api.MToolApp;
+import static org.mapton.api.MToolApp.ICON_SIZE;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxActionSwing;
+import se.trixon.almond.util.icons.material.MaterialIcon;
 
 /**
  *
@@ -34,6 +36,7 @@ public class DataSourcesTool implements MToolApp {
         FxActionSwing action = new FxActionSwing(Dict.DATA_SOURCES.toString(), () -> {
             Almond.openAndActivateTopComponent("DataSourcesTopComponent");
         });
+        action.setGraphic(MaterialIcon._File.CLOUD.getImageView(ICON_SIZE));
 
         return action;
     }
