@@ -54,7 +54,7 @@ public class ApiReports implements MApiReport {
                 implementations.add(implementation.getName());
             }
         }
-        items.put(category + "MContextMenu Copy ApiReports", implementations);
+        items.put(category + "MContextMenu Copy", implementations);
 
         implementations = new TreeSet<>();
         for (MContextMenuItem implementation : Lookup.getDefault().lookupAll(MContextMenuItem.class)) {
