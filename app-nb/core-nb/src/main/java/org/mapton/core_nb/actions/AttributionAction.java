@@ -30,10 +30,12 @@ import org.openide.awt.ActionRegistration;
         displayName = "Attribution"
 )
 @ActionReference(path = "Shortcuts", name = "D-I")
-public final class AttributionAction implements ActionListener {
+public final class AttributionAction extends BaseAction implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        MapToolBarPanel.getInstance().getToolBar().toogleAttributionPopOver();
+        if (isMapActive()) {
+            MapToolBarPanel.getInstance().getToolBar().toogleAttributionPopOver();
+        }
     }
 }

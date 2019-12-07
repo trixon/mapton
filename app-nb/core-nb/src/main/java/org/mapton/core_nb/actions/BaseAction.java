@@ -20,6 +20,7 @@ import org.mapton.api.MOptions;
 import org.mapton.api.MOptions2;
 import org.openide.awt.Actions;
 import org.openide.windows.WindowManager;
+import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.nbp.fx.FxTopComponent;
 
 /**
@@ -30,6 +31,10 @@ public abstract class BaseAction implements ActionListener {
 
     protected MOptions mOptions = MOptions.getInstance();
     protected MOptions2 mOptions2 = MOptions2.getInstance();
+
+    protected boolean isMapActive() {
+        return Almond.isSelected("MapTopComponent");
+    }
 
     protected void toggleTopComponent(String id) {
         FxTopComponent tc = (FxTopComponent) WindowManager.getDefault().findTopComponent(id);

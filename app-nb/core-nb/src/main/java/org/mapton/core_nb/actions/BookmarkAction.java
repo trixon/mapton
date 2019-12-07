@@ -33,10 +33,12 @@ public final class BookmarkAction extends BaseAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (usePopover()) {
-            MapToolBarPanel.getInstance().getToolBar().toogleBookmarkPopOver();
-        } else {
-            toggleTopComponent("BookmarkTopComponent");
+        if (isMapActive()) {
+            if (usePopover()) {
+                MapToolBarPanel.getInstance().getToolBar().toogleBookmarkPopOver();
+            } else {
+                toggleTopComponent("BookmarkTopComponent");
+            }
         }
     }
 }

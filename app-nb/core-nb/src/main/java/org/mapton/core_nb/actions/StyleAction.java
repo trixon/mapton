@@ -30,10 +30,12 @@ import org.openide.awt.ActionRegistration;
         displayName = "Style"
 )
 @ActionReference(path = "Shortcuts", name = "D-S")
-public final class StyleAction implements ActionListener {
+public final class StyleAction extends BaseAction implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        MapToolBarPanel.getInstance().getToolBar().toogleStylePopOver();
+        if (isMapActive()) {
+            MapToolBarPanel.getInstance().getToolBar().toogleStylePopOver();
+        }
     }
 }

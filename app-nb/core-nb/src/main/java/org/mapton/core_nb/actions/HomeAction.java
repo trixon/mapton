@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,12 +18,12 @@ package org.mapton.core_nb.actions;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javafx.application.Platform;
+import org.mapton.api.Mapton;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle.Messages;
 import se.trixon.almond.nbp.Almond;
-import org.mapton.api.Mapton;
 
 @ActionID(
         category = "Mapton",
@@ -38,10 +38,9 @@ public final class HomeAction implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (Almond.requestActive("MapTopComponent")) {
-            Platform.runLater(() -> {
-                Mapton.getEngine().goHome();
-            });
-        }
+        Almond.requestActive("MapTopComponent");
+        Platform.runLater(() -> {
+            Mapton.getEngine().goHome();
+        });
     }
 }

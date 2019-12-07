@@ -36,11 +36,12 @@ public final class RulerAction extends BaseAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (usePopover()) {
-            MapToolBarPanel.getInstance().getToolBar().toogleRulerPopOver();
-        } else {
-            toggleTopComponent("RulerTopComponent");
+        if (isMapActive()) {
+            if (usePopover()) {
+                MapToolBarPanel.getInstance().getToolBar().toogleRulerPopOver();
+            } else {
+                toggleTopComponent("RulerTopComponent");
+            }
         }
     }
-
 }

@@ -33,10 +33,12 @@ public final class ToolboxAction extends BaseAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (usePopover()) {
-            MapToolBarPanel.getInstance().getToolBar().toogleToolboxPopOver();
-        } else {
-            toggleTopComponent("ToolboxTopComponent");
+        if (isMapActive()) {
+            if (usePopover()) {
+                MapToolBarPanel.getInstance().getToolBar().toogleToolboxPopOver();
+            } else {
+                toggleTopComponent("ToolboxTopComponent");
+            }
         }
     }
 }

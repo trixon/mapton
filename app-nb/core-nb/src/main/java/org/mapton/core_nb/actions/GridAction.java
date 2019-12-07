@@ -33,10 +33,12 @@ public final class GridAction extends BaseAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (usePopover()) {
-            MapToolBarPanel.getInstance().getToolBar().toogleGridPopOver();
-        } else {
-            toggleTopComponent("GridTopComponent");
+        if (isMapActive()) {
+            if (usePopover()) {
+                MapToolBarPanel.getInstance().getToolBar().toogleGridPopOver();
+            } else {
+                toggleTopComponent("GridTopComponent");
+            }
         }
     }
 }

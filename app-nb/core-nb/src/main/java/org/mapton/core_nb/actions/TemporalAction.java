@@ -30,10 +30,12 @@ import org.openide.awt.ActionRegistration;
         displayName = "Style"
 )
 @ActionReference(path = "Shortcuts", name = "D-D")
-public final class TemporalAction implements ActionListener {
+public final class TemporalAction extends BaseAction implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        MapToolBarPanel.getInstance().getToolBar().toogleTemporalPopOver();
+        if (isMapActive()) {
+            MapToolBarPanel.getInstance().getToolBar().toogleTemporalPopOver();
+        }
     }
 }

@@ -21,6 +21,7 @@ import org.mapton.core_nb.ui.MapToolBarPanel;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
+import se.trixon.almond.nbp.Almond;
 
 @ActionID(
         category = "Mapton",
@@ -34,6 +35,7 @@ public final class SearchAction implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        Almond.requestActive("MapTopComponent");
         MapToolBarPanel.getInstance().getToolBar().activateSearch();
     }
 }

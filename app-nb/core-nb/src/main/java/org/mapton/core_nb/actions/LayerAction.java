@@ -33,10 +33,12 @@ public final class LayerAction extends BaseAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (usePopover()) {
-            MapToolBarPanel.getInstance().getToolBar().toogleLayerPopOver();
-        } else {
-            toggleTopComponent("LayerTopComponent");
+        if (isMapActive()) {
+            if (usePopover()) {
+                MapToolBarPanel.getInstance().getToolBar().toogleLayerPopOver();
+            } else {
+                toggleTopComponent("LayerTopComponent");
+            }
         }
     }
 }
