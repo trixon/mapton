@@ -61,9 +61,22 @@ public final class NotesTopComponent extends FxTopComponent {
     }
 
     @Override
+    protected void fxComponentActivated() {
+        super.fxComponentActivated();
+        focus();
+    }
+
+    @Override
     protected void fxComponentOpened() {
         super.fxComponentOpened();
         mTextArea.setText(mPreferences.get(KEY_NOTES, ""));
+        focus();
+    }
+
+    @Override
+    protected void fxComponentShowing() {
+        super.fxComponentShowing();
+        focus();
     }
 
     @Override
@@ -85,5 +98,10 @@ public final class NotesTopComponent extends FxTopComponent {
         Platform.runLater(() -> {
             mPreferences.put(KEY_NOTES, mTextArea.getText());
         });
+    }
+
+    private void focus() {
+        requestSceneFocus();
+        mTextArea.requestFocus();
     }
 }
