@@ -207,7 +207,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>addon-mapollage</artifactId>
+            <artifactId>addon-photos-nb</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

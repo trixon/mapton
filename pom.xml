@@ -125,6 +125,7 @@
         <module>app-nb/modules/reports-nb</module>
         <module>app-nb/modules-add-ons/geonames-ww</module>
         <module>app-nb/modules-add-ons/notes-nb</module>
+        <module>app-nb/modules-add-ons/photos-nb</module>
 
         <!--GUI WorkbenchFX-->
         <module>app-wb/application</module>
@@ -138,7 +139,6 @@
         <module>modules/wikipedia</module>
 
         <!--Add-ons-->
-        <module>modules-add-ons/mapollage</module>
         <module>modules-add-ons/mapollage-ww</module>
 
         <!--Unstable-->
