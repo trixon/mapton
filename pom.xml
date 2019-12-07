@@ -89,7 +89,6 @@
     </build>
 
     <modules>
-        <module>branding</module>
 
         <!--Shared-->
         <module>shared/api</module>
@@ -118,6 +117,7 @@
 
         <!--Applications-->
         <!--GUI NetBeans-->
+        <module>app-nb/branding</module>
         <module>app-nb/application</module>
         <module>app-nb/core-nb</module>
 
