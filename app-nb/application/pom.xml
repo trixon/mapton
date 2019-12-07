@@ -205,7 +205,7 @@
             <artifactId>addon-notes-nb</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!--        <dependency>
+        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>addon-mapollage</artifactId>
             <version>${project.version}</version>
@@ -214,7 +214,7 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>addon-mapollage-ww</artifactId>
             <version>${project.version}</version>
-        </dependency>-->
+        </dependency>
 
         <!--Mapton/Unstable-->
         <!--        <dependency>
