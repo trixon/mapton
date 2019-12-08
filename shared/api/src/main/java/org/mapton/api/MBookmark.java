@@ -24,7 +24,7 @@ import org.apache.commons.lang3.StringUtils;
  *
  * @author Patrik Karlström
  */
-public class MBookmark {
+public class MBookmark extends MObject {
 
     @SerializedName("category")
     private String mCategory = "";

@@ -36,6 +36,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.controlsfx.control.PopOver;
+import org.controlsfx.control.action.Action;
 import org.controlsfx.control.textfield.CustomTextField;
 import org.controlsfx.control.textfield.TextFields;
 import org.mapton.api.MBookmark;
@@ -67,11 +68,11 @@ public class SearchView {
     private int mInstantProviderCount;
     private final ArrayList<MBookmark> mInstantResults = new ArrayList<>();
     private final ObservableList<MBookmark> mItems = FXCollections.observableArrayList();
+    private final ListView<MBookmark> mListView = new ListView<>();
     private final MOptions mOptions = MOptions.getInstance();
     private final ArrayList<MSearchEngine> mRegularEngines = new ArrayList<>();
     private int mRegularProviderCount;
     private PopOver mResultPopOver;
-    private final ListView<MBookmark> mResultView = new ListView<>();
     private CustomTextField mSearchTextField;
 
     public SearchView() {
@@ -111,15 +112,28 @@ public class SearchView {
         mResultPopOver.setHeaderAlwaysVisible(true);
         mResultPopOver.setCloseButtonEnabled(false);
         mResultPopOver.setDetachable(false);
-        mResultPopOver.setContentNode(mResultView);
+        mResultPopOver.setContentNode(mListView);
         mResultPopOver.setAnimated(true);
         int fadeDuration = 800;
         mResultPopOver.setFadeInDuration(Duration.millis(fadeDuration));
         mResultPopOver.setFadeOutDuration(Duration.millis(fadeDuration));
 
-        mResultView.prefWidthProperty().bind(mSearchTextField.widthProperty());
-        mResultView.setItems(mItems);
-        mResultView.setCellFactory((ListView<MBookmark> param) -> new SearchResultListCell());
+        mListView.prefWidthProperty().bind(mSearchTextField.widthProperty());
+        mListView.setItems(mItems);
+        mListView.setCellFactory((ListView<MBookmark> param) -> new SearchResultListCell());
+    }
+
+    private boolean handleAction(MBookmark bookmark) {
+        try {
+            ((Action) bookmark.getValue("action")).handle(null);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private boolean hasAction(MBookmark bookmark) {
+        return bookmark.getValue("action") != null;
     }
 
     private void initListeners() {
@@ -131,7 +145,7 @@ public class SearchView {
             }
         });
 
-        mResultView.setOnKeyPressed((KeyEvent keyEvent) -> {
+        mListView.setOnKeyPressed((KeyEvent keyEvent) -> {
             if (keyEvent.getCode() == KeyCode.ENTER) {
                 String searchString = mSearchTextField.getText();
                 if (StringUtils.isNotBlank(searchString)) {
@@ -143,9 +157,9 @@ public class SearchView {
             }
         });
 
-        mResultView.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends MBookmark> observable, MBookmark oldValue, MBookmark bookmark) -> {
+        mListView.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends MBookmark> observable, MBookmark oldValue, MBookmark bookmark) -> {
             try {
-                if (!bookmark.isCategory()) {
+                if (!hasAction(bookmark) && !bookmark.isCategory()) {
                     if (bookmark.getZoom() != null) {
                         Mapton.getEngine().panTo(new MLatLon(bookmark.getLatitude(), bookmark.getLongitude()), bookmark.getZoom());
                     } else {
@@ -156,18 +170,23 @@ public class SearchView {
             }
         });
 
-        mResultView.setOnMousePressed((MouseEvent event) -> {
+        mListView.setOnMousePressed((MouseEvent event) -> {
             if (event.isPrimaryButtonDown()) {
-                MBookmark bookmark = mResultView.getSelectionModel().getSelectedItem();
+                MBookmark bookmark = mListView.getSelectionModel().getSelectedItem();
                 if (bookmark != null && !bookmark.isCategory()) {
                     mResultPopOver.hide();
                     mSearchTextField.setText(bookmark.getName());
-                    if (bookmark.getLatLonBox() != null) {
-                        Mapton.getEngine().fitToBounds(bookmark.getLatLonBox());
-                    } else if (bookmark.getZoom() != null) {
-                        Mapton.getEngine().panTo(new MLatLon(bookmark.getLatitude(), bookmark.getLongitude()), bookmark.getZoom());
-                    } else if (ObjectUtils.allNotNull(bookmark.getLatitude(), bookmark.getLongitude())) {
-                        Mapton.getEngine().panTo(new MLatLon(bookmark.getLatitude(), bookmark.getLongitude()));
+
+                    if (hasAction(bookmark)) {
+                        handleAction(bookmark);
+                    } else {
+                        if (bookmark.getLatLonBox() != null) {
+                            Mapton.getEngine().fitToBounds(bookmark.getLatLonBox());
+                        } else if (bookmark.getZoom() != null) {
+                            Mapton.getEngine().panTo(new MLatLon(bookmark.getLatitude(), bookmark.getLongitude()), bookmark.getZoom());
+                        } else if (ObjectUtils.allNotNull(bookmark.getLatitude(), bookmark.getLongitude())) {
+                            Mapton.getEngine().panTo(new MLatLon(bookmark.getLatitude(), bookmark.getLongitude()));
+                        }
                     }
                 }
             }
@@ -286,7 +305,7 @@ public class SearchView {
                 if (!bookmarks.isEmpty()) {
                     MBookmark b = new MBookmark();
                     b.setName(PROVIDER_PREFIX + engine.getName());
-                    b.setId(new Long(bookmarks.size()));
+                    b.setId(Long.valueOf(bookmarks.size()));
 
                     if (engine == mInstantEngines) {
                         mInstantProviderCount++;
@@ -368,8 +387,10 @@ public class SearchView {
         }
 
         private void clearContent() {
+//            Platform.runLater(() -> {
             setText(null);
             setGraphic(null);
+//            });
         }
 
         private void createUI() {
@@ -380,8 +401,8 @@ public class SearchView {
         }
 
         private void selectListItem() {
-            mResultView.getSelectionModel().select(this.getIndex());
-            mResultView.requestFocus();
+            mListView.getSelectionModel().select(this.getIndex());
+            mListView.requestFocus();
         }
     }
 }
