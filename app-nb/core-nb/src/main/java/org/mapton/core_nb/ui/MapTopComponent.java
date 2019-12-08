@@ -106,7 +106,7 @@ public final class MapTopComponent extends MTopComponent {
             if (mMOptions2.general().isDisplayCrosshair()) {
                 Graphics2D g2 = (Graphics2D) g;
                 int x = getWidth() / 2;
-                int y = getHeight() / 2;
+                int y = (getHeight() + MapToolBarPanel.getInstance().getToolBarPanel().getHeight()) / 2;
                 final int gap = FxHelper.getUIScaled(6);
                 final int length = FxHelper.getUIScaled(6) + gap;
 
