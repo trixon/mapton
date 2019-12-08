@@ -65,6 +65,8 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
  */
 public class AppToolBar extends BaseToolBar {
 
+    private final String CSS_FILE = getClass().getResource("toolbar_app.css").toExternalForm();
+
     private final AlmondOptions mAlmondOptions = AlmondOptions.INSTANCE;
     private FxActionSwing mSysAboutAction;
     private Action mSysHelpAction;
@@ -98,7 +100,6 @@ public class AppToolBar extends BaseToolBar {
     }
 
     private void init() {
-        setStyle("-fx-spacing: 0px;");
         setPadding(Insets.EMPTY);
 
         ActionGroup viewActionGroup = new ActionGroup(Dict.VIEW.toString(),
@@ -148,14 +149,15 @@ public class AppToolBar extends BaseToolBar {
 
         Platform.runLater(() -> {
             ActionUtils.updateToolBar(this, actions, ActionUtils.ActionTextBehavior.HIDE);
-
             FxHelper.adjustButtonWidth(getItems().stream(), getIconSizeContextMenu() * 1.5);
-
             getItems().stream().filter((item) -> (item instanceof ButtonBase))
                     .map((item) -> (ButtonBase) item).forEachOrdered((buttonBase) -> {
-                FxHelper.undecorateButton(buttonBase);
+//                buttonBase.getStylesheets().add(CSS_FILE);
             });
+
+            getStylesheets().add(CSS_FILE);
         });
+
     }
 
     private void initActionsFx() {
@@ -318,6 +320,12 @@ public class AppToolBar extends BaseToolBar {
         mToolboxPopOver.setArrowLocation(ArrowLocation.TOP_RIGHT);
         mToolboxPopOver.setCloseButtonEnabled(true);
         mToolboxPopOver.setDetachable(true);
+        mToolboxPopOver.setOnShowing(event -> {
+            mToolboxPopOver.getScene().getStylesheets().remove(CSS_FILE);
+        });
+        mToolboxPopOver.setOnHiding(event -> {
+            getButtonForAction(mToolboxAction).getStylesheets().add(CSS_FILE);
+        });
     }
 
 }

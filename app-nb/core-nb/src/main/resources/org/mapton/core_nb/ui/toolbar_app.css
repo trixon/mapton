@@ -1,0 +1,22 @@
+.root > * {
+    -fx-background-color: #102040;
+}
+
+.tool-bar {
+    -fx-spacing: 0px;
+}
+
+.button,.menu-button,.toggle-button{
+    -fx-background-color: transparent;
+}
+.button:hover,.menu-button:hover,.toggle-button:hover {
+    /*-fx-background-color: yellow;*/
+}
+
+.toggle-button:selected{
+    /*-fx-background-color: blue;*/
+}
+
+.button:pressed,.menu-button:pressed,.toggle-button:pressed {
+    -fx-background-color: #3c476b;
+}

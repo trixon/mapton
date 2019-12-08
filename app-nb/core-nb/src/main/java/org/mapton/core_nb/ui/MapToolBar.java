@@ -57,6 +57,8 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
  */
 public class MapToolBar extends BaseToolBar {
 
+    private final String CSS_FILE = getClass().getResource("toolbar_map.css").toExternalForm();
+
     private Action mAttributionAction;
     private PopOver mAttributionPopOver;
     private AttributionView mAttributionView;
@@ -156,7 +158,7 @@ public class MapToolBar extends BaseToolBar {
 
             getItems().stream().filter((item) -> (item instanceof ButtonBase))
                     .map((item) -> (ButtonBase) item).forEachOrdered((buttonBase) -> {
-                FxHelper.undecorateButton(buttonBase);
+                buttonBase.getStylesheets().add(CSS_FILE);
             });
 
             mSearchView = new SearchView();
@@ -301,6 +303,12 @@ public class MapToolBar extends BaseToolBar {
 
         mStylePopOver = new PopOver();
         initPopOver(mStylePopOver, String.format("%s & %s", Dict.TYPE.toString(), Dict.STYLE.toString()), new BorderPane());
+        mStylePopOver.setOnShowing(event -> {
+            getButtonForAction(mStyleAction).getStylesheets().remove(CSS_FILE);
+        });
+        mStylePopOver.setOnHiding(event -> {
+            getButtonForAction(mStyleAction).getStylesheets().add(CSS_FILE);
+        });
 
         mToolboxPopOver = new PopOver();
         initPopOver(mToolboxPopOver, MDict.MAP_TOOLS.toString(), new MapToolboxView());
