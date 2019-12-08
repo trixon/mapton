@@ -19,9 +19,9 @@ import java.awt.BorderLayout;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javax.swing.JPanel;
+import org.mapton.base.ui.StatusBarView;
 import se.trixon.almond.nbp.fx.FxPanel;
 import se.trixon.almond.util.swing.SwingHelper;
-import org.mapton.base.ui.StatusBarView;
 
 /**
  *

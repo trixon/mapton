@@ -246,7 +246,7 @@ public final class MapTopComponent extends MTopComponent {
             addHierarchyListener((HierarchyEvent hierarchyEvent) -> {
                 if (hierarchyEvent.getChangedParent() instanceof JLayeredPane) {
                     Dimension d = ((JFrame) WindowManager.getDefault().getMainWindow()).getContentPane().getPreferredSize();
-                    final boolean showOnlyMap = 1 == d.height && 1 == d.width;
+                    final boolean showOnlyMap = 40 == d.height && 100 == d.width;
                     mMOptions.setMapOnly(showOnlyMap);
                     try {
                         attachStatusbar();
