@@ -31,7 +31,9 @@ import javafx.scene.layout.BorderPane;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLayeredPane;
+import javax.swing.JRootPane;
 import javax.swing.SwingUtilities;
+import org.apache.commons.lang3.SystemUtils;
 import org.mapton.api.MDict;
 import org.mapton.api.MEngine;
 import org.mapton.api.MOptions2;
@@ -248,6 +250,22 @@ public final class MapTopComponent extends MTopComponent {
                     Dimension d = ((JFrame) WindowManager.getDefault().getMainWindow()).getContentPane().getPreferredSize();
                     final boolean showOnlyMap = 40 == d.height && 100 == d.width;
                     mMOptions.setMapOnly(showOnlyMap);
+
+                    if (SystemUtils.IS_OS_WINDOWS) {
+                        try {
+                            final JRootPane rootPane = getRootPane();
+                            final Dimension originalSize = rootPane.getSize();
+
+                            SwingUtilities.invokeLater(() -> {
+                                rootPane.setSize(new Dimension(originalSize.width - 1, originalSize.height - 0));
+                                SwingUtilities.invokeLater(() -> {
+                                    rootPane.setSize(originalSize);
+                                });
+                            });
+                        } catch (Exception e) {
+                            //nvm
+                        }
+                    }
                     try {
                         attachStatusbar();
                     } catch (NullPointerException e) {
