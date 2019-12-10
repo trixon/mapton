@@ -308,6 +308,7 @@ public class MapToolBar extends BaseToolBar {
         });
         mStylePopOver.setOnHiding(event -> {
             getButtonForAction(mStyleAction).getStylesheets().add(CSS_FILE);
+            onObjectHiding(mStylePopOver);
         });
 
         mToolboxPopOver = new PopOver();

@@ -42,9 +42,14 @@ public abstract class BaseToolBar extends ToolBar {
     protected final MOptions mOptions = MOptions.getInstance();
     protected final HashSet<PopOver> mPopOvers = new HashSet<>();
     private final HashMap<Action, Double> mButtonWidths = new HashMap<>();
-    private final HashMap<PopOver, Long> mPopoverClosingTimes = new HashMap<>();
+    private final HashMap<Object, Long> mObjectClosingTimes = new HashMap<>();
 
     public BaseToolBar() {
+    }
+
+    public void onObjectHiding(Object object) {
+        mObjectClosingTimes.put(object, System.currentTimeMillis());
+
     }
 
     protected ButtonBase getButtonForAction(Action action) {
@@ -69,7 +74,7 @@ public abstract class BaseToolBar extends ToolBar {
         popOver.setDetachable(false);
         popOver.setAnimated(false);
         popOver.setOnHiding(windowEvent -> {
-            mPopoverClosingTimes.put(popOver, System.currentTimeMillis());
+            onObjectHiding(popOver);
         });
         mPopOvers.add(popOver);
     }
@@ -92,8 +97,8 @@ public abstract class BaseToolBar extends ToolBar {
         action.setLongText(String.format("%s (%s)", action.getText(), keyCodeCombination.getDisplayText()));
     }
 
-    protected boolean shouldOpen(PopOver popOver) {
-        return System.currentTimeMillis() - mPopoverClosingTimes.getOrDefault(popOver, 0L) > 200;
+    protected boolean shouldOpen(Object object) {
+        return System.currentTimeMillis() - mObjectClosingTimes.getOrDefault(object, 0L) > 200;
     }
 
     protected void storeButtonWidths(Action... actions) {

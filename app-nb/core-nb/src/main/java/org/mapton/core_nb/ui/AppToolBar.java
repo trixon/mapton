@@ -156,6 +156,16 @@ public class AppToolBar extends BaseToolBar {
             });
 
             getStylesheets().add(CSS_FILE);
+
+            MenuButton menuButton = (MenuButton) getItems().get(0);
+            menuButton.setOnMousePressed(event -> {
+                if (shouldOpen(menuButton)) {
+                    menuButton.show();
+                }
+            });
+            menuButton.setOnHiding(event -> {
+                onObjectHiding(menuButton);
+            });
         });
 
     }
@@ -325,6 +335,7 @@ public class AppToolBar extends BaseToolBar {
         });
         mToolboxPopOver.setOnHiding(event -> {
             getButtonForAction(mToolboxAction).getStylesheets().add(CSS_FILE);
+            onObjectHiding(mToolboxPopOver);
         });
     }
 

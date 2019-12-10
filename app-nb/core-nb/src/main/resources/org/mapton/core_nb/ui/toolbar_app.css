@@ -19,4 +19,5 @@
 
 .button:pressed,.menu-button:pressed,.toggle-button:pressed {
     -fx-background-color: #3c476b;
+    -fx-background-radius: 0px;
 }
