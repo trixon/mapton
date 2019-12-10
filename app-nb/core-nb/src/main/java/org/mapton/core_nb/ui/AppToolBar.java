@@ -110,7 +110,7 @@ public class AppToolBar extends BaseToolBar {
 
         ActionGroup systemActionGroup;
         if (IS_MAC) {
-            systemActionGroup = new ActionGroup(Dict.MENU.toString(), MaterialIcon._Navigation.MENU.getImageView(getIconSizeToolBar()),
+            systemActionGroup = new ActionGroup(Dict.MENU.toString(), MaterialIcon._Navigation.MENU.getImageView(getIconSizeToolBar(), mOptions.getIconColorBright()),
                     viewActionGroup,
                     ActionUtils.ACTION_SEPARATOR,
                     mSysPluginsAction,
@@ -118,7 +118,7 @@ public class AppToolBar extends BaseToolBar {
                     mSysHelpAction
             );
         } else {
-            systemActionGroup = new ActionGroup(Dict.MENU.toString(), MaterialIcon._Navigation.MENU.getImageView(getIconSizeToolBar()),
+            systemActionGroup = new ActionGroup(Dict.MENU.toString(), MaterialIcon._Navigation.MENU.getImageView(getIconSizeToolBar(), mOptions.getIconColorBright()),
                     viewActionGroup,
                     ActionUtils.ACTION_SEPARATOR,
                     mSysOptionsAction,
@@ -183,7 +183,7 @@ public class AppToolBar extends BaseToolBar {
                 mToolboxPopOver.show((Node) event.getSource());
             }
         });
-        mToolboxAction.setGraphic(MaterialIcon._Content.ADD.getImageView(getIconSizeToolBarInt()));
+        mToolboxAction.setGraphic(MaterialIcon._Content.ADD.getImageView(getIconSizeToolBarInt(), mOptions.getIconColorBright()));
         setTooltip(mToolboxAction, new KeyCodeCombination(KeyCode.PLUS, KeyCombination.SHORTCUT_DOWN));
     }
 
@@ -197,14 +197,14 @@ public class AppToolBar extends BaseToolBar {
             }
         });
         mSysViewFullscreenAction.setAccelerator(KeyCombination.keyCombination("F11"));
-        mSysViewFullscreenAction.setGraphic(MaterialIcon._Navigation.FULLSCREEN.getImageView(getIconSizeToolBar()));
+        mSysViewFullscreenAction.setGraphic(MaterialIcon._Navigation.FULLSCREEN.getImageView(getIconSizeToolBar(), mOptions.getIconColorBright()));
         setTooltip(mSysViewFullscreenAction, new KeyCodeCombination(KeyCode.F11));
 
         //Map
         mSysViewMapAction = new FxActionSwingCheck(Dict.MAP.toString(), () -> {
             Actions.forID("Mapton", "org.mapton.core_nb.actions.OnlyMapAction").actionPerformed(null);
         });
-        mSysViewMapAction.setGraphic(MaterialIcon._Maps.MAP.getImageView(getIconSizeToolBar()));
+        mSysViewMapAction.setGraphic(MaterialIcon._Maps.MAP.getImageView(getIconSizeToolBar(), mOptions.getIconColorBright()));
         mSysViewMapAction.setAccelerator(KeyCombination.keyCombination("F12"));
         mSysViewMapAction.setSelected(mOptions.isMapOnly());
         setTooltip(mSysViewMapAction, new KeyCodeCombination(KeyCode.F12));
@@ -270,7 +270,7 @@ public class AppToolBar extends BaseToolBar {
                     mSysViewFullscreenAction.setSelected(fullscreen);
                     Platform.runLater(() -> {
                         MaterialIcon._Navigation fullscreenIcon = fullscreen == true ? MaterialIcon._Navigation.FULLSCREEN_EXIT : MaterialIcon._Navigation.FULLSCREEN;
-                        mSysViewFullscreenAction.setGraphic(fullscreenIcon.getImageView(getIconSizeToolBar()));
+                        mSysViewFullscreenAction.setGraphic(fullscreenIcon.getImageView(getIconSizeToolBar(), mOptions.getIconColorBright()));
                     });
                 }
             });

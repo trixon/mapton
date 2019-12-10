@@ -29,6 +29,8 @@ import org.controlsfx.control.PopOver;
 import org.controlsfx.control.action.Action;
 import org.mapton.api.MOptions;
 import org.mapton.api.MOptions2;
+import org.mapton.api.MOptionsGeneral;
+import org.mapton.api.Mapton;
 
 /**
  *
@@ -40,6 +42,7 @@ public abstract class BaseToolBar extends ToolBar {
     public static final boolean IS_MAC = SystemUtils.IS_OS_MAC;
 
     protected final MOptions mOptions = MOptions.getInstance();
+    protected final MOptionsGeneral mOptionsGeneral = Mapton.optionsGeneral();
     protected final HashSet<PopOver> mPopOvers = new HashSet<>();
     private final HashMap<Action, Double> mButtonWidths = new HashMap<>();
     private final HashMap<Object, Long> mObjectClosingTimes = new HashMap<>();

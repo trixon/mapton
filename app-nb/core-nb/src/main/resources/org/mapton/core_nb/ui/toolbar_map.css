@@ -17,6 +17,6 @@
 }
 
 .button:pressed,.menu-button:pressed,.toggle-button:pressed {
-    -fx-background-color: darkgrey;
+    -fx-background-color: #333;
     -fx-background-radius: 0px;
 }

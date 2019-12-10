@@ -21,3 +21,11 @@
     -fx-background-color: #3c476b;
     -fx-background-radius: 0px;
 }
+
+.menu-button > .arrow-button {
+    -fx-padding: 0;
+}
+
+.menu-button > .arrow-button > .arrow {
+    -fx-padding: 0;
+}

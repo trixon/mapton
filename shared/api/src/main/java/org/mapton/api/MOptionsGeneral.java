@@ -68,9 +68,9 @@ public class MOptionsGeneral {
                 Group.of(
                         Dict.LOOK_AND_FEEL.toString(),
                         //                        Setting.of(mBundle.getString("popover"), mPreferPopoverProperty).customKey("general.map.popover"),
-                        Setting.of(Dict.NIGHT_MODE.toString(), mNightModeProperty).customKey("general.map.nightMode")
-                //                        Setting.of(mBundle.getString("iconColor"), mIconColorDarkProperty).customKey("general.map.iconColor"),
-                //                        Setting.of(mBundle.getString("iconColorNightMode"), mIconColorBrightProperty).customKey("general.map.iconColorNightMode")
+                        Setting.of(Dict.NIGHT_MODE.toString(), mNightModeProperty).customKey("general.map.nightMode"),
+                        Setting.of(mBundle.getString("iconColor"), mIconColorDarkProperty).customKey("general.map.iconColor"),
+                        Setting.of(mBundle.getString("iconColorNightMode"), mIconColorBrightProperty).customKey("general.map.iconColorNightMode")
                 ),
                 Group.of(Dict.MAP.toString(),
                         Setting.of(MDict.MAP_ENGINE.toString(), engineItems, mEngineProperty).customKey("general.map.engine"),
