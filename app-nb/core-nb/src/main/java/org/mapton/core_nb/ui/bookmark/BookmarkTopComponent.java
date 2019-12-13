@@ -77,7 +77,7 @@ public final class BookmarkTopComponent extends MTopComponent {
     }
 
     private Scene createScene() {
-        return new Scene(new BookmarksView());
+        return new Scene(new BookmarksView(null));
     }
 
     void readProperties(java.util.Properties p) {

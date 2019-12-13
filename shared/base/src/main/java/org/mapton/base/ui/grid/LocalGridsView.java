@@ -33,6 +33,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import org.controlsfx.control.CheckListView;
 import org.controlsfx.control.IndexedCheckModel;
+import org.controlsfx.control.PopOver;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
 import org.controlsfx.glyphfont.FontAwesome;
@@ -57,12 +58,14 @@ public class LocalGridsView extends BorderPane {
     private final MOptions mOptions = MOptions.getInstance();
     private CheckBox mPlotCheckBox;
     private static LocalGridEditor sLocalGridEditor;
+    private final PopOver mPopOver;
 
     public static void setLocalGridEditor(LocalGridEditor localGridEditor) {
         LocalGridsView.sLocalGridEditor = localGridEditor;
     }
 
-    public LocalGridsView() {
+    public LocalGridsView(PopOver popOver) {
+        mPopOver = popOver;
         createUI();
         initStates();
         initListeners();
@@ -109,8 +112,8 @@ public class LocalGridsView extends BorderPane {
         remAction.setGraphic(Mapton.createGlyphToolbarForm(FontAwesome.Glyph.MINUS));
 
         Collection<? extends Action> actions = Arrays.asList(
-                new FileImportAction().getAction(this),
-                new FileExportAction().getAction(this),
+                new FileImportAction(mPopOver).getAction(this),
+                new FileExportAction(mPopOver).getAction(this),
                 addAction,
                 remAction,
                 editAction

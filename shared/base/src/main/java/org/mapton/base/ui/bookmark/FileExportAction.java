@@ -33,6 +33,7 @@ import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.controlsfx.control.PopOver;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.glyphfont.FontAwesome;
 import org.mapton.api.MBookmark;
@@ -56,6 +57,10 @@ public class FileExportAction extends FileAction {
 
     private File mFile;
 
+    public FileExportAction(PopOver popOver) {
+        super(popOver);
+    }
+
     @Override
     public Action getAction(Node owner) {
         Action action = new Action(Dict.EXPORT.toString(), (t) -> {
@@ -66,6 +71,10 @@ public class FileExportAction extends FileAction {
             SimpleDialog.addFilter(mExtKml);
             SimpleDialog.setFilter(mExtCsv);
             SimpleDialog.setOwner(owner.getScene().getWindow());
+            if (mPopOver != null) {
+                mPopOver.hide();
+            }
+
             final String dialogTitle = String.format("%s %s", Dict.EXPORT.toString(), mTitle.toLowerCase());
             SimpleDialog.setTitle(dialogTitle);
 

@@ -37,6 +37,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import org.apache.commons.lang3.StringUtils;
+import org.controlsfx.control.PopOver;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
 import org.controlsfx.control.textfield.TextFields;
@@ -67,10 +68,12 @@ public class BookmarksView extends BorderPane implements MActivatable {
     private BookmarkEditor mEditor;
     private TextField mFilterTextField;
     private final MBookmarkManager mManager = MBookmarkManager.getInstance();
+    private final PopOver mPopOver;
     private final Preferences mPreferences = NbPreferences.forModule(BookmarksView.class).node("expanded_state");
     private final TreeView<MBookmark> mTreeView = new TreeView<>();
 
-    public BookmarksView() {
+    public BookmarksView(PopOver popOver) {
+        mPopOver = popOver;
         mEditor = BookmarkEditor.getDefault();
         createUI();
 
@@ -132,8 +135,8 @@ public class BookmarksView extends BorderPane implements MActivatable {
         mTreeView.setCellFactory((TreeView<MBookmark> param) -> new BookmarkTreeCell());
 
         Collection<? extends Action> actions = Arrays.asList(
-                new FileImportAction().getAction(this),
-                new FileExportAction().getAction(this)
+                new FileImportAction(mPopOver).getAction(this),
+                new FileExportAction(mPopOver).getAction(this)
         );
 
         ToolBar toolBar = ActionUtils.createToolBar(actions, ActionUtils.ActionTextBehavior.HIDE);

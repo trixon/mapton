@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import javafx.scene.Node;
 import org.apache.commons.io.FileUtils;
+import org.controlsfx.control.PopOver;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.glyphfont.FontAwesome;
 import org.mapton.api.MKey;
@@ -37,6 +38,10 @@ public class FileExportAction extends FileAction {
 
     private File mFile;
 
+    public FileExportAction(PopOver popOver) {
+        super(popOver);
+    }
+
     @Override
     public Action getAction(Node owner) {
         Action action = new Action((t) -> {
@@ -52,6 +57,9 @@ public class FileExportAction extends FileAction {
                 final String dialogTitle = String.format("%s %s", Dict.EXPORT.toString(), mTitle.toLowerCase());
                 SimpleDialog.setTitle(dialogTitle);
                 SimpleDialog.setOwner(owner.getScene().getWindow());
+                if (mPopOver != null) {
+                    mPopOver.hide();
+                }
 
                 if (mFile == null) {
                     SimpleDialog.setPath(FileUtils.getUserDirectory());

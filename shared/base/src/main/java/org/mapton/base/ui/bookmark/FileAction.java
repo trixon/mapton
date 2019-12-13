@@ -19,6 +19,7 @@ import java.util.ResourceBundle;
 import javafx.scene.Node;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser.ExtensionFilter;
+import org.controlsfx.control.PopOver;
 import org.controlsfx.control.action.Action;
 import org.mapton.api.MBookmarkManager;
 import org.mapton.api.Mapton;
@@ -37,9 +38,14 @@ public abstract class FileAction {
     protected ExtensionFilter mExtGeo = new ExtensionFilter("SBG Geo (*.geo)", "*.geo");
     protected ExtensionFilter mExtJson = new ExtensionFilter("JSON (*.json)", "*.json");
     protected ExtensionFilter mExtKml = new ExtensionFilter("Keyhole Markup Language (*.kml)", "*.kml");
-    protected final MBookmarkManager mManager = MBookmarkManager.getInstance();
-    protected final String mTitle = Dict.BOOKMARKS.toString();
     protected Color mIconColor = Mapton.optionsGeneral().getIconColorForBackground();
+    protected final MBookmarkManager mManager = MBookmarkManager.getInstance();
+    protected PopOver mPopOver;
+    protected final String mTitle = Dict.BOOKMARKS.toString();
+
+    public FileAction(PopOver popOver) {
+        mPopOver = popOver;
+    }
 
     public abstract Action getAction(Node owner);
 }

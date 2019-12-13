@@ -18,6 +18,7 @@ package org.mapton.base.ui.grid;
 import javafx.scene.Node;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
+import org.controlsfx.control.PopOver;
 import org.controlsfx.control.action.Action;
 import org.mapton.api.MDict;
 import org.mapton.api.MLocalGridManager;
@@ -30,9 +31,14 @@ import org.mapton.api.Mapton;
 public abstract class FileAction {
 
     protected final FileChooser.ExtensionFilter mExtGrid = new FileChooser.ExtensionFilter("Mapton Grid (*.grid)", "*.grid");
-    protected final MLocalGridManager mManager = MLocalGridManager.getInstance();
-    protected final String mTitle = MDict.GRIDS.toString();
     protected Color mIconColor = Mapton.optionsGeneral().getIconColorForBackground();
+    protected final MLocalGridManager mManager = MLocalGridManager.getInstance();
+    protected PopOver mPopOver;
+    protected final String mTitle = MDict.GRIDS.toString();
+
+    public FileAction(PopOver popOver) {
+        mPopOver = popOver;
+    }
 
     public abstract Action getAction(Node owner);
 }

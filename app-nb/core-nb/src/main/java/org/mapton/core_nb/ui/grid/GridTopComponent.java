@@ -66,7 +66,7 @@ public final class GridTopComponent extends MTopComponent implements MMapMagnet 
     }
 
     private Scene createScene() {
-        mGridForm = new GridView();
+        mGridForm = new GridView(null);
         Label titleLabel = Mapton.createTitle(MDict.GRID.toString());
         mRoot = new BorderPane(mGridForm);
         mRoot.setTop(titleLabel);

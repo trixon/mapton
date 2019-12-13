@@ -30,6 +30,7 @@ import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.controlsfx.control.PopOver;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.glyphfont.FontAwesome;
 import org.mapton.api.MBookmark;
@@ -53,6 +54,10 @@ public class FileImportAction extends FileAction {
     private int mErrors;
     private int mImports;
 
+    public FileImportAction(PopOver popOver) {
+        super(popOver);
+    }
+
     @Override
     public Action getAction(Node owner) {
         Action action = new Action(Dict.IMPORT.toString(), (t) -> {
@@ -62,6 +67,10 @@ public class FileImportAction extends FileAction {
             SimpleDialog.addFilter(mExtJson);
             SimpleDialog.setFilter(mExtCsv);
             SimpleDialog.setOwner(owner.getScene().getWindow());
+            if (mPopOver != null) {
+                mPopOver.hide();
+            }
+
             final String dialogTitle = String.format("%s %s", Dict.IMPORT.toString(), mTitle.toLowerCase());
             SimpleDialog.setTitle(dialogTitle);
 

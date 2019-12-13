@@ -141,8 +141,8 @@ public class MapModule extends MWorkbenchModule {
     private void createUI() {
         mSearchView = new SearchView();
 
-        mBookmarksDrawerContent = new TitledDrawerContent(Dict.BOOKMARKS.toString(), new BookmarksView());
-        mGridDrawerContent = new TitledDrawerContent(MDict.GRID.toString(), new GridView());
+        mBookmarksDrawerContent = new TitledDrawerContent(Dict.BOOKMARKS.toString(), new BookmarksView(null));
+        mGridDrawerContent = new TitledDrawerContent(MDict.GRID.toString(), new GridView(null));
         mToolDrawerContent = new TitledDrawerContent(Dict.TOOLBOX.toString(), new ToolboxView());
 
         LocalGridsView.setLocalGridEditor(LocalGridEditor.getInstance());

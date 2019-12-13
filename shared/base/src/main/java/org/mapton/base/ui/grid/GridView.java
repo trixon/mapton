@@ -18,14 +18,17 @@ package org.mapton.base.ui.grid;
 import javafx.geometry.Insets;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import org.controlsfx.control.PopOver;
 import org.mapton.api.MActivatable;
 
 public final class GridView extends VBox implements MActivatable {
 
     private GlobalGridView mGlobalGridView;
     private LocalGridsView mLocalGridView;
+    private final PopOver mPopOver;
 
-    public GridView() {
+    public GridView(PopOver popOver) {
+        mPopOver = popOver;
         createUI();
     }
 
@@ -36,7 +39,7 @@ public final class GridView extends VBox implements MActivatable {
 
     private void createUI() {
         mGlobalGridView = new GlobalGridView();
-        mLocalGridView = new LocalGridsView();
+        mLocalGridView = new LocalGridsView(mPopOver);
 
         mGlobalGridView.setPadding(new Insets(8));
         setSpacing(8);

@@ -289,10 +289,10 @@ public class MapToolBar extends BaseToolBar {
 
     private void initPopOvers() {
         mBookmarkPopOver = new PopOver();
-        initPopOver(mBookmarkPopOver, Dict.BOOKMARKS.toString(), new BookmarksView());
+        initPopOver(mBookmarkPopOver, Dict.BOOKMARKS.toString(), new BookmarksView(mBookmarkPopOver));
 
         mGridPopOver = new PopOver();
-        initPopOver(mGridPopOver, MDict.GRIDS.toString(), new GridView());
+        initPopOver(mGridPopOver, MDict.GRIDS.toString(), new GridView(mGridPopOver));
 
         mLayerPopOver = new PopOver();
         initPopOver(mLayerPopOver, Dict.LAYERS.toString(), null);
