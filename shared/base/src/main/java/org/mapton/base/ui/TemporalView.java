@@ -16,6 +16,9 @@
 package org.mapton.base.ui;
 
 import java.time.LocalDate;
+import java.util.Locale;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
@@ -36,6 +39,7 @@ public class TemporalView extends BorderPane {
 
     private DatePane mDatePane;
     private final MTemporalManager mManager = MTemporalManager.getInstance();
+    private final StringProperty mTitleProperty = new SimpleStringProperty();
     private ToggleSwitch mToggleSwitch;
 
     public TemporalView() {
@@ -44,6 +48,10 @@ public class TemporalView extends BorderPane {
 
         mToggleSwitch.setSelected(true);
         mManager.refresh();
+    }
+
+    public StringProperty titleProperty() {
+        return mTitleProperty;
     }
 
     private void createUI() {
@@ -68,16 +76,48 @@ public class TemporalView extends BorderPane {
             } catch (Exception e) {
                 setDisable(true);
             }
+            refreshTitle();
         };
 
         mManager.minDateProperty().addListener(minMaxChangeListener);
         mManager.maxDateProperty().addListener(minMaxChangeListener);
+
+        ChangeListener<LocalDate> rangeChangeListener = (ObservableValue<? extends LocalDate> ov, LocalDate t, LocalDate t1) -> {
+            refreshTitle();
+        };
+
+        mManager.lowDateProperty().addListener(rangeChangeListener);
+        mManager.highDateProperty().addListener(rangeChangeListener);
 
         mManager.lowDateProperty().bindBidirectional(mDatePane.getFromDatePicker().valueProperty());
         mManager.highDateProperty().bindBidirectional(mDatePane.getToDatePicker().valueProperty());
 
         mToggleSwitch.selectedProperty().addListener((ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1) -> {
             mDatePane.setDateSelectionMode(t1 ? DateSelectionMode.INTERVAL : DateSelectionMode.POINT_IN_TIME);
+            refreshTitle();
         });
+    }
+
+    private void refreshTitle() {
+        if (isDisabled()) {
+            mTitleProperty.set(Dict.DATE.toString());
+        } else {
+            String text = null;
+            switch (mDatePane.getDateSelectionMode()) {
+                case INTERVAL:
+                    text = String.format("%s %s %s",
+                            mManager.getLowDate(),
+                            Dict.TO.toString().toLowerCase(Locale.getDefault()),
+                            mManager.getHighDate()
+                    );
+                    break;
+
+                case POINT_IN_TIME:
+                    text = mManager.getHighDate().toString();
+                    break;
+            }
+
+            mTitleProperty.set(text);
+        }
     }
 }

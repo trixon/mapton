@@ -144,8 +144,8 @@ public class MapToolBar extends BaseToolBar {
                 mAttributionAction,
                 mStyleAction,
                 ActionUtils.ACTION_SPAN,
-                mRulerAction,
                 mTemporalAction,
+                mRulerAction,
                 mToolboxAction
         ));
 
@@ -254,6 +254,7 @@ public class MapToolBar extends BaseToolBar {
         });
         mTemporalAction.setGraphic(MaterialIcon._Action.DATE_RANGE.getImageView(getIconSizeToolBarInt()));
         setTooltip(mTemporalAction, new KeyCodeCombination(KeyCode.D, KeyCombination.SHORTCUT_DOWN));
+        mTemporalAction.textProperty().bind(mTemporalView.titleProperty());
 
         //Copyright
         mAttributionAction = new Action("Copyright", event -> {
