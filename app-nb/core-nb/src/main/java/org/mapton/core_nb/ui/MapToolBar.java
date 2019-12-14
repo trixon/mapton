@@ -330,6 +330,13 @@ public class MapToolBar extends BaseToolBar {
         mTemporalPopOver.setAutoHide(false);
         mTemporalPopOver.setCloseButtonEnabled(true);
         mTemporalPopOver.setDetachable(true);
+        mTemporalPopOver.setOnShowing(event -> {
+            getButtonForAction(mTemporalAction).getStylesheets().remove(CSS_FILE);
+        });
+        mTemporalPopOver.setOnHiding(event -> {
+            getButtonForAction(mTemporalAction).getStylesheets().add(CSS_FILE);
+            onObjectHiding(mTemporalPopOver);
+        });
 
         setPopOverWidths(FxHelper.getUIScaled(DEFAULT_POP_OVER_WIDTH), mBookmarkPopOver, mGridPopOver, mToolboxPopOver);
 
