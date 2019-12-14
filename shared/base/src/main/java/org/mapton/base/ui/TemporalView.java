@@ -21,9 +21,11 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.geometry.Pos;
+import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import org.controlsfx.control.ToggleSwitch;
 import org.mapton.api.MTemporalManager;
 import se.trixon.almond.util.Dict;
@@ -41,6 +43,7 @@ public class TemporalView extends BorderPane {
     private final MTemporalManager mManager = MTemporalManager.getInstance();
     private final StringProperty mTitleProperty = new SimpleStringProperty();
     private ToggleSwitch mToggleSwitch;
+    private Button mResetButton;
 
     public TemporalView() {
         createUI();
@@ -59,10 +62,15 @@ public class TemporalView extends BorderPane {
         setPadding(FxHelper.getUIScaledInsets(8));
 
         mDatePane = new DatePane();
+        mResetButton = new Button(Dict.RESET.toString());
         mToggleSwitch = new ToggleSwitch(Dict.INTERVAL.toString());
-
-        HBox hBox = new HBox(mToggleSwitch);
-        hBox.setAlignment(Pos.CENTER_RIGHT);
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+        HBox hBox = new HBox(
+                mResetButton,
+                spacer,
+                mToggleSwitch
+        );
 
         setBottom(hBox);
         setCenter(mDatePane);
@@ -91,6 +99,12 @@ public class TemporalView extends BorderPane {
 
         mManager.lowDateProperty().bindBidirectional(mDatePane.getFromDatePicker().valueProperty());
         mManager.highDateProperty().bindBidirectional(mDatePane.getToDatePicker().valueProperty());
+
+        mResetButton.setOnAction(eh -> {
+            mToggleSwitch.setSelected(true);
+            mManager.lowDateProperty().set(mManager.getMinDate());
+            mManager.highDateProperty().set(mManager.getMaxDate());
+        });
 
         mToggleSwitch.selectedProperty().addListener((ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1) -> {
             mDatePane.setDateSelectionMode(t1 ? DateSelectionMode.INTERVAL : DateSelectionMode.POINT_IN_TIME);
