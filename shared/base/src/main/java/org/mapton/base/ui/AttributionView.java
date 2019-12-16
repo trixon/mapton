@@ -41,8 +41,8 @@ import se.trixon.almond.util.SystemHelper;
 public class AttributionView extends BorderPane {
 
     private final ResourceBundle mBundle = NbBundle.getBundle(AttributionView.class);
-    private WebView mWebView;
     private PopOver mPopOver;
+    private WebView mWebView;
 
     public AttributionView() {
         createUI();
@@ -92,36 +92,41 @@ public class AttributionView extends BorderPane {
     }
 
     private void updateDocumentInfo(MDocumentInfo documentInfo) {
-        LinkedHashMap<MAttribution, String> keys = new LinkedHashMap<>();
+        ContainerTag html;
+        if (documentInfo != null) {
+            LinkedHashMap<MAttribution, String> keys = new LinkedHashMap<>();
 
-        LinkedHashMap<String, MAttribution> attributions = documentInfo.getAttributions();
-        for (Map.Entry<String, MAttribution> entry : attributions.entrySet()) {
-            keys.put(entry.getValue(), entry.getKey());
+            LinkedHashMap<String, MAttribution> attributions = documentInfo.getAttributions();
+            for (Map.Entry<String, MAttribution> entry : attributions.entrySet()) {
+                keys.put(entry.getValue(), entry.getKey());
+            }
+
+            html = html(
+                    head(
+                            title(documentInfo.getName())
+                    ),
+                    body(
+                            h1(documentInfo.getName()),
+                            hr(),
+                            div(
+                                    each(attributions.values(), attribution
+                                            -> div(
+                                            h2(keys.get(attribution)),
+                                            p(iff(!attribution.isOnlyRaw(), rawHtml(String.format(mBundle.getString("attribution"),
+                                                    attribution.getProviderUrl(),
+                                                    attribution.getProviderName(),
+                                                    attribution.getLicenseUrl(),
+                                                    attribution.getLicenseName()
+                                            )))),
+                                            p(rawHtml(attribution.getRawHtml())),
+                                            hr())
+                                    )
+                            )
+                    )
+            );
+        } else {
+            html = html();
         }
-
-        ContainerTag html = html(
-                head(
-                        title(documentInfo.getName())
-                ),
-                body(
-                        h1(documentInfo.getName()),
-                        hr(),
-                        div(
-                                each(attributions.values(), attribution
-                                        -> div(
-                                        h2(keys.get(attribution)),
-                                        p(iff(!attribution.isOnlyRaw(), rawHtml(String.format(mBundle.getString("attribution"),
-                                                attribution.getProviderUrl(),
-                                                attribution.getProviderName(),
-                                                attribution.getLicenseUrl(),
-                                                attribution.getLicenseName()
-                                        )))),
-                                        p(rawHtml(attribution.getRawHtml())),
-                                        hr())
-                                )
-                        )
-                )
-        );
 
         //System.out.println(html.render());
         mWebView.getEngine().loadContent(html.render());

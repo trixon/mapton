@@ -354,6 +354,9 @@ public class MapToolBar extends BaseToolBar {
 
     private void updateDocumentInfo(MDocumentInfo documentInfo) {
         mAttributionAction.setDisabled(false);
-        mStyleAction.setText(documentInfo.getName());
+
+        if (documentInfo != null) {
+            mStyleAction.setText(documentInfo.getName());
+        }
     }
 }
