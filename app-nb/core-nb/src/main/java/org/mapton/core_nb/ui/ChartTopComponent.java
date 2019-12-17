@@ -35,7 +35,7 @@ import se.trixon.almond.util.Dict;
         //iconBase="SET/PATH/TO/ICON/HERE",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
-@TopComponent.Registration(mode = "output", openAtStartup = false)
+@TopComponent.Registration(mode = "mapBottom", openAtStartup = false)
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_ChartAction",
         preferredID = "ChartTopComponent"

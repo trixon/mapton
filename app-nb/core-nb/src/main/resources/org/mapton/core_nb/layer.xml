@@ -36,6 +36,8 @@ limitations under the License.
     </folder>
     <folder name="Windows2">
         <folder name="Modes">
+            <file name="mapTools.wsmode" url="mapToolsWsmode.xml"/>
+            <file name="mapBottom.wsmode" url="mapBottomWsmode.xml"/>
             <file name="navigator.wsmode" url="navigatorWsmode.xml"/>
             <file name="topLeft.wsmode" url="topLeftWsmode.xml"/>
         </folder>

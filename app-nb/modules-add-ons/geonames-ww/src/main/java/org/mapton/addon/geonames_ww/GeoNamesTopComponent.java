@@ -49,7 +49,7 @@ import se.trixon.almond.util.Dict;
         //iconBase="SET/PATH/TO/ICON/HERE",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
-@TopComponent.Registration(mode = "properties", openAtStartup = false)
+@TopComponent.Registration(mode = "mapTools", openAtStartup = false)
 public final class GeoNamesTopComponent extends MTopComponent implements MMapMagnet {
 
     private IndexedCheckModel<Country> mCheckModel;
