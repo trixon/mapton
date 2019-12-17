@@ -18,9 +18,6 @@
                 <configuration>
                     <publicPackages>
                         <publicPackage>org.mapton.core_nb.api.*</publicPackage>
-                        <publicPackage>com.dlsc.*</publicPackage>
-                        <publicPackage>org.openide.*</publicPackage>
-                        <publicPackage>se.trixon.*</publicPackage>
                     </publicPackages>
                     <nbmResources>
                         <nbmResource>
