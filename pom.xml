@@ -357,7 +357,12 @@
             </dependency>
             <dependency>
                 <groupId>org.mapton</groupId>
-                <artifactId>reports</artifactId>
+                <artifactId>reports-nb</artifactId>
+                <version>${mapton.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mapton</groupId>
+                <artifactId>reports-wb</artifactId>
                 <version>${mapton.version}</version>
             </dependency>
             <dependency>
