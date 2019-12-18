@@ -68,15 +68,15 @@
             <artifactId>javafx-web</artifactId>
         </dependency>
         <!--        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-web</artifactId>
-            <classifier>mac</classifier>
-        </dependency>
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-web</artifactId>
-            <classifier>linux</classifier>
-        </dependency>
+                    <groupId>org.openjfx</groupId>
+                    <artifactId>javafx-web</artifactId>
+                    <classifier>mac</classifier>
+                </dependency>
+                <dependency>
+                    <groupId>org.openjfx</groupId>
+                    <artifactId>javafx-web</artifactId>
+                    <classifier>linux</classifier>
+                </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-web</artifactId>
@@ -202,12 +202,12 @@
         </dependency>-->
 
         <!-- NetBeans -->
-        <dependency>
+        <!--        <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-netbeans-libs-javafx</artifactId>
             <version>${netbeans.version}</version>
             <scope>runtime</scope>
-        </dependency>
+        </dependency>-->
         <!--        <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-netbeans-libs-javafx-linux</artifactId>
