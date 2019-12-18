@@ -104,7 +104,7 @@ public class DataSourcesPane extends BorderPane {
                 restoreDefaultsAction
         ));
 
-        mToolBar = ActionUtils.createToolBar(actions, ActionUtils.ActionTextBehavior.HIDE);
+        mToolBar = ActionUtils.createToolBar(actions, ActionUtils.ActionTextBehavior.SHOW);
         mToolBar.setStyle("-fx-spacing: 0px;");
         mToolBar.setPadding(Insets.EMPTY);
 
