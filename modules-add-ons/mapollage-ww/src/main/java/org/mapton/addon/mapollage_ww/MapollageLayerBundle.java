@@ -110,7 +110,7 @@ public class MapollageLayerBundle extends LayerBundle {
     private void init() {
         mIconLayer.setName(Dict.PHOTOS.toString());
         setCategoryAddOns(mIconLayer);
-        attachTopComponentToLayer("MapollageTopComponent", mIconLayer);
+        attachTopComponentToLayer("PhotosTopComponent", mIconLayer);
 
         mIconLayer.setEnabled(true);
 
