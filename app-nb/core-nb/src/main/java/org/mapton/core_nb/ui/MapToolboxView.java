@@ -32,11 +32,15 @@ import javafx.scene.layout.BorderPane;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.textfield.TextFields;
+import org.mapton.api.MKey;
 import org.mapton.api.MToolMap;
+import org.mapton.api.Mapton;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.util.NbPreferences;
+import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.GlobalStateChangeEvent;
 import se.trixon.almond.util.StringHelper;
 
 /**
@@ -82,6 +86,10 @@ public class MapToolboxView extends BorderPane {
         Lookup.getDefault().lookupResult(MToolMap.class).addLookupListener((LookupEvent ev) -> {
             initTools();
         });
+
+        Mapton.getGlobalState().addListener((GlobalStateChangeEvent evt) -> {
+            Almond.openAndActivateTopComponent(evt.getValue());
+        }, MKey.LAYER_FAST_OPEN_TOOL);
     }
 
     private void createUI() {

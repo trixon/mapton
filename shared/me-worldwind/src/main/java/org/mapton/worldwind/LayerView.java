@@ -49,6 +49,7 @@ import org.controlsfx.control.action.ActionUtils;
 import org.controlsfx.control.textfield.TextFields;
 import org.controlsfx.glyphfont.FontAwesome;
 import org.mapton.api.MActivatable;
+import org.mapton.api.MKey;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.mapton.worldwind.api.WWHelper;
@@ -254,7 +255,7 @@ public class LayerView extends BorderPane implements MActivatable {
             if (selectedItem != null) {
                 Layer layer = selectedItem.getValue();
                 if (layer != null && layer.hasKey(WWHelper.KEY_FAST_OPEN) && event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
-                    //aaaAlmond.openAndActivateTopComponent((String) layer.getValue(WWHelper.KEY_FAST_OPEN));
+                    Mapton.getGlobalState().put(MKey.LAYER_FAST_OPEN_TOOL, layer.getValue(WWHelper.KEY_FAST_OPEN));
                     if (!event.isAltDown()) {
                         mCheckModel.check(selectedItem);
                     }
