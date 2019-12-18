@@ -31,9 +31,14 @@ public class Initializer implements Runnable {
     private WikipediaView mWikipediaView;
 
     public Initializer() {
-        Platform.startup(() -> {
+        Runnable r = () -> {
             mWikipediaView = new WikipediaView();
-        });
+        };
+        try {
+            Platform.startup(r);
+        } catch (Exception e) {
+            Platform.runLater(r);
+        }
     }
 
     @Override
