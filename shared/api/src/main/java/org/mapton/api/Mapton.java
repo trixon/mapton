@@ -73,12 +73,6 @@ public class Mapton {
         CONFIG_DIR = new File(System.getProperty("netbeans.user"), "mapton-modules");
         CACHE_DIR = new File(FileUtils.getUserDirectory(), ".cache/mapton");
         System.setProperty("mapton.cache", CACHE_DIR.getAbsolutePath());//Used by WorldWind
-
-        optionsGeneral().nightModeProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
-            for (Map.Entry<WebEngine, String> entry : WEB_ENGINE_TO_STYLE.entrySet()) {
-                applyHtmlCss(entry.getKey(), entry.getValue());
-            }
-        });
     }
 
     public static void applyHtmlCss(WebView webView, String filename) {
@@ -260,6 +254,13 @@ public class Mapton {
     }
 
     protected Mapton() {
+        Platform.runLater(() -> {
+            optionsGeneral().nightModeProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
+                for (Map.Entry<WebEngine, String> entry : WEB_ENGINE_TO_STYLE.entrySet()) {
+                    applyHtmlCss(entry.getKey(), entry.getValue());
+                }
+            });
+        });
     }
 
     public DoubleProperty zoomProperty() {
