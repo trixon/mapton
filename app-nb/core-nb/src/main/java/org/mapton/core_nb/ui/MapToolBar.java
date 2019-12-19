@@ -152,7 +152,7 @@ public class MapToolBar extends BaseToolBar {
         Platform.runLater(() -> {
             ActionUtils.updateToolBar(this, actions, ActionUtils.ActionTextBehavior.HIDE);
 
-            storeButtonWidths(mStyleAction, mRulerAction, mTemporalAction, mToolboxAction);
+            storeButtonWidths(mStyleAction, mTemporalAction);
             FxHelper.adjustButtonWidth(getItems().stream(), getIconSizeContextMenu() * 1.5);
             setTextFromActions();
 
