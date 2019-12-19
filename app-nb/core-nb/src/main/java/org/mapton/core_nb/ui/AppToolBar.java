@@ -67,20 +67,19 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
 public class AppToolBar extends BaseToolBar {
 
     private final String CSS_FILE = getClass().getResource("toolbar_app.css").toExternalForm();
-
+    private FxActionSwing mAboutAction;
     private final AlmondOptions mAlmondOptions = AlmondOptions.INSTANCE;
+    private FxActionSwingCheck mAlwaysOnTopAction;
+    private FxActionSwingCheck mFullscreenAction;
+    private Action mHelpAction;
+    private FxActionSwingCheck mMapAction;
+    private FxActionSwing mOptionsAction;
+    private FxActionSwing mOptionsPlatformAction;
+    private FxActionSwing mPluginsAction;
+    private FxActionSwing mQuitAction;
+    private FxActionSwing mResetWindowsAction;
+    private FxActionSwing mRestartAction;
     private Label mStatusLabel;
-    private FxActionSwing mSysAboutAction;
-    private Action mSysHelpAction;
-    private FxActionSwing mSysOptionsAction;
-    private FxActionSwing mSysOptionsPlatformAction;
-    private FxActionSwing mSysPluginsAction;
-    private FxActionSwing mSysQuitAction;
-    private FxActionSwing mSysRestartAction;
-    private FxActionSwingCheck mSysViewAlwaysOnTopAction;
-    private FxActionSwingCheck mSysViewFullscreenAction;
-    private FxActionSwingCheck mSysViewMapAction;
-    private FxActionSwing mSysViewResetAction;
     private Action mToolboxAction;
     private PopOver mToolboxPopOver;
 
@@ -109,9 +108,9 @@ public class AppToolBar extends BaseToolBar {
         setPadding(Insets.EMPTY);
 
         ActionGroup viewActionGroup = new ActionGroup(Dict.VIEW.toString(),
-                mSysViewAlwaysOnTopAction,
+                mAlwaysOnTopAction,
                 ActionUtils.ACTION_SEPARATOR,
-                mSysViewResetAction
+                mResetWindowsAction
         );
 
         ActionGroup systemActionGroup;
@@ -119,23 +118,23 @@ public class AppToolBar extends BaseToolBar {
             systemActionGroup = new ActionGroup(Dict.MENU.toString(), MaterialIcon._Navigation.MENU.getImageView(getIconSizeToolBar(), mOptions.getIconColorBright()),
                     viewActionGroup,
                     ActionUtils.ACTION_SEPARATOR,
-                    mSysPluginsAction,
+                    mPluginsAction,
                     ActionUtils.ACTION_SEPARATOR,
-                    mSysHelpAction
+                    mHelpAction
             );
         } else {
             systemActionGroup = new ActionGroup(Dict.MENU.toString(), MaterialIcon._Navigation.MENU.getImageView(getIconSizeToolBar(), mOptions.getIconColorBright()),
                     viewActionGroup,
                     ActionUtils.ACTION_SEPARATOR,
-                    mSysOptionsAction,
-                    mSysOptionsPlatformAction,
-                    mSysPluginsAction,
+                    mOptionsAction,
+                    mOptionsPlatformAction,
+                    mPluginsAction,
                     ActionUtils.ACTION_SEPARATOR,
-                    mSysHelpAction,
-                    mSysAboutAction,
+                    mHelpAction,
+                    mAboutAction,
                     ActionUtils.ACTION_SEPARATOR,
-                    mSysRestartAction,
-                    mSysQuitAction
+                    mRestartAction,
+                    mQuitAction
             );
         }
 
@@ -144,14 +143,14 @@ public class AppToolBar extends BaseToolBar {
                 systemActionGroup,
                 ActionUtils.ACTION_SPAN,
                 ActionUtils.ACTION_SPAN,
-                mSysViewMapAction,
+                mMapAction,
                 mToolboxAction
         ));
 
         setTooltip(systemActionGroup, new KeyCodeCombination(KeyCode.CONTEXT_MENU));
 
         if (!IS_MAC) {
-            actions.add(actions.size() - 1, mSysViewFullscreenAction);
+            actions.add(actions.size() - 1, mFullscreenAction);
         }
 
         Platform.runLater(() -> {
@@ -182,10 +181,10 @@ public class AppToolBar extends BaseToolBar {
 
     private void initActionsFx() {
         //Help
-        mSysHelpAction = new Action(Dict.HELP.toString(), (ActionEvent event) -> {
+        mHelpAction = new Action(Dict.HELP.toString(), (ActionEvent event) -> {
             SystemHelper.desktopBrowse("https://mapton.org/help/");
         });
-        mSysHelpAction.setAccelerator(KeyCombination.keyCombination("F1"));
+        mHelpAction.setAccelerator(KeyCombination.keyCombination("F1"));
 
         //mToolbox
         mToolboxAction = new Action(Dict.APPLICATION_TOOLS.toString(), event -> {
@@ -199,74 +198,74 @@ public class AppToolBar extends BaseToolBar {
 
     private void initActionsSwing() {
         //Full screen
-        mSysViewFullscreenAction = new FxActionSwingCheck(Dict.FULL_SCREEN.toString(), () -> {
+        mFullscreenAction = new FxActionSwingCheck(Dict.FULL_SCREEN.toString(), () -> {
             if (IS_MAC) {
                 Actions.forID("Almond", "se.trixon.almond.nbp.osx.actions.ToggleFullScreenAction").actionPerformed(null);
             } else {
                 Actions.forID("Window", "org.netbeans.core.windows.actions.ToggleFullScreenAction").actionPerformed(null);
             }
         });
-        mSysViewFullscreenAction.setAccelerator(KeyCombination.keyCombination("F11"));
-        mSysViewFullscreenAction.setGraphic(MaterialIcon._Navigation.FULLSCREEN.getImageView(getIconSizeToolBar(), mOptions.getIconColorBright()));
-        setTooltip(mSysViewFullscreenAction, new KeyCodeCombination(KeyCode.F11));
+        mFullscreenAction.setAccelerator(KeyCombination.keyCombination("F11"));
+        mFullscreenAction.setGraphic(MaterialIcon._Navigation.FULLSCREEN.getImageView(getIconSizeToolBar(), mOptions.getIconColorBright()));
+        setTooltip(mFullscreenAction, new KeyCodeCombination(KeyCode.F11));
 
         //Map
-        mSysViewMapAction = new FxActionSwingCheck(Dict.MAP.toString(), () -> {
+        mMapAction = new FxActionSwingCheck(Dict.MAP.toString(), () -> {
             Actions.forID("Mapton", "org.mapton.core_nb.actions.OnlyMapAction").actionPerformed(null);
         });
-        mSysViewMapAction.setGraphic(MaterialIcon._Maps.MAP.getImageView(getIconSizeToolBar(), mOptions.getIconColorBright()));
-        mSysViewMapAction.setAccelerator(KeyCombination.keyCombination("F12"));
-        mSysViewMapAction.setSelected(mOptions.isMapOnly());
-        setTooltip(mSysViewMapAction, new KeyCodeCombination(KeyCode.F12));
+        mMapAction.setGraphic(MaterialIcon._Maps.MAP.getImageView(getIconSizeToolBar(), mOptions.getIconColorBright()));
+        mMapAction.setAccelerator(KeyCombination.keyCombination("F12"));
+        mMapAction.setSelected(mOptions.isMapOnly());
+        setTooltip(mMapAction, new KeyCodeCombination(KeyCode.F12));
 
         //OnTop
-        mSysViewAlwaysOnTopAction = new FxActionSwingCheck(Dict.ALWAYS_ON_TOP.toString(), () -> {
+        mAlwaysOnTopAction = new FxActionSwingCheck(Dict.ALWAYS_ON_TOP.toString(), () -> {
             Actions.forID("View", "se.trixon.almond.nbp.StayOnTopAction").actionPerformed(null);
         });
-        mSysViewAlwaysOnTopAction.setSelected(mAlmondOptions.getAlwaysOnTop());
+        mAlwaysOnTopAction.setSelected(mAlmondOptions.getAlwaysOnTop());
 
         //Reset
-        mSysViewResetAction = new FxActionSwing(Dict.RESET_WINDOWS.toString(), () -> {
+        mResetWindowsAction = new FxActionSwing(Dict.RESET_WINDOWS.toString(), () -> {
             Actions.forID("Window", "org.netbeans.core.windows.actions.ResetWindowsAction").actionPerformed(null);
         });
 
 //
         //Plugins
-        mSysPluginsAction = new FxActionSwing(Dict.PLUGINS.toString(), () -> {
+        mPluginsAction = new FxActionSwing(Dict.PLUGINS.toString(), () -> {
             final java.awt.event.ActionEvent dummySwingActionEvent = new java.awt.event.ActionEvent(new JButton(), 0, "");
             Actions.forID("System", "org.netbeans.modules.autoupdate.ui.actions.PluginManagerAction").actionPerformed(dummySwingActionEvent);
         });
 
         //options
-        mSysOptionsAction = new FxActionSwing(Dict.OPTIONS.toString(), () -> {
+        mOptionsAction = new FxActionSwing(Dict.OPTIONS.toString(), () -> {
             Actions.forID("Mapton", "org.mapton.core_nb.actions.OptionsAction").actionPerformed(null);
         });
         if (!IS_MAC) {
-            mSysOptionsAction.setAccelerator(new KeyCodeCombination(KeyCode.COMMA, KeyCombination.SHORTCUT_DOWN));
+            mOptionsAction.setAccelerator(new KeyCodeCombination(KeyCode.COMMA, KeyCombination.SHORTCUT_DOWN));
         }
 
         //options - platform
-        mSysOptionsPlatformAction = new FxActionSwing(String.format("%s (%s)", Dict.OPTIONS.toString(), Dict.PLATFORM.toString()), () -> {
+        mOptionsPlatformAction = new FxActionSwing(String.format("%s (%s)", Dict.OPTIONS.toString(), Dict.PLATFORM.toString()), () -> {
             Actions.forID("Mapton", "org.mapton.core_nb.actions.OptionsPlatformAction").actionPerformed(null);
         });
 
         //About
-        mSysAboutAction = new FxActionSwing(String.format(Dict.ABOUT_S.toString(), "Mapton"), () -> {
+        mAboutAction = new FxActionSwing(String.format(Dict.ABOUT_S.toString(), "Mapton"), () -> {
             AboutModel aboutModel = new AboutModel(SystemHelper.getBundle(Initializer.class, "about"), SystemHelper.getResourceAsImageView(Initializer.class, "logo.png"));
             NbAboutFx nbAboutFx = new NbAboutFx(aboutModel);
             nbAboutFx.display();
         });
 
         //restart
-        mSysRestartAction = new FxActionSwing(Dict.RESTART.toString(), () -> {
+        mRestartAction = new FxActionSwing(Dict.RESTART.toString(), () -> {
             Actions.forID("File", "se.trixon.almond.nbp.actions.RestartAction").actionPerformed(null);
         });
 
         //quit
-        mSysQuitAction = new FxActionSwing(Dict.QUIT.toString(), () -> {
+        mQuitAction = new FxActionSwing(Dict.QUIT.toString(), () -> {
             Actions.forID("File", "se.trixon.almond.nbp.actions.QuitAction").actionPerformed(null);
         });
-        mSysQuitAction.setAccelerator(new KeyCodeCombination(KeyCode.Q, KeyCombination.SHORTCUT_DOWN));
+        mQuitAction.setAccelerator(new KeyCodeCombination(KeyCode.Q, KeyCombination.SHORTCUT_DOWN));
     }
 
     private void initListeners() {
@@ -277,10 +276,10 @@ public class AppToolBar extends BaseToolBar {
                 public void windowActivated(WindowEvent e) {
                     final boolean fullscreen = frame.isUndecorated();
                     mOptions.setFullscreen(fullscreen);
-                    mSysViewFullscreenAction.setSelected(fullscreen);
+                    mFullscreenAction.setSelected(fullscreen);
                     Platform.runLater(() -> {
                         MaterialIcon._Navigation fullscreenIcon = fullscreen == true ? MaterialIcon._Navigation.FULLSCREEN_EXIT : MaterialIcon._Navigation.FULLSCREEN;
-                        mSysViewFullscreenAction.setGraphic(fullscreenIcon.getImageView(getIconSizeToolBar(), mOptions.getIconColorBright()));
+                        mFullscreenAction.setGraphic(fullscreenIcon.getImageView(getIconSizeToolBar(), mOptions.getIconColorBright()));
                     });
                 }
             });
@@ -289,7 +288,7 @@ public class AppToolBar extends BaseToolBar {
         mOptions.getPreferences().addPreferenceChangeListener((PreferenceChangeEvent evt) -> {
             switch (evt.getKey()) {
                 case MOptions.KEY_MAP_ONLY:
-                    mSysViewMapAction.setSelected(mOptions.isMapOnly());
+                    mMapAction.setSelected(mOptions.isMapOnly());
                     mOptionsGeneral.maximizedMapProperty().set(mOptions.isMapOnly());
                     break;
             }
