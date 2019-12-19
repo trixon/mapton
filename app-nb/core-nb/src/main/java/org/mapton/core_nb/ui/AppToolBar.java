@@ -26,6 +26,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.ButtonBase;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -68,6 +69,7 @@ public class AppToolBar extends BaseToolBar {
     private final String CSS_FILE = getClass().getResource("toolbar_app.css").toExternalForm();
 
     private final AlmondOptions mAlmondOptions = AlmondOptions.INSTANCE;
+    private Label mStatusLabel;
     private FxActionSwing mSysAboutAction;
     private Action mSysHelpAction;
     private FxActionSwing mSysOptionsAction;
@@ -141,6 +143,7 @@ public class AppToolBar extends BaseToolBar {
         actions.addAll(Arrays.asList(
                 systemActionGroup,
                 ActionUtils.ACTION_SPAN,
+                ActionUtils.ACTION_SPAN,
                 mSysViewMapAction,
                 mToolboxAction
         ));
@@ -160,6 +163,9 @@ public class AppToolBar extends BaseToolBar {
             });
 
             getStylesheets().add(CSS_FILE);
+
+            mStatusLabel = new Label();
+            getItems().add(2, mStatusLabel);
 
             MenuButton menuButton = (MenuButton) getItems().get(0);
             menuButton.setOnMousePressed(event -> {
@@ -320,6 +326,12 @@ public class AppToolBar extends BaseToolBar {
                 }
             });
         }, MKey.NOTIFICATION, MKey.NOTIFICATION_CONFIRM, MKey.NOTIFICATION_ERROR, MKey.NOTIFICATION_INFORMATION, MKey.NOTIFICATION_WARNING);
+
+        Mapton.getGlobalState().addListener(evt -> {
+            Platform.runLater(() -> {
+                mStatusLabel.setText(evt.getValue());
+            });
+        }, MKey.APP_TOOL_LABEL);
     }
 
     private void initPopOvers() {
