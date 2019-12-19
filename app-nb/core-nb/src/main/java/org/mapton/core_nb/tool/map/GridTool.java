@@ -17,15 +17,16 @@ package org.mapton.core_nb.tool.map;
 
 import org.controlsfx.control.action.Action;
 import org.mapton.api.MDict;
+import org.mapton.api.MToolMap;
+import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.fx.FxActionSwing;
-import org.mapton.api.MToolMap;
 
 /**
  *
  * @author Patrik Karlström
  */
-//@ServiceProvider(service = MToolMap.class)
+@ServiceProvider(service = MToolMap.class)
 public class GridTool implements MToolMap {
 
     @Override

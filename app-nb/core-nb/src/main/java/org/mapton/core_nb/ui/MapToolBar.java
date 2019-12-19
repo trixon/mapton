@@ -140,7 +140,7 @@ public class MapToolBar extends BaseToolBar {
                 mHomeAction,
                 mBookmarkAction,
                 mLayerAction,
-                mGridAction,
+                //                mGridAction,
                 mAttributionAction,
                 mStyleAction,
                 ActionUtils.ACTION_SPAN,

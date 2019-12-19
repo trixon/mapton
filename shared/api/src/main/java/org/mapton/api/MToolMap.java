@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,11 +15,9 @@
  */
 package org.mapton.api;
 
-
 /**
  *
  * @author Patrik Karlström
  */
-public  interface MToolMap extends MToolBase{
-
+public interface MToolMap extends MToolBase {
 }

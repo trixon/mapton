@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,16 +17,16 @@ package org.mapton.api;
 
 import org.controlsfx.control.action.Action;
 
-
 /**
  *
  * @author Patrik Karlström
  */
 public interface MToolBase {
-     Action getAction();
+
+    Action getAction();
 
     default String getParent() {
         return null;
     }
-   
+
 }
