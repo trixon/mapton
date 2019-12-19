@@ -28,7 +28,6 @@ import org.apache.commons.lang3.SystemUtils;
 import org.controlsfx.control.PopOver;
 import org.controlsfx.control.action.Action;
 import org.mapton.api.MOptions;
-import org.mapton.api.MOptions2;
 import org.mapton.api.MOptionsGeneral;
 import org.mapton.api.Mapton;
 
@@ -41,6 +40,7 @@ public abstract class BaseToolBar extends ToolBar {
     public static final int DEFAULT_POP_OVER_WIDTH = 350;
     public static final boolean IS_MAC = SystemUtils.IS_OS_MAC;
 
+    protected final HashSet<PopOver> mAlwaysShowPopOvers = new HashSet<>();
     protected final MOptions mOptions = MOptions.getInstance();
     protected final MOptionsGeneral mOptionsGeneral = Mapton.optionsGeneral();
     protected final HashSet<PopOver> mPopOvers = new HashSet<>();
@@ -68,7 +68,7 @@ public abstract class BaseToolBar extends ToolBar {
         return null;
     }
 
-    protected void initPopOver(PopOver popOver, String title, Node content) {
+    protected void initPopOver(PopOver popOver, String title, Node content, boolean alwaysUsePopOver) {
         popOver.setTitle(title);
         popOver.setContentNode(content);
         popOver.setArrowLocation(PopOver.ArrowLocation.TOP_LEFT);
@@ -80,6 +80,9 @@ public abstract class BaseToolBar extends ToolBar {
             onObjectHiding(popOver);
         });
         mPopOvers.add(popOver);
+        if (alwaysUsePopOver) {
+            mAlwaysShowPopOvers.add(popOver);
+        }
     }
 
     protected void setPopOverWidths(double width, PopOver... popOvers) {
@@ -138,8 +141,8 @@ public abstract class BaseToolBar extends ToolBar {
         });
     }
 
-    protected boolean usePopOver() {
-        return MOptions2.getInstance().general().isPreferPopover() || mOptions.isMapOnly();
+    protected boolean usePopOver(PopOver popOver) {
+        return mOptionsGeneral.isPreferPopover() || mOptions.isMapOnly() || mAlwaysShowPopOvers.contains(popOver);
     }
 
 }

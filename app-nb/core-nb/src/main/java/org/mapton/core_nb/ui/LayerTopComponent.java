@@ -20,6 +20,7 @@ import java.awt.event.ComponentEvent;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
+import org.mapton.core_nb.api.MMapMagnet;
 import org.mapton.core_nb.api.MTopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
@@ -38,7 +39,7 @@ import se.trixon.almond.util.Dict;
         preferredID = "LayerTopComponent",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
-@TopComponent.Registration(mode = "navigator", openAtStartup = false)
+@TopComponent.Registration(mode = "mapTools", openAtStartup = false)
 @ActionID(category = "Mapton", id = "org.mapton.core_nb.layer.LayerTopComponent")
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_LayerAction",
@@ -47,7 +48,7 @@ import se.trixon.almond.util.Dict;
 @Messages({
     "CTL_LayerAction=Layer"
 })
-public final class LayerTopComponent extends MTopComponent {
+public final class LayerTopComponent extends MTopComponent implements MMapMagnet {
 
     private BorderPane mBorderPane;
 

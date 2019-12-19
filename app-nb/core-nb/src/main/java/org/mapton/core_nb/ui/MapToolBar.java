@@ -169,7 +169,7 @@ public class MapToolBar extends BaseToolBar {
     private void initActionsFx() {
         //Bookmark
         mBookmarkAction = new Action(Dict.BOOKMARKS.toString(), event -> {
-            if (usePopOver()) {
+            if (usePopOver(mBookmarkPopOver)) {
                 if (shouldOpen(mBookmarkPopOver)) {
                     mBookmarkPopOver.show((Node) event.getSource());
                 }
@@ -185,7 +185,7 @@ public class MapToolBar extends BaseToolBar {
 
         //Layer
         mLayerAction = new Action(Dict.LAYERS.toString(), event -> {
-            if (usePopOver()) {
+            if (usePopOver(mLayerPopOver)) {
                 if (shouldOpen(mLayerPopOver)) {
                     mLayerPopOver.show((Node) event.getSource());
                 }
@@ -201,7 +201,7 @@ public class MapToolBar extends BaseToolBar {
 
         //Grid
         mGridAction = new Action(MDict.GRIDS.toString(), event -> {
-            if (usePopOver()) {
+            if (usePopOver(mGridPopOver)) {
                 if (shouldOpen(mGridPopOver)) {
                     mGridPopOver.show((Node) event.getSource());
                 }
@@ -216,7 +216,7 @@ public class MapToolBar extends BaseToolBar {
 
         //mToolbox
         mToolboxAction = new Action(MDict.MAP_TOOLS.toString(), event -> {
-            if (usePopOver()) {
+            if (usePopOver(mToolboxPopOver)) {
                 if (shouldOpen(mToolboxPopOver)) {
                     mToolboxPopOver.show((Node) event.getSource());
                 }
@@ -290,20 +290,20 @@ public class MapToolBar extends BaseToolBar {
 
     private void initPopOvers() {
         mBookmarkPopOver = new PopOver();
-        initPopOver(mBookmarkPopOver, Dict.BOOKMARKS.toString(), new BookmarksView(mBookmarkPopOver));
+        initPopOver(mBookmarkPopOver, Dict.BOOKMARKS.toString(), new BookmarksView(mBookmarkPopOver), false);
 
         mGridPopOver = new PopOver();
-        initPopOver(mGridPopOver, MDict.GRIDS.toString(), new GridView(mGridPopOver));
+        initPopOver(mGridPopOver, MDict.GRIDS.toString(), new GridView(mGridPopOver), false);
 
         mLayerPopOver = new PopOver();
-        initPopOver(mLayerPopOver, Dict.LAYERS.toString(), null);
+        initPopOver(mLayerPopOver, Dict.LAYERS.toString(), null, false);
         mLayerPopOver.setOnShowing(event -> {
             mLayerPopOver.setContentNode(new LayerView());//TODO Why this?
             setPopOverWidths(FxHelper.getUIScaled(DEFAULT_POP_OVER_WIDTH), mLayerPopOver);
         });
 
         mStylePopOver = new PopOver();
-        initPopOver(mStylePopOver, String.format("%s & %s", Dict.TYPE.toString(), Dict.STYLE.toString()), new BorderPane());
+        initPopOver(mStylePopOver, String.format("%s & %s", Dict.TYPE.toString(), Dict.STYLE.toString()), new BorderPane(), true);
         mStylePopOver.setOnShowing(event -> {
             getButtonForAction(mStyleAction).getStylesheets().remove(CSS_FILE);
         });
@@ -313,11 +313,11 @@ public class MapToolBar extends BaseToolBar {
         });
 
         mToolboxPopOver = new PopOver();
-        initPopOver(mToolboxPopOver, MDict.MAP_TOOLS.toString(), new MapToolboxView());
+        initPopOver(mToolboxPopOver, MDict.MAP_TOOLS.toString(), new MapToolboxView(), true);
         mToolboxPopOver.setArrowLocation(ArrowLocation.TOP_RIGHT);
 
         mRulerPopOver = new PopOver();
-        initPopOver(mRulerPopOver, Dict.RULER.toString(), new RulerView());
+        initPopOver(mRulerPopOver, Dict.RULER.toString(), new RulerView(), true);
         mRulerPopOver.setArrowLocation(ArrowLocation.TOP_RIGHT);
         mRulerPopOver.setAutoHide(false);
         mRulerPopOver.setCloseButtonEnabled(true);
@@ -325,7 +325,7 @@ public class MapToolBar extends BaseToolBar {
 
         mTemporalPopOver = new PopOver();
         mTemporalView = new TemporalView();
-        initPopOver(mTemporalPopOver, Dict.Time.DATE.toString(), mTemporalView);
+        initPopOver(mTemporalPopOver, Dict.Time.DATE.toString(), mTemporalView, true);
         mTemporalPopOver.setArrowLocation(ArrowLocation.TOP_RIGHT);
         mTemporalPopOver.setAutoHide(false);
         mTemporalPopOver.setCloseButtonEnabled(true);
@@ -343,7 +343,7 @@ public class MapToolBar extends BaseToolBar {
         Platform.runLater(() -> {
             mAttributionPopOver = new PopOver();
             mAttributionView = new AttributionView(mAttributionPopOver);
-            initPopOver(mAttributionPopOver, Dict.COPYRIGHT.toString(), mAttributionView);
+            initPopOver(mAttributionPopOver, Dict.COPYRIGHT.toString(), mAttributionView, true);
             mAttributionPopOver.setArrowLocation(ArrowLocation.TOP_LEFT);
         });
     }

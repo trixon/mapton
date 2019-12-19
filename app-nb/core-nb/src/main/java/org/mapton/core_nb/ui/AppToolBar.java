@@ -73,8 +73,8 @@ public class AppToolBar extends BaseToolBar {
     private FxActionSwing mSysOptionsAction;
     private FxActionSwing mSysOptionsPlatformAction;
     private FxActionSwing mSysPluginsAction;
-    private FxActionSwing mSysRestartAction;
     private FxActionSwing mSysQuitAction;
+    private FxActionSwing mSysRestartAction;
     private FxActionSwingCheck mSysViewAlwaysOnTopAction;
     private FxActionSwingCheck mSysViewFullscreenAction;
     private FxActionSwingCheck mSysViewMapAction;
@@ -97,6 +97,10 @@ public class AppToolBar extends BaseToolBar {
                 ((MenuButton) node).show();
             }
         });
+    }
+
+    public void toogleToolboxPopOver() {
+        tooglePopOver(mToolboxPopOver, mToolboxAction);
     }
 
     private void init() {
@@ -280,9 +284,7 @@ public class AppToolBar extends BaseToolBar {
             switch (evt.getKey()) {
                 case MOptions.KEY_MAP_ONLY:
                     mSysViewMapAction.setSelected(mOptions.isMapOnly());
-                    break;
-
-                default:
+                    mOptionsGeneral.maximizedMapProperty().set(mOptions.isMapOnly());
                     break;
             }
         });
@@ -320,13 +322,9 @@ public class AppToolBar extends BaseToolBar {
         }, MKey.NOTIFICATION, MKey.NOTIFICATION_CONFIRM, MKey.NOTIFICATION_ERROR, MKey.NOTIFICATION_INFORMATION, MKey.NOTIFICATION_WARNING);
     }
 
-    public void toogleToolboxPopOver() {
-        tooglePopOver(mToolboxPopOver, mToolboxAction);
-    }
-
     private void initPopOvers() {
         mToolboxPopOver = new PopOver();
-        initPopOver(mToolboxPopOver, Dict.APPLICATION_TOOLS.toString(), new AppToolboxView());
+        initPopOver(mToolboxPopOver, Dict.APPLICATION_TOOLS.toString(), new AppToolboxView(), true);
         mToolboxPopOver.setArrowLocation(ArrowLocation.TOP_RIGHT);
         mToolboxPopOver.setCloseButtonEnabled(true);
         mToolboxPopOver.setDetachable(true);

@@ -38,11 +38,11 @@ import org.openide.windows.TopComponent;
         //iconBase="SET/PATH/TO/ICON/HERE",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
-@TopComponent.Registration(mode = "properties", openAtStartup = false)
+@TopComponent.Registration(mode = "mapTools", openAtStartup = false)
 public final class GridTopComponent extends MTopComponent implements MMapMagnet {
 
-    private BorderPane mRoot;
     private GridView mGridForm;
+    private BorderPane mRoot;
 
     public GridTopComponent() {
         setName(MDict.GRID.toString());

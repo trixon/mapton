@@ -18,6 +18,7 @@ package org.mapton.core_nb.ui.bookmark;
 import javafx.scene.Scene;
 import org.mapton.api.MOptions;
 import org.mapton.base.ui.bookmark.BookmarksView;
+import org.mapton.core_nb.api.MMapMagnet;
 import org.mapton.core_nb.api.MTopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
@@ -37,7 +38,7 @@ import se.trixon.almond.util.Dict;
         preferredID = "BookmarkTopComponent",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
-@TopComponent.Registration(mode = "topLeft", openAtStartup = false)
+@TopComponent.Registration(mode = "mapTools", openAtStartup = false)
 @ActionID(category = "Window", id = "org.mapton.core_nb.bookmark.BookmarkTopComponent")
 @ActionReference(path = "Menu/Window" /*, position = 333 */)
 @TopComponent.OpenActionRegistration(
@@ -47,7 +48,7 @@ import se.trixon.almond.util.Dict;
 @Messages({
     "CTL_BookmarkAction=Bookmark"
 })
-public final class BookmarkTopComponent extends MTopComponent {
+public final class BookmarkTopComponent extends MTopComponent implements MMapMagnet {
 
     public BookmarkTopComponent() {
         putClientProperty(PROP_MAXIMIZATION_DISABLED, Boolean.TRUE);
@@ -76,10 +77,6 @@ public final class BookmarkTopComponent extends MTopComponent {
         setScene(createScene());
     }
 
-    private Scene createScene() {
-        return new Scene(new BookmarksView(null));
-    }
-
     void readProperties(java.util.Properties p) {
         String version = p.getProperty("version");
     }
@@ -88,5 +85,9 @@ public final class BookmarkTopComponent extends MTopComponent {
         // better to version settings since initial version as advocated at
         // http://wiki.apidesign.org/wiki/PropertyFiles
         p.setProperty("version", "1.0");
+    }
+
+    private Scene createScene() {
+        return new Scene(new BookmarksView(null));
     }
 }

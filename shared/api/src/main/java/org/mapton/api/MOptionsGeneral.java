@@ -67,14 +67,14 @@ public class MOptionsGeneral {
         mCategory = Category.of(Dict.GENERAL.toString(),
                 Group.of(
                         Dict.LOOK_AND_FEEL.toString(),
-                        //                        Setting.of(mBundle.getString("popover"), mPreferPopoverProperty).customKey("general.map.popover"),
+                        Setting.of(mBundle.getString("popover"), mPreferPopoverProperty).customKey("general.map.popover"),
                         Setting.of(Dict.NIGHT_MODE.toString(), mNightModeProperty).customKey("general.map.nightMode"),
                         Setting.of(mBundle.getString("iconColor"), mIconColorDarkProperty).customKey("general.map.iconColor"),
                         Setting.of(mBundle.getString("iconColorNightMode"), mIconColorBrightProperty).customKey("general.map.iconColorNightMode")
                 ),
                 Group.of(Dict.MAP.toString(),
                         Setting.of(MDict.MAP_ENGINE.toString(), engineItems, mEngineProperty).customKey("general.map.engine"),
-                        Setting.of(mBundle.getString("maximize_map"), mMaximizedMapProperty).customKey("general.map.maximized"),
+                        //Setting.of(mBundle.getString("maximize_map"), mMaximizedMapProperty).customKey("general.map.maximized"),
                         Setting.of(mBundle.getString("crosshair"), mDisplayCrosshairProperty).customKey("general.map.crosshair"),
                         Setting.of(mBundle.getString("homeIcon"), mDisplayHomeIconProperty).customKey("general.map.homeIcon")
                 )
