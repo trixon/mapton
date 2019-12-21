@@ -41,6 +41,7 @@ import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.layers.LayerList;
 import gov.nasa.worldwind.layers.ViewControlsLayer;
 import gov.nasa.worldwind.layers.ViewControlsSelectListener;
+import gov.nasa.worldwind.layers.WorldMapLayer;
 import gov.nasa.worldwind.render.Highlightable;
 import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwind.render.WWIcon;
@@ -215,6 +216,9 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         ViewControlsLayer viewControlsLayer = new ViewControlsLayer();
         insertLayerBefore(viewControlsLayer, CompassLayer.class);
         addSelectListener(new ViewControlsSelectListener(this, viewControlsLayer));
+
+        MaskLayer maskLayer = new MaskLayer();
+        insertLayerBefore(maskLayer, WorldMapLayer.class);
 //        mNormalElevationModel = (CompoundElevationModel) wwd.getModel().getGlobe().getElevationModel();
         wwd.getModel().getGlobe().setElevationModel(mZeroElevationModel);
         wwd.getSceneController().setDeepPickEnabled(true);
@@ -522,6 +526,7 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         blacklist.add("Atmosphere");
         blacklist.add("Place Names");
         blacklist.add("Measure Tool");
+        blacklist.add("Mask");
 
         String styleId = mOptions.get(KEY_MAP_STYLE, DEFAULT_MAP_STYLE);
         String[] styleLayers = MapStyle.getLayers(styleId);

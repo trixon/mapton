@@ -27,6 +27,7 @@ public class ModuleOptions extends OptionsBase {
     public static final String KEY_DISPLAY_ATMOSPHERE = "display_atmosphere";
     public static final String KEY_DISPLAY_COMPASS = "display_compass";
     public static final String KEY_DISPLAY_CONTROLS = "display_controls";
+    public static final String KEY_DISPLAY_MASK = "display_mask";
     public static final String KEY_DISPLAY_PLACE_NAMES = "display_place_names";
     public static final String KEY_DISPLAY_SCALE_BAR = "display_scale_bar";
     public static final String KEY_DISPLAY_STARS = "display_stars";
@@ -36,6 +37,8 @@ public class ModuleOptions extends OptionsBase {
     public static final String KEY_MAP_OPACITY = "map_opacity";
     public static final String KEY_MAP_PROJECTION = "map_projection";
     public static final String KEY_MAP_STYLE = "map_style";
+    public static final String KEY_MASK_COLOR = "mask_color";
+    public static final String KEY_MASK_OPACITY = "mask_opacity";
     public static final String KEY_RULER_ANNOTATION = "ruler.annotation";
     public static final String KEY_RULER_COLOR_ANNOTATION = "ruler.color.annotation";
     public static final String KEY_RULER_COLOR_BACKGROUND = "ruler.color.background";
@@ -56,6 +59,7 @@ public class ModuleOptions extends OptionsBase {
     static final boolean DEFAULT_DISPLAY_ATMOSPHERE = true;
     static final boolean DEFAULT_DISPLAY_COMPASS = true;
     static final boolean DEFAULT_DISPLAY_CONTROLS = true;
+    static final boolean DEFAULT_DISPLAY_MASK = false;
     static final boolean DEFAULT_DISPLAY_PLACE_NAMES = true;
     static final boolean DEFAULT_DISPLAY_SCALE_BAR = true;
     static final boolean DEFAULT_DISPLAY_STARS = true;
@@ -65,6 +69,8 @@ public class ModuleOptions extends OptionsBase {
     static final double DEFAULT_MAP_OPACITY = 1.0;
     static final int DEFAULT_MAP_PROJECTION = 1;
     static final String DEFAULT_MAP_STYLE = "at.eox.osm";
+    static final String DEFAULT_MASK_COLOR = "ffffff";
+    static final float DEFAULT_MASK_OPACITY = 0.5f;
 
     public static ModuleOptions getInstance() {
         return Holder.INSTANCE;

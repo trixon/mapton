@@ -30,6 +30,7 @@ import javafx.geometry.Side;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.CustomMenuItem;
 import javafx.scene.control.Label;
@@ -48,6 +49,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
@@ -74,11 +76,14 @@ public class StyleView extends HBox {
     private CheckBox mCompassCheckBox;
     private CheckBox mControlsCheckBox;
     private CheckBox mElevationCheckBox;
+    private CheckBox mMaskCheckBox;
     private final GridPane mLeftPane = new GridPane();
     private RadioButton mModeFlatRadioButton;
     private RadioButton mModeGlobeRadioButton;
-    private VBox mOpacityBox;
-    private final Slider mOpacitySlider = new Slider(0, 1, 1);
+    private VBox mMapOpacityBox;
+    private VBox mMaskOpacityBox;
+    private final Slider mMapOpacitySlider = new Slider(0, 1, 1);
+    private final Slider mMaskOpacitySlider = new Slider(0, 1, 1);
     private final ModuleOptions mOptions = ModuleOptions.getInstance();
     private CheckBox mPlaceNameCheckBox;
     private ComboBox<String> mProjComboBox;
@@ -87,6 +92,7 @@ public class StyleView extends HBox {
     private CheckBox mStarsCheckBox;
     private final VBox mStyleBox = new VBox(16);
     private CheckBox mWorldMapCheckBox;
+    private ColorPicker mMaskColorPicker;
 
     public StyleView() {
         mProjections.add(MDict.PROJ_LAT_LON.toString());
@@ -188,41 +194,54 @@ public class StyleView extends HBox {
 
         }));
 
-        mWorldMapCheckBox.setOnAction((event) -> {
+        mWorldMapCheckBox.setOnAction(event -> {
             mOptions.put(KEY_DISPLAY_WORLD_MAP, mWorldMapCheckBox.isSelected());
         });
 
-        mScaleBarCheckBox.setOnAction((event) -> {
+        mScaleBarCheckBox.setOnAction(event -> {
             mOptions.put(KEY_DISPLAY_SCALE_BAR, mScaleBarCheckBox.isSelected());
         });
 
-        mControlsCheckBox.setOnAction((event) -> {
+        mControlsCheckBox.setOnAction(event -> {
             mOptions.put(KEY_DISPLAY_CONTROLS, mControlsCheckBox.isSelected());
         });
 
-        mCompassCheckBox.setOnAction((event) -> {
+        mCompassCheckBox.setOnAction(event -> {
             mOptions.put(KEY_DISPLAY_COMPASS, mCompassCheckBox.isSelected());
         });
 
-        mAtmosphereCheckBox.setOnAction((event) -> {
+        mAtmosphereCheckBox.setOnAction(event -> {
             mOptions.put(KEY_DISPLAY_ATMOSPHERE, mAtmosphereCheckBox.isSelected());
         });
 
-        mStarsCheckBox.setOnAction((event) -> {
+        mStarsCheckBox.setOnAction(event -> {
             mOptions.put(KEY_DISPLAY_STARS, mStarsCheckBox.isSelected());
         });
 
-        mPlaceNameCheckBox.setOnAction((event) -> {
+        mPlaceNameCheckBox.setOnAction(event -> {
             mOptions.put(KEY_DISPLAY_PLACE_NAMES, mPlaceNameCheckBox.isSelected());
         });
 
         mElevationCheckBox = new CheckBox(MDict.ELEVATION.toString());
-        mElevationCheckBox.setOnAction((event) -> {
+        mElevationCheckBox.setOnAction(event -> {
             mOptions.put(KEY_MAP_ELEVATION, mElevationCheckBox.isSelected());
         });
         mElevationCheckBox.setVisible(false);
 
-        mOpacityBox = new VBox(new Label(Dict.OPACITY.toString()), mOpacitySlider, mElevationCheckBox);
+        mMaskCheckBox = new CheckBox(Dict.MASK.toString());
+        mMaskCheckBox.setOnAction(event -> {
+            mOptions.put(KEY_DISPLAY_MASK, mMaskCheckBox.isSelected());
+        });
+        mMaskColorPicker = new ColorPicker();
+        mMaskColorPicker.prefWidthProperty().bind(widthProperty());
+        mMaskColorPicker.disableProperty().bind(mMaskCheckBox.selectedProperty().not());
+        mMaskOpacitySlider.disableProperty().bind(mMaskCheckBox.selectedProperty().not());
+
+        Color color = FxHelper.colorFromHexRGBA(mOptions.get(KEY_MASK_COLOR, DEFAULT_MASK_COLOR));
+        mMaskColorPicker.setValue(color);
+
+        mMapOpacityBox = new VBox(new Label(Dict.OPACITY.toString()), mMapOpacitySlider, mElevationCheckBox);
+        mMaskOpacityBox = new VBox(FxHelper.getUIScaled(8), mMaskCheckBox, mMaskOpacitySlider, mMaskColorPicker);
 
         getChildren().addAll(
                 mLeftPane,
@@ -232,8 +251,16 @@ public class StyleView extends HBox {
     }
 
     private void initListeners() {
-        mOpacitySlider.valueProperty().addListener((ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
-            mOptions.put(KEY_MAP_OPACITY, mOpacitySlider.getValue());
+        mMapOpacitySlider.valueProperty().addListener((ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
+            mOptions.put(KEY_MAP_OPACITY, mMapOpacitySlider.getValue());
+        });
+
+        mMaskOpacitySlider.valueProperty().addListener((ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
+            mOptions.put(KEY_MASK_OPACITY, mMaskOpacitySlider.getValue());
+        });
+
+        mMaskColorPicker.valueProperty().addListener((ObservableValue<? extends Color> ov, Color t, Color t1) -> {
+            mOptions.put(KEY_MASK_COLOR, FxHelper.colorToHexRGB(t1));
         });
 
         Mapton.getGlobalState().addListener((GlobalStateChangeEvent evt) -> {
@@ -303,8 +330,7 @@ public class StyleView extends HBox {
                 mStyleBox.getChildren().add(menuButton);
             }
 
-            mStyleBox.getChildren().add(new Separator());
-            mStyleBox.getChildren().add(mOpacityBox);
+            mStyleBox.getChildren().addAll(new Separator(), mMapOpacityBox, mMaskOpacityBox);
         });
     }
 
@@ -324,7 +350,9 @@ public class StyleView extends HBox {
         mStarsCheckBox.setSelected(mOptions.is(KEY_DISPLAY_STARS, DEFAULT_DISPLAY_STARS));
         mPlaceNameCheckBox.setSelected(mOptions.is(KEY_DISPLAY_PLACE_NAMES, DEFAULT_DISPLAY_PLACE_NAMES));
 
-        mOpacitySlider.setValue(mOptions.getDouble(KEY_MAP_OPACITY, DEFAULT_MAP_OPACITY));
+        mMapOpacitySlider.setValue(mOptions.getDouble(KEY_MAP_OPACITY, DEFAULT_MAP_OPACITY));
+        mMaskOpacitySlider.setValue(mOptions.getFloat(KEY_MASK_OPACITY, DEFAULT_MASK_OPACITY));
+        mMaskCheckBox.setSelected(mOptions.is(KEY_DISPLAY_MASK, DEFAULT_DISPLAY_MASK));
         mElevationCheckBox.setSelected(mOptions.is(KEY_MAP_ELEVATION, DEFAULT_MAP_ELEVATION));
     }
 
