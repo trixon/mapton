@@ -29,7 +29,7 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
  * @author Patrik Karlström
  */
 @ServiceProvider(service = MToolApp.class)
-public class NewsReportsTool implements MToolApp {
+public class NewsTool implements MToolApp {
 
     @Override
     public Action getAction() {

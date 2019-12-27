@@ -27,7 +27,7 @@ import se.trixon.almond.util.Dict;
  * Generic Property TopComponent
  */
 @ConvertAsProperties(
-        dtd = "-//org.mapton.core_nb.ui.chart//Chart//EN",
+        dtd = "-//org.mapton.core_nb.ui.news//News//EN",
         autostore = false
 )
 @TopComponent.Description(
