@@ -22,12 +22,13 @@ import java.util.Arrays;
 import java.util.prefs.PreferenceChangeEvent;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.ButtonBase;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
-import javafx.scene.control.MenuButton;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -80,6 +81,8 @@ public class AppToolBar extends BaseToolBar {
     private FxActionSwing mResetWindowsAction;
     private FxActionSwing mRestartAction;
     private Label mStatusLabel;
+    private ContextMenu mSystemContextMenu;
+    private Action mSystemMenuAction;
     private Action mToolboxAction;
     private PopOver mToolboxPopOver;
 
@@ -91,11 +94,16 @@ public class AppToolBar extends BaseToolBar {
         initListeners();
     }
 
-    public void displayMenu() {
+    public void toggleSystemMenu() {
         Platform.runLater(() -> {
-            Node node = getItems().get(0);
-            if (node instanceof MenuButton) {
-                ((MenuButton) node).show();
+            if (mSystemContextMenu.isShowing()) {
+                mSystemContextMenu.hide();
+                onObjectHiding(mSystemContextMenu);
+            } else {
+                Node node = getItems().get(0);
+                Bounds bounds = node.getBoundsInLocal();
+                Bounds screenBounds = node.localToScreen(bounds);
+                mSystemContextMenu.show(node, screenBounds.getMinX(), screenBounds.getMaxY());
             }
         });
     }
@@ -113,17 +121,17 @@ public class AppToolBar extends BaseToolBar {
                 mResetWindowsAction
         );
 
-        ActionGroup systemActionGroup;
+        ArrayList<Action> menuActions = new ArrayList<>();
         if (IS_MAC) {
-            systemActionGroup = new ActionGroup(Dict.MENU.toString(), MaterialIcon._Navigation.MENU.getImageView(getIconSizeToolBar(), mOptions.getIconColorBright()),
+            menuActions.addAll(Arrays.asList(
                     viewActionGroup,
                     ActionUtils.ACTION_SEPARATOR,
                     mPluginsAction,
                     ActionUtils.ACTION_SEPARATOR,
                     mHelpAction
-            );
+            ));
         } else {
-            systemActionGroup = new ActionGroup(Dict.MENU.toString(), MaterialIcon._Navigation.MENU.getImageView(getIconSizeToolBar(), mOptions.getIconColorBright()),
+            menuActions.addAll(Arrays.asList(
                     viewActionGroup,
                     ActionUtils.ACTION_SEPARATOR,
                     mOptionsAction,
@@ -135,24 +143,25 @@ public class AppToolBar extends BaseToolBar {
                     ActionUtils.ACTION_SEPARATOR,
                     mRestartAction,
                     mQuitAction
-            );
+            ));
         }
 
         ArrayList<Action> actions = new ArrayList<>();
         actions.addAll(Arrays.asList(
-                systemActionGroup,
+                mSystemMenuAction,
                 ActionUtils.ACTION_SPAN,
                 ActionUtils.ACTION_SPAN,
                 mMapAction,
                 mToolboxAction
         ));
 
-        setTooltip(systemActionGroup, new KeyCodeCombination(KeyCode.CONTEXT_MENU));
-
         if (!IS_MAC) {
             actions.add(actions.size() - 1, mFullscreenAction);
         }
-
+        mSystemContextMenu = ActionUtils.createContextMenu(menuActions);
+        mSystemContextMenu.setOnHiding(event -> {
+            onObjectHiding(mSystemContextMenu);
+        });
         Platform.runLater(() -> {
             ActionUtils.updateToolBar(this, actions, ActionUtils.ActionTextBehavior.HIDE);
             FxHelper.adjustButtonWidth(getItems().stream(), getIconSizeContextMenu() * 1.5);
@@ -165,18 +174,7 @@ public class AppToolBar extends BaseToolBar {
 
             mStatusLabel = new Label();
             getItems().add(2, mStatusLabel);
-
-            MenuButton menuButton = (MenuButton) getItems().get(0);
-            menuButton.setOnMousePressed(event -> {
-                if (shouldOpen(menuButton)) {
-                    menuButton.show();
-                }
-            });
-            menuButton.setOnHiding(event -> {
-                onObjectHiding(menuButton);
-            });
         });
-
     }
 
     private void initActionsFx() {
@@ -186,7 +184,16 @@ public class AppToolBar extends BaseToolBar {
         });
         mHelpAction.setAccelerator(KeyCombination.keyCombination("F1"));
 
-        //mToolbox
+        //System menu
+        mSystemMenuAction = new Action(Dict.MENU.toString(), event -> {
+            if (shouldOpen(mSystemContextMenu)) {
+                toggleSystemMenu();
+            }
+        });
+        mSystemMenuAction.setGraphic(MaterialIcon._Navigation.MENU.getImageView(getIconSizeToolBarInt(), mOptions.getIconColorBright()));
+        setTooltip(mSystemMenuAction, new KeyCodeCombination(KeyCode.CONTEXT_MENU));
+
+        //Toolbox
         mToolboxAction = new Action(Dict.APPLICATION_TOOLS.toString(), event -> {
             if (shouldOpen(mToolboxPopOver)) {
                 mToolboxPopOver.show((Node) event.getSource());
