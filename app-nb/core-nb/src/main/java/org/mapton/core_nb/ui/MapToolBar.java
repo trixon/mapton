@@ -20,7 +20,6 @@ import java.util.Arrays;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
-import javafx.scene.Node;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
@@ -171,7 +170,7 @@ public class MapToolBar extends BaseToolBar {
         mBookmarkAction = new Action(Dict.BOOKMARKS.toString(), event -> {
             if (usePopOver(mBookmarkPopOver)) {
                 if (shouldOpen(mBookmarkPopOver)) {
-                    mBookmarkPopOver.show((Node) event.getSource());
+                    show(mBookmarkPopOver, event.getSource());
                 }
             } else {
                 SwingUtilities.invokeLater(() -> {
@@ -187,7 +186,7 @@ public class MapToolBar extends BaseToolBar {
         mLayerAction = new Action(Dict.LAYERS.toString(), event -> {
             if (usePopOver(mLayerPopOver)) {
                 if (shouldOpen(mLayerPopOver)) {
-                    mLayerPopOver.show((Node) event.getSource());
+                    show(mLayerPopOver, event.getSource());
                 }
             } else {
                 SwingUtilities.invokeLater(() -> {
@@ -203,7 +202,7 @@ public class MapToolBar extends BaseToolBar {
         mGridAction = new Action(MDict.GRIDS.toString(), event -> {
             if (usePopOver(mGridPopOver)) {
                 if (shouldOpen(mGridPopOver)) {
-                    mGridPopOver.show((Node) event.getSource());
+                    show(mGridPopOver, event.getSource());
                 }
             } else {
                 SwingUtilities.invokeLater(() -> {
@@ -218,7 +217,7 @@ public class MapToolBar extends BaseToolBar {
         mToolboxAction = new Action(MDict.MAP_TOOLS.toString(), event -> {
             if (usePopOver(mToolboxPopOver)) {
                 if (shouldOpen(mToolboxPopOver)) {
-                    mToolboxPopOver.show((Node) event.getSource());
+                    show(mToolboxPopOver, event.getSource());
                 }
             } else {
                 SwingUtilities.invokeLater(() -> {
@@ -234,7 +233,7 @@ public class MapToolBar extends BaseToolBar {
             if (shouldOpen(mStylePopOver)) {
                 BorderPane pane = (BorderPane) mStylePopOver.getContentNode();
                 pane.setCenter(Mapton.getEngine().getStyleView());
-                mStylePopOver.show((Node) event.getSource());
+                show(mStylePopOver, event.getSource());
             }
         });
         mStyleAction.setGraphic(MaterialIcon._Image.COLOR_LENS.getImageView(getIconSizeToolBarInt()));
@@ -259,7 +258,7 @@ public class MapToolBar extends BaseToolBar {
         //Copyright
         mAttributionAction = new Action("Copyright", event -> {
             if (shouldOpen(mAttributionPopOver)) {
-                mAttributionPopOver.show((Node) event.getSource());
+                show(mAttributionPopOver, event.getSource());
             }
         });
         mAttributionAction.setGraphic(MaterialIcon._Action.COPYRIGHT.getImageView(getIconSizeToolBarInt()));

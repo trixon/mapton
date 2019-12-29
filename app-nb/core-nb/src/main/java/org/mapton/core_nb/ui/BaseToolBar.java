@@ -107,6 +107,10 @@ public abstract class BaseToolBar extends ToolBar {
         return System.currentTimeMillis() - mObjectClosingTimes.getOrDefault(object, 0L) > 200;
     }
 
+    protected void show(PopOver popOver, Object owner) {
+        popOver.show((Node) owner, -6);
+    }
+
     protected void storeButtonWidths(Action... actions) {
         for (Action action : actions) {
             mButtonWidths.put(action, getButtonForAction(action).prefWidthProperty().getValue());
@@ -135,7 +139,7 @@ public abstract class BaseToolBar extends ToolBar {
                 if (popOver.isShowing()) {
                     popOver.hide();
                 } else {
-                    popOver.show(getButtonForAction(action));
+                    show(popOver, getButtonForAction(action));
                 }
             }
         });

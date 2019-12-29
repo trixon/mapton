@@ -196,7 +196,7 @@ public class AppToolBar extends BaseToolBar {
         //Toolbox
         mToolboxAction = new Action(Dict.APPLICATION_TOOLS.toString(), event -> {
             if (shouldOpen(mToolboxPopOver)) {
-                mToolboxPopOver.show((Node) event.getSource());
+                show(mToolboxPopOver, event.getSource());
             }
         });
         mToolboxAction.setGraphic(MaterialIcon._Content.ADD.getImageView(getIconSizeToolBarInt(), mOptions.getIconColorBright()));
