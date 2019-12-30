@@ -53,14 +53,17 @@ public class BackgroundImageLayer extends LayerBundle {
         setName(Dict.IMAGE.toString());
         mLayer.setEnabled(true);
         mLayer.setPickEnabled(false);
-        mLayer.addRenderable(mScreenImage);
     }
 
     private void initListeners() {
         Mapton.getGlobalState().addListener((GlobalStateChangeEvent evt) -> {
             MBackgroundImage backgroundImage = evt.getValue();
-            mScreenImage.setImageSource(backgroundImage.getImageSource());
-            mScreenImage.setOpacity(backgroundImage.getOpacity());
+            mLayer.removeAllRenderables();
+            if (backgroundImage != null) {
+                mLayer.addRenderable(mScreenImage);
+                mScreenImage.setImageSource(backgroundImage.getImageSource());
+                mScreenImage.setOpacity(backgroundImage.getOpacity());
+            }
 
             refresh();
         }, MKey.BACKGROUND_IMAGE);

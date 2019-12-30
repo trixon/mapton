@@ -31,6 +31,7 @@
                         <publicPackage>javax.xml.*</publicPackage>
                         <publicPackage>org.apache.commons.*</publicPackage>
                         <publicPackage>org.controlsfx.*</publicPackage>
+                        <publicPackage>org.jsoup.*</publicPackage>
                         <publicPackage>org.postgresql.*</publicPackage>
                         <publicPackage>org.openide.*</publicPackage>
                         <publicPackage>se.trixon.*</publicPackage>
@@ -344,6 +345,10 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
         </dependency>
     </dependencies>
 

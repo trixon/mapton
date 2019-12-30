@@ -92,6 +92,10 @@ public class Mapton {
         webEngine.setUserStyleSheetLocation(file.toURI().toString());
     }
 
+    public static void clearBackgroundImage() {
+        getGlobalState().put(MKey.BACKGROUND_IMAGE, null);
+    }
+
     public static Glyph createGlyph(FontAwesome.Glyph glyphFont, double size, Color color) {
         return new Glyph("FontAwesome", glyphFont).size(size).color(color);
     }
