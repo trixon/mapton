@@ -20,9 +20,6 @@ import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.TextArea;
 import org.netbeans.api.settings.ConvertAsProperties;
-import org.openide.awt.ActionID;
-import org.openide.awt.ActionReference;
-import org.openide.util.NbBundle.Messages;
 import org.openide.util.NbPreferences;
 import org.openide.windows.TopComponent;
 import se.trixon.almond.nbp.fx.FxTopComponent;
@@ -32,24 +29,15 @@ import se.trixon.almond.util.Dict;
  * Top component which displays something.
  */
 @ConvertAsProperties(
-        dtd = "-//se.trixon.almond.nbp.fx//Notes//EN",
+        dtd = "-//org.mapton.addon.notes_nb//Notes//EN",
         autostore = false
 )
 @TopComponent.Description(
-        preferredID = "NotesNBTopComponent",
+        preferredID = "NotesTopComponent",
         //iconBase="SET/PATH/TO/ICON/HERE",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(mode = "editor", openAtStartup = false)
-@ActionID(category = "Window", id = "org.mapton.addon.notes_nb.NotesNBTopComponent")
-@ActionReference(path = "Menu/Window" /*, position = 333 */)
-@TopComponent.OpenActionRegistration(
-        displayName = "#CTL_NotesAction",
-        preferredID = "NotesTopComponent"
-)
-@Messages({
-    "CTL_NotesAction=Notes"
-})
 public final class NotesTopComponent extends FxTopComponent {
 
     private static final String KEY_NOTES = "notes";

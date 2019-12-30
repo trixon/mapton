@@ -34,7 +34,7 @@ public class NotesTool implements MToolApp {
     @Override
     public Action getAction() {
         FxActionSwing action = new FxActionSwing(Dict.NOTES.toString(), () -> {
-            Almond.openAndActivateTopComponent("NotesNBTopComponent");
+            Almond.openAndActivateTopComponent("NotesTopComponent");
         });
         action.setGraphic(MaterialIcon._Editor.MODE_EDIT.getImageView(ICON_SIZE));
 
