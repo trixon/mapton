@@ -175,6 +175,7 @@
         <module>app-nb/modules-add-ons/geonames-ww</module>
         <module>app-nb/modules-add-ons/notes-nb</module>
         <module>app-nb/modules-add-ons/photos-nb</module>
+        <module>app-nb/modules-add-ons/xkcd-nb</module>
 
         <!--GUI WorkbenchFX-->
         <module>app-wb/application</module>

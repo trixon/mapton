@@ -215,6 +215,11 @@
             <artifactId>addon-mapollage-ww</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>addon-xkcd-nb</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <!--Mapton/Unstable-->
         <!--        <dependency>
