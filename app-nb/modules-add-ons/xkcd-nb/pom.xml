@@ -56,16 +56,15 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>mapton-api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>core-nb</artifactId>
+        </dependency>
 
         <!-- Trixon -->
         <dependency>
             <groupId>se.trixon.almond</groupId>
             <artifactId>almond-nbp</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.netbeans.api</groupId>
-            <artifactId>org-openide-awt</artifactId>
-            <version>RELEASE112</version>
         </dependency>
     </dependencies>
     <properties>

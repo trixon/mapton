@@ -26,10 +26,11 @@ import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
+import org.mapton.core_nb.api.MMapMagnet;
+import org.mapton.core_nb.api.MTopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.util.Exceptions;
 import org.openide.windows.TopComponent;
-import se.trixon.almond.nbp.fx.FxTopComponent;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.control.LogPanel;
@@ -48,7 +49,7 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(mode = "mapTools", openAtStartup = false)
-public final class XkcdTopComponent extends FxTopComponent {
+public final class XkcdTopComponent extends MTopComponent implements MMapMagnet {
 
     private LogPanel mLogPanel;
     private boolean mFirstRun = true;
