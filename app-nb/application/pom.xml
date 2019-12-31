@@ -212,7 +212,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>addon-mapollage-ww</artifactId>
+            <artifactId>addon-photos-ww</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

@@ -7,7 +7,7 @@
         <version>2.0.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
-    <artifactId>addon-mapollage-ww</artifactId>
+    <artifactId>addon-photos-ww</artifactId>
     <name>Photos WorldWind</name>
     <description>Photos renderer for WorldWind</description>
     <packaging>nbm</packaging>

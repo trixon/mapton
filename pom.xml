@@ -189,7 +189,7 @@
         <module>modules/wikipedia</module>
 
         <!--Add-ons-->
-        <module>modules-add-ons/mapollage-ww</module>
+        <module>modules-add-ons/photos-ww</module>
 
         <!--Unstable-->
         <!--<module>demo</module>-->
