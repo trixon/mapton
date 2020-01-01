@@ -167,8 +167,11 @@ public final class XkcdTopComponent extends MTopComponent implements MMapMagnet 
         mLogPanel = new LogPanel();
         mLogPanel.setMonospaced();
         mLogPanel.setWrapText(true);
+
+        BorderPane innerPane = new BorderPane(toolBar);
         mRoot = new BorderPane(mLogPanel);
-        mRoot.setTop(toolBar);
+        innerPane.setTop(titleLabel);
+        mRoot.setTop(innerPane);
         titleLabel.prefWidthProperty().bind(mRoot.widthProperty());
 
         return new Scene(mRoot);
