@@ -112,6 +112,9 @@ public class Mapton {
         Label label = new Label(title);
 
         label.setBackground(background);
+        Color color = (Color) background.getFills().get(0).getFill();
+        FxHelper.colorToString(color);
+        label.setStyle(String.format("-fx-background-color: %s;", FxHelper.colorToString(color)));
         label.setAlignment(Pos.BASELINE_CENTER);
         label.setFont(new Font(FxHelper.getScaledFontSize() * 1.2));
         label.setTextFill(Color.WHITE);
