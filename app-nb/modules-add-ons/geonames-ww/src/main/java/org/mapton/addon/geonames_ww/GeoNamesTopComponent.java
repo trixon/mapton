@@ -16,9 +16,10 @@
 package org.mapton.addon.geonames_ww;
 
 import java.util.Arrays;
-import java.util.Collection;
+import java.util.List;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Scene;
+import javafx.scene.control.ButtonBase;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
@@ -28,6 +29,7 @@ import org.controlsfx.control.IndexedCheckModel;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.Mapton;
+import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.mapton.core_nb.api.MMapMagnet;
 import org.mapton.core_nb.api.MTopComponent;
 import org.mapton.geonames.api.Country;
@@ -36,6 +38,8 @@ import org.mapton.geonames.api.GeonamesManager;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.windows.TopComponent;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.fx.FxHelper;
+import se.trixon.almond.util.icons.material.MaterialIcon;
 
 /**
  * Top component which displays something.
@@ -81,33 +85,49 @@ public final class GeoNamesTopComponent extends MTopComponent implements MMapMag
     }
 
     private Scene createScene() {
+
+        Action randomAction = new Action(Dict.RANDOM.toString(), event -> {
+            mListView.getCheckModel().getCheckedItems().removeListener(mListChangeListener);
+            int randomSpan = 10;
+            int offset = RandomUtils.nextInt(0, randomSpan);
+            for (int i = offset; i < mListView.getItems().size(); i = i + randomSpan) {
+                mListView.getCheckModel().check(i);
+            }
+
+            Mapton.getGlobalState().put(GeoN.KEY_LIST_SELECTION, mCheckModel.getCheckedItems());
+            mCheckModel.getCheckedItems().addListener(mListChangeListener);
+        });
+        randomAction.setGraphic(MaterialIcon._Places.CASINO.getImageView(getIconSizeToolBarInt()));
+
+        Action clearAction = new Action(Dict.CLEAR.toString(), event -> {
+            mListView.getCheckModel().getCheckedItems().removeListener(mListChangeListener);
+            mListView.getCheckModel().clearChecks();
+            Mapton.getGlobalState().put(GeoN.KEY_LIST_SELECTION, mCheckModel.getCheckedItems());
+            mCheckModel.getCheckedItems().addListener(mListChangeListener);
+        });
+        clearAction.setGraphic(MaterialIcon._Content.CLEAR.getImageView(getIconSizeToolBarInt()));
+
+        List<Action> actions = Arrays.asList(
+                randomAction,
+                ActionUtils.ACTION_SPAN,
+                clearAction
+        );
+
+        ToolBar toolBar = ActionUtils.createToolBar(actions, ActionUtils.ActionTextBehavior.HIDE);
+
+        FxHelper.adjustButtonWidth(toolBar.getItems().stream(), getIconSizeToolBarInt());
+        toolBar.getItems().stream().filter((item) -> (item instanceof ButtonBase))
+                .map((item) -> (ButtonBase) item).forEachOrdered((buttonBase) -> {
+            FxHelper.undecorateButton(buttonBase);
+        });
+
+        FxHelper.slimToolBar(toolBar);
+
         Label titleLabel = Mapton.createTitle(GeoNamesTool.NAME);
 
         mListView = new CheckListView<>();
         mListView.getItems().setAll(CountryManager.getInstance().getCountryList());
         mCheckModel = mListView.getCheckModel();
-
-        Collection<? extends Action> actions = Arrays.asList(
-                new Action(Dict.RANDOM.toString(), (event) -> {
-                    mListView.getCheckModel().getCheckedItems().removeListener(mListChangeListener);
-                    int randomSpan = 10;
-                    int offset = RandomUtils.nextInt(0, randomSpan);
-                    for (int i = offset; i < mListView.getItems().size(); i = i + randomSpan) {
-                        mListView.getCheckModel().check(i);
-                    }
-
-                    Mapton.getGlobalState().put(GeoN.KEY_LIST_SELECTION, mCheckModel.getCheckedItems());
-                    mCheckModel.getCheckedItems().addListener(mListChangeListener);
-                }),
-                new Action(Dict.CLEAR_SELECTION.toString(), (event) -> {
-                    mListView.getCheckModel().getCheckedItems().removeListener(mListChangeListener);
-                    mListView.getCheckModel().clearChecks();
-                    Mapton.getGlobalState().put(GeoN.KEY_LIST_SELECTION, mCheckModel.getCheckedItems());
-                    mCheckModel.getCheckedItems().addListener(mListChangeListener);
-                })
-        );
-
-        ToolBar toolBar = ActionUtils.createToolBar(actions, ActionUtils.ActionTextBehavior.SHOW);
 
         BorderPane innerPane = new BorderPane(toolBar);
         mRoot = new BorderPane(mListView);
