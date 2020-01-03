@@ -31,10 +31,12 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
 @ServiceProvider(service = MToolApp.class)
 public class NotesTool implements MToolApp {
 
+    public static final String ID = "org-mapton-addon-notes_nb-NotesTopComponent";
+
     @Override
     public Action getAction() {
         FxActionSwing action = new FxActionSwing(Dict.NOTES.toString(), () -> {
-            Almond.openAndActivateTopComponent("NotesTopComponent");
+            Almond.openAndActivateTopComponent(ID);
         });
         action.setGraphic(MaterialIcon._Editor.MODE_EDIT.getImageView(ICON_SIZE));
 

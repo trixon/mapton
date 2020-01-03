@@ -33,7 +33,7 @@ import se.trixon.almond.util.Dict;
         autostore = false
 )
 @TopComponent.Description(
-        preferredID = "NotesTopComponent",
+        preferredID = NotesTool.ID,
         //iconBase="SET/PATH/TO/ICON/HERE",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
