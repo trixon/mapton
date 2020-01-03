@@ -28,7 +28,6 @@ import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.mapton.base.ui.updater.UpdaterView;
 import org.mapton.core_nb.api.MTopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
-import org.openide.awt.ActionID;
 import org.openide.windows.TopComponent;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
@@ -47,11 +46,6 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(mode = "editor", openAtStartup = false)
-@ActionID(category = "Mapton", id = "org.mapton.core_nb.updater.UpdaterTopComponent")
-@TopComponent.OpenActionRegistration(
-        displayName = "Updater",
-        preferredID = "UpdaterTopComponent"
-)
 public final class UpdaterTopComponent extends MTopComponent {
 
     public UpdaterTopComponent() {

@@ -52,6 +52,12 @@
             <artifactId>mapton-api</artifactId>
         </dependency>
 
+        <!-- Trixon -->
+        <dependency>
+            <groupId>se.trixon.almond</groupId>
+            <artifactId>almond-nbp-core</artifactId>
+        </dependency>
+
         <!-- Other -->
         <dependency>
             <groupId>org.jxmapviewer</groupId>

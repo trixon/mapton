@@ -28,6 +28,7 @@ import org.mapton.api.MWmsSourceProvider;
 import org.mapton.api.MWmsStyleProvider;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
+import se.trixon.almond.nbp.core.news.NewsProvider;
 
 /**
  *
@@ -107,6 +108,12 @@ public class ApiReports implements MApiReport {
             implementations.add(implementation.getClass().getCanonicalName());
         }
         items.put(category + "MWmsStylusProvider", implementations);
+
+        implementations = new TreeSet<>();
+        for (NewsProvider implementation : Lookup.getDefault().lookupAll(NewsProvider.class)) {
+            implementations.add(implementation.getClass().getCanonicalName());
+        }
+        items.put(category + "NewsProvider", implementations);
 
         return items;
     }
