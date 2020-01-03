@@ -22,18 +22,18 @@ import org.openide.awt.ActionRegistration;
 
 @ActionID(
         category = "Mapton",
-        id = "org.mapton.core_nb.actions.GridAction"
+        id = "org.mapton.core_nb.actions.ObjectPropertiesAction"
 )
 @ActionRegistration(
-        displayName = "Grids"
+        displayName = "ObjectProperties"
 )
-@ActionReference(path = "Shortcuts", name = "DS-G")
-public final class GridAction extends BaseAction {
+@ActionReference(path = "Shortcuts", name = "DS-P")
+public final class ObjectPropertiesAction extends BaseAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
         if (isMapActive()) {
-            toggleTopComponent("GridTopComponent");
+            toggleTopComponent("ObjectPropertiesTopComponent");
         }
     }
 }
