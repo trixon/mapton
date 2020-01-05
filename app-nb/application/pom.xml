@@ -276,6 +276,7 @@
                     <installerLicenseFile>../LICENSE</installerLicenseFile>
                     <etcConfFile>src/main/resources/mapton.conf</etcConfFile>
                     <installerPack200Enable>false</installerPack200Enable>
+                    <finalName>mapton-${mapton.version}</finalName>
                     <!--<additionalArguments>-J-Xmx2048m</additionalArguments>-->
                     <!--<additionalArguments>&#045;&#045;locale en:US</additionalArguments>-->
                     <!--<additionalArguments>&#045;&#045;nosplash</additionalArguments>-->
