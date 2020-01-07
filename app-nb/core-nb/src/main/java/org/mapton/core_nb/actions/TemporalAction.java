@@ -27,7 +27,7 @@ import org.openide.awt.ActionRegistration;
         id = "org.mapton.core_nb.actions.TemporalAction"
 )
 @ActionRegistration(
-        displayName = "Style"
+        displayName = "Date"
 )
 @ActionReference(path = "Shortcuts", name = "D-D")
 public final class TemporalAction extends BaseAction implements ActionListener {
