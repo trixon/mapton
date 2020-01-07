@@ -26,7 +26,7 @@
                         <publicPackage>com.sun.xml.*</publicPackage>
                         <publicPackage>de.micromata.*</publicPackage>
                         <publicPackage>j2html.*</publicPackage>
-                        <publicPackage>javafx.*</publicPackage>
+                        <!--<publicPackage>javafx.*</publicPackage>-->
                         <publicPackage>javax.annotation.*</publicPackage>
                         <publicPackage>javax.xml.*</publicPackage>
                         <publicPackage>org.apache.commons.*</publicPackage>
@@ -64,10 +64,6 @@
         </plugins>
     </build>
     <dependencies>
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-web</artifactId>
-        </dependency>
         <!--        <dependency>
                     <groupId>org.openjfx</groupId>
                     <artifactId>javafx-web</artifactId>
@@ -262,33 +258,75 @@
         <dependency>
             <groupId>se.trixon.almond</groupId>
             <artifactId>almond-util</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.openjfx</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>se.trixon.windowsystemfx</groupId>
             <artifactId>windowsystemfx-core</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.openjfx</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- UI -->
         <dependency>
             <groupId>org.controlsfx</groupId>
             <artifactId>controlsfx</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.openjfx</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.dlsc.formsfx</groupId>
             <artifactId>formsfx-core</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.openjfx</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.dlsc.preferencesfx</groupId>
             <artifactId>preferencesfx-core</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.openjfx</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>de.jensd</groupId>
             <artifactId>fontawesomefx-commons</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.openjfx</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>de.jensd</groupId>
             <artifactId>fontawesomefx-fontawesome</artifactId>
             <version>4.7.0-11</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.openjfx</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- Apache -->
