@@ -25,6 +25,7 @@
                         <publicPackage>com.sun.*</publicPackage>
                         <publicPackage>com.sun.xml.*</publicPackage>
                         <publicPackage>de.micromata.*</publicPackage>
+                        <publicPackage>eu.hansolo.tilesfx.*</publicPackage>
                         <publicPackage>j2html.*</publicPackage>
                         <!--<publicPackage>javafx.*</publicPackage>-->
                         <publicPackage>javax.annotation.*</publicPackage>
@@ -327,6 +328,10 @@
                     <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>eu.hansolo</groupId>
+            <artifactId>tilesfx</artifactId>
         </dependency>
 
         <!-- Apache -->
