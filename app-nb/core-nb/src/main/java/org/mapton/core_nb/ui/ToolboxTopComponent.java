@@ -16,6 +16,7 @@
 package org.mapton.core_nb.ui;
 
 import javafx.scene.Scene;
+import javafx.scene.layout.BorderPane;
 import org.mapton.core_nb.api.MMapMagnet;
 import org.mapton.core_nb.api.MTopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
@@ -36,6 +37,8 @@ import se.trixon.almond.util.Dict;
 @TopComponent.Registration(mode = "mapTools", openAtStartup = false)
 public final class ToolboxTopComponent extends MTopComponent implements MMapMagnet {
 
+    private BorderPane mRoot;
+
     public ToolboxTopComponent() {
         putClientProperty(PROP_MAXIMIZATION_DISABLED, Boolean.TRUE);
         putClientProperty(PROP_SLIDING_DISABLED, Boolean.TRUE);
@@ -49,6 +52,7 @@ public final class ToolboxTopComponent extends MTopComponent implements MMapMagn
     @Override
     protected void initFX() {
         setScene(createScene());
+        mRoot.setCenter(new MapToolboxView());
     }
 
     void readProperties(java.util.Properties p) {
@@ -62,6 +66,6 @@ public final class ToolboxTopComponent extends MTopComponent implements MMapMagn
     }
 
     private Scene createScene() {
-        return new Scene(new MapToolboxView());
+        return new Scene(mRoot = new BorderPane());
     }
 }
