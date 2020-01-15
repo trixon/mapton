@@ -312,7 +312,7 @@ public class MapToolBar extends BaseToolBar {
         });
 
         mToolboxPopOver = new PopOver();
-        initPopOver(mToolboxPopOver, MDict.MAP_TOOLS.toString(), new MapToolboxView(), true);
+        initPopOver(mToolboxPopOver, MDict.MAP_TOOLS.toString(), new MapToolboxView(), false);
         mToolboxPopOver.setArrowLocation(ArrowLocation.TOP_RIGHT);
 
         mRulerPopOver = new PopOver();
