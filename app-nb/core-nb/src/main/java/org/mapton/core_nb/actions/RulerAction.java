@@ -28,7 +28,7 @@ import org.openide.awt.ActionRegistration;
 @ActionRegistration(
         displayName = "Measure"
 )
-@ActionReference(path = "Shortcuts", name = "D-R")
+@ActionReference(path = "Shortcuts", name = "D-K")
 public final class RulerAction extends BaseAction {
 
     public RulerAction() {
@@ -37,11 +37,7 @@ public final class RulerAction extends BaseAction {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (isMapActive()) {
-            if (usePopover()) {
-                MapToolBarPanel.getInstance().getToolBar().toogleRulerPopOver();
-            } else {
-                toggleTopComponent("RulerTopComponent");
-            }
+            MapToolBarPanel.getInstance().getToolBar().toogleRulerPopOver();
         }
     }
 }
