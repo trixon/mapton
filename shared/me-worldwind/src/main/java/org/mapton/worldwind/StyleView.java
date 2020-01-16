@@ -315,14 +315,31 @@ public class StyleView extends HBox {
 
                 MultipleSelectionModel<MapStyle> selectionModel = listView.getSelectionModel();
                 selectionModel.getSelectedItems().addListener((ListChangeListener.Change<? extends MapStyle> change) -> {
-                    if (selectionModel.getSelectedItem() != null) {
-                        mOptions.put(KEY_MAP_STYLE, selectionModel.getSelectedItem().getId());
+                    change.next();
+                    if (change.wasAdded() || change.wasReplaced()) {
+                        try {
+                            mOptions.put(KEY_MAP_STYLE, selectionModel.getSelectedItem().getId());
+                        } catch (Exception e) {
+                        }
                     }
                 });
 
                 MenuButton menuButton = new MenuButton(category);
                 menuButton.setPopupSide(Side.RIGHT);
                 CustomMenuItem menuItem = new CustomMenuItem(listView);
+                menuButton.setOnShowing(event -> {
+                    listView.getSelectionModel().clearSelection();
+                });
+                menuButton.setOnShown(event -> {
+                    listView.requestFocus();
+                    for (MapStyle item : listView.getItems()) {
+                        if (item.getId().equalsIgnoreCase(mOptions.get(KEY_MAP_STYLE))) {
+                            listView.getSelectionModel().select(item);
+                            break;
+                        }
+                    }
+
+                });
                 menuItem.setHideOnClick(false);
                 menuButton.getItems().add(menuItem);
                 menuButton.prefWidthProperty().bind(widthProperty());
