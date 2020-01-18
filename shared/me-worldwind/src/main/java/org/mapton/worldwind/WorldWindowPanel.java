@@ -45,6 +45,7 @@ import gov.nasa.worldwind.layers.WorldMapLayer;
 import gov.nasa.worldwind.render.Highlightable;
 import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwind.render.WWIcon;
+import gov.nasa.worldwind.terrain.CompoundElevationModel;
 import gov.nasa.worldwind.terrain.LocalElevationModel;
 import gov.nasa.worldwind.terrain.ZeroElevationModel;
 import java.awt.event.MouseAdapter;
@@ -93,7 +94,7 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
     private FlatGlobe mFlatGlobe;
     private Object mLastHighlightObject;
     private String mLastHighlightText;
-//    private CompoundElevationModel mNormalElevationModel;
+    private CompoundElevationModel mNormalElevationModel;
     private final ModuleOptions mOptions = ModuleOptions.getInstance();
     private Globe mRoundGlobe;
     private ElevationModel mZeroElevationModel = new ZeroElevationModel();
@@ -159,7 +160,7 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
 //                CompoundElevationModel cem = (CompoundElevationModel) getWwd().getModel().getGlobe().getElevationModel();
                 localElevationModel.addElevations(file);
 //                cem.addElevationModel(em);
-//                mNormalElevationModel.addElevationModel(localElevationModel);
+                mNormalElevationModel.addElevationModel(localElevationModel);
             } catch (BufferUnderflowException e) {
                 System.out.println(e.getMessage());
             } catch (IOException e) {
@@ -219,7 +220,7 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
 
         MaskLayer maskLayer = new MaskLayer();
         insertLayerBefore(maskLayer, WorldMapLayer.class);
-//        mNormalElevationModel = (CompoundElevationModel) wwd.getModel().getGlobe().getElevationModel();
+        mNormalElevationModel = (CompoundElevationModel) wwd.getModel().getGlobe().getElevationModel();
         wwd.getModel().getGlobe().setElevationModel(mZeroElevationModel);
         wwd.getSceneController().setDeepPickEnabled(true);
     }
@@ -473,8 +474,8 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
     }
 
     private void updateElevation() {
-//        wwd.getModel().getGlobe().setElevationModel(mOptions.is(KEY_MAP_ELEVATION) ? mNormalElevationModel : mZeroElevationModel);
-//        wwd.redraw();
+        wwd.getModel().getGlobe().setElevationModel(mOptions.is(KEY_MAP_ELEVATION) ? mNormalElevationModel : mZeroElevationModel);
+        wwd.redraw();
     }
 
     private void updateMode() {

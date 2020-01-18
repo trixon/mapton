@@ -226,7 +226,6 @@ public class StyleView extends HBox {
         mElevationCheckBox.setOnAction(event -> {
             mOptions.put(KEY_MAP_ELEVATION, mElevationCheckBox.isSelected());
         });
-        mElevationCheckBox.setVisible(false);
 
         mMaskCheckBox = new CheckBox(Dict.MASK.toString());
         mMaskCheckBox.setOnAction(event -> {
@@ -240,7 +239,7 @@ public class StyleView extends HBox {
         Color color = FxHelper.colorFromHexRGBA(mOptions.get(KEY_MASK_COLOR, DEFAULT_MASK_COLOR));
         mMaskColorPicker.setValue(color);
 
-        mMapOpacityBox = new VBox(new Label(Dict.OPACITY.toString()), mMapOpacitySlider, mElevationCheckBox);
+        mMapOpacityBox = new VBox(new Label(Dict.OPACITY.toString()), mMapOpacitySlider);
         mMaskOpacityBox = new VBox(FxHelper.getUIScaled(8), mMaskCheckBox, mMaskOpacitySlider, mMaskColorPicker);
 
         getChildren().addAll(
@@ -347,7 +346,7 @@ public class StyleView extends HBox {
                 mStyleBox.getChildren().add(menuButton);
             }
 
-            mStyleBox.getChildren().addAll(new Separator(), mMapOpacityBox, mMaskOpacityBox);
+            mStyleBox.getChildren().addAll(new Separator(), mElevationCheckBox, mMapOpacityBox, mMaskOpacityBox);
         });
     }
 

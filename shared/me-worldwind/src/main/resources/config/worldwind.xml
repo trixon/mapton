@@ -7,8 +7,8 @@
     <Property name="gov.nasa.worldwind.avkey.ModelClassName" value="gov.nasa.worldwind.BasicModel"/>
     <Property name="gov.nasa.worldwind.avkey.GlobeClassName"
               value="gov.nasa.worldwind.globes.Earth"/>
-    <Property name="gov.nasa.worldwind.avkey.EarthElevationModelConfigFile"
-                  value="config/Earth/EarthElevations2.xml"/>
+    <!--    <Property name="gov.nasa.worldwind.avkey.EarthElevationModelConfigFile"
+    value="config/Earth/EarthElevations2.xml"/>-->
     <Property name="gov.nasa.worldwind.globes.GeographicProjectionClassName"
               value="gov.nasa.worldwind.globes.projections.ProjectionEquirectangular"/>
     <Property name="gov.nasa.worldwind.avkey.InitialLatitude" value="38"/>
