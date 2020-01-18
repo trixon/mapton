@@ -38,6 +38,7 @@ import org.mapton.api.MContextMenuItem;
 import org.mapton.api.MDict;
 import org.mapton.api.MEngine;
 import org.mapton.api.MEngineListener;
+import org.mapton.api.MKey;
 import org.mapton.api.MOptions;
 import org.mapton.api.MWhatsHereEngine;
 import org.mapton.api.Mapton;
@@ -248,7 +249,7 @@ public class MapContextMenu {
                 int zoom = (int) (5 + getEngine().getZoom() * 18);
                 String s = whatsHereEngine.getResult(getEngine().getLatLonMouse(), zoom);
                 if (StringUtils.isNotBlank(s)) {
-                    Mapton.getLog().i(getClass(), "WhatsHere: " + s);
+                    Mapton.notification(MKey.NOTIFICATION_INFORMATION, getBundleString("whats_here"), s);
                     Mapton.execute(() -> {
                         getEngine().onWhatsHere(s);
                     });
