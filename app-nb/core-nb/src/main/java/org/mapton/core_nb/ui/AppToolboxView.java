@@ -31,6 +31,7 @@ import org.controlsfx.control.GridCell;
 import org.controlsfx.control.GridView;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
+import org.mapton.api.MKey;
 import org.mapton.api.MToolApp;
 import org.mapton.api.Mapton;
 import org.openide.util.Lookup;
@@ -134,6 +135,7 @@ public class AppToolboxView extends BorderPane {
             mButton = new Button();
             setOnMouseClicked(event -> {
                 if (event.getClickCount() == 1 && event.getButton() == MouseButton.PRIMARY) {
+                    Mapton.getGlobalState().send(MKey.APP_TOOL_STARTED, event);
                     mButton.fire();
                 }
             });
@@ -150,7 +152,7 @@ public class AppToolboxView extends BorderPane {
                     Label label = new Label(item.getParent().toUpperCase(Locale.getDefault()));
                     label.setAlignment(Pos.CENTER);
                     label.setBackground(Mapton.getThemeBackground());
-                    label.setFont(Font.font(Font.getDefault().getSize() * 1.6));
+                    label.setFont(Font.font(FxHelper.getUIScaled(Font.getDefault().getSize() * 1.6)));
                     label.setMinSize(CELL_WIDTH, CELL_HEIGHT);
                     label.setMaxWidth(Double.MAX_VALUE);
                     label.setTextFill(Mapton.optionsGeneral().getIconColorBright());

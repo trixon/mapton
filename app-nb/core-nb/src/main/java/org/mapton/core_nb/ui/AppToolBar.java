@@ -338,6 +338,12 @@ public class AppToolBar extends BaseToolBar {
                 mStatusLabel.setText(evt.getValue());
             });
         }, MKey.APP_TOOL_LABEL);
+
+        Mapton.getGlobalState().addListener(evt -> {
+            Platform.runLater(() -> {
+                mToolboxPopOver.hide();
+            });
+        }, MKey.APP_TOOL_STARTED);
     }
 
     private void initPopOvers() {

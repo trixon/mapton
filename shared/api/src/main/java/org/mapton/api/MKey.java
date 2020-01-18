@@ -22,6 +22,7 @@ package org.mapton.api;
 public class MKey {
 
     public static final String APP_TOOL_LABEL = "app_toolbar.label";
+    public static final String APP_TOOL_STARTED = "app_tool.started";
     public static final String BACKGROUND_IMAGE = "background_image";
     public static final String CHART = "chart";
     public static final String CHART_WAIT = "chart.wait";
@@ -31,6 +32,7 @@ public class MKey {
     public static final String DATA_SOURCES_WMS_STYLES = "data_sources.wms.styles";
     public static final String LAYER_FAST_OPEN_TOOL = "map.layer.fastopen_tool";
     public static final String MAP_DOCUMENT_INFO = "map.document.info";
+    public static final String MAP_TOOL_STARTED = "map_tool.started";
     public static final String NOTIFICATION = "toolbar.notification";
     public static final String NOTIFICATION_CONFIRM = "toolbar.notification.confirm";
     public static final String NOTIFICATION_ERROR = "toolbar.notification.error";

@@ -45,7 +45,6 @@ import org.mapton.base.ui.bookmark.BookmarksView;
 import org.mapton.base.ui.grid.GridView;
 import org.openide.awt.Actions;
 import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.GlobalStateChangeEvent;
 import se.trixon.almond.util.fx.FxActionSwing;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.icons.material.MaterialIcon;
@@ -280,11 +279,17 @@ public class MapToolBar extends BaseToolBar {
             refreshEngine();
         });
 
-        Mapton.getGlobalState().addListener((GlobalStateChangeEvent evt) -> {
+        Mapton.getGlobalState().addListener(evt -> {
             Platform.runLater(() -> {
                 updateDocumentInfo(evt.getValue());
             });
         }, MKey.MAP_DOCUMENT_INFO);
+
+        Mapton.getGlobalState().addListener(evt -> {
+            Platform.runLater(() -> {
+                mToolboxPopOver.hide();
+            });
+        }, MKey.MAP_TOOL_STARTED);
     }
 
     private void initPopOvers() {

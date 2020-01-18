@@ -72,6 +72,7 @@ public class MapToolboxView extends BorderPane {
         mTreeView.setOnMouseClicked((event) -> {
             final TreeItem<Action> selectedItem = mTreeView.getSelectionModel().getSelectedItem();
             if (selectedItem != null && event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
+                Mapton.getGlobalState().send(MKey.MAP_TOOL_STARTED, event);
                 selectedItem.getValue().handle(null);
             }
         });
@@ -79,6 +80,7 @@ public class MapToolboxView extends BorderPane {
         mTreeView.setOnKeyPressed((event) -> {
             final TreeItem<Action> selectedItem = mTreeView.getSelectionModel().getSelectedItem();
             if (selectedItem != null && event.getCode() == KeyCode.ENTER) {
+                Mapton.getGlobalState().send(MKey.MAP_TOOL_STARTED, event);
                 mTreeView.getSelectionModel().getSelectedItem().getValue().handle(null);
             }
         });
