@@ -6,15 +6,15 @@
         },
         "description": {},
         "enabled": true,
-        "id": "net.emxsys.ve-a",
+        "id": "com.microsoft.ve-a",
         "layers": [
-            "net.emxsys.ve-a"
+            "com.microsoft.ve-a"
         ],
         "name": {
             "": "Bing Satellite",
             "sv": "Bing Satellit"
         },
-        "supplier": "Emxsys"
+        "supplier": "Bing (NASA)"
     },
     {
         "category": {
@@ -23,15 +23,15 @@
         },
         "description": {},
         "enabled": true,
-        "id": "net.emxsys.ve-h",
+        "id": "com.microsoft.ve-h",
         "layers": [
-            "net.emxsys.ve-h"
+            "com.microsoft.ve-h"
         ],
         "name": {
             "": "Bing Hybrid",
             "sv": "Bing Hybrid"
         },
-        "supplier": "Emxsys"
+        "supplier": "Bing (NASA)"
     },
     {
         "category": {
@@ -40,14 +40,14 @@
         },
         "description": {},
         "enabled": true,
-        "id": "net.emxsys.ve-r",
+        "id": "com.microsoft.ve-r",
         "layers": [
-            "net.emxsys.ve-r"
+            "com.microsoft.ve-r"
         ],
         "name": {
             "": "Bing Roadmap",
             "sv": "Bing Vägkarta"
         },
-        "supplier": "Emxsys"
+        "supplier": "Bing (NASA)"
     }
 ]

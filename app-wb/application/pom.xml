@@ -109,7 +109,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>wms-emxsys</artifactId>
+            <artifactId>wms-bing</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

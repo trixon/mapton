@@ -159,7 +159,7 @@
         <module>shared/te-swetrans</module>
 
         <!--Shared WMS-->
-        <module>shared/wms-emxsys</module>
+        <module>shared/wms-bing</module>
         <module>shared/wms-eox</module>
         <module>shared/wms-lantmateriet</module>
         <module>shared/wms-nasa</module>

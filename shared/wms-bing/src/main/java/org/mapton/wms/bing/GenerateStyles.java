@@ -1,5 +1,5 @@
-/*
- * Copyright 2019 Patrik Karlström.
+/* 
+ * Copyright 2020 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.wms.emxsys;
+package org.mapton.wms.bing;
 
 import java.util.TreeMap;
 import org.mapton.api.MWmsGenerator;
@@ -49,10 +49,10 @@ public class GenerateStyles extends MWmsGenerator {
                 mCategoriesEarth,
                 names,
                 descriptions,
-                "Emxsys",
+                "Bing (NASA)",
                 enabled,
-                "net.emxsys.ve-a",
-                "net.emxsys.ve-a"
+                "com.microsoft.ve-a",
+                "com.microsoft.ve-a"
         ));
     }
 
@@ -67,10 +67,10 @@ public class GenerateStyles extends MWmsGenerator {
                 mCategoriesEarth,
                 names,
                 descriptions,
-                "Emxsys",
+                "Bing (NASA)",
                 enabled,
-                "net.emxsys.ve-h",
-                "net.emxsys.ve-h"
+                "com.microsoft.ve-h",
+                "com.microsoft.ve-h"
         ));
     }
 
@@ -85,10 +85,10 @@ public class GenerateStyles extends MWmsGenerator {
                 mCategoriesEarth,
                 names,
                 descriptions,
-                "Emxsys",
+                "Bing (NASA)",
                 enabled,
-                "net.emxsys.ve-r",
-                "net.emxsys.ve-r"
+                "com.microsoft.ve-r",
+                "com.microsoft.ve-r"
         ));
     }
 }
