@@ -74,6 +74,7 @@ public class Initializer implements Runnable {
         System.setProperty("netbeans.winsys.status_line.path", "AppStatusPanel.instance");
 
         boolean fullscreen = mOptions.isFullscreen();
+        boolean mapOnly = mOptions.isMapOnly();
         FxHelper.setDarkThemeEnabled(mOptions.is(KEY_UI_LAF_DARK));
 
         SwingUtilities.invokeLater(() -> {
@@ -99,7 +100,7 @@ public class Initializer implements Runnable {
                 Actions.forID("Window", "org.netbeans.core.windows.actions.ToggleFullScreenAction").actionPerformed(null);
             }
 
-            if (mOptions.isMapOnly()) {
+            if (mapOnly) {
                 windowManager.findTopComponent("MapTopComponent").requestActive();;
                 Actions.forID("Window", "org.netbeans.core.windows.actions.ShowEditorOnlyAction").actionPerformed(null);
             }

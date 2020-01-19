@@ -53,6 +53,7 @@ import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.swing.DelayedResetRunner;
 import se.trixon.almond.util.swing.SwingHelper;
 
 /**
@@ -244,33 +245,36 @@ public final class MapTopComponent extends MTopComponent {
     }
 
     private void initListeners() {
+        DelayedResetRunner delayedResetRunner = new DelayedResetRunner(10, () -> {
+            final JFrame frame = (JFrame) WindowManager.getDefault().getMainWindow();
+            final boolean showOnlyMap = frame.getContentPane().getComponentCount() == 1;
+            mMOptions.setMapOnly(showOnlyMap);
+
+            if (SystemUtils.IS_OS_WINDOWS) {
+                try {
+                    final JRootPane rootPane = getRootPane();
+                    final Dimension originalSize = rootPane.getSize();
+
+                    SwingUtilities.invokeLater(() -> {
+                        rootPane.setSize(new Dimension(originalSize.width - 1, originalSize.height - 0));
+                        SwingUtilities.invokeLater(() -> {
+                            rootPane.setSize(originalSize);
+                        });
+                    });
+                } catch (Exception e) {
+                    //nvm
+                }
+            }
+            try {
+                attachStatusbar();
+            } catch (NullPointerException e) {
+            }
+        });
+
         SwingUtilities.invokeLater(() -> {
             addHierarchyListener((HierarchyEvent hierarchyEvent) -> {
                 if (hierarchyEvent.getChangedParent() instanceof JLayeredPane) {
-                    Dimension d = ((JFrame) WindowManager.getDefault().getMainWindow()).getContentPane().getPreferredSize();
-                    //FIXME
-                    final boolean showOnlyMap = 40 == d.height && 100 == d.width;
-                    mMOptions.setMapOnly(showOnlyMap);
-
-                    if (SystemUtils.IS_OS_WINDOWS) {
-                        try {
-                            final JRootPane rootPane = getRootPane();
-                            final Dimension originalSize = rootPane.getSize();
-
-                            SwingUtilities.invokeLater(() -> {
-                                rootPane.setSize(new Dimension(originalSize.width - 1, originalSize.height - 0));
-                                SwingUtilities.invokeLater(() -> {
-                                    rootPane.setSize(originalSize);
-                                });
-                            });
-                        } catch (Exception e) {
-                            //nvm
-                        }
-                    }
-                    try {
-                        attachStatusbar();
-                    } catch (NullPointerException e) {
-                    }
+                    delayedResetRunner.reset();
                 }
             });
         });
