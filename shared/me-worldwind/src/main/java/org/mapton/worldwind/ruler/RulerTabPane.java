@@ -31,6 +31,7 @@ import org.mapton.api.MKmlCreator;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
+import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.dialogs.SimpleDialog;
 
 /**
@@ -110,7 +111,7 @@ public class RulerTabPane extends TabPane {
         Tab plusTab = new Tab("+");
         plusTab.setClosable(false);
         getTabs().add(plusTab);
-        setPrefWidth(300);
+        setPrefWidth(FxHelper.getUIScaled(300));
     }
 
     private void initListeners() {

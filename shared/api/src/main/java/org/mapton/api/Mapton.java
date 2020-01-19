@@ -43,6 +43,7 @@ import org.openide.util.Lookup;
 import se.trixon.almond.util.GlobalState;
 import se.trixon.almond.util.Log;
 import se.trixon.almond.util.fx.FxHelper;
+import se.trixon.almond.util.swing.SwingHelper;
 
 /**
  *
@@ -79,6 +80,7 @@ public class Mapton {
         WEB_ENGINE_TO_STYLE.put(webView.getEngine(), filename);
         applyHtmlCss(webView.getEngine(), filename);
         //webView.setFontScale(SwingHelper.getUIScale());
+        webView.setZoom(SwingHelper.getUIScale());
     }
 
     public static void applyHtmlCss(WebEngine webEngine, String filename) {
@@ -178,19 +180,12 @@ public class Mapton {
     }
 
     public static int getIconSizeToolBar() {
-        return ICON_SIZE_TOOLBAR;
+        return SwingHelper.getUIScaled(ICON_SIZE_TOOLBAR);
     }
 
     public static int getIconSizeToolBarInt() {
         return (int) (getIconSizeToolBar() / 1.2);
     }
-//    public static int getIconSizeToolBar() {
-//        return (int) (ICON_SIZE_TOOLBAR * SwingHelper.getUIScale());
-//    }
-//
-//    public static int getIconSizeToolBarInt() {
-//        return (int) (getIconSizeToolBar() / 1.5);
-//    }
 
     public static Mapton getInstance() {
         return Holder.INSTANCE;

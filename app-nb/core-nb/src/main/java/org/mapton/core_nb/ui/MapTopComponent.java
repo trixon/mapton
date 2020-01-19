@@ -53,7 +53,7 @@ import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
 import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.fx.FxHelper;
+import se.trixon.almond.util.swing.SwingHelper;
 
 /**
  * Top component which displays something.
@@ -109,10 +109,10 @@ public final class MapTopComponent extends MTopComponent {
                 Graphics2D g2 = (Graphics2D) g;
                 int x = getWidth() / 2;
                 int y = (getHeight() + MapToolBarPanel.getInstance().getToolBarPanel().getHeight()) / 2;
-                final int gap = FxHelper.getUIScaled(6);
-                final int length = FxHelper.getUIScaled(6) + gap;
+                final int gap = SwingHelper.getUIScaled(6);
+                final int length = SwingHelper.getUIScaled(6) + gap;
 
-                Stroke[] strokes = {new BasicStroke(FxHelper.getUIScaled(5)), new BasicStroke(FxHelper.getUIScaled(2))};
+                Stroke[] strokes = {new BasicStroke(SwingHelper.getUIScaled(5)), new BasicStroke(SwingHelper.getUIScaled(2))};
                 Color[] colors = {new Color(0f, 0f, 0f, 0.4f), Color.WHITE};
 
                 for (int i = 0; i < 2; i++) {
@@ -248,6 +248,7 @@ public final class MapTopComponent extends MTopComponent {
             addHierarchyListener((HierarchyEvent hierarchyEvent) -> {
                 if (hierarchyEvent.getChangedParent() instanceof JLayeredPane) {
                     Dimension d = ((JFrame) WindowManager.getDefault().getMainWindow()).getContentPane().getPreferredSize();
+                    //FIXME
                     final boolean showOnlyMap = 40 == d.height && 100 == d.width;
                     mMOptions.setMapOnly(showOnlyMap);
 

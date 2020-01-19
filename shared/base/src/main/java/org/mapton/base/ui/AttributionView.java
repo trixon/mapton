@@ -33,6 +33,7 @@ import org.mapton.api.Mapton;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.GlobalStateChangeEvent;
 import se.trixon.almond.util.SystemHelper;
+import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
@@ -57,8 +58,8 @@ public class AttributionView extends BorderPane {
 
     private void createUI() {
         mWebView = new WebView();
+        mWebView.setPrefSize(FxHelper.getUIScaled(800), FxHelper.getUIScaled(600));
         Mapton.applyHtmlCss(mWebView, "attribution.css");
-        //mWebView.setFontScale(1.0);
         setCenter(mWebView);
     }
 

@@ -16,8 +16,6 @@
 package org.mapton.core_nb;
 
 import java.beans.PropertyChangeEvent;
-import javafx.application.Platform;
-import javafx.embed.swing.JFXPanel;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLayeredPane;
@@ -42,6 +40,7 @@ import se.trixon.almond.util.AboutModel;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.icons.material.MaterialIcon;
+import se.trixon.almond.util.swing.SwingHelper;
 
 /**
  *
@@ -64,9 +63,8 @@ public class Initializer implements Runnable {
         });
         Mapton.log(SystemHelper.getSystemInfo());
 
-        Platform.setImplicitExit(false);
-        new JFXPanel();
-
+//        Platform.setImplicitExit(false);
+//        new JFXPanel();
         DarculaDefaultsManager darculaDefaultsManager = DarculaDefaultsManager.getInstance();
         darculaDefaultsManager.putIfAbsent("invertIcons", "true");
         darculaDefaultsManager.putIfAbsent("stretchedTabs", "true");
@@ -80,16 +78,18 @@ public class Initializer implements Runnable {
 
         SwingUtilities.invokeLater(() -> {
             MaterialIcon.setDefaultColor(mOptions.getIconColor());
-            JFrame frame = (JFrame) Almond.getFrame();
-            JComponent toolbar = AppToolBarProvider.getInstance().getToolBarPanel();
-            frame.getRootPane().setLayout(new RootPaneLayout(toolbar));
-            toolbar.putClientProperty(JLayeredPane.LAYER_PROPERTY, 0);
-            frame.getRootPane().getLayeredPane().add(toolbar, 0);
+            SwingHelper.runLaterDelayed(10, () -> {
+                JFrame frame = (JFrame) Almond.getFrame();
+                JComponent toolbar = AppToolBarProvider.getInstance().getToolBarPanel();
+                frame.getRootPane().setLayout(new RootPaneLayout(toolbar));
+                toolbar.putClientProperty(JLayeredPane.LAYER_PROPERTY, 0);
+                frame.getRootPane().getLayeredPane().add(toolbar, 0);
 
-            if (SystemUtils.IS_OS_MAC) {
-                AboutAction.setFx(true);
-                AboutAction.setAboutModel(new AboutModel(SystemHelper.getBundle(Initializer.class, "about"), SystemHelper.getResourceAsImageView(Initializer.class, "logo.png")));
-            }
+                if (SystemUtils.IS_OS_MAC) {
+                    AboutAction.setFx(true);
+                    AboutAction.setAboutModel(new AboutModel(SystemHelper.getBundle(Initializer.class, "about"), SystemHelper.getResourceAsImageView(Initializer.class, "logo.png")));
+                }
+            });
         });
 
         final WindowManager windowManager = WindowManager.getDefault();
