@@ -21,7 +21,6 @@ import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.scene.control.ButtonBase;
-import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -39,7 +38,6 @@ import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeContextMenu;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.mapton.base.ui.AttributionView;
-import org.mapton.base.ui.SearchView;
 import org.mapton.base.ui.TemporalView;
 import org.mapton.base.ui.bookmark.BookmarksView;
 import org.mapton.base.ui.grid.GridView;
@@ -69,7 +67,6 @@ public class MapToolBar extends BaseToolBar {
     private PopOver mLayerPopOver;
     private Action mRulerAction;
     private PopOver mRulerPopOver;
-    private SearchView mSearchView;
     private Action mStyleAction;
     private PopOver mStylePopOver;
     private Action mTemporalAction;
@@ -87,14 +84,6 @@ public class MapToolBar extends BaseToolBar {
 
         refreshEngine();
         Mapton.getGlobalState().put(MKey.MAP_DOCUMENT_INFO, Mapton.getGlobalState().get(MKey.MAP_DOCUMENT_INFO));
-    }
-
-    public void activateSearch() {
-        Platform.runLater(() -> {
-            getScene().getWindow().requestFocus();
-            mSearchView.getPresenter().requestFocus();
-            ((TextField) mSearchView.getPresenter()).clear();
-        });
     }
 
     public void toogleAttributionPopOver() {
@@ -158,9 +147,6 @@ public class MapToolBar extends BaseToolBar {
                     .map((item) -> (ButtonBase) item).forEachOrdered((buttonBase) -> {
                 buttonBase.getStylesheets().add(CSS_FILE);
             });
-
-            mSearchView = new SearchView();
-            getItems().add(1, mSearchView.getPresenter());
         });
     }
 

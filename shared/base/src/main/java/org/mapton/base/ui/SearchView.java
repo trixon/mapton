@@ -100,11 +100,15 @@ public class SearchView {
 
     private void createUI() {
         mSearchTextField = (CustomTextField) TextFields.createClearableTextField();
-        mSearchTextField.setLeft(MaterialIcon._Action.SEARCH.getImageView(getIconSizeToolBarInt() - 4));
-//        mSearchTextField.setLeft(MaterialIcon._Action.SEARCH.getImageView((int) (Mapton.ICON_SIZE_TOOLBAR / 1.5 - 4)));
+        mSearchTextField.setLeft(MaterialIcon._Action.SEARCH.getImageView(getIconSizeToolBarInt() - FxHelper.getUIScaled(4)));
         mSearchTextField.setPromptText(MDict.SEARCH_PROMPT.toString());
-        mSearchTextField.setPrefColumnCount(20);
+        mSearchTextField.setPrefColumnCount(25);
         mSearchTextField.setText("");
+        mSearchTextField.setStyle("-fx-prompt-text-fill: red;");
+        mSearchTextField.setStyle(String.format("-fx-prompt-text-fill: %s;-fx-background-color: %s;",
+                FxHelper.colorToString(Mapton.optionsGeneral().getIconColorBright().darker().darker().darker()),
+                FxHelper.colorToString(Mapton.getThemeColor())
+        ));
 
         mResultPopOver = new PopOver();
         mResultPopOver.setTitle("");

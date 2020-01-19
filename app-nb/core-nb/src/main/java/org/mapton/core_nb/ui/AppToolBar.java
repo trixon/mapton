@@ -29,6 +29,7 @@ import javafx.scene.Node;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -47,6 +48,7 @@ import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeContextMenu;
 import static org.mapton.api.Mapton.getIconSizeToolBar;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
+import org.mapton.base.ui.SearchView;
 import org.mapton.core_nb.Initializer;
 import org.openide.awt.Actions;
 import se.trixon.almond.nbp.Almond;
@@ -80,6 +82,7 @@ public class AppToolBar extends BaseToolBar {
     private FxActionSwing mQuitAction;
     private FxActionSwing mResetWindowsAction;
     private FxActionSwing mRestartAction;
+    private SearchView mSearchView;
     private Label mStatusLabel;
     private ContextMenu mSystemContextMenu;
     private Action mSystemMenuAction;
@@ -92,6 +95,14 @@ public class AppToolBar extends BaseToolBar {
         initActionsSwing();
         init();
         initListeners();
+    }
+
+    public void activateSearch() {
+        Platform.runLater(() -> {
+            getScene().getWindow().requestFocus();
+            mSearchView.getPresenter().requestFocus();
+            ((TextField) mSearchView.getPresenter()).clear();
+        });
     }
 
     public void toggleSystemMenu() {
@@ -158,10 +169,12 @@ public class AppToolBar extends BaseToolBar {
         if (!IS_MAC) {
             actions.add(actions.size() - 1, mFullscreenAction);
         }
+
         mSystemContextMenu = ActionUtils.createContextMenu(menuActions);
         mSystemContextMenu.setOnHiding(event -> {
             onObjectHiding(mSystemContextMenu);
         });
+
         Platform.runLater(() -> {
             ActionUtils.updateToolBar(this, actions, ActionUtils.ActionTextBehavior.HIDE);
             FxHelper.adjustButtonWidth(getItems().stream(), getIconSizeContextMenu() * 1.5);
@@ -171,9 +184,11 @@ public class AppToolBar extends BaseToolBar {
             });
 
             getStylesheets().add(CSS_FILE);
+            mSearchView = new SearchView();
+            getItems().add(1, mSearchView.getPresenter());
 
             mStatusLabel = new Label();
-            getItems().add(2, mStatusLabel);
+            getItems().add(3, mStatusLabel);
         });
     }
 
