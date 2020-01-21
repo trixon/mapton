@@ -49,7 +49,7 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
 public final class UpdaterTopComponent extends MTopComponent {
 
     public UpdaterTopComponent() {
-        setName(getBundleString("updater_tool"));
+        setName(Dict.UPDATER.toString());
     }
 
     @Override
@@ -84,8 +84,8 @@ public final class UpdaterTopComponent extends MTopComponent {
         updateAction.setGraphic(MaterialIcon._Action.SYSTEM_UPDATE_ALT.getImageView(getIconSizeToolBarInt()));
 
         List<Action> actions = Arrays.asList(
-                refreshAction,
-                updateAction
+                updateAction,
+                refreshAction
         );
 
         ToolBar toolBar = ActionUtils.createToolBar(actions, ActionUtils.ActionTextBehavior.SHOW);

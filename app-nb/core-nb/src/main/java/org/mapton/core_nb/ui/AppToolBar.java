@@ -185,10 +185,9 @@ public class AppToolBar extends BaseToolBar {
 
             getStylesheets().add(CSS_FILE);
             mSearchView = new SearchView();
-            getItems().add(1, mSearchView.getPresenter());
+            getItems().add(getItems().size() - 3, mSearchView.getPresenter());
 
-            mStatusLabel = new Label();
-            getItems().add(3, mStatusLabel);
+            getItems().add(2, mStatusLabel = new Label());
         });
     }
 

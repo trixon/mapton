@@ -106,8 +106,8 @@ public class SearchView {
         mSearchTextField.setText("");
         mSearchTextField.setStyle("-fx-prompt-text-fill: red;");
         mSearchTextField.setStyle(String.format("-fx-prompt-text-fill: %s;-fx-background-color: %s;",
-                FxHelper.colorToString(Mapton.optionsGeneral().getIconColorBright().darker().darker().darker()),
-                FxHelper.colorToString(Mapton.getThemeColor())
+                FxHelper.colorToString(Mapton.optionsGeneral().getIconColorBright().darker().darker()),
+                FxHelper.colorToString(Mapton.getThemeColor().darker())
         ));
 
         mResultPopOver = new PopOver();
