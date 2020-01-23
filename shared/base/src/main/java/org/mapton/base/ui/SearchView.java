@@ -100,7 +100,7 @@ public class SearchView {
 
     private void createUI() {
         mSearchTextField = (CustomTextField) TextFields.createClearableTextField();
-        mSearchTextField.setLeft(MaterialIcon._Action.SEARCH.getImageView(getIconSizeToolBarInt() - FxHelper.getUIScaled(4)));
+        mSearchTextField.setLeft(MaterialIcon._Action.SEARCH.getImageView(getIconSizeToolBarInt() - FxHelper.getUIScaled(4), mOptions.getIconColorBright()));
         mSearchTextField.setPromptText(MDict.SEARCH_PROMPT.toString());
         mSearchTextField.setPrefColumnCount(25);
         mSearchTextField.setText("");
