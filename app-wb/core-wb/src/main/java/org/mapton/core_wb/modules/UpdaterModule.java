@@ -46,15 +46,15 @@ public class UpdaterModule extends MWorkbenchModule {
     private void createUI() {
         UpdaterView updaterView = new UpdaterView();
 
-        var refreshToolbarItem = new ToolbarItem(Dict.REFRESH.toString(), new MaterialDesignIconView(MaterialDesignIcon.SYNC), event -> {
-            updaterView.refreshUpdaters();
-        });
-
         var updateToolbarItem = new ToolbarItem(Dict.UPDATE.toString(), new MaterialDesignIconView(MaterialDesignIcon.DOWNLOAD), event -> {
             updaterView.update();
         });
 
-        getToolbarControlsLeft().addAll(refreshToolbarItem, updateToolbarItem);
+        var refreshToolbarItem = new ToolbarItem(Dict.REFRESH.toString(), new MaterialDesignIconView(MaterialDesignIcon.SYNC), event -> {
+            updaterView.refreshUpdaters();
+        });
+
+        getToolbarControlsLeft().addAll(updateToolbarItem, refreshToolbarItem);
 
         refreshToolbarItem.disableProperty().bind(updaterView.runningProperty());
         updateToolbarItem.disableProperty().bind(updaterView.runningProperty());
