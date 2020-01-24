@@ -36,16 +36,15 @@ import org.controlsfx.control.IndexedCheckModel;
 import org.controlsfx.control.PopOver;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
-import org.controlsfx.glyphfont.FontAwesome;
 import org.mapton.api.MLocalGrid;
 import org.mapton.api.MLocalGridManager;
 import org.mapton.api.MOptions;
 import static org.mapton.api.MOptions.*;
-import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
+import se.trixon.almond.util.icons.material.MaterialIcon;
 
 /**
  *
@@ -95,21 +94,21 @@ public class LocalGridsView extends BorderPane {
         Action addAction = new Action(Dict.ADD.toString(), (ActionEvent event) -> {
             sLocalGridEditor.edit(null);
         });
-        addAction.setGraphic(Mapton.createGlyphToolbarForm(FontAwesome.Glyph.PLUS));
+        addAction.setGraphic(MaterialIcon._Content.ADD.getImageView(getIconSizeToolBarInt()));
 
         Action editAction = new Action(Dict.EDIT.toString(), (ActionEvent event) -> {
             if (getSelected() != null) {
                 sLocalGridEditor.edit(getSelected());
             }
         });
-        editAction.setGraphic(Mapton.createGlyphToolbarForm(FontAwesome.Glyph.PENCIL));
+        editAction.setGraphic(MaterialIcon._Editor.MODE_EDIT.getImageView(getIconSizeToolBarInt()));
 
         Action remAction = new Action(Dict.REMOVE.toString(), (ActionEvent event) -> {
             if (getSelected() != null) {
                 sLocalGridEditor.remove(getSelected());
             }
         });
-        remAction.setGraphic(Mapton.createGlyphToolbarForm(FontAwesome.Glyph.MINUS));
+        remAction.setGraphic(MaterialIcon._Content.REMOVE.getImageView(getIconSizeToolBarInt()));
 
         Collection<? extends Action> actions = Arrays.asList(
                 new FileImportAction(mPopOver).getAction(this),

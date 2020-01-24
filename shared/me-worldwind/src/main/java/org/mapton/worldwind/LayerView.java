@@ -47,7 +47,6 @@ import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionGroup;
 import org.controlsfx.control.action.ActionUtils;
 import org.controlsfx.control.textfield.TextFields;
-import org.controlsfx.glyphfont.FontAwesome;
 import org.mapton.api.MActivatable;
 import org.mapton.api.MKey;
 import org.mapton.api.Mapton;
@@ -57,6 +56,7 @@ import org.openide.util.NbPreferences;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.StringHelper;
 import se.trixon.almond.util.fx.FxHelper;
+import se.trixon.almond.util.icons.material.MaterialIcon;
 
 /**
  *
@@ -163,7 +163,7 @@ public class LayerView extends BorderPane implements MActivatable {
         mFilterTextField.setMinWidth(20);
         final int iconSize = (int) (getIconSizeToolBarInt() * 0.8);
 
-        ActionGroup selectActionGroup = new ActionGroup(Dict.SHOW.toString(), Mapton.createGlyph(FontAwesome.Glyph.EYE, iconSize, Mapton.optionsGeneral().getIconColorForBackground()),
+        ActionGroup selectActionGroup = new ActionGroup(Dict.SHOW.toString(), MaterialIcon._Image.REMOVE_RED_EYE.getImageView(iconSize),
                 new Action(Dict.SHOW.toString(), (event) -> {
                     setChecked(mRootItem, true);
                 }),

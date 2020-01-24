@@ -32,15 +32,16 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.controlsfx.control.PopOver;
 import org.controlsfx.control.action.Action;
-import org.controlsfx.glyphfont.FontAwesome;
 import org.mapton.api.MBookmark;
 import org.mapton.api.MBookmarkManager;
 import org.mapton.api.MKey;
 import org.mapton.api.Mapton;
+import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.MathHelper;
 import se.trixon.almond.util.fx.dialogs.SimpleDialog;
+import se.trixon.almond.util.icons.material.MaterialIcon;
 import se.trixon.almond.util.io.Geo;
 import se.trixon.almond.util.io.GeoPoint;
 
@@ -118,7 +119,7 @@ public class FileImportAction extends FileAction {
             }
         });
 
-        action.setGraphic(Mapton.createGlyphToolbarForm(FontAwesome.Glyph.FOLDER_ALT));
+        action.setGraphic(MaterialIcon._File.FOLDER_OPEN.getImageView(getIconSizeToolBarInt()));
 
         return action;
     }

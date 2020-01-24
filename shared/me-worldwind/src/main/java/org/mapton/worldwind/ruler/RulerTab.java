@@ -37,6 +37,7 @@ import javafx.scene.control.ButtonBase;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.ToolBar;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
@@ -44,15 +45,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.PopOver;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
-import org.controlsfx.glyphfont.FontAwesome;
-import org.controlsfx.glyphfont.Glyph;
-import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.mapton.worldwind.ModuleOptions;
 import static org.mapton.worldwind.ModuleOptions.*;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxActionCheck;
 import se.trixon.almond.util.fx.FxHelper;
+import se.trixon.almond.util.icons.material.MaterialIcon;
 
 /**
  *
@@ -67,21 +66,21 @@ public class RulerTab extends Tab {
     private TextArea mMetricsTextArea;
     private final ModuleOptions mOptions = ModuleOptions.getInstance();
     private Action mOptionsAction;
-    private Glyph mOptionsGlyph;
+    private ImageView mOptionsImageView;
     private PopOver mOptionsPopOver;
-    private Glyph mPauseGlyph;
+    private ImageView mPauseImageView;
     private TextArea mPointListTextArea;
-    private Glyph mResumeImageGlyph;
+    private ImageView mResumeImageView;
     private RunState mRunState;
     private Action mSaveAction;
-    private Glyph mSaveGlyph;
+    private ImageView mSaveImageView;
     private Action mShapeAction;
-    private Glyph mShapeGlyph;
+    private ImageView mShapeImageView;
     private ShapePopOver mShapePopOver;
     private FxActionCheck mStartAction;
-    private Glyph mStartImageGlyph;
+    private ImageView mStartImageView;
     private FxActionCheck mStopAction;
-    private Glyph mStopGlyph;
+    private ImageView mStopImageView;
     private ToolBar mToolBar;
     private VBox mTopBox;
     private final WorldWindow mWorldWindow;
@@ -109,13 +108,13 @@ public class RulerTab extends Tab {
     }
 
     private void createUI() {
-        mStartImageGlyph = Mapton.createGlyphToolbarForm(FontAwesome.Glyph.PLAY);
-        mPauseGlyph = Mapton.createGlyphToolbarForm(FontAwesome.Glyph.PAUSE);
-        mResumeImageGlyph = Mapton.createGlyphToolbarForm(FontAwesome.Glyph.PLAY_CIRCLE_ALT);
-        mStopGlyph = Mapton.createGlyphToolbarForm(FontAwesome.Glyph.STOP);
-        mSaveGlyph = Mapton.createGlyphToolbarForm(FontAwesome.Glyph.SAVE);
-        mOptionsGlyph = Mapton.createGlyphToolbarForm(FontAwesome.Glyph.COG);
-        mShapeGlyph = Mapton.createGlyphToolbarForm(FontAwesome.Glyph.SQUARE_ALT);
+        mStartImageView = MaterialIcon._Av.PLAY_ARROW.getImageView(getIconSizeToolBarInt());
+        mPauseImageView = MaterialIcon._Av.PAUSE_CIRCLE_OUTLINE.getImageView(getIconSizeToolBarInt());
+        mResumeImageView = MaterialIcon._Av.PLAY_CIRCLE_OUTLINE.getImageView(getIconSizeToolBarInt());
+        mStopImageView = MaterialIcon._Av.STOP.getImageView(getIconSizeToolBarInt());
+        mSaveImageView = MaterialIcon._Content.SAVE.getImageView(getIconSizeToolBarInt());
+        mOptionsImageView = MaterialIcon._Action.SETTINGS.getImageView(getIconSizeToolBarInt());
+        mShapeImageView = MaterialIcon._Editor.FORMAT_SHAPES.getImageView(getIconSizeToolBarInt());
 
         mMetricsTextArea = new TextArea();
         mMetricsTextArea.setEditable(false);
@@ -195,22 +194,22 @@ public class RulerTab extends Tab {
                 mShapePopOver.show(((ButtonBase) event.getSource()));
             }
         });
-        mShapeAction.setGraphic(mShapeGlyph);
+        mShapeAction.setGraphic(mShapeImageView);
 
         mStartAction = new FxActionCheck(Dict.START.toString(), (event) -> {
             setRunState(mRunState == RunState.STARTABLE ? RunState.STOPPABLE : RunState.RESUMABLE);
         });
-        mStartAction.setGraphic(mStartImageGlyph);
+        mStartAction.setGraphic(mStartImageView);
 
         mStopAction = new FxActionCheck(Dict.STOP.toString(), (event) -> {
             setRunState(RunState.STARTABLE);
         });
-        mStopAction.setGraphic(mStopGlyph);
+        mStopAction.setGraphic(mStopImageView);
 
         mSaveAction = new Action(Dict.SAVE.toString(), (event) -> {
             ((RulerTabPane) getTabPane()).save();
         });
-        mSaveAction.setGraphic(mSaveGlyph);
+        mSaveAction.setGraphic(mSaveImageView);
 
         mOptionsAction = new Action(Dict.OPTIONS.toString(), (event) -> {
             if (mOptionsPopOver.isShowing()) {
@@ -219,7 +218,7 @@ public class RulerTab extends Tab {
                 mOptionsPopOver.show(((ButtonBase) event.getSource()));
             }
         });
-        mOptionsAction.setGraphic(mOptionsGlyph);
+        mOptionsAction.setGraphic(mOptionsImageView);
 
         ArrayList<Action> actions = new ArrayList<>();
         actions.addAll(Arrays.asList(
@@ -259,7 +258,7 @@ public class RulerTab extends Tab {
         Platform.runLater(() -> {
             switch (runState) {
                 case STARTABLE://Stop measure
-                    mStartAction.setGraphic(mStartImageGlyph);
+                    mStartAction.setGraphic(mStartImageView);
                     mStartAction.setSelected(false);
                     mStopAction.setDisabled(true);
                     mMeasureTool.setArmed(false);
@@ -267,12 +266,12 @@ public class RulerTab extends Tab {
 
                 case RESUMABLE://Pause/Resume
                     mMeasureTool.setArmed(!mMeasureTool.isArmed());
-                    mStartAction.setGraphic(!mMeasureTool.isArmed() ? mResumeImageGlyph : mPauseGlyph);
+                    mStartAction.setGraphic(!mMeasureTool.isArmed() ? mResumeImageView : mPauseImageView);
                     mStartAction.setSelected(false);
                     break;
 
                 case STOPPABLE://Start measure
-                    mStartAction.setGraphic(mPauseGlyph);
+                    mStartAction.setGraphic(mPauseImageView);
                     mStartAction.setSelected(false);
                     mStopAction.setDisabled(false);
                     mMeasureTool.clear();
