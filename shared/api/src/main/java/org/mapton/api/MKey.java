@@ -33,6 +33,10 @@ public class MKey {
     public static final String LAYER_FAST_OPEN_TOOL = "map.layer.fastopen_tool";
     public static final String MAP_DOCUMENT_INFO = "map.document.info";
     public static final String MAP_TOOL_STARTED = "map_tool.started";
+    /**
+     * Listen for this GlobalState key in order to catch ClearLayersAction
+     */
+    public static final String MAP_CLEAR_ALL_LAYERS = "map.clear.all.layers";
     public static final String NOTIFICATION = "toolbar.notification";
     public static final String NOTIFICATION_CONFIRM = "toolbar.notification.confirm";
     public static final String NOTIFICATION_ERROR = "toolbar.notification.error";

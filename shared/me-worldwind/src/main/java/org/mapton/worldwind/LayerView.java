@@ -262,6 +262,10 @@ public class LayerView extends BorderPane implements MActivatable {
                 }
             }
         });
+
+        Mapton.getGlobalState().addListener(evt -> {
+            setChecked(mRootItem, false);
+        }, MKey.MAP_CLEAR_ALL_LAYERS);
     }
 
     private boolean isCategoryTreeItem(TreeItem<Layer> treeItem) {
