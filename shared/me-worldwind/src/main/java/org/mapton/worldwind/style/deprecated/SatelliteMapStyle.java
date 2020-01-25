@@ -15,6 +15,7 @@
  */
 package org.mapton.worldwind.style.deprecated;
 
+import org.mapton.api.MDict;
 import org.mapton.worldwind.api.MapStyle;
 import se.trixon.almond.util.Dict;
 
@@ -27,12 +28,15 @@ import se.trixon.almond.util.Dict;
 public class SatelliteMapStyle extends MapStyle {
 
     public SatelliteMapStyle() {
-        setName(Dict.MAP_TYPE_SATELLITE.toString());
+        setId(getClass().getName());
+        setName(Dict.MAP_TYPE_SATELLITE.toString() + " 2");
+        setDescription(MDict.HOLLOW_DESCRIPTION.toString() + " 2");
         setSuppliers("NASA & Bing");
+        setCategory("NASA");
         setLayers(new String[]{
-            "NASA Blue Marble Image",
-            "Blue Marble May 2004",
-            "i-cubed Landsat",
+            //            "NASA Blue Marble Image",
+            //            "Blue Marble May 2004",
+            //            "i-cubed Landsat",
             "Bing Imagery"
         });
     }
