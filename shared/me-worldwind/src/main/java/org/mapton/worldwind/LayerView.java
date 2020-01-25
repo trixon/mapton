@@ -264,7 +264,9 @@ public class LayerView extends BorderPane implements MActivatable {
         });
 
         Mapton.getGlobalState().addListener(evt -> {
-            setChecked(mRootItem, false);
+            Platform.runLater(() -> {
+                setChecked(mRootItem, false);
+            });
         }, MKey.MAP_CLEAR_ALL_LAYERS);
     }
 

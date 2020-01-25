@@ -22,19 +22,27 @@ import org.mapton.api.Mapton;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
+import org.openide.util.NbBundle;
+import se.trixon.almond.util.Dict;
 
 @ActionID(
         category = "Mapton",
         id = "org.mapton.core_nb.actions.ClearLayersAction"
 )
 @ActionRegistration(
-        displayName = "Clear layers"
+        displayName = "#CTL_ClearLayersAction"
 )
 @ActionReference(path = "Shortcuts", name = "DS-L")
+@NbBundle.Messages("CTL_ClearLayersAction=Clear layers")
 public final class ClearLayersAction extends BaseAction implements ActionListener {
+
+    public static String getName() {
+        return Bundle.CTL_ClearLayersAction();
+    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         Mapton.getGlobalState().send(MKey.MAP_CLEAR_ALL_LAYERS, null);
+        Mapton.notification(MKey.NOTIFICATION_INFORMATION, getName(), Dict.OPERATION_COMPLETED.toString());
     }
 }

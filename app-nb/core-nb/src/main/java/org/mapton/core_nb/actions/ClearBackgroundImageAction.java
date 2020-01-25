@@ -17,23 +17,32 @@ package org.mapton.core_nb.actions;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import org.mapton.api.MKey;
 import org.mapton.api.Mapton;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
+import org.openide.util.NbBundle;
+import se.trixon.almond.util.Dict;
 
 @ActionID(
         category = "Mapton",
         id = "org.mapton.core_nb.actions.ClearBackgroundImageAction"
 )
 @ActionRegistration(
-        displayName = "Clear background image"
+        displayName = "#CTL_ClearBackgroundImageAction"
 )
 @ActionReference(path = "Shortcuts", name = "DS-J")
+@NbBundle.Messages("CTL_ClearBackgroundImageAction=Clear background image")
 public final class ClearBackgroundImageAction extends BaseAction implements ActionListener {
+
+    public static String getName() {
+        return Bundle.CTL_ClearBackgroundImageAction();
+    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         Mapton.clearBackgroundImage();
+        Mapton.notification(MKey.NOTIFICATION_INFORMATION, getName(), Dict.OPERATION_COMPLETED.toString());
     }
 }
