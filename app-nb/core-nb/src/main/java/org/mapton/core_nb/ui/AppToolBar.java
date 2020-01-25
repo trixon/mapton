@@ -45,9 +45,7 @@ import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.MKey;
 import org.mapton.api.MOptions;
 import org.mapton.api.Mapton;
-import static org.mapton.api.Mapton.getIconSizeContextMenu;
 import static org.mapton.api.Mapton.getIconSizeToolBar;
-import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.mapton.base.ui.SearchView;
 import org.mapton.core_nb.Initializer;
 import org.openide.awt.Actions;
@@ -177,7 +175,7 @@ public class AppToolBar extends BaseToolBar {
 
         Platform.runLater(() -> {
             ActionUtils.updateToolBar(this, actions, ActionUtils.ActionTextBehavior.HIDE);
-            FxHelper.adjustButtonWidth(getItems().stream(), getIconSizeContextMenu() * 1.5);
+            FxHelper.adjustButtonWidth(getItems().stream(), getIconSizeToolBar() * 1.0);
             getItems().stream().filter((item) -> (item instanceof ButtonBase))
                     .map((item) -> (ButtonBase) item).forEachOrdered((buttonBase) -> {
 //                buttonBase.getStylesheets().add(CSS_FILE);
@@ -204,7 +202,7 @@ public class AppToolBar extends BaseToolBar {
                 toggleSystemMenu();
             }
         });
-        mSystemMenuAction.setGraphic(MaterialIcon._Navigation.MENU.getImageView(getIconSizeToolBarInt(), mOptions.getIconColorBright()));
+        mSystemMenuAction.setGraphic(MaterialIcon._Navigation.MENU.getImageView(getIconSizeToolBar(), mOptions.getIconColorBright()));
         setTooltip(mSystemMenuAction, new KeyCodeCombination(KeyCode.CONTEXT_MENU));
 
         //Toolbox
@@ -213,7 +211,7 @@ public class AppToolBar extends BaseToolBar {
                 show(mToolboxPopOver, event.getSource());
             }
         });
-        mToolboxAction.setGraphic(MaterialIcon._Content.ADD.getImageView(getIconSizeToolBarInt(), mOptions.getIconColorBright()));
+        mToolboxAction.setGraphic(MaterialIcon._Content.ADD.getImageView(getIconSizeToolBar(), mOptions.getIconColorBright()));
         setTooltip(mToolboxAction, new KeyCodeCombination(KeyCode.PLUS, KeyCombination.SHORTCUT_DOWN));
     }
 

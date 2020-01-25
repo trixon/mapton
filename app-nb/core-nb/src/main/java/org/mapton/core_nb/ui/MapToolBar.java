@@ -35,7 +35,6 @@ import org.mapton.api.MDocumentInfo;
 import org.mapton.api.MKey;
 import org.mapton.api.MOptions2;
 import org.mapton.api.Mapton;
-import static org.mapton.api.Mapton.getIconSizeContextMenu;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.mapton.base.ui.AttributionView;
 import org.mapton.base.ui.TemporalView;
@@ -140,7 +139,7 @@ public class MapToolBar extends BaseToolBar {
             ActionUtils.updateToolBar(this, actions, ActionUtils.ActionTextBehavior.HIDE);
 
             storeButtonWidths(mStyleAction, mTemporalAction);
-            FxHelper.adjustButtonWidth(getItems().stream(), getIconSizeContextMenu() * 1.5);
+            FxHelper.adjustButtonWidth(getItems().stream(), getIconSizeToolBarInt() * 1.0);
             setTextFromActions();
 
             getItems().stream().filter((item) -> (item instanceof ButtonBase))

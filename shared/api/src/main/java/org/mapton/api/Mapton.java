@@ -184,7 +184,7 @@ public class Mapton {
     }
 
     public static int getIconSizeToolBarInt() {
-        return (int) (getIconSizeToolBar() / 1.2);
+        return (int) (getIconSizeToolBar() / 1.3);
     }
 
     public static Mapton getInstance() {

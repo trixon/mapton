@@ -47,7 +47,7 @@ import org.mapton.api.MLatLon;
 import org.mapton.api.MOptions;
 import org.mapton.api.MSearchEngine;
 import org.mapton.api.Mapton;
-import static org.mapton.api.Mapton.getIconSizeToolBarInt;
+import static org.mapton.api.Mapton.getIconSizeToolBar;
 import org.mapton.base.cootrans.Wgs84DMS;
 import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
@@ -100,7 +100,7 @@ public class SearchView {
 
     private void createUI() {
         mSearchTextField = (CustomTextField) TextFields.createClearableTextField();
-        mSearchTextField.setLeft(MaterialIcon._Action.SEARCH.getImageView(getIconSizeToolBarInt() - FxHelper.getUIScaled(4), mOptions.getIconColorBright()));
+        mSearchTextField.setLeft(MaterialIcon._Action.SEARCH.getImageView(getIconSizeToolBar() - FxHelper.getUIScaled(6), mOptions.getIconColorBright()));
         mSearchTextField.setPromptText(MDict.SEARCH_PROMPT.toString());
         mSearchTextField.setPrefColumnCount(25);
         mSearchTextField.setText("");
