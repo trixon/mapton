@@ -29,7 +29,7 @@ import org.openide.awt.ActionRegistration;
 @ActionRegistration(
         displayName = "Clear background image"
 )
-@ActionReference(path = "Shortcuts", name = "D-J")
+@ActionReference(path = "Shortcuts", name = "DS-J")
 public final class ClearBackgroundImageAction extends BaseAction implements ActionListener {
 
     @Override
