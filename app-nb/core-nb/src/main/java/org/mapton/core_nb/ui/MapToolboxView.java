@@ -28,6 +28,7 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.action.Action;
@@ -36,12 +37,11 @@ import org.mapton.api.MKey;
 import org.mapton.api.MToolMap;
 import org.mapton.api.Mapton;
 import org.openide.util.Lookup;
-import org.openide.util.LookupEvent;
 import org.openide.util.NbPreferences;
 import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.GlobalStateChangeEvent;
 import se.trixon.almond.util.StringHelper;
+import se.trixon.almond.util.SystemHelper;
 
 /**
  *
@@ -51,6 +51,7 @@ public class MapToolboxView extends BorderPane {
 
     private final Map<Action, String> mActionParents = new HashMap<>();
     private TextField mFilterTextField;
+    private long mLatestFocus;
     private final Preferences mPreferences = NbPreferences.forModule(MapToolboxView.class).node("maptools_expanded_state");
     private final Map<String, TreeItem<Action>> mToolParents = new TreeMap<>();
     private final ArrayList<MToolMap> mTools = new ArrayList<>();
@@ -58,44 +59,10 @@ public class MapToolboxView extends BorderPane {
 
     public MapToolboxView() {
         createUI();
-        addListeners();
+        initListeners();
 
         initTools();
         populate();
-    }
-
-    private void addListeners() {
-        mFilterTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-            populate();
-        });
-
-        mTreeView.setOnMouseClicked((event) -> {
-            final TreeItem<Action> selectedItem = mTreeView.getSelectionModel().getSelectedItem();
-            if (selectedItem != null && event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
-                if (selectedItem.getChildren().isEmpty()) {
-                    Mapton.getGlobalState().send(MKey.MAP_TOOL_STARTED, event);
-                }
-                selectedItem.getValue().handle(null);
-            }
-        });
-
-        mTreeView.setOnKeyPressed((event) -> {
-            final TreeItem<Action> selectedItem = mTreeView.getSelectionModel().getSelectedItem();
-            if (selectedItem != null && event.getCode() == KeyCode.ENTER) {
-                if (selectedItem.getChildren().isEmpty()) {
-                    Mapton.getGlobalState().send(MKey.MAP_TOOL_STARTED, event);
-                }
-                mTreeView.getSelectionModel().getSelectedItem().getValue().handle(null);
-            }
-        });
-
-        Lookup.getDefault().lookupResult(MToolMap.class).addLookupListener((LookupEvent ev) -> {
-            initTools();
-        });
-
-        Mapton.getGlobalState().addListener((GlobalStateChangeEvent evt) -> {
-            Almond.openAndActivateTopComponent(evt.getValue());
-        }, MKey.LAYER_FAST_OPEN_TOOL);
     }
 
     private void createUI() {
@@ -103,7 +70,7 @@ public class MapToolboxView extends BorderPane {
         mFilterTextField.setPromptText(Dict.TOOLS_SEARCH.toString());
 
         mTreeView.setShowRoot(false);
-        mTreeView.setCellFactory((TreeView<Action> param) -> new ActionTreeCell());
+        mTreeView.setCellFactory(param -> new ActionTreeCell());
 
         setTop(mFilterTextField);
         setCenter(mTreeView);
@@ -130,6 +97,34 @@ public class MapToolboxView extends BorderPane {
         }
 
         return parent;
+    }
+
+    private void initListeners() {
+        mFilterTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+            populate();
+        });
+
+        mTreeView.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
+            mLatestFocus = System.currentTimeMillis();
+        });
+
+        mTreeView.setOnKeyPressed(event -> {
+            final TreeItem<Action> selectedItem = mTreeView.getSelectionModel().getSelectedItem();
+            if (selectedItem != null && event.getCode() == KeyCode.ENTER) {
+                if (selectedItem.getChildren().isEmpty()) {
+                    Mapton.getGlobalState().send(MKey.MAP_TOOL_STARTED, event);
+                }
+                mTreeView.getSelectionModel().getSelectedItem().getValue().handle(null);
+            }
+        });
+
+        Lookup.getDefault().lookupResult(MToolMap.class).addLookupListener(event -> {
+            initTools();
+        });
+
+        Mapton.getGlobalState().addListener(evt -> {
+            Almond.openAndActivateTopComponent(evt.getValue());
+        }, MKey.LAYER_FAST_OPEN_TOOL);
     }
 
     private void initTools() {
@@ -203,6 +198,16 @@ public class MapToolboxView extends BorderPane {
         private void addContent(Action action) {
             setText(action.getText());
             setGraphic(action.getGraphic());
+            setOnMouseClicked((MouseEvent event) -> {
+                int clicksToSubtract = SystemHelper.age(mLatestFocus) < 1000 ? 1 : 0;
+                int clicks = event.getClickCount() - clicksToSubtract;
+                if (clicks == 2 && event.getButton() == MouseButton.PRIMARY) {
+                    if (getChildren().isEmpty()) {
+                        Mapton.getGlobalState().send(MKey.MAP_TOOL_STARTED, event);
+                    }
+                    action.handle(null);
+                }
+            });
         }
 
         private void clearContent() {
