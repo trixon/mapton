@@ -35,9 +35,9 @@ import javafx.scene.control.CheckBoxTreeItem;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToolBar;
 import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.CheckBoxTreeCell;
 import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -55,6 +55,7 @@ import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.NbPreferences;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.StringHelper;
+import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 
@@ -67,6 +68,7 @@ public class LayerView extends BorderPane implements MActivatable {
     private CheckModel<TreeItem<Layer>> mCheckModel;
     private final Preferences mExpandedPreferences;
     private TextField mFilterTextField;
+    private long mLatestFocus;
     private final HashSet<Layer> mLayerEnabledListenerSet;
     private final Map<String, CheckBoxTreeItem<Layer>> mLayerParents;
     private WorldWindowPanel mMap;
@@ -154,7 +156,7 @@ public class LayerView extends BorderPane implements MActivatable {
         mTreeView = new CheckTreeView<>(mRootItem);
         mCheckModel = mTreeView.getCheckModel();
         mTreeView.setShowRoot(false);
-        mTreeView.setCellFactory((TreeView<Layer> param) -> new LayerTreeCell());
+        mTreeView.setCellFactory(param -> new LayerTreeCell());
 
         setCenter(mTreeView);
 
@@ -230,6 +232,10 @@ public class LayerView extends BorderPane implements MActivatable {
             refresh(mMap);
         });
 
+        mTreeView.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
+            mLatestFocus = System.currentTimeMillis();
+        });
+
         mCheckModel.getCheckedItems().addListener((ListChangeListener.Change<? extends TreeItem<Layer>> c) -> {
             while (c.next()) {
                 if (c.wasAdded()) {
@@ -246,19 +252,6 @@ public class LayerView extends BorderPane implements MActivatable {
                             mVisibilityPreferences.putBoolean(getLayerPath(treeItem.getValue()), false);
                         }
                     });
-                }
-            }
-        });
-
-        mTreeView.setOnMouseClicked((event) -> {
-            final TreeItem<Layer> selectedItem = mTreeView.getSelectionModel().getSelectedItem();
-            if (selectedItem != null) {
-                Layer layer = selectedItem.getValue();
-                if (layer != null && layer.hasKey(WWHelper.KEY_FAST_OPEN) && event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
-                    Mapton.getGlobalState().put(MKey.LAYER_FAST_OPEN_TOOL, layer.getValue(WWHelper.KEY_FAST_OPEN));
-                    if (!event.isAltDown()) {
-                        mCheckModel.check(selectedItem);
-                    }
                 }
             }
         });
@@ -371,8 +364,20 @@ public class LayerView extends BorderPane implements MActivatable {
             }
         }
 
-        private void addContent(Layer action) {
-            setText(action.getName());
+        private void addContent(Layer layer) {
+            setText(layer.getName());
+            setOnMouseClicked((MouseEvent event) -> {
+                int clicksToSubtract = SystemHelper.age(mLatestFocus) < 1000 ? 1 : 0;
+                int clicks = event.getClickCount() - clicksToSubtract;
+                if (clicks == 2 && event.getButton() == MouseButton.PRIMARY) {
+                    if (layer.hasKey(WWHelper.KEY_FAST_OPEN)) {
+                        Mapton.getGlobalState().put(MKey.LAYER_FAST_OPEN_TOOL, layer.getValue(WWHelper.KEY_FAST_OPEN));
+                        if (!event.isAltDown()) {
+                            mCheckModel.check(this.getTreeItem());
+                        }
+                    }
+                }
+            });
         }
 
         private void clearContent() {
