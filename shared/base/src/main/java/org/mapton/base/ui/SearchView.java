@@ -30,6 +30,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.util.Duration;
 import org.apache.commons.lang3.ObjectUtils;
@@ -99,14 +100,15 @@ public class SearchView {
     }
 
     private void createUI() {
+        final Color promptColor = Mapton.optionsGeneral().getIconColorBright().darker().darker();
         mSearchTextField = (CustomTextField) TextFields.createClearableTextField();
-        mSearchTextField.setLeft(MaterialIcon._Action.SEARCH.getImageView(getIconSizeToolBar() - FxHelper.getUIScaled(6), mOptions.getIconColorBright()));
+        mSearchTextField.setLeft(MaterialIcon._Action.SEARCH.getImageView(getIconSizeToolBar() - FxHelper.getUIScaled(10), promptColor));
         mSearchTextField.setPromptText(MDict.SEARCH_PROMPT.toString());
         mSearchTextField.setPrefColumnCount(25);
         mSearchTextField.setText("");
         mSearchTextField.setStyle("-fx-prompt-text-fill: red;");
         mSearchTextField.setStyle(String.format("-fx-prompt-text-fill: %s;-fx-background-color: %s;",
-                FxHelper.colorToString(Mapton.optionsGeneral().getIconColorBright().darker().darker()),
+                FxHelper.colorToString(promptColor),
                 FxHelper.colorToString(Mapton.getThemeColor().darker())
         ));
 
