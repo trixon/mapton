@@ -18,6 +18,8 @@ package org.mapton.base.ui.updater;
 import java.util.ArrayList;
 import java.util.Comparator;
 import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
@@ -42,6 +44,7 @@ import se.trixon.almond.util.fx.FxHelper;
 public class UpdaterListView extends ListView<MUpdater> {
 
     private final MPrint mPrint = new MPrint(MKey.UPDATER_LOGGER);
+    private final BooleanProperty mSelectedProperty = new SimpleBooleanProperty(false);
 
     public UpdaterListView() {
         setMinWidth(FxHelper.getUIScaled(350));
@@ -81,6 +84,10 @@ public class UpdaterListView extends ListView<MUpdater> {
         }).start();
     }
 
+    public BooleanProperty selectedProperty() {
+        return mSelectedProperty;
+    }
+
     class UpdaterListCell extends ListCell<MUpdater> {
 
         private final Label mCategoryLabel = new Label();
@@ -112,6 +119,15 @@ public class UpdaterListView extends ListView<MUpdater> {
             mNameCheckBox.setSelected(updater.isOutOfDate());
             mNameCheckBox.selectedProperty().addListener((ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1) -> {
                 updater.setMarkedForUpdate(t1);
+
+                var markedForUpdate = false;
+                for (var item : getItems()) {
+                    if (item.isMarkedForUpdate()) {
+                        markedForUpdate = true;
+                        break;
+                    }
+                }
+                mSelectedProperty.set(markedForUpdate);
             });
 
             mCategoryLabel.setText(updater.getCategory());

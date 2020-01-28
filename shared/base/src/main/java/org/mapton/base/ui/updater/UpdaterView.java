@@ -34,12 +34,14 @@ public class UpdaterView implements LogListener {
     private final UpdaterListView mListView;
     private final LogPanel mLogPanel;
     private final BooleanProperty mRunningProperty = new SimpleBooleanProperty(false);
+    private final BooleanProperty mSelectedProperty = new SimpleBooleanProperty(false);
     private final UpdaterMaskerPane mUpdaterMaskerPane;
 
     public UpdaterView() {
         mListView = new UpdaterListView();
         mUpdaterMaskerPane = new UpdaterMaskerPane();
         mRunningProperty.bind(mUpdaterMaskerPane.runningProperty());
+        mSelectedProperty.bind(mListView.selectedProperty());
         mUpdaterMaskerPane.setContent(mListView);
 
         mLogPanel = new LogPanel();
@@ -69,6 +71,10 @@ public class UpdaterView implements LogListener {
 
     public BooleanProperty runningProperty() {
         return mRunningProperty;
+    }
+
+    public BooleanProperty selectedProperty() {
+        return mSelectedProperty;
     }
 
     public void update() {

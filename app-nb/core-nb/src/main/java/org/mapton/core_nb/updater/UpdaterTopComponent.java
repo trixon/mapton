@@ -73,15 +73,15 @@ public final class UpdaterTopComponent extends MTopComponent {
     private Scene createScene() {
         UpdaterView updaterView = new UpdaterView();
 
-        Action refreshAction = new Action(Dict.REFRESH.toString(), event -> {
-            updaterView.refreshUpdaters();
-        });
-        refreshAction.setGraphic(MaterialIcon._Navigation.REFRESH.getImageView(getIconSizeToolBarInt()));
-
         Action updateAction = new Action(Dict.UPDATE.toString(), event -> {
             updaterView.update();
         });
         updateAction.setGraphic(MaterialIcon._Action.SYSTEM_UPDATE_ALT.getImageView(getIconSizeToolBarInt()));
+
+        Action refreshAction = new Action(Dict.REFRESH.toString(), event -> {
+            updaterView.refreshUpdaters();
+        });
+        refreshAction.setGraphic(MaterialIcon._Navigation.REFRESH.getImageView(getIconSizeToolBarInt()));
 
         List<Action> actions = Arrays.asList(
                 updateAction,
@@ -97,8 +97,8 @@ public final class UpdaterTopComponent extends MTopComponent {
         toolBar.setStyle("-fx-spacing: 0px;");
         toolBar.setPadding(Insets.EMPTY);
 
+        updateAction.disabledProperty().bind(updaterView.runningProperty().or(updaterView.selectedProperty().not()));
         refreshAction.disabledProperty().bind(updaterView.runningProperty());
-        updateAction.disabledProperty().bind(updaterView.runningProperty());
 
         BorderPane root = new BorderPane(updaterView.getLogPanel());
         root.setLeft(updaterView.getListNode());
