@@ -29,10 +29,10 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.io.FilenameUtils;
 import org.mapton.addon.photos_nb.api.Mapo;
 import org.mapton.addon.photos_nb.api.MapoPhoto;
@@ -69,7 +69,7 @@ public class MapollageLayerBundle extends LayerBundle {
     private final RenderableLayer mRenderableLayer = new RenderableLayer();
     private MapoSettings mSettings;
     private final MTemporalManager mTemporalManager = MTemporalManager.getInstance();
-    private HashMap<String, MTemporalRange> mTemporalRanges;
+    private ConcurrentHashMap<String, MTemporalRange> mTemporalRanges;
 
     public MapollageLayerBundle() {
         init();

@@ -20,8 +20,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
 import javafx.beans.property.SimpleObjectProperty;
 import org.apache.commons.lang3.StringUtils;
 import se.trixon.almond.util.fx.control.DateSelectionMode;
@@ -37,7 +37,7 @@ public class MTemporalManager {
     private final SimpleObjectProperty<LocalDate> mLowDateProperty = new SimpleObjectProperty<>();
     private final SimpleObjectProperty<LocalDate> mMaxDateProperty = new SimpleObjectProperty<>();
     private final SimpleObjectProperty<LocalDate> mMinDateProperty = new SimpleObjectProperty<>();
-    private final HashMap<String, MTemporalRange> mRanges = new HashMap<>();
+    private final ConcurrentHashMap<String, MTemporalRange> mRanges = new ConcurrentHashMap<>();
 
     public static MTemporalManager getInstance() {
         return Holder.INSTANCE;
@@ -55,8 +55,8 @@ public class MTemporalManager {
         return mDateSelectionModeProperty;
     }
 
-    public HashMap<String, MTemporalRange> getAndRemoveSubSet(String prefix) {
-        HashMap<String, MTemporalRange> subSet = getSubSet(prefix);
+    public synchronized ConcurrentHashMap<String, MTemporalRange> getAndRemoveSubSet(String prefix) {
+        ConcurrentHashMap<String, MTemporalRange> subSet = getSubSet(prefix);
         removeAll(prefix);
 
         return subSet;
@@ -82,8 +82,8 @@ public class MTemporalManager {
         return mMinDateProperty.getValue();
     }
 
-    public HashMap<String, MTemporalRange> getSubSet(String prefix) {
-        HashMap<String, MTemporalRange> subSet = new HashMap<>();
+    public synchronized ConcurrentHashMap<String, MTemporalRange> getSubSet(String prefix) {
+        ConcurrentHashMap<String, MTemporalRange> subSet = new ConcurrentHashMap<>();
 
         for (String key : mRanges.keySet()) {
             if (StringUtils.startsWith(key, prefix)) {
@@ -98,28 +98,27 @@ public class MTemporalManager {
         return mHighDateProperty;
     }
 
-    public boolean isValid(String string) {
+    public synchronized boolean isValid(String string) {
         return isValid(LocalDate.parse(string));
     }
 
-    public boolean isValid(LocalDate localDate) {
+    public synchronized boolean isValid(LocalDate localDate) {
         return getLowDate().compareTo(localDate) * localDate.compareTo(getHighDate()) >= 0;
     }
 
-    public boolean isValid(LocalDateTime localDateTime) {
+    public synchronized boolean isValid(LocalDateTime localDateTime) {
         return isValid(localDateTime.toLocalDate());
     }
 
-    public boolean isValid(Timestamp timestamp) {
+    public synchronized boolean isValid(Timestamp timestamp) {
         return isValid(timestamp.toLocalDateTime().toLocalDate());
-
     }
 
-    public boolean isValid(java.sql.Date date) {
+    public synchronized boolean isValid(java.sql.Date date) {
         return isValid(date.toLocalDate());
     }
 
-    public boolean isValid(java.util.Date date) {
+    public synchronized boolean isValid(java.util.Date date) {
         return isValid(date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
     }
 
@@ -135,17 +134,17 @@ public class MTemporalManager {
         return mMinDateProperty;
     }
 
-    public void put(String key, MTemporalRange range) {
+    public synchronized void put(String key, MTemporalRange range) {
         mRanges.put(key, range);
     }
 
-    public void putAll(HashMap<String, MTemporalRange> subSet) {
+    public synchronized void putAll(ConcurrentHashMap<String, MTemporalRange> subSet) {
         mRanges.putAll(subSet);
 
         refresh();
     }
 
-    public void refresh() {
+    public synchronized void refresh() {
         TreeSet<MTemporalRange> fromRanges = new TreeSet<>((MTemporalRange o1, MTemporalRange o2) -> o1.getFromLocalDate().compareTo(o2.getFromLocalDate()));
         TreeSet<MTemporalRange> toRanges = new TreeSet<>((MTemporalRange o1, MTemporalRange o2) -> o1.getToLocalDate().compareTo(o2.getToLocalDate()));
 
@@ -163,11 +162,11 @@ public class MTemporalManager {
         }
     }
 
-    public MTemporalRange remove(String key) {
+    public synchronized MTemporalRange remove(String key) {
         return mRanges.remove(key);
     }
 
-    public void removeAll(String prefix) {
+    public synchronized void removeAll(String prefix) {
         ArrayList<String> keys = new ArrayList<>();
         for (String key : mRanges.keySet()) {
             if (StringUtils.startsWith(key, prefix)) {
