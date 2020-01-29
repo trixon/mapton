@@ -80,12 +80,24 @@ public class UpdaterListView extends ListView<MUpdater> {
 
             Platform.runLater(() -> {
                 getItems().setAll(updaters);
+                refreshSelectedProperty();
             });
         }).start();
     }
 
     public BooleanProperty selectedProperty() {
         return mSelectedProperty;
+    }
+
+    private void refreshSelectedProperty() {
+        var markedForUpdate = false;
+        for (var item : getItems()) {
+            if (item.isMarkedForUpdate()) {
+                markedForUpdate = true;
+                break;
+            }
+        }
+        mSelectedProperty.set(markedForUpdate);
     }
 
     class UpdaterListCell extends ListCell<MUpdater> {
@@ -119,15 +131,7 @@ public class UpdaterListView extends ListView<MUpdater> {
             mNameCheckBox.setSelected(updater.isOutOfDate());
             mNameCheckBox.selectedProperty().addListener((ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1) -> {
                 updater.setMarkedForUpdate(t1);
-
-                var markedForUpdate = false;
-                for (var item : getItems()) {
-                    if (item.isMarkedForUpdate()) {
-                        markedForUpdate = true;
-                        break;
-                    }
-                }
-                mSelectedProperty.set(markedForUpdate);
+                refreshSelectedProperty();
             });
 
             mCategoryLabel.setText(updater.getCategory());
@@ -160,6 +164,7 @@ public class UpdaterListView extends ListView<MUpdater> {
 
             mVBox.setPadding(FxHelper.getUIScaledInsets(4));
         }
+
     }
 
 }
