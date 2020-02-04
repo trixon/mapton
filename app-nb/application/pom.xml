@@ -186,8 +186,11 @@
         <!--Mapton/Other-->
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>poi-nb</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>reports-nb</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
