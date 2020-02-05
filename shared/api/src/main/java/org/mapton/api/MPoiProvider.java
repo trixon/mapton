@@ -15,6 +15,8 @@
  */
 package org.mapton.api;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author Patrik Karlström
@@ -22,5 +24,7 @@ package org.mapton.api;
 public interface MPoiProvider {
 
     public String getName();
+
+    public ArrayList<MPoi> getPois();
 
 }

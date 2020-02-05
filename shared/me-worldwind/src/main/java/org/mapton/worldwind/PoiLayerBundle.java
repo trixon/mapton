@@ -68,7 +68,7 @@ public class PoiLayerBundle extends LayerBundle {
     }
 
     private void initListeners() {
-        mPoiManager.getItems().addListener((ListChangeListener.Change<? extends MPoi> c) -> {
+        mPoiManager.getFilteredItems().addListener((ListChangeListener.Change<? extends MPoi> c) -> {
             updatePlacemarks();
         });
     }
@@ -76,7 +76,7 @@ public class PoiLayerBundle extends LayerBundle {
     private void updatePlacemarks() {
         mLayer.removeAllRenderables();
 
-        for (MPoi poi : mPoiManager.getItems()) {
+        for (MPoi poi : mPoiManager.getFilteredItems()) {
             if (poi.isDisplayMarker()) {
                 PointPlacemark placemark = new PointPlacemark(Position.fromDegrees(poi.getLatitude(), poi.getLongitude()));
                 placemark.setLabelText(poi.getName());

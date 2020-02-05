@@ -15,10 +15,14 @@
  */
 package org.mapton.api;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import org.apache.commons.lang3.StringUtils;
+import org.openide.util.Lookup;
 
 /**
  *
@@ -26,18 +30,75 @@ import javafx.collections.ObservableList;
  */
 public class MPoiManager {
 
-    private final ObjectProperty<ObservableList<MPoi>> mItems = new SimpleObjectProperty<>();
+    private final ObjectProperty<ObservableList<MPoi>> mAllItems = new SimpleObjectProperty<>();
+    private final ObjectProperty<ObservableList<MPoi>> mFilteredItems = new SimpleObjectProperty<>();
 
     public static MPoiManager getInstance() {
         return Holder.INSTANCE;
     }
 
     private MPoiManager() {
-        mItems.setValue(FXCollections.observableArrayList());
+        mAllItems.setValue(FXCollections.observableArrayList());
+        mFilteredItems.setValue(FXCollections.observableArrayList());
+
+        initListeners();
+
+        refresh("");
     }
 
-    public final ObservableList<MPoi> getItems() {
-        return mItems == null ? null : mItems.get();
+    public ObjectProperty<ObservableList<MPoi>> allItemsProperty() {
+        return mAllItems;
+    }
+
+    public ObjectProperty<ObservableList<MPoi>> filteredItemsProperty() {
+        return mFilteredItems;
+    }
+
+    public final ObservableList<MPoi> getAllItems() {
+        return mAllItems == null ? null : mAllItems.get();
+    }
+
+    public final ObservableList<MPoi> getFilteredItems() {
+        return mFilteredItems == null ? null : mFilteredItems.get();
+    }
+
+    public void refresh(String filter) {
+        ArrayList<MPoi> allPois = new ArrayList<>();
+        ArrayList<MPoi> filteredPois = new ArrayList<>();
+
+        for (MPoiProvider poiProvider : Lookup.getDefault().lookupAll(MPoiProvider.class)) {
+            for (MPoi poi : poiProvider.getPois()) {
+                poi.setProvider(poiProvider.getName());
+                allPois.add(poi);
+                if (validPoi(poi, filter)) {
+                    filteredPois.add(poi);
+                }
+            }
+        }
+
+        Comparator<MPoi> comparator = Comparator.comparing(MPoi::getProvider)
+                .thenComparing(Comparator.comparing(MPoi::getCategory))
+                .thenComparing(Comparator.comparing(MPoi::getName));
+        filteredPois.sort(comparator);
+
+        mAllItems.getValue().setAll(allPois);
+        mFilteredItems.getValue().setAll(filteredPois);
+    }
+
+    private void initListeners() {
+        Lookup.getDefault().lookupResult(MPoiProvider.class).addLookupListener(lookupEvent -> {
+            refresh("");
+        });
+    }
+
+    private boolean validPoi(MPoi poi, String filter) {
+        boolean valid
+                = StringUtils.containsIgnoreCase(poi.getProvider(), filter)
+                || StringUtils.containsIgnoreCase(poi.getName(), filter)
+                || StringUtils.containsIgnoreCase(poi.getCategory(), filter)
+                || StringUtils.containsIgnoreCase(poi.getGroup(), filter);
+
+        return valid;
     }
 
     private static class Holder {

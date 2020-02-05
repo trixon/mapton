@@ -22,7 +22,9 @@ package org.mapton.api;
 public class MPoi extends MBookmark {
 
     private String mGroup;
+    private String mProvider;
     private String mTags;
+    private String mWkt;
 
     public MPoi() {
     }
@@ -31,15 +33,31 @@ public class MPoi extends MBookmark {
         return mGroup;
     }
 
+    public String getProvider() {
+        return mProvider;
+    }
+
     public String getTags() {
         return mTags;
+    }
+
+    public String getWkt() {
+        return mWkt;
     }
 
     public void setGroup(String group) {
         mGroup = group;
     }
 
+    public void setProvider(String provider) {
+        mProvider = provider;
+    }
+
     public void setTags(String tags) {
         mTags = tags;
+    }
+
+    public void setWkt(String wkt) {
+        mWkt = wkt;
     }
 }
