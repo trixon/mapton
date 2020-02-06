@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.prefs.Preferences;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ListChangeListener;
 import javafx.collections.transformation.SortedList;
 import javafx.scene.control.CheckBoxTreeItem;
 import javafx.scene.control.TreeItem;
@@ -60,6 +61,7 @@ public class PoiCategoryCheckTreeView extends CheckTreeView<MPoi> {
         mTreeItemExpanderSet = new HashSet<>();
 
         createUI();
+        initListeners();
     }
 
     void populate() {
@@ -86,6 +88,8 @@ public class PoiCategoryCheckTreeView extends CheckTreeView<MPoi> {
         mTreeItemExpanderSet.forEach((checkBoxTreeItem) -> {
             checkBoxTreeItem.setExpanded(true);
         });
+
+        postPopulateRestoreSelection(mRootItem);
     }
 
     private void createUI() {
@@ -129,6 +133,30 @@ public class PoiCategoryCheckTreeView extends CheckTreeView<MPoi> {
         return parent;
     }
 
+    private String getPath(MPoi poi) {
+        return StringUtils.defaultString(poi.getCategory(), "DEFAULT");
+    }
+
+    private void initListeners() {
+        mCheckModel.getCheckedItems().addListener((ListChangeListener.Change<? extends TreeItem<MPoi>> c) -> {
+            while (c.next()) {
+                if (c.wasAdded()) {
+                    c.getAddedSubList().forEach((treeItem) -> {
+                        if (!isCategoryTreeItem(treeItem)) {
+                            mVisibilityPreferences.putBoolean(getPath(treeItem.getValue()), true);
+                        }
+                    });
+                } else if (c.wasRemoved()) {
+                    c.getRemoved().forEach((treeItem) -> {
+                        if (!isCategoryTreeItem(treeItem)) {
+                            mVisibilityPreferences.putBoolean(getPath(treeItem.getValue()), false);
+                        }
+                    });
+                }
+            }
+        });
+    }
+
     private boolean isCategoryTreeItem(TreeItem<MPoi> treeItem) {
         return !treeItem.getChildren().isEmpty();
     }
@@ -137,7 +165,7 @@ public class PoiCategoryCheckTreeView extends CheckTreeView<MPoi> {
         final MPoi poi = treeItem.getValue();
 
         if (isCategoryTreeItem(treeItem)) {
-            final String path = StringUtils.defaultString(poi.getCategory(), "DEFAULT");
+            final String path = getPath(poi);
 
             if (mExpandedPreferences.getBoolean(path, false)) {
                 mTreeItemExpanderSet.add(treeItem);
@@ -161,6 +189,20 @@ public class PoiCategoryCheckTreeView extends CheckTreeView<MPoi> {
             }
         } else {
             mPoisToRemove.put(treeItem, treeItem.getParent());
+        }
+    }
+
+    private void postPopulateRestoreSelection(CheckBoxTreeItem<MPoi> treeItem) {
+        if (treeItem.getChildren().isEmpty()) {
+            if (mVisibilityPreferences.getBoolean(getPath(treeItem.getValue()), true)) {
+                mCheckModel.check(treeItem);
+            } else {
+                mCheckModel.clearCheck(treeItem);
+            }
+        } else {
+            for (TreeItem<MPoi> childTreeItem : treeItem.getChildren()) {
+                postPopulateRestoreSelection((CheckBoxTreeItem<MPoi>) childTreeItem);
+            }
         }
     }
 
