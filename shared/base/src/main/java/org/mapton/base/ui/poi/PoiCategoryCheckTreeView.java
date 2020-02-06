@@ -21,15 +21,12 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.prefs.Preferences;
-import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.transformation.SortedList;
 import javafx.scene.control.CheckBoxTreeItem;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.cell.CheckBoxTreeCell;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 import org.controlsfx.control.CheckModel;
 import org.controlsfx.control.CheckTreeView;
 import org.mapton.api.MPoi;
@@ -66,41 +63,34 @@ public class PoiCategoryCheckTreeView extends CheckTreeView<MPoi> {
     }
 
     void populate() {
-        Platform.runLater(() -> {
-            mPoiParents.clear();
-            mRootItem.getChildren().clear();
-            mTreeItemListenerSet.clear();
+        mPoiParents.clear();
+        mRootItem.getChildren().clear();
+        mTreeItemListenerSet.clear();
+        mPoisToRemove.clear();
 
-            SortedList<MPoi> sortedPois = mManager.getAllItems().sorted((MPoi o1, MPoi o2) -> o1.getName().compareTo(o2.getName()));
+        SortedList<MPoi> sortedPois = mManager.getAllItems().sorted((MPoi o1, MPoi o2) -> o1.getName().compareTo(o2.getName()));
 
-            for (MPoi poi : sortedPois) {
-                CheckBoxTreeItem<MPoi> poiTreeItem = new CheckBoxTreeItem<>(poi);
-                String category = getCategory(poi);
-                System.out.println("category: " + category);
-                CheckBoxTreeItem<MPoi> parent = mPoiParents.computeIfAbsent(category, k -> getParent(mRootItem, category));
-                parent.getChildren().add(poiTreeItem);
-                parent.getValue().setCategory(category);
-//                                poi.setCategory(parent.getValue().getCategory());///
-//                                poi.setCategory(parent.getValue().getCategory());///
+        for (MPoi poi : sortedPois) {
+            CheckBoxTreeItem<MPoi> poiTreeItem = new CheckBoxTreeItem<>(poi);
+            String category = getCategory(poi);
+            CheckBoxTreeItem<MPoi> parent = mPoiParents.computeIfAbsent(category, k -> getParent(mRootItem, category, poi));
+            parent.getChildren().add(poiTreeItem);
+        }
 
-            }
+        postPopulate(mRootItem);
 
-            postPopulate(mRootItem, "");
+        for (Map.Entry<TreeItem<MPoi>, TreeItem<MPoi>> entry : mPoisToRemove.entrySet()) {
+            entry.getValue().getChildren().remove(entry.getKey());
+        }
 
-            for (Map.Entry<TreeItem<MPoi>, TreeItem<MPoi>> entry : mPoisToRemove.entrySet()) {
-                entry.getValue().getChildren().remove(entry.getKey());
-            }
-
-            mTreeItemExpanderSet.forEach((checkBoxTreeItem) -> {
-                checkBoxTreeItem.setExpanded(true);
-            });
+        mTreeItemExpanderSet.forEach((checkBoxTreeItem) -> {
+            checkBoxTreeItem.setExpanded(true);
         });
     }
 
     private void createUI() {
-        MPoi rootMPoi = new MPoi();
-        rootMPoi.setName("");
-        mRootItem = new CheckBoxTreeItem<>(rootMPoi);
+        mRootItem = new CheckBoxTreeItem<>(new MPoi());
+
         setRoot(mRootItem);
         mCheckModel = getCheckModel();
         setShowRoot(false);
@@ -108,10 +98,13 @@ public class PoiCategoryCheckTreeView extends CheckTreeView<MPoi> {
     }
 
     private String getCategory(MPoi poi) {
-        return String.format("%s/%s", poi.getProvider(), poi.getCategory());
+        return String.format("%s/%s",
+                StringUtils.defaultString(poi.getProvider()),
+                StringUtils.defaultString(poi.getCategory())
+        );
     }
 
-    private CheckBoxTreeItem<MPoi> getParent(CheckBoxTreeItem<MPoi> parent, String category) {
+    private CheckBoxTreeItem<MPoi> getParent(CheckBoxTreeItem<MPoi> parent, String category, MPoi poi) {
         String[] categorySegments = StringUtils.split(category, "/");
         StringBuilder sb = new StringBuilder();
 
@@ -122,10 +115,12 @@ public class PoiCategoryCheckTreeView extends CheckTreeView<MPoi> {
             if (mPoiParents.containsKey(path)) {
                 parent = mPoiParents.get(path);
             } else {
-                MPoi poi = new MPoi();
-                poi.setName(segment);
-                poi.setProvider(parent.getValue().getProvider());///
-                parent.getChildren().add(parent = mPoiParents.computeIfAbsent(sb.toString(), k -> new CheckBoxTreeItem<>(poi)));
+                MPoi parentPoi = new MPoi();
+                parentPoi.setName(segment);
+                parentPoi.setProvider(poi.getProvider());
+                parentPoi.setCategory(path);
+
+                parent.getChildren().add(parent = mPoiParents.computeIfAbsent(sb.toString(), k -> new CheckBoxTreeItem<>(parentPoi)));
             }
 
             sb.append("/");
@@ -138,11 +133,11 @@ public class PoiCategoryCheckTreeView extends CheckTreeView<MPoi> {
         return !treeItem.getChildren().isEmpty();
     }
 
-    private void postPopulate(CheckBoxTreeItem<MPoi> treeItem, String level) {
+    private void postPopulate(CheckBoxTreeItem<MPoi> treeItem) {
         final MPoi poi = treeItem.getValue();
 
         if (isCategoryTreeItem(treeItem)) {
-            final String path = getCategory(poi);
+            final String path = StringUtils.defaultString(poi.getCategory(), "DEFAULT");
 
             if (mExpandedPreferences.getBoolean(path, false)) {
                 mTreeItemExpanderSet.add(treeItem);
@@ -151,8 +146,6 @@ public class PoiCategoryCheckTreeView extends CheckTreeView<MPoi> {
             if (!mTreeItemListenerSet.contains(treeItem)) {
                 treeItem.expandedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
                     mExpandedPreferences.putBoolean(path, newValue);
-                    System.out.println("expanded: " + path + " " + newValue);
-                    System.out.println(ToStringBuilder.reflectionToString(poi, ToStringStyle.MULTI_LINE_STYLE));
                 });
 
                 mTreeItemListenerSet.add(treeItem);
@@ -164,7 +157,7 @@ public class PoiCategoryCheckTreeView extends CheckTreeView<MPoi> {
             treeItem.getChildren().sort(c1.reversed().thenComparing(c2));
 
             for (TreeItem<MPoi> childTreeItem : treeItem.getChildren()) {
-                postPopulate((CheckBoxTreeItem<MPoi>) childTreeItem, level + "-");
+                postPopulate((CheckBoxTreeItem<MPoi>) childTreeItem);
             }
         } else {
             mPoisToRemove.put(treeItem, treeItem.getParent());

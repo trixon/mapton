@@ -71,6 +71,7 @@ public class PoisView extends BorderPane {
 
         Action refreshAction = new Action(Dict.REFRESH.toString(), event -> {
             mManager.refresh("");
+            mCategoryCheckTreeView.populate();
         });
         refreshAction.setGraphic(MaterialIcon._Navigation.REFRESH.getImageView(getIconSizeToolBarInt()));
 
@@ -85,7 +86,7 @@ public class PoisView extends BorderPane {
         optionsAction.setDisabled(true);
 
         ArrayList<Action> actions = new ArrayList<>();
-//        actions.add(refreshAction);
+        actions.add(refreshAction);
         actions.add(filterAction);
         actions.add(optionsAction);
 
@@ -94,7 +95,7 @@ public class PoisView extends BorderPane {
         FxHelper.undecorateButtons(toolBar.getItems().stream());
         BorderPane topBorderPane = new BorderPane(mFilterTextField);
         topBorderPane.setRight(toolBar);
-        toolBar.setMinWidth(getIconSizeToolBarInt() * 3.5);
+        toolBar.setMinWidth(getIconSizeToolBarInt() * 4.5);
 
         FxHelper.slimToolBar(toolBar);
 
