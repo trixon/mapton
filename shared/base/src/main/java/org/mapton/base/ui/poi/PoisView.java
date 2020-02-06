@@ -46,6 +46,7 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
  */
 public class PoisView extends BorderPane {
 
+    private PoiCategoryCheckTreeView mCategoryCheckTreeView;
     private TextField mFilterTextField;
     private Label mItemCountLabel;
     private ListView<MPoi> mListView;
@@ -56,6 +57,7 @@ public class PoisView extends BorderPane {
         initListeners();
 
         mManager.refresh("");
+        mCategoryCheckTreeView.populate();
     }
 
     private void createUI() {
@@ -105,7 +107,9 @@ public class PoisView extends BorderPane {
         mItemCountLabel.setAlignment(Pos.BASELINE_RIGHT);
         setTop(topBox);
         setCenter(mListView);
-        setBottom(mItemCountLabel);
+        BorderPane bottomBorderPane = new BorderPane(mCategoryCheckTreeView = new PoiCategoryCheckTreeView());
+        bottomBorderPane.setBottom(mItemCountLabel);
+        setBottom(bottomBorderPane);
 
         titleLabel.prefWidthProperty().bind(widthProperty());
         mItemCountLabel.prefWidthProperty().bind(widthProperty());
@@ -118,6 +122,7 @@ public class PoisView extends BorderPane {
 
         mManager.getFilteredItems().addListener((ListChangeListener.Change<? extends MPoi> c) -> {
             mItemCountLabel.setText(String.format("%d/%d", mManager.getFilteredItems().size(), mManager.getAllItems().size()));
+            mCategoryCheckTreeView.populate();
         });
     }
 
