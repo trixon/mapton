@@ -31,18 +31,22 @@ public class MKey {
     public static final String DATA_SOURCES_WMS_SOURCES = "data_sources.wms.sources";
     public static final String DATA_SOURCES_WMS_STYLES = "data_sources.wms.styles";
     public static final String LAYER_FAST_OPEN_TOOL = "map.layer.fastopen_tool";
-    public static final String MAP_DOCUMENT_INFO = "map.document.info";
-    public static final String MAP_TOOL_STARTED = "map_tool.started";
     /**
      * Listen for this GlobalState key in order to catch ClearLayersAction
      */
     public static final String MAP_CLEAR_ALL_LAYERS = "map.clear.all.layers";
+    public static final String MAP_DOCUMENT_INFO = "map.document.info";
+    public static final String MAP_TOOL_STARTED = "map_tool.started";
     public static final String NOTIFICATION = "toolbar.notification";
     public static final String NOTIFICATION_CONFIRM = "toolbar.notification.confirm";
     public static final String NOTIFICATION_ERROR = "toolbar.notification.error";
     public static final String NOTIFICATION_INFORMATION = "toolbar.notification.information";
     public static final String NOTIFICATION_WARNING = "toolbar.notification.warning";
     public static final String OBJECT_PROPERTIES = "object.properties";
+    /**
+     * Listen for this GlobalState key in order to catch POI category updates
+     */
+    public static final String POI_CATEGORIES = "poi.categories";
     public static final String UPDATER_LOGGER = "updater.logger";
     public static final String WIKIPEDIA_ARTICLE = "wikipedia.article";
 

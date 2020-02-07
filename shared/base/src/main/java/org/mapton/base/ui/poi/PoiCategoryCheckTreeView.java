@@ -18,21 +18,26 @@ package org.mapton.base.ui.poi;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.prefs.Preferences;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
-import javafx.collections.transformation.SortedList;
 import javafx.scene.control.CheckBoxTreeItem;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.cell.CheckBoxTreeCell;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.CheckModel;
 import org.controlsfx.control.CheckTreeView;
+import org.mapton.api.MKey;
 import org.mapton.api.MPoi;
 import org.mapton.api.MPoiManager;
+import org.mapton.api.Mapton;
 import org.openide.util.NbPreferences;
+import se.trixon.almond.util.fx.DelayedResetRunner;
+import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
@@ -41,9 +46,9 @@ import org.openide.util.NbPreferences;
 public class PoiCategoryCheckTreeView extends CheckTreeView<MPoi> {
 
     private CheckModel<TreeItem<MPoi>> mCheckModel;
+    private DelayedResetRunner mDelayedResetRunner;
     private final Preferences mExpandedPreferences;
     private final MPoiManager mManager = MPoiManager.getInstance();
-    private final HashSet<MPoi> mPoiEnabledListenerSet;
     private final Map<String, CheckBoxTreeItem<MPoi>> mPoiParents;
     private final Map<TreeItem<MPoi>, TreeItem<MPoi>> mPoisToRemove;
     private CheckBoxTreeItem<MPoi> mRootItem;
@@ -56,9 +61,16 @@ public class PoiCategoryCheckTreeView extends CheckTreeView<MPoi> {
         mExpandedPreferences = NbPreferences.forModule(PoiCategoryCheckTreeView.class).node("poi_expanded");
         mPoiParents = new TreeMap<>();
         mPoisToRemove = new HashMap<>();
-        mPoiEnabledListenerSet = new HashSet<>();
         mTreeItemListenerSet = new HashSet<>();
         mTreeItemExpanderSet = new HashSet<>();
+        mDelayedResetRunner = new DelayedResetRunner(50, () -> {
+            var categories = new TreeSet<String>();
+            for (TreeItem<MPoi> checkedItem : mCheckModel.getCheckedItems()) {
+                categories.add(getPath(checkedItem.getValue()));
+            }
+
+            Mapton.getGlobalState().put(MKey.POI_CATEGORIES, categories);
+        });
 
         createUI();
         initListeners();
@@ -70,9 +82,7 @@ public class PoiCategoryCheckTreeView extends CheckTreeView<MPoi> {
         mTreeItemListenerSet.clear();
         mPoisToRemove.clear();
 
-        SortedList<MPoi> sortedPois = mManager.getAllItems().sorted((MPoi o1, MPoi o2) -> o1.getName().compareTo(o2.getName()));
-
-        for (MPoi poi : sortedPois) {
+        for (MPoi poi : mManager.getAllItems()) {
             CheckBoxTreeItem<MPoi> poiTreeItem = new CheckBoxTreeItem<>(poi);
             String category = getCategory(poi);
             CheckBoxTreeItem<MPoi> parent = mPoiParents.computeIfAbsent(category, k -> getParent(mRootItem, category, poi));
@@ -82,7 +92,10 @@ public class PoiCategoryCheckTreeView extends CheckTreeView<MPoi> {
         postPopulate(mRootItem);
 
         for (Map.Entry<TreeItem<MPoi>, TreeItem<MPoi>> entry : mPoisToRemove.entrySet()) {
-            entry.getValue().getChildren().remove(entry.getKey());
+            try {
+                entry.getValue().getChildren().remove(entry.getKey());
+            } catch (Exception e) {
+            }
         }
 
         mTreeItemExpanderSet.forEach((checkBoxTreeItem) -> {
@@ -154,6 +167,10 @@ public class PoiCategoryCheckTreeView extends CheckTreeView<MPoi> {
                     });
                 }
             }
+
+            FxHelper.runLaterDelayed(10, () -> {
+                mDelayedResetRunner.reset();
+            });
         });
     }
 
@@ -179,10 +196,12 @@ public class PoiCategoryCheckTreeView extends CheckTreeView<MPoi> {
                 mTreeItemListenerSet.add(treeItem);
             }
 
-            Comparator<TreeItem<MPoi>> c1 = (TreeItem<MPoi> o1, TreeItem<MPoi> o2) -> Boolean.compare(isCategoryTreeItem(o1), isCategoryTreeItem(o2));
-            Comparator<TreeItem<MPoi>> c2 = (TreeItem<MPoi> o1, TreeItem<MPoi> o2) -> o1.getValue().getName().compareTo(o2.getValue().getName());
-
-            treeItem.getChildren().sort(c1.reversed().thenComparing(c2));
+            Comparator<TreeItem<MPoi>> c1 = (TreeItem<MPoi> o1, TreeItem<MPoi> o2) -> {
+                final String s1 = o1.getValue().getName().toLowerCase(Locale.getDefault());
+                final String s2 = o2.getValue().getName().toLowerCase(Locale.getDefault());
+                return s1.compareToIgnoreCase(s2);
+            };
+            treeItem.getChildren().sort(c1);
 
             for (TreeItem<MPoi> childTreeItem : treeItem.getChildren()) {
                 postPopulate((CheckBoxTreeItem<MPoi>) childTreeItem);

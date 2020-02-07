@@ -18,9 +18,11 @@ package org.mapton.base.ui.poi;
 import java.util.ArrayList;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Pos;
+import javafx.scene.control.ButtonBase;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.Separator;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToolBar;
 import javafx.scene.control.Tooltip;
@@ -36,6 +38,9 @@ import org.mapton.api.MPoi;
 import org.mapton.api.MPoiManager;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
+import org.mapton.api.ui.MFilterPopOver;
+import static org.mapton.api.ui.MFilterPopOver.GAP;
+import static org.mapton.api.ui.MFilterPopOver.autoSize;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.icons.material.MaterialIcon;
@@ -46,7 +51,8 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
  */
 public class PoisView extends BorderPane {
 
-    private PoiCategoryCheckTreeView mCategoryCheckTreeView;
+    private FilterPopOver mFilterPopOver;
+
     private TextField mFilterTextField;
     private Label mItemCountLabel;
     private ListView<MPoi> mListView;
@@ -56,11 +62,12 @@ public class PoisView extends BorderPane {
         createUI();
         initListeners();
 
-        mManager.refresh("");
-        mCategoryCheckTreeView.populate();
+        mManager.refresh();
     }
 
     private void createUI() {
+        mFilterPopOver = new FilterPopOver();
+
         mFilterTextField = TextFields.createClearableTextField();
         mFilterTextField.setPromptText(String.format("%s %s", Dict.SEARCH.toString(), MDict.POI.toString()));
         mFilterTextField.setMinWidth(20);
@@ -70,15 +77,18 @@ public class PoisView extends BorderPane {
         mListView.setCellFactory(param -> new PoiListCell());
 
         Action refreshAction = new Action(Dict.REFRESH.toString(), event -> {
-            mManager.refresh("");
-            mCategoryCheckTreeView.populate();
+            mManager.refresh();
         });
         refreshAction.setGraphic(MaterialIcon._Navigation.REFRESH.getImageView(getIconSizeToolBarInt()));
 
         Action filterAction = new Action(Dict.FILTER.toString(), event -> {
+            if (mFilterPopOver.isShowing()) {
+                mFilterPopOver.hide();
+            } else {
+                mFilterPopOver.show(((ButtonBase) event.getSource()));
+            }
         });
         filterAction.setGraphic(MaterialIcon._Content.FILTER_LIST.getImageView(getIconSizeToolBarInt()));
-        filterAction.setDisabled(true);
 
         Action optionsAction = new Action(Dict.OPTIONS.toString(), event -> {
         });
@@ -95,7 +105,7 @@ public class PoisView extends BorderPane {
         FxHelper.undecorateButtons(toolBar.getItems().stream());
         BorderPane topBorderPane = new BorderPane(mFilterTextField);
         topBorderPane.setRight(toolBar);
-        toolBar.setMinWidth(getIconSizeToolBarInt() * 4.5);
+        toolBar.setMinWidth(getIconSizeToolBarInt() * 3 * 1.6);
 
         FxHelper.slimToolBar(toolBar);
 
@@ -108,9 +118,7 @@ public class PoisView extends BorderPane {
         mItemCountLabel.setAlignment(Pos.BASELINE_RIGHT);
         setTop(topBox);
         setCenter(mListView);
-        BorderPane bottomBorderPane = new BorderPane(mCategoryCheckTreeView = new PoiCategoryCheckTreeView());
-        bottomBorderPane.setBottom(mItemCountLabel);
-        setBottom(bottomBorderPane);
+        setBottom(mItemCountLabel);
 
         titleLabel.prefWidthProperty().bind(widthProperty());
         mItemCountLabel.prefWidthProperty().bind(widthProperty());
@@ -123,8 +131,39 @@ public class PoisView extends BorderPane {
 
         mManager.getFilteredItems().addListener((ListChangeListener.Change<? extends MPoi> c) -> {
             mItemCountLabel.setText(String.format("%d/%d", mManager.getFilteredItems().size(), mManager.getAllItems().size()));
-            mCategoryCheckTreeView.populate();
         });
+    }
+
+    public class FilterPopOver extends MFilterPopOver {
+
+        private PoiCategoryCheckTreeView mCategoryCheckTreeView;
+
+        public FilterPopOver() {
+            createUI();
+            mCategoryCheckTreeView.populate();
+        }
+
+        private void createUI() {
+            mCategoryCheckTreeView = new PoiCategoryCheckTreeView();
+            VBox vBox = new VBox(GAP,
+                    getButtonBox(),
+                    new Separator(),
+                    mCategoryCheckTreeView
+            );
+
+            autoSize(vBox);
+            setContentNode(vBox);
+        }
+
+        @Override
+        public void clear() {
+            mCategoryCheckTreeView.getCheckModel().clearChecks();
+        }
+
+        @Override
+        public void reset() {
+            mCategoryCheckTreeView.getCheckModel().checkAll();
+        }
     }
 
     class PoiListCell extends ListCell<MPoi> {
