@@ -282,6 +282,14 @@ public abstract class MEngine {
         mLatitude = latitude;
     }
 
+    public void setLockedLatitude(Double lockedLatitude) {
+        mLockedLatitude = lockedLatitude;
+    }
+
+    public void setLockedLongitude(Double lockedLongitude) {
+        mLockedLongitude = lockedLongitude;
+    }
+
     public void setLongitude(double longitude) {
         mLongitude = longitude;
     }
