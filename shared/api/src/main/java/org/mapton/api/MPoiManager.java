@@ -79,6 +79,7 @@ public class MPoiManager {
             for (MPoi poi : poiProvider.getPois()) {
                 poi.setCategory(StringUtils.defaultIfBlank(poi.getCategory(), "_DEFAULT"));
                 poi.setProvider(poiProvider.getName());
+                poi.setZoom(poi.getZoom() != null ? poi.getZoom() : 0.9);
                 allPois.add(poi);
                 if (validPoi(poi, filter)) {
                     filteredPois.add(poi);

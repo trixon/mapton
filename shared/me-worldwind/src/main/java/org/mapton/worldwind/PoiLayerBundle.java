@@ -22,6 +22,7 @@ import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import org.mapton.api.MDict;
 import org.mapton.api.MKey;
@@ -33,6 +34,7 @@ import org.mapton.worldwind.api.LayerBundleManager;
 import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.GlobalStateChangeEvent;
 import se.trixon.almond.util.fx.FxHelper;
 
 /**
@@ -42,14 +44,14 @@ import se.trixon.almond.util.fx.FxHelper;
 @ServiceProvider(service = LayerBundle.class)
 public class PoiLayerBundle extends LayerBundle {
 
-    private final MPoiManager mPoiManager = MPoiManager.getInstance();
     private final RenderableLayer mLayer = new RenderableLayer();
+    private final MPoiManager mPoiManager = MPoiManager.getInstance();
 
     public PoiLayerBundle() {
         init();
         initListeners();
 
-        updatePlacemarks();
+        refresh();
     }
 
     @Override
@@ -69,11 +71,17 @@ public class PoiLayerBundle extends LayerBundle {
 
     private void initListeners() {
         mPoiManager.getFilteredItems().addListener((ListChangeListener.Change<? extends MPoi> c) -> {
-            updatePlacemarks();
+            refresh();
         });
+
+        Mapton.getGlobalState().addListener((GlobalStateChangeEvent evt) -> {
+            Platform.runLater(() -> {
+                sendObjectProperties(evt.getValue());
+            });
+        }, MKey.POI_SELECTION);
     }
 
-    private void updatePlacemarks() {
+    private void refresh() {
         mLayer.removeAllRenderables();
 
         for (MPoi poi : mPoiManager.getFilteredItems()) {
@@ -90,13 +98,7 @@ public class PoiLayerBundle extends LayerBundle {
                 placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(attrs, 1.5));
 
                 placemark.setValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK, (Runnable) () -> {
-                    Map<String, Object> propertyMap = new LinkedHashMap<>();
-                    propertyMap.put(Dict.NAME.toString(), poi.getName());
-                    propertyMap.put(Dict.DESCRIPTION.toString(), poi.getDescription());
-                    propertyMap.put(Dict.CATEGORY.toString(), poi.getCategory());
-                    propertyMap.put(Dict.COLOR.toString(), javafx.scene.paint.Color.web(poi.getColor()));
-
-                    Mapton.getGlobalState().put(MKey.OBJECT_PROPERTIES, propertyMap);
+                    Mapton.getGlobalState().put(MKey.POI_SELECTION_MAP, poi);
                 });
 
                 mLayer.addRenderable(placemark);
@@ -104,5 +106,19 @@ public class PoiLayerBundle extends LayerBundle {
         }
 
         LayerBundleManager.getInstance().redraw();
+    }
+
+    private void sendObjectProperties(MPoi poi) {
+        Map<String, Object> propertyMap = new LinkedHashMap<>();
+
+        if (poi != null) {
+            propertyMap.put(Dict.NAME.toString(), poi.getName());
+            propertyMap.put(Dict.CATEGORY.toString(), poi.getCategory());
+            propertyMap.put(Dict.SOURCE.toString(), poi.getProvider());
+            propertyMap.put(Dict.DESCRIPTION.toString(), poi.getDescription());
+            propertyMap.put(Dict.TAGS.toString(), poi.getTags());
+        }
+
+        Mapton.getGlobalState().put(MKey.OBJECT_PROPERTIES, propertyMap);
     }
 }

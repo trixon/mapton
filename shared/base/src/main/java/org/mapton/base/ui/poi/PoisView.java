@@ -16,6 +16,10 @@
 package org.mapton.base.ui.poi;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import javafx.application.Platform;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -34,13 +38,15 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
+import javafx.scene.text.Font;
+import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
 import org.controlsfx.control.textfield.TextFields;
 import org.mapton.api.MContextMenuItem;
 import org.mapton.api.MDict;
+import org.mapton.api.MKey;
+import org.mapton.api.MLatLon;
 import org.mapton.api.MPoi;
 import org.mapton.api.MPoiManager;
 import org.mapton.api.Mapton;
@@ -176,6 +182,25 @@ public class PoisView extends BorderPane {
         };
 
         mListView.setOnMousePressed(mContextMenuMouseEvent);
+        mListView.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends MPoi> ov, MPoi p, MPoi p1) -> {
+            Mapton.getGlobalState().put(MKey.POI_SELECTION, p1);
+            if (p1 != null) {
+                Mapton.getEngine().panTo(new MLatLon(p1.getLatitude(), p1.getLongitude()), p1.getZoom());
+            }
+        });
+
+        Mapton.getGlobalState().addListener(gsce -> {
+            try {
+                Platform.runLater(() -> {
+                    MPoi poi = gsce.getValue();
+                    mListView.getSelectionModel().select(poi);
+                    mListView.getFocusModel().focus(mListView.getItems().indexOf(poi));
+                    mListView.scrollTo(poi);
+                });
+            } catch (Exception e) {
+
+            }
+        }, MKey.POI_SELECTION_MAP);
     }
 
     private void populateContextProviders() {
@@ -270,7 +295,27 @@ public class PoisView extends BorderPane {
 
             mNameLabel.setText(poi.getName());
             mDesc1Label.setText(String.format("%s: %s", poi.getProvider(), poi.getCategory()));
-            setTooltip(new Tooltip(ToStringBuilder.reflectionToString(poi, ToStringStyle.MULTI_LINE_STYLE)));
+
+            LinkedHashMap<String, String> rows = new LinkedHashMap<>();
+            rows.put(Dict.NAME.toString(), StringUtils.defaultString(poi.getName()));
+            rows.put(Dict.CATEGORY.toString(), StringUtils.defaultString(poi.getCategory()));
+            rows.put(Dict.SOURCE.toString(), StringUtils.defaultString(poi.getProvider()));
+            rows.put(Dict.DESCRIPTION.toString(), StringUtils.defaultString(poi.getDescription()));
+            rows.put(Dict.TAGS.toString(), StringUtils.defaultString(poi.getTags()));
+
+            int length = 0;
+            for (String string : rows.keySet()) {
+                length = Math.max(length, string.length());
+            }
+
+            StringBuilder sb = new StringBuilder();
+            for (Map.Entry<String, String> entry : rows.entrySet()) {
+                sb.append(StringUtils.rightPad(entry.getKey(), length, " ")).append(" : ").append(entry.getValue()).append("\n");
+            }
+
+            Tooltip tooltip = new Tooltip(sb.toString());
+            tooltip.setFont(Font.font("monospaced"));
+            setTooltip(tooltip);
 
             setGraphic(mVBox);
         }
