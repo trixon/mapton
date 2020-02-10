@@ -33,6 +33,7 @@ import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
+import se.trixon.almond.util.swing.SwingHelper;
 
 /**
  *
@@ -48,7 +49,9 @@ public class BookmarkLayerBundle extends LayerBundle {
         init();
         initListeners();
 
-        updatePlacemarks();
+        SwingHelper.runLaterDelayed(2000, () -> {
+            updatePlacemarks();
+        });
     }
 
     @Override
