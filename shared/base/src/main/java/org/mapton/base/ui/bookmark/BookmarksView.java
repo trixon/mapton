@@ -292,9 +292,14 @@ public class BookmarksView extends BorderPane implements MActivatable {
             contextMenu.getItems().add(4, mContextCopyMenu);
 
             setOnMousePressed((MouseEvent event) -> {
+                getScene().getWindow().requestFocus();
+                mTreeView.requestFocus();
                 MBookmark b = this.getItem();
 
                 if (b != null) {
+                    Mapton.getEngine().setLockedLatitude(b.getLatitude());
+                    Mapton.getEngine().setLockedLongitude(b.getLongitude());
+
                     if (event.isSecondaryButtonDown()) {
                         mContextCopyMenu.setDisable(b.isCategory());
                         mContextOpenMenu.setDisable(b.isCategory());
