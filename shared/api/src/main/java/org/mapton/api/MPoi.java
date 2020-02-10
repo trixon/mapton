@@ -24,6 +24,7 @@ public class MPoi extends MBookmark {
     private String mGroup;
     private String mProvider;
     private String mTags;
+    private String mUrl;
     private String mWkt;
 
     public MPoi() {
@@ -41,6 +42,10 @@ public class MPoi extends MBookmark {
         return mTags;
     }
 
+    public String getUrl() {
+        return mUrl;
+    }
+
     public String getWkt() {
         return mWkt;
     }
@@ -55,6 +60,10 @@ public class MPoi extends MBookmark {
 
     public void setTags(String tags) {
         mTags = tags;
+    }
+
+    public void setUrl(String url) {
+        mUrl = url;
     }
 
     public void setWkt(String wkt) {

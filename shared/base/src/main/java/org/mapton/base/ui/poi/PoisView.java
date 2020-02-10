@@ -32,6 +32,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Separator;
+import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToolBar;
 import javafx.scene.control.Tooltip;
@@ -67,6 +68,7 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
  */
 public class PoisView extends BorderPane {
 
+    private MenuItem mBrowseMenuItem;
     private Menu mContextCopyMenu;
     private ContextMenu mContextMenu;
     private EventHandler<MouseEvent> mContextMenuMouseEvent;
@@ -142,8 +144,10 @@ public class PoisView extends BorderPane {
 
         titleLabel.prefWidthProperty().bind(widthProperty());
         mItemCountLabel.prefWidthProperty().bind(widthProperty());
-
+        mBrowseMenuItem = new MenuItem(Dict.OPEN_IN_WEB_BROWSER.toString());
         mContextMenu = new ContextMenu(
+                mBrowseMenuItem,
+                new SeparatorMenuItem(),
                 mContextCopyMenu = new Menu(MDict.COPY_LOCATION.toString()),
                 mContextOpenMenu = new Menu(MDict.OPEN_LOCATION.toString())
         );
@@ -173,7 +177,7 @@ public class PoisView extends BorderPane {
                 if (mouseEvent.isSecondaryButtonDown()) {
                     Mapton.getEngine().setLatitude(poi.getLatitude());
                     Mapton.getEngine().setLongitude(poi.getLongitude());
-
+                    mBrowseMenuItem.setDisable(StringUtils.isBlank(poi.getUrl()));
                     mContextMenu.show(this, mouseEvent.getScreenX(), mouseEvent.getScreenY());
                 } else if (mouseEvent.isPrimaryButtonDown()) {
                     mContextMenu.hide();
@@ -201,6 +205,10 @@ public class PoisView extends BorderPane {
 
             }
         }, MKey.POI_SELECTION_MAP);
+
+        mBrowseMenuItem.setOnAction(actionEvent -> {
+            SystemHelper.desktopBrowse(mListView.getSelectionModel().getSelectedItem().getUrl());
+        });
     }
 
     private void populateContextProviders() {
