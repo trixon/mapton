@@ -17,15 +17,21 @@ package org.mapton.base.ui.poi;
 
 import java.util.ArrayList;
 import javafx.collections.ListChangeListener;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.control.ButtonBase;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToolBar;
 import javafx.scene.control.Tooltip;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -33,6 +39,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
 import org.controlsfx.control.textfield.TextFields;
+import org.mapton.api.MContextMenuItem;
 import org.mapton.api.MDict;
 import org.mapton.api.MPoi;
 import org.mapton.api.MPoiManager;
@@ -41,7 +48,10 @@ import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.mapton.api.ui.MFilterPopOver;
 import static org.mapton.api.ui.MFilterPopOver.GAP;
 import static org.mapton.api.ui.MFilterPopOver.autoSize;
+import org.openide.util.Lookup;
+import org.openide.util.LookupEvent;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 
@@ -51,8 +61,11 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
  */
 public class PoisView extends BorderPane {
 
+    private Menu mContextCopyMenu;
+    private ContextMenu mContextMenu;
+    private EventHandler<MouseEvent> mContextMenuMouseEvent;
+    private Menu mContextOpenMenu;
     private FilterPopOver mFilterPopOver;
-
     private TextField mFilterTextField;
     private Label mItemCountLabel;
     private ListView<MPoi> mListView;
@@ -61,6 +74,7 @@ public class PoisView extends BorderPane {
     public PoisView() {
         createUI();
         initListeners();
+        populateContextProviders();
 
         mManager.refresh();
     }
@@ -122,6 +136,11 @@ public class PoisView extends BorderPane {
 
         titleLabel.prefWidthProperty().bind(widthProperty());
         mItemCountLabel.prefWidthProperty().bind(widthProperty());
+
+        mContextMenu = new ContextMenu(
+                mContextCopyMenu = new Menu(MDict.COPY_LOCATION.toString()),
+                mContextOpenMenu = new Menu(MDict.OPEN_LOCATION.toString())
+        );
     }
 
     private void initListeners() {
@@ -132,6 +151,65 @@ public class PoisView extends BorderPane {
         mManager.getFilteredItems().addListener((ListChangeListener.Change<? extends MPoi> c) -> {
             mItemCountLabel.setText(String.format("%d/%d", mManager.getFilteredItems().size(), mManager.getAllItems().size()));
         });
+
+        Lookup.getDefault().lookupResult(MContextMenuItem.class).addLookupListener((LookupEvent ev) -> {
+            populateContextProviders();
+        });
+
+        mContextMenuMouseEvent = mouseEvent -> {
+            getScene().getWindow().requestFocus();
+            mListView.requestFocus();
+            MPoi poi = mListView.getSelectionModel().getSelectedItem();
+
+            if (poi != null) {
+                Mapton.getEngine().setLockedLatitude(poi.getLatitude());
+                Mapton.getEngine().setLockedLongitude(poi.getLongitude());
+                if (mouseEvent.isSecondaryButtonDown()) {
+                    Mapton.getEngine().setLatitude(poi.getLatitude());
+                    Mapton.getEngine().setLongitude(poi.getLongitude());
+
+                    mContextMenu.show(this, mouseEvent.getScreenX(), mouseEvent.getScreenY());
+                } else if (mouseEvent.isPrimaryButtonDown()) {
+                    mContextMenu.hide();
+                }
+            }
+        };
+
+        mListView.setOnMousePressed(mContextMenuMouseEvent);
+    }
+
+    private void populateContextProviders() {
+        mContextCopyMenu.getItems().clear();
+        mContextOpenMenu.getItems().clear();
+
+        for (MContextMenuItem provider : Lookup.getDefault().lookupAll(MContextMenuItem.class)) {
+            MenuItem item = new MenuItem(provider.getName());
+            switch (provider.getType()) {
+                case COPY:
+                    mContextCopyMenu.getItems().add(item);
+                    item.setOnAction((ActionEvent event) -> {
+                        String s = provider.getUrl();
+                        Mapton.getLog().v("Open location", s);
+                        SystemHelper.copyToClipboard(s);
+                    });
+                    break;
+
+                case OPEN:
+                    mContextOpenMenu.getItems().add(item);
+                    item.setOnAction((ActionEvent event) -> {
+                        String s = provider.getUrl();
+                        Mapton.getLog().v("Copy location", s);
+                        SystemHelper.desktopBrowse(s);
+                    });
+                    break;
+            }
+        }
+
+        mContextCopyMenu.getItems().sorted((MenuItem o1, MenuItem o2) -> o1.getText().compareToIgnoreCase(o2.getText()));
+        mContextCopyMenu.setVisible(!mContextCopyMenu.getItems().isEmpty());
+
+        mContextOpenMenu.getItems().sorted((MenuItem o1, MenuItem o2) -> o1.getText().compareToIgnoreCase(o2.getText()));
+        mContextOpenMenu.setVisible(!mContextOpenMenu.getItems().isEmpty());
     }
 
     public class FilterPopOver extends MFilterPopOver {
