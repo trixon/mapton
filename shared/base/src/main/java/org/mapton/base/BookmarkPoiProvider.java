@@ -41,6 +41,7 @@ public class BookmarkPoiProvider implements MPoiProvider {
     @Override
     public ArrayList<MPoi> getPois() {
         ArrayList<MPoi> pois = new ArrayList<>();
+
         for (MBookmark bookmark : MBookmarkManager.getInstance().dbLoad("%", false)) {
             MPoi poi = new MPoi();
             poi.setDescription(bookmark.getDescription());
@@ -50,11 +51,11 @@ public class BookmarkPoiProvider implements MPoiProvider {
             poi.setLatitude(bookmark.getLatitude());
             poi.setLongitude(bookmark.getLongitude());
             poi.setName(bookmark.getName());
+            poi.setZoom(bookmark.getZoom());
 
             pois.add(poi);
         }
 
         return pois;
     }
-
 }
