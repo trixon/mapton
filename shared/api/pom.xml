@@ -299,16 +299,6 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>com.dlsc.preferencesfx</groupId>
-            <artifactId>preferencesfx-core</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.openjfx</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
             <groupId>de.jensd</groupId>
             <artifactId>fontawesomefx-commons</artifactId>
             <exclusions>

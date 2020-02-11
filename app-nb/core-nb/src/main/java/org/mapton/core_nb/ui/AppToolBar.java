@@ -75,7 +75,6 @@ public class AppToolBar extends BaseToolBar {
     private Action mHelpAction;
     private FxActionSwingCheck mMapAction;
     private FxActionSwing mOptionsAction;
-    private FxActionSwing mOptionsPlatformAction;
     private FxActionSwing mPluginsAction;
     private FxActionSwing mQuitAction;
     private FxActionSwing mResetWindowsAction;
@@ -144,7 +143,6 @@ public class AppToolBar extends BaseToolBar {
                     viewActionGroup,
                     ActionUtils.ACTION_SEPARATOR,
                     mOptionsAction,
-                    mOptionsPlatformAction,
                     mPluginsAction,
                     ActionUtils.ACTION_SEPARATOR,
                     mHelpAction,
@@ -263,11 +261,6 @@ public class AppToolBar extends BaseToolBar {
             mOptionsAction.setAccelerator(new KeyCodeCombination(KeyCode.COMMA, KeyCombination.SHORTCUT_DOWN));
         }
 
-        //options - platform
-        mOptionsPlatformAction = new FxActionSwing(String.format("%s (%s)", Dict.OPTIONS.toString(), Dict.PLATFORM.toString()), () -> {
-            Actions.forID("Mapton", "org.mapton.core_nb.actions.OptionsPlatformAction").actionPerformed(null);
-        });
-
         //About
         mAboutAction = new FxActionSwing(String.format(Dict.ABOUT_S.toString(), "Mapton"), () -> {
             AboutModel aboutModel = new AboutModel(SystemHelper.getBundle(Initializer.class, "about"), SystemHelper.getResourceAsImageView(Initializer.class, "logo.png"));
@@ -308,7 +301,7 @@ public class AppToolBar extends BaseToolBar {
             switch (evt.getKey()) {
                 case MOptions.KEY_MAP_ONLY:
                     mMapAction.setSelected(mOptions.isMapOnly());
-                    mOptionsGeneral.maximizedMapProperty().set(mOptions.isMapOnly());
+                    mOptions.maximizedMapProperty().set(mOptions.isMapOnly());
                     break;
             }
         });

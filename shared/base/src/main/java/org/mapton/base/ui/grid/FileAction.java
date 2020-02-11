@@ -31,7 +31,7 @@ import org.mapton.api.Mapton;
 public abstract class FileAction {
 
     protected final FileChooser.ExtensionFilter mExtGrid = new FileChooser.ExtensionFilter("Mapton Grid (*.grid)", "*.grid");
-    protected Color mIconColor = Mapton.optionsGeneral().getIconColorForBackground();
+    protected Color mIconColor = Mapton.options().getIconColorForBackground();
     protected final MLocalGridManager mManager = MLocalGridManager.getInstance();
     protected PopOver mPopOver;
     protected final String mTitle = MDict.GRIDS.toString();

@@ -100,7 +100,7 @@ public class SearchView {
     }
 
     private void createUI() {
-        final Color promptColor = Mapton.optionsGeneral().getIconColorBright().darker().darker();
+        final Color promptColor = Mapton.options().getIconColorBright().darker().darker();
         mSearchTextField = (CustomTextField) TextFields.createClearableTextField();
         mSearchTextField.setLeft(MaterialIcon._Action.SEARCH.getImageView(getIconSizeToolBar() - FxHelper.getUIScaled(10), promptColor));
         mSearchTextField.setPromptText(MDict.SEARCH_PROMPT.toString());

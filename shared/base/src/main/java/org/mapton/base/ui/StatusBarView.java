@@ -27,7 +27,6 @@ import org.controlsfx.control.PlusMinusSlider;
 import org.mapton.api.MCooTrans;
 import org.mapton.api.MEngine;
 import org.mapton.api.MOptions;
-import org.mapton.api.MOptions2;
 import org.mapton.api.MStatusZoomMode;
 import org.mapton.api.Mapton;
 import org.openide.util.Lookup;
@@ -162,7 +161,7 @@ public class StatusBarView extends org.controlsfx.control.StatusBar {
             updateMousePositionData();
         });
 
-        MOptions2.getInstance().general().engineProperty().addListener((ObservableValue<? extends String> ov, String t, String t1) -> {
+        MOptions.getInstance().engineProperty().addListener((ObservableValue<? extends String> ov, String t, String t1) -> {
             setMessage("");
             Platform.runLater(() -> {
                 updateZoomMode();

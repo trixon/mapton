@@ -179,12 +179,12 @@
         <module>app-nb/modules-add-ons/xkcd-nb</module>
 
         <!--GUI WorkbenchFX-->
-        <module>app-wb/application</module>
+        <!--        <module>app-wb/application</module>
         <module>app-wb/core-wb</module>
 
-        <!--Modules WB-->
+        Modules WB
         <module>app-wb/modules/reports-wb</module>
-        <module>app-wb/modules-add-ons/notes-wb</module>
+        <module>app-wb/modules-add-ons/notes-wb</module>-->
 
         <!--Other-->
         <module>modules/wikipedia</module>
@@ -332,17 +332,6 @@
                 <groupId>com.dlsc.workbenchfx</groupId>
                 <artifactId>workbenchfx-core</artifactId>
                 <version>11.1.0</version>
-            </dependency>
-            <dependency>
-                <groupId>com.dlsc.preferencesfx</groupId>
-                <artifactId>preferencesfx-core</artifactId>
-                <version>11.6.0</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.openjfx</groupId>
-                        <artifactId>*</artifactId>
-                    </exclusion>
-                </exclusions>
             </dependency>
             <dependency>
                 <groupId>de.jensd</groupId>

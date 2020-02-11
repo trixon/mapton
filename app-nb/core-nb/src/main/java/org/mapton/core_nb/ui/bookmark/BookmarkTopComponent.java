@@ -16,7 +16,6 @@
 package org.mapton.core_nb.ui.bookmark;
 
 import javafx.scene.Scene;
-import org.mapton.api.MOptions;
 import org.mapton.base.ui.bookmark.BookmarksView;
 import org.mapton.core_nb.api.MMapMagnet;
 import org.mapton.core_nb.api.MTopComponent;
@@ -62,13 +61,13 @@ public final class BookmarkTopComponent extends MTopComponent implements MMapMag
 
     @Override
     protected void componentClosed() {
-        MOptions.getInstance().setBookmarkVisible(false);
+//        MOptions.getInstance().setBookmarkVisible(false);
         super.componentClosed();
     }
 
     @Override
     protected void componentOpened() {
-        MOptions.getInstance().setBookmarkVisible(true);
+//        MOptions.getInstance().setBookmarkVisible(true);
         super.componentOpened();
     }
 

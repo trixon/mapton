@@ -246,7 +246,7 @@ public class BookmarksView extends BorderPane implements MActivatable {
         }
 
         private void createUI() {
-            Color color = Mapton.optionsGeneral().getIconColorForBackground();
+            Color color = Mapton.options().getIconColorForBackground();
             Action editAction = new Action(Dict.EDIT.toString(), (ActionEvent event) -> {
                 bookmarkEdit();
             });

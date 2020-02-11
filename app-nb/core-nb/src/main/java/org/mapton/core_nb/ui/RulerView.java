@@ -18,7 +18,7 @@ package org.mapton.core_nb.ui;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.layout.BorderPane;
-import org.mapton.api.MOptions2;
+import org.mapton.api.MOptions;
 import org.mapton.api.Mapton;
 
 /**
@@ -30,7 +30,7 @@ public class RulerView extends BorderPane {
     public RulerView() {
         createUI();
 
-        MOptions2.getInstance().general().engineProperty().addListener((ObservableValue<? extends String> ov, String t, String t1) -> {
+        MOptions.getInstance().engineProperty().addListener((ObservableValue<? extends String> ov, String t, String t1) -> {
             loadRulerView();
         });
 

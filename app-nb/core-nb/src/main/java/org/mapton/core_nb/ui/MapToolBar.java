@@ -33,7 +33,7 @@ import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.MDict;
 import org.mapton.api.MDocumentInfo;
 import org.mapton.api.MKey;
-import org.mapton.api.MOptions2;
+import org.mapton.api.MOptions;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.mapton.base.ui.AttributionView;
@@ -163,7 +163,7 @@ public class MapToolBar extends BaseToolBar {
             }
         });
         mBookmarkAction.setGraphic(MaterialIcon._Action.BOOKMARK_BORDER.getImageView(getIconSizeToolBarInt()));
-        mBookmarkAction.setSelected(mOptions.isBookmarkVisible());
+//        mBookmarkAction.setSelected(mOptions.isBookmarkVisible());
         setTooltip(mBookmarkAction, new KeyCodeCombination(KeyCode.B, KeyCombination.SHORTCUT_DOWN));
 
         //Layer
@@ -179,7 +179,7 @@ public class MapToolBar extends BaseToolBar {
             }
         });
         mLayerAction.setGraphic(MaterialIcon._Maps.LAYERS.getImageView(getIconSizeToolBarInt()));
-        mLayerAction.setSelected(mOptions.isBookmarkVisible());
+//        mLayerAction.setSelected(mOptions.isBookmarkVisible());
         setTooltip(mLayerAction, new KeyCodeCombination(KeyCode.L, KeyCombination.SHORTCUT_DOWN));
 
         //Grid
@@ -260,7 +260,7 @@ public class MapToolBar extends BaseToolBar {
     }
 
     private void initListeners() {
-        MOptions2.getInstance().general().engineProperty().addListener((ObservableValue<? extends String> ov, String t, String t1) -> {
+        MOptions.getInstance().engineProperty().addListener((ObservableValue<? extends String> ov, String t, String t1) -> {
             refreshEngine();
         });
 

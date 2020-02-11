@@ -67,7 +67,6 @@ public class Mapton {
     private static final HashMap<WebEngine, String> WEB_ENGINE_TO_STYLE = new HashMap<>();
     private static final GlobalState sGlobalState = new GlobalState();
     private static final Log sLog = new Log();
-    private static MOptions sOptions = MOptions.getInstance();
     private DoubleProperty mZoomProperty = new SimpleDoubleProperty();
 
     static {
@@ -103,7 +102,7 @@ public class Mapton {
     }
 
     public static Glyph createGlyphToolbarForm(FontAwesome.Glyph glyphFont) {
-        return createGlyph(glyphFont, getIconSizeToolBarInt(), optionsGeneral().getIconColorForBackground());
+        return createGlyph(glyphFont, getIconSizeToolBarInt(), options().getIconColorForBackground());
     }
 
     public static Label createTitle(String title) {
@@ -157,10 +156,12 @@ public class Mapton {
         MEngine defaultEngine = null;
 
         for (MEngine mapEngine : Lookup.getDefault().lookupAll(MEngine.class)) {
-            if (StringUtils.equalsIgnoreCase(mapEngine.getName(), MOptions.getInstance().getEngine())) {
-                return mapEngine;
-            } else {
-                defaultEngine = mapEngine;
+            defaultEngine = mapEngine;
+            try {
+                if (StringUtils.equalsIgnoreCase(mapEngine.getName(), options().getEngine())) {
+                    return mapEngine;
+                }
+            } catch (Exception e) {
             }
         }
 
@@ -204,7 +205,7 @@ public class Mapton {
     }
 
     public static boolean isNightMode() {
-        return optionsGeneral().isNightMode();
+        return options().isNightMode();
     }
 
     public static void log(String line) {
@@ -247,17 +248,13 @@ public class Mapton {
         getGlobalState().send(type, notifications);
     }
 
-    public static MOptions2 options() {
-        return MOptions2.getInstance();
-    }
-
-    public static MOptionsGeneral optionsGeneral() {
-        return options().general();
+    public static MOptions options() {
+        return MOptions.getInstance();
     }
 
     protected Mapton() {
         Platform.runLater(() -> {
-            optionsGeneral().nightModeProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
+            options().nightModeProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
                 for (Map.Entry<WebEngine, String> entry : WEB_ENGINE_TO_STYLE.entrySet()) {
                     applyHtmlCss(entry.getKey(), entry.getValue());
                 }

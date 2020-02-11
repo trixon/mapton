@@ -36,7 +36,7 @@ import javax.swing.SwingUtilities;
 import org.apache.commons.lang3.SystemUtils;
 import org.mapton.api.MDict;
 import org.mapton.api.MEngine;
-import org.mapton.api.MOptions2;
+import org.mapton.api.MOptions;
 import org.mapton.api.Mapton;
 import org.mapton.base.ui.MapContextMenu;
 import org.mapton.base.ui.StatusBarView;
@@ -96,7 +96,7 @@ public final class MapTopComponent extends MTopComponent {
         putClientProperty(PROP_MAXIMIZATION_DISABLED, Boolean.TRUE);
         putClientProperty(PROP_UNDOCKING_DISABLED, Boolean.TRUE);
 
-        MOptions2.getInstance().general().engineProperty().addListener((ObservableValue<? extends String> ov, String t, String t1) -> {
+        MOptions.getInstance().engineProperty().addListener((ObservableValue<? extends String> ov, String t, String t1) -> {
             setEngine(Mapton.getEngine());
         });
     }
@@ -106,7 +106,7 @@ public final class MapTopComponent extends MTopComponent {
         try {
             super.paint(g);
 
-            if (mMOptions2.general().isDisplayCrosshair()) {
+            if (mMOptions.isDisplayCrosshair()) {
                 Graphics2D g2 = (Graphics2D) g;
                 int x = getWidth() / 2;
                 int y = (getHeight() + MapToolBarPanel.getInstance().getToolBarPanel().getHeight()) / 2;
@@ -180,8 +180,7 @@ public final class MapTopComponent extends MTopComponent {
     protected void initFX() {
         setScene(createScene());
         new MapContextMenu();
-        mMOptions2 = MOptions2.getInstance();
-        mMOptions2.general().displayCrosshairProperty().addListener((ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1) -> {
+        mMOptions.displayCrosshairProperty().addListener((ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1) -> {
             repaint();
             revalidate();
         });

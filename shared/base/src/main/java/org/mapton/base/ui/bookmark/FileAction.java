@@ -38,7 +38,7 @@ public abstract class FileAction {
     protected ExtensionFilter mExtGeo = new ExtensionFilter("SBG Geo (*.geo)", "*.geo");
     protected ExtensionFilter mExtJson = new ExtensionFilter("JSON (*.json)", "*.json");
     protected ExtensionFilter mExtKml = new ExtensionFilter("Keyhole Markup Language (*.kml)", "*.kml");
-    protected Color mIconColor = Mapton.optionsGeneral().getIconColorForBackground();
+    protected Color mIconColor = Mapton.options().getIconColorForBackground();
     protected final MBookmarkManager mManager = MBookmarkManager.getInstance();
     protected PopOver mPopOver;
     protected final String mTitle = Dict.BOOKMARKS.toString();

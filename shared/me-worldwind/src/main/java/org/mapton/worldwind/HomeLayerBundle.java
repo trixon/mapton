@@ -27,7 +27,6 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.value.ObservableValue;
 import org.mapton.api.MLatLon;
 import org.mapton.api.MOptions;
-import org.mapton.api.MOptions2;
 import org.mapton.api.Mapton;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.LayerBundleManager;
@@ -43,7 +42,7 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
 @ServiceProvider(service = LayerBundle.class)
 public class HomeLayerBundle extends LayerBundle {
 
-    private final BooleanProperty mDisplayHomeIconProperty = MOptions2.getInstance().general().displayHomeIconProperty();
+    private final BooleanProperty mDisplayHomeIconProperty = MOptions.getInstance().displayHomeIconProperty();
     private final RenderableLayer mLayer = new RenderableLayer();
     private final MOptions mOptions = MOptions.getInstance();
 

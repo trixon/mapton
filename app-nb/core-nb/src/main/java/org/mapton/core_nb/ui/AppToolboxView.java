@@ -155,7 +155,7 @@ public class AppToolboxView extends BorderPane {
                     label.setFont(Font.font(FxHelper.getUIScaled(Font.getDefault().getSize() * 1.6)));
                     label.setMinSize(CELL_WIDTH, CELL_HEIGHT);
                     label.setMaxWidth(Double.MAX_VALUE);
-                    label.setTextFill(Mapton.optionsGeneral().getIconColorBright());
+                    label.setTextFill(Mapton.options().getIconColorBright());
 
                     setGraphic(label);
                 } else {
