@@ -153,6 +153,11 @@
             <artifactId>se-nominatim</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>se-poi</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <!--Mapton/Transformation engines-->
         <dependency>

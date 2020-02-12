@@ -154,6 +154,7 @@
         <module>shared/se-geonames</module>
         <!--<module>shared/se-google</module>-->
         <module>shared/se-nominatim</module>
+        <module>shared/se-poi</module>
 
         <!--Shared Transformation engines-->
         <module>shared/te-swetrans</module>
