@@ -150,9 +150,6 @@ final class MainPanel extends javax.swing.JPanel {
                 mCrosshairToggleSwitch.selectedProperty().bindBidirectional(mOptions.displayCrosshairProperty());
                 mHomeIconToggleSwitch.selectedProperty().bindBidirectional(mOptions.displayHomeIconProperty());
 
-                mIconBrightColorPicker.disableProperty().bind(mNightModeToggleSwitch.selectedProperty().not());
-                mIconDarkColorPicker.disableProperty().bind(mNightModeToggleSwitch.selectedProperty());
-
                 var scrollPane = new ScrollPane(gp);
                 //TODO Remove scroll pane border
 
