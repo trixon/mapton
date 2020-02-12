@@ -117,6 +117,7 @@ public class PoiLayerBundle extends LayerBundle {
             propertyMap.put(Dict.SOURCE.toString(), poi.getProvider());
             propertyMap.put(Dict.DESCRIPTION.toString(), poi.getDescription());
             propertyMap.put(Dict.TAGS.toString(), poi.getTags());
+            propertyMap.put("URL", poi.getUrl());
         }
 
         Mapton.getGlobalState().put(MKey.OBJECT_PROPERTIES, propertyMap);
