@@ -37,7 +37,7 @@ import se.trixon.almond.util.Dict;
         preferredID = "BookmarkTopComponent",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
-@TopComponent.Registration(mode = "mapTools", openAtStartup = false)
+@TopComponent.Registration(mode = "topLeft", openAtStartup = false)
 @ActionID(category = "Window", id = "org.mapton.core_nb.bookmark.BookmarkTopComponent")
 @ActionReference(path = "Menu/Window" /*, position = 333 */)
 @TopComponent.OpenActionRegistration(

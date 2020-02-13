@@ -34,7 +34,7 @@ import se.trixon.almond.util.Dict;
         preferredID = "ToolboxTopComponent",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
-@TopComponent.Registration(mode = "mapTools", openAtStartup = false)
+@TopComponent.Registration(mode = "explorer", openAtStartup = false, position = 1)
 public final class ToolboxTopComponent extends MTopComponent implements MMapMagnet {
 
     private BorderPane mRoot;
