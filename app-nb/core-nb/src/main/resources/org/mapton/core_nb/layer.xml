@@ -42,4 +42,12 @@ limitations under the License.
             <file name="topLeft.wsmode" url="topLeftWsmode.xml"/>
         </folder>
     </folder>
+    <folder name="Shortcuts">
+        <file name="DS-R.shadow">
+            <attr name="originalFile" stringvalue="Actions/File/se-trixon-almond-nbp-actions-RestartAction.instance"/>
+        </file>
+        <file name="DS-X.shadow">
+            <attr name="originalFile" stringvalue="Actions/System/org-netbeans-modules-autoupdate-ui-actions-PluginManagerAction.instance"/>
+        </file>
+    </folder>
 </filesystem>

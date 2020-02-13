@@ -252,6 +252,7 @@ public class AppToolBar extends BaseToolBar {
             final java.awt.event.ActionEvent dummySwingActionEvent = new java.awt.event.ActionEvent(new JButton(), 0, "");
             Actions.forID("System", "org.netbeans.modules.autoupdate.ui.actions.PluginManagerAction").actionPerformed(dummySwingActionEvent);
         });
+        mPluginsAction.setAccelerator(new KeyCodeCombination(KeyCode.X, KeyCombination.SHORTCUT_DOWN, KeyCodeCombination.SHIFT_DOWN));
 
         //options
         mOptionsAction = new FxActionSwing(Dict.OPTIONS.toString(), () -> {
@@ -272,6 +273,7 @@ public class AppToolBar extends BaseToolBar {
         mRestartAction = new FxActionSwing(Dict.RESTART.toString(), () -> {
             Actions.forID("File", "se.trixon.almond.nbp.actions.RestartAction").actionPerformed(null);
         });
+        mRestartAction.setAccelerator(new KeyCodeCombination(KeyCode.R, KeyCombination.SHORTCUT_DOWN, KeyCodeCombination.SHIFT_DOWN));
 
         //quit
         mQuitAction = new FxActionSwing(Dict.QUIT.toString(), () -> {
