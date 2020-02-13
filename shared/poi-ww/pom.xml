@@ -5,9 +5,11 @@
         <groupId>org.mapton</groupId>
         <artifactId>mapton-parent</artifactId>
         <version>2.0.0-SNAPSHOT</version>
-        <relativePath>../../../pom.xml</relativePath>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
-    <artifactId>poi-nb</artifactId>
+    <artifactId>poi-ww</artifactId>
+    <name>POI WorldWind</name>
+    <description>POI renderer for WorldWind</description>
     <packaging>nbm</packaging>
     <build>
         <plugins>
@@ -49,6 +51,11 @@
             <artifactId>org-openide-util-lookup</artifactId>
             <version>${netbeans.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-dialogs</artifactId>
+            <version>${netbeans.version}</version>
+        </dependency>
 
         <!-- Mapton -->
         <dependency>
@@ -56,12 +63,12 @@
             <artifactId>mapton-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.mapton</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>core-nb</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.mapton</groupId>
-            <artifactId>mapton-base</artifactId>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>me-worldwind</artifactId>
         </dependency>
 
         <!-- Trixon -->
@@ -69,12 +76,8 @@
             <groupId>se.trixon.almond</groupId>
             <artifactId>almond-nbp</artifactId>
         </dependency>
-
-        <!-- Other -->
     </dependencies>
     <properties>
         <netbeans.hint.license>apache20</netbeans.hint.license>
     </properties>
-    <name>POI NB</name>
-    <description>POI browser</description>
 </project>

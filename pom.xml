@@ -149,6 +149,9 @@
         <module>shared/me-mapjfx</module>
         <module>shared/me-worldwind</module>
 
+        <!--Shared POI providers-->
+        <module>shared/poi-bookmarks</module>
+
         <!--Shared Search engines-->
         <module>shared/se-bookmarks</module>
         <module>shared/se-geonames</module>
@@ -164,6 +167,9 @@
         <module>shared/wms-eox</module>
         <module>shared/wms-lantmateriet</module>
         <module>shared/wms-nasa</module>
+
+        <!--Shared Other-->
+        <module>shared/poi-ww</module>
 
         <!--Applications-->
         <!--GUI NetBeans-->

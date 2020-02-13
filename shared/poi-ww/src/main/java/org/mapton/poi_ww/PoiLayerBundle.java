@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.worldwind;
+package org.mapton.poi_ww;
 
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.geom.Position;

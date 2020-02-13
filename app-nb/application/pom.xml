@@ -132,6 +132,13 @@
         </dependency>
 
 
+        <!--Mapton/POI providers-->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>poi-bookmarks</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <!--Mapton/Search engines-->
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -192,6 +199,11 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>poi-nb</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>poi-ww</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
