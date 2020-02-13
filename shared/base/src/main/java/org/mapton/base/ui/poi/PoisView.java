@@ -131,18 +131,12 @@ public class PoisView extends BorderPane {
 
         FxHelper.slimToolBar(toolBar);
 
-        Label titleLabel = Mapton.createTitle(MDict.POI.toString());
-        VBox topBox = new VBox(
-                titleLabel,
-                topBorderPane
-        );
         mItemCountLabel = new Label();
         mItemCountLabel.setAlignment(Pos.BASELINE_RIGHT);
-        setTop(topBox);
+        setTop(topBorderPane);
         setCenter(mListView);
         setBottom(mItemCountLabel);
 
-        titleLabel.prefWidthProperty().bind(widthProperty());
         mItemCountLabel.prefWidthProperty().bind(widthProperty());
         mBrowseMenuItem = new MenuItem(Dict.OPEN_IN_WEB_BROWSER.toString());
         mContextMenu = new ContextMenu(
