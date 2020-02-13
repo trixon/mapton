@@ -252,6 +252,21 @@
             </dependency>
             <dependency>
                 <groupId>org.mapton</groupId>
+                <artifactId>poi-ww</artifactId>
+                <version>${mapton.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mapton</groupId>
+                <artifactId>poi-bookmarks</artifactId>
+                <version>${mapton.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mapton</groupId>
+                <artifactId>se-poi</artifactId>
+                <version>${mapton.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mapton</groupId>
                 <artifactId>reports-nb</artifactId>
                 <version>${mapton.version}</version>
             </dependency>

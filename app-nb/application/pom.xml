@@ -136,7 +136,6 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>poi-bookmarks</artifactId>
-            <version>${project.version}</version>
         </dependency>
 
         <!--Mapton/Search engines-->
@@ -163,7 +162,6 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>se-poi</artifactId>
-            <version>${project.version}</version>
         </dependency>
 
         <!--Mapton/Transformation engines-->
@@ -203,7 +201,6 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>poi-ww</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
