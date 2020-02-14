@@ -21,13 +21,19 @@ package org.mapton.api;
  */
 public class MPoi extends MBookmark {
 
+    private String mGeometryTypeString;
     private String mGroup;
     private String mProvider;
+    private String mStatus;
     private String mTags;
     private String mUrl;
     private String mWkt;
 
     public MPoi() {
+    }
+
+    public String getGeometryTypeString() {
+        return mGeometryTypeString;
     }
 
     public String getGroup() {
@@ -36,6 +42,10 @@ public class MPoi extends MBookmark {
 
     public String getProvider() {
         return mProvider;
+    }
+
+    public String getStatus() {
+        return mStatus;
     }
 
     public String getTags() {
@@ -50,12 +60,20 @@ public class MPoi extends MBookmark {
         return mWkt;
     }
 
+    public void setGeometryTypeString(String geometryTypeString) {
+        mGeometryTypeString = geometryTypeString;
+    }
+
     public void setGroup(String group) {
         mGroup = group;
     }
 
     public void setProvider(String provider) {
         mProvider = provider;
+    }
+
+    public void setStatus(String status) {
+        mStatus = status;
     }
 
     public void setTags(String tags) {

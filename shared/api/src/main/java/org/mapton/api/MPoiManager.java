@@ -111,6 +111,7 @@ public class MPoiManager {
         boolean valid
                 = mCategories.contains(String.format("%s/%s", poi.getProvider(), poi.getCategory()))
                 && (StringHelper.matchesSimpleGlob(poi.getProvider(), filter, true, true)
+                || StringHelper.matchesSimpleGlob(poi.getUrl(), filter, true, true)
                 || StringHelper.matchesSimpleGlob(poi.getName(), filter, true, true)
                 || StringHelper.matchesSimpleGlob(poi.getCategory(), filter, true, true)
                 || StringHelper.matchesSimpleGlob(poi.getGroup(), filter, true, true));
