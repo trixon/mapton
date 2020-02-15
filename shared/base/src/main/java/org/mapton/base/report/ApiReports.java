@@ -21,6 +21,7 @@ import org.mapton.api.MApiReport;
 import org.mapton.api.MContextMenuItem;
 import org.mapton.api.MCooTrans;
 import org.mapton.api.MEngine;
+import org.mapton.api.MPoiProvider;
 import org.mapton.api.MSearchEngine;
 import org.mapton.api.MUpdater;
 import org.mapton.api.MWhatsHereEngine;
@@ -114,6 +115,12 @@ public class ApiReports implements MApiReport {
             implementations.add(implementation.getClass().getCanonicalName());
         }
         items.put(category + "NewsProvider", implementations);
+
+        implementations = new TreeSet<>();
+        for (MPoiProvider implementation : Lookup.getDefault().lookupAll(MPoiProvider.class)) {
+            implementations.add(implementation.getClass().getCanonicalName());
+        }
+        items.put(category + "MPoiProvider", implementations);
 
         return items;
     }
