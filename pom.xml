@@ -144,7 +144,7 @@
         <module>shared/base</module>
 
         <!--Shared Map engines-->
-        <!--<module>modules/me-gmapsfx</module>-->
+        <module>shared/me-gmapsfx</module>
         <module>shared/me-jxmapviewer2</module>
         <module>shared/me-mapjfx</module>
         <module>shared/me-worldwind</module>
@@ -155,7 +155,7 @@
         <!--Shared Search engines-->
         <module>shared/se-bookmarks</module>
         <module>shared/se-geonames</module>
-        <!--<module>shared/se-google</module>-->
+        <module>shared/se-google</module>
         <module>shared/se-nominatim</module>
         <module>shared/se-poi</module>
 

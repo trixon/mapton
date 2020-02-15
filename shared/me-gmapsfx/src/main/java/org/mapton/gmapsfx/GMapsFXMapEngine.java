@@ -35,6 +35,7 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.Node;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.image.WritableImage;
+import javax.swing.JComponent;
 import org.mapton.api.MAttribution;
 import org.mapton.api.MDocumentInfo;
 import org.mapton.api.MEngine;
@@ -85,17 +86,12 @@ public class GMapsFXMapEngine extends MEngine {
     }
 
     @Override
-    public String getName() {
-        return "Google Maps";
+    public JComponent getMapComponent() {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public Node getStyleView() {
-        return mStyleView;
-    }
-
-    @Override
-    public Node getUI() {
+    public Node getMapNode() {
         if (mMapView == null) {
             init();
         }
@@ -103,6 +99,16 @@ public class GMapsFXMapEngine extends MEngine {
         updateToolbarDocumentInfo();
 
         return mMapView;
+    }
+
+    @Override
+    public String getName() {
+        return "Google Maps";
+    }
+
+    @Override
+    public Node getStyleView() {
+        return mStyleView;
     }
 
     @Override

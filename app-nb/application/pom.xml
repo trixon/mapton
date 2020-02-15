@@ -110,11 +110,11 @@
         </dependency>
 
         <!--Mapton/Map engines-->
-        <!--                <dependency>
+        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>me-gmapsfx</artifactId>
             <version>${project.version}</version>
-        </dependency>-->
+        </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>me-jxmapviewer2</artifactId>
@@ -149,11 +149,11 @@
             <artifactId>se-geonames</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!--        <dependency>
+        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>se-google</artifactId>
             <version>${project.version}</version>
-        </dependency>-->
+        </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>se-nominatim</artifactId>
