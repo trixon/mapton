@@ -308,7 +308,7 @@ public final class MapTopComponent extends MTopComponent {
         } else {
             Platform.runLater(() -> {
                 resetFx();
-                mRoot.setTop(MapToolBarPanel.getInstance().getToolBar());
+                add(MapToolBarPanel.getInstance().getToolBarPanel(), BorderLayout.NORTH);
                 mRoot.setCenter(engine.getMapNode());
                 attachStatusbar();
                 try {
