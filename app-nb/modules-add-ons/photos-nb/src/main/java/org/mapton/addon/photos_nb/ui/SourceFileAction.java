@@ -15,10 +15,11 @@
  */
 package org.mapton.addon.photos_nb.ui;
 
-import javafx.stage.FileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import org.controlsfx.control.action.Action;
 import org.mapton.addon.photos_nb.api.MapoSourceManager;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.swing.dialogs.SimpleDialog;
 
 /**
  *
@@ -26,9 +27,12 @@ import se.trixon.almond.util.Dict;
  */
 public abstract class SourceFileAction {
 
-    protected final FileChooser.ExtensionFilter mExtFilter = new FileChooser.ExtensionFilter("Mapton Mapollage (*.mapo)", "*.mapo");
     protected final MapoSourceManager mManager = MapoSourceManager.getInstance();
     protected final String mTitle = Dict.SOURCES.toString();
+
+    public SourceFileAction() {
+        SimpleDialog.getExtensionFilters().put("mapo", new FileNameExtensionFilter("Mapton Mapollage (*.mapo)", "*.mapo"));
+    }
 
     public abstract Action getAction();
 }

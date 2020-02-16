@@ -24,8 +24,9 @@ import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.fx.dialogs.SimpleDialog;
+import se.trixon.almond.util.fx.FxActionSwing;
 import se.trixon.almond.util.icons.material.MaterialIcon;
+import se.trixon.almond.util.swing.dialogs.SimpleDialog;
 
 /**
  *
@@ -37,9 +38,11 @@ public class SourceFileImportAction extends SourceFileAction {
 
     @Override
     public Action getAction() {
-        Action action = new Action((t) -> {
+        FxActionSwing action = new FxActionSwing(Dict.IMPORT.toString(), () -> {
             SimpleDialog.clearFilters();
-            SimpleDialog.addFilter(mExtFilter);
+            SimpleDialog.addFilters("mapo");
+            SimpleDialog.setFilter("mapo");
+
             final String dialogTitle = String.format("%s %s", Dict.IMPORT.toString(), mTitle.toLowerCase());
             SimpleDialog.setTitle(dialogTitle);
 

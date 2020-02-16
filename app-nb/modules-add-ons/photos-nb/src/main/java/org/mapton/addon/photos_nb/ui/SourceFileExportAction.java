@@ -20,14 +20,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import org.apache.commons.io.FileUtils;
 import org.controlsfx.control.action.Action;
+import org.mapton.addon.photos_nb.api.MapoSource;
 import org.mapton.api.MKey;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
-import org.mapton.addon.photos_nb.api.MapoSource;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.fx.dialogs.SimpleDialog;
+import se.trixon.almond.util.fx.FxActionSwing;
 import se.trixon.almond.util.icons.material.MaterialIcon;
+import se.trixon.almond.util.swing.dialogs.SimpleDialog;
 
 /**
  *
@@ -39,7 +40,7 @@ public class SourceFileExportAction extends SourceFileAction {
 
     @Override
     public Action getAction() {
-        Action action = new Action((t) -> {
+        FxActionSwing action = new FxActionSwing(Dict.EXPORT.toString(), () -> {
             ArrayList<MapoSource> selectedSources = new ArrayList<>();
             mManager.getItems().stream()
                     .filter((source) -> (source.isVisible()))
@@ -48,7 +49,9 @@ public class SourceFileExportAction extends SourceFileAction {
                     });
             if (!selectedSources.isEmpty()) {
                 SimpleDialog.clearFilters();
-                SimpleDialog.addFilter(mExtFilter);
+                SimpleDialog.addFilters("mapo");
+                SimpleDialog.setFilter("mapo");
+
                 final String dialogTitle = String.format("%s %s", Dict.EXPORT.toString(), mTitle.toLowerCase());
                 SimpleDialog.setTitle(dialogTitle);
 
