@@ -240,7 +240,10 @@ final class MainPanel extends javax.swing.JPanel {
         boolean newIconColorBright = newNightMode && !mOldIconColorBright.equals(mOptions.getIconColorBright());
         boolean newIconColorDark = !newNightMode && !mOldIconColorDark.equals(mOptions.getIconColorDark());
 
-        if (mOldNightMode != newNightMode || newIconColorBright || newIconColorDark) {
+        if (mOldNightMode != newNightMode
+                || newIconColorBright
+                || newIconColorDark
+                || !mOptions.getEngine().equalsIgnoreCase(mOldEngine)) {
             String laf = newNightMode ? "com.bulenkov.darcula.DarculaLaf" : UIManager.getSystemLookAndFeelClassName();
             NbPreferences.root().node("laf").put("laf", laf);
 
