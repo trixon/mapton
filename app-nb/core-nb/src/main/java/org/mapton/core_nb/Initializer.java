@@ -95,10 +95,11 @@ public class Initializer implements Runnable {
 
                 var map = se.trixon.almond.util.swing.dialogs.SimpleDialog.getExtensionFilters();
                 map.put("*", new FileNameExtensionFilter(Dict.ALL_FILES.toString(), "*"));
-                map.put("csv", new FileNameExtensionFilter("Comma-separated value (*.csv)", "*.csv"));
-                map.put("geo", new FileNameExtensionFilter("SBG Geo (*.geo)", "*.geo"));
-                map.put("json", new FileNameExtensionFilter("JSON (*.json)", "*.json"));
-                map.put("kml", new FileNameExtensionFilter("Keyhole Markup Language (*.kml)", "*.kml"));
+                map.put("csv", new FileNameExtensionFilter("Comma-separated value (*.csv)", "csv"));
+                map.put("geo", new FileNameExtensionFilter("SBG Geo (*.geo)", "geo"));
+                map.put("json", new FileNameExtensionFilter("JSON (*.json)", "json"));
+                map.put("kml", new FileNameExtensionFilter("Keyhole Markup Language (*.kml)", "kml"));
+                map.put("grid", new FileNameExtensionFilter("Mapton Grid (*.grid)", "grid"));
             });
         });
 

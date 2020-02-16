@@ -36,6 +36,7 @@ public class Initializer implements Runnable {
             map.put("geo", new ExtensionFilter("SBG Geo (*.geo)", "*.geo"));
             map.put("json", new ExtensionFilter("JSON (*.json)", "*.json"));
             map.put("kml", new ExtensionFilter("Keyhole Markup Language (*.kml)", "*.kml"));
+            map.put("grid", new ExtensionFilter("Mapton Grid (*.grid)", "*.grid"));
         });
     }
 

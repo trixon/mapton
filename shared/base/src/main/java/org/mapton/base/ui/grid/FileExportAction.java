@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Patrik Karlström.
+ * Copyright 2020 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,8 +28,9 @@ import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.fx.dialogs.SimpleDialog;
+import se.trixon.almond.util.fx.FxActionSwing;
 import se.trixon.almond.util.icons.material.MaterialIcon;
+import se.trixon.almond.util.swing.dialogs.SimpleDialog;
 
 /**
  *
@@ -45,7 +46,7 @@ public class FileExportAction extends FileAction {
 
     @Override
     public Action getAction(Node owner) {
-        Action action = new Action((t) -> {
+        FxActionSwing action = new FxActionSwing(Dict.EXPORT.toString(), () -> {
             ArrayList<MLocalGrid> selectedGrids = new ArrayList<>();
             mManager.getItems().stream()
                     .filter((grid) -> (grid.isVisible()))
@@ -54,10 +55,12 @@ public class FileExportAction extends FileAction {
                     });
             if (!selectedGrids.isEmpty()) {
                 SimpleDialog.clearFilters();
-                SimpleDialog.addFilter(mExtGrid);
+                SimpleDialog.addFilters("grid");
+                SimpleDialog.setFilter("grid");
+
                 final String dialogTitle = String.format("%s %s", Dict.EXPORT.toString(), mTitle.toLowerCase());
                 SimpleDialog.setTitle(dialogTitle);
-                SimpleDialog.setOwner(owner.getScene().getWindow());
+
                 if (mPopOver != null) {
                     mPopOver.hide();
                 }

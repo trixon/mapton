@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Patrik Karlström.
+ * Copyright 2020 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@ package org.mapton.base.ui.grid;
 
 import javafx.scene.Node;
 import javafx.scene.paint.Color;
-import javafx.stage.FileChooser;
 import org.controlsfx.control.PopOver;
 import org.controlsfx.control.action.Action;
 import org.mapton.api.MDict;
@@ -30,7 +29,6 @@ import org.mapton.api.Mapton;
  */
 public abstract class FileAction {
 
-    protected final FileChooser.ExtensionFilter mExtGrid = new FileChooser.ExtensionFilter("Mapton Grid (*.grid)", "*.grid");
     protected Color mIconColor = Mapton.options().getIconColorForBackground();
     protected final MLocalGridManager mManager = MLocalGridManager.getInstance();
     protected PopOver mPopOver;
