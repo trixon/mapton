@@ -178,6 +178,7 @@
         <module>app-nb/core-nb</module>
 
         <!--Modules NB-->
+        <module>app-nb/modules/editors-nb</module>
         <module>app-nb/modules/poi-nb</module>
         <module>app-nb/modules/reports-nb</module>
         <module>app-nb/modules-add-ons/geonames-ww</module>
@@ -243,6 +244,11 @@
             <dependency>
                 <groupId>org.mapton</groupId>
                 <artifactId>me-worldwind</artifactId>
+                <version>${mapton.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mapton</groupId>
+                <artifactId>editors-nb</artifactId>
                 <version>${mapton.version}</version>
             </dependency>
             <dependency>

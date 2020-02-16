@@ -196,6 +196,10 @@
         <!--Mapton/Other-->
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>editors-nb</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>poi-nb</artifactId>
         </dependency>
         <dependency>
