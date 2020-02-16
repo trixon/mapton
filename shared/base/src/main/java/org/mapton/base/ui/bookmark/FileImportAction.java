@@ -40,10 +40,11 @@ import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.MathHelper;
-import se.trixon.almond.util.fx.dialogs.SimpleDialog;
+import se.trixon.almond.util.fx.FxActionSwing;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 import se.trixon.almond.util.io.Geo;
 import se.trixon.almond.util.io.GeoPoint;
+import se.trixon.almond.util.swing.dialogs.SimpleDialog;
 
 /**
  *
@@ -61,13 +62,11 @@ public class FileImportAction extends FileAction {
 
     @Override
     public Action getAction(Node owner) {
-        Action action = new Action(Dict.IMPORT.toString(), (t) -> {
+        FxActionSwing action = new FxActionSwing(Dict.IMPORT.toString(), () -> {
             SimpleDialog.clearFilters();
-            SimpleDialog.addFilter(mExtCsv);
-            SimpleDialog.addFilter(mExtGeo);
-            SimpleDialog.addFilter(mExtJson);
-            SimpleDialog.setFilter(mExtCsv);
-            SimpleDialog.setOwner(owner.getScene().getWindow());
+            SimpleDialog.addFilters("csv", "geo", "json", "csv");
+            SimpleDialog.setFilter("csv");
+
             if (mPopOver != null) {
                 mPopOver.hide();
             }

@@ -44,11 +44,12 @@ import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
-import se.trixon.almond.util.fx.dialogs.SimpleDialog;
+import se.trixon.almond.util.fx.FxActionSwing;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 import se.trixon.almond.util.io.Geo;
 import se.trixon.almond.util.io.GeoHeader;
 import se.trixon.almond.util.io.GeoPoint;
+import se.trixon.almond.util.swing.dialogs.SimpleDialog;
 
 /**
  *
@@ -64,14 +65,11 @@ public class FileExportAction extends FileAction {
 
     @Override
     public Action getAction(Node owner) {
-        Action action = new Action(Dict.EXPORT.toString(), (t) -> {
+        FxActionSwing action = new FxActionSwing(Dict.EXPORT.toString(), () -> {
             SimpleDialog.clearFilters();
-            SimpleDialog.addFilter(mExtCsv);
-            SimpleDialog.addFilter(mExtGeo);
-            SimpleDialog.addFilter(mExtJson);
-            SimpleDialog.addFilter(mExtKml);
-            SimpleDialog.setFilter(mExtCsv);
-            SimpleDialog.setOwner(owner.getScene().getWindow());
+            SimpleDialog.addFilters("csv", "geo", "json", "kml", "csv");
+            SimpleDialog.setFilter("csv");
+
             if (mPopOver != null) {
                 mPopOver.hide();
             }

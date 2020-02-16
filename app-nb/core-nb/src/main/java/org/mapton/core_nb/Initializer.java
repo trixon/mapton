@@ -20,6 +20,7 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLayeredPane;
 import javax.swing.SwingUtilities;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import org.apache.commons.lang3.SystemUtils;
 import org.mapton.api.MOptions;
 import static org.mapton.api.MOptions.*;
@@ -37,6 +38,7 @@ import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.nbp.about.AboutAction;
 import se.trixon.almond.nbp.swing.RootPaneLayout;
 import se.trixon.almond.util.AboutModel;
+import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.icons.material.MaterialIcon;
@@ -90,6 +92,13 @@ public class Initializer implements Runnable {
                     AboutAction.setFx(true);
                     AboutAction.setAboutModel(new AboutModel(SystemHelper.getBundle(Initializer.class, "about"), SystemHelper.getResourceAsImageView(Initializer.class, "logo.png")));
                 }
+
+                var map = se.trixon.almond.util.swing.dialogs.SimpleDialog.getExtensionFilters();
+                map.put("*", new FileNameExtensionFilter(Dict.ALL_FILES.toString(), "*"));
+                map.put("csv", new FileNameExtensionFilter("Comma-separated value (*.csv)", "*.csv"));
+                map.put("geo", new FileNameExtensionFilter("SBG Geo (*.geo)", "*.geo"));
+                map.put("json", new FileNameExtensionFilter("JSON (*.json)", "*.json"));
+                map.put("kml", new FileNameExtensionFilter("Keyhole Markup Language (*.kml)", "*.kml"));
             });
         });
 
