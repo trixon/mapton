@@ -17,12 +17,12 @@
         id = "Modules",
         position = 1,
         categoryName = "#OptionsCategory_Name_Modules",
-        iconBase = "org/mapton/core/nb/modules.png",
+        iconBase = "org/mapton/core_nb/modules.png",
         keywords = "#OptionsCategory_Keywords_Modules",
         keywordsCategory = "Modules"
 )
 @NbBundle.Messages(value = {"OptionsCategory_Name_Modules=Modules", "OptionsCategory_Keywords_Modules=module modules"})
-package org.mapton.core.nb;
+package org.mapton.core_nb;
 
 import org.netbeans.spi.options.OptionsPanelController;
 import org.openide.util.NbBundle;
