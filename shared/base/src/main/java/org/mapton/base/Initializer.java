@@ -37,6 +37,7 @@ public class Initializer implements Runnable {
             map.put("json", new ExtensionFilter("JSON (*.json)", "*.json"));
             map.put("kml", new ExtensionFilter("Keyhole Markup Language (*.kml)", "*.kml"));
             map.put("grid", new ExtensionFilter("Mapton Grid (*.grid)", "*.grid"));
+            map.put("png", new ExtensionFilter(String.format("%s (*.png)", Dict.IMAGE.toString()), "*.png"));
         });
     }
 

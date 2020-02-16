@@ -28,7 +28,6 @@ import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
-import javafx.stage.FileChooser;
 import javax.imageio.ImageIO;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -47,9 +46,9 @@ import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.util.NbBundle;
-import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
-import se.trixon.almond.util.fx.dialogs.SimpleDialog;
+import se.trixon.almond.util.fx.FxHelper;
+import se.trixon.almond.util.swing.dialogs.SimpleDialog;
 
 /**
  *
@@ -82,27 +81,27 @@ public class MapContextMenu {
     }
 
     private void exportImage() {
-        FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter("Image (*.png)", "*.png");
         SimpleDialog.clearFilters();
-        SimpleDialog.addFilter(new FileChooser.ExtensionFilter(Dict.ALL_FILES.toString(), "*"));
-        SimpleDialog.addFilter(filter);
-        SimpleDialog.setFilter(filter);
-        SimpleDialog.setOwner(mContextMenu.getOwnerWindow());
+        SimpleDialog.addFilters("*", "png");
+        SimpleDialog.setFilter("png");
+
         SimpleDialog.setTitle(getBundleString("export_view"));
 
         SimpleDialog.setPath(mExportFile == null ? FileUtils.getUserDirectory() : mExportFile.getParentFile());
         SimpleDialog.setSelectedFile(new File(new SimpleDateFormat("'Mapton_'yyyyMMdd_HHmmss").format(new Date())));
 
         mContextMenu.hide();
-        if (SimpleDialog.saveFile(new String[]{"png"})) {
-            mExportFile = SimpleDialog.getPath();
-            try {
-                ImageIO.write(getEngine().getImageRenderer().call(), "png", mExportFile);
-            } catch (Exception ex) {
-                Exceptions.printStackTrace(ex);
-            }
 
-        }
+        FxHelper.runLaterDelayed(10, () -> {
+            if (SimpleDialog.saveFile(new String[]{"png"})) {
+                mExportFile = SimpleDialog.getPath();
+                try {
+                    ImageIO.write(getEngine().getImageRenderer().call(), "png", mExportFile);
+                } catch (Exception ex) {
+                    Exceptions.printStackTrace(ex);
+                }
+            }
+        });
     }
 
     private String getBundleString(String key) {
