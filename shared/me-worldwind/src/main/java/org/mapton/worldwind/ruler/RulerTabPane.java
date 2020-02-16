@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Patrik Karlström.
+ * Copyright 2020 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import javafx.stage.FileChooser;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.mapton.api.MKmlCreator;
@@ -32,7 +31,7 @@ import org.openide.util.Exceptions;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.FxHelper;
-import se.trixon.almond.util.fx.dialogs.SimpleDialog;
+import se.trixon.almond.util.swing.dialogs.SimpleDialog;
 
 /**
  *
@@ -60,14 +59,10 @@ public class RulerTabPane extends TabPane {
     }
 
     void save() {
-        FileChooser.ExtensionFilter mExtKml = new FileChooser.ExtensionFilter("Keyhole Markup Language (*.kml)", "*.kml");
-
         SimpleDialog.clearFilters();
-        SimpleDialog.addFilter(new FileChooser.ExtensionFilter(Dict.ALL_FILES.toString(), "*"));
-        SimpleDialog.addFilter(mExtKml);
-        SimpleDialog.setFilter(mExtKml);
+        SimpleDialog.addFilters("*", "kml");
+        SimpleDialog.setFilter("kml");
         SimpleDialog.setTitle(String.format("%s %s", Dict.SAVE.toString(), Dict.Geometry.GEOMETRIES.toString().toLowerCase()));
-        SimpleDialog.setOwner(this.getScene().getWindow());
 
         String epoch = mSdf.format(new Date());
 
