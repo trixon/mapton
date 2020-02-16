@@ -36,6 +36,7 @@ import org.mapton.api.MToolApp;
 import org.mapton.api.Mapton;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
+import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
 
 /**
@@ -44,11 +45,11 @@ import se.trixon.almond.util.fx.FxHelper;
  */
 public class AppToolboxView extends BorderPane {
 
-    private static final int CELL_WIDTH = FxHelper.getUIScaled(192);
     private static final int CELL_HEIGHT = FxHelper.getUIScaled(118);
-
-    private final ArrayList<MToolApp> mTools = new ArrayList<>();
+    private static final int CELL_WIDTH = FxHelper.getUIScaled(192);
     private final GridView<MToolApp> mGridView = new GridView<>();
+    private MToolApp mMapTool;
+    private final ArrayList<MToolApp> mTools = new ArrayList<>();
 
     public AppToolboxView() {
         createUI();
@@ -72,17 +73,33 @@ public class AppToolboxView extends BorderPane {
         setMaxHeight(CELL_HEIGHT * 3.65);
     }
 
+    private int getFirstIndex(String s) {
+        for (int i = 0; i < mGridView.getItems().size(); i++) {
+            final String parent = StringUtils.defaultString(mGridView.getItems().get(i).getParent(), "?");
+
+            if (parent.equalsIgnoreCase(s)) {
+                return i;
+            }
+        }
+
+        return 0;
+    }
+
     private void initTools() {
         mTools.clear();
         Lookup.getDefault().lookupAll(MToolApp.class).forEach((tool) -> {
             mTools.add(tool);
+            if (tool.getAction().getText().equalsIgnoreCase(Dict.MAP.toString())) {
+                mMapTool = tool;
+            }
         });
 
         Comparator<MToolApp> c1 = (MToolApp o1, MToolApp o2) -> StringUtils.defaultString(o1.getParent()).compareToIgnoreCase(StringUtils.defaultString(o2.getParent()));
         Comparator<MToolApp> c2 = (MToolApp o1, MToolApp o2) -> o1.getAction().getText().compareToIgnoreCase(o2.getAction().getText());
 
         mTools.sort(c1.thenComparing(c2));
-
+        mTools.remove(mMapTool);
+        mTools.add(0, mMapTool);
         populate();
     }
 
@@ -113,18 +130,6 @@ public class AppToolboxView extends BorderPane {
             mGridView.getItems().add(getFirstIndex(category), tool);
         }
 
-    }
-
-    private int getFirstIndex(String s) {
-        for (int i = 0; i < mGridView.getItems().size(); i++) {
-            final String parent = StringUtils.defaultString(mGridView.getItems().get(i).getParent(), "?");
-
-            if (parent.equalsIgnoreCase(s)) {
-                return i;
-            }
-        }
-
-        return 0;
     }
 
     public class ActionGridCell extends GridCell<MToolApp> {

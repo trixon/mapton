@@ -41,4 +41,9 @@ public class NewsTool implements MToolApp {
         return action;
     }
 
+    @Override
+    public String getParent() {
+        return Dict.SYSTEM.toString();
+    }
+
 }
