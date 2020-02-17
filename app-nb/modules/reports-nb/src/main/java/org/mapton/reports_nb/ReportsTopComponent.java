@@ -66,6 +66,6 @@ public final class ReportsTopComponent extends MTopComponent {
     }
 
     private Scene createScene() {
-        return new Scene(new MSplitNavPane<>(MReport.class));
+        return new Scene(new MSplitNavPane<>(MReport.class, Dict.REPORT.toString()));
     }
 }

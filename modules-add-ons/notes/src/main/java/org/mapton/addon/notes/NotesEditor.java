@@ -16,7 +16,6 @@
 package org.mapton.addon.notes;
 
 import java.util.prefs.Preferences;
-import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
 import javafx.scene.control.TextArea;
@@ -56,12 +55,4 @@ public class NotesEditor extends MEditor {
 
         return mTextArea;
     }
-
-    @Override
-    public void onSelect() {
-        Platform.runLater(() -> {
-            mTextArea.requestFocus();
-        });
-    }
-
 }

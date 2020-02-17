@@ -16,6 +16,7 @@
 package org.mapton.api.report;
 
 import java.util.Comparator;
+import java.util.Locale;
 import java.util.TreeMap;
 import java.util.prefs.Preferences;
 import javafx.application.Platform;
@@ -23,29 +24,41 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ToolBar;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.layout.BorderPane;
 import org.apache.commons.lang3.StringUtils;
-import org.controlsfx.control.MasterDetailPane;
+import org.controlsfx.control.textfield.TextFields;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.util.NbPreferences;
+import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.StringHelper;
+import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
  * @author Patrik Karlström
  * @param <T>
  */
-public class MSplitNavPane<T extends MSplitNavType> extends MasterDetailPane {
+public class MSplitNavPane<T extends MSplitNavType> extends BorderPane {
 
     private final Class<? extends MSplitNavType> mClass;
+    private BorderPane mDetailBorderPane;
+    private TextField mFilterTextField;
+    private BorderPane mMasterBorderPane;
+    private final TreeMap<String, TreeItem<T>> mParents = new TreeMap<>();
     private Label mPlaceholderLabel;
     private final Preferences mPreferences;
-    private final TreeMap<String, TreeItem<T>> mReportParents = new TreeMap<>();
     private TreeView<T> mTreeView;
+    private final String mTypeName;
+    private ToolBar mToolBar;
 
-    public MSplitNavPane(Class<T> clazz) {
+    public MSplitNavPane(Class<T> clazz, String typeName) {
         mClass = clazz;
+        mTypeName = typeName;
         mPreferences = NbPreferences.forModule(mClass).node("expanded_state_" + mClass.getName());
 
         createUI();
@@ -60,23 +73,36 @@ public class MSplitNavPane<T extends MSplitNavType> extends MasterDetailPane {
             TreeItem<T> selectedItem = mTreeView.getSelectionModel().getSelectedItem();
 
             if (selectedItem == null) {
-                setDetailNode(mPlaceholderLabel);
+                mDetailBorderPane.setCenter(mPlaceholderLabel);
             } else {
-                T selectedReport = selectedItem.getValue();
-                setDetailNode(selectedReport.getNode());
-                selectedReport.onSelect();
+                T selectedType = selectedItem.getValue();
+                mDetailBorderPane.setCenter(selectedType.getNode());
+                selectedType.onSelect();
             }
         });
+
+        mFilterTextField = TextFields.createClearableTextField();
+        mFilterTextField.setPromptText(String.format("%s %s", Dict.SEARCH.toString(), mTypeName.toLowerCase(Locale.getDefault())));
+        mFilterTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+            populate();
+        });
+
+        mMasterBorderPane = new BorderPane(mTreeView);
+        mMasterBorderPane.setPrefWidth(FxHelper.getUIScaled(300));
+        mMasterBorderPane.setTop(mFilterTextField);
+
+        mToolBar = new ToolBar();
+        mDetailBorderPane = new BorderPane(mPlaceholderLabel);
+//        mDetailBorderPane.setTop(mToolBar);
+
+        setLeft(mMasterBorderPane);
+        setCenter(mDetailBorderPane);
 
         Lookup.getDefault().lookupResult(mClass).addLookupListener((LookupEvent ev) -> {
             populate();
         });
 
         populate();
-
-        setMasterNode(mTreeView);
-        setDetailNode(mPlaceholderLabel);
-        setDividerPosition(0.5);
     }
 
     private TreeItem<T> getParent(TreeItem<T> parent, String category) {
@@ -87,10 +113,10 @@ public class MSplitNavPane<T extends MSplitNavType> extends MasterDetailPane {
             sb.append(segment);
             String path = sb.toString();
 
-            if (mReportParents.containsKey(path)) {
-                parent = mReportParents.get(path);
+            if (mParents.containsKey(path)) {
+                parent = mParents.get(path);
             } else {
-                T report = (T) new MSplitNavType() {
+                T type = (T) new MSplitNavType() {
                     @Override
                     public String getName() {
                         return segment;
@@ -112,7 +138,7 @@ public class MSplitNavPane<T extends MSplitNavType> extends MasterDetailPane {
                     }
                 };
 
-                parent.getChildren().add(parent = mReportParents.computeIfAbsent(sb.toString(), k -> new TreeItem<>(report)));
+                parent.getChildren().add(parent = mParents.computeIfAbsent(sb.toString(), k -> new TreeItem<>(type)));
             }
 
             sb.append("/");
@@ -122,9 +148,9 @@ public class MSplitNavPane<T extends MSplitNavType> extends MasterDetailPane {
     }
 
     private void populate() {
-        mReportParents.clear();
+        mParents.clear();
 
-        T rootReport = (T) new MSplitNavType() {
+        T rootType = (T) new MSplitNavType() {
             @Override
             public String getName() {
                 return "";
@@ -141,14 +167,21 @@ public class MSplitNavPane<T extends MSplitNavType> extends MasterDetailPane {
             }
         };
 
-        TreeItem<T> root = new TreeItem<>(rootReport);
+        TreeItem<T> root = new TreeItem<>(rootType);
 
         new Thread(() -> {
-            Lookup.getDefault().lookupAll(mClass).forEach((report) -> {
-                TreeItem<T> reportTreeItem = new TreeItem<>((T) report);
-                String category = report.getParent();
-                TreeItem<T> parent = mReportParents.computeIfAbsent(category, k -> getParent(root, category));
-                parent.getChildren().add(reportTreeItem);
+            final String filter = mFilterTextField.getText();
+            Lookup.getDefault().lookupAll(mClass).forEach((type) -> {
+                final boolean validFilter
+                        = StringHelper.matchesSimpleGlob(type.getParent(), filter, true, true)
+                        || StringHelper.matchesSimpleGlob(type.getName(), filter, true, true);
+
+                if (validFilter) {
+                    TreeItem<T> treeItem = new TreeItem<>((T) type);
+                    String category = type.getParent();
+                    TreeItem<T> parent = mParents.computeIfAbsent(category, k -> getParent(root, category));
+                    parent.getChildren().add(treeItem);
+                }
             });
 
             Platform.runLater(() -> {

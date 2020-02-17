@@ -66,7 +66,7 @@ public final class EditorsTopComponent extends MTopComponent {
     }
 
     private Scene createScene() {
-        return new Scene(new MSplitNavPane<>(MEditor.class));
+        return new Scene(new MSplitNavPane<>(MEditor.class, Dict.EDITOR.toString()));
     }
 
 }
