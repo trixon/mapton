@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Patrik Karlström.
+ * Copyright 2020 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,17 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.api;
+package org.mapton.api.report;
 
-import org.mapton.api.report.MSplitNavType;
+import org.mapton.api.Mapton;
 
 /**
  *
  * @author Patrik Karlström
  */
-public abstract class MMaskerPaneReport extends MMaskerPaneBase implements MSplitNavType {
+public abstract class MEditor implements MSplitNavType {
 
-    public MMaskerPaneReport() {
+    @Override
+    public String getParent() {
+        return String.format("- %s -", Mapton.LOG_TAG);
     }
 
     @Override
