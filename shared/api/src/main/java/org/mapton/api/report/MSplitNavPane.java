@@ -71,8 +71,7 @@ public class MSplitNavPane<T extends MSplitNavType> extends BorderPane {
         mTreeView.setShowRoot(false);
         mTreeView.getSelectionModel().getSelectedItems().addListener((ListChangeListener.Change<? extends TreeItem<T>> c) -> {
             TreeItem<T> selectedItem = mTreeView.getSelectionModel().getSelectedItem();
-
-            if (selectedItem == null) {
+            if (mTreeView.getSelectionModel().isEmpty()) {
                 mDetailBorderPane.setCenter(mPlaceholderLabel);
             } else {
                 T selectedType = selectedItem.getValue();
