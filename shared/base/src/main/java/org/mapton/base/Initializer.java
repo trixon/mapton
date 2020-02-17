@@ -29,7 +29,7 @@ public class Initializer implements Runnable {
 
     @Override
     public void run() {
-        FxHelper.runLaterDelayed(10, () -> {
+        FxHelper.runLaterDelayed(1000 * 10, () -> {
             var map = se.trixon.almond.util.fx.dialogs.SimpleDialog.getExtensionFilters();
             map.put("*", new ExtensionFilter(Dict.ALL_FILES.toString(), "*"));
             map.put("csv", new ExtensionFilter("Comma-separated value (*.csv)", "*.csv"));
