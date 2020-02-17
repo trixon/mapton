@@ -182,7 +182,6 @@
         <module>app-nb/modules/poi-nb</module>
         <module>app-nb/modules/reports-nb</module>
         <module>app-nb/modules-add-ons/geonames-ww</module>
-        <module>app-nb/modules-add-ons/notes-nb</module>
         <module>app-nb/modules-add-ons/photos-nb</module>
         <module>app-nb/modules-add-ons/xkcd-nb</module>
 
@@ -198,6 +197,7 @@
         <module>modules/wikipedia</module>
 
         <!--Add-ons-->
+        <module>modules-add-ons/notes</module>
         <module>modules-add-ons/photos-ww</module>
 
         <!--Unstable-->

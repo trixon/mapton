@@ -223,7 +223,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>addon-notes-nb</artifactId>
+            <artifactId>addon-notes</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
