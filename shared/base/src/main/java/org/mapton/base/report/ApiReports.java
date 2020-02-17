@@ -27,6 +27,8 @@ import org.mapton.api.MUpdater;
 import org.mapton.api.MWhatsHereEngine;
 import org.mapton.api.MWmsSourceProvider;
 import org.mapton.api.MWmsStyleProvider;
+import org.mapton.api.report.MEditor;
+import org.mapton.api.report.MReport;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.core.news.NewsProvider;
@@ -38,91 +40,61 @@ import se.trixon.almond.nbp.core.news.NewsProvider;
 @ServiceProvider(service = MApiReport.class)
 public class ApiReports implements MApiReport {
 
+    private final String mCategory = "Core/";
+    private final TreeMap<String, TreeSet<String>> mItems = new TreeMap<>();
+
     @Override
     public TreeMap<String, TreeSet<String>> getItems() {
-        String category = "Core/";
-        TreeMap<String, TreeSet<String>> items = new TreeMap<>();
+        mItems.clear();
 
-        TreeSet<String> implementations;
-        implementations = new TreeSet<>();
-        for (MCooTrans implementation : Lookup.getDefault().lookupAll(MCooTrans.class)) {
-            implementations.add(implementation.getName());
-        }
-        items.put(category + "MCooTrans", implementations);
+        TreeSet<String> copyImplementations = new TreeSet<>();
+        TreeSet<String> extrasImplementations = new TreeSet<>();
+        TreeSet<String> openImplementations = new TreeSet<>();
 
-        implementations = new TreeSet<>();
         for (MContextMenuItem implementation : Lookup.getDefault().lookupAll(MContextMenuItem.class)) {
-            if (implementation.getType() == MContextMenuItem.ContextType.COPY) {
-                implementations.add(implementation.getName());
+            switch (implementation.getType()) {
+                case COPY:
+                    copyImplementations.add(implementation.getName());
+                    break;
+
+                case EXTRAS:
+                    extrasImplementations.add(implementation.getName());
+                    break;
+
+                case OPEN:
+                    openImplementations.add(implementation.getName());
+                    break;
+
+                default:
+                    throw new AssertionError();
             }
         }
-        items.put(category + "MContextMenu Copy", implementations);
 
-        implementations = new TreeSet<>();
-        for (MContextMenuItem implementation : Lookup.getDefault().lookupAll(MContextMenuItem.class)) {
-            if (implementation.getType() == MContextMenuItem.ContextType.EXTRAS) {
-                implementations.add(implementation.getName());
-            }
-        }
-        items.put(category + "MContextMenu Extras", implementations);
+        mItems.put(mCategory + "MContextMenu Copy", copyImplementations);
+        mItems.put(mCategory + "MContextMenu Extras", extrasImplementations);
+        mItems.put(mCategory + "MContextMenu Open", openImplementations);
 
-        implementations = new TreeSet<>();
-        for (MContextMenuItem implementation : Lookup.getDefault().lookupAll(MContextMenuItem.class)) {
-            if (implementation.getType() == MContextMenuItem.ContextType.OPEN) {
-                implementations.add(implementation.getName());
-            }
-        }
-        items.put(category + "MContextMenu Open", implementations);
+        populate(MCooTrans.class);
+        populate(MEngine.class);
+        populate(MSearchEngine.class);
+        populate(MWhatsHereEngine.class);
+        populate(MUpdater.class);
+        populate(MWmsSourceProvider.class);
+        populate(MWmsStyleProvider.class);
+        populate(NewsProvider.class);
+        populate(MPoiProvider.class);
+        populate(MEditor.class);
+        populate(MReport.class);
 
-        implementations = new TreeSet<>();
-        for (MEngine implementation : Lookup.getDefault().lookupAll(MEngine.class)) {
-            implementations.add(implementation.getName());
-        }
-        items.put(category + "MEngine", implementations);
-
-        implementations = new TreeSet<>();
-        for (MSearchEngine implementation : Lookup.getDefault().lookupAll(MSearchEngine.class)) {
-            implementations.add(implementation.getName());
-        }
-        items.put(category + "MSearchEngine", implementations);
-
-        implementations = new TreeSet<>();
-        for (MWhatsHereEngine implementation : Lookup.getDefault().lookupAll(MWhatsHereEngine.class)) {
-            implementations.add(implementation.getName());
-        }
-        items.put(category + "MWhatsHereEngine", implementations);
-
-        implementations = new TreeSet<>();
-        for (MUpdater implementation : Lookup.getDefault().lookupAll(MUpdater.class)) {
-            implementations.add(implementation.getName());
-        }
-        items.put(category + "MUpdater", implementations);
-
-        implementations = new TreeSet<>();
-        for (MWmsSourceProvider implementation : Lookup.getDefault().lookupAll(MWmsSourceProvider.class)) {
-            implementations.add(implementation.getClass().getCanonicalName());
-        }
-        items.put(category + "MWmsSourceProvider", implementations);
-
-        implementations = new TreeSet<>();
-        for (MWmsStyleProvider implementation : Lookup.getDefault().lookupAll(MWmsStyleProvider.class)) {
-            implementations.add(implementation.getClass().getCanonicalName());
-        }
-        items.put(category + "MWmsStylusProvider", implementations);
-
-        implementations = new TreeSet<>();
-        for (NewsProvider implementation : Lookup.getDefault().lookupAll(NewsProvider.class)) {
-            implementations.add(implementation.getClass().getCanonicalName());
-        }
-        items.put(category + "NewsProvider", implementations);
-
-        implementations = new TreeSet<>();
-        for (MPoiProvider implementation : Lookup.getDefault().lookupAll(MPoiProvider.class)) {
-            implementations.add(implementation.getClass().getCanonicalName());
-        }
-        items.put(category + "MPoiProvider", implementations);
-
-        return items;
+        return mItems;
     }
 
+    private void populate(Class clazz) {
+        TreeSet<String> implementations = new TreeSet<>();
+        for (Object implementation : Lookup.getDefault().lookupAll(clazz)) {
+            implementations.add(implementation.getClass().getCanonicalName());
+        }
+
+        mItems.put(mCategory + clazz.getSimpleName(), implementations);
+    }
 }
