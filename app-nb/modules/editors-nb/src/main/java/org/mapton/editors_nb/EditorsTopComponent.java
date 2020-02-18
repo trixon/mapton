@@ -16,6 +16,8 @@
 package org.mapton.editors_nb;
 
 import javafx.scene.Scene;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.layout.BorderPane;
 import org.mapton.api.report.MEditor;
 import org.mapton.api.report.MSplitNavPane;
 import org.mapton.core_nb.api.MTopComponent;
@@ -23,6 +25,7 @@ import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.windows.TopComponent;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.fx.FxHelper;
 
 /**
  * Top component which displays something.
@@ -44,13 +47,18 @@ import se.trixon.almond.util.Dict;
 )
 public final class EditorsTopComponent extends MTopComponent {
 
+    private BorderPane mRoot;
+
     public EditorsTopComponent() {
         setName(Dict.EDITORS.toString());
     }
 
     @Override
     protected void initFX() {
-        setScene(createScene());
+        setScene(new Scene(mRoot = new BorderPane(new ProgressBar(-1))));
+        FxHelper.runLaterDelayed(1 * 1000, () -> {
+            createUI();
+        });
     }
 
     void readProperties(java.util.Properties p) {
@@ -65,8 +73,8 @@ public final class EditorsTopComponent extends MTopComponent {
         // TODO store your settings
     }
 
-    private Scene createScene() {
-        return new Scene(new MSplitNavPane<>(MEditor.class, Dict.EDITOR.toString()));
+    private void createUI() {
+        mRoot.setCenter(new MSplitNavPane<>(MEditor.class, Dict.EDITOR.toString()));
     }
 
 }
