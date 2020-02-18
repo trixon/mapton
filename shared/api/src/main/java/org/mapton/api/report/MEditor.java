@@ -15,23 +15,17 @@
  */
 package org.mapton.api.report;
 
-import org.mapton.api.MMaskerPaneReport;
 import org.mapton.api.Mapton;
 
 /**
  *
  * @author Patrik Karlström
  */
-public abstract class MEditor extends MMaskerPaneReport {
+public abstract class MEditor extends MSplitNavMaskerPane {
 
     @Override
     public String getParent() {
         return String.format("- %s -", Mapton.LOG_TAG);
-    }
-
-    @Override
-    public String toString() {
-        return getName();
     }
 
 }

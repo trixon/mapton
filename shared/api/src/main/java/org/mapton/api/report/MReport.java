@@ -15,12 +15,10 @@
  */
 package org.mapton.api.report;
 
-import org.mapton.api.MMaskerPaneReport;
-
 /**
  *
  * @author Patrik Karlström
  */
-public abstract class MReport extends MMaskerPaneReport {
+public abstract class MReport extends MSplitNavMaskerPane {
 
 }

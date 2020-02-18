@@ -15,22 +15,27 @@
  */
 package org.mapton.api.report;
 
-import javafx.scene.Node;
+import org.mapton.api.MMaskerPaneBase;
 
 /**
  *
  * @author Patrik Karlström
  */
-public interface MSplitNavType {
+public abstract class MSplitNavMaskerPane extends MMaskerPaneBase implements MSplitNavType {
 
-    public String getName();
+    protected MSplitNavSettings mSplitNavSetting = new MSplitNavSettings();
 
-    public Node getNode();
-
-    public String getParent();
-
-    public MSplitNavSettings getSplitNavSettings();
-
-    default public void onSelect() {
+    public MSplitNavMaskerPane() {
     }
+
+    @Override
+    public MSplitNavSettings getSplitNavSettings() {
+        return mSplitNavSetting;
+    }
+
+    @Override
+    public String toString() {
+        return getName();
+    }
+
 }

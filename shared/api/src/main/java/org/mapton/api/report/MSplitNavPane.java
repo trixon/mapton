@@ -22,6 +22,8 @@ import java.util.prefs.Preferences;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -29,8 +31,11 @@ import javafx.scene.control.ToolBar;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.textfield.TextFields;
+import org.mapton.api.Mapton;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.util.NbPreferences;
@@ -47,14 +52,16 @@ public class MSplitNavPane<T extends MSplitNavType> extends BorderPane {
 
     private final Class<? extends MSplitNavType> mClass;
     private BorderPane mDetailBorderPane;
+    private VBox mDetailTopBox;
     private TextField mFilterTextField;
     private BorderPane mMasterBorderPane;
     private final TreeMap<String, TreeItem<T>> mParents = new TreeMap<>();
     private Label mPlaceholderLabel;
     private final Preferences mPreferences;
+    private Label mTitleLabel;
+    private ToolBar mToolBar;
     private TreeView<T> mTreeView;
     private final String mTypeName;
-    private ToolBar mToolBar;
 
     public MSplitNavPane(Class<T> clazz, String typeName) {
         mClass = clazz;
@@ -72,11 +79,10 @@ public class MSplitNavPane<T extends MSplitNavType> extends BorderPane {
         mTreeView.getSelectionModel().getSelectedItems().addListener((ListChangeListener.Change<? extends TreeItem<T>> c) -> {
             TreeItem<T> selectedItem = mTreeView.getSelectionModel().getSelectedItem();
             if (mTreeView.getSelectionModel().isEmpty()) {
+                mDetailBorderPane.setTop(null);
                 mDetailBorderPane.setCenter(mPlaceholderLabel);
             } else {
-                T selectedType = selectedItem.getValue();
-                mDetailBorderPane.setCenter(selectedType.getNode());
-                selectedType.onSelect();
+                load(selectedItem.getValue());
             }
         });
 
@@ -90,9 +96,15 @@ public class MSplitNavPane<T extends MSplitNavType> extends BorderPane {
         mMasterBorderPane.setPrefWidth(FxHelper.getUIScaled(300));
         mMasterBorderPane.setTop(mFilterTextField);
 
+        mDetailTopBox = new VBox();
+        mDetailTopBox.setFillWidth(true);
+        mDetailTopBox.setAlignment(Pos.CENTER);
+        mTitleLabel = Mapton.createTitle("");
         mToolBar = new ToolBar();
+        FxHelper.slimToolBar(mToolBar);
+
         mDetailBorderPane = new BorderPane(mPlaceholderLabel);
-//        mDetailBorderPane.setTop(mToolBar);
+        mTitleLabel.prefWidthProperty().bind(mDetailBorderPane.widthProperty());
 
         setLeft(mMasterBorderPane);
         setCenter(mDetailBorderPane);
@@ -132,6 +144,11 @@ public class MSplitNavPane<T extends MSplitNavType> extends BorderPane {
                     }
 
                     @Override
+                    public MSplitNavSettings getSplitNavSettings() {
+                        throw new UnsupportedOperationException("Not supported yet.");
+                    }
+
+                    @Override
                     public String toString() {
                         return getName();
                     }
@@ -144,6 +161,50 @@ public class MSplitNavPane<T extends MSplitNavType> extends BorderPane {
         }
 
         return parent;
+    }
+
+    private void load(T selectedType) {
+        final Node node = selectedType.getNode();
+        if (node != null) {
+            mDetailBorderPane.setTop(mDetailTopBox);
+            mDetailBorderPane.setCenter(node);
+            loadSettings(selectedType);
+
+            selectedType.onSelect();
+        } else {
+            mDetailBorderPane.setTop(null);
+            mDetailBorderPane.setCenter(null);
+        }
+    }
+
+    private void loadSettings(T item) {
+        MSplitNavSettings settings = item.getSplitNavSettings();
+
+        if (settings.getTitle() == null) {
+            mTitleLabel.setText(item.getName());
+        } else {
+            mTitleLabel.setText(settings.getTitle());
+        }
+
+        final Color color = settings.getTitleColor();
+        if (color != null) {
+            var background = FxHelper.createBackground(color);
+            mTitleLabel.setBackground(background);
+            mTitleLabel.setStyle(String.format("-fx-background-color: %s;", FxHelper.colorToString(color)));
+        }
+
+        final ObservableList<Node> children = mDetailTopBox.getChildren();
+        children.clear();
+
+        if (settings.isDisplayTitle()) {
+            children.add(mTitleLabel);
+        }
+
+        mToolBar.getItems().clear();
+        if (settings.isDisplayToolbar()) {
+            children.add(mToolBar);
+            mToolBar.getItems().setAll(settings.getToolBarItems());
+        }
     }
 
     private void populate() {
@@ -163,6 +224,11 @@ public class MSplitNavPane<T extends MSplitNavType> extends BorderPane {
             @Override
             public String getParent() {
                 return "";
+            }
+
+            @Override
+            public MSplitNavSettings getSplitNavSettings() {
+                throw new UnsupportedOperationException("Not supported yet.");
             }
         };
 
