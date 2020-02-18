@@ -46,13 +46,19 @@ public class NotesEditor extends MEditor {
     @Override
     public Node getNode() {
         if (mTextArea == null) {
-            mTextArea = new TextArea();
-            mTextArea.setText(mPreferences.get(KEY_NOTES, ""));
-            mTextArea.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
-                mPreferences.put(KEY_NOTES, mTextArea.getText());
-            });
+            createUI();
         }
 
-        return mTextArea;
+        return mBody;
+    }
+
+    private void createUI() {
+        mTextArea = new TextArea();
+        mTextArea.setText(mPreferences.get(KEY_NOTES, ""));
+        mTextArea.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
+            mPreferences.put(KEY_NOTES, mTextArea.getText());
+        });
+
+        mNotificationPane.setContent(mTextArea);
     }
 }

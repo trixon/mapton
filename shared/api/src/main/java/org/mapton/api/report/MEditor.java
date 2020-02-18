@@ -15,13 +15,14 @@
  */
 package org.mapton.api.report;
 
+import org.mapton.api.MMaskerPaneReport;
 import org.mapton.api.Mapton;
 
 /**
  *
  * @author Patrik Karlström
  */
-public abstract class MEditor implements MSplitNavType {
+public abstract class MEditor extends MMaskerPaneReport {
 
     @Override
     public String getParent() {
