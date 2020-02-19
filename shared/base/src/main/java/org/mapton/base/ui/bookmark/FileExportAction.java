@@ -70,9 +70,7 @@ public class FileExportAction extends FileAction {
             SimpleDialog.addFilters("csv", "geo", "json", "kml", "csv");
             SimpleDialog.setFilter("csv");
 
-            if (mPopOver != null) {
-                mPopOver.hide();
-            }
+            hidePopOver();
 
             final String dialogTitle = String.format("%s %s", Dict.EXPORT.toString(), mTitle.toLowerCase());
             SimpleDialog.setTitle(dialogTitle);

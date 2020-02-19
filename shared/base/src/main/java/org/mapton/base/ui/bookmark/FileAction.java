@@ -16,6 +16,7 @@
 package org.mapton.base.ui.bookmark;
 
 import java.util.ResourceBundle;
+import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.paint.Color;
 import org.controlsfx.control.PopOver;
@@ -39,6 +40,14 @@ public abstract class FileAction {
 
     public FileAction(PopOver popOver) {
         mPopOver = popOver;
+    }
+
+    protected void hidePopOver() {
+        if (mPopOver != null) {
+            Platform.runLater(() -> {
+                mPopOver.hide();
+            });
+        }
     }
 
     public abstract Action getAction(Node owner);
