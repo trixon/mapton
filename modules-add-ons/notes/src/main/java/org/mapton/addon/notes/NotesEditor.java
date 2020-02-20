@@ -20,6 +20,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
 import javafx.scene.control.TextArea;
 import org.mapton.api.report.MEditor;
+import org.mapton.api.report.MSplitNavSettings.TitleMode;
 import org.openide.util.NbPreferences;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
@@ -36,6 +37,7 @@ public class NotesEditor extends MEditor {
     private TextArea mTextArea;
 
     public NotesEditor() {
+        getSplitNavSettings().setTitleMode(TitleMode.NAME);
     }
 
     @Override
