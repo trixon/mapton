@@ -27,10 +27,9 @@ import org.mapton.api.Mapton;
  */
 public class MSplitNavSettings {
 
-    private boolean mDisplayTitle = true;
-    private boolean mDisplayToolbar = false;
     private String mTitle = null;
     private Color mTitleColor = Mapton.getThemeColor();
+    private TitleMode mTitleMode = TitleMode.FULL_PATH;
     private ObservableList<Node> mToolBarItems = FXCollections.observableArrayList();
 
     public MSplitNavSettings() {
@@ -44,24 +43,12 @@ public class MSplitNavSettings {
         return mTitleColor;
     }
 
+    public TitleMode getTitleMode() {
+        return mTitleMode;
+    }
+
     public ObservableList<Node> getToolBarItems() {
         return mToolBarItems;
-    }
-
-    public boolean isDisplayTitle() {
-        return mDisplayTitle;
-    }
-
-    public boolean isDisplayToolbar() {
-        return mDisplayToolbar;
-    }
-
-    public void setDisplayTitle(boolean displayTitle) {
-        mDisplayTitle = displayTitle;
-    }
-
-    public void setDisplayToolbar(boolean displayToolbar) {
-        mDisplayToolbar = displayToolbar;
     }
 
     public void setTitle(String title) {
@@ -72,8 +59,18 @@ public class MSplitNavSettings {
         mTitleColor = titleColor;
     }
 
+    public void setTitleMode(TitleMode titleMode) {
+        mTitleMode = titleMode;
+    }
+
     public void setToolBarItems(ObservableList<Node> items) {
         mToolBarItems = items;
     }
 
+    public enum TitleMode {
+        NONE,
+        NAME,
+        FULL_PATH,
+        NAME_WITH_PARENT;
+    }
 }

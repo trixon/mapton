@@ -19,11 +19,9 @@ import java.util.Comparator;
 import java.util.Locale;
 import java.util.TreeMap;
 import java.util.prefs.Preferences;
-import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -31,28 +29,30 @@ import javafx.scene.control.ToolBar;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.textfield.TextFields;
 import org.mapton.api.Mapton;
+import org.mapton.api.report.MSplitNavSettings.TitleMode;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.util.NbPreferences;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.StringHelper;
 import se.trixon.almond.util.fx.FxHelper;
+import static se.trixon.almond.util.fx.FxHelper.getScaledFontSize;
 
 /**
  *
  * @author Patrik Karlström
- * @param <T>
+ * @param <T extends MSplitNavType>
  */
 public class MSplitNavPane<T extends MSplitNavType> extends BorderPane {
 
     private final Class<? extends MSplitNavType> mClass;
     private BorderPane mDetailBorderPane;
-    private VBox mDetailTopBox;
+    private StackPane mDetailTopPane;
     private TextField mFilterTextField;
     private BorderPane mMasterBorderPane;
     private final TreeMap<String, TreeItem<T>> mParents = new TreeMap<>();
@@ -96,15 +96,17 @@ public class MSplitNavPane<T extends MSplitNavType> extends BorderPane {
         mMasterBorderPane.setPrefWidth(FxHelper.getUIScaled(300));
         mMasterBorderPane.setTop(mFilterTextField);
 
-        mDetailTopBox = new VBox();
-        mDetailTopBox.setFillWidth(true);
-        mDetailTopBox.setAlignment(Pos.CENTER);
-        mTitleLabel = Mapton.createTitle("");
+        mDetailTopPane = new StackPane();
+
+        mTitleLabel = new Label();
+        mTitleLabel.setPrefHeight(Mapton.getIconSizeToolBarInt() * 1.3);
+        mTitleLabel.setStyle(String.format("-fx-font-size: %dpx;", (int) (getScaledFontSize() * 1.5)));
+
         mToolBar = new ToolBar();
+
         FxHelper.slimToolBar(mToolBar);
 
         mDetailBorderPane = new BorderPane(mPlaceholderLabel);
-        mTitleLabel.prefWidthProperty().bind(mDetailBorderPane.widthProperty());
 
         setLeft(mMasterBorderPane);
         setCenter(mDetailBorderPane);
@@ -166,7 +168,7 @@ public class MSplitNavPane<T extends MSplitNavType> extends BorderPane {
     private void load(T selectedType) {
         final Node node = selectedType.getNode();
         if (node != null) {
-            mDetailBorderPane.setTop(mDetailTopBox);
+            mDetailBorderPane.setTop(mDetailTopPane);
             mDetailBorderPane.setCenter(node);
             loadSettings(selectedType);
 
@@ -178,32 +180,27 @@ public class MSplitNavPane<T extends MSplitNavType> extends BorderPane {
     }
 
     private void loadSettings(T item) {
+        setTitle(item);
+
         MSplitNavSettings settings = item.getSplitNavSettings();
-
-        if (settings.getTitle() == null) {
-            mTitleLabel.setText(item.getName());
-        } else {
-            mTitleLabel.setText(settings.getTitle());
-        }
-
         final Color color = settings.getTitleColor();
         if (color != null) {
             var background = FxHelper.createBackground(color);
-            mTitleLabel.setBackground(background);
-            mTitleLabel.setStyle(String.format("-fx-background-color: %s;", FxHelper.colorToString(color)));
+            mDetailTopPane.setBackground(background);
+            mToolBar.setStyle(String.format("-fx-background-color: #%s;", FxHelper.colorToHexRGBA(color)));
         }
 
-        final ObservableList<Node> children = mDetailTopBox.getChildren();
+        final ObservableList<Node> children = mDetailTopPane.getChildren();
         children.clear();
 
-        if (settings.isDisplayTitle()) {
-            children.add(mTitleLabel);
-        }
-
         mToolBar.getItems().clear();
-        if (settings.isDisplayToolbar()) {
+        if (!settings.getToolBarItems().isEmpty()) {
             children.add(mToolBar);
             mToolBar.getItems().setAll(settings.getToolBarItems());
+        }
+
+        if (settings.getTitleMode() != TitleMode.NONE) {
+            children.add(mTitleLabel);
         }
     }
 
@@ -234,26 +231,26 @@ public class MSplitNavPane<T extends MSplitNavType> extends BorderPane {
 
         TreeItem<T> root = new TreeItem<>(rootType);
 
-        new Thread(() -> {
-            final String filter = mFilterTextField.getText();
-            Lookup.getDefault().lookupAll(mClass).forEach((type) -> {
-                final boolean validFilter
-                        = StringHelper.matchesSimpleGlob(type.getParent(), filter, true, true)
-                        || StringHelper.matchesSimpleGlob(type.getName(), filter, true, true);
+//        new Thread(() -> {
+        final String filter = mFilterTextField.getText();
+        Lookup.getDefault().lookupAll(mClass).forEach((type) -> {
+            final boolean validFilter
+                    = StringHelper.matchesSimpleGlob(type.getParent(), filter, true, true)
+                    || StringHelper.matchesSimpleGlob(type.getName(), filter, true, true);
 
-                if (validFilter) {
-                    TreeItem<T> treeItem = new TreeItem<>((T) type);
-                    String category = type.getParent();
-                    TreeItem<T> parent = mParents.computeIfAbsent(category, k -> getParent(root, category));
-                    parent.getChildren().add(treeItem);
-                }
-            });
+            if (validFilter) {
+                TreeItem<T> treeItem = new TreeItem<>((T) type);
+                String category = type.getParent();
+                TreeItem<T> parent = mParents.computeIfAbsent(category, k -> getParent(root, category));
+                parent.getChildren().add(treeItem);
+            }
+        });
 
-            Platform.runLater(() -> {
-                postPopulate(root);
-                mTreeView.setRoot(root);
-            });
-        }).start();
+//            Platform.runLater(() -> {
+        postPopulate(root);
+        mTreeView.setRoot(root);
+//            });
+//        }).start();
     }
 
     private void postPopulate(TreeItem<T> treeItem) {
@@ -273,6 +270,38 @@ public class MSplitNavPane<T extends MSplitNavType> extends BorderPane {
 
         for (TreeItem<T> childTreeItem : treeItem.getChildren()) {
             postPopulate(childTreeItem);
+        }
+    }
+
+    private void setTitle(T item) {
+        MSplitNavSettings settings = item.getSplitNavSettings();
+
+        String titlePrefix;
+        switch (settings.getTitleMode()) {
+            case FULL_PATH:
+                titlePrefix = item.getParent();
+                break;
+
+            case NAME_WITH_PARENT:
+                if (StringUtils.contains(item.getParent(), "/")) {
+                    titlePrefix = StringUtils.substringAfterLast(item.getParent(), "/");
+                } else {
+                    titlePrefix = item.getParent();
+                }
+                break;
+
+            default:
+                titlePrefix = "";
+        }
+
+        if (titlePrefix.length() > 0) {
+            titlePrefix = titlePrefix + "/";
+        }
+
+        if (settings.getTitle() == null) {
+            mTitleLabel.setText(titlePrefix + item.getName());
+        } else {
+            mTitleLabel.setText(titlePrefix + settings.getTitle());
         }
     }
 }
