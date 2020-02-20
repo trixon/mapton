@@ -15,10 +15,26 @@
  */
 package org.mapton.api.report;
 
+import j2html.tags.ContainerTag;
+import javafx.scene.web.WebView;
+import org.mapton.api.Mapton;
+
 /**
  *
  * @author Patrik Karlström
  */
 public abstract class MReport extends MSplitNavMaskerPane {
+
+    private WebView mWebView;
+    protected ContainerTag mHtml;
+
+    public WebView getWebView() {
+        if (mWebView == null) {
+            mWebView = new WebView();
+            Mapton.applyHtmlCss(mWebView, "report.css");
+        }
+
+        return mWebView;
+    }
 
 }
