@@ -19,6 +19,7 @@ import java.util.Comparator;
 import java.util.Locale;
 import java.util.TreeMap;
 import java.util.prefs.Preferences;
+import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -77,12 +78,13 @@ public class MSplitNavPane<T extends MSplitNavType> extends BorderPane {
         mTreeView = new TreeView<>();
         mTreeView.setShowRoot(false);
         mTreeView.getSelectionModel().getSelectedItems().addListener((ListChangeListener.Change<? extends TreeItem<T>> c) -> {
-            TreeItem<T> selectedItem = mTreeView.getSelectionModel().getSelectedItem();
             if (mTreeView.getSelectionModel().isEmpty()) {
                 mDetailBorderPane.setTop(null);
                 mDetailBorderPane.setCenter(mPlaceholderLabel);
             } else {
-                load(selectedItem.getValue());
+                Platform.runLater(() -> {
+                    load(mTreeView.getSelectionModel().getSelectedItem().getValue());
+                });
             }
         });
 
@@ -148,6 +150,14 @@ public class MSplitNavPane<T extends MSplitNavType> extends BorderPane {
                     @Override
                     public MSplitNavSettings getSplitNavSettings() {
                         throw new UnsupportedOperationException("Not supported yet.");
+                    }
+
+                    @Override
+                    public void setName(String name) {
+                    }
+
+                    @Override
+                    public void setParent(String parent) {
                     }
 
                     @Override
@@ -226,6 +236,14 @@ public class MSplitNavPane<T extends MSplitNavType> extends BorderPane {
             @Override
             public MSplitNavSettings getSplitNavSettings() {
                 throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            @Override
+            public void setName(String name) {
+            }
+
+            @Override
+            public void setParent(String parent) {
             }
         };
 

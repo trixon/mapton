@@ -24,13 +24,35 @@ import org.mapton.api.MMaskerPaneBase;
 public abstract class MSplitNavMaskerPane extends MMaskerPaneBase implements MSplitNavType {
 
     protected MSplitNavSettings mSplitNavSetting = new MSplitNavSettings();
+    private String mName = "";
+    private String mParent = "";
 
     public MSplitNavMaskerPane() {
     }
 
     @Override
+    public String getName() {
+        return mName;
+    }
+
+    @Override
+    public String getParent() {
+        return mParent;
+    }
+
+    @Override
     public MSplitNavSettings getSplitNavSettings() {
         return mSplitNavSetting;
+    }
+
+    @Override
+    public void setName(String name) {
+        mName = name;
+    }
+
+    @Override
+    public void setParent(String parent) {
+        mParent = parent;
     }
 
     @Override

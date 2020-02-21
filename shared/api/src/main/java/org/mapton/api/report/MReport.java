@@ -16,8 +16,12 @@
 package org.mapton.api.report;
 
 import j2html.tags.ContainerTag;
+import java.util.concurrent.Callable;
+import javafx.application.Platform;
+import javafx.scene.Node;
 import javafx.scene.web.WebView;
 import org.mapton.api.Mapton;
+import org.openide.util.Exceptions;
 
 /**
  *
@@ -26,7 +30,22 @@ import org.mapton.api.Mapton;
 public abstract class MReport extends MSplitNavMaskerPane {
 
     private WebView mWebView;
-    protected ContainerTag mHtml;
+
+    public MReport() {
+    }
+
+    public ContainerTag getContent() {
+        return null;
+    }
+
+    @Override
+    public Node getNode() {
+        if (mNotificationPane.getContent() == null) {
+            mNotificationPane.setContent(getWebView());
+        }
+
+        return mBody;
+    }
 
     public WebView getWebView() {
         if (mWebView == null) {
@@ -37,4 +56,35 @@ public abstract class MReport extends MSplitNavMaskerPane {
         return mWebView;
     }
 
+    @Override
+    public void onSelect() {
+        update(() -> {
+            return getContent();
+        });
+    }
+
+    public void update(Callable<ContainerTag> callable) {
+        if (callable == null) {
+            return;
+        }
+
+        getWebView().getEngine().loadContent("");
+        mMaskerPane.setVisible(true);
+
+        new Thread(() -> {
+            try {
+                ContainerTag containerTag = callable.call();
+                Platform.runLater(() -> {
+                    try {
+                        getWebView().getEngine().loadContent(containerTag.render());
+                    } catch (NullPointerException e) {
+                        //
+                    }
+                    mMaskerPane.setVisible(false);
+                });
+            } catch (Exception ex) {
+                Exceptions.printStackTrace(ex);
+            }
+        }).start();
+    }
 }

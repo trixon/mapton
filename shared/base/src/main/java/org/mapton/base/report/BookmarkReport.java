@@ -19,9 +19,6 @@ import static j2html.TagCreator.*;
 import j2html.tags.ContainerTag;
 import java.util.ArrayList;
 import java.util.TreeMap;
-import javafx.application.Platform;
-import javafx.scene.Node;
-import javafx.scene.web.WebView;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.api.MBookmark;
 import org.mapton.api.MBookmarkManager;
@@ -39,18 +36,12 @@ public class BookmarkReport extends MReport {
 
     private final MBookmarkManager mManager = MBookmarkManager.getInstance();
     private final String mName = Dict.BOOKMARKS.toString();
-    private WebView mWebView;
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        System.out.println(new BookmarkReport().getContent().renderFormatted());
-    }
 
     public BookmarkReport() {
+        setName(mName);
     }
 
+    @Override
     public ContainerTag getContent() {
         final TreeMap<String, ArrayList<MBookmark>> bookmarkCategories = new TreeMap<>();
 
@@ -92,25 +83,6 @@ public class BookmarkReport extends MReport {
                         )));
 
         return html;
-    }
-
-    @Override
-    public String getName() {
-        return mName;
-    }
-
-    @Override
-    public Node getNode() {
-        if (mWebView == null) {
-            mWebView = new WebView();
-            Mapton.applyHtmlCss(mWebView, "report.css");
-        }
-
-        Platform.runLater(() -> {
-            mWebView.getEngine().loadContent(getContent().render());
-        });
-
-        return mWebView;
     }
 
     @Override

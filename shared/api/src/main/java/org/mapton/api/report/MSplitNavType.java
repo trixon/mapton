@@ -33,4 +33,9 @@ public interface MSplitNavType {
 
     default public void onSelect() {
     }
+
+    public void setName(String name);
+
+    public void setParent(String parent);
+
 }
