@@ -25,7 +25,6 @@ import java.awt.Stroke;
 import java.awt.event.HierarchyEvent;
 import java.util.HashSet;
 import javafx.application.Platform;
-import javafx.beans.value.ObservableValue;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javax.swing.JComponent;
@@ -105,10 +104,6 @@ public final class MapTopComponent extends MTopComponent {
         map.put("kml", new FileNameExtensionFilter("Keyhole Markup Language (*.kml)", "kml"));
         map.put("grid", new FileNameExtensionFilter("Mapton Grid (*.grid)", "grid"));
         map.put("png", new FileNameExtensionFilter(String.format("%s (*.png)", Dict.IMAGE.toString()), "png"));
-
-        MOptions.getInstance().engineProperty().addListener((ObservableValue<? extends String> ov, String t, String t1) -> {
-            setEngine(Mapton.getEngine());
-        });
     }
 
     @Override
@@ -183,6 +178,16 @@ public final class MapTopComponent extends MTopComponent {
     @Override
     protected void fxComponentOpened() {
         super.fxComponentOpened();
+    }
+
+    @Override
+    protected void fxPostConstructor() {
+        super.fxPostConstructor();
+
+        MOptions.getInstance().engineProperty().addListener((ov, t, t1) -> {
+            setEngine(Mapton.getEngine());
+        });
+
         setEngine(Mapton.getEngine());
     }
 
@@ -190,7 +195,7 @@ public final class MapTopComponent extends MTopComponent {
     protected void initFX() {
         setScene(createScene());
         new MapContextMenu();
-        mMOptions.displayCrosshairProperty().addListener((ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1) -> {
+        mMOptions.displayCrosshairProperty().addListener((ov, t, t1) -> {
             repaint();
             revalidate();
         });
