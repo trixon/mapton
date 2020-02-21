@@ -33,6 +33,7 @@ import javax.swing.JFrame;
 import javax.swing.JLayeredPane;
 import javax.swing.JRootPane;
 import javax.swing.SwingUtilities;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import org.apache.commons.lang3.SystemUtils;
 import org.mapton.api.MDict;
 import org.mapton.api.MEngine;
@@ -96,6 +97,15 @@ public final class MapTopComponent extends MTopComponent {
         putClientProperty(PROP_MAXIMIZATION_DISABLED, Boolean.TRUE);
         putClientProperty(PROP_UNDOCKING_DISABLED, Boolean.TRUE);
 
+        var map = se.trixon.almond.util.swing.dialogs.SimpleDialog.getExtensionFilters();
+        map.put("*", new FileNameExtensionFilter(Dict.ALL_FILES.toString(), "*"));
+        map.put("csv", new FileNameExtensionFilter("Comma-separated value (*.csv)", "csv"));
+        map.put("geo", new FileNameExtensionFilter("SBG Geo (*.geo)", "geo"));
+        map.put("json", new FileNameExtensionFilter("JSON (*.json)", "json"));
+        map.put("kml", new FileNameExtensionFilter("Keyhole Markup Language (*.kml)", "kml"));
+        map.put("grid", new FileNameExtensionFilter("Mapton Grid (*.grid)", "grid"));
+        map.put("png", new FileNameExtensionFilter(String.format("%s (*.png)", Dict.IMAGE.toString()), "png"));
+
         MOptions.getInstance().engineProperty().addListener((ObservableValue<? extends String> ov, String t, String t1) -> {
             setEngine(Mapton.getEngine());
         });
@@ -157,12 +167,6 @@ public final class MapTopComponent extends MTopComponent {
     }
 
     @Override
-    protected void componentOpened() {
-        super.componentOpened();
-        setEngine(Mapton.getEngine());
-    }
-
-    @Override
     protected void componentShowing() {
         super.componentShowing();
         for (TopComponent tc : mMapMagnets) {
@@ -174,6 +178,12 @@ public final class MapTopComponent extends MTopComponent {
         }
 
         StatusBarView.getInstance().setWindowMode(StatusWindowMode.MAP);
+    }
+
+    @Override
+    protected void fxComponentOpened() {
+        super.fxComponentOpened();
+        setEngine(Mapton.getEngine());
     }
 
     @Override

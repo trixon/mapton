@@ -15,9 +15,6 @@
  */
 package org.mapton.core_nb.ui;
 
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import org.mapton.core_nb.api.MMapMagnet;
@@ -60,12 +57,6 @@ public final class LayerTopComponent extends MTopComponent implements MMapMagnet
 
         setName(Dict.LAYERS.toString());
         setPopOverHolder(true);
-        addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentShown(ComponentEvent e) {
-                reInitFX();
-            }
-        });
     }
 
     @Override
@@ -87,14 +78,8 @@ public final class LayerTopComponent extends MTopComponent implements MMapMagnet
 
     private Scene createScene() {
         mBorderPane = new BorderPane();
-        reInitFX();
+        mBorderPane.setCenter(new LayerView());
 
         return new Scene(mBorderPane);
-    }
-
-    private void reInitFX() {
-        Platform.runLater(() -> {
-            mBorderPane.setCenter(new LayerView());
-        });
     }
 }
