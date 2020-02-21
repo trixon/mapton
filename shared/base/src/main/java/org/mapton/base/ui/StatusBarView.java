@@ -148,6 +148,9 @@ public class StatusBarView extends org.controlsfx.control.StatusBar {
         getLeftItems().addAll(mLeftItemsBox);
         getRightItems().addAll(mRightItemsBox);
         setStyle("-fx-background-insets: 0, 0;");
+
+        mRightLabel.setVisible(false);
+        mComboBox.setVisible(false);
     }
 
     private void initListeners() {
