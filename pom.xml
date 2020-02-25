@@ -488,7 +488,7 @@
     </repositories>
 
     <properties>
-        <netbeans.version>RELEASE112</netbeans.version>
+        <netbeans.version>RELEASE113</netbeans.version>
         <netbeans.compile.on.save>all</netbeans.compile.on.save>
         <brandingToken>mapton</brandingToken>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
