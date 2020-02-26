@@ -151,6 +151,8 @@ public class StatusBarView extends org.controlsfx.control.StatusBar {
 
         mRightLabel.setVisible(false);
         mComboBox.setVisible(false);
+        //mComboBox.setStyle("-fx-background-color: transparent;-fx-border-color: gray;");
+        mComboBox.setStyle("-fx-background-color: transparent;");
     }
 
     private void initListeners() {

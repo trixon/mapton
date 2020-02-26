@@ -182,10 +182,6 @@
             <artifactId>almond-nbp-actions-osx</artifactId>
         </dependency>-->
         <!--        <dependency>
-            <groupId>se.trixon.almond</groupId>
-            <artifactId>almond-nbp-darcula</artifactId>
-        </dependency>-->
-        <!--        <dependency>
             <groupId>de.jensd</groupId>
             <artifactId>fontawesomefx-commons</artifactId>
         </dependency>

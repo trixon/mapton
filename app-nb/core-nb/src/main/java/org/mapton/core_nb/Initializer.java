@@ -16,27 +16,30 @@
 package org.mapton.core_nb;
 
 import java.beans.PropertyChangeEvent;
+import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLayeredPane;
 import javax.swing.SwingUtilities;
 import org.apache.commons.lang3.SystemUtils;
 import org.mapton.api.MOptions;
-import static org.mapton.api.MOptions.*;
+import static org.mapton.api.MOptions.KEY_UI_LAF_DARK;
 import org.mapton.api.Mapton;
 import org.mapton.core_nb.api.MMapMagnet;
 import org.mapton.core_nb.ui.AppToolBarProvider;
 import org.mapton.core_nb.updater.UpdateNotificator;
 import org.openide.awt.Actions;
 import org.openide.modules.OnStart;
+import org.openide.util.NbPreferences;
 import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
 import se.trixon.almond.nbp.Almond;
-import se.trixon.almond.nbp.DarculaDefaultsManager;
 import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.nbp.about.AboutAction;
 import se.trixon.almond.nbp.swing.RootPaneLayout;
 import se.trixon.almond.util.AboutModel;
+import se.trixon.almond.util.PrefsHelper;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.icons.material.MaterialIcon;
@@ -53,6 +56,17 @@ public class Initializer implements Runnable {
 
     @Override
     public void run() {
+        try {
+            final String key = "laf";
+            final String defaultLAF = "com.formdev.flatlaf.FlatDarkLaf";
+            Preferences preferences = NbPreferences.root().node("laf");
+            PrefsHelper.putIfAbsent(preferences, key, defaultLAF);
+            if (preferences.get(key, "-").equalsIgnoreCase("com.bulenkov.darcula.DarculaLaf")) {
+                preferences.put(key, defaultLAF);
+            }
+        } catch (BackingStoreException ex) {
+            //Exceptions.printStackTrace(ex);
+        }
         Mapton.getLog().setUseTimestamps(false);
         NbLog.setUseGlobalTag(false);
         Mapton.getLog().setOut((String s) -> {
@@ -65,10 +79,6 @@ public class Initializer implements Runnable {
 
 //        Platform.setImplicitExit(false);
 //        new JFXPanel();
-        DarculaDefaultsManager darculaDefaultsManager = DarculaDefaultsManager.getInstance();
-        darculaDefaultsManager.putIfAbsent("invertIcons", "true");
-        darculaDefaultsManager.putIfAbsent("stretchedTabs", "true");
-
         System.setProperty("netbeans.winsys.no_help_in_dialogs", "true");
         System.setProperty("netbeans.winsys.no_toolbars", "true");
         System.setProperty("netbeans.winsys.status_line.path", "AppStatusPanel.instance");

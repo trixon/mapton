@@ -31,7 +31,6 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javax.swing.UIManager;
 import org.controlsfx.control.ToggleSwitch;
 import org.controlsfx.control.action.Action;
 import org.mapton.api.MDict;
@@ -244,7 +243,7 @@ final class MainPanel extends javax.swing.JPanel {
                 || newIconColorBright
                 || newIconColorDark
                 || !mOptions.getEngine().equalsIgnoreCase(mOldEngine)) {
-            String laf = newNightMode ? "com.bulenkov.darcula.DarculaLaf" : UIManager.getSystemLookAndFeelClassName();
+            String laf = newNightMode ? "com.formdev.flatlaf.FlatDarkLaf" : "com.formdev.flatlaf.FlatLightLaf";
             NbPreferences.root().node("laf").put("laf", laf);
 
             Action restartAction = new Action(Dict.RESTART.toString(), (eventHandler) -> {
