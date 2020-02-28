@@ -16,13 +16,10 @@
 package org.mapton.core_nb.ui;
 
 import javafx.scene.Scene;
+import org.mapton.api.MDict;
 import org.mapton.core_nb.api.MTopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
-import org.openide.awt.ActionID;
-import org.openide.awt.ActionReference;
-import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
-import se.trixon.almond.util.Dict;
 
 /**
  * Top component which displays something.
@@ -33,19 +30,9 @@ import se.trixon.almond.util.Dict;
 )
 @TopComponent.Description(
         preferredID = "ToolboxTopComponent",
-        //iconBase="SET/PATH/TO/ICON/HERE",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(mode = "explorer", openAtStartup = false, position = 1)
-@ActionID(category = "Window", id = "org.mapton.core_nb.ui.ToolboxTopComponent")
-@ActionReference(path = "Menu/Window" /*, position = 333 */)
-@TopComponent.OpenActionRegistration(
-        displayName = "#CTL_ToolboxAction",
-        preferredID = "ToolboxTopComponent"
-)
-@Messages({
-    "CTL_ToolboxAction=Toolbox"
-})
 public final class MapToolboxTopComponent extends MTopComponent {
 
     public MapToolboxTopComponent() {
@@ -54,7 +41,7 @@ public final class MapToolboxTopComponent extends MTopComponent {
         putClientProperty(PROP_UNDOCKING_DISABLED, Boolean.TRUE);
         putClientProperty(PROP_KEEP_PREFERRED_SIZE_WHEN_SLIDED_IN, Boolean.TRUE);
 
-        setName(Dict.TOOLBOX.toString());
+        setName(MDict.MAP_TOOLS.toString());
         setPopOverHolder(true);
     }
 
