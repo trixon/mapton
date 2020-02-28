@@ -36,7 +36,7 @@ public class ClearBackgroundImageTool extends MToolMapCommand {
     @Override
     public Action getAction() {
         Action action = new Action(
-                FxHelper.createTitleAndKeyCode(ClearBackgroundImageAction.getName(), KeyCode.J, KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN),
+                FxHelper.createTitleAndKeyCode(ClearBackgroundImageAction.getName(), KeyCode.J, KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN) + "<",
                 evt -> {
                     SwingHelper.runLaterDelayed(0, () -> {
                         Actions.forID("Mapton", "org.mapton.core_nb.actions.ClearBackgroundImageAction").actionPerformed(null);

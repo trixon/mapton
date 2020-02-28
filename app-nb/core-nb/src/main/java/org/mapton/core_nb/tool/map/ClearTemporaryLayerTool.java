@@ -36,7 +36,7 @@ public class ClearTemporaryLayerTool extends MToolMapCommand {
     @Override
     public Action getAction() {
         Action action = new Action(
-                FxHelper.createTitleAndKeyCode(ClearTemporaryLayerAction.getName(), KeyCode.T, KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN),
+                FxHelper.createTitleAndKeyCode(ClearTemporaryLayerAction.getName(), KeyCode.T, KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN) + "<",
                 evt -> {
                     SwingHelper.runLaterDelayed(0, () -> {
                         Actions.forID("Mapton", "org.mapton.core_nb.actions.ClearTemporaryLayerAction").actionPerformed(null);

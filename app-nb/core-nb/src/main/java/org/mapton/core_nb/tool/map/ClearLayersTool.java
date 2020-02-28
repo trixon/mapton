@@ -36,7 +36,7 @@ public class ClearLayersTool extends MToolMapCommand {
     @Override
     public Action getAction() {
         Action action = new Action(
-                FxHelper.createTitleAndKeyCode(ClearLayersAction.getName(), KeyCode.L, KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN),
+                FxHelper.createTitleAndKeyCode(ClearLayersAction.getName(), KeyCode.L, KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN) + "<",
                 evt -> {
                     SwingHelper.runLaterDelayed(0, () -> {
                         Actions.forID("Mapton", "org.mapton.core_nb.actions.ClearLayersAction").actionPerformed(null);

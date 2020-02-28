@@ -23,6 +23,7 @@ import java.util.TreeMap;
 import java.util.prefs.Preferences;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -196,7 +197,13 @@ public class MapToolboxView extends BorderPane {
         }
 
         private void addContent(Action action) {
-            setText(action.getText());
+            String text = action.getText();
+            if (StringUtils.endsWith(text, ")<")) {
+                setText(StringUtils.substringBefore(text, " ("));
+                setTooltip(new Tooltip(StringUtils.removeEnd(text, "<")));
+            } else {
+                setText(text);
+            }
             setGraphic(action.getGraphic());
             setOnMouseClicked((MouseEvent event) -> {
                 int clicksToSubtract = SystemHelper.age(mLatestFocus) < 1000 ? 1 : 0;
