@@ -27,7 +27,7 @@ import se.trixon.almond.util.fx.FxActionSwing;
  * @author Patrik Karlström
  */
 @ServiceProvider(service = MToolMap.class)
-public class ObjectPropertiesTool implements MToolMap {
+public class ObjectPropertiesTool extends BaseSystemTool {
 
     @Override
     public Action getAction() {

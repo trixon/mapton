@@ -25,7 +25,6 @@ public abstract class MToolMapCommand implements MToolMap {
 
     @Override
     public String getParent() {
-        return Dict.COMMANDS.toString();
+        return String.format("- %s -/%s", Dict.SYSTEM.toString(), Dict.COMMANDS.toString());
     }
-
 }

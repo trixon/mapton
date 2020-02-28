@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Patrik Karlström.
+ * Copyright 2020 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,26 +15,18 @@
  */
 package org.mapton.core_nb.tool.map;
 
-import org.controlsfx.control.action.Action;
-import org.mapton.api.MDict;
 import org.mapton.api.MToolMap;
-import org.openide.util.lookup.ServiceProvider;
-import se.trixon.almond.nbp.Almond;
-import se.trixon.almond.util.fx.FxActionSwing;
+import se.trixon.almond.util.Dict;
 
 /**
  *
  * @author Patrik Karlström
  */
-@ServiceProvider(service = MToolMap.class)
-public class GridTool extends BaseSystemTool {
+public abstract class BaseSystemTool implements MToolMap {
 
     @Override
-    public Action getAction() {
-        FxActionSwing action = new FxActionSwing(MDict.GRID.toString(), () -> {
-            Almond.openAndActivateTopComponent("GridTopComponent");
-        });
-
-        return action;
+    public String getParent() {
+        return String.format("- %s -", Dict.SYSTEM.toString());
     }
+
 }

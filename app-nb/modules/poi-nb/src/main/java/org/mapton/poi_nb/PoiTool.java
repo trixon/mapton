@@ -20,6 +20,7 @@ import org.mapton.api.MDict;
 import org.mapton.api.MToolMap;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.Almond;
+import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxActionSwing;
 
 /**
@@ -38,4 +39,8 @@ public class PoiTool implements MToolMap {
         return action;
     }
 
+    @Override
+    public String getParent() {
+        return String.format("- %s -", Dict.SYSTEM.toString());
+    }
 }

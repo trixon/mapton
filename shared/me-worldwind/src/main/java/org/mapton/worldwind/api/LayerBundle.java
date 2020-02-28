@@ -83,7 +83,7 @@ public abstract class LayerBundle {
     }
 
     public void setCategoryAddOns(Layer layer) {
-        setCategory(layer, String.format("- %s -", Dict.ADD_ONS.toString()));
+        setCategory(layer, Dict.ADD_ONS.toString());
     }
 
     public void setCategorySystem(Layer layer) {

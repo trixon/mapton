@@ -27,7 +27,7 @@ import se.trixon.almond.util.fx.FxActionSwing;
  * @author Patrik Karlström
  */
 @ServiceProvider(service = MToolMap.class)
-public class ChartTool implements MToolMap {
+public class ChartTool extends BaseSystemTool {
 
     @Override
     public Action getAction() {
