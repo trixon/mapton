@@ -132,7 +132,7 @@ public class BookmarksView extends BorderPane implements MActivatable {
         mFilterTextField.setMinWidth(20);
 
         mTreeView.setShowRoot(false);
-        mTreeView.setCellFactory((TreeView<MBookmark> param) -> new BookmarkTreeCell());
+        mTreeView.setCellFactory(param -> new BookmarkTreeCell());
 
         Collection<? extends Action> actions = Arrays.asList(
                 new FileImportAction(mPopOver).getAction(this),
@@ -206,8 +206,8 @@ public class BookmarksView extends BorderPane implements MActivatable {
             mPreferences.putBoolean(path, newValue);
         });
 
-        Comparator<TreeItem<MBookmark>> c1 = (TreeItem<MBookmark> o1, TreeItem<MBookmark> o2) -> Boolean.compare(o1.getChildren().isEmpty(), o2.getChildren().isEmpty());
-        Comparator<TreeItem<MBookmark>> c2 = (TreeItem<MBookmark> o1, TreeItem<MBookmark> o2) -> o1.getValue().getName().compareTo(o2.getValue().getName());
+        Comparator<TreeItem<MBookmark>> c1 = (o1, o2) -> Boolean.compare(o1.getChildren().isEmpty(), o2.getChildren().isEmpty());
+        Comparator<TreeItem<MBookmark>> c2 = (o1, o2) -> o1.getValue().getName().compareTo(o2.getValue().getName());
 
         treeItem.getChildren().sort(c1.thenComparing(c2));
 
@@ -354,10 +354,10 @@ public class BookmarksView extends BorderPane implements MActivatable {
                 }
             }
 
-            mContextCopyMenu.getItems().sorted((MenuItem o1, MenuItem o2) -> o1.getText().compareToIgnoreCase(o2.getText()));
+            mContextCopyMenu.getItems().sorted((o1, o2) -> o1.getText().compareToIgnoreCase(o2.getText()));
             mContextCopyMenu.setVisible(!mContextCopyMenu.getItems().isEmpty());
 
-            mContextOpenMenu.getItems().sorted((MenuItem o1, MenuItem o2) -> o1.getText().compareToIgnoreCase(o2.getText()));
+            mContextOpenMenu.getItems().sorted((o1, o2) -> o1.getText().compareToIgnoreCase(o2.getText()));
             mContextOpenMenu.setVisible(!mContextOpenMenu.getItems().isEmpty());
         }
     }
