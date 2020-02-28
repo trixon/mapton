@@ -15,12 +15,15 @@
  */
 package org.mapton.core_nb.tool.map;
 
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCombination;
 import org.controlsfx.control.action.Action;
 import org.mapton.api.MToolMap;
 import org.mapton.api.MToolMapCommand;
 import org.mapton.core_nb.actions.ClearLayersAction;
 import org.openide.awt.Actions;
 import org.openide.util.lookup.ServiceProvider;
+import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.swing.SwingHelper;
 
 /**
@@ -32,11 +35,13 @@ public class ClearLayersTool extends MToolMapCommand {
 
     @Override
     public Action getAction() {
-        Action action = new Action(ClearLayersAction.getName(), evt -> {
-            SwingHelper.runLaterDelayed(0, () -> {
-                Actions.forID("Mapton", "org.mapton.core_nb.actions.ClearLayersAction").actionPerformed(null);
-            });
-        });
+        Action action = new Action(
+                FxHelper.createTitleAndKeyCode(ClearLayersAction.getName(), KeyCode.L, KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN),
+                evt -> {
+                    SwingHelper.runLaterDelayed(0, () -> {
+                        Actions.forID("Mapton", "org.mapton.core_nb.actions.ClearLayersAction").actionPerformed(null);
+                    });
+                });
 
         return action;
     }
