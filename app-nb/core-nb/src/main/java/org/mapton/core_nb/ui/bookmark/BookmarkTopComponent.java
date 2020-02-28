@@ -60,18 +60,6 @@ public final class BookmarkTopComponent extends MTopComponent implements MMapMag
     }
 
     @Override
-    protected void componentClosed() {
-//        MOptions.getInstance().setBookmarkVisible(false);
-        super.componentClosed();
-    }
-
-    @Override
-    protected void componentOpened() {
-//        MOptions.getInstance().setBookmarkVisible(true);
-        super.componentOpened();
-    }
-
-    @Override
     protected void initFX() {
         setScene(createScene());
     }
