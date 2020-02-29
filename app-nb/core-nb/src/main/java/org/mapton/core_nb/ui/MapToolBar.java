@@ -229,7 +229,7 @@ public class MapToolBar extends BaseToolBar {
             toogleRulerPopOver();
         });
         mRulerAction.setGraphic(MaterialIcon._Editor.SPACE_BAR.getImageView(getIconSizeToolBarInt()));
-        setTooltip(mRulerAction, new KeyCodeCombination(KeyCode.R, KeyCombination.SHORTCUT_DOWN));
+        setTooltip(mRulerAction, new KeyCodeCombination(KeyCode.K, KeyCombination.SHORTCUT_DOWN));
 
         //Temporal
         mTemporalAction = new Action(Dict.Time.DATE.toString(), event -> {
