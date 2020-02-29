@@ -15,11 +15,15 @@
  */
 package org.mapton.worldwind;
 
+import gov.nasa.worldwind.geom.LatLon;
 import gov.nasa.worldwind.layers.RenderableLayer;
-import gov.nasa.worldwind.render.ScreenImage;
-import gov.nasa.worldwind.render.Size;
+import gov.nasa.worldwind.render.BasicShapeAttributes;
+import gov.nasa.worldwind.render.Material;
+import gov.nasa.worldwind.render.ShapeAttributes;
+import gov.nasa.worldwind.render.SurfaceCircle;
+import gov.nasa.worldwind.render.SurfacePolygon;
 import java.awt.Color;
-import java.awt.Point;
+import java.util.ArrayList;
 import static org.mapton.worldwind.ModuleOptions.*;
 import org.mapton.worldwind.api.LayerBundleManager;
 
@@ -30,7 +34,7 @@ import org.mapton.worldwind.api.LayerBundleManager;
 public class MaskLayer extends RenderableLayer {
 
     private final ModuleOptions mOptions = ModuleOptions.getInstance();
-    private ScreenImage mScreenImage;
+    private final ShapeAttributes mShapeAttributes = new BasicShapeAttributes();
 
     public MaskLayer() {
         setName("Mask");
@@ -43,13 +47,43 @@ public class MaskLayer extends RenderableLayer {
     }
 
     private void init() {
-        final int dim = 3000;
-        Size size = Size.fromPixels(dim, dim);
-        mScreenImage = new ScreenImage();
-        mScreenImage.setScreenLocation(new Point(dim / 2, dim / 2));
-        mScreenImage.setSize(size);
+        mShapeAttributes.setDrawOutline(false);
+        mShapeAttributes.setDrawInterior(true);
 
-        addRenderable(mScreenImage);
+        //TODO
+        //SurfacePolygon eats memory
+        //SurfaceCircle leaves an equator gap
+//        for (int i = 0; i < 2; i++) {
+//            for (int j = 0; j < 2; j++) {
+//                ArrayList<LatLon> l = new ArrayList<>();
+//                int latSignum = i == 0 ? 1 : -1;
+//                int lonSignum = j == 0 ? 1 : -1;
+//                l.add(LatLon.fromDegrees(0, 0));
+//                l.add(LatLon.fromDegrees(0, lonSignum * 180));
+//                l.add(LatLon.fromDegrees(latSignum * 90, lonSignum * 180));
+//                l.add(LatLon.fromDegrees(latSignum * 90, 0));
+//
+//                addRenderable(new SurfacePolygon(mShapeAttributes, l));
+//            }
+//        }
+        int radius = 10000 * 5000;
+        addRenderable(new SurfaceCircle(mShapeAttributes, LatLon.fromDegrees(90, 0), radius));
+        addRenderable(new SurfaceCircle(mShapeAttributes, LatLon.fromDegrees(-90, 0), radius));
+
+        //Fill the gap
+        final double gap = 0.668646;
+        int lonStep = 10;
+        for (int lon = -180; lon < 180; lon = lon + lonStep) {
+            for (int lat = -1; lat < 2; lat = lat + 1) {
+                ArrayList<LatLon> l = new ArrayList<>();
+                l.add(LatLon.fromDegrees(lat * gap, lon));
+                l.add(LatLon.fromDegrees(lat * gap, lon + lonStep));
+                l.add(LatLon.fromDegrees(0, lon + lonStep));
+                l.add(LatLon.fromDegrees(0, lon));
+
+                addRenderable(new SurfacePolygon(mShapeAttributes, l));
+            }
+        }
     }
 
     private void initListeners() {
@@ -68,12 +102,11 @@ public class MaskLayer extends RenderableLayer {
         setEnabled(mOptions.is(KEY_DISPLAY_MASK, DEFAULT_DISPLAY_MASK));
 
         String colorString = mOptions.get(KEY_MASK_COLOR, DEFAULT_MASK_COLOR);
-        float opacity = mOptions.getFloat(KEY_MASK_OPACITY, DEFAULT_MASK_OPACITY);
         Color c = Color.decode("0x" + colorString);
-        float[] a = c.getRGBComponents(null);
-        Color c2 = new Color(a[0], a[1], a[2], opacity);
+        float opacity = mOptions.getFloat(KEY_MASK_OPACITY, DEFAULT_MASK_OPACITY);
+        mShapeAttributes.setInteriorMaterial(new Material(c));
+        mShapeAttributes.setInteriorOpacity(opacity);
 
-        mScreenImage.setColor(c2);
         try {
             LayerBundleManager.getInstance().redraw();
         } catch (Exception e) {
