@@ -124,6 +124,7 @@ public class MapToolBar extends BaseToolBar {
         ArrayList<Action> actions = new ArrayList<>();
         actions.addAll(Arrays.asList(
                 mHomeAction,
+                mToolboxAction,
                 mBookmarkAction,
                 mLayerAction,
                 //                mGridAction,
@@ -131,14 +132,13 @@ public class MapToolBar extends BaseToolBar {
                 mStyleAction,
                 ActionUtils.ACTION_SPAN,
                 mTemporalAction,
-                mRulerAction,
-                mToolboxAction
+                mRulerAction
         ));
 
         Platform.runLater(() -> {
             ActionUtils.updateToolBar(this, actions, ActionUtils.ActionTextBehavior.HIDE);
 
-            storeButtonWidths(mStyleAction, mTemporalAction);
+            storeButtonWidths(mStyleAction, mTemporalAction, mRulerAction);
             FxHelper.adjustButtonWidth(getItems().stream(), getIconSizeToolBarInt() * 1.0);
             setTextFromActions();
 
@@ -209,7 +209,7 @@ public class MapToolBar extends BaseToolBar {
                 });
             }
         });
-        mToolboxAction.setGraphic(MaterialIcon._Places.BUSINESS_CENTER.getImageView(getIconSizeToolBarInt()));
+        mToolboxAction.setGraphic(MaterialIcon._Action.BUILD.getImageView(getIconSizeToolBarInt()));
         setTooltip(mToolboxAction, new KeyCodeCombination(KeyCode.T, KeyCombination.SHORTCUT_DOWN));
 
         //Style
@@ -230,6 +230,8 @@ public class MapToolBar extends BaseToolBar {
         });
         mRulerAction.setGraphic(MaterialIcon._Editor.SPACE_BAR.getImageView(getIconSizeToolBarInt()));
         setTooltip(mRulerAction, new KeyCodeCombination(KeyCode.K, KeyCombination.SHORTCUT_DOWN));
+//        mRulerAction.textProperty().set(Dict.RULER.toString());
+        mRulerAction.textProperty().bind(mRulerPopOver.titleProperty());
 
         //Temporal
         mTemporalAction = new Action(Dict.Time.DATE.toString(), event -> {
@@ -303,7 +305,6 @@ public class MapToolBar extends BaseToolBar {
 
         mToolboxPopOver = new PopOver();
         initPopOver(mToolboxPopOver, MDict.MAP_TOOLS.toString(), new MapToolboxView(), false);
-        mToolboxPopOver.setArrowLocation(ArrowLocation.TOP_RIGHT);
 
         mRulerPopOver = new PopOver();
         initPopOver(mRulerPopOver, Dict.RULER.toString(), new RulerView(), true);

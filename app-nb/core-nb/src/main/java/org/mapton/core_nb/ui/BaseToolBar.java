@@ -109,6 +109,7 @@ public abstract class BaseToolBar extends ToolBar {
 
     protected void tooglePopOver(PopOver popOver, Action action) {
         FxHelper.runLater(() -> {
+            getScene().getWindow().requestFocus();
             if (popOver.isAutoHide()) {
                 if (popOver.isShowing()) {
                     popOver.hide();
