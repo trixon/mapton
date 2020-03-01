@@ -18,7 +18,6 @@ package org.mapton.core_nb.ui;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.ToolBar;
@@ -28,6 +27,8 @@ import org.apache.commons.lang3.SystemUtils;
 import org.controlsfx.control.PopOver;
 import org.controlsfx.control.action.Action;
 import org.mapton.api.MOptions;
+import se.trixon.almond.util.fx.FxHelper;
+import se.trixon.almond.util.fx.PopOverWatcher;
 
 /**
  *
@@ -106,6 +107,7 @@ public abstract class BaseToolBar extends ToolBar {
 
     protected void show(PopOver popOver, Object owner) {
         popOver.show((Node) owner, -6);
+        PopOverWatcher.getInstance().registerPopOver(popOver, (Node) owner);
     }
 
     protected void storeButtonWidths(Action... actions) {
@@ -115,7 +117,7 @@ public abstract class BaseToolBar extends ToolBar {
     }
 
     protected void tooglePopOver(PopOver popOver, Action action) {
-        Platform.runLater(() -> {
+        FxHelper.runLater(() -> {
             if (popOver.isAutoHide()) {
                 if (popOver.isShowing()) {
                     popOver.hide();

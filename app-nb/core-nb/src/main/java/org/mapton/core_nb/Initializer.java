@@ -42,6 +42,7 @@ import se.trixon.almond.util.AboutModel;
 import se.trixon.almond.util.PrefsHelper;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.FxHelper;
+import se.trixon.almond.util.fx.PopOverWatcher;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 import se.trixon.almond.util.swing.SwingHelper;
 
@@ -91,6 +92,7 @@ public class Initializer implements Runnable {
             MaterialIcon.setDefaultColor(mOptions.getIconColor());
             SwingHelper.runLaterDelayed(10, () -> {
                 JFrame frame = (JFrame) Almond.getFrame();
+                PopOverWatcher.getInstance().setFrame(frame);
                 JComponent toolbar = AppToolBarProvider.getInstance().getToolBarPanel();
                 frame.getRootPane().setLayout(new RootPaneLayout(toolbar));
                 toolbar.putClientProperty(JLayeredPane.LAYER_PROPERTY, 0);
