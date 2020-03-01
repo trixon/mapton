@@ -30,10 +30,11 @@ import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
-import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.CustomMenuItem;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.layout.VBox;
@@ -50,7 +51,7 @@ import se.trixon.almond.util.fx.FxHelper;
  *
  * @author Patrik Karlström
  */
-public class OptionsPopOver extends BasePopOver {
+public class OptionsContextMenu extends ContextMenu {
 
     private CheckBox mAnnotationCheckBox;
     private ColorPicker mAnnotationColorPicker;
@@ -72,18 +73,17 @@ public class OptionsPopOver extends BasePopOver {
     private final SimpleIntegerProperty mShapeIntegerProperty;
     private final WorldWindow mWorldWindow;
 
-    public OptionsPopOver(MeasureTool measureTool, WorldWindow worldWindow) {
+    public OptionsContextMenu(MeasureTool measureTool, WorldWindow worldWindow) {
         mMeasureTool = measureTool;
         mWorldWindow = worldWindow;
         mShapeIntegerProperty = new SimpleIntegerProperty();
 
-        setTitle(Dict.OPTIONS.toString());
-        setContentNode(createUI());
+        createUI();
         initListeners();
         initStates();
     }
 
-    private Node createUI() {
+    private void createUI() {
         VBox vbox = new VBox(8);
 
         vbox.setPadding(new Insets(8, 16, 16, 16));
@@ -132,7 +132,8 @@ public class OptionsPopOver extends BasePopOver {
         mKeyCheckBoxes.put(ModuleOptions.KEY_RULER_CONTROL_POINTS, mControlPointsCheckBox);
         mKeyCheckBoxes.put(ModuleOptions.KEY_RULER_POINT_LIST, mPointListCheckBox);
 
-        return vbox;
+        CustomMenuItem customMenuItem = new CustomMenuItem(vbox, false);
+        getItems().setAll(customMenuItem);
     }
 
     private java.awt.Color initColors(ColorPicker colorPicker, String key, Color defaultColor) {

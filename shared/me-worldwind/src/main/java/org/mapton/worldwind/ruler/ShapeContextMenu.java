@@ -19,11 +19,10 @@ import gov.nasa.worldwind.util.measure.MeasureTool;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.Insets;
-import javafx.scene.Node;
-import javafx.scene.control.RadioButton;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.ToggleGroup;
-import javafx.scene.layout.VBox;
 import org.mapton.worldwind.ModuleOptions;
 import static org.mapton.worldwind.ModuleOptions.KEY_RULER_SHAPE;
 import se.trixon.almond.util.Dict;
@@ -32,23 +31,22 @@ import se.trixon.almond.util.Dict;
  *
  * @author Patrik Karlström
  */
-public class ShapePopOver extends BasePopOver {
+public class ShapeContextMenu extends ContextMenu {
 
     private final MeasureTool mMeasureTool;
     private final ModuleOptions mOptions = ModuleOptions.getInstance();
     private final SimpleIntegerProperty mShapeIndexProperty = new SimpleIntegerProperty();
 
-    public ShapePopOver(MeasureTool measureTool) {
+    public ShapeContextMenu(MeasureTool measureTool) {
         mMeasureTool = measureTool;
-        setTitle(Dict.Geometry.GEOMETRY.toString());
-        setContentNode(createUI());
+        createUI();
     }
 
     public SimpleIntegerProperty shapeIndexProperty() {
         return mShapeIndexProperty;
     }
 
-    private Node createUI() {
+    private void createUI() {
         String[] shapeTitles = {
             Dict.Geometry.LINE.toString(),
             Dict.Geometry.PATH.toString(),
@@ -69,7 +67,7 @@ public class ShapePopOver extends BasePopOver {
             MeasureTool.SHAPE_QUAD
         };
 
-        RadioButton[] radioButtons = new RadioButton[shapeTitles.length];
+        RadioMenuItem[] radioButtons = new RadioMenuItem[shapeTitles.length];
         ToggleGroup toggleGroup = new ToggleGroup();
 
         EventHandler<ActionEvent> eventHandler = (ActionEvent t) -> {
@@ -81,7 +79,7 @@ public class ShapePopOver extends BasePopOver {
         };
 
         for (int i = 0; i < radioButtons.length; i++) {
-            radioButtons[i] = new RadioButton(shapeTitles[i]);
+            radioButtons[i] = new RadioMenuItem(shapeTitles[i]);
             radioButtons[i].setToggleGroup(toggleGroup);
             radioButtons[i].setOnAction(eventHandler);
         }
@@ -89,10 +87,9 @@ public class ShapePopOver extends BasePopOver {
         int index = mOptions.getInt(KEY_RULER_SHAPE);
         radioButtons[index].setSelected(true);
         mMeasureTool.setMeasureShapeType(shapes[index]);
-
-        VBox vbox = new VBox(12, radioButtons);
-        vbox.setPadding(new Insets(16));
-
-        return vbox;
+        MenuItem headerItem = new MenuItem(Dict.Geometry.GEOMETRY.toString());
+        headerItem.setDisable(true);
+        getItems().setAll(headerItem);
+        getItems().addAll(radioButtons);
     }
 }

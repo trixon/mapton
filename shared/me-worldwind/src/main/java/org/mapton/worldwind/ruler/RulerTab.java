@@ -29,10 +29,10 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.prefs.PreferenceChangeEvent;
 import javafx.application.Platform;
-import javafx.beans.value.ObservableValue;
+import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextArea;
@@ -42,7 +42,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import org.apache.commons.lang3.StringUtils;
-import org.controlsfx.control.PopOver;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
@@ -66,8 +65,8 @@ public class RulerTab extends Tab {
     private TextArea mMetricsTextArea;
     private final ModuleOptions mOptions = ModuleOptions.getInstance();
     private Action mOptionsAction;
+    private OptionsContextMenu mOptionsContextMenu;
     private ImageView mOptionsImageView;
-    private PopOver mOptionsPopOver;
     private ImageView mPauseImageView;
     private TextArea mPointListTextArea;
     private ImageView mResumeImageView;
@@ -75,8 +74,8 @@ public class RulerTab extends Tab {
     private Action mSaveAction;
     private ImageView mSaveImageView;
     private Action mShapeAction;
+    private ShapeContextMenu mShapeContextMenu;
     private ImageView mShapeImageView;
-    private ShapePopOver mShapePopOver;
     private FxActionCheck mStartAction;
     private ImageView mStartImageView;
     private FxActionCheck mStopAction;
@@ -137,8 +136,8 @@ public class RulerTab extends Tab {
 
         initToolBar();
 
-        mShapePopOver = new ShapePopOver(mMeasureTool);
-        mOptionsPopOver = new OptionsPopOver(mMeasureTool, mWorldWindow);
+        mShapeContextMenu = new ShapeContextMenu(mMeasureTool);
+        mOptionsContextMenu = new OptionsContextMenu(mMeasureTool, mWorldWindow);
     }
 
     private void initListeners() {
@@ -166,7 +165,7 @@ public class RulerTab extends Tab {
             }
         });
 
-        mOptions.getPreferences().addPreferenceChangeListener((PreferenceChangeEvent evt) -> {
+        mOptions.getPreferences().addPreferenceChangeListener(evt -> {
             Platform.runLater(() -> {
                 switch (evt.getKey()) {
                     case KEY_RULER_POINT_LIST:
@@ -176,46 +175,52 @@ public class RulerTab extends Tab {
             });
         });
 
-        mShapePopOver.shapeIndexProperty().addListener((ObservableValue<? extends Number> ov, Number t, Number t1) -> {
+        mShapeContextMenu.shapeIndexProperty().addListener((ov, oldValue, newValue) -> {
             setRunState(RunState.STOPPABLE);
         });
 
-        setOnClosed((event -> {
+        setOnClosed(event -> {
             mMeasureTool.setArmed(false);
             mMeasureTool.clear();
-        }));
+        });
     }
 
     private void initToolBar() {
-        mShapeAction = new Action(Dict.Geometry.GEOMETRY.toString(), (event) -> {
-            if (mShapePopOver.isShowing()) {
-                mShapePopOver.hide();
+        mShapeAction = new Action(Dict.Geometry.GEOMETRY.toString(), event -> {
+            if (mShapeContextMenu.isShowing()) {
+                mShapeContextMenu.hide();
             } else {
-                mShapePopOver.show(((ButtonBase) event.getSource()));
+                Node node = FxHelper.getButtonForAction(mShapeAction, mToolBar.getItems());
+                Bounds bounds = node.getBoundsInLocal();
+                Bounds screenBounds = node.localToScreen(bounds);
+                mShapeContextMenu.show(node, screenBounds.getMinX(), screenBounds.getMaxY());
             }
         });
         mShapeAction.setGraphic(mShapeImageView);
 
-        mStartAction = new FxActionCheck(Dict.START.toString(), (event) -> {
+        mStartAction = new FxActionCheck(Dict.START.toString(), event -> {
             setRunState(mRunState == RunState.STARTABLE ? RunState.STOPPABLE : RunState.RESUMABLE);
         });
         mStartAction.setGraphic(mStartImageView);
 
-        mStopAction = new FxActionCheck(Dict.STOP.toString(), (event) -> {
+        mStopAction = new FxActionCheck(Dict.STOP.toString(), event -> {
             setRunState(RunState.STARTABLE);
         });
         mStopAction.setGraphic(mStopImageView);
 
-        mSaveAction = new Action(Dict.SAVE.toString(), (event) -> {
+        mSaveAction = new Action(Dict.SAVE.toString(), event -> {
             ((RulerTabPane) getTabPane()).save();
         });
         mSaveAction.setGraphic(mSaveImageView);
 
-        mOptionsAction = new Action(Dict.OPTIONS.toString(), (event) -> {
-            if (mOptionsPopOver.isShowing()) {
-                mOptionsPopOver.hide();
+        mOptionsAction = new Action(Dict.OPTIONS.toString(), event -> {
+            if (mOptionsContextMenu.isShowing()) {
+                mOptionsContextMenu.hide();
             } else {
-                mOptionsPopOver.show(((ButtonBase) event.getSource()));
+                Node node = FxHelper.getButtonForAction(mOptionsAction, mToolBar.getItems());
+                Bounds bounds = node.getBoundsInLocal();
+                Bounds screenBounds = node.localToScreen(bounds);
+                mOptionsContextMenu.show(node, screenBounds.getMinX(), screenBounds.getMaxY());
             }
         });
         mOptionsAction.setGraphic(mOptionsImageView);

@@ -54,16 +54,7 @@ public abstract class BaseToolBar extends ToolBar {
     }
 
     protected ButtonBase getButtonForAction(Action action) {
-        for (Node item : getItems()) {
-            if (item instanceof ButtonBase) {
-                ButtonBase buttonBase = (ButtonBase) item;
-                if (buttonBase.getOnAction().equals(action)) {
-                    return buttonBase;
-                }
-            }
-        }
-
-        return null;
+        return FxHelper.getButtonForAction(action, getItems());
     }
 
     protected void initPopOver(PopOver popOver, String title, Node content, boolean alwaysUsePopOver) {
