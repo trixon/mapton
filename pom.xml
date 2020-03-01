@@ -364,7 +364,7 @@
             <dependency>
                 <groupId>eu.hansolo</groupId>
                 <artifactId>tilesfx</artifactId>
-                <version>11.30</version>
+                <version>11.31</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
