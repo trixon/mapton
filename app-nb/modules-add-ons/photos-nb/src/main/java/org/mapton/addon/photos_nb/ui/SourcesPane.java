@@ -23,6 +23,7 @@ import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.ToolBar;
@@ -49,6 +50,7 @@ import org.openide.util.Exceptions;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.GlobalStateChangeEvent;
 import se.trixon.almond.util.fx.FxHelper;
+import se.trixon.almond.util.fx.PopOverWatcher;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 
 /**
@@ -123,7 +125,9 @@ public class SourcesPane extends BorderPane {
             if (mOptionsPopOver.isShowing()) {
                 mOptionsPopOver.hide();
             } else {
-                mOptionsPopOver.show(((ButtonBase) event.getSource()));
+                Node node = (Node) event.getSource();
+                mOptionsPopOver.show(node);
+                PopOverWatcher.getInstance().registerPopOver(mOptionsPopOver, node);
             }
         });
         optionsAction.setGraphic(MaterialIcon._Action.SETTINGS.getImageView(getIconSizeToolBarInt()));

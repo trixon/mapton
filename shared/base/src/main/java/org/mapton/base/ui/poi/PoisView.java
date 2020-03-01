@@ -24,7 +24,7 @@ import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
-import javafx.scene.control.ButtonBase;
+import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -60,6 +60,7 @@ import org.openide.util.LookupEvent;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.FxHelper;
+import se.trixon.almond.util.fx.PopOverWatcher;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 
 /**
@@ -107,7 +108,9 @@ public class PoisView extends BorderPane {
             if (mFilterPopOver.isShowing()) {
                 mFilterPopOver.hide();
             } else {
-                mFilterPopOver.show(((ButtonBase) event.getSource()));
+                Node node = (Node) event.getSource();
+                mFilterPopOver.show(node);
+                PopOverWatcher.getInstance().registerPopOver(mFilterPopOver, node);
             }
         });
         filterAction.setGraphic(MaterialIcon._Content.FILTER_LIST.getImageView(getIconSizeToolBarInt()));
