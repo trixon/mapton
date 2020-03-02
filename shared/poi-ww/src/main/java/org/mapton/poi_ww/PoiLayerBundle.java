@@ -93,7 +93,11 @@ public class PoiLayerBundle extends LayerBundle {
 
                 PointPlacemarkAttributes attrs = new PointPlacemarkAttributes(placemark.getDefaultAttributes());
                 attrs.setImageAddress("images/pushpins/plain-white.png");
-                attrs.setImageColor(FxHelper.colorToColor(FxHelper.colorFromHexRGBA(poi.getColor())));
+                try {
+                    attrs.setImageColor(FxHelper.colorToColor(FxHelper.colorFromHexRGBA(poi.getColor())));
+                } catch (Exception e) {
+                    // nvm?
+                }
                 placemark.setAttributes(attrs);
                 placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(attrs, 1.5));
 
