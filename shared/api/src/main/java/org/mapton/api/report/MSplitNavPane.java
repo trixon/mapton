@@ -23,6 +23,7 @@ import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -30,7 +31,7 @@ import javafx.scene.control.ToolBar;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.textfield.TextFields;
@@ -53,7 +54,7 @@ public class MSplitNavPane<T extends MSplitNavType> extends BorderPane {
 
     private final Class<? extends MSplitNavType> mClass;
     private BorderPane mDetailBorderPane;
-    private StackPane mDetailTopPane;
+    private VBox mDetailTopPane;
     private TextField mFilterTextField;
     private BorderPane mMasterBorderPane;
     private final TreeMap<String, TreeItem<T>> mParents = new TreeMap<>();
@@ -98,11 +99,13 @@ public class MSplitNavPane<T extends MSplitNavType> extends BorderPane {
         mMasterBorderPane.setPrefWidth(FxHelper.getUIScaled(300));
         mMasterBorderPane.setTop(mFilterTextField);
 
-        mDetailTopPane = new StackPane();
+        mDetailTopPane = new VBox();
 
         mTitleLabel = new Label();
         mTitleLabel.setPrefHeight(Mapton.getIconSizeToolBarInt() * 1.3);
         mTitleLabel.setStyle(String.format("-fx-font-size: %dpx;", (int) (getScaledFontSize() * 1.5)));
+        mTitleLabel.prefWidthProperty().bind(mDetailTopPane.widthProperty());
+        mTitleLabel.setAlignment(Pos.CENTER);
 
         mToolBar = new ToolBar();
 
@@ -203,14 +206,14 @@ public class MSplitNavPane<T extends MSplitNavType> extends BorderPane {
         final ObservableList<Node> children = mDetailTopPane.getChildren();
         children.clear();
 
+        if (settings.getTitleMode() != TitleMode.NONE) {
+            children.add(mTitleLabel);
+        }
+
         mToolBar.getItems().clear();
         if (!settings.getToolBarItems().isEmpty()) {
             children.add(mToolBar);
             mToolBar.getItems().setAll(settings.getToolBarItems());
-        }
-
-        if (settings.getTitleMode() != TitleMode.NONE) {
-            children.add(mTitleLabel);
         }
     }
 
