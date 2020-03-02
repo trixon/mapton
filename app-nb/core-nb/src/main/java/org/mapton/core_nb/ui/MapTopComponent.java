@@ -104,6 +104,7 @@ public final class MapTopComponent extends MTopComponent {
         map.put("kml", new FileNameExtensionFilter("Keyhole Markup Language (*.kml)", "kml"));
         map.put("grid", new FileNameExtensionFilter("Mapton Grid (*.grid)", "grid"));
         map.put("png", new FileNameExtensionFilter(String.format("%s (*.png)", Dict.IMAGE.toString()), "png"));
+        map.put("txt", new FileNameExtensionFilter(String.format("%s (*.txt)", Dict.TEXT.toString()), "txt"));
     }
 
     @Override
