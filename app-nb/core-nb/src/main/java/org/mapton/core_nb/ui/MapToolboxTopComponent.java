@@ -17,6 +17,7 @@ package org.mapton.core_nb.ui;
 
 import javafx.scene.Scene;
 import org.mapton.api.MDict;
+import org.mapton.core_nb.api.MMapMagnet;
 import org.mapton.core_nb.api.MTopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.windows.TopComponent;
@@ -33,7 +34,7 @@ import org.openide.windows.TopComponent;
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(mode = "explorer", openAtStartup = false, position = 1)
-public final class MapToolboxTopComponent extends MTopComponent {
+public final class MapToolboxTopComponent extends MTopComponent implements MMapMagnet {
 
     public MapToolboxTopComponent() {
         putClientProperty(PROP_MAXIMIZATION_DISABLED, Boolean.TRUE);
