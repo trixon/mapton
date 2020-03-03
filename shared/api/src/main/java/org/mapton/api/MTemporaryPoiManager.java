@@ -15,7 +15,7 @@
  */
 package org.mapton.api;
 
-import java.sql.SQLException;
+import java.util.ArrayList;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -41,12 +41,21 @@ public class MTemporaryPoiManager {
         mItems.setValue(FXCollections.observableArrayList());
     }
 
+    public void fitToBounds() {
+        ArrayList<MLatLon> latLons = new ArrayList<>();
+        getItems().forEach(poi -> {
+            latLons.add(new MLatLon(poi.getLatitude(), poi.getLongitude()));
+        });
+
+        Mapton.getEngine().fitToBounds(new MLatLonBox(latLons));
+    }
+
     public final ObservableList<MPoi> getItems() {
         return mItems == null ? null : mItems.get();
     }
 
-    public void goTo(MPoi bookmark) throws ClassNotFoundException, SQLException {
-        Mapton.getEngine().panTo(new MLatLon(bookmark.getLatitude(), bookmark.getLongitude()), bookmark.getZoom());
+    public void goTo(MPoi poi) {
+        Mapton.getEngine().panTo(new MLatLon(poi.getLatitude(), poi.getLongitude()), poi.getZoom());
     }
 
     public final ObjectProperty<ObservableList<MPoi>> itemsProperty() {
