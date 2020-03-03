@@ -33,7 +33,7 @@ import se.trixon.almond.util.Dict;
 @ActionRegistration(
         displayName = "#CTL_ClearTemporaryLayerAction"
 )
-@ActionReference(path = "Shortcuts", name = "DS-L")
+@ActionReference(path = "Shortcuts", name = "DS-T")
 @NbBundle.Messages("CTL_ClearTemporaryLayerAction=Clear temporary content")
 public final class ClearTemporaryLayerAction extends BaseAction implements ActionListener {
 
