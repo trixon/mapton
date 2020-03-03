@@ -20,6 +20,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import org.apache.commons.lang3.ObjectUtils;
 
 /**
  *
@@ -43,9 +44,11 @@ public class MTemporaryPoiManager {
 
     public void fitToBounds() {
         ArrayList<MLatLon> latLons = new ArrayList<>();
-        getItems().forEach(poi -> {
-            latLons.add(new MLatLon(poi.getLatitude(), poi.getLongitude()));
-        });
+        getItems().stream()
+                .filter(poi -> ObjectUtils.allNotNull(poi.getLatitude(), poi.getLongitude()))
+                .forEach(poi -> {
+                    latLons.add(new MLatLon(poi.getLatitude(), poi.getLongitude()));
+                });
 
         Mapton.getEngine().fitToBounds(new MLatLonBox(latLons));
     }

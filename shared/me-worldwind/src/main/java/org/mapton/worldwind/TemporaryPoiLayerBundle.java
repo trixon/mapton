@@ -23,6 +23,7 @@ import gov.nasa.worldwind.render.PointPlacemarkAttributes;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import javafx.collections.ListChangeListener;
+import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.api.MBookmark;
 import org.mapton.api.MKey;
 import org.mapton.api.MPoi;
@@ -74,7 +75,7 @@ public class TemporaryPoiLayerBundle extends LayerBundle {
         mLayer.removeAllRenderables();
 
         for (MPoi poi : mManager.getItems()) {
-            if (poi.isDisplayMarker()) {
+            if (poi.isDisplayMarker() && ObjectUtils.allNotNull(poi.getLatitude(), poi.getLongitude())) {
                 PointPlacemark placemark = new PointPlacemark(Position.fromDegrees(poi.getLatitude(), poi.getLongitude()));
                 placemark.setLabelText(poi.getName());
                 placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
