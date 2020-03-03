@@ -23,9 +23,7 @@ import org.mapton.api.Mapton;
  */
 public abstract class MEditor extends MSplitNavMaskerPane {
 
-    @Override
-    public String getParent() {
-        return String.format("- %s -", Mapton.LOG_TAG);
+    public MEditor() {
+        setParent(String.format("- %s -", Mapton.LOG_TAG));
     }
-
 }
