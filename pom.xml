@@ -134,6 +134,20 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-help-plugin</artifactId>
+                <version>3.2.0</version>
+                <executions>
+                    <execution>
+                        <id>show-profiles</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>active-profiles</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
@@ -214,12 +228,6 @@
                 <groupId>org.mapton</groupId>
                 <artifactId>mapton-api</artifactId>
                 <version>${mapton.version}</version>
-                <!--                <exclusions>
-                    <exclusion>
-                        <groupId>org.netbeans.api</groupId>
-                        <artifactId>org-netbeans-libs-javafx</artifactId>
-                    </exclusion>
-                </exclusions>-->
             </dependency>
             <dependency>
                 <groupId>org.mapton</groupId>
@@ -312,12 +320,6 @@
                 <groupId>se.trixon.almond</groupId>
                 <artifactId>almond-nbp</artifactId>
                 <version>${almond.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.openjfx</groupId>
-                        <artifactId>*</artifactId>
-                    </exclusion>
-                </exclusions>
             </dependency>
             <dependency>
                 <groupId>se.trixon.almond</groupId>
@@ -345,26 +347,56 @@
                 <groupId>org.controlsfx</groupId>
                 <artifactId>controlsfx</artifactId>
                 <version>11.0.1</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.openjfx</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>com.dlsc.formsfx</groupId>
                 <artifactId>formsfx-core</artifactId>
                 <version>11.4.1</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.openjfx</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>com.dlsc.workbenchfx</groupId>
                 <artifactId>workbenchfx-core</artifactId>
                 <version>11.1.0</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.openjfx</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>de.jensd</groupId>
                 <artifactId>fontawesomefx-commons</artifactId>
                 <version>11.0</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.openjfx</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>eu.hansolo</groupId>
                 <artifactId>tilesfx</artifactId>
                 <version>11.31</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.openjfx</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
@@ -489,7 +521,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <almond.version>11.0.5-SNAPSHOT</almond.version>
         <mapton.version>2.0.0-SNAPSHOT</mapton.version>
-        <openjfx.version>13.0.1</openjfx.version>
+        <openjfx.version>13.0.2</openjfx.version>
     </properties>
     <description>Some kind of map application</description>
 </project>
