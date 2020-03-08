@@ -49,7 +49,7 @@ import se.trixon.almond.util.fx.FxHelper;
 
 final class MainPanel extends javax.swing.JPanel {
 
-    private final ResourceBundle mBundle = NbBundle.getBundle(MOptions.class);
+    private final ResourceBundle mBundle;
     private final MainOptionsPanelController mController;
     private ToggleSwitch mCrosshairToggleSwitch;
     private ComboBox<String> mEngineComboBox;
@@ -69,6 +69,7 @@ final class MainPanel extends javax.swing.JPanel {
     private ToggleSwitch mPopoverToggleSwitch;
 
     MainPanel(MainOptionsPanelController controller) {
+        mBundle = NbBundle.getBundle(MOptions.class);
         mController = controller;
         mFxPanel = new FxPanel() {
 
