@@ -19,29 +19,40 @@ import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.Renderable;
 import org.mapton.api.MKey;
 import org.mapton.api.Mapton;
+import org.mapton.worldwind.api.LayerBundle;
+import se.trixon.almond.util.Dict;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class IndicatorLayer extends RenderableLayer {
+public class IndicatorLayerBundle extends LayerBundle {
 
-    public IndicatorLayer() {
-        setName("Indicator");
-        setPickEnabled(false);
+    private final RenderableLayer mLayer = new RenderableLayer();
 
+    public IndicatorLayerBundle() {
         init();
         initListeners();
     }
 
+    @Override
+    public void populate() {
+        getLayers().add(mLayer);
+        setPopulated(true);
+    }
+
     private void init() {
+        setCategorySystem(mLayer);
+        setName(Dict.INDICATORS.toString());
+        mLayer.setName(Dict.INDICATORS.toString());
+        mLayer.setPickEnabled(false);
     }
 
     private void initListeners() {
         Mapton.getGlobalState().addListener(gsc -> {
-            removeAllRenderables();
+            mLayer.removeAllRenderables();
             if (gsc.getValue() instanceof Renderable) {
-                addRenderable(gsc.getValue());
+                mLayer.addRenderable(gsc.getValue());
             }
         }, MKey.INDICATOR_LAYER_LOAD);
     }

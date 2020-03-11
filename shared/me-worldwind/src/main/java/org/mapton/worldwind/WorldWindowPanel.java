@@ -98,7 +98,7 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
     private final ModuleOptions mOptions = ModuleOptions.getInstance();
     private Globe mRoundGlobe;
     private ElevationModel mZeroElevationModel = new ZeroElevationModel();
-    private IndicatorLayer mIndicatorLayer;
+    private IndicatorLayerBundle mIndicatorLayer;
 
     public WorldWindowPanel() {
         init();
@@ -225,7 +225,8 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         wwd.getModel().getGlobe().setElevationModel(mZeroElevationModel);
         wwd.getSceneController().setDeepPickEnabled(true);
 
-        mIndicatorLayer = new IndicatorLayer();
+        mIndicatorLayer = new IndicatorLayerBundle();
+        mIndicatorLayer.populate();
     }
 
     private void initFinalize() {
@@ -271,7 +272,7 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
                 });
             }
         }
-        addCustomLayer(mIndicatorLayer);
+        addCustomLayer(mIndicatorLayer.getLayers().get(0));
 //        });
     }
 
