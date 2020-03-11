@@ -43,6 +43,7 @@ public class MKey {
     public static final String NOTIFICATION_INFORMATION = "toolbar.notification.information";
     public static final String NOTIFICATION_WARNING = "toolbar.notification.warning";
     public static final String OBJECT_PROPERTIES = "object.properties";
+    public static final String INDICATOR_LAYER_LOAD = "indicator_layer.load";
     /**
      * Listen for this GlobalState key in order to catch POI category updates
      */
