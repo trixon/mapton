@@ -17,6 +17,7 @@ package org.mapton.worldwind;
 
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.Renderable;
+import java.util.ArrayList;
 import org.mapton.api.MKey;
 import org.mapton.api.Mapton;
 import org.mapton.worldwind.api.LayerBundle;
@@ -53,6 +54,18 @@ public class IndicatorLayerBundle extends LayerBundle {
             mLayer.removeAllRenderables();
             if (gsc.getValue() instanceof Renderable) {
                 mLayer.addRenderable(gsc.getValue());
+            } else if (gsc.getValue() instanceof Renderable[]) {
+                Renderable[] renderables = gsc.getValue();
+                for (Renderable renderable : renderables) {
+                    mLayer.addRenderable(renderable);
+                }
+            } else if (gsc.getValue() instanceof ArrayList) {
+                ArrayList<?> arrayList = gsc.getValue();
+                if (!arrayList.isEmpty() && arrayList.get(0) instanceof Renderable) {
+                    for (Renderable renderable : (ArrayList<Renderable>) arrayList) {
+                        mLayer.addRenderable(renderable);
+                    }
+                }
             }
         }, MKey.INDICATOR_LAYER_LOAD);
     }
