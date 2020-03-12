@@ -33,7 +33,7 @@ import se.trixon.almond.util.Dict;
         displayName = "#CTL_ClearLayersAction"
 )
 @ActionReference(path = "Shortcuts", name = "DS-L")
-@NbBundle.Messages("CTL_ClearLayersAction=Clear layers")
+@NbBundle.Messages("CTL_ClearLayersAction=Hide all layers")
 public final class ClearLayersAction extends BaseAction implements ActionListener {
 
     public static String getName() {
