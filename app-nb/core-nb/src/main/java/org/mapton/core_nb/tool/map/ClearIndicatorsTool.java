@@ -39,7 +39,7 @@ public class ClearIndicatorsTool extends MToolMapCommand {
                 FxHelper.createTitleAndKeyCode(ClearIndicatorLayerAction.getName(), KeyCode.I, KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN) + "<",
                 evt -> {
                     SwingHelper.runLaterDelayed(0, () -> {
-                        Actions.forID("Mapton", "org.mapton.core_nb.actions.ClearIndicatorsAction").actionPerformed(null);
+                        Actions.forID("Mapton", "org.mapton.core_nb.actions.ClearIndicatorLayerAction").actionPerformed(null);
                     });
                 });
 
