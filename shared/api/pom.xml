@@ -26,7 +26,7 @@
                         <publicPackage>de.micromata.*</publicPackage>
                         <publicPackage>eu.hansolo.tilesfx.*</publicPackage>
                         <publicPackage>j2html.*</publicPackage>
-                        <publicPackage>javafx.*</publicPackage>
+                        <!--<publicPackage>javafx.*</publicPackage>-->
                         <publicPackage>javax.annotation.*</publicPackage>
                         <publicPackage>javax.xml.*</publicPackage>
                         <publicPackage>org.apache.commons.*</publicPackage>
@@ -65,13 +65,13 @@
     </build>
 
     <profiles>
-        <profile>
+        <!--        <profile>
             <id>javafx-current</id>
             <activation>
-                <activeByDefault>true</activeByDefault>
+                <activeByDefault>false</activeByDefault>
             </activation>
             <dependencies>
-                <!--javafx current-->
+                javafx current
                 <dependency>
                     <groupId>org.openjfx</groupId>
                     <artifactId>javafx-base</artifactId>
@@ -115,7 +115,7 @@
                 <activeByDefault>false</activeByDefault>
             </activation>
             <dependencies>
-                <!--javafx linux-->
+                javafx linux
                 <dependency>
                     <groupId>org.openjfx</groupId>
                     <artifactId>javafx-base</artifactId>
@@ -159,7 +159,7 @@
                     <classifier>linux</classifier>
                 </dependency>
 
-                <!--javafx mac-->
+                javafx mac
                 <dependency>
                     <groupId>org.openjfx</groupId>
                     <artifactId>javafx-base</artifactId>
@@ -203,7 +203,7 @@
                     <classifier>mac</classifier>
                 </dependency>
 
-                <!--javafx win-->
+                javafx win
                 <dependency>
                     <groupId>org.openjfx</groupId>
                     <artifactId>javafx-base</artifactId>
@@ -247,7 +247,7 @@
                     <classifier>win</classifier>
                 </dependency>
             </dependencies>
-        </profile>
+        </profile>-->
     </profiles>
 
     <dependencies>
@@ -293,15 +293,33 @@
         <dependency>
             <groupId>de.jensd</groupId>
             <artifactId>fontawesomefx-commons</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.openjfx</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>de.jensd</groupId>
             <artifactId>fontawesomefx-fontawesome</artifactId>
             <version>4.7.0-11</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.openjfx</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>eu.hansolo</groupId>
             <artifactId>tilesfx</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.openjfx</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- Apache -->

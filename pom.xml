@@ -228,6 +228,12 @@
                 <groupId>org.mapton</groupId>
                 <artifactId>mapton-api</artifactId>
                 <version>${mapton.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.openjfx</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.mapton</groupId>
@@ -310,16 +316,34 @@
                 <groupId>se.trixon.almond</groupId>
                 <artifactId>almond-util</artifactId>
                 <version>${almond.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.openjfx</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>se.trixon.almond</groupId>
                 <artifactId>almond-nbp-core</artifactId>
                 <version>${almond.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.openjfx</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>se.trixon.almond</groupId>
                 <artifactId>almond-nbp</artifactId>
                 <version>${almond.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.openjfx</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>se.trixon.almond</groupId>
@@ -335,11 +359,23 @@
                 <groupId>se.trixon</groupId>
                 <artifactId>GMapsFX-txn</artifactId>
                 <version>2.12.201</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.openjfx</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>se.trixon.windowsystemfx</groupId>
                 <artifactId>windowsystemfx-core</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.openjfx</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
 
             <!-- Other -->
