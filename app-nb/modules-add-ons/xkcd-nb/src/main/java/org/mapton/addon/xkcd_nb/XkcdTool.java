@@ -17,9 +17,9 @@ package org.mapton.addon.xkcd_nb;
 
 import org.controlsfx.control.action.Action;
 import org.mapton.api.MToolMap;
+import org.mapton.api.MToolMapAddOn;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.Almond;
-import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxActionSwing;
 
 /**
@@ -27,7 +27,7 @@ import se.trixon.almond.util.fx.FxActionSwing;
  * @author Patrik Karlström
  */
 @ServiceProvider(service = MToolMap.class)
-public class XkcdTool implements MToolMap {
+public class XkcdTool extends MToolMapAddOn {
 
     public static final String NAME = "XKCD";
 
@@ -38,10 +38,5 @@ public class XkcdTool implements MToolMap {
         });
 
         return action;
-    }
-
-    @Override
-    public String getParent() {
-        return Dict.ADD_ONS.toString();
     }
 }

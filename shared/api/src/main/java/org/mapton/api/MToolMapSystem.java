@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Patrik Karlström.
+ * Copyright 2020 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,29 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.addon.photos_nb;
+package org.mapton.api;
 
-import org.controlsfx.control.action.Action;
-import org.mapton.api.MToolMap;
-import org.mapton.api.MToolMapAddOn;
-import org.openide.util.lookup.ServiceProvider;
-import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.fx.FxActionSwing;
 
 /**
  *
  * @author Patrik Karlström
  */
-@ServiceProvider(service = MToolMap.class)
-public class PhotosTool extends MToolMapAddOn {
+public abstract class MToolMapSystem implements MToolMap {
 
     @Override
-    public Action getAction() {
-        FxActionSwing action = new FxActionSwing(Dict.PHOTOS.toString(), () -> {
-            Almond.openAndActivateTopComponent("PhotosTopComponent");
-        });
-
-        return action;
+    public String getParent() {
+        return String.format("- %s -", Dict.SYSTEM.toString());
     }
+
 }

@@ -15,6 +15,7 @@
  */
 package org.mapton.core_nb.tool.map;
 
+import org.mapton.api.MToolMapSystem;
 import org.controlsfx.control.action.Action;
 import org.mapton.api.MToolMap;
 import org.openide.util.lookup.ServiceProvider;
@@ -27,7 +28,7 @@ import se.trixon.almond.util.fx.FxActionSwing;
  * @author Patrik Karlström
  */
 @ServiceProvider(service = MToolMap.class)
-public class ChartTool extends BaseSystemTool {
+public class ChartTool extends MToolMapSystem {
 
     @Override
     public Action getAction() {

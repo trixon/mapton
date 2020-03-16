@@ -13,20 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core_nb.tool.map;
+package org.mapton.api;
 
-import org.mapton.api.MToolMap;
 import se.trixon.almond.util.Dict;
 
 /**
  *
  * @author Patrik Karlström
  */
-public abstract class BaseSystemTool implements MToolMap {
+public abstract class MToolMapAddOn implements MToolMap {
 
     @Override
     public String getParent() {
-        return String.format("- %s -", Dict.SYSTEM.toString());
+        return String.format("- %s -", Dict.ADD_ONS.toString());
     }
-
 }
