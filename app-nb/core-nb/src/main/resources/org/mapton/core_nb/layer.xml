@@ -34,6 +34,7 @@ limitations under the License.
             <file name="se-trixon-almond-nbp-options-IconOptionsPanelController.instance_hidden"/>
         </folder>
     </folder>
+    <file name="Toolbars_hidden"/>
     <folder name="Windows2">
         <folder name="Modes">
             <file name="mapTools.wsmode" url="mapToolsWsmode.xml"/>
