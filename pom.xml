@@ -41,11 +41,11 @@
                 <plugin>
                     <groupId>org.apache.netbeans.utilities</groupId>
                     <artifactId>nbm-maven-plugin</artifactId>
-                    <version>4.4</version>
+                    <version>4.5</version>
                     <extensions>true</extensions>
                     <configuration>
                         <!--TODO Fix it-->
-                        <verifyRuntime>false</verifyRuntime>
+                        <!--<verifyRuntime>false</verifyRuntime>-->
                         <brandingToken>${brandingToken}</brandingToken>
                         <cluster>${brandingToken}</cluster>
                         <additionalArguments>-J-Xmx768m</additionalArguments>
@@ -426,7 +426,7 @@
             <dependency>
                 <groupId>eu.hansolo</groupId>
                 <artifactId>tilesfx</artifactId>
-                <version>11.31</version>
+                <version>11.32</version>
                 <exclusions>
                     <exclusion>
                         <groupId>org.openjfx</groupId>
@@ -487,7 +487,7 @@
             <dependency>
                 <groupId>org.postgresql</groupId>
                 <artifactId>postgresql</artifactId>
-                <version>42.2.10</version>
+                <version>42.2.11</version>
             </dependency>
             <dependency>
                 <groupId>de.micromata.jak</groupId>

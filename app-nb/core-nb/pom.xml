@@ -16,6 +16,7 @@
                 <artifactId>nbm-maven-plugin</artifactId>
                 <extensions>true</extensions>
                 <configuration>
+                    <!--<verifyRuntime>false</verifyRuntime>-->
                     <publicPackages>
                         <publicPackage>org.mapton.core_nb.api.*</publicPackage>
                     </publicPackages>
@@ -115,6 +116,16 @@
         <dependency>
             <groupId>org.netbeans.modules</groupId>
             <artifactId>org-netbeans-swing-laf-flatlaf</artifactId>
+            <version>${netbeans.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-netbeans-libs-flatlaf</artifactId>
+            <version>${netbeans.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-netbeans-swing-tabcontrol</artifactId>
             <version>${netbeans.version}</version>
         </dependency>
 

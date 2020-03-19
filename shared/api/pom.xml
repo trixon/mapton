@@ -21,6 +21,7 @@
                         <publicPackage>com.dlsc.*</publicPackage>
                         <publicPackage>com.github.goober.*</publicPackage>
                         <publicPackage>com.google.*</publicPackage>
+                        <publicPackage>com.healthmarketscience.sqlbuilder.*</publicPackage>
                         <publicPackage>com.sun.*</publicPackage>
                         <publicPackage>com.sun.xml.*</publicPackage>
                         <publicPackage>de.micromata.*</publicPackage>
@@ -31,6 +32,7 @@
                         <publicPackage>javax.xml.*</publicPackage>
                         <publicPackage>org.apache.commons.*</publicPackage>
                         <publicPackage>org.controlsfx.*</publicPackage>
+                        <publicPackage>org.h2.*</publicPackage>
                         <publicPackage>org.jsoup.*</publicPackage>
                         <publicPackage>org.postgresql.*</publicPackage>
                         <publicPackage>org.openide.*</publicPackage>
@@ -380,6 +382,11 @@
         <dependency>
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.googlecode.json-simple</groupId>
+            <artifactId>json-simple</artifactId>
+            <version>1.1.1</version>
         </dependency>
     </dependencies>
 
