@@ -30,6 +30,8 @@ import javafx.scene.layout.BorderPane;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLayeredPane;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JRootPane;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -85,6 +87,7 @@ public final class MapTopComponent extends MTopComponent {
     private AppStatusPanel mAppStatusPanel;
     private MEngine mEngine;
     private final HashSet<TopComponent> mMapMagnets = new HashSet<>();
+    private JPanel mProgressPanel;
     private BorderPane mRoot;
 
     public MapTopComponent() {
@@ -302,24 +305,40 @@ public final class MapTopComponent extends MTopComponent {
         });
 
         if (engine.isSwing()) {
+            if (mProgressPanel == null) {
+                mProgressPanel = new JPanel(new BorderLayout());
+                JProgressBar progressBar = new JProgressBar();
+                progressBar.setIndeterminate(true);
+                mProgressPanel.add(progressBar, BorderLayout.NORTH);
+            }
+
             SwingUtilities.invokeLater(() -> {
                 removeAll();
-                JComponent engineUI = engine.getMapComponent();
-                engineUI.setMinimumSize(new Dimension(1, 1));
-                engineUI.setPreferredSize(new Dimension(1, 1));
                 add(MapToolBarPanel.getInstance().getToolBarPanel(), BorderLayout.NORTH);
-//                add(getFxPanel(), BorderLayout.NORTH);
-//                getFxPanel().setVisible(false);
-                add(engineUI, BorderLayout.CENTER);
+                add(mProgressPanel, BorderLayout.CENTER);
+
+                new Thread(() -> {
+                    JComponent engineUI = engine.getMapComponent();
+                    engineUI.setMinimumSize(new Dimension(1, 1));
+                    engineUI.setPreferredSize(new Dimension(1, 1));
+
+                    SwingHelper.runLaterDelayed(0, () -> {
+                        remove(mProgressPanel);
+                        add(engineUI, BorderLayout.CENTER);
+                        revalidate();
+                        repaint();
+
+                        try {
+                            engine.onActivate();
+                            engine.panTo(mMOptions.getMapCenter(), mMOptions.getMapZoom());
+                        } catch (NullPointerException e) {
+                        }
+                    });
+                }).start();
+
                 attachStatusbar();
                 revalidate();
                 repaint();
-
-                try {
-                    engine.onActivate();
-                    engine.panTo(mMOptions.getMapCenter(), mMOptions.getMapZoom());
-                } catch (NullPointerException e) {
-                }
             });
         } else {
             Platform.runLater(() -> {

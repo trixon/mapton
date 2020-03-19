@@ -218,6 +218,9 @@ public class WorldWindMapEngine extends MEngine {
 
     @Override
     public void panTo(MLatLon latLon) {
+        if (!mInitialized) {
+            return;
+        }
         View view = mMap.getView();
         Position eyePosition = view.getCurrentEyePosition();
         Angle fieldOfView = view.getFieldOfView();
