@@ -119,7 +119,7 @@ public class Initializer implements Runnable {
 
             //Pre-load but don't display
             Almond.getTopComponent("ObjectPropertiesTopComponent");
-            //Actions.forID("Window", "org.mapton.core_nb.ui.MapTopComponent").actionPerformed(null);
+            Almond.getTopComponent("ChartTopComponent");
 
             new UpdateNotificator();
         });
