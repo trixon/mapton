@@ -15,6 +15,9 @@
  */
 package org.mapton.worldwind;
 
+import eu.hansolo.tilesfx.Tile;
+import eu.hansolo.tilesfx.Tile.SkinType;
+import eu.hansolo.tilesfx.TileBuilder;
 import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import java.beans.PropertyChangeEvent;
@@ -32,6 +35,7 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
 import javafx.scene.control.CheckBoxTreeItem;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToolBar;
 import javafx.scene.control.TreeItem;
@@ -39,6 +43,7 @@ import javafx.scene.control.cell.CheckBoxTreeCell;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.paint.Color;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.CheckModel;
@@ -48,7 +53,9 @@ import org.controlsfx.control.action.ActionGroup;
 import org.controlsfx.control.action.ActionUtils;
 import org.controlsfx.control.textfield.TextFields;
 import org.mapton.api.MActivatable;
+import org.mapton.api.MDict;
 import org.mapton.api.MKey;
+import org.mapton.api.MOptions;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.mapton.worldwind.api.WWHelper;
@@ -146,6 +153,10 @@ public class LayerView extends BorderPane implements MActivatable {
             mTreeItemExpanderSet.forEach((checkBoxTreeItem) -> {
                 checkBoxTreeItem.setExpanded(true);
             });
+
+            if (getCenter() != mTreeView) {
+                setCenter(mTreeView);
+            }
         });
     }
 
@@ -158,8 +169,24 @@ public class LayerView extends BorderPane implements MActivatable {
         mTreeView.setShowRoot(false);
         mTreeView.setCellFactory(param -> new LayerTreeCell());
 
-        setCenter(mTreeView);
+        ProgressIndicator progressIndicator = new ProgressIndicator(-1);
+        int diam = FxHelper.getUIScaled(200);
+        progressIndicator.setMinSize(diam, diam);
+        Tile circularProgressTile = TileBuilder.create()
+                .skinType(SkinType.CUSTOM)
+                .title(MDict.LOADING_LAYERS.toString())
+                .text(Dict.PLEASE_WAIT.toString())
+                .maxSize(FxHelper.getUIScaled(300), FxHelper.getUIScaled(400))
+                .graphic(progressIndicator)
+                .build();
 
+        if (!MOptions.getInstance().isNightMode()) {
+            circularProgressTile.setBackgroundColor(Color.LIGHTGRAY);
+            circularProgressTile.setTextColor(Color.BLACK);
+            circularProgressTile.setTitleColor(Color.BLACK);
+        }
+
+        setCenter(circularProgressTile);
         mFilterTextField = TextFields.createClearableTextField();
         mFilterTextField.setPromptText(Dict.LAYER_SEARCH.toString());
         mFilterTextField.setMinWidth(20);
