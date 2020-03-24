@@ -120,6 +120,9 @@ public class WorldWindMapEngine extends MEngine {
 
     @Override
     public void fitToBounds(MLatLonBox latLonBox) {
+        if (!mInitialized) {
+            return;
+        }
         fitToBounds(toSector(latLonBox));
     }
 
