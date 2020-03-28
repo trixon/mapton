@@ -38,9 +38,10 @@ import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.nbp.about.AboutAction;
 import se.trixon.almond.nbp.swing.RootPaneLayout;
-import se.trixon.almond.util.AboutModel;
 import se.trixon.almond.util.PrefsHelper;
 import se.trixon.almond.util.SystemHelper;
+import se.trixon.almond.util.SystemHelperFx;
+import se.trixon.almond.util.fx.AboutModel;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.PopOverWatcher;
 import se.trixon.almond.util.icons.material.MaterialIcon;
@@ -100,7 +101,7 @@ public class Initializer implements Runnable {
 
                 if (SystemUtils.IS_OS_MAC) {
                     AboutAction.setFx(true);
-                    AboutAction.setAboutModel(new AboutModel(SystemHelper.getBundle(Initializer.class, "about"), SystemHelper.getResourceAsImageView(Initializer.class, "logo.png")));
+                    AboutAction.setAboutModel(new AboutModel(SystemHelper.getBundle(Initializer.class, "about"), SystemHelperFx.getResourceAsImageView(Initializer.class, "logo.png")));
                 }
             });
         });

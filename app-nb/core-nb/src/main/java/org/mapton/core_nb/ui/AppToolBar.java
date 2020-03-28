@@ -52,10 +52,11 @@ import org.openide.awt.Actions;
 import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.nbp.AlmondOptions;
 import se.trixon.almond.nbp.dialogs.NbAboutFx;
-import se.trixon.almond.util.AboutModel;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.GlobalStateChangeEvent;
 import se.trixon.almond.util.SystemHelper;
+import se.trixon.almond.util.SystemHelperFx;
+import se.trixon.almond.util.fx.AboutModel;
 import se.trixon.almond.util.fx.FxActionSwing;
 import se.trixon.almond.util.fx.FxActionSwingCheck;
 import se.trixon.almond.util.fx.FxHelper;
@@ -264,7 +265,7 @@ public class AppToolBar extends BaseToolBar {
 
         //About
         mAboutAction = new FxActionSwing(String.format(Dict.ABOUT_S.toString(), "Mapton"), () -> {
-            AboutModel aboutModel = new AboutModel(SystemHelper.getBundle(Initializer.class, "about"), SystemHelper.getResourceAsImageView(Initializer.class, "logo.png"));
+            AboutModel aboutModel = new AboutModel(SystemHelper.getBundle(Initializer.class, "about"), SystemHelperFx.getResourceAsImageView(Initializer.class, "logo.png"));
             NbAboutFx nbAboutFx = new NbAboutFx(aboutModel);
             nbAboutFx.display();
         });

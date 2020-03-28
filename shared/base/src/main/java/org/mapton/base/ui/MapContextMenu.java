@@ -47,6 +47,7 @@ import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.SystemHelper;
+import se.trixon.almond.util.SystemHelperFx;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.swing.dialogs.SimpleDialog;
 
@@ -74,7 +75,7 @@ public class MapContextMenu {
     private void copyImage() {
         mContextMenu.hide();
         try {
-            SystemHelper.copyToClipboard(getEngine().getImageRenderer().call());
+            SystemHelperFx.copyToClipboard(getEngine().getImageRenderer().call());
         } catch (Exception ex) {
             Exceptions.printStackTrace(ex);
         }
