@@ -118,9 +118,15 @@ public class Initializer implements Runnable {
                 Actions.forID("Window", "org.netbeans.core.windows.actions.ShowEditorOnlyAction").actionPerformed(null);
             }
 
-            //Pre-load but don't display
-            Almond.getTopComponent("ObjectPropertiesTopComponent");
-            Almond.getTopComponent("ChartTopComponent");
+            SwingHelper.runLaterDelayed(45 * 1000, () -> {
+                //Pre-load but don't display
+                Almond.getTopComponent("ReportsTopComponent");
+                Almond.getTopComponent("EditorsTopComponent");
+                Almond.getTopComponent("UpdaterTopComponent");
+                Almond.getTopComponent("ObjectPropertiesTopComponent");
+                Almond.getTopComponent("ChartTopComponent");
+            });
+            new Thread().start();
 
             new UpdateNotificator();
         });
