@@ -48,9 +48,6 @@ import org.mapton.core_nb.api.MMapMagnet;
 import org.mapton.core_nb.api.MTopComponent;
 import org.mapton.core_nb.ui.grid.LocalGridEditor;
 import org.netbeans.api.settings.ConvertAsProperties;
-import org.openide.awt.ActionID;
-import org.openide.awt.ActionReference;
-import org.openide.awt.ActionReferences;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
@@ -70,10 +67,6 @@ import se.trixon.almond.util.swing.SwingHelper;
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(mode = "editor", openAtStartup = true, position = Integer.MIN_VALUE)
-@ActionID(category = "Window", id = "org.mapton.core_nb.ui.MapTopComponent")
-@ActionReferences({
-    @ActionReference(path = "Shortcuts", name = "D-M")
-})
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_MapAction",
         preferredID = "MapTopComponent"
