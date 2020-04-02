@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import org.mapton.api.MKey;
 import org.mapton.api.Mapton;
 import org.mapton.worldwind.api.LayerBundle;
+import org.mapton.worldwind.api.LayerBundleManager;
 import se.trixon.almond.util.Dict;
 
 /**
@@ -67,6 +68,8 @@ public class IndicatorLayerBundle extends LayerBundle {
                     }
                 }
             }
+
+            LayerBundleManager.getInstance().redraw();
         }, MKey.INDICATOR_LAYER_LOAD);
     }
 }
