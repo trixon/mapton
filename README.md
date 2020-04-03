@@ -1,5 +1,5 @@
 # mapton
 Some kind of map application
 
-![alt tag](https://mapton.org/wp-content/uploads/2019/06/2019-06-23-200212_1280x800_scrot.png)
-![alt tag](https://mapton.org/wp-content/uploads/2019/06/2019-06-27-201602_1280x800_scrot.png)
+![alt tag](https://mapton.org/files/screenshots/appstream01.png)
+![alt tag](https://mapton.org/files/screenshots/appstream02.png)
