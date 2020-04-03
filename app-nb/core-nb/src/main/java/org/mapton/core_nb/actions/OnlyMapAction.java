@@ -22,6 +22,7 @@ import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
 import org.openide.awt.Actions;
 import org.openide.util.NbBundle.Messages;
+import se.trixon.almond.nbp.Almond;
 
 @ActionID(
         category = "Mapton",
@@ -36,7 +37,7 @@ public final class OnlyMapAction implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        Actions.forID("Window", "org.mapton.core_nb.ui.MapTopComponent").actionPerformed(null);
+        Almond.openAndActivateTopComponent("MapTopComponent");
         Actions.forID("Window", "org.netbeans.core.windows.actions.ShowEditorOnlyAction").actionPerformed(null);
     }
 }
