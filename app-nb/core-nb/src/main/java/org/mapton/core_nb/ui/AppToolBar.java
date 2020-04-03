@@ -185,6 +185,7 @@ public class AppToolBar extends BaseToolBar {
             getItems().add(getItems().size() - 3, mSearchView.getPresenter());
 
             getItems().add(2, mStatusLabel = new Label());
+            mStatusLabel.setTextFill(mOptions.getIconColorBright());
         });
     }
 
