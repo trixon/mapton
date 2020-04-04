@@ -69,18 +69,7 @@ public class Initializer implements Runnable {
         } catch (BackingStoreException ex) {
             //Exceptions.printStackTrace(ex);
         }
-        Mapton.getLog().setUseTimestamps(false);
-        NbLog.setUseGlobalTag(false);
-        Mapton.getLog().setOut((String s) -> {
-            NbLog.i("", s);
-        });
-        Mapton.getLog().setErr((String s) -> {
-            NbLog.e("", s);
-        });
-        Mapton.log(SystemHelper.getSystemInfo());
 
-//        Platform.setImplicitExit(false);
-//        new JFXPanel();
         System.setProperty("netbeans.winsys.no_help_in_dialogs", "true");
         System.setProperty("netbeans.winsys.no_toolbars", "true");
         System.setProperty("netbeans.winsys.status_line.path", "AppStatusPanel.instance");
@@ -109,6 +98,16 @@ public class Initializer implements Runnable {
         final WindowManager windowManager = WindowManager.getDefault();
 
         windowManager.invokeWhenUIReady(() -> {
+            Mapton.getLog().setUseTimestamps(false);
+            NbLog.setUseGlobalTag(false);
+            Mapton.getLog().setOut((String s) -> {
+                NbLog.i("", s);
+            });
+            Mapton.getLog().setErr((String s) -> {
+                NbLog.e("", s);
+            });
+            Mapton.log(SystemHelper.getSystemInfo());
+
             if (fullscreen) {
                 Actions.forID("Window", "org.netbeans.core.windows.actions.ToggleFullScreenAction").actionPerformed(null);
             }
