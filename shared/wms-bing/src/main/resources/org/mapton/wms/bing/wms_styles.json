@@ -1,0 +1,53 @@
+[
+    {
+        "category": {
+            "": "Earth",
+            "sv": "Jorden"
+        },
+        "description": {},
+        "enabled": true,
+        "id": "com.microsoft.ve-a",
+        "layers": [
+            "com.microsoft.ve-a"
+        ],
+        "name": {
+            "": "Bing Satellite",
+            "sv": "Bing Satellit"
+        },
+        "supplier": "Bing (NASA)"
+    },
+    {
+        "category": {
+            "": "Earth",
+            "sv": "Jorden"
+        },
+        "description": {},
+        "enabled": true,
+        "id": "com.microsoft.ve-h",
+        "layers": [
+            "com.microsoft.ve-h"
+        ],
+        "name": {
+            "": "Bing Hybrid",
+            "sv": "Bing Hybrid"
+        },
+        "supplier": "Bing (NASA)"
+    },
+    {
+        "category": {
+            "": "Earth",
+            "sv": "Jorden"
+        },
+        "description": {},
+        "enabled": true,
+        "id": "com.microsoft.ve-r",
+        "layers": [
+            "com.microsoft.ve-r"
+        ],
+        "name": {
+            "": "Bing Roadmap",
+            "sv": "Bing Vägkarta"
+        },
+        "supplier": "Bing (NASA)"
+    }
+]

@@ -15,8 +15,8 @@
  */
 package org.mapton.demo.ww;
 
-import org.openide.util.lookup.ServiceProvider;
 import org.mapton.worldwind.api.MapStyle;
+import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
@@ -26,6 +26,7 @@ import org.mapton.worldwind.api.MapStyle;
 public class TrixonMapStyle extends MapStyle {
 
     public TrixonMapStyle() {
+        setId("demo.styleId");
         setName("Trixon");
         setSuppliers("Trixon");
         setLayers(new String[]{

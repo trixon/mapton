@@ -1,0 +1,92 @@
+[
+    {
+        "attributions": {
+            "at.eox.blackmarble": {
+                "licenseName": null,
+                "licenseUrl": null,
+                "onlyRaw": true,
+                "providerName": null,
+                "providerUrl": null,
+                "rawHtml": "Data &copy; <a href=\"https://neo.sci.gsfc.nasa.gov\">NASA</a>, Rendering &copy; <a href=\"https://eox.at\">EOX</a>"
+            },
+            "at.eox.bluemarble": {
+                "licenseName": null,
+                "licenseUrl": null,
+                "onlyRaw": true,
+                "providerName": null,
+                "providerUrl": null,
+                "rawHtml": "Data &copy; <a href=\"https://neo.sci.gsfc.nasa.gov\">NASA</a>, Rendering &copy; <a href=\"https://eox.at\">EOX</a>"
+            },
+            "at.eox.coastline": {
+                "licenseName": null,
+                "licenseUrl": null,
+                "onlyRaw": true,
+                "providerName": null,
+                "providerUrl": null,
+                "rawHtml": "Data &copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors and <a href=\"https://maps.eox.at/#data\">others</a>, Rendering &copy; <a href=\"https://eox.at\">EOX</a>"
+            },
+            "at.eox.hydrography": {
+                "licenseName": null,
+                "licenseUrl": null,
+                "onlyRaw": true,
+                "providerName": null,
+                "providerUrl": null,
+                "rawHtml": "Data &copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors and <a href=\"https://maps.eox.at/#data\">others</a>, Rendering &copy; <a href=\"https://eox.at\">EOX</a>"
+            },
+            "at.eox.osm": {
+                "licenseName": null,
+                "licenseUrl": null,
+                "onlyRaw": true,
+                "providerName": null,
+                "providerUrl": null,
+                "rawHtml": "Data &copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors and <a href=\"https://maps.eox.at/#data\">others</a>, Rendering &copy; <a href=\"https://eox.at\">EOX</a>"
+            },
+            "at.eox.s2cloudless": {
+                "licenseName": null,
+                "licenseUrl": null,
+                "onlyRaw": true,
+                "providerName": null,
+                "providerUrl": null,
+                "rawHtml": "<a href=\"https://s2maps.eu\">Sentinel-2 cloudless – https://s2maps.eu</a> by <a href=\"https://eox.at/\">EOX IT Services GmbH</a> (Contains modified Copernicus Sentinel data 2019)"
+            },
+            "at.eox.streets": {
+                "licenseName": null,
+                "licenseUrl": null,
+                "onlyRaw": true,
+                "providerName": null,
+                "providerUrl": null,
+                "rawHtml": "Data &copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors and <a href=\"https://maps.eox.at/#data\">others</a>, Rendering &copy; <a href=\"https://eox.at\">EOX</a>"
+            },
+            "at.eox.terrain": {
+                "licenseName": null,
+                "licenseUrl": null,
+                "onlyRaw": true,
+                "providerName": null,
+                "providerUrl": null,
+                "rawHtml": "Data &copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors and <a href=\"https://maps.eox.at/#data\">others</a>, Rendering &copy; <a href=\"https://eox.at\">EOX</a>"
+            },
+            "at.eox.terrain-light": {
+                "licenseName": null,
+                "licenseUrl": null,
+                "onlyRaw": true,
+                "providerName": null,
+                "providerUrl": null,
+                "rawHtml": "Data &copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors and <a href=\"https://maps.eox.at/#data\">others</a>, Rendering &copy; <a href=\"https://eox.at\">EOX</a>"
+            }
+        },
+        "enabled": true,
+        "layers": {
+            "blackmarble": "at.eox.blackmarble",
+            "bluemarble": "at.eox.bluemarble",
+            "coastline": "at.eox.coastline",
+            "hydrography": "at.eox.hydrography",
+            "osm": "at.eox.osm",
+            "s2cloudless-2019": "at.eox.s2cloudless",
+            "streets": "at.eox.streets",
+            "terrain": "at.eox.terrain",
+            "terrain-light": "at.eox.terrain-light"
+        },
+        "name": "EOX",
+        "url": "http://tiles.maps.eox.at/wms?service=wms&request=getcapabilities"
+    }
+]

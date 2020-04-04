@@ -1,0 +1,38 @@
+[
+    {
+        "attributions": {
+            "com.microsoft.ve-a": {
+                "licenseName": "Microsoft Bing Maps ToU",
+                "licenseUrl": "https://www.microsoft.com/maps/assets/docs/terms.aspx/",
+                "onlyRaw": false,
+                "providerName": "Bing (NASA)",
+                "providerUrl": "https://nasa.gov",
+                "rawHtml": null
+            },
+            "com.microsoft.ve-h": {
+                "licenseName": "Microsoft Bing Maps ToU",
+                "licenseUrl": "https://www.microsoft.com/maps/assets/docs/terms.aspx/",
+                "onlyRaw": false,
+                "providerName": "Bing (NASA)",
+                "providerUrl": "https://nasa.gov",
+                "rawHtml": null
+            },
+            "com.microsoft.ve-r": {
+                "licenseName": "Microsoft Bing Maps ToU",
+                "licenseUrl": "https://www.microsoft.com/maps/assets/docs/terms.aspx/",
+                "onlyRaw": false,
+                "providerName": "Bing (NASA)",
+                "providerUrl": "https://nasa.gov",
+                "rawHtml": null
+            }
+        },
+        "enabled": true,
+        "layers": {
+            "ve-a": "com.microsoft.ve-a",
+            "ve-h": "com.microsoft.ve-h",
+            "ve-r": "com.microsoft.ve-r"
+        },
+        "name": "Bing",
+        "url": "https://worldwind27.arc.nasa.gov/wms/virtualearth"
+    }
+]

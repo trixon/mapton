@@ -19,8 +19,6 @@ import javafx.application.Platform;
 import org.mapton.api.MKey;
 import org.mapton.api.Mapton;
 import org.openide.modules.OnStart;
-import org.openide.windows.WindowManager;
-import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.GlobalStateChangeEvent;
 
 /**
@@ -33,17 +31,20 @@ public class Initializer implements Runnable {
     private WikipediaView mWikipediaView;
 
     public Initializer() {
-        WindowManager.getDefault().invokeWhenUIReady(() -> {
-            Platform.runLater(() -> {
-                mWikipediaView = new WikipediaView();
-            });
-        });
+        Runnable r = () -> {
+            mWikipediaView = new WikipediaView();
+        };
+        try {
+            Platform.startup(r);
+        } catch (Exception e) {
+            Platform.runLater(r);
+        }
     }
 
     @Override
     public void run() {
         Mapton.getGlobalState().addListener((GlobalStateChangeEvent evt) -> {
-            Almond.openTopComponent("ObjectPropertiesTopComponent", true);
+//aaa            Almond.openTopComponent("ObjectPropertiesTopComponent", true);
             try {
                 Platform.runLater(() -> {
                     Mapton.getGlobalState().put(MKey.OBJECT_PROPERTIES, mWikipediaView);

@@ -47,7 +47,6 @@ import org.mapton.api.MWikipediaArticleManager;
 import org.mapton.api.Mapton;
 import static org.mapton.wikipedia.Module.LOG_TAG;
 import org.openide.util.Exceptions;
-import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.util.GlobalStateChangeEvent;
 import se.trixon.almond.util.fx.FxHelper;
 
@@ -119,8 +118,8 @@ public final class WikipediaView extends BorderPane {
                     "https://%s.m.wikipedia.org/wiki/%s",
                     mWikipediaArticleManager.getLocale().getLanguage(),
                     article.getTitle());
-            NbLog.v(LOG_TAG, url);
-            NbLog.v(LOG_TAG, article.getThumbnail());
+            Mapton.getLog().v(LOG_TAG, url);
+            Mapton.getLog().v(LOG_TAG, article.getThumbnail());
 
             try {
                 Document doc = Jsoup.connect(url).get();
@@ -231,9 +230,9 @@ public final class WikipediaView extends BorderPane {
                         mStackPane.setPadding(Insets.EMPTY);
                     }
                 } catch (NullPointerException | NumberFormatException e) {
-                    NbLog.e(LOG_TAG, "Error while creating padding");
-                    NbLog.v(LOG_TAG, article.getTitle());
-                    NbLog.v(LOG_TAG, article.getThumbnail());
+                    Mapton.getLog().e(LOG_TAG, "Error while creating padding");
+                    Mapton.getLog().v(LOG_TAG, article.getTitle());
+                    Mapton.getLog().v(LOG_TAG, article.getThumbnail());
                 }
 
                 mImageView.setImage(image);

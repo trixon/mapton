@@ -1,0 +1,32 @@
+* {
+    -ws-split-color: lightgray;
+}
+
+.root > * {
+    -primary-color: #102040;
+    -primary-variant-color: #3c476b;
+
+    -error-color: #B00020;
+    -on-secondary-color: #FFFFFF;
+    -on-error-color: #FFFFFF;
+}
+
+.button-bar .button {
+    -fx-text-fill: #ff8c00;
+}
+
+.check-menu-item:checked > .left-container > .check {
+    -fx-background-color: -fx-dark-text-color;
+}
+
+.check-menu-item:focused:checked > .left-container > .check {
+    -fx-background-color: -fx-dark-text-color;
+}
+
+.tab-control:selected .shape {
+    -fx-background-color: -fx-dark-text-color !important; /* The close icon */
+}
+
+.tab-control .shape:hover {
+    -fx-background-color: red !important; /* The close icon */
+}

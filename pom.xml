@@ -4,7 +4,7 @@
 
     <groupId>org.mapton</groupId>
     <artifactId>mapton-parent</artifactId>
-    <version>1.1.3</version>
+    <version>2.0.0</version>
     <packaging>pom</packaging>
 
     <name>mapton-parent</name>
@@ -41,11 +41,11 @@
                 <plugin>
                     <groupId>org.apache.netbeans.utilities</groupId>
                     <artifactId>nbm-maven-plugin</artifactId>
-                    <version>4.2</version>
+                    <version>4.5</version>
                     <extensions>true</extensions>
                     <configuration>
                         <!--TODO Fix it-->
-                        <verifyRuntime>false</verifyRuntime>
+                        <!--<verifyRuntime>false</verifyRuntime>-->
                         <brandingToken>${brandingToken}</brandingToken>
                         <cluster>${brandingToken}</cluster>
                         <additionalArguments>-J-Xmx768m</additionalArguments>
@@ -56,8 +56,7 @@
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>3.8.1</version>
                     <configuration>
-                        <source>1.8</source>
-                        <target>1.8</target>
+                        <release>11</release>
                         <showDeprecation>true</showDeprecation>
                         <compilerArgument>-Xlint:unchecked</compilerArgument>
                     </configuration>
@@ -65,65 +64,159 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.1.2</version>
+                    <version>3.2.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>versions-maven-plugin</artifactId>
+                    <version>2.7</version>
+                    <configuration>
+                        <generateBackupPoms>false</generateBackupPoms>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>3.0.0-M1</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <version>3.1.0</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-install-plugin</artifactId>
+                    <version>3.0.0-M1</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-site-plugin</artifactId>
+                    <version>3.8.2</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>3.1.0</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>3.0.0-M4</version>
                 </plugin>
             </plugins>
         </pluginManagement>
         <plugins>
             <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>versions-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                    <showDeprecation>true</showDeprecation>
-                </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>3.0.0-M3</version>
+                <executions>
+                    <execution>
+                        <id>enforce</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <banDuplicatePomDependencyVersions/>
+                                <requireMavenVersion>
+                                    <version>3.0.5</version>
+                                </requireMavenVersion>
+                                <requireJavaVersion>
+                                    <version>11</version>
+                                </requireJavaVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!--            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-help-plugin</artifactId>
+                <version>3.2.0</version>
+                <executions>
+                    <execution>
+                        <id>show-profiles</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>active-profiles</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>-->
         </plugins>
     </build>
 
     <modules>
-        <module>application</module>
-        <module>branding</module>
-        <module>core</module>
 
-        <!--Map engines-->
-        <module>modules/me-gmapsfx</module>
-        <module>modules/me-jxmapviewer2</module>
-        <module>modules/me-worldwind</module>
-        <module>modules/datasources</module>
+        <!--Shared-->
+        <module>shared/api</module>
+        <module>shared/base</module>
 
-        <!--Search engines-->
-        <module>modules/se-bookmarks</module>
-        <module>modules/se-geonames</module>
-        <module>modules/se-google</module>
-        <module>modules/se-nominatim</module>
+        <!--Shared Map engines-->
+        <module>shared/me-gmapsfx</module>
+        <module>shared/me-jxmapviewer2</module>
+        <module>shared/me-mapjfx</module>
+        <module>shared/me-worldwind</module>
 
-        <!--Transformation engines-->
-        <module>modules/te-swetrans</module>
+        <!--Shared POI providers-->
+        <module>shared/poi-bookmarks</module>
+
+        <!--Shared Search engines-->
+        <module>shared/se-bookmarks</module>
+        <module>shared/se-geonames</module>
+        <module>shared/se-google</module>
+        <module>shared/se-nominatim</module>
+        <module>shared/se-poi</module>
+
+        <!--Shared Transformation engines-->
+        <module>shared/te-swetrans</module>
+
+        <!--Shared WMS-->
+        <module>shared/wms-bing</module>
+        <module>shared/wms-eox</module>
+        <module>shared/wms-lantmateriet</module>
+        <module>shared/wms-nasa</module>
+
+        <!--Shared Other-->
+        <module>shared/poi-ww</module>
+
+        <!--Applications-->
+        <!--GUI NetBeans-->
+        <module>app-nb/branding</module>
+        <module>app-nb/application</module>
+        <module>app-nb/core-nb</module>
+
+        <!--Modules NB-->
+        <module>app-nb/modules/editors-nb</module>
+        <module>app-nb/modules/poi-nb</module>
+        <module>app-nb/modules/reports-nb</module>
+        <module>app-nb/modules-add-ons/geonames-ww</module>
+        <module>app-nb/modules-add-ons/photos-nb</module>
+        <module>app-nb/modules-add-ons/xkcd-nb</module>
+
+        <!--GUI WorkbenchFX-->
+        <!--        <module>app-wb/application</module>
+        <module>app-wb/core-wb</module>
+
+        Modules WB
+        <module>app-wb/modules/reports-wb</module>
+        <module>app-wb/modules-add-ons/notes-wb</module>-->
 
         <!--Other-->
-        <module>modules/reports</module>
         <module>modules/wikipedia</module>
 
-
         <!--Add-ons-->
-        <module>modules-add-ons/geonames-ww</module>
-        <module>modules-add-ons/mapollage</module>
-        <module>modules-add-ons/mapollage-ww</module>
         <module>modules-add-ons/notes</module>
-
-        <!--WMS-->
-        <module>modules/wms-emxsys</module>
-        <module>modules/wms-eox</module>
-        <module>modules/wms-lantmateriet</module>
-        <module>modules/wms-nasa</module>
+        <module>modules-add-ons/photos-ww</module>
 
         <!--Unstable-->
         <!--<module>demo</module>-->
-        <!--<module>modules/me-mapjfx</module>-->
         <!--<module>modules-ext/gdal</module>-->
-        <!--<module>modules/ww-datasources</module>-->
 
         <!--Deprecated-->
     </modules>
@@ -133,7 +226,28 @@
             <!-- Mapton -->
             <dependency>
                 <groupId>org.mapton</groupId>
-                <artifactId>core</artifactId>
+                <artifactId>mapton-api</artifactId>
+                <version>${mapton.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.openjfx</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.mapton</groupId>
+                <artifactId>mapton-base</artifactId>
+                <version>${mapton.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mapton</groupId>
+                <artifactId>core-wb</artifactId>
+                <version>${mapton.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mapton</groupId>
+                <artifactId>core-nb</artifactId>
                 <version>${mapton.version}</version>
             </dependency>
             <dependency>
@@ -148,12 +262,52 @@
             </dependency>
             <dependency>
                 <groupId>org.mapton</groupId>
-                <artifactId>reports</artifactId>
+                <artifactId>editors-nb</artifactId>
+                <version>${mapton.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mapton</groupId>
+                <artifactId>poi-nb</artifactId>
+                <version>${mapton.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mapton</groupId>
+                <artifactId>poi-ww</artifactId>
+                <version>${mapton.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mapton</groupId>
+                <artifactId>poi-bookmarks</artifactId>
+                <version>${mapton.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mapton</groupId>
+                <artifactId>se-poi</artifactId>
+                <version>${mapton.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mapton</groupId>
+                <artifactId>reports-nb</artifactId>
+                <version>${mapton.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mapton</groupId>
+                <artifactId>reports-wb</artifactId>
                 <version>${mapton.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.mapton</groupId>
                 <artifactId>se-geonames</artifactId>
+                <version>${mapton.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>wikipedia</artifactId>
+                <version>${mapton.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>datasources</artifactId>
                 <version>${mapton.version}</version>
             </dependency>
 
@@ -162,11 +316,34 @@
                 <groupId>se.trixon.almond</groupId>
                 <artifactId>almond-util</artifactId>
                 <version>${almond.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.openjfx</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>se.trixon.almond</groupId>
+                <artifactId>almond-nbp-core</artifactId>
+                <version>${almond.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.openjfx</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>se.trixon.almond</groupId>
                 <artifactId>almond-nbp</artifactId>
                 <version>${almond.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.openjfx</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>se.trixon.almond</groupId>
@@ -179,21 +356,88 @@
                 <version>${almond.version}</version>
             </dependency>
             <dependency>
-                <groupId>se.trixon.almond</groupId>
-                <artifactId>almond-nbp-darcula</artifactId>
-                <version>${almond.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>se.trixon</groupId>
                 <artifactId>GMapsFX-txn</artifactId>
                 <version>2.12.201</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.openjfx</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>se.trixon.windowsystemfx</groupId>
+                <artifactId>windowsystemfx-core</artifactId>
+                <version>0.0.1-SNAPSHOT</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.openjfx</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
 
             <!-- Other -->
             <dependency>
+                <groupId>org.controlsfx</groupId>
+                <artifactId>controlsfx</artifactId>
+                <version>11.0.1</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.openjfx</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>com.dlsc.formsfx</groupId>
+                <artifactId>formsfx-core</artifactId>
+                <version>11.4.1</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.openjfx</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>com.dlsc.workbenchfx</groupId>
+                <artifactId>workbenchfx-core</artifactId>
+                <version>11.1.0</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.openjfx</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>de.jensd</groupId>
+                <artifactId>fontawesomefx-commons</artifactId>
+                <version>11.0</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.openjfx</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>eu.hansolo</groupId>
+                <artifactId>tilesfx</artifactId>
+                <version>11.32</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.openjfx</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
-                <version>3.9</version>
+                <version>3.10</version>
             </dependency>
             <dependency>
                 <groupId>commons-io</groupId>
@@ -203,12 +447,12 @@
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-csv</artifactId>
-                <version>1.7</version>
+                <version>1.8</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-text</artifactId>
-                <version>1.7</version>
+                <version>1.8</version>
             </dependency>
             <dependency>
                 <groupId>commons-logging</groupId>
@@ -228,22 +472,22 @@
             <dependency>
                 <groupId>com.h2database</groupId>
                 <artifactId>h2</artifactId>
-                <version>1.4.199</version>
+                <version>1.4.200</version>
             </dependency>
             <dependency>
                 <groupId>com.google.code.gson</groupId>
                 <artifactId>gson</artifactId>
-                <version>2.8.5</version>
+                <version>2.8.6</version>
             </dependency>
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
-                <version>28.0-jre</version>
+                <version>28.2-jre</version>
             </dependency>
             <dependency>
                 <groupId>org.postgresql</groupId>
                 <artifactId>postgresql</artifactId>
-                <version>42.2.6</version>
+                <version>42.2.11</version>
             </dependency>
             <dependency>
                 <groupId>de.micromata.jak</groupId>
@@ -263,27 +507,27 @@
             <dependency>
                 <groupId>org.jxmapviewer</groupId>
                 <artifactId>jxmapviewer2</artifactId>
-                <version>2.4</version>
+                <version>2.5</version>
             </dependency>
             <dependency>
                 <groupId>com.sothawo</groupId>
                 <artifactId>mapjfx</artifactId>
-                <version>1.26.2</version>
+                <version>2.13.1</version>
             </dependency>
             <dependency>
                 <groupId>com.github.pcmehlitz</groupId>
                 <artifactId>worldwind-pcm</artifactId>
-                <version>2.1.0.187</version>
+                <version>2.1.0.198</version>
             </dependency>
             <dependency>
                 <groupId>org.jsoup</groupId>
                 <artifactId>jsoup</artifactId>
-                <version>1.12.1</version>
+                <version>1.13.1</version>
             </dependency>
             <dependency>
                 <groupId>com.drewnoakes</groupId>
                 <artifactId>metadata-extractor</artifactId>
-                <version>2.12.0</version>
+                <version>2.13.0</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -296,15 +540,24 @@
             <id>bintray-trixon-maven</id>
             <url>https://dl.bintray.com/trixon/maven</url>
         </repository>
+        <repository>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>bintray-jerady-maven</id>
+            <name>bintray</name>
+            <url>https://dl.bintray.com/jerady/maven</url>
+        </repository>
     </repositories>
 
     <properties>
-        <netbeans.version>RELEASE111</netbeans.version>
+        <netbeans.version>RELEASE113</netbeans.version>
         <netbeans.compile.on.save>all</netbeans.compile.on.save>
         <brandingToken>mapton</brandingToken>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <almond.version>3.0.4</almond.version>
-        <mapton.version>1.1.3</mapton.version>
+        <almond.version>11.0.5</almond.version>
+        <mapton.version>2.0.0</mapton.version>
+        <openjfx.version>14</openjfx.version>
     </properties>
     <description>Some kind of map application</description>
 </project>

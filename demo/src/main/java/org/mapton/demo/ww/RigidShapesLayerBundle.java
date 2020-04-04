@@ -40,6 +40,7 @@ import org.mapton.worldwind.api.LayerBundle;
 public class RigidShapesLayerBundle extends LayerBundle {
 
     private final RenderableLayer mRigidShapesLayer = new RenderableLayer();
+    private final RenderableLayer mCylinderLayer = new RenderableLayer();
 
     public RigidShapesLayerBundle() {
         mRigidShapesLayer.setName("Rigid Shapes");
@@ -52,9 +53,111 @@ public class RigidShapesLayerBundle extends LayerBundle {
 
     @Override
     public void populate() throws Exception {
-        addRigidShapes();
-        getLayers().add(mRigidShapesLayer);
+        addCylinders();
+//        addRigidShapes();
+        getLayers().setAll(mRigidShapesLayer, mCylinderLayer);
         setPopulated(true);
+    }
+
+    private void addCylinders() {
+        // Create and set an attribute bundle.
+        ShapeAttributes attrs = new BasicShapeAttributes();
+        attrs.setInteriorMaterial(Material.YELLOW);
+        attrs.setInteriorOpacity(0.7);
+        attrs.setEnableLighting(true);
+        attrs.setOutlineMaterial(Material.RED);
+        attrs.setOutlineWidth(2d);
+        attrs.setDrawInterior(true);
+        attrs.setDrawOutline(false);
+
+        // Create and set an attribute bundle.
+        ShapeAttributes attrs2 = new BasicShapeAttributes();
+        attrs2.setInteriorMaterial(Material.PINK);
+        attrs2.setInteriorOpacity(1);
+        attrs2.setEnableLighting(true);
+        attrs2.setOutlineMaterial(Material.WHITE);
+        attrs2.setOutlineWidth(2d);
+        attrs2.setDrawOutline(false);
+
+        // ********* sample  Cylinders  *******************
+        // Cylinder with equal axes, ABSOLUTE altitude mode
+        Cylinder cylinder3 = new Cylinder(Position.fromDegrees(40, -120, 80000), 100000, 50000);
+        cylinder3.setAltitudeMode(WorldWind.ABSOLUTE);
+        cylinder3.setAttributes(attrs);
+        cylinder3.setVisible(true);
+        cylinder3.setValue(AVKey.DISPLAY_NAME, "Cylinder with equal axes, ABSOLUTE altitude mode");
+        mCylinderLayer.addRenderable(cylinder3);
+
+        // Cylinder with equal axes, RELATIVE_TO_GROUND
+        Cylinder cylinder4 = new Cylinder(Position.fromDegrees(37.5, -115, 50000), 50000, 50000, 50000);
+        cylinder4.setAltitudeMode(WorldWind.RELATIVE_TO_GROUND);
+        cylinder4.setAttributes(attrs);
+        cylinder4.setVisible(true);
+        cylinder4.setValue(AVKey.DISPLAY_NAME, "Cylinder with equal axes, RELATIVE_TO_GROUND altitude mode");
+        mCylinderLayer.addRenderable(cylinder4);
+
+        // Cylinder with equal axes, CLAMP_TO_GROUND
+        Cylinder cylinder5 = new Cylinder(Position.fromDegrees(35, -110, 50000), 50000, 50000, 50000);
+        cylinder5.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
+        cylinder5.setAttributes(attrs);
+        cylinder5.setVisible(true);
+        cylinder5.setValue(AVKey.DISPLAY_NAME, "Cylinder with equal axes, CLAMP_TO_GROUND altitude mode");
+        mCylinderLayer.addRenderable(cylinder5);
+
+        // Cylinder with a texture, using Cylinder(position, height, radius) constructor
+        Cylinder cylinder9 = new Cylinder(Position.fromDegrees(0, -90, 600000), 1200000, 600000);
+        cylinder9.setAltitudeMode(WorldWind.RELATIVE_TO_GROUND);
+        cylinder9.setImageSources("gov/nasa/worldwindx/examples/images/500px-Checkerboard_pattern.png");
+        cylinder9.setAttributes(attrs);
+        cylinder9.setVisible(true);
+        cylinder9.setValue(AVKey.DISPLAY_NAME, "Cylinder with a texture");
+        mCylinderLayer.addRenderable(cylinder9);
+
+        // Scaled Cylinder with default orientation
+        Cylinder cylinder = new Cylinder(Position.ZERO, 1000000, 500000, 100000);
+        cylinder.setAltitudeMode(WorldWind.ABSOLUTE);
+        cylinder.setAttributes(attrs);
+        cylinder.setVisible(true);
+        cylinder.setValue(AVKey.DISPLAY_NAME, "Scaled Cylinder with default orientation");
+        mCylinderLayer.addRenderable(cylinder);
+
+        // Scaled Cylinder with a pre-set orientation
+        Cylinder cylinder2 = new Cylinder(Position.fromDegrees(0, 30, 750000), 1000000, 500000, 100000,
+                Angle.fromDegrees(90), Angle.fromDegrees(45), Angle.fromDegrees(30));
+        cylinder2.setAltitudeMode(WorldWind.RELATIVE_TO_GROUND);
+        cylinder2.setAttributes(attrs2);
+        cylinder2.setValue(AVKey.DISPLAY_NAME, "Scaled Cylinder with a pre-set orientation");
+        cylinder2.setVisible(true);
+
+        mCylinderLayer.addRenderable(cylinder2);
+
+        // Scaled Cylinder with a pre-set orientation
+        Cylinder cylinder6 = new Cylinder(Position.fromDegrees(30, 30, 750000), 1000000, 500000, 100000,
+                Angle.fromDegrees(90), Angle.fromDegrees(45), Angle.fromDegrees(30));
+        cylinder6.setAltitudeMode(WorldWind.RELATIVE_TO_GROUND);
+        cylinder6.setImageSources("gov/nasa/worldwindx/examples/images/500px-Checkerboard_pattern.png");
+        cylinder6.setAttributes(attrs2);
+        cylinder6.setVisible(true);
+        cylinder6.setValue(AVKey.DISPLAY_NAME, "Scaled Cylinder with a pre-set orientation");
+        mCylinderLayer.addRenderable(cylinder6);
+
+        // Scaled Cylinder with a pre-set orientation
+        Cylinder cylinder7 = new Cylinder(Position.fromDegrees(60, 30, 750000), 1000000, 500000, 100000,
+                Angle.fromDegrees(90), Angle.fromDegrees(45), Angle.fromDegrees(30));
+        cylinder7.setAltitudeMode(WorldWind.RELATIVE_TO_GROUND);
+        cylinder7.setAttributes(attrs2);
+        cylinder7.setVisible(true);
+        cylinder7.setValue(AVKey.DISPLAY_NAME, "Scaled Cylinder with a pre-set orientation");
+        mCylinderLayer.addRenderable(cylinder7);
+
+        // Scaled, oriented Cylinder in 3rd "quadrant" (-X, -Y, -Z)
+        Cylinder cylinder8 = new Cylinder(Position.fromDegrees(-45, -180, 750000), 1000000, 500000, 100000,
+                Angle.fromDegrees(90), Angle.fromDegrees(45), Angle.fromDegrees(30));
+        cylinder8.setAltitudeMode(WorldWind.RELATIVE_TO_GROUND);
+        cylinder8.setAttributes(attrs2);
+        cylinder8.setVisible(true);
+        cylinder8.setValue(AVKey.DISPLAY_NAME, "Scaled, oriented Cylinder in the 3rd 'quadrant' (-X, -Y, -Z)");
+        mCylinderLayer.addRenderable(cylinder8);
     }
 
     private void addRigidShapes() {
