@@ -17,7 +17,6 @@ package org.mapton.core_nb.actions;
 
 import java.awt.event.ActionListener;
 import org.mapton.api.MOptions;
-import org.openide.awt.Actions;
 import org.openide.windows.WindowManager;
 import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.nbp.fx.FxTopComponent;
@@ -46,7 +45,7 @@ public abstract class BaseAction implements ActionListener {
         if (tc.isOpened()) {
             tc.requestActive();
         } else {
-            Actions.forID("Window", "org.mapton.core_nb.ui.MapTopComponent").actionPerformed(null);
+            Almond.openAndActivateTopComponent("MapTopComponent");
         }
 
     }

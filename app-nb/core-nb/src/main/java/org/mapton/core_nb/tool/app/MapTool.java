@@ -17,8 +17,8 @@ package org.mapton.core_nb.tool.app;
 
 import org.controlsfx.control.action.Action;
 import org.mapton.api.MToolApp;
-import org.openide.awt.Actions;
 import org.openide.util.lookup.ServiceProvider;
+import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxActionSwing;
 import se.trixon.almond.util.icons.material.MaterialIcon;
@@ -33,7 +33,7 @@ public class MapTool implements MToolApp {
     @Override
     public Action getAction() {
         FxActionSwing action = new FxActionSwing(Dict.MAP.toString(), () -> {
-            Actions.forID("Window", "org.mapton.core_nb.ui.MapTopComponent").actionPerformed(null);
+            Almond.openAndActivateTopComponent("MapTopComponent");
         });
         action.setGraphic(MaterialIcon._Maps.MAP.getImageView(ICON_SIZE));
 
