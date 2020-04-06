@@ -18,6 +18,7 @@ package org.mapton.core_nb;
 import java.beans.PropertyChangeEvent;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
+import javafx.application.Platform;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLayeredPane;
@@ -73,6 +74,8 @@ public class Initializer implements Runnable {
         System.setProperty("netbeans.winsys.no_help_in_dialogs", "true");
         System.setProperty("netbeans.winsys.no_toolbars", "true");
         System.setProperty("netbeans.winsys.status_line.path", "AppStatusPanel.instance");
+
+        Platform.setImplicitExit(false);
 
         boolean fullscreen = mOptions.isFullscreen();
         boolean mapOnly = mOptions.isMapOnly();
