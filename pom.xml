@@ -517,7 +517,7 @@
             <dependency>
                 <groupId>com.github.pcmehlitz</groupId>
                 <artifactId>worldwind-pcm</artifactId>
-                <version>2.1.0.198</version>
+                <version>2.1.0.202</version>
             </dependency>
             <dependency>
                 <groupId>org.jsoup</groupId>
