@@ -113,8 +113,8 @@ public class MapKit extends JXMapKit {
 
         setTileFactory(mTileFactory);
         try {
-            mMap.setLoadingImage(ImageIO.read(Mapton.class.getResource("mapton32.png")));
-        } catch (IOException ex) {
+            mMap.setLoadingImage(ImageIO.read(MapKit.class.getResource("mapton32.png")));
+        } catch (Exception ex) {
             //nvm - use default
         }
 
