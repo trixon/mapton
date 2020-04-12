@@ -88,14 +88,19 @@ public class GeoNamesLayerBundle extends LayerBundle {
         int minValue = 0;
         int maxValue = 100000;
 
-        for (Country country : countries) {
-            AnalyticGrid analyticGrid = new AnalyticGrid(mLayer, altitude, minValue, maxValue);
-            analyticGrid.setNullOpacity(0.0);
-            analyticGrid.setZeroOpacity(0.3);
-            analyticGrid.setZeroValueSearchRange(5);
-            analyticGrid.setGridData(getGridData(country));
+        countries.stream()
+                .filter(country -> (country.getGeonames().size() > 1))
+                .map(country -> {
+                    AnalyticGrid analyticGrid = new AnalyticGrid(mLayer, altitude, minValue, maxValue);
+                    analyticGrid.setNullOpacity(0.0);
+                    analyticGrid.setZeroOpacity(0.3);
+                    analyticGrid.setZeroValueSearchRange(5);
+                    analyticGrid.setGridData(getGridData(country));
+
+                    return analyticGrid;
+                }).forEachOrdered(analyticGrid -> {
             mLayer.addRenderable(analyticGrid.getSurface());
-        }
+        });
 
         LayerBundleManager.getInstance().redraw();
     }
