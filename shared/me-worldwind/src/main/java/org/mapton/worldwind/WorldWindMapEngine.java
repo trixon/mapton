@@ -123,7 +123,12 @@ public class WorldWindMapEngine extends MEngine {
         if (!mInitialized) {
             return;
         }
-        fitToBounds(toSector(latLonBox));
+
+        try {
+            fitToBounds(toSector(latLonBox));
+        } catch (NullPointerException e) {
+            //nvm
+        }
     }
 
     @Override
