@@ -213,7 +213,7 @@ public class MapToolBar extends BaseToolBar {
         setTooltip(mToolboxAction, new KeyCodeCombination(KeyCode.T, KeyCombination.SHORTCUT_DOWN));
 
         //Style
-        mStyleAction = new Action(String.format("%s & %s", Dict.TYPE.toString(), Dict.STYLE.toString()), event -> {
+        mStyleAction = new Action(event -> {
             if (shouldOpen(mStylePopOver)) {
                 BorderPane pane = (BorderPane) mStylePopOver.getContentNode();
                 pane.setCenter(Mapton.getEngine().getStyleView());
