@@ -90,3 +90,5 @@ $RECYCLE.BIN/
 !/app-nb/branding/src/main/nbm-branding/modules/org-netbeans-core-io-ui.jar/
 !/app-nb/branding/src/main/nbm-branding/modules/org-netbeans-core-windows.jar/
 !/app-nb/branding/src/main/nbm-branding/modules/org-netbeans-core.jar/
+/packaging/snap/squashfs-root/
+/packaging/snap/mapton*.snap

@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Mapton
+Comment=Some kind of map application
+Exec=mapton %F
+Icon=${SNAP}/meta/gui/mapton.png
+Terminal=false
+Categories=Education;
+StartupNotify=true
+StartupWMClass=Mapton
+
+Name[sv_SE]=Mapton

@@ -1,0 +1,29 @@
+name: mapton
+title: Mapton
+base: core18
+version: '2.0.1'
+summary: Some kind of map application
+description: |
+    Mapton is an easy to use map application that runs on your desktop.
+    It combines the simplicity of a mobile app with the capability of being extensible  with powerful custom plugins.
+
+    On its own, Mapton is a capable map application, however, Mapton is also a platform for domain specific GIS related plugin development.
+
+grade: devel
+architectures: [ amd64 ]
+confinement: devmode
+
+apps:
+  mapton:
+    command: mapton/bin/mapton
+    extensions: [gnome-3-28]
+
+parts:
+  mapton:
+    plugin: dump
+#    source: https://github.com/trixon/mapton/releases/download/v$SNAPCRAFT_PROJECT_VERSION/mapton-$SNAPCRAFT_PROJECT_VERSION-linux.zip
+    source: /root/project/mapton.zip
+    source-type: zip
+    stage-packages:
+      - libavcodec57
+      - libavformat57
