@@ -15,6 +15,7 @@
  */
 package org.mapton.core_nb.actions;
 
+import org.mapton.core_nb.api.BaseAction;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import org.mapton.api.MKey;

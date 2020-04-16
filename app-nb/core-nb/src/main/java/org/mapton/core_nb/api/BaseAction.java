@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core_nb.actions;
+package org.mapton.core_nb.api;
 
 import java.awt.event.ActionListener;
 import org.mapton.api.MOptions;
