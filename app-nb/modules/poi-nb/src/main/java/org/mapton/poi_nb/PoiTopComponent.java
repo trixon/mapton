@@ -22,7 +22,6 @@ import org.mapton.base.ui.poi.PoisView;
 import org.mapton.core_nb.api.MMapMagnet;
 import org.mapton.core_nb.api.MTopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
-import org.openide.awt.ActionID;
 import org.openide.windows.TopComponent;
 
 /**
@@ -37,8 +36,7 @@ import org.openide.windows.TopComponent;
         //iconBase="SET/PATH/TO/ICON/HERE",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
-@TopComponent.Registration(mode = "mapTools", openAtStartup = false)
-@ActionID(category = "Mapton", id = "org.mapton.poi_nb.PoiTopComponent")
+@TopComponent.Registration(mode = "topLeft", openAtStartup = false, position = 2)
 @TopComponent.OpenActionRegistration(
         displayName = "POI",
         preferredID = "PoiTopComponent"
