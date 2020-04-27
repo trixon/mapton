@@ -43,6 +43,7 @@ import javafx.scene.Node;
 import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.mapton.api.MAttribution;
 import org.mapton.api.MDocumentInfo;
@@ -210,6 +211,16 @@ public class WorldWindMapEngine extends MEngine {
         mOptions.put(KEY_VIEW_HEADING, view.getHeading().getDegrees());
         mOptions.put(KEY_VIEW_PITCH, view.getPitch().getDegrees());
         mOptions.put(KEY_VIEW_ROLL, view.getRoll().getDegrees());
+    }
+
+    @Override
+    public void onStyleSwap() {
+        String prevStyle = mOptions.get(KEY_MAP_STYLE_PREV);
+        if (StringUtils.isNoneBlank(prevStyle)) {
+            String currentStyle = mOptions.get(KEY_MAP_STYLE);
+            mOptions.put(KEY_MAP_STYLE, prevStyle);
+            mOptions.put(KEY_MAP_STYLE_PREV, currentStyle);
+        }
     }
 
     @Override

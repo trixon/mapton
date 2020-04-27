@@ -256,6 +256,10 @@ public abstract class MEngine {
     public void onOpening() {
     }
 
+    public void onStyleSwap() {
+        Mapton.getLog().i(getClass().getSimpleName(), "style swap not implemented");
+    }
+
     public void onWhatsHere(String s) {
         Mapton.getLog().i(getClass().getSimpleName(), "displayWhatsHere not implemented");
     }
@@ -313,6 +317,10 @@ public abstract class MEngine {
 
     public void setStatusProgress(double progress) {
         Mapton.getGlobalState().put(KEY_STATUS_PROGRESS, progress);
+    }
+
+    public void swapStyle() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     /**

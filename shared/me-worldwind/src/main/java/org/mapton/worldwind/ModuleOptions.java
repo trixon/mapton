@@ -37,6 +37,7 @@ public class ModuleOptions extends OptionsBase {
     public static final String KEY_MAP_OPACITY = "map_opacity";
     public static final String KEY_MAP_PROJECTION = "map_projection";
     public static final String KEY_MAP_STYLE = "map_style";
+    public static final String KEY_MAP_STYLE_PREV = "map_style_prev";
     public static final String KEY_MASK_COLOR = "mask_color";
     public static final String KEY_MASK_OPACITY = "mask_opacity";
     public static final String KEY_RULER_ANNOTATION = "ruler.annotation";

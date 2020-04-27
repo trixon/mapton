@@ -67,6 +67,7 @@ public class MapToolBar extends BaseToolBar {
     private Action mRulerAction;
     private PopOver mRulerPopOver;
     private Action mStyleAction;
+    private FxActionSwing mStyleSwapAction;
     private PopOver mStylePopOver;
     private Action mTemporalAction;
     private PopOver mTemporalPopOver;
@@ -129,6 +130,7 @@ public class MapToolBar extends BaseToolBar {
                 mLayerAction,
                 //                mGridAction,
                 mAttributionAction,
+                mStyleSwapAction,
                 mStyleAction,
                 ActionUtils.ACTION_SPAN,
                 mTemporalAction,
@@ -259,6 +261,14 @@ public class MapToolBar extends BaseToolBar {
         });
         mHomeAction.setGraphic(MaterialIcon._Action.HOME.getImageView(getIconSizeToolBarInt()));
         setTooltip(mHomeAction, new KeyCodeCombination(KeyCode.H, KeyCombination.SHORTCUT_DOWN));
+
+        //Swap Style
+        mStyleSwapAction = new FxActionSwing(MDict.PREVIOUS_STYLE.toString(), () -> {
+            Actions.forID("Mapton", "org.mapton.core_nb.actions.StyleSwapAction").actionPerformed(null);
+        });
+        mStyleSwapAction.setGraphic(MaterialIcon._Action.SWAP_HORIZ.getImageView(getIconSizeToolBarInt()));
+        mStyleSwapAction.disabledProperty().bind(mStyleAction.disabledProperty());
+        setTooltip(mStyleSwapAction, new KeyCodeCombination(KeyCode.S, KeyCombination.SHORTCUT_DOWN, KeyCodeCombination.SHIFT_DOWN));
     }
 
     private void initListeners() {

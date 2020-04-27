@@ -287,6 +287,7 @@ public class StyleView extends HBox {
                     Button button = new Button(mapStyle.getName());
                     button.prefWidthProperty().bind(widthProperty());
                     button.setOnAction((ActionEvent event) -> {
+                        mOptions.put(KEY_MAP_STYLE_PREV, mOptions.get(KEY_MAP_STYLE));
                         mOptions.put(KEY_MAP_STYLE, mapStyle.getId());
                     });
 
@@ -317,6 +318,7 @@ public class StyleView extends HBox {
                     change.next();
                     if (change.wasAdded() || change.wasReplaced()) {
                         try {
+                            mOptions.put(KEY_MAP_STYLE_PREV, mOptions.get(KEY_MAP_STYLE));
                             mOptions.put(KEY_MAP_STYLE, selectionModel.getSelectedItem().getId());
                         } catch (Exception e) {
                         }

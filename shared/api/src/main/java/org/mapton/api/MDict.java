@@ -43,6 +43,7 @@ public enum MDict {
     OPEN_LOCATION,
     ORIGIN,
     POI,
+    PREVIOUS_STYLE,
     PROJECTION,
     PROJ_LAT_LON,
     PROJ_MERCATOR,
