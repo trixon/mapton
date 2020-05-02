@@ -222,6 +222,11 @@
         <!--Mapton/Add-ons-->
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>addon-files-nb</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>addon-geonames-ww</artifactId>
             <version>${project.version}</version>
         </dependency>

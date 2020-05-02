@@ -195,6 +195,7 @@
         <module>app-nb/modules/editors-nb</module>
         <module>app-nb/modules/poi-nb</module>
         <module>app-nb/modules/reports-nb</module>
+        <module>app-nb/modules-add-ons/files-nb</module>
         <module>app-nb/modules-add-ons/geonames-ww</module>
         <module>app-nb/modules-add-ons/photos-nb</module>
         <module>app-nb/modules-add-ons/xkcd-nb</module>
