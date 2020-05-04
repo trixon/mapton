@@ -22,7 +22,7 @@ import java.time.LocalDate;
  *
  * @author Patrik Karlström
  */
-public class MapoSettings {
+public class FileSettings {
 
     @SerializedName("color_gap")
     private String mColorGap = "000000";
@@ -41,7 +41,7 @@ public class MapoSettings {
     @SerializedName("width")
     private Double mWidth = 2.0;
 
-    public MapoSettings() {
+    public FileSettings() {
     }
 
     public String getColorGap() {

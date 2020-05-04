@@ -33,10 +33,10 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOCase;
 import org.apache.commons.lang3.StringUtils;
-import org.mapton.addon.files_nb.api.MapoCollection;
-import org.mapton.addon.files_nb.api.MapoPhoto;
-import org.mapton.addon.files_nb.api.MapoSource;
-import org.mapton.addon.files_nb.api.MapoSourceManager;
+import org.mapton.addon.files_nb.api.FileCollection;
+import org.mapton.addon.files_nb.api.FilePhoto;
+import org.mapton.addon.files_nb.api.FileSource;
+import org.mapton.addon.files_nb.api.FileSourceManager;
 import org.mapton.api.MKey;
 import org.mapton.api.Mapton;
 import org.openide.util.Exceptions;
@@ -49,18 +49,18 @@ import se.trixon.almond.util.Dict;
  */
 public class SourceScanner {
 
-    private MapoCollection mCurrentCollection;
-    private MapoSource mCurrentSource;
+    private FileCollection mCurrentCollection;
+    private FileSource mCurrentSource;
     private final ArrayList<File> mFiles = new ArrayList<>();
     private boolean mInterrupted = false;
-    private final MapoSourceManager mManager = MapoSourceManager.getInstance();
+    private final FileSourceManager mManager = FileSourceManager.getInstance();
     private final NbPrint mPrint = new NbPrint(Dict.PHOTOS.toString());
 
     public SourceScanner() {
         mPrint.select();
         mPrint.out("BEGIN SCAN COLLECTION");
 
-        for (MapoSource source : mManager.getItems()) {
+        for (FileSource source : mManager.getItems()) {
             if (source.isVisible()) {
                 try {
                     process(source);
@@ -83,7 +83,7 @@ public class SourceScanner {
         }
     }
 
-    private void generateFileList(MapoSource source) throws IOException {
+    private void generateFileList(FileSource source) throws IOException {
         mPrint.out(Dict.GENERATING_FILELIST.toString());
         PathMatcher pathMatcher = source.getPathMatcher();
 
@@ -127,7 +127,7 @@ public class SourceScanner {
             PhotoInfo photoInfo = new PhotoInfo(file);
 
             if (!photoInfo.isZeroCoordinate()) {
-                MapoPhoto mapoPhoto = new MapoPhoto();
+                FilePhoto mapoPhoto = new FilePhoto();
                 mapoPhoto.setPath(file.getAbsolutePath());
                 mapoPhoto.setLat(photoInfo.getLat());
                 mapoPhoto.setLon(photoInfo.getLon());
@@ -148,12 +148,12 @@ public class SourceScanner {
         }
     }
 
-    private void process(MapoSource source) throws IOException {
+    private void process(FileSource source) throws IOException {
         mPrint.out(String.format("%s: %s", "BEGIN SCAN", source));
 
         mFiles.clear();
         mCurrentSource = source;
-        mCurrentCollection = new MapoCollection();
+        mCurrentCollection = new FileCollection();
         mCurrentCollection.setId(source.getId());
         mCurrentCollection.setName(source.getName());
         source.isValid();
@@ -174,8 +174,8 @@ public class SourceScanner {
                 }
             }
 
-            ArrayList<MapoPhoto> photos = mCurrentCollection.getPhotos();
-            Collections.sort(photos, (MapoPhoto o1, MapoPhoto o2) -> o1.getDate().compareTo(o2.getDate()));
+            ArrayList<FilePhoto> photos = mCurrentCollection.getPhotos();
+            Collections.sort(photos, (FilePhoto o1, FilePhoto o2) -> o1.getDate().compareTo(o2.getDate()));
 
             try {
                 mCurrentCollection.setDateMin(photos.get(0).getDate());

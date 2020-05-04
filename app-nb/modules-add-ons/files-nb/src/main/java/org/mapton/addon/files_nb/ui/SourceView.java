@@ -31,7 +31,7 @@ import javafx.scene.paint.Color;
 import org.controlsfx.validation.ValidationResult;
 import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
-import org.mapton.addon.files_nb.api.MapoSource;
+import org.mapton.addon.files_nb.api.FileSource;
 import org.openide.DialogDescriptor;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
@@ -65,7 +65,7 @@ public class SourceView extends VBox {
         createUI();
     }
 
-    public void load(MapoSource source) {
+    public void load(FileSource source) {
         mNameTextField.setText(source.getName());
         mDescTextField.setText(source.getDescriptionString());
 
@@ -88,7 +88,7 @@ public class SourceView extends VBox {
         mColorPicker.setValue(color);
     }
 
-    public void save(MapoSource source) {
+    public void save(FileSource source) {
         source.setName(mNameTextField.getText());
         source.setDescriptionString(mDescTextField.getText());
 

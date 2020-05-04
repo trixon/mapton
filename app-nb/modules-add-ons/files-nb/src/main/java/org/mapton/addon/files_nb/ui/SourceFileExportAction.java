@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import org.apache.commons.io.FileUtils;
 import org.controlsfx.control.action.Action;
-import org.mapton.addon.files_nb.api.MapoSource;
+import org.mapton.addon.files_nb.api.FileSource;
 import org.mapton.api.MKey;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
@@ -41,7 +41,7 @@ public class SourceFileExportAction extends SourceFileAction {
     @Override
     public Action getAction() {
         FxActionSwing action = new FxActionSwing(Dict.EXPORT.toString(), () -> {
-            ArrayList<MapoSource> selectedSources = new ArrayList<>();
+            ArrayList<FileSource> selectedSources = new ArrayList<>();
             mManager.getItems().stream()
                     .filter((source) -> (source.isVisible()))
                     .forEachOrdered((source) -> {

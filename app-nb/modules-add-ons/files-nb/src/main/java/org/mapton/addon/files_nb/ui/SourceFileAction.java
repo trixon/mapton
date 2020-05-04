@@ -17,7 +17,7 @@ package org.mapton.addon.files_nb.ui;
 
 import javax.swing.filechooser.FileNameExtensionFilter;
 import org.controlsfx.control.action.Action;
-import org.mapton.addon.files_nb.api.MapoSourceManager;
+import org.mapton.addon.files_nb.api.FileSourceManager;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.swing.dialogs.SimpleDialog;
 
@@ -27,7 +27,7 @@ import se.trixon.almond.util.swing.dialogs.SimpleDialog;
  */
 public abstract class SourceFileAction {
 
-    protected final MapoSourceManager mManager = MapoSourceManager.getInstance();
+    protected final FileSourceManager mManager = FileSourceManager.getInstance();
     protected final String mTitle = Dict.SOURCES.toString();
 
     public SourceFileAction() {

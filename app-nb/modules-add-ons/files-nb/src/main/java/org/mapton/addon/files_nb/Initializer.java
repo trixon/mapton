@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2020 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,7 +15,7 @@
  */
 package org.mapton.addon.files_nb;
 
-import org.mapton.addon.files_nb.api.MapoSourceManager;
+import org.mapton.addon.files_nb.api.FileSourceManager;
 import org.openide.modules.OnStart;
 import org.openide.windows.WindowManager;
 
@@ -32,8 +32,7 @@ public class Initializer implements Runnable {
     @Override
     public void run() {
         WindowManager.getDefault().invokeWhenUIReady(() -> {
-            MapoSourceManager.getInstance().load();
+            FileSourceManager.getInstance().load();
         });
     }
-
 }

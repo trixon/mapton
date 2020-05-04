@@ -41,31 +41,31 @@ import se.trixon.almond.util.swing.SwingHelper;
  *
  * @author Patrik Karlström
  */
-public class MapoSourceManager {
+public class FileSourceManager {
 
     private File mCacheDir;
     private File mConfigDir;
-    private ObjectProperty<ObservableList<MapoSource>> mItems = new SimpleObjectProperty<>();
+    private ObjectProperty<ObservableList<FileSource>> mItems = new SimpleObjectProperty<>();
     private File mSourcesFile;
 
-    public static MapoSourceManager getInstance() {
+    public static FileSourceManager getInstance() {
         return Holder.INSTANCE;
     }
 
-    private MapoSourceManager() {
+    private FileSourceManager() {
         mItems.setValue(FXCollections.observableArrayList());
     }
 
-    public void edit(final MapoSource aSource) {
+    public void edit(final FileSource aSource) {
         SwingUtilities.invokeLater(() -> {
-            MapoSource newSource = aSource;
+            FileSource newSource = aSource;
             boolean add = aSource == null;
             if (add) {
-                newSource = new MapoSource();
+                newSource = new FileSource();
                 newSource.setId(System.currentTimeMillis());
             }
 
-            final MapoSource source = newSource;
+            final FileSource source = newSource;
             SourcePanel localGridPanel = new SourcePanel();
             DialogDescriptor d = new DialogDescriptor(localGridPanel, Dict.SOURCE.toString());
             localGridPanel.setDialogDescriptor(d);
@@ -81,7 +81,7 @@ public class MapoSourceManager {
                         mItems.get().add(source);
                     }
 
-                    FXCollections.sort(mItems.get(), (MapoSource o1, MapoSource o2) -> o1.getName().compareTo(o2.getName()));
+                    FXCollections.sort(mItems.get(), (FileSource o1, FileSource o2) -> o1.getName().compareTo(o2.getName()));
                 });
             }
         });
@@ -103,14 +103,14 @@ public class MapoSourceManager {
         return mConfigDir;
     }
 
-    public ObservableList<MapoSource> getItems() {
+    public ObservableList<FileSource> getItems() {
         return mItems.get();
     }
 
     public LocalDate getMaxDate() {
         LocalDate localDate = LocalDate.MIN;
 
-        for (MapoSource source : mItems.get()) {
+        for (FileSource source : mItems.get()) {
             if (source.isVisible()) {
                 try {
                     LocalDate collectionDate = source.getCollection().getDateMax().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
@@ -132,7 +132,7 @@ public class MapoSourceManager {
     public LocalDate getMinDate() {
         LocalDate localDate = LocalDate.MAX;
 
-        for (MapoSource source : mItems.get()) {
+        for (FileSource source : mItems.get()) {
             if (source.isVisible()) {
                 try {
                     LocalDate collectionDate = source.getCollection().getDateMin().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
@@ -151,7 +151,7 @@ public class MapoSourceManager {
         return localDate;
     }
 
-    public final ObjectProperty<ObservableList<MapoSource>> itemsProperty() {
+    public final ObjectProperty<ObservableList<FileSource>> itemsProperty() {
         if (mItems == null) {
             mItems = new SimpleObjectProperty<>(this, "items");
         }
@@ -160,13 +160,13 @@ public class MapoSourceManager {
     }
 
     public void load() {
-        ArrayList<MapoSource> loadedItems = new ArrayList<>();
+        ArrayList<FileSource> loadedItems = new ArrayList<>();
 
         try {
             if (getSourcesFile().isFile()) {
-                loadedItems = Mapo.getGson().fromJson(FileUtils.readFileToString(getSourcesFile(), "utf-8"), new TypeToken<ArrayList<MapoSource>>() {
+                loadedItems = Mapo.getGson().fromJson(FileUtils.readFileToString(getSourcesFile(), "utf-8"), new TypeToken<ArrayList<FileSource>>() {
                 }.getType());
-                for (MapoSource source : loadedItems) {
+                for (FileSource source : loadedItems) {
                     try {
                         source.setCollection(source.loadCollection());
                     } catch (IOException ex) {
@@ -178,14 +178,14 @@ public class MapoSourceManager {
             Exceptions.printStackTrace(ex);
         }
 
-        final ArrayList<MapoSource> items = loadedItems;
+        final ArrayList<FileSource> items = loadedItems;
         Platform.runLater(() -> {
             mItems.get().setAll(items);
             Mapton.getGlobalState().put(Mapo.KEY_SOURCE_UPDATED, this);
         });
     }
 
-    public void removeAll(MapoSource... mapoSources) {
+    public void removeAll(FileSource... mapoSources) {
         mItems.get().removeAll(mapoSources);
     }
 
@@ -193,18 +193,18 @@ public class MapoSourceManager {
         FileUtils.writeStringToFile(getSourcesFile(), Mapo.getGson().toJson(mItems.get()), "utf-8");
     }
 
-    public void sourceExport(File file, ArrayList<MapoSource> selectedSources) throws IOException {
+    public void sourceExport(File file, ArrayList<FileSource> selectedSources) throws IOException {
         FileUtils.writeStringToFile(file, Mapo.getGson().toJson(selectedSources), "utf-8");
     }
 
     public void sourceImport(File file) throws IOException {
         String json = FileUtils.readFileToString(file, "utf-8");
-        ArrayList<MapoSource> sources = Mapo.getGson().fromJson(json, new TypeToken<ArrayList<MapoSource>>() {
+        ArrayList<FileSource> sources = Mapo.getGson().fromJson(json, new TypeToken<ArrayList<FileSource>>() {
         }.getType());
 
         Platform.runLater(() -> {
             mItems.get().addAll(sources);
-            FXCollections.sort(mItems.get(), (MapoSource o1, MapoSource o2) -> o1.getName().compareTo(o2.getName()));
+            FXCollections.sort(mItems.get(), (FileSource o1, FileSource o2) -> o1.getName().compareTo(o2.getName()));
         });
     }
 
@@ -218,6 +218,6 @@ public class MapoSourceManager {
 
     private static class Holder {
 
-        private static final MapoSourceManager INSTANCE = new MapoSourceManager();
+        private static final FileSourceManager INSTANCE = new FileSourceManager();
     }
 }

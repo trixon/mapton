@@ -17,7 +17,7 @@ package org.mapton.addon.files_nb.ui;
 
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
-import org.mapton.addon.files_nb.api.MapoSource;
+import org.mapton.addon.files_nb.api.FileSource;
 import se.trixon.almond.nbp.fx.FxDialogPanel;
 
 /**
@@ -33,11 +33,11 @@ public class SourcePanel extends FxDialogPanel {
     public SourcePanel() {
     }
 
-    public void load(MapoSource source) {
+    public void load(FileSource source) {
         mSourceView.load(source);
     }
 
-    public void save(MapoSource source) {
+    public void save(FileSource source) {
         mSourceView.save(source);
     }
 

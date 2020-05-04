@@ -23,7 +23,7 @@ import java.util.Date;
  *
  * @author Patrik Karlström
  */
-public class MapoCollection {
+public class FileCollection {
 
     @SerializedName("dateMax")
     private Date mDateMax;
@@ -34,9 +34,9 @@ public class MapoCollection {
     @SerializedName("name")
     private String mName;
     @SerializedName("photos")
-    private ArrayList<MapoPhoto> mPhotos = new ArrayList<>();
+    private ArrayList<FilePhoto> mPhotos = new ArrayList<>();
 
-    public MapoCollection() {
+    public FileCollection() {
     }
 
     public Date getDateMax() {
@@ -55,7 +55,7 @@ public class MapoCollection {
         return mName;
     }
 
-    public ArrayList<MapoPhoto> getPhotos() {
+    public ArrayList<FilePhoto> getPhotos() {
         return mPhotos;
     }
 
@@ -75,7 +75,7 @@ public class MapoCollection {
         mName = name;
     }
 
-    public void setPhotos(ArrayList<MapoPhoto> photos) {
+    public void setPhotos(ArrayList<FilePhoto> photos) {
         mPhotos = photos;
     }
 

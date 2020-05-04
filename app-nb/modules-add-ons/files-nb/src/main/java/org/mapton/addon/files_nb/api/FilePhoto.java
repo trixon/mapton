@@ -22,7 +22,7 @@ import java.util.Date;
  *
  * @author Patrik Karlström
  */
-public class MapoPhoto {
+public class FilePhoto {
 
     @SerializedName("altitude")
     private Double mAltitude;
@@ -45,7 +45,7 @@ public class MapoPhoto {
     @SerializedName("width")
     private int mWidth;
 
-    public MapoPhoto() {
+    public FilePhoto() {
     }
 
     public Double getAltitude() {

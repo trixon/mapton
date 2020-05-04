@@ -35,7 +35,7 @@ import java.util.Date;
 import java.util.TimeZone;
 import javax.imageio.ImageIO;
 import org.apache.commons.io.FileUtils;
-import org.mapton.addon.files_nb.api.MapoSource;
+import org.mapton.addon.files_nb.api.FileSource;
 import se.trixon.almond.util.GraphicsHelper;
 import se.trixon.almond.util.ImageScaler;
 import se.trixon.almond.util.Scaler;
@@ -64,7 +64,7 @@ public class PhotoInfo {
         init();
     }
 
-    public void createThumbnail(MapoSource source, File file) throws IOException {
+    public void createThumbnail(FileSource source, File file) throws IOException {
         int thumbnailSize = source.getThumbnailSize();
 
         if (source.isThumbnailForceCreation() || !file.exists()) {

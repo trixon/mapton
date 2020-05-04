@@ -37,9 +37,9 @@ import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.addon.files_nb.SourceScanner;
 import org.mapton.addon.files_nb.api.Mapo;
-import org.mapton.addon.files_nb.api.MapoCollection;
-import org.mapton.addon.files_nb.api.MapoSource;
-import org.mapton.addon.files_nb.api.MapoSourceManager;
+import org.mapton.addon.files_nb.api.FileCollection;
+import org.mapton.addon.files_nb.api.FileSource;
+import org.mapton.addon.files_nb.api.FileSourceManager;
 import org.mapton.api.MTemporalManager;
 import org.mapton.api.MTemporalRange;
 import org.mapton.api.Mapton;
@@ -60,8 +60,8 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
 public class SourcesPane extends BorderPane {
 
     private List<Action> mActions;
-    private final CheckListView<MapoSource> mListView = new CheckListView<>();
-    private final MapoSourceManager mManager = MapoSourceManager.getInstance();
+    private final CheckListView<FileSource> mListView = new CheckListView<>();
+    private final FileSourceManager mManager = FileSourceManager.getInstance();
     private final Mapo mMapo = Mapo.getInstance();
     private OptionsPopOver mOptionsPopOver = new OptionsPopOver();
     private Action mRefreshAction;
@@ -159,7 +159,7 @@ public class SourcesPane extends BorderPane {
         mListView.itemsProperty().bind(mManager.itemsProperty());
     }
 
-    private MapoSource getSelected() {
+    private FileSource getSelected() {
         return mListView.getSelectionModel().getSelectedItem();
     }
 
@@ -172,13 +172,13 @@ public class SourcesPane extends BorderPane {
             }
         });
 
-        mListView.getSelectionModel().getSelectedItems().addListener((ListChangeListener.Change<? extends MapoSource> c) -> {
+        mListView.getSelectionModel().getSelectedItems().addListener((ListChangeListener.Change<? extends FileSource> c) -> {
             if (getSelected() != null) {
                 getSelected().fitToBounds();
             }
         });
 
-        mManager.getItems().addListener((ListChangeListener.Change<? extends MapoSource> c) -> {
+        mManager.getItems().addListener((ListChangeListener.Change<? extends FileSource> c) -> {
             Platform.runLater(() -> {
                 refreshCheckedStates();
                 try {
@@ -189,9 +189,9 @@ public class SourcesPane extends BorderPane {
             });
         });
 
-        final IndexedCheckModel<MapoSource> checkModel = mListView.getCheckModel();
+        final IndexedCheckModel<FileSource> checkModel = mListView.getCheckModel();
 
-        checkModel.getCheckedItems().addListener((ListChangeListener.Change<? extends MapoSource> c) -> {
+        checkModel.getCheckedItems().addListener((ListChangeListener.Change<? extends FileSource> c) -> {
             Platform.runLater(() -> {
                 mManager.getItems().forEach((source) -> {
                     source.setVisible(checkModel.isChecked(source));
@@ -226,9 +226,9 @@ public class SourcesPane extends BorderPane {
     }
 
     private void refreshCheckedStates() {
-        final IndexedCheckModel<MapoSource> checkModel = mListView.getCheckModel();
+        final IndexedCheckModel<FileSource> checkModel = mListView.getCheckModel();
 
-        for (MapoSource source : mManager.getItems()) {
+        for (FileSource source : mManager.getItems()) {
             if (source.isVisible()) {
                 checkModel.check(source);
             } else {
@@ -242,7 +242,7 @@ public class SourcesPane extends BorderPane {
             mTemporalManager.removeAll(Mapo.KEY_TEMPORAL_PREFIX);
             mManager.getItems().forEach((source) -> {
                 if (source.isVisible()) {
-                    MapoCollection collection = source.getCollection();
+                    FileCollection collection = source.getCollection();
                     if (ObjectUtils.allNotNull(collection.getDateMin(), collection.getDateMax())) {
                         mTemporalManager.put(Mapo.KEY_TEMPORAL_PREFIX + source.getName(), new MTemporalRange(collection.getDateMin(), collection.getDateMax()));
                     }
@@ -254,7 +254,7 @@ public class SourcesPane extends BorderPane {
     }
 
     private void remove() {
-        final MapoSource source = getSelected();
+        final FileSource source = getSelected();
 
         SwingUtilities.invokeLater(() -> {
             String[] buttons = new String[]{Dict.CANCEL.toString(), Dict.REMOVE.toString()};

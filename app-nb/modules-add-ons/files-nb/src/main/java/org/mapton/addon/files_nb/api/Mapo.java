@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2020 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,10 +25,10 @@ import org.mapton.addon.files_nb.Options;
  */
 public class Mapo {
 
-    public static final String KEY_MAPO = "mapo";
-    public static final String KEY_SETTINGS_UPDATED = "photos.settings_updated";
-    public static final String KEY_SOURCE_UPDATED = "photos.source_updated";
-    public static final String KEY_TEMPORAL_PREFIX = "org.mapton.addon.mapollage.";
+    public static final String KEY_FILE = "file";
+    public static final String KEY_SETTINGS_UPDATED = "files.settings_updated";
+    public static final String KEY_SOURCE_UPDATED = "files.source_updated";
+    public static final String KEY_TEMPORAL_PREFIX = "org.mapton.addon.files.";
 
     private static final Gson sGson = new GsonBuilder()
             .setVersion(1.0)
@@ -36,7 +36,7 @@ public class Mapo {
             .setPrettyPrinting()
             .create();
     private final Options mOptions = Options.getInstance();
-    private MapoSettings mSettings = new MapoSettings();
+    private FileSettings mSettings = new FileSettings();
 
     public static Gson getGson() {
         return sGson;
@@ -47,10 +47,10 @@ public class Mapo {
     }
 
     private Mapo() {
-        mSettings = getGson().fromJson(mOptions.get(Options.KEY_SETTINGS, getGson().toJson(new MapoSettings())), MapoSettings.class);
+        mSettings = getGson().fromJson(mOptions.get(Options.KEY_SETTINGS, getGson().toJson(new FileSettings())), FileSettings.class);
     }
 
-    public MapoSettings getSettings() {
+    public FileSettings getSettings() {
         return mSettings;
     }
 

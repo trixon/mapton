@@ -32,9 +32,9 @@ import org.mapton.api.Mapton;
  *
  * @author Patrik Karlström
  */
-public class MapoSource {
+public class FileSource {
 
-    private transient MapoCollection mCollection = new MapoCollection();
+    private transient FileCollection mCollection = new FileCollection();
     @SerializedName("descriptionString")
     private String mDescriptionString;
     @SerializedName("source")
@@ -47,7 +47,7 @@ public class MapoSource {
     private boolean mFollowLinks = true;
     @SerializedName("id")
     private Long mId;
-    private transient final MapoSourceManager mManager = MapoSourceManager.getInstance();
+    private transient final FileSourceManager mManager = FileSourceManager.getInstance();
     @SerializedName("name")
     private String mName;
     private transient PathMatcher mPathMatcher;
@@ -65,13 +65,13 @@ public class MapoSource {
     @SerializedName("visible")
     private boolean mVisible = true;
 
-    public MapoSource() {
+    public FileSource() {
     }
 
     public void fitToBounds() {
         ArrayList<MLatLon> latLons = new ArrayList<>();
 
-        for (MapoPhoto photo : getCollection().getPhotos()) {
+        for (FilePhoto photo : getCollection().getPhotos()) {
             latLons.add(new MLatLon(photo.getLat(), photo.getLon()));
         }
 
@@ -81,7 +81,7 @@ public class MapoSource {
         }
     }
 
-    public MapoCollection getCollection() {
+    public FileCollection getCollection() {
         return mCollection;
     }
 
@@ -163,19 +163,19 @@ public class MapoSource {
         return mVisible;
     }
 
-    public MapoCollection loadCollection() throws IOException {
+    public FileCollection loadCollection() throws IOException {
         try {
-            return Mapo.getGson().fromJson(FileUtils.readFileToString(getCollectionFile(), "utf-8"), MapoCollection.class);
+            return Mapo.getGson().fromJson(FileUtils.readFileToString(getCollectionFile(), "utf-8"), FileCollection.class);
         } catch (FileNotFoundException e) {
-            return new MapoCollection();
+            return new FileCollection();
         }
     }
 
-    public void save(MapoCollection collection) throws IOException {
+    public void save(FileCollection collection) throws IOException {
         FileUtils.write(getCollectionFile(), Mapo.getGson().toJson(collection), "utf-8");
     }
 
-    public void setCollection(MapoCollection collection) {
+    public void setCollection(FileCollection collection) {
         mCollection = collection;
     }
 
