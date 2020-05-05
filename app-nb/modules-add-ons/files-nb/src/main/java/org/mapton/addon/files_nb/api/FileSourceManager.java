@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2020 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -185,8 +185,15 @@ public class FileSourceManager {
         });
     }
 
-    public void removeAll(FileSource... mapoSources) {
-        mItems.get().removeAll(mapoSources);
+    public void removeAll(FileSource... fileSources) {
+        try {
+            if (fileSources == null || fileSources.length == 0) {
+                mItems.get().clear();
+            } else {
+                mItems.get().removeAll(fileSources);
+            }
+        } catch (Exception e) {
+        }
     }
 
     public void save() throws IOException {
