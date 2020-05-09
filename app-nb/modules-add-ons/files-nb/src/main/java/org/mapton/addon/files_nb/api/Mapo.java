@@ -36,7 +36,7 @@ public class Mapo {
             .setPrettyPrinting()
             .create();
     private final Options mOptions = Options.getInstance();
-    private FileSettings mSettings = new FileSettings();
+    private FilesSettings mSettings = new FilesSettings();
 
     public static Gson getGson() {
         return sGson;
@@ -47,10 +47,10 @@ public class Mapo {
     }
 
     private Mapo() {
-        mSettings = getGson().fromJson(mOptions.get(Options.KEY_SETTINGS, getGson().toJson(new FileSettings())), FileSettings.class);
+        mSettings = getGson().fromJson(mOptions.get(Options.KEY_SETTINGS, getGson().toJson(new FilesSettings())), FilesSettings.class);
     }
 
-    public FileSettings getSettings() {
+    public FilesSettings getSettings() {
         return mSettings;
     }
 

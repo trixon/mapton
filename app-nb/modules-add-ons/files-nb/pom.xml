@@ -107,6 +107,10 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>core-nb</artifactId>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>me-worldwind</artifactId>
+        </dependency>
 
         <!-- Trixon -->
         <dependency>

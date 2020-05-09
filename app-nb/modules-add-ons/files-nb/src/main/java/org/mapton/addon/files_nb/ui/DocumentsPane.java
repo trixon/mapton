@@ -26,7 +26,6 @@ import javafx.scene.control.ButtonBase;
 import javafx.scene.control.ToolBar;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
-import javafx.scene.input.MouseButton;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.BorderPane;
 import javax.swing.SwingUtilities;
@@ -37,10 +36,8 @@ import org.controlsfx.control.CheckListView;
 import org.controlsfx.control.IndexedCheckModel;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
-import org.mapton.addon.files_nb.api.FileSource;
-import org.mapton.addon.files_nb.api.FileSourceManager;
-import org.mapton.addon.files_nb.api.Mapo;
-import org.mapton.api.Mapton;
+import org.mapton.addon.files_nb.api.Document;
+import org.mapton.addon.files_nb.api.DocumentManager;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
@@ -55,18 +52,17 @@ import se.trixon.almond.util.swing.dialogs.SimpleDialog;
  *
  * @author Patrik Karlström
  */
-public class SourcesPane extends BorderPane {
+public class DocumentsPane extends BorderPane {
 
     private final String[] SUPPORTED_EXTS = new String[]{"kml"};
     private List<Action> mActions;
     private File mFileDialogStartDir;
-    private final CheckListView<FileSource> mListView = new CheckListView<>();
-    private final FileSourceManager mManager = FileSourceManager.getInstance();
-    private final Mapo mMapo = Mapo.getInstance();
+    private final CheckListView<Document> mListView = new CheckListView<>();
+    private final DocumentManager mManager = DocumentManager.getInstance();
     private final OptionsPopOver mOptionsPopOver = new OptionsPopOver();
     private Action mRefreshAction;
 
-    public SourcesPane() {
+    public DocumentsPane() {
         createUI();
         refreshCheckedStates();
         initListeners();
@@ -76,9 +72,7 @@ public class SourcesPane extends BorderPane {
         files.stream()
                 .filter(file -> (file.isDirectory() || (file.isFile() && StringUtils.equalsAnyIgnoreCase(FilenameUtils.getExtension(file.getName()), SUPPORTED_EXTS))))
                 .forEachOrdered(file -> {
-                    if (!mManager.contains(file)) {
-                        mManager.getItems().add(new FileSource(file));
-                    }
+                    mManager.addIfMissing(file);
                 });
 
         mManager.sort();
@@ -144,26 +138,18 @@ public class SourcesPane extends BorderPane {
         mListView.itemsProperty().bind(mManager.itemsProperty());
     }
 
-    private FileSource getSelected() {
+    private Document getSelected() {
         return mListView.getSelectionModel().getSelectedItem();
     }
 
     private void initListeners() {
-        mListView.setOnMouseClicked((mouseEvent) -> {
-            if (getSelected() != null
-                    && mouseEvent.getButton() == MouseButton.PRIMARY
-                    && mouseEvent.getClickCount() == 2) {
-//                mManager.edit(getSelected());
-            }
-        });
-
-        mListView.getSelectionModel().getSelectedItems().addListener((ListChangeListener.Change<? extends FileSource> c) -> {
+        mListView.getSelectionModel().getSelectedItems().addListener((ListChangeListener.Change<? extends Document> c) -> {
             if (getSelected() != null) {
                 getSelected().fitToBounds();
             }
         });
 
-        mManager.getItems().addListener((ListChangeListener.Change<? extends FileSource> c) -> {
+        mManager.getItems().addListener((ListChangeListener.Change<? extends Document> c) -> {
             Platform.runLater(() -> {
                 refreshCheckedStates();
                 try {
@@ -174,11 +160,11 @@ public class SourcesPane extends BorderPane {
             });
         });
 
-        final IndexedCheckModel<FileSource> checkModel = mListView.getCheckModel();
+        final IndexedCheckModel<Document> checkModel = mListView.getCheckModel();
 
-        checkModel.getCheckedItems().addListener((ListChangeListener.Change<? extends FileSource> c) -> {
+        checkModel.getCheckedItems().addListener((ListChangeListener.Change<? extends Document> c) -> {
             Platform.runLater(() -> {
-                mManager.getItems().forEach((source) -> {
+                mManager.getItems().forEach(source -> {
                     source.setVisible(checkModel.isChecked(source));
                 });
 
@@ -187,9 +173,6 @@ public class SourcesPane extends BorderPane {
                 } catch (IOException ex) {
                     Exceptions.printStackTrace(ex);
                 }
-
-                Mapton.getGlobalState().put(Mapo.KEY_SOURCE_UPDATED, mManager);
-                Mapton.getGlobalState().put(Mapo.KEY_SETTINGS_UPDATED, mMapo.getSettings());
             });
         });
 
@@ -206,9 +189,9 @@ public class SourcesPane extends BorderPane {
     }
 
     private void refreshCheckedStates() {
-        final IndexedCheckModel<FileSource> checkModel = mListView.getCheckModel();
+        final IndexedCheckModel<Document> checkModel = mListView.getCheckModel();
 
-        for (FileSource source : mManager.getItems()) {
+        for (Document source : mManager.getItems()) {
             if (source.isVisible()) {
                 checkModel.check(source);
             } else {
@@ -218,7 +201,7 @@ public class SourcesPane extends BorderPane {
     }
 
     private void remove() {
-        final FileSource source = getSelected();
+        final Document source = getSelected();
 
         SwingUtilities.invokeLater(() -> {
             String[] buttons = new String[]{Dict.CANCEL.toString(), Dict.CLOSE.toString()};

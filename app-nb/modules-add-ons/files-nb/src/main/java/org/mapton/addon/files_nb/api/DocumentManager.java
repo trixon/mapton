@@ -23,7 +23,9 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Locale;
 import javafx.application.Platform;
+import javafx.beans.property.LongProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -35,22 +37,33 @@ import org.openide.util.Exceptions;
  *
  * @author Patrik Karlström
  */
-public class FileSourceManager {
+public class DocumentManager {
 
     private File mConfigDir;
-    private ObjectProperty<ObservableList<FileSource>> mItems = new SimpleObjectProperty<>();
+    private ObjectProperty<ObservableList<Document>> mItemsProperty = new SimpleObjectProperty<>();
     private File mSourcesFile;
+    private LongProperty mUpdatedProperty = new SimpleLongProperty();
 
-    public static FileSourceManager getInstance() {
+    public static DocumentManager getInstance() {
         return Holder.INSTANCE;
     }
 
-    private FileSourceManager() {
-        mItems.setValue(FXCollections.observableArrayList());
+    private DocumentManager() {
+        mItemsProperty.setValue(FXCollections.observableArrayList());
+    }
+
+    public boolean addIfMissing(File file) {
+        if (!contains(file)) {
+            getItems().add(new Document(file));
+
+            return true;
+        }
+
+        return false;
     }
 
     public boolean contains(File file) {
-        if (mItems.get().stream().anyMatch(fileSource -> (fileSource.getFile().equals(file)))) {
+        if (mItemsProperty.get().stream().anyMatch(fileSource -> (fileSource.getFile().equals(file)))) {
             return true;
         }
 
@@ -65,57 +78,62 @@ public class FileSourceManager {
         return mConfigDir;
     }
 
-    public ObservableList<FileSource> getItems() {
-        return mItems.get();
+    public ObservableList<Document> getItems() {
+        return mItemsProperty.get();
     }
 
-    public final ObjectProperty<ObservableList<FileSource>> itemsProperty() {
-        if (mItems == null) {
-            mItems = new SimpleObjectProperty<>(this, "items");
+    public final ObjectProperty<ObservableList<Document>> itemsProperty() {
+        if (mItemsProperty == null) {
+            mItemsProperty = new SimpleObjectProperty<>(this, "items");
         }
 
-        return mItems;
+        return mItemsProperty;
     }
 
     public void load() {
-        ArrayList<FileSource> loadedItems = new ArrayList<>();
+        ArrayList<Document> loadedItems = new ArrayList<>();
 
         try {
             if (getSourcesFile().isFile()) {
-                loadedItems = Mapo.getGson().fromJson(FileUtils.readFileToString(getSourcesFile(), "utf-8"), new TypeToken<ArrayList<FileSource>>() {
+                loadedItems = Mapo.getGson().fromJson(FileUtils.readFileToString(getSourcesFile(), "utf-8"), new TypeToken<ArrayList<Document>>() {
                 }.getType());
             }
         } catch (IOException | JsonSyntaxException ex) {
             Exceptions.printStackTrace(ex);
         }
 
-        final ArrayList<FileSource> items = loadedItems;
+        final ArrayList<Document> items = loadedItems;
         Platform.runLater(() -> {
-            mItems.get().setAll(items);
+            mItemsProperty.get().setAll(items);
             Mapton.getGlobalState().put(Mapo.KEY_SOURCE_UPDATED, this);
         });
     }
 
-    public void removeAll(FileSource... fileSources) {
+    public void removeAll(Document... fileSources) {
         try {
             if (fileSources == null || fileSources.length == 0) {
-                mItems.get().clear();
+                mItemsProperty.get().clear();
             } else {
-                mItems.get().removeAll(fileSources);
+                mItemsProperty.get().removeAll(fileSources);
             }
         } catch (Exception e) {
         }
     }
 
     public void save() throws IOException {
-        FileUtils.writeStringToFile(getSourcesFile(), Mapo.getGson().toJson(mItems.get()), "utf-8");
+        FileUtils.writeStringToFile(getSourcesFile(), Mapo.getGson().toJson(mItemsProperty.get()), "utf-8");
+        triggerUpdate();
     }
 
     public void sort() {
-        Comparator<FileSource> c1 = (FileSource o1, FileSource o2) -> Boolean.compare(o1.getFile().isFile(), o2.getFile().isFile());
-        Comparator<FileSource> c2 = (FileSource o1, FileSource o2) -> o1.getFile().getName().toLowerCase(Locale.getDefault()).compareTo(o2.getFile().getName().toLowerCase(Locale.getDefault()));
+        Comparator<Document> c1 = (Document o1, Document o2) -> Boolean.compare(o1.getFile().isFile(), o2.getFile().isFile());
+        Comparator<Document> c2 = (Document o1, Document o2) -> o1.getFile().getName().toLowerCase(Locale.getDefault()).compareTo(o2.getFile().getName().toLowerCase(Locale.getDefault()));
 
-        FXCollections.sort(mItems.get(), c1.thenComparing(c2));
+        FXCollections.sort(mItemsProperty.get(), c1.thenComparing(c2));
+    }
+
+    public LongProperty updatedProperty() {
+        return mUpdatedProperty;
     }
 
     private File getSourcesFile() {
@@ -126,8 +144,15 @@ public class FileSourceManager {
         return mSourcesFile;
     }
 
+    private void triggerUpdate() {
+        long now = System.currentTimeMillis();
+        if (mUpdatedProperty.get() != now) {
+            mUpdatedProperty.set(now);
+        }
+    }
+
     private static class Holder {
 
-        private static final FileSourceManager INSTANCE = new FileSourceManager();
+        private static final DocumentManager INSTANCE = new DocumentManager();
     }
 }

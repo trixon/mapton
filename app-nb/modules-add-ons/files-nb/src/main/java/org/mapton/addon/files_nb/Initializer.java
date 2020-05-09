@@ -15,7 +15,7 @@
  */
 package org.mapton.addon.files_nb;
 
-import org.mapton.addon.files_nb.api.FileSourceManager;
+import org.mapton.addon.files_nb.api.DocumentManager;
 import org.openide.modules.OnStart;
 import org.openide.windows.WindowManager;
 
@@ -32,7 +32,7 @@ public class Initializer implements Runnable {
     @Override
     public void run() {
         WindowManager.getDefault().invokeWhenUIReady(() -> {
-            FileSourceManager.getInstance().load();
+            DocumentManager.getInstance().load();
         });
     }
 }

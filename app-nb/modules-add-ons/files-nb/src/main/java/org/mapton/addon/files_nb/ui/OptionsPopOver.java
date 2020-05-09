@@ -36,8 +36,8 @@ import javafx.scene.paint.Color;
 import org.controlsfx.control.PopOver;
 import org.mapton.addon.files_nb.Options;
 import org.mapton.addon.files_nb.api.Mapo;
-import org.mapton.addon.files_nb.api.FileSettings;
-import org.mapton.addon.files_nb.api.FileSettings.SplitBy;
+import org.mapton.addon.files_nb.api.FilesSettings;
+import org.mapton.addon.files_nb.api.FilesSettings.SplitBy;
 import org.mapton.api.Mapton;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
@@ -168,7 +168,7 @@ public class OptionsPopOver extends PopOver {
     }
 
     private void load() {
-        FileSettings settings = mMapo.getSettings();
+        FilesSettings settings = mMapo.getSettings();
 
         mDrawTrackCheckBox.setSelected(settings.isPlotTracks());
         mDrawGapCheckBox.setSelected(settings.isPlotGaps());
@@ -223,7 +223,7 @@ public class OptionsPopOver extends PopOver {
     }
 
     private void save() {
-        FileSettings settings = mMapo.getSettings();
+        FilesSettings settings = mMapo.getSettings();
         settings.setPlotTracks(mDrawTrackCheckBox.isSelected());
         settings.setPlotGaps(mDrawGapCheckBox.isSelected());
         settings.setWidth(mWidthSpinner.getValue());

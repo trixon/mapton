@@ -18,7 +18,7 @@ package org.mapton.addon.files_nb;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
-import org.mapton.addon.files_nb.ui.SourcesPane;
+import org.mapton.addon.files_nb.ui.DocumentsPane;
 import org.mapton.api.Mapton;
 import org.mapton.core_nb.api.MMapMagnet;
 import org.mapton.core_nb.api.MTopComponent;
@@ -66,7 +66,7 @@ public final class FilesTopComponent extends MTopComponent implements MMapMagnet
 
     private Scene createScene() {
         Label titleLabel = Mapton.createTitle(Dict.FILES.toString());
-        mRoot = new BorderPane(new SourcesPane());
+        mRoot = new BorderPane(new DocumentsPane());
         mRoot.setTop(titleLabel);
         titleLabel.prefWidthProperty().bind(mRoot.widthProperty());
 

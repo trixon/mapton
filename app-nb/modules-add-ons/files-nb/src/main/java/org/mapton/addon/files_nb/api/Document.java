@@ -26,7 +26,7 @@ import org.mapton.api.Mapton;
  *
  * @author Patrik Karlström
  */
-public class FileSource {
+public class Document {
 
     @SerializedName("file")
     private File mFile;
@@ -35,10 +35,10 @@ public class FileSource {
     @SerializedName("visible")
     private boolean mVisible = true;
 
-    public FileSource() {
+    public Document() {
     }
 
-    public FileSource(File file) {
+    public Document(File file) {
         mFile = file;
     }
 
