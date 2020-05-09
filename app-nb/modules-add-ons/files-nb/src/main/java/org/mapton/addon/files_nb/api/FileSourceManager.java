@@ -19,23 +19,17 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import java.io.File;
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Locale;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javax.swing.SwingUtilities;
 import org.apache.commons.io.FileUtils;
-import org.mapton.addon.files_nb.ui.SourcePanel;
 import org.mapton.api.Mapton;
-import org.openide.DialogDescriptor;
-import org.openide.DialogDisplayer;
 import org.openide.util.Exceptions;
-import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.swing.SwingHelper;
 
 /**
  *
@@ -43,7 +37,6 @@ import se.trixon.almond.util.swing.SwingHelper;
  */
 public class FileSourceManager {
 
-    private File mCacheDir;
     private File mConfigDir;
     private ObjectProperty<ObservableList<FileSource>> mItems = new SimpleObjectProperty<>();
     private File mSourcesFile;
@@ -56,48 +49,17 @@ public class FileSourceManager {
         mItems.setValue(FXCollections.observableArrayList());
     }
 
-    public void edit(final FileSource aSource) {
-        SwingUtilities.invokeLater(() -> {
-            FileSource newSource = aSource;
-            boolean add = aSource == null;
-            if (add) {
-                newSource = new FileSource();
-                newSource.setId(System.currentTimeMillis());
-            }
-
-            final FileSource source = newSource;
-            SourcePanel localGridPanel = new SourcePanel();
-            DialogDescriptor d = new DialogDescriptor(localGridPanel, Dict.SOURCE.toString());
-            localGridPanel.setDialogDescriptor(d);
-            localGridPanel.initFx(() -> {
-                localGridPanel.load(source);
-            });
-
-            localGridPanel.setPreferredSize(SwingHelper.getUIScaledDim(600, 400));
-            if (DialogDescriptor.OK_OPTION == DialogDisplayer.getDefault().notify(d)) {
-                Platform.runLater(() -> {
-                    localGridPanel.save(source);
-                    if (add) {
-                        mItems.get().add(source);
-                    }
-
-                    FXCollections.sort(mItems.get(), (FileSource o1, FileSource o2) -> o1.getName().compareTo(o2.getName()));
-                });
-            }
-        });
-    }
-
-    public File getCacheDir() {
-        if (mCacheDir == null) {
-            mCacheDir = new File(Mapton.getCacheDir(), "photos");
+    public boolean contains(File file) {
+        if (mItems.get().stream().anyMatch(fileSource -> (fileSource.getFile().equals(file)))) {
+            return true;
         }
 
-        return mCacheDir;
+        return false;
     }
 
     public File getConfigDir() {
         if (mConfigDir == null) {
-            mConfigDir = new File(Mapton.getConfigDir(), "photos");
+            mConfigDir = new File(Mapton.getConfigDir(), "files");
         }
 
         return mConfigDir;
@@ -105,50 +67,6 @@ public class FileSourceManager {
 
     public ObservableList<FileSource> getItems() {
         return mItems.get();
-    }
-
-    public LocalDate getMaxDate() {
-        LocalDate localDate = LocalDate.MIN;
-
-        for (FileSource source : mItems.get()) {
-            if (source.isVisible()) {
-                try {
-                    LocalDate collectionDate = source.getCollection().getDateMax().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-                    if (collectionDate.isAfter(localDate)) {
-                        localDate = collectionDate;
-                    }
-                } catch (NullPointerException e) {
-                }
-            }
-        }
-
-        if (localDate.isEqual(LocalDate.MIN)) {
-            localDate = LocalDate.of(2099, 12, 31);
-        }
-
-        return localDate;
-    }
-
-    public LocalDate getMinDate() {
-        LocalDate localDate = LocalDate.MAX;
-
-        for (FileSource source : mItems.get()) {
-            if (source.isVisible()) {
-                try {
-                    LocalDate collectionDate = source.getCollection().getDateMin().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-                    if (collectionDate.isBefore(localDate)) {
-                        localDate = collectionDate;
-                    }
-                } catch (NullPointerException e) {
-                }
-            }
-        }
-
-        if (localDate.isEqual(LocalDate.MAX)) {
-            localDate = LocalDate.of(1900, 1, 1);
-        }
-
-        return localDate;
     }
 
     public final ObjectProperty<ObservableList<FileSource>> itemsProperty() {
@@ -166,13 +84,6 @@ public class FileSourceManager {
             if (getSourcesFile().isFile()) {
                 loadedItems = Mapo.getGson().fromJson(FileUtils.readFileToString(getSourcesFile(), "utf-8"), new TypeToken<ArrayList<FileSource>>() {
                 }.getType());
-                for (FileSource source : loadedItems) {
-                    try {
-                        source.setCollection(source.loadCollection());
-                    } catch (IOException ex) {
-                        Exceptions.printStackTrace(ex);
-                    }
-                }
             }
         } catch (IOException | JsonSyntaxException ex) {
             Exceptions.printStackTrace(ex);
@@ -200,19 +111,11 @@ public class FileSourceManager {
         FileUtils.writeStringToFile(getSourcesFile(), Mapo.getGson().toJson(mItems.get()), "utf-8");
     }
 
-    public void sourceExport(File file, ArrayList<FileSource> selectedSources) throws IOException {
-        FileUtils.writeStringToFile(file, Mapo.getGson().toJson(selectedSources), "utf-8");
-    }
+    public void sort() {
+        Comparator<FileSource> c1 = (FileSource o1, FileSource o2) -> Boolean.compare(o1.getFile().isFile(), o2.getFile().isFile());
+        Comparator<FileSource> c2 = (FileSource o1, FileSource o2) -> o1.getFile().getName().toLowerCase(Locale.getDefault()).compareTo(o2.getFile().getName().toLowerCase(Locale.getDefault()));
 
-    public void sourceImport(File file) throws IOException {
-        String json = FileUtils.readFileToString(file, "utf-8");
-        ArrayList<FileSource> sources = Mapo.getGson().fromJson(json, new TypeToken<ArrayList<FileSource>>() {
-        }.getType());
-
-        Platform.runLater(() -> {
-            mItems.get().addAll(sources);
-            FXCollections.sort(mItems.get(), (FileSource o1, FileSource o2) -> o1.getName().compareTo(o2.getName()));
-        });
+        FXCollections.sort(mItems.get(), c1.thenComparing(c2));
     }
 
     private File getSourcesFile() {

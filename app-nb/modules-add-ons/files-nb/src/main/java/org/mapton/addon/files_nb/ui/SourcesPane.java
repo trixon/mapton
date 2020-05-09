@@ -15,6 +15,7 @@
  */
 package org.mapton.addon.files_nb.ui;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -23,9 +24,15 @@ import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.ToolBar;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseButton;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.BorderPane;
 import javax.swing.SwingUtilities;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.CheckListView;
 import org.controlsfx.control.IndexedCheckModel;
 import org.controlsfx.control.action.Action;
@@ -42,6 +49,7 @@ import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.PopOverWatcher;
 import se.trixon.almond.util.icons.material.MaterialIcon;
+import se.trixon.almond.util.swing.dialogs.SimpleDialog;
 
 /**
  *
@@ -49,7 +57,9 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
  */
 public class SourcesPane extends BorderPane {
 
+    private final String[] SUPPORTED_EXTS = new String[]{"kml"};
     private List<Action> mActions;
+    private File mFileDialogStartDir;
     private final CheckListView<FileSource> mListView = new CheckListView<>();
     private final FileSourceManager mManager = FileSourceManager.getInstance();
     private final Mapo mMapo = Mapo.getInstance();
@@ -60,44 +70,39 @@ public class SourcesPane extends BorderPane {
         createUI();
         refreshCheckedStates();
         initListeners();
-        Mapton.getGlobalState().put(Mapo.KEY_SOURCE_UPDATED, mManager);
+    }
 
-        new Thread(() -> {
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException ex) {
-                Exceptions.printStackTrace(ex);
-            }
-            Mapton.getGlobalState().put(Mapo.KEY_SETTINGS_UPDATED, mMapo.getSettings());
-        }).start();
+    private void addFiles(List<File> files) {
+        files.stream()
+                .filter(file -> (file.isDirectory() || (file.isFile() && StringUtils.equalsAnyIgnoreCase(FilenameUtils.getExtension(file.getName()), SUPPORTED_EXTS))))
+                .forEachOrdered(file -> {
+                    if (!mManager.contains(file)) {
+                        mManager.getItems().add(new FileSource(file));
+                    }
+                });
+
+        mManager.sort();
     }
 
     private void createUI() {
-        Action addAction = new Action(Dict.ADD.toString(), event -> {
-            mManager.edit(null);
+        Action openAction = new Action(Dict.OPEN.toString(), event -> {
+            requestAddFiles();
         });
-        addAction.setGraphic(MaterialIcon._Content.ADD.getImageView(getIconSizeToolBarInt()));
+        openAction.setGraphic(MaterialIcon._Content.ADD.getImageView(getIconSizeToolBarInt()));
 
-        Action editAction = new Action(Dict.EDIT.toString(), event -> {
-            if (getSelected() != null) {
-                mManager.edit(getSelected());
-            }
-        });
-        editAction.setGraphic(MaterialIcon._Editor.MODE_EDIT.getImageView(getIconSizeToolBarInt()));
-
-        Action removeAction = new Action(Dict.REMOVE.toString(), event -> {
+        Action closeAction = new Action(Dict.CLOSE.toString(), event -> {
             if (getSelected() != null) {
                 remove();
             }
         });
-        removeAction.setGraphic(MaterialIcon._Content.REMOVE.getImageView(getIconSizeToolBarInt()));
+        closeAction.setGraphic(MaterialIcon._Content.REMOVE.getImageView(getIconSizeToolBarInt()));
 
-        Action removeAllAction = new Action(Dict.REMOVE_ALL.toString(), event -> {
+        Action closeAllAction = new Action(Dict.CLOSE_ALL.toString(), event -> {
             if (!mListView.getItems().isEmpty()) {
                 removeAll();
             }
         });
-        removeAllAction.setGraphic(MaterialIcon._Content.CLEAR.getImageView(getIconSizeToolBarInt()));
+        closeAllAction.setGraphic(MaterialIcon._Content.CLEAR.getImageView(getIconSizeToolBarInt()));
 
         mRefreshAction = new Action(event -> {
         });
@@ -116,11 +121,9 @@ public class SourcesPane extends BorderPane {
         optionsAction.setGraphic(MaterialIcon._Action.SETTINGS.getImageView(getIconSizeToolBarInt()));
 
         mActions = Arrays.asList(
-                new SourceFileImportAction().getAction(),
-                addAction,
-                removeAction,
-                removeAllAction,
-                editAction,
+                openAction,
+                closeAction,
+                closeAllAction,
                 ActionUtils.ACTION_SPAN,
                 mRefreshAction,
                 optionsAction
@@ -150,7 +153,7 @@ public class SourcesPane extends BorderPane {
             if (getSelected() != null
                     && mouseEvent.getButton() == MouseButton.PRIMARY
                     && mouseEvent.getClickCount() == 2) {
-                mManager.edit(getSelected());
+//                mManager.edit(getSelected());
             }
         });
 
@@ -189,6 +192,17 @@ public class SourcesPane extends BorderPane {
                 Mapton.getGlobalState().put(Mapo.KEY_SETTINGS_UPDATED, mMapo.getSettings());
             });
         });
+
+        mListView.setOnDragOver((DragEvent event) -> {
+            Dragboard board = event.getDragboard();
+            if (board.hasFiles()) {
+                event.acceptTransferModes(TransferMode.COPY);
+            }
+        });
+
+        mListView.setOnDragDropped((DragEvent event) -> {
+            addFiles(event.getDragboard().getFiles());
+        });
     }
 
     private void refreshCheckedStates() {
@@ -209,7 +223,7 @@ public class SourcesPane extends BorderPane {
         SwingUtilities.invokeLater(() -> {
             String[] buttons = new String[]{Dict.CANCEL.toString(), Dict.CLOSE.toString()};
             NotifyDescriptor d = new NotifyDescriptor(
-                    String.format(Dict.Dialog.MESSAGE_FILE_CLOSE.toString(), source.getName()),
+                    String.format(Dict.Dialog.MESSAGE_FILE_CLOSE.toString(), source.getFile().getName()),
                     String.format(Dict.Dialog.TITLE_CLOSE_S.toString(), Dict.FILE.toString().toLowerCase()) + "?",
                     NotifyDescriptor.OK_CANCEL_OPTION,
                     NotifyDescriptor.WARNING_MESSAGE,
@@ -241,5 +255,27 @@ public class SourcesPane extends BorderPane {
                 });
             }
         });
+    }
+
+    private void requestAddFiles() {
+        SimpleDialog.clearFilters();
+        for (String ext : SUPPORTED_EXTS) {
+            SimpleDialog.addFilters(ext);
+        }
+        SimpleDialog.setFilter("kml");
+        SimpleDialog.setTitle(Dict.OPEN.toString());
+
+        if (mFileDialogStartDir == null) {
+            SimpleDialog.setPath(FileUtils.getUserDirectory());
+        } else {
+            SimpleDialog.setPath(mFileDialogStartDir);
+            SimpleDialog.setSelectedFile(new File(""));
+        }
+
+        if (SimpleDialog.openFileAndDirectoy(true)) {
+            File[] paths = SimpleDialog.getPaths();
+            mFileDialogStartDir = paths[0].getParentFile();
+            addFiles(Arrays.asList(paths));
+        }
     }
 }
