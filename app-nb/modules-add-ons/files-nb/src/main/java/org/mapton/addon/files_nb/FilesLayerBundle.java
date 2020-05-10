@@ -19,7 +19,6 @@ import gov.nasa.worldwind.layers.RenderableLayer;
 import java.io.File;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
-import javax.swing.SwingUtilities;
 import org.apache.commons.io.FilenameUtils;
 import org.mapton.addon.files_nb.api.Document;
 import org.mapton.addon.files_nb.api.DocumentManager;
@@ -28,7 +27,7 @@ import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.LayerBundleManager;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.swing.SwingHelper;
+import se.trixon.almond.util.swing.DelayedResetRunner;
 
 /**
  *
@@ -43,10 +42,6 @@ public class FilesLayerBundle extends LayerBundle {
     public FilesLayerBundle() {
         init();
         initListeners();
-
-        SwingHelper.runLaterDelayed(5000, () -> {
-            update();
-        });
     }
 
     @Override
@@ -64,16 +59,16 @@ public class FilesLayerBundle extends LayerBundle {
     }
 
     private void initListeners() {
+        DelayedResetRunner delayedResetRunner = new DelayedResetRunner(100, () -> {
+            update();
+        });
+
         mManager.getItems().addListener((ListChangeListener.Change<? extends Document> c) -> {
-            SwingUtilities.invokeLater(() -> {
-                update();
-            });
+            delayedResetRunner.reset();
         });
 
         mManager.updatedProperty().addListener((ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
-            SwingUtilities.invokeLater(() -> {
-                update();
-            });
+            delayedResetRunner.reset();
         });
     }
 
@@ -88,6 +83,7 @@ public class FilesLayerBundle extends LayerBundle {
                 } else if (file.isFile()) {
                     switch (FilenameUtils.getExtension(file.getName())) {
                         case "kml":
+                        case "kmz":
                             KmlRenderer.render(file, mLayer);
                             break;
 

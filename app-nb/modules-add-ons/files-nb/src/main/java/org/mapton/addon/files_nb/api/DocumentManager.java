@@ -32,6 +32,7 @@ import javafx.collections.ObservableList;
 import org.apache.commons.io.FileUtils;
 import org.mapton.api.Mapton;
 import org.openide.util.Exceptions;
+import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
@@ -116,15 +117,17 @@ public class DocumentManager {
         }
     }
 
-    public void removeAll(Document... fileSources) {
-        try {
-            if (fileSources == null || fileSources.length == 0) {
-                mItemsProperty.get().clear();
-            } else {
-                mItemsProperty.get().removeAll(fileSources);
+    public void removeAll(Document... documents) {
+        FxHelper.runLater(() -> {
+            try {
+                if (documents == null || documents.length == 0) {
+                    mItemsProperty.get().clear();
+                } else {
+                    mItemsProperty.get().removeAll(documents);
+                }
+            } catch (Exception e) {
             }
-        } catch (Exception e) {
-        }
+        });
     }
 
     public void save() throws IOException {

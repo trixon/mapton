@@ -54,7 +54,7 @@ import se.trixon.almond.util.swing.dialogs.SimpleDialog;
  */
 public class DocumentsPane extends BorderPane {
 
-    private final String[] SUPPORTED_EXTS = new String[]{"kml"};
+    private final String[] SUPPORTED_EXTS = new String[]{"kml", "kmz"};
     private List<Action> mActions;
     private File mFileDialogStartDir;
     private final CheckListView<Document> mListView = new CheckListView<>();
@@ -150,22 +150,20 @@ public class DocumentsPane extends BorderPane {
         });
 
         mManager.getItems().addListener((ListChangeListener.Change<? extends Document> c) -> {
-            Platform.runLater(() -> {
-                refreshCheckedStates();
-                try {
-                    mManager.save();
-                } catch (IOException ex) {
-                    Exceptions.printStackTrace(ex);
-                }
-            });
+            refreshCheckedStates();
+            try {
+                mManager.save();
+            } catch (IOException ex) {
+                Exceptions.printStackTrace(ex);
+            }
         });
 
         final IndexedCheckModel<Document> checkModel = mListView.getCheckModel();
 
         checkModel.getCheckedItems().addListener((ListChangeListener.Change<? extends Document> c) -> {
             Platform.runLater(() -> {
-                mManager.getItems().forEach(source -> {
-                    source.setVisible(checkModel.isChecked(source));
+                mManager.getItems().forEach(document -> {
+                    document.setVisible(checkModel.isChecked(document));
                 });
 
                 try {
@@ -191,22 +189,22 @@ public class DocumentsPane extends BorderPane {
     private void refreshCheckedStates() {
         final IndexedCheckModel<Document> checkModel = mListView.getCheckModel();
 
-        for (Document source : mManager.getItems()) {
-            if (source.isVisible()) {
-                checkModel.check(source);
+        for (Document document : mManager.getItems()) {
+            if (document.isVisible()) {
+                checkModel.check(document);
             } else {
-                checkModel.clearCheck(source);
+                checkModel.clearCheck(document);
             }
         }
     }
 
     private void remove() {
-        final Document source = getSelected();
+        final Document document = getSelected();
 
         SwingUtilities.invokeLater(() -> {
             String[] buttons = new String[]{Dict.CANCEL.toString(), Dict.CLOSE.toString()};
             NotifyDescriptor d = new NotifyDescriptor(
-                    String.format(Dict.Dialog.MESSAGE_FILE_CLOSE.toString(), source.getFile().getName()),
+                    String.format(Dict.Dialog.MESSAGE_FILE_CLOSE.toString(), document.getFile().getName()),
                     String.format(Dict.Dialog.TITLE_CLOSE_S.toString(), Dict.FILE.toString().toLowerCase()) + "?",
                     NotifyDescriptor.OK_CANCEL_OPTION,
                     NotifyDescriptor.WARNING_MESSAGE,
@@ -215,7 +213,7 @@ public class DocumentsPane extends BorderPane {
 
             if (Dict.CLOSE.toString() == DialogDisplayer.getDefault().notify(d)) {
                 Platform.runLater(() -> {
-                    mManager.removeAll(source);
+                    mManager.removeAll(document);
                 });
             }
         });

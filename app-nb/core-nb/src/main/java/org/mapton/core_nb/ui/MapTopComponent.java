@@ -98,6 +98,7 @@ public final class MapTopComponent extends MTopComponent {
         map.put("geo", new FileNameExtensionFilter("SBG Geo (*.geo)", "geo"));
         map.put("json", new FileNameExtensionFilter("JSON (*.json)", "json"));
         map.put("kml", new FileNameExtensionFilter("Keyhole Markup Language (*.kml)", "kml"));
+        map.put("kmz", new FileNameExtensionFilter("Keyhole Markup Language (*.kmz)", "kmz"));
         map.put("grid", new FileNameExtensionFilter("Mapton Grid (*.grid)", "grid"));
         map.put("png", new FileNameExtensionFilter(String.format("%s (*.png)", Dict.IMAGE.toString()), "png"));
         map.put("txt", new FileNameExtensionFilter(String.format("%s (*.txt)", Dict.TEXT.toString()), "txt"));
