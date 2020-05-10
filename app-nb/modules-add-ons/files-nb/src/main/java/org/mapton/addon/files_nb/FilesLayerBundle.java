@@ -16,10 +16,14 @@
 package org.mapton.addon.files_nb;
 
 import gov.nasa.worldwind.layers.RenderableLayer;
+import java.io.File;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
+import javax.swing.SwingUtilities;
+import org.apache.commons.io.FilenameUtils;
 import org.mapton.addon.files_nb.api.Document;
 import org.mapton.addon.files_nb.api.DocumentManager;
+import org.mapton.addon.files_nb.renderers.KmlRenderer;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.LayerBundleManager;
 import org.openide.util.lookup.ServiceProvider;
@@ -40,7 +44,7 @@ public class FilesLayerBundle extends LayerBundle {
         init();
         initListeners();
 
-        SwingHelper.runLaterDelayed(2000, () -> {
+        SwingHelper.runLaterDelayed(5000, () -> {
             update();
         });
     }
@@ -61,20 +65,36 @@ public class FilesLayerBundle extends LayerBundle {
 
     private void initListeners() {
         mManager.getItems().addListener((ListChangeListener.Change<? extends Document> c) -> {
-            update();
+            SwingUtilities.invokeLater(() -> {
+                update();
+            });
         });
 
         mManager.updatedProperty().addListener((ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
-            update();
+            SwingUtilities.invokeLater(() -> {
+                update();
+            });
         });
     }
 
     private void update() {
         mLayer.removeAllRenderables();
-        for (Document fileSource : mManager.getItems()) {
 
-            if (fileSource.isVisible()) {
-                //mLayer.addRenderable(placemark);
+        for (Document document : mManager.getItems()) {
+            if (document.isVisible()) {
+                File file = document.getFile();
+                if (file.isDirectory()) {
+                    //TODO
+                } else if (file.isFile()) {
+                    switch (FilenameUtils.getExtension(file.getName())) {
+                        case "kml":
+                            KmlRenderer.render(file, mLayer);
+                            break;
+
+                        default:
+                            throw new AssertionError();
+                    }
+                }
             }
         }
 

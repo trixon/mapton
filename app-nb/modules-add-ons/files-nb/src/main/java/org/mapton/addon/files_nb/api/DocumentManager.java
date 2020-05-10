@@ -109,6 +109,13 @@ public class DocumentManager {
         });
     }
 
+    public void refresh() {
+        long now = System.currentTimeMillis();
+        if (mUpdatedProperty.get() != now) {
+            mUpdatedProperty.set(now);
+        }
+    }
+
     public void removeAll(Document... fileSources) {
         try {
             if (fileSources == null || fileSources.length == 0) {
@@ -122,7 +129,7 @@ public class DocumentManager {
 
     public void save() throws IOException {
         FileUtils.writeStringToFile(getSourcesFile(), Mapo.getGson().toJson(mItemsProperty.get()), "utf-8");
-        triggerUpdate();
+        refresh();
     }
 
     public void sort() {
@@ -142,13 +149,6 @@ public class DocumentManager {
         }
 
         return mSourcesFile;
-    }
-
-    private void triggerUpdate() {
-        long now = System.currentTimeMillis();
-        if (mUpdatedProperty.get() != now) {
-            mUpdatedProperty.set(now);
-        }
     }
 
     private static class Holder {

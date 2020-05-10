@@ -98,9 +98,9 @@ public class DocumentsPane extends BorderPane {
         });
         closeAllAction.setGraphic(MaterialIcon._Content.CLEAR.getImageView(getIconSizeToolBarInt()));
 
-        mRefreshAction = new Action(event -> {
+        mRefreshAction = new Action(Dict.REFRESH.toString(), event -> {
+            mManager.refresh();
         });
-        mRefreshAction.setText(Dict.REFRESH.toString());
         mRefreshAction.setGraphic(MaterialIcon._Navigation.REFRESH.getImageView(getIconSizeToolBarInt()));
 
         Action optionsAction = new Action(Dict.OPTIONS.toString(), (event) -> {
