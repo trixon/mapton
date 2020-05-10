@@ -22,6 +22,7 @@ import javafx.collections.ListChangeListener;
 import org.apache.commons.io.FilenameUtils;
 import org.mapton.addon.files_nb.api.Document;
 import org.mapton.addon.files_nb.api.DocumentManager;
+import org.mapton.addon.files_nb.renderers.GeoRenderer;
 import org.mapton.addon.files_nb.renderers.KmlRenderer;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.LayerBundleManager;
@@ -82,6 +83,10 @@ public class FilesLayerBundle extends LayerBundle {
                     //TODO
                 } else if (file.isFile()) {
                     switch (FilenameUtils.getExtension(file.getName())) {
+                        case "geo":
+                            GeoRenderer.render(file, mLayer);
+                            break;
+
                         case "kml":
                         case "kmz":
                             KmlRenderer.render(file, mLayer);

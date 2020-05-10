@@ -54,7 +54,7 @@ import se.trixon.almond.util.swing.dialogs.SimpleDialog;
  */
 public class DocumentsPane extends BorderPane {
 
-    private final String[] SUPPORTED_EXTS = new String[]{"kml", "kmz"};
+    private final String[] SUPPORTED_EXTS = new String[]{"geo", "kml", "kmz"};
     private List<Action> mActions;
     private File mFileDialogStartDir;
     private final CheckListView<Document> mListView = new CheckListView<>();
