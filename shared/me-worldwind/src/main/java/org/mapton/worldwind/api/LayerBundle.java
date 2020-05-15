@@ -31,11 +31,15 @@ import se.trixon.almond.util.Dict;
  */
 public abstract class LayerBundle {
 
+    public static final int DEFAULT_REPAINT_DELAY = 10000;
     private HashSet<Layer> mChildLayers = new HashSet<>();
+    private boolean mInitialized = false;
     private final ObservableList<Layer> mLayers = FXCollections.observableArrayList();
     private final StringProperty mName = new SimpleStringProperty();
+    private Runnable mPainter;
     private Layer mParentLayer;
     private boolean mPopulated = false;
+    private boolean mRepainting = false;
 
     public LayerBundle() {
     }
@@ -78,6 +82,44 @@ public abstract class LayerBundle {
 
     public abstract void populate() throws Exception;
 
+    /**
+     * Runs the repaintRunnable in its own thread after a delay.
+     *
+     * @param delay -1=Run without delay, >=0 initialize and run
+     */
+    public void repaint(long delay) {
+        if (mRepainting || mPainter == null) {
+            return;
+        }
+
+        if (delay != -1) {
+            mInitialized = true;
+        }
+
+        if (mInitialized) {
+            mRepainting = true;
+            new Thread(() -> {
+                if (delay > -1) {
+                    try {
+                        Thread.sleep(delay);
+                    } catch (InterruptedException e) {
+                        //nvm
+                    }
+                }
+                mPainter.run();
+                LayerBundleManager.getInstance().redraw();
+                mRepainting = false;
+            }, getClass().getName() + "->repaint").start();
+        }
+    }
+
+    /**
+     * Repaint now, if initialized
+     */
+    public void repaint() {
+        repaint(-1);
+    }
+
     public void setCategory(Layer layer, String category) {
         layer.setValue(WWHelper.KEY_LAYER_CATEGORY, category);
     }
@@ -94,6 +136,10 @@ public abstract class LayerBundle {
         mName.set(value);
     }
 
+    public void setPainter(Runnable painter) {
+        mPainter = painter;
+    }
+
     public void setPopulated(boolean populated) {
         mPopulated = populated;
     }
@@ -101,5 +147,4 @@ public abstract class LayerBundle {
     public void setVisibleInLayerManager(Layer layer, boolean visibility) {
         layer.setValue(WWHelper.KEY_LAYER_HIDE_FROM_MANAGER, !visibility);
     }
-
 }
