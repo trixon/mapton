@@ -146,7 +146,7 @@ public class MapollageLayerBundle extends LayerBundle {
 
     private void initRepaint() {
         setPainter(() -> {
-            if (!mIconLayer.isEnabled()) {
+            if (!mIconLayer.isEnabled() || mSettings == null) {
                 return;
             }
 
