@@ -25,7 +25,6 @@ import org.mapton.addon.files_nb.api.DocumentManager;
 import org.mapton.addon.files_nb.renderers.GeoRenderer;
 import org.mapton.addon.files_nb.renderers.KmlRenderer;
 import org.mapton.worldwind.api.LayerBundle;
-import org.mapton.worldwind.api.LayerBundleManager;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.swing.DelayedResetRunner;
@@ -42,13 +41,14 @@ public class FilesLayerBundle extends LayerBundle {
 
     public FilesLayerBundle() {
         init();
+        initRepaint();
         initListeners();
     }
 
     @Override
     public void populate() throws Exception {
         getLayers().add(mLayer);
-        setPopulated(true);
+        repaint(DEFAULT_REPAINT_DELAY);
     }
 
     private void init() {
@@ -57,11 +57,12 @@ public class FilesLayerBundle extends LayerBundle {
         setName(Dict.FILES.toString());
         mLayer.setEnabled(true);
         mLayer.setPickEnabled(true);
+        attachTopComponentToLayer("FilesTopComponent", mLayer);
     }
 
     private void initListeners() {
         DelayedResetRunner delayedResetRunner = new DelayedResetRunner(100, () -> {
-            update();
+            repaint();
         });
 
         mManager.getItems().addListener((ListChangeListener.Change<? extends Document> c) -> {
@@ -73,32 +74,32 @@ public class FilesLayerBundle extends LayerBundle {
         });
     }
 
-    private void update() {
-        mLayer.removeAllRenderables();
+    private void initRepaint() {
+        setPainter(() -> {
+            mLayer.removeAllRenderables();
 
-        for (Document document : mManager.getItems()) {
-            if (document.isVisible()) {
-                File file = document.getFile();
-                if (file.isDirectory()) {
-                    //TODO
-                } else if (file.isFile()) {
-                    switch (FilenameUtils.getExtension(file.getName())) {
-                        case "geo":
-                            GeoRenderer.render(file, mLayer);
-                            break;
+            for (Document document : mManager.getItems()) {
+                if (document.isVisible()) {
+                    File file = document.getFile();
+                    if (file.isDirectory()) {
+                        //TODO
+                    } else if (file.isFile()) {
+                        switch (FilenameUtils.getExtension(file.getName())) {
+                            case "geo":
+                                GeoRenderer.render(file, mLayer);
+                                break;
 
-                        case "kml":
-                        case "kmz":
-                            KmlRenderer.render(file, mLayer);
-                            break;
+                            case "kml":
+                            case "kmz":
+                                KmlRenderer.render(file, mLayer);
+                                break;
 
-                        default:
-                            throw new AssertionError();
+                            default:
+                                throw new AssertionError();
+                        }
                     }
                 }
             }
-        }
-
-        LayerBundleManager.getInstance().redraw();
+        });
     }
 }

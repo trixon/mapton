@@ -30,11 +30,9 @@ import org.mapton.api.MPoi;
 import org.mapton.api.MPoiManager;
 import org.mapton.api.Mapton;
 import org.mapton.worldwind.api.LayerBundle;
-import org.mapton.worldwind.api.LayerBundleManager;
 import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.GlobalStateChangeEvent;
 import se.trixon.almond.util.fx.FxHelper;
 
 /**
@@ -49,15 +47,14 @@ public class PoiLayerBundle extends LayerBundle {
 
     public PoiLayerBundle() {
         init();
+        initRepaint();
         initListeners();
-
-        refresh();
     }
 
     @Override
     public void populate() throws Exception {
         getLayers().add(mLayer);
-        setPopulated(true);
+        repaint(DEFAULT_REPAINT_DELAY);
     }
 
     private void init() {
@@ -71,45 +68,45 @@ public class PoiLayerBundle extends LayerBundle {
 
     private void initListeners() {
         mPoiManager.getFilteredItems().addListener((ListChangeListener.Change<? extends MPoi> c) -> {
-            refresh();
+            repaint();
         });
 
-        Mapton.getGlobalState().addListener((GlobalStateChangeEvent evt) -> {
+        Mapton.getGlobalState().addListener(gsce -> {
             Platform.runLater(() -> {
-                sendObjectProperties(evt.getValue());
+                sendObjectProperties(gsce.getValue());
             });
         }, MKey.POI_SELECTION);
     }
 
-    private void refresh() {
-        mLayer.removeAllRenderables();
+    private void initRepaint() {
+        setPainter(() -> {
+            mLayer.removeAllRenderables();
 
-        for (MPoi poi : mPoiManager.getFilteredItems()) {
-            if (poi.isDisplayMarker()) {
-                PointPlacemark placemark = new PointPlacemark(Position.fromDegrees(poi.getLatitude(), poi.getLongitude()));
-                placemark.setLabelText(poi.getName());
-                placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
-                placemark.setEnableLabelPicking(true);
+            for (MPoi poi : mPoiManager.getFilteredItems()) {
+                if (poi.isDisplayMarker()) {
+                    PointPlacemark placemark = new PointPlacemark(Position.fromDegrees(poi.getLatitude(), poi.getLongitude()));
+                    placemark.setLabelText(poi.getName());
+                    placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
+                    placemark.setEnableLabelPicking(true);
 
-                PointPlacemarkAttributes attrs = new PointPlacemarkAttributes(placemark.getDefaultAttributes());
-                attrs.setImageAddress("images/pushpins/plain-white.png");
-                try {
-                    attrs.setImageColor(FxHelper.colorToColor(FxHelper.colorFromHexRGBA(poi.getColor())));
-                } catch (Exception e) {
-                    // nvm?
+                    PointPlacemarkAttributes attrs = new PointPlacemarkAttributes(placemark.getDefaultAttributes());
+                    attrs.setImageAddress("images/pushpins/plain-white.png");
+                    try {
+                        attrs.setImageColor(FxHelper.colorToColor(FxHelper.colorFromHexRGBA(poi.getColor())));
+                    } catch (Exception e) {
+                        // nvm?
+                    }
+                    placemark.setAttributes(attrs);
+                    placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(attrs, 1.5));
+
+                    placemark.setValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK, (Runnable) () -> {
+                        Mapton.getGlobalState().put(MKey.POI_SELECTION_MAP, poi);
+                    });
+
+                    mLayer.addRenderable(placemark);
                 }
-                placemark.setAttributes(attrs);
-                placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(attrs, 1.5));
-
-                placemark.setValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK, (Runnable) () -> {
-                    Mapton.getGlobalState().put(MKey.POI_SELECTION_MAP, poi);
-                });
-
-                mLayer.addRenderable(placemark);
             }
-        }
-
-        LayerBundleManager.getInstance().redraw();
+        });
     }
 
     private void sendObjectProperties(MPoi poi) {

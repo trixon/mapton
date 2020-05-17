@@ -21,30 +21,31 @@ import org.mapton.api.MBackgroundImage;
 import org.mapton.api.MKey;
 import org.mapton.api.Mapton;
 import org.mapton.worldwind.api.LayerBundle;
-import org.mapton.worldwind.api.LayerBundleManager;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.GlobalStateChangeEvent;
 
 /**
  *
  * @author Patrik Karlström
  */
 @ServiceProvider(service = LayerBundle.class)
-public class BackgroundImageLayer extends LayerBundle {
+public class BackgroundImageLayerBundle extends LayerBundle {
+
+    private MBackgroundImage backgroundImage;
 
     private final RenderableLayer mLayer = new RenderableLayer();
     private final ScreenImage mScreenImage = new ScreenImage();
 
-    public BackgroundImageLayer() {
+    public BackgroundImageLayerBundle() {
         init();
+        initRepaint();
         initListeners();
     }
 
     @Override
     public void populate() throws Exception {
         getLayers().add(mLayer);
-        setPopulated(true);
+        repaint(0);
     }
 
     private void init() {
@@ -56,24 +57,25 @@ public class BackgroundImageLayer extends LayerBundle {
     }
 
     private void initListeners() {
-        Mapton.getGlobalState().addListener((GlobalStateChangeEvent evt) -> {
-            MBackgroundImage backgroundImage = evt.getValue();
-            mLayer.removeAllRenderables();
-            if (backgroundImage != null) {
-                mLayer.addRenderable(mScreenImage);
-                mScreenImage.setImageSource(backgroundImage.getImageSource());
-                mScreenImage.setOpacity(backgroundImage.getOpacity());
-            }
-
-            refresh();
+        Mapton.getGlobalState().addListener(gsce -> {
+            backgroundImage = gsce.getValue();
+            repaint();
         }, MKey.BACKGROUND_IMAGE);
     }
 
-    private void refresh() {
-        try {
-            LayerBundleManager.getInstance().redraw();
-        } catch (Exception e) {
-            //nvm
-        }
+    private void initRepaint() {
+        setPainter(() -> {
+            mLayer.removeAllRenderables();
+            if (backgroundImage != null) {
+                mLayer.addRenderable(mScreenImage);
+                synchronized (this) {
+                    mScreenImage.setImageSource(backgroundImage.getImageSource());
+                    try {
+                        mScreenImage.setOpacity(backgroundImage.getOpacity());
+                    } catch (Exception e) {
+                    }
+                }
+            }
+        });
     }
 }

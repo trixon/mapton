@@ -30,7 +30,6 @@ import org.mapton.api.MPoi;
 import org.mapton.api.MTemporaryPoiManager;
 import org.mapton.api.Mapton;
 import org.mapton.worldwind.api.LayerBundle;
-import org.mapton.worldwind.api.LayerBundleManager;
 import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
@@ -43,18 +42,19 @@ import se.trixon.almond.util.fx.FxHelper;
 @ServiceProvider(service = LayerBundle.class)
 public class TemporaryPoiLayerBundle extends LayerBundle {
 
-    private final MTemporaryPoiManager mManager = MTemporaryPoiManager.getInstance();
     private final RenderableLayer mLayer = new RenderableLayer();
+    private final MTemporaryPoiManager mManager = MTemporaryPoiManager.getInstance();
 
     public TemporaryPoiLayerBundle() {
         init();
+        initRepaint();
         initListeners();
     }
 
     @Override
     public void populate() throws Exception {
         getLayers().add(mLayer);
-        setPopulated(true);
+        repaint(0);
     }
 
     private void init() {
@@ -67,40 +67,40 @@ public class TemporaryPoiLayerBundle extends LayerBundle {
 
     private void initListeners() {
         mManager.getItems().addListener((ListChangeListener.Change<? extends MBookmark> c) -> {
-            updatePlacemarks();
+            repaint();
         });
     }
 
-    private void updatePlacemarks() {
-        mLayer.removeAllRenderables();
+    private void initRepaint() {
+        setPainter(() -> {
+            mLayer.removeAllRenderables();
 
-        for (MPoi poi : mManager.getItems()) {
-            if (poi.isDisplayMarker() && ObjectUtils.allNotNull(poi.getLatitude(), poi.getLongitude())) {
-                PointPlacemark placemark = new PointPlacemark(Position.fromDegrees(poi.getLatitude(), poi.getLongitude()));
-                placemark.setLabelText(poi.getName());
-                placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
-                placemark.setEnableLabelPicking(true);
+            for (MPoi poi : mManager.getItems()) {
+                if (poi.isDisplayMarker() && ObjectUtils.allNotNull(poi.getLatitude(), poi.getLongitude())) {
+                    PointPlacemark placemark = new PointPlacemark(Position.fromDegrees(poi.getLatitude(), poi.getLongitude()));
+                    placemark.setLabelText(poi.getName());
+                    placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
+                    placemark.setEnableLabelPicking(true);
 
-                PointPlacemarkAttributes attrs = new PointPlacemarkAttributes(placemark.getDefaultAttributes());
-                attrs.setImageAddress("images/pushpins/plain-white.png");
-                attrs.setImageColor(FxHelper.colorToColor(FxHelper.colorFromHexRGBA(poi.getColor())));
-                placemark.setAttributes(attrs);
-                placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(attrs, 1.5));
+                    PointPlacemarkAttributes attrs = new PointPlacemarkAttributes(placemark.getDefaultAttributes());
+                    attrs.setImageAddress("images/pushpins/plain-white.png");
+                    attrs.setImageColor(FxHelper.colorToColor(FxHelper.colorFromHexRGBA(poi.getColor())));
+                    placemark.setAttributes(attrs);
+                    placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(attrs, 1.5));
 
-                placemark.setValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK, (Runnable) () -> {
-                    Map<String, Object> propertyMap = new LinkedHashMap<>();
-                    propertyMap.put(Dict.NAME.toString(), poi.getName());
-                    propertyMap.put(Dict.DESCRIPTION.toString(), poi.getDescription());
-                    propertyMap.put(Dict.CATEGORY.toString(), poi.getCategory());
-                    propertyMap.put(Dict.COLOR.toString(), javafx.scene.paint.Color.web(poi.getColor()));
+                    placemark.setValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK, (Runnable) () -> {
+                        Map<String, Object> propertyMap = new LinkedHashMap<>();
+                        propertyMap.put(Dict.NAME.toString(), poi.getName());
+                        propertyMap.put(Dict.DESCRIPTION.toString(), poi.getDescription());
+                        propertyMap.put(Dict.CATEGORY.toString(), poi.getCategory());
+                        propertyMap.put(Dict.COLOR.toString(), javafx.scene.paint.Color.web(poi.getColor()));
 
-                    Mapton.getGlobalState().put(MKey.OBJECT_PROPERTIES, propertyMap);
-                });
+                        Mapton.getGlobalState().put(MKey.OBJECT_PROPERTIES, propertyMap);
+                    });
 
-                mLayer.addRenderable(placemark);
+                    mLayer.addRenderable(placemark);
+                }
             }
-        }
-
-        LayerBundleManager.getInstance().redraw();
+        });
     }
 }

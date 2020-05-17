@@ -21,8 +21,8 @@ import java.util.ArrayList;
 import org.mapton.api.MKey;
 import org.mapton.api.Mapton;
 import org.mapton.worldwind.api.LayerBundle;
-import org.mapton.worldwind.api.LayerBundleManager;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.GlobalStateChangeEvent;
 
 /**
  *
@@ -30,17 +30,18 @@ import se.trixon.almond.util.Dict;
  */
 public class IndicatorLayerBundle extends LayerBundle {
 
+    private GlobalStateChangeEvent mGsce;
     private final RenderableLayer mLayer = new RenderableLayer();
 
     public IndicatorLayerBundle() {
         init();
+        initRepaint();
         initListeners();
     }
 
     @Override
     public void populate() {
         getLayers().add(mLayer);
-        setPopulated(true);
     }
 
     private void init() {
@@ -51,25 +52,30 @@ public class IndicatorLayerBundle extends LayerBundle {
     }
 
     private void initListeners() {
-        Mapton.getGlobalState().addListener(gsc -> {
+        Mapton.getGlobalState().addListener(gsce -> {
+            mGsce = gsce;
+            repaint(0);
+        }, MKey.INDICATOR_LAYER_LOAD);
+    }
+
+    private void initRepaint() {
+        setPainter(() -> {
             mLayer.removeAllRenderables();
-            if (gsc.getValue() instanceof Renderable) {
-                mLayer.addRenderable(gsc.getValue());
-            } else if (gsc.getValue() instanceof Renderable[]) {
-                Renderable[] renderables = gsc.getValue();
+            if (mGsce.getValue() instanceof Renderable) {
+                mLayer.addRenderable(mGsce.getValue());
+            } else if (mGsce.getValue() instanceof Renderable[]) {
+                Renderable[] renderables = mGsce.getValue();
                 for (Renderable renderable : renderables) {
                     mLayer.addRenderable(renderable);
                 }
-            } else if (gsc.getValue() instanceof ArrayList) {
-                ArrayList<?> arrayList = gsc.getValue();
+            } else if (mGsce.getValue() instanceof ArrayList) {
+                ArrayList<?> arrayList = mGsce.getValue();
                 if (!arrayList.isEmpty() && arrayList.get(0) instanceof Renderable) {
                     for (Renderable renderable : (ArrayList<Renderable>) arrayList) {
                         mLayer.addRenderable(renderable);
                     }
                 }
             }
-
-            LayerBundleManager.getInstance().redraw();
-        }, MKey.INDICATOR_LAYER_LOAD);
+        });
     }
 }

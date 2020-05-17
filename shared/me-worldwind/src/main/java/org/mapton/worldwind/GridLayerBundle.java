@@ -30,7 +30,6 @@ import org.mapton.api.MLocalGridManager;
 import org.mapton.api.MOptions;
 import static org.mapton.api.MOptions.*;
 import org.mapton.worldwind.api.LayerBundle;
-import org.mapton.worldwind.api.LayerBundleManager;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.fx.FxHelper;
 
@@ -56,16 +55,17 @@ public class GridLayerBundle extends LayerBundle {
         setName(MDict.GRID.toString());
 
         init();
+        initRepaint();
     }
 
     @Override
     public void populate() throws Exception {
         getLayers().add(mLayer);
         initAttributes();
-        refresh();
+        repaint(0);
 
         mOptions.getPreferences().addPreferenceChangeListener((event) -> {
-            refresh();
+            repaint();
         });
     }
 
@@ -118,6 +118,21 @@ public class GridLayerBundle extends LayerBundle {
         mPolarAttributes = (BasicShapeAttributes) mGridAttributes.copy();
         mPolarAttributes.setOutlineMaterial(Material.BLUE);
         mPolarAttributes.setOutlineWidth(2.0);
+    }
+
+    private void initRepaint() {
+        setPainter(() -> {
+            mLayer.removeAllRenderables();
+            mAltitudeMode = mOptions.is(KEY_GRID_GLOBAL_CLAMP_TO_GROUND) ? WorldWind.CLAMP_TO_GROUND : WorldWind.ABSOLUTE;
+
+            if (mOptions.is(KEY_GRID_GLOBAL_PLOT)) {
+                plotGlobal();
+            }
+
+            if (mOptions.is(KEY_GRID_LOCAL_PLOT)) {
+                plotLocal();
+            }
+        });
     }
 
     private void plotGlobal() {
@@ -207,20 +222,5 @@ public class GridLayerBundle extends LayerBundle {
 
             draw(pos1, pos2, shapeAttributes);
         }
-    }
-
-    private void refresh() {
-        mLayer.removeAllRenderables();
-        mAltitudeMode = mOptions.is(KEY_GRID_GLOBAL_CLAMP_TO_GROUND) ? WorldWind.CLAMP_TO_GROUND : WorldWind.ABSOLUTE;
-
-        if (mOptions.is(KEY_GRID_GLOBAL_PLOT)) {
-            plotGlobal();
-        }
-
-        if (mOptions.is(KEY_GRID_LOCAL_PLOT)) {
-            plotLocal();
-        }
-
-        LayerBundleManager.getInstance().redraw();
     }
 }

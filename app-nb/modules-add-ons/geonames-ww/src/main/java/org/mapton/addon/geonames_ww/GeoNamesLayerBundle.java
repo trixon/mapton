@@ -21,13 +21,11 @@ import javafx.collections.ObservableList;
 import org.mapton.api.Mapton;
 import org.mapton.geonames.api.Country;
 import org.mapton.worldwind.api.LayerBundle;
-import org.mapton.worldwind.api.LayerBundleManager;
 import org.mapton.worldwind.api.analytic.AnalyticGrid;
 import org.mapton.worldwind.api.analytic.CellAggregate;
 import org.mapton.worldwind.api.analytic.GridData;
 import org.mapton.worldwind.api.analytic.GridValue;
 import org.openide.util.lookup.ServiceProvider;
-import se.trixon.almond.util.GlobalStateChangeEvent;
 
 /**
  *
@@ -40,14 +38,13 @@ public class GeoNamesLayerBundle extends LayerBundle {
 
     public GeoNamesLayerBundle() {
         init();
+        initRepaint();
         initListeners();
     }
 
     @Override
     public void populate() {
         getLayers().add(mLayer);
-
-        setPopulated(true);
     }
 
     private GridData getGridData(Country country) {
@@ -74,34 +71,34 @@ public class GeoNamesLayerBundle extends LayerBundle {
     }
 
     private void initListeners() {
-        Mapton.getGlobalState().addListener((GlobalStateChangeEvent evt) -> {
-            refresh();
+        Mapton.getGlobalState().addListener(gsce -> {
+            repaint(0);
         }, GeoN.KEY_LIST_SELECTION);
     }
 
-    private void refresh() {
-        mLayer.removeAllRenderables();
+    private void initRepaint() {
+        setPainter(() -> {
+            mLayer.removeAllRenderables();
 
-        ObservableList<Country> countries = Mapton.getGlobalState().get(GeoN.KEY_LIST_SELECTION);
+            ObservableList<Country> countries = Mapton.getGlobalState().get(GeoN.KEY_LIST_SELECTION);
 
-        int altitude = 50000;
-        int minValue = 0;
-        int maxValue = 100000;
+            int altitude = 50000;
+            int minValue = 0;
+            int maxValue = 100000;
 
-        countries.stream()
-                .filter(country -> (country.getGeonames().size() > 1))
-                .map(country -> {
-                    AnalyticGrid analyticGrid = new AnalyticGrid(mLayer, altitude, minValue, maxValue);
-                    analyticGrid.setNullOpacity(0.0);
-                    analyticGrid.setZeroOpacity(0.3);
-                    analyticGrid.setZeroValueSearchRange(5);
-                    analyticGrid.setGridData(getGridData(country));
+            countries.stream()
+                    .filter(country -> (country.getGeonames().size() > 1))
+                    .map(country -> {
+                        AnalyticGrid analyticGrid = new AnalyticGrid(mLayer, altitude, minValue, maxValue);
+                        analyticGrid.setNullOpacity(0.0);
+                        analyticGrid.setZeroOpacity(0.3);
+                        analyticGrid.setZeroValueSearchRange(5);
+                        analyticGrid.setGridData(getGridData(country));
 
-                    return analyticGrid;
-                }).forEachOrdered(analyticGrid -> {
-            mLayer.addRenderable(analyticGrid.getSurface());
+                        return analyticGrid;
+                    }).forEachOrdered(analyticGrid -> {
+                mLayer.addRenderable(analyticGrid.getSurface());
+            });
         });
-
-        LayerBundleManager.getInstance().redraw();
     }
 }

@@ -22,14 +22,12 @@ import gov.nasa.worldwind.render.Offset;
 import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
 import java.awt.Color;
-import java.util.prefs.PreferenceChangeEvent;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.value.ObservableValue;
 import org.mapton.api.MLatLon;
 import org.mapton.api.MOptions;
 import org.mapton.api.Mapton;
 import org.mapton.worldwind.api.LayerBundle;
-import org.mapton.worldwind.api.LayerBundleManager;
 import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.GraphicsHelper;
@@ -48,15 +46,14 @@ public class HomeLayerBundle extends LayerBundle {
 
     public HomeLayerBundle() {
         init();
+        initRepaint();
         initListeners();
-
-        updatePlacemarks();
     }
 
     @Override
     public void populate() throws Exception {
         getLayers().add(mLayer);
-        setPopulated(true);
+        repaint(0);
     }
 
     private void init() {
@@ -71,31 +68,31 @@ public class HomeLayerBundle extends LayerBundle {
             mLayer.setEnabled(t1);
         });
 
-        mOptions.getPreferences().addPreferenceChangeListener((PreferenceChangeEvent evt) -> {
-            switch (evt.getKey()) {
+        mOptions.getPreferences().addPreferenceChangeListener(pce -> {
+            switch (pce.getKey()) {
                 case MOptions.KEY_MAP_HOME_LAT:
-                    updatePlacemarks();
+                    repaint();
                     break;
             }
         });
     }
 
-    private void updatePlacemarks() {
-        mLayer.removeAllRenderables();
+    private void initRepaint() {
+        setPainter(() -> {
+            mLayer.removeAllRenderables();
 
-        MLatLon home = mOptions.getMapHome();
-        PointPlacemark placemark = new PointPlacemark(Position.fromDegrees(home.getLatitude(), home.getLongitude()));
-        placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
+            MLatLon home = mOptions.getMapHome();
+            PointPlacemark placemark = new PointPlacemark(Position.fromDegrees(home.getLatitude(), home.getLongitude()));
+            placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
 
-        PointPlacemarkAttributes attrs = new PointPlacemarkAttributes(placemark.getDefaultAttributes());
-        attrs.setImage(GraphicsHelper.toBufferedImage(MaterialIcon._Action.HOME.getImageIcon(Mapton.getIconSizeToolBar() * 2, Color.RED).getImage()));
-        attrs.setImageOffset(Offset.CENTER);
+            PointPlacemarkAttributes attrs = new PointPlacemarkAttributes(placemark.getDefaultAttributes());
+            attrs.setImage(GraphicsHelper.toBufferedImage(MaterialIcon._Action.HOME.getImageIcon(Mapton.getIconSizeToolBar() * 2, Color.RED).getImage()));
+            attrs.setImageOffset(Offset.CENTER);
 
-        placemark.setAttributes(attrs);
-        placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(attrs, 1.0));
+            placemark.setAttributes(attrs);
+            placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(attrs, 1.0));
 
-        mLayer.addRenderable(placemark);
-
-        LayerBundleManager.getInstance().redraw();
+            mLayer.addRenderable(placemark);
+        });
     }
 }

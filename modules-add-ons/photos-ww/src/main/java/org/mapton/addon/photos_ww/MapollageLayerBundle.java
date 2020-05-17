@@ -45,13 +45,11 @@ import org.mapton.api.MTemporalManager;
 import org.mapton.api.MTemporalRange;
 import org.mapton.api.Mapton;
 import org.mapton.worldwind.api.LayerBundle;
-import org.mapton.worldwind.api.LayerBundleManager;
 import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.dialogs.NbMessage;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.GlobalState;
-import se.trixon.almond.util.GlobalStateChangeEvent;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.FxHelper;
 
@@ -73,6 +71,7 @@ public class MapollageLayerBundle extends LayerBundle {
 
     public MapollageLayerBundle() {
         init();
+        initRepaint();
         initListeners();
     }
 
@@ -80,8 +79,7 @@ public class MapollageLayerBundle extends LayerBundle {
     public void populate() throws Exception {
         getLayers().add(mIconLayer);
         getLayers().add(mRenderableLayer);
-
-        setPopulated(true);
+        repaint(DEFAULT_REPAINT_DELAY);
     }
 
     private String getCatKey(String category, String value) {
@@ -124,24 +122,91 @@ public class MapollageLayerBundle extends LayerBundle {
 
     private void initListeners() {
         GlobalState globalState = Mapton.getGlobalState();
-        globalState.addListener((GlobalStateChangeEvent evt) -> {
-            refresh();
+        globalState.addListener(gsce -> {
+            repaint();
         }, Mapo.KEY_MAPO);
 
-        globalState.addListener((GlobalStateChangeEvent evt) -> {
-            mSettings = evt.getValue();
-            refresh();
+        globalState.addListener(gsce -> {
+            mSettings = gsce.getValue();
+            repaint();
         }, Mapo.KEY_SETTINGS_UPDATED);
 
         mIconLayer.addPropertyChangeListener((PropertyChangeEvent evt) -> {
             if (evt.getPropertyName().equals("Enabled")) {
                 mRenderableLayer.setEnabled(mIconLayer.isEnabled());
                 if (mIconLayer.isEnabled()) {
-                    refresh();
+                    repaint();
                     mTemporalManager.putAll(mTemporalRanges);
                 } else {
                     mTemporalRanges = mTemporalManager.getAndRemoveSubSet(Mapo.KEY_TEMPORAL_PREFIX);
                 }
+            }
+        });
+    }
+
+    private void initRepaint() {
+        setPainter(() -> {
+            if (!mIconLayer.isEnabled()) {
+                return;
+            }
+
+            mIconLayer.removeAllIcons();
+            mRenderableLayer.removeAllRenderables();
+            mLineNodes.clear();
+
+            for (MapoSource source : mManager.getItems()) {
+                if (source.isVisible()) {
+                    for (MapoPhoto photo : source.getCollection().getPhotos()) {
+                        boolean validDate;
+
+                        try {
+                            validDate = mTemporalManager.isValid(photo.getDate());
+                        } catch (NullPointerException e) {
+                            continue;
+                        }
+
+                        if (validDate) {
+                            String absolutePath = new File(source.getThumbnailDir(), String.format("%s.jpg", photo.getChecksum())).getAbsolutePath();
+                            UserFacingIcon icon = new UserFacingIcon(absolutePath, Position.fromDegrees(photo.getLat(), photo.getLon()));
+                            int downSample = 10;
+                            icon.setSize(new Dimension(photo.getWidth() / downSample, photo.getHeight() / downSample));
+                            icon.setHighlightScale(downSample);
+
+                            icon.setValue(WWHelper.KEY_RUNNABLE_HOOVER, (Runnable) () -> {
+                                Map<String, Object> propertyMap = new LinkedHashMap<>();
+                                propertyMap.put(getCatKey(Dict.PHOTO.toString(), Dict.NAME.toString()), FilenameUtils.getBaseName(photo.getPath()));
+                                propertyMap.put(getCatKey(Dict.PHOTO.toString(), Dict.DATE.toString()), mDateFormat.format(photo.getDate()));
+                                propertyMap.put(getCatKey(Dict.PHOTO.toString(), Dict.PATH.toString()), photo.getPath());
+                                propertyMap.put(getCatKey(Dict.PHOTO.toString(), Dict.LATITUDE.toString()), photo.getLat());
+                                propertyMap.put(getCatKey(Dict.PHOTO.toString(), Dict.LONGITUDE.toString()), photo.getLon());
+                                propertyMap.put(getCatKey(Dict.PHOTO.toString(), Dict.ALTITUDE.toString()), photo.getAltitude());
+                                propertyMap.put(getCatKey(Dict.PHOTO.toString(), Dict.BEARING.toString()), photo.getBearing());
+                                propertyMap.put(getCatKey(Dict.SOURCE.toString(), Dict.SOURCE.toString()), source.getName());
+                                propertyMap.put(getCatKey(Dict.SOURCE.toString(), Dict.DESCRIPTION.toString()), source.getDescriptionString());
+                                propertyMap.put(getCatKey(Dict.SOURCE.toString(), Dict.CACHE.toString()), source.getThumbnailDir().getAbsolutePath());
+
+                                Mapton.getGlobalState().put(MKey.OBJECT_PROPERTIES, propertyMap);
+                            });
+
+                            icon.setValue(WWHelper.KEY_RUNNABLE_LEFT_DOUBLE_CLICK, (Runnable) () -> {
+                                File f = new File(photo.getPath());
+                                if (f.isFile()) {
+                                    SystemHelper.desktopOpen(new File(photo.getPath()));
+                                } else {
+                                    NbMessage.error(Dict.Dialog.TITLE_FILE_NOT_FOUND.toString(), String.format(Dict.Dialog.MESSAGE_FILE_NOT_FOUND.toString(), photo.getPath()));
+                                }
+                            });
+
+                            mLineNodes.add(new LineNode(photo.getDate(), photo.getLat(), photo.getLon()));
+
+                            mIconLayer.addIcon(icon);
+                        }
+                    }
+                }
+            }
+
+            if (mLineNodes.size() > 1) {
+                plotTracks();
             }
         });
     }
@@ -205,72 +270,4 @@ public class MapollageLayerBundle extends LayerBundle {
             }
         }
     }
-
-    private void refresh() {
-        if (!mIconLayer.isEnabled()) {
-            return;
-        }
-
-        mIconLayer.removeAllIcons();
-        mRenderableLayer.removeAllRenderables();
-        mLineNodes.clear();
-
-        for (MapoSource source : mManager.getItems()) {
-            if (source.isVisible()) {
-                for (MapoPhoto photo : source.getCollection().getPhotos()) {
-                    boolean validDate;
-
-                    try {
-                        validDate = mTemporalManager.isValid(photo.getDate());
-                    } catch (NullPointerException e) {
-                        continue;
-                    }
-
-                    if (validDate) {
-                        String absolutePath = new File(source.getThumbnailDir(), String.format("%s.jpg", photo.getChecksum())).getAbsolutePath();
-                        UserFacingIcon icon = new UserFacingIcon(absolutePath, Position.fromDegrees(photo.getLat(), photo.getLon()));
-                        int downSample = 10;
-                        icon.setSize(new Dimension(photo.getWidth() / downSample, photo.getHeight() / downSample));
-                        icon.setHighlightScale(downSample);
-
-                        icon.setValue(WWHelper.KEY_RUNNABLE_HOOVER, (Runnable) () -> {
-                            Map<String, Object> propertyMap = new LinkedHashMap<>();
-                            propertyMap.put(getCatKey(Dict.PHOTO.toString(), Dict.NAME.toString()), FilenameUtils.getBaseName(photo.getPath()));
-                            propertyMap.put(getCatKey(Dict.PHOTO.toString(), Dict.DATE.toString()), mDateFormat.format(photo.getDate()));
-                            propertyMap.put(getCatKey(Dict.PHOTO.toString(), Dict.PATH.toString()), photo.getPath());
-                            propertyMap.put(getCatKey(Dict.PHOTO.toString(), Dict.LATITUDE.toString()), photo.getLat());
-                            propertyMap.put(getCatKey(Dict.PHOTO.toString(), Dict.LONGITUDE.toString()), photo.getLon());
-                            propertyMap.put(getCatKey(Dict.PHOTO.toString(), Dict.ALTITUDE.toString()), photo.getAltitude());
-                            propertyMap.put(getCatKey(Dict.PHOTO.toString(), Dict.BEARING.toString()), photo.getBearing());
-                            propertyMap.put(getCatKey(Dict.SOURCE.toString(), Dict.SOURCE.toString()), source.getName());
-                            propertyMap.put(getCatKey(Dict.SOURCE.toString(), Dict.DESCRIPTION.toString()), source.getDescriptionString());
-                            propertyMap.put(getCatKey(Dict.SOURCE.toString(), Dict.CACHE.toString()), source.getThumbnailDir().getAbsolutePath());
-
-                            Mapton.getGlobalState().put(MKey.OBJECT_PROPERTIES, propertyMap);
-                        });
-
-                        icon.setValue(WWHelper.KEY_RUNNABLE_LEFT_DOUBLE_CLICK, (Runnable) () -> {
-                            File f = new File(photo.getPath());
-                            if (f.isFile()) {
-                                SystemHelper.desktopOpen(new File(photo.getPath()));
-                            } else {
-                                NbMessage.error(Dict.Dialog.TITLE_FILE_NOT_FOUND.toString(), String.format(Dict.Dialog.MESSAGE_FILE_NOT_FOUND.toString(), photo.getPath()));
-                            }
-                        });
-
-                        mLineNodes.add(new LineNode(photo.getDate(), photo.getLat(), photo.getLon()));
-
-                        mIconLayer.addIcon(icon);
-                    }
-                }
-            }
-        }
-
-        if (mLineNodes.size() > 1) {
-            plotTracks();
-        }
-
-        LayerBundleManager.getInstance().redraw();
-    }
-
 }

@@ -19,6 +19,7 @@ import gov.nasa.worldwind.layers.Layer;
 import org.mapton.api.MEngine;
 import org.mapton.worldwind.WorldWindMapEngine;
 import org.mapton.worldwind.WorldWindowPanel;
+import se.trixon.almond.util.swing.DelayedResetRunner;
 
 /**
  *
@@ -26,6 +27,7 @@ import org.mapton.worldwind.WorldWindowPanel;
  */
 public class LayerBundleManager {
 
+    private final DelayedResetRunner mDelayedResetRunner;
     private WorldWindMapEngine mEngine;
     private WorldWindowPanel mMap;
 
@@ -34,6 +36,9 @@ public class LayerBundleManager {
     }
 
     private LayerBundleManager() {
+        mDelayedResetRunner = new DelayedResetRunner(50, () -> {
+            getMap().redraw();
+        });
     }
 
     public void add(Layer layer) {
@@ -41,7 +46,7 @@ public class LayerBundleManager {
     }
 
     public void redraw() {
-        getMap().redraw();
+        mDelayedResetRunner.reset();
     }
 
     public void remove(Layer layer) {
