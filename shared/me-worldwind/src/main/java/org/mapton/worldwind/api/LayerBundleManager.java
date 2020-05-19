@@ -37,7 +37,11 @@ public class LayerBundleManager {
 
     private LayerBundleManager() {
         mDelayedResetRunner = new DelayedResetRunner(50, () -> {
-            getMap().redraw();
+            try {
+                getMap().redraw();
+            } catch (Exception e) {
+                //nvm Called before map was initialized
+            }
         });
     }
 
