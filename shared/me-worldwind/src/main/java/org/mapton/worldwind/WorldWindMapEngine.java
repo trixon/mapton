@@ -28,6 +28,7 @@ import gov.nasa.worldwind.geom.Box;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.geom.Sector;
 import gov.nasa.worldwind.geom.Vec4;
+import java.awt.BorderLayout;
 import java.awt.Point;
 import java.awt.event.HierarchyBoundsListener;
 import java.awt.event.HierarchyEvent;
@@ -41,6 +42,10 @@ import javafx.application.Platform;
 import javafx.embed.swing.SwingNode;
 import javafx.scene.Node;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import org.apache.commons.lang3.StringUtils;
@@ -57,6 +62,7 @@ import org.mapton.worldwind.api.MapStyle;
 import org.mapton.worldwind.ruler.RulerTabPane;
 import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
+import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.GlobalState;
 import se.trixon.almond.util.SystemHelper;
 
@@ -72,6 +78,7 @@ public class WorldWindMapEngine extends MEngine {
     private boolean mInProgress;
     private boolean mInitialized;
     private final LayerView mLayerView;
+    private JPanel mMainPanel;
     private WorldWindowPanel mMap;
     private double mOldAltitude;
     private double mOldGlobalZoom;
@@ -151,14 +158,25 @@ public class WorldWindMapEngine extends MEngine {
 
     @Override
     public JComponent getMapComponent() {
-        if (mMap == null) {
-            init();
-            initListeners();
+        if (mMainPanel == null) {
+            initMainPanel();
+
+            new Thread(() -> {
+                init();
+                initListeners();
+
+                SwingUtilities.invokeLater(() -> {
+                    mMainPanel.removeAll();
+                    mMainPanel.add(mMap, BorderLayout.CENTER);
+                    mMainPanel.revalidate();
+                    mMainPanel.repaint();
+                });
+            }).start();
         }
 
         updateToolbarDocumentInfo();
 
-        return mMap;
+        return mMainPanel;
     }
 
     @Override
@@ -409,6 +427,18 @@ public class WorldWindMapEngine extends MEngine {
         });
 
         downloadTimer.start();
+    }
+
+    private void initMainPanel() {
+        mMainPanel = new JPanel(new BorderLayout());
+        JProgressBar progressBar = new JProgressBar();
+        progressBar.setIndeterminate(true);
+        mMainPanel.add(progressBar, BorderLayout.NORTH);
+        JLabel label = new JLabel(String.format("<html>%s<br/><br/><br/></html>", Dict.PATIENCE_IS_A_VIRTUE.toString()));
+        label.setVerticalAlignment(SwingConstants.BOTTOM);
+        label.setFont(label.getFont().deriveFont(label.getFont().getSize() * 2f));
+        label.setHorizontalAlignment(SwingConstants.CENTER);
+        mMainPanel.add(label, BorderLayout.CENTER);
     }
 
     private double toGlobalZoom() {
