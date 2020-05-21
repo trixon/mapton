@@ -233,12 +233,10 @@ public class WorldWindMapEngine extends MEngine {
 
     @Override
     public void onStyleSwap() {
-        String prevStyle = mOptions.get(KEY_MAP_STYLE_PREV);
-        if (StringUtils.isNoneBlank(prevStyle)) {
-            String currentStyle = mOptions.get(KEY_MAP_STYLE);
-            mOptions.put(KEY_MAP_STYLE, prevStyle);
-            mOptions.put(KEY_MAP_STYLE_PREV, currentStyle);
-        }
+        String prevStyle = StringUtils.defaultIfBlank(mOptions.get(KEY_MAP_STYLE_PREV), DEFAULT_MAP_STYLE);
+        String currentStyle = mOptions.get(KEY_MAP_STYLE);
+        mOptions.put(KEY_MAP_STYLE, prevStyle);
+        mOptions.put(KEY_MAP_STYLE_PREV, currentStyle);
     }
 
     @Override
