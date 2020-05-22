@@ -17,12 +17,8 @@ package org.mapton.core_nb.ui.bookmark;
 
 import javafx.scene.Scene;
 import org.mapton.base.ui.bookmark.BookmarksView;
-import org.mapton.core_nb.api.MMapMagnet;
 import org.mapton.core_nb.api.MTopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
-import org.openide.awt.ActionID;
-import org.openide.awt.ActionReference;
-import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
 import se.trixon.almond.util.Dict;
 
@@ -30,7 +26,7 @@ import se.trixon.almond.util.Dict;
  * Top component which displays something.
  */
 @ConvertAsProperties(
-        dtd = "-//org.mapton.core_nb.bookmark//Bookmark//EN",
+        dtd = "-//org.mapton.core_nb.ui.bookmark//Bookmark//EN",
         autostore = false
 )
 @TopComponent.Description(
@@ -38,16 +34,7 @@ import se.trixon.almond.util.Dict;
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(mode = "topLeft", openAtStartup = false, position = 1)
-@ActionID(category = "Window", id = "org.mapton.core_nb.bookmark.BookmarkTopComponent")
-@ActionReference(path = "Menu/Window" /*, position = 333 */)
-@TopComponent.OpenActionRegistration(
-        displayName = "#CTL_BookmarkAction",
-        preferredID = "BookmarkTopComponent"
-)
-@Messages({
-    "CTL_BookmarkAction=Bookmark"
-})
-public final class BookmarkTopComponent extends MTopComponent implements MMapMagnet {
+public final class BookmarkTopComponent extends MTopComponent {
 
     public BookmarkTopComponent() {
         putClientProperty(PROP_MAXIMIZATION_DISABLED, Boolean.TRUE);

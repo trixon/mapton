@@ -20,7 +20,6 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import org.mapton.addon.photos_nb.ui.SourcesPane;
 import org.mapton.api.Mapton;
-import org.mapton.core_nb.api.MMapMagnet;
 import org.mapton.core_nb.api.MTopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.windows.TopComponent;
@@ -39,7 +38,7 @@ import se.trixon.almond.util.Dict;
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(mode = "mapTools", openAtStartup = false)
-public final class PhotosTopComponent extends MTopComponent implements MMapMagnet {
+public final class PhotosTopComponent extends MTopComponent {
 
     private BorderPane mRoot;
 

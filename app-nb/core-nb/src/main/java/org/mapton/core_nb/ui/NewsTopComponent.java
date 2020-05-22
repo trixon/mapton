@@ -17,7 +17,6 @@ package org.mapton.core_nb.ui;
 
 import javafx.scene.Scene;
 import org.mapton.base.ui.news.NewsView;
-import org.mapton.core_nb.api.MMapMagnet;
 import org.mapton.core_nb.api.MTopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.windows.TopComponent;
@@ -36,7 +35,7 @@ import se.trixon.almond.util.Dict;
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(mode = "editor", openAtStartup = false)
-public final class NewsTopComponent extends MTopComponent implements MMapMagnet {
+public final class NewsTopComponent extends MTopComponent {
 
     public NewsTopComponent() {
         setName(Dict.NEWS.toString());

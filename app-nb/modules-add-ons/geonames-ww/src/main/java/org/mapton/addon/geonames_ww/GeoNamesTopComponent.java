@@ -30,7 +30,6 @@ import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
-import org.mapton.core_nb.api.MMapMagnet;
 import org.mapton.core_nb.api.MTopComponent;
 import org.mapton.geonames.api.Country;
 import org.mapton.geonames.api.CountryManager;
@@ -54,7 +53,7 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(mode = "mapTools", openAtStartup = false)
-public final class GeoNamesTopComponent extends MTopComponent implements MMapMagnet {
+public final class GeoNamesTopComponent extends MTopComponent {
 
     private IndexedCheckModel<Country> mCheckModel;
     private ListChangeListener<Country> mListChangeListener;

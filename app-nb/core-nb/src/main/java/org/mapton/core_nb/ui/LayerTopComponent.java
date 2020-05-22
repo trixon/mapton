@@ -17,7 +17,6 @@ package org.mapton.core_nb.ui;
 
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
-import org.mapton.core_nb.api.MMapMagnet;
 import org.mapton.core_nb.api.MTopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
@@ -45,7 +44,7 @@ import se.trixon.almond.util.Dict;
 @Messages({
     "CTL_LayerAction=Layer"
 })
-public final class LayerTopComponent extends MTopComponent implements MMapMagnet {
+public final class LayerTopComponent extends MTopComponent {
 
     private BorderPane mBorderPane;
 

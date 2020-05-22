@@ -16,9 +16,11 @@
 package org.mapton.core_nb.api;
 
 /**
+ * @deprecated Use window group 'MapGroup' instead.
  *
  * @author Patrik Karlström
  */
+@Deprecated
 public interface MMapMagnet {
 
 }

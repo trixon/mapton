@@ -21,7 +21,6 @@ import javafx.scene.layout.BorderPane;
 import org.mapton.api.MDict;
 import org.mapton.api.Mapton;
 import org.mapton.base.ui.grid.GridView;
-import org.mapton.core_nb.api.MMapMagnet;
 import org.mapton.core_nb.api.MTopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.windows.TopComponent;
@@ -30,7 +29,7 @@ import org.openide.windows.TopComponent;
  * Top component which displays something.
  */
 @ConvertAsProperties(
-        dtd = "-//org.mapton.core//Grid//EN",
+        dtd = "-//org.mapton.core_nb.ui//Grid//EN",
         autostore = false
 )
 @TopComponent.Description(
@@ -39,7 +38,7 @@ import org.openide.windows.TopComponent;
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(mode = "mapTools", openAtStartup = false)
-public final class GridTopComponent extends MTopComponent implements MMapMagnet {
+public final class GridTopComponent extends MTopComponent {
 
     private GridView mGridForm;
     private BorderPane mRoot;

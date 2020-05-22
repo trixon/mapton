@@ -17,7 +17,6 @@ package org.mapton.core_nb.ui;
 
 import javafx.scene.Scene;
 import org.mapton.base.ui.ObjectPropertyView;
-import org.mapton.core_nb.api.MMapMagnet;
 import org.mapton.core_nb.api.MTopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.windows.TopComponent;
@@ -36,11 +35,7 @@ import se.trixon.almond.util.Dict;
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(mode = "properties", openAtStartup = false)
-@TopComponent.OpenActionRegistration(
-        displayName = "#CTL_ObjectPropertiesAction",
-        preferredID = "ObjectPropertiesTopComponent"
-)
-public final class ObjectPropertiesTopComponent extends MTopComponent implements MMapMagnet {
+public final class ObjectPropertiesTopComponent extends MTopComponent {
 
     public ObjectPropertiesTopComponent() {
         setName(Dict.OBJECT_PROPERTIES.toString());

@@ -1,3 +1,4 @@
 Manifest-Version: 1.0
+OpenIDE-Module-Layer: org/mapton/addon/geonames_ww/layer.xml
 OpenIDE-Module-Localizing-Bundle: org/mapton/addon/geonames_ww/Bundle.properties
 

@@ -19,7 +19,6 @@ import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import org.mapton.api.MDict;
 import org.mapton.base.ui.poi.PoisView;
-import org.mapton.core_nb.api.MMapMagnet;
 import org.mapton.core_nb.api.MTopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.windows.TopComponent;
@@ -41,7 +40,7 @@ import org.openide.windows.TopComponent;
         displayName = "POI",
         preferredID = "PoiTopComponent"
 )
-public final class PoiTopComponent extends MTopComponent implements MMapMagnet {
+public final class PoiTopComponent extends MTopComponent {
 
     private BorderPane mRoot;
 

@@ -15,8 +15,8 @@
  */
 package org.mapton.core_nb.actions;
 
-import org.mapton.core_nb.api.BaseAction;
 import java.awt.event.ActionEvent;
+import org.mapton.core_nb.api.BaseAction;
 import org.mapton.core_nb.ui.MapToolBarPanel;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;

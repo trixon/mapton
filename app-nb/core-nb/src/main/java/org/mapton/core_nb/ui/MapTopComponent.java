@@ -23,7 +23,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
 import java.awt.event.HierarchyEvent;
-import java.util.HashSet;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
@@ -44,7 +43,6 @@ import org.mapton.base.ui.MapContextMenu;
 import org.mapton.base.ui.StatusBarView;
 import org.mapton.base.ui.StatusBarView.StatusWindowMode;
 import org.mapton.base.ui.grid.LocalGridsView;
-import org.mapton.core_nb.api.MMapMagnet;
 import org.mapton.core_nb.api.MTopComponent;
 import org.mapton.core_nb.ui.grid.LocalGridEditor;
 import org.netbeans.api.settings.ConvertAsProperties;
@@ -76,10 +74,8 @@ import se.trixon.almond.util.swing.SwingHelper;
 })
 public final class MapTopComponent extends MTopComponent {
 
-    private final HashSet<TopComponent> mActiveMapMagnets = new HashSet<>();
     private AppStatusPanel mAppStatusPanel;
     private MEngine mEngine;
-    private final HashSet<TopComponent> mMapMagnets = new HashSet<>();
     private JPanel mProgressPanel;
     private BorderPane mRoot;
 
@@ -136,40 +132,14 @@ public final class MapTopComponent extends MTopComponent {
     @Override
     protected void componentHidden() {
         super.componentHidden();
-        mMapMagnets.clear();
-        mActiveMapMagnets.clear();
-
-        final WindowManager windowManager = WindowManager.getDefault();
-        windowManager.getModes().stream().filter((mode) -> !(mode.equals(windowManager.findMode(this)))).forEachOrdered((mode) -> {
-            TopComponent selectedTopComponent = mode.getSelectedTopComponent();
-            for (TopComponent tc : windowManager.getOpenedTopComponents(mode)) {
-                if (tc instanceof MTopComponent && tc.isOpened() && !windowManager.isTopComponentFloating(tc)) {
-                    if (tc instanceof MMapMagnet) {
-                        if (tc.equals(selectedTopComponent)) {
-                            mActiveMapMagnets.add(tc);
-                        }
-
-                        tc.close();
-                        mMapMagnets.add(tc);
-                    }
-                }
-            }
-        });
-
+        WindowManager.getDefault().findTopComponentGroup("MapGroup").close();
         StatusBarView.getInstance().setWindowMode(StatusWindowMode.OTHER);
     }
 
     @Override
     protected void componentShowing() {
         super.componentShowing();
-        for (TopComponent tc : mMapMagnets) {
-            tc.open();
-        }
-
-        for (TopComponent tc : mActiveMapMagnets) {
-            tc.requestActive();
-        }
-
+        WindowManager.getDefault().findTopComponentGroup("MapGroup").open();
         StatusBarView.getInstance().setWindowMode(StatusWindowMode.MAP);
     }
 

@@ -42,6 +42,17 @@ limitations under the License.
             <file name="navigator.wsmode" url="navigatorWsmode.xml"/>
             <file name="topLeft.wsmode" url="topLeftWsmode.xml"/>
         </folder>
+        <folder name="Groups">
+            <file name="MapGroup.wsgrp" url="MapGroupWsgrp.xml"/>
+            <folder name="MapGroup">
+                <file name="BookmarkTopComponent.wstcgrp" url="ui/bookmark/BookmarkTopComponentWstcgrp.xml"/>
+                <file name="ChartTopComponent.wstcgrp" url="ui/ChartTopComponentWstcgrp.xml"/>
+                <file name="GridTopComponent.wstcgrp" url="ui/grid/GridTopComponentWstcgrp.xml"/>
+                <file name="LayerTopComponent.wstcgrp" url="ui/LayerTopComponentWstcgrp.xml"/>
+                <file name="ObjectPropertiesTopComponent.wstcgrp" url="ui/ObjectPropertiesTopComponentWstcgrp.xml"/>
+                <file name="ToolboxTopComponent.wstcgrp" url="ui/ToolboxTopComponentWstcgrp.xml"/>
+            </folder>
+        </folder>
     </folder>
     <folder name="Shortcuts">
         <file name="DS-R.shadow">
