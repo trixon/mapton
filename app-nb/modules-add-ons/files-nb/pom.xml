@@ -127,19 +127,10 @@
             <groupId>se.trixon.almond</groupId>
             <artifactId>almond-nbp</artifactId>
         </dependency>
-        <dependency>
-            <groupId>se.trixon.almond</groupId>
-            <artifactId>almond-util</artifactId>
-        </dependency>
 
         <!-- Other -->
-        <dependency>
-            <groupId>com.drewnoakes</groupId>
-            <artifactId>metadata-extractor</artifactId>
-        </dependency>
     </dependencies>
     <properties>
-        <netbeans.compile.on.save>all</netbeans.compile.on.save>
         <netbeans.hint.license>apache20</netbeans.hint.license>
     </properties>
 </project>

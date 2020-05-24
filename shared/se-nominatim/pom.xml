@@ -57,6 +57,12 @@
             <groupId>fr.dudie</groupId>
             <artifactId>nominatim-api</artifactId>
             <version>3.4</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 </project>

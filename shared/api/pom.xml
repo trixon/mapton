@@ -18,6 +18,7 @@
                 <configuration>
                     <publicPackages>
                         <publicPackage>org.mapton.api.*</publicPackage>
+                        <publicPackage>com.drew.*</publicPackage>
                         <publicPackage>com.dlsc.*</publicPackage>
                         <publicPackage>com.github.goober.*</publicPackage>
                         <publicPackage>com.google.*</publicPackage>
@@ -391,6 +392,10 @@
             <groupId>com.googlecode.json-simple</groupId>
             <artifactId>json-simple</artifactId>
             <version>1.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.drewnoakes</groupId>
+            <artifactId>metadata-extractor</artifactId>
         </dependency>
     </dependencies>
 

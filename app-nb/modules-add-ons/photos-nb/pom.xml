@@ -118,10 +118,6 @@
         </dependency>
 
         <!-- Other -->
-        <dependency>
-            <groupId>com.drewnoakes</groupId>
-            <artifactId>metadata-extractor</artifactId>
-        </dependency>
     </dependencies>
     <properties>
         <netbeans.compile.on.save>all</netbeans.compile.on.save>
