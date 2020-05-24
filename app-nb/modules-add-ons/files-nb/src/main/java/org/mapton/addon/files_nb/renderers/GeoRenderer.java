@@ -15,20 +15,31 @@
  */
 package org.mapton.addon.files_nb.renderers;
 
+import gov.nasa.worldwind.WorldWind;
+import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
+import gov.nasa.worldwind.render.BasicShapeAttributes;
+import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwind.render.Renderable;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
+import javafx.geometry.Point2D;
 import static org.mapton.addon.files_nb.renderers.Renderer.DIGEST_RENDERABLE_MAP;
+import org.mapton.api.MCooTrans;
+import org.mapton.api.MOptions;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.io.Geo;
+import se.trixon.almond.util.io.GeoPoint;
 
 /**
  *
  * @author Patrik Karlström
  */
 public class GeoRenderer extends Renderer {
+
+    private BasicShapeAttributes mLineBasicShapeAttributes;
 
     public static void render(File file, RenderableLayer layer) {
         GeoRenderer renderer = new GeoRenderer(file, layer);
@@ -38,6 +49,7 @@ public class GeoRenderer extends Renderer {
     public GeoRenderer(File file, RenderableLayer layer) {
         mFile = file;
         mLayer = layer;
+        initAttributes();
     }
 
     @Override
@@ -49,6 +61,8 @@ public class GeoRenderer extends Renderer {
                 Geo geo = new Geo();
                 try {
                     geo.read(mFile);
+                    renderPoints(newRenderables, geo.getPoints());
+                    System.out.println(geo.getLines().size());
                     //Dynamic transform
                     //Create Points
                     //Create Lines
@@ -65,4 +79,23 @@ public class GeoRenderer extends Renderer {
         });
     }
 
+    private void initAttributes() {
+        mLineBasicShapeAttributes = new BasicShapeAttributes();
+    }
+
+    private void renderPoints(ArrayList<Renderable> renderables, List<GeoPoint> points) {
+        MCooTrans.getCooTrans();
+        MCooTrans ct = MOptions.getInstance().getMapCooTrans();
+
+        for (GeoPoint point : points) {
+            if (ct.isWithinProjectedBounds(point.getX(), point.getY())) {
+                Point2D p = ct.toWgs84(point.getX(), point.getY());
+                PointPlacemark placemark = new PointPlacemark(Position.fromDegrees(p.getY(), p.getX()));
+                placemark.setLabelText(point.getPointId());
+                placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
+                placemark.setEnableLabelPicking(true);
+                renderables.add(placemark);
+            }
+        }
+    }
 }
