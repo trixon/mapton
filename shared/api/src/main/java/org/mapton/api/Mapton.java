@@ -32,13 +32,13 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.util.Duration;
 import javax.swing.SwingUtilities;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.Notifications;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.glyphfont.FontAwesome;
 import org.controlsfx.glyphfont.Glyph;
 import org.openide.modules.InstalledFileLocator;
+import org.openide.modules.Places;
 import org.openide.util.Lookup;
 import se.trixon.almond.util.GlobalState;
 import se.trixon.almond.util.Log;
@@ -71,7 +71,7 @@ public class Mapton {
 
     static {
         CONFIG_DIR = new File(System.getProperty("netbeans.user"), "mapton-modules");
-        CACHE_DIR = new File(FileUtils.getUserDirectory(), ".cache/mapton");
+        CACHE_DIR = Places.getCacheDirectory();
         System.setProperty("mapton.cache", CACHE_DIR.getAbsolutePath());//Used by WorldWind
     }
 
