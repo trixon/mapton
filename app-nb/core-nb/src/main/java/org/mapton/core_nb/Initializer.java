@@ -125,7 +125,6 @@ public class Initializer implements Runnable {
                 Almond.getTopComponent("ObjectPropertiesTopComponent");
                 Almond.getTopComponent("ChartTopComponent");
             });
-            new Thread().start();
 
             new UpdateNotificator();
         });

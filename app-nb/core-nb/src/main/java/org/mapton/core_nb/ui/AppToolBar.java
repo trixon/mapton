@@ -52,6 +52,7 @@ import org.openide.awt.Actions;
 import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.nbp.AlmondOptions;
 import se.trixon.almond.nbp.dialogs.NbAboutFx;
+import se.trixon.almond.nbp.dialogs.NbSystemInformation;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.GlobalStateChangeEvent;
 import se.trixon.almond.util.SystemHelper;
@@ -77,6 +78,7 @@ public class AppToolBar extends BaseToolBar {
     private FxActionSwingCheck mMapAction;
     private FxActionSwing mOptionsAction;
     private FxActionSwing mPluginsAction;
+    private FxActionSwing mSysInfoAction;
     private FxActionSwing mQuitAction;
     private FxActionSwing mResetWindowsAction;
     private FxActionSwing mRestartAction;
@@ -136,6 +138,7 @@ public class AppToolBar extends BaseToolBar {
                     viewActionGroup,
                     ActionUtils.ACTION_SEPARATOR,
                     mPluginsAction,
+                    mSysInfoAction,
                     ActionUtils.ACTION_SEPARATOR,
                     mHelpAction
             ));
@@ -145,6 +148,7 @@ public class AppToolBar extends BaseToolBar {
                     ActionUtils.ACTION_SEPARATOR,
                     mOptionsAction,
                     mPluginsAction,
+                    mSysInfoAction,
                     ActionUtils.ACTION_SEPARATOR,
                     mHelpAction,
                     mAboutAction,
@@ -255,6 +259,11 @@ public class AppToolBar extends BaseToolBar {
             Actions.forID("System", "org.netbeans.modules.autoupdate.ui.actions.PluginManagerAction").actionPerformed(dummySwingActionEvent);
         });
         mPluginsAction.setAccelerator(new KeyCodeCombination(KeyCode.X, KeyCombination.SHORTCUT_DOWN, KeyCodeCombination.SHIFT_DOWN));
+
+        //SysInfo
+        mSysInfoAction = new FxActionSwing(Dict.SYSTEM_INFORMATION.toString(), () -> {
+            new NbSystemInformation().displayDialog();
+        });
 
         //options
         mOptionsAction = new FxActionSwing(Dict.OPTIONS.toString(), () -> {
