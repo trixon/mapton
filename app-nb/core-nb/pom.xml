@@ -145,7 +145,6 @@
             <artifactId>almond-nbp</artifactId>
         </dependency>
 
-
         <!-- Other -->
     </dependencies>
     <properties>
