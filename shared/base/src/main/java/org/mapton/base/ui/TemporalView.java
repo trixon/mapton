@@ -179,26 +179,28 @@ public class TemporalView extends BorderPane {
     }
 
     private void refreshTitle() {
-        if (isDisabled()) {
-            mTitleProperty.set(Dict.DATE.toString());
-        } else {
-            String text = null;
-            switch (mDatePane.getDateSelectionMode()) {
-                case INTERVAL:
-                    text = String.format("%s %s %s",
-                            mManager.getLowDate(),
-                            Dict.TO.toString().toLowerCase(Locale.getDefault()),
-                            mManager.getHighDate()
-                    );
-                    break;
+        FxHelper.runLater(() -> {
+            if (isDisabled()) {
+                mTitleProperty.set(Dict.DATE.toString());
+            } else {
+                String text = null;
+                switch (mDatePane.getDateSelectionMode()) {
+                    case INTERVAL:
+                        text = String.format("%s %s %s",
+                                mManager.getLowDate(),
+                                Dict.TO.toString().toLowerCase(Locale.getDefault()),
+                                mManager.getHighDate()
+                        );
+                        break;
 
-                case POINT_IN_TIME:
-                    text = mManager.getHighDate().toString();
-                    break;
+                    case POINT_IN_TIME:
+                        text = mManager.getHighDate().toString();
+                        break;
+                }
+
+                mTitleProperty.set(text);
             }
-
-            mTitleProperty.set(text);
-        }
+        });
     }
 
     class TemporalPreset {
