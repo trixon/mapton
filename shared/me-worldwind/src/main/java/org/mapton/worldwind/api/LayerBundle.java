@@ -18,7 +18,9 @@ package org.mapton.worldwind.api;
 import gov.nasa.worldwind.layers.Layer;
 import java.beans.PropertyChangeEvent;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.Set;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -31,7 +33,8 @@ import se.trixon.almond.util.Dict;
  */
 public abstract class LayerBundle {
 
-    public static final int DEFAULT_REPAINT_DELAY = 10000;
+    public static final int DEFAULT_REPAINT_DELAY = 5000;
+    private static Set<Runnable> sActivePaintersSet = Collections.synchronizedSet(new HashSet());
     private HashSet<Layer> mChildLayers = new HashSet<>();
     private boolean mInitialized = false;
     private final ObservableList<Layer> mLayers = FXCollections.observableArrayList();
@@ -39,7 +42,6 @@ public abstract class LayerBundle {
     private Runnable mPainter;
     private Layer mParentLayer;
     private boolean mPopulated = false;
-    private boolean mRepainting = false;
 
     public LayerBundle() {
     }
@@ -87,8 +89,8 @@ public abstract class LayerBundle {
      *
      * @param delay -1=Run without delay, >=0 initialize and run
      */
-    public void repaint(long delay) {
-        if (mRepainting || mPainter == null) {
+    public synchronized void repaint(long delay) {
+        if (mPainter == null || sActivePaintersSet.contains(mPainter)) {
             return;
         }
 
@@ -97,7 +99,7 @@ public abstract class LayerBundle {
         }
 
         if (mInitialized) {
-            mRepainting = true;
+            sActivePaintersSet.add(mPainter);
             new Thread(() -> {
                 if (delay > -1) {
                     try {
@@ -108,7 +110,12 @@ public abstract class LayerBundle {
                 }
                 mPainter.run();
                 LayerBundleManager.getInstance().redraw();
-                mRepainting = false;
+//                try {
+//                    Thread.sleep(1000);
+//                } catch (InterruptedException ex) {
+//                    Exceptions.printStackTrace(ex);
+//                }
+                sActivePaintersSet.remove(mPainter);
             }, getClass().getName() + "->repaint").start();
         }
     }

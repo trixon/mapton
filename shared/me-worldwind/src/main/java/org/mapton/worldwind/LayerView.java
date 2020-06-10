@@ -17,12 +17,13 @@ package org.mapton.worldwind;
 
 import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.layers.RenderableLayer;
-import java.beans.PropertyChangeEvent;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.prefs.Preferences;
 import javafx.application.Platform;
@@ -37,7 +38,6 @@ import javafx.scene.control.ToolBar;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.cell.CheckBoxTreeCell;
 import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -57,7 +57,7 @@ import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.NbPreferences;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.StringHelper;
-import se.trixon.almond.util.SystemHelper;
+import se.trixon.almond.util.fx.DelayedResetRunner;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 
@@ -70,13 +70,13 @@ public class LayerView extends BorderPane implements MActivatable {
     private CheckModel<TreeItem<Layer>> mCheckModel;
     private final Preferences mExpandedPreferences;
     private TextField mFilterTextField;
-    private long mLatestFocus;
-    private final HashSet<Layer> mLayerEnabledListenerSet;
+    private final Set<Layer> mLayerEnabledListenerSet;
     private final Map<String, CheckBoxTreeItem<Layer>> mLayerParents;
+    private ListChangeListener.Change<? extends TreeItem<Layer>> mListChangeListener;
     private WorldWindowPanel mMap;
     private CheckBoxTreeItem<Layer> mRootItem;
-    private final HashSet<CheckBoxTreeItem<Layer>> mTreeItemExpanderSet;
-    private final HashSet<CheckBoxTreeItem<Layer>> mTreeItemListenerSet;
+    private final Set<CheckBoxTreeItem<Layer>> mTreeItemExpanderSet;
+    private final Set<CheckBoxTreeItem<Layer>> mTreeItemListenerSet;
     private CheckTreeView<Layer> mTreeView;
     private final Preferences mVisibilityPreferences;
 
@@ -88,13 +88,12 @@ public class LayerView extends BorderPane implements MActivatable {
         mVisibilityPreferences = NbPreferences.forModule(LayerView.class).node("layer_visibility");
         mExpandedPreferences = NbPreferences.forModule(LayerView.class).node("layer_group_expanded");
         mLayerParents = new TreeMap<>();
-        mLayerEnabledListenerSet = new HashSet<>();
-        mTreeItemListenerSet = new HashSet<>();
-        mTreeItemExpanderSet = new HashSet<>();
+        mLayerEnabledListenerSet = Collections.synchronizedSet(new HashSet());
+        mTreeItemListenerSet = Collections.synchronizedSet(new HashSet());
+        mTreeItemExpanderSet = Collections.synchronizedSet(new HashSet());
 
         Platform.runLater(() -> {
             createUI();
-            initListeners();
         });
     }
 
@@ -103,15 +102,21 @@ public class LayerView extends BorderPane implements MActivatable {
         mFilterTextField.requestFocus();
     }
 
-    void refresh(WorldWindowPanel map) {
+    synchronized void refresh(WorldWindowPanel map) {
         if (mMap == null) {
             mMap = map;
-            mMap.getCustomLayers().addListener((ListChangeListener.Change<? extends Layer> change) -> {
+            DelayedResetRunner delayedResetRunner = new DelayedResetRunner(100, () -> {
                 refresh(map);
             });
+
+            mMap.getCustomLayers().addListener((ListChangeListener.Change<? extends Layer> change) -> {
+                delayedResetRunner.reset();
+            });
+
+            return;
         }
 
-        Platform.runLater(() -> {
+        FxHelper.runLater(() -> {
             mLayerParents.clear();
             mRootItem.getChildren().clear();
             mTreeItemListenerSet.clear();
@@ -143,7 +148,7 @@ public class LayerView extends BorderPane implements MActivatable {
                 parent.getChildren().add(layerTreeItem);
             }
 
-            postPopulate(mRootItem, "");
+            postPopulate(mRootItem);
 
             mTreeItemExpanderSet.forEach((checkBoxTreeItem) -> {
                 checkBoxTreeItem.setExpanded(true);
@@ -151,6 +156,7 @@ public class LayerView extends BorderPane implements MActivatable {
 
             if (getCenter() != mTreeView) {
                 setCenter(mTreeView);
+                initListeners();
             }
         });
     }
@@ -241,29 +247,36 @@ public class LayerView extends BorderPane implements MActivatable {
             refresh(mMap);
         });
 
-        mTreeView.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
-            mLatestFocus = System.currentTimeMillis();
-        });
+        DelayedResetRunner delayedResetRunner = new DelayedResetRunner(200, () -> {
+            if (mListChangeListener == null) {
+                return;
+            }
 
-        mCheckModel.getCheckedItems().addListener((ListChangeListener.Change<? extends TreeItem<Layer>> c) -> {
-            while (c.next()) {
-                if (c.wasAdded()) {
-                    c.getAddedSubList().forEach((treeItem) -> {
-                        if (!isCategoryTreeItem(treeItem)) {
-                            treeItem.getValue().setEnabled(true);
-                            mVisibilityPreferences.putBoolean(getLayerPath(treeItem.getValue()), true);
-                        }
-                    });
-                } else if (c.wasRemoved()) {
-                    c.getRemoved().forEach((treeItem) -> {
-                        if (!isCategoryTreeItem(treeItem)) {
-                            treeItem.getValue().setEnabled(false);
-                            mVisibilityPreferences.putBoolean(getLayerPath(treeItem.getValue()), false);
-                        }
-                    });
-                }
+            if (mListChangeListener.wasAdded()) {
+                mListChangeListener.getAddedSubList().forEach(treeItem -> {
+                    if (!isCategoryTreeItem(treeItem) && !treeItem.getValue().isEnabled()) {
+                        treeItem.getValue().setEnabled(true);
+                        mVisibilityPreferences.putBoolean(getLayerPath(treeItem.getValue()), true);
+                    }
+                });
+            } else if (mListChangeListener.wasRemoved()) {
+                mListChangeListener.getRemoved().forEach(treeItem -> {
+                    if (!isCategoryTreeItem(treeItem) && treeItem.getValue().isEnabled()) {
+                        treeItem.getValue().setEnabled(false);
+                        mVisibilityPreferences.putBoolean(getLayerPath(treeItem.getValue()), false);
+                    }
+                });
             }
         });
+
+        ListChangeListener<TreeItem<Layer>> name = (ListChangeListener.Change<? extends TreeItem<Layer>> c) -> {
+            while (c.next()) {
+                mListChangeListener = c;
+                delayedResetRunner.reset();
+            }
+        };
+
+        mCheckModel.getCheckedItems().addListener(name);
 
         Mapton.getGlobalState().addListener(evt -> {
             Platform.runLater(() -> {
@@ -276,7 +289,7 @@ public class LayerView extends BorderPane implements MActivatable {
         return !treeItem.getChildren().isEmpty();
     }
 
-    private void postPopulate(CheckBoxTreeItem<Layer> treeItem, String level) {
+    private void postPopulate(CheckBoxTreeItem<Layer> treeItem) {
         final Layer layer = treeItem.getValue();
 
         if (isCategoryTreeItem(treeItem)) {
@@ -300,14 +313,14 @@ public class LayerView extends BorderPane implements MActivatable {
             treeItem.getChildren().sort(c1.reversed().thenComparing(c2));
 
             for (TreeItem<Layer> childTreeItem : treeItem.getChildren()) {
-                postPopulate((CheckBoxTreeItem<Layer>) childTreeItem, level + "-");
+                postPopulate((CheckBoxTreeItem<Layer>) childTreeItem);
             }
         } else {
             if (!mLayerEnabledListenerSet.contains(layer)) {
                 mLayerEnabledListenerSet.add(layer);
-                layer.addPropertyChangeListener("Enabled", (PropertyChangeEvent evt) -> {
+                layer.addPropertyChangeListener("Enabled", pce -> {
                     Platform.runLater(() -> {
-                        if ((boolean) evt.getNewValue()) {
+                        if ((boolean) pce.getNewValue()) {
                             mCheckModel.check(treeItem);
                         } else {
                             mCheckModel.clearCheck(treeItem);
@@ -318,6 +331,9 @@ public class LayerView extends BorderPane implements MActivatable {
 
             if (mVisibilityPreferences.getBoolean(getLayerPath(layer), layer.isEnabled())) {
                 mCheckModel.check(treeItem);
+                if (!layer.isEnabled()) {
+                    layer.setEnabled(true);
+                }
             } else {
                 mCheckModel.clearCheck(treeItem);
                 layer.setEnabled(false);
@@ -375,13 +391,11 @@ public class LayerView extends BorderPane implements MActivatable {
 
         private void addContent(Layer layer) {
             setText(layer.getName());
-            setOnMouseClicked((MouseEvent event) -> {
-                int clicksToSubtract = SystemHelper.age(mLatestFocus) < 1000 ? 1 : 0;
-                int clicks = event.getClickCount() - clicksToSubtract;
-                if (clicks == 2 && event.getButton() == MouseButton.PRIMARY) {
+            setOnMouseClicked(mouseEvent -> {
+                if (mouseEvent.getClickCount() == 2 && mouseEvent.getButton() == MouseButton.PRIMARY) {
                     if (layer.hasKey(WWHelper.KEY_FAST_OPEN)) {
                         Mapton.getGlobalState().put(MKey.LAYER_FAST_OPEN_TOOL, layer.getValue(WWHelper.KEY_FAST_OPEN));
-                        if (!event.isAltDown()) {
+                        if (!mouseEvent.isAltDown()) {
                             mCheckModel.check(this.getTreeItem());
                         }
                     }
@@ -392,6 +406,7 @@ public class LayerView extends BorderPane implements MActivatable {
         private void clearContent() {
             setText(null);
             setGraphic(null);
+            setOnMouseClicked(null);
         }
 
         private void createUI() {
