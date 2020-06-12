@@ -562,13 +562,13 @@
     </repositories>
 
     <properties>
-        <netbeans.version>RELEASE113</netbeans.version>
-        <netbeans.compile.on.save>all</netbeans.compile.on.save>
+        <netbeans.version>RELEASE120-1</netbeans.version>
+        <netbeans.compile.on.save>none</netbeans.compile.on.save>
         <brandingToken>mapton</brandingToken>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <almond.version>11.0.6-SNAPSHOT</almond.version>
         <mapton.version>2.0.2-SNAPSHOT</mapton.version>
-        <openjfx.version>14</openjfx.version>
+        <!--<openjfx.version>14</openjfx.version>-->
     </properties>
     <description>Some kind of map application</description>
 </project>
