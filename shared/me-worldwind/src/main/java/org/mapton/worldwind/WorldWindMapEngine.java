@@ -128,7 +128,7 @@ public class WorldWindMapEngine extends MEngine {
 
     @Override
     public void fitToBounds(MLatLonBox latLonBox) {
-        if (!mInitialized) {
+        if (!mInitialized || (latLonBox.getLatitudeSpan() == 0 && latLonBox.getLongitudeSpan() == 0)) {
             return;
         }
 
