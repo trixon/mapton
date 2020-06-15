@@ -563,7 +563,7 @@
 
     <properties>
         <netbeans.version>RELEASE120-1</netbeans.version>
-        <netbeans.compile.on.save>none</netbeans.compile.on.save>
+        <netbeans.compile.on.save>all</netbeans.compile.on.save>
         <brandingToken>mapton</brandingToken>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <almond.version>11.0.6-SNAPSHOT</almond.version>
