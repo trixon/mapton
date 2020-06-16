@@ -19,6 +19,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.ResourceBundle;
 import java.util.prefs.PreferenceChangeEvent;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -36,6 +37,7 @@ import javafx.scene.input.KeyCombination;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
+import org.apache.commons.lang3.SystemUtils;
 import org.controlsfx.control.Notifications;
 import org.controlsfx.control.PopOver;
 import org.controlsfx.control.PopOver.ArrowLocation;
@@ -49,6 +51,7 @@ import static org.mapton.api.Mapton.getIconSizeToolBar;
 import org.mapton.base.ui.SearchView;
 import org.mapton.core_nb.Initializer;
 import org.openide.awt.Actions;
+import org.openide.util.NbBundle;
 import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.nbp.AlmondOptions;
 import se.trixon.almond.nbp.dialogs.NbAboutFx;
@@ -88,8 +91,10 @@ public class AppToolBar extends BaseToolBar {
     private Action mSystemMenuAction;
     private Action mToolboxAction;
     private PopOver mToolboxPopOver;
+    private final ResourceBundle mBundle;
 
     public AppToolBar() {
+        mBundle = NbBundle.getBundle(AppToolBar.class);
         initPopOvers();
         initActionsFx();
         initActionsSwing();
@@ -262,6 +267,10 @@ public class AppToolBar extends BaseToolBar {
 
         //SysInfo
         mSysInfoAction = new FxActionSwing(Dict.SYSTEM_INFORMATION.toString(), () -> {
+            if (SystemUtils.IS_OS_WINDOWS) {
+                Mapton.notification(MKey.NOTIFICATION_INFORMATION, mBundle.getString("collecting_system_information"), mBundle.getString("stay_alert"));
+            }
+
             new NbSystemInformation().displayDialog();
         });
 
