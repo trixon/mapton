@@ -24,6 +24,7 @@ import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import javafx.beans.property.SimpleObjectProperty;
 import org.apache.commons.lang3.StringUtils;
+import se.trixon.almond.util.fx.DelayedResetRunner;
 import se.trixon.almond.util.fx.control.DateSelectionMode;
 
 /**
@@ -38,12 +39,32 @@ public class MTemporalManager {
     private final SimpleObjectProperty<LocalDate> mMaxDateProperty = new SimpleObjectProperty<>();
     private final SimpleObjectProperty<LocalDate> mMinDateProperty = new SimpleObjectProperty<>();
     private final ConcurrentHashMap<String, MTemporalRange> mRanges = new ConcurrentHashMap<>();
+    private final DelayedResetRunner mDelayedResetRunner;
 
     public static MTemporalManager getInstance() {
         return Holder.INSTANCE;
     }
 
     private MTemporalManager() {
+        mDelayedResetRunner = new DelayedResetRunner(500, () -> {
+//            synchronized (this) {
+            TreeSet<MTemporalRange> fromRanges = new TreeSet<>((o1, o2) -> o1.getFromLocalDate().compareTo(o2.getFromLocalDate()));
+            TreeSet<MTemporalRange> toRanges = new TreeSet<>((o1, o2) -> o1.getToLocalDate().compareTo(o2.getToLocalDate()));
+
+            for (MTemporalRange range : mRanges.values()) {
+                fromRanges.add(range);
+                toRanges.add(range);
+            }
+
+            if (!fromRanges.isEmpty() && !toRanges.isEmpty()) {
+                setMinDate(fromRanges.first().getFromLocalDate());
+                setMaxDate(toRanges.last().getToLocalDate());
+            } else {
+                setMinDate(LocalDate.of(1900, 1, 1));
+                setMaxDate(LocalDate.of(2099, 12, 31));
+            }
+//            }
+        });
     }
 
     public void clear() {
@@ -144,22 +165,8 @@ public class MTemporalManager {
         refresh();
     }
 
-    public synchronized void refresh() {
-        TreeSet<MTemporalRange> fromRanges = new TreeSet<>((MTemporalRange o1, MTemporalRange o2) -> o1.getFromLocalDate().compareTo(o2.getFromLocalDate()));
-        TreeSet<MTemporalRange> toRanges = new TreeSet<>((MTemporalRange o1, MTemporalRange o2) -> o1.getToLocalDate().compareTo(o2.getToLocalDate()));
-
-        for (MTemporalRange range : mRanges.values()) {
-            fromRanges.add(range);
-            toRanges.add(range);
-        }
-
-        if (!fromRanges.isEmpty() && !toRanges.isEmpty()) {
-            setMinDate(fromRanges.first().getFromLocalDate());
-            setMaxDate(toRanges.last().getToLocalDate());
-        } else {
-            setMinDate(LocalDate.of(1900, 1, 1));
-            setMaxDate(LocalDate.of(2099, 12, 31));
-        }
+    public void refresh() {
+        mDelayedResetRunner.reset();
     }
 
     public synchronized MTemporalRange remove(String key) {
