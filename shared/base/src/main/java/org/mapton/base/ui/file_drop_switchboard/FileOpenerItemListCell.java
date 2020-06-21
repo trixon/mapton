@@ -15,6 +15,7 @@
  */
 package org.mapton.base.ui.file_drop_switchboard;
 
+import java.util.ArrayList;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListCell;
 import javafx.scene.layout.HBox;
@@ -32,9 +33,11 @@ class FileOpenerItemListCell extends ListCell<MFileOpenerInput> {
     private HBox mBox;
     private ComboBox<MCooTrans> mCooTransComboBox;
     private ComboBox<MFileOpener> mFileOpenerComboBox;
+    private ArrayList<MFileOpener> mFileOpeners;
     private MFileOpenerInput mItem;
 
-    public FileOpenerItemListCell() {
+    public FileOpenerItemListCell(ArrayList<MFileOpener> fileOpeners) {
+        mFileOpeners = fileOpeners;
         createUI();
     }
 
@@ -50,7 +53,6 @@ class FileOpenerItemListCell extends ListCell<MFileOpenerInput> {
 
     private void addContent(MFileOpenerInput item) {
         mItem = item;
-        mFileOpenerComboBox.getItems().setAll(item.getFileOpeners());
         mFileOpenerComboBox.setValue(item.getFileOpener());
 
         mCooTransComboBox.setValue(item.getCooTrans());
@@ -66,6 +68,7 @@ class FileOpenerItemListCell extends ListCell<MFileOpenerInput> {
 
     private void createUI() {
         mFileOpenerComboBox = new ComboBox<>();
+        mFileOpenerComboBox.getItems().setAll(mFileOpeners);
         mFileOpenerComboBox.setPrefWidth(FxHelper.getUIScaled(100));
         mFileOpenerComboBox.setCellFactory(k -> new FileOpenerListCell());
         mFileOpenerComboBox.setButtonCell(new FileOpenerListCell());

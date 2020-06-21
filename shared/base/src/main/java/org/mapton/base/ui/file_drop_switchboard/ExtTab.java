@@ -82,7 +82,7 @@ public class ExtTab extends Tab {
                 new VBox(new Label(mBundle.getString("default_coosys")), mCooTransComboBox)
         );
 
-        mListView.setCellFactory(listview -> new FileOpenerItemListCell());
+        mListView.setCellFactory(listview -> new FileOpenerItemListCell(mFileOpeners));
         mRoot.setTop(headerBox);
         mRoot.setCenter(mListView);
 
