@@ -22,9 +22,19 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetDropEvent;
 import java.awt.event.HierarchyEvent;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
 import javafx.application.Platform;
 import javafx.scene.Scene;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.BorderPane;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -46,6 +56,7 @@ import org.mapton.base.ui.grid.LocalGridsView;
 import org.mapton.core_nb.api.MTopComponent;
 import org.mapton.core_nb.ui.grid.LocalGridEditor;
 import org.netbeans.api.settings.ConvertAsProperties;
+import org.openide.util.Exceptions;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
@@ -227,6 +238,29 @@ public final class MapTopComponent extends MTopComponent {
     }
 
     private void initListeners() {
+        setDropTarget(new DropTarget() {
+            @Override
+            public synchronized void drop(DropTargetDropEvent dtde) {
+                try {
+                    dtde.acceptDrop(DnDConstants.ACTION_COPY);
+                    new FileDropSwitchboard((List<File>) dtde.getTransferable().getTransferData(DataFlavor.javaFileListFlavor));
+                } catch (UnsupportedFlavorException | IOException ex) {
+                    Exceptions.printStackTrace(ex);
+                }
+            }
+        });
+
+        mRoot.setOnDragOver(dragEvent -> {
+            Dragboard board = dragEvent.getDragboard();
+            if (board.hasFiles()) {
+                dragEvent.acceptTransferModes(TransferMode.COPY);
+            }
+        });
+
+        mRoot.setOnDragDropped(dragEvent -> {
+            new FileDropSwitchboard(dragEvent.getDragboard().getFiles());
+        });
+
         DelayedResetRunner delayedResetRunner = new DelayedResetRunner(10, () -> {
             final JFrame frame = (JFrame) WindowManager.getDefault().getMainWindow();
             final boolean showOnlyMap = frame.getContentPane().getComponentCount() == 1;
