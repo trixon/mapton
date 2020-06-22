@@ -19,6 +19,8 @@ import java.io.File;
 import java.util.List;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
+import javax.swing.JButton;
+import javax.swing.SwingUtilities;
 import org.mapton.base.ui.file_drop_switchboard.FileDropSwitchboardView;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
@@ -32,6 +34,7 @@ import se.trixon.almond.util.swing.SwingHelper;
  */
 public class FileDropSwitchboard {
 
+    private final JButton mDefaultButton = new JButton(Dict.OPEN.toString());
     private final List<File> mFiles;
 
     public FileDropSwitchboard(List<File> files) {
@@ -40,7 +43,7 @@ public class FileDropSwitchboard {
     }
 
     private void displayDialog() {
-        String[] buttons = new String[]{Dict.CANCEL.toString(), Dict.OPEN.toString()};
+        JButton[] buttons = new JButton[]{new JButton(Dict.CANCEL.toString()), mDefaultButton};
         SwitchboardDialogPanel dialogPanel = new SwitchboardDialogPanel(mFiles);
         dialogPanel.initFx(() -> {
         });
@@ -52,9 +55,9 @@ public class FileDropSwitchboard {
                 NotifyDescriptor.OK_CANCEL_OPTION,
                 NotifyDescriptor.PLAIN_MESSAGE,
                 buttons,
-                Dict.OPEN.toString());
+                mDefaultButton);
 
-        if (Dict.OPEN.toString() == DialogDisplayer.getDefault().notify(d)) {
+        if (mDefaultButton == DialogDisplayer.getDefault().notify(d)) {
             dialogPanel.openFiles();
         }
     }
@@ -73,6 +76,9 @@ public class FileDropSwitchboard {
         protected void fxConstructor() {
             setScene(createScene());
             mRoot.setCenter(mFileOpenerView = new FileDropSwitchboardView(mFiles));
+            SwingUtilities.invokeLater(() -> {
+                mDefaultButton.setEnabled(mFileOpenerView.hasFiles());
+            });
         }
 
         void openFiles() {

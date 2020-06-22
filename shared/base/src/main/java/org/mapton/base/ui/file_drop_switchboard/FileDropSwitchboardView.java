@@ -47,6 +47,14 @@ public class FileDropSwitchboardView extends BorderPane {
         createUI();
     }
 
+    public boolean hasFiles() {
+        if (mTabPane.getTabs().stream().anyMatch(tab -> (tab instanceof ExtTab))) {
+            return true;
+        }
+
+        return false;
+    }
+
     public void openFiles() {
         HashMap<MFileOpener, ArrayList<MFileOpenerFile>> openerToList = new HashMap<>();
         mTabPane.getTabs().stream().filter(tab -> (tab instanceof ExtTab)).forEachOrdered(tab -> {

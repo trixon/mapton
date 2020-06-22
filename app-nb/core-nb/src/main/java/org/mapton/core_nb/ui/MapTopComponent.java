@@ -243,7 +243,10 @@ public final class MapTopComponent extends MTopComponent {
             public synchronized void drop(DropTargetDropEvent dtde) {
                 try {
                     dtde.acceptDrop(DnDConstants.ACTION_COPY);
-                    new FileDropSwitchboard((List<File>) dtde.getTransferable().getTransferData(DataFlavor.javaFileListFlavor));
+                    final List<File> files = (List<File>) dtde.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
+                    SwingHelper.runLaterDelayed(2, () -> {
+                        new FileDropSwitchboard(files);
+                    });
                 } catch (UnsupportedFlavorException | IOException ex) {
                     Exceptions.printStackTrace(ex);
                 }
