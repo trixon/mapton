@@ -15,7 +15,9 @@
  */
 package org.mapton.worldwind.api;
 
+import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
+import org.mapton.api.MLatLon;
 
 /**
  *
@@ -37,5 +39,9 @@ public class WWHelper {
         highlightAttrs.setLabelScale(attrs.getLabelScale() * scale);
 
         return highlightAttrs;
+    }
+
+    public static Position positionFromLatLon(MLatLon latLon) {
+        return Position.fromDegrees(latLon.getLatitude(), latLon.getLongitude());
     }
 }
