@@ -13,29 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.base.ui.file_drop_switchboard;
+package org.mapton.addon.files_nb.coordinate_file_openers;
 
-import javafx.scene.control.ListCell;
-import javafx.scene.control.Tooltip;
 import org.mapton.api.MCoordinateFileOpener;
 
 /**
  *
  * @author Patrik Karlström
  */
-class FileOpenerListCell extends ListCell<MCoordinateFileOpener> {
+public abstract class BaseCoordinateFileOpener extends MCoordinateFileOpener {
 
-    public FileOpenerListCell() {
-    }
-
-    @Override
-    protected void updateItem(MCoordinateFileOpener item, boolean empty) {
-        super.updateItem(item, empty);
-        if (item == null || empty) {
-            setText(null);
-        } else {
-            setText(item.getName());
-            setTooltip(new Tooltip(item.getDescription()));
-        }
-    }
 }

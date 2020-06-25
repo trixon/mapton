@@ -19,6 +19,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
 import javafx.scene.control.ListView;
@@ -26,8 +27,9 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
 import org.apache.commons.io.FilenameUtils;
-import org.mapton.api.MFileOpener;
-import org.mapton.api.MFileOpenerFile;
+import org.mapton.api.MCoordinateFileOpener;
+import org.mapton.api.MCoordinateFile;
+import org.mapton.api.Mapton;
 import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
 
@@ -56,40 +58,40 @@ public class FileDropSwitchboardView extends BorderPane {
     }
 
     public void openFiles() {
-        HashMap<MFileOpener, ArrayList<MFileOpenerFile>> openerToList = new HashMap<>();
+        HashMap<MCoordinateFileOpener, ArrayList<MCoordinateFile>> openerToList = new HashMap<>();
         mTabPane.getTabs().stream().filter(tab -> (tab instanceof ExtTab)).forEachOrdered(tab -> {
-            ((ExtTab) tab).getItems().forEach(fileOpenerInput -> {
-                var fileOpenerResult = new MFileOpenerFile();
-                fileOpenerResult.setFile(fileOpenerInput.getFile());
-                fileOpenerResult.setCooTrans(fileOpenerInput.getCooTrans());
-                openerToList.computeIfAbsent(fileOpenerInput.getFileOpener(), k -> new ArrayList<>()).add(fileOpenerResult);
+            ((ExtTab) tab).getItems().forEach(fileOpener -> {
+                var fileOpenerFile = new MCoordinateFile();
+                fileOpenerFile.setFile(fileOpener.getFile());
+                fileOpenerFile.setCooTrans(fileOpener.getCooTrans());
+                openerToList.computeIfAbsent(fileOpener.getCoordinateFileOpener(), k -> new ArrayList<>()).add(fileOpenerFile);
             });
         });
 
         openerToList.entrySet().forEach(entry -> {
-            entry.getKey().open(entry.getValue());
+            Mapton.getGlobalState().put(entry.getKey().getClass().getName(), entry.getValue());
         });
     }
 
     private void createUI() {
         setCenter(mTabPane);
 
-        TreeMap<String, ArrayList<MFileOpener>> extToFileOpeners = new TreeMap<>();
-        Lookup.getDefault().lookupAll(MFileOpener.class).forEach(fileOpener -> {
+        TreeMap<String, ArrayList<MCoordinateFileOpener>> extToFileOpeners = new TreeMap<>();
+        Lookup.getDefault().lookupAll(MCoordinateFileOpener.class).forEach(fileOpener -> {
             for (String extension : fileOpener.getExtensions()) {
-                extToFileOpeners.computeIfAbsent(extension, k -> new ArrayList<>()).add(fileOpener);
+                extToFileOpeners.computeIfAbsent(extension.toLowerCase(Locale.getDefault()), k -> new ArrayList<>()).add(fileOpener);
             }
         });
 
         extToFileOpeners.values().forEach(fileOpeners -> {
-            fileOpeners.sort((MFileOpener o1, MFileOpener o2) -> o1.getName().compareToIgnoreCase(o2.getName()));
+            fileOpeners.sort((MCoordinateFileOpener o1, MCoordinateFileOpener o2) -> o1.getName().compareToIgnoreCase(o2.getName()));
         });
 
         TreeMap<String, ArrayList<File>> extToFile = new TreeMap<>();
 
         ListView<File> listView = new ListView<>();
         mFiles.forEach(file -> {
-            String extension = FilenameUtils.getExtension(file.getName());
+            String extension = FilenameUtils.getExtension(file.getName()).toLowerCase(Locale.getDefault());
             if (extToFileOpeners.containsKey(extension)) {
                 extToFile.computeIfAbsent(extension, k -> new ArrayList<>()).add(file);
             } else {

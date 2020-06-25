@@ -19,10 +19,10 @@ import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.ogc.kml.KMLRoot;
 import gov.nasa.worldwind.ogc.kml.impl.KMLController;
 import gov.nasa.worldwind.render.Renderable;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import javax.xml.stream.XMLStreamException;
+import org.mapton.api.MCoordinateFile;
 import org.openide.util.Exceptions;
 
 /**
@@ -31,13 +31,13 @@ import org.openide.util.Exceptions;
  */
 public class KmlRenderer extends Renderer {
 
-    public static void render(File file, RenderableLayer layer) {
-        KmlRenderer renderer = new KmlRenderer(file, layer);
+    public static void render(MCoordinateFile coordinateFile, RenderableLayer layer) {
+        KmlRenderer renderer = new KmlRenderer(coordinateFile, layer);
         renderer.render(layer);
     }
 
-    public KmlRenderer(File file, RenderableLayer layer) {
-        mFile = file;
+    public KmlRenderer(MCoordinateFile coordinateFile, RenderableLayer layer) {
+        mCoordinateFile = coordinateFile;
         mLayer = layer;
     }
 
@@ -48,7 +48,7 @@ public class KmlRenderer extends Renderer {
             ArrayList<Renderable> renderables = DIGEST_RENDERABLE_MAP.computeIfAbsent(digest, k -> {
                 ArrayList<Renderable> newRenderables = new ArrayList<>();
                 try {
-                    KMLRoot kmlRoot = KMLRoot.createAndParse(mFile);
+                    KMLRoot kmlRoot = KMLRoot.createAndParse(mCoordinateFile.getFile());
                     KMLController kmlController = new KMLController(kmlRoot);
                     newRenderables.add(kmlController);
                 } catch (IOException | XMLStreamException ex) {

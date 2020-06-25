@@ -13,36 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.api;
+package org.mapton.addon.files_nb.coordinate_file_openers;
 
-import java.io.File;
+import org.mapton.api.MCoordinateFileOpener;
+import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class MFileOpenerFile {
+@ServiceProvider(service = MCoordinateFileOpener.class)
+public class KmlCoordinateFileOpener extends MCoordinateFileOpener {
 
-    private MCooTrans mCooTrans = MOptions.getInstance().getMapCooTrans();
-    private File mFile;
-
-    public MFileOpenerFile() {
+    @Override
+    public String getDescription() {
+        return "Basic map plot";
     }
 
-    public MCooTrans getCooTrans() {
-        return mCooTrans;
+    @Override
+    public String[] getExtensions() {
+        return new String[]{"kml", "kmz"};
     }
 
-    public File getFile() {
-        return mFile;
+    @Override
+    public String getName() {
+        return "Generic Plot";
     }
-
-    public void setCooTrans(MCooTrans cooTrans) {
-        mCooTrans = cooTrans;
-    }
-
-    public void setFile(File file) {
-        mFile = file;
-    }
-
 }

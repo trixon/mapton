@@ -15,14 +15,12 @@
  */
 package org.mapton.api;
 
-import java.util.ArrayList;
-
 /**
- * Used by FileDropSwitchBoard to handle the opening of dropped files. Sub class and add @ServiceProvider(service = MFileOpener.class) in order to provide a FileOpener.
+ * Used by FileDropSwitchBoard to handle the opening of dropped files. Sub class and add @ServiceProvider(service = MCoordinateFileOpener.class) in order to provide a FileOpener.
  *
  * @author Patrik Karlström
  */
-public abstract class MFileOpener {
+public abstract class MCoordinateFileOpener {
 
     public abstract String getDescription();
 
@@ -30,7 +28,4 @@ public abstract class MFileOpener {
 
     public abstract String getName();
 
-    public abstract String getPreferredID();
-
-    public abstract void open(ArrayList<MFileOpenerFile> fileOpenerResults);
 }

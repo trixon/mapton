@@ -21,14 +21,12 @@ import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwind.render.Renderable;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.geometry.Point2D;
 import static org.mapton.addon.files_nb.renderers.Renderer.DIGEST_RENDERABLE_MAP;
-import org.mapton.api.MCooTrans;
-import org.mapton.api.MOptions;
+import org.mapton.api.MCoordinateFile;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.io.Geo;
 import se.trixon.almond.util.io.GeoPoint;
@@ -41,13 +39,14 @@ public class GeoRenderer extends Renderer {
 
     private BasicShapeAttributes mLineBasicShapeAttributes;
 
-    public static void render(File file, RenderableLayer layer) {
-        GeoRenderer renderer = new GeoRenderer(file, layer);
+    public static void render(MCoordinateFile coordinateFile, RenderableLayer layer) {
+        GeoRenderer renderer = new GeoRenderer(coordinateFile, layer);
         renderer.render(layer);
     }
 
-    public GeoRenderer(File file, RenderableLayer layer) {
-        mFile = file;
+    public GeoRenderer(MCoordinateFile coordinateFile, RenderableLayer layer) {
+        mCoordinateFile = coordinateFile;
+        mCooTrans = coordinateFile.getCooTrans();
         mLayer = layer;
         initAttributes();
     }
@@ -60,7 +59,7 @@ public class GeoRenderer extends Renderer {
                 ArrayList<Renderable> newRenderables = new ArrayList<>();
                 Geo geo = new Geo();
                 try {
-                    geo.read(mFile);
+                    geo.read(mCoordinateFile.getFile());
                     renderPoints(newRenderables, geo.getPoints());
                     System.out.println(geo.getLines().size());
                     //Dynamic transform
@@ -84,12 +83,9 @@ public class GeoRenderer extends Renderer {
     }
 
     private void renderPoints(ArrayList<Renderable> renderables, List<GeoPoint> points) {
-        MCooTrans.getCooTrans();
-        MCooTrans ct = MOptions.getInstance().getMapCooTrans();
-
         for (GeoPoint point : points) {
-            if (ct.isWithinProjectedBounds(point.getX(), point.getY())) {
-                Point2D p = ct.toWgs84(point.getX(), point.getY());
+            if (mCooTrans.isWithinProjectedBounds(point.getX(), point.getY())) {
+                Point2D p = mCooTrans.toWgs84(point.getX(), point.getY());
                 PointPlacemark placemark = new PointPlacemark(Position.fromDegrees(p.getY(), p.getX()));
                 placemark.setLabelText(point.getPointId());
                 placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);

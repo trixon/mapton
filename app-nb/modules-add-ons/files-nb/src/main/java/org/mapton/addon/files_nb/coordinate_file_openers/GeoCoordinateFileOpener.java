@@ -13,36 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.api;
+package org.mapton.addon.files_nb.coordinate_file_openers;
 
-import java.io.File;
-import java.util.ArrayList;
+import org.mapton.api.MCoordinateFileOpener;
+import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class MFileOpenerInput extends MFileOpenerFile {
+@ServiceProvider(service = MCoordinateFileOpener.class)
+public class GeoCoordinateFileOpener extends BaseCoordinateFileOpener {
 
-    private MFileOpener mFileOpener;
-    private final ArrayList<MFileOpener> mFileOpeners;
-
-    public MFileOpenerInput(ArrayList<MFileOpener> fileOpeners, File file) {
-        setFile(file);
-        mFileOpeners = fileOpeners;
-        mFileOpener = fileOpeners.get(0);
+    @Override
+    public String getDescription() {
+        return "Basic map plot";
     }
 
-    public MFileOpener getFileOpener() {
-        return mFileOpener;
+    @Override
+    public String[] getExtensions() {
+        return new String[]{"geo"};
     }
 
-    public ArrayList<MFileOpener> getFileOpeners() {
-        return mFileOpeners;
-    }
-
-    public void setFileOpener(MFileOpener fileOpener) {
-        mFileOpener = fileOpener;
+    @Override
+    public String getName() {
+        return "Generic Plot";
     }
 
 }

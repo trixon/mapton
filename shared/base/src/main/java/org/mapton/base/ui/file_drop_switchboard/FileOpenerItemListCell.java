@@ -19,30 +19,33 @@ import java.util.ArrayList;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListCell;
 import javafx.scene.layout.HBox;
+import org.apache.commons.lang3.StringUtils;
 import org.mapton.api.MCooTrans;
-import org.mapton.api.MFileOpener;
-import org.mapton.api.MFileOpenerInput;
+import org.mapton.api.MCoordinateFileInput;
+import org.mapton.api.MCoordinateFileOpener;
 import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
  * @author Patrik Karlström
  */
-class FileOpenerItemListCell extends ListCell<MFileOpenerInput> {
+class FileOpenerItemListCell extends ListCell<MCoordinateFileInput> {
 
     private HBox mBox;
     private ComboBox<MCooTrans> mCooTransComboBox;
-    private ComboBox<MFileOpener> mFileOpenerComboBox;
-    private ArrayList<MFileOpener> mFileOpeners;
-    private MFileOpenerInput mItem;
+    private final String mExt;
+    private ComboBox<MCoordinateFileOpener> mCoordinateFileOpenerComboBox;
+    private final ArrayList<MCoordinateFileOpener> mCoordinateFileOpeners;
+    private MCoordinateFileInput mItem;
 
-    public FileOpenerItemListCell(ArrayList<MFileOpener> fileOpeners) {
-        mFileOpeners = fileOpeners;
+    public FileOpenerItemListCell(String ext, ArrayList<MCoordinateFileOpener> coordinateFileOpeners) {
+        mExt = ext;
+        mCoordinateFileOpeners = coordinateFileOpeners;
         createUI();
     }
 
     @Override
-    protected void updateItem(MFileOpenerInput item, boolean empty) {
+    protected void updateItem(MCoordinateFileInput item, boolean empty) {
         super.updateItem(item, empty);
         if (item == null || empty) {
             clearContent();
@@ -51,11 +54,15 @@ class FileOpenerItemListCell extends ListCell<MFileOpenerInput> {
         }
     }
 
-    private void addContent(MFileOpenerInput item) {
+    private void addContent(MCoordinateFileInput item) {
         mItem = item;
-        mFileOpenerComboBox.setValue(item.getFileOpener());
+        mCoordinateFileOpenerComboBox.setValue(item.getCoordinateFileOpener());
 
-        mCooTransComboBox.setValue(item.getCooTrans());
+        if (StringUtils.equalsAnyIgnoreCase(mExt, "kml", "kmz")) {
+            mCooTransComboBox.setValue(MCooTrans.getCooTrans("WGS 84"));
+        } else {
+            mCooTransComboBox.setValue(item.getCooTrans());
+        }
 
         setGraphic(mBox);
         setText(item.getFile().getName());
@@ -67,16 +74,15 @@ class FileOpenerItemListCell extends ListCell<MFileOpenerInput> {
     }
 
     private void createUI() {
-        mFileOpenerComboBox = new ComboBox<>();
-        mFileOpenerComboBox.getItems().setAll(mFileOpeners);
-        mFileOpenerComboBox.setPrefWidth(FxHelper.getUIScaled(100));
-        mFileOpenerComboBox.setCellFactory(k -> new FileOpenerListCell());
-        mFileOpenerComboBox.setButtonCell(new FileOpenerListCell());
+        mCoordinateFileOpenerComboBox = new ComboBox<>();
+        mCoordinateFileOpenerComboBox.getItems().setAll(mCoordinateFileOpeners);
+        mCoordinateFileOpenerComboBox.setCellFactory(k -> new FileOpenerListCell());
+        mCoordinateFileOpenerComboBox.setButtonCell(new FileOpenerListCell());
 
-        mFileOpenerComboBox.setOnAction(ae -> {
-            var fileOpener = mFileOpenerComboBox.valueProperty().get();
+        mCoordinateFileOpenerComboBox.setOnAction(ae -> {
+            var fileOpener = mCoordinateFileOpenerComboBox.valueProperty().get();
             if (fileOpener != null) {
-                mItem.setFileOpener(fileOpener);
+                mItem.setCoordinateFileOpener(fileOpener);
             }
         });
 
@@ -91,7 +97,11 @@ class FileOpenerItemListCell extends ListCell<MFileOpenerInput> {
             }
         });
 
-        mBox = new HBox(FxHelper.getUIScaled(8), mFileOpenerComboBox, mCooTransComboBox);
+        if (StringUtils.equalsAnyIgnoreCase(mExt, "kml", "kmz")) {
+            mCooTransComboBox.setDisable(true);
+        }
+
+        mBox = new HBox(FxHelper.getUIScaled(8), mCoordinateFileOpenerComboBox, mCooTransComboBox);
         mBox.setPadding(FxHelper.getUIScaledInsets(0, 12, 0, 0));
     }
 }

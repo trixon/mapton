@@ -13,63 +13,55 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.addon.files_nb.api;
+package org.mapton.api;
 
 import com.google.gson.annotations.SerializedName;
 import java.io.File;
-import java.util.ArrayList;
-import org.mapton.api.MLatLon;
-import org.mapton.api.MLatLonBox;
-import org.mapton.api.Mapton;
 
 /**
+ * This class holds a coordinate transformation and a file.
  *
  * @author Patrik Karlström
  */
-public class Document {
+public class MCoordinateFile {
 
+    private transient MCooTrans mCooTrans;
+    @SerializedName("cooTrans")
+    private String mCooTransString;
     @SerializedName("file")
     private File mFile;
-    @SerializedName("recursive")
-    private boolean mRecursive = true;
     @SerializedName("visible")
     private boolean mVisible = true;
 
-    public Document() {
+    public MCoordinateFile() {
     }
 
-    public Document(File file) {
-        mFile = file;
-    }
-
-    public void fitToBounds() {
-        ArrayList<MLatLon> latLons = new ArrayList<>();
-
-        //TODO
-        if (!latLons.isEmpty()) {
-            MLatLonBox latLonBox = new MLatLonBox(latLons);
-            Mapton.getEngine().fitToBounds(latLonBox);
+    public MCooTrans getCooTrans() {
+        if (mCooTrans == null) {
+            if (mCooTransString == null) {
+                mCooTrans = MOptions.getInstance().getMapCooTrans();
+            } else {
+                mCooTrans = MCooTrans.getCooTrans(mCooTransString);
+            }
         }
+        return mCooTrans;
     }
 
     public File getFile() {
         return mFile;
     }
 
-    public boolean isRecursive() {
-        return mRecursive;
-    }
-
     public boolean isVisible() {
         return mVisible;
     }
 
-    public void setFile(File file) {
-        mFile = file;
+    public void setCooTrans(MCooTrans cooTrans) {
+        mCooTransString = cooTrans.getName();
+        mCooTrans = cooTrans;
     }
 
-    public void setRecursive(boolean recursive) {
-        mRecursive = recursive;
+    public void setFile(File file) {
+        mFile = file;
     }
 
     public void setVisible(boolean visible) {

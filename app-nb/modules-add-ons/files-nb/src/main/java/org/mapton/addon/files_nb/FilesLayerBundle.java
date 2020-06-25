@@ -16,14 +16,13 @@
 package org.mapton.addon.files_nb;
 
 import gov.nasa.worldwind.layers.RenderableLayer;
-import java.io.File;
-import javafx.beans.value.ObservableValue;
+import java.util.Locale;
 import javafx.collections.ListChangeListener;
 import org.apache.commons.io.FilenameUtils;
-import org.mapton.addon.files_nb.api.Document;
-import org.mapton.addon.files_nb.api.DocumentManager;
+import org.mapton.addon.files_nb.api.CoordinateFileManager;
 import org.mapton.addon.files_nb.renderers.GeoRenderer;
 import org.mapton.addon.files_nb.renderers.KmlRenderer;
+import org.mapton.api.MCoordinateFile;
 import org.mapton.worldwind.api.LayerBundle;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
@@ -37,7 +36,7 @@ import se.trixon.almond.util.swing.DelayedResetRunner;
 public class FilesLayerBundle extends LayerBundle {
 
     private final RenderableLayer mLayer = new RenderableLayer();
-    private final DocumentManager mManager = DocumentManager.getInstance();
+    private final CoordinateFileManager mManager = CoordinateFileManager.getInstance();
 
     public FilesLayerBundle() {
         init();
@@ -65,11 +64,11 @@ public class FilesLayerBundle extends LayerBundle {
             repaint();
         });
 
-        mManager.getItems().addListener((ListChangeListener.Change<? extends Document> c) -> {
+        mManager.getItems().addListener((ListChangeListener.Change<? extends MCoordinateFile> c) -> {
             delayedResetRunner.reset();
         });
 
-        mManager.updatedProperty().addListener((ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
+        mManager.updatedProperty().addListener((observable, oldValue, newValue) -> {
             delayedResetRunner.reset();
         });
     }
@@ -78,25 +77,20 @@ public class FilesLayerBundle extends LayerBundle {
         setPainter(() -> {
             mLayer.removeAllRenderables();
 
-            for (Document document : mManager.getItems()) {
-                if (document.isVisible()) {
-                    File file = document.getFile();
-                    if (file.isDirectory()) {
-                        //TODO
-                    } else if (file.isFile()) {
-                        switch (FilenameUtils.getExtension(file.getName())) {
-                            case "geo":
-                                GeoRenderer.render(file, mLayer);
-                                break;
+            for (MCoordinateFile coordinateFile : mManager.getItems()) {
+                if (coordinateFile.isVisible()) {
+                    switch (FilenameUtils.getExtension(coordinateFile.getFile().getName()).toLowerCase(Locale.getDefault())) {
+                        case "geo":
+                            GeoRenderer.render(coordinateFile, mLayer);
+                            break;
 
-                            case "kml":
-                            case "kmz":
-                                KmlRenderer.render(file, mLayer);
-                                break;
+                        case "kml":
+                        case "kmz":
+                            KmlRenderer.render(coordinateFile, mLayer);
+                            break;
 
-                            default:
-                                throw new AssertionError();
-                        }
+                        default:
+                            throw new AssertionError();
                     }
                 }
             }

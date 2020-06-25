@@ -26,9 +26,10 @@ import javafx.scene.control.Tab;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import org.apache.commons.lang3.StringUtils;
 import org.mapton.api.MCooTrans;
-import org.mapton.api.MFileOpener;
-import org.mapton.api.MFileOpenerInput;
+import org.mapton.api.MCoordinateFileInput;
+import org.mapton.api.MCoordinateFileOpener;
 import org.mapton.api.MOptions;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.fx.FxHelper;
@@ -41,48 +42,54 @@ public class ExtTab extends Tab {
 
     private final ResourceBundle mBundle;
     private final ComboBox<MCooTrans> mCooTransComboBox = new ComboBox<>();
-    private final ComboBox<MFileOpener> mFileOpenerComboBox = new ComboBox<>();
-    private final ArrayList<MFileOpener> mFileOpeners;
-    private final ListView<MFileOpenerInput> mListView = new ListView<>();
+    private final ComboBox<MCoordinateFileOpener> mCoordinateFileOpenerComboBox = new ComboBox<>();
+    private final ArrayList<MCoordinateFileOpener> mCoordinateFileOpeners;
+    private final ListView<MCoordinateFileInput> mListView = new ListView<>();
     private final BorderPane mRoot = new BorderPane();
+    private final String mExt;
 
-    ExtTab(String title, ArrayList<File> files, ArrayList<MFileOpener> fileOpeners) {
+    ExtTab(String ext, ArrayList<File> files, ArrayList<MCoordinateFileOpener> coordinateFileOpeners) {
+        mExt = ext;
         mBundle = NbBundle.getBundle(FileDropSwitchboardView.class);
-        mFileOpeners = fileOpeners;
+        mCoordinateFileOpeners = coordinateFileOpeners;
         createUI();
         initListeners();
-        setText(title);
+        setText(mExt);
         files.stream()
                 .sorted(File::compareTo)
                 .forEachOrdered(file -> {
-                    mListView.getItems().add(new MFileOpenerInput(fileOpeners, file));
+                    mListView.getItems().add(new MCoordinateFileInput(coordinateFileOpeners, file));
                 });
     }
 
-    ObservableList<MFileOpenerInput> getItems() {
+    ObservableList<MCoordinateFileInput> getItems() {
         return mListView.getItems();
     }
 
     private void createUI() {
         setClosable(false);
-        mFileOpenerComboBox.setPrefWidth(FxHelper.getUIScaled(100));
-        mFileOpenerComboBox.getItems().setAll(mFileOpeners);
-        mFileOpenerComboBox.setCellFactory(k -> new FileOpenerListCell());
-        mFileOpenerComboBox.setButtonCell(new FileOpenerListCell());
-        mFileOpenerComboBox.getSelectionModel().select(0);
+        mCoordinateFileOpenerComboBox.getItems().setAll(mCoordinateFileOpeners);
+        mCoordinateFileOpenerComboBox.setCellFactory(k -> new FileOpenerListCell());
+        mCoordinateFileOpenerComboBox.setButtonCell(new FileOpenerListCell());
+        mCoordinateFileOpenerComboBox.getSelectionModel().select(0);
 
         mCooTransComboBox.getItems().setAll(MCooTrans.getCooTrans());
         mCooTransComboBox.setItems(mCooTransComboBox.getItems().sorted());
         mCooTransComboBox.getSelectionModel().select(MOptions.getInstance().getMapCooTrans());
 
+        if (StringUtils.equalsAnyIgnoreCase(mExt, "kml", "kmz")) {
+            mCooTransComboBox.setValue(MCooTrans.getCooTrans("WGS 84"));
+            mCooTransComboBox.setDisable(true);
+        }
+
         HBox headerBox = new HBox(FxHelper.getUIScaled(8));
         headerBox.setPadding(FxHelper.getUIScaledInsets(8));
         headerBox.getChildren().addAll(
-                new VBox(new Label(mBundle.getString("default_openers")), mFileOpenerComboBox),
+                new VBox(new Label(mBundle.getString("default_openers")), mCoordinateFileOpenerComboBox),
                 new VBox(new Label(mBundle.getString("default_coosys")), mCooTransComboBox)
         );
 
-        mListView.setCellFactory(listview -> new FileOpenerItemListCell(mFileOpeners));
+        mListView.setCellFactory(listview -> new FileOpenerItemListCell(mExt, mCoordinateFileOpeners));
         mRoot.setTop(headerBox);
         mRoot.setCenter(mListView);
 
@@ -90,9 +97,9 @@ public class ExtTab extends Tab {
     }
 
     private void initListeners() {
-        mFileOpenerComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
+        mCoordinateFileOpenerComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
             mListView.getItems().forEach(item -> {
-                item.setFileOpener(newValue);
+                item.setCoordinateFileOpener(newValue);
             });
             mListView.refresh();
         });

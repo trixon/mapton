@@ -15,7 +15,6 @@
  */
 package org.mapton.addon.files_nb.ui;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -24,20 +23,14 @@ import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.ToolBar;
-import javafx.scene.input.DragEvent;
-import javafx.scene.input.Dragboard;
-import javafx.scene.input.TransferMode;
 import javafx.scene.layout.BorderPane;
 import javax.swing.SwingUtilities;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.CheckListView;
 import org.controlsfx.control.IndexedCheckModel;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
-import org.mapton.addon.files_nb.api.Document;
-import org.mapton.addon.files_nb.api.DocumentManager;
+import org.mapton.addon.files_nb.api.CoordinateFileManager;
+import org.mapton.api.MCoordinateFile;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
@@ -46,7 +39,6 @@ import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.PopOverWatcher;
 import se.trixon.almond.util.icons.material.MaterialIcon;
-import se.trixon.almond.util.swing.dialogs.SimpleDialog;
 
 /**
  *
@@ -54,11 +46,9 @@ import se.trixon.almond.util.swing.dialogs.SimpleDialog;
  */
 public class DocumentsPane extends BorderPane {
 
-    private final String[] SUPPORTED_EXTS = new String[]{"geo", "kml", "kmz"};
     private List<Action> mActions;
-    private File mFileDialogStartDir;
-    private final CheckListView<Document> mListView = new CheckListView<>();
-    private final DocumentManager mManager = DocumentManager.getInstance();
+    private final CheckListView<MCoordinateFile> mListView = new CheckListView<>();
+    private final CoordinateFileManager mManager = CoordinateFileManager.getInstance();
     private final OptionsPopOver mOptionsPopOver = new OptionsPopOver();
     private Action mRefreshAction;
 
@@ -68,22 +58,7 @@ public class DocumentsPane extends BorderPane {
         initListeners();
     }
 
-    private void addFiles(List<File> files) {
-        files.stream()
-                .filter(file -> (file.isDirectory() || (file.isFile() && StringUtils.equalsAnyIgnoreCase(FilenameUtils.getExtension(file.getName()), SUPPORTED_EXTS))))
-                .forEachOrdered(file -> {
-                    mManager.addIfMissing(file);
-                });
-
-        mManager.sort();
-    }
-
     private void createUI() {
-        Action openAction = new Action(Dict.OPEN.toString(), event -> {
-            requestAddFiles();
-        });
-        openAction.setGraphic(MaterialIcon._Content.ADD.getImageView(getIconSizeToolBarInt()));
-
         Action closeAction = new Action(Dict.CLOSE.toString(), event -> {
             if (getSelected() != null) {
                 remove();
@@ -113,9 +88,9 @@ public class DocumentsPane extends BorderPane {
             }
         });
         optionsAction.setGraphic(MaterialIcon._Action.SETTINGS.getImageView(getIconSizeToolBarInt()));
+        optionsAction.setDisabled(true);
 
         mActions = Arrays.asList(
-                openAction,
                 closeAction,
                 closeAllAction,
                 ActionUtils.ACTION_SPAN,
@@ -138,18 +113,18 @@ public class DocumentsPane extends BorderPane {
         mListView.itemsProperty().bind(mManager.itemsProperty());
     }
 
-    private Document getSelected() {
+    private MCoordinateFile getSelected() {
         return mListView.getSelectionModel().getSelectedItem();
     }
 
     private void initListeners() {
-        mListView.getSelectionModel().getSelectedItems().addListener((ListChangeListener.Change<? extends Document> c) -> {
+        mListView.getSelectionModel().getSelectedItems().addListener((ListChangeListener.Change<? extends MCoordinateFile> c) -> {
             if (getSelected() != null) {
-                getSelected().fitToBounds();
+//                getSelected().fitToBounds();
             }
         });
 
-        mManager.getItems().addListener((ListChangeListener.Change<? extends Document> c) -> {
+        mManager.getItems().addListener((ListChangeListener.Change<? extends MCoordinateFile> c) -> {
             refreshCheckedStates();
             try {
                 mManager.save();
@@ -158,9 +133,9 @@ public class DocumentsPane extends BorderPane {
             }
         });
 
-        final IndexedCheckModel<Document> checkModel = mListView.getCheckModel();
+        final IndexedCheckModel<MCoordinateFile> checkModel = mListView.getCheckModel();
 
-        checkModel.getCheckedItems().addListener((ListChangeListener.Change<? extends Document> c) -> {
+        checkModel.getCheckedItems().addListener((ListChangeListener.Change<? extends MCoordinateFile> c) -> {
             Platform.runLater(() -> {
                 mManager.getItems().forEach(document -> {
                     document.setVisible(checkModel.isChecked(document));
@@ -173,23 +148,12 @@ public class DocumentsPane extends BorderPane {
                 }
             });
         });
-
-        mListView.setOnDragOver((DragEvent event) -> {
-            Dragboard board = event.getDragboard();
-            if (board.hasFiles()) {
-                event.acceptTransferModes(TransferMode.COPY);
-            }
-        });
-
-        mListView.setOnDragDropped((DragEvent event) -> {
-            addFiles(event.getDragboard().getFiles());
-        });
     }
 
     private void refreshCheckedStates() {
-        final IndexedCheckModel<Document> checkModel = mListView.getCheckModel();
+        final IndexedCheckModel<MCoordinateFile> checkModel = mListView.getCheckModel();
 
-        for (Document document : mManager.getItems()) {
+        for (MCoordinateFile document : mManager.getItems()) {
             if (document.isVisible()) {
                 checkModel.check(document);
             } else {
@@ -199,7 +163,7 @@ public class DocumentsPane extends BorderPane {
     }
 
     private void remove() {
-        final Document document = getSelected();
+        final MCoordinateFile document = getSelected();
 
         SwingUtilities.invokeLater(() -> {
             String[] buttons = new String[]{Dict.CANCEL.toString(), Dict.CLOSE.toString()};
@@ -236,27 +200,5 @@ public class DocumentsPane extends BorderPane {
                 });
             }
         });
-    }
-
-    private void requestAddFiles() {
-        SimpleDialog.clearFilters();
-        for (String ext : SUPPORTED_EXTS) {
-            SimpleDialog.addFilters(ext);
-        }
-        SimpleDialog.setFilter("kml");
-        SimpleDialog.setTitle(Dict.OPEN.toString());
-
-        if (mFileDialogStartDir == null) {
-            SimpleDialog.setPath(FileUtils.getUserDirectory());
-        } else {
-            SimpleDialog.setPath(mFileDialogStartDir);
-            SimpleDialog.setSelectedFile(new File(""));
-        }
-
-        if (SimpleDialog.openFileAndDirectoy(true)) {
-            File[] paths = SimpleDialog.getPaths();
-            mFileDialogStartDir = paths[0].getParentFile();
-            addFiles(Arrays.asList(paths));
-        }
     }
 }

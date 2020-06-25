@@ -30,6 +30,9 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.apache.commons.io.FileUtils;
+import org.mapton.addon.files_nb.coordinate_file_openers.GeoCoordinateFileOpener;
+import org.mapton.addon.files_nb.coordinate_file_openers.KmlCoordinateFileOpener;
+import org.mapton.api.MCoordinateFile;
 import org.mapton.api.Mapton;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.fx.FxHelper;
@@ -38,37 +41,24 @@ import se.trixon.almond.util.fx.FxHelper;
  *
  * @author Patrik Karlström
  */
-public class DocumentManager {
+public class CoordinateFileManager {
 
     private File mConfigDir;
-    private ObjectProperty<ObservableList<Document>> mItemsProperty = new SimpleObjectProperty<>();
+    private ObjectProperty<ObservableList<MCoordinateFile>> mItemsProperty = new SimpleObjectProperty<>();
     private File mSourcesFile;
-    private LongProperty mUpdatedProperty = new SimpleLongProperty();
+    private final LongProperty mUpdatedProperty = new SimpleLongProperty();
 
-    public static DocumentManager getInstance() {
+    public static CoordinateFileManager getInstance() {
         return Holder.INSTANCE;
     }
 
-    private DocumentManager() {
+    private CoordinateFileManager() {
         mItemsProperty.setValue(FXCollections.observableArrayList());
+        initListeners();
     }
 
-    public boolean addIfMissing(File file) {
-        if (!contains(file)) {
-            getItems().add(new Document(file));
-
-            return true;
-        }
-
-        return false;
-    }
-
-    public boolean contains(File file) {
-        if (mItemsProperty.get().stream().anyMatch(fileSource -> (fileSource.getFile().equals(file)))) {
-            return true;
-        }
-
-        return false;
+    public boolean contains(MCoordinateFile coordinateFile) {
+        return mItemsProperty.get().stream().anyMatch(fileSource -> (fileSource.getFile().equals(coordinateFile.getFile())));
     }
 
     public File getConfigDir() {
@@ -79,11 +69,11 @@ public class DocumentManager {
         return mConfigDir;
     }
 
-    public ObservableList<Document> getItems() {
+    public ObservableList<MCoordinateFile> getItems() {
         return mItemsProperty.get();
     }
 
-    public final ObjectProperty<ObservableList<Document>> itemsProperty() {
+    public final ObjectProperty<ObservableList<MCoordinateFile>> itemsProperty() {
         if (mItemsProperty == null) {
             mItemsProperty = new SimpleObjectProperty<>(this, "items");
         }
@@ -92,18 +82,19 @@ public class DocumentManager {
     }
 
     public void load() {
-        ArrayList<Document> loadedItems = new ArrayList<>();
+        ArrayList<MCoordinateFile> loadedItems = new ArrayList<>();
 
         try {
             if (getSourcesFile().isFile()) {
-                loadedItems = Mapo.getGson().fromJson(FileUtils.readFileToString(getSourcesFile(), "utf-8"), new TypeToken<ArrayList<Document>>() {
+                loadedItems = Mapo.getGson().fromJson(FileUtils.readFileToString(getSourcesFile(), "utf-8"), new TypeToken<ArrayList<MCoordinateFile>>() {
                 }.getType());
             }
         } catch (IOException | JsonSyntaxException ex) {
             Exceptions.printStackTrace(ex);
         }
 
-        final ArrayList<Document> items = loadedItems;
+        final ArrayList<MCoordinateFile> items = loadedItems;
+
         Platform.runLater(() -> {
             mItemsProperty.get().setAll(items);
             Mapton.getGlobalState().put(Mapo.KEY_SOURCE_UPDATED, this);
@@ -117,7 +108,7 @@ public class DocumentManager {
         }
     }
 
-    public void removeAll(Document... documents) {
+    public void removeAll(MCoordinateFile... documents) {
         FxHelper.runLater(() -> {
             try {
                 if (documents == null || documents.length == 0) {
@@ -136,14 +127,31 @@ public class DocumentManager {
     }
 
     public void sort() {
-        Comparator<Document> c1 = (Document o1, Document o2) -> Boolean.compare(o1.getFile().isFile(), o2.getFile().isFile());
-        Comparator<Document> c2 = (Document o1, Document o2) -> o1.getFile().getName().toLowerCase(Locale.getDefault()).compareTo(o2.getFile().getName().toLowerCase(Locale.getDefault()));
+        Comparator<MCoordinateFile> c1 = (MCoordinateFile o1, MCoordinateFile o2) -> o1.getFile().getName().toLowerCase(Locale.getDefault()).compareTo(o2.getFile().getName().toLowerCase(Locale.getDefault()));
 
-        FXCollections.sort(mItemsProperty.get(), c1.thenComparing(c2));
+        FXCollections.sort(mItemsProperty.get(), c1);
     }
 
     public LongProperty updatedProperty() {
         return mUpdatedProperty;
+    }
+
+    private void addFiles(ArrayList<MCoordinateFile> fileOpenerFiles) {
+        for (MCoordinateFile fileOpenerFile : fileOpenerFiles) {
+            addIfMissing(fileOpenerFile);
+        }
+
+        sort();
+    }
+
+    private boolean addIfMissing(MCoordinateFile coordinateFile) {
+        if (!contains(coordinateFile)) {
+            getItems().add(coordinateFile);
+
+            return true;
+        }
+
+        return false;
     }
 
     private File getSourcesFile() {
@@ -154,8 +162,16 @@ public class DocumentManager {
         return mSourcesFile;
     }
 
+    private void initListeners() {
+        Mapton.getGlobalState().addListener(gsce -> {
+            FxHelper.runLater(() -> {
+                addFiles(gsce.getValue());
+            });
+        }, GeoCoordinateFileOpener.class.getName(), KmlCoordinateFileOpener.class.getName());
+    }
+
     private static class Holder {
 
-        private static final DocumentManager INSTANCE = new DocumentManager();
+        private static final CoordinateFileManager INSTANCE = new CoordinateFileManager();
     }
 }
