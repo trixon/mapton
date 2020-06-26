@@ -17,9 +17,12 @@ package org.mapton.core_nb.ui;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.TreeMap;
 import java.util.prefs.PreferenceChangeEvent;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -37,6 +40,8 @@ import javafx.scene.input.KeyCombination;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.controlsfx.control.Notifications;
 import org.controlsfx.control.PopOver;
@@ -44,6 +49,7 @@ import org.controlsfx.control.PopOver.ArrowLocation;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionGroup;
 import org.controlsfx.control.action.ActionUtils;
+import org.mapton.api.MCoordinateFileOpener;
 import org.mapton.api.MKey;
 import org.mapton.api.MOptions;
 import org.mapton.api.Mapton;
@@ -51,10 +57,12 @@ import static org.mapton.api.Mapton.getIconSizeToolBar;
 import org.mapton.base.ui.SearchView;
 import org.mapton.core_nb.Initializer;
 import org.openide.awt.Actions;
+import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
 import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.nbp.AlmondOptions;
 import se.trixon.almond.nbp.dialogs.NbAboutFx;
+import se.trixon.almond.nbp.dialogs.NbMessage;
 import se.trixon.almond.nbp.dialogs.NbSystemInformation;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.GlobalStateChangeEvent;
@@ -65,6 +73,7 @@ import se.trixon.almond.util.fx.FxActionSwing;
 import se.trixon.almond.util.fx.FxActionSwingCheck;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.icons.material.MaterialIcon;
+import se.trixon.almond.util.swing.dialogs.SimpleDialog;
 
 /**
  *
@@ -76,22 +85,24 @@ public class AppToolBar extends BaseToolBar {
     private FxActionSwing mAboutAction;
     private final AlmondOptions mAlmondOptions = AlmondOptions.INSTANCE;
     private FxActionSwingCheck mAlwaysOnTopAction;
+    private final ResourceBundle mBundle;
+    private File mFile;
     private FxActionSwingCheck mFullscreenAction;
     private Action mHelpAction;
     private FxActionSwingCheck mMapAction;
+    private FxActionSwing mOpenAction;
     private FxActionSwing mOptionsAction;
     private FxActionSwing mPluginsAction;
-    private FxActionSwing mSysInfoAction;
     private FxActionSwing mQuitAction;
     private FxActionSwing mResetWindowsAction;
     private FxActionSwing mRestartAction;
     private SearchView mSearchView;
     private Label mStatusLabel;
+    private FxActionSwing mSysInfoAction;
     private ContextMenu mSystemContextMenu;
     private Action mSystemMenuAction;
     private Action mToolboxAction;
     private PopOver mToolboxPopOver;
-    private final ResourceBundle mBundle;
 
     public AppToolBar() {
         mBundle = NbBundle.getBundle(AppToolBar.class);
@@ -108,6 +119,43 @@ public class AppToolBar extends BaseToolBar {
             mSearchView.getPresenter().requestFocus();
             ((TextField) mSearchView.getPresenter()).clear();
         });
+    }
+
+    public void open() {
+        TreeMap<String, ArrayList<MCoordinateFileOpener>> extToCoordinateFileOpeners = new TreeMap<>();
+        Lookup.getDefault().lookupAll(MCoordinateFileOpener.class).forEach(coordinateFileOpener -> {
+            for (String extension : coordinateFileOpener.getExtensions()) {
+                extToCoordinateFileOpeners.computeIfAbsent(extension.toLowerCase(Locale.getDefault()), k -> new ArrayList<>()).add(coordinateFileOpener);
+            }
+        });
+
+        if (!extToCoordinateFileOpeners.isEmpty()) {
+            NbMessage.warning(Dict.WARNING.toString(), mBundle.getString("no_file_openers"));
+        } else {
+            ArrayList<FileNameExtensionFilter> fileNameExtensionFilters = new ArrayList<>();
+            SimpleDialog.setTitle(Dict.OPEN.toString());
+            SimpleDialog.clearFilters();
+            extToCoordinateFileOpeners.entrySet().stream().map(entry -> {
+                entry.getValue().sort((MCoordinateFileOpener o1, MCoordinateFileOpener o2) -> o1.getName().compareToIgnoreCase(o2.getName()));
+                return entry;
+            }).forEachOrdered(entry -> {
+                entry.getValue().forEach(coordinateFileOpener -> {
+                    SimpleDialog.addFilter(new FileNameExtensionFilter(String.format("%s (%s)", coordinateFileOpener.getName(), entry.getKey()), entry.getKey()));
+                });
+            });
+
+            if (mFile == null) {
+                SimpleDialog.setPath(FileUtils.getUserDirectory());
+            } else {
+                SimpleDialog.setPath(mFile.getParentFile());
+                SimpleDialog.setSelectedFile(new File(""));
+            }
+
+            if (SimpleDialog.openFile(true)) {
+                mFile = SimpleDialog.getPaths()[0];
+                new FileDropSwitchboard(Arrays.asList(SimpleDialog.getPaths()));
+            }
+        }
     }
 
     public void toggleSystemMenu() {
@@ -140,6 +188,8 @@ public class AppToolBar extends BaseToolBar {
         ArrayList<Action> menuActions = new ArrayList<>();
         if (IS_MAC) {
             menuActions.addAll(Arrays.asList(
+                    mOpenAction,
+                    ActionUtils.ACTION_SEPARATOR,
                     viewActionGroup,
                     ActionUtils.ACTION_SEPARATOR,
                     mPluginsAction,
@@ -149,6 +199,8 @@ public class AppToolBar extends BaseToolBar {
             ));
         } else {
             menuActions.addAll(Arrays.asList(
+                    mOpenAction,
+                    ActionUtils.ACTION_SEPARATOR,
                     viewActionGroup,
                     ActionUtils.ACTION_SEPARATOR,
                     mOptionsAction,
@@ -225,6 +277,12 @@ public class AppToolBar extends BaseToolBar {
     }
 
     private void initActionsSwing() {
+        //open
+        mOpenAction = new FxActionSwing(Dict.OPEN.toString(), () -> {
+            Actions.forID("Mapton", "org.mapton.core_nb.actions.OpenAction").actionPerformed(null);
+        });
+        mOpenAction.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.SHORTCUT_DOWN));
+
         //Full screen
         mFullscreenAction = new FxActionSwingCheck(Dict.FULL_SCREEN.toString(), () -> {
             if (IS_MAC) {
@@ -387,5 +445,4 @@ public class AppToolBar extends BaseToolBar {
             onObjectHiding(mToolboxPopOver);
         });
     }
-
 }
