@@ -129,7 +129,7 @@ public class AppToolBar extends BaseToolBar {
             }
         });
 
-        if (!extToCoordinateFileOpeners.isEmpty()) {
+        if (extToCoordinateFileOpeners.isEmpty()) {
             NbMessage.warning(Dict.WARNING.toString(), mBundle.getString("no_file_openers"));
         } else {
             ArrayList<FileNameExtensionFilter> fileNameExtensionFilters = new ArrayList<>();
