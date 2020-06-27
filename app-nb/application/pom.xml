@@ -250,6 +250,11 @@
             <artifactId>addon-xkcd-nb</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>addon-world-clock-nb</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <!--Mapton/Unstable-->
         <!--        <dependency>
@@ -289,7 +294,7 @@
                     <installerPack200Enable>false</installerPack200Enable>
                     <finalName>mapton-${mapton.version}</finalName>
                     <!--<additionalArguments>-J-Xmx2048m</additionalArguments>-->
-                    <additionalArguments>&#045;&#045;locale en:US</additionalArguments>
+                    <!--<additionalArguments>&#045;&#045;locale en:US</additionalArguments>-->
                     <!--<additionalArguments>&#045;&#045;nosplash</additionalArguments>-->
                     <!--<additionalArguments>&#045;&#045;fontsize 32</additionalArguments>-->
                 </configuration>
