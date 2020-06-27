@@ -214,10 +214,6 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>reports-nb</artifactId>
         </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>wikipedia</artifactId>
-        </dependency>
 
         <!--Mapton/Add-ons-->
         <dependency>
@@ -253,6 +249,21 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>addon-world-clock-nb</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>addon-wikipedia</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>addon-wikipedia-nb</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>addon-wikipedia-ww</artifactId>
             <version>${project.version}</version>
         </dependency>
 
