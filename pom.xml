@@ -195,11 +195,6 @@
         <module>app-nb/modules/editors-nb</module>
         <module>app-nb/modules/poi-nb</module>
         <module>app-nb/modules/reports-nb</module>
-        <module>app-nb/modules-add-ons/files-nb</module>
-        <module>app-nb/modules-add-ons/geonames-ww</module>
-        <module>app-nb/modules-add-ons/photos-nb</module>
-        <module>app-nb/modules-add-ons/world_clock-nb</module>
-        <module>app-nb/modules-add-ons/xkcd-nb</module>
 
         <!--GUI WorkbenchFX-->
         <!--        <module>app-wb/application</module>
@@ -207,14 +202,20 @@
 
         Modules WB
         <module>app-wb/modules/reports-wb</module>
-        <module>app-wb/modules-add-ons/notes-wb</module>-->
+        -->
 
         <!--Other-->
         <module>modules/wikipedia</module>
 
         <!--Add-ons-->
-        <module>modules-add-ons/notes</module>
-        <module>modules-add-ons/photos-ww</module>
+        <module>add-ons/files/files-nb</module>
+        <module>add-ons/geonames/geonames-ww</module>
+        <module>add-ons/notes/notes</module>
+        <!--<module>addons/notes/notes-wb</module>-->
+        <module>add-ons/photos/photos-nb</module>
+        <module>add-ons/photos/photos-ww</module>
+        <module>add-ons/worldclock/worldclock-nb</module>
+        <module>add-ons/xkcd/xkcd-nb</module>
 
         <!--Unstable-->
         <!--<module>demo</module>-->
