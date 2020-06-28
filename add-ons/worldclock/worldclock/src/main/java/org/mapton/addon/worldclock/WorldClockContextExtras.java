@@ -13,32 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.addon.worldclock_nb;
+package org.mapton.addon.worldclock;
 
-import org.controlsfx.control.action.Action;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import org.mapton.addon.worldclock.api.WorldClock;
-import org.mapton.api.MToolMap;
-import org.mapton.api.MToolMapAddOn;
+import org.mapton.api.MContextMenuItem;
 import org.openide.util.lookup.ServiceProvider;
-import se.trixon.almond.nbp.Almond;
-import se.trixon.almond.util.fx.FxActionSwing;
 
 /**
  *
  * @author Patrik Karlström
  */
-@ServiceProvider(service = MToolMap.class)
-public class WorldClockTool extends MToolMapAddOn {
+@ServiceProvider(service = MContextMenuItem.class)
+public class WorldClockContextExtras extends MContextMenuItem {
 
-    public static final String NAME = WorldClock.NAME;
+    public WorldClockContextExtras() {
+    }
 
     @Override
-
-    public Action getAction() {
-        FxActionSwing action = new FxActionSwing(NAME, () -> {
-            Almond.openAndActivateTopComponent("WorldClockTopComponent");
-        });
-
-        return action;
+    public EventHandler<ActionEvent> getAction() {
+        return event -> {
+        };
     }
+
+    @Override
+    public String getName() {
+        return WorldClock.NAME;
+    }
+
+    @Override
+    public ContextType getType() {
+        return ContextType.EXTRAS;
+    }
+
 }

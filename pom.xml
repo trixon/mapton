@@ -216,7 +216,9 @@
         <module>add-ons/wikipedia/wikipedia</module>
         <module>add-ons/wikipedia/wikipedia-nb</module>
         <module>add-ons/wikipedia/wikipedia-ww</module>
+        <module>add-ons/worldclock/worldclock</module>
         <module>add-ons/worldclock/worldclock-nb</module>
+        <module>add-ons/worldclock/worldclock-ww</module>
         <module>add-ons/xkcd/xkcd-nb</module>
 
         <!--Unstable-->

@@ -13,20 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.addon.worldclock_nb;
+package org.mapton.addon.worldclock.api;
 
-import org.openide.util.lookup.ServiceProvider;
-import se.trixon.almond.nbp.core.news.NewsProvider;
+import org.openide.util.NbBundle;
 
 /**
  *
  * @author Patrik Karlström
  */
-@ServiceProvider(service = NewsProvider.class)
-public class News implements NewsProvider {
+public class WorldClock {
 
-    @Override
-    public String getHeading() {
-        return WorldClockTool.NAME;
-    }
+    public static final String NAME = NbBundle.getMessage(WorldClock.class, "worldClock");
 }

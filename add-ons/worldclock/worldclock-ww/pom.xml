@@ -7,8 +7,8 @@
         <version>2.0.2-SNAPSHOT</version>
         <relativePath>../../../pom.xml</relativePath>
     </parent>
-    <artifactId>addon-world-clock-nb</artifactId>
-    <name>World Clock NB</name>
+    <artifactId>addon-world-clock-ww</artifactId>
+    <name>World Clock WorldWind</name>
     <description>Got time for this?</description>
     <packaging>nbm</packaging>
     <build>
@@ -26,10 +26,6 @@
                         <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
                     </archive>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
             </plugin>
         </plugins>
     </build>
@@ -53,6 +49,11 @@
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-util-lookup</artifactId>
+            <version>${netbeans.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-dialogs</artifactId>
             <version>${netbeans.version}</version>
         </dependency>
         <dependency>
@@ -90,15 +91,10 @@
             <artifactId>org-netbeans-swing-tabcontrol</artifactId>
             <version>${netbeans.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.netbeans.api</groupId>
-            <artifactId>org-openide-dialogs</artifactId>
-            <version>${netbeans.version}</version>
-        </dependency>
 
         <!-- Mapton -->
         <dependency>
-            <groupId>${project.groupId}</groupId>
+            <groupId>org.mapton</groupId>
             <artifactId>mapton-api</artifactId>
         </dependency>
         <dependency>
@@ -110,19 +106,18 @@
             <artifactId>addon-world-clock</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>me-worldwind</artifactId>
+        </dependency>
 
         <!-- Trixon -->
         <dependency>
             <groupId>se.trixon.almond</groupId>
             <artifactId>almond-nbp</artifactId>
         </dependency>
-        <dependency>
-            <groupId>se.trixon.almond</groupId>
-            <artifactId>almond-nbp-core</artifactId>
-        </dependency>
     </dependencies>
     <properties>
-        <netbeans.compile.on.save>all</netbeans.compile.on.save>
         <netbeans.hint.license>apache20</netbeans.hint.license>
     </properties>
 </project>

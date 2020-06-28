@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+OpenIDE-Module-Localizing-Bundle: org/mapton/addon/worldclock/Bundle.properties
+AutoUpdate-Show-In-Client: false
+

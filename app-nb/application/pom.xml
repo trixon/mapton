@@ -253,6 +253,11 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>addon-world-clock-ww</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>addon-wikipedia</artifactId>
             <version>${project.version}</version>
         </dependency>

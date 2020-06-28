@@ -15,23 +15,14 @@
  */
 package org.mapton.addon.worldclock_nb;
 
-import java.util.Arrays;
-import java.util.List;
 import javafx.scene.Scene;
-import javafx.scene.control.ButtonBase;
 import javafx.scene.control.Label;
-import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
-import org.controlsfx.control.action.Action;
-import org.controlsfx.control.action.ActionUtils;
+import org.mapton.addon.worldclock.api.WorldClockView;
 import org.mapton.api.Mapton;
-import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.mapton.core_nb.api.MTopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.windows.TopComponent;
-import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.fx.FxHelper;
-import se.trixon.almond.util.icons.material.MaterialIcon;
 
 /**
  * Top component which displays something.
@@ -72,55 +63,10 @@ public final class WorldClockTopComponent extends MTopComponent {
     }
 
     private Scene createScene() {
-        Action firstAction = new Action(Dict.FIRST.toString(), event -> {
-        });
-        firstAction.setGraphic(MaterialIcon._Navigation.FIRST_PAGE.getImageView(getIconSizeToolBarInt()));
-
-        Action previousAction = new Action(Dict.PREVIOUS.toString(), event -> {
-        });
-        previousAction.setGraphic(MaterialIcon._Navigation.CHEVRON_LEFT.getImageView(getIconSizeToolBarInt()));
-
-        Action nextAction = new Action(Dict.NEXT.toString(), event -> {
-        });
-        nextAction.setGraphic(MaterialIcon._Navigation.CHEVRON_RIGHT.getImageView(getIconSizeToolBarInt()));
-
-        Action lastAction = new Action(Dict.LAST.toString(), event -> {
-        });
-        lastAction.setGraphic(MaterialIcon._Navigation.LAST_PAGE.getImageView(getIconSizeToolBarInt()));
-
-        Action randomAction = new Action(Dict.RANDOM.toString(), event -> {
-        });
-        randomAction.setGraphic(MaterialIcon._Places.CASINO.getImageView(getIconSizeToolBarInt()));
-
-        Action clearAction = new Action(Dict.CLEAR.toString(), event -> {
-        });
-        clearAction.setGraphic(MaterialIcon._Content.CLEAR.getImageView(getIconSizeToolBarInt()));
-
-        List<Action> actions = Arrays.asList(
-                firstAction,
-                previousAction,
-                randomAction,
-                nextAction,
-                lastAction,
-                ActionUtils.ACTION_SPAN,
-                clearAction
-        );
-
-        ToolBar toolBar = ActionUtils.createToolBar(actions, ActionUtils.ActionTextBehavior.HIDE);
-
-        FxHelper.adjustButtonWidth(toolBar.getItems().stream(), getIconSizeToolBarInt());
-        toolBar.getItems().stream().filter((item) -> (item instanceof ButtonBase))
-                .map((item) -> (ButtonBase) item).forEachOrdered((buttonBase) -> {
-            FxHelper.undecorateButton(buttonBase);
-        });
-
-        FxHelper.slimToolBar(toolBar);
         Label titleLabel = Mapton.createTitle(WorldClockTool.NAME);
 
-        BorderPane innerPane = new BorderPane(toolBar);
-        mRoot = new BorderPane();
-        innerPane.setTop(titleLabel);
-        mRoot.setTop(innerPane);
+        mRoot = new BorderPane(new WorldClockView());
+        mRoot.setTop(titleLabel);
         titleLabel.prefWidthProperty().bind(mRoot.widthProperty());
 
         return new Scene(mRoot);

@@ -13,20 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.addon.worldclock_nb;
-
-import org.openide.util.lookup.ServiceProvider;
-import se.trixon.almond.nbp.core.news.NewsProvider;
+package org.mapton.addon.worldclock;
 
 /**
  *
  * @author Patrik Karlström
  */
-@ServiceProvider(service = NewsProvider.class)
-public class News implements NewsProvider {
+public class Module {
 
-    @Override
-    public String getHeading() {
-        return WorldClockTool.NAME;
-    }
+    public static final String LOG_TAG = "World Clock";
 }
