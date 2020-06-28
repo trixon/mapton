@@ -39,7 +39,6 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
  */
 public class DataSourcesPane extends BorderPane {
 
-    private DataSourceTab mFileTab;
     private TabPane mTabPane;
     private ToolBar mToolBar;
     private DataSourceTab mWmsSourceTab;
@@ -52,7 +51,6 @@ public class DataSourcesPane extends BorderPane {
 
     void save() {
         Platform.runLater(() -> {
-            mFileTab.save();
             mWmsSourceTab.save();
             mWmsStyleTab.save();
         });
@@ -66,10 +64,9 @@ public class DataSourcesPane extends BorderPane {
         initToolBar();
         String[] wmsExts = new String[]{"json"};
 
-        mFileTab = new DataSourceTab(Dict.FILE.toString(), MKey.DATA_SOURCES_FILES, null);
         mWmsSourceTab = new DataSourceTab("WMS " + Dict.SOURCE.toString(), MKey.DATA_SOURCES_WMS_SOURCES, wmsExts);
         mWmsStyleTab = new DataSourceTab("WMS " + Dict.STYLE.toString(), MKey.DATA_SOURCES_WMS_STYLES, wmsExts);
-        mTabPane = new TabPane(mWmsSourceTab, mWmsStyleTab, mFileTab);
+        mTabPane = new TabPane(mWmsSourceTab, mWmsStyleTab);
 
         for (Tab tab : mTabPane.getTabs()) {
             tab.setClosable(false);
@@ -79,7 +76,6 @@ public class DataSourcesPane extends BorderPane {
     }
 
     private void init() {
-        mFileTab.load("");
         mWmsSourceTab.load(MDataSourceInitializer.getDefaultSources());
         mWmsStyleTab.load(MDataSourceInitializer.getDefaultStyles());
 
