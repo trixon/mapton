@@ -15,9 +15,15 @@
  */
 package org.mapton.addon.worldclock.api;
 
+import eu.hansolo.tilesfx.Tile;
+import eu.hansolo.tilesfx.Tile.SkinType;
+import eu.hansolo.tilesfx.TileBuilder;
+import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import javafx.scene.control.ButtonBase;
+import javafx.scene.control.ListView;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
 import org.controlsfx.control.action.Action;
@@ -28,6 +34,8 @@ import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 
 public final class WorldClockView extends BorderPane {
+
+    private static final double TILE_SIZE = 150;
 
     public WorldClockView() {
         createUI();
@@ -79,6 +87,29 @@ public final class WorldClockView extends BorderPane {
 
         FxHelper.slimToolBar(toolBar);
         setTop(toolBar);
+        var timeTile = TileBuilder.create()
+                .prefSize(TILE_SIZE, TILE_SIZE)
+                .skinType(SkinType.TIME)
+                .title("Time Tile")
+                .text("Whatever text")
+                .duration(LocalTime.of(1, 22))
+                .description("Average reply time")
+                .textVisible(true)
+                .build();
+
+        var clockTile = TileBuilder.create()
+                .prefSize(TILE_SIZE, TILE_SIZE * 2)
+                .skinType(SkinType.CLOCK)
+                .title("Clock Tile")
+                .text("Whatever text")
+                .dateVisible(true)
+                .locale(Locale.US)
+                .running(true)
+                .build();
+
+        ListView<Tile> listview = new ListView<>();
+        listview.getItems().setAll(timeTile, clockTile);
+        setCenter(listview);
     }
 
     private void initListeners() {
