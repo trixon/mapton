@@ -211,6 +211,9 @@
         <module>add-ons/geonames/geonames-ww</module>
         <module>add-ons/notes/notes</module>
         <!--<module>addons/notes/notes-wb</module>-->
+        <module>add-ons/panopticon/panopticon</module>
+        <module>add-ons/panopticon/panopticon-nb</module>
+        <module>add-ons/panopticon/panopticon-ww</module>
         <module>add-ons/photos/photos-nb</module>
         <module>add-ons/photos/photos-ww</module>
         <module>add-ons/wikipedia/wikipedia</module>
