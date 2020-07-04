@@ -224,6 +224,9 @@
         <module>add-ons/worldclock/worldclock-ww</module>
         <module>add-ons/xkcd/xkcd-nb</module>
 
+        <!--POI data sources-->
+        <module>add-ons/poi/trv-traffic-information</module>
+
         <!--Unstable-->
         <!--<module>demo</module>-->
         <!--<module>modules-ext/gdal</module>-->
@@ -288,6 +291,11 @@
             <dependency>
                 <groupId>org.mapton</groupId>
                 <artifactId>poi-bookmarks</artifactId>
+                <version>${mapton.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mapton</groupId>
+                <artifactId>poi-trv-ti</artifactId>
                 <version>${mapton.version}</version>
             </dependency>
             <dependency>

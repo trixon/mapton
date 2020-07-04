@@ -141,6 +141,10 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>poi-bookmarks</artifactId>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>poi-trv-ti</artifactId>
+        </dependency>
 
         <!--Mapton/Search engines-->
         <dependency>
@@ -231,7 +235,7 @@
             <artifactId>addon-notes</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
+        <!--        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>addon-panopticon</artifactId>
             <version>${project.version}</version>
@@ -245,7 +249,7 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>addon-panopticon-ww</artifactId>
             <version>${project.version}</version>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>addon-photos-nb</artifactId>
@@ -261,7 +265,7 @@
             <artifactId>addon-xkcd-nb</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
+        <!--        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>addon-world-clock</artifactId>
             <version>${project.version}</version>
@@ -275,7 +279,7 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>addon-world-clock-ww</artifactId>
             <version>${project.version}</version>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>addon-wikipedia</artifactId>
