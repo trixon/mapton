@@ -34,6 +34,7 @@
                         <publicPackage>org.apache.commons.*</publicPackage>
                         <publicPackage>org.controlsfx.*</publicPackage>
                         <publicPackage>org.h2.*</publicPackage>
+                        <publicPackage>org.locationtech.jts.*</publicPackage>
                         <publicPackage>org.jsoup.*</publicPackage>
                         <publicPackage>org.postgresql.*</publicPackage>
                         <publicPackage>org.openide.*</publicPackage>
@@ -400,6 +401,11 @@
         <dependency>
             <groupId>com.drewnoakes</groupId>
             <artifactId>metadata-extractor</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.locationtech.jts</groupId>
+            <artifactId>jts-core</artifactId>
+            <version>1.17.0</version>
         </dependency>
     </dependencies>
 

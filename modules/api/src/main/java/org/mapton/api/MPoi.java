@@ -21,15 +21,24 @@ package org.mapton.api;
  */
 public class MPoi extends MBookmark {
 
+    private String mExternalImageUrl;
+
     private String mGeometryTypeString;
     private String mGroup;
+    private String mPlacemarkImageUrl;
+    private double mPlacemarkScale = 1.0;
     private String mProvider;
     private String mStatus;
     private String mTags;
     private String mUrl;
     private String mWkt;
+    private boolean mPlotLabel = true;
 
     public MPoi() {
+    }
+
+    public String getExternalImageUrl() {
+        return mExternalImageUrl;
     }
 
     public String getGeometryTypeString() {
@@ -38,6 +47,14 @@ public class MPoi extends MBookmark {
 
     public String getGroup() {
         return mGroup;
+    }
+
+    public String getPlacemarkImageUrl() {
+        return mPlacemarkImageUrl;
+    }
+
+    public double getPlacemarkScale() {
+        return mPlacemarkScale;
     }
 
     public String getProvider() {
@@ -60,12 +77,32 @@ public class MPoi extends MBookmark {
         return mWkt;
     }
 
+    public boolean isPlotLabel() {
+        return mPlotLabel;
+    }
+
+    public void setExternalImageUrl(String externalImageUrl) {
+        mExternalImageUrl = externalImageUrl;
+    }
+
     public void setGeometryTypeString(String geometryTypeString) {
         mGeometryTypeString = geometryTypeString;
     }
 
     public void setGroup(String group) {
         mGroup = group;
+    }
+
+    public void setPlacemarkImageUrl(String placemarkImageUrl) {
+        mPlacemarkImageUrl = placemarkImageUrl;
+    }
+
+    public void setPlacemarkScale(double placemarkScale) {
+        this.mPlacemarkScale = placemarkScale;
+    }
+
+    public void setPlotLabel(boolean plotLabel) {
+        this.mPlotLabel = plotLabel;
     }
 
     public void setProvider(String provider) {

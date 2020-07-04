@@ -24,6 +24,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
+import org.mapton.api.MBackgroundImage;
 import org.mapton.api.MDict;
 import org.mapton.api.MKey;
 import org.mapton.api.MPoi;
@@ -85,16 +86,20 @@ public class PoiLayerBundle extends LayerBundle {
             for (MPoi poi : mPoiManager.getFilteredItems()) {
                 if (poi.isDisplayMarker()) {
                     PointPlacemark placemark = new PointPlacemark(Position.fromDegrees(poi.getLatitude(), poi.getLongitude()));
-                    placemark.setLabelText(poi.getName());
+                    placemark.setLabelText(poi.isPlotLabel() ? poi.getName() : null);
                     placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
                     placemark.setEnableLabelPicking(true);
-
                     PointPlacemarkAttributes attrs = new PointPlacemarkAttributes(placemark.getDefaultAttributes());
-                    attrs.setImageAddress("images/pushpins/plain-white.png");
-                    try {
-                        attrs.setImageColor(FxHelper.colorToColor(FxHelper.colorFromHexRGBA(poi.getColor())));
-                    } catch (Exception e) {
-                        // nvm?
+                    if (poi.getPlacemarkImageUrl() == null) {
+                        attrs.setImageAddress("images/pushpins/plain-white.png");
+                        try {
+                            attrs.setImageColor(FxHelper.colorToColor(FxHelper.colorFromHexRGBA(poi.getColor())));
+                        } catch (Exception e) {
+                            // nvm?
+                        }
+                    } else {
+                        attrs.setImageAddress(poi.getPlacemarkImageUrl());
+                        attrs.setScale(poi.getPlacemarkScale());
                     }
                     placemark.setAttributes(attrs);
                     placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(attrs, 1.5));
@@ -113,6 +118,7 @@ public class PoiLayerBundle extends LayerBundle {
         Map<String, Object> propertyMap = new LinkedHashMap<>();
 
         if (poi != null) {
+            Mapton.getGlobalState().put(MKey.BACKGROUND_IMAGE, new MBackgroundImage(poi.getExternalImageUrl(), .85));
             propertyMap.put(Dict.NAME.toString(), poi.getName());
             propertyMap.put(Dict.CATEGORY.toString(), poi.getCategory());
             propertyMap.put(Dict.SOURCE.toString(), poi.getProvider());

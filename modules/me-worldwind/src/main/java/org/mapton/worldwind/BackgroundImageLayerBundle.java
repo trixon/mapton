@@ -31,8 +31,7 @@ import se.trixon.almond.util.Dict;
 @ServiceProvider(service = LayerBundle.class)
 public class BackgroundImageLayerBundle extends LayerBundle {
 
-    private MBackgroundImage backgroundImage;
-
+    private MBackgroundImage mBackgroundImage;
     private final RenderableLayer mLayer = new RenderableLayer();
     private final ScreenImage mScreenImage = new ScreenImage();
 
@@ -58,7 +57,7 @@ public class BackgroundImageLayerBundle extends LayerBundle {
 
     private void initListeners() {
         Mapton.getGlobalState().addListener(gsce -> {
-            backgroundImage = gsce.getValue();
+            mBackgroundImage = gsce.getValue();
             repaint();
         }, MKey.BACKGROUND_IMAGE);
     }
@@ -66,12 +65,12 @@ public class BackgroundImageLayerBundle extends LayerBundle {
     private void initRepaint() {
         setPainter(() -> {
             mLayer.removeAllRenderables();
-            if (backgroundImage != null) {
+            if (mBackgroundImage != null && mBackgroundImage.getImageSource() != null) {
                 mLayer.addRenderable(mScreenImage);
                 synchronized (this) {
-                    mScreenImage.setImageSource(backgroundImage.getImageSource());
+                    mScreenImage.setImageSource(mBackgroundImage.getImageSource());
                     try {
-                        mScreenImage.setOpacity(backgroundImage.getOpacity());
+                        mScreenImage.setOpacity(mBackgroundImage.getOpacity());
                     } catch (Exception e) {
                     }
                 }
