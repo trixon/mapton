@@ -54,8 +54,6 @@ public class AppToolboxView extends BorderPane {
     public AppToolboxView() {
         createUI();
         addListeners();
-
-        initTools();
     }
 
     private void addListeners() {
