@@ -18,9 +18,10 @@ package org.mapton.poi_trv_ti;
 import java.io.IOException;
 import javafx.util.Duration;
 import javax.xml.bind.JAXBException;
-import static org.mapton.poi_trv_ti.TrafficInformationManager.Service.*;
+import org.mapton.poi_trv_ti.TrafficInformationManager.Service;
 import org.openide.modules.OnStart;
 import org.openide.util.Exceptions;
+import se.trixon.almond.util.SystemHelper;
 import se.trixon.trv_ti.TrafficInformation;
 
 /**
@@ -30,9 +31,10 @@ import se.trixon.trv_ti.TrafficInformation;
 @OnStart
 public class Downloader implements Runnable {
 
-    private final Duration mFreqCamera = Duration.hours(168);
-    private final Duration mFreqTrafficeSafetyCamera = Duration.hours(168);
-    private final Duration mFreqWeatherStation = Duration.minutes(30);
+    private static final Duration FREQ_1_WEEK = Duration.hours(168);
+    private static final Duration FREQ_2_MINUTES = Duration.minutes(2);
+    private static final Duration FREQ_2_HOURS = Duration.hours(2);
+    private static final Duration FREQ_30_MINUTES = Duration.minutes(30);
     private final TrafficInformationManager mManager = TrafficInformationManager.getInstance();
     private final TrafficInformation mTrafficInformation = mManager.getTrafficInformation();
 
@@ -41,31 +43,38 @@ public class Downloader implements Runnable {
 
     @Override
     public void run() {
-        System.out.println("RUN");
-        new Thread(() -> {
-            new DownloadJob(mManager.getFile(CAMERA), mFreqCamera, () -> {
+        SystemHelper.runLaterDelayed(10 * 1000, () -> {
+            new DownloadJob(mManager.getFile(Service.CAMERA), FREQ_1_WEEK, () -> {
                 try {
-                    mTrafficInformation.road().getCameraResults(null, null, mManager.getFile(CAMERA));
+                    mTrafficInformation.road().getCameraResults(null, null, mManager.getFile(Service.CAMERA));
                 } catch (IOException | InterruptedException | JAXBException ex) {
                     Exceptions.printStackTrace(ex);
                 }
             });
 
-            new DownloadJob(mManager.getFile(TRAFFIC_SAFETY_CAMERA), mFreqTrafficeSafetyCamera, () -> {
+            new DownloadJob(mManager.getFile(Service.TRAFFIC_SAFETY_CAMERA), FREQ_1_WEEK, () -> {
                 try {
-                    mTrafficInformation.road().getTrafficSafetyCameraResults(null, null, mManager.getFile(TRAFFIC_SAFETY_CAMERA));
+                    mTrafficInformation.road().getTrafficSafetyCameraResults(null, null, mManager.getFile(Service.TRAFFIC_SAFETY_CAMERA));
                 } catch (IOException | InterruptedException | JAXBException ex) {
                     Exceptions.printStackTrace(ex);
                 }
             });
 
-            new DownloadJob(mManager.getFile(WEATHER_STATION), mFreqWeatherStation, () -> {
+            new DownloadJob(mManager.getFile(Service.WEATHER_STATION), FREQ_30_MINUTES, () -> {
                 try {
-                    mTrafficInformation.road().getWeatherStationResults(null, null, mManager.getFile(WEATHER_STATION));
+                    mTrafficInformation.road().getWeatherStationResults(null, null, mManager.getFile(Service.WEATHER_STATION));
                 } catch (IOException | InterruptedException | JAXBException ex) {
                     Exceptions.printStackTrace(ex);
                 }
             });
-        }).start();
+
+            new DownloadJob(mManager.getFile(Service.PARKING), FREQ_2_HOURS, () -> {
+                try {
+                    mTrafficInformation.road().getParkingResults(null, null, mManager.getFile(Service.PARKING));
+                } catch (IOException | InterruptedException | JAXBException ex) {
+                    Exceptions.printStackTrace(ex);
+                }
+            });
+        });
     }
 }

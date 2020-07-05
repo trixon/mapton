@@ -17,7 +17,10 @@ package org.mapton.poi_trv_ti;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import javax.xml.bind.JAXBException;
 import org.apache.commons.io.FileUtils;
 import org.mapton.api.MServiceKeyManager;
 import org.mapton.api.Mapton;
@@ -31,7 +34,12 @@ import se.trixon.trv_ti.TrafficInformation;
 public class TrafficInformationManager {
 
     private final File mCacheDir;
+    private HashMap<File, Long> mFileToTimestamp = new HashMap<>();
     private final TrafficInformationManager mManager = getInstance();
+    private List<se.trixon.trv_ti.road.camera.v1.RESULT> mResultsCamera;
+    private List<se.trixon.trv_ti.road.parking.v1_4.RESULT> mResultsParking;
+    private List<se.trixon.trv_ti.road.trafficsafetycamera.v1.RESULT> mResultsTrafficSafetyCamera;
+    private List<se.trixon.trv_ti.road.weatherstation.v1.RESULT> mResultsWeatherStation;
     private HashMap<Service, File> mServiceToFile = new HashMap<>();
     private final TrafficInformation mTrafficInformation;
 
@@ -53,8 +61,89 @@ public class TrafficInformationManager {
         return mServiceToFile.computeIfAbsent(service, k -> new File(mCacheDir, service.getFilename()));
     }
 
+    public List<se.trixon.trv_ti.road.camera.v1.RESULT> getResultsCamera() {
+        File file = getFile(Service.CAMERA);
+        if (file.exists()) {
+            if (isOutOfDate(mResultsCamera, file)) {
+                try {
+                    mResultsCamera = mTrafficInformation.road().getCameraResults(file);
+                    mFileToTimestamp.put(file, file.lastModified());
+                } catch (IOException | InterruptedException | JAXBException ex) {
+                    mResultsCamera = new ArrayList<>();
+                    Exceptions.printStackTrace(ex);
+                }
+            }
+        } else {
+            mResultsCamera = new ArrayList<>();
+        }
+
+        return mResultsCamera;
+    }
+
+    public List<se.trixon.trv_ti.road.parking.v1_4.RESULT> getResultsParking() {
+        File file = getFile(Service.PARKING);
+        if (file.exists()) {
+            if (isOutOfDate(mResultsParking, file)) {
+                try {
+                    mResultsParking = mTrafficInformation.road().getParkingResults(file);
+                    mFileToTimestamp.put(file, file.lastModified());
+                } catch (IOException | InterruptedException | JAXBException ex) {
+                    mResultsParking = new ArrayList<>();
+                    Exceptions.printStackTrace(ex);
+                }
+            }
+        } else {
+            mResultsParking = new ArrayList<>();
+        }
+
+        return mResultsParking;
+    }
+
+    public List<se.trixon.trv_ti.road.trafficsafetycamera.v1.RESULT> getResultsTrafficSafetyCamera() {
+        File file = getFile(Service.TRAFFIC_SAFETY_CAMERA);
+        if (file.exists()) {
+            if (isOutOfDate(mResultsTrafficSafetyCamera, file)) {
+                try {
+                    mResultsTrafficSafetyCamera = mTrafficInformation.road().getTrafficSafetyCameraResults(file);
+                    mFileToTimestamp.put(file, file.lastModified());
+                } catch (IOException | InterruptedException | JAXBException ex) {
+                    mResultsTrafficSafetyCamera = new ArrayList<>();
+                    Exceptions.printStackTrace(ex);
+                }
+            }
+        } else {
+            mResultsTrafficSafetyCamera = new ArrayList<>();
+
+        }
+        return mResultsTrafficSafetyCamera;
+    }
+
+    public List<se.trixon.trv_ti.road.weatherstation.v1.RESULT> getResultsWeatherStation() {
+        File file = getFile(Service.WEATHER_STATION);
+        if (file.exists()) {
+            if (isOutOfDate(mResultsWeatherStation, file)) {
+                try {
+                    mResultsWeatherStation = mTrafficInformation.road().getWeatherStationResults(file);
+                    mFileToTimestamp.put(file, file.lastModified());
+                } catch (IOException | InterruptedException | JAXBException ex) {
+                    mResultsWeatherStation = new ArrayList<>();
+                    Exceptions.printStackTrace(ex);
+                }
+            }
+        } else {
+            mResultsWeatherStation = new ArrayList<>();
+        }
+
+        return mResultsWeatherStation;
+    }
+
     public TrafficInformation getTrafficInformation() {
         return mTrafficInformation;
+    }
+
+    private boolean isOutOfDate(Object result, File file) {
+        long lastModified = mFileToTimestamp.computeIfAbsent(file, k -> 0L);
+        return result == null || file.lastModified() > lastModified;
     }
 
     private static class Holder {
@@ -64,6 +153,7 @@ public class TrafficInformationManager {
 
     public enum Service {
         CAMERA("camera.xml"),
+        PARKING("parking.xml"),
         TRAFFIC_SAFETY_CAMERA("traffic_safety_camera.xml"),
         WEATHER_STATION("weather_station.xml");
         private final String mFilename;

@@ -20,6 +20,7 @@ import java.io.File;
 import javafx.util.Duration;
 import javax.swing.Timer;
 import org.apache.commons.io.FilenameUtils;
+import org.mapton.api.Mapton;
 import se.trixon.almond.util.SystemHelper;
 
 /**
@@ -32,12 +33,12 @@ public class DownloadJob {
 
     public DownloadJob(File file, Duration updateFrequency, Runnable r) {
         final int defaultDelay = (int) updateFrequency.toMillis();
-        String fileName = FilenameUtils.getBaseName(file.getAbsolutePath());
+        String fileName = FilenameUtils.getName(file.getAbsolutePath());
         ActionListener actionListener = actionEvent -> {
             new Thread(() -> {
-                System.out.println("Start download " + fileName);
+                Mapton.logDownloading("Trv Traffic Information", fileName);
                 r.run();
-                System.out.println("End download " + fileName);
+                Mapton.logDownloading("Trv Traffic Information", fileName + ", done");
                 mTimer.setDelay(defaultDelay);
                 mTimer.setInitialDelay(defaultDelay);
                 mTimer.restart();
@@ -46,16 +47,14 @@ public class DownloadJob {
 
         mTimer = new Timer(defaultDelay, actionListener);
 
-        if (!file.exists() || SystemHelper.age(file.lastModified()) > updateFrequency.toMillis()) {
+        if (!file.exists() || SystemHelper.age(file.lastModified()) > defaultDelay) {
             actionListener.actionPerformed(null);
-        }
+        } else {
+            long initialDelay = defaultDelay;
+            if (file.exists()) {
+                initialDelay = file.lastModified() + defaultDelay - System.currentTimeMillis();
+            }
 
-        long initialDelay = defaultDelay;
-        if (file.exists()) {
-            initialDelay = file.lastModified() + defaultDelay - System.currentTimeMillis();
-        }
-
-        if (!mTimer.isRunning()) {
             int actualDelay = (int) Math.max(0, initialDelay);
             mTimer.setDelay(actualDelay);
             mTimer.setInitialDelay(actualDelay);
