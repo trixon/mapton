@@ -16,33 +16,35 @@
 package org.mapton.core_nb.tool.map;
 
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import org.controlsfx.control.action.Action;
-import org.mapton.api.MToolMap;
 import org.mapton.api.MToolMapCommand;
 import org.mapton.core_nb.actions.ClearTemporaryLayerAction;
 import org.openide.awt.Actions;
 import org.openide.util.lookup.ServiceProvider;
-import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.swing.SwingHelper;
 
 /**
  *
  * @author Patrik Karlström
  */
-@ServiceProvider(service = MToolMap.class)
+@ServiceProvider(service = MToolMapCommand.class)
 public class ClearTemporaryLayerTool extends MToolMapCommand {
 
     @Override
     public Action getAction() {
-        Action action = new Action(
-                FxHelper.createTitleAndKeyCode(ClearTemporaryLayerAction.getName(), KeyCode.T, KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN) + "<",
-                evt -> {
-                    SwingHelper.runLaterDelayed(0, () -> {
-                        Actions.forID("Mapton", "org.mapton.core_nb.actions.ClearTemporaryLayerAction").actionPerformed(null);
-                    });
-                });
+        Action action = new Action(ClearTemporaryLayerAction.getName(), evt -> {
+            SwingHelper.runLater(() -> {
+                Actions.forID("Mapton", "org.mapton.core_nb.actions.ClearTemporaryLayerAction").actionPerformed(null);
+            });
+        });
 
         return action;
+    }
+
+    @Override
+    public KeyCodeCombination getKeyCodeCombination() {
+        return new KeyCodeCombination(KeyCode.T, KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN);
     }
 }

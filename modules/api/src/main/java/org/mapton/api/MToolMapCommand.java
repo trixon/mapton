@@ -21,7 +21,7 @@ import se.trixon.almond.util.Dict;
  *
  * @author Patrik Karlström
  */
-public abstract class MToolMapCommand implements MToolMap {
+public abstract class MToolMapCommand implements MToolBase {
 
     @Override
     public String getParent() {

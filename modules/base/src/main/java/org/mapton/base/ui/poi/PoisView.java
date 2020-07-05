@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import javafx.application.Platform;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -36,6 +35,7 @@ import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToolBar;
 import javafx.scene.control.Tooltip;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
@@ -47,7 +47,6 @@ import org.controlsfx.control.textfield.TextFields;
 import org.mapton.api.MContextMenuItem;
 import org.mapton.api.MDict;
 import org.mapton.api.MKey;
-import org.mapton.api.MLatLon;
 import org.mapton.api.MPoi;
 import org.mapton.api.MPoiManager;
 import org.mapton.api.Mapton;
@@ -183,11 +182,18 @@ public class PoisView extends BorderPane {
         };
 
         mListView.setOnMousePressed(mContextMenuMouseEvent);
-        mListView.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends MPoi> ov, MPoi p, MPoi p1) -> {
-            Mapton.getGlobalState().put(MKey.POI_SELECTION, p1);
-            if (p1 != null) {
-                Mapton.getEngine().panTo(new MLatLon(p1.getLatitude(), p1.getLongitude()), p1.getZoom());
+        mListView.setOnMouseClicked(mouseEvent -> {
+            if (mouseEvent.getButton() == MouseButton.PRIMARY && mouseEvent.isShiftDown()) {
+//                if (mouseEvent.getButton() == MouseButton.PRIMARY && mouseEvent.getClickCount() == 2) {
+                var poi = mListView.getSelectionModel().getSelectedItem();
+                if (poi != null) {
+                    Mapton.getEngine().panTo(poi.getLatLon(), poi.getZoom());
+                }
             }
+        });
+
+        mListView.getSelectionModel().selectedItemProperty().addListener((ov, oldPoi, newPoi) -> {
+            Mapton.getGlobalState().put(MKey.POI_SELECTION, newPoi);
         });
 
         Mapton.getGlobalState().addListener(gsce -> {

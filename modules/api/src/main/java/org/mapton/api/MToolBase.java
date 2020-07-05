@@ -15,6 +15,7 @@
  */
 package org.mapton.api;
 
+import javafx.scene.input.KeyCodeCombination;
 import org.controlsfx.control.action.Action;
 
 /**
@@ -24,6 +25,10 @@ import org.controlsfx.control.action.Action;
 public interface MToolBase {
 
     Action getAction();
+
+    default KeyCodeCombination getKeyCodeCombination() {
+        return null;
+    }
 
     default String getParent() {
         return null;

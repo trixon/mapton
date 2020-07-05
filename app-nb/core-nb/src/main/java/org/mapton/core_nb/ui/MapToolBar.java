@@ -19,8 +19,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
+import javafx.geometry.Side;
 import javafx.scene.control.ButtonBase;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -34,6 +38,7 @@ import org.mapton.api.MDict;
 import org.mapton.api.MDocumentInfo;
 import org.mapton.api.MKey;
 import org.mapton.api.MOptions;
+import org.mapton.api.MToolMapCommand;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.mapton.base.ui.AttributionView;
@@ -41,6 +46,7 @@ import org.mapton.base.ui.TemporalView;
 import org.mapton.base.ui.bookmark.BookmarksView;
 import org.mapton.base.ui.grid.GridView;
 import org.openide.awt.Actions;
+import org.openide.util.Lookup;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxActionSwing;
 import se.trixon.almond.util.fx.FxHelper;
@@ -59,6 +65,9 @@ public class MapToolBar extends BaseToolBar {
     private AttributionView mAttributionView;
     private Action mBookmarkAction;
     private PopOver mBookmarkPopOver;
+    private Action mCommandAction;
+    private ContextMenu mCommandContextMenu;
+    private ObservableList<MenuItem> mCommandMenuItems;
     private Action mGridAction;
     private PopOver mGridPopOver;
     private FxActionSwing mHomeAction;
@@ -67,8 +76,8 @@ public class MapToolBar extends BaseToolBar {
     private Action mRulerAction;
     private PopOver mRulerPopOver;
     private Action mStyleAction;
-    private FxActionSwing mStyleSwapAction;
     private PopOver mStylePopOver;
+    private FxActionSwing mStyleSwapAction;
     private Action mTemporalAction;
     private PopOver mTemporalPopOver;
     private TemporalView mTemporalView;
@@ -92,6 +101,16 @@ public class MapToolBar extends BaseToolBar {
 
     public void toogleBookmarkPopOver() {
         tooglePopOver(mBookmarkPopOver, mBookmarkAction);
+    }
+
+    public void toogleCommandContextMenu() {
+        FxHelper.runLater(() -> {
+            if (mCommandContextMenu.isShowing()) {
+                mCommandContextMenu.hide();
+            } else if (shouldOpen(mCommandContextMenu)) {
+                mCommandContextMenu.show(getButtonForAction(mCommandAction), Side.BOTTOM, 0, 0);
+            }
+        });
     }
 
     public void toogleGridPopOver() {
@@ -125,6 +144,7 @@ public class MapToolBar extends BaseToolBar {
         ArrayList<Action> actions = new ArrayList<>();
         actions.addAll(Arrays.asList(
                 mHomeAction,
+                mCommandAction,
                 mToolboxAction,
                 mBookmarkAction,
                 mLayerAction,
@@ -148,6 +168,16 @@ public class MapToolBar extends BaseToolBar {
                     .map((item) -> (ButtonBase) item).forEachOrdered((buttonBase) -> {
                 buttonBase.getStylesheets().add(CSS_FILE);
             });
+
+            mCommandContextMenu = new ContextMenu();
+            mCommandContextMenu.setOnHiding(windowEvent -> {
+                onObjectHiding(mCommandContextMenu);
+            });
+            mCommandMenuItems = mCommandContextMenu.getItems();
+            Lookup.getDefault().lookupResult(MToolMapCommand.class).addLookupListener(event -> {
+                populateCommands();
+            });
+            populateCommands();
         });
     }
 
@@ -183,6 +213,13 @@ public class MapToolBar extends BaseToolBar {
         mLayerAction.setGraphic(MaterialIcon._Maps.LAYERS.getImageView(getIconSizeToolBarInt()));
 //        mLayerAction.setSelected(mOptions.isBookmarkVisible());
         setTooltip(mLayerAction, new KeyCodeCombination(KeyCode.L, KeyCombination.SHORTCUT_DOWN));
+
+        //CommandAction
+        mCommandAction = new Action(Dict.COMMANDS.toString(), event -> {
+            toogleCommandContextMenu();
+        });
+        mCommandAction.setGraphic(MaterialIcon._Image.FLASH_ON.getImageView(getIconSizeToolBarInt()));
+        setTooltip(mCommandAction, new KeyCodeCombination(KeyCode.E, KeyCombination.SHORTCUT_DOWN));
 
         //Grid
         mGridAction = new Action(MDict.GRIDS.toString(), event -> {
@@ -346,6 +383,20 @@ public class MapToolBar extends BaseToolBar {
             initPopOver(mAttributionPopOver, Dict.COPYRIGHT.toString(), mAttributionView, true);
             mAttributionPopOver.setArrowLocation(ArrowLocation.TOP_LEFT);
         });
+    }
+
+    private void populateCommands() {
+        new Thread(() -> {
+            mCommandMenuItems.clear();
+            Lookup.getDefault().lookupAll(MToolMapCommand.class).forEach(command -> {
+                MenuItem menuItem = new MenuItem(command.getAction().getText());
+                menuItem.setAccelerator(command.getKeyCodeCombination());
+                menuItem.setOnAction(actionEvent -> {
+                    command.getAction().handle(null);
+                });
+                mCommandMenuItems.add(menuItem);
+            });
+        }).start();
     }
 
     private void refreshEngine() {

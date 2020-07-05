@@ -16,33 +16,36 @@
 package org.mapton.core_nb.tool.map;
 
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import org.controlsfx.control.action.Action;
-import org.mapton.api.MToolMap;
 import org.mapton.api.MToolMapCommand;
 import org.mapton.core_nb.actions.ClearBackgroundImageAction;
 import org.openide.awt.Actions;
 import org.openide.util.lookup.ServiceProvider;
-import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.swing.SwingHelper;
 
 /**
  *
  * @author Patrik Karlström
  */
-@ServiceProvider(service = MToolMap.class)
+@ServiceProvider(service = MToolMapCommand.class)
 public class ClearBackgroundImageTool extends MToolMapCommand {
 
     @Override
     public Action getAction() {
-        Action action = new Action(
-                FxHelper.createTitleAndKeyCode(ClearBackgroundImageAction.getName(), KeyCode.J, KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN) + "<",
+        Action action = new Action(ClearBackgroundImageAction.getName(),
                 evt -> {
-                    SwingHelper.runLaterDelayed(0, () -> {
+                    SwingHelper.runLater(() -> {
                         Actions.forID("Mapton", "org.mapton.core_nb.actions.ClearBackgroundImageAction").actionPerformed(null);
                     });
                 });
 
         return action;
+    }
+
+    @Override
+    public KeyCodeCombination getKeyCodeCombination() {
+        return new KeyCodeCombination(KeyCode.J, KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN);
     }
 }
