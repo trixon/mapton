@@ -15,6 +15,8 @@
  */
 package org.mapton.api;
 
+import java.util.LinkedHashMap;
+
 /**
  *
  * @author Patrik Karlström
@@ -33,6 +35,7 @@ public class MPoi extends MBookmark {
     private String mUrl;
     private String mWkt;
     private boolean mPlotLabel = true;
+    private LinkedHashMap<String, Object> mPropertyMap;
 
     public MPoi() {
     }
@@ -55,6 +58,10 @@ public class MPoi extends MBookmark {
 
     public double getPlacemarkScale() {
         return mPlacemarkScale;
+    }
+
+    public LinkedHashMap<String, Object> getPropertyMap() {
+        return mPropertyMap;
     }
 
     public String getProvider() {
@@ -98,11 +105,15 @@ public class MPoi extends MBookmark {
     }
 
     public void setPlacemarkScale(double placemarkScale) {
-        this.mPlacemarkScale = placemarkScale;
+        mPlacemarkScale = placemarkScale;
     }
 
     public void setPlotLabel(boolean plotLabel) {
-        this.mPlotLabel = plotLabel;
+        mPlotLabel = plotLabel;
+    }
+
+    public void setPropertyMap(LinkedHashMap<String, Object> propertyMap) {
+        mPropertyMap = propertyMap;
     }
 
     public void setProvider(String provider) {

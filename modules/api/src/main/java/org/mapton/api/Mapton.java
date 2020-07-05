@@ -215,6 +215,10 @@ public class Mapton {
         sLog.timedOut(String.format("%s: %s ", category, item));
     }
 
+    public static void logDownloading(String category, String item) {
+        sLog.timedOut(String.format("Downloading %s: %s ", category, item));
+    }
+
     public static void logLoading(String category, String item) {
         sLog.timedOut(String.format("Loading %s: %s ", category, item));
     }

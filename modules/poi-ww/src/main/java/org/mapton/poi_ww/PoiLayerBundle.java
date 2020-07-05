@@ -118,14 +118,18 @@ public class PoiLayerBundle extends LayerBundle {
         Map<String, Object> propertyMap = new LinkedHashMap<>();
 
         if (poi != null) {
-            Mapton.getGlobalState().put(MKey.BACKGROUND_IMAGE, new MBackgroundImage(poi.getExternalImageUrl(), .85));
-            propertyMap.put(Dict.NAME.toString(), poi.getName());
-            propertyMap.put(Dict.CATEGORY.toString(), poi.getCategory());
-            propertyMap.put(Dict.SOURCE.toString(), poi.getProvider());
-            propertyMap.put(Dict.DESCRIPTION.toString(), poi.getDescription());
-            propertyMap.put(Dict.TAGS.toString(), poi.getTags());
-            propertyMap.put(Dict.COLOR.toString(), javafx.scene.paint.Color.web(poi.getColor()));
-            propertyMap.put("URL", poi.getUrl());
+            if (poi.getPropertyMap() != null) {
+                propertyMap = poi.getPropertyMap();
+            } else {
+                Mapton.getGlobalState().put(MKey.BACKGROUND_IMAGE, new MBackgroundImage(poi.getExternalImageUrl(), .85));
+                propertyMap.put(Dict.NAME.toString(), poi.getName());
+                propertyMap.put(Dict.CATEGORY.toString(), poi.getCategory());
+                propertyMap.put(Dict.SOURCE.toString(), poi.getProvider());
+                propertyMap.put(Dict.DESCRIPTION.toString(), poi.getDescription());
+                propertyMap.put(Dict.TAGS.toString(), poi.getTags());
+                propertyMap.put(Dict.COLOR.toString(), javafx.scene.paint.Color.web(poi.getColor()));
+                propertyMap.put("URL", poi.getUrl());
+            }
         }
 
         Mapton.getGlobalState().put(MKey.OBJECT_PROPERTIES, propertyMap);
