@@ -109,6 +109,8 @@ public class MapToolBar extends BaseToolBar {
                 mCommandContextMenu.hide();
             } else if (shouldOpen(mCommandContextMenu)) {
                 mCommandContextMenu.show(getButtonForAction(mCommandAction), Side.BOTTOM, 0, 0);
+                getScene().getWindow().requestFocus();
+                mCommandContextMenu.requestFocus();
             }
         });
     }
@@ -396,6 +398,7 @@ public class MapToolBar extends BaseToolBar {
                 });
                 mCommandMenuItems.add(menuItem);
             });
+            mCommandMenuItems.sort((o1, o2) -> o1.getText().compareTo(o2.getText()));
         }).start();
     }
 
