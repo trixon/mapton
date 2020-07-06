@@ -44,4 +44,8 @@ public class WWHelper {
     public static Position positionFromLatLon(MLatLon latLon) {
         return Position.fromDegrees(latLon.getLatitude(), latLon.getLongitude());
     }
+
+    public static Position positionFromLatLon(MLatLon latLon, double elevation) {
+        return Position.fromDegrees(latLon.getLatitude(), latLon.getLongitude(), elevation);
+    }
 }
