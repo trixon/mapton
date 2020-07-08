@@ -25,7 +25,7 @@ import org.apache.commons.io.FileUtils;
 import org.mapton.api.MServiceKeyManager;
 import org.mapton.api.Mapton;
 import org.openide.util.Exceptions;
-import se.trixon.trv_ti.TrafficInformation;
+import se.trixon.trv_traffic_information.TrafficInformation;
 
 /**
  *
@@ -36,10 +36,10 @@ public class TrafficInformationManager {
     private final File mCacheDir;
     private HashMap<File, Long> mFileToTimestamp = new HashMap<>();
     private final TrafficInformationManager mManager = getInstance();
-    private List<se.trixon.trv_ti.road.camera.v1.RESULT> mResultsCamera;
-    private List<se.trixon.trv_ti.road.parking.v1_4.RESULT> mResultsParking;
-    private List<se.trixon.trv_ti.road.trafficsafetycamera.v1.RESULT> mResultsTrafficSafetyCamera;
-    private List<se.trixon.trv_ti.road.weatherstation.v1.RESULT> mResultsWeatherStation;
+    private List<se.trixon.trv_traffic_information.road.camera.v1.RESULT> mResultsCamera;
+    private List<se.trixon.trv_traffic_information.road.parking.v1_4.RESULT> mResultsParking;
+    private List<se.trixon.trv_traffic_information.road.trafficsafetycamera.v1.RESULT> mResultsTrafficSafetyCamera;
+    private List<se.trixon.trv_traffic_information.road.weatherstation.v1.RESULT> mResultsWeatherStation;
     private HashMap<Service, File> mServiceToFile = new HashMap<>();
     private final TrafficInformation mTrafficInformation;
 
@@ -61,7 +61,7 @@ public class TrafficInformationManager {
         return mServiceToFile.computeIfAbsent(service, k -> new File(mCacheDir, service.getFilename()));
     }
 
-    public List<se.trixon.trv_ti.road.camera.v1.RESULT> getResultsCamera() {
+    public List<se.trixon.trv_traffic_information.road.camera.v1.RESULT> getResultsCamera() {
         File file = getFile(Service.CAMERA);
         if (file.exists()) {
             if (isOutOfDate(mResultsCamera, file)) {
@@ -80,7 +80,7 @@ public class TrafficInformationManager {
         return mResultsCamera;
     }
 
-    public List<se.trixon.trv_ti.road.parking.v1_4.RESULT> getResultsParking() {
+    public List<se.trixon.trv_traffic_information.road.parking.v1_4.RESULT> getResultsParking() {
         File file = getFile(Service.PARKING);
         if (file.exists()) {
             if (isOutOfDate(mResultsParking, file)) {
@@ -99,7 +99,7 @@ public class TrafficInformationManager {
         return mResultsParking;
     }
 
-    public List<se.trixon.trv_ti.road.trafficsafetycamera.v1.RESULT> getResultsTrafficSafetyCamera() {
+    public List<se.trixon.trv_traffic_information.road.trafficsafetycamera.v1.RESULT> getResultsTrafficSafetyCamera() {
         File file = getFile(Service.TRAFFIC_SAFETY_CAMERA);
         if (file.exists()) {
             if (isOutOfDate(mResultsTrafficSafetyCamera, file)) {
@@ -118,7 +118,7 @@ public class TrafficInformationManager {
         return mResultsTrafficSafetyCamera;
     }
 
-    public List<se.trixon.trv_ti.road.weatherstation.v1.RESULT> getResultsWeatherStation() {
+    public List<se.trixon.trv_traffic_information.road.weatherstation.v1.RESULT> getResultsWeatherStation() {
         File file = getFile(Service.WEATHER_STATION);
         if (file.exists()) {
             if (isOutOfDate(mResultsWeatherStation, file)) {

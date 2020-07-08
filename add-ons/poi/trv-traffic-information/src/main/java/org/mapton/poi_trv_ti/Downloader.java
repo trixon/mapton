@@ -22,7 +22,7 @@ import org.mapton.poi_trv_ti.TrafficInformationManager.Service;
 import org.openide.modules.OnStart;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.SystemHelper;
-import se.trixon.trv_ti.TrafficInformation;
+import se.trixon.trv_traffic_information.TrafficInformation;
 
 /**
  *

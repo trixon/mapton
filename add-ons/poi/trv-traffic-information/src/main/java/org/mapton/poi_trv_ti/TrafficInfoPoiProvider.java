@@ -27,12 +27,12 @@ import org.openide.util.Exceptions;
 import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
-import se.trixon.trv_ti.road.camera.v1.Camera;
-import se.trixon.trv_ti.road.parking.v1_4.Parking;
-import se.trixon.trv_ti.road.trafficsafetycamera.v1.TrafficSafetyCamera;
-import se.trixon.trv_ti.road.weatherstation.v1.Measurement;
-import se.trixon.trv_ti.road.weatherstation.v1.WeatherStation;
-import se.trixon.trv_ti.road.weatherstation.v1.Wind;
+import se.trixon.trv_traffic_information.road.camera.v1.Camera;
+import se.trixon.trv_traffic_information.road.parking.v1_4.Parking;
+import se.trixon.trv_traffic_information.road.trafficsafetycamera.v1.TrafficSafetyCamera;
+import se.trixon.trv_traffic_information.road.weatherstation.v1.Measurement;
+import se.trixon.trv_traffic_information.road.weatherstation.v1.WeatherStation;
+import se.trixon.trv_traffic_information.road.weatherstation.v1.Wind;
 
 /**
  *
