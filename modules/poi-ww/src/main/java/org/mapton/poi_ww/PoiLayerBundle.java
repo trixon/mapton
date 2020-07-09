@@ -26,6 +26,7 @@ import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import org.mapton.api.MBackgroundImage;
 import org.mapton.api.MDict;
+import org.mapton.api.MGenericLoader;
 import org.mapton.api.MKey;
 import org.mapton.api.MPoi;
 import org.mapton.api.MPoiManager;
@@ -115,23 +116,32 @@ public class PoiLayerBundle extends LayerBundle {
     }
 
     private void sendObjectProperties(MPoi poi) {
-        Map<String, Object> propertyMap = new LinkedHashMap<>();
+        Object propertyPresenter = null;
 
         if (poi != null) {
-            if (poi.getPropertyMap() != null) {
-                propertyMap = poi.getPropertyMap();
+            if (poi.getPropertyNode() != null) {
+                propertyPresenter = poi.getPropertyNode();
+                if (propertyPresenter instanceof MGenericLoader) {
+                    ((MGenericLoader) propertyPresenter).load(poi.getPropertySource());
+                }
             } else {
-                Mapton.getGlobalState().put(MKey.BACKGROUND_IMAGE, new MBackgroundImage(poi.getExternalImageUrl(), .85));
-                propertyMap.put(Dict.NAME.toString(), poi.getName());
-                propertyMap.put(Dict.CATEGORY.toString(), poi.getCategory());
-                propertyMap.put(Dict.SOURCE.toString(), poi.getProvider());
-                propertyMap.put(Dict.DESCRIPTION.toString(), poi.getDescription());
-                propertyMap.put(Dict.TAGS.toString(), poi.getTags());
-                propertyMap.put(Dict.COLOR.toString(), javafx.scene.paint.Color.web(poi.getColor()));
-                propertyMap.put("URL", poi.getUrl());
+                Map<String, Object> propertyMap = new LinkedHashMap<>();
+                if (poi.getPropertyMap() != null) {
+                    propertyMap = poi.getPropertyMap();
+                } else {
+                    Mapton.getGlobalState().put(MKey.BACKGROUND_IMAGE, new MBackgroundImage(poi.getExternalImageUrl(), 0.95));
+                    propertyMap.put(Dict.NAME.toString(), poi.getName());
+                    propertyMap.put(Dict.CATEGORY.toString(), poi.getCategory());
+                    propertyMap.put(Dict.SOURCE.toString(), poi.getProvider());
+                    propertyMap.put(Dict.DESCRIPTION.toString(), poi.getDescription());
+                    propertyMap.put(Dict.TAGS.toString(), poi.getTags());
+                    propertyMap.put(Dict.COLOR.toString(), javafx.scene.paint.Color.web(poi.getColor()));
+                    propertyMap.put("URL", poi.getUrl());
+                }
+                propertyPresenter = propertyMap;
             }
         }
 
-        Mapton.getGlobalState().put(MKey.OBJECT_PROPERTIES, propertyMap);
+        Mapton.getGlobalState().put(MKey.OBJECT_PROPERTIES, propertyPresenter);
     }
 }
