@@ -18,6 +18,8 @@ package org.mapton.poi_trv_ti;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.ResourceBundle;
+import javafx.application.Platform;
+import org.apache.commons.lang3.StringUtils;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
@@ -43,9 +45,13 @@ public class TrafficInfoPoiProvider implements MPoiProvider {
 
     private final ResourceBundle mBundle = NbBundle.getBundle(TrafficInfoPoiProvider.class);
     private final TrafficInformationManager mManager = TrafficInformationManager.getInstance();
+    private WeatherView mWeatherView;
     private final WKTReader mWktReader = new WKTReader();
 
     public TrafficInfoPoiProvider() {
+        Platform.runLater(() -> {
+            mWeatherView = new WeatherView();
+        });
     }
 
     @Override
@@ -126,6 +132,13 @@ public class TrafficInfoPoiProvider implements MPoiProvider {
     private void addWeatherStations(ArrayList<MPoi> pois) {
         mManager.getResultsWeatherStation().forEach(result -> {
             for (WeatherStation weatherStation : result.getWeatherStation()) {
+                if ( //                        (weatherStation.getRoadNumberNumeric() != null && weatherStation.getRoadNumberNumeric() > 0)
+                        (weatherStation.isActive() != null && !weatherStation.isActive())
+                        || (weatherStation.isDeleted() != null && weatherStation.isDeleted())
+                        || StringUtils.endsWith(weatherStation.getName(), " Fjärryta")) {
+                    continue;
+                }
+
                 MPoi poi = new MPoi();
                 poi.setCategory(String.format("%s", "Väderstation"));
                 poi.setDisplayMarker(true);
@@ -133,6 +146,8 @@ public class TrafficInfoPoiProvider implements MPoiProvider {
                 poi.setZoom(0.9);
                 poi.setPlacemarkImageUrl(getPlacemarkUrl(weatherStation.getIconId()));
                 poi.setPlotLabel(false);
+                poi.setPropertyNode(mWeatherView);
+                poi.setPropertySource(weatherStation);
                 setLatLonFromGeometry(poi, weatherStation.getGeometry().getWGS84());
 
                 LinkedHashMap<String, Object> propertyMap = new LinkedHashMap<>();
