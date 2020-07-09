@@ -16,6 +16,7 @@
 package org.mapton.api;
 
 import java.util.LinkedHashMap;
+import javafx.scene.Node;
 
 /**
  *
@@ -24,18 +25,19 @@ import java.util.LinkedHashMap;
 public class MPoi extends MBookmark {
 
     private String mExternalImageUrl;
-
     private String mGeometryTypeString;
     private String mGroup;
     private String mPlacemarkImageUrl;
     private double mPlacemarkScale = 1.0;
+    private boolean mPlotLabel = true;
+    private LinkedHashMap<String, Object> mPropertyMap;
+    private Node mPropertyNode;
+    private Object mPropertySource;
     private String mProvider;
     private String mStatus;
     private String mTags;
     private String mUrl;
     private String mWkt;
-    private boolean mPlotLabel = true;
-    private LinkedHashMap<String, Object> mPropertyMap;
 
     public MPoi() {
     }
@@ -62,6 +64,14 @@ public class MPoi extends MBookmark {
 
     public LinkedHashMap<String, Object> getPropertyMap() {
         return mPropertyMap;
+    }
+
+    public Node getPropertyNode() {
+        return mPropertyNode;
+    }
+
+    public Object getPropertySource() {
+        return mPropertySource;
     }
 
     public String getProvider() {
@@ -114,6 +124,14 @@ public class MPoi extends MBookmark {
 
     public void setPropertyMap(LinkedHashMap<String, Object> propertyMap) {
         mPropertyMap = propertyMap;
+    }
+
+    public void setPropertyNode(Node propertyNode) {
+        mPropertyNode = propertyNode;
+    }
+
+    public void setPropertySource(Object propertySource) {
+        mPropertySource = propertySource;
     }
 
     public void setProvider(String provider) {
