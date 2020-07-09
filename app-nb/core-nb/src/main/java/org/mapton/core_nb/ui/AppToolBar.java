@@ -24,6 +24,7 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
 import java.util.prefs.PreferenceChangeEvent;
+import javafx.animation.ScaleTransition;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.geometry.Bounds;
@@ -37,6 +38,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
+import javafx.util.Duration;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
@@ -421,6 +423,13 @@ public class AppToolBar extends BaseToolBar {
         Mapton.getGlobalState().addListener(evt -> {
             Platform.runLater(() -> {
                 mStatusLabel.setText(evt.getValue());
+                ScaleTransition scaleTransition = new ScaleTransition(Duration.millis(250), mStatusLabel);
+                scaleTransition.setToX(1.2);
+                scaleTransition.setToY(1.2);
+                scaleTransition.setCycleCount(8);
+                scaleTransition.setAutoReverse(true);
+
+                scaleTransition.play();
             });
         }, MKey.APP_TOOL_LABEL);
 
