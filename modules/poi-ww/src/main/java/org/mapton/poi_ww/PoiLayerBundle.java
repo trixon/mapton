@@ -20,21 +20,14 @@ import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
-import org.mapton.api.MBackgroundImage;
 import org.mapton.api.MDict;
-import org.mapton.api.MGenericLoader;
-import org.mapton.api.MKey;
 import org.mapton.api.MPoi;
 import org.mapton.api.MPoiManager;
-import org.mapton.api.Mapton;
+import org.mapton.api.MPoiStyle;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
-import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
 
 /**
@@ -72,12 +65,6 @@ public class PoiLayerBundle extends LayerBundle {
         mPoiManager.getFilteredItems().addListener((ListChangeListener.Change<? extends MPoi> c) -> {
             repaint();
         });
-
-        Mapton.getGlobalState().addListener(gsce -> {
-            Platform.runLater(() -> {
-                sendObjectProperties(gsce.getValue());
-            });
-        }, MKey.POI_SELECTION);
     }
 
     private void initRepaint() {
@@ -87,11 +74,13 @@ public class PoiLayerBundle extends LayerBundle {
             for (MPoi poi : mPoiManager.getFilteredItems()) {
                 if (poi.isDisplayMarker()) {
                     PointPlacemark placemark = new PointPlacemark(Position.fromDegrees(poi.getLatitude(), poi.getLongitude()));
-                    placemark.setLabelText(poi.isPlotLabel() ? poi.getName() : null);
                     placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
                     placemark.setEnableLabelPicking(true);
                     PointPlacemarkAttributes attrs = new PointPlacemarkAttributes(placemark.getDefaultAttributes());
-                    if (poi.getPlacemarkImageUrl() == null) {
+
+                    final MPoiStyle style = poi.getStyle();
+                    if (style == null) {
+                        placemark.setLabelText(poi.getName());
                         attrs.setImageAddress("images/pushpins/plain-white.png");
                         try {
                             attrs.setImageColor(FxHelper.colorToColor(FxHelper.colorFromHexRGBA(poi.getColor())));
@@ -99,49 +88,34 @@ public class PoiLayerBundle extends LayerBundle {
                             // nvm?
                         }
                     } else {
-                        attrs.setImageAddress(poi.getPlacemarkImageUrl());
-                        attrs.setScale(poi.getPlacemarkScale());
+                        String label = style.getLabelText() != null ? style.getLabelText() : poi.getName();
+                        placemark.setLabelText(style.isLabelVisible() ? label : null);
+                        attrs.setLabelScale(style.getLabelScale());
+                        attrs.setImageOffset(WWHelper.offsetFromImageLocation(style.getImageLocation()));
+                        if (style.getImageUrl() == null) {
+                            attrs.setImageAddress("images/pushpins/plain-white.png");
+                        } else {
+                            attrs.setImageAddress(style.getImageUrl());
+                            attrs.setScale(style.getImageScale());
+                            try {
+                                attrs.setImageColor(FxHelper.colorToColor(FxHelper.colorFromHexRGBA(style.getImageColor())));
+                            } catch (Exception e) {
+                                // nvm?
+                            }
+                        }
+                        attrs.setScale(style.getImageScale());
                     }
+
                     placemark.setAttributes(attrs);
                     placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(attrs, 1.5));
 
                     placemark.setValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK, (Runnable) () -> {
-                        Mapton.getGlobalState().put(MKey.POI_SELECTION_MAP, poi);
+                        mPoiManager.setSelectedItem(poi);
                     });
 
                     mLayer.addRenderable(placemark);
                 }
             }
         });
-    }
-
-    private void sendObjectProperties(MPoi poi) {
-        Object propertyPresenter = null;
-
-        if (poi != null) {
-            if (poi.getPropertyNode() != null) {
-                propertyPresenter = poi.getPropertyNode();
-                if (propertyPresenter instanceof MGenericLoader) {
-                    ((MGenericLoader) propertyPresenter).load(poi.getPropertySource());
-                }
-            } else {
-                Map<String, Object> propertyMap = new LinkedHashMap<>();
-                if (poi.getPropertyMap() != null) {
-                    propertyMap = poi.getPropertyMap();
-                } else {
-                    Mapton.getGlobalState().put(MKey.BACKGROUND_IMAGE, new MBackgroundImage(poi.getExternalImageUrl(), 0.95));
-                    propertyMap.put(Dict.NAME.toString(), poi.getName());
-                    propertyMap.put(Dict.CATEGORY.toString(), poi.getCategory());
-                    propertyMap.put(Dict.SOURCE.toString(), poi.getProvider());
-                    propertyMap.put(Dict.DESCRIPTION.toString(), poi.getDescription());
-                    propertyMap.put(Dict.TAGS.toString(), poi.getTags());
-                    propertyMap.put(Dict.COLOR.toString(), javafx.scene.paint.Color.web(poi.getColor()));
-                    propertyMap.put("URL", poi.getUrl());
-                }
-                propertyPresenter = propertyMap;
-            }
-        }
-
-        Mapton.getGlobalState().put(MKey.OBJECT_PROPERTIES, propertyPresenter);
     }
 }

@@ -49,13 +49,7 @@ public class MKey {
      */
     public static final String POI_CATEGORIES = "poi.categories";
     /**
-     * Listen for this GlobalState key in order to catch POI list selection
-     * changes
-     */
-    public static final String POI_SELECTION = "poi.selection";
-    /**
-     * Listen for this GlobalState key in order to catch POI map selection
-     * changes
+     * Listen for this GlobalState key in order to catch POI map selection changes
      */
     public static final String POI_SELECTION_MAP = "poi.selection.map";
     public static final String UPDATER_LOGGER = "updater.logger";

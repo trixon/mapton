@@ -27,14 +27,12 @@ public class MPoi extends MBookmark {
     private String mExternalImageUrl;
     private String mGeometryTypeString;
     private String mGroup;
-    private String mPlacemarkImageUrl;
-    private double mPlacemarkScale = 1.0;
-    private boolean mPlotLabel = true;
     private LinkedHashMap<String, Object> mPropertyMap;
     private Node mPropertyNode;
     private Object mPropertySource;
     private String mProvider;
     private String mStatus;
+    private MPoiStyle mStyle;
     private String mTags;
     private String mUrl;
     private String mWkt;
@@ -52,14 +50,6 @@ public class MPoi extends MBookmark {
 
     public String getGroup() {
         return mGroup;
-    }
-
-    public String getPlacemarkImageUrl() {
-        return mPlacemarkImageUrl;
-    }
-
-    public double getPlacemarkScale() {
-        return mPlacemarkScale;
     }
 
     public LinkedHashMap<String, Object> getPropertyMap() {
@@ -82,6 +72,10 @@ public class MPoi extends MBookmark {
         return mStatus;
     }
 
+    public MPoiStyle getStyle() {
+        return mStyle;
+    }
+
     public String getTags() {
         return mTags;
     }
@@ -94,10 +88,6 @@ public class MPoi extends MBookmark {
         return mWkt;
     }
 
-    public boolean isPlotLabel() {
-        return mPlotLabel;
-    }
-
     public void setExternalImageUrl(String externalImageUrl) {
         mExternalImageUrl = externalImageUrl;
     }
@@ -108,18 +98,6 @@ public class MPoi extends MBookmark {
 
     public void setGroup(String group) {
         mGroup = group;
-    }
-
-    public void setPlacemarkImageUrl(String placemarkImageUrl) {
-        mPlacemarkImageUrl = placemarkImageUrl;
-    }
-
-    public void setPlacemarkScale(double placemarkScale) {
-        mPlacemarkScale = placemarkScale;
-    }
-
-    public void setPlotLabel(boolean plotLabel) {
-        mPlotLabel = plotLabel;
     }
 
     public void setPropertyMap(LinkedHashMap<String, Object> propertyMap) {
@@ -140,6 +118,10 @@ public class MPoi extends MBookmark {
 
     public void setStatus(String status) {
         mStatus = status;
+    }
+
+    public void setStyle(MPoiStyle style) {
+        mStyle = style;
     }
 
     public void setTags(String tags) {

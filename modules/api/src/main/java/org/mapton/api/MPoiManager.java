@@ -17,6 +17,8 @@ package org.mapton.api;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.TreeSet;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -24,7 +26,9 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.apache.commons.lang3.StringUtils;
 import org.openide.util.Lookup;
+import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.StringHelper;
+import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
@@ -36,6 +40,7 @@ public class MPoiManager {
     private TreeSet<String> mCategories = new TreeSet<>();
     private String mFilter = "";
     private final ObjectProperty<ObservableList<MPoi>> mFilteredItems = new SimpleObjectProperty<>();
+    private final SimpleObjectProperty<MPoi> mSelectedItem = new SimpleObjectProperty<>();
 
     public static MPoiManager getInstance() {
         return Holder.INSTANCE;
@@ -66,34 +71,49 @@ public class MPoiManager {
         return mFilteredItems == null ? null : mFilteredItems.get();
     }
 
+    public MPoi getSelectedItem() {
+        return mSelectedItem.get();
+    }
+
     public void refresh() {
         refresh(mFilter);
     }
 
     public void refresh(String filter) {
         mFilter = filter;
-        ArrayList<MPoi> allPois = new ArrayList<>();
-        ArrayList<MPoi> filteredPois = new ArrayList<>();
 
-        for (MPoiProvider poiProvider : Lookup.getDefault().lookupAll(MPoiProvider.class)) {
-            for (MPoi poi : poiProvider.getPois()) {
-                poi.setCategory(StringUtils.defaultIfBlank(poi.getCategory(), "_DEFAULT"));
-                poi.setProvider(poiProvider.getName());
-                poi.setZoom(poi.getZoom() != null ? poi.getZoom() : 0.9);
-                allPois.add(poi);
-                if (validPoi(poi, filter)) {
-                    filteredPois.add(poi);
+        FxHelper.runLater(() -> {
+            ArrayList<MPoi> allPois = new ArrayList<>();
+            ArrayList<MPoi> filteredPois = new ArrayList<>();
+
+            for (MPoiProvider poiProvider : Lookup.getDefault().lookupAll(MPoiProvider.class)) {
+                for (MPoi poi : poiProvider.getPois()) {
+                    poi.setCategory(StringUtils.defaultIfBlank(poi.getCategory(), "_DEFAULT"));
+                    poi.setProvider(poiProvider.getName());
+                    poi.setZoom(poi.getZoom() != null ? poi.getZoom() : 0.9);
+                    allPois.add(poi);
+                    if (validPoi(poi, filter)) {
+                        filteredPois.add(poi);
+                    }
                 }
             }
-        }
 
-        Comparator<MPoi> comparator = Comparator.comparing(MPoi::getProvider)
-                .thenComparing(Comparator.comparing(MPoi::getCategory))
-                .thenComparing(Comparator.comparing(MPoi::getName));
-        filteredPois.sort(comparator);
+            Comparator<MPoi> comparator = Comparator.comparing(MPoi::getProvider)
+                    .thenComparing(Comparator.comparing(MPoi::getCategory))
+                    .thenComparing(Comparator.comparing(MPoi::getName));
+            filteredPois.sort(comparator);
 
-        mAllItems.getValue().setAll(allPois);
-        mFilteredItems.getValue().setAll(filteredPois);
+            mAllItems.getValue().setAll(allPois);
+            mFilteredItems.getValue().setAll(filteredPois);
+        });
+    }
+
+    public SimpleObjectProperty<MPoi> selectedItemProperty() {
+        return mSelectedItem;
+    }
+
+    public void setSelectedItem(MPoi poi) {
+        mSelectedItem.set(poi);
     }
 
     private void initListeners() {
@@ -105,6 +125,40 @@ public class MPoiManager {
             mCategories = gscl.getValue();
             refresh();
         }, MKey.POI_CATEGORIES);
+
+        selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            sendObjectProperties(newValue);
+        });
+    }
+
+    private void sendObjectProperties(MPoi poi) {
+        Object propertyPresenter = null;
+
+        if (poi != null) {
+            if (poi.getPropertyNode() != null) {
+                propertyPresenter = poi.getPropertyNode();
+                if (propertyPresenter instanceof MGenericLoader) {
+                    ((MGenericLoader) propertyPresenter).load(poi.getPropertySource());
+                }
+            } else {
+                Map<String, Object> propertyMap = new LinkedHashMap<>();
+                if (poi.getPropertyMap() != null) {
+                    propertyMap = poi.getPropertyMap();
+                } else {
+                    Mapton.getGlobalState().put(MKey.BACKGROUND_IMAGE, new MBackgroundImage(poi.getExternalImageUrl(), 0.95));
+                    propertyMap.put(Dict.NAME.toString(), poi.getName());
+                    propertyMap.put(Dict.CATEGORY.toString(), poi.getCategory());
+                    propertyMap.put(Dict.SOURCE.toString(), poi.getProvider());
+                    propertyMap.put(Dict.DESCRIPTION.toString(), poi.getDescription());
+                    propertyMap.put(Dict.TAGS.toString(), poi.getTags());
+                    propertyMap.put(Dict.COLOR.toString(), javafx.scene.paint.Color.web(poi.getColor()));
+                    propertyMap.put("URL", poi.getUrl());
+                }
+                propertyPresenter = propertyMap;
+            }
+        }
+
+        Mapton.getGlobalState().put(MKey.OBJECT_PROPERTIES, propertyPresenter);
     }
 
     private boolean validPoi(MPoi poi, String filter) {
