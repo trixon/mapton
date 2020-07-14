@@ -296,7 +296,7 @@
             </dependency>
             <dependency>
                 <groupId>org.mapton</groupId>
-                <artifactId>poi-trv-ti</artifactId>
+                <artifactId>poi-trv-traffic-information</artifactId>
                 <version>${mapton.version}</version>
             </dependency>
             <dependency>
