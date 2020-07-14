@@ -20,6 +20,7 @@ import java.io.File;
 import javafx.util.Duration;
 import javax.swing.Timer;
 import org.apache.commons.io.FilenameUtils;
+import org.mapton.api.MPoiManager;
 import org.mapton.api.Mapton;
 import se.trixon.almond.util.SystemHelper;
 
@@ -42,6 +43,8 @@ public class DownloadJob {
                 mTimer.setDelay(defaultDelay);
                 mTimer.setInitialDelay(defaultDelay);
                 mTimer.restart();
+
+                MPoiManager.getInstance().refresh();
             }).start();
         };
 

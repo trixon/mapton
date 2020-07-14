@@ -19,20 +19,29 @@ import eu.hansolo.tilesfx.Tile;
 import eu.hansolo.tilesfx.TileBuilder;
 import eu.hansolo.tilesfx.colors.Bright;
 import eu.hansolo.tilesfx.colors.Dark;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
-import java.util.Locale;
+import java.time.format.DateTimeFormatter;
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Stop;
 import javafx.scene.text.Font;
+import javafx.scene.text.TextAlignment;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.mapton.api.MDict;
 import org.mapton.api.MGenericLoader;
+import org.openide.util.Exceptions;
+import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.trv_traffic_information.road.weatherstation.v1.Measurement;
+import se.trixon.trv_traffic_information.road.weatherstation.v1.Precipitation;
 import se.trixon.trv_traffic_information.road.weatherstation.v1.WeatherStation;
 
 /**
@@ -41,18 +50,20 @@ import se.trixon.trv_traffic_information.road.weatherstation.v1.WeatherStation;
  */
 public class WeatherView extends BorderPane implements MGenericLoader<WeatherStation> {
 
+    private static final double TILE_HEIGHT = 150;
     private static final double TILE_SIZE = 150;
     private static final double TILE_WIDTH = 150;
-    private static final double TILE_HEIGHT = 150;
-
-    private Label mTitleLabel = new Label();
-    private Label mTimeLabel = new Label();
-    private Label mAirTempLabel = new Label();
-    private Label mRoadTempLabel = new Label();
-    private final ZoneId mZoneOffset = ZoneOffset.systemDefault();
-    private Tile fluidTile;
     private Tile barGaugeTile;
     private Tile highLowTile;
+    private Tile mAirHumidityTile;
+    private Tile mAirTemperatureTile;
+    private Tile mCameraImageTile;
+    private final DateTimeFormatter mDtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH.mm");
+    private final TrafficInformationManager mManager = TrafficInformationManager.getInstance();
+    private Tile mPrecipitationTile;
+    private Label mTimeLabel;
+    private Label mTitleLabel;
+    private final ZoneId mZoneOffset = ZoneOffset.systemDefault();
 
     public WeatherView() {
         createUI();
@@ -60,75 +71,83 @@ public class WeatherView extends BorderPane implements MGenericLoader<WeatherSta
 
     @Override
     public void load(WeatherStation weatherStation) {
-        OffsetDateTime offsetDateTime = OffsetDateTime.parse(weatherStation.getModifiedTime().toString());
-        mTitleLabel.setText(String.format("%s %d, %s", "VÄG", weatherStation.getRoadNumberNumeric(), weatherStation.getName()));
-        mTimeLabel.setText(offsetDateTime.atZoneSameInstant(mZoneOffset).toLocalDateTime().toString());
-        final Measurement measurement = weatherStation.getMeasurement();
-        mAirTempLabel.setText(String.format("%.1f° C", measurement.getAir().getTemp()));
-        mRoadTempLabel.setText(String.format("%.1f° C", measurement.getRoad().getTemp()));
+        FxHelper.runLater(() -> {
+            final Measurement measurement = weatherStation.getMeasurement();
+            OffsetDateTime offsetDateTime = OffsetDateTime.parse(measurement.getMeasureTime().toString());
 
-        fluidTile.setValue(measurement.getAir().getRelativeHumidity());
-        try {
-            barGaugeTile.setValue(measurement.getWind().getForce());
-            barGaugeTile.setThreshold(measurement.getWind().getForceMax());
-            barGaugeTile.setDisable(false);
-            highLowTile.setValue(measurement.getWind().getForce());
-            highLowTile.setReferenceValue(measurement.getWind().getForceMax());
-        } catch (Exception e) {
-            barGaugeTile.setValue(0);
-            barGaugeTile.setThreshold(0);
-            barGaugeTile.setDisable(true);
-        }
-        debug(weatherStation);
+            mTitleLabel.setText(String.format("%s %d, %s",
+                    MDict.ROAD.toString(),
+                    weatherStation.getRoadNumberNumeric(),
+                    weatherStation.getName()
+            ));
+            final LocalDateTime measLocalDateTime = offsetDateTime.atZoneSameInstant(mZoneOffset).toLocalDateTime();
+            mTimeLabel.setText(measLocalDateTime.format(mDtf));
+
+            mAirHumidityTile.setValue(measurement.getAir().getRelativeHumidity());
+            try {
+                barGaugeTile.setValue(measurement.getWind().getForce());
+                barGaugeTile.setThreshold(measurement.getWind().getForceMax());
+                barGaugeTile.setDisable(false);
+                highLowTile.setValue(measurement.getWind().getForce());
+                highLowTile.setReferenceValue(measurement.getWind().getForceMax());
+            } catch (Exception e) {
+                barGaugeTile.setValue(0);
+                barGaugeTile.setThreshold(0);
+                barGaugeTile.setDisable(true);
+            }
+
+            loadTemperature(weatherStation);
+            loadPreciptation(weatherStation);
+            loadImage(weatherStation);
+
+            debug(weatherStation);
+        });
     }
 
     private void createUI() {
         setPadding(FxHelper.getUIScaledInsets(8));
         String style = "-fx-font-weight: %s; -fx-font-style: %s; -fx-font-size: %.0fpx";
         final double defaultSize = Font.getDefault().getSize();
+        mTimeLabel = new Label();
+        mTitleLabel = new Label();
 
         mTitleLabel.setStyle(String.format(style, "bold", "normal", defaultSize * 1.2));
         setTop(mTitleLabel);
 
-        Label airTempLabel = new Label("LUFTTEMPERATUR");
-        Label roadTempLabel = new Label("ROADTEMPERATUR");
-
-        final String headerStyle = String.format(style, "normal", "italic", defaultSize);
-        final String valueStyle = String.format(style, "bold", "normal", defaultSize);
-        airTempLabel.setStyle(headerStyle);
-        mAirTempLabel.setStyle(valueStyle);
-        roadTempLabel.setStyle(headerStyle);
-        mRoadTempLabel.setStyle(valueStyle);
-        GridPane gp = new GridPane();
-        int row = 0;
-        gp.add(mTimeLabel, 0, row++, 2, 1);
-        gp.addRow(row++, airTempLabel, mAirTempLabel);
-        gp.addRow(row++, roadTempLabel, mRoadTempLabel);
-
-        FxHelper.setPadding(FxHelper.getUIScaledInsets(0, 8, 0, 0), airTempLabel, roadTempLabel);
-
-        var clockTile = TileBuilder.create()
-                .prefSize(TILE_SIZE, TILE_SIZE * 2)
-                .skinType(Tile.SkinType.CLOCK)
-                .title("Clock Tile")
-                .text("Whatever text")
-                .dateVisible(true)
-                .locale(Locale.US)
-                .running(true)
+        mAirTemperatureTile = TileBuilder.create()
+                .skinType(Tile.SkinType.NUMBER)
+                .prefSize(TILE_WIDTH, TILE_HEIGHT)
+                .textSize(Tile.TextSize.BIGGER)
+                .title("TEMPERATURE")
+                .unit("° C")
+                .description("AIR")
                 .build();
 
-        fluidTile = TileBuilder.create().skinType(Tile.SkinType.FLUID)
+        mPrecipitationTile = TileBuilder.create()
+                .skinType(Tile.SkinType.IMAGE_COUNTER)
+                .prefSize(2 * TILE_WIDTH, TILE_HEIGHT)
+                .textSize(Tile.TextSize.BIGGER)
+                .title("PRECIPITATION")
+                .descriptionAlignment(Pos.BASELINE_LEFT)
+                .descriptionAlignment(Pos.BOTTOM_LEFT)
+                .imageMask(Tile.ImageMask.NONE)
+                .unit("mm/h")
+                .build();
+
+        mAirHumidityTile = TileBuilder.create()
+                .skinType(Tile.SkinType.FLUID)
                 .prefSize(TILE_WIDTH, TILE_HEIGHT)
-                .title("FluidTileSkin")
-                .text("Waterlevel")
+                .textSize(Tile.TextSize.BIGGER)
+                .title("HUMIDITY")
                 .unit("\u0025")
                 .decimals(0)
-                .barColor(Tile.BLUE) // defines the fluid color, alternatively use sections or gradientstops
+                .barColor(Tile.BLUE)
                 .animated(true)
                 .build();
+
         barGaugeTile = TileBuilder.create()
                 .skinType(Tile.SkinType.BAR_GAUGE)
-                .prefSize(TILE_WIDTH, TILE_HEIGHT)
+                .prefSize(2 * TILE_WIDTH, TILE_HEIGHT)
                 .minValue(0)
                 .maxValue(40)
                 .startFromZero(true)
@@ -150,23 +169,37 @@ public class WeatherView extends BorderPane implements MGenericLoader<WeatherSta
                 .strokeWithGradient(true)
                 .animated(true)
                 .build();
+
         highLowTile = TileBuilder.create()
                 .skinType(Tile.SkinType.HIGH_LOW)
                 .prefSize(TILE_WIDTH, TILE_HEIGHT)
                 .title("WIND SPEED")
                 .unit("m/s")
                 .description("\u2197")
-                //                .text("Whatever text")
-                .referenceValue(6.7)
-                .value(8.2)
                 .build();
 
-        gp.add(fluidTile, 0, row++, GridPane.REMAINING, 1);
-        gp.add(barGaugeTile, 0, row++, GridPane.REMAINING, 1);
-        gp.add(highLowTile, 0, row++, GridPane.REMAINING, 1);
+        mCameraImageTile = TileBuilder.create()
+                .skinType(Tile.SkinType.IMAGE)
+                .prefSize(3 * TILE_WIDTH, TILE_HEIGHT * 1.2)
+                .imageMask(Tile.ImageMask.NONE)
+                .textAlignment(TextAlignment.CENTER)
+                .roundedCorners(true)
+                .build();
 
-        setCenter(gp);
+        VBox vbox = new VBox(FxHelper.getUIScaled(8),
+                mTimeLabel,
+                new HBox(FxHelper.getUIScaled(8),
+                        mAirTemperatureTile,
+                        mPrecipitationTile
+                ),
+                new HBox(FxHelper.getUIScaled(8),
+                        mAirHumidityTile,
+                        barGaugeTile
+                ),
+                mCameraImageTile
+        );
 
+        setCenter(vbox);
     }
 
     private void debug(Object o) {
@@ -186,6 +219,45 @@ public class WeatherView extends BorderPane implements MGenericLoader<WeatherSta
         debug(weatherStation.getMeasurement().getPrecipitation());
         debug(weatherStation.getMeasurement().getRoad());
         debug(weatherStation.getMeasurement().getWind());
+    }
+
+    private void loadImage(WeatherStation weatherStation) {
+        String url = mManager.getCameraGroupToPhotoUrl().getOrDefault(weatherStation.getId(), null);
+
+        Image image = null;
+        if (url != null) {
+            image = new Image(url);
+        }
+        mCameraImageTile.setImage(image);
+    }
+
+    private void loadPreciptation(WeatherStation weatherStation) {
+        Precipitation precipitation = weatherStation.getMeasurement().getPrecipitation();
+        String url = String.format("%s%s.png", SystemHelper.getPackageAsPath(TrafficInfoPoiProvider.class), "precipitationNoPrecipitation");
+
+        try {
+            final Float amount = precipitation.getAmount();
+            if (amount != null) {
+                mPrecipitationTile.setValue(amount);
+            }
+            mPrecipitationTile.setValueVisible(amount != null);
+
+            mPrecipitationTile.setDescription(String.format("%s\n%s", precipitation.getType(), precipitation.getAmountName()));
+            url = mManager.getIcon(weatherStation.getMeasurement());
+        } catch (Exception e) {
+            Exceptions.printStackTrace(e);
+        }
+
+        mPrecipitationTile.setImage(new Image(url));
+    }
+
+    private void loadTemperature(WeatherStation weatherStation) {
+        final Measurement measurement = weatherStation.getMeasurement();
+        try {
+            mAirTemperatureTile.setValue(measurement.getAir().getTemp());
+        } catch (Exception e) {
+            Exceptions.printStackTrace(e);
+        }
     }
 
 }

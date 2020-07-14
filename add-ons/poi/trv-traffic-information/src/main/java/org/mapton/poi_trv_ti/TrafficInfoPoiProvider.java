@@ -16,25 +16,27 @@
 package org.mapton.poi_trv_ti;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 import org.mapton.api.MPoi;
 import org.mapton.api.MPoiProvider;
+import org.mapton.api.MPoiStyle;
 import org.openide.util.Exceptions;
 import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
-import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.SystemHelper;
+import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.trv_traffic_information.road.camera.v1.Camera;
 import se.trixon.trv_traffic_information.road.parking.v1_4.Parking;
 import se.trixon.trv_traffic_information.road.trafficsafetycamera.v1.TrafficSafetyCamera;
 import se.trixon.trv_traffic_information.road.weatherstation.v1.Measurement;
 import se.trixon.trv_traffic_information.road.weatherstation.v1.WeatherStation;
-import se.trixon.trv_traffic_information.road.weatherstation.v1.Wind;
 
 /**
  *
@@ -71,8 +73,17 @@ public class TrafficInfoPoiProvider implements MPoiProvider {
     }
 
     private void addCameras(ArrayList<MPoi> pois) {
+        mManager.getCameraGroupToPhotoUrl().clear();
         mManager.getResultsCamera().forEach(result -> {
             for (Camera camera : result.getCamera()) {
+                if (!camera.isActive()) {
+                    continue;
+                }
+                try {
+                    mManager.getCameraGroupToPhotoUrl().put(camera.getCameraGroup(), camera.getPhotoUrl());
+                } catch (NullPointerException e) {
+                    System.out.println(ToStringBuilder.reflectionToString(camera, ToStringStyle.MULTI_LINE_STYLE));
+                }
                 MPoi poi = new MPoi();
                 poi.setDescription(camera.getDescription());
                 poi.setCategory(String.format("%s", "Kameror"));
@@ -82,9 +93,11 @@ public class TrafficInfoPoiProvider implements MPoiProvider {
                 poi.setName(camera.getName());
                 poi.setZoom(0.9);
                 poi.setExternalImageUrl(camera.getPhotoUrl() + "?type=fullsize");
-                poi.setPlotLabel(false);
-                poi.setPlacemarkImageUrl(getPlacemarkUrl(camera.getIconId()));
                 setLatLonFromGeometry(poi, camera.getGeometry().getWGS84());
+                final MPoiStyle style = new MPoiStyle();
+                poi.setStyle(style);
+                style.setImageUrl(getPlacemarkUrl(camera.getIconId()));
+                style.setLabelVisible(false);
 
                 pois.add(poi);
             }
@@ -101,9 +114,11 @@ public class TrafficInfoPoiProvider implements MPoiProvider {
                 poi.setDisplayMarker(true);
                 poi.setName(parking.getName());
                 poi.setZoom(0.9);
-                poi.setPlacemarkImageUrl(getPlacemarkUrl(parking.getIconId()));
-                poi.setPlotLabel(false);
                 setLatLonFromGeometry(poi, parking.getGeometry().getWGS84());
+                final MPoiStyle style = new MPoiStyle();
+                poi.setStyle(style);
+                style.setImageUrl(getPlacemarkUrl(parking.getIconId()));
+                style.setLabelVisible(false);
 
                 pois.add(poi);
             }
@@ -120,9 +135,11 @@ public class TrafficInfoPoiProvider implements MPoiProvider {
                 poi.setDisplayMarker(true);
                 poi.setName(camera.getName());
                 poi.setZoom(0.9);
-                poi.setPlacemarkImageUrl(getPlacemarkUrl(camera.getIconId()));
-                poi.setPlotLabel(false);
                 setLatLonFromGeometry(poi, camera.getGeometry().getWGS84());
+                final MPoiStyle style = new MPoiStyle();
+                poi.setStyle(style);
+                style.setImageUrl(getPlacemarkUrl(camera.getIconId()));
+                style.setLabelVisible(false);
 
                 pois.add(poi);
             }
@@ -133,8 +150,8 @@ public class TrafficInfoPoiProvider implements MPoiProvider {
         mManager.getResultsWeatherStation().forEach(result -> {
             for (WeatherStation weatherStation : result.getWeatherStation()) {
                 if ( //                        (weatherStation.getRoadNumberNumeric() != null && weatherStation.getRoadNumberNumeric() > 0)
-                        (weatherStation.isActive() != null && !weatherStation.isActive())
-                        || (weatherStation.isDeleted() != null && weatherStation.isDeleted())
+                        //                        (weatherStation.isActive() != null && !weatherStation.isActive())
+                        (weatherStation.isDeleted() != null && weatherStation.isDeleted())
                         || StringUtils.endsWith(weatherStation.getName(), " Fjärryta")) {
                     continue;
                 }
@@ -144,39 +161,26 @@ public class TrafficInfoPoiProvider implements MPoiProvider {
                 poi.setDisplayMarker(true);
                 poi.setName(weatherStation.getName());
                 poi.setZoom(0.9);
-                poi.setPlacemarkImageUrl(getPlacemarkUrl(weatherStation.getIconId()));
-                poi.setPlotLabel(false);
                 poi.setPropertyNode(mWeatherView);
                 poi.setPropertySource(weatherStation);
                 setLatLonFromGeometry(poi, weatherStation.getGeometry().getWGS84());
 
-                LinkedHashMap<String, Object> propertyMap = new LinkedHashMap<>();
-                propertyMap.put(Dict.NAME.toString(), weatherStation.getName());
-                propertyMap.put("Road", weatherStation.getRoadNumberNumeric());
-                propertyMap.put("Modified", weatherStation.getModifiedTime());
-                propertyMap.put("Active", weatherStation.isActive());
-                propertyMap.put("Deleted", weatherStation.isDeleted());
+                final MPoiStyle style = new MPoiStyle();
+                poi.setStyle(style);
                 final Measurement measurement = weatherStation.getMeasurement();
-                if (measurement != null) {
-                    propertyMap.put("Meas", measurement.getMeasureTime());
-                    propertyMap.put("Road", measurement.getRoad().getTemp());
-                    propertyMap.put("Air", measurement.getAir().getTemp());
-                    propertyMap.put("Air Humid", measurement.getAir().getRelativeHumidity());
-                    propertyMap.put("Precept type", measurement.getPrecipitation().getType());
-                    propertyMap.put("Precept amount", measurement.getPrecipitation().getAmount());
-                    propertyMap.put("Precept amount name", measurement.getPrecipitation().getAmountName());
-                    propertyMap.put("Precept type", measurement.getPrecipitation().getType());
-                    final Wind wind = measurement.getWind();
-                    if (wind != null) {
+                if (weatherStation.isActive()) {
+                    style.setLabelText(measurement.getAir().getTemp().toString());
+                    style.setImageUrl(mManager.getIcon(measurement));
 
-                        propertyMap.put("Wind direction", wind.getDirection());
-                        propertyMap.put("Wind direction icon", wind.getDirectionIconId());
-                        propertyMap.put("Wind direction text", wind.getDirectionText());
-                        propertyMap.put("Wind direction force", wind.getForce());
-                        propertyMap.put("Wind direction force max", wind.getForceMax());
-                    }
+                } else {
+                    style.setLabelText("NODATA");
+                    style.setImageUrl(String.format("%s%s.png", SystemHelper.getPackageAsPath(TrafficInfoPoiProvider.class), "precipitationNoData"));
                 }
-                poi.setPropertyMap(propertyMap);
+
+                style.setLabelScale(1.2);
+                style.setImageScale(FxHelper.getUIScaled(0.1));
+                style.setLabelVisible(true);
+                style.setImageLocation(MPoiStyle.ImageLocation.MIDDLE_CENTER);
 
                 pois.add(poi);
             }

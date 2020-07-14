@@ -20,12 +20,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.xml.bind.JAXBException;
 import org.apache.commons.io.FileUtils;
 import org.mapton.api.MServiceKeyManager;
 import org.mapton.api.Mapton;
 import org.openide.util.Exceptions;
+import se.trixon.almond.util.SystemHelper;
 import se.trixon.trv_traffic_information.TrafficInformation;
+import se.trixon.trv_traffic_information.road.weatherstation.v1.Measurement;
 
 /**
  *
@@ -34,6 +37,7 @@ import se.trixon.trv_traffic_information.TrafficInformation;
 public class TrafficInformationManager {
 
     private final File mCacheDir;
+    private final ConcurrentHashMap<String, String> mCameraGroupToPhotoUrl = new ConcurrentHashMap<>();
     private HashMap<File, Long> mFileToTimestamp = new HashMap<>();
     private final TrafficInformationManager mManager = getInstance();
     private List<se.trixon.trv_traffic_information.road.camera.v1.RESULT> mResultsCamera;
@@ -57,8 +61,63 @@ public class TrafficInformationManager {
         }
     }
 
+    public ConcurrentHashMap<String, String> getCameraGroupToPhotoUrl() {
+        return mCameraGroupToPhotoUrl;
+    }
+
     public File getFile(Service service) {
         return mServiceToFile.computeIfAbsent(service, k -> new File(mCacheDir, service.getFilename()));
+    }
+
+    public String getIcon(Measurement measurement) {
+        String basename = "NoData";
+        switch (measurement.getPrecipitation().getAmountName()) {
+            case "Givare saknas/Fel på givare":
+                break;
+            case "Lätt regn":
+                basename = "LightRain";
+                break;
+            case "Måttligt regn":
+                basename = "ModerateRain";
+                break;
+            case "Kraftigt regn":
+                basename = "HeavyRain";
+                break;
+            case "Lätt snöblandat regn":
+                basename = "LightSleet";
+                break;
+            case "Måttligt snöblandat regn":
+                basename = "ModerateSleet";
+                break;
+            case "Kraftigt snöblandat regn":
+                basename = "HeavySleet";
+                break;
+            case "Lätt snöfall":
+                basename = "LightSnow";
+                break;
+            case "Måttligt snöfall":
+                basename = "ModerateSnow";
+                break;
+            case "Kraftigt snöfall":
+                basename = "HeavySnow";
+                break;
+            case "Annan nederbördstyp":
+                basename = "NoData";
+                break;
+
+            case "Ingen nederbörd":
+                basename = "NoPrecipitation";
+                break;
+
+            case "Okänd nederbördstyp":
+                basename = "NoData";
+                break;
+
+            default:
+                throw new AssertionError();
+        }
+
+        return String.format("%sprecipitation%s.png", SystemHelper.getPackageAsPath(TrafficInfoPoiProvider.class), basename);
     }
 
     public List<se.trixon.trv_traffic_information.road.camera.v1.RESULT> getResultsCamera() {

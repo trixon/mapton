@@ -31,9 +31,10 @@ import se.trixon.trv_traffic_information.TrafficInformation;
 @OnStart
 public class Downloader implements Runnable {
 
+    private static final Duration FREQ_10_MINUTES = Duration.minutes(10);
     private static final Duration FREQ_1_WEEK = Duration.hours(168);
-    private static final Duration FREQ_2_MINUTES = Duration.minutes(2);
     private static final Duration FREQ_2_HOURS = Duration.hours(2);
+    private static final Duration FREQ_2_MINUTES = Duration.minutes(2);
     private static final Duration FREQ_30_MINUTES = Duration.minutes(30);
     private final TrafficInformationManager mManager = TrafficInformationManager.getInstance();
     private final TrafficInformation mTrafficInformation = mManager.getTrafficInformation();
@@ -60,7 +61,7 @@ public class Downloader implements Runnable {
                 }
             });
 
-            new DownloadJob(mManager.getFile(Service.WEATHER_STATION), FREQ_30_MINUTES, () -> {
+            new DownloadJob(mManager.getFile(Service.WEATHER_STATION), FREQ_10_MINUTES, () -> {
                 try {
                     mTrafficInformation.road().getWeatherStationResults(null, null, mManager.getFile(Service.WEATHER_STATION));
                 } catch (IOException | InterruptedException | JAXBException ex) {
