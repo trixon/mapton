@@ -193,7 +193,7 @@ public class PoisView extends BorderPane {
         });
 
         mListView.getSelectionModel().selectedItemProperty().addListener((ov, oldPoi, newPoi) -> {
-            Mapton.getGlobalState().put(MKey.POI_SELECTION, newPoi);
+            mManager.setSelectedItem(newPoi);
         });
 
         Mapton.getGlobalState().addListener(gsce -> {
