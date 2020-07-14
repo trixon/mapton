@@ -16,8 +16,10 @@
 package org.mapton.worldwind.api;
 
 import gov.nasa.worldwind.geom.Position;
+import gov.nasa.worldwind.render.Offset;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
 import org.mapton.api.MLatLon;
+import org.mapton.api.MPoiStyle.ImageLocation;
 
 /**
  *
@@ -41,6 +43,31 @@ public class WWHelper {
         return highlightAttrs;
     }
 
+    public static Offset offsetFromImageLocation(ImageLocation imageLocation) {
+        switch (imageLocation) {
+            case BOTTOM_LEFT:
+                return Offset.fromFraction(0.0, 0.0);
+            case BOTTOM_CENTER:
+                return Offset.fromFraction(0.5, 0.0);
+            case BOTTOM_RIGHT:
+                return Offset.fromFraction(1.0, 0.0);
+            case MIDDLE_LEFT:
+                return Offset.fromFraction(0.0, 0.5);
+            case MIDDLE_CENTER:
+                return Offset.fromFraction(0.5, 0.5);
+            case MIDDLE_RIGHT:
+                return Offset.fromFraction(1.0, 0.5);
+            case TOP_LEFT:
+                return Offset.fromFraction(0.0, 1.0);
+            case TOP_CENTER:
+                return Offset.fromFraction(0.5, 1.0);
+            case TOP_RIGHT:
+                return Offset.fromFraction(1.0, 1.0);
+            default:
+                throw new AssertionError();
+        }
+    }
+
     public static Position positionFromLatLon(MLatLon latLon) {
         return Position.fromDegrees(latLon.getLatitude(), latLon.getLongitude());
     }
@@ -48,4 +75,5 @@ public class WWHelper {
     public static Position positionFromLatLon(MLatLon latLon, double elevation) {
         return Position.fromDegrees(latLon.getLatitude(), latLon.getLongitude(), elevation);
     }
+
 }
