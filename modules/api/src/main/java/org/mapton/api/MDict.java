@@ -54,6 +54,7 @@ public enum MDict {
     PROJ_TRANSVERSE_MERCATOR,
     PROJ_UPS_NORTH,
     PROJ_UPS_SOUTH,
+    ROAD,
     SCALE_BAR,
     SEARCH_PROMPT,
     SET_HOME,
