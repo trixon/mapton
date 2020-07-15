@@ -120,7 +120,6 @@
         <!-- Other -->
     </dependencies>
     <properties>
-        <netbeans.compile.on.save>all</netbeans.compile.on.save>
         <netbeans.hint.license>apache20</netbeans.hint.license>
     </properties>
 </project>
