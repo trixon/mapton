@@ -28,7 +28,8 @@ import org.mapton.api.Mapton;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.trv_traffic_information.TrafficInformation;
-import se.trixon.trv_traffic_information.road.weatherstation.v1.Measurement;
+import se.trixon.trv_traffic_information.road.weatherstation.v1.Precipitation;
+import se.trixon.trv_traffic_information.road.weatherstation.v1.Wind;
 
 /**
  *
@@ -69,9 +70,13 @@ public class TrafficInformationManager {
         return mServiceToFile.computeIfAbsent(service, k -> new File(mCacheDir, service.getFilename()));
     }
 
-    public String getIcon(Measurement measurement) {
+    public String getIconUrl(Wind wind) {
+        return String.format("%s%s.png", SystemHelper.getPackageAsPath(TrafficInfoPoiProvider.class), wind.getDirectionIconId());
+    }
+
+    public String getIconUrl(Precipitation precipitation) {
         String basename = "NoData";
-        switch (measurement.getPrecipitation().getAmountName()) {
+        switch (precipitation.getAmountName()) {
             case "Givare saknas/Fel på givare":
                 break;
             case "Lätt regn":

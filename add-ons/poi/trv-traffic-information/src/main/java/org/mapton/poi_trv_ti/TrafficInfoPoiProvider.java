@@ -19,8 +19,6 @@ import java.util.ArrayList;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
@@ -82,7 +80,7 @@ public class TrafficInfoPoiProvider implements MPoiProvider {
                 try {
                     mManager.getCameraGroupToPhotoUrl().put(camera.getCameraGroup(), camera.getPhotoUrl());
                 } catch (NullPointerException e) {
-                    System.out.println(ToStringBuilder.reflectionToString(camera, ToStringStyle.MULTI_LINE_STYLE));
+                    //System.out.println(ToStringBuilder.reflectionToString(camera, ToStringStyle.MULTI_LINE_STYLE));
                 }
                 MPoi poi = new MPoi();
                 poi.setDescription(camera.getDescription());
@@ -169,9 +167,15 @@ public class TrafficInfoPoiProvider implements MPoiProvider {
                 poi.setStyle(style);
                 final Measurement measurement = weatherStation.getMeasurement();
                 if (weatherStation.isActive()) {
-                    style.setLabelText(measurement.getAir().getTemp().toString());
-                    style.setImageUrl(mManager.getIcon(measurement));
-
+                    style.setLabelText(String.format("%.0f°", measurement.getAir().getTemp()));
+                    style.setImageUrl(mManager.getIconUrl(measurement.getPrecipitation()));
+                    try {
+                        poi.setDescription(String.format("%s %s",
+                                measurement.getPrecipitation().getAmount(),
+                                measurement.getPrecipitation().getAmountName()
+                        ));
+                    } catch (Exception e) {
+                    }
                 } else {
                     style.setLabelText("NODATA");
                     style.setImageUrl(String.format("%s%s.png", SystemHelper.getPackageAsPath(TrafficInfoPoiProvider.class), "precipitationNoData"));

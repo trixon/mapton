@@ -17,28 +17,36 @@ package org.mapton.poi_trv_ti;
 
 import eu.hansolo.tilesfx.Tile;
 import eu.hansolo.tilesfx.TileBuilder;
-import eu.hansolo.tilesfx.colors.Bright;
-import eu.hansolo.tilesfx.colors.Dark;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.ResourceBundle;
 import javafx.geometry.Pos;
+import javafx.geometry.VPos;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-import javafx.scene.paint.Stop;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
+import static javafx.scene.layout.GridPane.REMAINING;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.mapton.api.MDict;
 import org.mapton.api.MGenericLoader;
 import org.openide.util.Exceptions;
-import se.trixon.almond.util.SystemHelper;
+import org.openide.util.NbBundle;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.trv_traffic_information.road.weatherstation.v1.Measurement;
 import se.trixon.trv_traffic_information.road.weatherstation.v1.Precipitation;
@@ -50,19 +58,20 @@ import se.trixon.trv_traffic_information.road.weatherstation.v1.WeatherStation;
  */
 public class WeatherView extends BorderPane implements MGenericLoader<WeatherStation> {
 
-    private static final double TILE_HEIGHT = 150;
-    private static final double TILE_SIZE = 150;
-    private static final double TILE_WIDTH = 150;
-    private Tile barGaugeTile;
-    private Tile highLowTile;
+    private static final double TILE_HEIGHT = FxHelper.getUIScaled(150.0);
+    private static final double TILE_WIDTH = FxHelper.getUIScaled(150.0);
     private Tile mAirHumidityTile;
     private Tile mAirTemperatureTile;
+    private final ResourceBundle mBundle = NbBundle.getBundle(WeatherView.class);
     private Tile mCameraImageTile;
     private final DateTimeFormatter mDtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH.mm");
+    private final HashMap<String, Image> mIconIdToImage = new HashMap<>();
     private final TrafficInformationManager mManager = TrafficInformationManager.getInstance();
+    private Image mNullImage;
     private Tile mPrecipitationTile;
     private Label mTimeLabel;
     private Label mTitleLabel;
+    private Tile mWindTile;
     private final ZoneId mZoneOffset = ZoneOffset.systemDefault();
 
     public WeatherView() {
@@ -83,28 +92,18 @@ public class WeatherView extends BorderPane implements MGenericLoader<WeatherSta
             final LocalDateTime measLocalDateTime = offsetDateTime.atZoneSameInstant(mZoneOffset).toLocalDateTime();
             mTimeLabel.setText(measLocalDateTime.format(mDtf));
 
-            mAirHumidityTile.setValue(measurement.getAir().getRelativeHumidity());
-            try {
-                barGaugeTile.setValue(measurement.getWind().getForce());
-                barGaugeTile.setThreshold(measurement.getWind().getForceMax());
-                barGaugeTile.setDisable(false);
-                highLowTile.setValue(measurement.getWind().getForce());
-                highLowTile.setReferenceValue(measurement.getWind().getForceMax());
-            } catch (Exception e) {
-                barGaugeTile.setValue(0);
-                barGaugeTile.setThreshold(0);
-                barGaugeTile.setDisable(true);
-            }
-
             loadTemperature(weatherStation);
             loadPreciptation(weatherStation);
+            loadHumidity(weatherStation);
+            loadWind(weatherStation);
             loadImage(weatherStation);
 
-            debug(weatherStation);
+            //debug(weatherStation);
         });
     }
 
     private void createUI() {
+        mIconIdToImage.put("null", mNullImage = new Pane().snapshot(null, null));
         setPadding(FxHelper.getUIScaledInsets(8));
         String style = "-fx-font-weight: %s; -fx-font-style: %s; -fx-font-size: %.0fpx";
         final double defaultSize = Font.getDefault().getSize();
@@ -115,67 +114,42 @@ public class WeatherView extends BorderPane implements MGenericLoader<WeatherSta
         setTop(mTitleLabel);
 
         mAirTemperatureTile = TileBuilder.create()
-                .skinType(Tile.SkinType.NUMBER)
+                .skinType(Tile.SkinType.FIRE_SMOKE)
                 .prefSize(TILE_WIDTH, TILE_HEIGHT)
                 .textSize(Tile.TextSize.BIGGER)
-                .title("TEMPERATURE")
-                .unit("° C")
-                .description("AIR")
+                .minValue(-999)
+                .decimals(0)
+                .threshold(100)
+                .thresholdVisible(true)
                 .build();
 
         mPrecipitationTile = TileBuilder.create()
                 .skinType(Tile.SkinType.IMAGE_COUNTER)
                 .prefSize(2 * TILE_WIDTH, TILE_HEIGHT)
                 .textSize(Tile.TextSize.BIGGER)
-                .title("PRECIPITATION")
                 .descriptionAlignment(Pos.BASELINE_LEFT)
                 .descriptionAlignment(Pos.BOTTOM_LEFT)
-                .imageMask(Tile.ImageMask.NONE)
-                .unit("mm/h")
+                .imageMask(Tile.ImageMask.ROUND)
+                .minValue(-1)
+                .build();
+
+        mWindTile = TileBuilder.create()
+                .skinType(Tile.SkinType.IMAGE_COUNTER)
+                .prefSize(2 * TILE_WIDTH, TILE_HEIGHT)
+                .textSize(Tile.TextSize.BIGGER)
+                .descriptionAlignment(Pos.BASELINE_LEFT)
+                .descriptionAlignment(Pos.BOTTOM_LEFT)
+                .imageMask(Tile.ImageMask.ROUND)
                 .build();
 
         mAirHumidityTile = TileBuilder.create()
-                .skinType(Tile.SkinType.FLUID)
+                .skinType(Tile.SkinType.FIRE_SMOKE)
                 .prefSize(TILE_WIDTH, TILE_HEIGHT)
                 .textSize(Tile.TextSize.BIGGER)
-                .title("HUMIDITY")
                 .unit("\u0025")
                 .decimals(0)
-                .barColor(Tile.BLUE)
-                .animated(true)
-                .build();
-
-        barGaugeTile = TileBuilder.create()
-                .skinType(Tile.SkinType.BAR_GAUGE)
-                .prefSize(2 * TILE_WIDTH, TILE_HEIGHT)
-                .minValue(0)
-                .maxValue(40)
-                .startFromZero(true)
-                .threshold(80)
+                .threshold(100)
                 .thresholdVisible(true)
-                .title("BarGauge Tile")
-                .unit("F")
-                .text("Whatever text")
-                .gradientStops(new Stop(0, Bright.BLUE),
-                        new Stop(0.1, Bright.BLUE_GREEN),
-                        new Stop(0.2, Bright.GREEN),
-                        new Stop(0.3, Bright.GREEN_YELLOW),
-                        new Stop(0.4, Bright.YELLOW),
-                        new Stop(0.5, Bright.YELLOW_ORANGE),
-                        new Stop(0.6, Bright.ORANGE),
-                        new Stop(0.7, Bright.ORANGE_RED),
-                        new Stop(0.8, Bright.RED),
-                        new Stop(1.0, Dark.RED))
-                .strokeWithGradient(true)
-                .animated(true)
-                .build();
-
-        highLowTile = TileBuilder.create()
-                .skinType(Tile.SkinType.HIGH_LOW)
-                .prefSize(TILE_WIDTH, TILE_HEIGHT)
-                .title("WIND SPEED")
-                .unit("m/s")
-                .description("\u2197")
                 .build();
 
         mCameraImageTile = TileBuilder.create()
@@ -186,20 +160,36 @@ public class WeatherView extends BorderPane implements MGenericLoader<WeatherSta
                 .roundedCorners(true)
                 .build();
 
-        VBox vbox = new VBox(FxHelper.getUIScaled(8),
-                mTimeLabel,
-                new HBox(FxHelper.getUIScaled(8),
-                        mAirTemperatureTile,
-                        mPrecipitationTile
-                ),
-                new HBox(FxHelper.getUIScaled(8),
-                        mAirHumidityTile,
-                        barGaugeTile
-                ),
-                mCameraImageTile
-        );
+        GridPane gp = new GridPane();
+        gp.setPadding(FxHelper.getUIScaledInsets(8));
+        gp.setHgap(FxHelper.getUIScaled(8));
+        gp.setVgap(FxHelper.getUIScaled(8));
+        int col = 0;
+        int row = 0;
 
-        setCenter(vbox);
+        gp.add(mTimeLabel, col, row, REMAINING, 1);
+        gp.add(mAirTemperatureTile, col, ++row, 1, 1);
+        gp.add(mPrecipitationTile, ++col, row, REMAINING, 1);
+        gp.add(mAirHumidityTile, col = 0, ++row, 1, 1);
+        gp.add(mWindTile, ++col, row, REMAINING, 1);
+        gp.add(mCameraImageTile, col = 0, ++row, REMAINING, 1);
+
+        GridPane.setValignment(mTimeLabel, VPos.CENTER);
+        GridPane.setHgrow(mPrecipitationTile, Priority.ALWAYS);
+        GridPane.setHgrow(mWindTile, Priority.ALWAYS);
+
+        GridPane.setFillWidth(mPrecipitationTile, true);
+        GridPane.setFillWidth(mWindTile, true);
+        mCameraImageTile.setMaxWidth(Double.MAX_VALUE);
+
+        double width = 100.0 / 3.0;
+        ColumnConstraints col1 = new ColumnConstraints();
+        col1.setPercentWidth(width);
+        ColumnConstraints col2 = new ColumnConstraints();
+        col2.setPercentWidth(width * 2);
+        gp.getColumnConstraints().addAll(col1, col2);
+
+        setCenter(gp);
     }
 
     private void debug(Object o) {
@@ -213,51 +203,118 @@ public class WeatherView extends BorderPane implements MGenericLoader<WeatherSta
     private void debug(WeatherStation weatherStation) {
         System.out.println("*".repeat(80));
 //        debug(weatherStation);
-        debug(weatherStation.getMeasurement());
-        debug(weatherStation.getMeasurement().getAir());
-        debug(weatherStation.getMeasurement().getMeasureTime());
+//        debug(weatherStation.getMeasurement());
+//        debug(weatherStation.getMeasurement().getAir());
         debug(weatherStation.getMeasurement().getPrecipitation());
-        debug(weatherStation.getMeasurement().getRoad());
-        debug(weatherStation.getMeasurement().getWind());
+//        debug(weatherStation.getMeasurement().getRoad());
+//        debug(weatherStation.getMeasurement().getWind());
+    }
+
+    private Image getImageForIconId(String iconId) {
+        return mIconIdToImage.computeIfAbsent(iconId, k -> {
+            var imageView = new ImageView(k);
+//        var pane = new StackPane(imageView);
+//        pane.setPadding(new Insets(148));
+            var snapshotParameters = new SnapshotParameters();
+            snapshotParameters.setFill(Color.WHITESMOKE);
+            WritableImage image = imageView.snapshot(snapshotParameters, null);
+
+            return image;
+        });
+    }
+
+    private String getMessage(String key) {
+        try {
+            return mBundle.getString(key);
+        } catch (Exception e) {
+            return key;
+        }
+    }
+
+    private void loadHumidity(WeatherStation weatherStation) {
+        try {
+            mAirHumidityTile.setValue(weatherStation.getMeasurement().getAir().getRelativeHumidity());
+        } catch (NullPointerException e) {
+            mAirHumidityTile.setValue(-1);
+        }
     }
 
     private void loadImage(WeatherStation weatherStation) {
         String url = mManager.getCameraGroupToPhotoUrl().getOrDefault(weatherStation.getId(), null);
 
-        Image image = null;
+        Image image = mNullImage;
         if (url != null) {
             image = new Image(url);
         }
+
         mCameraImageTile.setImage(image);
     }
 
     private void loadPreciptation(WeatherStation weatherStation) {
         Precipitation precipitation = weatherStation.getMeasurement().getPrecipitation();
-        String url = String.format("%s%s.png", SystemHelper.getPackageAsPath(TrafficInfoPoiProvider.class), "precipitationNoPrecipitation");
 
         try {
             final Float amount = precipitation.getAmount();
+            var hasValue = amount != null;
             if (amount != null) {
                 mPrecipitationTile.setValue(amount);
             }
-            mPrecipitationTile.setValueVisible(amount != null);
+            mPrecipitationTile.setValueVisible(hasValue);
+            mPrecipitationTile.setUnit(hasValue ? "mm/h" : "");
 
-            mPrecipitationTile.setDescription(String.format("%s\n%s", precipitation.getType(), precipitation.getAmountName()));
-            url = mManager.getIcon(weatherStation.getMeasurement());
+            String description = precipitation.getAmountName();
+            if (StringUtils.equalsAnyIgnoreCase(precipitation.getType(), "Hagel", "Underkylt regn")) {
+                description = precipitation.getType();
+            }
+            mPrecipitationTile.setDescription(getMessage(description));
         } catch (Exception e) {
             Exceptions.printStackTrace(e);
         }
 
-        mPrecipitationTile.setImage(new Image(url));
+        mPrecipitationTile.setImage(getImageForIconId(mManager.getIconUrl(precipitation)));
+        setTooltipText(mPrecipitationTile, precipitation);
     }
 
     private void loadTemperature(WeatherStation weatherStation) {
         final Measurement measurement = weatherStation.getMeasurement();
-        try {
+        var hasValue = measurement != null && measurement.getAir() != null;
+
+        if (hasValue) {
             mAirTemperatureTile.setValue(measurement.getAir().getTemp());
-        } catch (Exception e) {
-            Exceptions.printStackTrace(e);
         }
+
+        mAirTemperatureTile.setValueVisible(hasValue);
+        mAirTemperatureTile.setUnit(hasValue ? "°C" : "");
+        setTooltipText(mAirTemperatureTile, measurement.getAir());
+    }
+
+    private void loadWind(WeatherStation weatherStation) {
+        var wind = weatherStation.getMeasurement().getWind();
+        var hasValue = wind != null && wind.getForce() != null;
+//        var hasValue = wind != null && wind.getForce() != null && wind.getForce() > 0;
+
+        if (hasValue) {
+            mWindTile.setValue(wind.getForce());
+            mWindTile.setDescription(String.format("%s: %.1f m/s", "Max", wind.getForceMax()));
+            mWindTile.setImage(getImageForIconId(mManager.getIconUrl(wind)));
+        } else {
+            mWindTile.setValue(-1);
+            mWindTile.setDescription("");
+            mWindTile.setImage(mNullImage);
+        }
+
+        mWindTile.setValueVisible(hasValue);
+        mWindTile.setUnit(hasValue ? "m/s" : "");
+        setTooltipText(mWindTile, wind);
+    }
+
+    private void setTooltipText(Tile tile, Object o) {
+        String s = null;
+        if (o != null) {
+            s = ToStringBuilder.reflectionToString(o, ToStringStyle.NO_CLASS_NAME_STYLE);
+        }
+
+        tile.setTooltipText(s);
     }
 
 }
