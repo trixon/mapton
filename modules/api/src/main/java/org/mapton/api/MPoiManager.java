@@ -168,7 +168,8 @@ public class MPoiManager {
                 || StringHelper.matchesSimpleGlob(poi.getUrl(), filter, true, true)
                 || StringHelper.matchesSimpleGlob(poi.getName(), filter, true, true)
                 || StringHelper.matchesSimpleGlob(poi.getCategory(), filter, true, true)
-                || StringHelper.matchesSimpleGlob(poi.getGroup(), filter, true, true));
+                || StringHelper.matchesSimpleGlob(poi.getGroup(), filter, true, true)
+                || StringHelper.matchesSimpleGlob(poi.getDescription(), filter, true, true));
 
         return valid;
     }
