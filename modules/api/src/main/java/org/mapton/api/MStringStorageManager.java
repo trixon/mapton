@@ -36,9 +36,6 @@ public class MStringStorageManager {
     private MStringStorageManager() {
     }
 
-//    public String getValue(Class c) {
-//        return getNode(c).get(c.getName(), null);
-//    }
     public String getValue(Class c, String defaultValue) {
         return getNode(c).get(c.getName(), defaultValue);
     }

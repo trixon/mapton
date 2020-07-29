@@ -31,7 +31,6 @@ public abstract class MStringStorage {
     private String mName;
     private String mPromptText;
     private String mTooltipText;
-//    private boolean mUseDefaultValue;
     private String mValue;
 
     public MStringStorage() {
@@ -61,9 +60,6 @@ public abstract class MStringStorage {
         return mValue;
     }
 
-//    public boolean isUseDefaultValue() {
-//        return mUseDefaultValue;
-//    }
     public void setDefaultValue(String defaultValue) {
         mDefaultValue = defaultValue;
     }
@@ -84,9 +80,6 @@ public abstract class MStringStorage {
         mTooltipText = tooltipText;
     }
 
-//    public void setUseDefaultValue(boolean useDefaultValue) {
-//        mUseDefaultValue = useDefaultValue;
-//    }
     public void setValue(String value) {
         mValue = value;
     }

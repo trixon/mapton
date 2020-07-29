@@ -23,7 +23,9 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.xml.bind.JAXBException;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.mapton.api.MServiceKeyManager;
+import org.mapton.api.MStringStorageManager;
 import org.mapton.api.Mapton;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.SystemHelper;
@@ -53,8 +55,13 @@ public class TrafficInformationManager {
     }
 
     private TrafficInformationManager() {
-        mTrafficInformation = new TrafficInformation(MServiceKeyManager.getInstance().getKey("001"));
+        var key = MStringStorageManager.getInstance().getValue(ApiKeyHandler.class, null);
+        if (StringUtils.isBlank(key)) {
+            key = MServiceKeyManager.getInstance().getKey("001");
+        }
+        mTrafficInformation = new TrafficInformation(key);
         mCacheDir = new File(Mapton.getCacheDir(), "poi/trv-ti");
+
         try {
             FileUtils.forceMkdir(mCacheDir);
         } catch (IOException ex) {
