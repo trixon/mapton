@@ -13,16 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@OptionsPanelController.ContainerRegistration(
-        id = "Modules",
-        position = 2,
-        categoryName = "#OptionsCategory_Name_Modules",
-        iconBase = "org/mapton/core_nb/modules.png",
-        keywords = "#OptionsCategory_Keywords_Modules",
-        keywordsCategory = "Modules"
-)
-@NbBundle.Messages(value = {"OptionsCategory_Name_Modules=Modules", "OptionsCategory_Keywords_Modules=module modules"})
-package org.mapton.core_nb;
+package org.mapton.poi_trv_ti;
 
-import org.netbeans.spi.options.OptionsPanelController;
+import java.util.ResourceBundle;
+import org.mapton.api.MStringStorage;
 import org.openide.util.NbBundle;
+import org.openide.util.lookup.ServiceProvider;
+
+/**
+ *
+ * @author Patrik Karlström
+ */
+@ServiceProvider(service = MStringStorage.ApiKey.class)
+public class ApiKeyHandler extends MStringStorage.ApiKey {
+
+    private final ResourceBundle mBundle = NbBundle.getBundle(ApiKeyHandler.class);
+
+    public ApiKeyHandler() {
+        setGroup(mBundle.getString("stringStorageGroup"));
+        setName(mBundle.getString("stringStorageName"));
+        setTooltipText(mBundle.getString("stringStorageTooltip"));
+    }
+
+}
