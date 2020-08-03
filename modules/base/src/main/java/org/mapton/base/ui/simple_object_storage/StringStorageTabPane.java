@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.base.ui.string_storage;
+package org.mapton.base.ui.simple_object_storage;
 
 import javafx.scene.control.TabPane;
-import org.mapton.api.MStringStorage;
+import org.mapton.api.MSimpleObjectStorageString;
 import se.trixon.almond.util.Dict;
 
 /**
@@ -27,10 +27,10 @@ public class StringStorageTabPane extends TabPane {
 
     public StringStorageTabPane() {
         getTabs().addAll(
-                new StringStorageTab(MStringStorage.ApiKey.class, "API KEY"),
-                new StringStorageTab(MStringStorage.Path.class, Dict.PATH.toString()),
-                new StringStorageTab(MStringStorage.Url.class, "URL"),
-                new StringStorageTab(MStringStorage.Misc.class, Dict.MISCELLANEOUS.toString())
+                new StringStorageTab(MSimpleObjectStorageString.ApiKey.class, "API KEY"),
+                new StringStorageTab(MSimpleObjectStorageString.Path.class, Dict.PATH.toString()),
+                new StringStorageTab(MSimpleObjectStorageString.Url.class, "URL"),
+                new StringStorageTab(MSimpleObjectStorageString.Misc.class, Dict.MISCELLANEOUS.toString())
         );
     }
 

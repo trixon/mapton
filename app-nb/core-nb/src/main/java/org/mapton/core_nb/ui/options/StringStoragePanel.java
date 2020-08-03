@@ -18,7 +18,7 @@ package org.mapton.core_nb.ui.options;
 import java.awt.BorderLayout;
 import javafx.application.Platform;
 import javafx.scene.Scene;
-import org.mapton.base.ui.string_storage.StringStorageTabPane;
+import org.mapton.base.ui.simple_object_storage.StringStorageTabPane;
 import se.trixon.almond.nbp.fx.FxPanel;
 
 final class StringStoragePanel extends javax.swing.JPanel {

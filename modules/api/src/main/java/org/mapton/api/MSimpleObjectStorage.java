@@ -15,28 +15,26 @@
  */
 package org.mapton.api;
 
-import java.io.File;
-import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.fx.control.FileChooserPane;
 
 /**
  *
  * @author Patrik Karlström
+ * @param <T>
  */
-public abstract class MStringStorage {
+public abstract class MSimpleObjectStorage<T> {
 
-    private String mDefaultValue = null;
+    private T mDefaultValue = null;
     private String mGroup = Dict.MISCELLANEOUS.toString();
     private String mName;
     private String mPromptText;
     private String mTooltipText;
-    private String mValue;
+    private T mValue;
 
-    public MStringStorage() {
+    public MSimpleObjectStorage() {
     }
 
-    public String getDefaultValue() {
+    public T getDefaultValue() {
         return mDefaultValue;
     }
 
@@ -56,11 +54,11 @@ public abstract class MStringStorage {
         return mTooltipText;
     }
 
-    public String getValue() {
+    public T getValue() {
         return mValue;
     }
 
-    public void setDefaultValue(String defaultValue) {
+    public void setDefaultValue(T defaultValue) {
         mDefaultValue = defaultValue;
     }
 
@@ -80,46 +78,7 @@ public abstract class MStringStorage {
         mTooltipText = tooltipText;
     }
 
-    public void setValue(String value) {
+    public void setValue(T value) {
         mValue = value;
-    }
-
-    public static abstract class ApiKey extends MStringStorage {
-
-        public ApiKey() {
-            setPromptText(NbBundle.getMessage(MStringStorage.class, "stringStoragePrompt"));
-        }
-
-    }
-
-    public static abstract class Misc extends MStringStorage {
-
-    }
-
-    public static abstract class Path extends MStringStorage {
-
-        private File mFile;
-        private FileChooserPane.ObjectMode mObjectMode = FileChooserPane.ObjectMode.FILE;
-
-        public File getFile() {
-            return mFile;
-        }
-
-        public FileChooserPane.ObjectMode getObjectMode() {
-            return mObjectMode;
-        }
-
-        public void setFile(File file) {
-            mFile = file;
-        }
-
-        public void setObjectMode(FileChooserPane.ObjectMode objectMode) {
-            mObjectMode = objectMode;
-        }
-
-    }
-
-    public static abstract class Url extends MStringStorage {
-
     }
 }

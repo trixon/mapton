@@ -25,7 +25,7 @@ import javax.xml.bind.JAXBException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.api.MServiceKeyManager;
-import org.mapton.api.MStringStorageManager;
+import org.mapton.api.MSimpleObjectStorageManager;
 import org.mapton.api.Mapton;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.SystemHelper;
@@ -55,7 +55,7 @@ public class TrafficInformationManager {
     }
 
     private TrafficInformationManager() {
-        var key = MStringStorageManager.getInstance().getValue(ApiKeyHandler.class, null);
+        var key = MSimpleObjectStorageManager.getInstance().getValue(ApiKeyHandler.class, null);
         if (StringUtils.isBlank(key)) {
             key = MServiceKeyManager.getInstance().getKey("001");
         }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.base.ui.string_storage;
+package org.mapton.base.ui.simple_object_storage;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -29,8 +29,8 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import org.apache.commons.lang3.StringUtils;
-import org.mapton.api.MStringStorage;
-import org.mapton.api.MStringStorageManager;
+import org.mapton.api.MSimpleObjectStorageManager;
+import org.mapton.api.MSimpleObjectStorageString;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import se.trixon.almond.util.fx.FxHelper;
@@ -41,12 +41,12 @@ import se.trixon.almond.util.fx.control.FileChooserPane;
  * @author Patrik Karlström
  * @param <T>
  */
-public class StringStorageTab<T extends MStringStorage> extends Tab {
+public class StringStorageTab<T extends MSimpleObjectStorageString> extends Tab {
 
     private final Class<T> mClass;
     private final HashMap<Class, TextField> mClassToTextField = new HashMap<>();
     private final VBox mItemBox = new VBox(FxHelper.getUIScaled(8));
-    private final MStringStorageManager mManager = MStringStorageManager.getInstance();
+    private final MSimpleObjectStorageManager mManager = MSimpleObjectStorageManager.getInstance();
     private ScrollPane mScrollPane;
 
     public StringStorageTab(Class<T> c, String title) {
@@ -90,8 +90,8 @@ public class StringStorageTab<T extends MStringStorage> extends Tab {
             for (T stringStorage : stringStorages) {
                 VBox box;
                 TextField textField;
-                if (stringStorage instanceof MStringStorage.Path) {
-                    MStringStorage.Path storagePath = (MStringStorage.Path) stringStorage;
+                if (stringStorage instanceof MSimpleObjectStorageString.Path) {
+                    MSimpleObjectStorageString.Path storagePath = (MSimpleObjectStorageString.Path) stringStorage;
                     FileChooserPane fileChooserPane = new FileChooserPane("title", storagePath.getName(), storagePath.getObjectMode(), SelectionMode.SINGLE);
                     textField = fileChooserPane.getTextField();
                     box = new VBox(fileChooserPane);

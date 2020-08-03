@@ -16,7 +16,7 @@
 package org.mapton.poi_trv_ti;
 
 import java.util.ResourceBundle;
-import org.mapton.api.MStringStorage;
+import org.mapton.api.MSimpleObjectStorageString;
 import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
 
@@ -24,8 +24,8 @@ import org.openide.util.lookup.ServiceProvider;
  *
  * @author Patrik Karlström
  */
-@ServiceProvider(service = MStringStorage.ApiKey.class)
-public class ApiKeyHandler extends MStringStorage.ApiKey {
+@ServiceProvider(service = MSimpleObjectStorageString.ApiKey.class)
+public class ApiKeyHandler extends MSimpleObjectStorageString.ApiKey {
 
     private final ResourceBundle mBundle = NbBundle.getBundle(ApiKeyHandler.class);
 

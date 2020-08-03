@@ -24,36 +24,36 @@ import org.openide.util.NbPreferences;
  *
  * @author Patrik Karlström
  */
-public class MStringStorageManager {
+public class MSimpleObjectStorageManager {
 
     private final HashMap<Class, Preferences> mClassToPreferenceNode = new HashMap<>();
-    private final Preferences mPreferences = NbPreferences.forModule(MStringStorageManager.class);
+    private final Preferences mPreferences = NbPreferences.forModule(MSimpleObjectStorageManager.class);
 
-    public static MStringStorageManager getInstance() {
+    public static MSimpleObjectStorageManager getInstance() {
         return Holder.INSTANCE;
     }
 
-    private MStringStorageManager() {
+    private MSimpleObjectStorageManager() {
     }
 
     public String getValue(Class c, String defaultValue) {
         return getNode(c).get(c.getName(), defaultValue);
     }
 
-    public <T> void putValue(Class<? extends MStringStorage> c, String value) {
+    public <T> void putValue(Class<? extends MSimpleObjectStorageString> c, String value) {
         getNode(c).put(c.getName(), StringUtils.defaultString(value));
     }
 
     private Preferences getNode(Class c) {
         var parentNode = mPreferences.node("string_storage");
-        if (MStringStorage.ApiKey.class.isAssignableFrom(c)) {
-            return mClassToPreferenceNode.computeIfAbsent(MStringStorage.ApiKey.class, k -> parentNode.node("api_key"));
-        } else if (MStringStorage.Path.class.isAssignableFrom(c)) {
-            return mClassToPreferenceNode.computeIfAbsent(MStringStorage.Path.class, k -> parentNode.node("path"));
-        } else if (MStringStorage.Url.class.isAssignableFrom(c)) {
-            return mClassToPreferenceNode.computeIfAbsent(MStringStorage.Url.class, k -> parentNode.node("url"));
-        } else if (MStringStorage.Misc.class.isAssignableFrom(c)) {
-            return mClassToPreferenceNode.computeIfAbsent(MStringStorage.Misc.class, k -> parentNode.node("misc"));
+        if (MSimpleObjectStorageString.ApiKey.class.isAssignableFrom(c)) {
+            return mClassToPreferenceNode.computeIfAbsent(MSimpleObjectStorageString.ApiKey.class, k -> parentNode.node("api_key"));
+        } else if (MSimpleObjectStorageString.Path.class.isAssignableFrom(c)) {
+            return mClassToPreferenceNode.computeIfAbsent(MSimpleObjectStorageString.Path.class, k -> parentNode.node("path"));
+        } else if (MSimpleObjectStorageString.Url.class.isAssignableFrom(c)) {
+            return mClassToPreferenceNode.computeIfAbsent(MSimpleObjectStorageString.Url.class, k -> parentNode.node("url"));
+        } else if (MSimpleObjectStorageString.Misc.class.isAssignableFrom(c)) {
+            return mClassToPreferenceNode.computeIfAbsent(MSimpleObjectStorageString.Misc.class, k -> parentNode.node("misc"));
         } else {
             return parentNode.node("unknown");
         }
@@ -61,6 +61,6 @@ public class MStringStorageManager {
 
     private static class Holder {
 
-        private static final MStringStorageManager INSTANCE = new MStringStorageManager();
+        private static final MSimpleObjectStorageManager INSTANCE = new MSimpleObjectStorageManager();
     }
 }
