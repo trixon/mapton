@@ -47,9 +47,9 @@ public class UpdaterMaskerPane extends MMaskerPaneBase {
         new Thread(() -> {
             for (MUpdater updater : updaters) {
                 if (updater.isMarkedForUpdate()) {
-                    mPrint.out(String.format("%s: %s", updater.getName(), "UPDATE BEGIN"));
+                    mPrint.out(String.format("%s %s/%s", "Update", updater.getCategory(), updater.getName()));
                     updater.run();
-                    mPrint.out(String.format("%s: %s", updater.getName(), "UPDATE END"));
+                    mPrint.out(String.format("%s %s/%s, %s", "Update", updater.getCategory(), updater.getName(), Dict.DONE.toString().toLowerCase()));
                 }
             }
 

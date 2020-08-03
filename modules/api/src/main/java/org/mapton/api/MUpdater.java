@@ -15,9 +15,12 @@
  */
 package org.mapton.api;
 
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import javafx.util.Duration;
+import javax.swing.Timer;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
 
@@ -27,13 +30,36 @@ import se.trixon.almond.util.SystemHelper;
  */
 public abstract class MUpdater {
 
-    protected MPrint mPrint = new MPrint(MKey.UPDATER_LOGGER);
+    public static final Duration FREQ_10_MINUTES = Duration.minutes(10);
+    public static final Duration FREQ_1_WEEK = Duration.hours(168);
+    public static final Duration FREQ_2_HOURS = Duration.hours(2);
+    public static final Duration FREQ_2_MINUTES = Duration.minutes(2);
+    public static final Duration FREQ_2_WEEKS = Duration.hours(336);
+    public static final Duration FREQ_30_MINUTES = Duration.minutes(30);
 
+    protected MPrint mPrint = new MPrint(MKey.UPDATER_LOGGER);
+    protected Timer mTimer;
+    private Long mAgeLimit;
+    private boolean mAutoUpdate;
+    private Duration mAutoUpdateInterval;
+    private Runnable mAutoUpdatePostRunnable;
     private String mCategory = null;
     private String mComment;
     private boolean mMarkedForUpdate;
     private String mName;
     private Runnable mRunnable;
+
+    public Long getAgeLimit() {
+        return mAgeLimit;
+    }
+
+    public Duration getAutoUpdateInterval() {
+        return mAutoUpdateInterval;
+    }
+
+    public Runnable getAutoUpdatePostRunnable() {
+        return mAutoUpdatePostRunnable;
+    }
 
     public String getCategory() {
         return mCategory;
@@ -57,6 +83,10 @@ public abstract class MUpdater {
         return mRunnable;
     }
 
+    public boolean isAutoUpdate() {
+        return mAutoUpdate;
+    }
+
     public boolean isMarkedForUpdate() {
         return mMarkedForUpdate;
     }
@@ -65,6 +95,23 @@ public abstract class MUpdater {
 
     public void run() {
         mRunnable.run();
+    }
+
+    public void setAgeLimit(Long ageLimit) {
+        mAgeLimit = ageLimit;
+    }
+
+    public void setAutoUpdate(boolean autoUpdate) {
+        mAutoUpdate = autoUpdate;
+    }
+
+    public void setAutoUpdateInterval(Duration autoUpdateInterval) {
+        mAutoUpdateInterval = autoUpdateInterval;
+        setAgeLimit(Math.round(mAutoUpdateInterval.toMillis()));
+    }
+
+    public void setAutoUpdatePostRunnable(Runnable autoUpdatePostRunnable) {
+        mAutoUpdatePostRunnable = autoUpdatePostRunnable;
     }
 
     public void setCategory(String category) {
@@ -98,8 +145,6 @@ public abstract class MUpdater {
         public ByFile() {
         }
 
-        public abstract Long getAgeLimit();
-
         public File getFile() {
             return mFile;
         }
@@ -112,6 +157,40 @@ public abstract class MUpdater {
             }
 
             return String.format(Dict.UPDATED_S.toString(), lastUpdate);
+        }
+
+        public void initAutoUpdater() {
+            final int defaultDelay = (int) getAutoUpdateInterval().toMillis();
+            ActionListener actionListener = actionEvent -> {
+                new Thread(() -> {
+                    mPrint.out(String.format("%s %s/%s", "AutoUpdate", getCategory(), getName()));
+                    getRunnable().run();
+                    mPrint.out(String.format("%s %s/%s, %s", "AutoUpdate", getCategory(), getName(), Dict.DONE.toString().toLowerCase()));
+                    mTimer.setDelay(defaultDelay);
+                    mTimer.setInitialDelay(defaultDelay);
+                    mTimer.restart();
+
+                    if (getAutoUpdatePostRunnable() != null) {
+                        getAutoUpdatePostRunnable().run();
+                    }
+                }).start();
+            };
+
+            mTimer = new Timer(defaultDelay, actionListener);
+
+            if (!mFile.exists() || SystemHelper.age(mFile.lastModified()) > defaultDelay) {
+                actionListener.actionPerformed(null);
+            } else {
+                long initialDelay = defaultDelay;
+                if (mFile.exists()) {
+                    initialDelay = mFile.lastModified() + defaultDelay - System.currentTimeMillis();
+                }
+
+                int actualDelay = (int) Math.max(0, initialDelay);
+                mTimer.setDelay(actualDelay);
+                mTimer.setInitialDelay(actualDelay);
+                mTimer.start();
+            }
         }
 
         @Override

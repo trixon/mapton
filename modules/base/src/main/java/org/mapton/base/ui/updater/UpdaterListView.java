@@ -34,7 +34,6 @@ import org.mapton.api.MPrint;
 import org.mapton.api.MUpdater;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
-import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
 
 /**
@@ -61,7 +60,11 @@ public class UpdaterListView extends ListView<MUpdater> {
             ArrayList<MUpdater> updaters = new ArrayList<>(Lookup.getDefault().lookupAll(MUpdater.class));
             for (MUpdater updater : updaters) {
                 updater.setMarkedForUpdate(updater.isOutOfDate());
-
+                if (updater.isAutoUpdate()) {
+                    updater.setAutoUpdatePostRunnable(() -> {
+                        refreshUpdaters();
+                    });
+                }
                 String status;
                 if (updater.isOutOfDate()) {
                     status = "is out of date";
@@ -69,7 +72,7 @@ public class UpdaterListView extends ListView<MUpdater> {
                     status = "OK";
                 }
 
-                mPrint.out(String.format("%s: %s %s", Dict.UPDATER.toString(), updater.getName(), status));
+                mPrint.out(String.format("%s: %s %s", "Status check", updater.getName(), status));
             }
 
             Comparator<MUpdater> c1 = (MUpdater o1, MUpdater o2) -> Boolean.compare(o2.isOutOfDate(), o1.isMarkedForUpdate());

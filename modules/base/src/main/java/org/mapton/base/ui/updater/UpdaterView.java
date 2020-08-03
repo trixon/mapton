@@ -21,7 +21,6 @@ import javafx.scene.Node;
 import org.mapton.api.MKey;
 import org.mapton.api.MUpdater;
 import org.mapton.api.Mapton;
-import se.trixon.almond.util.GlobalStateChangeEvent;
 import se.trixon.almond.util.LogListener;
 import se.trixon.almond.util.fx.control.LogPanel;
 
@@ -47,8 +46,8 @@ public class UpdaterView implements LogListener {
         mLogPanel = new LogPanel();
         mLogPanel.setMonospaced();
 
-        Mapton.getGlobalState().addListener((GlobalStateChangeEvent evt) -> {
-            mLogPanel.println((String) evt.getObject());
+        Mapton.getGlobalState().addListener(gsce -> {
+            mLogPanel.println((String) gsce.getObject());
         }, MKey.UPDATER_LOGGER);
     }
 
