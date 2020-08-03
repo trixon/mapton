@@ -16,7 +16,6 @@
 package org.mapton.geonames;
 
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 import org.mapton.api.MUpdater;
 import org.mapton.geonames.api.GeonamesManager;
 import org.openide.util.Exceptions;
@@ -35,6 +34,8 @@ public class GeonamesUpdater extends MUpdater.ByFile {
     public GeonamesUpdater() {
         setFile(mGenerator.getCities1000zipFile());
         setComment("Search engine data from geonames.org");
+        setCategory(Dict.SYSTEM.toString());
+
         setRunnable(() -> {
             try {
                 mGenerator.update(mPrint);
@@ -43,16 +44,9 @@ public class GeonamesUpdater extends MUpdater.ByFile {
                 Exceptions.printStackTrace(ex);
             }
         });
-    }
 
-    @Override
-    public Long getAgeLimit() {
-        return TimeUnit.DAYS.toMillis(14);
-    }
-
-    @Override
-    public String getCategory() {
-        return Dict.SYSTEM.toString();
+        setAutoUpdateInterval(FREQ_2_WEEKS);
+        initAutoUpdater();
     }
 
     @Override
