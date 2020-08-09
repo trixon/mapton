@@ -15,15 +15,19 @@
  */
 package org.mapton.base.ui.simple_object_storage;
 
+import java.util.ResourceBundle;
 import javafx.scene.control.TabPane;
 import org.mapton.api.MGenericLoader;
 import org.mapton.api.MGenericSaver;
+import org.openide.util.NbBundle;
 
 /**
  *
  * @author Patrik Karlström
  */
 public abstract class BaseTabPane extends TabPane implements MGenericLoader<Object>, MGenericSaver<Object> {
+
+    protected final ResourceBundle mBundle = NbBundle.getBundle(BaseTabPane.class);
 
     public BaseTabPane() {
     }

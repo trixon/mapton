@@ -19,16 +19,13 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
-import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
 import org.apache.commons.lang3.StringUtils;
+import org.controlsfx.control.ToggleSwitch;
 import org.mapton.api.MSimpleObjectStorageBoolean;
-import org.mapton.api.MSimpleObjectStorageManager;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import se.trixon.almond.util.fx.FxHelper;
@@ -41,10 +38,9 @@ import se.trixon.almond.util.fx.FxHelper;
 public class BooleanStorageTab<T extends MSimpleObjectStorageBoolean> extends BaseTab {
 
     private final Class<T> mClass;
-    private final HashMap<Class, TextField> mClassToTextField = new HashMap<>();
+    private final HashMap<Class, ToggleSwitch> mClassToToggleSwitch = new HashMap<>();
     private final VBox mItemBox = new VBox(FxHelper.getUIScaled(8));
-    private final MSimpleObjectStorageManager mManager = MSimpleObjectStorageManager.getInstance();
-    private ScrollPane mScrollPane;
+    private final ScrollPane mScrollPane;
 
     public BooleanStorageTab(Class<T> c, String title) {
         super(title);
@@ -63,57 +59,46 @@ public class BooleanStorageTab<T extends MSimpleObjectStorageBoolean> extends Ba
 
     @Override
     public void load(Object object) {
-        Lookup.getDefault().lookupAll(mClass).forEach(stringStorage -> {
-//            mClassToTextField.get(stringStorage.getClass()).setText(mManager.getString(stringStorage.getClass(), stringStorage.getDefaultValue()));
+        Lookup.getDefault().lookupAll(mClass).forEach(simpleStorage -> {
+            mClassToToggleSwitch.get(simpleStorage.getClass()).setSelected(mManager.getBoolean(simpleStorage.getClass(), simpleStorage.getDefaultValue()));
         });
     }
 
     @Override
     public void save(Object object) {
-        Lookup.getDefault().lookupAll(mClass).forEach(stringStorage -> {
-//            mManager.putString(stringStorage.getClass(), mClassToTextField.get(stringStorage.getClass()).getText());
+        Lookup.getDefault().lookupAll(mClass).forEach(simpleStorage -> {
+            mManager.putBoolean(simpleStorage.getClass(), mClassToToggleSwitch.get(simpleStorage.getClass()).isSelected());
         });
     }
 
     private void populateItems() {
         FxHelper.runLater(() -> {
-            ArrayList<T> stringStorages = new ArrayList<>(Lookup.getDefault().lookupAll(mClass));
+            ArrayList<T> simpleStorages = new ArrayList<>(Lookup.getDefault().lookupAll(mClass));
             Comparator<T> c1 = (T o1, T o2) -> StringUtils.defaultString(o1.getGroup()).compareToIgnoreCase(StringUtils.defaultString(o2.getGroup()));
             Comparator<T> c2 = (T o1, T o2) -> StringUtils.defaultString(o1.getName()).compareToIgnoreCase(StringUtils.defaultString(o2.getName()));
 
-            stringStorages.sort(c1.thenComparing(c2));
+            simpleStorages.sort(c1.thenComparing(c2));
             HashSet<String> groups = new HashSet<>();
-            mClassToTextField.clear();
+            mClassToToggleSwitch.clear();
 
-            for (T stringStorage : stringStorages) {
+            for (T simpleStorage : simpleStorages) {
                 VBox box;
-                TextField textField;
-//                if (stringStorage instanceof MSimpleObjectStorageString.Path) {
-//                    MSimpleObjectStorageString.Path storagePath = (MSimpleObjectStorageString.Path) stringStorage;
-//                    FileChooserPane fileChooserPane = new FileChooserPane("title", storagePath.getName(), storagePath.getObjectMode(), SelectionMode.SINGLE);
-//                    textField = fileChooserPane.getTextField();
-//                    box = new VBox(fileChooserPane);
-//                } else {
-                Label nameLabel = new Label(stringStorage.getName());
-                textField = new TextField();
-                textField.prefWidthProperty().bind(mItemBox.widthProperty());
-                box = new VBox(nameLabel, textField);
-//                }
-                textField.setPromptText(stringStorage.getPromptText());
-                textField.setTooltip(new Tooltip(stringStorage.getTooltipText()));
-                mClassToTextField.put(stringStorage.getClass(), textField);
+                ToggleSwitch toggleSwitch = new ToggleSwitch(simpleStorage.getName());
+                toggleSwitch.prefWidthProperty().bind(mItemBox.widthProperty());
+                box = new VBox(toggleSwitch);
+                if (StringUtils.isNotBlank(simpleStorage.getTooltipText())) {
+                    toggleSwitch.setTooltip(new Tooltip(simpleStorage.getTooltipText()));
+                }
+                mClassToToggleSwitch.put(simpleStorage.getClass(), toggleSwitch);
 
-                String group = stringStorage.getGroup();
+                String group = simpleStorage.getGroup();
                 if (!groups.contains(group)) {
                     groups.add(group);
-                    Label groupLabel = new Label(group);
-                    box.getChildren().add(0, groupLabel);
-                    groupLabel.setFont(Font.font(Font.getDefault().getSize() * 1.2));
+                    box.getChildren().add(0, getGroupLabel(group));
                 }
 
                 mItemBox.getChildren().add(box);
             }
         });
     }
-
 }

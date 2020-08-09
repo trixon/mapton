@@ -16,7 +16,9 @@
 package org.mapton.poi_trv_ti.updater;
 
 import org.mapton.api.MPoiManager;
+import org.mapton.api.MSimpleObjectStorageManager;
 import org.mapton.api.MUpdater;
+import org.mapton.poi_trv_ti.AutoUpdateProvider;
 import org.mapton.poi_trv_ti.TrafficInformationManager;
 import se.trixon.trv_traffic_information.TrafficInformation;
 
@@ -32,6 +34,11 @@ public abstract class BaseUpdater extends MUpdater.ByFile {
     public BaseUpdater() {
         setAutoUpdate(true);
         setCategory("Trv Traffic Information");
+    }
+
+    @Override
+    public boolean isAutoUpdateEnabled() {
+        return MSimpleObjectStorageManager.getInstance().getBoolean(AutoUpdateProvider.class, false);
     }
 
     public void refreshPoiManager() {

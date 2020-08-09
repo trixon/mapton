@@ -31,6 +31,7 @@ import se.trixon.almond.util.SystemHelper;
 public abstract class MUpdater {
 
     public static final Duration FREQ_10_MINUTES = Duration.minutes(10);
+    public static final Duration FREQ_1_MINUTE = Duration.minutes(1);
     public static final Duration FREQ_1_WEEK = Duration.hours(168);
     public static final Duration FREQ_2_HOURS = Duration.hours(2);
     public static final Duration FREQ_2_MINUTES = Duration.minutes(2);
@@ -85,6 +86,10 @@ public abstract class MUpdater {
 
     public boolean isAutoUpdate() {
         return mAutoUpdate;
+    }
+
+    public boolean isAutoUpdateEnabled() {
+        return true;
     }
 
     public boolean isMarkedForUpdate() {
@@ -163,15 +168,21 @@ public abstract class MUpdater {
             final int defaultDelay = (int) getAutoUpdateInterval().toMillis();
             ActionListener actionListener = actionEvent -> {
                 new Thread(() -> {
-                    mPrint.out(String.format("%s %s/%s", "AutoUpdate", getCategory(), getName()));
-                    getRunnable().run();
-                    mPrint.out(String.format("%s %s/%s, %s", "AutoUpdate", getCategory(), getName(), Dict.DONE.toString().toLowerCase()));
-                    mTimer.setDelay(defaultDelay);
-                    mTimer.setInitialDelay(defaultDelay);
-                    mTimer.restart();
+                    if (isAutoUpdateEnabled()) {
+                        mPrint.out(String.format("%s %s/%s", "AutoUpdate", getCategory(), getName()));
+                        getRunnable().run();
+                        mPrint.out(String.format("%s %s/%s, %s", "AutoUpdate", getCategory(), getName(), Dict.DONE.toString().toLowerCase()));
+                        mTimer.setDelay(defaultDelay);
+                        mTimer.setInitialDelay(defaultDelay);
+                        mTimer.restart();
 
-                    if (getAutoUpdatePostRunnable() != null) {
-                        getAutoUpdatePostRunnable().run();
+                        if (getAutoUpdatePostRunnable() != null) {
+                            getAutoUpdatePostRunnable().run();
+                        }
+                    } else {
+                        mTimer.setDelay(defaultDelay);
+                        mTimer.setInitialDelay(defaultDelay);
+                        mTimer.restart();
                     }
                 }).start();
             };

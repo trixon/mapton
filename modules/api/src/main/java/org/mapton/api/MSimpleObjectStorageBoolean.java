@@ -22,6 +22,7 @@ package org.mapton.api;
 public abstract class MSimpleObjectStorageBoolean extends MSimpleObjectStorage<Boolean> {
 
     public MSimpleObjectStorageBoolean() {
+        setDefaultValue(false);
     }
 
     public static abstract class UpdaterAutoUpdate extends MSimpleObjectStorageBoolean {

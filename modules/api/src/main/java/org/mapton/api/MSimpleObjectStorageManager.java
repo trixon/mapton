@@ -37,23 +37,23 @@ public class MSimpleObjectStorageManager {
     }
 
     public Boolean getBoolean(Class c, Boolean defaultValue) {
-        return getNode(c).getBoolean(c.getName(), defaultValue);
+        return getNode("boolean", c).getBoolean(c.getName(), defaultValue);
     }
 
     public String getString(Class c, String defaultValue) {
-        return getNode(c).get(c.getName(), defaultValue);
+        return getNode("string", c).get(c.getName(), defaultValue);
     }
 
     public void putBoolean(Class<? extends MSimpleObjectStorageBoolean> c, Boolean value) {
-        getNode(c).putBoolean(c.getName(), value);
+        getNode("boolean", c).putBoolean(c.getName(), value);
     }
 
     public void putString(Class<? extends MSimpleObjectStorageString> c, String value) {
-        getNode(c).put(c.getName(), StringUtils.defaultString(value));
+        getNode("string", c).put(c.getName(), StringUtils.defaultString(value));
     }
 
-    private Preferences getNode(Class c) {
-        var parentNode = mPreferences.node(c.getSimpleName());
+    private Preferences getNode(String category, Class c) {
+        var parentNode = mPreferences.node(category);
 
         if (MSimpleObjectStorageString.ApiKey.class.isAssignableFrom(c)) {
             return mClassToPreferenceNode.computeIfAbsent(MSimpleObjectStorageString.ApiKey.class, k -> parentNode.node("api_key"));

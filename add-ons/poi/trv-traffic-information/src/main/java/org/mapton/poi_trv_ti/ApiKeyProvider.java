@@ -25,11 +25,11 @@ import org.openide.util.lookup.ServiceProvider;
  * @author Patrik Karlström
  */
 @ServiceProvider(service = MSimpleObjectStorageString.ApiKey.class)
-public class ApiKeyHandler extends MSimpleObjectStorageString.ApiKey {
+public class ApiKeyProvider extends MSimpleObjectStorageString.ApiKey {
 
-    private final ResourceBundle mBundle = NbBundle.getBundle(ApiKeyHandler.class);
+    private final ResourceBundle mBundle = NbBundle.getBundle(ApiKeyProvider.class);
 
-    public ApiKeyHandler() {
+    public ApiKeyProvider() {
         setGroup(mBundle.getString("stringStorageGroup"));
         setName(mBundle.getString("stringStorageName"));
         setTooltipText(mBundle.getString("stringStorageTooltip"));

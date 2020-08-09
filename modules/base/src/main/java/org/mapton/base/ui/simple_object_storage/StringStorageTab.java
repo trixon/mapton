@@ -26,7 +26,6 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.api.MSimpleObjectStorageString;
 import org.openide.util.Lookup;
@@ -44,7 +43,7 @@ public class StringStorageTab<T extends MSimpleObjectStorageString> extends Base
     private final Class<T> mClass;
     private final HashMap<Class, TextField> mClassToTextField = new HashMap<>();
     private final VBox mItemBox = new VBox(FxHelper.getUIScaled(8));
-    private ScrollPane mScrollPane;
+    private final ScrollPane mScrollPane;
 
     public StringStorageTab(Class<T> c, String title) {
         super(title);
@@ -77,15 +76,15 @@ public class StringStorageTab<T extends MSimpleObjectStorageString> extends Base
 
     private void populateItems() {
         FxHelper.runLater(() -> {
-            ArrayList<T> stringStorages = new ArrayList<>(Lookup.getDefault().lookupAll(mClass));
+            ArrayList<T> simpleStorages = new ArrayList<>(Lookup.getDefault().lookupAll(mClass));
             Comparator<T> c1 = (T o1, T o2) -> StringUtils.defaultString(o1.getGroup()).compareToIgnoreCase(StringUtils.defaultString(o2.getGroup()));
             Comparator<T> c2 = (T o1, T o2) -> StringUtils.defaultString(o1.getName()).compareToIgnoreCase(StringUtils.defaultString(o2.getName()));
 
-            stringStorages.sort(c1.thenComparing(c2));
+            simpleStorages.sort(c1.thenComparing(c2));
             HashSet<String> groups = new HashSet<>();
             mClassToTextField.clear();
 
-            for (T stringStorage : stringStorages) {
+            for (T stringStorage : simpleStorages) {
                 VBox box;
                 TextField textField;
                 if (stringStorage instanceof MSimpleObjectStorageString.Path) {
@@ -106,9 +105,7 @@ public class StringStorageTab<T extends MSimpleObjectStorageString> extends Base
                 String group = stringStorage.getGroup();
                 if (!groups.contains(group)) {
                     groups.add(group);
-                    Label groupLabel = new Label(group);
-                    box.getChildren().add(0, groupLabel);
-                    groupLabel.setFont(Font.font(Font.getDefault().getSize() * 1.2));
+                    box.getChildren().add(0, getGroupLabel(group));
                 }
 
                 mItemBox.getChildren().add(box);

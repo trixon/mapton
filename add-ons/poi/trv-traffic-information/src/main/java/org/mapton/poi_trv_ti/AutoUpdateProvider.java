@@ -13,19 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.base.ui.simple_object_storage;
+package org.mapton.poi_trv_ti;
 
+import java.util.ResourceBundle;
 import org.mapton.api.MSimpleObjectStorageBoolean;
+import org.openide.util.NbBundle;
+import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class BooleanStorageTabPane extends BaseTabPane {
+@ServiceProvider(service = MSimpleObjectStorageBoolean.UpdaterAutoUpdate.class)
+public class AutoUpdateProvider extends MSimpleObjectStorageBoolean.UpdaterAutoUpdate {
 
-    public BooleanStorageTabPane() {
-        getTabs().addAll(
-                new BooleanStorageTab(MSimpleObjectStorageBoolean.UpdaterAutoUpdate.class, mBundle.getString("automaticUpdates"))
-        );
+    private final ResourceBundle mBundle = NbBundle.getBundle(AutoUpdateProvider.class);
+
+    public AutoUpdateProvider() {
+        setGroup(mBundle.getString("stringStorageGroup"));
+        setName(mBundle.getString("stringStorageName"));
     }
+
 }
