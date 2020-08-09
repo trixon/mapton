@@ -27,7 +27,7 @@ import org.openide.util.NbPreferences;
 public class MSimpleObjectStorageManager {
 
     private final HashMap<Class, Preferences> mClassToPreferenceNode = new HashMap<>();
-    private final Preferences mPreferences = NbPreferences.forModule(MSimpleObjectStorageManager.class);
+    private final Preferences mPreferences = NbPreferences.forModule(MSimpleObjectStorageManager.class).node("simple_object_storage");
 
     public static MSimpleObjectStorageManager getInstance() {
         return Holder.INSTANCE;
@@ -36,16 +36,25 @@ public class MSimpleObjectStorageManager {
     private MSimpleObjectStorageManager() {
     }
 
-    public String getValue(Class c, String defaultValue) {
+    public Boolean getBoolean(Class c, Boolean defaultValue) {
+        return getNode(c).getBoolean(c.getName(), defaultValue);
+    }
+
+    public String getString(Class c, String defaultValue) {
         return getNode(c).get(c.getName(), defaultValue);
     }
 
-    public <T> void putValue(Class<? extends MSimpleObjectStorageString> c, String value) {
+    public void putBoolean(Class<? extends MSimpleObjectStorageBoolean> c, Boolean value) {
+        getNode(c).putBoolean(c.getName(), value);
+    }
+
+    public void putString(Class<? extends MSimpleObjectStorageString> c, String value) {
         getNode(c).put(c.getName(), StringUtils.defaultString(value));
     }
 
     private Preferences getNode(Class c) {
-        var parentNode = mPreferences.node("string_storage");
+        var parentNode = mPreferences.node(c.getSimpleName());
+
         if (MSimpleObjectStorageString.ApiKey.class.isAssignableFrom(c)) {
             return mClassToPreferenceNode.computeIfAbsent(MSimpleObjectStorageString.ApiKey.class, k -> parentNode.node("api_key"));
         } else if (MSimpleObjectStorageString.Path.class.isAssignableFrom(c)) {
@@ -54,6 +63,8 @@ public class MSimpleObjectStorageManager {
             return mClassToPreferenceNode.computeIfAbsent(MSimpleObjectStorageString.Url.class, k -> parentNode.node("url"));
         } else if (MSimpleObjectStorageString.Misc.class.isAssignableFrom(c)) {
             return mClassToPreferenceNode.computeIfAbsent(MSimpleObjectStorageString.Misc.class, k -> parentNode.node("misc"));
+        } else if (MSimpleObjectStorageBoolean.UpdaterAutoUpdate.class.isAssignableFrom(c)) {
+            return mClassToPreferenceNode.computeIfAbsent(MSimpleObjectStorageBoolean.UpdaterAutoUpdate.class, k -> parentNode.node("updaterAutoUpdate"));
         } else {
             return parentNode.node("unknown");
         }

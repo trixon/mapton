@@ -15,21 +15,17 @@
  */
 package org.mapton.base.ui.simple_object_storage;
 
-import org.mapton.api.MSimpleObjectStorageString;
-import se.trixon.almond.util.Dict;
+import org.mapton.api.MSimpleObjectStorageBoolean;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class StringStorageTabPane extends BaseTabPane {
+public class BooleanStorageTabPane extends BaseTabPane {
 
-    public StringStorageTabPane() {
+    public BooleanStorageTabPane() {
         getTabs().addAll(
-                new StringStorageTab(MSimpleObjectStorageString.ApiKey.class, "API KEY"),
-                new StringStorageTab(MSimpleObjectStorageString.Path.class, Dict.PATH.toString()),
-                new StringStorageTab(MSimpleObjectStorageString.Url.class, "URL"),
-                new StringStorageTab(MSimpleObjectStorageString.Misc.class, Dict.MISCELLANEOUS.toString())
+                new BooleanStorageTab(MSimpleObjectStorageBoolean.UpdaterAutoUpdate.class, "UPDATER - AUTO UPDATE")
         );
     }
 }

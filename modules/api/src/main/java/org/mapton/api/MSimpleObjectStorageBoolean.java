@@ -13,23 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.base.ui.simple_object_storage;
-
-import org.mapton.api.MSimpleObjectStorageString;
-import se.trixon.almond.util.Dict;
+package org.mapton.api;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class StringStorageTabPane extends BaseTabPane {
+public abstract class MSimpleObjectStorageBoolean extends MSimpleObjectStorage<Boolean> {
 
-    public StringStorageTabPane() {
-        getTabs().addAll(
-                new StringStorageTab(MSimpleObjectStorageString.ApiKey.class, "API KEY"),
-                new StringStorageTab(MSimpleObjectStorageString.Path.class, Dict.PATH.toString()),
-                new StringStorageTab(MSimpleObjectStorageString.Url.class, "URL"),
-                new StringStorageTab(MSimpleObjectStorageString.Misc.class, Dict.MISCELLANEOUS.toString())
-        );
+    public MSimpleObjectStorageBoolean() {
     }
+
+    public static abstract class UpdaterAutoUpdate extends MSimpleObjectStorageBoolean {
+
+    }
+
 }

@@ -25,17 +25,16 @@ import org.openide.util.Lookup;
 
 @OptionsPanelController.TopLevelRegistration(
         position = 1,
-        categoryName = "#OptionsCategory_Name_StringStorage",
-        iconBase = "org/mapton/core_nb/ui/options/string_storage.png",
-        keywords = "#OptionsCategory_Keywords_StringStorage",
-        keywordsCategory = "StringStorage"
+        categoryName = "#OptionsCategory_Name_SimpleObjectStorage",
+        iconBase = "org/mapton/core_nb/ui/options/simple_object_storage.png",
+        keywords = "#OptionsCategory_Keywords_SimpleObjectStorage",
+        keywordsCategory = "SimpleObjectStorage"
 )
-@org.openide.util.NbBundle.Messages({"OptionsCategory_Name_StringStorage=Strings", "OptionsCategory_Keywords_StringStorage=string storage url api key path"})
-public final class StringStorageOptionsPanelController extends OptionsPanelController {
+@org.openide.util.NbBundle.Messages({"OptionsCategory_Name_SimpleObjectStorage=Values", "OptionsCategory_Keywords_SimpleObjectStorage=string storage url api key path"})
+public final class SimpleObjectStorageOptionsPanelController extends OptionsPanelController {
 
     private boolean mChanged;
-
-    private StringStoragePanel mPanel;
+    private SimpleObjectStoragePanel mPanel;
     private final PropertyChangeSupport mPropertyChangeSupport = new PropertyChangeSupport(this);
 
     @Override
@@ -96,9 +95,9 @@ public final class StringStorageOptionsPanelController extends OptionsPanelContr
         mPropertyChangeSupport.firePropertyChange(OptionsPanelController.PROP_VALID, null, null);
     }
 
-    private StringStoragePanel getPpanel() {
+    private SimpleObjectStoragePanel getPpanel() {
         if (mPanel == null) {
-            mPanel = new StringStoragePanel(this);
+            mPanel = new SimpleObjectStoragePanel(this);
         }
 
         return mPanel;

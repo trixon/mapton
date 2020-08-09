@@ -22,31 +22,31 @@ import java.util.HashSet;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
-import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import org.apache.commons.lang3.StringUtils;
-import org.mapton.api.MSimpleObjectStorageString;
+import org.mapton.api.MSimpleObjectStorageBoolean;
+import org.mapton.api.MSimpleObjectStorageManager;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import se.trixon.almond.util.fx.FxHelper;
-import se.trixon.almond.util.fx.control.FileChooserPane;
 
 /**
  *
  * @author Patrik Karlström
  * @param <T>
  */
-public class StringStorageTab<T extends MSimpleObjectStorageString> extends BaseTab {
+public class BooleanStorageTab<T extends MSimpleObjectStorageBoolean> extends BaseTab {
 
     private final Class<T> mClass;
     private final HashMap<Class, TextField> mClassToTextField = new HashMap<>();
     private final VBox mItemBox = new VBox(FxHelper.getUIScaled(8));
+    private final MSimpleObjectStorageManager mManager = MSimpleObjectStorageManager.getInstance();
     private ScrollPane mScrollPane;
 
-    public StringStorageTab(Class<T> c, String title) {
+    public BooleanStorageTab(Class<T> c, String title) {
         super(title);
         mClass = c;
         setContent(mScrollPane = new ScrollPane(mItemBox));
@@ -63,15 +63,15 @@ public class StringStorageTab<T extends MSimpleObjectStorageString> extends Base
 
     @Override
     public void load(Object object) {
-        Lookup.getDefault().lookupAll(mClass).forEach(simpleStorage -> {
-            mClassToTextField.get(simpleStorage.getClass()).setText(mManager.getString(simpleStorage.getClass(), simpleStorage.getDefaultValue()));
+        Lookup.getDefault().lookupAll(mClass).forEach(stringStorage -> {
+//            mClassToTextField.get(stringStorage.getClass()).setText(mManager.getString(stringStorage.getClass(), stringStorage.getDefaultValue()));
         });
     }
 
     @Override
     public void save(Object object) {
-        Lookup.getDefault().lookupAll(mClass).forEach(simpleStorage -> {
-            mManager.putString(simpleStorage.getClass(), mClassToTextField.get(simpleStorage.getClass()).getText());
+        Lookup.getDefault().lookupAll(mClass).forEach(stringStorage -> {
+//            mManager.putString(stringStorage.getClass(), mClassToTextField.get(stringStorage.getClass()).getText());
         });
     }
 
@@ -88,17 +88,17 @@ public class StringStorageTab<T extends MSimpleObjectStorageString> extends Base
             for (T stringStorage : stringStorages) {
                 VBox box;
                 TextField textField;
-                if (stringStorage instanceof MSimpleObjectStorageString.Path) {
-                    MSimpleObjectStorageString.Path storagePath = (MSimpleObjectStorageString.Path) stringStorage;
-                    FileChooserPane fileChooserPane = new FileChooserPane("title", storagePath.getName(), storagePath.getObjectMode(), SelectionMode.SINGLE);
-                    textField = fileChooserPane.getTextField();
-                    box = new VBox(fileChooserPane);
-                } else {
-                    Label nameLabel = new Label(stringStorage.getName());
-                    textField = new TextField();
-                    textField.prefWidthProperty().bind(mItemBox.widthProperty());
-                    box = new VBox(nameLabel, textField);
-                }
+//                if (stringStorage instanceof MSimpleObjectStorageString.Path) {
+//                    MSimpleObjectStorageString.Path storagePath = (MSimpleObjectStorageString.Path) stringStorage;
+//                    FileChooserPane fileChooserPane = new FileChooserPane("title", storagePath.getName(), storagePath.getObjectMode(), SelectionMode.SINGLE);
+//                    textField = fileChooserPane.getTextField();
+//                    box = new VBox(fileChooserPane);
+//                } else {
+                Label nameLabel = new Label(stringStorage.getName());
+                textField = new TextField();
+                textField.prefWidthProperty().bind(mItemBox.widthProperty());
+                box = new VBox(nameLabel, textField);
+//                }
                 textField.setPromptText(stringStorage.getPromptText());
                 textField.setTooltip(new Tooltip(stringStorage.getTooltipText()));
                 mClassToTextField.put(stringStorage.getClass(), textField);

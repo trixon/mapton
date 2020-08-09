@@ -15,21 +15,30 @@
  */
 package org.mapton.base.ui.simple_object_storage;
 
-import org.mapton.api.MSimpleObjectStorageString;
-import se.trixon.almond.util.Dict;
+import javafx.scene.control.TabPane;
+import org.mapton.api.MGenericLoader;
+import org.mapton.api.MGenericSaver;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class StringStorageTabPane extends BaseTabPane {
+public abstract class BaseTabPane extends TabPane implements MGenericLoader<Object>, MGenericSaver<Object> {
 
-    public StringStorageTabPane() {
-        getTabs().addAll(
-                new StringStorageTab(MSimpleObjectStorageString.ApiKey.class, "API KEY"),
-                new StringStorageTab(MSimpleObjectStorageString.Path.class, Dict.PATH.toString()),
-                new StringStorageTab(MSimpleObjectStorageString.Url.class, "URL"),
-                new StringStorageTab(MSimpleObjectStorageString.Misc.class, Dict.MISCELLANEOUS.toString())
-        );
+    public BaseTabPane() {
+    }
+
+    @Override
+    public void load(Object object) {
+        getTabs().stream().filter(tab -> (tab instanceof MGenericLoader)).forEachOrdered(tab -> {
+            ((MGenericLoader) tab).load(null);
+        });
+    }
+
+    @Override
+    public void save(Object object) {
+        getTabs().stream().filter(tab -> (tab instanceof MGenericSaver)).forEachOrdered(tab -> {
+            ((MGenericSaver) tab).save(null);
+        });
     }
 }

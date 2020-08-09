@@ -55,7 +55,7 @@ public class TrafficInformationManager {
     }
 
     private TrafficInformationManager() {
-        var key = MSimpleObjectStorageManager.getInstance().getValue(ApiKeyHandler.class, null);
+        var key = MSimpleObjectStorageManager.getInstance().getString(ApiKeyHandler.class, null);
         if (StringUtils.isBlank(key)) {
             key = MServiceKeyManager.getInstance().getKey("001");
         }
