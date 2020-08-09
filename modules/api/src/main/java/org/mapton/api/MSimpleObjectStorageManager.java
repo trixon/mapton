@@ -15,7 +15,7 @@
  */
 package org.mapton.api;
 
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.prefs.Preferences;
 import org.apache.commons.lang3.StringUtils;
 import org.openide.util.NbPreferences;
@@ -26,7 +26,7 @@ import org.openide.util.NbPreferences;
  */
 public class MSimpleObjectStorageManager {
 
-    private final HashMap<Class, Preferences> mClassToPreferenceNode = new HashMap<>();
+    private final ConcurrentHashMap<Class, Preferences> mClassToPreferenceNode = new ConcurrentHashMap<>();
     private final Preferences mPreferences = NbPreferences.forModule(MSimpleObjectStorageManager.class).node("simple_object_storage");
 
     public static MSimpleObjectStorageManager getInstance() {
