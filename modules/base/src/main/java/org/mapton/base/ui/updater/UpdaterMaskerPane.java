@@ -18,6 +18,7 @@ package org.mapton.base.ui.updater;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.mapton.api.MKey;
 import org.mapton.api.MMaskerPaneBase;
@@ -45,7 +46,7 @@ public class UpdaterMaskerPane extends MMaskerPaneBase {
         mMaskerPane.setVisible(true);
         mRunningProperty.set(true);
         new Thread(() -> {
-            for (MUpdater updater : updaters) {
+            for (MUpdater updater : FXCollections.observableArrayList(updaters)) {//Avoid java.util.ConcurrentModificationException
                 if (updater.isMarkedForUpdate()) {
                     mPrint.out(String.format("%s %s/%s", "Update", updater.getCategory(), updater.getName()));
                     updater.run();
