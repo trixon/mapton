@@ -25,6 +25,10 @@ public abstract class MSimpleObjectStorageBoolean extends MSimpleObjectStorage<B
         setDefaultValue(false);
     }
 
+    public static abstract class Misc extends MSimpleObjectStorageBoolean {
+
+    }
+
     public static abstract class UpdaterAutoUpdate extends MSimpleObjectStorageBoolean {
 
     }

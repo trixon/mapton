@@ -15,7 +15,9 @@
  */
 package org.mapton.api;
 
+import java.io.File;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.prefs.PreferenceChangeListener;
 import java.util.prefs.Preferences;
 import org.apache.commons.lang3.StringUtils;
 import org.openide.util.NbPreferences;
@@ -36,8 +38,35 @@ public class MSimpleObjectStorageManager {
     private MSimpleObjectStorageManager() {
     }
 
+    public void addListener(PreferenceChangeListener pcl, Class<? extends MSimpleObjectStorage> clazz) {
+        String category;
+        if (MSimpleObjectStorageBoolean.class.isAssignableFrom(clazz)) {
+            category = "boolean";
+        } else {
+            category = "string";
+        }
+
+        getNode(category, clazz).addPreferenceChangeListener(pcl);
+    }
+
+    public void addListeners(PreferenceChangeListener pcl, Class<? extends MSimpleObjectStorage>... clazzes) {
+        for (var clazz : clazzes) {
+            addListener(pcl, clazz);
+        }
+    }
+
+    public void addListenerss(PreferenceChangeListener pcl, Class<? extends MSimpleObjectStorage>... clazzes) {
+        for (var clazz : clazzes) {
+            addListener(pcl, clazz);
+        }
+    }
+
     public Boolean getBoolean(Class c, Boolean defaultValue) {
         return getNode("boolean", c).getBoolean(c.getName(), defaultValue);
+    }
+
+    public File getFile(Class c, File defaultValue) {
+        return new File(getString(c, defaultValue.getAbsolutePath()));
     }
 
     public String getString(Class c, String defaultValue) {

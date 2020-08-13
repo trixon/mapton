@@ -15,7 +15,9 @@
  */
 package org.mapton.base.ui.simple_object_storage;
 
+import java.util.ResourceBundle;
 import org.mapton.api.MSimpleObjectStorageString;
+import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
 
 /**
@@ -24,9 +26,11 @@ import se.trixon.almond.util.Dict;
  */
 public class StringStorageTabPane extends BaseTabPane {
 
+    private final ResourceBundle mBundle = NbBundle.getBundle(StringStorageTabPane.class);
+
     public StringStorageTabPane() {
         getTabs().addAll(
-                new StringStorageTab(MSimpleObjectStorageString.ApiKey.class, "API KEY"),
+                new StringStorageTab(MSimpleObjectStorageString.ApiKey.class, mBundle.getString("api_key")),
                 new StringStorageTab(MSimpleObjectStorageString.Path.class, Dict.PATH.toString()),
                 new StringStorageTab(MSimpleObjectStorageString.Url.class, "URL"),
                 new StringStorageTab(MSimpleObjectStorageString.Misc.class, Dict.MISCELLANEOUS.toString())
