@@ -83,9 +83,15 @@ public final class UpdaterTopComponent extends MTopComponent {
         });
         refreshAction.setGraphic(MaterialIcon._Navigation.REFRESH.getImageView(getIconSizeToolBarInt()));
 
+        Action clearAction = new Action(Dict.CLEAR.toString(), event -> {
+            updaterView.clear();
+        });
+        clearAction.setGraphic(MaterialIcon._Content.CLEAR.getImageView(getIconSizeToolBarInt()));
+
         List<Action> actions = Arrays.asList(
                 updateAction,
-                refreshAction
+                refreshAction,
+                clearAction
         );
 
         ToolBar toolBar = ActionUtils.createToolBar(actions, ActionUtils.ActionTextBehavior.SHOW);

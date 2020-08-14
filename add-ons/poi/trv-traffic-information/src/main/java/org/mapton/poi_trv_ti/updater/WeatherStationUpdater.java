@@ -34,12 +34,18 @@ public class WeatherStationUpdater extends BaseUpdater {
         setComment("Weather observations");
 
         setRunnable(() -> {
-            try {
-                mTrafficInformation.road().getWeatherStationResults(null, null, mManager.getFile(Service.WEATHER_STATION));
-                refreshPoiManager();
-            } catch (IOException | InterruptedException | JAXBException ex) {
-                mPrint.err(ex.getMessage());
-                Exceptions.printStackTrace(ex);
+            //TODO Check if poi category is visible
+            // ...and layer too? no...?
+            if (true) {
+                try {
+                    mTrafficInformation.road().getWeatherStationResults(null, null, mManager.getFile(Service.WEATHER_STATION));
+                    refreshPoiManager();
+                } catch (IOException | InterruptedException | JAXBException ex) {
+                    mPrint.err(ex.getMessage());
+                    Exceptions.printStackTrace(ex);
+                }
+            } else {
+                mPrint.out("POI NOT SHOWING, SKIPPING AUTO UPDATE");
             }
         });
 

@@ -51,6 +51,10 @@ public class UpdaterView implements LogListener {
         }, MKey.UPDATER_LOGGER);
     }
 
+    public void clear() {
+        mLogPanel.clear();
+    }
+
     public Node getListNode() {
         return mUpdaterMaskerPane.getNode();
     }
