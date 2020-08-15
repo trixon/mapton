@@ -31,6 +31,7 @@ import java.awt.event.HierarchyEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.input.Dragboard;
@@ -47,6 +48,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import org.apache.commons.lang3.SystemUtils;
 import org.mapton.api.MDict;
 import org.mapton.api.MEngine;
+import org.mapton.api.MKey;
 import org.mapton.api.MOptions;
 import org.mapton.api.Mapton;
 import org.mapton.base.ui.MapContextMenu;
@@ -89,6 +91,7 @@ public final class MapTopComponent extends MTopComponent {
     private MEngine mEngine;
     private JPanel mProgressPanel;
     private BorderPane mRoot;
+    private boolean mMapInitialized = false;
 
     public MapTopComponent() {
         super();
@@ -334,6 +337,8 @@ public final class MapTopComponent extends MTopComponent {
                             engine.panTo(mMOptions.getMapCenter(), mMOptions.getMapZoom());
                         } catch (NullPointerException e) {
                         }
+
+                        markMapAsInitialized();
                     });
                 }).start();
 
@@ -355,10 +360,26 @@ public final class MapTopComponent extends MTopComponent {
                 SwingUtilities.invokeLater(() -> {
                     revalidate();
                     repaint();
+
+                    markMapAsInitialized();
                 });
             });
         }
 
         Mapton.logLoading("Map Engine", engine.getName());
+    }
+
+    private synchronized void markMapAsInitialized() {
+        if (!mMapInitialized) {
+            mMapInitialized = true;
+            new Thread(() -> {
+                try {
+                    TimeUnit.SECONDS.sleep(1);
+                } catch (InterruptedException ex) {
+                    Exceptions.printStackTrace(ex);
+                }
+                Mapton.getExecutionFlow().setReady(MKey.EXECUTION_FLOW_MAP_INITIALIZED);
+            }).start();
+        }
     }
 }

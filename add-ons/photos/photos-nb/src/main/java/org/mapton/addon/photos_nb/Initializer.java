@@ -16,8 +16,9 @@
 package org.mapton.addon.photos_nb;
 
 import org.mapton.addon.photos_nb.api.MapoSourceManager;
+import org.mapton.api.MKey;
+import org.mapton.api.Mapton;
 import org.openide.modules.OnStart;
-import org.openide.windows.WindowManager;
 
 /**
  *
@@ -31,7 +32,7 @@ public class Initializer implements Runnable {
 
     @Override
     public void run() {
-        WindowManager.getDefault().invokeWhenUIReady(() -> {
+        Mapton.getExecutionFlow().executeWhenReady(MKey.EXECUTION_FLOW_MAP_INITIALIZED, () -> {
             MapoSourceManager.getInstance().load();
         });
     }

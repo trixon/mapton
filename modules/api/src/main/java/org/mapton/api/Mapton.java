@@ -40,6 +40,7 @@ import org.controlsfx.glyphfont.Glyph;
 import org.openide.modules.InstalledFileLocator;
 import org.openide.modules.Places;
 import org.openide.util.Lookup;
+import se.trixon.almond.util.ExecutionFlow;
 import se.trixon.almond.util.GlobalState;
 import se.trixon.almond.util.Log;
 import se.trixon.almond.util.fx.FxHelper;
@@ -63,6 +64,7 @@ public class Mapton {
 
     private static final File CACHE_DIR;
     private static final File CONFIG_DIR;
+    private static final ExecutionFlow EXECUTION_FLOW = new ExecutionFlow();
     private static final Color ICON_COLOR = Color.BLACK;
     private static final HashMap<WebEngine, String> WEB_ENGINE_TO_STYLE = new HashMap<>();
     private static final GlobalState sGlobalState = new GlobalState();
@@ -165,6 +167,10 @@ public class Mapton {
         }
 
         return defaultEngine;
+    }
+
+    public static ExecutionFlow getExecutionFlow() {
+        return EXECUTION_FLOW;
     }
 
     public static GlobalState getGlobalState() {
