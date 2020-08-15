@@ -45,6 +45,7 @@ import org.mapton.api.MLatLonBox;
 import org.mapton.api.Mapton;
 import static org.mapton.gmapsfx.ModuleOptions.*;
 import org.mapton.gmapsfx.api.MapStyle;
+import org.mapton.google_maps.api.GoogleMaps;
 import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
@@ -140,7 +141,7 @@ public class GMapsFXMapEngine extends MEngine {
     }
 
     private void init() {
-        mMapView = new GoogleMapView(Locale.getDefault().getLanguage(), mOptions.get(KEY_MAP_KEY, "AIzaSyCdVPck8GWP2piXLjl7XTf4QOaydWWYzFE"));
+        mMapView = new GoogleMapView(Locale.getDefault().getLanguage(), GoogleMaps.getKey());
 
         mMapView.addMapInitializedListener(() -> {
             mInfoWindow = new InfoWindow();

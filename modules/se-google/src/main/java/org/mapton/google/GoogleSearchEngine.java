@@ -31,6 +31,7 @@ import org.mapton.api.MBookmark;
 import org.mapton.api.MLatLon;
 import org.mapton.api.MLatLonBox;
 import org.mapton.api.MSearchEngine;
+import org.mapton.google_maps.api.GoogleMaps;
 import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
 
@@ -44,7 +45,7 @@ public class GoogleSearchEngine implements MSearchEngine {
     boolean mDone = false;
 
     public GoogleSearchEngine() {
-        GoogleMapView googleMapView = new GoogleMapView(Locale.getDefault().getLanguage(), "AIzaSyCdVPck8GWP2piXLjl7XTf4QOaydWWYzFE");
+        GoogleMapView googleMapView = new GoogleMapView(Locale.getDefault().getLanguage(), GoogleMaps.getKey());
     }
 
     @Override

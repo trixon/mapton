@@ -30,7 +30,6 @@ public class ModuleOptions extends OptionsBase {
     static final String DEFAULT_MAP_STYLE = "Retro";
     static final String DEFAULT_MAP_TYPE = "TERRAIN";
     static final int DEFAULT_MAP_ZOOM = 12;
-    static final String KEY_MAP_KEY = "map_key";
     static final String KEY_MAP_ZOOM = "map_zoom";
 
     public static ModuleOptions getInstance() {

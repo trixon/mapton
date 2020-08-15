@@ -17,6 +17,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <publicPackages>
+                        <publicPackage>org.mapton.google_maps.api.*</publicPackage>
                         <publicPackage>com.lynden.gmapsfx.*</publicPackage>
                     </publicPackages>
                 </configuration>
