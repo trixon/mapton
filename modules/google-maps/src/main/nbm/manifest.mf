@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+OpenIDE-Module-Module: org.mapton.google_maps
+OpenIDE-Module-Localizing-Bundle: org/mapton/google_maps/Bundle.properties
+

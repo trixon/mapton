@@ -157,6 +157,7 @@
         <!--Shared-->
         <module>modules/api</module>
         <module>modules/base</module>
+        <module>modules/google-maps</module>
 
         <!--Shared Map engines-->
         <module>modules/me-gmapsfx</module>
@@ -322,6 +323,12 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>datasources</artifactId>
+                <version>${mapton.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>google-maps</artifactId>
                 <version>${mapton.version}</version>
             </dependency>
 

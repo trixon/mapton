@@ -7,9 +7,7 @@
         <version>2.0.2-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
-    <artifactId>me-gmapsfx</artifactId>
-    <name>me-gmapsfx</name>
-    <description>A map engine based on GMapsFX.&lt;br/&gt;https://rterp.github.io/GMapsFX/</description>
+    <artifactId>google-maps</artifactId>
     <packaging>nbm</packaging>
     <build>
         <plugins>
@@ -19,7 +17,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <publicPackages>
-                        <publicPackage>org.mapton.gmapsfx.api.*</publicPackage>
+                        <publicPackage>com.lynden.gmapsfx.*</publicPackage>
                     </publicPackages>
                 </configuration>
             </plugin>
@@ -61,9 +59,25 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>mapton-api</artifactId>
         </dependency>
+
+        <!-- Trixon -->
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>google-maps</artifactId>
+            <groupId>se.trixon</groupId>
+            <artifactId>GMapsFX-txn</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>sl4j-impl</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>ch.qos.logback</groupId>
+                    <artifactId>logback-classic</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
     <properties>

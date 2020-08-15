@@ -100,24 +100,24 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>mapton-api</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>mapton-base</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>core-nb</artifactId>
-            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>google-maps</artifactId>
         </dependency>
 
         <!--Mapton/Map engines-->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>me-gmapsfx</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -127,7 +127,6 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>me-worldwind</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -155,7 +154,6 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>se-geonames</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
