@@ -18,6 +18,7 @@
                 <artifactId>nbm-maven-plugin</artifactId>
                 <extensions>true</extensions>
                 <configuration>
+                    <moduleType>disabled</moduleType>
                     <publicPackages>
                         <publicPackage>org.mapton.gmapsfx.api.*</publicPackage>
                     </publicPackages>
