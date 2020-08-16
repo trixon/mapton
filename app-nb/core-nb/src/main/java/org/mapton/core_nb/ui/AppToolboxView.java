@@ -93,8 +93,8 @@ public class AppToolboxView extends BorderPane {
             }
         });
 
-        Comparator<MToolApp> c1 = (MToolApp o1, MToolApp o2) -> StringUtils.defaultString(o1.getParent()).compareToIgnoreCase(StringUtils.defaultString(o2.getParent()));
-        Comparator<MToolApp> c2 = (MToolApp o1, MToolApp o2) -> o1.getAction().getText().compareToIgnoreCase(o2.getAction().getText());
+        Comparator<MToolApp> c1 = (o1, o2) -> StringUtils.defaultString(o1.getParent()).compareToIgnoreCase(StringUtils.defaultString(o2.getParent()));
+        Comparator<MToolApp> c2 = (o1, o2) -> o1.getAction().getText().compareToIgnoreCase(o2.getAction().getText());
 
         mTools.sort(c1.thenComparing(c2));
         mTools.remove(mMapTool);
@@ -109,7 +109,9 @@ public class AppToolboxView extends BorderPane {
         for (MToolApp tool : mTools) {
             mGridView.getItems().add(tool);
             final String parent = StringUtils.defaultString(tool.getParent());
-            categories.add(parent);
+            if (StringUtils.isNotBlank(tool.getParent())) {
+                categories.add(parent);
+            }
         }
 
         for (String category : categories) {
