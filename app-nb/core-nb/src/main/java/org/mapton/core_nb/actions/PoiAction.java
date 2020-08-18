@@ -15,9 +15,8 @@
  */
 package org.mapton.core_nb.actions;
 
-import org.mapton.core_nb.api.BaseAction;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import org.mapton.core_nb.api.BaseAction;
 import org.mapton.core_nb.ui.MapToolBarPanel;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -25,18 +24,22 @@ import org.openide.awt.ActionRegistration;
 
 @ActionID(
         category = "Mapton",
-        id = "org.mapton.core_nb.actions.AttributionAction"
+        id = "org.mapton.core_nb.actions.PoiAction"
 )
 @ActionRegistration(
-        displayName = "Attribution"
+        displayName = "POI"
 )
 @ActionReference(path = "Shortcuts", name = "D-I")
-public final class AttributionAction extends BaseAction implements ActionListener {
+public final class PoiAction extends BaseAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
         if (isMapActive()) {
-            MapToolBarPanel.getInstance().getToolBar().toogleAttributionPopOver();
+            if (usePopover()) {
+                MapToolBarPanel.getInstance().getToolBar().tooglePoiPopOver();
+            } else {
+                toggleTopComponent("PoiTopComponent");
+            }
         }
     }
 }

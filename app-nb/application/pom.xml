@@ -206,10 +206,6 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>poi-nb</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>poi-ww</artifactId>
         </dependency>
         <dependency>

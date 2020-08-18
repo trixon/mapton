@@ -45,6 +45,7 @@ import org.mapton.base.ui.AttributionView;
 import org.mapton.base.ui.TemporalView;
 import org.mapton.base.ui.bookmark.BookmarksView;
 import org.mapton.base.ui.grid.GridView;
+import org.mapton.base.ui.poi.PoisView;
 import org.openide.awt.Actions;
 import org.openide.util.Lookup;
 import se.trixon.almond.util.Dict;
@@ -73,6 +74,8 @@ public class MapToolBar extends BaseToolBar {
     private FxActionSwing mHomeAction;
     private Action mLayerAction;
     private PopOver mLayerPopOver;
+    private Action mPoiAction;
+    private PopOver mPoiPopOver;
     private Action mRulerAction;
     private PopOver mRulerPopOver;
     private Action mStyleAction;
@@ -123,6 +126,10 @@ public class MapToolBar extends BaseToolBar {
         tooglePopOver(mLayerPopOver, mLayerAction);
     }
 
+    public void tooglePoiPopOver() {
+        tooglePopOver(mPoiPopOver, mPoiAction);
+    }
+
     public void toogleRulerPopOver() {
         tooglePopOver(mRulerPopOver, mRulerAction);
     }
@@ -149,6 +156,7 @@ public class MapToolBar extends BaseToolBar {
                 mCommandAction,
                 mToolboxAction,
                 mBookmarkAction,
+                mPoiAction,
                 mLayerAction,
                 //                mGridAction,
                 mAttributionAction,
@@ -197,8 +205,22 @@ public class MapToolBar extends BaseToolBar {
             }
         });
         mBookmarkAction.setGraphic(MaterialIcon._Action.BOOKMARK_BORDER.getImageView(getIconSizeToolBarInt()));
-//        mBookmarkAction.setSelected(mOptions.isBookmarkVisible());
         setTooltip(mBookmarkAction, new KeyCodeCombination(KeyCode.B, KeyCombination.SHORTCUT_DOWN));
+
+        //POI
+        mPoiAction = new Action(MDict.POI.toString(), event -> {
+            if (usePopOver(mPoiPopOver)) {
+                if (shouldOpen(mPoiPopOver)) {
+                    show(mPoiPopOver, event.getSource());
+                }
+            } else {
+                SwingUtilities.invokeLater(() -> {
+                    Actions.forID("Mapton", "org.mapton.core_nb.actions.PoiAction").actionPerformed(null);
+                });
+            }
+        });
+        mPoiAction.setGraphic(MaterialIcon._Maps.PLACE.getImageView(getIconSizeToolBarInt()));
+        setTooltip(mPoiAction, new KeyCodeCombination(KeyCode.I, KeyCombination.SHORTCUT_DOWN));
 
         //Layer
         mLayerAction = new Action(Dict.LAYERS.toString(), event -> {
@@ -213,7 +235,6 @@ public class MapToolBar extends BaseToolBar {
             }
         });
         mLayerAction.setGraphic(MaterialIcon._Maps.LAYERS.getImageView(getIconSizeToolBarInt()));
-//        mLayerAction.setSelected(mOptions.isBookmarkVisible());
         setTooltip(mLayerAction, new KeyCodeCombination(KeyCode.L, KeyCombination.SHORTCUT_DOWN));
 
         //CommandAction
@@ -290,7 +311,6 @@ public class MapToolBar extends BaseToolBar {
         });
         mAttributionAction.setGraphic(MaterialIcon._Action.COPYRIGHT.getImageView(getIconSizeToolBarInt()));
         mAttributionAction.setDisabled(true);
-        setTooltip(mAttributionAction, new KeyCodeCombination(KeyCode.I, KeyCombination.SHORTCUT_DOWN));
     }
 
     private void initActionsSwing() {
@@ -331,6 +351,9 @@ public class MapToolBar extends BaseToolBar {
     private void initPopOvers() {
         mBookmarkPopOver = new PopOver();
         initPopOver(mBookmarkPopOver, Dict.BOOKMARKS.toString(), new BookmarksView(mBookmarkPopOver), false);
+
+        mPoiPopOver = new PopOver();
+        initPopOver(mPoiPopOver, MDict.POI.toString(), new PoisView(), false);
 
         mGridPopOver = new PopOver();
         initPopOver(mGridPopOver, MDict.GRIDS.toString(), new GridView(mGridPopOver), false);
@@ -377,7 +400,7 @@ public class MapToolBar extends BaseToolBar {
             onObjectHiding(mTemporalPopOver);
         });
 
-        setPopOverWidths(FxHelper.getUIScaled(DEFAULT_POP_OVER_WIDTH), mBookmarkPopOver, mGridPopOver, mToolboxPopOver);
+        setPopOverWidths(FxHelper.getUIScaled(DEFAULT_POP_OVER_WIDTH), mBookmarkPopOver, mPoiPopOver, mGridPopOver, mToolboxPopOver);
 
         Platform.runLater(() -> {
             mAttributionPopOver = new PopOver();

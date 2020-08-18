@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.poi_nb;
+package org.mapton.core_nb.ui;
 
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
@@ -45,7 +45,13 @@ public final class PoiTopComponent extends MTopComponent {
     private BorderPane mRoot;
 
     public PoiTopComponent() {
+        putClientProperty(PROP_MAXIMIZATION_DISABLED, Boolean.TRUE);
+        putClientProperty(PROP_SLIDING_DISABLED, Boolean.TRUE);
+        putClientProperty(PROP_UNDOCKING_DISABLED, Boolean.TRUE);
+        putClientProperty(PROP_KEEP_PREFERRED_SIZE_WHEN_SLIDED_IN, Boolean.TRUE);
+
         setName(MDict.POI.toString());
+        setPopOverHolder(true);
     }
 
     @Override
