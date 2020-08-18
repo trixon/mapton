@@ -28,6 +28,7 @@ import org.mapton.api.MPoiStyle;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
+import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.fx.FxHelper;
 
 /**
@@ -111,6 +112,9 @@ public class PoiLayerBundle extends LayerBundle {
 
                     placemark.setValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK, (Runnable) () -> {
                         mPoiManager.setSelectedItem(poi);
+                    });
+                    placemark.setValue(WWHelper.KEY_RUNNABLE_LEFT_DOUBLE_CLICK, (Runnable) () -> {
+                        Almond.openAndActivateTopComponent((String) mLayer.getValue(WWHelper.KEY_FAST_OPEN));
                     });
 
                     mLayer.addRenderable(placemark);

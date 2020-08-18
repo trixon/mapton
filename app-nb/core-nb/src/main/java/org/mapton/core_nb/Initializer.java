@@ -22,6 +22,7 @@ import javax.swing.JFrame;
 import javax.swing.JLayeredPane;
 import javax.swing.SwingUtilities;
 import org.apache.commons.lang3.SystemUtils;
+import org.mapton.api.MKey;
 import org.mapton.api.MOptions;
 import static org.mapton.api.MOptions.KEY_UI_LAF_DARK;
 import org.mapton.api.Mapton;
@@ -114,13 +115,15 @@ public class Initializer implements Runnable {
                 Actions.forID("Window", "org.netbeans.core.windows.actions.ShowEditorOnlyAction").actionPerformed(null);
             }
 
-            SwingHelper.runLaterDelayed(45 * 1000, () -> {
-                //Pre-load but don't display
-                Almond.getTopComponent("ReportsTopComponent");
-                Almond.getTopComponent("EditorsTopComponent");
-                Almond.getTopComponent("UpdaterTopComponent");
-                Almond.getTopComponent("ObjectPropertiesTopComponent");
-                Almond.getTopComponent("ChartTopComponent");
+            Mapton.getExecutionFlow().executeWhenReady(MKey.EXECUTION_FLOW_MAP_INITIALIZED, () -> {
+                SwingHelper.runLater(() -> {
+                    //Pre-load but don't display
+                    Almond.getTopComponent("ReportsTopComponent");
+                    Almond.getTopComponent("EditorsTopComponent");
+                    Almond.getTopComponent("UpdaterTopComponent");
+                    Almond.getTopComponent("ObjectPropertiesTopComponent");
+                    Almond.getTopComponent("ChartTopComponent");
+                });
             });
 
             new UpdateNotificator();
