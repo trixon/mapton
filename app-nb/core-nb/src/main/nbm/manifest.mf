@@ -5,3 +5,4 @@ OpenIDE-Module-Localizing-Bundle: org/mapton/core_nb/Bundle.properties
 AutoUpdate-Essential-Module: true
 AutoUpdate-Show-In-Client: false
 OpenIDE-Module-Requires: org.openide.windows.WindowManager
+OpenIDE-Module-Provides: org.mapton.Core
