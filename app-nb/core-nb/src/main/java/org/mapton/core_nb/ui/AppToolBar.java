@@ -34,7 +34,6 @@ import javafx.scene.Node;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -118,8 +117,8 @@ public class AppToolBar extends BaseToolBar {
     public void activateSearch() {
         Platform.runLater(() -> {
             getScene().getWindow().requestFocus();
-            mSearchView.getPresenter().requestFocus();
-            ((TextField) mSearchView.getPresenter()).clear();
+            mSearchView.requestFocus();
+            mSearchView.clear();
         });
     }
 
@@ -246,10 +245,16 @@ public class AppToolBar extends BaseToolBar {
             getStylesheets().add(CSS_FILE);
             mSearchView = new SearchView();
             getItems().add(getItems().size() - 3, mSearchView.getPresenter());
+            updateBackgroundColor();
 
             getItems().add(2, mStatusLabel = new Label());
             mStatusLabel.setTextFill(mOptions.getIconColorBright());
         });
+
+        Mapton.getGlobalState().addListener(gsce -> {
+            updateBackgroundColor();
+        }, MKey.APP_THEME_BACKGROUND);
+
     }
 
     private void initActionsFx() {
@@ -368,6 +373,7 @@ public class AppToolBar extends BaseToolBar {
             frame.addWindowListener(new WindowAdapter() {
                 @Override
                 public void windowActivated(WindowEvent e) {
+                    updateBackgroundColor();
                     final boolean fullscreen = frame.isUndecorated();
                     mOptions.setFullscreen(fullscreen);
                     mFullscreenAction.setSelected(fullscreen);
@@ -452,6 +458,12 @@ public class AppToolBar extends BaseToolBar {
         mToolboxPopOver.setOnHiding(event -> {
             getButtonForAction(mToolboxAction).getStylesheets().add(CSS_FILE);
             onObjectHiding(mToolboxPopOver);
+        });
+    }
+
+    private void updateBackgroundColor() {
+        FxHelper.runLaterDelayed(10, () -> {
+            setBackground(FxHelper.createBackground(Mapton.getThemeColor()));
         });
     }
 }

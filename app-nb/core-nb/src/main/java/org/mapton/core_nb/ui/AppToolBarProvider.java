@@ -19,6 +19,7 @@ import java.awt.Dimension;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Scene;
+import javafx.scene.layout.BorderPane;
 import static org.mapton.api.Mapton.getIconSizeToolBar;
 import se.trixon.almond.util.fx.FxHelper;
 
@@ -41,7 +42,7 @@ public class AppToolBarProvider {
 
         mToolBar = new AppToolBar();
         Platform.runLater(() -> {
-            Scene scene = new Scene(mToolBar);
+            Scene scene = new Scene(new BorderPane(mToolBar)); //Wrap it in order to be able to change the background
             mToolBarPanel.setScene(scene);
             mToolBarPanel.setVisible(true);
             FxHelper.loadDarkTheme(mToolBarPanel.getScene());

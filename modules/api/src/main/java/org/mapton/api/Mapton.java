@@ -108,7 +108,7 @@ public class Mapton {
     }
 
     public static Label createTitle(String title) {
-        return createTitle(title, Mapton.getThemeBackground());
+        return createTitle(title, Mapton.getDefaultThemeBackground());
     }
 
     public static Label createTitle(String title, Background background) {
@@ -151,6 +151,14 @@ public class Mapton {
 
     public static DateFormat getDefaultDateFormat() {
         return DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM);
+    }
+
+    public static Background getDefaultThemeBackground() {
+        return FxHelper.createBackground(getDefaultThemeColor());
+    }
+
+    public static Color getDefaultThemeColor() {
+        return Color.web("#102039");
     }
 
     public static MEngine getEngine() {
@@ -206,7 +214,7 @@ public class Mapton {
     }
 
     public static Color getThemeColor() {
-        return Color.web("#102039");
+        return Mapton.getGlobalState().getOrDefault(MKey.APP_THEME_BACKGROUND, getDefaultThemeColor());
     }
 
     public static boolean isNightMode() {

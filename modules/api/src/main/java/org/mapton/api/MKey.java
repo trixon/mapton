@@ -21,6 +21,7 @@ package org.mapton.api;
  */
 public class MKey {
 
+    public static final String APP_THEME_BACKGROUND = "app_theme_background";
     public static final String APP_TOOL_LABEL = "app_toolbar.label";
     public static final String APP_TOOL_STARTED = "app_tool.started";
     public static final String BACKGROUND_IMAGE = "background_image";
@@ -50,7 +51,8 @@ public class MKey {
      */
     public static final String POI_CATEGORIES = "poi.categories";
     /**
-     * Listen for this GlobalState key in order to catch POI map selection changes
+     * Listen for this GlobalState key in order to catch POI map selection
+     * changes
      */
     public static final String POI_SELECTION_MAP = "poi.selection.map";
     public static final String UPDATER_LOGGER = "updater.logger";

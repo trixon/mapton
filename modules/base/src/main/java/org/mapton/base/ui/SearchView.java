@@ -44,6 +44,7 @@ import org.mapton.api.MBookmark;
 import org.mapton.api.MCooTrans;
 import org.mapton.api.MDecDegDMS;
 import org.mapton.api.MDict;
+import org.mapton.api.MKey;
 import org.mapton.api.MLatLon;
 import org.mapton.api.MOptions;
 import org.mapton.api.MSearchEngine;
@@ -95,8 +96,16 @@ public class SearchView {
         populateEngines();
     }
 
+    public void clear() {
+        mSearchTextField.clear();
+    }
+
     public Node getPresenter() {
         return mSearchTextField;
+    }
+
+    public void requestFocus() {
+        mSearchTextField.requestFocus();
     }
 
     private void createUI() {
@@ -106,12 +115,6 @@ public class SearchView {
         mSearchTextField.setPromptText(MDict.SEARCH_PROMPT.toString());
         mSearchTextField.setPrefColumnCount(25);
         mSearchTextField.setText("");
-        mSearchTextField.setStyle("-fx-prompt-text-fill: red;");
-        mSearchTextField.setStyle(String.format("-fx-prompt-text-fill: %s;-fx-background-color: %s;",
-                FxHelper.colorToString(promptColor),
-                FxHelper.colorToString(Mapton.getThemeColor().darker())
-        ));
-
         mResultPopOver = new PopOver();
         mResultPopOver.setTitle("");
         mResultPopOver.setArrowLocation(PopOver.ArrowLocation.TOP_CENTER);
@@ -127,6 +130,8 @@ public class SearchView {
         mListView.prefWidthProperty().bind(mSearchTextField.widthProperty());
         mListView.setItems(mItems);
         mListView.setCellFactory((ListView<MBookmark> param) -> new SearchResultListCell());
+
+        updateBackgroundColor();
     }
 
     private boolean handleAction(MBookmark bookmark) {
@@ -143,6 +148,10 @@ public class SearchView {
     }
 
     private void initListeners() {
+        Mapton.getGlobalState().addListener(gsce -> {
+            updateBackgroundColor();
+        }, MKey.APP_THEME_BACKGROUND);
+
         mSearchTextField.textProperty().addListener((observable, oldValue, searchString) -> {
             if (StringUtils.isNotBlank(searchString)) {
                 searchInstantly(searchString);
@@ -351,6 +360,15 @@ public class SearchView {
         mItems.addAll(mInstantResults);
         mRegularProviderCount = 0;
         search(searchString, mRegularEngines);
+    }
+
+    private void updateBackgroundColor() {
+        Platform.runLater(() -> {
+            Color promptColor = Mapton.options().getIconColorBright().darker().darker();
+            mSearchTextField.setStyle(String.format("-fx-prompt-text-fill: %s;-fx-background-color: %s;",
+                    FxHelper.colorToString(promptColor),
+                    FxHelper.colorToString(Mapton.getThemeColor().darker())));
+        });
     }
 
     class SearchResultListCell extends ListCell<MBookmark> {
