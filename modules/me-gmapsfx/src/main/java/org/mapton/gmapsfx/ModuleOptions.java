@@ -15,7 +15,7 @@
  */
 package org.mapton.gmapsfx;
 
-import com.lynden.gmapsfx.javascript.object.MapTypeIdEnum;
+import com.dlsc.gmapsfx.javascript.object.MapTypeIdEnum;
 import org.openide.util.NbPreferences;
 import se.trixon.almond.util.OptionsBase;
 

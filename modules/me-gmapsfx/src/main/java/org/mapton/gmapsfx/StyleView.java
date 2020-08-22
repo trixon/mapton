@@ -15,7 +15,7 @@
  */
 package org.mapton.gmapsfx;
 
-import com.lynden.gmapsfx.javascript.object.MapTypeIdEnum;
+import com.dlsc.gmapsfx.javascript.object.MapTypeIdEnum;
 import java.util.ArrayList;
 import java.util.Collections;
 import javafx.application.Platform;

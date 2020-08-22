@@ -15,9 +15,9 @@
  */
 package org.mapton.gmapsfx;
 
-import com.lynden.gmapsfx.javascript.object.LatLong;
-import com.lynden.gmapsfx.javascript.object.Marker;
-import com.lynden.gmapsfx.javascript.object.MarkerOptions;
+import com.dlsc.gmapsfx.javascript.object.LatLong;
+import com.dlsc.gmapsfx.javascript.object.Marker;
+import com.dlsc.gmapsfx.javascript.object.MarkerOptions;
 import javafx.collections.ListChangeListener;
 import org.mapton.api.MBookmark;
 import org.mapton.api.MBookmarkManager;

@@ -18,7 +18,7 @@
                 <configuration>
                     <publicPackages>
                         <publicPackage>org.mapton.google_maps.api.*</publicPackage>
-                        <publicPackage>com.lynden.gmapsfx.*</publicPackage>
+                        <publicPackage>com.dlsc.gmapsfx.*</publicPackage>
                     </publicPackages>
                 </configuration>
             </plugin>
@@ -61,24 +61,16 @@
             <artifactId>mapton-api</artifactId>
         </dependency>
 
-        <!-- Trixon -->
+        <!-- Other -->
         <dependency>
-            <groupId>se.trixon</groupId>
-            <artifactId>GMapsFX-txn</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>sl4j-impl</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>ch.qos.logback</groupId>
-                    <artifactId>logback-classic</artifactId>
-                </exclusion>
-            </exclusions>
+            <groupId>com.dlsc</groupId>
+            <artifactId>GMapsFX</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.sun.activation</groupId>
+            <artifactId>javax.activation</artifactId>
+            <version>1.2.0</version>
         </dependency>
     </dependencies>
     <properties>

@@ -15,19 +15,18 @@
  */
 package org.mapton.gmapsfx;
 
-import com.lynden.gmapsfx.GoogleMapView;
-import com.lynden.gmapsfx.javascript.event.GMapMouseEvent;
-import com.lynden.gmapsfx.javascript.event.UIEventType;
-import com.lynden.gmapsfx.javascript.object.GoogleMap;
-import com.lynden.gmapsfx.javascript.object.InfoWindow;
-import com.lynden.gmapsfx.javascript.object.LatLong;
-import com.lynden.gmapsfx.javascript.object.LatLongBounds;
-import com.lynden.gmapsfx.javascript.object.MapOptions;
-import com.lynden.gmapsfx.javascript.object.MapTypeIdEnum;
+import com.dlsc.gmapsfx.GoogleMapView;
+import com.dlsc.gmapsfx.javascript.event.GMapMouseEvent;
+import com.dlsc.gmapsfx.javascript.event.UIEventType;
+import com.dlsc.gmapsfx.javascript.object.GoogleMap;
+import com.dlsc.gmapsfx.javascript.object.InfoWindow;
+import com.dlsc.gmapsfx.javascript.object.LatLong;
+import com.dlsc.gmapsfx.javascript.object.LatLongBounds;
+import com.dlsc.gmapsfx.javascript.object.MapOptions;
+import com.dlsc.gmapsfx.javascript.object.MapTypeIdEnum;
 import java.awt.Point;
 import java.util.LinkedHashMap;
 import java.util.Locale;
-import java.util.concurrent.TimeUnit;
 import java.util.prefs.PreferenceChangeEvent;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
@@ -46,10 +45,10 @@ import org.mapton.api.Mapton;
 import static org.mapton.gmapsfx.ModuleOptions.*;
 import org.mapton.gmapsfx.api.MapStyle;
 import org.mapton.google_maps.api.GoogleMaps;
-import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.MathHelper;
+import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
@@ -179,17 +178,9 @@ public class GMapsFXMapEngine extends MEngine {
                     case ModuleOptions.KEY_MAP_STYLE:
                         final MLatLon old = getCenter();
                         initMap();
-                        new Thread(() -> {
-                            try {
-                                TimeUnit.MILLISECONDS.sleep(100);
-                                Platform.runLater(() -> {
-                                    panTo(old);
-                                });
-                            } catch (InterruptedException ex) {
-                                Exceptions.printStackTrace(ex);
-                            }
-
-                        }).start();
+                        FxHelper.runLaterDelayed(100, () -> {
+                            panTo(old);
+                        });
                         break;
 
                     case ModuleOptions.KEY_MAP_TYPE:

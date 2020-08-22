@@ -15,14 +15,14 @@
  */
 package org.mapton.google;
 
-import com.lynden.gmapsfx.GoogleMapView;
-import com.lynden.gmapsfx.javascript.object.LatLong;
-import com.lynden.gmapsfx.javascript.object.LatLongBounds;
-import com.lynden.gmapsfx.service.geocoding.GeocoderGeometry;
-import com.lynden.gmapsfx.service.geocoding.GeocoderStatus;
-import com.lynden.gmapsfx.service.geocoding.GeocodingResult;
-import com.lynden.gmapsfx.service.geocoding.GeocodingService;
-import com.lynden.gmapsfx.service.geocoding.GeocodingServiceCallback;
+import com.dlsc.gmapsfx.GoogleMapView;
+import com.dlsc.gmapsfx.javascript.object.LatLong;
+import com.dlsc.gmapsfx.javascript.object.LatLongBounds;
+import com.dlsc.gmapsfx.service.geocoding.GeocoderGeometry;
+import com.dlsc.gmapsfx.service.geocoding.GeocoderStatus;
+import com.dlsc.gmapsfx.service.geocoding.GeocodingResult;
+import com.dlsc.gmapsfx.service.geocoding.GeocodingService;
+import com.dlsc.gmapsfx.service.geocoding.GeocodingServiceCallback;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
