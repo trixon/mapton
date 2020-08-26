@@ -46,7 +46,7 @@ public class UpdateNotificator {
             check();
         });
 
-        mTimer.setInitialDelay((int) TimeUnit.MINUTES.toMillis(1));
+        mTimer.setInitialDelay((int) TimeUnit.MINUTES.toMillis(2));
         mTimer.start();
     }
 
