@@ -240,6 +240,8 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
 
         updateStyle();
         customElevationModelRefresh();
+
+        Mapton.getExecutionFlow().setReady(MKey.EXECUTION_FLOW_MAP_WW_INITIALIZED);
     }
 
     private void initLayerBundles() {

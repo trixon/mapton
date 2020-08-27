@@ -32,6 +32,7 @@ public class MKey {
     public static final String DATA_SOURCES_WMS_SOURCES = "data_sources.wms.sources";
     public static final String DATA_SOURCES_WMS_STYLES = "data_sources.wms.styles";
     public static final String EXECUTION_FLOW_MAP_INITIALIZED = "execution_flow_map_initialized";
+    public static final String EXECUTION_FLOW_MAP_WW_INITIALIZED = "execution_flow_map_ww_initialized";
     public static final String INDICATOR_LAYER_LOAD = "indicator_layer.load";
     public static final String LAYER_FAST_OPEN_TOOL = "map.layer.fastopen_tool";
     /**
