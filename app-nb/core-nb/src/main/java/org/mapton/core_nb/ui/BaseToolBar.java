@@ -15,6 +15,7 @@
  */
 package org.mapton.core_nb.ui;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -55,6 +56,15 @@ public abstract class BaseToolBar extends ToolBar {
 
     protected ButtonBase getButtonForAction(Action action) {
         return FxHelper.getButtonForAction(action, getItems());
+    }
+
+    protected ArrayList<ButtonBase> getButtons() {
+        ArrayList<ButtonBase> buttonBases = new ArrayList<>();
+        getItems().stream().filter(node -> (node instanceof ButtonBase)).forEachOrdered(node -> {
+            buttonBases.add((ButtonBase) node);
+        });
+
+        return buttonBases;
     }
 
     protected void initPopOver(PopOver popOver, String title, Node content, boolean alwaysUsePopOver) {
