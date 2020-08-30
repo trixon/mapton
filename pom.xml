@@ -212,17 +212,11 @@
         <module>add-ons/geonames/geonames-ww</module>
         <module>add-ons/notes/notes</module>
         <!--<module>addons/notes/notes-wb</module>-->
-        <module>add-ons/panopticon/panopticon</module>
-        <module>add-ons/panopticon/panopticon-nb</module>
-        <module>add-ons/panopticon/panopticon-ww</module>
         <module>add-ons/photos/photos-nb</module>
         <module>add-ons/photos/photos-ww</module>
         <module>add-ons/wikipedia/wikipedia</module>
         <module>add-ons/wikipedia/wikipedia-nb</module>
         <module>add-ons/wikipedia/wikipedia-ww</module>
-        <module>add-ons/worldclock/worldclock</module>
-        <module>add-ons/worldclock/worldclock-nb</module>
-        <module>add-ons/worldclock/worldclock-ww</module>
         <module>add-ons/xkcd/xkcd-nb</module>
 
         <!--POI data sources-->
@@ -231,6 +225,12 @@
         <!--Unstable-->
         <!--<module>demo</module>-->
         <!--<module>modules-ext/gdal</module>-->
+        <!--<module>add-ons/panopticon/panopticon</module>-->
+        <!--<module>add-ons/panopticon/panopticon-nb</module>-->
+        <!--<module>add-ons/panopticon/panopticon-ww</module>-->
+        <!--<module>add-ons/worldclock/worldclock</module>-->
+        <!--<module>add-ons/worldclock/worldclock-nb</module>-->
+        <!--<module>add-ons/worldclock/worldclock-ww</module>-->
 
         <!--Deprecated-->
     </modules>
@@ -441,7 +441,7 @@
             <dependency>
                 <groupId>eu.hansolo</groupId>
                 <artifactId>tilesfx</artifactId>
-                <version>11.41</version>
+                <version>11.43</version>
                 <exclusions>
                     <exclusion>
                         <groupId>org.openjfx</groupId>
@@ -512,7 +512,7 @@
             <dependency>
                 <groupId>org.postgresql</groupId>
                 <artifactId>postgresql</artifactId>
-                <version>42.2.15</version>
+                <version>42.2.16</version>
             </dependency>
             <dependency>
                 <groupId>de.micromata.jak</groupId>
