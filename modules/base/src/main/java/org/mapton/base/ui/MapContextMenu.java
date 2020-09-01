@@ -166,6 +166,10 @@ public class MapContextMenu {
     }
 
     private void initListeners() {
+        Mapton.getGlobalState().addListener(gsce -> {
+            populateContextProviders();
+        }, MKey.MAP_POPULATE_CONTEXT_MENY);
+
         MEngine.addEngineListener(new MEngineListener() {
             @Override
             public void displayContextMenu(Point screenXY) {

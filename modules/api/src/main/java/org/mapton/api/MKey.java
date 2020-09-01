@@ -40,6 +40,7 @@ public class MKey {
      */
     public static final String MAP_CLEAR_ALL_LAYERS = "map.clear.all.layers";
     public static final String MAP_DOCUMENT_INFO = "map.document.info";
+    public static final String MAP_POPULATE_CONTEXT_MENY = "map.populate.context.menu";
     public static final String MAP_TOOL_STARTED = "map_tool.started";
     public static final String NOTIFICATION = "toolbar.notification";
     public static final String NOTIFICATION_CONFIRM = "toolbar.notification.confirm";
