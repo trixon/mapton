@@ -16,7 +16,67 @@ limitations under the License.
 -->
 <!DOCTYPE filesystem PUBLIC "-//NetBeans//DTD Filesystem 1.2//EN" "http://www.netbeans.org/dtds/filesystem-1_2.dtd">
 <filesystem>
-    <folder name="Menu_hidden"/>
+    <folder name="Actions">
+        <folder name="Help">
+            <file name="org-netbeans-core-actions-AboutAction.instance">
+                <attr name="delegate" newvalue="org.mapton.core_nb.actions.AboutAction"/>
+                <attr name="instanceCreate" methodvalue="org.openide.awt.Actions.alwaysEnabled"/>
+                <attr name="displayName" bundlevalue="org.netbeans.core.actions.Bundle#About"/>
+                <attr name="noIconInMenu" boolvalue="false"/>
+            </file>
+        </folder>
+        <folder name="Mapton">
+            <!--            <file name="org-mapton-core_nb-actions-PropertiesAction.instance">
+                <attr name="displayName" stringvalue="ObjectProperties"/>
+                <attr name="instanceCreate" methodvalue="org.openide.awt.Actions.alwaysEnabled"/>
+                <attr name="noIconInMenu" boolvalue="false"/>
+            </file>-->
+        </folder>
+    </folder>
+    <folder name="Menu">
+        <folder name="File">
+            <file name="org-openide-actions-SaveAction.shadow_hidden"/>
+            <file name="org-openide-actions-SaveAllAction.shadow_hidden"/>
+            <file name="org-openide-actions-SaveAsAction.shadow_hidden"/>
+        </folder>
+        <file name="GoTo_hidden"/>
+        <folder name="Tools">
+            <folder name="System">
+                <attr name="position" intvalue="0"/>
+                <attr name="displayName" bundlevalue="org.mapton.core_nb.actions.Bundle#CTL_System"/>
+            </folder>
+            <folder name="Add-on">
+                <attr name="position" intvalue="1"/>
+                <attr name="displayName" bundlevalue="org.mapton.core_nb.actions.Bundle#CTL_Add-on"/>
+            </folder>
+            <file name="org-netbeans-modules-templates-actions-TemplatesAction.shadow_hidden"/>
+        </folder>
+        <folder name="View">
+            <file name="ShowEditorOnlyAction.shadow_hidden"/>
+            <file name="ToggleFullScreenAction.shadow_hidden"/>
+            <file name="org-netbeans-core-actions-LogAction.shadow_hidden"/>
+            <file name="se-trixon-almond-nbp-StayOnTopAction.shadow">
+                <attr name="originalFile" stringvalue="Actions/View/se-trixon-almond-nbp-StayOnTopAction.instance"/>
+                <attr name="position" intvalue="9010"/>
+            </file>
+        </folder>
+        <folder name="Window">
+        </folder>
+        <!--        <file name="Spacer.instance">
+            <attr name="instanceCreate" methodvalue="javax.swing.Box.createHorizontalGlue"/>
+            <attr name="position" intvalue="9005"/>
+        </file>-->
+        <!--        <file name="org-netbeans-modules-quicksearch-QuickSearchAction.shadow">
+            <attr name="originalFile" stringvalue="Actions/Edit/org-netbeans-modules-quicksearch-QuickSearchAction.instance"/>
+            <attr name="position" intvalue="9008"/>
+        </file>-->
+        <folder name="Window">
+            <file name="SwitchToRecentDocumentAction.shadow_hidden"/>
+            <file name="Tools_hidden"/>
+            <file name="Web_hidden"/>
+            <file name="org-netbeans-core-io-ui-IOWindowAction.shadow_hidden"/>
+        </folder>
+    </folder>
     <!--    <folder name="Shortcuts">
         <file name="DS-ENTER.shadow_hidden"/>
         <file name="F12.shadow_hidden"/>
@@ -34,7 +94,13 @@ limitations under the License.
             <file name="se-trixon-almond-nbp-options-IconOptionsPanelController.instance_hidden"/>
         </folder>
     </folder>
-    <file name="Toolbars_hidden"/>
+    <folder name="Toolbars">
+        <folder name="QuickSearch">
+            <file name="org-netbeans-modules-quicksearch-QuickSearchAction.shadow">
+                <attr name="originalFile" stringvalue="Actions/Edit/org-netbeans-modules-quicksearch-QuickSearchAction.instance"/>
+            </file>
+        </folder>
+    </folder>
     <folder name="Windows2">
         <folder name="Modes">
             <file name="mapTools.wsmode" url="mapToolsWsmode.xml"/>
@@ -49,7 +115,7 @@ limitations under the License.
                 <file name="ChartTopComponent.wstcgrp" url="ui/ChartTopComponentWstcgrp.xml"/>
                 <file name="GridTopComponent.wstcgrp" url="ui/grid/GridTopComponentWstcgrp.xml"/>
                 <file name="LayerTopComponent.wstcgrp" url="ui/LayerTopComponentWstcgrp.xml"/>
-                <file name="ObjectPropertiesTopComponent.wstcgrp" url="ui/ObjectPropertiesTopComponentWstcgrp.xml"/>
+                <file name="PropertiesTopComponent.wstcgrp" url="ui/PropertiesTopComponentWstcgrp.xml"/>
                 <file name="PoiTopComponent.wstcgrp" url="ui/PoiTopComponentWstcgrp.xml"/>
                 <file name="ToolboxTopComponent.wstcgrp" url="ui/ToolboxTopComponentWstcgrp.xml"/>
             </folder>
@@ -61,6 +127,9 @@ limitations under the License.
         </file>
         <file name="DS-X.shadow">
             <attr name="originalFile" stringvalue="Actions/System/org-netbeans-modules-autoupdate-ui-actions-PluginManagerAction.instance"/>
+        </file>
+        <file name="D-COMMA.shadow">
+            <attr name="originalFile" stringvalue="Actions/Window/org-netbeans-modules-options-OptionsWindowAction.instance"/>
         </file>
     </folder>
 </filesystem>
