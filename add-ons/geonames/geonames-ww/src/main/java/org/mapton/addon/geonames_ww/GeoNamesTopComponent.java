@@ -35,6 +35,10 @@ import org.mapton.geonames.api.Country;
 import org.mapton.geonames.api.CountryManager;
 import org.mapton.geonames.api.GeonamesManager;
 import org.netbeans.api.settings.ConvertAsProperties;
+import org.openide.awt.ActionID;
+import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
+import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
@@ -53,6 +57,17 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(mode = "mapTools", openAtStartup = false)
+@TopComponent.OpenActionRegistration(
+        displayName = "#CTL_GeoNamesAction",
+        preferredID = "GeoNamesTopComponent"
+)
+@ActionID(category = "Mapton", id = "org.mapton.addon.geonames.GeoNamesAction")
+@ActionReferences({
+    @ActionReference(path = "Menu/Tools/Add-on", position = 0)
+})
+@NbBundle.Messages({
+    "CTL_GeoNamesAction=Population (GeoNames)"
+})
 public final class GeoNamesTopComponent extends MTopComponent {
 
     private IndexedCheckModel<Country> mCheckModel;
@@ -61,7 +76,7 @@ public final class GeoNamesTopComponent extends MTopComponent {
     private BorderPane mRoot;
 
     public GeoNamesTopComponent() {
-        setName(GeoNamesTool.NAME);
+        setName(Bundle.CTL_GeoNamesAction());
         GeonamesManager.getInstance().init();
     }
 
@@ -122,7 +137,7 @@ public final class GeoNamesTopComponent extends MTopComponent {
 
         FxHelper.slimToolBar(toolBar);
 
-        Label titleLabel = Mapton.createTitle(GeoNamesTool.NAME);
+        Label titleLabel = Mapton.createTitle(Bundle.CTL_GeoNamesAction());
 
         mListView = new CheckListView<>();
         mListView.getItems().setAll(CountryManager.getInstance().getCountryList());

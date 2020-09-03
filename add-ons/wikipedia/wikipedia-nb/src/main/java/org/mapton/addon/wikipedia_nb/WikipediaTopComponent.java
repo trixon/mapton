@@ -22,6 +22,10 @@ import org.mapton.addon.wikipedia.api.WikipediaView;
 import org.mapton.api.Mapton;
 import org.mapton.core_nb.api.MTopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
+import org.openide.awt.ActionID;
+import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
+import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
 /**
@@ -37,12 +41,23 @@ import org.openide.windows.TopComponent;
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(mode = "mapTools", openAtStartup = false)
+@TopComponent.OpenActionRegistration(
+        displayName = "#CTL_WikipediaAction",
+        preferredID = "CTL_WikipediaTopComponent"
+)
+@ActionID(category = "Mapton", id = "org.mapton.addon.wikipedia.WikipediaAction")
+@ActionReferences({
+    @ActionReference(path = "Menu/Tools/Add-on", position = 0)
+})
+@NbBundle.Messages({
+    "CTL_WikipediaAction=Wikipedia"
+})
 public final class WikipediaTopComponent extends MTopComponent {
 
     private BorderPane mRoot;
 
     public WikipediaTopComponent() {
-        setName(WikipediaTool.NAME);
+        setName(Bundle.CTL_WikipediaAction());
     }
 
     @Override
@@ -63,7 +78,7 @@ public final class WikipediaTopComponent extends MTopComponent {
     }
 
     private Scene createScene() {
-        Label titleLabel = Mapton.createTitle(WikipediaTool.NAME);
+        Label titleLabel = Mapton.createTitle(Bundle.CTL_WikipediaAction());
         mRoot = new BorderPane(new WikipediaView());
         mRoot.setTop(titleLabel);
         titleLabel.prefWidthProperty().bind(mRoot.widthProperty());

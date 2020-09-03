@@ -22,6 +22,10 @@ import org.mapton.addon.files_nb.ui.DocumentsPane;
 import org.mapton.api.Mapton;
 import org.mapton.core_nb.api.MTopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
+import org.openide.awt.ActionID;
+import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
+import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 import se.trixon.almond.util.Dict;
 
@@ -38,6 +42,17 @@ import se.trixon.almond.util.Dict;
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(mode = "mapTools", openAtStartup = false)
+@TopComponent.OpenActionRegistration(
+        displayName = "#CTL_FilesAction",
+        preferredID = "FilesTopComponent"
+)
+@ActionID(category = "Mapton", id = "org.mapton.addon.files.FilesAction")
+@ActionReferences({
+    @ActionReference(path = "Menu/Tools/Add-on", position = 0)
+})
+@NbBundle.Messages({
+    "CTL_FilesAction=Files"
+})
 public final class FilesTopComponent extends MTopComponent {
 
     private BorderPane mRoot;

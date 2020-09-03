@@ -61,7 +61,7 @@ public class GeoNamesLayerBundle extends LayerBundle {
     }
 
     private void init() {
-        mLayer.setName(GeoNamesTool.NAME);
+        mLayer.setName(Bundle.CTL_GeoNamesAction());
         setCategoryAddOns(mLayer);
         attachTopComponentToLayer("GeoNamesTopComponent", mLayer);
         mLayer.setPickEnabled(false);

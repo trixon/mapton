@@ -28,7 +28,11 @@ import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.mapton.core_nb.api.MTopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
+import org.openide.awt.ActionID;
+import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
 import org.openide.util.Exceptions;
+import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
@@ -48,6 +52,17 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(mode = "mapTools", openAtStartup = false)
+@TopComponent.OpenActionRegistration(
+        displayName = "#CTL_XkcdAction",
+        preferredID = "XkcdTopComponent"
+)
+@ActionID(category = "Mapton", id = "org.mapton.addon.xkcd_nb.XkcdAction")
+@ActionReferences({
+    @ActionReference(path = "Menu/Tools/Add-on", position = 0)
+})
+@NbBundle.Messages({
+    "CTL_XkcdAction=XKCD"
+})
 public final class XkcdTopComponent extends MTopComponent {
 
     private LogPanel mLogPanel;
@@ -56,7 +71,7 @@ public final class XkcdTopComponent extends MTopComponent {
     private BorderPane mRoot;
 
     public XkcdTopComponent() {
-        setName(XkcdTool.NAME);
+        setName(Bundle.CTL_XkcdAction());
 
         mManager.setDisplayer((Xkcd xkcd) -> {
             StringBuilder sb = new StringBuilder(xkcd.getAlt()).append("\n\n");
@@ -162,7 +177,7 @@ public final class XkcdTopComponent extends MTopComponent {
         });
 
         FxHelper.slimToolBar(toolBar);
-        Label titleLabel = Mapton.createTitle(XkcdTool.NAME);
+        Label titleLabel = Mapton.createTitle(Bundle.CTL_XkcdAction());
         mLogPanel = new LogPanel();
         mLogPanel.setMonospaced();
         mLogPanel.setWrapText(true);

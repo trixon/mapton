@@ -27,6 +27,6 @@ public class News implements NewsProvider {
 
     @Override
     public String getHeading() {
-        return WikipediaTool.NAME;
+        return Bundle.CTL_WikipediaAction();
     }
 }
