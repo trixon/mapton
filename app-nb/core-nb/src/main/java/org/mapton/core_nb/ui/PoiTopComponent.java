@@ -18,7 +18,7 @@ package org.mapton.core_nb.ui;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import org.mapton.api.MDict;
-import org.mapton.base.ui.poi.PoisView;
+import org.mapton.base.ui.poi.PoisViewManager;
 import org.mapton.core_nb.api.MTopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.windows.TopComponent;
@@ -72,7 +72,7 @@ public final class PoiTopComponent extends MTopComponent {
     }
 
     private Scene createScene() {
-        mRoot = new BorderPane(new PoisView());
+        mRoot = new BorderPane(PoisViewManager.getInstance().getPoisView());
 
         return new Scene(mRoot);
     }

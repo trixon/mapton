@@ -28,7 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.openide.util.Lookup;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.StringHelper;
-import se.trixon.almond.util.fx.FxHelper;
+import se.trixon.almond.util.fx.DelayedResetRunner;
 
 /**
  *
@@ -36,43 +36,50 @@ import se.trixon.almond.util.fx.FxHelper;
  */
 public class MPoiManager {
 
-    private final ObjectProperty<ObservableList<MPoi>> mAllItems = new SimpleObjectProperty<>();
-    private TreeSet<String> mCategories = new TreeSet<>();
+    private final ObjectProperty<ObservableList<MPoi>> mAllItemsProperty = new SimpleObjectProperty<>();
+    private final ObjectProperty<TreeSet<String>> mCategoriesProperty = new SimpleObjectProperty<>();
+    private DelayedResetRunner mDelayedResetRunner;
     private String mFilter = "";
-    private final ObjectProperty<ObservableList<MPoi>> mFilteredItems = new SimpleObjectProperty<>();
-    private final SimpleObjectProperty<MPoi> mSelectedItem = new SimpleObjectProperty<>();
+    private final ObjectProperty<ObservableList<MPoi>> mFilteredItemsProperty = new SimpleObjectProperty<>();
+    private boolean mPopulateCategoriesAfterRefresh;
+    private final SimpleObjectProperty<MPoi> mSelectedItemProperty = new SimpleObjectProperty<>();
+    private final SimpleObjectProperty<Long> mTrigRefreshCategoriesProperty = new SimpleObjectProperty<>();
 
     public static MPoiManager getInstance() {
         return Holder.INSTANCE;
     }
 
     private MPoiManager() {
-        mAllItems.setValue(FXCollections.observableArrayList());
-        mFilteredItems.setValue(FXCollections.observableArrayList());
+        mAllItemsProperty.setValue(FXCollections.observableArrayList());
+        mFilteredItemsProperty.setValue(FXCollections.observableArrayList());
 
         initListeners();
 
-        refresh("");
+        mDelayedResetRunner.reset();
     }
 
     public ObjectProperty<ObservableList<MPoi>> allItemsProperty() {
-        return mAllItems;
+        return mAllItemsProperty;
+    }
+
+    public ObjectProperty<TreeSet<String>> categoriesProperty() {
+        return mCategoriesProperty;
     }
 
     public ObjectProperty<ObservableList<MPoi>> filteredItemsProperty() {
-        return mFilteredItems;
+        return mFilteredItemsProperty;
     }
 
     public final ObservableList<MPoi> getAllItems() {
-        return mAllItems == null ? null : mAllItems.get();
+        return mAllItemsProperty == null ? null : mAllItemsProperty.get();
     }
 
     public final ObservableList<MPoi> getFilteredItems() {
-        return mFilteredItems == null ? null : mFilteredItems.get();
+        return mFilteredItemsProperty == null ? null : mFilteredItemsProperty.get();
     }
 
     public MPoi getSelectedItem() {
-        return mSelectedItem.get();
+        return mSelectedItemProperty.get();
     }
 
     public void refresh() {
@@ -81,50 +88,69 @@ public class MPoiManager {
 
     public void refresh(String filter) {
         mFilter = filter;
-
-        FxHelper.runLater(() -> {
-            ArrayList<MPoi> allPois = new ArrayList<>();
-            ArrayList<MPoi> filteredPois = new ArrayList<>();
-
-            for (MPoiProvider poiProvider : Lookup.getDefault().lookupAll(MPoiProvider.class)) {
-                for (MPoi poi : poiProvider.getPois()) {
-                    poi.setCategory(StringUtils.defaultIfBlank(poi.getCategory(), "_DEFAULT"));
-                    poi.setProvider(poiProvider.getName());
-                    poi.setZoom(poi.getZoom() != null ? poi.getZoom() : 0.9);
-                    allPois.add(poi);
-                    if (validPoi(poi, filter)) {
-                        filteredPois.add(poi);
-                    }
-                }
-            }
-
-            Comparator<MPoi> comparator = Comparator.comparing(MPoi::getProvider)
-                    .thenComparing(Comparator.comparing(MPoi::getCategory))
-                    .thenComparing(Comparator.comparing(MPoi::getName));
-            filteredPois.sort(comparator);
-
-            mAllItems.getValue().setAll(allPois);
-            mFilteredItems.getValue().setAll(filteredPois);
-        });
+        mPopulateCategoriesAfterRefresh = true;
+        mDelayedResetRunner.reset();
     }
 
     public SimpleObjectProperty<MPoi> selectedItemProperty() {
-        return mSelectedItem;
+        return mSelectedItemProperty;
     }
 
     public void setSelectedItem(MPoi poi) {
-        mSelectedItem.set(poi);
+        mSelectedItemProperty.set(poi);
+    }
+
+    public SimpleObjectProperty<Long> trigRefreshCategoriesProperty() {
+        return mTrigRefreshCategoriesProperty;
     }
 
     private void initListeners() {
-        Lookup.getDefault().lookupResult(MPoiProvider.class).addLookupListener(lookupEvent -> {
-            refresh();
+        mDelayedResetRunner = new DelayedResetRunner(200, () -> {
+            synchronized (this) {
+                var allPois = new ArrayList<MPoi>();
+                var filteredPois = new ArrayList<MPoi>();
+
+                Lookup.getDefault().lookupAll(MPoiProvider.class).forEach(poiProvider -> {
+                    try {
+                        for (MPoi poi : poiProvider.getPois()) {
+                            poi.setCategory(StringUtils.defaultIfBlank(poi.getCategory(), "_DEFAULT"));
+                            poi.setProvider(poiProvider.getName());
+                            poi.setZoom(poi.getZoom() != null ? poi.getZoom() : 0.9);
+                            allPois.add(poi);
+                            if (validPoi(poi, mFilter)) {
+                                filteredPois.add(poi);
+                            }
+                        }
+                    } catch (Exception e) {
+                        System.err.println("Failed to load POI from " + poiProvider.getName());
+                    }
+                });
+
+                Comparator<MPoi> comparator = Comparator.comparing(MPoi::getProvider)
+                        .thenComparing(Comparator.comparing(MPoi::getCategory))
+                        .thenComparing(Comparator.comparing(MPoi::getName));
+                filteredPois.sort(comparator);
+
+                mAllItemsProperty.getValue().setAll(allPois);
+                mFilteredItemsProperty.getValue().setAll(filteredPois);
+
+                if (mPopulateCategoriesAfterRefresh) {
+                    mTrigRefreshCategoriesProperty.set(System.currentTimeMillis());
+                } else {
+                    mPopulateCategoriesAfterRefresh = true;
+                }
+            }
         });
 
-        Mapton.getGlobalState().addListener(gscl -> {
-            mCategories = gscl.getValue();
-            refresh();
-        }, MKey.POI_CATEGORIES);
+        Lookup.getDefault().lookupResult(MPoiProvider.class).addLookupListener(lookupEvent -> {
+            mDelayedResetRunner.reset();
+        });
+
+        // Gets updated in PoiCategoryCheckTreeView
+        mCategoriesProperty.addListener((observable, oldValue, newValue) -> {
+            mPopulateCategoriesAfterRefresh = false;
+            mDelayedResetRunner.reset();
+        });
 
         selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             sendObjectProperties(newValue);
@@ -163,7 +189,7 @@ public class MPoiManager {
 
     private boolean validPoi(MPoi poi, String filter) {
         boolean valid
-                = mCategories.contains(String.format("%s/%s", poi.getProvider(), poi.getCategory()))
+                = mCategoriesProperty.get().contains(String.format("%s/%s", poi.getProvider(), poi.getCategory()))
                 && (StringHelper.matchesSimpleGlob(poi.getProvider(), filter, true, true)
                 || StringHelper.matchesSimpleGlob(poi.getUrl(), filter, true, true)
                 || StringHelper.matchesSimpleGlob(poi.getName(), filter, true, true)

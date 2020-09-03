@@ -84,7 +84,9 @@ public class PoisView extends BorderPane {
         initListeners();
         populateContextProviders();
 
-        mManager.refresh();
+        FxHelper.runLaterDelayed(1000, () -> {
+            mManager.refresh();
+        });
     }
 
     private void createUI() {
@@ -254,7 +256,6 @@ public class PoisView extends BorderPane {
 
         public FilterPopOver() {
             createUI();
-            mCategoryCheckTreeView.populate();
         }
 
         private void createUI() {

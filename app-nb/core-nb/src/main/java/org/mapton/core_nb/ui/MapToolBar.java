@@ -45,7 +45,7 @@ import org.mapton.base.ui.AttributionView;
 import org.mapton.base.ui.TemporalView;
 import org.mapton.base.ui.bookmark.BookmarksView;
 import org.mapton.base.ui.grid.GridView;
-import org.mapton.base.ui.poi.PoisView;
+import org.mapton.base.ui.poi.PoisViewManager;
 import org.openide.awt.Actions;
 import org.openide.util.Lookup;
 import se.trixon.almond.util.Dict;
@@ -353,7 +353,7 @@ public class MapToolBar extends BaseToolBar {
         initPopOver(mBookmarkPopOver, Dict.BOOKMARKS.toString(), new BookmarksView(mBookmarkPopOver), false);
 
         mPoiPopOver = new PopOver();
-        initPopOver(mPoiPopOver, MDict.POI.toString(), new PoisView(), false);
+        initPopOver(mPoiPopOver, MDict.POI.toString(), PoisViewManager.getInstance().getPoisView(), false);
 
         mGridPopOver = new PopOver();
         initPopOver(mGridPopOver, MDict.GRIDS.toString(), new GridView(mGridPopOver), false);

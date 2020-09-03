@@ -49,10 +49,6 @@ public class MKey {
     public static final String NOTIFICATION_WARNING = "toolbar.notification.warning";
     public static final String OBJECT_PROPERTIES = "object.properties";
     /**
-     * Listen for this GlobalState key in order to catch POI category updates
-     */
-    public static final String POI_CATEGORIES = "poi.categories";
-    /**
      * Listen for this GlobalState key in order to catch POI map selection
      * changes
      */
