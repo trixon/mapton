@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE filesystem PUBLIC "-//NetBeans//DTD Filesystem 1.2//EN" "http://www.netbeans.org/dtds/filesystem-1_2.dtd">
+<filesystem>
+    <folder name="QuickSearch">
+        <folder name="POI">
+            <attr name="command" stringvalue="p"/>
+            <attr name="position" intvalue="0"/>
+            <file name="org-mapton-se_poi-PoiQuickSearchProvider.instance">
+                <attr name="displayName" bundlevalue="org.mapton.se_poi.Bundle#QuickSearch/POI/org-mapton-se_poi-PoiQuickSearchProvider.instance"/>
+            </file>
+        </folder>
+    </folder>
+</filesystem>
