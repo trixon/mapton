@@ -19,6 +19,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.awt.Actions;
 import org.openide.util.NbBundle.Messages;
@@ -31,8 +32,11 @@ import se.trixon.almond.nbp.Almond;
 @ActionRegistration(
         displayName = "#CTL_OnlyMapAction"
 )
-@ActionReference(path = "Shortcuts", name = "F12")
-@Messages("CTL_OnlyMapAction=Map")
+@ActionReferences({
+    @ActionReference(path = "Menu/View", position = 9999),
+    @ActionReference(path = "Shortcuts", name = "F12")
+})
+@Messages("CTL_OnlyMapAction=Toggle &map mode")
 public final class OnlyMapAction implements ActionListener {
 
     @Override

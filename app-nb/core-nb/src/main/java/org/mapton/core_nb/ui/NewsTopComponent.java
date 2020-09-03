@@ -19,6 +19,10 @@ import javafx.scene.Scene;
 import org.mapton.base.ui.news.NewsView;
 import org.mapton.core_nb.api.MTopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
+import org.openide.awt.ActionID;
+import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
+import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 import se.trixon.almond.util.Dict;
 
@@ -34,7 +38,19 @@ import se.trixon.almond.util.Dict;
         //iconBase="SET/PATH/TO/ICON/HERE",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
-@TopComponent.Registration(mode = "editor", openAtStartup = false)
+@TopComponent.Registration(mode = "editor", openAtStartup = false, position = 10)
+@TopComponent.OpenActionRegistration(
+        displayName = "#CTL_NewsAction",
+        preferredID = "NewsTopComponent"
+)
+@ActionID(category = "Mapton", id = "org.mapton.core_nb.ui.NewsTopComponent")
+@ActionReferences({
+    @ActionReference(path = "Shortcuts", name = "D-0"),
+    @ActionReference(path = "Menu/Window", position = 10)
+})
+@NbBundle.Messages({
+    "CTL_NewsAction=&News"
+})
 public final class NewsTopComponent extends MTopComponent {
 
     public NewsTopComponent() {

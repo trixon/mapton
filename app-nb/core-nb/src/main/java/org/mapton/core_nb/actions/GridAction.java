@@ -15,20 +15,28 @@
  */
 package org.mapton.core_nb.actions;
 
-import org.mapton.core_nb.api.BaseAction;
 import java.awt.event.ActionEvent;
+import org.mapton.core_nb.api.BaseAction;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
+import org.openide.util.NbBundle;
 
 @ActionID(
         category = "Mapton",
         id = "org.mapton.core_nb.actions.GridAction"
 )
 @ActionRegistration(
-        displayName = "Grids"
+        displayName = "#CTL_GridsAction"
 )
-@ActionReference(path = "Shortcuts", name = "DS-G")
+@ActionReferences({
+    @ActionReference(path = "Shortcuts", name = "DS-4"),
+    @ActionReference(path = "Menu/Tools/System", position = 3)
+})
+@NbBundle.Messages({
+    "CTL_GridsAction=&Grids"
+})
 public final class GridAction extends BaseAction {
 
     @Override

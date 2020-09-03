@@ -15,20 +15,28 @@
  */
 package org.mapton.core_nb.actions;
 
-import org.mapton.core_nb.api.BaseAction;
 import java.awt.event.ActionEvent;
+import org.mapton.core_nb.api.BaseAction;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
+import org.openide.util.NbBundle;
 
 @ActionID(
         category = "Mapton",
         id = "org.mapton.core_nb.actions.ChartAction"
 )
 @ActionRegistration(
-        displayName = "Chart"
+        displayName = "#CTL_ChartAction"
 )
-@ActionReference(path = "Shortcuts", name = "DS-C")
+@ActionReferences({
+    @ActionReference(path = "Shortcuts", name = "DS-6"),
+    @ActionReference(path = "Menu/Tools/System", position = 5)
+})
+@NbBundle.Messages({
+    "CTL_ChartAction=&Chart"
+})
 public final class ChartAction extends BaseAction {
 
     @Override

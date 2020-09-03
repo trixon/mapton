@@ -15,21 +15,29 @@
  */
 package org.mapton.core_nb.actions;
 
-import org.mapton.core_nb.api.BaseAction;
 import java.awt.event.ActionEvent;
+import org.mapton.core_nb.api.BaseAction;
 import org.mapton.core_nb.ui.MapToolBarPanel;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
+import org.openide.util.NbBundle;
 
 @ActionID(
         category = "Mapton",
         id = "org.mapton.core_nb.actions.LayerAction"
 )
 @ActionRegistration(
-        displayName = "Layer"
+        displayName = "#CTL_LayersAction"
 )
-@ActionReference(path = "Shortcuts", name = "D-L")
+@ActionReferences({
+    @ActionReference(path = "Shortcuts", name = "DS-1"),
+    @ActionReference(path = "Menu/Tools/System", position = 0)
+})
+@NbBundle.Messages({
+    "CTL_LayersAction=&Layers"
+})
 public final class LayerAction extends BaseAction {
 
     @Override

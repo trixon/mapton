@@ -19,6 +19,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle.Messages;
 import se.trixon.almond.util.SystemHelper;
@@ -30,7 +31,10 @@ import se.trixon.almond.util.SystemHelper;
 @ActionRegistration(
         displayName = "#CTL_HelpAction"
 )
-@ActionReference(path = "Shortcuts", name = "F1")
+@ActionReferences({
+    @ActionReference(path = "Menu/Help", position = 0),
+    @ActionReference(path = "Shortcuts", name = "F1")
+})
 @Messages("CTL_HelpAction=Help")
 public final class HelpAction implements ActionListener {
 

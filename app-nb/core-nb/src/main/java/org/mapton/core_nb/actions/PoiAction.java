@@ -20,6 +20,7 @@ import org.mapton.core_nb.api.BaseAction;
 import org.mapton.core_nb.ui.MapToolBarPanel;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 
 @ActionID(
@@ -27,9 +28,12 @@ import org.openide.awt.ActionRegistration;
         id = "org.mapton.core_nb.actions.PoiAction"
 )
 @ActionRegistration(
-        displayName = "POI"
+        displayName = "&POI"
 )
-@ActionReference(path = "Shortcuts", name = "D-I")
+@ActionReferences({
+    @ActionReference(path = "Shortcuts", name = "DS-3"),
+    @ActionReference(path = "Menu/Tools/System", position = 2)
+})
 public final class PoiAction extends BaseAction {
 
     @Override

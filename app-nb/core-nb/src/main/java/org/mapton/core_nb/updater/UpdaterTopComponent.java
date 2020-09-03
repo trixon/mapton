@@ -28,6 +28,10 @@ import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.mapton.base.ui.updater.UpdaterView;
 import org.mapton.core_nb.api.MTopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
+import org.openide.awt.ActionID;
+import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
+import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
@@ -45,7 +49,19 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
         //iconBase="SET/PATH/TO/ICON/HERE",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
-@TopComponent.Registration(mode = "editor", openAtStartup = false)
+@TopComponent.Registration(mode = "editor", openAtStartup = false, position = 9)
+@TopComponent.OpenActionRegistration(
+        displayName = "#CTL_UpdaterAction",
+        preferredID = "UpdaterTopComponent"
+)
+@ActionID(category = "Mapton", id = "org.mapton.core_nb.updater.UpdaterTopComponent")
+@ActionReferences({
+    @ActionReference(path = "Shortcuts", name = "D-9"),
+    @ActionReference(path = "Menu/Window", position = 9)
+})
+@NbBundle.Messages({
+    "CTL_UpdaterAction=&Updater"
+})
 public final class UpdaterTopComponent extends MTopComponent {
 
     public UpdaterTopComponent() {

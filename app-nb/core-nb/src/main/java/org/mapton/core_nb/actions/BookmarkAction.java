@@ -15,21 +15,29 @@
  */
 package org.mapton.core_nb.actions;
 
-import org.mapton.core_nb.api.BaseAction;
 import java.awt.event.ActionEvent;
+import org.mapton.core_nb.api.BaseAction;
 import org.mapton.core_nb.ui.MapToolBarPanel;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
+import org.openide.util.NbBundle;
 
 @ActionID(
         category = "Mapton",
         id = "org.mapton.core_nb.actions.BookmarkAction"
 )
 @ActionRegistration(
-        displayName = "Bookmarks"
+        displayName = "#CTL_BookmarksAction"
 )
-@ActionReference(path = "Shortcuts", name = "D-B")
+@ActionReferences({
+    @ActionReference(path = "Shortcuts", name = "DS-2"),
+    @ActionReference(path = "Menu/Tools/System", position = 1)
+})
+@NbBundle.Messages({
+    "CTL_BookmarksAction=&Bookmarks"
+})
 public final class BookmarkAction extends BaseAction {
 
     @Override

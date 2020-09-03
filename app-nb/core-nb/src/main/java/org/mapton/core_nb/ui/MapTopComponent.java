@@ -58,6 +58,9 @@ import org.mapton.base.ui.grid.LocalGridsView;
 import org.mapton.core_nb.api.MTopComponent;
 import org.mapton.core_nb.ui.grid.LocalGridEditor;
 import org.netbeans.api.settings.ConvertAsProperties;
+import org.openide.awt.ActionID;
+import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
 import org.openide.util.Exceptions;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
@@ -82,8 +85,13 @@ import se.trixon.almond.util.swing.SwingHelper;
         displayName = "#CTL_MapAction",
         preferredID = "MapTopComponent"
 )
+@ActionID(category = "Window", id = "org.mapton.demo.MapTopComponent")
+@ActionReferences({
+    @ActionReference(path = "Shortcuts", name = "D-1"),
+    @ActionReference(path = "Menu/Window", position = 0)
+})
 @Messages({
-    "CTL_MapAction=Map"
+    "CTL_MapAction=&Map"
 })
 public final class MapTopComponent extends MTopComponent {
 

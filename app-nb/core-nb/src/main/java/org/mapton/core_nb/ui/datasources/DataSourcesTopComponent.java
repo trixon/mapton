@@ -19,6 +19,9 @@ import javafx.scene.Scene;
 import org.mapton.core_nb.api.MTopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
+import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
+import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 import se.trixon.almond.util.Dict;
 
@@ -34,12 +37,19 @@ import se.trixon.almond.util.Dict;
         //iconBase="SET/PATH/TO/ICON/HERE",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
-@TopComponent.Registration(mode = "editor", openAtStartup = false, position = 99)
-@ActionID(category = "Mapton", id = "org.mapton.datasources.DataSourcesTopComponent")
+@TopComponent.Registration(mode = "editor", openAtStartup = false, position = 4)
 @TopComponent.OpenActionRegistration(
-        displayName = "DataSources",
+        displayName = "#CTL_DataSourcesAction",
         preferredID = "DataSourcesTopComponent"
 )
+@ActionID(category = "Mapton", id = "org.mapton.datasources.DataSourcesTopComponent")
+@ActionReferences({
+    @ActionReference(path = "Shortcuts", name = "D-4"),
+    @ActionReference(path = "Menu/Window", position = 4)
+})
+@NbBundle.Messages({
+    "CTL_DataSourcesAction=&Data sources"
+})
 public final class DataSourcesTopComponent extends MTopComponent {
 
     private DataSourcesPane mDataSourcesPane;

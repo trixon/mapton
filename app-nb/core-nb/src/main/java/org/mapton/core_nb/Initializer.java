@@ -17,16 +17,13 @@ package org.mapton.core_nb;
 
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
-import javax.swing.JLayeredPane;
 import javax.swing.SwingUtilities;
 import org.apache.commons.lang3.SystemUtils;
 import org.mapton.api.MKey;
 import org.mapton.api.MOptions;
 import static org.mapton.api.MOptions.KEY_UI_LAF_DARK;
 import org.mapton.api.Mapton;
-import org.mapton.core_nb.ui.AppToolBarProvider;
 import org.mapton.core_nb.updater.UpdateNotificator;
 import org.openide.awt.Actions;
 import org.openide.modules.OnStart;
@@ -35,7 +32,6 @@ import org.openide.windows.WindowManager;
 import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.nbp.about.AboutAction;
-import se.trixon.almond.nbp.swing.RootPaneLayout;
 import se.trixon.almond.util.PrefsHelper;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.SystemHelperFx;
@@ -69,7 +65,7 @@ public class Initializer implements Runnable {
         }
 
         System.setProperty("netbeans.winsys.no_help_in_dialogs", "true");
-        System.setProperty("netbeans.winsys.no_toolbars", "true");
+//        System.setProperty("netbeans.winsys.no_toolbars", "true");
         System.setProperty("netbeans.winsys.status_line.path", "AppStatusPanel.instance");
 
         boolean fullscreen = mOptions.isFullscreen();
@@ -81,10 +77,6 @@ public class Initializer implements Runnable {
             SwingHelper.runLaterDelayed(10, () -> {
                 JFrame frame = (JFrame) Almond.getFrame();
                 PopOverWatcher.getInstance().setFrame(frame);
-                JComponent toolbar = AppToolBarProvider.getInstance().getToolBarPanel();
-                frame.getRootPane().setLayout(new RootPaneLayout(toolbar));
-                toolbar.putClientProperty(JLayeredPane.LAYER_PROPERTY, 0);
-                frame.getRootPane().getLayeredPane().add(toolbar, 0);
 
                 if (SystemUtils.IS_OS_MAC) {
                     AboutAction.setFx(true);
@@ -121,7 +113,7 @@ public class Initializer implements Runnable {
                     Almond.getTopComponent("ReportsTopComponent");
                     Almond.getTopComponent("EditorsTopComponent");
                     Almond.getTopComponent("UpdaterTopComponent");
-                    Almond.getTopComponent("ObjectPropertiesTopComponent");
+                    Almond.getTopComponent("PropertiesTopComponent");
                     Almond.getTopComponent("ChartTopComponent");
                 });
             });

@@ -20,16 +20,22 @@ import org.mapton.core_nb.api.BaseAction;
 import org.mapton.core_nb.ui.AppToolBarProvider;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
+import org.openide.util.NbBundle;
 
 @ActionID(
         category = "Mapton",
         id = "org.mapton.core_nb.actions.OpenAction"
 )
 @ActionRegistration(
-        displayName = "Bookmarks"
+        displayName = "#CTL_OpenAction"
 )
-@ActionReference(path = "Shortcuts", name = "D-O")
+@ActionReferences({
+    @ActionReference(path = "Menu/File", position = 0),
+    @ActionReference(path = "Shortcuts", name = "D-O")
+})
+@NbBundle.Messages("CTL_OpenAction=&Open...")
 public final class OpenAction extends BaseAction {
 
     @Override

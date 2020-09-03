@@ -87,8 +87,6 @@ $RECYCLE.BIN/
 # End of https://www.gitignore.io/api/java,linux,maven,netbeans,windows
 
 !/app-nb/branding/src/main/nbm-branding/core/core.jar/
-!/app-nb/branding/src/main/nbm-branding/modules/org-netbeans-core-io-ui.jar/
-!/app-nb/branding/src/main/nbm-branding/modules/org-netbeans-core-windows.jar/
-!/app-nb/branding/src/main/nbm-branding/modules/org-netbeans-core.jar/
+!/app-nb/branding/src/main/nbm-branding/modules/*
 /packaging/snap/squashfs-root/
 /packaging/snap/mapton*.snap

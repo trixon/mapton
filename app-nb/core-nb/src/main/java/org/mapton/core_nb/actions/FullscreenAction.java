@@ -20,6 +20,7 @@ import java.awt.event.ActionListener;
 import org.apache.commons.lang3.SystemUtils;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.awt.Actions;
 import org.openide.util.NbBundle.Messages;
@@ -31,8 +32,11 @@ import org.openide.util.NbBundle.Messages;
 @ActionRegistration(
         displayName = "#CTL_FullscreenAction"
 )
-@ActionReference(path = "Shortcuts", name = "F11")
-@Messages("CTL_FullscreenAction=Fullscreen")
+@ActionReferences({
+    @ActionReference(path = "Menu/View", position = 9998),
+    @ActionReference(path = "Shortcuts", name = "F11")
+})
+@Messages("CTL_FullscreenAction=Toggle &full screen mode")
 public final class FullscreenAction implements ActionListener {
 
     @Override

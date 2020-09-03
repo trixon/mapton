@@ -38,7 +38,7 @@ public class AppToolBarProvider {
 
     private AppToolBarProvider() {
         mToolBarPanel.setVisible(false);
-        mToolBarPanel.setPreferredSize(new Dimension(100, (int) (getIconSizeToolBar() * 1.2)));
+        mToolBarPanel.setPreferredSize(new Dimension(100, (int) (getIconSizeToolBar() * .8)));
 
         mToolBar = new AppToolBar();
         Platform.runLater(() -> {

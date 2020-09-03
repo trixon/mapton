@@ -54,7 +54,6 @@ import org.mapton.api.MCoordinateFileOpener;
 import org.mapton.api.MKey;
 import org.mapton.api.MOptions;
 import org.mapton.api.Mapton;
-import static org.mapton.api.Mapton.getIconSizeToolBar;
 import org.mapton.base.ui.SearchView;
 import org.mapton.core_nb.Initializer;
 import org.openide.awt.Actions;
@@ -175,6 +174,10 @@ public class AppToolBar extends BaseToolBar {
 
     public void toogleToolboxPopOver() {
         tooglePopOver(mToolboxPopOver, mToolboxAction);
+    }
+
+    private int getIconSizeToolBar() {
+        return (int) (Mapton.getIconSizeToolBar() * .6);
     }
 
     private void init() {

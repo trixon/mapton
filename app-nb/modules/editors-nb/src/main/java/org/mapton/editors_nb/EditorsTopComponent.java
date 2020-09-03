@@ -21,6 +21,9 @@ import org.mapton.api.report.MSplitNavPane;
 import org.mapton.core_nb.api.MTopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
+import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
+import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 import se.trixon.almond.util.Dict;
 
@@ -36,12 +39,19 @@ import se.trixon.almond.util.Dict;
         //iconBase="SET/PATH/TO/ICON/HERE",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
-@TopComponent.Registration(mode = "editor", openAtStartup = false, position = 99)
-@ActionID(category = "Mapton", id = "org.mapton.editors_nb.EditorsTopComponent")
+@TopComponent.Registration(mode = "editor", openAtStartup = false, position = 3)
 @TopComponent.OpenActionRegistration(
-        displayName = "Editors",
+        displayName = "#CTL_EditorsAction",
         preferredID = "EditorsTopComponent"
 )
+@ActionID(category = "Mapton", id = "org.mapton.editors_nb.EditorsTopComponent")
+@ActionReferences({
+    @ActionReference(path = "Shortcuts", name = "D-3"),
+    @ActionReference(path = "Menu/Window", position = 3)
+})
+@NbBundle.Messages({
+    "CTL_EditorsAction=&Editors"
+})
 public final class EditorsTopComponent extends MTopComponent {
 
     public EditorsTopComponent() {
