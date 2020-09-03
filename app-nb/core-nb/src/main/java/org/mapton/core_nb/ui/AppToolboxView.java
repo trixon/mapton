@@ -108,9 +108,12 @@ public class AppToolboxView extends BorderPane {
         TreeSet<String> categories = new TreeSet<>();
         for (MToolApp tool : mTools) {
             mGridView.getItems().add(tool);
-            final String parent = StringUtils.defaultString(tool.getParent());
-            if (StringUtils.isNotBlank(tool.getParent())) {
-                categories.add(parent);
+            try {
+                final String parent = StringUtils.defaultString(tool.getParent());
+                if (StringUtils.isNotBlank(tool.getParent())) {
+                    categories.add(parent);
+                }
+            } catch (Exception e) {
             }
         }
 
