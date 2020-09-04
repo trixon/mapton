@@ -17,9 +17,11 @@ package org.mapton.geonames;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import org.mapton.api.MBookmark;
 import org.mapton.api.MContextMenuItem;
 import org.mapton.api.MLatLon;
+import org.mapton.geonames.api.GeonamesManager;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -44,12 +46,11 @@ public class DuckDuckGo extends MContextMenuItem {
 
     @Override
     public String getUrl() {
-        GeonamesSearchEngine gse = new GeonamesSearchEngine();
         MLatLon hereLatLon = new MLatLon(getLongitude(), getLatitude());
         MBookmark nearest = new MBookmark();
         double dist = Double.MAX_VALUE;
 
-        for (MBookmark bookmark : gse.getResults("")) {
+        for (MBookmark bookmark : getResults()) {
             MLatLon bookmarkLatLon = new MLatLon(bookmark.getLongitude(), bookmark.getLatitude());
             double newDistance = hereLatLon.distance(bookmarkLatLon);
             if (newDistance < dist) {
@@ -68,5 +69,21 @@ public class DuckDuckGo extends MContextMenuItem {
         } catch (UnsupportedEncodingException ex) {
             return null;
         }
+    }
+
+    private ArrayList<MBookmark> getResults() {
+        ArrayList<MBookmark> bookmarks = new ArrayList<>();
+        GeonamesManager.getInstance().getGeonames().stream()
+                .forEachOrdered((g) -> {
+                    MBookmark b = new MBookmark();
+                    b.setName(g.getName());
+                    b.setCategory(g.getCountryCode());
+                    b.setLatitude(g.getLatitude());
+                    b.setLongitude(g.getLongitude());
+                    b.setZoom(0.5);
+                    bookmarks.add(b);
+                });
+
+        return bookmarks;
     }
 }

@@ -20,7 +20,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import java.util.ArrayList;
 import java.util.TreeMap;
-import org.mapton.geonames.GeonamesSearchEngine;
+import org.mapton.geonames.GeoNamesQuickSearchProvider;
 import se.trixon.almond.util.SystemHelper;
 
 /**
@@ -39,7 +39,7 @@ public class CountryManager {
 
     private CountryManager() {
         Gson gson = new GsonBuilder().create();
-        String json = SystemHelper.getResourceAsString(GeonamesSearchEngine.class, "country_codes.json");
+        String json = SystemHelper.getResourceAsString(GeoNamesQuickSearchProvider.class, "country_codes.json");
         mCountryList = gson.fromJson(json, new TypeToken<ArrayList<Country>>() {
         }.getType());
 
