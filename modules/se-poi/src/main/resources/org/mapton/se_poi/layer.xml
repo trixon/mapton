@@ -5,9 +5,8 @@
         <folder name="POI">
             <attr name="command" stringvalue="p"/>
             <attr name="position" intvalue="0"/>
-            <file name="org-mapton-se_poi-PoiQuickSearchProvider.instance">
-                <attr name="displayName" bundlevalue="org.mapton.se_poi.Bundle#QuickSearch/POI/org-mapton-se_poi-PoiQuickSearchProvider.instance"/>
-            </file>
+            <attr name="displayName" bundlevalue="org.mapton.se_poi.Bundle#QuickSearch/POI"/>
+            <file name="org-mapton-se_poi-PoiQuickSearchProvider.instance"/>
         </folder>
     </folder>
 </filesystem>
