@@ -119,7 +119,7 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>google-maps</artifactId>
         </dependency>
-        
+
         <!-- Trixon -->
         <dependency>
             <groupId>se.trixon.almond</groupId>
@@ -127,5 +127,10 @@
         </dependency>
 
         <!-- Other -->
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-netbeans-spi-quicksearch</artifactId>
+            <version>${netbeans.version}</version>
+        </dependency>
     </dependencies>
 </project>
