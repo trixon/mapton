@@ -46,7 +46,7 @@ public class AppMenuToolBar extends JPanel {
         CallableSystemAction quickSearchAction = (CallableSystemAction) Actions.forID("Edit", "org.netbeans.modules.quicksearch.QuickSearchAction");
         Component quickSearchPresenter = quickSearchAction.getToolbarPresenter();
         quickSearchPresenter.setPreferredSize(SwingHelper.getUIScaledDim(300, 20));
-        setBackground(FxHelper.colorToColor(Mapton.getDefaultThemeColor()));
+        setBackground(FxHelper.colorToColor(Mapton.getThemeColor()));
         add(mStatusLabel = new JLabel("", SwingConstants.CENTER), BorderLayout.CENTER);
         add(quickSearchPresenter, BorderLayout.EAST);
         add(AppToolBarProvider.getInstance().getToolBarPanel(), BorderLayout.PAGE_END);
@@ -60,7 +60,9 @@ public class AppMenuToolBar extends JPanel {
         }, MKey.APP_TOOL_LABEL);
 
         globalState.addListener(gsce -> {
-            setBackground(FxHelper.colorToColor(Mapton.getThemeColor()));
+            SwingHelper.runLater(() -> {
+                setBackground(FxHelper.colorToColor(Mapton.getThemeColor()));
+            });
         }, MKey.APP_THEME_BACKGROUND);
     }
 }
