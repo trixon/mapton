@@ -30,17 +30,14 @@ import javafx.application.Platform;
 import org.mapton.api.MBookmark;
 import org.mapton.api.MLatLon;
 import org.mapton.api.MLatLonBox;
-import org.mapton.api.MSearchEngine;
 import org.mapton.google_maps.api.GoogleMaps;
 import org.openide.util.Exceptions;
-import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
  * @author Patrik Karlström
  */
-@ServiceProvider(service = MSearchEngine.class)
-public class GoogleSearchEngine implements MSearchEngine {
+public class GoogleSearchEngine {
 
     boolean mDone = false;
 
@@ -48,12 +45,10 @@ public class GoogleSearchEngine implements MSearchEngine {
         GoogleMapView googleMapView = new GoogleMapView(Locale.getDefault().getLanguage(), GoogleMaps.getKey());
     }
 
-    @Override
     public String getName() {
         return "Google Maps";
     }
 
-    @Override
     public ArrayList<MBookmark> getResults(String searchString) {
         ArrayList<MBookmark> bookmarks = new ArrayList<>();
 
@@ -99,7 +94,6 @@ public class GoogleSearchEngine implements MSearchEngine {
         return bookmarks;
     }
 
-    @Override
     public boolean isInstantSearch() {
         return false;
     }
