@@ -22,7 +22,6 @@ import org.mapton.api.MContextMenuItem;
 import org.mapton.api.MCooTrans;
 import org.mapton.api.MEngine;
 import org.mapton.api.MPoiProvider;
-import org.mapton.api.MSearchEngine;
 import org.mapton.api.MUpdater;
 import org.mapton.api.MWhatsHereEngine;
 import org.mapton.api.MWmsSourceProvider;
@@ -76,7 +75,6 @@ public class ApiReports implements MApiReport {
 
         populate(MCooTrans.class);
         populate(MEngine.class);
-        populate(MSearchEngine.class);
         populate(MWhatsHereEngine.class);
         populate(MUpdater.class);
         populate(MWmsSourceProvider.class);

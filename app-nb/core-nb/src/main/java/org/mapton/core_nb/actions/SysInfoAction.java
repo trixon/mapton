@@ -21,7 +21,7 @@ import java.util.ResourceBundle;
 import org.apache.commons.lang3.SystemUtils;
 import org.mapton.api.MKey;
 import org.mapton.api.Mapton;
-import org.mapton.core_nb.ui.AppToolBar;
+import org.mapton.core_nb.ui.AppMenuToolBar;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
@@ -42,7 +42,7 @@ public final class SysInfoAction implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        ResourceBundle bundle = NbBundle.getBundle(AppToolBar.class);
+        ResourceBundle bundle = NbBundle.getBundle(AppMenuToolBar.class);
 
         if (SystemUtils.IS_OS_WINDOWS) {
             Mapton.notification(MKey.NOTIFICATION_INFORMATION, bundle.getString("collecting_system_information"), bundle.getString("stay_alert"));
