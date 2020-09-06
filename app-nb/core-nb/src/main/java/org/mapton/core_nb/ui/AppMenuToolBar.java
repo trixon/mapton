@@ -16,7 +16,6 @@
 package org.mapton.core_nb.ui;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javax.swing.JLabel;
@@ -26,8 +25,6 @@ import org.controlsfx.control.Notifications;
 import org.mapton.api.MKey;
 import org.mapton.api.Mapton;
 import org.mapton.base.ui.FxOnScreenDummy;
-import org.openide.awt.Actions;
-import org.openide.util.actions.CallableSystemAction;
 import se.trixon.almond.util.GlobalState;
 import se.trixon.almond.util.GlobalStateChangeEvent;
 import se.trixon.almond.util.fx.FxHelper;
@@ -48,12 +45,8 @@ public class AppMenuToolBar extends JPanel {
 
     private void init() {
         setLayout(new BorderLayout());
-        CallableSystemAction quickSearchAction = (CallableSystemAction) Actions.forID("Edit", "org.netbeans.modules.quicksearch.QuickSearchAction");
-        Component quickSearchPresenter = quickSearchAction.getToolbarPresenter();
-        quickSearchPresenter.setPreferredSize(SwingHelper.getUIScaledDim(300, 20));
         setBackground(FxHelper.colorToColor(Mapton.getThemeColor()));
         add(mStatusLabel = new JLabel("", SwingConstants.CENTER), BorderLayout.CENTER);
-        add(quickSearchPresenter, BorderLayout.EAST);
     }
 
     private void initListeners() {
