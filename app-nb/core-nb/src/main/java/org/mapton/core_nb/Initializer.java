@@ -66,7 +66,6 @@ public class Initializer implements Runnable {
 
         System.setProperty("netbeans.winsys.no_help_in_dialogs", "true");
         System.setProperty("netbeans.winsys.no_toolbars", "true");
-        System.setProperty("netbeans.winsys.status_line.path", "AppStatusPanel.instance");
 
         boolean fullscreen = mOptions.isFullscreen();
         boolean mapOnly = mOptions.isMapOnly();
@@ -103,7 +102,7 @@ public class Initializer implements Runnable {
             }
 
             if (mapOnly) {
-                windowManager.findTopComponent("MapTopComponent").requestActive();;
+                windowManager.findTopComponent("MapTopComponent").requestActive();
                 Actions.forID("Window", "org.netbeans.core.windows.actions.ShowEditorOnlyAction").actionPerformed(null);
             }
 

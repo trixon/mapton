@@ -60,8 +60,6 @@ limitations under the License.
                 <attr name="position" intvalue="9010"/>
             </file>
         </folder>
-        <folder name="Window">
-        </folder>
         <!--        <file name="Spacer.instance">
             <attr name="instanceCreate" methodvalue="javax.swing.Box.createHorizontalGlue"/>
             <attr name="position" intvalue="9005"/>
@@ -77,13 +75,6 @@ limitations under the License.
             <file name="org-netbeans-core-io-ui-IOWindowAction.shadow_hidden"/>
         </folder>
     </folder>
-    <!--    <folder name="Shortcuts">
-        <file name="DS-ENTER.shadow_hidden"/>
-        <file name="F12.shadow_hidden"/>
-    </folder>-->
-    <file name="AppStatusPanel.instance">
-        <attr name="instanceClass" stringvalue="org.mapton.core_nb.ui.AppStatusPanel"/>
-    </file>
     <folder name="OptionsDialog">
         <folder name="Advanced">
             <file name="org-netbeans-core-ui-options-filetypes-FileAssociationsOptionsPanelController.instance_hidden"/>

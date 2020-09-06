@@ -42,6 +42,7 @@ import org.mapton.api.MToolMapCommand;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.mapton.base.ui.AttributionView;
+import org.mapton.base.ui.FxOnScreenDummy;
 import org.mapton.base.ui.TemporalView;
 import org.mapton.base.ui.bookmark.BookmarksView;
 import org.mapton.base.ui.grid.GridView;
@@ -188,6 +189,7 @@ public class MapToolBar extends BaseToolBar {
                 populateCommands();
             });
             populateCommands();
+            getItems().add(0, FxOnScreenDummy.getInstance());
         });
     }
 

@@ -52,8 +52,6 @@ import org.mapton.api.MKey;
 import org.mapton.api.MOptions;
 import org.mapton.api.Mapton;
 import org.mapton.base.ui.MapContextMenu;
-import org.mapton.base.ui.StatusBarView;
-import org.mapton.base.ui.StatusBarView.StatusWindowMode;
 import org.mapton.base.ui.grid.LocalGridsView;
 import org.mapton.core_nb.api.MTopComponent;
 import org.mapton.core_nb.ui.grid.LocalGridEditor;
@@ -95,11 +93,10 @@ import se.trixon.almond.util.swing.SwingHelper;
 })
 public final class MapTopComponent extends MTopComponent {
 
-    private AppStatusPanel mAppStatusPanel;
     private MEngine mEngine;
+    private boolean mMapInitialized = false;
     private JPanel mProgressPanel;
     private BorderPane mRoot;
-    private boolean mMapInitialized = false;
 
     public MapTopComponent() {
         super();
@@ -155,14 +152,12 @@ public final class MapTopComponent extends MTopComponent {
     protected void componentHidden() {
         super.componentHidden();
         WindowManager.getDefault().findTopComponentGroup("MapGroup").close();
-        StatusBarView.getInstance().setWindowMode(StatusWindowMode.OTHER);
     }
 
     @Override
     protected void componentShowing() {
         super.componentShowing();
         WindowManager.getDefault().findTopComponentGroup("MapGroup").open();
-        StatusBarView.getInstance().setWindowMode(StatusWindowMode.MAP);
     }
 
     @Override
@@ -204,33 +199,6 @@ public final class MapTopComponent extends MTopComponent {
         // TODO store your settings
     }
 
-    private void attachStatusbar() {
-        boolean showOnlyMap = mMOptions.isMapOnly();
-
-        if (mEngine.isSwing()) {
-            try {
-                if (showOnlyMap) {
-                    add(getStatusPanel().getFxPanel(), BorderLayout.SOUTH);
-                } else {
-                    getStatusPanel().resetSwing();
-                }
-            } catch (NullPointerException e) {
-                // nvm
-            }
-        } else {
-            Platform.runLater(() -> {
-                if (showOnlyMap) {
-                    mRoot.setBottom(StatusBarView.getInstance());
-                } else {
-                    if (mRoot.getBottom() != null) {
-                        mRoot.setBottom(null);
-                        getStatusPanel().resetFx();
-                    }
-                }
-            });
-        }
-    }
-
     private Scene createScene() {
         mRoot = new BorderPane();
 
@@ -238,14 +206,6 @@ public final class MapTopComponent extends MTopComponent {
         LocalGridsView.setLocalGridEditor(LocalGridEditor.getInstance());
 
         return new Scene(mRoot);
-    }
-
-    private AppStatusPanel getStatusPanel() {
-        if (mAppStatusPanel == null) {
-            mAppStatusPanel = AppStatusPanel.getInstance();
-        }
-
-        return mAppStatusPanel;
     }
 
     private void initListeners() {
@@ -295,10 +255,6 @@ public final class MapTopComponent extends MTopComponent {
                     //nvm
                 }
             }
-            try {
-                attachStatusbar();
-            } catch (NullPointerException e) {
-            }
         });
 
         SwingUtilities.invokeLater(() -> {
@@ -308,6 +264,20 @@ public final class MapTopComponent extends MTopComponent {
                 }
             });
         });
+    }
+
+    private synchronized void markMapAsInitialized() {
+        if (!mMapInitialized) {
+            mMapInitialized = true;
+            new Thread(() -> {
+                try {
+                    TimeUnit.SECONDS.sleep(1);
+                } catch (InterruptedException ex) {
+                    Exceptions.printStackTrace(ex);
+                }
+                Mapton.getExecutionFlow().setReady(MKey.EXECUTION_FLOW_MAP_INITIALIZED);
+            }).start();
+        }
     }
 
     private void setEngine(MEngine engine) {
@@ -350,7 +320,6 @@ public final class MapTopComponent extends MTopComponent {
                     });
                 }).start();
 
-                attachStatusbar();
                 revalidate();
                 repaint();
             });
@@ -359,7 +328,6 @@ public final class MapTopComponent extends MTopComponent {
                 resetFx();
                 add(MapToolBarPanel.getInstance().getToolBarPanel(), BorderLayout.NORTH);
                 mRoot.setCenter(engine.getMapNode());
-                attachStatusbar();
                 try {
                     engine.onActivate();
                     engine.panTo(mMOptions.getMapCenter(), mMOptions.getMapZoom());
@@ -375,19 +343,5 @@ public final class MapTopComponent extends MTopComponent {
         }
 
         Mapton.logLoading("Map Engine", engine.getName());
-    }
-
-    private synchronized void markMapAsInitialized() {
-        if (!mMapInitialized) {
-            mMapInitialized = true;
-            new Thread(() -> {
-                try {
-                    TimeUnit.SECONDS.sleep(1);
-                } catch (InterruptedException ex) {
-                    Exceptions.printStackTrace(ex);
-                }
-                Mapton.getExecutionFlow().setReady(MKey.EXECUTION_FLOW_MAP_INITIALIZED);
-            }).start();
-        }
     }
 }

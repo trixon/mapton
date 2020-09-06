@@ -18,12 +18,14 @@ package org.mapton.core_nb.ui;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import javafx.application.Platform;
+import javafx.geometry.Pos;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import org.controlsfx.control.Notifications;
 import org.mapton.api.MKey;
 import org.mapton.api.Mapton;
+import org.mapton.base.ui.FxOnScreenDummy;
 import org.openide.awt.Actions;
 import org.openide.util.actions.CallableSystemAction;
 import se.trixon.almond.util.GlobalState;
@@ -70,7 +72,7 @@ public class AppMenuToolBar extends JPanel {
         Mapton.getGlobalState().addListener((GlobalStateChangeEvent evt) -> {
             Platform.runLater(() -> {
                 Notifications notifications = evt.getValue();
-//                notifications.owner(null).position(Pos.TOP_RIGHT);
+                notifications.owner(FxOnScreenDummy.getInstance()).position(Pos.TOP_RIGHT);
 
                 switch (evt.getKey()) {
                     case MKey.NOTIFICATION:

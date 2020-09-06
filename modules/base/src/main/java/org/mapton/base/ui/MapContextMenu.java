@@ -173,7 +173,7 @@ public class MapContextMenu {
         MEngine.addEngineListener(new MEngineListener() {
             @Override
             public void displayContextMenu(Point screenXY) {
-                Node rootNode = StatusBarView.getInstance();
+                Node rootNode = FxOnScreenDummy.getInstance();
                 rootNode.getScene().getWindow().requestFocus();
                 rootNode.requestFocus();
 
