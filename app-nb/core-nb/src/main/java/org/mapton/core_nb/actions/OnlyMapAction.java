@@ -17,6 +17,7 @@ package org.mapton.core_nb.actions;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import org.mapton.api.MOptions;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -39,9 +40,12 @@ import se.trixon.almond.nbp.Almond;
 @Messages("CTL_OnlyMapAction=Toggle &map mode")
 public final class OnlyMapAction implements ActionListener {
 
+    private MOptions mOptions = MOptions.getInstance();
+
     @Override
     public void actionPerformed(ActionEvent e) {
         Almond.openAndActivateTopComponent("MapTopComponent");
         Actions.forID("Window", "org.netbeans.core.windows.actions.ShowEditorOnlyAction").actionPerformed(null);
+        mOptions.setMapOnly(!mOptions.isMapOnly());
     }
 }

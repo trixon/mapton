@@ -237,8 +237,6 @@ public final class MapTopComponent extends MTopComponent {
 
         DelayedResetRunner delayedResetRunner = new DelayedResetRunner(10, () -> {
             final JFrame frame = (JFrame) WindowManager.getDefault().getMainWindow();
-            final boolean showOnlyMap = frame.getContentPane().getComponentCount() == 1;
-            mMOptions.setMapOnly(showOnlyMap);
 
             if (SystemUtils.IS_OS_WINDOWS) {
                 try {
