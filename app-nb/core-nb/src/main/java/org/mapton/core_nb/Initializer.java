@@ -73,6 +73,7 @@ public class Initializer implements Runnable {
 
         SwingUtilities.invokeLater(() -> {
             MaterialIcon.setDefaultColor(mOptions.getIconColor());
+            se.trixon.almond.util.icons.material.swing.MaterialIcon.setDefaultColor(FxHelper.colorToColor(mOptions.getIconColor()));
             SwingHelper.runLaterDelayed(10, () -> {
                 JFrame frame = (JFrame) Almond.getFrame();
                 PopOverWatcher.getInstance().setFrame(frame);

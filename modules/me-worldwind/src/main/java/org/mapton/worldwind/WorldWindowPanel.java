@@ -69,6 +69,7 @@ import javax.xml.stream.XMLStreamException;
 import org.apache.commons.io.FileUtils;
 import org.mapton.api.MKey;
 import static org.mapton.api.MKey.*;
+import org.mapton.api.MNotificationIcons;
 import org.mapton.api.MWmsSource;
 import org.mapton.api.Mapton;
 import static org.mapton.worldwind.ModuleOptions.*;
@@ -77,6 +78,8 @@ import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.MapStyle;
 import org.mapton.worldwind.api.WWHelper;
 import org.mapton.worldwind.api.WmsService;
+import org.openide.awt.NotificationDisplayer;
+import org.openide.awt.NotificationDisplayer.Priority;
 import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
@@ -433,7 +436,13 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
                 } catch (XMLStreamException ex) {
                     Mapton.getLog().w(LOG_TAG, ex.getMessage());
                 } catch (WWRuntimeException ex) {
-                    Mapton.notification(MKey.NOTIFICATION_ERROR, Dict.Dialog.TITLE_IO_ERROR.toString(), "WMS error: " + wmsService.getName());
+                    NotificationDisplayer.getDefault().notify(
+                            Dict.Dialog.TITLE_IO_ERROR.toString(),
+                            MNotificationIcons.getErrorIcon(),
+                            String.format("WMS error: %s", wmsService.getName()),
+                            null,
+                            Priority.HIGH
+                    );
                     Mapton.getLog().e(LOG_TAG, ex.getMessage());
                 } catch (Exception ex) {
                     Exceptions.printStackTrace(ex);

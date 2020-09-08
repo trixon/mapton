@@ -16,17 +16,12 @@
 package org.mapton.core_nb.ui;
 
 import java.awt.BorderLayout;
-import javafx.application.Platform;
-import javafx.geometry.Pos;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
-import org.controlsfx.control.Notifications;
 import org.mapton.api.MKey;
 import org.mapton.api.Mapton;
-import org.mapton.base.ui.FxOnScreenDummy;
 import se.trixon.almond.util.GlobalState;
-import se.trixon.almond.util.GlobalStateChangeEvent;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.swing.SwingHelper;
 
@@ -61,37 +56,5 @@ public class AppMenuToolBar extends JPanel {
                 setBackground(FxHelper.colorToColor(Mapton.getThemeColor()));
             });
         }, MKey.APP_THEME_BACKGROUND);
-
-        Mapton.getGlobalState().addListener((GlobalStateChangeEvent evt) -> {
-            Platform.runLater(() -> {
-                Notifications notifications = evt.getValue();
-                notifications.owner(FxOnScreenDummy.getInstance()).position(Pos.TOP_RIGHT);
-
-                switch (evt.getKey()) {
-                    case MKey.NOTIFICATION:
-                        notifications.show();
-                        break;
-
-                    case MKey.NOTIFICATION_CONFIRM:
-                        notifications.showConfirm();
-                        break;
-
-                    case MKey.NOTIFICATION_ERROR:
-                        notifications.showError();
-                        break;
-
-                    case MKey.NOTIFICATION_INFORMATION:
-                        notifications.showInformation();
-                        break;
-
-                    case MKey.NOTIFICATION_WARNING:
-                        notifications.showWarning();
-                        break;
-
-                    default:
-                        throw new AssertionError();
-                }
-            });
-        }, MKey.NOTIFICATION, MKey.NOTIFICATION_CONFIRM, MKey.NOTIFICATION_ERROR, MKey.NOTIFICATION_INFORMATION, MKey.NOTIFICATION_WARNING);
     }
 }

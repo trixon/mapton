@@ -16,20 +16,16 @@
 package org.mapton.core_nb.updater;
 
 import java.awt.event.ActionEvent;
-import java.io.File;
 import java.util.ResourceBundle;
 import java.util.concurrent.TimeUnit;
-import javafx.util.Duration;
 import javax.swing.Timer;
 import org.apache.commons.lang3.ObjectUtils;
-import org.controlsfx.control.action.Action;
-import org.mapton.api.MKey;
+import org.mapton.api.MNotificationIcons;
 import org.mapton.api.MUpdater;
-import org.mapton.api.Mapton;
+import org.openide.awt.NotificationDisplayer;
 import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
 import se.trixon.almond.nbp.Almond;
-import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
 
 /**
@@ -50,28 +46,27 @@ public class UpdateNotificator {
         mTimer.start();
     }
 
-    private void alert(MUpdater.ByFile updater) {
-        String name = updater.getName();
-        if (updater.getCategory() != null) {
-            name = String.format("%s/%s", updater.getCategory(), updater.getName());
+    private void check() {
+        for (var updater : Lookup.getDefault().lookupAll(MUpdater.ByFile.class)) {
+            var file = updater.getFile();
+            if (ObjectUtils.allNotNull(updater.getAgeLimit(), file)) {
+                if (!file.exists() || SystemHelper.age(file.lastModified()) >= updater.getAgeLimit()) {
+                    displayNotification();
+                    break;
+                }
+            }
         }
-
-        Action action = new Action(mBundle.getString("updater_tool"), (eventHandler) -> {
-            Almond.openAndActivateTopComponent("UpdaterTopComponent");
-        });
-
-        Mapton.notification(MKey.NOTIFICATION_WARNING, Dict.UPDATE.toString(), name, Duration.seconds(10), action);
     }
 
-    private void check() {
-        Lookup.getDefault().lookupAll(MUpdater.ByFile.class).stream()
-                .forEach((updater) -> {
-                    final File file = updater.getFile();
-                    if (ObjectUtils.allNotNull(updater.getAgeLimit(), file)) {
-                        if (!file.exists() || SystemHelper.age(file.lastModified()) >= updater.getAgeLimit()) {
-                            alert(updater);
-                        }
-                    }
-                });
+    private void displayNotification() {
+        NotificationDisplayer.getDefault().notify(
+                mBundle.getString("update_available"),
+                MNotificationIcons.getInformationIcon(),
+                mBundle.getString("updater_tool"),
+                actionEvent -> {
+                    Almond.openAndActivateTopComponent("UpdaterTopComponent");
+                },
+                NotificationDisplayer.Priority.NORMAL
+        );
     }
 }

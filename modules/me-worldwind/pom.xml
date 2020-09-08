@@ -56,6 +56,16 @@
             <artifactId>org-openide-util-lookup</artifactId>
             <version>${netbeans.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.netbeans.modules</groupId>
+            <artifactId>org-netbeans-modules-notifications</artifactId>
+            <version>${netbeans.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-awt</artifactId>
+            <version>${netbeans.version}</version>
+        </dependency>
 
         <!-- Mapton -->
         <dependency>

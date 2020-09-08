@@ -15,17 +15,14 @@
  */
 package org.mapton.core_nb.actions;
 
-import org.mapton.core_nb.api.BaseAction;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import org.mapton.api.MKey;
 import org.mapton.api.MTemporaryPoiManager;
-import org.mapton.api.Mapton;
+import org.mapton.core_nb.api.BaseAction;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle;
-import se.trixon.almond.util.Dict;
 
 @ActionID(
         category = "Mapton",
@@ -45,6 +42,5 @@ public final class ClearTemporaryLayerAction extends BaseAction implements Actio
     @Override
     public void actionPerformed(ActionEvent e) {
         MTemporaryPoiManager.getInstance().getItems().clear();
-        Mapton.notification(MKey.NOTIFICATION_INFORMATION, getName(), Dict.OPERATION_COMPLETED.toString());
     }
 }

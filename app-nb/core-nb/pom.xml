@@ -134,6 +134,11 @@
             <artifactId>org-netbeans-core-multitabs</artifactId>
             <version>${netbeans.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.netbeans.modules</groupId>
+            <artifactId>org-netbeans-modules-notifications</artifactId>
+            <version>${netbeans.version}</version>
+        </dependency>
 
         <!-- Mapton -->
         <dependency>

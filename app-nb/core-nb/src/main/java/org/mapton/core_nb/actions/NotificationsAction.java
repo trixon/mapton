@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Patrik Karlström.
+ * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,31 +17,27 @@ package org.mapton.core_nb.actions;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import org.mapton.api.MKey;
-import org.mapton.api.Mapton;
-import org.mapton.core_nb.api.BaseAction;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
-import org.openide.util.NbBundle;
+import org.openide.awt.Actions;
+import org.openide.util.NbBundle.Messages;
 
 @ActionID(
         category = "Mapton",
-        id = "org.mapton.core_nb.actions.ClearIndicatorLayerAction"
+        id = "org.mapton.core_nb.actions.NotificationsAction"
 )
 @ActionRegistration(
-        displayName = "#CTL_ClearIndicatorLayerAction"
+        displayName = "#CTL_NotificationsAction"
 )
-@ActionReference(path = "Shortcuts", name = "DS-I")
-@NbBundle.Messages("CTL_ClearIndicatorLayerAction=Clear indicators")
-public final class ClearIndicatorLayerAction extends BaseAction implements ActionListener {
-
-    public static String getName() {
-        return Bundle.CTL_ClearIndicatorLayerAction();
-    }
+@ActionReferences({
+    @ActionReference(path = "Menu/Window", position = 20),})
+@Messages("CTL_NotificationsAction=&Notifications")
+public final class NotificationsAction implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        Mapton.getGlobalState().put(MKey.INDICATOR_LAYER_LOAD, null);
+        Actions.forID("Window", "org.netbeans.modules.notifications.NotificationCenterTopComponent").actionPerformed(null);
     }
 }

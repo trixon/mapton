@@ -253,7 +253,7 @@ public class MapContextMenu {
                 int zoom = (int) (5 + getEngine().getZoom() * 18);
                 String s = whatsHereEngine.getResult(getEngine().getLatLonMouse(), zoom);
                 if (StringUtils.isNotBlank(s)) {
-                    Mapton.notification(MKey.NOTIFICATION_INFORMATION, getBundleString("whats_here"), s);
+                    Mapton.notification(MKey.NOTIFICATION_FX_INFORMATION, getBundleString("whats_here"), s);
                     Mapton.execute(() -> {
                         getEngine().onWhatsHere(s);
                     });

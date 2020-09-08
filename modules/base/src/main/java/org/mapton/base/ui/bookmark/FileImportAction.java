@@ -34,9 +34,10 @@ import org.controlsfx.control.PopOver;
 import org.controlsfx.control.action.Action;
 import org.mapton.api.MBookmark;
 import org.mapton.api.MBookmarkManager;
-import org.mapton.api.MKey;
-import org.mapton.api.Mapton;
+import org.mapton.api.MNotificationIcons;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
+import org.openide.awt.NotificationDisplayer;
+import org.openide.awt.NotificationDisplayer.Priority;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.MathHelper;
@@ -106,7 +107,13 @@ public class FileImportAction extends FileAction {
                         }
 
                         if (mImports + mErrors > 0) {
-                            Mapton.notification(MKey.NOTIFICATION_INFORMATION, dialogTitle, Dict.OPERATION_COMPLETED.toString());
+                            NotificationDisplayer.getDefault().notify(
+                                    Dict.OPERATION_COMPLETED.toString(),
+                                    MNotificationIcons.getInformationIcon(),
+                                    dialogTitle,
+                                    null,
+                                    Priority.LOW
+                            );
                         }
                     } catch (IOException ex) {
                         Exceptions.printStackTrace(ex);
@@ -178,10 +185,12 @@ public class FileImportAction extends FileAction {
                 mErrors = result.y;
             } else {
                 String message = String.format(mBundle.getString("bookmark_import_error_csv_message"), String.join("\n ▶ ", requiredColumns));
-                Mapton.notification(
-                        MKey.NOTIFICATION_ERROR,
+                NotificationDisplayer.getDefault().notify(
                         mBundle.getString("bookmark_import_error_csv_title"),
-                        message
+                        MNotificationIcons.getErrorIcon(),
+                        message,
+                        null,
+                        Priority.HIGH
                 );
             }
         }

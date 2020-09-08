@@ -72,6 +72,7 @@ limitations under the License.
             <file name="SwitchToRecentDocumentAction.shadow_hidden"/>
             <file name="Tools_hidden"/>
             <file name="Web_hidden"/>
+            <file name="org-netbeans-core-ide-ServicesTabAction.shadow_hidden"/>
             <file name="org-netbeans-core-io-ui-IOWindowAction.shadow_hidden"/>
         </folder>
     </folder>

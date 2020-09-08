@@ -32,12 +32,12 @@ import se.trixon.almond.util.swing.SwingHelper;
  *
  * @author Patrik Karlström
  */
-@ServiceProvider(service = StatusLineElementProvider.class, position = 9998)
-public class CoordinateStatusLineElementProvider implements StatusLineElementProvider {
+@ServiceProvider(service = StatusLineElementProvider.class, position = 598)
+public class CoordinateStatusLineElement implements StatusLineElementProvider {
 
     private JLabel mLabel;
 
-    public CoordinateStatusLineElementProvider() {
+    public CoordinateStatusLineElement() {
     }
 
     @Override

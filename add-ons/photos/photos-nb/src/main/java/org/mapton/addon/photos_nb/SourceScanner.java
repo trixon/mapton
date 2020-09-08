@@ -37,8 +37,8 @@ import org.mapton.addon.photos_nb.api.MapoCollection;
 import org.mapton.addon.photos_nb.api.MapoPhoto;
 import org.mapton.addon.photos_nb.api.MapoSource;
 import org.mapton.addon.photos_nb.api.MapoSourceManager;
-import org.mapton.api.MKey;
-import org.mapton.api.Mapton;
+import org.mapton.api.MNotificationIcons;
+import org.openide.awt.NotificationDisplayer;
 import org.openide.util.Exceptions;
 import se.trixon.almond.nbp.NbPrint;
 import se.trixon.almond.util.Dict;
@@ -75,11 +75,23 @@ public class SourceScanner {
 
         if (mInterrupted) {
             mPrint.out("INTERRUPTED SCAN COLLECTION");
-            Mapton.notification(MKey.NOTIFICATION_WARNING, Dict.PHOTOS.toString(), Dict.OPERATION_INTERRUPTED.toString());
+            NotificationDisplayer.getDefault().notify(
+                    Dict.OPERATION_INTERRUPTED.toString(),
+                    MNotificationIcons.getWarningIcon(),
+                    Dict.PHOTOS.toString(),
+                    null,
+                    NotificationDisplayer.Priority.HIGH
+            );
         } else {
             mManager.load();
             mPrint.out("END SCAN COLLECTION");
-            Mapton.notification(MKey.NOTIFICATION_INFORMATION, Dict.PHOTOS.toString(), Dict.OPERATION_COMPLETED.toString());
+            NotificationDisplayer.getDefault().notify(
+                    Dict.OPERATION_COMPLETED.toString(),
+                    MNotificationIcons.getInformationIcon(),
+                    Dict.PHOTOS.toString(),
+                    null,
+                    NotificationDisplayer.Priority.LOW
+            );
         }
     }
 

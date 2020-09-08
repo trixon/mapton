@@ -21,9 +21,9 @@ import java.util.ArrayList;
 import org.apache.commons.io.FileUtils;
 import org.controlsfx.control.action.Action;
 import org.mapton.addon.photos_nb.api.MapoSource;
-import org.mapton.api.MKey;
-import org.mapton.api.Mapton;
+import org.mapton.api.MNotificationIcons;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
+import org.openide.awt.NotificationDisplayer;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxActionSwing;
@@ -67,7 +67,13 @@ public class SourceFileExportAction extends SourceFileAction {
                         mFile = SimpleDialog.getPath();
                         try {
                             mManager.sourceExport(mFile, selectedSources);
-                            Mapton.notification(MKey.NOTIFICATION_INFORMATION, dialogTitle, Dict.OPERATION_COMPLETED.toString());
+                            NotificationDisplayer.getDefault().notify(
+                                    Dict.OPERATION_COMPLETED.toString(),
+                                    MNotificationIcons.getInformationIcon(),
+                                    dialogTitle,
+                                    null,
+                                    NotificationDisplayer.Priority.LOW
+                            );
                         } catch (IOException ex) {
                             Exceptions.printStackTrace(ex);
                         }

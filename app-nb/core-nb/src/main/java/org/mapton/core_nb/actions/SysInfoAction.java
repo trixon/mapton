@@ -17,15 +17,9 @@ package org.mapton.core_nb.actions;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ResourceBundle;
-import org.apache.commons.lang3.SystemUtils;
-import org.mapton.api.MKey;
-import org.mapton.api.Mapton;
-import org.mapton.core_nb.ui.AppMenuToolBar;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
-import org.openide.util.NbBundle;
 import org.openide.util.NbBundle.Messages;
 import se.trixon.almond.nbp.dialogs.NbSystemInformation;
 
@@ -42,12 +36,6 @@ public final class SysInfoAction implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        ResourceBundle bundle = NbBundle.getBundle(AppMenuToolBar.class);
-
-        if (SystemUtils.IS_OS_WINDOWS) {
-            Mapton.notification(MKey.NOTIFICATION_INFORMATION, bundle.getString("collecting_system_information"), bundle.getString("stay_alert"));
-        }
-
         new Thread(() -> {
             new NbSystemInformation().displayDialog();
         }).start();

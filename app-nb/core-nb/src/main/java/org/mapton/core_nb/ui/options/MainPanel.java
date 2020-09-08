@@ -32,13 +32,14 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import org.controlsfx.control.ToggleSwitch;
-import org.controlsfx.control.action.Action;
 import org.mapton.api.MDict;
 import org.mapton.api.MEngine;
-import org.mapton.api.MKey;
+import org.mapton.api.MNotificationIcons;
 import org.mapton.api.MOptions;
 import org.mapton.api.Mapton;
 import org.openide.LifecycleManager;
+import org.openide.awt.NotificationDisplayer;
+import org.openide.awt.NotificationDisplayer.Priority;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.util.NbBundle;
@@ -247,12 +248,16 @@ final class MainPanel extends javax.swing.JPanel {
             String laf = newNightMode ? "com.formdev.flatlaf.FlatDarkLaf" : "com.formdev.flatlaf.FlatLightLaf";
             NbPreferences.root().node("laf").put("laf", laf);
 
-            Action restartAction = new Action(Dict.RESTART.toString(), (eventHandler) -> {
-                LifecycleManager.getDefault().markForRestart();
-                LifecycleManager.getDefault().exit();
-            });
-
-            Mapton.notification(MKey.NOTIFICATION_WARNING, mBundle.getString("actionRequired"), mBundle.getString("restartRequired"), restartAction);
+            NotificationDisplayer.getDefault().notify(
+                    mBundle.getString("restartRequired"),
+                    MNotificationIcons.getWarningIcon(),
+                    Dict.RESTART.toString(),
+                    actionEvent -> {
+                        LifecycleManager.getDefault().markForRestart();
+                        LifecycleManager.getDefault().exit();
+                    },
+                    Priority.HIGH
+            );
         }
     }
 }

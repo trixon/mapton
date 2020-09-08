@@ -15,7 +15,12 @@
  */
 package org.mapton.base.ui;
 
+import javafx.application.Platform;
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import org.controlsfx.control.Notifications;
+import org.mapton.api.MKey;
+import org.mapton.api.Mapton;
 
 /**
  *
@@ -23,11 +28,46 @@ import javafx.scene.control.Label;
  */
 public class FxOnScreenDummy extends Label {
 
-    private FxOnScreenDummy() {
-    }
-
     public static FxOnScreenDummy getInstance() {
         return Holder.INSTANCE;
+    }
+
+    private FxOnScreenDummy() {
+        initListener();
+    }
+
+    private void initListener() {
+        Mapton.getGlobalState().addListener(gsce -> {
+            Platform.runLater(() -> {
+                Notifications notifications = gsce.getValue();
+                notifications.owner(this).position(Pos.TOP_RIGHT);
+
+                switch (gsce.getKey()) {
+                    case MKey.NOTIFICATION_FX:
+                        notifications.show();
+                        break;
+
+                    case MKey.NOTIFICATION_FX_CONFIRM:
+                        notifications.showConfirm();
+                        break;
+
+                    case MKey.NOTIFICATION_FX_ERROR:
+                        notifications.showError();
+                        break;
+
+                    case MKey.NOTIFICATION_FX_INFORMATION:
+                        notifications.showInformation();
+                        break;
+
+                    case MKey.NOTIFICATION_FX_WARNING:
+                        notifications.showWarning();
+                        break;
+
+                    default:
+                        throw new AssertionError();
+                }
+            });
+        }, MKey.NOTIFICATION_FX, MKey.NOTIFICATION_FX_CONFIRM, MKey.NOTIFICATION_FX_ERROR, MKey.NOTIFICATION_FX_INFORMATION, MKey.NOTIFICATION_FX_WARNING);
     }
 
     private static class Holder {

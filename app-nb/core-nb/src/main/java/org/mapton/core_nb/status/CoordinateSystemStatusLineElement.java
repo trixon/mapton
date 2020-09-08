@@ -16,6 +16,7 @@
 package org.mapton.core_nb.status;
 
 import java.awt.Component;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import javax.swing.DefaultComboBoxModel;
@@ -34,14 +35,15 @@ import se.trixon.almond.util.swing.SwingHelper;
  *
  * @author Patrik Karlström
  */
-@ServiceProvider(service = StatusLineElementProvider.class, position = 9999)
-public class CoordinateSystemStatusLineElementProvider implements StatusLineElementProvider {
+@ServiceProvider(service = StatusLineElementProvider.class, position = 599)
+public class CoordinateSystemStatusLineElement implements StatusLineElementProvider {
 
     private JComboBox<MCooTrans> mComboBox;
     private MCooTrans mCooTrans;
     private final MOptions mOptions = MOptions.getInstance();
+    private ActionListener mActionListener;
 
-    public CoordinateSystemStatusLineElementProvider() {
+    public CoordinateSystemStatusLineElement() {
     }
 
     @Override
@@ -61,14 +63,14 @@ public class CoordinateSystemStatusLineElementProvider implements StatusLineElem
     }
 
     private void initListeners() {
-        Lookup.getDefault().lookupResult(MCooTrans.class).addLookupListener(lookupEvent -> {
-            updateProviders();
-        });
-
-        mComboBox.addActionListener(actionEvent -> {
+        mActionListener = actionEvent -> {
             mCooTrans = (MCooTrans) mComboBox.getModel().getSelectedItem();
             mOptions.setMapCooTrans(mCooTrans.getName());
             updateMousePositionData();
+        };
+
+        Lookup.getDefault().lookupResult(MCooTrans.class).addLookupListener(lookupEvent -> {
+            updateProviders();
         });
     }
 
@@ -79,6 +81,7 @@ public class CoordinateSystemStatusLineElementProvider implements StatusLineElem
 
     private void updateProviders() {
         SwingHelper.runLater(() -> {
+            mComboBox.removeActionListener(mActionListener);
             mComboBox.removeAllItems();
             final ArrayList<MCooTrans> cooTranses = MCooTrans.getCooTrans();
             Collections.sort(cooTranses, (o1, o2) -> o1.getName().compareTo(o2.getName()));
@@ -99,6 +102,8 @@ public class CoordinateSystemStatusLineElementProvider implements StatusLineElem
                 mCooTrans = (MCooTrans) mComboBox.getModel().getSelectedItem();
                 updateMousePositionData();
             }
+
+            mComboBox.addActionListener(mActionListener);
         });
     }
 }
