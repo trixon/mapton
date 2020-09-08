@@ -59,17 +59,13 @@ public class ImageLayerBundle extends LayerBundle {
 
     private void refresh() {
         Thread thread = new Thread(() -> {
-            System.out.println("status: Loading image");
             File dir = new File(FileUtils.getUserDirectory(), "test/img");
             loadImages(dir);
 
             LayerBundleManager.getInstance().redraw();
-
-            System.out.println("status: ready");
         });
 
         thread.setPriority(Thread.MIN_PRIORITY);
         thread.start();
     }
-
 }

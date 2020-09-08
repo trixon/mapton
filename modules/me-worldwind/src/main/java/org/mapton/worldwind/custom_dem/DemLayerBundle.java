@@ -61,15 +61,10 @@ public class DemLayerBundle extends LayerBundle {
 
     private void refresh() {
         Thread thread = new Thread(() -> {
-            System.out.println("status: Loading image");
 //                File file = new File("c:/temp/orto.tif");
-
             File dir = new File(FileUtils.getUserDirectory(), "test/dem");
             loadImages(dir);
-
             LayerBundleManager.getInstance().redraw();
-
-            System.out.println("status: ready");
         });
 
         thread.setPriority(Thread.MIN_PRIORITY);

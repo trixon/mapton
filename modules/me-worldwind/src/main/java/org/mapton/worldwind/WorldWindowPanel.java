@@ -179,8 +179,6 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
             if (dir.isDirectory()) {
                 customElevationModelLoad(dir);
             }
-
-            System.out.println("status: ready");
         });
 
         thread.setPriority(Thread.MIN_PRIORITY);
