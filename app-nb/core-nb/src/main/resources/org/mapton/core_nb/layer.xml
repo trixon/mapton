@@ -34,6 +34,14 @@ limitations under the License.
         </folder>
     </folder>
     <folder name="Menu">
+        <folder name="Edit">
+            <file name="Separator2.instance_hidden"/>
+            <file name="org-netbeans-modules-search-FindInFilesAction-separatorBefore.instance_hidden"/>
+            <file name="org-netbeans-modules-search-FindInFilesAction.shadow_hidden"/>
+            <file name="org-netbeans-modules-search-ReplaceInFilesAction.shadow_hidden"/>
+            <file name="org-openide-actions-FindAction.shadow_hidden"/>
+            <file name="org-openide-actions-ReplaceAction.shadow_hidden"/>
+        </folder>
         <folder name="File">
             <file name="org-openide-actions-SaveAction.shadow_hidden"/>
             <file name="org-openide-actions-SaveAllAction.shadow_hidden"/>
@@ -108,6 +116,10 @@ limitations under the License.
         </folder>
     </folder>
     <folder name="Shortcuts">
+        <file name="D-I.shadow_hidden"/>
+        <file name="D-F.shadow">
+            <attr name="originalFile" stringvalue="Actions/Edit/org-netbeans-modules-quicksearch-QuickSearchAction.instance"/>
+        </file>
         <file name="DS-R.shadow">
             <attr name="originalFile" stringvalue="Actions/File/se-trixon-almond-nbp-actions-RestartAction.instance"/>
         </file>

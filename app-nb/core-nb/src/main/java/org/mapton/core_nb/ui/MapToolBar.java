@@ -423,7 +423,10 @@ public class MapToolBar extends BaseToolBar {
                 });
                 mCommandMenuItems.add(menuItem);
             });
-            mCommandMenuItems.sort((o1, o2) -> o1.getText().compareTo(o2.getText()));
+
+            if (!mCommandMenuItems.isEmpty()) {
+                mCommandMenuItems.sort((o1, o2) -> o1.getText().compareTo(o2.getText()));
+            }
         }).start();
     }
 
