@@ -32,7 +32,7 @@ import org.openide.awt.ActionRegistration;
 )
 @ActionReferences({
     @ActionReference(path = "Shortcuts", name = "DS-3"),
-    @ActionReference(path = "Menu/Tools/System", position = 2)
+    @ActionReference(path = "Menu/MapTools", position = 1200)
 })
 public final class PoiAction extends BaseAction {
 

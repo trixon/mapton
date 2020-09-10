@@ -58,7 +58,7 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
 )
 @ActionID(category = "Mapton", id = "org.mapton.addon.xkcd_nb.XkcdAction")
 @ActionReferences({
-    @ActionReference(path = "Menu/Tools/Add-on", position = 0)
+    @ActionReference(path = "Menu/MapTools/Add-on", position = 0)
 })
 @NbBundle.Messages({
     "CTL_XkcdAction=XKCD"

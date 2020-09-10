@@ -47,7 +47,7 @@ import org.openide.windows.TopComponent;
 )
 @ActionID(category = "Mapton", id = "org.mapton.addon.wikipedia.WikipediaAction")
 @ActionReferences({
-    @ActionReference(path = "Menu/Tools/Add-on", position = 0)
+    @ActionReference(path = "Menu/MapTools/Add-on", position = 0)
 })
 @NbBundle.Messages({
     "CTL_WikipediaAction=Wikipedia"

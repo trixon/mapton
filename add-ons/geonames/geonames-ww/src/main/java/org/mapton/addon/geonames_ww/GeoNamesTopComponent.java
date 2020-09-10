@@ -63,7 +63,7 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
 )
 @ActionID(category = "Mapton", id = "org.mapton.addon.geonames.GeoNamesAction")
 @ActionReferences({
-    @ActionReference(path = "Menu/Tools/Add-on", position = 0)
+    @ActionReference(path = "Menu/MapTools/Add-on", position = 0)
 })
 @NbBundle.Messages({
     "CTL_GeoNamesAction=Population (GeoNames)"

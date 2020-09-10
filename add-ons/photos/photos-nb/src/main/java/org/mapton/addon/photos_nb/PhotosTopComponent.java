@@ -48,7 +48,7 @@ import se.trixon.almond.util.Dict;
 )
 @ActionID(category = "Mapton", id = "org.mapton.addon.photos.PhotosAction")
 @ActionReferences({
-    @ActionReference(path = "Menu/Tools/Add-on", position = 0)
+    @ActionReference(path = "Menu/MapTools/Add-on", position = 0)
 })
 @NbBundle.Messages({
     "CTL_PhotosAction=Photos"
