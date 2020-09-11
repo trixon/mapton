@@ -42,6 +42,8 @@ public class AppMenuToolBar extends JPanel {
         setLayout(new BorderLayout());
         setBackground(FxHelper.colorToColor(Mapton.getThemeColor()));
         add(mStatusLabel = new JLabel("", SwingConstants.CENTER), BorderLayout.CENTER);
+        mStatusLabel.setText(Mapton.getGlobalState().getOrDefault(MKey.APP_TOOL_LABEL, null));
+        mStatusLabel.setForeground(FxHelper.colorToColor(Mapton.getThemeForegroundColor()));
     }
 
     private void initListeners() {
@@ -54,7 +56,8 @@ public class AppMenuToolBar extends JPanel {
         globalState.addListener(gsce -> {
             SwingHelper.runLater(() -> {
                 setBackground(FxHelper.colorToColor(Mapton.getThemeColor()));
+                mStatusLabel.setForeground(FxHelper.colorToColor(Mapton.getThemeForegroundColor()));
             });
-        }, MKey.APP_THEME_BACKGROUND);
+        }, MKey.APP_THEME_BACKGROUND, MKey.APP_THEME_FOREGROUND);
     }
 }

@@ -22,6 +22,7 @@ package org.mapton.api;
 public class MKey {
 
     public static final String APP_THEME_BACKGROUND = "app_theme_background";
+    public static final String APP_THEME_FOREGROUND = "app_theme_foreground";
     public static final String APP_TOOL_LABEL = "app_toolbar.label";
     public static final String APP_TOOL_STARTED = "app_tool.started";
     public static final String BACKGROUND_IMAGE = "background_image";

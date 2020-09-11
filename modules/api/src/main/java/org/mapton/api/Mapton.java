@@ -161,6 +161,10 @@ public class Mapton {
         return Color.web("#102039");
     }
 
+    public static Color getDefaultThemeForegroundColor() {
+        return Color.WHITE;
+    }
+
     public static MEngine getEngine() {
         MEngine defaultEngine = null;
 
@@ -215,6 +219,10 @@ public class Mapton {
 
     public static Color getThemeColor() {
         return Mapton.getGlobalState().getOrDefault(MKey.APP_THEME_BACKGROUND, getDefaultThemeColor());
+    }
+
+    public static Color getThemeForegroundColor() {
+        return Mapton.getGlobalState().getOrDefault(MKey.APP_THEME_FOREGROUND, getDefaultThemeForegroundColor());
     }
 
     public static boolean isNightMode() {
