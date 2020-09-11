@@ -39,6 +39,8 @@ public final class PropertiesTopComponent extends MTopComponent {
 
     public PropertiesTopComponent() {
         setName(Dict.PROPERTIES.toString());
+        putClientProperty("print.printable", Boolean.TRUE); // NOI18N
+        putClientProperty("print.name", String.format("Mapton - %s", Dict.PROPERTIES.toString())); // NOI18N
     }
 
     @Override

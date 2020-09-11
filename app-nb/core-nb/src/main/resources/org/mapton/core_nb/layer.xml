@@ -33,7 +33,21 @@ limitations under the License.
             </file>-->
         </folder>
     </folder>
+    <folder name="Keymaps">
+        <folder name="NetBeans">
+            <file name="DOS-P.shadow_hidden"/>
+        </folder>
+    </folder>
     <folder name="Menu">
+        <folder name="File">
+            <file name="org-openide-actions-SaveAction.shadow_hidden"/>
+            <file name="org-openide-actions-SaveAllAction.shadow_hidden"/>
+            <file name="org-openide-actions-SaveAsAction.shadow_hidden"/>
+            <file name="org-netbeans-modules-print-action-PrintAction.shadow">
+                <attr name="originalFile" stringvalue="Actions/File/org-netbeans-modules-print-action-PrintAction.instance"/>
+                <attr name="position" intvalue="2099"/>
+            </file>
+        </folder>
         <folder name="Edit">
             <file name="Separator2.instance_hidden"/>
             <file name="org-netbeans-modules-search-FindInFilesAction-separatorBefore.instance_hidden"/>
@@ -41,11 +55,6 @@ limitations under the License.
             <file name="org-netbeans-modules-search-ReplaceInFilesAction.shadow_hidden"/>
             <file name="org-openide-actions-FindAction.shadow_hidden"/>
             <file name="org-openide-actions-ReplaceAction.shadow_hidden"/>
-        </folder>
-        <folder name="File">
-            <file name="org-openide-actions-SaveAction.shadow_hidden"/>
-            <file name="org-openide-actions-SaveAllAction.shadow_hidden"/>
-            <file name="org-openide-actions-SaveAsAction.shadow_hidden"/>
         </folder>
         <file name="GoTo_hidden"/>
         <folder name="MapTools">
@@ -120,6 +129,11 @@ limitations under the License.
     </folder>
     <folder name="Shortcuts">
         <file name="D-I.shadow_hidden"/>
+        <file name="DOS-P.shadow_hidden"/>
+
+        <file name="D-P.shadow">
+            <attr name="originalFile" stringvalue="Actions/File/org-netbeans-modules-print-action-PrintAction.instance"/>
+        </file>
         <file name="D-F.shadow">
             <attr name="originalFile" stringvalue="Actions/Edit/org-netbeans-modules-quicksearch-QuickSearchAction.instance"/>
         </file>

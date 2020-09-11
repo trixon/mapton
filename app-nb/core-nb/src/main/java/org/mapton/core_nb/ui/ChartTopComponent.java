@@ -39,6 +39,8 @@ public final class ChartTopComponent extends MTopComponent {
 
     public ChartTopComponent() {
         setName(Dict.CHART.toString());
+        putClientProperty("print.printable", Boolean.TRUE); // NOI18N
+        putClientProperty("print.name", String.format("Mapton - %s", Dict.CHART.toString())); // NOI18N
     }
 
     @Override

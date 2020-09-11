@@ -106,6 +106,8 @@ public final class MapTopComponent extends MTopComponent {
         putClientProperty(PROP_DRAGGING_DISABLED, Boolean.TRUE);
         putClientProperty(PROP_MAXIMIZATION_DISABLED, Boolean.TRUE);
         putClientProperty(PROP_UNDOCKING_DISABLED, Boolean.TRUE);
+        putClientProperty("print.printable", Boolean.TRUE); // NOI18N
+        putClientProperty("print.name", String.format("Mapton - %s", Dict.MAP.toString())); // NOI18N
 
         var map = se.trixon.almond.util.swing.dialogs.SimpleDialog.getExtensionFilters();
         map.put("*", new FileNameExtensionFilter(Dict.ALL_FILES.toString(), "*"));
