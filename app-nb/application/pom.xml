@@ -84,10 +84,6 @@
                     <groupId>org.netbeans.modules</groupId>
                     <artifactId>org-netbeans-modules-favorites</artifactId>
                 </exclusion>
-                <exclusion>
-                    <groupId>org.netbeans.modules</groupId>
-                    <artifactId>org-openide-util-ui-svg</artifactId>
-                </exclusion>
             </exclusions>
         </dependency>
 
