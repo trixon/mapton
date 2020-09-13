@@ -75,23 +75,22 @@ public class CoordinateStatusLineElement implements StatusLineElementProvider {
                     if (engine.getAltitude() != null) {
                         double metersAltitude = engine.getAltitude();
                         if (Math.abs(metersAltitude) >= 1000) {
-                            altitude = String.format("%s %,7d km, ", Dict.ALTITUDE.toString(), (int) Math.round(metersAltitude / 1e3));
+                            altitude = String.format("%s %,7d km", Dict.ALTITUDE.toString(), (int) Math.round(metersAltitude / 1e3));
                         } else {
-                            altitude = String.format("%s %,7d m, ", Dict.ALTITUDE.toString(), (int) Math.round(metersAltitude));
+                            altitude = String.format("%s %,7d m", Dict.ALTITUDE.toString(), (int) Math.round(metersAltitude));
                         }
                     }
 
                     String elevation = "";
                     if (engine.getElevation() != null) {
-                        elevation = String.format("%s %,6d %s, ", Dict.ELEVATION.toString(), (int) engine.getElevation().doubleValue(), Dict.METERS.toString().toLowerCase());
+                        elevation = String.format("%s %,6d %s", Dict.ELEVATION.toString(), (int) engine.getElevation().doubleValue(), Dict.METERS.toString().toLowerCase());
                     }
 
-                    String cooString = MCooTrans.getCooTrans(MOptions.getInstance().getMapCooTransName()).getString(latitude, longitude);
-                    String lat = String.format("%9.6f°%s", Math.abs(latitude), latitude < 0 ? "S" : "N");
-                    String lon = String.format("%10.6f°%s", Math.abs(longitude), longitude < 0 ? "W" : "E");
-                    String latLon = String.format("%s  %s WGS 84 DD, %s", lat, lon, cooString);
-
-                    mLabel.setText(altitude + elevation + latLon);
+                    mLabel.setText(String.format("%s, %s, %s",
+                            altitude,
+                            elevation,
+                            MCooTrans.getCooTrans(MOptions.getInstance().getMapCooTransName()).getString(latitude, longitude)
+                    ));
                 }
             } else {
                 mLabel.setText("");
