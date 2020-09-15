@@ -19,7 +19,6 @@ import java.awt.event.ActionEvent;
 import org.mapton.core_nb.api.BaseAction;
 import org.mapton.core_nb.ui.MapToolBarPanel;
 import org.openide.awt.ActionID;
-import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
 
 @ActionID(
@@ -29,7 +28,7 @@ import org.openide.awt.ActionRegistration;
 @ActionRegistration(
         displayName = "Toolbox"
 )
-@ActionReference(path = "Shortcuts", name = "D-T")
+//@ActionReference(path = "Shortcuts", name = "D-T")
 public final class ToolboxAction extends BaseAction {
 
     @Override

@@ -46,7 +46,7 @@ import se.trixon.almond.util.Dict;
 )
 @ActionID(category = "Mapton", id = "org.mapton.editors_nb.EditorsTopComponent")
 @ActionReferences({
-    @ActionReference(path = "Shortcuts", name = "D-3"),
+    @ActionReference(path = "Shortcuts", name = "DS-O"),
     @ActionReference(path = "Menu/Window", position = 3)
 })
 @NbBundle.Messages({

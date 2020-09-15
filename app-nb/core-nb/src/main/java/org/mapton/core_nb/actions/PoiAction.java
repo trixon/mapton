@@ -31,7 +31,7 @@ import org.openide.awt.ActionRegistration;
         displayName = "&POI"
 )
 @ActionReferences({
-    @ActionReference(path = "Shortcuts", name = "DS-3"),
+    @ActionReference(path = "Shortcuts", name = "D-I"),
     @ActionReference(path = "Menu/MapTools", position = 1200)
 })
 public final class PoiAction extends BaseAction {

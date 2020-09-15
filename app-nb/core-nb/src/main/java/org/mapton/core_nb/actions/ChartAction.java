@@ -31,7 +31,7 @@ import org.openide.util.NbBundle;
         displayName = "#CTL_ChartAction"
 )
 @ActionReferences({
-    @ActionReference(path = "Shortcuts", name = "DS-6"),
+    @ActionReference(path = "Shortcuts", name = "DS-C"),
     @ActionReference(path = "Menu/Window", position = 5)
 })
 @NbBundle.Messages({
@@ -41,8 +41,8 @@ public final class ChartAction extends BaseAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (isMapActive()) {
-            toggleTopComponent("ChartTopComponent");
-        }
+//        if (isMapActive()) {
+        toggleTopComponent("ChartTopComponent");
+//        }
     }
 }

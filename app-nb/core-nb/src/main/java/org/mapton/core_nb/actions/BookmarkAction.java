@@ -32,7 +32,7 @@ import org.openide.util.NbBundle;
         displayName = "#CTL_BookmarksAction"
 )
 @ActionReferences({
-    @ActionReference(path = "Shortcuts", name = "DS-2"),
+    @ActionReference(path = "Shortcuts", name = "D-B"),
     @ActionReference(path = "Menu/MapTools", position = 1100)
 })
 @NbBundle.Messages({

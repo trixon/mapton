@@ -89,7 +89,7 @@ import se.trixon.almond.util.swing.SwingHelper;
 )
 @ActionID(category = "Window", id = "org.mapton.demo.MapTopComponent")
 @ActionReferences({
-    @ActionReference(path = "Shortcuts", name = "D-1"),
+    @ActionReference(path = "Shortcuts", name = "D-M"),
     @ActionReference(path = "Menu/Window", position = 0)
 })
 @Messages({

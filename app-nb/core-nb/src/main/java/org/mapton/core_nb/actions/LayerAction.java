@@ -32,7 +32,7 @@ import org.openide.util.NbBundle;
         displayName = "#CTL_LayersAction"
 )
 @ActionReferences({
-    @ActionReference(path = "Shortcuts", name = "DS-1"),
+    @ActionReference(path = "Shortcuts", name = "D-L"),
     @ActionReference(path = "Menu/MapTools", position = 1000, separatorBefore = 999)
 })
 @NbBundle.Messages({
