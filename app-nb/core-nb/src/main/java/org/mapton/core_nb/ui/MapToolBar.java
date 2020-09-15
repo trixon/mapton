@@ -155,14 +155,14 @@ public class MapToolBar extends BaseToolBar {
         actions.addAll(Arrays.asList(
                 mHomeAction,
                 mCommandAction,
-                mToolboxAction,
-                //                mBookmarkAction,
-                //                mPoiAction,
-                //                mLayerAction,
-                //                //                mGridAction,
                 mAttributionAction,
                 mStyleSwapAction,
                 mStyleAction,
+                //mToolboxAction,
+                mBookmarkAction,
+                mPoiAction,
+                mLayerAction,
+                mGridAction,
                 ActionUtils.ACTION_SPAN,
                 mTemporalAction,
                 mRulerAction
@@ -175,8 +175,8 @@ public class MapToolBar extends BaseToolBar {
             FxHelper.adjustButtonWidth(getItems().stream(), getIconSizeToolBarInt() * 1.0);
             setTextFromActions();
 
-            getItems().stream().filter((item) -> (item instanceof ButtonBase))
-                    .map((item) -> (ButtonBase) item).forEachOrdered((buttonBase) -> {
+            getItems().stream().filter(item -> (item instanceof ButtonBase))
+                    .map(item -> (ButtonBase) item).forEachOrdered((buttonBase) -> {
                 buttonBase.getStylesheets().add(CSS_FILE);
             });
 
@@ -190,6 +190,10 @@ public class MapToolBar extends BaseToolBar {
             });
             populateCommands();
             getItems().add(0, FxOnScreenDummy.getInstance());
+
+            getButtonForAction(mLayerAction).setVisible(false);
+            getButtonForAction(mPoiAction).setVisible(false);
+            getButtonForAction(mBookmarkAction).setVisible(false);
         });
     }
 
@@ -198,7 +202,7 @@ public class MapToolBar extends BaseToolBar {
         mBookmarkAction = new Action(Dict.BOOKMARKS.toString(), event -> {
             if (usePopOver(mBookmarkPopOver)) {
                 if (shouldOpen(mBookmarkPopOver)) {
-                    show(mBookmarkPopOver, event.getSource());
+                    show(mBookmarkPopOver, this);
                 }
             } else {
                 SwingUtilities.invokeLater(() -> {
@@ -206,14 +210,14 @@ public class MapToolBar extends BaseToolBar {
                 });
             }
         });
-        mBookmarkAction.setGraphic(MaterialIcon._Action.BOOKMARK_BORDER.getImageView(getIconSizeToolBarInt()));
-        setTooltip(mBookmarkAction, new KeyCodeCombination(KeyCode.B, KeyCombination.SHORTCUT_DOWN));
+//        mBookmarkAction.setGraphic(MaterialIcon._Action.BOOKMARK_BORDER.getImageView(getIconSizeToolBarInt()));
+//        setTooltip(mBookmarkAction, new KeyCodeCombination(KeyCode.B, KeyCombination.SHORTCUT_DOWN));
 
         //POI
         mPoiAction = new Action(MDict.POI.toString(), event -> {
             if (usePopOver(mPoiPopOver)) {
                 if (shouldOpen(mPoiPopOver)) {
-                    show(mPoiPopOver, event.getSource());
+                    show(mPoiPopOver, this);
                 }
             } else {
                 SwingUtilities.invokeLater(() -> {
@@ -221,14 +225,14 @@ public class MapToolBar extends BaseToolBar {
                 });
             }
         });
-        mPoiAction.setGraphic(MaterialIcon._Maps.PLACE.getImageView(getIconSizeToolBarInt()));
-        setTooltip(mPoiAction, new KeyCodeCombination(KeyCode.I, KeyCombination.SHORTCUT_DOWN));
+//        mPoiAction.setGraphic(MaterialIcon._Maps.PLACE.getImageView(getIconSizeToolBarInt()));
+//        setTooltip(mPoiAction, new KeyCodeCombination(KeyCode.I, KeyCombination.SHORTCUT_DOWN));
 
         //Layer
         mLayerAction = new Action(Dict.LAYERS.toString(), event -> {
             if (usePopOver(mLayerPopOver)) {
                 if (shouldOpen(mLayerPopOver)) {
-                    show(mLayerPopOver, event.getSource());
+                    show(mLayerPopOver, this);
                 }
             } else {
                 SwingUtilities.invokeLater(() -> {
@@ -236,8 +240,8 @@ public class MapToolBar extends BaseToolBar {
                 });
             }
         });
-        mLayerAction.setGraphic(MaterialIcon._Maps.LAYERS.getImageView(getIconSizeToolBarInt()));
-        setTooltip(mLayerAction, new KeyCodeCombination(KeyCode.L, KeyCombination.SHORTCUT_DOWN));
+//        mLayerAction.setGraphic(MaterialIcon._Maps.LAYERS.getImageView(getIconSizeToolBarInt()));
+//        setTooltip(mLayerAction, new KeyCodeCombination(KeyCode.L, KeyCombination.SHORTCUT_DOWN));
 
         //CommandAction
         mCommandAction = new Action(Dict.COMMANDS.toString(), event -> {
@@ -258,8 +262,8 @@ public class MapToolBar extends BaseToolBar {
                 });
             }
         });
-        mGridAction.setGraphic(MaterialIcon._Image.GRID_ON.getImageView(getIconSizeToolBarInt()));
-        setTooltip(mGridAction, new KeyCodeCombination(KeyCode.G, KeyCombination.SHORTCUT_DOWN));
+//        mGridAction.setGraphic(MaterialIcon._Image.GRID_ON.getImageView(getIconSizeToolBarInt()));
+//        setTooltip(mGridAction, new KeyCodeCombination(KeyCode.G, KeyCombination.SHORTCUT_DOWN));
 
         //mToolbox
         mToolboxAction = new Action(MDict.MAP_TOOLS.toString(), event -> {
@@ -353,9 +357,11 @@ public class MapToolBar extends BaseToolBar {
     private void initPopOvers() {
         mBookmarkPopOver = new PopOver();
         initPopOver(mBookmarkPopOver, Dict.BOOKMARKS.toString(), new BookmarksView(mBookmarkPopOver), false);
+        mBookmarkPopOver.setArrowLocation(ArrowLocation.TOP_CENTER);
 
         mPoiPopOver = new PopOver();
         initPopOver(mPoiPopOver, MDict.POI.toString(), PoisViewManager.getInstance().getPoisView(), false);
+        mPoiPopOver.setArrowLocation(ArrowLocation.TOP_CENTER);
 
         mGridPopOver = new PopOver();
         initPopOver(mGridPopOver, MDict.GRIDS.toString(), new GridView(mGridPopOver), false);
@@ -366,6 +372,7 @@ public class MapToolBar extends BaseToolBar {
             mLayerPopOver.setContentNode(new LayerView());//TODO Why this?
             setPopOverWidths(FxHelper.getUIScaled(DEFAULT_POP_OVER_WIDTH), mLayerPopOver);
         });
+        mLayerPopOver.setArrowLocation(ArrowLocation.TOP_CENTER);
 
         mStylePopOver = new PopOver();
         initPopOver(mStylePopOver, String.format("%s & %s", Dict.TYPE.toString(), Dict.STYLE.toString()), new BorderPane(), true);

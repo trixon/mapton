@@ -129,10 +129,10 @@ public abstract class BaseToolBar extends ToolBar {
                     });
 
                     getItems().stream()
-                            .filter((item) -> (item instanceof ButtonBase))
-                            .map((item) -> (ButtonBase) item)
-                            .filter((buttonBase) -> (buttonBase.getOnAction() == action))
-                            .forEachOrdered((buttonBase) -> {
+                            .filter(item -> (item instanceof ButtonBase))
+                            .map(item -> (ButtonBase) item)
+                            .filter(buttonBase -> (buttonBase.getOnAction() == action))
+                            .forEachOrdered(buttonBase -> {
                                 buttonBase.fire();
                             });
                 }
