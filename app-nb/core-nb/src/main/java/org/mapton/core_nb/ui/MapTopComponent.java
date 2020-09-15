@@ -287,6 +287,9 @@ public final class MapTopComponent extends MTopComponent {
                 mProgressHandle = ProgressHandleFactory.createSystemHandle(Dict.CACHING.toString());
                 mProgressHandle.start();
                 mProgressHandle.switchToIndeterminate();
+                SwingHelper.runLaterDelayed(15 * 1000, () -> {
+                    mProgressHandle.finish();
+                });
             } else {
                 mProgressHandle.finish();
             }
