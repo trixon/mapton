@@ -39,10 +39,12 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.layout.BorderPane;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JRootPane;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import org.apache.commons.lang3.SystemUtils;
@@ -97,9 +99,9 @@ public final class MapTopComponent extends MTopComponent {
 
     private MEngine mEngine;
     private boolean mMapInitialized = false;
+    private ProgressHandle mProgressHandle;
     private JPanel mProgressPanel;
     private BorderPane mRoot;
-    private ProgressHandle mProgressHandle;
 
     public MapTopComponent() {
         super();
@@ -166,19 +168,30 @@ public final class MapTopComponent extends MTopComponent {
     }
 
     @Override
-    protected void fxComponentOpened() {
-        super.fxComponentOpened();
-    }
-
-    @Override
     protected void fxPostConstructor() {
         super.fxPostConstructor();
 
-        MOptions.getInstance().engineProperty().addListener((ov, t, t1) -> {
-            setEngine(Mapton.getEngine());
+        SwingHelper.runLater(() -> {
+            removeAll();
+            JLabel label = new JLabel(String.format("<html>%s<br/><br/><br/></html>", Dict.PATIENCE_IS_A_VIRTUE.toString()));
+            label.setVerticalAlignment(SwingConstants.BOTTOM);
+            label.setFont(label.getFont().deriveFont(label.getFont().getSize() * 2f));
+            label.setHorizontalAlignment(SwingConstants.CENTER);
+            add(label, BorderLayout.CENTER);
         });
 
-        setEngine(Mapton.getEngine());
+        new Thread(() -> {
+            try {
+                Thread.sleep(2000);
+                MOptions.getInstance().engineProperty().addListener((ov, t, t1) -> {
+                    setEngine(Mapton.getEngine());
+                });
+
+                setEngine(Mapton.getEngine());
+            } catch (InterruptedException ex) {
+                Exceptions.printStackTrace(ex);
+            }
+        }).start();
     }
 
     @Override
