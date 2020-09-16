@@ -56,9 +56,8 @@ import org.mapton.api.Mapton;
 import org.mapton.base.ui.MapContextMenu;
 import org.mapton.base.ui.grid.LocalGridsView;
 import org.mapton.core_nb.api.MTopComponent;
+import org.mapton.core_nb.api.MaptonNb;
 import org.mapton.core_nb.ui.grid.LocalGridEditor;
-import org.netbeans.api.progress.ProgressHandle;
-import org.netbeans.api.progress.ProgressHandleFactory;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -99,7 +98,7 @@ public final class MapTopComponent extends MTopComponent {
 
     private MEngine mEngine;
     private boolean mMapInitialized = false;
-    private ProgressHandle mProgressHandle;
+//    private ProgressHandle mProgressHandle;
     private JPanel mProgressPanel;
     private BorderPane mRoot;
 
@@ -284,14 +283,12 @@ public final class MapTopComponent extends MTopComponent {
         Mapton.getGlobalState().addListener(gsce -> {
             double state = gsce.getValue();
             if (-1.0 == state) {
-                mProgressHandle = ProgressHandleFactory.createSystemHandle(Dict.CACHING.toString());
-                mProgressHandle.start();
-                mProgressHandle.switchToIndeterminate();
+                MaptonNb.progressStart(Dict.CACHING.toString());
                 SwingHelper.runLaterDelayed(15 * 1000, () -> {
-                    mProgressHandle.finish();
+                    MaptonNb.progressStop(Dict.CACHING.toString());
                 });
             } else {
-                mProgressHandle.finish();
+                MaptonNb.progressStop(Dict.CACHING.toString());
             }
         }, MEngine.KEY_STATUS_PROGRESS);
     }

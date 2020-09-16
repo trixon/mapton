@@ -72,6 +72,10 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>mapton-api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.mapton</groupId>
+            <artifactId>core-nb</artifactId>
+        </dependency>
 
         <!-- Other -->
         <dependency>

@@ -67,11 +67,13 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javax.xml.stream.XMLStreamException;
 import org.apache.commons.io.FileUtils;
+import org.mapton.api.MDict;
 import org.mapton.api.MKey;
 import static org.mapton.api.MKey.*;
 import org.mapton.api.MNotificationIcons;
 import org.mapton.api.MWmsSource;
 import org.mapton.api.Mapton;
+import org.mapton.core_nb.api.MaptonNb;
 import static org.mapton.worldwind.ModuleOptions.*;
 import static org.mapton.worldwind.WorldWindMapEngine.LOG_TAG;
 import org.mapton.worldwind.api.LayerBundle;
@@ -104,11 +106,14 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
     private IndicatorLayerBundle mIndicatorLayer;
 
     public WorldWindowPanel() {
+        MaptonNb.progressStart(MDict.MAP_ENGINE.toString());
         init();
 
         new Thread(() -> {
             initFinalize();
             initListeners();
+            MaptonNb.progressStop(MDict.MAP_ENGINE.toString());
+
         }).start();
     }
 

@@ -24,9 +24,8 @@ import org.mapton.api.MKey;
 import org.mapton.api.MOptions;
 import static org.mapton.api.MOptions.KEY_UI_LAF_DARK;
 import org.mapton.api.Mapton;
+import org.mapton.core_nb.api.MaptonNb;
 import org.mapton.core_nb.updater.UpdateNotificator;
-import org.netbeans.api.progress.ProgressHandle;
-import org.netbeans.api.progress.ProgressHandleFactory;
 import org.openide.awt.Actions;
 import org.openide.modules.OnStart;
 import org.openide.util.NbPreferences;
@@ -88,9 +87,7 @@ public class Initializer implements Runnable {
             });
         });
 
-        final ProgressHandle progressHandle = ProgressHandleFactory.createSystemHandle(Dict.WARMING_UP.toString());
-        progressHandle.start();
-        progressHandle.switchToIndeterminate();
+        MaptonNb.progressStart(Dict.WARMING_UP.toString());
 
         final WindowManager windowManager = WindowManager.getDefault();
 
@@ -115,7 +112,7 @@ public class Initializer implements Runnable {
             }
 
             Mapton.getExecutionFlow().executeWhenReady(MKey.EXECUTION_FLOW_MAP_INITIALIZED, () -> {
-                progressHandle.finish();
+                MaptonNb.progressStop(Dict.WARMING_UP.toString());
                 SwingHelper.runLater(() -> {
                     //Pre-load but don't display
                     Almond.getTopComponent("ReportsTopComponent");
