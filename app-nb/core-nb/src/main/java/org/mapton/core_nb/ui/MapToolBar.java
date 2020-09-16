@@ -162,7 +162,7 @@ public class MapToolBar extends BaseToolBar {
                 mBookmarkAction,
                 mPoiAction,
                 mLayerAction,
-                mGridAction,
+                //mGridAction,
                 ActionUtils.ACTION_SPAN,
                 mTemporalAction,
                 mRulerAction
