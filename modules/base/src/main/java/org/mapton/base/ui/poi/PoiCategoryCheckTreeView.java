@@ -160,18 +160,20 @@ public class PoiCategoryCheckTreeView extends CheckTreeView<MPoi> {
     }
 
     private void populate() {
-        mPoiParents.clear();
         mRootItem.getChildren().clear();
         mTreeItemListenerSet.clear();
         mPoisToRemove.clear();
+        Map<String, CheckBoxTreeItem<MPoi>> poiParents = new TreeMap<>();
 
         for (MPoi poi : mManager.getAllItems()) {
-//        for (MPoi poi : new ArrayList<>(mManager.getAllItems())) {
             CheckBoxTreeItem<MPoi> poiTreeItem = new CheckBoxTreeItem<>(poi);
             String category = getCategory(poi);
-            CheckBoxTreeItem<MPoi> parent = mPoiParents.computeIfAbsent(category, k -> getParent(mRootItem, category, poi));
+            CheckBoxTreeItem<MPoi> parent = poiParents.computeIfAbsent(category, k -> getParent(mRootItem, category, poi));
             parent.getChildren().add(poiTreeItem);
         }
+
+        mPoiParents.clear();
+        mPoiParents.putAll(poiParents);
 
         postPopulate(mRootItem);
 

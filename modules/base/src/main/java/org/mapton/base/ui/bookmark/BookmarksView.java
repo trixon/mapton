@@ -181,17 +181,19 @@ public class BookmarksView extends BorderPane implements MActivatable {
     }
 
     private void populate() {
-        mBookmarkParents.clear();
         MBookmark rootMark = new MBookmark();
         rootMark.setName("");
         TreeItem<MBookmark> root = new TreeItem<>(rootMark);
+        Map<String, TreeItem<MBookmark>> bookmarkParents = new TreeMap<>();
 
         for (MBookmark bookmark : mManager.getItems()) {
             TreeItem<MBookmark> bookmarkTreeItem = new TreeItem<>(bookmark);
             String category = bookmark.getCategory();
-            TreeItem<MBookmark> parent = mBookmarkParents.computeIfAbsent(category, k -> getParent(root, category));
+            TreeItem<MBookmark> parent = bookmarkParents.computeIfAbsent(category, k -> getParent(root, category));
             parent.getChildren().add(bookmarkTreeItem);
         }
+        mBookmarkParents.clear();
+        mBookmarkParents.putAll(mBookmarkParents);
 
         postPopulate(root, "");
         mTreeView.setRoot(root);

@@ -117,10 +117,9 @@ public class LayerView extends BorderPane implements MActivatable {
         }
 
         FxHelper.runLater(() -> {
-            mLayerParents.clear();
             mRootItem.getChildren().clear();
             mTreeItemListenerSet.clear();
-
+            Map<String, CheckBoxTreeItem<Layer>> layerParents = new TreeMap<>();
             SortedList<Layer> sortedLayers = mMap.getCustomLayers().sorted((Layer o1, Layer o2) -> o1.getName().compareTo(o2.getName()));
             ObservableList<Layer> filteredLayers = FXCollections.observableArrayList();
 
@@ -144,10 +143,11 @@ public class LayerView extends BorderPane implements MActivatable {
             for (Layer layer : filteredLayers) {
                 CheckBoxTreeItem<Layer> layerTreeItem = new CheckBoxTreeItem<>(layer);
                 String category = getCategory(layer);
-                CheckBoxTreeItem<Layer> parent = mLayerParents.computeIfAbsent(category, k -> getParent(mRootItem, category));
+                CheckBoxTreeItem<Layer> parent = layerParents.computeIfAbsent(category, k -> getParent(mRootItem, category));
                 parent.getChildren().add(layerTreeItem);
             }
-
+            mLayerParents.clear();
+            mLayerParents.putAll(mLayerParents);
             postPopulate(mRootItem);
 
             mTreeItemExpanderSet.forEach((checkBoxTreeItem) -> {
