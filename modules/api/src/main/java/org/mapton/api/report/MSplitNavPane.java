@@ -252,7 +252,6 @@ public class MSplitNavPane<T extends MSplitNavType> extends BorderPane {
 
         TreeItem<T> root = new TreeItem<>(rootType);
 
-//        new Thread(() -> {
         final String filter = mFilterTextField.getText();
         Lookup.getDefault().lookupAll(mClass).forEach((type) -> {
             final boolean validFilter
@@ -262,16 +261,20 @@ public class MSplitNavPane<T extends MSplitNavType> extends BorderPane {
             if (validFilter) {
                 TreeItem<T> treeItem = new TreeItem<>((T) type);
                 String category = type.getParent();
-                TreeItem<T> parent = mParents.computeIfAbsent(category, k -> getParent(root, category));
+
+                TreeItem<T> parent = null;
+                if (!mParents.containsKey(category)) {
+                    parent = mParents.put(category, getParent(root, category));
+                } else {
+                    parent = mParents.get(category);
+                }
+
                 parent.getChildren().add(treeItem);
             }
         });
 
-//            Platform.runLater(() -> {
         postPopulate(root);
         mTreeView.setRoot(root);
-//            });
-//        }).start();
     }
 
     private void postPopulate(TreeItem<T> treeItem) {
