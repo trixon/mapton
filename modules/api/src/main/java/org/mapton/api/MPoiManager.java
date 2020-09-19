@@ -22,8 +22,6 @@ import java.util.Map;
 import java.util.TreeSet;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import org.apache.commons.lang3.StringUtils;
 import org.openide.util.Lookup;
 import se.trixon.almond.util.Dict;
@@ -34,15 +32,12 @@ import se.trixon.almond.util.fx.DelayedResetRunner;
  *
  * @author Patrik Karlström
  */
-public class MPoiManager {
+public class MPoiManager extends MBaseDataManager<MPoi> {
 
-    private final ObjectProperty<ObservableList<MPoi>> mAllItemsProperty = new SimpleObjectProperty<>();
     private final ObjectProperty<TreeSet<String>> mCategoriesProperty = new SimpleObjectProperty<>();
     private DelayedResetRunner mDelayedResetRunner;
     private String mFilter = "";
-    private final ObjectProperty<ObservableList<MPoi>> mFilteredItemsProperty = new SimpleObjectProperty<>();
     private boolean mPopulateCategoriesAfterRefresh;
-    private final SimpleObjectProperty<MPoi> mSelectedItemProperty = new SimpleObjectProperty<>();
     private final SimpleObjectProperty<Long> mTrigRefreshCategoriesProperty = new SimpleObjectProperty<>();
 
     public static MPoiManager getInstance() {
@@ -50,36 +45,15 @@ public class MPoiManager {
     }
 
     private MPoiManager() {
-        mAllItemsProperty.setValue(FXCollections.observableArrayList());
-        mFilteredItemsProperty.setValue(FXCollections.observableArrayList());
+        super(MPoi.class.getName());
 
         initListeners();
 
         mDelayedResetRunner.reset();
     }
 
-    public ObjectProperty<ObservableList<MPoi>> allItemsProperty() {
-        return mAllItemsProperty;
-    }
-
     public ObjectProperty<TreeSet<String>> categoriesProperty() {
         return mCategoriesProperty;
-    }
-
-    public ObjectProperty<ObservableList<MPoi>> filteredItemsProperty() {
-        return mFilteredItemsProperty;
-    }
-
-    public final ObservableList<MPoi> getAllItems() {
-        return mAllItemsProperty == null ? null : mAllItemsProperty.get();
-    }
-
-    public final ObservableList<MPoi> getFilteredItems() {
-        return mFilteredItemsProperty == null ? null : mFilteredItemsProperty.get();
-    }
-
-    public MPoi getSelectedItem() {
-        return mSelectedItemProperty.get();
     }
 
     public void refresh() {
@@ -92,16 +66,21 @@ public class MPoiManager {
         mDelayedResetRunner.reset();
     }
 
-    public SimpleObjectProperty<MPoi> selectedItemProperty() {
-        return mSelectedItemProperty;
-    }
-
-    public void setSelectedItem(MPoi poi) {
-        mSelectedItemProperty.set(poi);
-    }
-
     public SimpleObjectProperty<Long> trigRefreshCategoriesProperty() {
         return mTrigRefreshCategoriesProperty;
+    }
+
+    @Override
+    protected void applyTemporalFilter() {
+        //No dates for pois yet, all is valid
+        getTimeFilteredItems().setAll(getFilteredItems());
+    }
+
+    @Override
+    protected void load(ArrayList<MPoi> items) {
+        //TODO Apply temporal rules
+        getFilteredItems().setAll(items);
+        getAllItems().setAll(items);
     }
 
     private void initListeners() {
@@ -131,8 +110,8 @@ public class MPoiManager {
                         .thenComparing(Comparator.comparing(MPoi::getName));
                 filteredPois.sort(comparator);
 
-                mAllItemsProperty.getValue().setAll(allPois);
-                mFilteredItemsProperty.getValue().setAll(filteredPois);
+                getAllItems().setAll(allPois);
+                getFilteredItems().setAll(filteredPois);
 
                 if (mPopulateCategoriesAfterRefresh) {
                     mTrigRefreshCategoriesProperty.set(System.currentTimeMillis());

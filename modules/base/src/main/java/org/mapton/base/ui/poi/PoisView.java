@@ -185,8 +185,7 @@ public class PoisView extends BorderPane {
 
         mListView.setOnMousePressed(mContextMenuMouseEvent);
         mListView.setOnMouseClicked(mouseEvent -> {
-            if (mouseEvent.getButton() == MouseButton.PRIMARY && mouseEvent.isShiftDown()) {
-//                if (mouseEvent.getButton() == MouseButton.PRIMARY && mouseEvent.getClickCount() == 2) {
+            if (mouseEvent.getButton() == MouseButton.PRIMARY && mouseEvent.getClickCount() == 2) {
                 var poi = mListView.getSelectionModel().getSelectedItem();
                 if (poi != null) {
                     Mapton.getEngine().panTo(poi.getLatLon(), poi.getZoom());
