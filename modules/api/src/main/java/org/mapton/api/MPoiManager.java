@@ -45,7 +45,7 @@ public class MPoiManager extends MBaseDataManager<MPoi> {
     }
 
     private MPoiManager() {
-        super(MPoi.class.getName());
+        super(MPoi.class);
 
         initListeners();
 

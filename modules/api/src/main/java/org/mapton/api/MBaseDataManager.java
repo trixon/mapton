@@ -15,6 +15,9 @@
  */
 package org.mapton.api;
 
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -31,18 +34,18 @@ import se.trixon.almond.util.fx.DelayedResetRunner;
  */
 public abstract class MBaseDataManager<T> {
 
-    protected final MTemporalManager mTemporalManager = MTemporalManager.getInstance();
-    protected MTemporalRange mTemporalRange;
     private final String TEMPORAL_PREFIX;
     private final ObjectProperty<ObservableList<T>> mAllItemsProperty = new SimpleObjectProperty<>();
     private final DelayedResetRunner mDelayedResetRunner;
     private final ObjectProperty<ObservableList<T>> mFilteredItemsProperty = new SimpleObjectProperty<>();
     private T mOldSelectedValue;
     private final ObjectProperty<T> mSelectedItemProperty = new SimpleObjectProperty<>();
+    private final MTemporalManager mTemporalManager = MTemporalManager.getInstance();
+    private MTemporalRange mTemporalRange;
     private final ObjectProperty<ObservableList<T>> mTimeFilteredItemsProperty = new SimpleObjectProperty<>();
 
-    public MBaseDataManager(String temporalPrefix) {
-        TEMPORAL_PREFIX = temporalPrefix;
+    public MBaseDataManager(Class<T> typeParameterClass) {
+        TEMPORAL_PREFIX = typeParameterClass.getName();
 
         mAllItemsProperty.setValue(FXCollections.observableArrayList());
         mFilteredItemsProperty.setValue(FXCollections.observableArrayList());
@@ -84,6 +87,30 @@ public abstract class MBaseDataManager<T> {
         return mTimeFilteredItemsProperty == null ? null : mTimeFilteredItemsProperty.get();
     }
 
+    public boolean isValid(String string) {
+        return string == null ? false : mTemporalManager.isValid(string);
+    }
+
+    public boolean isValid(LocalDate localDate) {
+        return localDate == null ? false : mTemporalManager.isValid(localDate);
+    }
+
+    public boolean isValid(LocalDateTime localDateTime) {
+        return localDateTime == null ? false : mTemporalManager.isValid(localDateTime);
+    }
+
+    public boolean isValid(Timestamp timestamp) {
+        return timestamp == null ? false : mTemporalManager.isValid(timestamp);
+    }
+
+    public boolean isValid(java.sql.Date date) {
+        return date == null ? false : mTemporalManager.isValid(date);
+    }
+
+    public boolean isValid(java.util.Date date) {
+        return date == null ? false : mTemporalManager.isValid(date);
+    }
+
     public void restoreSelection() {
         mSelectedItemProperty.set(mOldSelectedValue);
     }
@@ -94,6 +121,15 @@ public abstract class MBaseDataManager<T> {
 
     public void setSelectedItem(T item) {
         mSelectedItemProperty.set(item);
+    }
+
+    public void setTemporalRange(LocalDate first, LocalDate last) {
+        setTemporalRange(new MTemporalRange(first, last));
+    }
+
+    public void setTemporalRange(MTemporalRange temporalRange) {
+        mTemporalRange = temporalRange;
+        mTemporalManager.put(TEMPORAL_PREFIX, temporalRange);
     }
 
     public void setTemporalVisibility(boolean visible) {
