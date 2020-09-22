@@ -123,7 +123,7 @@ limitations under the License.
                 <file name="LayerTopComponent.wstcgrp" url="ui/LayerTopComponentWstcgrp.xml"/>
                 <file name="PropertiesTopComponent.wstcgrp" url="ui/PropertiesTopComponentWstcgrp.xml"/>
                 <file name="PoiTopComponent.wstcgrp" url="ui/PoiTopComponentWstcgrp.xml"/>
-                <file name="ToolboxTopComponent.wstcgrp" url="ui/ToolboxTopComponentWstcgrp.xml"/>
+                <!--<file name="ToolboxTopComponent.wstcgrp" url="ui/ToolboxTopComponentWstcgrp.xml"/>-->
             </folder>
         </folder>
     </folder>
