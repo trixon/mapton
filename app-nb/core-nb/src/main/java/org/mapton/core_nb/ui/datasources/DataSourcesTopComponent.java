@@ -45,7 +45,7 @@ import se.trixon.almond.util.Dict;
 @ActionID(category = "Mapton", id = "org.mapton.datasources.DataSourcesTopComponent")
 @ActionReferences({
     @ActionReference(path = "Shortcuts", name = "DS-D"),
-    @ActionReference(path = "Menu/Window", position = 4)
+    @ActionReference(path = "Menu/Tools", position = 4)
 })
 @NbBundle.Messages({
     "CTL_DataSourcesAction=&Data sources"

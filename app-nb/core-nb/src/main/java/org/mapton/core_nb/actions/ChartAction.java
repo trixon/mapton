@@ -32,7 +32,7 @@ import org.openide.util.NbBundle;
 )
 @ActionReferences({
     @ActionReference(path = "Shortcuts", name = "DS-C"),
-    @ActionReference(path = "Menu/Window", position = 5)
+    @ActionReference(path = "Menu/Tools", position = 5)
 })
 @NbBundle.Messages({
     "CTL_ChartAction=&Chart"

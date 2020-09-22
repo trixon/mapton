@@ -30,7 +30,7 @@ import se.trixon.almond.nbp.dialogs.NbSystemInformation;
 @ActionRegistration(
         displayName = "#CTL_SysInfoAction"
 )
-@ActionReference(path = "Menu/Tools", position = 1150)
+@ActionReference(path = "Menu/Tools", position = 1150, separatorBefore = 1149)
 @Messages("CTL_SysInfoAction=S&ystem information")
 public final class SysInfoAction implements ActionListener {
 

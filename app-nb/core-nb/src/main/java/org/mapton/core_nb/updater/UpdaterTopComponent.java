@@ -57,7 +57,7 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
 @ActionID(category = "Mapton", id = "org.mapton.core_nb.updater.UpdaterTopComponent")
 @ActionReferences({
     @ActionReference(path = "Shortcuts", name = "DS-U"),
-    @ActionReference(path = "Menu/Window", position = 9)
+    @ActionReference(path = "Menu/Tools", position = 9)
 })
 @NbBundle.Messages({
     "CTL_UpdaterAction=&Updater"

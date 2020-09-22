@@ -32,7 +32,7 @@ import org.openide.util.NbBundle.Messages;
         displayName = "#CTL_NotificationsAction"
 )
 @ActionReferences({
-    @ActionReference(path = "Menu/Window", position = 20),})
+    @ActionReference(path = "Menu/Tools", position = 20),})
 @Messages("CTL_NotificationsAction=&Notifications")
 public final class NotificationsAction implements ActionListener {
 

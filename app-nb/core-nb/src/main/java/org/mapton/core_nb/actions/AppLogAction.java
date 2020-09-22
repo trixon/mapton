@@ -33,7 +33,7 @@ import se.trixon.almond.nbp.NbLog;
         displayName = "#CTL_AppLogAction"
 )
 @ActionReferences({
-    @ActionReference(path = "Shortcuts", name = "D-4"),
+    @ActionReference(path = "Shortcuts", name = "D-4", position = 0),
     @ActionReference(path = "Menu/View", position = 0)
 })
 @NbBundle.Messages({
