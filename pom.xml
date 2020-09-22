@@ -579,10 +579,10 @@
             <id>bintray-dlsc-oss-maven</id>
             <url>https://dl.bintray.com/dlsc-oss/repository</url>
         </repository>
-        <repository>
+        <!--        <repository>
             <id>netbeans-next</id>
             <url>https://repository.apache.org/content/repositories/orgapachenetbeans-1068</url>
-        </repository>
+        </repository>-->
     </repositories>
 
     <properties>
