@@ -49,10 +49,6 @@ public class MKey {
     public static final String NOTIFICATION_FX_INFORMATION = "toolbar.notification.information";
     public static final String NOTIFICATION_FX_WARNING = "toolbar.notification.warning";
     public static final String OBJECT_PROPERTIES = "object.properties";
-    /**
-     * Listen for this GlobalState key in order to catch POI map selection changes
-     */
-    public static final String POI_SELECTION_MAP = "poi.selection.map";
     public static final String UPDATER_LOGGER = "updater.logger";
     public static final String WIKIPEDIA_ARTICLE = "wikipedia.article";
 

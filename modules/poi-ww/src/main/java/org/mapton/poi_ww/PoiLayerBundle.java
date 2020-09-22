@@ -24,7 +24,6 @@ import javafx.collections.ListChangeListener;
 import org.mapton.api.MDict;
 import org.mapton.api.MPoi;
 import org.mapton.api.MPoiManager;
-import org.mapton.api.MPoiStyle;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
@@ -63,7 +62,7 @@ public class PoiLayerBundle extends LayerBundle {
     }
 
     private void initListeners() {
-        mPoiManager.getFilteredItems().addListener((ListChangeListener.Change<? extends MPoi> c) -> {
+        mPoiManager.getTimeFilteredItems().addListener((ListChangeListener.Change<? extends MPoi> c) -> {
             repaint();
         });
     }
@@ -71,15 +70,14 @@ public class PoiLayerBundle extends LayerBundle {
     private void initRepaint() {
         setPainter(() -> {
             mLayer.removeAllRenderables();
-
-            for (MPoi poi : mPoiManager.getFilteredItems()) {
+            for (var poi : mPoiManager.getTimeFilteredItems()) {
                 if (poi.isDisplayMarker()) {
-                    PointPlacemark placemark = new PointPlacemark(Position.fromDegrees(poi.getLatitude(), poi.getLongitude()));
+                    var placemark = new PointPlacemark(Position.fromDegrees(poi.getLatitude(), poi.getLongitude()));
                     placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
                     placemark.setEnableLabelPicking(true);
-                    PointPlacemarkAttributes attrs = new PointPlacemarkAttributes(placemark.getDefaultAttributes());
+                    var attrs = new PointPlacemarkAttributes(placemark.getDefaultAttributes());
 
-                    final MPoiStyle style = poi.getStyle();
+                    var style = poi.getStyle();
                     if (style == null) {
                         placemark.setLabelText(poi.getName());
                         attrs.setImageAddress("images/pushpins/plain-white.png");
@@ -89,7 +87,7 @@ public class PoiLayerBundle extends LayerBundle {
                             // nvm?
                         }
                     } else {
-                        String label = style.getLabelText() != null ? style.getLabelText() : poi.getName();
+                        var label = style.getLabelText() != null ? style.getLabelText() : poi.getName();
                         placemark.setLabelText(style.isLabelVisible() ? label : null);
                         attrs.setLabelScale(style.getLabelScale());
                         attrs.setImageOffset(WWHelper.offsetFromImageLocation(style.getImageLocation()));

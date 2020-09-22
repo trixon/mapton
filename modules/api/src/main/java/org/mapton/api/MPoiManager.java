@@ -37,7 +37,6 @@ public class MPoiManager extends MBaseDataManager<MPoi> {
     private final ObjectProperty<TreeSet<String>> mCategoriesProperty = new SimpleObjectProperty<>();
     private DelayedResetRunner mDelayedResetRunner;
     private String mFilter = "";
-    private boolean mPopulateCategoriesAfterRefresh;
     private final SimpleObjectProperty<Long> mTrigRefreshCategoriesProperty = new SimpleObjectProperty<>();
 
     public static MPoiManager getInstance() {
@@ -46,7 +45,7 @@ public class MPoiManager extends MBaseDataManager<MPoi> {
 
     private MPoiManager() {
         super(MPoi.class);
-
+        mCategoriesProperty.set(new TreeSet<>());
         initListeners();
 
         mDelayedResetRunner.reset();
@@ -62,7 +61,6 @@ public class MPoiManager extends MBaseDataManager<MPoi> {
 
     public void refresh(String filter) {
         mFilter = filter;
-        mPopulateCategoriesAfterRefresh = true;
         mDelayedResetRunner.reset();
     }
 
@@ -78,47 +76,44 @@ public class MPoiManager extends MBaseDataManager<MPoi> {
 
     @Override
     protected void load(ArrayList<MPoi> items) {
-        //TODO Apply temporal rules
-        getFilteredItems().setAll(items);
-        getAllItems().setAll(items);
+    }
+
+    private void applyFilter() {
+        var filteredPois = new ArrayList<MPoi>();
+
+        getAllItems().stream()
+                .filter(poi -> (validPoi(poi, mFilter)))
+                .forEachOrdered(poi -> {
+                    filteredPois.add(poi);
+                });
+
+        Comparator<MPoi> comparator = Comparator.comparing(MPoi::getProvider)
+                .thenComparing(Comparator.comparing(MPoi::getCategory))
+                .thenComparing(Comparator.comparing(MPoi::getName));
+        filteredPois.sort(comparator);
+
+        getFilteredItems().setAll(filteredPois);
     }
 
     private void initListeners() {
         mDelayedResetRunner = new DelayedResetRunner(200, () -> {
-            synchronized (this) {
-                var allPois = new ArrayList<MPoi>();
-                var filteredPois = new ArrayList<MPoi>();
-
-                Lookup.getDefault().lookupAll(MPoiProvider.class).forEach(poiProvider -> {
-                    try {
-                        for (MPoi poi : poiProvider.getPois()) {
-                            poi.setCategory(StringUtils.defaultIfBlank(poi.getCategory(), "_DEFAULT"));
-                            poi.setProvider(poiProvider.getName());
-                            poi.setZoom(poi.getZoom() != null ? poi.getZoom() : 0.9);
-                            allPois.add(poi);
-                            if (validPoi(poi, mFilter)) {
-                                filteredPois.add(poi);
-                            }
-                        }
-                    } catch (Exception e) {
-                        System.err.println("Failed to load POI from " + poiProvider.getName());
+            var allPois = new ArrayList<MPoi>();
+            Lookup.getDefault().lookupAll(MPoiProvider.class).forEach(poiProvider -> {
+                try {
+                    for (var poi : poiProvider.getPois()) {
+                        poi.setCategory(StringUtils.defaultIfBlank(poi.getCategory(), "_DEFAULT"));
+                        poi.setProvider(poiProvider.getName());
+                        poi.setZoom(poi.getZoom() != null ? poi.getZoom() : 0.9);
+                        allPois.add(poi);
                     }
-                });
-
-                Comparator<MPoi> comparator = Comparator.comparing(MPoi::getProvider)
-                        .thenComparing(Comparator.comparing(MPoi::getCategory))
-                        .thenComparing(Comparator.comparing(MPoi::getName));
-                filteredPois.sort(comparator);
-
-                getAllItems().setAll(allPois);
-                getFilteredItems().setAll(filteredPois);
-
-                if (mPopulateCategoriesAfterRefresh) {
-                    mTrigRefreshCategoriesProperty.set(System.currentTimeMillis());
-                } else {
-                    mPopulateCategoriesAfterRefresh = true;
+                } catch (Exception e) {
+                    System.err.println("Failed to load POI from " + poiProvider.getName());
                 }
-            }
+            });
+
+            getAllItems().setAll(allPois);
+            //Hand off PoiCategoryCheckTreeView to return refreshed categories
+            mTrigRefreshCategoriesProperty.set(System.currentTimeMillis());
         });
 
         Lookup.getDefault().lookupResult(MPoiProvider.class).addLookupListener(lookupEvent -> {
@@ -127,8 +122,7 @@ public class MPoiManager extends MBaseDataManager<MPoi> {
 
         // Gets updated in PoiCategoryCheckTreeView
         mCategoriesProperty.addListener((observable, oldValue, newValue) -> {
-            mPopulateCategoriesAfterRefresh = false;
-            mDelayedResetRunner.reset();
+            applyFilter();
         });
 
         selectedItemProperty().addListener((observable, oldValue, newValue) -> {
@@ -167,8 +161,9 @@ public class MPoiManager extends MBaseDataManager<MPoi> {
     }
 
     private boolean validPoi(MPoi poi, String filter) {
+        String category = String.format("%s/%s", poi.getProvider(), poi.getCategory());
         boolean valid
-                = mCategoriesProperty.get().contains(String.format("%s/%s", poi.getProvider(), poi.getCategory()))
+                = mCategoriesProperty.get().contains(category)
                 && (StringHelper.matchesSimpleGlob(poi.getProvider(), filter, true, true)
                 || StringHelper.matchesSimpleGlob(poi.getUrl(), filter, true, true)
                 || StringHelper.matchesSimpleGlob(poi.getName(), filter, true, true)

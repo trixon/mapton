@@ -46,7 +46,6 @@ import org.controlsfx.control.action.ActionUtils;
 import org.controlsfx.control.textfield.TextFields;
 import org.mapton.api.MContextMenuItem;
 import org.mapton.api.MDict;
-import org.mapton.api.MKey;
 import org.mapton.api.MPoi;
 import org.mapton.api.MPoiManager;
 import org.mapton.api.Mapton;
@@ -55,7 +54,6 @@ import org.mapton.api.ui.MFilterPopOver;
 import static org.mapton.api.ui.MFilterPopOver.GAP;
 import static org.mapton.api.ui.MFilterPopOver.autoSize;
 import org.openide.util.Lookup;
-import org.openide.util.LookupEvent;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.FxHelper;
@@ -97,7 +95,7 @@ public class PoisView extends BorderPane {
         mFilterTextField.setMinWidth(20);
 
         mListView = new ListView<>();
-        mListView.itemsProperty().bind(mManager.filteredItemsProperty());
+        mListView.itemsProperty().bind(mManager.timeFilteredItemsProperty());
         mListView.setCellFactory(param -> new PoiListCell());
 
         Action refreshAction = new Action(Dict.REFRESH.toString(), event -> {
@@ -156,11 +154,17 @@ public class PoisView extends BorderPane {
             mManager.refresh(newValue);
         });
 
-        mManager.getFilteredItems().addListener((ListChangeListener.Change<? extends MPoi> c) -> {
-            mItemCountLabel.setText(String.format("%d/%d", mManager.getFilteredItems().size(), mManager.getAllItems().size()));
+        mManager.getTimeFilteredItems().addListener((ListChangeListener.Change<? extends MPoi> c) -> {
+            Platform.runLater(() -> {
+                mItemCountLabel.setText(String.format("%d/%d",
+                        mManager.getTimeFilteredItems().size(),
+                        mManager.getAllItems().size()
+                ));
+                mManager.restoreSelection();
+            });
         });
 
-        Lookup.getDefault().lookupResult(MContextMenuItem.class).addLookupListener((LookupEvent ev) -> {
+        Lookup.getDefault().lookupResult(MContextMenuItem.class).addLookupListener(lookupEvent -> {
             populateContextProviders();
         });
 
@@ -197,18 +201,13 @@ public class PoisView extends BorderPane {
             mManager.setSelectedItem(newPoi);
         });
 
-        Mapton.getGlobalState().addListener(gsce -> {
-            try {
-                Platform.runLater(() -> {
-                    MPoi poi = gsce.getValue();
-                    mListView.getSelectionModel().select(poi);
-                    mListView.getFocusModel().focus(mListView.getItems().indexOf(poi));
-                    mListView.scrollTo(poi);
-                });
-            } catch (Exception e) {
-
-            }
-        }, MKey.POI_SELECTION_MAP);
+        mManager.selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            Platform.runLater(() -> {
+                mListView.getSelectionModel().select(newValue);
+                mListView.getFocusModel().focus(mListView.getItems().indexOf(newValue));
+                FxHelper.scrollToItemIfNotVisible(mListView, newValue);
+            });
+        });
 
         mBrowseMenuItem.setOnAction(actionEvent -> {
             SystemHelper.desktopBrowse(mListView.getSelectionModel().getSelectedItem().getUrl());
@@ -242,10 +241,10 @@ public class PoisView extends BorderPane {
             }
         }
 
-        mContextCopyMenu.getItems().sorted((MenuItem o1, MenuItem o2) -> o1.getText().compareToIgnoreCase(o2.getText()));
+        mContextCopyMenu.getItems().sorted((o1, o2) -> o1.getText().compareToIgnoreCase(o2.getText()));
         mContextCopyMenu.setVisible(!mContextCopyMenu.getItems().isEmpty());
 
-        mContextOpenMenu.getItems().sorted((MenuItem o1, MenuItem o2) -> o1.getText().compareToIgnoreCase(o2.getText()));
+        mContextOpenMenu.getItems().sorted((o1, o2) -> o1.getText().compareToIgnoreCase(o2.getText()));
         mContextOpenMenu.setVisible(!mContextOpenMenu.getItems().isEmpty());
     }
 
