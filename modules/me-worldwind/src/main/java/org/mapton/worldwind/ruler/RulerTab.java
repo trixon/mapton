@@ -48,6 +48,7 @@ import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.mapton.worldwind.ModuleOptions;
 import static org.mapton.worldwind.ModuleOptions.*;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.SystemHelperFx;
 import se.trixon.almond.util.fx.FxActionCheck;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.icons.material.MaterialIcon;
@@ -60,6 +61,8 @@ public class RulerTab extends Tab {
 
     static final int DEFAULT_PATH_TYPE_INDEX = 2;
     private BorderPane mBorderPane;
+    private Action mCopyAction;
+    private ImageView mCopyImageView;
     private BorderPane mLowerBorderPane;
     private final MeasureTool mMeasureTool;
     private TextArea mMetricsTextArea;
@@ -114,6 +117,7 @@ public class RulerTab extends Tab {
         mSaveImageView = MaterialIcon._Content.SAVE.getImageView(getIconSizeToolBarInt());
         mOptionsImageView = MaterialIcon._Action.SETTINGS.getImageView(getIconSizeToolBarInt());
         mShapeImageView = MaterialIcon._Editor.FORMAT_SHAPES.getImageView(getIconSizeToolBarInt());
+        mCopyImageView = MaterialIcon._Content.CONTENT_COPY.getImageView(getIconSizeToolBarInt());
 
         mMetricsTextArea = new TextArea();
         mMetricsTextArea.setEditable(false);
@@ -213,6 +217,11 @@ public class RulerTab extends Tab {
         });
         mSaveAction.setGraphic(mSaveImageView);
 
+        mCopyAction = new Action(Dict.COPY.toString(), event -> {
+            SystemHelperFx.copyToClipboard(mPointListTextArea.getText());
+        });
+        mCopyAction.setGraphic(mCopyImageView);
+
         mOptionsAction = new Action(Dict.OPTIONS.toString(), event -> {
             if (mOptionsContextMenu.isShowing()) {
                 mOptionsContextMenu.hide();
@@ -231,6 +240,8 @@ public class RulerTab extends Tab {
                 mStartAction,
                 mStopAction,
                 mSaveAction,
+                mCopyAction,
+                ActionUtils.ACTION_SPAN,
                 mOptionsAction
         ));
 
