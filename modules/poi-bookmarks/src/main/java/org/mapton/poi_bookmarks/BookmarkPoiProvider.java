@@ -16,7 +16,6 @@
 package org.mapton.poi_bookmarks;
 
 import java.util.ArrayList;
-import org.mapton.api.MBookmark;
 import org.mapton.api.MBookmarkManager;
 import org.mapton.api.MPoi;
 import org.mapton.api.MPoiProvider;
@@ -42,8 +41,8 @@ public class BookmarkPoiProvider implements MPoiProvider {
     public ArrayList<MPoi> getPois() {
         ArrayList<MPoi> pois = new ArrayList<>();
 
-        for (MBookmark bookmark : MBookmarkManager.getInstance().dbLoad("%", false)) {
-            MPoi poi = new MPoi();
+        for (var bookmark : MBookmarkManager.getInstance().dbLoad("%", false)) {
+            var poi = new MPoi();
             poi.setDescription(bookmark.getDescription());
             poi.setCategory(bookmark.getCategory());
             poi.setColor(bookmark.getColor());
@@ -52,6 +51,7 @@ public class BookmarkPoiProvider implements MPoiProvider {
             poi.setLongitude(bookmark.getLongitude());
             poi.setName(bookmark.getName());
             poi.setZoom(bookmark.getZoom());
+            poi.setUrl(bookmark.getUrl());
 
             pois.add(poi);
         }

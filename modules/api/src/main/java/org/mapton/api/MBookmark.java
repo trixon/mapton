@@ -50,6 +50,8 @@ public class MBookmark extends MObject {
     private transient Timestamp mTimeModified;
     @SerializedName("zoom")
     private Double mZoom;
+    @SerializedName("url")
+    private String mUrl;
 
     public MBookmark() {
         setDisplayMarker(true);
@@ -101,6 +103,10 @@ public class MBookmark extends MObject {
 
     public Timestamp getTimeModified() {
         return mTimeModified;
+    }
+
+    public String getUrl() {
+        return mUrl;
     }
 
     public Double getZoom() {
@@ -161,6 +167,10 @@ public class MBookmark extends MObject {
 
     public void setTimeModified(Timestamp timeModified) {
         mTimeModified = timeModified;
+    }
+
+    public void setUrl(String url) {
+        mUrl = url;
     }
 
     public void setZoom(Double zoom) {

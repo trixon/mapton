@@ -312,6 +312,7 @@ public class PoisView extends BorderPane {
             rows.put(Dict.SOURCE.toString(), StringUtils.defaultString(poi.getProvider()));
             rows.put(Dict.DESCRIPTION.toString(), StringUtils.defaultString(poi.getDescription()));
             rows.put(Dict.TAGS.toString(), StringUtils.defaultString(poi.getTags()));
+            rows.put("URL", StringUtils.defaultString(poi.getUrl()));
 
             int length = 0;
             for (String string : rows.keySet()) {

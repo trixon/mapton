@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.TreeSet;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.ListChangeListener;
 import org.apache.commons.lang3.StringUtils;
 import org.openide.util.Lookup;
 import se.trixon.almond.util.Dict;
@@ -127,6 +128,10 @@ public class MPoiManager extends MBaseDataManager<MPoi> {
 
         selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             sendObjectProperties(newValue);
+        });
+
+        MBookmarkManager.getInstance().getItems().addListener((ListChangeListener.Change<? extends MBookmark> c) -> {
+            refresh();
         });
     }
 

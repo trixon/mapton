@@ -62,6 +62,7 @@ public class MBookmarkManager extends DbBaseManager {
     public static final String COL_LONGITUDE = "longitude";
     public static final String COL_MODIFIED = "modified";
     public static final String COL_NAME = "name";
+    public static final String COL_URL = "url";
     public static final String COL_ZOOM = "zoom";
     private final ResourceBundle mBundle = NbBundle.getBundle(MBookmarkManager.class);
 
@@ -77,6 +78,7 @@ public class MBookmarkManager extends DbBaseManager {
     private String mStoredFilter = "";
     private final DbColumn mTimeCreated;
     private final DbColumn mTimeModified;
+    private final DbColumn mUrl;
     private final DbColumn mZoom;
 
     public static MBookmarkManager getInstance() {
@@ -90,6 +92,7 @@ public class MBookmarkManager extends DbBaseManager {
         mName = mTable.addColumn(COL_NAME, SQL_VARCHAR, Integer.MAX_VALUE);
         mCategory = mTable.addColumn(COL_CATEGORY, SQL_VARCHAR, Integer.MAX_VALUE);
         mDescription = mTable.addColumn(COL_DESCRIPTION, SQL_VARCHAR, Integer.MAX_VALUE);
+        mUrl = mTable.addColumn(COL_URL, SQL_VARCHAR, Integer.MAX_VALUE);
         mColor = mTable.addColumn(COL_COLOR, SQL_VARCHAR, Integer.MAX_VALUE);
         mDisplayMarker = mTable.addColumn(COL_DISPLAY_MARKER, SQL_BOOLEAN, null);
         mLatitude = mTable.addColumn(COL_LATITUDE, SQL_DOUBLE, null);
@@ -219,6 +222,7 @@ public class MBookmarkManager extends DbBaseManager {
                 bookmark.setName(getString(rs, mName));
                 bookmark.setCategory(getString(rs, mCategory));
                 bookmark.setDescription(getString(rs, mDescription));
+                bookmark.setUrl(getString(rs, mUrl));
                 bookmark.setColor(getString(rs, mColor));
                 bookmark.setDisplayMarker(getBoolean(rs, mDisplayMarker));
                 bookmark.setLatitude(getDouble(rs, mLatitude));
@@ -252,6 +256,7 @@ public class MBookmarkManager extends DbBaseManager {
                     mName,
                     mCategory,
                     mDescription,
+                    mUrl,
                     mColor,
                     mDisplayMarker,
                     mLatitude,
@@ -265,6 +270,7 @@ public class MBookmarkManager extends DbBaseManager {
                     .addSetClause(mName, mUpdatePlaceHolders.get(mName))
                     .addSetClause(mCategory, mUpdatePlaceHolders.get(mCategory))
                     .addSetClause(mDescription, mUpdatePlaceHolders.get(mDescription))
+                    .addSetClause(mUrl, mUpdatePlaceHolders.get(mUrl))
                     .addSetClause(mColor, mUpdatePlaceHolders.get(mColor))
                     .addSetClause(mDisplayMarker, mUpdatePlaceHolders.get(mDisplayMarker))
                     .addSetClause(mLatitude, mUpdatePlaceHolders.get(mLatitude))
@@ -281,6 +287,7 @@ public class MBookmarkManager extends DbBaseManager {
         mUpdatePlaceHolders.get(mName).setString(bookmark.getName(), mUpdatePreparedStatement);
         mUpdatePlaceHolders.get(mCategory).setString(bookmark.getCategory(), mUpdatePreparedStatement);
         mUpdatePlaceHolders.get(mDescription).setString(bookmark.getDescription(), mUpdatePreparedStatement);
+        mUpdatePlaceHolders.get(mUrl).setString(bookmark.getUrl(), mUpdatePreparedStatement);
         mUpdatePlaceHolders.get(mColor).setString(bookmark.getColor(), mUpdatePreparedStatement);
         mUpdatePlaceHolders.get(mDisplayMarker).setBoolean(bookmark.isDisplayMarker(), mUpdatePreparedStatement);
         mUpdatePlaceHolders.get(mLatitude).setObject(bookmark.getLatitude(), mUpdatePreparedStatement);
@@ -367,6 +374,7 @@ public class MBookmarkManager extends DbBaseManager {
                     mName,
                     mCategory,
                     mDescription,
+                    mUrl,
                     mColor,
                     mDisplayMarker,
                     mLatitude,
@@ -379,6 +387,7 @@ public class MBookmarkManager extends DbBaseManager {
                     .addColumn(mName, mInsertPlaceHolders.get(mName))
                     .addColumn(mCategory, mInsertPlaceHolders.get(mCategory))
                     .addColumn(mDescription, mInsertPlaceHolders.get(mDescription))
+                    .addColumn(mUrl, mInsertPlaceHolders.get(mUrl))
                     .addColumn(mColor, mInsertPlaceHolders.get(mColor))
                     .addColumn(mDisplayMarker, mInsertPlaceHolders.get(mDisplayMarker))
                     .addColumn(mLatitude, mInsertPlaceHolders.get(mLatitude))
@@ -395,6 +404,7 @@ public class MBookmarkManager extends DbBaseManager {
         mInsertPlaceHolders.get(mName).setString(bookmark.getName(), mInsertPreparedStatement);
         mInsertPlaceHolders.get(mCategory).setString(bookmark.getCategory(), mInsertPreparedStatement);
         mInsertPlaceHolders.get(mDescription).setString(bookmark.getDescription(), mInsertPreparedStatement);
+        mInsertPlaceHolders.get(mUrl).setString(bookmark.getUrl(), mInsertPreparedStatement);
         mInsertPlaceHolders.get(mColor).setString(bookmark.getColor(), mInsertPreparedStatement);
         mInsertPlaceHolders.get(mDisplayMarker).setBoolean(bookmark.isDisplayMarker(), mInsertPreparedStatement);
         mInsertPlaceHolders.get(mLatitude).setObject(bookmark.getLatitude(), mInsertPreparedStatement);

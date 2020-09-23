@@ -64,6 +64,7 @@ public class BookmarkReport extends MReport {
                                                 tr(
                                                         th(Dict.NAME.toString()),
                                                         th(Dict.DESCRIPTION.toString()),
+                                                        th("URL"),
                                                         th(Dict.LATITUDE.toString()),
                                                         th(Dict.LONGITUDE.toString())
                                                 ),
@@ -72,6 +73,7 @@ public class BookmarkReport extends MReport {
                                                                 -> tr(
                                                                 td(bookmark.getName()),
                                                                 td(StringUtils.defaultString(bookmark.getDescription())),
+                                                                td(StringUtils.defaultString(bookmark.getUrl())),
                                                                 td(String.format("%.6f", bookmark.getLatitude())),
                                                                 td(String.format("%.6f", bookmark.getLongitude()))
                                                         )

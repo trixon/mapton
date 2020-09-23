@@ -154,6 +154,7 @@ public class FileImportAction extends FileAction {
                 for (CSVRecord record : records) {
                     String category = getOrDefault(record, MBookmarkManager.COL_CATEGORY, Dict.DEFAULT.toString());
                     String description = getOrDefault(record, MBookmarkManager.COL_DESCRIPTION, "");
+                    String url = getOrDefault(record, MBookmarkManager.COL_URL, "");
                     String color = getOrDefault(record, MBookmarkManager.COL_COLOR, "FFFF00");
                     String displayMarker = getOrDefault(record, MBookmarkManager.COL_DISPLAY_MARKER, "1");
                     String zoomString = getOrDefault(record, MBookmarkManager.COL_ZOOM, default_zoom);
@@ -170,6 +171,7 @@ public class FileImportAction extends FileAction {
                     bookmark.setCategory(category);
                     bookmark.setName(record.get(MBookmarkManager.COL_NAME));
                     bookmark.setDescription(description);
+                    bookmark.setUrl(url);
                     bookmark.setColor(color);
                     bookmark.setDisplayMarker(displayMarker.equalsIgnoreCase("1"));
 

@@ -50,6 +50,7 @@ public class BookmarkView extends StackPane {
     private ComboBox<String> mCategoryComboBox;
     private ColorPicker mColorPicker;
     private TextArea mDescTextArea;
+    private TextField mUrlTextField;
     private Spinner<Double> mLatitudeSpinner;
     private Spinner<Double> mLongitudeSpinner;
     private MBookmarkManager mManager = MBookmarkManager.getInstance();
@@ -65,6 +66,7 @@ public class BookmarkView extends StackPane {
         mNameTextField.setText(bookmark.getName());
         mCategoryComboBox.getSelectionModel().select(bookmark.getCategory());
         mDescTextArea.setText(bookmark.getDescription());
+        mUrlTextField.setText(bookmark.getUrl());
         mZoomSpinner.getValueFactory().setValue(bookmark.getZoom());
         mLatitudeSpinner.getValueFactory().setValue(bookmark.getLatitude());
         mLongitudeSpinner.getValueFactory().setValue(bookmark.getLongitude());
@@ -81,6 +83,7 @@ public class BookmarkView extends StackPane {
         bookmark.setName(mNameTextField.getText());
         bookmark.setCategory(StringUtils.defaultString(mCategoryComboBox.getSelectionModel().getSelectedItem()));
         bookmark.setDescription(StringUtils.defaultString(mDescTextArea.getText()));
+        bookmark.setUrl(StringUtils.defaultString(mUrlTextField.getText()));
         bookmark.setZoom(mZoomSpinner.getValue());
         bookmark.setLatitude(mLatitudeSpinner.getValue());
         bookmark.setLongitude(mLongitudeSpinner.getValue());
@@ -92,6 +95,7 @@ public class BookmarkView extends StackPane {
         mNameTextField = new TextField();
         mCategoryComboBox = new ComboBox<>();
         mDescTextArea = new TextArea();
+        mUrlTextField = new TextField();
         mZoomSpinner = new Spinner<>(0.0, 1.0, 0.25, 0.1);
         mLatitudeSpinner = new Spinner<>(-90, 90, 0, 0.000001);
         mLongitudeSpinner = new Spinner<>(-180, 180, 0, 0.000001);
@@ -152,6 +156,7 @@ public class BookmarkView extends StackPane {
         Label zoomLabel = new Label(Dict.ZOOM.toString());
         Label latLabel = new Label(Dict.LATITUDE.toString());
         Label lonLabel = new Label(Dict.LONGITUDE.toString());
+        Label urlLabel = new Label("URL");
 
         VBox box = new VBox(
                 nameLabel,
@@ -160,6 +165,8 @@ public class BookmarkView extends StackPane {
                 mCategoryComboBox,
                 descLabel,
                 mDescTextArea,
+                urlLabel,
+                mUrlTextField,
                 colorLabel,
                 mColorPicker,
                 zoomLabel,
