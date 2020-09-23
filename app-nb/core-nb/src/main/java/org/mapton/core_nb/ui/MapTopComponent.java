@@ -27,7 +27,6 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDropEvent;
-import java.awt.event.HierarchyEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -38,7 +37,6 @@ import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.BorderPane;
 import javax.swing.JComponent;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
@@ -96,7 +94,6 @@ import se.trixon.almond.util.swing.SwingHelper;
 })
 public final class MapTopComponent extends MTopComponent {
 
-    private MEngine mEngine;
     private boolean mMapInitialized = false;
     private JPanel mProgressPanel;
     private BorderPane mRoot;
@@ -252,28 +249,28 @@ public final class MapTopComponent extends MTopComponent {
         });
 
         DelayedResetRunner delayedResetRunner = new DelayedResetRunner(10, () -> {
-            final JFrame frame = (JFrame) WindowManager.getDefault().getMainWindow();
+            try {
+                final JRootPane rootPane = getRootPane();
+                final Dimension originalSize = rootPane.getSize();
 
-            if (SystemUtils.IS_OS_WINDOWS) {
-                try {
-                    final JRootPane rootPane = getRootPane();
-                    final Dimension originalSize = rootPane.getSize();
-
+                SwingUtilities.invokeLater(() -> {
+                    rootPane.setSize(new Dimension(originalSize.width - 1, originalSize.height - 0));
+                    revalidate();
+                    repaint();
                     SwingUtilities.invokeLater(() -> {
-                        rootPane.setSize(new Dimension(originalSize.width - 1, originalSize.height - 0));
-                        SwingUtilities.invokeLater(() -> {
-                            rootPane.setSize(originalSize);
-                        });
+                        rootPane.setSize(originalSize);
+                        revalidate();
+                        repaint();
                     });
-                } catch (Exception e) {
-                    //nvm
-                }
+                });
+            } catch (Exception e) {
+                //nvm
             }
         });
 
         SwingUtilities.invokeLater(() -> {
-            addHierarchyListener((HierarchyEvent hierarchyEvent) -> {
-                if (hierarchyEvent.getChangedParent() instanceof JLayeredPane) {
+            addHierarchyListener(hierarchyEvent -> {
+                if (SystemUtils.IS_OS_WINDOWS && hierarchyEvent.getChangedParent() instanceof JLayeredPane) {
                     delayedResetRunner.reset();
                 }
             });
@@ -307,7 +304,6 @@ public final class MapTopComponent extends MTopComponent {
     }
 
     private void setEngine(MEngine engine) {
-        mEngine = engine;
         SwingUtilities.invokeLater(() -> {
             setToolTipText(String.format("%s: %s", MDict.MAP_ENGINE.toString(), engine.getName()));
         });
