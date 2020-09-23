@@ -17,7 +17,6 @@ package org.mapton.worldwind;
 
 import java.util.TreeMap;
 import java.util.TreeSet;
-import org.apache.commons.lang3.StringUtils;
 import org.mapton.api.MApiReport;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.MapStyle;
@@ -34,25 +33,25 @@ public class ApiReports implements MApiReport {
 
     @Override
     public TreeMap<String, TreeSet<String>> getItems() {
-        String group = "WorldWind/";
+        var group = "WorldWind/";
         TreeMap<String, TreeSet<String>> items = new TreeMap<>();
 
         TreeSet<String> implementations;
         implementations = new TreeSet<>();
         for (LayerBundle implementation : Lookup.getDefault().lookupAll(LayerBundle.class)) {
-            implementations.add(StringUtils.defaultString(implementation.getName(), "NO NAME"));
+            implementations.add(implementation.getClass().getCanonicalName());
         }
         items.put(group + "LayerBundle", implementations);
 
         implementations = new TreeSet<>();
         for (MapStyle implementation : Lookup.getDefault().lookupAll(MapStyle.class)) {
-            implementations.add(implementation.getName());
+            implementations.add(implementation.getClass().getCanonicalName());
         }
         items.put(group + "MapStyle", implementations);
 
         implementations = new TreeSet<>();
         for (WmsService implementation : Lookup.getDefault().lookupAll(WmsService.class)) {
-            implementations.add(implementation.getName());
+            implementations.add(implementation.getClass().getCanonicalName());
         }
         items.put(group + "WmsService", implementations);
 

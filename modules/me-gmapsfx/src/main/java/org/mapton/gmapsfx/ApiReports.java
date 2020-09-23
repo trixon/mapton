@@ -31,13 +31,13 @@ public class ApiReports implements MApiReport {
 
     @Override
     public TreeMap<String, TreeSet<String>> getItems() {
-        String category = "GMapsFX/";
+        var category = "GMapsFX/";
         TreeMap<String, TreeSet<String>> items = new TreeMap<>();
 
         TreeSet<String> implementations;
         implementations = new TreeSet<>();
         for (MapStyle implementation : Lookup.getDefault().lookupAll(MapStyle.class)) {
-            implementations.add(implementation.getName());
+            implementations.add(implementation.getClass().getCanonicalName());
         }
         items.put(category + "MapStyle", implementations);
 

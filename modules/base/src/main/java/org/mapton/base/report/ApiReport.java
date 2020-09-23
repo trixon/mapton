@@ -42,7 +42,7 @@ public class ApiReport extends MSubReports {
 
     @Override
     public String getName() {
-        return "API";
+        return "API ServiceProviders";
     }
 
     @Override

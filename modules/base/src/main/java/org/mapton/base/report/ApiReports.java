@@ -20,6 +20,7 @@ import java.util.TreeSet;
 import org.mapton.api.MApiReport;
 import org.mapton.api.MContextMenuItem;
 import org.mapton.api.MCooTrans;
+import org.mapton.api.MCoordinateFileOpener;
 import org.mapton.api.MEngine;
 import org.mapton.api.MPoiProvider;
 import org.mapton.api.MUpdater;
@@ -53,15 +54,15 @@ public class ApiReports implements MApiReport {
         for (MContextMenuItem implementation : Lookup.getDefault().lookupAll(MContextMenuItem.class)) {
             switch (implementation.getType()) {
                 case COPY:
-                    copyImplementations.add(implementation.getName());
+                    copyImplementations.add(implementation.getClass().getCanonicalName());
                     break;
 
                 case EXTRAS:
-                    extrasImplementations.add(implementation.getName());
+                    extrasImplementations.add(implementation.getClass().getCanonicalName());
                     break;
 
                 case OPEN:
-                    openImplementations.add(implementation.getName());
+                    openImplementations.add(implementation.getClass().getCanonicalName());
                     break;
 
                 default:
@@ -74,6 +75,7 @@ public class ApiReports implements MApiReport {
         mItems.put(mCategory + "MContextMenu Open", openImplementations);
 
         populate(MCooTrans.class);
+        populate(MCoordinateFileOpener.class);
         populate(MEngine.class);
         populate(MWhatsHereEngine.class);
         populate(MUpdater.class);
