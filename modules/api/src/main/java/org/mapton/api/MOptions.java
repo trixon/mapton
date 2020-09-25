@@ -252,6 +252,14 @@ public class MOptions extends OptionsBase {
     }
 
     private void initListeners() {
+        mPreferences.addPreferenceChangeListener(pcl -> {
+            switch (pcl.getKey()) {
+                case KEY_UI_POPOVER:
+                    //Allow setting default value on startup
+                    mPreferPopoverProperty.set(is(KEY_UI_POPOVER));
+                    break;
+            }
+        });
         mNightModeProperty.addListener((ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1) -> {
             put(KEY_UI_LAF_DARK, t1);
         });
