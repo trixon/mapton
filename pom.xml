@@ -157,41 +157,39 @@
         <module>application</module>
         <module>branding</module>
 
-        <!--Shared-->
+        <!-- Common -->
         <module>modules/api</module>
         <module>modules/base</module>
         <module>modules/core</module>
+        <module>modules/editors</module>
         <module>modules/google-maps</module>
+        <module>modules/poi-ww</module>
+        <module>modules/reports</module>
 
-        <!--Shared Map engines-->
+        <!--Map engines-->
         <module>modules/me-gmapsfx</module>
         <module>modules/me-jxmapviewer2</module>
         <module>modules/me-mapjfx</module>
         <module>modules/me-worldwind</module>
 
-        <!--Shared POI providers-->
+        <!--POI providers-->
         <module>modules/poi-bookmarks</module>
 
-        <!--Shared Search engines-->
+        <!--Search engines-->
         <module>modules/se-bookmarks</module>
         <module>modules/se-geonames</module>
         <module>modules/se-google</module>
         <module>modules/se-nominatim</module>
         <module>modules/se-poi</module>
 
-        <!--Shared Transformation engines-->
+        <!--Transformation engines-->
         <module>modules/te-swetrans</module>
 
-        <!--Shared WMS-->
+        <!--WMS-->
         <module>modules/wms-bing</module>
         <module>modules/wms-eox</module>
         <module>modules/wms-lantmateriet</module>
         <module>modules/wms-nasa</module>
-
-        <!--Shared Other-->
-        <module>modules/poi-ww</module>
-        <module>modules/editors</module>
-        <module>modules/reports</module>
 
         <!--Other-->
 
@@ -199,10 +197,10 @@
         <module>add-ons/files/files</module>
         <module>add-ons/geonames/geonames-ww</module>
         <module>add-ons/notes/notes</module>
-        <module>add-ons/photos/photos</module>
         <module>add-ons/photos/photos-ww</module>
-        <module>add-ons/wikipedia/wikipedia</module>
+        <module>add-ons/photos/photos</module>
         <module>add-ons/wikipedia/wikipedia-ww</module>
+        <module>add-ons/wikipedia/wikipedia</module>
         <module>add-ons/xkcd/xkcd</module>
 
         <!--POI data sources-->
@@ -292,7 +290,6 @@
                 <artifactId>datasources</artifactId>
                 <version>${mapton.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>google-maps</artifactId>
@@ -343,17 +340,6 @@
                 <artifactId>almond-nbp-actions-osx</artifactId>
                 <version>${almond.version}</version>
             </dependency>
-            <dependency>
-                <groupId>se.trixon.windowsystemfx</groupId>
-                <artifactId>windowsystemfx-core</artifactId>
-                <version>0.0.1-SNAPSHOT</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.openjfx</groupId>
-                        <artifactId>*</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
 
             <!-- Other -->
             <dependency>
@@ -371,39 +357,6 @@
                 <groupId>org.controlsfx</groupId>
                 <artifactId>controlsfx</artifactId>
                 <version>11.0.2</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.openjfx</groupId>
-                        <artifactId>*</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>com.dlsc.formsfx</groupId>
-                <artifactId>formsfx-core</artifactId>
-                <version>11.4.1</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.openjfx</groupId>
-                        <artifactId>*</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>com.dlsc.workbenchfx</groupId>
-                <artifactId>workbenchfx-core</artifactId>
-                <version>11.1.0</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.openjfx</groupId>
-                        <artifactId>*</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>de.jensd</groupId>
-                <artifactId>fontawesomefx-commons</artifactId>
-                <version>11.0</version>
                 <exclusions>
                     <exclusion>
                         <groupId>org.openjfx</groupId>
@@ -565,7 +518,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <almond.version>11.0.6-SNAPSHOT</almond.version>
         <mapton.version>2.1.0-SNAPSHOT</mapton.version>
-        <!--<openjfx.version>14</openjfx.version>-->
+        <!--<openjfx.version>15</openjfx.version>-->
     </properties>
     <description>Some kind of map application</description>
 </project>
