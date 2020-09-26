@@ -145,5 +145,14 @@ limitations under the License.
         <file name="D-COMMA.shadow">
             <attr name="originalFile" stringvalue="Actions/Window/org-netbeans-modules-options-OptionsWindowAction.instance"/>
         </file>
+        <file name="D-W.shadow">
+            <attr name="originalFile" stringvalue="Actions/Window/org-netbeans-core-windows-actions-CloseWindowAction.instance"/>
+        </file>
+        <file name="DS-W.shadow">
+            <attr name="originalFile" stringvalue="Actions/Window/org-netbeans-core-windows-actions-CloseAllDocumentsAction.instance"/>
+        </file>
+        <file name="S-F4.shadow">
+            <attr name="originalFile" stringvalue="Actions/Window/org-netbeans-core-windows-actions-DocumentsAction.instance"/>
+        </file>
     </folder>
 </filesystem>

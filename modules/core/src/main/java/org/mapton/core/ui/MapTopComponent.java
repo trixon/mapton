@@ -279,12 +279,12 @@ public final class MapTopComponent extends MTopComponent {
         Mapton.getGlobalState().addListener(gsce -> {
             double state = gsce.getValue();
             if (-1.0 == state) {
-                MaptonNb.progressStart(Dict.CACHING.toString());
+                MaptonNb.progressStart(Dict.RENDERING.toString());
                 SwingHelper.runLaterDelayed(15 * 1000, () -> {
-                    MaptonNb.progressStop(Dict.CACHING.toString());
+                    MaptonNb.progressStop(Dict.RENDERING.toString());
                 });
             } else {
-                MaptonNb.progressStop(Dict.CACHING.toString());
+                MaptonNb.progressStop(Dict.RENDERING.toString());
             }
         }, MEngine.KEY_STATUS_PROGRESS);
     }
