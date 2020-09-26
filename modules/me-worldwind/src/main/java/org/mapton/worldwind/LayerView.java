@@ -72,7 +72,6 @@ public class LayerView extends BorderPane implements MActivatable {
     private TextField mFilterTextField;
     private final Set<Layer> mLayerEnabledListenerSet;
     private final Map<String, CheckBoxTreeItem<Layer>> mLayerParents;
-    private ListChangeListener.Change<? extends TreeItem<Layer>> mListChangeListener;
     private WorldWindowPanel mMap;
     private CheckBoxTreeItem<Layer> mRootItem;
     private final Set<CheckBoxTreeItem<Layer>> mTreeItemExpanderSet;
@@ -247,36 +246,25 @@ public class LayerView extends BorderPane implements MActivatable {
             refresh(mMap);
         });
 
-        DelayedResetRunner delayedResetRunner = new DelayedResetRunner(200, () -> {
-            if (mListChangeListener == null) {
-                return;
-            }
-
-            if (mListChangeListener.wasAdded()) {
-                mListChangeListener.getAddedSubList().forEach(treeItem -> {
-                    if (!isCategoryTreeItem(treeItem) && !treeItem.getValue().isEnabled()) {
-                        treeItem.getValue().setEnabled(true);
-                        mVisibilityPreferences.putBoolean(getLayerPath(treeItem.getValue()), true);
-                    }
-                });
-            } else if (mListChangeListener.wasRemoved()) {
-                mListChangeListener.getRemoved().forEach(treeItem -> {
-                    if (!isCategoryTreeItem(treeItem) && treeItem.getValue().isEnabled()) {
-                        treeItem.getValue().setEnabled(false);
-                        mVisibilityPreferences.putBoolean(getLayerPath(treeItem.getValue()), false);
-                    }
-                });
+        mCheckModel.getCheckedItems().addListener((ListChangeListener.Change<? extends TreeItem<Layer>> c) -> {
+            while (c.next()) {
+                if (c.wasAdded()) {
+                    c.getAddedSubList().forEach(treeItem -> {
+                        if (!isCategoryTreeItem(treeItem) && !treeItem.getValue().isEnabled()) {
+                            treeItem.getValue().setEnabled(true);
+                            mVisibilityPreferences.putBoolean(getLayerPath(treeItem.getValue()), true);
+                        }
+                    });
+                } else if (c.wasRemoved()) {
+                    c.getRemoved().forEach(treeItem -> {
+                        if (!isCategoryTreeItem(treeItem) && treeItem.getValue().isEnabled()) {
+                            treeItem.getValue().setEnabled(false);
+                            mVisibilityPreferences.putBoolean(getLayerPath(treeItem.getValue()), false);
+                        }
+                    });
+                }
             }
         });
-
-        ListChangeListener<TreeItem<Layer>> name = (ListChangeListener.Change<? extends TreeItem<Layer>> c) -> {
-            while (c.next()) {
-                mListChangeListener = c;
-                delayedResetRunner.reset();
-            }
-        };
-
-        mCheckModel.getCheckedItems().addListener(name);
 
         Mapton.getGlobalState().addListener(evt -> {
             Platform.runLater(() -> {
