@@ -1,6 +1,0 @@
-Manifest-Version: 1.0
-OpenIDE-Module-Module: org.mapton.core_wb
-OpenIDE-Module-Localizing-Bundle: org/mapton/core_wb/Bundle.properties
-AutoUpdate-Essential-Module: true
-AutoUpdate-Show-In-Client: false
-OpenIDE-Module-Install: org/mapton/core_wb/Installer.class

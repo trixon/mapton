@@ -197,21 +197,12 @@
         <module>app-nb/modules/editors-nb</module>
         <module>app-nb/modules/reports-nb</module>
 
-        <!--GUI WorkbenchFX-->
-        <!--        <module>app-wb/application</module>
-        <module>app-wb/core-wb</module>
-
-        Modules WB
-        <module>app-wb/modules/reports-wb</module>
-        -->
-
         <!--Other-->
 
         <!--Add-ons-->
         <module>add-ons/files/files-nb</module>
         <module>add-ons/geonames/geonames-ww</module>
         <module>add-ons/notes/notes</module>
-        <!--<module>addons/notes/notes-wb</module>-->
         <module>add-ons/photos/photos-nb</module>
         <module>add-ons/photos/photos-ww</module>
         <module>add-ons/wikipedia/wikipedia</module>
@@ -252,11 +243,6 @@
             <dependency>
                 <groupId>org.mapton</groupId>
                 <artifactId>mapton-base</artifactId>
-                <version>${mapton.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.mapton</groupId>
-                <artifactId>core-wb</artifactId>
                 <version>${mapton.version}</version>
             </dependency>
             <dependency>
@@ -302,11 +288,6 @@
             <dependency>
                 <groupId>org.mapton</groupId>
                 <artifactId>reports-nb</artifactId>
-                <version>${mapton.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.mapton</groupId>
-                <artifactId>reports-wb</artifactId>
                 <version>${mapton.version}</version>
             </dependency>
             <dependency>
