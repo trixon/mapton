@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.addon.wikipedia_nb;
+package org.mapton.addon.wikipedia;
 
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -32,7 +32,7 @@ import org.openide.windows.TopComponent;
  * Top component which displays something.
  */
 @ConvertAsProperties(
-        dtd = "-//org.mapton.addon.wikipedia_nb//Wikipedia//EN",
+        dtd = "-//org.mapton.addon.wikipedia//Wikipedia//EN",
         autostore = false
 )
 @TopComponent.Description(
@@ -43,7 +43,7 @@ import org.openide.windows.TopComponent;
 @TopComponent.Registration(mode = "mapTools", openAtStartup = false)
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_WikipediaAction",
-        preferredID = "CTL_WikipediaTopComponent"
+        preferredID = "WikipediaTopComponent"
 )
 @ActionID(category = "Mapton", id = "org.mapton.addon.wikipedia.WikipediaAction")
 @ActionReferences({

@@ -13,25 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.addon.wikipedia_nb;
+package org.mapton.addon.wikipedia;
 
-import org.openide.modules.OnStart;
-import se.trixon.almond.nbp.Almond;
-import se.trixon.almond.util.swing.SwingHelper;
+import org.openide.util.lookup.ServiceProvider;
+import se.trixon.almond.nbp.core.news.NewsProvider;
 
 /**
  *
  * @author Patrik Karlström
  */
-@OnStart
-public class Initializer implements Runnable {
+@ServiceProvider(service = NewsProvider.class)
+public class News implements NewsProvider {
 
     @Override
-    public void run() {
-        SwingHelper.runLaterDelayed(45 * 1000, () -> {
-            //Pre-load but don't display
-            Almond.getTopComponent("WikipediaTopComponent");
-        });
+    public String getHeading() {
+        return Bundle.CTL_WikipediaAction();
     }
-
 }

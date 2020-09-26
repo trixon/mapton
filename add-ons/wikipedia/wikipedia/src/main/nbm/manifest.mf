@@ -1,3 +1,3 @@
 Manifest-Version: 1.0
+OpenIDE-Module-Layer: org/mapton/addon/wikipedia/layer.xml
 OpenIDE-Module-Localizing-Bundle: org/mapton/addon/wikipedia/Bundle.properties
-AutoUpdate-Show-In-Client: false

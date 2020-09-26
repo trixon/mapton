@@ -206,7 +206,6 @@
         <module>add-ons/photos/photos</module>
         <module>add-ons/photos/photos-ww</module>
         <module>add-ons/wikipedia/wikipedia</module>
-        <module>add-ons/wikipedia/wikipedia-nb</module>
         <module>add-ons/wikipedia/wikipedia-ww</module>
         <module>add-ons/xkcd/xkcd-nb</module>
 
