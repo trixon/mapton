@@ -108,7 +108,7 @@ public class Initializer implements Runnable {
 
             if (mapOnly) {
                 windowManager.findTopComponent("MapTopComponent").requestActive();
-                Actions.forID("Mapton", "org.mapton.core.actions.OnlyMapAction").actionPerformed(null);
+                Actions.forID("Window", "org.netbeans.core.windows.actions.ShowEditorOnlyAction").actionPerformed(null);
             }
 
             Mapton.getExecutionFlow().executeWhenReady(MKey.EXECUTION_FLOW_MAP_INITIALIZED, () -> {

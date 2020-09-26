@@ -25,6 +25,7 @@ import org.openide.awt.ActionRegistration;
 import org.openide.awt.Actions;
 import org.openide.util.NbBundle.Messages;
 import se.trixon.almond.nbp.Almond;
+import se.trixon.almond.util.swing.SwingHelper;
 
 @ActionID(
         category = "Mapton",
@@ -40,12 +41,13 @@ import se.trixon.almond.nbp.Almond;
 @Messages("CTL_OnlyMapAction=Toggle &map mode")
 public final class OnlyMapAction implements ActionListener {
 
-    private MOptions mOptions = MOptions.getInstance();
-
     @Override
     public void actionPerformed(ActionEvent e) {
+        var options = MOptions.getInstance();
+        options.setMapOnly(!options.isMapOnly());
         Almond.openAndActivateTopComponent("MapTopComponent");
-        Actions.forID("Window", "org.netbeans.core.windows.actions.ShowEditorOnlyAction").actionPerformed(null);
-        mOptions.setMapOnly(!mOptions.isMapOnly());
+        SwingHelper.runLaterDelayed(10, () -> {
+            Actions.forID("Window", "org.netbeans.core.windows.actions.ShowEditorOnlyAction").actionPerformed(null);
+        });
     }
 }
