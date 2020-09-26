@@ -169,7 +169,13 @@ public class MSplitNavPane<T extends MSplitNavType> extends BorderPane {
                     }
                 };
 
-                parent.getChildren().add(parent = mParents.computeIfAbsent(sb.toString(), k -> new TreeItem<>(type)));
+                var key = sb.toString();
+                if (mParents.containsKey(key)) {
+                    parent = mParents.get(key);
+                } else {
+                    mParents.put(key, new TreeItem<>(type));
+                    parent.getChildren().add(parent = mParents.get(key));
+                }
             }
 
             sb.append("/");
