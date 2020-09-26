@@ -153,10 +153,14 @@
     </build>
 
     <modules>
+        <!--Applications-->
+        <module>application</module>
+        <module>branding</module>
 
         <!--Shared-->
         <module>modules/api</module>
         <module>modules/base</module>
+        <module>modules/core-nb</module>
         <module>modules/google-maps</module>
 
         <!--Shared Map engines-->
@@ -188,12 +192,6 @@
         <module>modules/poi-ww</module>
         <module>modules/editors</module>
         <module>modules/reports</module>
-
-        <!--Applications-->
-        <!--GUI NetBeans-->
-        <module>app-nb/branding</module>
-        <module>app-nb/application</module>
-        <module>app-nb/core-nb</module>
 
         <!--Other-->
 
