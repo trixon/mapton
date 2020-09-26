@@ -200,7 +200,7 @@
         <!--Other-->
 
         <!--Add-ons-->
-        <module>add-ons/files/files-nb</module>
+        <module>add-ons/files/files</module>
         <module>add-ons/geonames/geonames-ww</module>
         <module>add-ons/notes/notes</module>
         <module>add-ons/photos/photos-nb</module>

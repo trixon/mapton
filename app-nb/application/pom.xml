@@ -212,7 +212,7 @@
         <!--Mapton/Add-ons-->
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>addon-files-nb</artifactId>
+            <artifactId>addon-files</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
