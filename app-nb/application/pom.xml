@@ -288,13 +288,6 @@
             <version>${project.version}</version>
         </dependency>-->
 
-        <!--Mapton/Ext-->
-        <!--        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>ext-gdal</artifactId>
-            <version>1.7.2-1</version>
-        </dependency>-->
-
         <!-- Trixon -->
         <dependency>
             <groupId>se.trixon.almond</groupId>

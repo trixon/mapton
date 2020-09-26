@@ -214,7 +214,6 @@
 
         <!--Unstable-->
         <!--<module>demo</module>-->
-        <!--<module>modules-ext/gdal</module>-->
         <!--<module>add-ons/panopticon/panopticon</module>-->
         <!--<module>add-ons/panopticon/panopticon-nb</module>-->
         <!--<module>add-ons/panopticon/panopticon-ww</module>-->
