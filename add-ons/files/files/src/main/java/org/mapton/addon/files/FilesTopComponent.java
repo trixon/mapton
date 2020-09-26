@@ -20,7 +20,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import org.mapton.addon.files.ui.DocumentsPane;
 import org.mapton.api.Mapton;
-import org.mapton.core_nb.api.MTopComponent;
+import org.mapton.core.api.MTopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;

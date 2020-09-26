@@ -74,7 +74,7 @@
         </dependency>
         <dependency>
             <groupId>org.mapton</groupId>
-            <artifactId>core-nb</artifactId>
+            <artifactId>core</artifactId>
         </dependency>
 
         <!-- Other -->

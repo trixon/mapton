@@ -26,7 +26,7 @@ import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
-import org.mapton.core_nb.api.MTopComponent;
+import org.mapton.core.api.MTopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -56,7 +56,7 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
         displayName = "#CTL_XkcdAction",
         preferredID = "XkcdTopComponent"
 )
-@ActionID(category = "Mapton", id = "org.mapton.addon.xkcd_nb.XkcdAction")
+@ActionID(category = "Mapton", id = "org.mapton.addon.xkcd.XkcdAction")
 @ActionReferences({
     @ActionReference(path = "Menu/MapTools/Add-on", position = 0)
 })

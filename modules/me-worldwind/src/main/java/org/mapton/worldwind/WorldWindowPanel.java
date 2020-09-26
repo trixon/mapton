@@ -73,7 +73,7 @@ import static org.mapton.api.MKey.*;
 import org.mapton.api.MNotificationIcons;
 import org.mapton.api.MWmsSource;
 import org.mapton.api.Mapton;
-import org.mapton.core_nb.api.MaptonNb;
+import org.mapton.core.api.MaptonNb;
 import static org.mapton.worldwind.ModuleOptions.*;
 import static org.mapton.worldwind.WorldWindMapEngine.LOG_TAG;
 import org.mapton.worldwind.api.LayerBundle;

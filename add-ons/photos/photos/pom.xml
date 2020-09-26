@@ -108,7 +108,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>core-nb</artifactId>
+            <artifactId>core</artifactId>
         </dependency>
 
         <!-- Trixon -->

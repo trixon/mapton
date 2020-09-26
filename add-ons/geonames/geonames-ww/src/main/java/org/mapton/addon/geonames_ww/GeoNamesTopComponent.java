@@ -30,7 +30,7 @@ import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
-import org.mapton.core_nb.api.MTopComponent;
+import org.mapton.core.api.MTopComponent;
 import org.mapton.geonames.api.Country;
 import org.mapton.geonames.api.CountryManager;
 import org.mapton.geonames.api.GeonamesManager;

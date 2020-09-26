@@ -18,7 +18,7 @@ package org.mapton.editors;
 import javafx.scene.Scene;
 import org.mapton.api.report.MEditor;
 import org.mapton.api.report.MSplitNavPane;
-import org.mapton.core_nb.api.MTopComponent;
+import org.mapton.core.api.MTopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
