@@ -207,7 +207,7 @@
         <module>add-ons/photos/photos-ww</module>
         <module>add-ons/wikipedia/wikipedia</module>
         <module>add-ons/wikipedia/wikipedia-ww</module>
-        <module>add-ons/xkcd/xkcd-nb</module>
+        <module>add-ons/xkcd/xkcd</module>
 
         <!--POI data sources-->
         <module>add-ons/poi/trv-traffic-information</module>

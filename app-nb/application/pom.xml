@@ -252,7 +252,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>addon-xkcd-nb</artifactId>
+            <artifactId>addon-xkcd</artifactId>
             <version>${project.version}</version>
         </dependency>
         <!--        <dependency>

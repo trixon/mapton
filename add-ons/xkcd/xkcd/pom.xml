@@ -7,8 +7,8 @@
         <version>2.1.0-SNAPSHOT</version>
         <relativePath>../../../pom.xml</relativePath>
     </parent>
-    <artifactId>addon-xkcd-nb</artifactId>
-    <name>XKCD NB</name>
+    <artifactId>addon-xkcd</artifactId>
+    <name>XKCD</name>
     <description>A viewer of XKCD - A webcomic of romance, sarcasm, math, and language.</description>
     <packaging>nbm</packaging>
     <build>

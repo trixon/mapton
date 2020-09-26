@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.addon.xkcd_nb;
+package org.mapton.addon.xkcd;
 
 import java.util.Arrays;
 import java.util.List;
@@ -43,7 +43,7 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
  * Top component which displays something.
  */
 @ConvertAsProperties(
-        dtd = "-//org.mapton.addon.xkcd_nb//Xkcd//EN",
+        dtd = "-//org.mapton.addon.xkcd//Xkcd//EN",
         autostore = false
 )
 @TopComponent.Description(
