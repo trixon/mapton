@@ -198,7 +198,7 @@
         <!--Mapton/Other-->
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>editors-nb</artifactId>
+            <artifactId>editors</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -206,7 +206,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>reports-nb</artifactId>
+            <artifactId>reports</artifactId>
         </dependency>
 
         <!--Mapton/Add-ons-->
@@ -225,21 +225,6 @@
             <artifactId>addon-notes</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!--        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>addon-panopticon</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>addon-panopticon-nb</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>addon-panopticon-ww</artifactId>
-            <version>${project.version}</version>
-        </dependency>-->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>addon-photos</artifactId>
@@ -255,21 +240,6 @@
             <artifactId>addon-xkcd</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!--        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>addon-world-clock</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>addon-world-clock-nb</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>addon-world-clock-ww</artifactId>
-            <version>${project.version}</version>
-        </dependency>-->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>addon-wikipedia</artifactId>
@@ -285,6 +255,36 @@
         <!--        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>demo</artifactId>
+            <version>${project.version}</version>
+        </dependency>-->
+        <!--        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>addon-world-clock</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>addon-world-clock-nb</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>addon-world-clock-ww</artifactId>
+            <version>${project.version}</version>
+        </dependency>-->
+        <!--        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>addon-panopticon</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>addon-panopticon-nb</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>addon-panopticon-ww</artifactId>
             <version>${project.version}</version>
         </dependency>-->
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Patrik Karlström.
+ * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.editors_nb;
+package org.mapton.reports;
 
 import javafx.scene.Scene;
-import org.mapton.api.report.MEditor;
+import org.mapton.api.report.MReport;
 import org.mapton.api.report.MSplitNavPane;
 import org.mapton.core_nb.api.MTopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
@@ -31,31 +31,31 @@ import se.trixon.almond.util.Dict;
  * Top component which displays something.
  */
 @ConvertAsProperties(
-        dtd = "-//org.mapton.editors//Editors//EN",
+        dtd = "-//org.mapton.reports//Reports//EN",
         autostore = false
 )
 @TopComponent.Description(
-        preferredID = "EditorsTopComponent",
+        preferredID = "ReportsTopComponent",
         //iconBase="SET/PATH/TO/ICON/HERE",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
-@TopComponent.Registration(mode = "editor", openAtStartup = false, position = 3)
+@TopComponent.Registration(mode = "editor", openAtStartup = false, position = 2)
 @TopComponent.OpenActionRegistration(
-        displayName = "#CTL_EditorsAction",
-        preferredID = "EditorsTopComponent"
+        displayName = "#CTL_ReportsAction",
+        preferredID = "ReportsTopComponent"
 )
-@ActionID(category = "Mapton", id = "org.mapton.editors_nb.EditorsTopComponent")
+@ActionID(category = "Mapton", id = "org.mapton.reports.ReportsTopComponent")
 @ActionReferences({
-    @ActionReference(path = "Shortcuts", name = "DS-O"),
-    @ActionReference(path = "Menu/Tools", position = 3)
+    @ActionReference(path = "Shortcuts", name = "DS-E"),
+    @ActionReference(path = "Menu/Tools", position = 2)
 })
 @NbBundle.Messages({
-    "CTL_EditorsAction=&Editors"
+    "CTL_ReportsAction=&Reports"
 })
-public final class EditorsTopComponent extends MTopComponent {
+public final class ReportsTopComponent extends MTopComponent {
 
-    public EditorsTopComponent() {
-        setName(Dict.EDITORS.toString());
+    public ReportsTopComponent() {
+        setName(Dict.REPORTS.toString());
     }
 
     @Override
@@ -76,6 +76,6 @@ public final class EditorsTopComponent extends MTopComponent {
     }
 
     private Scene createScene() {
-        return new Scene(new MSplitNavPane<>(MEditor.class, Dict.EDITOR.toString()));
+        return new Scene(new MSplitNavPane<>(MReport.class, Dict.REPORT.toString()));
     }
 }

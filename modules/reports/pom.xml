@@ -5,9 +5,9 @@
         <groupId>org.mapton</groupId>
         <artifactId>mapton-parent</artifactId>
         <version>2.1.0-SNAPSHOT</version>
-        <relativePath>../../../pom.xml</relativePath>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
-    <artifactId>editors-nb</artifactId>
+    <artifactId>reports</artifactId>
     <packaging>nbm</packaging>
     <build>
         <plugins>
@@ -115,5 +115,5 @@
     <properties>
         <netbeans.hint.license>apache20</netbeans.hint.license>
     </properties>
-    <name>Editors NB</name>
+    <name>Reports</name>
 </project>

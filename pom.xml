@@ -186,16 +186,14 @@
 
         <!--Shared Other-->
         <module>modules/poi-ww</module>
+        <module>modules/editors</module>
+        <module>modules/reports</module>
 
         <!--Applications-->
         <!--GUI NetBeans-->
         <module>app-nb/branding</module>
         <module>app-nb/application</module>
         <module>app-nb/core-nb</module>
-
-        <!--Modules NB-->
-        <module>app-nb/modules/editors-nb</module>
-        <module>app-nb/modules/reports-nb</module>
 
         <!--Other-->
 
@@ -258,7 +256,7 @@
             </dependency>
             <dependency>
                 <groupId>org.mapton</groupId>
-                <artifactId>editors-nb</artifactId>
+                <artifactId>editors</artifactId>
                 <version>${mapton.version}</version>
             </dependency>
             <dependency>
@@ -283,7 +281,7 @@
             </dependency>
             <dependency>
                 <groupId>org.mapton</groupId>
-                <artifactId>reports-nb</artifactId>
+                <artifactId>reports</artifactId>
                 <version>${mapton.version}</version>
             </dependency>
             <dependency>
