@@ -68,7 +68,6 @@ public class MOptions extends OptionsBase {
     private static final double DEFAULT_MAP_ZOOM = 0.8f;
     private static final boolean DEFAULT_UI_LAF_NIGHT_MODE = true;
     private static final boolean DEFAULT_UI_POPOVER = true;
-//    private static final String KEY_DISPLAY_BOOKMARK = "display_bookmark";
     private static final String KEY_FULL_SCREEN = "fullscreen";
     private static final String KEY_MAP_CENTER_LAT = "map.center_lat";
     private static final String KEY_MAP_CENTER_LON = "map.center_lon";
@@ -175,9 +174,6 @@ public class MOptions extends OptionsBase {
         return mIconColorDarkProperty;
     }
 
-//    public boolean isBookmarkVisible() {
-//        return mPreferences.getBoolean(KEY_DISPLAY_BOOKMARK, true);
-//    }
     public boolean isDisplayCrosshair() {
         return mDisplayCrosshairProperty.get();
     }
@@ -218,9 +214,6 @@ public class MOptions extends OptionsBase {
         return mPreferPopoverProperty;
     }
 
-//    public void setBookmarkVisible(boolean value) {
-//        mPreferences.putBoolean(KEY_DISPLAY_BOOKMARK, value);
-//    }
     public void setFullscreen(boolean value) {
         mPreferences.putBoolean(KEY_FULL_SCREEN, value);
     }
