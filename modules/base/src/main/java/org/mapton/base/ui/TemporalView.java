@@ -55,6 +55,9 @@ public class TemporalView extends BorderPane {
         initListeners();
 
         mToggleSwitch.setSelected(true);
+        setDisable(true);
+        mDatePane.setMinMaxDate(mManager.getMinDate(), mManager.getMaxDate());
+
         mManager.refresh();
     }
 

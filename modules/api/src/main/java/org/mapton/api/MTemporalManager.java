@@ -47,7 +47,6 @@ public class MTemporalManager {
 
     private MTemporalManager() {
         mDelayedResetRunner = new DelayedResetRunner(500, () -> {
-//            synchronized (this) {
             TreeSet<MTemporalRange> fromRanges = new TreeSet<>((o1, o2) -> o1.getFromLocalDate().compareTo(o2.getFromLocalDate()));
             TreeSet<MTemporalRange> toRanges = new TreeSet<>((o1, o2) -> o1.getToLocalDate().compareTo(o2.getToLocalDate()));
 
@@ -63,7 +62,6 @@ public class MTemporalManager {
                 setMinDate(LocalDate.of(1900, 1, 1));
                 setMaxDate(LocalDate.of(2099, 12, 31));
             }
-//            }
         });
     }
 

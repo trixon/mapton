@@ -24,7 +24,6 @@ import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.Path;
 import gov.nasa.worldwind.render.UserFacingIcon;
 import java.awt.Dimension;
-import java.beans.PropertyChangeEvent;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -131,15 +130,13 @@ public class MapollageLayerBundle extends LayerBundle {
             repaint();
         }, Mapo.KEY_SETTINGS_UPDATED);
 
-        mIconLayer.addPropertyChangeListener((PropertyChangeEvent evt) -> {
-            if (evt.getPropertyName().equals("Enabled")) {
-                mRenderableLayer.setEnabled(mIconLayer.isEnabled());
-                if (mIconLayer.isEnabled()) {
-                    repaint();
-                    mTemporalManager.putAll(mTemporalRanges);
-                } else {
-                    mTemporalRanges = mTemporalManager.getAndRemoveSubSet(Mapo.KEY_TEMPORAL_PREFIX);
-                }
+        mIconLayer.addPropertyChangeListener("Enabled", pce -> {
+            mRenderableLayer.setEnabled(mIconLayer.isEnabled());
+            if (mIconLayer.isEnabled()) {
+                repaint();
+                mTemporalManager.putAll(mTemporalRanges);
+            } else {
+                mTemporalRanges = mTemporalManager.getAndRemoveSubSet(Mapo.KEY_TEMPORAL_PREFIX);
             }
         });
     }
