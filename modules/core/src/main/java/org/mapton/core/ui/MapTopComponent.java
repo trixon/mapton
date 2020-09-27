@@ -84,7 +84,7 @@ import se.trixon.almond.util.swing.SwingHelper;
         displayName = "#CTL_MapAction",
         preferredID = "MapTopComponent"
 )
-@ActionID(category = "Window", id = "org.mapton.demo.MapTopComponent")
+@ActionID(category = "Window", id = "org.mapton.core.ui.MapTopComponent")
 @ActionReferences({
     @ActionReference(path = "Shortcuts", name = "D-M"),
     @ActionReference(path = "Menu/Tools", position = 0)
@@ -126,7 +126,7 @@ public final class MapTopComponent extends MTopComponent {
         try {
             super.paint(g);
 
-            if (mMOptions.isDisplayCrosshair()) {
+            if (mMOptions.isDisplayCrosshair() && !"WorldWind".equalsIgnoreCase(mMOptions.getEngine())) {
                 Graphics2D g2 = (Graphics2D) g;
                 int x = getWidth() / 2;
                 int y = (getHeight() + MapToolBarPanel.getInstance().getToolBarPanel().getHeight()) / 2;

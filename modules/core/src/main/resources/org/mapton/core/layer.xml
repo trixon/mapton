@@ -53,6 +53,7 @@ limitations under the License.
             <file name="org-netbeans-modules-search-FindInFilesAction-separatorBefore.instance_hidden"/>
             <file name="org-netbeans-modules-search-FindInFilesAction.shadow_hidden"/>
             <file name="org-netbeans-modules-search-ReplaceInFilesAction.shadow_hidden"/>
+            <file name="org-openide-actions-DeleteAction.shadow_hidden"/>
             <file name="org-openide-actions-FindAction.shadow_hidden"/>
             <file name="org-openide-actions-ReplaceAction.shadow_hidden"/>
         </folder>

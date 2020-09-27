@@ -60,14 +60,14 @@ public class MOptions extends OptionsBase {
 
     private static final boolean DEFAULT_FULL_SCREEN = false;
     private static final boolean DEFAULT_MAP_DISPLAY_CROSSHAIR = true;
-    private static final boolean DEFAULT_MAP_DISPLAY_HOME_ICON = true;
+    private static final boolean DEFAULT_MAP_DISPLAY_HOME_ICON = false;
     private static final String DEFAULT_MAP_ENGINE = "WorldWind";
     private static final double DEFAULT_MAP_LAT = 57.661509;
     private static final double DEFAULT_MAP_LON = 11.999312;
     private static final boolean DEFAULT_MAP_ONLY = false;
     private static final double DEFAULT_MAP_ZOOM = 0.8f;
     private static final boolean DEFAULT_UI_LAF_NIGHT_MODE = true;
-    private static final boolean DEFAULT_UI_POPOVER = true;
+    private static final boolean DEFAULT_UI_POPOVER = false;
     private static final String KEY_FULL_SCREEN = "fullscreen";
     private static final String KEY_MAP_CENTER_LAT = "map.center_lat";
     private static final String KEY_MAP_CENTER_LON = "map.center_lon";

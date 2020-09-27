@@ -37,6 +37,7 @@ import gov.nasa.worldwind.globes.projections.ProjectionSinusoidal;
 import gov.nasa.worldwind.globes.projections.ProjectionTransverseMercator;
 import gov.nasa.worldwind.globes.projections.ProjectionUPS;
 import gov.nasa.worldwind.layers.CompassLayer;
+import gov.nasa.worldwind.layers.CrosshairLayer;
 import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.layers.LayerList;
 import gov.nasa.worldwind.layers.ViewControlsLayer;
@@ -61,7 +62,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.prefs.PreferenceChangeEvent;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -71,6 +71,7 @@ import org.mapton.api.MDict;
 import org.mapton.api.MKey;
 import static org.mapton.api.MKey.*;
 import org.mapton.api.MNotificationIcons;
+import org.mapton.api.MOptions;
 import org.mapton.api.MWmsSource;
 import org.mapton.api.Mapton;
 import org.mapton.core.api.MaptonNb;
@@ -84,9 +85,7 @@ import org.openide.awt.NotificationDisplayer;
 import org.openide.awt.NotificationDisplayer.Priority;
 import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
-import org.openide.util.LookupEvent;
 import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.GlobalStateChangeEvent;
 import se.trixon.almond.util.GraphicsHelper;
 
 /**
@@ -95,15 +94,16 @@ import se.trixon.almond.util.GraphicsHelper;
  */
 public class WorldWindowPanel extends WorldWindowGLJPanel {
 
+    private CrosshairLayer mCrosshairLayer;
     private final ObservableList<Layer> mCustomLayers = FXCollections.observableArrayList();
     private FlatGlobe mFlatGlobe;
+    private IndicatorLayerBundle mIndicatorLayer;
     private Object mLastHighlightObject;
     private String mLastHighlightText;
     private CompoundElevationModel mNormalElevationModel;
     private final ModuleOptions mOptions = ModuleOptions.getInstance();
     private Globe mRoundGlobe;
     private ElevationModel mZeroElevationModel = new ZeroElevationModel();
-    private IndicatorLayerBundle mIndicatorLayer;
 
     public WorldWindowPanel() {
         MaptonNb.progressStart(MDict.MAP_ENGINE.toString());
@@ -227,6 +227,13 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
 
         MaskLayer maskLayer = new MaskLayer();
         insertLayerBefore(maskLayer, WorldMapLayer.class);
+
+        mCrosshairLayer = new CrosshairLayer();
+        mCrosshairLayer.setIconFilePath("org/mapton/worldwind/crosshair.png");
+        mCrosshairLayer.setIconScale(0.16);
+        mCrosshairLayer.setEnabled(MOptions.getInstance().isDisplayCrosshair());
+        insertLayerBefore(mCrosshairLayer, WorldMapLayer.class);
+
         mNormalElevationModel = (CompoundElevationModel) wwd.getModel().getGlobe().getElevationModel();
         wwd.getModel().getGlobe().setElevationModel(mZeroElevationModel);
         wwd.getSceneController().setDeepPickEnabled(true);
@@ -283,8 +290,8 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
     }
 
     private void initListeners() {
-        mOptions.getPreferences().addPreferenceChangeListener((PreferenceChangeEvent evt) -> {
-            switch (evt.getKey()) {
+        mOptions.getPreferences().addPreferenceChangeListener(pce -> {
+            switch (pce.getKey()) {
                 case ModuleOptions.KEY_MAP_OPACITY:
                 case ModuleOptions.KEY_MAP_STYLE:
                     updateStyle();
@@ -313,15 +320,15 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
             }
         });
 
-        Mapton.getGlobalState().addListener((GlobalStateChangeEvent evt) -> {
+        Mapton.getGlobalState().addListener(gsce -> {
             initWmsService();
         }, DATA_SOURCES_WMS_SOURCES);
 
-        Lookup.getDefault().lookupResult(LayerBundle.class).addLookupListener((LookupEvent ev) -> {
+        Lookup.getDefault().lookupResult(LayerBundle.class).addLookupListener(lookupEvent -> {
             initLayerBundles();
         });
 
-        Lookup.getDefault().lookupResult(WmsService.class).addLookupListener((LookupEvent ev) -> {
+        Lookup.getDefault().lookupResult(WmsService.class).addLookupListener(lookupEvent -> {
             initWmsService();
         });
 
@@ -408,6 +415,10 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
 
         getWwd().addSelectListener(rolloverSelectListener);
         getWwd().getInputHandler().addMouseListener(highlightClickAdapter);
+
+        MOptions.getInstance().displayCrosshairProperty().addListener((observable, oldValue, newValue) -> {
+            mCrosshairLayer.setEnabled(newValue);
+        });
     }
 
     private void initWmsService() {
@@ -545,6 +556,7 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         blacklist.add("Place Names");
         blacklist.add("Measure Tool");
         blacklist.add("Mask");
+        blacklist.add("Crosshairs");
 
         String styleId = mOptions.get(KEY_MAP_STYLE, DEFAULT_MAP_STYLE);
         String[] styleLayers = MapStyle.getLayers(styleId);
