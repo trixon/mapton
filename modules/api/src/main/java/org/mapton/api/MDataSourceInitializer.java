@@ -53,22 +53,6 @@ public class MDataSourceInitializer implements Runnable {
     private static final String LOG_TAG = "DataSources";
     private final Preferences mPreferences = NbPreferences.forModule(MDataSourceInitializer.class);
 
-    public static String getDefaultSources() {
-        try {
-            return IOUtils.toString(new URI("https://mapton.org/files/data_sources_wms_sources_defaults"), "utf-8") + "\n";
-        } catch (IOException | URISyntaxException ex) {
-            return "# Defaults not found\n";
-        }
-    }
-
-    public static String getDefaultStyles() {
-        try {
-            return IOUtils.toString(new URI("https://mapton.org/files/data_sources_wms_styles_defaults"), "utf-8") + "\n";
-        } catch (IOException | URISyntaxException ex) {
-            return "# Defaults not found\n";
-        }
-    }
-
     public MDataSourceInitializer() {
         mPreferences.addPreferenceChangeListener((PreferenceChangeEvent evt) -> {
             switch (evt.getKey()) {
@@ -121,7 +105,7 @@ public class MDataSourceInitializer implements Runnable {
     private void applyWmsSource() {
         ArrayList<MWmsSource> allSources = new ArrayList<>();
 
-        for (String json : getJsons(mPreferences.get(DATA_SOURCES_WMS_SOURCES, getDefaultSources()))) {
+        for (String json : getJsons(mPreferences.get(DATA_SOURCES_WMS_SOURCES, MDataSource.getDefaultSources()))) {
             try {
                 deserializeSource(json).stream()
                         .filter((wmsSource) -> (wmsSource.isEnabled()))
@@ -162,7 +146,7 @@ public class MDataSourceInitializer implements Runnable {
     private void applyWmsStyle() {
         ArrayList<MWmsStyle> allStyles = new ArrayList<>();
 
-        for (String json : getJsons(mPreferences.get(DATA_SOURCES_WMS_STYLES, getDefaultStyles()))) {
+        for (String json : getJsons(mPreferences.get(DATA_SOURCES_WMS_STYLES, MDataSource.getDefaultStyles()))) {
             try {
                 deserializeStyle(json).stream()
                         .filter((wmsStyle) -> (wmsStyle.isEnabled()))

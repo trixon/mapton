@@ -16,16 +16,13 @@
 package org.mapton.api.ui;
 
 import java.io.File;
-import java.util.prefs.Preferences;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextArea;
-import javafx.scene.input.DragEvent;
-import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.scene.text.Font;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.openide.util.NbPreferences;
+import org.mapton.api.MDataSource;
 import se.trixon.almond.util.fx.FxHelper;
 
 /**
@@ -37,7 +34,6 @@ public class DataSourceTab extends Tab {
     private String mDefaults;
     private final String[] mDropExts;
     private final String mKey;
-    private final Preferences mPreferences = NbPreferences.forModule(DataSourceTab.class);
     private TextArea mTextArea;
 
     public DataSourceTab(String text, String key, String[] dropExts) {
@@ -50,7 +46,7 @@ public class DataSourceTab extends Tab {
 
     public void load(String defaults) {
         mDefaults = defaults;
-        mTextArea.setText(mPreferences.get(mKey, defaults));
+        mTextArea.setText(MDataSource.getPreferences().get(mKey, defaults));
     }
 
     public void restoreDefaults() {
@@ -58,7 +54,7 @@ public class DataSourceTab extends Tab {
     }
 
     public void save() {
-        mPreferences.put(mKey, mTextArea.getText());
+        MDataSource.getPreferences().put(mKey, mTextArea.getText());
     }
 
     private void append(File file) {
@@ -72,15 +68,15 @@ public class DataSourceTab extends Tab {
     }
 
     private void initListeners() {
-        mTextArea.setOnDragOver((DragEvent event) -> {
-            Dragboard board = event.getDragboard();
-            if (board.hasFiles()) {
-                event.acceptTransferModes(TransferMode.COPY);
+        mTextArea.setOnDragOver(dragEvent -> {
+            var dragBoard = dragEvent.getDragboard();
+            if (dragBoard.hasFiles()) {
+                dragEvent.acceptTransferModes(TransferMode.COPY);
             }
         });
 
-        mTextArea.setOnDragDropped((DragEvent event) -> {
-            for (File file : event.getDragboard().getFiles()) {
+        mTextArea.setOnDragDropped(dragEvent -> {
+            for (var file : dragEvent.getDragboard().getFiles()) {
                 if (mDropExts == null) {
                     append(file);
                 } else {

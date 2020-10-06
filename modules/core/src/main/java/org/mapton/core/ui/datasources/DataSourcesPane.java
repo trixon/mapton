@@ -25,7 +25,7 @@ import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
-import org.mapton.api.MDataSourceInitializer;
+import org.mapton.api.MDataSource;
 import org.mapton.api.MKey;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.mapton.api.ui.DataSourceTab;
@@ -76,8 +76,8 @@ public class DataSourcesPane extends BorderPane {
     }
 
     private void init() {
-        mWmsSourceTab.load(MDataSourceInitializer.getDefaultSources());
-        mWmsStyleTab.load(MDataSourceInitializer.getDefaultStyles());
+        mWmsSourceTab.load(MDataSource.getDefaultSources());
+        mWmsStyleTab.load(MDataSource.getDefaultStyles());
 
         apply();
     }
