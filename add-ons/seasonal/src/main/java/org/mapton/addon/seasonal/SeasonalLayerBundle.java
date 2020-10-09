@@ -66,7 +66,7 @@ public class SeasonalLayerBundle extends LayerBundle {
         final String today = new SimpleDateFormat("yyyyMMdd").format(new Date(System.currentTimeMillis()));
         if (ArrayUtils.contains(fettisdagar, today)) {
             refresh(new MardiGrasRenderer(mLayer));
-        } else if (ArrayUtils.contains(halloween, today)) {
+        } else if (true || ArrayUtils.contains(halloween, today)) {
             refresh(new HalloweenRenderer(mLayer));
         }
     }
@@ -81,19 +81,19 @@ public class SeasonalLayerBundle extends LayerBundle {
         }, SeasonalSOSB.class);
     }
 
-    private void refresh(BaseRenderer baseRenderer) {
+    private void refresh(BaseRenderer renderer) {
         mLayer.removeAllRenderables();
         if (MSimpleObjectStorageManager.getInstance().getBoolean(SeasonalSOSB.class, true)) {
             new Thread(() -> {
                 try {
                     TimeUnit.SECONDS.sleep(STARTUP_DELAY);
-                    baseRenderer.run();
-                    if (baseRenderer.isHollow()) {
+                    renderer.run();
+                    if (renderer.isHollow()) {
                         var node = NbPreferences.root().node("org/mapton/me/worldwind");
                         node.put("map_style_prev", node.get("map_style", "se.trixon.hollow"));
                         node.put("map_style", "se.trixon.hollow");
                     }
-                    baseRenderer.panTo();
+                    renderer.panTo();
                 } catch (InterruptedException ex) {
                     Exceptions.printStackTrace(ex);
                 }
