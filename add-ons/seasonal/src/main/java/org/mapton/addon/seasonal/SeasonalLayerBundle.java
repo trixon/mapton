@@ -66,7 +66,7 @@ public class SeasonalLayerBundle extends LayerBundle {
         final String today = new SimpleDateFormat("yyyyMMdd").format(new Date(System.currentTimeMillis()));
         if (ArrayUtils.contains(fettisdagar, today)) {
             refresh(new MardiGrasRenderer(mLayer));
-        } else if (true || ArrayUtils.contains(halloween, today)) {
+        } else if (ArrayUtils.contains(halloween, today)) {
             refresh(new HalloweenRenderer(mLayer));
         }
     }
