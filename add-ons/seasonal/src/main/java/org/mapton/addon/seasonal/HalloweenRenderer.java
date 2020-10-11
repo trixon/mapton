@@ -40,7 +40,7 @@ public class HalloweenRenderer extends BaseRenderer {
     public HalloweenRenderer(RenderableLayer layer) {
         super(layer);
         setLatLon(new MLatLon(28, 0));
-        setZoom(0.04);
+        setZoom(0.05);
     }
 
     @Override

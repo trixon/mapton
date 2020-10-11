@@ -17,9 +17,11 @@ package org.mapton.addon.seasonal;
 
 import gov.nasa.worldwind.layers.RenderableLayer;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.mapton.api.MKey;
 import org.mapton.api.MSimpleObjectStorageManager;
 import org.mapton.api.Mapton;
@@ -62,11 +64,10 @@ public class SeasonalLayerBundle extends LayerBundle {
     private void checkForRefresh() {
         String[] fettisdagar = {"20200225", "20210216", "20220201", "20230221", "20240224", "20250304"};
         String[] halloween = {"1030", "1031"};
-
         final String today = new SimpleDateFormat("yyyyMMdd").format(new Date(System.currentTimeMillis()));
         if (ArrayUtils.contains(fettisdagar, today)) {
             refresh(new MardiGrasRenderer(mLayer));
-        } else if (ArrayUtils.contains(halloween, today)) {
+        } else if (Arrays.stream(halloween).anyMatch(s -> StringUtils.endsWith(today, s))) {
             refresh(new HalloweenRenderer(mLayer));
         }
     }
