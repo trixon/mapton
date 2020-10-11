@@ -85,6 +85,9 @@ public class CandleRenderer extends BaseRenderer {
             }
         });
 
-        timer.start();
+        LocalDateTime now = LocalDateTime.now();
+        if (now.isAfter(startTimes[0].minusDays(3)) && now.isBefore(startTimes[startTimes.length - 1].plusDays(10))) {
+            timer.start();
+        }
     }
 }
