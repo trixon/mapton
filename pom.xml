@@ -459,7 +459,7 @@
             <dependency>
                 <groupId>org.jxmapviewer</groupId>
                 <artifactId>jxmapviewer2</artifactId>
-                <version>2.5</version>
+                <version>2.6</version>
             </dependency>
             <dependency>
                 <groupId>com.sothawo</groupId>
@@ -517,7 +517,7 @@
         <netbeans.compile.on.save>none</netbeans.compile.on.save>
         <brandingToken>mapton</brandingToken>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <almond.version>11.0.6</almond.version>
+        <almond.version>11.0.7-SNAPSHOT</almond.version>
         <mapton.version>2.1.1-SNAPSHOT</mapton.version>
         <!--<openjfx.version>15</openjfx.version>-->
     </properties>
