@@ -109,6 +109,10 @@ public class RulerTab extends Tab {
         return new KmlFeatureGenerator(getText(), mMetricsTextArea.getText(), mMeasureTool).generate();
     }
 
+    private void copyPointList() {
+        SystemHelperFx.copyToClipboard(String.join(", ", mPointListTextArea.getText().split("\n")));
+    }
+
     private void createUI() {
         mStartImageView = MaterialIcon._Av.PLAY_ARROW.getImageView(getIconSizeToolBarInt());
         mPauseImageView = MaterialIcon._Av.PAUSE_CIRCLE_OUTLINE.getImageView(getIconSizeToolBarInt());
@@ -218,7 +222,7 @@ public class RulerTab extends Tab {
         mSaveAction.setGraphic(mSaveImageView);
 
         mCopyAction = new Action(Dict.COPY.toString(), event -> {
-            SystemHelperFx.copyToClipboard(mPointListTextArea.getText());
+            copyPointList();
         });
         mCopyAction.setGraphic(mCopyImageView);
 
