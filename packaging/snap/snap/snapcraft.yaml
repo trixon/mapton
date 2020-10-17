@@ -1,29 +1,46 @@
 name: mapton
 title: Mapton
 base: core18
-version: '2.0.1'
+version: '2.1.0'
 summary: Some kind of map application
 description: |
     Mapton is an easy to use map application that runs on your desktop.
-    It combines the simplicity of a mobile app with the capability of being extensible  with powerful custom plugins.
+    It combines the simplicity of a mobile app with the capability of being extensible with powerful custom plugins.
 
-    On its own, Mapton is a capable map application, however, Mapton is also a platform for domain specific GIS related plugin development.
+    On its own, Mapton is a capable map application, however, Mapton is also a platform for GIS related plugin development.
 
 grade: devel
 architectures: [ amd64 ]
-confinement: devmode
+confinement: strict
+icon: snap/gui/mapton.png
+license: Apache-2.0
 
 apps:
   mapton:
     command: mapton/bin/mapton
     extensions: [gnome-3-28]
+    plugs:
+        - home
+        - removable-media
+        - network
+#        - opengl
 
 parts:
   mapton:
     plugin: dump
-#    source: https://github.com/trixon/mapton/releases/download/v$SNAPCRAFT_PROJECT_VERSION/mapton-$SNAPCRAFT_PROJECT_VERSION-linux.zip
-    source: /root/project/mapton.zip
+    source: https://github.com/trixon/mapton/releases/download/v$SNAPCRAFT_PROJECT_VERSION/mapton-$SNAPCRAFT_PROJECT_VERSION-linux.zip
+#    source: /root/project/mapton.zip
     source-type: zip
-    stage-packages:
-      - libavcodec57
-      - libavformat57
+#    stage-packages:
+#      - libavcodec57
+#      - libavformat57
+
+  config:
+    plugin: nil
+    override-build: |
+        sed -i 's/${HOME}\/.${APPNAME}/${SNAP_USER_COMMON}\/data/' /root/parts/mapton/src/mapton/bin/mapton
+        sed -i 's/${HOME}\/.cache\/${APPNAME}/${SNAP_USER_COMMON}\/cache/' /root/parts/mapton/src/mapton/bin/mapton
+        rm -r /root/parts/mapton/src/mapton/platform/modules/lib/i386
+        rm -r /root/parts/mapton/src/mapton/platform/modules/lib/x86
+        rm /root/parts/mapton/src/mapton/platform/lib/*.dll
+        rm /root/parts/mapton/src/mapton/platform/lib/*.exe
