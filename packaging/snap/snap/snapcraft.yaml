@@ -9,7 +9,7 @@ description: |
 
     On its own, Mapton is a capable map application, however, Mapton is also a platform for GIS related plugin development.
 
-grade: devel
+grade: stable
 architectures: [ amd64 ]
 confinement: strict
 icon: snap/gui/mapton.png
