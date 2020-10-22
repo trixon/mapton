@@ -90,7 +90,6 @@ public class ObjectPropertyView extends BorderPane {
     @SuppressWarnings("unchecked")
     private void refresh(Object o) {
         Node centerObject = null;
-        setCenter(mPropertySheet);
 
         if (o == null) {
             centerObject = mPlaceholderLabel;
@@ -106,6 +105,7 @@ public class ObjectPropertyView extends BorderPane {
             centerObject = mLogPanel;
             load(o.toString());
         } else {
+            centerObject = mLogPanel;
             load(ToStringBuilder.reflectionToString(o, ToStringStyle.MULTI_LINE_STYLE));
         }
 
