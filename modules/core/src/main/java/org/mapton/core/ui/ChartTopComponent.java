@@ -16,6 +16,8 @@
 package org.mapton.core.ui;
 
 import javafx.scene.Scene;
+import org.mapton.api.MKey;
+import org.mapton.api.Mapton;
 import org.mapton.base.ui.ChartView;
 import org.mapton.core.api.MTopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
@@ -46,6 +48,7 @@ public final class ChartTopComponent extends MTopComponent {
     @Override
     protected void initFX() {
         setScene(new Scene(new ChartView()));
+        Mapton.getGlobalState().put(MKey.CHART, Mapton.getGlobalState().get(MKey.CHART));
     }
 
     void readProperties(java.util.Properties p) {

@@ -16,6 +16,8 @@
 package org.mapton.core.ui;
 
 import javafx.scene.Scene;
+import org.mapton.api.MKey;
+import org.mapton.api.Mapton;
 import org.mapton.base.ui.ObjectPropertyView;
 import org.mapton.core.api.MTopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
@@ -46,6 +48,7 @@ public final class PropertiesTopComponent extends MTopComponent {
     @Override
     protected void initFX() {
         setScene(new Scene(new ObjectPropertyView()));
+        Mapton.getGlobalState().put(MKey.OBJECT_PROPERTIES, Mapton.getGlobalState().get(MKey.OBJECT_PROPERTIES));
     }
 
     void readProperties(java.util.Properties p) {
