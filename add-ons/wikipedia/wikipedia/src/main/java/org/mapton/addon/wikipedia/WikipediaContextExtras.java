@@ -21,25 +21,21 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.Locale;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.mapton.api.MContextMenuItem;
-import org.mapton.api.MLatLon;
+import static org.mapton.addon.wikipedia.Module.LOG_TAG;
 import org.mapton.addon.wikipedia.api.WikipediaArticle;
 import org.mapton.addon.wikipedia.api.WikipediaArticleManager;
-import org.mapton.api.Mapton;
-import static org.mapton.addon.wikipedia.Module.LOG_TAG;
 import org.mapton.addon.wikipedia.result.ApiResult;
-import org.mapton.addon.wikipedia.result.Coordinate;
-import org.mapton.addon.wikipedia.result.Page;
-import org.mapton.addon.wikipedia.result.Terms;
-import org.mapton.addon.wikipedia.result.Thumbnail;
+import org.mapton.api.MContextMenuItem;
+import org.mapton.api.MLatLon;
+import org.mapton.api.Mapton;
 import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
+import se.trixon.almond.nbp.Almond;
 
 /**
  *
@@ -57,8 +53,8 @@ public class WikipediaContextExtras extends MContextMenuItem {
     @Override
     public EventHandler<ActionEvent> getAction() {
         return (event) -> {
-//aaa            Almond.openAndActivateTopComponent("WikipediaTopComponent");
-            String base = String.format(Locale.ENGLISH,
+            Almond.openAndActivateTopComponent("WikipediaTopComponent");
+            var base = String.format(Locale.ENGLISH,
                     "https://%s.wikipedia.org/w/api.php?action=query",
                     mLocale.getLanguage()
             );
@@ -100,24 +96,24 @@ public class WikipediaContextExtras extends MContextMenuItem {
                 Mapton.getLog().v(LOG_TAG, url.toString());
 
                 mWikipediaManager.setLocale(mLocale);
-                mWikipediaManager.getItems().clear();
+                mWikipediaManager.getAllItems().clear();
+
                 new Thread(() -> {
-                    String json;
                     try {
-                        json = IOUtils.toString(url, "utf-8");
-                        ApiResult result = ApiResult.load(json);
-                        ArrayList<WikipediaArticle> articles = new ArrayList<>();
+                        var json = IOUtils.toString(url, "utf-8");
+                        var result = ApiResult.load(json);
+                        var articles = new ArrayList<WikipediaArticle>();
                         if (result.getQuery() != null && result.getQuery().getPages() != null) {
-                            final LinkedHashMap<String, Page> pages = result.getQuery().getPages();
+                            var pages = result.getQuery().getPages();
                             Mapton.getLog().v(LOG_TAG, String.format("Found %d articles", pages.size()));
-                            for (Page page : pages.values()) {
-                                WikipediaArticle article = new WikipediaArticle();
+                            for (var page : pages.values()) {
+                                var article = new WikipediaArticle();
                                 article.setTitle(page.getTitle());
-                                Coordinate coordinate = page.getCoordinates().get(0);
-                                MLatLon latLon = new MLatLon(coordinate.getLat(), coordinate.getLon());
+                                var coordinate = page.getCoordinates().get(0);
+                                var latLon = new MLatLon(coordinate.getLat(), coordinate.getLon());
                                 article.setLatLon(latLon);
                                 article.setDistance(latLon.distance(new MLatLon(getLatitude(), getLongitude())));
-                                final Thumbnail thumbnail = page.getThumbnail();
+                                var thumbnail = page.getThumbnail();
 
                                 if (thumbnail != null) {
                                     article.setThumbnail(thumbnail.getSource());
@@ -125,7 +121,7 @@ public class WikipediaContextExtras extends MContextMenuItem {
                                     article.setThumbnailWidth(thumbnail.getWidth());
                                 }
 
-                                final Terms terms = page.getTerms();
+                                var terms = page.getTerms();
                                 if (terms != null && terms.getDescription() != null && terms.getDescription().length > 0) {
                                     article.setDescription(terms.getDescription()[0]);
                                 }
@@ -134,8 +130,11 @@ public class WikipediaContextExtras extends MContextMenuItem {
                             }
                         }
 
-                        Collections.sort(articles, (WikipediaArticle o1, WikipediaArticle o2) -> o1.getDistance().compareTo(o2.getDistance()));
-                        mWikipediaManager.getItems().addAll(articles);
+                        Collections.sort(articles, (o1, o2) -> o1.getDistance().compareTo(o2.getDistance()));
+                        mWikipediaManager.getAllItems().addAll(articles);
+                        if (!articles.isEmpty()) {
+                            mWikipediaManager.setSelectedItem(articles.get(0));
+                        }
                     } catch (IOException ex) {
                         Exceptions.printStackTrace(ex);
                     }

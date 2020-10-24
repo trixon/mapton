@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Locale;
 import javafx.application.Platform;
-import javafx.collections.ListChangeListener;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.Side;
@@ -42,10 +41,8 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import static org.mapton.addon.wikipedia.Module.LOG_TAG;
-import org.mapton.api.MKey;
 import org.mapton.api.Mapton;
 import org.openide.util.Exceptions;
-import se.trixon.almond.util.GlobalStateChangeEvent;
 import se.trixon.almond.util.fx.FxHelper;
 
 public final class WikipediaView extends BorderPane {
@@ -62,44 +59,34 @@ public final class WikipediaView extends BorderPane {
 
     private void createUI() {
         mListView = new ListView<>();
+        mListView.itemsProperty().bind(mWikipediaArticleManager.allItemsProperty());
         mListView.setCellFactory((ListView<WikipediaArticle> param) -> new ArticleListCell());
+        mListView.setPrefHeight(FxHelper.getUIScaled(300));
         mWebView = new WebView();
         mWebView.setZoom(FxHelper.getUIScaled(0.8));
-        MasterDetailPane masterDetailPane = new MasterDetailPane(Side.TOP, mListView, mWebView, true);
-        masterDetailPane.setDividerPosition(0.7);
+        var masterDetailPane = new MasterDetailPane(Side.TOP, mListView, mWebView, true);
+        masterDetailPane.setDividerPosition(0.5);
 
         setCenter(masterDetailPane);
-
-        mWikipediaArticleManager.getItems().addListener((ListChangeListener.Change<? extends WikipediaArticle> c) -> {
-            Platform.runLater(() -> {
-                mImageCache.clear();
-                mListView.getItems().setAll(mWikipediaArticleManager.getItems());
-                if (mWikipediaArticleManager.getItems().size() > 0) {
-                    select(mWikipediaArticleManager.getItems().get(0));
-                } else {
-                    select(null);
-                }
-            });
-        });
-
-        mListView.getSelectionModel().getSelectedItems().addListener((ListChangeListener.Change<? extends WikipediaArticle> c) -> {
-            select(mListView.getSelectionModel().getSelectedItem());
-        });
     }
 
     private void initListeners() {
-        Mapton.getGlobalState().addListener((GlobalStateChangeEvent evt) -> {
+        mListView.getSelectionModel().selectedItemProperty().addListener((ov, oldValue, newValue) -> {
+            mWikipediaArticleManager.setSelectedItem(newValue);
+        });
+
+        mWikipediaArticleManager.selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             try {
                 Platform.runLater(() -> {
-                    WikipediaArticle article = evt.getValue();
-                    mListView.getSelectionModel().select(article);
-                    mListView.getFocusModel().focus(mListView.getItems().indexOf(article));
-                    mListView.scrollTo(article);
+                    select(newValue);
+                    mListView.getSelectionModel().select(newValue);
+                    mListView.getFocusModel().focus(mListView.getItems().indexOf(newValue));
+                    FxHelper.scrollToItemIfNotVisible(mListView, newValue);
                 });
             } catch (Exception e) {
 
             }
-        }, MKey.WIKIPEDIA_ARTICLE);
+        });
     }
 
     private void select(WikipediaArticle article) {
@@ -113,8 +100,8 @@ public final class WikipediaView extends BorderPane {
                     "https://%s.m.wikipedia.org/wiki/%s",
                     mWikipediaArticleManager.getLocale().getLanguage(),
                     article.getTitle());
-            Mapton.getLog().v(LOG_TAG, url);
-            Mapton.getLog().v(LOG_TAG, article.getThumbnail());
+            Mapton.getLog().d(LOG_TAG, url);
+            Mapton.getLog().d(LOG_TAG, article.getThumbnail());
 
             try {
                 Document doc = Jsoup.connect(url).get();
@@ -169,12 +156,13 @@ public final class WikipediaView extends BorderPane {
         @Override
         protected void updateItem(WikipediaArticle article, boolean empty) {
             super.updateItem(article, empty);
-
-            if (article == null || empty) {
-                clearContent();
-            } else {
-                addContent(article);
-            }
+            FxHelper.runLater(() -> {
+                if (article == null || empty) {
+                    clearContent();
+                } else {
+                    addContent(article);
+                }
+            });
         }
 
         private void addContent(WikipediaArticle article) {

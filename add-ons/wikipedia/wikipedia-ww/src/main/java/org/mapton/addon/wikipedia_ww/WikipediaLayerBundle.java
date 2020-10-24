@@ -26,8 +26,6 @@ import java.awt.Color;
 import javafx.collections.ListChangeListener;
 import org.mapton.addon.wikipedia.api.WikipediaArticle;
 import org.mapton.addon.wikipedia.api.WikipediaArticleManager;
-import org.mapton.api.MKey;
-import org.mapton.api.Mapton;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
@@ -65,7 +63,7 @@ public class WikipediaLayerBundle extends LayerBundle {
     }
 
     private void initListeners() {
-        mWikipediaArticleManager.getItems().addListener((ListChangeListener.Change<? extends WikipediaArticle> c) -> {
+        mWikipediaArticleManager.getAllItems().addListener((ListChangeListener.Change<? extends WikipediaArticle> c) -> {
             repaint();
             mLayer.setEnabled(true);
         });
@@ -76,8 +74,8 @@ public class WikipediaLayerBundle extends LayerBundle {
             mLayer.removeAllRenderables();
 
             String imageAddress = SystemHelper.getPackageAsPath(getClass()) + "Wikipedia-logo.png";
-            for (WikipediaArticle article : mWikipediaArticleManager.getItems()) {
-                PointPlacemark placemark = new PointPlacemark(Position.fromDegrees(article.getLatLon().getLatitude(), article.getLatLon().getLongitude()));
+            for (var article : mWikipediaArticleManager.getAllItems()) {
+                var placemark = new PointPlacemark(Position.fromDegrees(article.getLatLon().getLatitude(), article.getLatLon().getLongitude()));
                 placemark.setLabelText(article.getTitle());
                 placemark.setValue(AVKey.DISPLAY_NAME, article.getDescription());
                 placemark.setLineEnabled(false);
@@ -86,7 +84,7 @@ public class WikipediaLayerBundle extends LayerBundle {
                 placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
                 placemark.setEnableLabelPicking(true);
 
-                PointPlacemarkAttributes attrs = new PointPlacemarkAttributes(placemark.getDefaultAttributes());
+                var attrs = new PointPlacemarkAttributes(placemark.getDefaultAttributes());
 
                 attrs.setImageAddress(imageAddress);
                 attrs.setImageColor(Color.decode("#ff8888"));
@@ -97,7 +95,7 @@ public class WikipediaLayerBundle extends LayerBundle {
                 placemark.setAttributes(attrs);
                 placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(attrs, 1.5));
                 placemark.setValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK, (Runnable) () -> {
-                    Mapton.getGlobalState().put(MKey.WIKIPEDIA_ARTICLE, article);
+                    mWikipediaArticleManager.setSelectedItem(article);
                 });
 
                 mLayer.addRenderable(placemark);

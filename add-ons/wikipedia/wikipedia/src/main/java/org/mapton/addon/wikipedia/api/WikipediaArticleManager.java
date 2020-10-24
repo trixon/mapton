@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,19 +15,16 @@
  */
 package org.mapton.addon.wikipedia.api;
 
+import java.util.ArrayList;
 import java.util.Locale;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import org.mapton.api.MBaseDataManager;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class WikipediaArticleManager {
+public class WikipediaArticleManager extends MBaseDataManager<WikipediaArticle> {
 
-    private ObjectProperty<ObservableList<WikipediaArticle>> mItems = new SimpleObjectProperty<>();
     private Locale mLocale = Locale.getDefault();
 
     public static WikipediaArticleManager getInstance() {
@@ -35,27 +32,25 @@ public class WikipediaArticleManager {
     }
 
     private WikipediaArticleManager() {
-        mItems.setValue(FXCollections.observableArrayList());
-    }
-
-    public final ObservableList<WikipediaArticle> getItems() {
-        return mItems == null ? null : mItems.get();
+        super(WikipediaArticle.class);
     }
 
     public Locale getLocale() {
         return mLocale;
     }
 
-    public final ObjectProperty<ObservableList<WikipediaArticle>> itemsProperty() {
-        if (mItems == null) {
-            mItems = new SimpleObjectProperty<>(this, "items");
-        }
-
-        return mItems;
-    }
-
     public void setLocale(Locale locale) {
         mLocale = locale;
+    }
+
+    @Override
+    protected void applyTemporalFilter() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    protected void load(ArrayList<WikipediaArticle> items) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     private static class Holder {
