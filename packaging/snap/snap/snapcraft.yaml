@@ -1,13 +1,37 @@
 name: mapton
 title: Mapton
 base: core18
-version: '2.1.0'
+version: '2.1.1'
 summary: Some kind of map application
 description: |
-    Mapton is an easy to use map application that runs on your desktop.
-    It combines the simplicity of a mobile app with the capability of being extensible with powerful custom plugins.
+    **Mapton is an open-source map application** for Linux, MacOS and Windows that lets you quickly and easily explore the world.
 
-    On its own, Mapton is a capable map application, however, Mapton is also a platform for GIS related plugin development.
+
+    Mapton consists of a rich set of background maps and a toolbox, a toolbox that like the maps, can be extended with custom plugins.
+
+
+    _It's a simple application, yet a powerful platform._
+
+
+    **Features**
+    * 3d, 4d when looking at time coded data
+    * Time slider
+    * Geographical bookmarks and Point of Interests
+    * Layer management
+    * WMS support
+    * Search in different data sources
+    * Ruler
+    * Extensible with custom plugins
+
+
+    **Bundled plugins**
+    * Files - Plot kml files
+    * Photos - Plot geotagged images
+    * Population visualizer - Look at the world population
+    * Wikipedia - Find and read geotagged articles
+    * XKCD - View the amazing XKCD strip
+
+    https://twitter.com/mapton_app
 
 grade: stable
 architectures: [ amd64 ]
@@ -23,17 +47,13 @@ apps:
         - home
         - removable-media
         - network
-#        - opengl
 
 parts:
   mapton:
     plugin: dump
     source: https://github.com/trixon/mapton/releases/download/v$SNAPCRAFT_PROJECT_VERSION/mapton-$SNAPCRAFT_PROJECT_VERSION-linux.zip
-#    source: /root/project/mapton.zip
+#    source: /root/project/mapton-$SNAPCRAFT_PROJECT_VERSION-linux.zip
     source-type: zip
-#    stage-packages:
-#      - libavcodec57
-#      - libavformat57
 
   config:
     plugin: nil
