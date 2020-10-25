@@ -54,6 +54,8 @@ public class AttributionView extends BorderPane {
         mPopOver = popOver;
         createUI();
         initListeners();
+
+        updateDocumentInfo(Mapton.getGlobalState().get(MKey.MAP_DOCUMENT_INFO));
     }
 
     private void createUI() {
