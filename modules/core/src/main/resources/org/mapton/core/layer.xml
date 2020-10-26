@@ -140,7 +140,7 @@ limitations under the License.
         <file name="D-F.shadow">
             <attr name="originalFile" stringvalue="Actions/Edit/org-netbeans-modules-quicksearch-QuickSearchAction.instance"/>
         </file>
-        <file name="DS-R.shadow">
+        <file name="CS-Q.shadow">
             <attr name="originalFile" stringvalue="Actions/File/se-trixon-almond-nbp-actions-RestartAction.instance"/>
         </file>
         <file name="DS-X.shadow">
