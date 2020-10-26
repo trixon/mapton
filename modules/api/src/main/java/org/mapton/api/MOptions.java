@@ -35,6 +35,7 @@ public class MOptions extends OptionsBase {
 
     public static final String DEFAULT_UI_LAF_ICON_COLOR_BRIGHT = "D3D3D3";
     public static final String DEFAULT_UI_LAF_ICON_COLOR_DARK = "1A1A1A";
+    public static final String KEY_APP_FIRST_RUN = "app.first_run";
 
     public static final String KEY_GRID_GLOBAL_CLAMP_TO_GROUND = "global_clamp_to_ground";
     public static final String KEY_GRID_GLOBAL_EQUATOR = "grid.global.equator";
@@ -180,6 +181,10 @@ public class MOptions extends OptionsBase {
 
     public boolean isDisplayHomeIcon() {
         return mDisplayHomeIconProperty.get();
+    }
+
+    public boolean isFirstRun() {
+        return mPreferences.getBoolean(KEY_APP_FIRST_RUN, true);
     }
 
     public boolean isFullscreen() {
