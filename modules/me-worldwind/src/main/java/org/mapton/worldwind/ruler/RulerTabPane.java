@@ -16,22 +16,11 @@
 package org.mapton.worldwind.ruler;
 
 import gov.nasa.worldwind.WorldWindow;
-import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-import org.mapton.api.MKmlCreator;
-import org.openide.util.Exceptions;
-import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.FxHelper;
-import se.trixon.almond.util.swing.dialogs.SimpleDialog;
 
 /**
  *
@@ -39,8 +28,6 @@ import se.trixon.almond.util.swing.dialogs.SimpleDialog;
  */
 public class RulerTabPane extends TabPane {
 
-    private File mDestination;
-    private SimpleDateFormat mSdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
     private int mTabCounter = 0;
     private WorldWindow mWorldWindow;
 
@@ -56,41 +43,6 @@ public class RulerTabPane extends TabPane {
     public void refresh(WorldWindow worldWindow) {
         mWorldWindow = worldWindow;
         addTab();
-    }
-
-    void save() {
-        SimpleDialog.clearFilters();
-        SimpleDialog.addFilters("*", "kml");
-        SimpleDialog.setFilter("kml");
-        SimpleDialog.setTitle(String.format("%s %s", Dict.SAVE.toString(), Dict.Geometry.GEOMETRIES.toString().toLowerCase()));
-
-        String epoch = mSdf.format(new Date());
-
-        SimpleDialog.setSelectedFile(new File(String.format("%s_%s", Dict.Geometry.GEOMETRIES.toString(), epoch)));
-        if (mDestination == null) {
-            SimpleDialog.setPath(FileUtils.getUserDirectory());
-        } else {
-            SimpleDialog.setPath(mDestination.getParentFile());
-        }
-
-        if (SimpleDialog.saveFile(new String[]{"kml"})) {
-            mDestination = SimpleDialog.getPath();
-            new Thread(() -> {
-                try {
-                    switch (FilenameUtils.getExtension(mDestination.getName())) {
-                        case "kml":
-                            new ExporterKml(epoch);
-                            break;
-
-                        default:
-                            throw new AssertionError();
-                    }
-                } catch (IOException ex) {
-                    Exceptions.printStackTrace(ex);
-                }
-            }).start();
-
-        }
     }
 
     private void addTab() {
@@ -126,19 +78,4 @@ public class RulerTabPane extends TabPane {
         private static final RulerTabPane INSTANCE = new RulerTabPane();
     }
 
-    private class ExporterKml extends MKmlCreator {
-
-        ExporterKml(String epoch) throws IOException {
-            mDocument.setName(String.format("%s_%s", Dict.Geometry.GEOMETRIES.toString(), epoch));
-
-            for (Tab tab : getTabs()) {
-                if (tab instanceof RulerTab) {
-                    mDocument.addToFeature(((RulerTab) tab).getFeature());
-                }
-            }
-
-            save(mDestination, true, true);
-            SystemHelper.desktopOpen(mDestination);
-        }
-    }
 }

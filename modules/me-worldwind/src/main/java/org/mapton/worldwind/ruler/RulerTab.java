@@ -217,7 +217,7 @@ public class RulerTab extends Tab {
         mStopAction.setGraphic(mStopImageView);
 
         mSaveAction = new Action(Dict.SAVE.toString(), event -> {
-            ((RulerTabPane) getTabPane()).save();
+            new RulerExporter((RulerTabPane) getTabPane());
         });
         mSaveAction.setGraphic(mSaveImageView);
 
