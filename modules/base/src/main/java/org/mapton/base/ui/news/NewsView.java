@@ -25,12 +25,12 @@ public class NewsView extends HBox {
     private final DynamicNewsSection mDynamicNewsSection = new DynamicNewsSection();
 
     public NewsView() {
-        if (false) {
-            getChildren().setAll(mDynamicNewsSection, new Separator());
-        }
-        getChildren().add(mStaticNewsSection);
+        getChildren().setAll(
+                mDynamicNewsSection,
+                new Separator(),
+                mStaticNewsSection
+        );
         HBox.setHgrow(mDynamicNewsSection, Priority.ALWAYS);
         HBox.setHgrow(mStaticNewsSection, Priority.ALWAYS);
     }
-
 }

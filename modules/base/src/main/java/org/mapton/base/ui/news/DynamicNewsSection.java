@@ -15,10 +15,12 @@
  */
 package org.mapton.base.ui.news;
 
-import org.openide.util.Lookup;
-import org.openide.util.LookupEvent;
-import se.trixon.almond.nbp.core.news.NewsProvider;
+import java.util.ArrayList;
+import org.mapton.api.MKey;
+import org.mapton.api.Mapton;
+import se.trixon.almond.nbp.core.news.NewsItem;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
@@ -27,10 +29,11 @@ import se.trixon.almond.util.Dict;
 class DynamicNewsSection extends NewsSection {
 
     public DynamicNewsSection() {
-        Lookup.Result<NewsProvider> newsResult = Lookup.getDefault().lookupResult(NewsProvider.class);
-        newsResult.addLookupListener((LookupEvent ev) -> {
-            refresh();
-        });
+        Mapton.getGlobalState().addListener(gsce -> {
+            FxHelper.runLater(() -> {
+                refresh();
+            });
+        }, MKey.APP_NEWS_DYNAMIC);
 
         refresh();
     }
@@ -39,8 +42,13 @@ class DynamicNewsSection extends NewsSection {
     public void refresh() {
         StringBuilder builder = new StringBuilder();
         builder.append("<h1>").append(Dict.NEWS.toString()).append("</h1>");
-
-        //TODO Populate news from GlobalState
+        ArrayList<NewsItem> newsItems = Mapton.getGlobalState().get(MKey.APP_NEWS_DYNAMIC);
+        if (newsItems != null) {
+            for (NewsItem newsItem : newsItems) {
+                builder.append("<h2>").append(newsItem.getName()).append("</h2>");
+                builder.append(newsItem.getNews());
+            }
+        }
         mWebView.getEngine().loadContent(builder.toString(), "text/html");
     }
 
