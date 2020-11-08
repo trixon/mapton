@@ -51,7 +51,6 @@ import org.mapton.api.MEngine;
 import org.mapton.api.MKey;
 import org.mapton.api.MOptions;
 import org.mapton.api.Mapton;
-import org.mapton.base.ui.MapContextMenu;
 import org.mapton.base.ui.grid.LocalGridsView;
 import org.mapton.core.api.MTopComponent;
 import org.mapton.core.api.MaptonNb;

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.base.ui;
+package org.mapton.core.ui;
 
 import java.awt.Point;
 import java.io.File;
@@ -41,7 +41,8 @@ import org.mapton.api.MKey;
 import org.mapton.api.MOptions;
 import org.mapton.api.MWhatsHereEngine;
 import org.mapton.api.Mapton;
-import org.mapton.base.ui.bookmark.BookmarkEditor;
+import org.mapton.base.ui.FxOnScreenDummy;
+import org.mapton.core.ui.bookmark.BookmarkEditor;
 import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;

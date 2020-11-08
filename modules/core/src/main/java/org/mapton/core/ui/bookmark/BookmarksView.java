@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.base.ui.bookmark;
+package org.mapton.core.ui.bookmark;
 
 import java.sql.SQLException;
 import java.util.Arrays;
