@@ -357,7 +357,7 @@
             <dependency>
                 <groupId>org.controlsfx</groupId>
                 <artifactId>controlsfx</artifactId>
-                <version>11.0.2</version>
+                <version>11.0.3</version>
                 <exclusions>
                     <exclusion>
                         <groupId>org.openjfx</groupId>
