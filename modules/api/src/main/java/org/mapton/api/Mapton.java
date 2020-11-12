@@ -85,13 +85,16 @@ public class Mapton {
     }
 
     public static void applyHtmlCss(WebEngine webEngine, String filename) {
-        String path = String.format("resources/css/%s", filename);
+        var path = String.format("resources/css/%s", filename);
+        var codeNameBase = Mapton.class.getPackage().getName();
+        var file = InstalledFileLocator.getDefault().locate(path, codeNameBase, false);
+
         if (isNightMode()) {
             path = StringUtils.replace(path, ".css", "_dark.css");
+            var darkFile = InstalledFileLocator.getDefault().locate(path, codeNameBase, false);
+            file = darkFile.isFile() ? darkFile : file;
         }
 
-        final String codeNameBase = Mapton.class.getPackage().getName();
-        File file = InstalledFileLocator.getDefault().locate(path, codeNameBase, false);
         webEngine.setUserStyleSheetLocation(file.toURI().toString());
     }
 

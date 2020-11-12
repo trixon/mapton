@@ -60,7 +60,7 @@ public class AttributionView extends BorderPane {
 
     private void createUI() {
         mWebView = new WebView();
-        mWebView.setPrefSize(FxHelper.getUIScaled(800), FxHelper.getUIScaled(600));
+        mWebView.setPrefSize(FxHelper.getUIScaled(500), FxHelper.getUIScaled(300));
         Mapton.applyHtmlCss(mWebView, "attribution.css");
         setCenter(mWebView);
     }
@@ -111,19 +111,17 @@ public class AttributionView extends BorderPane {
                     body(
                             h1(documentInfo.getName()),
                             hr(),
-                            div(
-                                    each(attributions.values(), attribution
-                                            -> div(
-                                            h2(keys.get(attribution)),
-                                            p(iff(!attribution.isOnlyRaw(), rawHtml(String.format(mBundle.getString("attribution"),
-                                                    attribution.getProviderUrl(),
-                                                    attribution.getProviderName(),
-                                                    attribution.getLicenseUrl(),
-                                                    attribution.getLicenseName()
-                                            )))),
-                                            p(rawHtml(attribution.getRawHtml())),
-                                            hr())
-                                    )
+                            each(attributions.values(), attribution
+                                    -> div(
+                                    h2(keys.get(attribution)),
+                                    p(iff(!attribution.isOnlyRaw(), rawHtml(String.format(mBundle.getString("attribution"),
+                                            attribution.getProviderUrl(),
+                                            attribution.getProviderName(),
+                                            attribution.getLicenseUrl(),
+                                            attribution.getLicenseName()
+                                    )))),
+                                    p(rawHtml(attribution.getRawHtml())),
+                                    hr())
                             )
                     )
             );

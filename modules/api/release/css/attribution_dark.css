@@ -13,6 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+
 /*
     Created on : 2019-jul-01, 21:41:30
     Author     : Patrik Karlström
@@ -22,6 +23,7 @@ limitations under the License.
 body {
     background-color: #3c3f41;
     color: #ebebeb;
+    font-size:small;
 }
 
 a {

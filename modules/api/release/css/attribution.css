@@ -19,6 +19,10 @@ limitations under the License.
     Author     : Patrik Karlström
 */
 
+
+body {
+    font-size:small;
+}
 a {
     color: #00aaff;
 }
