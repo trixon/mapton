@@ -112,10 +112,6 @@
         </dependency>
 
         <!-- Trixon -->
-        <dependency>
-            <groupId>se.trixon.almond</groupId>
-            <artifactId>almond-nbp</artifactId>
-        </dependency>
     </dependencies>
     <properties>
         <netbeans.hint.license>apache20</netbeans.hint.license>

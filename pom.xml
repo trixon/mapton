@@ -437,11 +437,6 @@
                 <version>30.0-jre</version>
             </dependency>
             <dependency>
-                <groupId>org.postgresql</groupId>
-                <artifactId>postgresql</artifactId>
-                <version>42.2.18</version>
-            </dependency>
-            <dependency>
                 <groupId>de.micromata.jak</groupId>
                 <artifactId>JavaAPIforKml</artifactId>
                 <version>2.2.1</version>

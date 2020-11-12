@@ -104,13 +104,19 @@
 
         <!-- Trixon -->
         <dependency>
-            <groupId>se.trixon.almond</groupId>
-            <artifactId>almond-nbp</artifactId>
-        </dependency>
-        <dependency>
             <groupId>se.trixon</groupId>
             <artifactId>trv-traffic-information</artifactId>
             <version>1.0.2</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>jakarta.xml.bind</groupId>
+                    <artifactId>jakarta.xml.bind-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>jakarta.activation</groupId>
+                    <artifactId>jakarta.activation-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
     <properties>

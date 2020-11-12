@@ -109,10 +109,6 @@
         <!-- Trixon -->
         <dependency>
             <groupId>se.trixon.almond</groupId>
-            <artifactId>almond-nbp</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>se.trixon.almond</groupId>
             <artifactId>almond-nbp-core</artifactId>
         </dependency>
     </dependencies>

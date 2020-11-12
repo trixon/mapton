@@ -55,6 +55,12 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>mapton-api</artifactId>
+            <!--            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+            </exclusions>-->
         </dependency>
 
         <!-- Other -->
@@ -65,6 +71,10 @@
                 <exclusion>
                     <groupId>org.openjfx</groupId>
                     <artifactId>*</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
