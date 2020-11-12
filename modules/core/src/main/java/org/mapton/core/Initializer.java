@@ -87,11 +87,10 @@ public class Initializer implements Runnable {
             });
         });
 
-        MaptonNb.progressStart(Dict.WARMING_UP.toString());
-
         final WindowManager windowManager = WindowManager.getDefault();
 
         windowManager.invokeWhenUIReady(() -> {
+            MaptonNb.progressStart(Dict.WARMING_UP.toString());
             Mapton.getLog().setUseTimestamps(false);
             NbLog.setUseGlobalTag(false);
             Mapton.getLog().setOut((String s) -> {
