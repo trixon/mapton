@@ -19,6 +19,7 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
@@ -36,13 +37,16 @@ public abstract class MBaseDataManager<T> {
 
     private final String TEMPORAL_PREFIX;
     private final ObjectProperty<ObservableList<T>> mAllItemsProperty = new SimpleObjectProperty<>();
+    private final HashSet<T> mAllItemsSet = new HashSet<>();
     private final DelayedResetRunner mDelayedResetRunner;
     private final ObjectProperty<ObservableList<T>> mFilteredItemsProperty = new SimpleObjectProperty<>();
+    private final HashSet<T> mFilteredItemsSet = new HashSet<>();
     private T mOldSelectedValue;
     private final ObjectProperty<T> mSelectedItemProperty = new SimpleObjectProperty<>();
     private final MTemporalManager mTemporalManager = MTemporalManager.getInstance();
     private MTemporalRange mTemporalRange;
     private final ObjectProperty<ObservableList<T>> mTimeFilteredItemsProperty = new SimpleObjectProperty<>();
+    private final HashSet<T> mTimeFilteredItemsSet = new HashSet<>();
 
     public MBaseDataManager(Class<T> typeParameterClass) {
         TEMPORAL_PREFIX = typeParameterClass.getName();
@@ -75,8 +79,16 @@ public abstract class MBaseDataManager<T> {
         return mAllItemsProperty == null ? null : mAllItemsProperty.get();
     }
 
+    public HashSet<T> getAllItemsSet() {
+        return mAllItemsSet;
+    }
+
     public ObservableList<T> getFilteredItems() {
         return mFilteredItemsProperty == null ? null : mFilteredItemsProperty.get();
+    }
+
+    public HashSet<T> getFilteredItemsSet() {
+        return mFilteredItemsSet;
     }
 
     public T getSelectedItem() {
@@ -85,6 +97,10 @@ public abstract class MBaseDataManager<T> {
 
     public ObservableList<T> getTimeFilteredItems() {
         return mTimeFilteredItemsProperty == null ? null : mTimeFilteredItemsProperty.get();
+    }
+
+    public HashSet<T> getTimeFilteredItemsSet() {
+        return mTimeFilteredItemsSet;
     }
 
     public boolean isValid(String string) {
