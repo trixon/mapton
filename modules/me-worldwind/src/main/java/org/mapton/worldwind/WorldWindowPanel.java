@@ -263,6 +263,7 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
                     layerBundle.populate();
                     layerBundle.setPopulated(true);
                     layerBundle.getLayers().forEach((layer) -> {
+                        layer.setValue("layerBundle", layerBundle);
                         addCustomLayer(layer);
                     });
                 } catch (Exception ex) {

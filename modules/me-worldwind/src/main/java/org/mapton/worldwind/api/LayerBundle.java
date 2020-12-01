@@ -25,6 +25,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.Node;
 import se.trixon.almond.util.Dict;
 
 /**
@@ -72,6 +73,10 @@ public abstract class LayerBundle {
 
     public final String getName() {
         return mName.get();
+    }
+
+    public Node getOptionsNode() {
+        return null;
     }
 
     public boolean isPopulated() {
