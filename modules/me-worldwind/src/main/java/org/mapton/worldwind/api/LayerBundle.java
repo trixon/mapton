@@ -75,7 +75,7 @@ public abstract class LayerBundle {
         return mName.get();
     }
 
-    public Node getOptionsNode() {
+    public Node getOptionsView() {
         return null;
     }
 

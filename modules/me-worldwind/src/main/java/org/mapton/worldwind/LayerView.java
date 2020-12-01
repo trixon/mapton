@@ -214,7 +214,7 @@ public class LayerView extends BorderPane implements MActivatable {
                 mOptionsPopOver.hide();
             } else {
                 var layerBundle = (LayerBundle) getSelectedTreeItem().getValue().getValue("layerBundle");
-                var optionsNode = layerBundle.getOptionsNode();
+                var optionsNode = layerBundle.getOptionsView();
                 var button = (ButtonBase) event.getSource();
                 var buttonBounds = button.localToScreen(button.getBoundsInLocal());
                 double x = buttonBounds.getMaxX() + 2;
@@ -282,7 +282,7 @@ public class LayerView extends BorderPane implements MActivatable {
         mTreeView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             try {
                 var layerBundle = (LayerBundle) getSelectedTreeItem().getValue().getValue("layerBundle");
-                var optionsNode = layerBundle.getOptionsNode();
+                var optionsNode = layerBundle.getOptionsView();
                 mOptionsAction.setDisabled(optionsNode == null);
             } catch (Exception e) {
                 mOptionsAction.setDisabled(true);
