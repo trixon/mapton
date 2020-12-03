@@ -34,6 +34,8 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.CheckBoxTreeItem;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToolBar;
 import javafx.scene.control.TreeItem;
@@ -72,6 +74,7 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
 public class LayerView extends BorderPane implements MActivatable {
 
     private CheckModel<TreeItem<Layer>> mCheckModel;
+    private ContextMenu mContextMenu;
     private final Preferences mExpandedPreferences;
     private TextField mFilterTextField;
     private final Set<Layer> mLayerEnabledListenerSet;
@@ -80,6 +83,7 @@ public class LayerView extends BorderPane implements MActivatable {
     private Action mOptionsAction;
     private PopOver mOptionsPopOver;
     private CheckBoxTreeItem<Layer> mRootItem;
+    private ToolBar mToolBar;
     private final Set<CheckBoxTreeItem<Layer>> mTreeItemExpanderSet;
     private final Set<CheckBoxTreeItem<Layer>> mTreeItemListenerSet;
     private CheckTreeView<Layer> mTreeView;
@@ -215,7 +219,7 @@ public class LayerView extends BorderPane implements MActivatable {
             } else {
                 var layerBundle = (LayerBundle) getSelectedTreeItem().getValue().getValue("layerBundle");
                 var optionsNode = layerBundle.getOptionsView();
-                var button = (ButtonBase) event.getSource();
+                var button = getOptionsToolBarButton();
                 var buttonBounds = button.localToScreen(button.getBoundsInLocal());
                 double x = buttonBounds.getMaxX() + 2;
                 double y = buttonBounds.getMinY() + buttonBounds.getHeight() / 4;//FIXME Is 4 strange?
@@ -232,14 +236,22 @@ public class LayerView extends BorderPane implements MActivatable {
                 mOptionsAction
         );
 
-        ToolBar toolBar = ActionUtils.createToolBar(actions, ActionUtils.ActionTextBehavior.HIDE);
-        FxHelper.adjustButtonWidth(toolBar.getItems().stream(), iconSize);
-        FxHelper.undecorateButtons(toolBar.getItems().stream());
+        mToolBar = ActionUtils.createToolBar(actions, ActionUtils.ActionTextBehavior.HIDE);
+        FxHelper.adjustButtonWidth(mToolBar.getItems().stream(), iconSize);
+        FxHelper.undecorateButtons(mToolBar.getItems().stream());
         BorderPane topBorderPane = new BorderPane(mFilterTextField);
-        topBorderPane.setRight(toolBar);
-        toolBar.setMinWidth(iconSize * 4.8);
-        FxHelper.slimToolBar(toolBar);
+        topBorderPane.setRight(mToolBar);
+        mToolBar.setMinWidth(iconSize * 4.8);
+        FxHelper.slimToolBar(mToolBar);
         setTop(topBorderPane);
+
+        var optionsItem = new MenuItem(Dict.OPTIONS.toString());
+        optionsItem.disableProperty().bind(mOptionsAction.disabledProperty());
+        optionsItem.setOnAction(actionEvent -> {
+            mOptionsAction.handle(null);
+        });
+
+        mContextMenu = new ContextMenu(optionsItem);
     }
 
     private String getCategory(Layer layer) {
@@ -248,6 +260,10 @@ public class LayerView extends BorderPane implements MActivatable {
 
     private String getLayerPath(Layer layer) {
         return String.format("%s/%s", getCategory(layer), layer.getName());
+    }
+
+    private ButtonBase getOptionsToolBarButton() {
+        return FxHelper.getButtonForAction(mOptionsAction, mToolBar.getItems());
     }
 
     private CheckBoxTreeItem<Layer> getParent(CheckBoxTreeItem<Layer> parent, String category) {
@@ -416,6 +432,14 @@ public class LayerView extends BorderPane implements MActivatable {
         @Override
         public void updateItem(Layer layer, boolean empty) {
             super.updateItem(layer, empty);
+            var treeItem = getTreeItem();
+            if (treeItem != null) {
+                if (treeItem.isLeaf()) {
+                    setContextMenu(mContextMenu);
+                } else {
+                    setContextMenu(null);
+                }
+            }
 
             if (layer == null || empty) {
                 clearContent();
