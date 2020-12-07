@@ -22,6 +22,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
 import javafx.beans.property.SimpleObjectProperty;
 import org.apache.commons.lang3.StringUtils;
 import se.trixon.almond.util.fx.DelayedResetRunner;
@@ -33,13 +34,15 @@ import se.trixon.almond.util.fx.control.DateSelectionMode;
  */
 public class MTemporalManager {
 
+    private static final Logger LOGGER = Logger.getLogger(MTemporalManager.class.getName());
+
     private final SimpleObjectProperty<DateSelectionMode> mDateSelectionModeProperty = new SimpleObjectProperty<>();
+    private final DelayedResetRunner mDelayedResetRunner;
     private final SimpleObjectProperty<LocalDate> mHighDateProperty = new SimpleObjectProperty<>();
     private final SimpleObjectProperty<LocalDate> mLowDateProperty = new SimpleObjectProperty<>();
     private final SimpleObjectProperty<LocalDate> mMaxDateProperty = new SimpleObjectProperty<>();
     private final SimpleObjectProperty<LocalDate> mMinDateProperty = new SimpleObjectProperty<>();
     private final ConcurrentHashMap<String, MTemporalRange> mRanges = new ConcurrentHashMap<>();
-    private final DelayedResetRunner mDelayedResetRunner;
 
     public static MTemporalManager getInstance() {
         return Holder.INSTANCE;
@@ -68,6 +71,10 @@ public class MTemporalManager {
     public void clear() {
         mRanges.clear();
         refresh();
+    }
+
+    public boolean contains(String key) {
+        return mRanges.containsKey(key);
     }
 
     public SimpleObjectProperty<DateSelectionMode> dateSelectionModeProperty() {

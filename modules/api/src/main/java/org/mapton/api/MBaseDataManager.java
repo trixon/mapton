@@ -20,6 +20,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.logging.Logger;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
@@ -35,6 +36,9 @@ import se.trixon.almond.util.fx.DelayedResetRunner;
  */
 public abstract class MBaseDataManager<T> {
 
+    private static final Logger LOGGER = Logger.getLogger(MBaseDataManager.class.getName());
+    protected final MSelectionLockManager mSelectionLockManager = MSelectionLockManager.getInstance();
+
     private final String TEMPORAL_PREFIX;
     private final ObjectProperty<ObservableList<T>> mAllItemsProperty = new SimpleObjectProperty<>();
     private final HashSet<T> mAllItemsSet = new HashSet<>();
@@ -47,6 +51,7 @@ public abstract class MBaseDataManager<T> {
     private MTemporalRange mTemporalRange;
     private final ObjectProperty<ObservableList<T>> mTimeFilteredItemsProperty = new SimpleObjectProperty<>();
     private final HashSet<T> mTimeFilteredItemsSet = new HashSet<>();
+    private final DelayedResetRunner mUnlockDelayedResetRunner;
 
     public MBaseDataManager(Class<T> typeParameterClass) {
         TEMPORAL_PREFIX = typeParameterClass.getName();
@@ -55,9 +60,15 @@ public abstract class MBaseDataManager<T> {
         mFilteredItemsProperty.setValue(FXCollections.observableArrayList());
         mTimeFilteredItemsProperty.setValue(FXCollections.observableArrayList());
 
+        mUnlockDelayedResetRunner = new DelayedResetRunner(100, () -> {
+            mSelectionLockManager.removeLock(this);
+        });
+
         mDelayedResetRunner = new DelayedResetRunner(50, () -> {
             try {
+                selectionLock();
                 applyTemporalFilter();
+                selectionUnlock();
             } catch (Exception e) {
                 //
             }
@@ -103,6 +114,14 @@ public abstract class MBaseDataManager<T> {
         return mTimeFilteredItemsSet;
     }
 
+    public boolean isSelectionLocked() {
+        return mSelectionLockManager.isLocked();
+    }
+
+    public boolean isSelectionUnlocked() {
+        return !mSelectionLockManager.isLocked();
+    }
+
     public boolean isValid(String string) {
         return string == null ? false : mTemporalManager.isValid(string);
     }
@@ -135,6 +154,14 @@ public abstract class MBaseDataManager<T> {
         return mSelectedItemProperty;
     }
 
+    public void selectionLock() {
+        mSelectionLockManager.addLock(this);
+    }
+
+    public void selectionUnlock() {
+        mUnlockDelayedResetRunner.reset();
+    }
+
     public void setSelectedItem(T item) {
         mSelectedItemProperty.set(item);
     }
@@ -150,13 +177,13 @@ public abstract class MBaseDataManager<T> {
 
     public void setTemporalVisibility(boolean visible) {
         if (mTemporalRange != null) {
-            if (visible) {
+            if (visible && !mTemporalManager.contains(TEMPORAL_PREFIX)) {
                 mTemporalManager.put(TEMPORAL_PREFIX, mTemporalRange);
-            } else {
+                mTemporalManager.refresh();
+            } else if (!visible && mTemporalManager.contains(TEMPORAL_PREFIX)) {
                 mTemporalManager.remove(TEMPORAL_PREFIX);
+                mTemporalManager.refresh();
             }
-
-            mTemporalManager.refresh();
         }
     }
 

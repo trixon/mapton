@@ -45,7 +45,6 @@ public class WikipediaArticleManager extends MBaseDataManager<WikipediaArticle> 
 
     @Override
     protected void applyTemporalFilter() {
-        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
