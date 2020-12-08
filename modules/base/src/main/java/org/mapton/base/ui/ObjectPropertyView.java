@@ -28,6 +28,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.controlsfx.control.PropertySheet;
 import org.mapton.api.MKey;
 import org.mapton.api.MPropertyItem;
+import org.mapton.api.MSelectionLockManager;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBar;
 import org.openide.util.NbBundle;
@@ -89,6 +90,10 @@ public class ObjectPropertyView extends BorderPane {
 
     @SuppressWarnings("unchecked")
     private void refresh(Object o) {
+        if (MSelectionLockManager.getInstance().isLocked()) {
+            return;
+        }
+
         Node centerObject = null;
 
         if (o == null) {

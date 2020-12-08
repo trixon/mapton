@@ -28,6 +28,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import se.trixon.almond.util.fx.DelayedResetRunner;
+import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
@@ -163,7 +164,9 @@ public abstract class MBaseDataManager<T> {
     }
 
     public void setSelectedItem(T item) {
-        mSelectedItemProperty.set(item);
+        FxHelper.runLater(() -> {
+            mSelectedItemProperty.set(item);
+        });
     }
 
     public void setTemporalRange(LocalDate first, LocalDate last) {

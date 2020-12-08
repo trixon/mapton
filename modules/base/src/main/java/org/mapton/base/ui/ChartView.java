@@ -23,6 +23,7 @@ import javafx.scene.layout.BorderPane;
 import org.mapton.api.LineChartX;
 import org.mapton.api.MChartLine;
 import org.mapton.api.MKey;
+import org.mapton.api.MSelectionLockManager;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBar;
 import org.openide.util.NbBundle;
@@ -72,6 +73,10 @@ public class ChartView extends BorderPane {
     }
 
     private void refresh(Object o) {
+        if (MSelectionLockManager.getInstance().isLocked()) {
+            return;
+        }
+
         Node centerObject = null;
 
         if (o == null) {
