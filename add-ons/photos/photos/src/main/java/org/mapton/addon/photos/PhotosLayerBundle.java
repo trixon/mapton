@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.addon.photos_ww;
+package org.mapton.addon.photos;
 
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.geom.Position;
@@ -57,7 +57,7 @@ import se.trixon.almond.util.fx.FxHelper;
  * @author Patrik Karlström
  */
 @ServiceProvider(service = LayerBundle.class)
-public class MapollageLayerBundle extends LayerBundle {
+public class PhotosLayerBundle extends LayerBundle {
 
     private final SimpleDateFormat mDateFormat = new SimpleDateFormat("yyyy-MM-dd HH.mm.ss");
     private final IconLayer mIconLayer = new IconLayer();
@@ -68,7 +68,7 @@ public class MapollageLayerBundle extends LayerBundle {
     private final MTemporalManager mTemporalManager = MTemporalManager.getInstance();
     private ConcurrentHashMap<String, MTemporalRange> mTemporalRanges;
 
-    public MapollageLayerBundle() {
+    public PhotosLayerBundle() {
         init();
         initRepaint();
         initListeners();
