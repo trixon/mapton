@@ -17,9 +17,11 @@ package org.mapton.worldwind;
 
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.ScreenImage;
+import javafx.scene.Node;
 import org.mapton.api.MBackgroundImage;
 import org.mapton.api.MKey;
 import org.mapton.api.Mapton;
+import static org.mapton.worldwind.ModuleOptions.*;
 import org.mapton.worldwind.api.LayerBundle;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
@@ -33,12 +35,23 @@ public class BackgroundImageLayerBundle extends LayerBundle {
 
     private MBackgroundImage mBackgroundImage;
     private final RenderableLayer mLayer = new RenderableLayer();
+    private final ModuleOptions mOptions = ModuleOptions.getInstance();
+    private BackgroundImageOptionsView mOptionsView;
     private final ScreenImage mScreenImage = new ScreenImage();
 
     public BackgroundImageLayerBundle() {
         init();
         initRepaint();
         initListeners();
+    }
+
+    @Override
+    public Node getOptionsView() {
+        if (mOptionsView == null) {
+            mOptionsView = new BackgroundImageOptionsView();
+        }
+
+        return mOptionsView;
     }
 
     @Override
@@ -60,6 +73,10 @@ public class BackgroundImageLayerBundle extends LayerBundle {
             mBackgroundImage = gsce.getValue();
             repaint();
         }, MKey.BACKGROUND_IMAGE);
+
+        mOptions.getPreferences().addPreferenceChangeListener(pce -> {
+            repaint();
+        });
     }
 
     private void initRepaint() {
@@ -70,7 +87,7 @@ public class BackgroundImageLayerBundle extends LayerBundle {
                 synchronized (this) {
                     mScreenImage.setImageSource(mBackgroundImage.getImageSource());
                     try {
-                        mScreenImage.setOpacity(mBackgroundImage.getOpacity());
+                        mScreenImage.setOpacity(mOptions.getDouble(KEY_BACKGROUND_IMAGE_OPACITY, DEFAULT_BACKGROUND_IMAGE_OPACITY));
                     } catch (Exception e) {
                     }
                 }
