@@ -23,7 +23,6 @@ import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.ToolBar;
@@ -50,7 +49,6 @@ import org.openide.util.Exceptions;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.GlobalStateChangeEvent;
 import se.trixon.almond.util.fx.FxHelper;
-import se.trixon.almond.util.fx.PopOverWatcher;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 
 /**
@@ -63,7 +61,6 @@ public class SourcesPane extends BorderPane {
     private final CheckListView<MapoSource> mListView = new CheckListView<>();
     private final MapoSourceManager mManager = MapoSourceManager.getInstance();
     private final Mapo mMapo = Mapo.getInstance();
-    private OptionsPopOver mOptionsPopOver = new OptionsPopOver();
     private Action mRefreshAction;
     private Button mRefreshButton;
     private Thread mRefreshThread;
@@ -121,17 +118,6 @@ public class SourcesPane extends BorderPane {
         });
         setRunningState(RunState.STARTABLE);
 
-        Action optionsAction = new Action(Dict.OPTIONS.toString(), (event) -> {
-            if (mOptionsPopOver.isShowing()) {
-                mOptionsPopOver.hide();
-            } else {
-                Node node = (Node) event.getSource();
-                mOptionsPopOver.show(node);
-                PopOverWatcher.getInstance().registerPopOver(mOptionsPopOver, node);
-            }
-        });
-        optionsAction.setGraphic(MaterialIcon._Action.SETTINGS.getImageView(getIconSizeToolBarInt()));
-
         mActions = Arrays.asList(
                 new SourceFileImportAction().getAction(),
                 new SourceFileExportAction().getAction(),
@@ -139,8 +125,7 @@ public class SourcesPane extends BorderPane {
                 remAction,
                 editAction,
                 ActionUtils.ACTION_SPAN,
-                mRefreshAction,
-                optionsAction
+                mRefreshAction
         );
 
         ToolBar toolBar = ActionUtils.createToolBar(mActions, ActionUtils.ActionTextBehavior.HIDE);

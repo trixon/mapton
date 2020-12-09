@@ -32,6 +32,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
+import javafx.scene.Node;
 import org.apache.commons.io.FilenameUtils;
 import org.mapton.addon.photos.api.Mapo;
 import org.mapton.addon.photos.api.MapoPhoto;
@@ -39,6 +40,7 @@ import org.mapton.addon.photos.api.MapoSettings;
 import org.mapton.addon.photos.api.MapoSettings.SplitBy;
 import org.mapton.addon.photos.api.MapoSource;
 import org.mapton.addon.photos.api.MapoSourceManager;
+import org.mapton.addon.photos.ui.OptionsView;
 import org.mapton.api.MKey;
 import org.mapton.api.MTemporalManager;
 import org.mapton.api.MTemporalRange;
@@ -63,6 +65,7 @@ public class PhotosLayerBundle extends LayerBundle {
     private final IconLayer mIconLayer = new IconLayer();
     private final ArrayList<LineNode> mLineNodes = new ArrayList<>();
     private final MapoSourceManager mManager = MapoSourceManager.getInstance();
+    private OptionsView mOptionsView;
     private final RenderableLayer mRenderableLayer = new RenderableLayer();
     private MapoSettings mSettings;
     private final MTemporalManager mTemporalManager = MTemporalManager.getInstance();
@@ -72,6 +75,15 @@ public class PhotosLayerBundle extends LayerBundle {
         init();
         initRepaint();
         initListeners();
+    }
+
+    @Override
+    public Node getOptionsView() {
+        if (mOptionsView == null) {
+            mOptionsView = new OptionsView();
+        }
+
+        return mOptionsView;
     }
 
     @Override

@@ -30,10 +30,10 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import org.controlsfx.control.PopOver;
 import org.mapton.addon.photos.Options;
 import org.mapton.addon.photos.api.Mapo;
 import org.mapton.addon.photos.api.MapoSettings;
@@ -47,9 +47,9 @@ import se.trixon.almond.util.fx.FxHelper;
  *
  * @author Patrik Karlström
  */
-public class OptionsPopOver extends PopOver {
+public class OptionsView extends BorderPane {
 
-    private final ResourceBundle mBundle = SystemHelper.getBundle(OptionsPopOver.class, "Bundle");
+    private final ResourceBundle mBundle = SystemHelper.getBundle(OptionsView.class, "Bundle");
     private final CheckBox mDrawGapCheckBox = new CheckBox(mBundle.getString("TabPath.drawGapCheckBox"));
     private final CheckBox mDrawTrackCheckBox = new CheckBox(mBundle.getString("TabPath.drawTrackCheckBox"));
     private final ColorPicker mGapColorPicker = new ColorPicker();
@@ -66,20 +66,14 @@ public class OptionsPopOver extends PopOver {
     private final ColorPicker mTrackColorPicker = new ColorPicker();
     private final Spinner<Double> mWidthSpinner = new Spinner<>(1.0, 10.0, 1.0, 0.1);
 
-    public OptionsPopOver() {
-        setTitle(Dict.OPTIONS.toString());
-        setArrowLocation(PopOver.ArrowLocation.TOP_RIGHT);
-        setHeaderAlwaysVisible(true);
-        setCloseButtonEnabled(false);
-        setDetachable(false);
-        setAnimated(true);
-        setContentNode(createUI());
+    public OptionsView() {
+        createUI();
 
         load();
         initListeners();
     }
 
-    private Node createUI() {
+    private void createUI() {
         mRoot = new VBox();
         VBox trackBox = new VBox();
 
@@ -140,7 +134,7 @@ public class OptionsPopOver extends PopOver {
 
         mRoot.setPadding(new Insets(8));
 
-        return mRoot;
+        setCenter(mRoot);
     }
 
     private void initListeners() {
