@@ -201,7 +201,6 @@
         <module>add-ons/files/files</module>
         <module>add-ons/geonames/geonames-ww</module>
         <module>add-ons/notes/notes</module>
-        <module>add-ons/photos/photos-ww</module>
         <module>add-ons/photos/photos</module>
         <module>add-ons/seasonal</module>
         <module>add-ons/wikipedia/wikipedia-ww</module>
