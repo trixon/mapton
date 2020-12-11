@@ -25,7 +25,6 @@ import org.mapton.api.Mapton;
 import org.netbeans.spi.quicksearch.SearchProvider;
 import org.netbeans.spi.quicksearch.SearchRequest;
 import org.netbeans.spi.quicksearch.SearchResponse;
-import org.openide.util.Exceptions;
 
 /**
  *
@@ -52,9 +51,7 @@ public class NominatimQuickSearchProvider implements SearchProvider {
                 }
             }
         } catch (IOException ex) {
-            Exceptions.printStackTrace(ex);
+            System.err.println(ex.getMessage());
         }
-
     }
-
 }
