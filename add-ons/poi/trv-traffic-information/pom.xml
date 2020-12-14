@@ -98,7 +98,7 @@
             <artifactId>mapton-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
+            <groupId>org.mapton</groupId>
             <artifactId>core</artifactId>
         </dependency>
 
