@@ -22,7 +22,6 @@ import java.util.Map;
 import javafx.scene.Node;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.ToolBar;
-import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.layout.Region;
 import org.apache.commons.lang3.SystemUtils;
 import org.controlsfx.control.PopOver;
@@ -96,10 +95,6 @@ public abstract class BaseToolBar extends ToolBar {
             b.setPrefWidth(entry.getValue());
             b.textProperty().bind(entry.getKey().textProperty());
         }
-    }
-
-    protected void setTooltip(Action action, KeyCodeCombination keyCodeCombination) {
-        action.setLongText(String.format("%s (%s)", action.getText(), keyCodeCombination.getDisplayText()));
     }
 
     protected boolean shouldOpen(Object object) {

@@ -44,9 +44,9 @@ import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.mapton.base.ui.AttributionView;
 import org.mapton.base.ui.FxOnScreenDummy;
 import org.mapton.base.ui.TemporalView;
-import org.mapton.core.ui.bookmark.BookmarksView;
 import org.mapton.base.ui.grid.GridView;
 import org.mapton.base.ui.poi.PoisViewManager;
+import org.mapton.core.ui.bookmark.BookmarksView;
 import org.openide.awt.Actions;
 import org.openide.util.Lookup;
 import se.trixon.almond.util.Dict;
@@ -211,7 +211,7 @@ public class MapToolBar extends BaseToolBar {
             }
         });
 //        mBookmarkAction.setGraphic(MaterialIcon._Action.BOOKMARK_BORDER.getImageView(getIconSizeToolBarInt()));
-//        setTooltip(mBookmarkAction, new KeyCodeCombination(KeyCode.B, KeyCombination.SHORTCUT_DOWN));
+//        FxHelper.setTooltip(mBookmarkAction, new KeyCodeCombination(KeyCode.B, KeyCombination.SHORTCUT_DOWN));
 
         //POI
         mPoiAction = new Action(MDict.POI.toString(), event -> {
@@ -226,7 +226,7 @@ public class MapToolBar extends BaseToolBar {
             }
         });
 //        mPoiAction.setGraphic(MaterialIcon._Maps.PLACE.getImageView(getIconSizeToolBarInt()));
-//        setTooltip(mPoiAction, new KeyCodeCombination(KeyCode.I, KeyCombination.SHORTCUT_DOWN));
+//        FxHelper.setTooltip(mPoiAction, new KeyCodeCombination(KeyCode.I, KeyCombination.SHORTCUT_DOWN));
 
         //Layer
         mLayerAction = new Action(Dict.LAYERS.toString(), event -> {
@@ -241,14 +241,14 @@ public class MapToolBar extends BaseToolBar {
             }
         });
 //        mLayerAction.setGraphic(MaterialIcon._Maps.LAYERS.getImageView(getIconSizeToolBarInt()));
-//        setTooltip(mLayerAction, new KeyCodeCombination(KeyCode.L, KeyCombination.SHORTCUT_DOWN));
+//        FxHelper.setTooltip(mLayerAction, new KeyCodeCombination(KeyCode.L, KeyCombination.SHORTCUT_DOWN));
 
         //CommandAction
         mCommandAction = new Action(Dict.COMMANDS.toString(), event -> {
             toogleCommandContextMenu();
         });
         mCommandAction.setGraphic(MaterialIcon._Image.FLASH_ON.getImageView(getIconSizeToolBarInt()));
-        setTooltip(mCommandAction, new KeyCodeCombination(KeyCode.E, KeyCombination.SHORTCUT_DOWN));
+        FxHelper.setTooltip(mCommandAction, new KeyCodeCombination(KeyCode.E, KeyCombination.SHORTCUT_DOWN));
 
         //Grid
         mGridAction = new Action(MDict.GRIDS.toString(), event -> {
@@ -263,7 +263,7 @@ public class MapToolBar extends BaseToolBar {
             }
         });
 //        mGridAction.setGraphic(MaterialIcon._Image.GRID_ON.getImageView(getIconSizeToolBarInt()));
-//        setTooltip(mGridAction, new KeyCodeCombination(KeyCode.G, KeyCombination.SHORTCUT_DOWN));
+//        FxHelper.setTooltip(mGridAction, new KeyCodeCombination(KeyCode.G, KeyCombination.SHORTCUT_DOWN));
 
         //mToolbox
         mToolboxAction = new Action(MDict.MAP_TOOLS.toString(), event -> {
@@ -278,7 +278,7 @@ public class MapToolBar extends BaseToolBar {
             }
         });
         mToolboxAction.setGraphic(MaterialIcon._Action.BUILD.getImageView(getIconSizeToolBarInt()));
-        setTooltip(mToolboxAction, new KeyCodeCombination(KeyCode.T, KeyCombination.SHORTCUT_DOWN));
+        FxHelper.setTooltip(mToolboxAction, new KeyCodeCombination(KeyCode.T, KeyCombination.SHORTCUT_DOWN));
 
         //Style
         mStyleAction = new Action(event -> {
@@ -290,14 +290,14 @@ public class MapToolBar extends BaseToolBar {
         });
         mStyleAction.setGraphic(MaterialIcon._Image.COLOR_LENS.getImageView(getIconSizeToolBarInt()));
         mStyleAction.setDisabled(true);
-        setTooltip(mStyleAction, new KeyCodeCombination(KeyCode.S, KeyCombination.SHORTCUT_DOWN));
+        FxHelper.setTooltip(mStyleAction, new KeyCodeCombination(KeyCode.S, KeyCombination.SHORTCUT_DOWN));
 
         //Ruler
         mRulerAction = new Action(Dict.RULER.toString(), event -> {
             toogleRulerPopOver();
         });
         mRulerAction.setGraphic(MaterialIcon._Editor.SPACE_BAR.getImageView(getIconSizeToolBarInt()));
-        setTooltip(mRulerAction, new KeyCodeCombination(KeyCode.K, KeyCombination.SHORTCUT_DOWN));
+        FxHelper.setTooltip(mRulerAction, new KeyCodeCombination(KeyCode.K, KeyCombination.SHORTCUT_DOWN));
 //        mRulerAction.textProperty().set(Dict.RULER.toString());
         mRulerAction.textProperty().bind(mRulerPopOver.titleProperty());
 
@@ -306,7 +306,7 @@ public class MapToolBar extends BaseToolBar {
             toogleTemporalPopOver();
         });
         mTemporalAction.setGraphic(MaterialIcon._Action.DATE_RANGE.getImageView(getIconSizeToolBarInt()));
-        setTooltip(mTemporalAction, new KeyCodeCombination(KeyCode.D, KeyCombination.SHORTCUT_DOWN));
+        FxHelper.setTooltip(mTemporalAction, new KeyCodeCombination(KeyCode.D, KeyCombination.SHORTCUT_DOWN));
         mTemporalAction.textProperty().bind(mTemporalView.titleProperty());
 
         //Copyright
@@ -325,7 +325,7 @@ public class MapToolBar extends BaseToolBar {
             Actions.forID("Mapton", "org.mapton.core.actions.HomeAction").actionPerformed(null);
         });
         mHomeAction.setGraphic(MaterialIcon._Action.HOME.getImageView(getIconSizeToolBarInt()));
-        setTooltip(mHomeAction, new KeyCodeCombination(KeyCode.H, KeyCombination.SHORTCUT_DOWN));
+        FxHelper.setTooltip(mHomeAction, new KeyCodeCombination(KeyCode.H, KeyCombination.SHORTCUT_DOWN));
 
         //Swap Style
         mStyleSwapAction = new FxActionSwing(MDict.PREVIOUS_STYLE.toString(), () -> {
@@ -333,7 +333,7 @@ public class MapToolBar extends BaseToolBar {
         });
         mStyleSwapAction.setGraphic(MaterialIcon._Action.SWAP_HORIZ.getImageView(getIconSizeToolBarInt()));
         mStyleSwapAction.disabledProperty().bind(mStyleAction.disabledProperty());
-        setTooltip(mStyleSwapAction, new KeyCodeCombination(KeyCode.S, KeyCombination.SHORTCUT_DOWN, KeyCodeCombination.SHIFT_DOWN));
+        FxHelper.setTooltip(mStyleSwapAction, new KeyCodeCombination(KeyCode.S, KeyCombination.SHORTCUT_DOWN, KeyCodeCombination.SHIFT_DOWN));
     }
 
     private void initListeners() {
