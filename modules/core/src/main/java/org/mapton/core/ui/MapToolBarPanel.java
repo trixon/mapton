@@ -19,6 +19,9 @@ import java.awt.Dimension;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Scene;
+import org.controlsfx.control.NotificationPane;
+import org.mapton.api.MBannerManager;
+import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import se.trixon.almond.util.fx.FxHelper;
 
@@ -30,6 +33,7 @@ public class MapToolBarPanel {
 
     private final MapToolBar mToolBar;
     private final JFXPanel mToolBarPanel = new JFXPanel();
+    private NotificationPane mNotificationPane;
 
     public static MapToolBarPanel getInstance() {
         return Holder.INSTANCE;
@@ -37,11 +41,25 @@ public class MapToolBarPanel {
 
     private MapToolBarPanel() {
         mToolBarPanel.setVisible(false);
-        mToolBarPanel.setPreferredSize(new Dimension(100, (int) (getIconSizeToolBarInt() * 1.5)));
+        mToolBarPanel.setPreferredSize(new Dimension(100, (int) (getIconSizeToolBarInt() * 1.7)));
 
         mToolBar = new MapToolBar();
         Platform.runLater(() -> {
-            Scene scene = new Scene(mToolBar);
+            mNotificationPane = new NotificationPane(mToolBar);
+            if (Mapton.isNightMode()) {
+                mNotificationPane.getStyleClass().add(NotificationPane.STYLE_CLASS_DARK);
+            }
+
+            var bannerManager = MBannerManager.getInstance();
+            bannerManager.messageProperty().addListener((observable, oldValue, newValue) -> {
+                if (newValue != null) {
+                    FxHelper.runLater(() -> {
+                        mNotificationPane.show(newValue, bannerManager.getGraphic());
+                    });
+                }
+            });
+
+            Scene scene = new Scene(mNotificationPane);
             mToolBarPanel.setScene(scene);
             mToolBarPanel.setVisible(true);
             FxHelper.loadDarkTheme(mToolBarPanel.getScene());
