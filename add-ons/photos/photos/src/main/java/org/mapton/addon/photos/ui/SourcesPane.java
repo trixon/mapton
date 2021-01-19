@@ -24,7 +24,6 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonBase;
 import javafx.scene.control.ToolBar;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
@@ -131,12 +130,9 @@ public class SourcesPane extends BorderPane {
         ToolBar toolBar = ActionUtils.createToolBar(mActions, ActionUtils.ActionTextBehavior.HIDE);
 
         FxHelper.adjustButtonWidth(toolBar.getItems().stream(), getIconSizeToolBarInt());
-        toolBar.getItems().stream().filter((item) -> (item instanceof ButtonBase))
-                .map((item) -> (ButtonBase) item).forEachOrdered((buttonBase) -> {
-            FxHelper.undecorateButton(buttonBase);
-        });
-
+        FxHelper.undecorateButtons(toolBar.getItems().stream());
         FxHelper.slimToolBar(toolBar);
+
         mRefreshButton = (Button) toolBar.getItems().get(toolBar.getItems().size() - 1);
         setTop(toolBar);
         setCenter(mListView);
