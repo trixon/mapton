@@ -55,12 +55,6 @@ public class MSimpleObjectStorageManager {
         }
     }
 
-    public void addListenerss(PreferenceChangeListener pcl, Class<? extends MSimpleObjectStorage>... clazzes) {
-        for (var clazz : clazzes) {
-            addListener(pcl, clazz);
-        }
-    }
-
     public Boolean getBoolean(Class c, Boolean defaultValue) {
         return getNode("boolean", c).getBoolean(c.getName(), defaultValue);
     }

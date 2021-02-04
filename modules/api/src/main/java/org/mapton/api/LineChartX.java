@@ -32,7 +32,7 @@ public class LineChartX {
     private final MChartLine mChart;
     private LineChart<String, Number> mLineChart;
     private NumberAxis mNumberAxis;
-    private XYChart.Series[] mSeries;
+    private XYChart.Series<String, Number>[] mSeries;
     private CategoryAxis mXAxis;
 
     public LineChartX(MChartLine chart) {

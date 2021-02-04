@@ -259,7 +259,7 @@ public class MSplitNavPane<T extends MSplitNavType> extends BorderPane {
         TreeItem<T> root = new TreeItem<>(rootType);
 
         final String filter = mFilterTextField.getText();
-        Lookup.getDefault().lookupAll(mClass).forEach((type) -> {
+        Lookup.getDefault().lookupAll(mClass).forEach(type -> {
             final boolean validFilter
                     = StringHelper.matchesSimpleGlob(type.getParent(), filter, true, true)
                     || StringHelper.matchesSimpleGlob(type.getName(), filter, true, true);
@@ -268,7 +268,7 @@ public class MSplitNavPane<T extends MSplitNavType> extends BorderPane {
                 TreeItem<T> treeItem = new TreeItem<>((T) type);
                 String category = type.getParent();
 
-                TreeItem<T> parent = null;
+                TreeItem<T> parent;
                 if (!mParents.containsKey(category)) {
                     parent = mParents.put(category, getParent(root, category));
                 } else {
