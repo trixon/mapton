@@ -44,7 +44,7 @@ public class SourcePanel extends FxDialogPanel {
     @Override
     protected void fxConstructor() {
         setScene(createScene());
-        mRoot.setCenter(mSourceView = new SourceView(mDialogDescriptor));
+        mRoot.setCenter(mSourceView = new SourceView(mNotifyDescriptor));
     }
 
     private Scene createScene() {

@@ -31,7 +31,7 @@ import se.trixon.almond.util.swing.SwingHelper;
  *
  * @author Patrik Karlström
  */
-public class LocalGridEditor implements org.mapton.base.ui.grid.LocalGridEditor{
+public class LocalGridEditor implements org.mapton.base.ui.grid.LocalGridEditor {
 
     private final MLocalGridManager mManager = MLocalGridManager.getInstance();
 
@@ -54,7 +54,7 @@ public class LocalGridEditor implements org.mapton.base.ui.grid.LocalGridEditor{
             final MLocalGrid localGrid = newLocalGrid;
             LocalGridPanel localGridPanel = new LocalGridPanel();
             DialogDescriptor d = new DialogDescriptor(localGridPanel, MDict.GRID.toString());
-            localGridPanel.setDialogDescriptor(d);
+            localGridPanel.setNotifyDescriptor(d);
             localGridPanel.initFx(() -> {
                 localGridPanel.load(localGrid);
             });
@@ -70,7 +70,8 @@ public class LocalGridEditor implements org.mapton.base.ui.grid.LocalGridEditor{
                     FXCollections.sort(mManager.getItems(), (MLocalGrid o1, MLocalGrid o2) -> o1.getName().compareTo(o2.getName()));
                 });
             }
-        });    }
+        });
+    }
 
     @Override
     public void remove(MLocalGrid localGrid) {

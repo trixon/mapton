@@ -68,7 +68,7 @@ public class MapoSourceManager {
             final MapoSource source = newSource;
             SourcePanel localGridPanel = new SourcePanel();
             DialogDescriptor d = new DialogDescriptor(localGridPanel, Dict.SOURCE.toString());
-            localGridPanel.setDialogDescriptor(d);
+            localGridPanel.setNotifyDescriptor(d);
             localGridPanel.initFx(() -> {
                 localGridPanel.load(source);
             });

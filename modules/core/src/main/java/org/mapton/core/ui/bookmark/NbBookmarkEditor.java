@@ -64,7 +64,7 @@ public class NbBookmarkEditor implements org.mapton.core.ui.bookmark.BookmarkEdi
             final MBookmark bookmark = newBookmark;
             BookmarkPanel bookmarkPanel = new BookmarkPanel();
             DialogDescriptor d = new DialogDescriptor(bookmarkPanel, Dict.BOOKMARK.toString());
-            bookmarkPanel.setDialogDescriptor(d);
+            bookmarkPanel.setNotifyDescriptor(d);
             bookmarkPanel.initFx(() -> {
                 bookmarkPanel.load(bookmark);
             });
@@ -94,7 +94,7 @@ public class NbBookmarkEditor implements org.mapton.core.ui.bookmark.BookmarkEdi
         SwingUtilities.invokeLater(() -> {
             CategoryPanel categoryPanel = new CategoryPanel();
             DialogDescriptor d = new DialogDescriptor(categoryPanel, Dict.EDIT.toString());
-            categoryPanel.setDialogDescriptor(d);
+            categoryPanel.setNotifyDescriptor(d);
             categoryPanel.initFx(() -> {
                 categoryPanel.setCategory(category);
             });
@@ -140,7 +140,7 @@ public class NbBookmarkEditor implements org.mapton.core.ui.bookmark.BookmarkEdi
         SwingUtilities.invokeLater(() -> {
             ColorPanel colorPanel = new ColorPanel();
             DialogDescriptor d = new DialogDescriptor(colorPanel, Dict.EDIT.toString());
-            colorPanel.setDialogDescriptor(d);
+            colorPanel.setNotifyDescriptor(d);
             colorPanel.initFx(() -> {
             });
 
@@ -173,7 +173,7 @@ public class NbBookmarkEditor implements org.mapton.core.ui.bookmark.BookmarkEdi
         SwingUtilities.invokeLater(() -> {
             ZoomPanel zoomPanel = new ZoomPanel();
             DialogDescriptor d = new DialogDescriptor(zoomPanel, Dict.EDIT.toString());
-            zoomPanel.setDialogDescriptor(d);
+            zoomPanel.setNotifyDescriptor(d);
             zoomPanel.initFx(() -> {
             });
 

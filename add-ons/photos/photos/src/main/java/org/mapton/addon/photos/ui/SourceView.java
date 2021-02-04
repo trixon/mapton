@@ -32,7 +32,7 @@ import org.controlsfx.validation.ValidationResult;
 import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
 import org.mapton.addon.photos.api.MapoSource;
-import org.openide.DialogDescriptor;
+import org.openide.NotifyDescriptor;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
@@ -46,7 +46,7 @@ public class SourceView extends VBox {
 
     private final ResourceBundle mBundle;
     private TextField mDescTextField;
-    private final DialogDescriptor mDialogDescriptor;
+    private final NotifyDescriptor mNotifyDescriptor;
     private TextField mExcludeTextField;
     private TextField mFilePatternField;
     private CheckBox mLinksCheckBox;
@@ -59,8 +59,8 @@ public class SourceView extends VBox {
     private HBox mhBox;
     private ColorPicker mColorPicker;
 
-    public SourceView(DialogDescriptor dialogDescriptor) {
-        mDialogDescriptor = dialogDescriptor;
+    public SourceView(NotifyDescriptor notifyDescriptor) {
+        mNotifyDescriptor = notifyDescriptor;
         mBundle = NbBundle.getBundle(SourceView.class);
         createUI();
     }
@@ -203,7 +203,7 @@ public class SourceView extends VBox {
         validationSupport.registerValidator(mNameTextField, indicateRequired, emptyValidator);
 
         validationSupport.validationResultProperty().addListener((ObservableValue<? extends ValidationResult> observable, ValidationResult oldValue, ValidationResult newValue) -> {
-            mDialogDescriptor.setValid(!validationSupport.isInvalid());
+            mNotifyDescriptor.setValid(!validationSupport.isInvalid());
         });
 
         validationSupport.initInitialDecoration();
