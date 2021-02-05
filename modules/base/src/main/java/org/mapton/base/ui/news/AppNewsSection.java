@@ -20,6 +20,7 @@ import org.openide.util.LookupEvent;
 import se.trixon.almond.nbp.core.news.NewsBuilder;
 import se.trixon.almond.nbp.core.news.NewsProvider;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
@@ -42,7 +43,9 @@ class AppNewsSection extends NewsSection {
         builder.append("<h1>").append(Dict.APPLICATION_NEWS.toString()).append("</h1>");
         builder.append(new NewsBuilder().getNews());
 
-        mWebView.getEngine().loadContent(builder.toString(), "text/html");
+        FxHelper.runLater(() -> {
+            mWebView.getEngine().loadContent(builder.toString(), "text/html");
+        });
     }
 
 }

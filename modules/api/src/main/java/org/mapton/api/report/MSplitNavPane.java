@@ -38,7 +38,6 @@ import org.controlsfx.control.textfield.TextFields;
 import org.mapton.api.Mapton;
 import org.mapton.api.report.MSplitNavSettings.TitleMode;
 import org.openide.util.Lookup;
-import org.openide.util.LookupEvent;
 import org.openide.util.NbPreferences;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.StringHelper;
@@ -116,7 +115,7 @@ public class MSplitNavPane<T extends MSplitNavType> extends BorderPane {
         setLeft(mMasterBorderPane);
         setCenter(mDetailBorderPane);
 
-        Lookup.getDefault().lookupResult(mClass).addLookupListener((LookupEvent ev) -> {
+        Lookup.getDefault().lookupResult(mClass).addLookupListener(lookupEvent -> {
             populate();
         });
 
@@ -280,7 +279,9 @@ public class MSplitNavPane<T extends MSplitNavType> extends BorderPane {
         });
 
         postPopulate(root);
-        mTreeView.setRoot(root);
+        FxHelper.runLater(() -> {
+            mTreeView.setRoot(root);
+        });
     }
 
     private void postPopulate(TreeItem<T> treeItem) {
