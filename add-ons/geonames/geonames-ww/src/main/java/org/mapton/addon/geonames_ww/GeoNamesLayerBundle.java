@@ -50,8 +50,7 @@ public class GeoNamesLayerBundle extends LayerBundle {
     private GridData getGridData(Country country) {
         ArrayList<GridValue> values = new ArrayList<>();
         country.getGeonames().forEach((geoname) -> {
-            Double value = new Double(geoname.getPopulation());
-            values.add(new GridValue(geoname.getLatLon(), value));
+            values.add(new GridValue(geoname.getLatLon(), Double.valueOf(geoname.getPopulation())));
         });
 
         int width = 100;
