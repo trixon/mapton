@@ -62,7 +62,7 @@ public class SeasonalLayerBundle extends LayerBundle {
     }
 
     private void checkForRefresh() {
-        String[] fettisdagar = {"20200225", "20210216", "20220201", "20230221", "20240224", "20250304"};
+        String[] fettisdagar = {"20210216", "20220201", "20230221", "20240224", "20250304", "20260217", "20270209", "20280229", "20290213"};
         String[] halloween = {"1030", "1031"};
         final String today = new SimpleDateFormat("yyyyMMdd").format(new Date(System.currentTimeMillis()));
         if (ArrayUtils.contains(fettisdagar, today)) {
