@@ -112,8 +112,6 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         new Thread(() -> {
             initFinalize();
             initListeners();
-
-            MaptonNb.progressStop(MDict.MAP_ENGINE.toString());
         }).start();
     }
 
@@ -247,6 +245,7 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         updateMode();
         updateProjection();
         updateElevation();
+        MaptonNb.progressStop(MDict.MAP_ENGINE.toString());
         Mapton.getExecutionFlow().setReady(MKey.EXECUTION_FLOW_MAP_WW_INITIALIZED);
         initLayerBundles();
         initWmsService();
