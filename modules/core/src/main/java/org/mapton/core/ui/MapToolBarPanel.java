@@ -19,9 +19,11 @@ import java.awt.Dimension;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import org.controlsfx.control.NotificationPane;
 import org.mapton.api.MBannerManager;
-import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import se.trixon.almond.util.fx.FxHelper;
 
@@ -31,9 +33,10 @@ import se.trixon.almond.util.fx.FxHelper;
  */
 public class MapToolBarPanel {
 
+    private Label mNotificationLabel;
+    private NotificationPane mNotificationPane;
     private final MapToolBar mToolBar;
     private final JFXPanel mToolBarPanel = new JFXPanel();
-    private NotificationPane mNotificationPane;
 
     public static MapToolBarPanel getInstance() {
         return Holder.INSTANCE;
@@ -46,15 +49,25 @@ public class MapToolBarPanel {
         mToolBar = new MapToolBar();
         Platform.runLater(() -> {
             mNotificationPane = new NotificationPane(mToolBar);
-            if (Mapton.isNightMode()) {
-                mNotificationPane.getStyleClass().add(NotificationPane.STYLE_CLASS_DARK);
-            }
+            mNotificationLabel = new Label();
+            mNotificationLabel.setBackground(FxHelper.createBackground(Color.RED));
+            mNotificationLabel.setPadding(FxHelper.getUIScaledInsets(0, 0, 0, 8));
 
+            mNotificationLabel.prefHeightProperty().bind(mNotificationPane.heightProperty());
+            mNotificationLabel.prefWidthProperty().bind(mNotificationPane.widthProperty());
+            mNotificationLabel.setFont(Font.font(Font.getDefault().getSize() * 1.4));
+            mNotificationLabel.setTextFill(Color.WHITE);
+//            if (!Mapton.isNightMode()) {
+//                mNotificationPane.getStyleClass().add(NotificationPane.STYLE_CLASS_DARK);
+//            }
             var bannerManager = MBannerManager.getInstance();
             bannerManager.messageProperty().addListener((observable, oldValue, newValue) -> {
                 if (newValue != null) {
                     FxHelper.runLater(() -> {
-                        mNotificationPane.show(newValue, bannerManager.getGraphic());
+                        mNotificationLabel.setText(newValue);
+                        mNotificationLabel.setGraphic(bannerManager.getGraphic());
+
+                        mNotificationPane.show("", mNotificationLabel);
                     });
                 }
             });
