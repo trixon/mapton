@@ -23,6 +23,7 @@ import java.util.TreeSet;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ListChangeListener;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openide.util.Lookup;
 import se.trixon.almond.util.Dict;
@@ -169,6 +170,7 @@ public class MPoiManager extends MBaseDataManager<MPoi> {
         String category = String.format("%s/%s", poi.getProvider(), poi.getCategory());
         boolean valid
                 = mCategoriesProperty.get().contains(category)
+                && ObjectUtils.allNotNull(poi.getLatitude(), poi.getLongitude())
                 && (StringHelper.matchesSimpleGlob(poi.getProvider(), filter, true, true)
                 || StringHelper.matchesSimpleGlob(poi.getUrl(), filter, true, true)
                 || StringHelper.matchesSimpleGlob(poi.getName(), filter, true, true)
