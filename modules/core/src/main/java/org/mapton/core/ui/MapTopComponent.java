@@ -279,7 +279,7 @@ public final class MapTopComponent extends MTopComponent {
             double state = gsce.getValue();
             if (-1.0 == state) {
                 MaptonNb.progressStart(Dict.RENDERING.toString());
-                SwingHelper.runLaterDelayed(15 * 1000, () -> {
+                SwingHelper.runLaterDelayed(TimeUnit.SECONDS.toMillis(5), () -> {
                     MaptonNb.progressStop(Dict.RENDERING.toString());
                 });
             } else {
