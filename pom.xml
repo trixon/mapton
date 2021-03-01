@@ -373,7 +373,7 @@
             <dependency>
                 <groupId>org.controlsfx</groupId>
                 <artifactId>controlsfx</artifactId>
-                <version>11.0.3</version>
+                <version>11.1.0</version>
                 <exclusions>
                     <exclusion>
                         <groupId>org.openjfx</groupId>
@@ -384,7 +384,7 @@
             <dependency>
                 <groupId>eu.hansolo</groupId>
                 <artifactId>tilesfx</artifactId>
-                <version>11.47</version>
+                <version>11.48</version>
                 <exclusions>
                     <exclusion>
                         <groupId>org.openjfx</groupId>
