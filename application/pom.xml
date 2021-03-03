@@ -212,6 +212,11 @@
         <!--Mapton/Add-ons-->
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>addon-base64</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>addon-files</artifactId>
             <version>${project.version}</version>
         </dependency>
