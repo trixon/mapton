@@ -15,11 +15,32 @@
  */
 package org.mapton.addon.base64;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.ResourceBundle;
 import javafx.scene.Node;
 import javafx.scene.control.TextArea;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.TransferMode;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.text.Font;
+import org.apache.commons.io.FileUtils;
+import org.controlsfx.control.action.Action;
+import org.controlsfx.control.action.ActionUtils;
+import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.mapton.api.report.MEditor;
 import org.mapton.api.report.MSplitNavSettings.TitleMode;
+import org.openide.util.Exceptions;
+import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
+import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.SystemHelper;
+import se.trixon.almond.util.fx.FxHelper;
+import se.trixon.almond.util.fx.control.LogPanel;
+import se.trixon.almond.util.icons.material.MaterialIcon;
 
 /**
  *
@@ -28,8 +49,10 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = MEditor.class)
 public class Base64Editor extends MEditor {
 
-    private TextArea mSourceTextArea;
-    private TextArea mDestTextArea;
+    private BorderPane mBorderPane;
+    private final ResourceBundle mBundle = NbBundle.getBundle(Base64Editor.class);
+    private final LogPanel mPreviewLogPanel = new LogPanel();
+    private final TextArea mSourceTextArea = new TextArea();
 
     public Base64Editor() {
         getSplitNavSettings().setTitleMode(TitleMode.NAME);
@@ -42,20 +65,103 @@ public class Base64Editor extends MEditor {
 
     @Override
     public Node getNode() {
-        if (mSourceTextArea == null) {
+        if (mBorderPane == null) {
+            initToolBar();
             createUI();
+            initListeners();
         }
 
         return mBody;
     }
 
     private void createUI() {
-        mSourceTextArea = new TextArea();
+        mSourceTextArea.setPromptText(mBundle.getString("prompt_source"));
+        mSourceTextArea.setFont(Font.font("monospaced"));
         mSourceTextArea.textProperty().addListener((observable, oldValue, newValue) -> {
+            encode();
         });
 
-        mDestTextArea = new TextArea();
+        var gridPane = new GridPane();
+        gridPane.addRow(0, mSourceTextArea, mPreviewLogPanel);
+        FxHelper.autoSizeColumn(gridPane, 2);
+        mPreviewLogPanel.setWrapText(true);
+        mBorderPane = new BorderPane(gridPane);
+        gridPane.prefHeightProperty().bind(mBorderPane.heightProperty());
+        mSourceTextArea.prefHeightProperty().bind(gridPane.heightProperty());
+        mNotificationPane.setContent(mBorderPane);
+    }
 
-        mNotificationPane.setContent(mSourceTextArea);
+    private void decode() {
+        try {
+            mPreviewLogPanel.setText(new String(Base64.getDecoder().decode(mSourceTextArea.getText().getBytes()), "utf-8"));
+        } catch (UnsupportedEncodingException ex) {
+            Exceptions.printStackTrace(ex);
+        } catch (IllegalArgumentException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+    }
+
+    private void encode() {
+        try {
+            mPreviewLogPanel.setText(new String(Base64.getEncoder().encode(mSourceTextArea.getText().getBytes()), "utf-8"));
+        } catch (UnsupportedEncodingException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+    }
+
+    private void initListeners() {
+        mSourceTextArea.setOnDragOver(dragEvent -> {
+            var dragboard = dragEvent.getDragboard();
+            if (dragboard.hasFiles()) {
+                dragEvent.acceptTransferModes(TransferMode.COPY);
+            }
+        });
+
+        mSourceTextArea.setOnDragDropped((DragEvent event) -> {
+            try {
+                var file = event.getDragboard().getFiles().get(0);
+                String s = FileUtils.readFileToString(file, "utf-8");
+                mSourceTextArea.setText(s);
+            } catch (IOException ex) {
+                Exceptions.printStackTrace(ex);
+            }
+        });
+    }
+
+    private void initToolBar() {
+        var clearAction = new Action(Dict.CLEAR.toString(), event -> {
+            mSourceTextArea.clear();
+        });
+        clearAction.setGraphic(MaterialIcon._Content.CLEAR.getImageView(getIconSizeToolBarInt()));
+
+        var encodeAction = new Action(Dict.ENCODE.toString(), event -> {
+            encode();
+        });
+        encodeAction.setGraphic(MaterialIcon._Navigation.CHEVRON_RIGHT.getImageView(getIconSizeToolBarInt()));
+
+        var decodeAction = new Action(Dict.DECODE.toString(), event -> {
+            decode();
+        });
+        decodeAction.setGraphic(MaterialIcon._Navigation.CHEVRON_LEFT.getImageView(getIconSizeToolBarInt()));
+
+        var copyAction = new Action(Dict.COPY.toString(), event -> {
+            SystemHelper.copyToClipboard(mPreviewLogPanel.getText());
+        });
+        copyAction.setGraphic(MaterialIcon._Content.CONTENT_COPY.getImageView(getIconSizeToolBarInt()));
+
+        ArrayList<Action> actions = new ArrayList<>();
+        actions.add(encodeAction);
+        actions.add(decodeAction);
+        actions.add(ActionUtils.ACTION_SEPARATOR);
+        actions.add(copyAction);
+        actions.add(ActionUtils.ACTION_SPAN);
+        actions.add(clearAction);
+
+        var toolBar = ActionUtils.createToolBar(actions, ActionUtils.ActionTextBehavior.HIDE);
+        FxHelper.adjustButtonWidth(toolBar.getItems().stream(), getIconSizeToolBarInt());
+        FxHelper.slimToolBar(toolBar);
+        FxHelper.undecorateButtons(toolBar.getItems().stream());
+
+        mSplitNavSetting.getToolBarItems().setAll(toolBar.getItems());
     }
 }
