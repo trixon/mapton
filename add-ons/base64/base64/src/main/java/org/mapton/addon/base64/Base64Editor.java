@@ -36,6 +36,7 @@ import org.mapton.api.report.MSplitNavSettings.TitleMode;
 import org.openide.util.Exceptions;
 import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
+import se.trixon.almond.nbp.dialogs.NbMessage;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.FxHelper;
@@ -97,7 +98,7 @@ public class Base64Editor extends MEditor {
         } catch (UnsupportedEncodingException ex) {
             Exceptions.printStackTrace(ex);
         } catch (IllegalArgumentException ex) {
-            Exceptions.printStackTrace(ex);
+            NbMessage.error(Dict.Dialog.ERROR.toString(), ex.getMessage());
         }
     }
 
