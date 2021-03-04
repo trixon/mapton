@@ -105,6 +105,7 @@ public class MSplitNavPane<T extends MSplitNavType> extends BorderPane {
         mTitleLabel.setStyle(String.format("-fx-font-size: %dpx;", (int) (getScaledFontSize() * 1.5)));
         mTitleLabel.prefWidthProperty().bind(mDetailTopPane.widthProperty());
         mTitleLabel.setAlignment(Pos.CENTER);
+        mTitleLabel.setTextFill(Mapton.getThemeForegroundColor());
 
         mToolBar = new ToolBar();
 
