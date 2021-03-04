@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 import javafx.application.Platform;
 import javafx.beans.property.LongProperty;
 import javafx.beans.property.ObjectProperty;
@@ -30,6 +31,11 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.FileFilterUtils;
+import org.apache.commons.io.filefilter.IOFileFilter;
+import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
+import org.apache.commons.io.monitor.FileAlterationMonitor;
+import org.apache.commons.io.monitor.FileAlterationObserver;
 import org.mapton.addon.files.coordinate_file_openers.GeoCoordinateFileOpener;
 import org.mapton.addon.files.coordinate_file_openers.KmlCoordinateFileOpener;
 import org.mapton.api.MCoordinateFile;
@@ -93,8 +99,11 @@ public class CoordinateFileManager {
             Exceptions.printStackTrace(ex);
         }
 
-        final ArrayList<MCoordinateFile> items = loadedItems;
+        for (var coordinateFile : loadedItems) {
+            addMonitor(coordinateFile);
+        }
 
+        final var items = loadedItems; //Lambda below needs final
         Platform.runLater(() -> {
             mItemsProperty.get().setAll(items);
             Mapton.getGlobalState().put(Mapo.KEY_SOURCE_UPDATED, this);
@@ -108,13 +117,13 @@ public class CoordinateFileManager {
         }
     }
 
-    public void removeAll(MCoordinateFile... documents) {
+    public void removeAll(MCoordinateFile... coordinateFile) {
         FxHelper.runLater(() -> {
             try {
-                if (documents == null || documents.length == 0) {
+                if (coordinateFile == null || coordinateFile.length == 0) {
                     mItemsProperty.get().clear();
                 } else {
-                    mItemsProperty.get().removeAll(documents);
+                    mItemsProperty.get().removeAll(coordinateFile);
                 }
             } catch (Exception e) {
             }
@@ -147,11 +156,57 @@ public class CoordinateFileManager {
     private boolean addIfMissing(MCoordinateFile coordinateFile) {
         if (!contains(coordinateFile)) {
             getItems().add(coordinateFile);
+            addMonitor(coordinateFile);
 
             return true;
         }
 
         return false;
+    }
+
+    private void addMonitor(MCoordinateFile coordinateFile) {
+        var file = coordinateFile.getFile();
+        var directory = file.getParentFile();
+
+        IOFileFilter directoryFilter = FileFilterUtils.and(
+                FileFilterUtils.directoryFileFilter(),
+                FileFilterUtils.nameFileFilter(directory.getName()));
+
+        IOFileFilter fileFilter = FileFilterUtils.and(
+                FileFilterUtils.fileFileFilter(),
+                FileFilterUtils.nameFileFilter(file.getName()));
+
+        IOFileFilter filter = FileFilterUtils.or(directoryFilter, fileFilter);
+
+        var observer = new FileAlterationObserver(directory, filter);
+        var monitor = new FileAlterationMonitor(TimeUnit.SECONDS.toMillis(5), observer);
+        var listener = new FileAlterationListenerAdaptor() {
+            private final File fileToMonitor = file;
+
+            @Override
+            public void onFileChange(File file) {
+                if (file.equals(fileToMonitor)) {
+                    refresh();
+                }
+            }
+
+            @Override
+            public void onFileDelete(File file) {
+                if (file.equals(fileToMonitor)) {
+                    removeAll(coordinateFile);
+                    refresh();
+                }
+            }
+        };
+
+        new Thread(() -> {
+            observer.addListener(listener);
+            try {
+                monitor.start();
+            } catch (Exception ex) {
+                Exceptions.printStackTrace(ex);
+            }
+        }).start();
     }
 
     private File getSourcesFile() {
