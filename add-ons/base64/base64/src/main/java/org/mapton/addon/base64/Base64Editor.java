@@ -30,6 +30,7 @@ import javafx.scene.text.Font;
 import org.apache.commons.io.FileUtils;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
+import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.mapton.api.report.MEditor;
 import org.mapton.api.report.MSplitNavSettings.TitleMode;
@@ -131,22 +132,22 @@ public class Base64Editor extends MEditor {
         var clearAction = new Action(Dict.CLEAR.toString(), event -> {
             mSourceTextArea.clear();
         });
-        clearAction.setGraphic(MaterialIcon._Content.CLEAR.getImageView(getIconSizeToolBarInt()));
+        clearAction.setGraphic(MaterialIcon._Content.CLEAR.getImageView(getIconSizeToolBarInt(), Mapton.getThemeForegroundColor()));
 
         var encodeAction = new Action(Dict.ENCODE.toString(), event -> {
             encode();
         });
-        encodeAction.setGraphic(MaterialIcon._Navigation.CHEVRON_RIGHT.getImageView(getIconSizeToolBarInt()));
+        encodeAction.setGraphic(MaterialIcon._Navigation.CHEVRON_RIGHT.getImageView(getIconSizeToolBarInt(), Mapton.getThemeForegroundColor()));
 
         var decodeAction = new Action(Dict.DECODE.toString(), event -> {
             decode();
         });
-        decodeAction.setGraphic(MaterialIcon._Navigation.CHEVRON_LEFT.getImageView(getIconSizeToolBarInt()));
+        decodeAction.setGraphic(MaterialIcon._Navigation.CHEVRON_LEFT.getImageView(getIconSizeToolBarInt(), Mapton.getThemeForegroundColor()));
 
         var copyAction = new Action(Dict.COPY.toString(), event -> {
             SystemHelper.copyToClipboard(mPreviewLogPanel.getText());
         });
-        copyAction.setGraphic(MaterialIcon._Content.CONTENT_COPY.getImageView(getIconSizeToolBarInt()));
+        copyAction.setGraphic(MaterialIcon._Content.CONTENT_COPY.getImageView(getIconSizeToolBarInt(), Mapton.getThemeForegroundColor()));
 
         ArrayList<Action> actions = new ArrayList<>();
         actions.add(encodeAction);
