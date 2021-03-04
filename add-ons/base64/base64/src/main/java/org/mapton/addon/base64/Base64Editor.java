@@ -95,9 +95,7 @@ public class Base64Editor extends MEditor {
     private void decode() {
         try {
             mPreviewLogPanel.setText(new String(Base64.getDecoder().decode(mSourceTextArea.getText().getBytes()), "utf-8"));
-        } catch (UnsupportedEncodingException ex) {
-            Exceptions.printStackTrace(ex);
-        } catch (IllegalArgumentException ex) {
+        } catch (UnsupportedEncodingException | IllegalArgumentException ex) {
             NbMessage.error(Dict.Dialog.ERROR.toString(), ex.getMessage());
         }
     }
