@@ -42,11 +42,12 @@ import se.trixon.almond.util.fx.FxHelper;
 public abstract class MSubReports extends MReport {
 
     private BorderPane mBorderPane;
-    private Comparator<MSubReport> mComparator;
+    private final Comparator<MSubReport> mComparator;
     private ListView<MSubReport> mListView;
     private WebView mWebView;
 
     public MSubReports() {
+        setParent(String.format("- %s -", Dict.SYSTEM.toString()));
         mComparator = Comparator.comparing(MSubReport::getGroup)
                 .thenComparing(Comparator.comparing(MSubReport::getName));
     }

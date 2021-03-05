@@ -20,6 +20,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
 import javafx.scene.control.TextArea;
 import org.mapton.api.report.MEditor;
+import org.mapton.api.report.MEditorSystem;
 import org.mapton.api.report.MSplitNavSettings.TitleMode;
 import org.openide.util.NbPreferences;
 import org.openide.util.lookup.ServiceProvider;
@@ -30,7 +31,7 @@ import se.trixon.almond.util.Dict;
  * @author Patrik Karlström
  */
 @ServiceProvider(service = MEditor.class)
-public class NotesEditor extends MEditor {
+public class NotesEditor extends MEditorSystem {
 
     private static final String KEY_NOTES = "notes";
     private final Preferences mPreferences = NbPreferences.forModule(NotesEditor.class);

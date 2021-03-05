@@ -26,10 +26,9 @@ import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.api.MApiReport;
-import org.mapton.api.Mapton;
 import org.mapton.api.report.MReport;
 import org.mapton.api.report.MSubReport;
-import org.mapton.api.report.MSubReports;
+import org.mapton.api.report.MSubReportsSystem;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
 
@@ -38,7 +37,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @author Patrik Karlström
  */
 @ServiceProvider(service = MReport.class)
-public class ApiReport extends MSubReports {
+public class ApiReport extends MSubReportsSystem {
 
     @Override
     public String getName() {
@@ -104,11 +103,6 @@ public class ApiReport extends MSubReports {
         }
 
         return node;
-    }
-
-    @Override
-    public String getParent() {
-        return String.format("- %s -", Mapton.LOG_TAG);
     }
 
     @Override

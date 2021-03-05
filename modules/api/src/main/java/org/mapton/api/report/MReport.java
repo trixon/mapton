@@ -22,6 +22,7 @@ import javafx.scene.Node;
 import javafx.scene.web.WebView;
 import org.mapton.api.Mapton;
 import org.openide.util.Exceptions;
+import se.trixon.almond.util.Dict;
 
 /**
  *
@@ -32,6 +33,7 @@ public abstract class MReport extends MSplitNavMaskerPane {
     private WebView mWebView;
 
     public MReport() {
+        setParent(String.format("- %s -", Dict.SYSTEM.toString()));
     }
 
     public ContainerTag getContent() {

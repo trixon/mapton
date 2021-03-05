@@ -22,8 +22,8 @@ import java.util.TreeMap;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.api.MBookmark;
 import org.mapton.api.MBookmarkManager;
-import org.mapton.api.Mapton;
 import org.mapton.api.report.MReport;
+import org.mapton.api.report.MReportSystem;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
 
@@ -32,7 +32,7 @@ import se.trixon.almond.util.Dict;
  * @author Patrik Karlström
  */
 @ServiceProvider(service = MReport.class)
-public class BookmarkReport extends MReport {
+public class BookmarkReport extends MReportSystem {
 
     private final MBookmarkManager mManager = MBookmarkManager.getInstance();
     private final String mName = Dict.BOOKMARKS.toString();
@@ -85,10 +85,5 @@ public class BookmarkReport extends MReport {
                         )));
 
         return html;
-    }
-
-    @Override
-    public String getParent() {
-        return String.format("- %s -", Mapton.LOG_TAG);
     }
 }

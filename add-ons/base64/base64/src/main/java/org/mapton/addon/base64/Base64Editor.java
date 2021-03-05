@@ -33,6 +33,7 @@ import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.mapton.api.report.MEditor;
+import org.mapton.api.report.MEditorSystem;
 import org.mapton.api.report.MSplitNavSettings.TitleMode;
 import org.openide.util.Exceptions;
 import org.openide.util.NbBundle;
@@ -49,7 +50,7 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
  * @author Patrik Karlström
  */
 @ServiceProvider(service = MEditor.class)
-public class Base64Editor extends MEditor {
+public class Base64Editor extends MEditorSystem {
 
     private BorderPane mBorderPane;
     private final ResourceBundle mBundle = NbBundle.getBundle(Base64Editor.class);

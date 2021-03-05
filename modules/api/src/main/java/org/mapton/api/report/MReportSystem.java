@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Patrik Karlström.
+ * Copyright 2021 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,15 +15,16 @@
  */
 package org.mapton.api.report;
 
-import se.trixon.almond.util.Dict;
+import org.mapton.api.Mapton;
 
 /**
  *
  * @author Patrik Karlström
  */
-public abstract class MEditor extends MSplitNavMaskerPane {
+public abstract class MReportSystem extends MReport {
 
-    public MEditor() {
-        setParent(String.format("- %s -", Dict.SYSTEM.toString()));
+    public MReportSystem() {
+        mSplitNavSetting.setTitleColor(Mapton.getDefaultThemeColor());
     }
+
 }
