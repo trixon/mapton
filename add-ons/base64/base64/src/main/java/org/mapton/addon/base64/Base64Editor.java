@@ -96,7 +96,10 @@ public class Base64Editor extends MEditorSystem {
 
     private void decode() {
         try {
-            mPreviewLogPanel.setText(new String(Base64.getDecoder().decode(mSourceTextArea.getText().getBytes()), "utf-8"));
+            byte[] bytesIn = mSourceTextArea.getText().getBytes("utf-8");
+            byte[] bytesOut = Base64.getDecoder().decode(bytesIn);
+            String result = new String(bytesOut, "utf-8");
+            mPreviewLogPanel.setText(result);
         } catch (UnsupportedEncodingException | IllegalArgumentException ex) {
             NbMessage.error(Dict.Dialog.ERROR.toString(), ex.getMessage());
         }
@@ -104,7 +107,10 @@ public class Base64Editor extends MEditorSystem {
 
     private void encode() {
         try {
-            mPreviewLogPanel.setText(new String(Base64.getEncoder().encode(mSourceTextArea.getText().getBytes()), "utf-8"));
+            byte[] bytesIn = mSourceTextArea.getText().getBytes("utf-8");
+            byte[] bytesOut = Base64.getEncoder().encode(bytesIn);
+            String result = new String(bytesOut, "utf-8");
+            mPreviewLogPanel.setText(result);
         } catch (UnsupportedEncodingException ex) {
             Exceptions.printStackTrace(ex);
         }
