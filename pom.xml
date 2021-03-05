@@ -518,21 +518,21 @@
             <id>bintray-dlsc-oss-maven</id>
             <url>https://dl.bintray.com/dlsc-oss/repository</url>
         </repository>
-        <!--        <repository>
+        <repository>
             <id>netbeans-next</id>
-            <url>https://repository.apache.org/content/repositories/orgapachenetbeans-1077</url>
-        </repository>-->
+            <url>https://repository.apache.org/content/repositories/orgapachenetbeans-1082</url>
+        </repository>
     </repositories>
 
     <pluginRepositories>
-        <!--        <pluginRepository>
+        <pluginRepository>
             <id>netbeans-next</id>
-            <url>https://repository.apache.org/content/repositories/orgapachenetbeans-1075/</url>
-        </pluginRepository>-->
+            <url>https://repository.apache.org/content/repositories/orgapachenetbeans-1081/</url>
+        </pluginRepository>
     </pluginRepositories>
 
     <properties>
-        <netbeans.version>RELEASE122</netbeans.version>
+        <netbeans.version>RELEASE123</netbeans.version>
         <netbeans.compile.on.save>none</netbeans.compile.on.save>
         <brandingToken>mapton</brandingToken>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
