@@ -85,8 +85,6 @@ public class MapToolBar extends BaseToolBar {
     private Action mTemporalAction;
     private PopOver mTemporalPopOver;
     private TemporalView mTemporalView;
-    private Action mToolboxAction;
-    private PopOver mToolboxPopOver;
 
     public MapToolBar() {
         initPopOvers();
@@ -141,10 +139,6 @@ public class MapToolBar extends BaseToolBar {
 
     public void toogleTemporalPopOver() {
         tooglePopOver(mTemporalPopOver, mTemporalAction);
-    }
-
-    public void toogleToolboxPopOver() {
-        tooglePopOver(mToolboxPopOver, mToolboxAction);
     }
 
     private void init() {
@@ -266,21 +260,6 @@ public class MapToolBar extends BaseToolBar {
 //        mGridAction.setGraphic(MaterialIcon._Image.GRID_ON.getImageView(getIconSizeToolBarInt()));
 //        FxHelper.setTooltip(mGridAction, new KeyCodeCombination(KeyCode.G, KeyCombination.SHORTCUT_DOWN));
 
-        //mToolbox
-        mToolboxAction = new Action(MDict.MAP_TOOLS.toString(), event -> {
-            if (usePopOver(mToolboxPopOver)) {
-                if (shouldOpen(mToolboxPopOver)) {
-                    show(mToolboxPopOver, event.getSource());
-                }
-            } else {
-                SwingUtilities.invokeLater(() -> {
-                    Actions.forID("Mapton", "org.mapton.core.actions.ToolboxAction").actionPerformed(null);
-                });
-            }
-        });
-        mToolboxAction.setGraphic(MaterialIcon._Action.BUILD.getImageView(getIconSizeToolBarInt()));
-        FxHelper.setTooltip(mToolboxAction, new KeyCodeCombination(KeyCode.T, KeyCombination.SHORTCUT_DOWN));
-
         //Style
         mStyleAction = new Action(event -> {
             if (shouldOpen(mStylePopOver)) {
@@ -347,12 +326,6 @@ public class MapToolBar extends BaseToolBar {
                 updateDocumentInfo(evt.getValue());
             });
         }, MKey.MAP_DOCUMENT_INFO);
-
-        Mapton.getGlobalState().addListener(evt -> {
-            Platform.runLater(() -> {
-                mToolboxPopOver.hide();
-            });
-        }, MKey.MAP_TOOL_STARTED);
     }
 
     private void initPopOvers() {
@@ -385,9 +358,6 @@ public class MapToolBar extends BaseToolBar {
             onObjectHiding(mStylePopOver);
         });
 
-        mToolboxPopOver = new PopOver();
-        initPopOver(mToolboxPopOver, MDict.MAP_TOOLS.toString(), new MapToolboxView(), false);
-
         mRulerPopOver = new PopOver();
         initPopOver(mRulerPopOver, Dict.RULER.toString(), new RulerView(), true);
         mRulerPopOver.setArrowLocation(ArrowLocation.TOP_RIGHT);
@@ -410,7 +380,7 @@ public class MapToolBar extends BaseToolBar {
             onObjectHiding(mTemporalPopOver);
         });
 
-        setPopOverWidths(FxHelper.getUIScaled(DEFAULT_POP_OVER_WIDTH), mBookmarkPopOver, mPoiPopOver, mGridPopOver, mToolboxPopOver);
+        setPopOverWidths(FxHelper.getUIScaled(DEFAULT_POP_OVER_WIDTH), mBookmarkPopOver, mPoiPopOver, mGridPopOver);
 
         Platform.runLater(() -> {
             mAttributionPopOver = new PopOver();
