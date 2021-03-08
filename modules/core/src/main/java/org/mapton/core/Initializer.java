@@ -128,5 +128,9 @@ public class Initializer implements Runnable {
 
             new UpdateNotificator();
         });
+
+        Mapton.getGlobalState().addListener(gsce -> {
+            Almond.openAndActivateTopComponent(gsce.getValue());
+        }, MKey.LAYER_FAST_OPEN_TOOL);
     }
 }
