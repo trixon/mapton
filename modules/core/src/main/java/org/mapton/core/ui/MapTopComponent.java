@@ -63,6 +63,7 @@ import org.openide.util.Exceptions;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
+import se.trixon.almond.nbp.dialogs.NbSnapHelper;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.swing.DelayedResetRunner;
 import se.trixon.almond.util.swing.SwingHelper;
@@ -298,6 +299,8 @@ public final class MapTopComponent extends MTopComponent {
                     Exceptions.printStackTrace(ex);
                 }
                 Mapton.getExecutionFlow().setReady(MKey.EXECUTION_FLOW_MAP_INITIALIZED);
+
+                NbSnapHelper.checkSnapStatus(Mapton.class, "snap", "mapton", "removable-media");
             }).start();
         }
     }
