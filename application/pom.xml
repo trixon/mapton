@@ -109,6 +109,10 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>google-maps</artifactId>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>maintenance</artifactId>
+        </dependency>
 
         <!--Mapton/Map engines-->
         <dependency>

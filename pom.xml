@@ -41,7 +41,7 @@
                 <plugin>
                     <groupId>org.apache.netbeans.utilities</groupId>
                     <artifactId>nbm-maven-plugin</artifactId>
-                    <version>4.5</version>
+                    <version>4.6</version>
                     <extensions>true</extensions>
                     <configuration>
                         <!--TODO Fix it-->
@@ -180,6 +180,7 @@
         <module>modules/core</module>
         <module>modules/editors</module>
         <module>modules/google-maps</module>
+        <module>modules/maintenance</module>
         <module>modules/poi-ww</module>
         <module>modules/reports</module>
 
@@ -311,6 +312,11 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>google-maps</artifactId>
+                <version>${mapton.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>maintenance</artifactId>
                 <version>${mapton.version}</version>
             </dependency>
 
@@ -518,10 +524,10 @@
             <id>bintray-dlsc-oss-maven</id>
             <url>https://dl.bintray.com/dlsc-oss/repository</url>
         </repository>
-        <repository>
+        <!--        <repository>
             <id>netbeans-next</id>
             <url>https://repository.apache.org/content/repositories/orgapachenetbeans-1082</url>
-        </repository>
+        </repository>-->
     </repositories>
 
     <pluginRepositories>
