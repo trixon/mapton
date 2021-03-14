@@ -33,6 +33,7 @@ import org.openide.windows.WindowManager;
 import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.nbp.NbLog;
 import se.trixon.almond.nbp.about.AboutAction;
+import se.trixon.almond.nbp.dialogs.NbOptionalDialog;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.PrefsHelper;
 import se.trixon.almond.util.SystemHelper;
@@ -54,6 +55,8 @@ public class Initializer implements Runnable {
 
     @Override
     public void run() {
+        NbOptionalDialog.setPreferences(NbPreferences.forModule(NbOptionalDialog.class).node("optionalDialogState"));
+
         try {
             final String key = "laf";
             final String defaultLAF = "com.formdev.flatlaf.FlatDarkLaf";

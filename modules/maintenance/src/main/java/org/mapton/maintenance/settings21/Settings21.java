@@ -16,10 +16,11 @@
 package org.mapton.maintenance.settings21;
 
 import java.io.File;
+import org.mapton.api.MKey;
+import org.mapton.api.Mapton;
 import org.openide.NotifyDescriptor;
 import org.openide.modules.OnStart;
 import org.openide.modules.Places;
-import org.openide.windows.WindowManager;
 import se.trixon.almond.nbp.dialogs.NbOptionalDialog;
 import se.trixon.almond.util.SnapHelper;
 
@@ -50,7 +51,7 @@ public class Settings21 implements Runnable {
 
     @Override
     public void run() {
-        WindowManager.getDefault().invokeWhenUIReady(() -> {
+        Mapton.getExecutionFlow().executeWhenReady(MKey.EXECUTION_FLOW_MAP_INITIALIZED, () -> {
             File oldUserDir;
             File oldCacheDir;
             File newUserDir = Places.getUserDirectory();
