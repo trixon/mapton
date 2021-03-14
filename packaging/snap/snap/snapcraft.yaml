@@ -1,7 +1,7 @@
 name: mapton
 title: Mapton
-base: core18
-version: '2.1.1'
+base: core20
+version: '2.1.2-SNAPSHOT'
 summary: Some kind of map application
 description: |
     **Mapton is an open-source map application** for Linux, MacOS and Windows that lets you quickly and easily explore the world.
@@ -42,7 +42,7 @@ license: Apache-2.0
 apps:
   mapton:
     command: mapton/bin/mapton
-    extensions: [gnome-3-28]
+    extensions: [gnome-3-38]
     plugs:
         - home
         - removable-media
@@ -51,16 +51,18 @@ apps:
 parts:
   mapton:
     plugin: dump
-    source: https://github.com/trixon/mapton/releases/download/v$SNAPCRAFT_PROJECT_VERSION/mapton-$SNAPCRAFT_PROJECT_VERSION-linux.zip
-#    source: /root/project/mapton-$SNAPCRAFT_PROJECT_VERSION-linux.zip
+    #source: https://github.com/trixon/mapton/releases/download/v$SNAPCRAFT_PROJECT_VERSION/mapton-$SNAPCRAFT_PROJECT_VERSION-linux.zip
+    source: /root/project/mapton-$SNAPCRAFT_PROJECT_VERSION-linux.zip
     source-type: zip
 
   config:
+    after:
+      - mapton
     plugin: nil
-    override-build: |
-        sed -i 's/${HOME}\/.${APPNAME}/${SNAP_USER_COMMON}\/data/' /root/parts/mapton/src/mapton/bin/mapton
-        sed -i 's/${HOME}\/.cache\/${APPNAME}/${SNAP_USER_COMMON}\/cache/' /root/parts/mapton/src/mapton/bin/mapton
-        rm -r /root/parts/mapton/src/mapton/platform/modules/lib/i386
-        rm -r /root/parts/mapton/src/mapton/platform/modules/lib/x86
-        rm /root/parts/mapton/src/mapton/platform/lib/*.dll
-        rm /root/parts/mapton/src/mapton/platform/lib/*.exe
+    override-prime: |
+        sed -i 's/${HOME}\/.${APPNAME}/${SNAP_USER_COMMON}\/.mapton/' /root/prime/mapton/bin/mapton
+        sed -i 's/${HOME}\/.cache\/${APPNAME}/${SNAP_USER_COMMON}\/.cache\/mapton/' /root/prime/mapton/bin/mapton
+        rm -r /root/prime/mapton/platform/modules/lib/i386
+        rm -r /root/prime/mapton/platform/modules/lib/x86
+        rm /root/prime/mapton/platform/lib/*.dll
+        rm /root/prime/mapton/platform/lib/*.exe
