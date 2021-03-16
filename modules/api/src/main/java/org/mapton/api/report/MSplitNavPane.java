@@ -223,7 +223,7 @@ public class MSplitNavPane<T extends MSplitNavType> extends BorderPane {
         }
     }
 
-    private void populate() {
+    private synchronized void populate() {
         mParents.clear();
 
         T rootType = (T) new MSplitNavType() {
