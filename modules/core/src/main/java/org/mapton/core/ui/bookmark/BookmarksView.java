@@ -74,7 +74,7 @@ public class BookmarksView extends BorderPane implements MActivatable {
 
     public BookmarksView(PopOver popOver) {
         mPopOver = popOver;
-        mEditor = BookmarkEditor.getDefault();
+        mEditor = new BookmarkEditor();
         createUI();
 
         mManager.dbLoad(mFilterTextField.getText(), true);
