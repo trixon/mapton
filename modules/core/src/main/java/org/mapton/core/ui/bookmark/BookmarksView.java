@@ -25,17 +25,13 @@ import java.util.prefs.Preferences;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
-import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
-import javafx.scene.control.ToolBar;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.paint.Color;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.PopOver;
 import org.controlsfx.control.action.Action;
@@ -65,7 +61,7 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
 public class BookmarksView extends BorderPane implements MActivatable {
 
     private final Map<String, TreeItem<MBookmark>> mBookmarkParents = new TreeMap<>();
-    private BookmarkEditor mEditor;
+    private final BookmarkEditor mBookmarkEditor;
     private TextField mFilterTextField;
     private final MBookmarkManager mManager = MBookmarkManager.getInstance();
     private final PopOver mPopOver;
@@ -74,7 +70,7 @@ public class BookmarksView extends BorderPane implements MActivatable {
 
     public BookmarksView(PopOver popOver) {
         mPopOver = popOver;
-        mEditor = new BookmarkEditor();
+        mBookmarkEditor = new BookmarkEditor();
         createUI();
 
         mManager.dbLoad(mFilterTextField.getText(), true);
@@ -95,23 +91,15 @@ public class BookmarksView extends BorderPane implements MActivatable {
         mManager.getItems().addListener((ListChangeListener.Change<? extends MBookmark> c) -> {
             populate();
         });
-
-        mTreeView.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends TreeItem<MBookmark>> observable, TreeItem<MBookmark> oldValue, TreeItem<MBookmark> newValue) -> {
-            try {
-                bookmarkGoTo(newValue.getValue());
-            } catch (NullPointerException e) {
-                //nvm
-            }
-        });
     }
 
     private void bookmarkEdit() {
-        MBookmark bookmark = getSelectedBookmark();
+        var bookmark = getSelectedBookmark();
         if (bookmark != null) {
             if (bookmark.isCategory()) {
-                mEditor.editCategory(bookmark.getCategory());
+                mBookmarkEditor.editCategory(bookmark.getCategory());
             } else {
-                mEditor.editBookmark(bookmark);
+                mBookmarkEditor.editBookmark(bookmark);
             }
         }
     }
@@ -139,10 +127,10 @@ public class BookmarksView extends BorderPane implements MActivatable {
                 new FileExportAction(mPopOver).getAction(this)
         );
 
-        ToolBar toolBar = ActionUtils.createToolBar(actions, ActionUtils.ActionTextBehavior.HIDE);
+        var toolBar = ActionUtils.createToolBar(actions, ActionUtils.ActionTextBehavior.HIDE);
         FxHelper.adjustButtonWidth(toolBar.getItems().stream(), getIconSizeToolBarInt());
         FxHelper.undecorateButtons(toolBar.getItems().stream());
-        BorderPane topBorderPane = new BorderPane(mFilterTextField);
+        var topBorderPane = new BorderPane(mFilterTextField);
         topBorderPane.setRight(toolBar);
         toolBar.setMinWidth(getIconSizeToolBarInt() * 3.5);
         FxHelper.slimToolBar(toolBar);
@@ -175,21 +163,21 @@ public class BookmarksView extends BorderPane implements MActivatable {
     }
 
     private MBookmark getSelectedBookmark() {
-        TreeItem<MBookmark> item = mTreeView.getSelectionModel().getSelectedItem();
+        var item = mTreeView.getSelectionModel().getSelectedItem();
 
         return item != null ? item.getValue() : null;
     }
 
     private void populate() {
-        MBookmark rootMark = new MBookmark();
+        var rootMark = new MBookmark();
         rootMark.setName("");
-        TreeItem<MBookmark> root = new TreeItem<>(rootMark);
+        var root = new TreeItem<>(rootMark);
         Map<String, TreeItem<MBookmark>> bookmarkParents = new TreeMap<>();
 
-        for (MBookmark bookmark : mManager.getItems()) {
-            TreeItem<MBookmark> bookmarkTreeItem = new TreeItem<>(bookmark);
+        for (var bookmark : mManager.getItems()) {
+            var bookmarkTreeItem = new TreeItem<>(bookmark);
             String category = bookmark.getCategory();
-            TreeItem<MBookmark> parent = bookmarkParents.computeIfAbsent(category, k -> getParent(root, category));
+            var parent = bookmarkParents.computeIfAbsent(category, k -> getParent(root, category));
             parent.getChildren().add(bookmarkTreeItem);
         }
         mBookmarkParents.clear();
@@ -200,7 +188,7 @@ public class BookmarksView extends BorderPane implements MActivatable {
     }
 
     private void postPopulate(TreeItem<MBookmark> treeItem, String level) {
-        final MBookmark value = treeItem.getValue();
+        final var value = treeItem.getValue();
         final String path = String.format("%s/%s", value.getCategory(), value.getName());
         treeItem.setExpanded(mPreferences.getBoolean(path, false));
 
@@ -248,32 +236,32 @@ public class BookmarksView extends BorderPane implements MActivatable {
         }
 
         private void createUI() {
-            Color color = Mapton.options().getIconColorForBackground();
-            Action editAction = new Action(Dict.EDIT.toString(), (ActionEvent event) -> {
+            var color = Mapton.options().getIconColorForBackground();
+            var editAction = new Action(Dict.EDIT.toString(), (ActionEvent event) -> {
                 bookmarkEdit();
             });
             editAction.setGraphic(MaterialIcon._Content.CREATE.getImageView(getIconSizeContextMenu(), color));
 
-            Action editColorAction = new Action(Dict.COLOR.toString(), (ActionEvent event) -> {
-                mEditor.editColor(getSelectedBookmark().getCategory());
+            var editColorAction = new Action(Dict.COLOR.toString(), (ActionEvent event) -> {
+                mBookmarkEditor.editColor(getSelectedBookmark().getCategory());
             });
             editColorAction.setGraphic(MaterialIcon._Image.COLORIZE.getImageView(getIconSizeContextMenu(), color));
 
-            Action editZoomAction = new Action(Dict.ZOOM.toString(), (ActionEvent event) -> {
-                mEditor.editZoom(getSelectedBookmark().getCategory());
+            var editZoomAction = new Action(Dict.ZOOM.toString(), (ActionEvent event) -> {
+                mBookmarkEditor.editZoom(getSelectedBookmark().getCategory());
             });
             editZoomAction.setGraphic(MaterialIcon._Editor.FORMAT_SIZE.getImageView(getIconSizeContextMenu(), color));
 
-            Action zoomExtentAction = new Action(Dict.ZOOM_EXTENTS.toString(), (ActionEvent event) -> {
+            var zoomExtentAction = new Action(Dict.ZOOM_EXTENTS.toString(), (ActionEvent event) -> {
                 Mapton.getEngine().fitToBounds(mManager.getExtents(getSelectedBookmark().getCategory()));
             });
 
-            Action removeAction = new Action(Dict.REMOVE.toString(), (ActionEvent event) -> {
-                mEditor.remove(getSelectedBookmark());
+            var removeAction = new Action(Dict.REMOVE.toString(), (ActionEvent event) -> {
+                mBookmarkEditor.remove(getSelectedBookmark());
             });
 
-            Action removeAllAction = new Action(Dict.REMOVE_ALL.toString(), (ActionEvent event) -> {
-                mEditor.removeAll();
+            var removeAllAction = new Action(Dict.REMOVE_ALL.toString(), (ActionEvent event) -> {
+                mBookmarkEditor.removeAll();
             });
 
             Collection<? extends Action> actions = Arrays.asList(
@@ -286,38 +274,38 @@ public class BookmarksView extends BorderPane implements MActivatable {
                     removeAllAction
             );
 
-            ContextMenu contextMenu = ActionUtils.createContextMenu(actions);
+            var contextMenu = ActionUtils.createContextMenu(actions);
             mContextCopyMenu = new Menu(MDict.COPY_LOCATION.toString());
             mContextOpenMenu = new Menu(MDict.OPEN_LOCATION.toString());
 
             contextMenu.getItems().add(4, mContextOpenMenu);
             contextMenu.getItems().add(4, mContextCopyMenu);
 
-            setOnMousePressed((MouseEvent event) -> {
+            setOnMousePressed(mouseEvent -> {
                 getScene().getWindow().requestFocus();
                 mTreeView.requestFocus();
-                MBookmark b = this.getItem();
+                var bookmark = this.getItem();
 
-                if (b != null) {
-                    Mapton.getEngine().setLockedLatitude(b.getLatitude());
-                    Mapton.getEngine().setLockedLongitude(b.getLongitude());
+                if (bookmark != null) {
+                    Mapton.getEngine().setLockedLatitude(bookmark.getLatitude());
+                    Mapton.getEngine().setLockedLongitude(bookmark.getLongitude());
 
-                    if (event.isSecondaryButtonDown()) {
-                        mContextCopyMenu.setDisable(b.isCategory());
-                        mContextOpenMenu.setDisable(b.isCategory());
-                        editColorAction.setDisabled(!b.isCategory());
-                        editZoomAction.setDisabled(!b.isCategory());
-                        zoomExtentAction.setDisabled(!b.isCategory());
+                    if (mouseEvent.isSecondaryButtonDown()) {
+                        mContextCopyMenu.setDisable(bookmark.isCategory());
+                        mContextOpenMenu.setDisable(bookmark.isCategory());
+                        editColorAction.setDisabled(!bookmark.isCategory());
+                        editZoomAction.setDisabled(!bookmark.isCategory());
+                        zoomExtentAction.setDisabled(!bookmark.isCategory());
 
-                        if (!b.isCategory()) {
-                            Mapton.getEngine().setLatitude(b.getLatitude());
-                            Mapton.getEngine().setLongitude(b.getLongitude());
+                        if (!bookmark.isCategory()) {
+                            Mapton.getEngine().setLatitude(bookmark.getLatitude());
+                            Mapton.getEngine().setLongitude(bookmark.getLongitude());
                         }
 
-                        contextMenu.show(this, event.getScreenX(), event.getScreenY());
-                    } else if (event.isPrimaryButtonDown()) {
+                        contextMenu.show(this, mouseEvent.getScreenX(), mouseEvent.getScreenY());
+                    } else if (mouseEvent.isPrimaryButtonDown() && mouseEvent.getClickCount() == 2) {
                         contextMenu.hide();
-                        bookmarkGoTo(b);
+                        bookmarkGoTo(bookmark);
                     }
                 }
             });
