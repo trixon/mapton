@@ -15,6 +15,7 @@
  */
 package org.mapton.core.ui.bookmark;
 
+import org.mapton.core.api.BookmarkEditor;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;

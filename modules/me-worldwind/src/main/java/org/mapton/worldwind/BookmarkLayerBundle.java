@@ -27,6 +27,7 @@ import org.mapton.api.MBookmark;
 import org.mapton.api.MBookmarkManager;
 import org.mapton.api.MKey;
 import org.mapton.api.Mapton;
+import org.mapton.core.api.BookmarkEditor;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
@@ -40,6 +41,7 @@ import se.trixon.almond.util.fx.FxHelper;
 @ServiceProvider(service = LayerBundle.class)
 public class BookmarkLayerBundle extends LayerBundle {
 
+    private final BookmarkEditor mBookmarkEditor = new BookmarkEditor();
     private final MBookmarkManager mBookmarkManager = MBookmarkManager.getInstance();
     private final RenderableLayer mLayer = new RenderableLayer();
 
@@ -73,7 +75,7 @@ public class BookmarkLayerBundle extends LayerBundle {
         setPainter(() -> {
             mLayer.removeAllRenderables();
 
-            for (MBookmark bookmark : mBookmarkManager.getItems()) {
+            for (var bookmark : mBookmarkManager.getItems()) {
                 if (bookmark.isDisplayMarker()) {
                     PointPlacemark placemark = new PointPlacemark(Position.fromDegrees(bookmark.getLatitude(), bookmark.getLongitude()));
                     placemark.setLabelText(bookmark.getName());
@@ -94,6 +96,10 @@ public class BookmarkLayerBundle extends LayerBundle {
                         propertyMap.put(Dict.COLOR.toString(), javafx.scene.paint.Color.web(bookmark.getColor()));
 
                         Mapton.getGlobalState().put(MKey.OBJECT_PROPERTIES, propertyMap);
+                    });
+
+                    placemark.setValue(WWHelper.KEY_RUNNABLE_LEFT_DOUBLE_CLICK, (Runnable) () -> {
+                        mBookmarkEditor.editBookmark(bookmark);
                     });
 
                     mLayer.addRenderable(placemark);

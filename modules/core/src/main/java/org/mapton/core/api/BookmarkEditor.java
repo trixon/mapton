@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core.ui.bookmark;
+package org.mapton.core.api;
 
 import java.awt.Dimension;
 import java.sql.SQLException;
@@ -27,6 +27,10 @@ import org.controlsfx.control.action.Action;
 import org.mapton.api.MBookmark;
 import org.mapton.api.MBookmarkManager;
 import org.mapton.api.Mapton;
+import org.mapton.core.ui.bookmark.BookmarkPanel;
+import org.mapton.core.ui.bookmark.CategoryPanel;
+import org.mapton.core.ui.bookmark.ColorPanel;
+import org.mapton.core.ui.bookmark.ZoomPanel;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
@@ -50,7 +54,7 @@ public class BookmarkEditor {
 
     public void editBookmark(final MBookmark aBookmark) {
         SwingUtilities.invokeLater(() -> {
-            MBookmark newBookmark = aBookmark;
+            var newBookmark = aBookmark;
             boolean add = aBookmark == null;
             if (add) {
                 newBookmark = new MBookmark();
@@ -59,9 +63,9 @@ public class BookmarkEditor {
                 newBookmark.setLongitude(Mapton.getEngine().getLockedLongitude());
             }
 
-            final MBookmark bookmark = newBookmark;
-            BookmarkPanel bookmarkPanel = new BookmarkPanel();
-            DialogDescriptor d = new DialogDescriptor(bookmarkPanel, Dict.BOOKMARK.toString());
+            final var bookmark = newBookmark;
+            var bookmarkPanel = new BookmarkPanel();
+            var d = new DialogDescriptor(bookmarkPanel, Dict.BOOKMARK.toString());
             bookmarkPanel.setNotifyDescriptor(d);
             bookmarkPanel.initFx(() -> {
                 bookmarkPanel.load(bookmark);
@@ -89,8 +93,8 @@ public class BookmarkEditor {
 
     public void editCategory(final String category) {
         SwingUtilities.invokeLater(() -> {
-            CategoryPanel categoryPanel = new CategoryPanel();
-            DialogDescriptor d = new DialogDescriptor(categoryPanel, Dict.EDIT.toString());
+            var categoryPanel = new CategoryPanel();
+            var d = new DialogDescriptor(categoryPanel, Dict.EDIT.toString());
             categoryPanel.setNotifyDescriptor(d);
             categoryPanel.initFx(() -> {
                 categoryPanel.setCategory(category);
@@ -101,10 +105,10 @@ public class BookmarkEditor {
             if (DialogDescriptor.OK_OPTION == DialogDisplayer.getDefault().notify(d)) {
                 String newCategory = categoryPanel.getCategory();
                 if (!StringUtils.equals(category, newCategory)) {
-                    Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+                    var timestamp = new Timestamp(System.currentTimeMillis());
 
                     TreeSet<String> bookmarkNames = new TreeSet<>();
-                    for (MBookmark bookmark : mManager.getItems()) {
+                    for (var bookmark : mManager.getItems()) {
                         if (StringUtils.startsWith(bookmark.getCategory(), category)) {
                             String oldCategory = bookmark.getCategory();
                             bookmark.setCategory(StringUtils.replaceOnce(bookmark.getCategory(), category, newCategory));
@@ -134,8 +138,8 @@ public class BookmarkEditor {
 
     public void editColor(final String category) {
         SwingUtilities.invokeLater(() -> {
-            ColorPanel colorPanel = new ColorPanel();
-            DialogDescriptor d = new DialogDescriptor(colorPanel, Dict.EDIT.toString());
+            var colorPanel = new ColorPanel();
+            var d = new DialogDescriptor(colorPanel, Dict.EDIT.toString());
             colorPanel.setNotifyDescriptor(d);
             colorPanel.initFx(() -> {
             });
@@ -143,9 +147,9 @@ public class BookmarkEditor {
             colorPanel.setPreferredSize(SwingHelper.getUIScaledDim(200, 100));
             if (DialogDescriptor.OK_OPTION == DialogDisplayer.getDefault().notify(d)) {
                 String color = colorPanel.getColor();
-                Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+                var timestamp = new Timestamp(System.currentTimeMillis());
 
-                for (MBookmark bookmark : mManager.getItems()) {
+                for (var bookmark : mManager.getItems()) {
                     if (StringUtils.startsWith(bookmark.getCategory(), category)) {
                         bookmark.setColor(color);
                         bookmark.setTimeModified(timestamp);
@@ -166,8 +170,8 @@ public class BookmarkEditor {
 
     public void editZoom(final String category) {
         SwingUtilities.invokeLater(() -> {
-            ZoomPanel zoomPanel = new ZoomPanel();
-            DialogDescriptor d = new DialogDescriptor(zoomPanel, Dict.EDIT.toString());
+            var zoomPanel = new ZoomPanel();
+            var d = new DialogDescriptor(zoomPanel, Dict.EDIT.toString());
             zoomPanel.setNotifyDescriptor(d);
             zoomPanel.initFx(() -> {
             });
@@ -175,9 +179,9 @@ public class BookmarkEditor {
             zoomPanel.setPreferredSize(new Dimension(200, 100));
             if (DialogDescriptor.OK_OPTION == DialogDisplayer.getDefault().notify(d)) {
                 double zoom = zoomPanel.getZoom();
-                Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+                var timestamp = new Timestamp(System.currentTimeMillis());
 
-                for (MBookmark bookmark : mManager.getItems()) {
+                for (var bookmark : mManager.getItems()) {
                     if (StringUtils.startsWith(bookmark.getCategory(), category)) {
                         bookmark.setZoom(zoom);
                         bookmark.setTimeModified(timestamp);
@@ -207,7 +211,7 @@ public class BookmarkEditor {
     public void remove(final MBookmark bookmark) {
         SwingUtilities.invokeLater(() -> {
             String[] buttons = new String[]{Dict.CANCEL.toString(), Dict.REMOVE.toString()};
-            NotifyDescriptor d = new NotifyDescriptor(
+            var d = new NotifyDescriptor(
                     String.format(Dict.Dialog.MESSAGE_PROFILE_REMOVE.toString(), bookmark.getName()),
                     Dict.Dialog.TITLE_BOOKMARK_REMOVE.toString() + "?",
                     NotifyDescriptor.OK_CANCEL_OPTION,
@@ -234,7 +238,7 @@ public class BookmarkEditor {
     public void removeAll() {
         SwingUtilities.invokeLater(() -> {
             String[] buttons = new String[]{Dict.CANCEL.toString(), Dict.REMOVE_ALL.toString()};
-            NotifyDescriptor d = new NotifyDescriptor(
+            var d = new NotifyDescriptor(
                     Dict.Dialog.MESSAGE_BOOKMARK_REMOVE_ALL.toString(),
                     Dict.Dialog.TITLE_BOOKMARK_REMOVE_ALL.toString() + "?",
                     NotifyDescriptor.OK_CANCEL_OPTION,
