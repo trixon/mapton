@@ -1,0 +1,3 @@
+#!/bin/bash
+snapcraft clean mapton --enable-experimental-extensions
+
