@@ -15,23 +15,19 @@
  */
 package org.mapton.core.ui.grid;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.ToolBar;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import org.controlsfx.control.CheckListView;
-import org.controlsfx.control.IndexedCheckModel;
 import org.controlsfx.control.PopOver;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
@@ -52,10 +48,10 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
 public class LocalGridsView extends BorderPane {
 
     private final CheckListView<MLocalGrid> mListView = new CheckListView<>();
+    private final LocalGridEditor mLocalGridEditor;
     private final MLocalGridManager mManager = MLocalGridManager.getInstance();
     private final MOptions mOptions = MOptions.getInstance();
     private CheckBox mPlotCheckBox;
-    private final LocalGridEditor mLocalGridEditor;
     private final PopOver mPopOver;
 
     public LocalGridsView(PopOver popOver) {
@@ -114,7 +110,7 @@ public class LocalGridsView extends BorderPane {
                 editAction
         );
 
-        ToolBar toolBar = ActionUtils.createToolBar(actions, ActionUtils.ActionTextBehavior.HIDE);
+        var toolBar = ActionUtils.createToolBar(actions, ActionUtils.ActionTextBehavior.HIDE);
 
         FxHelper.adjustButtonWidth(toolBar.getItems().stream(), getIconSizeToolBarInt());
         toolBar.getItems().stream().filter((item) -> (item instanceof ButtonBase))
@@ -137,21 +133,16 @@ public class LocalGridsView extends BorderPane {
     }
 
     private void initListeners() {
-        mPlotCheckBox.setOnAction((event) -> {
+        mPlotCheckBox.setOnAction(event -> {
             mOptions.put(KEY_GRID_LOCAL_PLOT, mPlotCheckBox.isSelected());
         });
 
-        mListView.setOnMouseClicked((mouseEvent) -> {
+        mListView.setOnMouseClicked(mouseEvent -> {
             if (getSelected() != null
                     && mouseEvent.getButton() == MouseButton.PRIMARY
                     && mouseEvent.getClickCount() == 2) {
-                mLocalGridEditor.edit(getSelected());
-            }
-        });
-
-        mListView.getSelectionModel().getSelectedItems().addListener((ListChangeListener.Change<? extends MLocalGrid> c) -> {
-            if (getSelected() != null) {
                 getSelected().fitToBounds();
+
             }
         });
 
@@ -169,10 +160,10 @@ public class LocalGridsView extends BorderPane {
     }
 
     private void load() {
-        ArrayList<MLocalGrid> grids = mManager.loadItems();
+        var grids = mManager.loadItems();
         Platform.runLater(() -> {
-            final IndexedCheckModel<MLocalGrid> checkModel = mListView.getCheckModel();
-            final ObservableList<MLocalGrid> items = mListView.getItems();
+            final var checkModel = mListView.getCheckModel();
+            final var items = mListView.getItems();
 
             checkModel.getCheckedItems().addListener((ListChangeListener.Change<? extends MLocalGrid> c) -> {
                 Platform.runLater(() -> {
@@ -192,10 +183,10 @@ public class LocalGridsView extends BorderPane {
     }
 
     private void refreshCheckedStates() {
-        final IndexedCheckModel<MLocalGrid> checkModel = mListView.getCheckModel();
-        final ObservableList<MLocalGrid> items = mListView.getItems();
+        final var checkModel = mListView.getCheckModel();
+        final var items = mListView.getItems();
 
-        for (MLocalGrid grid : items) {
+        for (var grid : items) {
             if (grid.isVisible()) {
                 checkModel.check(grid);
             } else {
