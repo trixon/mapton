@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2021 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,10 +16,10 @@
 package org.mapton.base.cootrans;
 
 import javafx.geometry.Point2D;
-import org.openide.util.lookup.ServiceProvider;
-import org.mapton.api.MDecDegDMS;
 import org.mapton.api.MBounds;
 import org.mapton.api.MCooTrans;
+import org.mapton.api.MDecDegDMS;
+import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
@@ -78,6 +78,11 @@ public class Wgs84DMS implements MCooTrans {
     @Override
     public String getString(double latitude, double longitude) {
         return String.format("%s %s", getLatitudeString(latitude, longitude), getLongitudeString(latitude, longitude));
+    }
+
+    @Override
+    public boolean isOrthogonal() {
+        return false;
     }
 
     @Override

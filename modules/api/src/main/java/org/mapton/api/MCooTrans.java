@@ -57,6 +57,10 @@ public interface MCooTrans {
 
     String getString(double latitude, double longitude);
 
+    default boolean isOrthogonal() {
+        return true;
+    }
+
     boolean isWithinProjectedBounds(double latitude, double longitude);
 
     boolean isWithinWgs84Bounds(double latitude, double longitude);

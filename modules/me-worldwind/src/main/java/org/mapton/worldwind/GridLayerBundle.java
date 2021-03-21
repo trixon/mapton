@@ -16,13 +16,12 @@
 package org.mapton.worldwind;
 
 import gov.nasa.worldwind.WorldWind;
+import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.Path;
-import javafx.collections.ObservableList;
-import javafx.geometry.Point2D;
 import org.mapton.api.MCooTrans;
 import org.mapton.api.MDict;
 import org.mapton.api.MLocalGrid;
@@ -69,31 +68,31 @@ public class GridLayerBundle extends LayerBundle {
         });
     }
 
-    private void draw(Position pos1, Position pos2, BasicShapeAttributes attributes) {
-        Path path = new Path(pos1, pos2);
+    private void draw(Position pos1, Position pos2, BasicShapeAttributes attributes, String pathType) {
+        var path = new Path(pos1, pos2);
         path.setAttributes(attributes);
         path.setFollowTerrain(true);
         path.setAltitudeMode(mAltitudeMode);
-
+        path.setPathType(pathType);
         mLayer.addRenderable(path);
     }
 
     private void drawLatitude(double latitude, BasicShapeAttributes attributes) {
-        Position pos0 = Position.fromDegrees(latitude, 0);
-        Position pos1 = Position.fromDegrees(latitude, 180);
-        Position pos2 = Position.fromDegrees(latitude, -180);
+        var pos0 = Position.fromDegrees(latitude, 0);
+        var pos1 = Position.fromDegrees(latitude, 180);
+        var pos2 = Position.fromDegrees(latitude, -180);
 
-        draw(pos0, pos1, attributes);
-        draw(pos0, pos2, attributes);
+        draw(pos0, pos1, attributes, AVKey.LINEAR);
+        draw(pos0, pos2, attributes, AVKey.LINEAR);
     }
 
     private void drawLongitude(double longitude, BasicShapeAttributes attributes) {
-        Position pos0 = Position.fromDegrees(0, longitude);
-        Position pos1 = Position.fromDegrees(90, longitude);
-        Position pos2 = Position.fromDegrees(-90, longitude);
+        var pos0 = Position.fromDegrees(0, longitude);
+        var pos1 = Position.fromDegrees(90, longitude);
+        var pos2 = Position.fromDegrees(-90, longitude);
 
-        draw(pos0, pos1, attributes);
-        draw(pos0, pos2, attributes);
+        draw(pos0, pos1, attributes, AVKey.LINEAR);
+        draw(pos0, pos2, attributes, AVKey.LINEAR);
     }
 
     private void init() {
@@ -136,8 +135,6 @@ public class GridLayerBundle extends LayerBundle {
     }
 
     private void plotGlobal() {
-//        System.out.println("PLOT GLOBAL");
-
         if (mOptions.is(KEY_GRID_GLOBAL_LATITUDES)) {
             for (int i = -90; i < 90; i += 15) {
                 drawLatitude(i, mGridAttributes);
@@ -175,9 +172,9 @@ public class GridLayerBundle extends LayerBundle {
     }
 
     private void plotLocal() {
-        ObservableList<MLocalGrid> grids = mManager.getItems();
+        var grids = mManager.getItems();
         if (grids != null) {
-            for (MLocalGrid grid : grids) {
+            for (var grid : grids) {
                 if (grid.isVisible()) {
                     plotLocal(grid);
                 }
@@ -186,16 +183,14 @@ public class GridLayerBundle extends LayerBundle {
     }
 
     private void plotLocal(MLocalGrid grid) {
-        BasicShapeAttributes shapeAttributes = new BasicShapeAttributes();
+        var shapeAttributes = new BasicShapeAttributes();
         shapeAttributes.setDrawOutline(true);
-//        shapeAttributes.setOutlineOpacity(0.5);
         shapeAttributes.setOutlineWidth(grid.getLineWidth());
         shapeAttributes.setOutlineMaterial(new Material(FxHelper.colorToColor(FxHelper.colorFromHexRGBA(grid.getColor()))));
 
-        MCooTrans cooTrans = MCooTrans.getCooTrans(grid.getCooTrans());
+        var cooTrans = MCooTrans.getCooTrans(grid.getCooTrans());
+        String pathType = cooTrans.isOrthogonal() ? AVKey.GREAT_CIRCLE : AVKey.LINEAR;
 
-        //FIXME Don't use static min/max
-        //https://github.com/trixon/mapton/issues/36
         double latMin = grid.getLatStart();
         double latMax = grid.getLatStart() + grid.getLatStep() * grid.getLatCount();
         double lonMin = grid.getLonStart();
@@ -203,24 +198,24 @@ public class GridLayerBundle extends LayerBundle {
 
         for (int lonCount = 0; lonCount < grid.getLonCount() + 1; lonCount++) {
             double lon = grid.getLonStart() + lonCount * grid.getLonStep();
-            Point2D p1 = cooTrans.toWgs84(latMin, lon);
-            Point2D p2 = cooTrans.toWgs84(latMax, lon);
+            var p1 = cooTrans.toWgs84(latMin, lon);
+            var p2 = cooTrans.toWgs84(latMax, lon);
 
-            Position pos1 = Position.fromDegrees(p1.getY(), p1.getX());
-            Position pos2 = Position.fromDegrees(p2.getY(), p2.getX());
+            var pos1 = Position.fromDegrees(p1.getY(), p1.getX());
+            var pos2 = Position.fromDegrees(p2.getY(), p2.getX());
 
-            draw(pos1, pos2, shapeAttributes);
+            draw(pos1, pos2, shapeAttributes, pathType);
         }
 
         for (int latCount = 0; latCount < grid.getLatCount() + 1; latCount++) {
             double lat = grid.getLatStart() + latCount * grid.getLatStep();
-            Point2D p1 = cooTrans.toWgs84(lat, lonMin);
-            Point2D p2 = cooTrans.toWgs84(lat, lonMax);
+            var p1 = cooTrans.toWgs84(lat, lonMin);
+            var p2 = cooTrans.toWgs84(lat, lonMax);
 
-            Position pos1 = Position.fromDegrees(p1.getY(), p1.getX());
-            Position pos2 = Position.fromDegrees(p2.getY(), p2.getX());
+            var pos1 = Position.fromDegrees(p1.getY(), p1.getX());
+            var pos2 = Position.fromDegrees(p2.getY(), p2.getX());
 
-            draw(pos1, pos2, shapeAttributes);
+            draw(pos1, pos2, shapeAttributes, pathType);
         }
     }
 }

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2021 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -73,6 +73,11 @@ public class Wgs84 implements MCooTrans {
     @Override
     public String getString(double latitude, double longitude) {
         return String.format("%s %s", getLatitudeString(latitude, longitude), getLongitudeString(latitude, longitude));
+    }
+
+    @Override
+    public boolean isOrthogonal() {
+        return false;
     }
 
     @Override
