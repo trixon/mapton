@@ -20,7 +20,6 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import org.mapton.api.MDict;
 import org.mapton.api.Mapton;
-import org.mapton.base.ui.grid.GridView;
 import org.mapton.core.api.MTopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.windows.TopComponent;

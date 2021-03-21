@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.base.ui.grid;
+package org.mapton.core.ui.grid;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,7 +21,6 @@ import java.util.Collection;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.CheckBox;
@@ -56,15 +55,12 @@ public class LocalGridsView extends BorderPane {
     private final MLocalGridManager mManager = MLocalGridManager.getInstance();
     private final MOptions mOptions = MOptions.getInstance();
     private CheckBox mPlotCheckBox;
-    private static LocalGridEditor sLocalGridEditor;
+    private final LocalGridEditor mLocalGridEditor;
     private final PopOver mPopOver;
-
-    public static void setLocalGridEditor(LocalGridEditor localGridEditor) {
-        LocalGridsView.sLocalGridEditor = localGridEditor;
-    }
 
     public LocalGridsView(PopOver popOver) {
         mPopOver = popOver;
+        mLocalGridEditor = new LocalGridEditor();
         createUI();
         initStates();
         initListeners();
@@ -91,21 +87,21 @@ public class LocalGridsView extends BorderPane {
         mPlotCheckBox.setFont(Font.font(Font.getDefault().getFamily(), FontWeight.BOLD, FxHelper.getScaledFontSize() * 1.2));
         mPlotCheckBox.setPadding(new Insets(0, 0, 0, 8));
 
-        Action addAction = new Action(Dict.ADD.toString(), (ActionEvent event) -> {
-            sLocalGridEditor.edit(null);
+        var addAction = new Action(Dict.ADD.toString(), actionEvent -> {
+            mLocalGridEditor.edit(null);
         });
         addAction.setGraphic(MaterialIcon._Content.ADD.getImageView(getIconSizeToolBarInt()));
 
-        Action editAction = new Action(Dict.EDIT.toString(), (ActionEvent event) -> {
+        var editAction = new Action(Dict.EDIT.toString(), actionEvent -> {
             if (getSelected() != null) {
-                sLocalGridEditor.edit(getSelected());
+                mLocalGridEditor.edit(getSelected());
             }
         });
         editAction.setGraphic(MaterialIcon._Editor.MODE_EDIT.getImageView(getIconSizeToolBarInt()));
 
-        Action remAction = new Action(Dict.REMOVE.toString(), (ActionEvent event) -> {
+        var remAction = new Action(Dict.REMOVE.toString(), actionEvent -> {
             if (getSelected() != null) {
-                sLocalGridEditor.remove(getSelected());
+                mLocalGridEditor.remove(getSelected());
             }
         });
         remAction.setGraphic(MaterialIcon._Content.REMOVE.getImageView(getIconSizeToolBarInt()));
@@ -149,7 +145,7 @@ public class LocalGridsView extends BorderPane {
             if (getSelected() != null
                     && mouseEvent.getButton() == MouseButton.PRIMARY
                     && mouseEvent.getClickCount() == 2) {
-                sLocalGridEditor.edit(getSelected());
+                mLocalGridEditor.edit(getSelected());
             }
         });
 

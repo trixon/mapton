@@ -17,7 +17,6 @@ package org.mapton.core.ui.grid;
 
 import javafx.scene.Scene;
 import org.mapton.api.MLocalGrid;
-import org.mapton.base.ui.grid.LocalGridView;
 import se.trixon.almond.nbp.fx.FxDialogPanel;
 
 /**

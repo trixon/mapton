@@ -51,10 +51,8 @@ import org.mapton.api.MEngine;
 import org.mapton.api.MKey;
 import org.mapton.api.MOptions;
 import org.mapton.api.Mapton;
-import org.mapton.base.ui.grid.LocalGridsView;
 import org.mapton.core.api.MTopComponent;
 import org.mapton.core.api.MaptonNb;
-import org.mapton.core.ui.grid.LocalGridEditor;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -216,7 +214,6 @@ public final class MapTopComponent extends MTopComponent {
         mRoot = new BorderPane();
 
         initListeners();
-        LocalGridsView.setLocalGridEditor(LocalGridEditor.getInstance());
 
         return new Scene(mRoot);
     }

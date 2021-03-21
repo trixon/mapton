@@ -31,18 +31,13 @@ import se.trixon.almond.util.swing.SwingHelper;
  *
  * @author Patrik Karlström
  */
-public class LocalGridEditor implements org.mapton.base.ui.grid.LocalGridEditor {
+public class LocalGridEditor {
 
     private final MLocalGridManager mManager = MLocalGridManager.getInstance();
 
-    public static LocalGridEditor getInstance() {
-        return Holder.INSTANCE;
+    public LocalGridEditor() {
     }
 
-    private LocalGridEditor() {
-    }
-
-    @Override
     public void edit(final MLocalGrid aLocalGrid) {
         SwingUtilities.invokeLater(() -> {
             MLocalGrid newLocalGrid = aLocalGrid;
@@ -73,7 +68,6 @@ public class LocalGridEditor implements org.mapton.base.ui.grid.LocalGridEditor 
         });
     }
 
-    @Override
     public void remove(MLocalGrid localGrid) {
         SwingUtilities.invokeLater(() -> {
             String[] buttons = new String[]{Dict.CANCEL.toString(), Dict.REMOVE.toString()};
@@ -93,8 +87,4 @@ public class LocalGridEditor implements org.mapton.base.ui.grid.LocalGridEditor 
         });
     }
 
-    private static class Holder {
-
-        private static final LocalGridEditor INSTANCE = new LocalGridEditor();
-    }
 }

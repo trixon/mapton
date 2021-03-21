@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.base.ui.grid;
+package org.mapton.core.ui.grid;
 
 import javafx.geometry.Insets;
 import javafx.scene.layout.Priority;
