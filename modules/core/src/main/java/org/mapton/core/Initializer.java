@@ -119,7 +119,7 @@ public class Initializer implements Runnable {
 
             Mapton.getExecutionFlow().executeWhenReady(MKey.EXECUTION_FLOW_MAP_INITIALIZED, () -> {
                 MaptonNb.progressStop(Dict.WARMING_UP.toString());
-                SwingHelper.runLater(() -> {
+                SwingHelper.runLaterDelayed(10000,() -> {
                     //Pre-load but don't display
                     Almond.getTopComponent("ReportsTopComponent");
                     Almond.getTopComponent("EditorsTopComponent");
