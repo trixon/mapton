@@ -30,7 +30,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import org.controlsfx.control.CheckListView;
-import org.controlsfx.control.PopOver;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.MCoordinateFile;
@@ -56,10 +55,8 @@ public class LocalGridsView extends BorderPane {
     private final MLocalGridManager mManager = MLocalGridManager.getInstance();
     private final MOptions mOptions = MOptions.getInstance();
     private CheckBox mPlotCheckBox;
-    private final PopOver mPopOver;
 
-    public LocalGridsView(PopOver popOver) {
-        mPopOver = popOver;
+    public LocalGridsView() {
         mLocalGridEditor = new LocalGridEditor();
         createUI();
         initStates();
@@ -107,8 +104,8 @@ public class LocalGridsView extends BorderPane {
         remAction.setGraphic(MaterialIcon._Content.REMOVE.getImageView(getIconSizeToolBarInt()));
 
         Collection<? extends Action> actions = Arrays.asList(
-                new FileImportAction(mPopOver).getAction(this),
-                new FileExportAction(mPopOver).getAction(this),
+                new FileImportAction().getAction(this),
+                new FileExportAction().getAction(this),
                 addAction,
                 remAction,
                 editAction

@@ -17,7 +17,6 @@ package org.mapton.core.ui.grid;
 
 import javafx.scene.Node;
 import javafx.scene.paint.Color;
-import org.controlsfx.control.PopOver;
 import org.controlsfx.control.action.Action;
 import org.mapton.api.MDict;
 import org.mapton.api.MLocalGridManager;
@@ -31,11 +30,9 @@ public abstract class FileAction {
 
     protected Color mIconColor = Mapton.options().getIconColorForBackground();
     protected final MLocalGridManager mManager = MLocalGridManager.getInstance();
-    protected PopOver mPopOver;
     protected final String mTitle = MDict.GRIDS.toString();
 
-    public FileAction(PopOver popOver) {
-        mPopOver = popOver;
+    public FileAction() {
     }
 
     public abstract Action getAction(Node owner);

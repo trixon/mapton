@@ -64,7 +64,7 @@ public final class GridTopComponent extends MTopComponent {
     }
 
     private Scene createScene() {
-        mGridForm = new GridView(null);
+        mGridForm = new GridView();
         Label titleLabel = Mapton.createTitle(MDict.GRID.toString());
         mRoot = new BorderPane(mGridForm);
         mRoot.setTop(titleLabel);

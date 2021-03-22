@@ -19,7 +19,6 @@ import java.io.File;
 import java.io.IOException;
 import javafx.scene.Node;
 import org.apache.commons.io.FileUtils;
-import org.controlsfx.control.PopOver;
 import org.controlsfx.control.action.Action;
 import org.mapton.api.MNotificationIcons;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
@@ -38,8 +37,7 @@ public class FileImportAction extends FileAction {
 
     private File mFile;
 
-    public FileImportAction(PopOver popOver) {
-        super(popOver);
+    public FileImportAction() {
     }
 
     @Override
@@ -50,10 +48,6 @@ public class FileImportAction extends FileAction {
             SimpleDialog.setFilter("grid");
             final String dialogTitle = String.format("%s %s", Dict.IMPORT.toString(), mTitle.toLowerCase());
             SimpleDialog.setTitle(dialogTitle);
-
-            if (mPopOver != null) {
-                mPopOver.hide();
-            }
 
             if (mFile == null) {
                 SimpleDialog.setPath(FileUtils.getUserDirectory());

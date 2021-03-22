@@ -44,7 +44,6 @@ import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.mapton.base.ui.AttributionView;
 import org.mapton.base.ui.FxOnScreenDummy;
 import org.mapton.base.ui.TemporalView;
-import org.mapton.core.ui.grid.GridView;
 import org.mapton.base.ui.poi.PoisViewManager;
 import org.mapton.core.ui.bookmark.BookmarksView;
 import org.openide.awt.Actions;
@@ -70,8 +69,6 @@ public class MapToolBar extends BaseToolBar {
     private Action mCommandAction;
     private ContextMenu mCommandContextMenu;
     private ObservableList<MenuItem> mCommandMenuItems;
-    private Action mGridAction;
-    private PopOver mGridPopOver;
     private FxActionSwing mHomeAction;
     private Action mLayerAction;
     private PopOver mLayerPopOver;
@@ -117,10 +114,6 @@ public class MapToolBar extends BaseToolBar {
         });
     }
 
-    public void toogleGridPopOver() {
-        tooglePopOver(mGridPopOver, mGridAction);
-    }
-
     public void toogleLayerPopOver() {
         tooglePopOver(mLayerPopOver, mLayerAction);
     }
@@ -156,7 +149,6 @@ public class MapToolBar extends BaseToolBar {
                 mBookmarkAction,
                 mPoiAction,
                 mLayerAction,
-                //mGridAction,
                 ActionUtils.ACTION_SPAN,
                 mTemporalAction,
                 mRulerAction
@@ -245,21 +237,6 @@ public class MapToolBar extends BaseToolBar {
         mCommandAction.setGraphic(MaterialIcon._Image.FLASH_ON.getImageView(getIconSizeToolBarInt()));
         FxHelper.setTooltip(mCommandAction, new KeyCodeCombination(KeyCode.E, KeyCombination.SHORTCUT_DOWN));
 
-        //Grid
-        mGridAction = new Action(MDict.GRIDS.toString(), event -> {
-            if (usePopOver(mGridPopOver)) {
-                if (shouldOpen(mGridPopOver)) {
-                    show(mGridPopOver, event.getSource());
-                }
-            } else {
-                SwingUtilities.invokeLater(() -> {
-                    Actions.forID("Mapton", "org.mapton.core.actions.GridAction").actionPerformed(null);
-                });
-            }
-        });
-//        mGridAction.setGraphic(MaterialIcon._Image.GRID_ON.getImageView(getIconSizeToolBarInt()));
-//        FxHelper.setTooltip(mGridAction, new KeyCodeCombination(KeyCode.G, KeyCombination.SHORTCUT_DOWN));
-
         //Style
         mStyleAction = new Action(event -> {
             if (shouldOpen(mStylePopOver)) {
@@ -337,9 +314,6 @@ public class MapToolBar extends BaseToolBar {
         initPopOver(mPoiPopOver, MDict.POI.toString(), PoisViewManager.getInstance().getPoisView(), false);
         mPoiPopOver.setArrowLocation(ArrowLocation.TOP_CENTER);
 
-        mGridPopOver = new PopOver();
-        initPopOver(mGridPopOver, MDict.GRIDS.toString(), new GridView(mGridPopOver), false);
-
         mLayerPopOver = new PopOver();
         initPopOver(mLayerPopOver, Dict.LAYERS.toString(), null, false);
         mLayerPopOver.setOnShowing(event -> {
@@ -380,7 +354,7 @@ public class MapToolBar extends BaseToolBar {
             onObjectHiding(mTemporalPopOver);
         });
 
-        setPopOverWidths(FxHelper.getUIScaled(DEFAULT_POP_OVER_WIDTH), mBookmarkPopOver, mPoiPopOver, mGridPopOver);
+        setPopOverWidths(FxHelper.getUIScaled(DEFAULT_POP_OVER_WIDTH), mBookmarkPopOver, mPoiPopOver);
 
         Platform.runLater(() -> {
             mAttributionPopOver = new PopOver();
