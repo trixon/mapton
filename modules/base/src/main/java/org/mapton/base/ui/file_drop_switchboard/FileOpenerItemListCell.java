@@ -58,7 +58,7 @@ class FileOpenerItemListCell extends ListCell<MCoordinateFileInput> {
         mItem = item;
         mCoordinateFileOpenerComboBox.setValue(item.getCoordinateFileOpener());
 
-        if (StringUtils.equalsAnyIgnoreCase(mExt, "kml", "kmz")) {
+        if (StringUtils.equalsAnyIgnoreCase(mExt, "grid", "kml", "kmz")) {
             mCooTransComboBox.setValue(MCooTrans.getCooTrans("WGS 84"));
         } else {
             mCooTransComboBox.setValue(item.getCooTrans());
@@ -97,7 +97,7 @@ class FileOpenerItemListCell extends ListCell<MCoordinateFileInput> {
             }
         });
 
-        if (StringUtils.equalsAnyIgnoreCase(mExt, "kml", "kmz")) {
+        if (StringUtils.equalsAnyIgnoreCase(mExt, "grid", "kml", "kmz")) {
             mCooTransComboBox.setDisable(true);
         }
 

@@ -58,12 +58,12 @@ public class MLocalGridManager {
 
     public void gridImport(File file) throws IOException {
         String json = FileUtils.readFileToString(file, "utf-8");
-        ArrayList<MLocalGrid> grids = mGson.fromJson(json, new TypeToken<ArrayList<MLocalGrid>>() {
+        ArrayList<MLocalGrid> fileGrids = mGson.fromJson(json, new TypeToken<ArrayList<MLocalGrid>>() {
         }.getType());
 
         Platform.runLater(() -> {
-            mItems.addAll(grids);
-            FXCollections.sort(mItems, (MLocalGrid o1, MLocalGrid o2) -> o1.getName().compareTo(o2.getName()));
+            mItems.addAll(fileGrids);
+            FXCollections.sort(mItems, (o1, o2) -> o1.getName().compareTo(o2.getName()));
         });
     }
 

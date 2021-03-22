@@ -77,7 +77,7 @@ public class ExtTab extends Tab {
         mCooTransComboBox.setItems(mCooTransComboBox.getItems().sorted());
         mCooTransComboBox.getSelectionModel().select(MOptions.getInstance().getMapCooTrans());
 
-        if (StringUtils.equalsAnyIgnoreCase(mExt, "kml", "kmz")) {
+        if (StringUtils.equalsAnyIgnoreCase(mExt, "grid", "kml", "kmz")) {
             mCooTransComboBox.setValue(MCooTrans.getCooTrans("WGS 84"));
             mCooTransComboBox.setDisable(true);
         }
