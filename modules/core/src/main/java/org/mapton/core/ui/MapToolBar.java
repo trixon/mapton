@@ -282,7 +282,7 @@ public class MapToolBar extends BaseToolBar {
             Actions.forID("Mapton", "org.mapton.core.actions.HomeAction").actionPerformed(null);
         });
         mHomeAction.setGraphic(MaterialIcon._Action.HOME.getImageView(getIconSizeToolBarInt()));
-        FxHelper.setTooltip(mHomeAction, new KeyCodeCombination(KeyCode.H, KeyCombination.SHORTCUT_DOWN));
+        FxHelper.setTooltip(mHomeAction, new KeyCodeCombination(KeyCode.H, KeyCombination.CONTROL_DOWN));
 
         //Swap Style
         mStyleSwapAction = new FxActionSwing(MDict.PREVIOUS_STYLE.toString(), () -> {

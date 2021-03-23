@@ -32,7 +32,7 @@ import se.trixon.almond.nbp.Almond;
 @ActionRegistration(
         displayName = "#CTL_HomeAction"
 )
-@ActionReference(path = "Shortcuts", name = "D-H")
+@ActionReference(path = "Shortcuts", name = "C-H")
 @Messages("CTL_HomeAction=Home")
 public final class HomeAction implements ActionListener {
 
