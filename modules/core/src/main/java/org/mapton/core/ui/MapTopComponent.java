@@ -36,12 +36,10 @@ import javafx.scene.Scene;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.BorderPane;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
-import javax.swing.JRootPane;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -84,7 +82,7 @@ import se.trixon.almond.util.swing.SwingHelper;
 )
 @ActionID(category = "Window", id = "org.mapton.core.ui.MapTopComponent")
 @ActionReferences({
-    @ActionReference(path = "Shortcuts", name = "D-M"),
+    @ActionReference(path = "Shortcuts", name = "C-M"),
     @ActionReference(path = "Menu/Tools", position = 0)
 })
 @Messages({
@@ -166,25 +164,20 @@ public final class MapTopComponent extends MTopComponent {
 
         SwingHelper.runLater(() -> {
             removeAll();
-            JLabel label = new JLabel(String.format("<html>%s<br/><br/><br/></html>", Dict.PATIENCE_IS_A_VIRTUE.toString()));
+            var label = new JLabel(String.format("<html>%s<br/><br/><br/></html>", Dict.PATIENCE_IS_A_VIRTUE.toString()));
             label.setVerticalAlignment(SwingConstants.BOTTOM);
             label.setFont(label.getFont().deriveFont(label.getFont().getSize() * 2f));
             label.setHorizontalAlignment(SwingConstants.CENTER);
             add(label, BorderLayout.CENTER);
-        });
 
-        new Thread(() -> {
-            try {
-                Thread.sleep(2000);
-                MOptions.getInstance().engineProperty().addListener((ov, t, t1) -> {
+            MOptions.getInstance().engineProperty().addListener((ov, t, t1) -> {
+                SwingHelper.runLater(() -> {
                     setEngine(Mapton.getEngine());
                 });
+            });
 
-                setEngine(Mapton.getEngine());
-            } catch (InterruptedException ex) {
-                Exceptions.printStackTrace(ex);
-            }
-        }).start();
+            setEngine(Mapton.getEngine());
+        });
     }
 
     @Override
@@ -245,10 +238,10 @@ public final class MapTopComponent extends MTopComponent {
             new FileDropSwitchboard(dragEvent.getDragboard().getFiles());
         });
 
-        DelayedResetRunner delayedResetRunner = new DelayedResetRunner(10, () -> {
+        var delayedResetRunner = new DelayedResetRunner(10, () -> {
             try {
-                final JRootPane rootPane = getRootPane();
-                final Dimension originalSize = rootPane.getSize();
+                var rootPane = getRootPane();
+                var originalSize = rootPane.getSize();
 
                 SwingUtilities.invokeLater(() -> {
                     rootPane.setSize(new Dimension(originalSize.width - 1, originalSize.height - 0));
@@ -277,7 +270,7 @@ public final class MapTopComponent extends MTopComponent {
             double state = gsce.getValue();
             if (-1.0 == state) {
                 MaptonNb.progressStart(Dict.RENDERING.toString());
-                SwingHelper.runLaterDelayed(TimeUnit.SECONDS.toMillis(5), () -> {
+                SwingHelper.runLaterDelayed(TimeUnit.SECONDS.toMillis(3), () -> {
                     MaptonNb.progressStop(Dict.RENDERING.toString());
                 });
             } else {
@@ -303,47 +296,40 @@ public final class MapTopComponent extends MTopComponent {
     }
 
     private void setEngine(MEngine engine) {
-        SwingUtilities.invokeLater(() -> {
-            setToolTipText(String.format("%s: %s", MDict.MAP_ENGINE.toString(), engine.getName()));
-        });
+        setToolTipText(String.format("%s: %s", MDict.MAP_ENGINE.toString(), engine.getName()));
 
         if (engine.isSwing()) {
             if (mProgressPanel == null) {
                 mProgressPanel = new JPanel(new BorderLayout());
-                JProgressBar progressBar = new JProgressBar();
+                var progressBar = new JProgressBar();
                 progressBar.setIndeterminate(true);
                 mProgressPanel.add(progressBar, BorderLayout.NORTH);
             }
 
-            SwingUtilities.invokeLater(() -> {
-                removeAll();
-                add(MapToolBarPanel.getInstance().getToolBarPanel(), BorderLayout.NORTH);
-                add(mProgressPanel, BorderLayout.CENTER);
+            removeAll();
+            add(MapToolBarPanel.getInstance().getToolBarPanel(), BorderLayout.NORTH);
+            add(mProgressPanel, BorderLayout.CENTER);
 
-                new Thread(() -> {
-                    JComponent engineUI = engine.getMapComponent();
-                    engineUI.setMinimumSize(new Dimension(1, 1));
-                    engineUI.setPreferredSize(new Dimension(1, 1));
+            var engineUI = engine.getMapComponent();
+            var dimension = new Dimension(1, 1);
+            engineUI.setMinimumSize(dimension);
+            engineUI.setPreferredSize(dimension);
 
-                    SwingHelper.runLaterDelayed(0, () -> {
-                        remove(mProgressPanel);
-                        add(engineUI, BorderLayout.CENTER);
-                        revalidate();
-                        repaint();
+            remove(mProgressPanel);
+            add(engineUI, BorderLayout.CENTER);
+            revalidate();
+            repaint();
 
-                        try {
-                            engine.onActivate();
-                            engine.panTo(mMOptions.getMapCenter(), mMOptions.getMapZoom());
-                        } catch (NullPointerException e) {
-                        }
+            try {
+                engine.onActivate();
+                engine.panTo(mMOptions.getMapCenter(), mMOptions.getMapZoom());
+            } catch (NullPointerException e) {
+            }
 
-                        markMapAsInitialized();
-                    });
-                }).start();
+            revalidate();
+            repaint();
 
-                revalidate();
-                repaint();
-            });
+            markMapAsInitialized();
         } else {
             Platform.runLater(() -> {
                 resetFx();
