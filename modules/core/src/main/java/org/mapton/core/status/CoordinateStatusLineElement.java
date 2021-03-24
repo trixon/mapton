@@ -19,6 +19,7 @@ import java.awt.Component;
 import java.awt.Font;
 import javax.swing.JLabel;
 import javax.swing.border.EmptyBorder;
+import org.apache.commons.lang3.StringUtils;
 import org.mapton.api.MCooTrans;
 import org.mapton.api.MEngine;
 import org.mapton.api.MOptions;
@@ -86,11 +87,13 @@ public class CoordinateStatusLineElement implements StatusLineElementProvider {
                         elevation = String.format("%s %,6d %s", Dict.ELEVATION.toString(), (int) engine.getElevation().doubleValue(), Dict.METERS.toString().toLowerCase());
                     }
 
-                    mLabel.setText(String.format("%s, %s, %s",
+                    String text = String.format("%s, %s, %s",
                             altitude,
                             elevation,
                             MCooTrans.getCooTrans(MOptions.getInstance().getMapCooTransName()).getString(latitude, longitude)
-                    ));
+                    );
+
+                    mLabel.setText(StringUtils.removeStart(text, ", , "));
                 }
             } else {
                 mLabel.setText("");
