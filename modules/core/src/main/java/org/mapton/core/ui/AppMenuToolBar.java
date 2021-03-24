@@ -16,12 +16,17 @@
 package org.mapton.core.ui;
 
 import java.awt.BorderLayout;
+import javafx.application.Platform;
+import javafx.embed.swing.JFXPanel;
+import javafx.scene.Scene;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import org.mapton.api.MKey;
 import org.mapton.api.Mapton;
+import org.mapton.base.ui.FxOnScreenDummy;
 import se.trixon.almond.util.GlobalState;
+import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.swing.SwingHelper;
 
@@ -31,6 +36,7 @@ import se.trixon.almond.util.swing.SwingHelper;
  */
 public class AppMenuToolBar extends JPanel {
 
+    private final JFXPanel mFxPanel = new JFXPanel();
     private JLabel mStatusLabel;
 
     public AppMenuToolBar() {
@@ -42,8 +48,17 @@ public class AppMenuToolBar extends JPanel {
         setLayout(new BorderLayout());
         setBackground(FxHelper.colorToColor(Mapton.getThemeColor()));
         add(mStatusLabel = new JLabel("", SwingConstants.CENTER), BorderLayout.CENTER);
+        add(mFxPanel, BorderLayout.EAST);
         mStatusLabel.setText(Mapton.getGlobalState().getOrDefault(MKey.APP_TOOL_LABEL, null));
         mStatusLabel.setForeground(FxHelper.colorToColor(Mapton.getThemeForegroundColor()));
+
+        SystemHelper.runLaterDelayed(500, () -> {
+            Platform.runLater(() -> {
+                var scene = new Scene(FxOnScreenDummy.getInstance());
+                FxHelper.loadDarkTheme(scene);
+                mFxPanel.setScene(scene);
+            });
+        });
     }
 
     private void initListeners() {
