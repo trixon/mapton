@@ -16,7 +16,6 @@
 package org.mapton.api;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.util.Properties;
 import org.openide.util.Exceptions;
@@ -39,9 +38,13 @@ public class MServiceKeyManager {
     public String getKey(String key) {
         if (mProperties == null) {
             mProperties = new Properties();
-
-            try (InputStream inputStream = new URL("https://mapton.org/files/services.properties").openStream()) {
-                mProperties.load(inputStream);
+            try {
+                var urlConnection = new URL("https://mapton.org/files/services.properties").openConnection();
+                urlConnection.setConnectTimeout(5000);
+                urlConnection.setReadTimeout(5000);
+                urlConnection.connect();
+                mProperties.load(urlConnection.getInputStream());
+                urlConnection.getInputStream().close();
             } catch (IOException ex) {
                 Exceptions.printStackTrace(ex);
             }
