@@ -94,6 +94,7 @@ public class Initializer implements Runnable {
 
         windowManager.invokeWhenUIReady(() -> {
             MaptonNb.progressStart(Dict.WARMING_UP.toString());
+            Mapton.getGlobalState().put(MKey.APP_TOOL_LABEL, " ");//Forces repaint of AppMenuToolBar
             Mapton.getLog().setUseTimestamps(false);
             NbLog.setUseGlobalTag(false);
             Mapton.getLog().setOut((String s) -> {
