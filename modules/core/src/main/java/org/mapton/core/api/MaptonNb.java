@@ -33,6 +33,14 @@ public class MaptonNb {
         return WindowManager.getDefault().getMainWindow();
     }
 
+    public static void progressClear() {
+        for (var progressHandle : mDisplayNameToProgressHandle.values()) {
+            progressHandle.finish();
+        }
+
+        mDisplayNameToProgressHandle.clear();
+    }
+
     public static ProgressHandle progressStart(String displayName) {
         if (!mDisplayNameToProgressHandle.containsKey(displayName)) {
             ProgressHandle progressHandle = ProgressHandleFactory.createSystemHandle(displayName);
