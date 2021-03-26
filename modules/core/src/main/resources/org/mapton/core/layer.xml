@@ -72,6 +72,7 @@ limitations under the License.
         <folder name="Tools">
             <file name="Separator1.instance_hidden"/>
             <file name="org-netbeans-modules-templates-actions-TemplatesAction.shadow_hidden"/>
+            <file name="org-openide-actions-ToolsAction.shadow_hidden"/>
         </folder>
         <folder name="View">
             <file name="Separator2.instance_hidden"/>
