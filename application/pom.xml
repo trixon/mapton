@@ -8,7 +8,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>mapton-application</artifactId>
+    <artifactId>application</artifactId>
     <packaging>nbm-application</packaging>
 
     <properties>
@@ -28,25 +28,10 @@
             <version>${netbeans.version}</version>
             <type>pom</type>
             <exclusions>
+                <!--EXCLUDE TEST-->
                 <exclusion>
                     <groupId>org.netbeans.modules</groupId>
                     <artifactId>org-netbeans-modules-junitlib</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.netbeans.api</groupId>
-                    <artifactId>org-netbeans-api-htmlui</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.netbeans.modules</groupId>
-                    <artifactId>org-netbeans-modules-templatesui</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.netbeans.api</groupId>
-                    <artifactId>org-netbeans-api-progress-compat8</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.netbeans.api</groupId>
-                    <artifactId>org-netbeans-api-visual</artifactId>
                 </exclusion>
                 <exclusion>
                     <groupId>org.netbeans.api</groupId>
@@ -56,10 +41,22 @@
                     <groupId>org.netbeans.api</groupId>
                     <artifactId>org-netbeans-libs-testng</artifactId>
                 </exclusion>
+
+                <!--EXCLUDE COMPAT8-->
                 <exclusion>
                     <groupId>org.netbeans.api</groupId>
                     <artifactId>org-openide-execution-compat8</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>org.netbeans.api</groupId>
+                    <artifactId>org-netbeans-api-progress-compat8</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.netbeans.api</groupId>
+                    <artifactId>org-openide-compat</artifactId>
+                </exclusion>
+
+                <!--EXCLUDE GUI-->
                 <exclusion>
                     <groupId>org.netbeans.api</groupId>
                     <artifactId>org-jdesktop-layout</artifactId>
@@ -70,19 +67,11 @@
                 </exclusion>
                 <exclusion>
                     <groupId>org.netbeans.api</groupId>
-                    <artifactId>org-netbeans-libs-jsr223</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.netbeans.api</groupId>
-                    <artifactId>org-openide-compat</artifactId>
+                    <artifactId>org-netbeans-api-htmlui</artifactId>
                 </exclusion>
                 <exclusion>
                     <groupId>org.netbeans.modules</groupId>
-                    <artifactId>org-netbeans-modules-core-kit</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.netbeans.modules</groupId>
-                    <artifactId>org-netbeans-modules-favorites</artifactId>
+                    <artifactId>org-netbeans-modules-templatesui</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -321,7 +310,7 @@
                     <installerPack200Enable>false</installerPack200Enable>
                     <finalName>mapton-${mapton.version}</finalName>
                     <!--<additionalArguments>-J-Xmx2048m</additionalArguments>-->
-                    <additionalArguments>&#045;&#045;locale en:US</additionalArguments>
+                    <!--<additionalArguments>&#045;&#045;locale en:US</additionalArguments>-->
                     <!--<additionalArguments>&#045;&#045;nosplash</additionalArguments>-->
                     <!--<additionalArguments>&#045;&#045;fontsize 32</additionalArguments>-->
                     <!--<additionalArguments>&#045;&#045;fontsize 16</additionalArguments>-->
@@ -333,5 +322,4 @@
             </plugin>
         </plugins>
     </build>
-    <name>mapton-application</name>
 </project>
