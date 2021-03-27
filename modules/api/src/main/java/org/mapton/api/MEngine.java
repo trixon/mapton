@@ -26,7 +26,6 @@ import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import javax.swing.JComponent;
 import org.openide.util.Lookup;
-import org.openide.util.LookupEvent;
 
 /**
  *
@@ -41,7 +40,6 @@ public abstract class MEngine {
     private static final TreeMap<String, MEngine> ENGINES = new TreeMap<>();
     private static final HashSet<MEngineListener> sEngineListeners = new HashSet<>();
 
-    protected final MOptions mMaptonOptions = MOptions.getInstance();
     private Double mAltitude;
     private Double mElevation;
     private Callable<BufferedImage> mImageRenderer;
@@ -53,7 +51,7 @@ public abstract class MEngine {
     private Double mLongitude;
 
     static {
-        Lookup.getDefault().lookupResult(MEngine.class).addLookupListener((LookupEvent ev) -> {
+        Lookup.getDefault().lookupResult(MEngine.class).addLookupListener(lookupEvent -> {
             populateEngines();
         });
 
@@ -78,7 +76,7 @@ public abstract class MEngine {
 
     private static void populateEngines() {
         ENGINES.clear();
-        Lookup.getDefault().lookupAll(MEngine.class).forEach((engine) -> {
+        Lookup.getDefault().lookupAll(MEngine.class).forEach(engine -> {
             ENGINES.put(engine.getName(), engine);
         });
     }
@@ -91,7 +89,7 @@ public abstract class MEngine {
         mLockedLongitude = mLongitude;
 
         Runnable r = () -> {
-            for (MEngineListener engineListener : sEngineListeners) {
+            for (var engineListener : sEngineListeners) {
                 try {
                     engineListener.displayContextMenu(screenXY);
                 } catch (Exception e) {
@@ -143,7 +141,7 @@ public abstract class MEngine {
     }
 
     public double getLatitudeProj() {
-        return mMaptonOptions.getMapCooTrans().getLatitude(mLatitude, mLongitude);
+        return options().getMapCooTrans().getLatitude(mLatitude, mLongitude);
     }
 
     public Node getLayerView() {
@@ -161,7 +159,7 @@ public abstract class MEngine {
     }
 
     public double getLockedLatitudeProj() {
-        return mMaptonOptions.getMapCooTrans().getLatitude(mLockedLatitude, mLockedLongitude);
+        return options().getMapCooTrans().getLatitude(mLockedLatitude, mLockedLongitude);
     }
 
     public Double getLockedLongitude() {
@@ -169,7 +167,7 @@ public abstract class MEngine {
     }
 
     public double getLockedLongitudeProj() {
-        return mMaptonOptions.getMapCooTrans().getLongitude(mLockedLatitude, mLockedLongitude);
+        return options().getMapCooTrans().getLongitude(mLockedLatitude, mLockedLongitude);
     }
 
     public Double getLongitude() {
@@ -177,7 +175,7 @@ public abstract class MEngine {
     }
 
     public double getLongitudeProj() {
-        return mMaptonOptions.getMapCooTrans().getLongitude(mLatitude, mLongitude);
+        return options().getMapCooTrans().getLongitude(mLatitude, mLongitude);
     }
 
     public abstract JComponent getMapComponent();
@@ -204,12 +202,12 @@ public abstract class MEngine {
     }
 
     public final void goHome() {
-        panTo(mMaptonOptions.getMapHome(), mMaptonOptions.getMapHomeZoom());
+        panTo(options().getMapHome(), options().getMapHomeZoom());
     }
 
     public void hideContextMenu() {
         Runnable r = () -> {
-            for (MEngineListener engineListener : sEngineListeners) {
+            for (var engineListener : sEngineListeners) {
                 try {
                     engineListener.hideContextMenu();
                 } catch (Exception e) {
@@ -229,7 +227,7 @@ public abstract class MEngine {
 
     public final void initialized() {
         mInitialized = true;
-        panTo(mMaptonOptions.getMapCenter(), mMaptonOptions.getMapZoom());
+        panTo(options().getMapCenter(), options().getMapZoom());
     }
 
     public boolean isInitialized() {
@@ -320,7 +318,7 @@ public abstract class MEngine {
     }
 
     public void swapStyle() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     /**
@@ -330,5 +328,9 @@ public abstract class MEngine {
      */
     public void zoomTo(double zoom) {
         panTo(getCenter(), zoom);
+    }
+
+    protected MOptions options() {
+        return MOptions.getInstance();
     }
 }
