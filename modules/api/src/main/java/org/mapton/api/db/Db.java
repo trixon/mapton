@@ -31,6 +31,7 @@ import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.lang3.StringUtils;
+import org.openide.modules.Places;
 
 /**
  *
@@ -52,7 +53,7 @@ public class Db {
     }
 
     private Db() {
-        mDbFile = new File(System.getProperty("netbeans.user"), "mapton" + DB_POSTFIX);
+        mDbFile = new File(Places.getUserDirectory(), "mapton" + DB_POSTFIX);
         mConnString = String.format("jdbc:h2:%s;DEFRAG_ALWAYS=true", StringUtils.removeEnd(mDbFile.getAbsolutePath(), DB_POSTFIX));
         mSpec = new DbSpec();
         init();
