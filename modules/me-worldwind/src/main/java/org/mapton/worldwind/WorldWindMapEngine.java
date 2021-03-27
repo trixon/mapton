@@ -83,7 +83,7 @@ public class WorldWindMapEngine extends MEngine {
     private double mOldAltitude;
     private double mOldGlobalZoom;
     private final ModuleOptions mOptions = ModuleOptions.getInstance();
-    private RulerTabPane mRulerTabPane;
+    private final RulerTabPane mRulerTabPane;
     private final StyleView mStyleView;
     private SwingNode mSwingNode;
     private long mZoomEpoch = System.currentTimeMillis();
@@ -212,7 +212,7 @@ public class WorldWindMapEngine extends MEngine {
 
     @Override
     public void onActivate() {
-        View view = mMap.getView();
+        var view = mMap.getView();
         view.setHeading(Angle.fromDegrees(mOptions.getDouble(KEY_VIEW_HEADING)));
         view.setPitch(Angle.fromDegrees(mOptions.getDouble(KEY_VIEW_PITCH)));
         view.setRoll(Angle.fromDegrees(mOptions.getDouble(KEY_VIEW_ROLL)));
@@ -225,10 +225,11 @@ public class WorldWindMapEngine extends MEngine {
 
     @Override
     public void onDeactivate() {
-        View view = mMap.getView();
+        var view = mMap.getView();
         mOptions.put(KEY_VIEW_HEADING, view.getHeading().getDegrees());
         mOptions.put(KEY_VIEW_PITCH, view.getPitch().getDegrees());
         mOptions.put(KEY_VIEW_ROLL, view.getRoll().getDegrees());
+        mOptions.put(KEY_VIEW_ALTITUDE, view.getEyePosition().getAltitude());
     }
 
     @Override
@@ -260,7 +261,7 @@ public class WorldWindMapEngine extends MEngine {
         Position eyePosition = view.getCurrentEyePosition();
         Angle fieldOfView = view.getFieldOfView();
 
-        mMap.getView().goTo(toPosition(latLon), mMap.getView().getEyePosition().getAltitude());
+        panTo(latLon, mMap.getView().getEyePosition().getAltitude());
         try {
             view.setEyePosition(eyePosition);
             view.setFieldOfView(fieldOfView);
@@ -315,7 +316,13 @@ public class WorldWindMapEngine extends MEngine {
     }
 
     private void init() {
-        mMap = new WorldWindowPanel();
+        mMap = new WorldWindowPanel(() -> {
+            var zoom = mOptions.getDouble(KEY_VIEW_ALTITUDE, -1d);
+            if (zoom != -1) {
+                mMap.getView().goTo(toPosition(options().getMapCenter()), zoom);
+            }
+
+        });
         mLayerView.refresh(mMap);
         mRulerTabPane.refresh(mMap);
         setImageRenderer(mMap.getImageRenderer());

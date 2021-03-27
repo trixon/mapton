@@ -105,13 +105,14 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
     private Globe mRoundGlobe;
     private ElevationModel mZeroElevationModel = new ZeroElevationModel();
 
-    public WorldWindowPanel() {
+    public WorldWindowPanel(Runnable postCreateRunnable) {
         MaptonNb.progressStart(MDict.MAP_ENGINE.toString());
         init();
 
         new Thread(() -> {
             initFinalize();
             initListeners();
+            postCreateRunnable.run();
         }).start();
     }
 
@@ -142,7 +143,7 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
     Callable<BufferedImage> getImageRenderer() {
         return () -> {
             //TODO Save unwanted layer state and hide them
-            BufferedImage image = GraphicsHelper.componentToImage(this, null);
+            var image = GraphicsHelper.componentToImage(this, null);
             //TODO Restore
 
             return image;
@@ -155,9 +156,9 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
 
     private void customElevationModelLoad(File dir) {
         System.out.println("customElevationModelLoad " + dir.getAbsolutePath());
-        LocalElevationModel localElevationModel = new LocalElevationModel();
+        var localElevationModel = new LocalElevationModel();
 
-        for (File file : dir.listFiles()) {
+        for (var file : dir.listFiles()) {
             if (!file.isFile()) {
                 continue;
             }
@@ -177,8 +178,8 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
     }
 
     private void customElevationModelRefresh() {
-        Thread thread = new Thread(() -> {
-            File dir = new File(FileUtils.getUserDirectory(), "test/dem");
+        var thread = new Thread(() -> {
+            var dir = new File(FileUtils.getUserDirectory(), "test/dem");
             if (dir.isDirectory()) {
                 customElevationModelLoad(dir);
             }
@@ -212,18 +213,18 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
     }
 
     private void init() {
-        Model m = (Model) WorldWind.createConfigurationComponent(AVKey.MODEL_CLASS_NAME);
-        setModel(m);
+        var model = (Model) WorldWind.createConfigurationComponent(AVKey.MODEL_CLASS_NAME);
+        setModel(model);
 
-        mRoundGlobe = m.getGlobe();
+        mRoundGlobe = model.getGlobe();
         mFlatGlobe = new EarthFlat();
         mFlatGlobe.setElevationModel(new ZeroElevationModel());
 
-        ViewControlsLayer viewControlsLayer = new ViewControlsLayer();
+        var viewControlsLayer = new ViewControlsLayer();
         insertLayerBefore(viewControlsLayer, CompassLayer.class);
         addSelectListener(new ViewControlsSelectListener(this, viewControlsLayer));
 
-        MaskLayer maskLayer = new MaskLayer();
+        var maskLayer = new MaskLayer();
         insertLayerBefore(maskLayer, WorldMapLayer.class);
 
         mCrosshairLayer = new CrosshairLayer();
@@ -255,8 +256,7 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
     }
 
     private void initLayerBundles() {
-//        SwingUtilities.invokeLater(() -> {
-        for (LayerBundle layerBundle : Lookup.getDefault().lookupAll(LayerBundle.class)) {
+        for (var layerBundle : Lookup.getDefault().lookupAll(LayerBundle.class)) {
             if (!layerBundle.isPopulated()) {
                 try {
                     layerBundle.populate();
@@ -286,7 +286,6 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
             }
         }
         addCustomLayer(mIndicatorLayer.getLayers().get(0));
-//        });
     }
 
     private void initListeners() {
@@ -332,7 +331,7 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
             initWmsService();
         });
 
-        MouseAdapter highlightClickAdapter = new MouseAdapter() {
+        var highlightClickAdapter = new MouseAdapter() {
 
             @Override
             public void mouseClicked(MouseEvent mouseEvent) {
@@ -356,7 +355,7 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
             }
         };
 
-        SelectListener rolloverSelectListener = new SelectListener() {
+        var rolloverSelectListener = new SelectListener() {
 
             @Override
             public void selected(SelectEvent event) {
@@ -422,21 +421,21 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
     }
 
     private void initWmsService() {
-        ArrayList< WmsService> wmsServices = new ArrayList<>(Lookup.getDefault().lookupAll(WmsService.class));
+        ArrayList<WmsService> wmsServices = new ArrayList<>(Lookup.getDefault().lookupAll(WmsService.class));
         ArrayList<MWmsSource> wmsSources = Mapton.getGlobalState().get(DATA_SOURCES_WMS_SOURCES);
 
         if (wmsSources != null) {
-            for (MWmsSource wmsSource : wmsSources) {
+            for (var wmsSource : wmsSources) {
                 wmsServices.add(WmsService.createFromWmsSource(wmsSource));
             }
         }
 
-        for (WmsService wmsService : wmsServices) {
+        for (var wmsService : wmsServices) {
             if (!wmsService.isPopulated()) {
 //                new Thread(() -> {
                 try {
                     wmsService.populate();
-                    for (Layer layer : wmsService.getLayers()) {
+                    for (var layer : wmsService.getLayers()) {
                         Mapton.logLoading("WMS Layer", layer.getName());
                         layer.setEnabled(false);
                         getLayers().addIfAbsent(layer);
@@ -464,17 +463,17 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         }
     }
 
-    private void insertLayerBefore(Layer layer, Class type) {
+    private void insertLayerBefore(Layer aLayer, Class type) {
         int position = 0;
-        LayerList layers = getLayers();
-        for (Layer l : getLayers()) {
-            if (type.isInstance(l)) {
-                position = layers.indexOf(l);
+        var layers = getLayers();
+        for (var layer : getLayers()) {
+            if (type.isInstance(layer)) {
+                position = layers.indexOf(layer);
                 break;
             }
         }
 
-        layers.add(position, layer);
+        layers.add(position, aLayer);
     }
 
     private boolean isFlatGlobe() {
@@ -486,12 +485,12 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
             return;
         }
 
-        LayerList allLayers = getLayers();
+        var allLayers = getLayers();
         List<String> documentLayers = Arrays.asList(styleLayers);
         Collections.reverse(documentLayers);
 
-        for (String layerName : documentLayers) {
-            Layer layer = allLayers.getLayerByName(layerName);
+        for (var layerName : documentLayers) {
+            var layer = allLayers.getLayerByName(layerName);
             if (layer != null) {
                 allLayers.remove(layer);
                 allLayers.add(layer);
@@ -560,7 +559,7 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
 
         String styleId = mOptions.get(KEY_MAP_STYLE, DEFAULT_MAP_STYLE);
         String[] styleLayers = MapStyle.getLayers(styleId);
-        MapStyle mapStyle = MapStyle.getStyle(styleId);
+        var mapStyle = MapStyle.getStyle(styleId);
 
         try {
             Mapton.getLog().i(Dict.DOCUMENT.toString(), String.format("%s: (%s)", mapStyle.getName(), String.join(", ", styleLayers)));
