@@ -43,7 +43,7 @@ public class Finalizer implements Runnable {
             }
         });
 
-        Lookup.getDefault().lookupAll(MEngine.class).forEach((MEngine mapEngine) -> {
+        Lookup.getDefault().lookupAll(MEngine.class).forEach(mapEngine -> {
             if (mapEngine.isInitialized()) {
                 Mapton.execute(mapEngine::onClosing);
             }

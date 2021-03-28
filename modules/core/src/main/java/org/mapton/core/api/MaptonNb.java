@@ -18,7 +18,6 @@ package org.mapton.core.api;
 import java.awt.Frame;
 import java.util.HashMap;
 import org.netbeans.api.progress.ProgressHandle;
-import org.netbeans.api.progress.ProgressHandleFactory;
 import org.openide.windows.WindowManager;
 
 /**
@@ -43,7 +42,7 @@ public class MaptonNb {
 
     public static ProgressHandle progressStart(String displayName) {
         if (!mDisplayNameToProgressHandle.containsKey(displayName)) {
-            ProgressHandle progressHandle = ProgressHandleFactory.createSystemHandle(displayName);
+            var progressHandle = ProgressHandle.createHandle(displayName);
             mDisplayNameToProgressHandle.put(displayName, progressHandle);
             progressHandle.start();
             progressHandle.switchToIndeterminate();
