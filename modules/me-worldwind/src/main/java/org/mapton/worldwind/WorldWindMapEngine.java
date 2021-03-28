@@ -319,7 +319,9 @@ public class WorldWindMapEngine extends MEngine {
         mMap = new WorldWindowPanel(() -> {
             var zoom = mOptions.getDouble(KEY_VIEW_ALTITUDE, -1d);
             if (zoom != -1) {
-                mMap.getView().goTo(toPosition(options().getMapCenter()), zoom);
+                if (mMap.getView().getGlobe() != null) {
+                    mMap.getView().goTo(toPosition(options().getMapCenter()), zoom);
+                }
             }
 
         });
@@ -392,8 +394,11 @@ public class WorldWindMapEngine extends MEngine {
                         }
 
                         @Override
-                        public void ancestorResized(HierarchyEvent e) {
-                            mMap.redrawNow();
+                        public void ancestorResized(HierarchyEvent hierarchyEvent) {
+                            try {
+                                mMap.redrawNow();
+                            } catch (Exception e) {
+                            }
                         }
                     });
                 }
