@@ -122,7 +122,9 @@ public class MapToolBar extends BaseToolBar {
     }
 
     public void toogleRulerPopOver() {
-        tooglePopOver(mRulerPopOver, mRulerAction);
+        if (Mapton.getEngine().getRulerView() != null) {
+            tooglePopOver(mRulerPopOver, mRulerAction);
+        }
     }
 
     public void toogleStylePopOver() {
@@ -252,6 +254,7 @@ public class MapToolBar extends BaseToolBar {
             toogleRulerPopOver();
         });
         mRulerAction.setGraphic(MaterialIcon._Editor.SPACE_BAR.getImageView(getIconSizeToolBarInt()));
+        mRulerAction.setDisabled(true);
         FxHelper.setTooltip(mRulerAction, new KeyCodeCombination(KeyCode.K, KeyCombination.SHORTCUT_DOWN));
 //        mRulerAction.textProperty().set(Dict.RULER.toString());
         mRulerAction.textProperty().bind(mRulerPopOver.titleProperty());
@@ -382,6 +385,7 @@ public class MapToolBar extends BaseToolBar {
 
     private void refreshEngine() {
         mStyleAction.setDisabled(Mapton.getEngine().getStyleView() == null);
+        mRulerAction.setDisabled(Mapton.getEngine().getRulerView() == null);
     }
 
     private void updateDocumentInfo(MDocumentInfo documentInfo) {
