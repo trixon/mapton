@@ -187,7 +187,7 @@ public abstract class MEngine {
     public Node getRulerView() {
         Mapton.getLog().i(getClass().getSimpleName(), "getRulerView not implemented");
 
-        return new Pane();
+        return null;
     }
 
     public MStatusZoomMode getStatusZoomMode() {

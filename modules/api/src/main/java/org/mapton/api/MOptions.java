@@ -15,14 +15,12 @@
  */
 package org.mapton.api;
 
-import java.util.ResourceBundle;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.paint.Color;
-import org.openide.util.NbBundle;
 import org.openide.util.NbPreferences;
 import se.trixon.almond.util.OptionsBase;
 import se.trixon.almond.util.fx.FxHelper;
@@ -76,7 +74,6 @@ public class MOptions extends OptionsBase {
     private static final String KEY_MAP_HOME_ZOOM = "map.home_zoom";
     private static final String KEY_MAP_ZOOM = "map.zoom";
 
-    private final ResourceBundle mBundle = NbBundle.getBundle(MOptions.class);
     private final BooleanProperty mDisplayCrosshairProperty = new SimpleBooleanProperty(true);
     private final BooleanProperty mDisplayHomeIconProperty = new SimpleBooleanProperty(false);
     private final ObjectProperty<String> mEngineProperty = new SimpleObjectProperty<>("WorldWind");
