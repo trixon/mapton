@@ -17,7 +17,6 @@ package org.mapton.core.ui.bookmark;
 
 import java.text.DecimalFormat;
 import java.text.ParseException;
-import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
@@ -33,7 +32,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.util.StringConverter;
 import org.apache.commons.lang3.StringUtils;
-import org.controlsfx.validation.ValidationResult;
 import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
 import org.mapton.api.MBookmark;
@@ -70,15 +68,16 @@ public class BookmarkPanel extends FxDialogPanel {
 
     class BookmarkView extends StackPane {
 
+        private MBookmark mBookmark;
         private ComboBox<String> mCategoryComboBox;
         private ColorPicker mColorPicker;
         private TextArea mDescTextArea;
-        private TextField mUrlTextField;
         private Spinner<Double> mLatitudeSpinner;
         private Spinner<Double> mLongitudeSpinner;
-        private MBookmarkManager mManager = MBookmarkManager.getInstance();
+        private final MBookmarkManager mManager = MBookmarkManager.getInstance();
         private TextField mNameTextField;
         private CheckBox mPlacemarkCheckBox;
+        private TextField mUrlTextField;
         private Spinner<Double> mZoomSpinner;
 
         public BookmarkView() {
@@ -86,6 +85,8 @@ public class BookmarkPanel extends FxDialogPanel {
         }
 
         public void load(MBookmark bookmark) {
+            mBookmark = bookmark;
+
             mNameTextField.setText(bookmark.getName());
             mCategoryComboBox.getSelectionModel().select(bookmark.getCategory());
             mDescTextArea.setText(bookmark.getDescription());
@@ -104,7 +105,7 @@ public class BookmarkPanel extends FxDialogPanel {
 
         public void save(MBookmark bookmark) {
             bookmark.setName(mNameTextField.getText());
-            bookmark.setCategory(StringUtils.defaultString(mCategoryComboBox.getSelectionModel().getSelectedItem()));
+            bookmark.setCategory(mCategoryComboBox.getEditor().getText().trim());
             bookmark.setDescription(StringUtils.defaultString(mDescTextArea.getText()));
             bookmark.setUrl(StringUtils.defaultString(mUrlTextField.getText()));
             bookmark.setZoom(mZoomSpinner.getValue());
@@ -172,14 +173,14 @@ public class BookmarkPanel extends FxDialogPanel {
 
             mDescTextArea.setPrefHeight(20);
 
-            Label nameLabel = new Label(Dict.NAME.toString());
-            Label descLabel = new Label(Dict.DESCRIPTION.toString());
-            Label categoryLabel = new Label(Dict.CATEGORY.toString());
-            Label colorLabel = new Label(Dict.COLOR.toString());
-            Label zoomLabel = new Label(Dict.ZOOM.toString());
-            Label latLabel = new Label(Dict.LATITUDE.toString());
-            Label lonLabel = new Label(Dict.LONGITUDE.toString());
-            Label urlLabel = new Label("URL");
+            var nameLabel = new Label(Dict.NAME.toString());
+            var descLabel = new Label(Dict.DESCRIPTION.toString());
+            var categoryLabel = new Label(Dict.CATEGORY.toString());
+            var colorLabel = new Label(Dict.COLOR.toString());
+            var zoomLabel = new Label(Dict.ZOOM.toString());
+            var latLabel = new Label(Dict.LATITUDE.toString());
+            var lonLabel = new Label(Dict.LONGITUDE.toString());
+            var urlLabel = new Label("URL");
 
             VBox box = new VBox(
                     nameLabel,
@@ -219,21 +220,21 @@ public class BookmarkPanel extends FxDialogPanel {
 
         private void initValidation() {
             final String text_is_required = "Text is required";
-            boolean indicateRequired = false;
 
-            ValidationSupport validationSupport = new ValidationSupport();
+            var validationSupport = new ValidationSupport();
             Validator<Object> emptyValidator = Validator.createEmptyValidator(text_is_required);
-            validationSupport.registerValidator(mNameTextField, indicateRequired, emptyValidator);
-            Validator<String> uniqueValidator = Validator.createPredicateValidator((String s) -> {
+            validationSupport.registerValidator(mNameTextField, true, emptyValidator);
+            Validator<String> uniqueValidator = Validator.createPredicateValidator(s -> {
                 return true;//Only used to trigger validation
             }, "The combination of name and category has to be unique");
 
-            validationSupport.registerValidator(mCategoryComboBox, indicateRequired, uniqueValidator);
-            validationSupport.validationResultProperty().addListener((ObservableValue<? extends ValidationResult> observable, ValidationResult oldValue, ValidationResult newValue) -> {
-                //TODO
-//            mDialogDescriptor.setValid(!validationSupport.isInvalid()
-//                    && !mManager.exists(mBookmark.getId(), mNameTextField.getText().trim(), mCategoryComboBox.getSelectionModel().getSelectedItem().trim())
-//            );
+            validationSupport.registerValidator(mCategoryComboBox.getEditor(), false, uniqueValidator);
+            validationSupport.validationResultProperty().addListener((observable, oldValue, newValue) -> {
+                String name = mNameTextField.getText().trim();
+                String category = mCategoryComboBox.getEditor().getText().trim();
+                mNotifyDescriptor.setValid(!validationSupport.isInvalid()
+                        && !mManager.exists(mBookmark.getId(), name, category)
+                );
             });
 
             validationSupport.initInitialDecoration();

@@ -320,7 +320,7 @@ public class MBookmarkManager extends DbBaseManager {
         try (Statement statement = mDb.getAutoCommitConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
             String sql = selectQuery.toString();
             ResultSet rs = statement.executeQuery(sql);
-            rs.first();
+            rs.beforeFirst();
             while (rs.next()) {
                 categories.add(getString(rs, mCategory));
             }

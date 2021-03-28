@@ -71,7 +71,7 @@ public class BookmarkEditor {
                 bookmarkPanel.load(bookmark);
             });
 
-            bookmarkPanel.setPreferredSize(SwingHelper.getUIScaledDim(300, 500));
+            bookmarkPanel.setPreferredSize(SwingHelper.getUIScaledDim(300, 550));
             if (DialogDescriptor.OK_OPTION == DialogDisplayer.getDefault().notify(d)) {
                 bookmarkPanel.save(bookmark);
                 Platform.runLater(() -> {
