@@ -261,7 +261,7 @@ public class WorldWindMapEngine extends MEngine {
         Position eyePosition = view.getCurrentEyePosition();
         Angle fieldOfView = view.getFieldOfView();
 
-        panTo(latLon, mMap.getView().getEyePosition().getAltitude());
+        mMap.getView().goTo(toPosition(latLon), mMap.getView().getEyePosition().getAltitude());
         try {
             view.setEyePosition(eyePosition);
             view.setFieldOfView(fieldOfView);
