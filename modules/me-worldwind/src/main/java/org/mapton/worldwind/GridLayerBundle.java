@@ -22,6 +22,7 @@ import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.Path;
+import javafx.collections.ListChangeListener;
 import org.mapton.api.MCooTrans;
 import org.mapton.api.MDict;
 import org.mapton.api.MLocalGrid;
@@ -49,12 +50,9 @@ public class GridLayerBundle extends LayerBundle {
     private BasicShapeAttributes mTropicAttributes;
 
     public GridLayerBundle() {
-        mLayer.setName(MDict.GRID.toString());
-        setCategorySystem(mLayer);
-        setName(MDict.GRID.toString());
-
         init();
         initRepaint();
+        initListeners();
     }
 
     @Override
@@ -62,10 +60,6 @@ public class GridLayerBundle extends LayerBundle {
         getLayers().add(mLayer);
         initAttributes();
         repaint(0);
-
-        mOptions.getPreferences().addPreferenceChangeListener((event) -> {
-            repaint();
-        });
     }
 
     private void draw(Position pos1, Position pos2, BasicShapeAttributes attributes, String pathType) {
@@ -96,6 +90,10 @@ public class GridLayerBundle extends LayerBundle {
     }
 
     private void init() {
+        mLayer.setName(MDict.GRID.toString());
+        setCategorySystem(mLayer);
+        setName(MDict.GRID.toString());
+
         mLayer.setPickEnabled(false);
         attachTopComponentToLayer("GridTopComponent", mLayer);
     }
@@ -117,6 +115,16 @@ public class GridLayerBundle extends LayerBundle {
         mPolarAttributes = (BasicShapeAttributes) mGridAttributes.copy();
         mPolarAttributes.setOutlineMaterial(Material.BLUE);
         mPolarAttributes.setOutlineWidth(2.0);
+    }
+
+    private void initListeners() {
+        mOptions.getPreferences().addPreferenceChangeListener(pce -> {
+            repaint();
+        });
+
+        mManager.getItems().addListener((ListChangeListener.Change<? extends MLocalGrid> c) -> {
+//            repaint();
+        });
     }
 
     private void initRepaint() {

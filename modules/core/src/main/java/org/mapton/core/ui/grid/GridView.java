@@ -18,20 +18,14 @@ package org.mapton.core.ui.grid;
 import javafx.geometry.Insets;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import org.mapton.api.MActivatable;
 
-public final class GridView extends VBox implements MActivatable {
+public final class GridView extends VBox {
 
     private GlobalGridView mGlobalGridView;
     private LocalGridsView mLocalGridView;
 
     public GridView() {
         createUI();
-    }
-
-    @Override
-    public void activate() {
-        mLocalGridView.activate();
     }
 
     private void createUI() {

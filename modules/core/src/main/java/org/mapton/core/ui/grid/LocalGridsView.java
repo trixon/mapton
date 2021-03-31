@@ -64,21 +64,6 @@ public class LocalGridsView extends BorderPane {
         load();
     }
 
-    void activate() {
-        //This is a workaround for a system deep NPE
-        new Thread(() -> {
-            try {
-                Thread.sleep(2);
-            } catch (InterruptedException ex) {
-                Exceptions.printStackTrace(ex);
-            }
-
-            Platform.runLater(() -> {
-                mListView.requestFocus();
-            });
-        }).start();
-    }
-
     private void createUI() {
         mPlotCheckBox = new CheckBox(Dict.LOCAL.toString());
         mPlotCheckBox.setFont(Font.font(Font.getDefault().getFamily(), FontWeight.BOLD, FxHelper.getScaledFontSize() * 1.2));
