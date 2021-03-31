@@ -15,7 +15,6 @@
  */
 package org.mapton.core.ui.bookmark;
 
-import org.mapton.core.api.BookmarkEditor;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
@@ -38,7 +37,6 @@ import org.controlsfx.control.PopOver;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
 import org.controlsfx.control.textfield.TextFields;
-import org.mapton.api.MActivatable;
 import org.mapton.api.MBookmark;
 import org.mapton.api.MBookmarkManager;
 import org.mapton.api.MContextMenuItem;
@@ -46,6 +44,7 @@ import org.mapton.api.MDict;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeContextMenu;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
+import org.mapton.core.api.BookmarkEditor;
 import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
@@ -59,7 +58,7 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
  *
  * @author Patrik Karlström
  */
-public class BookmarksView extends BorderPane implements MActivatable {
+public class BookmarksView extends BorderPane {
 
     private final Map<String, TreeItem<MBookmark>> mBookmarkParents = new TreeMap<>();
     private final BookmarkEditor mBookmarkEditor;
@@ -77,11 +76,6 @@ public class BookmarksView extends BorderPane implements MActivatable {
         mManager.dbLoad(mFilterTextField.getText(), true);
         populate();
         addListeners();
-    }
-
-    @Override
-    public void activate() {
-        mFilterTextField.requestFocus();
     }
 
     private void addListeners() {
