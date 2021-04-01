@@ -16,47 +16,23 @@
 package org.mapton.api.ui;
 
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.control.Control;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
-import org.controlsfx.control.PopOver;
+import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.fx.FxHelper;
+import se.trixon.almond.util.icons.material.MaterialIcon;
 
 /**
  *
  * @author Patrik Karlström
  */
-public abstract class MFilterPopOver extends PopOver {
+public abstract class MFilterPopOver extends MPopOver {
 
-    public static final int GAP = FxHelper.getUIScaled(8);
-    public static final int WIDTH = FxHelper.getUIScaled(96);
     private final Button allButton = new Button(Dict.SHOW_ALL.toString());
     private final Button clearButton = new Button(Dict.CLEAR.toString());
     private final HBox mButtonBox;
 
-    public static void autoSize(VBox vBox) {
-        for (Node node : vBox.getChildren()) {
-            VBox.setVgrow(node, Priority.ALWAYS);
-
-            if (node instanceof Control) {
-                Control c = (Control) node;
-                c.setPrefWidth(2 * WIDTH + GAP);
-            }
-        }
-        vBox.setPadding(FxHelper.getUIScaledInsets(GAP));
-    }
-
     public MFilterPopOver() {
-        setArrowLocation(PopOver.ArrowLocation.TOP_RIGHT);
-        setHeaderAlwaysVisible(true);
-        setCloseButtonEnabled(false);
-        setDetachable(true);
-        setAnimated(true);
-
         setTitle(Dict.FILTER.toString());
         allButton.setOnAction((event) -> {
             reset();
@@ -69,6 +45,8 @@ public abstract class MFilterPopOver extends PopOver {
         clearButton.setPrefWidth(WIDTH);
         mButtonBox = new HBox(GAP, allButton, clearButton);
         mButtonBox.setAlignment(Pos.CENTER);
+
+        getAction().setGraphic(MaterialIcon._Content.FILTER_LIST.getImageView(getIconSizeToolBarInt()));
     }
 
     public abstract void clear();
