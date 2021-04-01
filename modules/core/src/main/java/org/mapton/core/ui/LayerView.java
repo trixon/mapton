@@ -28,7 +28,11 @@ import se.trixon.almond.util.fx.FxHelper;
  */
 public class LayerView extends BorderPane {
 
-    public LayerView() {
+    public static LayerView getInstance() {
+        return Holder.INSTANCE;
+    }
+
+    private LayerView() {
         createUI();
 
         MOptions.getInstance().engineProperty().addListener((ObservableValue<? extends String> ov, String t, String t1) -> {
@@ -46,5 +50,10 @@ public class LayerView extends BorderPane {
         Platform.runLater(() -> {
             setCenter(Mapton.getEngine().getLayerView());
         });
+    }
+
+    private static class Holder {
+
+        private static final LayerView INSTANCE = new LayerView();
     }
 }

@@ -59,7 +59,6 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
 public class MapToolBar extends BaseToolBar {
 
     private final String CSS_FILE = getClass().getResource("toolbar_map.css").toExternalForm();
-
     private Action mAttributionAction;
     private PopOver mAttributionPopOver;
     private AttributionView mAttributionView;
@@ -313,12 +312,18 @@ public class MapToolBar extends BaseToolBar {
 
         mPoiPopOver = new PopOver();
         initPopOver(mPoiPopOver, MDict.POI.toString(), PoisViewManager.getInstance().getPoisView(), false);
+        mPoiPopOver.setOnShowing(event -> {
+            mPoiPopOver.setContentNode(null);
+            mPoiPopOver.setContentNode(PoisViewManager.getInstance().getPoisView());
+            setPopOverWidths(FxHelper.getUIScaled(DEFAULT_POP_OVER_WIDTH), mPoiPopOver);
+        });
         mPoiPopOver.setArrowLocation(ArrowLocation.TOP_CENTER);
 
         mLayerPopOver = new PopOver();
         initPopOver(mLayerPopOver, Dict.LAYERS.toString(), null, false);
         mLayerPopOver.setOnShowing(event -> {
-            mLayerPopOver.setContentNode(new LayerView());//TODO Why this?
+            mLayerPopOver.setContentNode(null);
+            mLayerPopOver.setContentNode(LayerView.getInstance());
             setPopOverWidths(FxHelper.getUIScaled(DEFAULT_POP_OVER_WIDTH), mLayerPopOver);
         });
         mLayerPopOver.setArrowLocation(ArrowLocation.TOP_CENTER);

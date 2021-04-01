@@ -42,7 +42,7 @@ import org.openide.windows.TopComponent;
 )
 public final class PoiTopComponent extends MTopComponent {
 
-    private BorderPane mRoot;
+    private BorderPane mBorderPane;
 
     public PoiTopComponent() {
         putClientProperty(PROP_MAXIMIZATION_DISABLED, Boolean.TRUE);
@@ -52,6 +52,14 @@ public final class PoiTopComponent extends MTopComponent {
 
         setName(MDict.POI.toString());
         setPopOverHolder(true);
+    }
+
+    @Override
+    protected void fxComponentOpened() {
+        super.fxComponentOpened();
+        if (mBorderPane != null) {
+            mBorderPane.setCenter(PoisViewManager.getInstance().getPoisView());
+        }
     }
 
     @Override
@@ -72,8 +80,8 @@ public final class PoiTopComponent extends MTopComponent {
     }
 
     private Scene createScene() {
-        mRoot = new BorderPane(PoisViewManager.getInstance().getPoisView());
+        mBorderPane = new BorderPane(PoisViewManager.getInstance().getPoisView());
 
-        return new Scene(mRoot);
+        return new Scene(mBorderPane);
     }
 }

@@ -59,6 +59,14 @@ public final class LayerTopComponent extends MTopComponent {
     }
 
     @Override
+    protected void fxComponentOpened() {
+        super.fxComponentOpened();
+        if (mBorderPane != null) {
+            mBorderPane.setCenter(LayerView.getInstance());
+        }
+    }
+
+    @Override
     protected void initFX() {
         setScene(createScene());
     }
@@ -76,8 +84,7 @@ public final class LayerTopComponent extends MTopComponent {
     }
 
     private Scene createScene() {
-        mBorderPane = new BorderPane();
-        mBorderPane.setCenter(new LayerView());
+        mBorderPane = new BorderPane(LayerView.getInstance());
 
         return new Scene(mBorderPane);
     }
