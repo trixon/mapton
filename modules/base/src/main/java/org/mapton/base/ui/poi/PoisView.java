@@ -23,7 +23,6 @@ import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -33,7 +32,6 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.Separator;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.TextField;
-import javafx.scene.control.ToolBar;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -51,13 +49,12 @@ import org.mapton.api.MPoiManager;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.mapton.api.ui.MFilterPopOver;
-import static org.mapton.api.ui.MFilterPopOver.GAP;
-import static org.mapton.api.ui.MFilterPopOver.autoSize;
+import static org.mapton.api.ui.MPopOver.GAP;
+import static org.mapton.api.ui.MPopOver.autoSize;
 import org.openide.util.Lookup;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.FxHelper;
-import se.trixon.almond.util.fx.PopOverWatcher;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 
 /**
@@ -98,36 +95,25 @@ public class PoisView extends BorderPane {
         mListView.itemsProperty().bind(mManager.timeFilteredItemsProperty());
         mListView.setCellFactory(param -> new PoiListCell());
 
-        Action refreshAction = new Action(Dict.REFRESH.toString(), event -> {
+        var refreshAction = new Action(Dict.REFRESH.toString(), event -> {
             mManager.refresh();
         });
         refreshAction.setGraphic(MaterialIcon._Navigation.REFRESH.getImageView(getIconSizeToolBarInt()));
 
-        Action filterAction = new Action(Dict.FILTER.toString(), event -> {
-            if (mFilterPopOver.isShowing()) {
-                mFilterPopOver.hide();
-            } else {
-                Node node = (Node) event.getSource();
-                mFilterPopOver.show(node);
-                PopOverWatcher.getInstance().registerPopOver(mFilterPopOver, node);
-            }
-        });
-        filterAction.setGraphic(MaterialIcon._Content.FILTER_LIST.getImageView(getIconSizeToolBarInt()));
-
-        Action optionsAction = new Action(Dict.OPTIONS.toString(), event -> {
+        var optionsAction = new Action(Dict.OPTIONS.toString(), event -> {
         });
         optionsAction.setGraphic(MaterialIcon._Action.SETTINGS.getImageView(getIconSizeToolBarInt()));
         optionsAction.setDisabled(true);
 
         ArrayList<Action> actions = new ArrayList<>();
         actions.add(refreshAction);
-        actions.add(filterAction);
+        actions.add(mFilterPopOver.getAction());
         actions.add(optionsAction);
 
-        ToolBar toolBar = ActionUtils.createToolBar(actions, ActionUtils.ActionTextBehavior.HIDE);
+        var toolBar = ActionUtils.createToolBar(actions, ActionUtils.ActionTextBehavior.HIDE);
         FxHelper.adjustButtonWidth(toolBar.getItems().stream(), getIconSizeToolBarInt());
         FxHelper.undecorateButtons(toolBar.getItems().stream());
-        BorderPane topBorderPane = new BorderPane(mFilterTextField);
+        var topBorderPane = new BorderPane(mFilterTextField);
         topBorderPane.setRight(toolBar);
         toolBar.setMinWidth(getIconSizeToolBarInt() * 3 * 1.6);
 

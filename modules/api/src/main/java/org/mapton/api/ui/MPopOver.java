@@ -22,6 +22,7 @@ import javafx.scene.layout.VBox;
 import org.controlsfx.control.PopOver;
 import org.controlsfx.control.action.Action;
 import se.trixon.almond.util.fx.FxHelper;
+import se.trixon.almond.util.fx.PopOverWatcher;
 
 /**
  *
@@ -56,7 +57,9 @@ public abstract class MPopOver extends PopOver {
             if (isShowing()) {
                 hide();
             } else {
-                show(((ButtonBase) actionEvent.getSource()));
+                var node = (ButtonBase) actionEvent.getSource();
+                show(node);
+                PopOverWatcher.getInstance().registerPopOver(this, node);
             }
         });
     }
