@@ -21,7 +21,6 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import org.mapton.api.MOptions;
 import static org.mapton.api.MOptions.*;
 import org.openide.util.NbBundle;
@@ -54,8 +53,7 @@ public class GlobalGridView extends VBox {
     private void createUI() {
         ResourceBundle bundle = NbBundle.getBundle(GridView.class);
         mPlotCheckBox = new CheckBox(Dict.GLOBAL.toString());
-        mPlotCheckBox.setFont(Font.font(Font.getDefault().getFamily(), FontWeight.BOLD, FxHelper.getScaledFontSize() * 1.2));
-
+        mPlotCheckBox.setStyle("-fx-font-weight: bold; -fx-font-size: 1.3em");
         mClampToGroundCheckBox = new CheckBox("CLAMP TO GROUND");
 
         mLongitudesCheckBox = new CheckBox(bundle.getString("longitudes"));
