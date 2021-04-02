@@ -15,6 +15,8 @@
  */
 package org.mapton.core;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import javax.swing.JFrame;
@@ -27,7 +29,9 @@ import org.mapton.api.Mapton;
 import org.mapton.core.api.MaptonNb;
 import org.mapton.core.updater.UpdateNotificator;
 import org.openide.awt.Actions;
+import org.openide.awt.HtmlBrowser;
 import org.openide.modules.OnStart;
+import org.openide.util.Exceptions;
 import org.openide.util.NbPreferences;
 import org.openide.windows.WindowManager;
 import se.trixon.almond.nbp.Almond;
@@ -136,5 +140,14 @@ public class Initializer implements Runnable {
         Mapton.getGlobalState().addListener(gsce -> {
             Almond.openAndActivateTopComponent(gsce.getValue());
         }, MKey.LAYER_FAST_OPEN_TOOL);
+
+        SystemHelper.setDesktopBrowser(url -> {
+            try {
+                HtmlBrowser.URLDisplayer.getDefault().showURL(new URL(url));
+            } catch (MalformedURLException ex) {
+                Exceptions.printStackTrace(ex);
+            }
+        });
     }
+
 }
