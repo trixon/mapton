@@ -123,7 +123,7 @@ public class GridLayerBundle extends LayerBundle {
         });
 
         mManager.getItems().addListener((ListChangeListener.Change<? extends MLocalGrid> c) -> {
-//            repaint();
+            repaint();
         });
     }
 

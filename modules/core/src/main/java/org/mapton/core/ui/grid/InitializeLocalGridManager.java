@@ -15,8 +15,13 @@
  */
 package org.mapton.core.ui.grid;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import org.mapton.api.MCoordinateFile;
 import org.mapton.api.MLocalGridManager;
+import org.mapton.api.Mapton;
 import org.openide.modules.OnStart;
+import org.openide.util.Exceptions;
 
 /**
  *
@@ -28,7 +33,21 @@ public class InitializeLocalGridManager implements Runnable {
     @Override
     public void run() {
         var manager = MLocalGridManager.getInstance();
-        manager.getItems().setAll(manager.loadItems());
-    }
+        try {
+            manager.getItems().setAll(manager.loadItems());
+        } catch (Exception e) {
+        }
 
+        Mapton.getGlobalState().addListener(gsce -> {
+            ArrayList<MCoordinateFile> coordinateFiles = gsce.getValue();
+            for (var coordinateFile : coordinateFiles) {
+                try {
+                    manager.gridImport(coordinateFile.getFile());
+                } catch (IOException ex) {
+                    Exceptions.printStackTrace(ex);
+                }
+            }
+            manager.save();
+        }, GridFileOpener.class.getName());
+    }
 }

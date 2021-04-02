@@ -15,8 +15,6 @@
  */
 package org.mapton.core.ui.grid;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import javafx.application.Platform;
@@ -32,14 +30,11 @@ import javafx.scene.text.FontWeight;
 import org.controlsfx.control.CheckListView;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
-import org.mapton.api.MCoordinateFile;
 import org.mapton.api.MLocalGrid;
 import org.mapton.api.MLocalGridManager;
 import org.mapton.api.MOptions;
 import static org.mapton.api.MOptions.*;
-import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
-import org.openide.util.Exceptions;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.icons.material.MaterialIcon;
@@ -138,17 +133,6 @@ public class LocalGridsView extends BorderPane {
                 mManager.save();
             });
         });
-
-        Mapton.getGlobalState().addListener(gsce -> {
-            ArrayList<MCoordinateFile> coordinateFiles = gsce.getValue();
-            for (var coordinateFile : coordinateFiles) {
-                try {
-                    mManager.gridImport(coordinateFile.getFile());
-                } catch (IOException ex) {
-                    Exceptions.printStackTrace(ex);
-                }
-            }
-        }, GridFileOpener.class.getName());
     }
 
     private void initStates() {
