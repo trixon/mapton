@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.mapton</groupId>
         <artifactId>mapton-parent</artifactId>
-        <version>2.1.2-SNAPSHOT</version>
+        <version>2.2.0</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <artifactId>wms-nasa</artifactId>
