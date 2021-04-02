@@ -48,6 +48,7 @@ import org.mapton.api.Mapton;
 import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.MathHelper;
+import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
@@ -63,6 +64,24 @@ public class MapJfxMapEngine extends MEngine {
     private final OfflineCache mOfflineCache = OfflineCache.INSTANCE;
 
     public MapJfxMapEngine() {
+    }
+
+    @Override
+    public void create(Runnable postCreateRunnable) {
+        FxHelper.runLater(() -> {
+            if (mMapView == null) {
+                init();
+                initListeners();
+                mMapView.initialize(Configuration.builder()
+                        .showZoomControls(false)
+                        .build()
+                );
+                Mapton.getLog().i(LOG_TAG, "Loaded and ready");
+                postCreateRunnable.run();
+            } else {
+                postCreateRunnable.run();
+            }
+        });
     }
 
     @Override
@@ -86,10 +105,6 @@ public class MapJfxMapEngine extends MEngine {
 
     @Override
     public Node getMapNode() {
-        if (mMapView == null) {
-            init();
-        }
-
         updateToolbarDocumentInfo();
 
         return mMapView;
@@ -165,22 +180,6 @@ public class MapJfxMapEngine extends MEngine {
                 }).start();
             }
         });
-
-        new Thread(() -> {
-            try {
-                TimeUnit.MILLISECONDS.sleep(2);
-                Platform.runLater(() -> {
-                    initListeners();
-                    mMapView.initialize(Configuration.builder()
-                            .showZoomControls(false)
-                            .build()
-                    );
-                    Mapton.getLog().i(LOG_TAG, "Loaded and ready");
-                });
-            } catch (InterruptedException ex) {
-                Exceptions.printStackTrace(ex);
-            }
-        }).start();
 
         setImageRenderer(() -> {
             WritableImage image = mMapView.snapshot(new SnapshotParameters(), null);

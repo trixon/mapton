@@ -128,10 +128,6 @@ public class Initializer implements Runnable {
                 Actions.forID("Window", "org.netbeans.core.windows.actions.ShowEditorOnlyAction").actionPerformed(null);
             }
 
-            if (mOptions.isFirstRun()) {
-                Actions.forID("Mapton", "org.mapton.core.actions.AboutMapsAction").actionPerformed(null);
-            }
-
             Mapton.getExecutionFlow().executeWhenReady(MKey.EXECUTION_FLOW_MAP_INITIALIZED, () -> {
                 MaptonNb.progressStop(Dict.WARMING_UP.toString());
                 SwingHelper.runLaterDelayed(10000, () -> {
@@ -141,6 +137,10 @@ public class Initializer implements Runnable {
                     Almond.getTopComponent("UpdaterTopComponent");
                     Almond.getTopComponent("PropertiesTopComponent");
                     Almond.getTopComponent("ChartTopComponent");
+
+                    if (mOptions.isFirstRun()) {
+                        Actions.forID("Mapton", "org.mapton.core.actions.AboutMapsAction").actionPerformed(null);
+                    }
                 });
             });
 

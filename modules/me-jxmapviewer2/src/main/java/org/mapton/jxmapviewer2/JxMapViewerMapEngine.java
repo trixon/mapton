@@ -59,6 +59,17 @@ public class JxMapViewerMapEngine extends MEngine {
     }
 
     @Override
+    public void create(Runnable postCreateRunnable) {
+        if (mMapKit == null) {
+            init();
+            initListeners();
+            postCreateRunnable.run();
+        } else {
+            postCreateRunnable.run();
+        }
+    }
+
+    @Override
     public void fitToBounds(MLatLonBox latLonBox) {
         Set<GeoPosition> positions = new HashSet<>();
         positions.add(toGeoPosition(latLonBox.getNorthEast()));
@@ -85,11 +96,6 @@ public class JxMapViewerMapEngine extends MEngine {
 
     @Override
     public JComponent getMapComponent() {
-        if (mMapKit == null) {
-            init();
-            initListeners();
-        }
-
         updateToolbarDocumentInfo();
 
         return mMapKit;

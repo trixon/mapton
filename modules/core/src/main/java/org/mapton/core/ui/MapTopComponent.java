@@ -31,7 +31,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
@@ -310,43 +309,49 @@ public final class MapTopComponent extends MTopComponent {
             add(MapToolBarPanel.getInstance().getToolBarPanel(), BorderLayout.NORTH);
             add(mProgressPanel, BorderLayout.CENTER);
 
-            var engineUI = engine.getMapComponent();
-            var dimension = new Dimension(1, 1);
-            engineUI.setMinimumSize(dimension);
-            engineUI.setPreferredSize(dimension);
+            Runnable postCreateRunnable = () -> {
+                var engineUI = engine.getMapComponent();
+                var dimension = new Dimension(1, 1);
+                engineUI.setMinimumSize(dimension);
+                engineUI.setPreferredSize(dimension);
 
-            remove(mProgressPanel);
-            add(engineUI, BorderLayout.CENTER);
-            revalidate();
-            repaint();
+                remove(mProgressPanel);
+                add(engineUI, BorderLayout.CENTER);
 
-            try {
-                engine.onActivate();
-                engine.panTo(mMOptions.getMapCenter(), mMOptions.getMapZoom());
-            } catch (NullPointerException e) {
-            }
+                try {
+                    engine.onActivate();
+                    engine.panTo(mMOptions.getMapCenter(), mMOptions.getMapZoom());
+                } catch (NullPointerException e) {
+                }
 
-            revalidate();
-            repaint();
+                revalidate();
+                repaint();
 
-            markMapAsInitialized();
+                markMapAsInitialized();
+            };
+
+            engine.create(postCreateRunnable);
         } else {
-            Platform.runLater(() -> {
-                resetFx();
-                add(MapToolBarPanel.getInstance().getToolBarPanel(), BorderLayout.NORTH);
+            resetFx();
+            add(MapToolBarPanel.getInstance().getToolBarPanel(), BorderLayout.NORTH);
+
+            Runnable postCreateRunnable = () -> {
                 mRoot.setCenter(engine.getMapNode());
                 try {
                     engine.onActivate();
                     engine.panTo(mMOptions.getMapCenter(), mMOptions.getMapZoom());
                 } catch (Exception e) {
                 }
+
                 SwingUtilities.invokeLater(() -> {
                     revalidate();
                     repaint();
 
                     markMapAsInitialized();
                 });
-            });
+            };
+
+            engine.create(postCreateRunnable);
         }
 
         Mapton.logLoading("Map Engine", engine.getName());

@@ -65,6 +65,7 @@ import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.GlobalState;
 import se.trixon.almond.util.SystemHelper;
+import se.trixon.almond.util.swing.SwingHelper;
 
 /**
  *
@@ -127,6 +128,26 @@ public class WorldWindMapEngine extends MEngine {
     }
 
     @Override
+    public void create(Runnable postCreateRunnable) {
+        if (mMainPanel == null) {
+            initMainPanel();
+
+            new Thread(() -> {
+                init();
+                initListeners();
+
+                SwingHelper.runLater(() -> {
+                    mMainPanel.removeAll();
+                    mMainPanel.add(mMap, BorderLayout.CENTER);
+                    postCreateRunnable.run();
+                });
+            }).start();
+        } else {
+            postCreateRunnable.run();
+        }
+    }
+
+    @Override
     public void fitToBounds(MLatLonBox latLonBox) {
         if (!mInitialized || (latLonBox.getLatitudeSpan() == 0 && latLonBox.getLongitudeSpan() == 0)) {
             return;
@@ -158,22 +179,6 @@ public class WorldWindMapEngine extends MEngine {
 
     @Override
     public JComponent getMapComponent() {
-        if (mMainPanel == null) {
-            initMainPanel();
-
-            new Thread(() -> {
-                init();
-                initListeners();
-
-                SwingUtilities.invokeLater(() -> {
-                    mMainPanel.removeAll();
-                    mMainPanel.add(mMap, BorderLayout.CENTER);
-                    mMainPanel.revalidate();
-                    mMainPanel.repaint();
-                });
-            }).start();
-        }
-
         updateToolbarDocumentInfo();
 
         return mMainPanel;
@@ -441,10 +446,10 @@ public class WorldWindMapEngine extends MEngine {
 
     private void initMainPanel() {
         mMainPanel = new JPanel(new BorderLayout());
-        JProgressBar progressBar = new JProgressBar();
+        var progressBar = new JProgressBar();
         progressBar.setIndeterminate(true);
         mMainPanel.add(progressBar, BorderLayout.NORTH);
-        JLabel label = new JLabel(String.format("<html>%s<br/><br/><br/></html>", Dict.PATIENCE_IS_A_VIRTUE.toString()));
+        var label = new JLabel(String.format("<html>%s<br/><br/><br/></html>", Dict.PATIENCE_IS_A_VIRTUE.toString()));
         label.setVerticalAlignment(SwingConstants.BOTTOM);
         label.setFont(label.getFont().deriveFont(label.getFont().getSize() * 2f));
         label.setHorizontalAlignment(SwingConstants.CENTER);

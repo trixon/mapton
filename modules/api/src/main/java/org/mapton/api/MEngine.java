@@ -84,6 +84,8 @@ public abstract class MEngine {
     public MEngine() {
     }
 
+    public abstract void create(Runnable postCreateRunnable);
+
     public void displayContextMenu(Point screenXY) {
         mLockedLatitude = mLatitude;
         mLockedLongitude = mLongitude;

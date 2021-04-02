@@ -72,6 +72,18 @@ public class GMapsFXMapEngine extends MEngine {
     }
 
     @Override
+    public void create(Runnable postCreateRunnable) {
+        FxHelper.runLater(() -> {
+            if (mMapView == null) {
+                init();
+                postCreateRunnable.run();
+            } else {
+                postCreateRunnable.run();
+            }
+        });
+    }
+
+    @Override
     public void fitToBounds(MLatLonBox latLonBox) {
         mMap.fitBounds(new LatLongBounds(toLatLong(latLonBox.getSouthWest()), toLatLong(latLonBox.getNorthEast())));
     }
@@ -92,10 +104,6 @@ public class GMapsFXMapEngine extends MEngine {
 
     @Override
     public Node getMapNode() {
-        if (mMapView == null) {
-            init();
-        }
-
         updateToolbarDocumentInfo();
 
         return mMapView;
