@@ -15,10 +15,14 @@
  */
 package org.mapton.core;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
+import javafx.embed.swing.SwingFXUtils;
+import javafx.scene.image.ImageView;
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import org.apache.commons.lang3.SystemUtils;
@@ -41,7 +45,6 @@ import se.trixon.almond.nbp.dialogs.NbOptionalDialog;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.PrefsHelper;
 import se.trixon.almond.util.SystemHelper;
-import se.trixon.almond.util.SystemHelperFx;
 import se.trixon.almond.util.fx.AboutModel;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.PopOverWatcher;
@@ -89,7 +92,14 @@ public class Initializer implements Runnable {
 
                 if (SystemUtils.IS_OS_MAC) {
                     AboutAction.setFx(true);
-                    AboutAction.setAboutModel(new AboutModel(SystemHelper.getBundle(Initializer.class, "about"), SystemHelperFx.getResourceAsImageView(Initializer.class, "logo.png")));
+                    try {
+                        String path = "/" + SystemHelper.getPackageAsPath(Initializer.class) + "logo.png";
+                        var bufferedImage = ImageIO.read(Initializer.class.getResource(path));
+                        var imageView = new ImageView(SwingFXUtils.toFXImage(bufferedImage, null));
+                        AboutAction.setAboutModel(new AboutModel(SystemHelper.getBundle(Initializer.class, "about"), imageView));
+                    } catch (IOException ex) {
+                        Exceptions.printStackTrace(ex);
+                    }
                 }
             });
         });
