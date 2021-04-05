@@ -47,7 +47,7 @@
                 "onlyRaw": true,
                 "providerName": null,
                 "providerUrl": null,
-                "rawHtml": "<a href=\"https://s2maps.eu\">Sentinel-2 cloudless – https://s2maps.eu</a> by <a href=\"https://eox.at/\">EOX IT Services GmbH</a> (Contains modified Copernicus Sentinel data 2019)"
+                "rawHtml": "<a href=\"https://s2maps.eu\">Sentinel-2 cloudless – https://s2maps.eu</a> by <a href=\"https://eox.at/\">EOX IT Services GmbH</a> (Contains modified Copernicus Sentinel data 2020)"
             },
             "at.eox.streets": {
                 "licenseName": null,
@@ -81,7 +81,7 @@
             "coastline": "at.eox.coastline",
             "hydrography": "at.eox.hydrography",
             "osm": "at.eox.osm",
-            "s2cloudless-2019": "at.eox.s2cloudless",
+            "s2cloudless-2020": "at.eox.s2cloudless",
             "streets": "at.eox.streets",
             "terrain": "at.eox.terrain",
             "terrain-light": "at.eox.terrain-light"

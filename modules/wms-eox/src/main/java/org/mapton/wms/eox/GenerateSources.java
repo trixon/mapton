@@ -45,20 +45,20 @@ public class GenerateSources extends MWmsGenerator {
         layers.put("coastline", "at.eox.coastline");
         layers.put("hydrography", "at.eox.hydrography");
         layers.put("osm", "at.eox.osm");
-        layers.put("s2cloudless-2019", "at.eox.s2cloudless");
+        layers.put("s2cloudless-2020", "at.eox.s2cloudless");
         layers.put("streets", "at.eox.streets");
         layers.put("terrain", "at.eox.terrain");
         layers.put("terrain-light", "at.eox.terrain-light");
 
-        MAttribution s2Attribution = new MAttribution();
+        var s2Attribution = new MAttribution();
         s2Attribution.setOnlyRaw(true);
-        s2Attribution.setRawHtml("<a href=\"https://s2maps.eu\">Sentinel-2 cloudless – https://s2maps.eu</a> by <a href=\"https://eox.at/\">EOX IT Services GmbH</a> (Contains modified Copernicus Sentinel data 2019)");
+        s2Attribution.setRawHtml("<a href=\"https://s2maps.eu\">Sentinel-2 cloudless – https://s2maps.eu</a> by <a href=\"https://eox.at/\">EOX IT Services GmbH</a> (Contains modified Copernicus Sentinel data 2020)");
 
-        MAttribution generalAttribution = new MAttribution();
+        var generalAttribution = new MAttribution();
         generalAttribution.setOnlyRaw(true);
         generalAttribution.setRawHtml("Data &copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors and <a href=\"https://maps.eox.at/#data\">others</a>, Rendering &copy; <a href=\"https://eox.at\">EOX</a>");
 
-        MAttribution nasaAttribution = new MAttribution();
+        var nasaAttribution = new MAttribution();
         nasaAttribution.setOnlyRaw(true);
         nasaAttribution.setRawHtml("Data &copy; <a href=\"https://neo.sci.gsfc.nasa.gov\">NASA</a>, Rendering &copy; <a href=\"https://eox.at\">EOX</a>");
 
