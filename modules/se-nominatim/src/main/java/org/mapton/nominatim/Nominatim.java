@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2021 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,20 +19,17 @@ import fr.dudie.nominatim.client.JsonNominatimClient;
 import fr.dudie.nominatim.client.NominatimOptions;
 import fr.dudie.nominatim.model.Address;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.logging.Logger;
-import org.apache.http.client.HttpClient;
-import org.apache.http.conn.ClientConnectionManager;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.scheme.SchemeRegistry;
-import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.SingleClientConnManager;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.mapton.api.MLatLon;
 import org.openide.util.Exceptions;
 
@@ -50,6 +47,7 @@ public class Nominatim {
 
     public static void main(String[] args) throws IOException {
         Nominatim nominatim = getInstance();
+        System.out.println(ToStringBuilder.reflectionToString(nominatim.getAddress(new MLatLon(57.685575, 11.959081)), ToStringStyle.JSON_STYLE));
     }
 
     private Nominatim() {
@@ -68,34 +66,40 @@ public class Nominatim {
     }
 
     private JsonNominatimClient getClient() {
-        InputStream inputStream = null;
-
         try {
-            SchemeRegistry registry = new SchemeRegistry();
-            registry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
-            ClientConnectionManager connexionManager = new SingleClientConnManager(null, registry);
-            HttpClient httpClient = new DefaultHttpClient(connexionManager, null);
+            int timeout = 5000;
 
-            inputStream = new URL("https://mapton.org/files/nominatim-client.properties").openStream();
-            Properties properties = new Properties();
-            properties.load(inputStream);
+            var urlConnection = new URL("https://mapton.org/files/nominatim-client.properties").openConnection();
+            urlConnection.setConnectTimeout(timeout);
+            urlConnection.setReadTimeout(timeout);
+            urlConnection.connect();
+
+            var properties = new Properties();
+            properties.load(urlConnection.getInputStream());
+            urlConnection.getInputStream().close();
+
             String baseUrl = properties.getProperty("nominatim.server.url");
             String email = properties.getProperty("nominatim.headerEmail");
-            NominatimOptions options = new NominatimOptions();
-            options.setAcceptLanguage(Locale.getDefault());
-            return new JsonNominatimClient(baseUrl, httpClient, email, options);
+
+            var nominatimOptions = new NominatimOptions();
+            nominatimOptions.setAcceptLanguage(Locale.getDefault());
+
+            var requestConfig = RequestConfig.custom()
+                    .setConnectTimeout(timeout)
+                    .setConnectionRequestTimeout(timeout)
+                    .setSocketTimeout(timeout)
+                    .build();
+
+            var httpClient = HttpClientBuilder.create()
+                    .setDefaultRequestConfig(requestConfig)
+                    .setSSLSocketFactory(SSLConnectionSocketFactory.getSocketFactory())
+                    .build();
+
+            return new JsonNominatimClient(baseUrl, httpClient, email, nominatimOptions);
         } catch (MalformedURLException ex) {
             Exceptions.printStackTrace(ex);
         } catch (IOException ex) {
             Exceptions.printStackTrace(ex);
-        } finally {
-            try {
-                if (inputStream != null) {
-                    inputStream.close();
-                }
-            } catch (IOException ex) {
-                Exceptions.printStackTrace(ex);
-            }
         }
 
         return null;
