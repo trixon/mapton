@@ -15,6 +15,7 @@
  */
 package org.mapton.addon.files.renderers;
 
+import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.Renderable;
 import java.io.IOException;
@@ -35,7 +36,7 @@ public abstract class Renderer {
     protected static final ConcurrentHashMap<String, ArrayList<Renderable>> DIGEST_RENDERABLE_MAP = new ConcurrentHashMap<>();
     protected MCooTrans mCooTrans;
     protected MCoordinateFile mCoordinateFile;
-    protected RenderableLayer mLayer;
+    protected Layer mLayer;
     private final DigestUtils mDigestUtils = new DigestUtils(MessageDigestAlgorithms.SHA_256);
 
     public String getDigest() {

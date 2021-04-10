@@ -38,6 +38,7 @@ import org.apache.commons.io.monitor.FileAlterationMonitor;
 import org.apache.commons.io.monitor.FileAlterationObserver;
 import org.mapton.addon.files.coordinate_file_openers.GeoCoordinateFileOpener;
 import org.mapton.addon.files.coordinate_file_openers.KmlCoordinateFileOpener;
+import org.mapton.addon.files.coordinate_file_openers.ShpCoordinateFileOpener;
 import org.mapton.api.MCoordinateFile;
 import org.mapton.api.Mapton;
 import org.openide.util.Exceptions;
@@ -136,7 +137,7 @@ public class CoordinateFileManager {
     }
 
     public void sort() {
-        Comparator<MCoordinateFile> c1 = (MCoordinateFile o1, MCoordinateFile o2) -> o1.getFile().getName().toLowerCase(Locale.getDefault()).compareTo(o2.getFile().getName().toLowerCase(Locale.getDefault()));
+        Comparator<MCoordinateFile> c1 = (o1, o2) -> o1.getFile().getName().toLowerCase(Locale.getDefault()).compareTo(o2.getFile().getName().toLowerCase(Locale.getDefault()));
 
         FXCollections.sort(mItemsProperty.get(), c1);
     }
@@ -222,7 +223,10 @@ public class CoordinateFileManager {
             FxHelper.runLater(() -> {
                 addFiles(gsce.getValue());
             });
-        }, GeoCoordinateFileOpener.class.getName(), KmlCoordinateFileOpener.class.getName());
+        }, GeoCoordinateFileOpener.class.getName(),
+                KmlCoordinateFileOpener.class.getName(),
+                ShpCoordinateFileOpener.class.getName()
+        );
     }
 
     private static class Holder {

@@ -18,6 +18,7 @@ package org.mapton.addon.files;
 import org.mapton.addon.files.api.CoordinateFileManager;
 import org.mapton.addon.files.coordinate_file_openers.GeoCoordinateFileOpener;
 import org.mapton.addon.files.coordinate_file_openers.KmlCoordinateFileOpener;
+import org.mapton.addon.files.coordinate_file_openers.ShpCoordinateFileOpener;
 import org.mapton.api.Mapton;
 import org.openide.modules.OnStart;
 import org.openide.windows.WindowManager;
@@ -41,7 +42,9 @@ public class Initializer implements Runnable {
 
         Mapton.getGlobalState().addListener(gsce -> {
             Almond.openAndActivateTopComponent("FilesTopComponent");
-        }, GeoCoordinateFileOpener.class.getName(), KmlCoordinateFileOpener.class.getName()
+        }, GeoCoordinateFileOpener.class.getName(),
+                KmlCoordinateFileOpener.class.getName(),
+                ShpCoordinateFileOpener.class.getName()
         );
     }
 }
