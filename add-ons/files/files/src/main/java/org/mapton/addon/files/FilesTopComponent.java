@@ -18,7 +18,6 @@ package org.mapton.addon.files;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
-import org.mapton.addon.files.ui.DocumentsPane;
 import org.mapton.api.Mapton;
 import org.mapton.core.api.MTopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
@@ -80,7 +79,7 @@ public final class FilesTopComponent extends MTopComponent {
 
     private Scene createScene() {
         Label titleLabel = Mapton.createTitle(Dict.FILES.toString());
-        mRoot = new BorderPane(new DocumentsPane());
+        mRoot = new BorderPane(new FilesPane());
         mRoot.setTop(titleLabel);
         titleLabel.prefWidthProperty().bind(mRoot.widthProperty());
 

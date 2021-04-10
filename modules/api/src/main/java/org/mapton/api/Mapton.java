@@ -15,6 +15,8 @@
  */
 package org.mapton.api;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import java.io.File;
 import java.text.DateFormat;
 import java.util.HashMap;
@@ -51,6 +53,12 @@ import se.trixon.almond.util.swing.SwingHelper;
  * @author Patrik Karlström
  */
 public class Mapton {
+
+    private static final Gson sGson = new GsonBuilder()
+            .setVersion(1.0)
+            .serializeNulls()
+            .setPrettyPrinting()
+            .create();
 
     public static final int ICON_SIZE_MODULE = 32;
     public static final int ICON_SIZE_MODULE_TOOLBAR = 40;
@@ -190,6 +198,10 @@ public class Mapton {
 
     public static GlobalState getGlobalState() {
         return sGlobalState;
+    }
+
+    public static Gson getGson() {
+        return sGson;
     }
 
     public static Color getIconColor() {

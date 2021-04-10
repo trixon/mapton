@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.addon.files.api;
+package org.mapton.api;
 
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
@@ -36,9 +36,6 @@ import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
 import org.apache.commons.io.monitor.FileAlterationMonitor;
 import org.apache.commons.io.monitor.FileAlterationObserver;
-import org.mapton.api.MCoordinateFile;
-import org.mapton.api.MCoordinateFileOpener;
-import org.mapton.api.Mapton;
 import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import se.trixon.almond.util.fx.FxHelper;
@@ -47,18 +44,20 @@ import se.trixon.almond.util.fx.FxHelper;
  *
  * @author Patrik Karlström
  */
-public class CoordinateFileManager {
+public class MCoordinateFileManager {
+
+    public static final String KEY_SOURCE_UPDATED = "files.source_updated";
 
     private File mConfigDir;
     private ObjectProperty<ObservableList<MCoordinateFile>> mItemsProperty = new SimpleObjectProperty<>();
     private File mSourcesFile;
     private final LongProperty mUpdatedProperty = new SimpleLongProperty();
 
-    public static CoordinateFileManager getInstance() {
+    public static MCoordinateFileManager getInstance() {
         return Holder.INSTANCE;
     }
 
-    private CoordinateFileManager() {
+    private MCoordinateFileManager() {
         mItemsProperty.setValue(FXCollections.observableArrayList());
         initListeners();
     }
@@ -102,7 +101,7 @@ public class CoordinateFileManager {
 
         try {
             if (getSourcesFile().isFile()) {
-                loadedItems = Mapo.getGson().fromJson(FileUtils.readFileToString(getSourcesFile(), "utf-8"), new TypeToken<ArrayList<MCoordinateFile>>() {
+                loadedItems = Mapton.getGson().fromJson(FileUtils.readFileToString(getSourcesFile(), "utf-8"), new TypeToken<ArrayList<MCoordinateFile>>() {
                 }.getType());
             }
         } catch (IOException | JsonSyntaxException ex) {
@@ -116,7 +115,7 @@ public class CoordinateFileManager {
         final var items = loadedItems; //Lambda below needs final
         Platform.runLater(() -> {
             mItemsProperty.get().setAll(items);
-            Mapton.getGlobalState().put(Mapo.KEY_SOURCE_UPDATED, this);
+            Mapton.getGlobalState().put(KEY_SOURCE_UPDATED, this);
         });
     }
 
@@ -141,7 +140,7 @@ public class CoordinateFileManager {
     }
 
     public void save() throws IOException {
-        FileUtils.writeStringToFile(getSourcesFile(), Mapo.getGson().toJson(mItemsProperty.get()), "utf-8");
+        FileUtils.writeStringToFile(getSourcesFile(), Mapton.getGson().toJson(mItemsProperty.get()), "utf-8");
         refresh();
     }
 
@@ -239,6 +238,6 @@ public class CoordinateFileManager {
 
     private static class Holder {
 
-        private static final CoordinateFileManager INSTANCE = new CoordinateFileManager();
+        private static final MCoordinateFileManager INSTANCE = new MCoordinateFileManager();
     }
 }

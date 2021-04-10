@@ -15,7 +15,7 @@
  */
 package org.mapton.addon.files;
 
-import org.mapton.addon.files.api.CoordinateFileManager;
+import org.mapton.api.MCoordinateFileManager;
 import org.mapton.api.Mapton;
 import org.openide.windows.OnShowing;
 import org.openide.windows.WindowManager;
@@ -34,7 +34,7 @@ public class Initializer implements Runnable {
     @Override
     public void run() {
         WindowManager.getDefault().invokeWhenUIReady(() -> {
-            var coordinateFileManager = CoordinateFileManager.getInstance();
+            var coordinateFileManager = MCoordinateFileManager.getInstance();
             coordinateFileManager.load();
 
             Mapton.getGlobalState().addListener(gsce -> {

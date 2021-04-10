@@ -7,9 +7,9 @@
         <version>2.2.1-SNAPSHOT</version>
         <relativePath>../../../pom.xml</relativePath>
     </parent>
-    <artifactId>addon-files</artifactId>
-    <name>Files</name>
-    <description>Displays files on the map</description>
+    <artifactId>frww-shp</artifactId>
+    <name>FRWW-Shp</name>
+    <description>Shp file renderer for WorldWind</description>
     <packaging>nbm</packaging>
     <build>
         <plugins>
@@ -116,6 +116,10 @@
                     <artifactId>org-netbeans-libs-flatlaf</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>me-worldwind</artifactId>
         </dependency>
 
         <!-- Trixon -->

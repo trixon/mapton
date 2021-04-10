@@ -277,6 +277,11 @@
             <artifactId>fo-shp</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>frww-shp</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <!--Mapton/Unstable-->
         <!--        <dependency>

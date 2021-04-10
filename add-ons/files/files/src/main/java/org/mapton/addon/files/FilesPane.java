@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.addon.files.ui;
+package org.mapton.addon.files;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
-import javafx.scene.Node;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
@@ -29,7 +28,7 @@ import org.controlsfx.control.CheckListView;
 import org.controlsfx.control.IndexedCheckModel;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
-import org.mapton.addon.files.api.CoordinateFileManager;
+import org.mapton.api.MCoordinateFileManager;
 import org.mapton.api.MCoordinateFile;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.openide.DialogDisplayer;
@@ -37,22 +36,20 @@ import org.openide.NotifyDescriptor;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
-import se.trixon.almond.util.fx.PopOverWatcher;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class DocumentsPane extends BorderPane {
+public class FilesPane extends BorderPane {
 
     private List<Action> mActions;
     private final CheckListView<MCoordinateFile> mListView = new CheckListView<>();
-    private final CoordinateFileManager mManager = CoordinateFileManager.getInstance();
-    private final OptionsPopOver mOptionsPopOver = new OptionsPopOver();
+    private final MCoordinateFileManager mManager = MCoordinateFileManager.getInstance();
     private Action mRefreshAction;
 
-    public DocumentsPane() {
+    public FilesPane() {
         createUI();
         refreshCheckedStates();
         initListeners();
@@ -79,13 +76,6 @@ public class DocumentsPane extends BorderPane {
         mRefreshAction.setGraphic(MaterialIcon._Navigation.REFRESH.getImageView(getIconSizeToolBarInt()));
 
         Action optionsAction = new Action(Dict.OPTIONS.toString(), (event) -> {
-            if (mOptionsPopOver.isShowing()) {
-                mOptionsPopOver.hide();
-            } else {
-                Node node = (Node) event.getSource();
-                mOptionsPopOver.show(node);
-                PopOverWatcher.getInstance().registerPopOver(mOptionsPopOver, node);
-            }
         });
         optionsAction.setGraphic(MaterialIcon._Action.SETTINGS.getImageView(getIconSizeToolBarInt()));
         optionsAction.setDisabled(true);

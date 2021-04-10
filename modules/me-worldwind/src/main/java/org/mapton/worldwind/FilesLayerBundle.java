@@ -13,18 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.addon.files;
+package org.mapton.worldwind;
 
 import gov.nasa.worldwind.layers.RenderableLayer;
 import java.util.Locale;
 import javafx.collections.ListChangeListener;
 import org.apache.commons.io.FilenameUtils;
-import org.mapton.addon.files.api.CoordinateFileManager;
-import org.mapton.addon.files.renderers.GeoRenderer;
-import org.mapton.addon.files.renderers.KmlRenderer;
-import org.mapton.addon.files.renderers.ShpRenderer;
+import org.mapton.api.MCoordinateFileManager;
 import org.mapton.api.MCoordinateFile;
 import org.mapton.worldwind.api.LayerBundle;
+import org.mapton.worldwind.temp.GeoRenderer;
+import org.mapton.worldwind.temp.KmlRenderer;
+import org.mapton.worldwind.temp.ShpRenderer;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.swing.DelayedResetRunner;
@@ -37,7 +37,7 @@ import se.trixon.almond.util.swing.DelayedResetRunner;
 public class FilesLayerBundle extends LayerBundle {
 
     private final RenderableLayer mLayer = new RenderableLayer();
-    private final CoordinateFileManager mManager = CoordinateFileManager.getInstance();
+    private final MCoordinateFileManager mManager = MCoordinateFileManager.getInstance();
     private final ShpRenderer mShpRenderer;
 
     public FilesLayerBundle() {
@@ -82,7 +82,7 @@ public class FilesLayerBundle extends LayerBundle {
             mLayer.removeAllRenderables();
 
             for (var coordinateFile : mManager.getItems()) {
-//                if (coordinateFile.isVisible()) { //TODO 
+//                if (coordinateFile.isVisible()) { //TODO
                 String ext = FilenameUtils.getExtension(coordinateFile.getFile().getName()).toLowerCase(Locale.getDefault());
                 switch (ext) {
                     case "geo":

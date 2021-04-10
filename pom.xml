@@ -217,6 +217,7 @@
         <module>add-ons/files/fo-geo</module>
         <module>add-ons/files/fo-kml</module>
         <module>add-ons/files/fo-shp</module>
+        <module>add-ons/files/frww-shp</module>
         <module>add-ons/geonames/geonames-ww</module>
         <module>add-ons/notes/notes</module>
         <module>add-ons/photos/photos</module>
