@@ -16,7 +16,6 @@
 package org.mapton.worldwind.api;
 
 import gov.nasa.worldwind.layers.Layer;
-import java.beans.PropertyChangeEvent;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -47,24 +46,36 @@ public abstract class LayerBundle {
     public LayerBundle() {
     }
 
-    public void attachTopComponentToLayer(String topComponentID, Layer layer) {
-        layer.setValue(WWHelper.KEY_FAST_OPEN, topComponentID);
-    }
-
-    public void connectChildLayers(Layer parentLayer, Layer... childLayers) {
-        mParentLayer = parentLayer;
-        mChildLayers = new HashSet<>(Arrays.asList(childLayers));
-        for (Layer childLayer : childLayers) {
+    public void addAllChildLayers(Layer... childLayers) {
+        mChildLayers.addAll(Arrays.asList(childLayers));
+        for (var childLayer : childLayers) {
             setVisibleInLayerManager(childLayer, false);
+            childLayer.setEnabled(mParentLayer.isEnabled());
         }
 
-        mParentLayer.addPropertyChangeListener((PropertyChangeEvent evt) -> {
-            for (Layer childLayer : childLayers) {
-                if (evt.getPropertyName().equals("Enabled")) {
+        mParentLayer.addPropertyChangeListener(pce -> {
+            if (pce.getPropertyName().equals("Enabled")) {
+                for (var childLayer : mChildLayers) {
                     childLayer.setEnabled(mParentLayer.isEnabled());
                 }
             }
         });
+    }
+
+    public void attachTopComponentToLayer(String topComponentID, Layer layer) {
+        layer.setValue(WWHelper.KEY_FAST_OPEN, topComponentID);
+    }
+
+    /**
+     *
+     * @param parentLayer
+     * @param childLayers
+     * @deprecated Use setAllChildLayers or addAllChildLayers instead
+     */
+    @Deprecated
+    public void connectChildLayers(Layer parentLayer, Layer... childLayers) {
+        mParentLayer = parentLayer;
+        setAllChildLayers(childLayers);
     }
 
     public ObservableList<Layer> getLayers() {
@@ -77,6 +88,10 @@ public abstract class LayerBundle {
 
     public Node getOptionsView() {
         return null;
+    }
+
+    public Layer getParentLayer() {
+        return mParentLayer;
     }
 
     public boolean isPopulated() {
@@ -132,6 +147,11 @@ public abstract class LayerBundle {
         repaint(-1);
     }
 
+    public void setAllChildLayers(Layer... childLayers) {
+        mChildLayers = new HashSet<>(Arrays.asList(childLayers));
+        addAllChildLayers(childLayers);
+    }
+
     public void setCategory(Layer layer, String category) {
         layer.setValue(WWHelper.KEY_LAYER_CATEGORY, category);
     }
@@ -150,6 +170,10 @@ public abstract class LayerBundle {
 
     public void setPainter(Runnable painter) {
         mPainter = painter;
+    }
+
+    public void setParentLayer(Layer parentLayer) {
+        mParentLayer = parentLayer;
     }
 
     public void setPopulated(boolean populated) {
