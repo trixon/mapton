@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.addon.files;
+package org.mapton.files;
 
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -32,7 +32,7 @@ import se.trixon.almond.util.Dict;
  * Top component which displays something.
  */
 @ConvertAsProperties(
-        dtd = "-//org.mapton.addon.files//Files//EN",
+        dtd = "-//org.mapton.files//Files//EN",
         autostore = false
 )
 @TopComponent.Description(
@@ -45,9 +45,10 @@ import se.trixon.almond.util.Dict;
         displayName = "#CTL_FilesAction",
         preferredID = "FilesTopComponent"
 )
-@ActionID(category = "Mapton", id = "org.mapton.addon.files.FilesAction")
+@ActionID(category = "Mapton", id = "org.mapton.files.FilesAction")
 @ActionReferences({
-    @ActionReference(path = "Menu/MapTools/Add-on", position = 0)
+    @ActionReference(path = "Shortcuts", name = "D-U"),
+    @ActionReference(path = "Menu/MapTools", position = 1250)
 })
 @NbBundle.Messages({
     "CTL_FilesAction=Files"

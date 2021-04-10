@@ -210,10 +210,10 @@
         <module>modules/wms-nasa</module>
 
         <!--Other-->
+        <module>modules/files</module>
 
         <!--Add-ons-->
         <module>add-ons/base64/base64</module>
-        <module>add-ons/files/files</module>
         <module>add-ons/files/fo-geo</module>
         <module>add-ons/files/fo-kml</module>
         <module>add-ons/files/fo-shp</module>

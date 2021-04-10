@@ -19,8 +19,8 @@ import gov.nasa.worldwind.layers.RenderableLayer;
 import java.util.Locale;
 import javafx.collections.ListChangeListener;
 import org.apache.commons.io.FilenameUtils;
-import org.mapton.api.MCoordinateFileManager;
 import org.mapton.api.MCoordinateFile;
+import org.mapton.api.MCoordinateFileManager;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.temp.GeoRenderer;
 import org.mapton.worldwind.temp.KmlRenderer;
@@ -56,7 +56,7 @@ public class FilesLayerBundle extends LayerBundle {
     private void init() {
         setParentLayer(mLayer);
         mLayer.setName(Dict.FILES.toString());
-        setCategoryAddOns(mLayer);
+        setCategorySystem(mLayer);
         setName(Dict.FILES.toString());
         mLayer.setEnabled(true);
         mLayer.setPickEnabled(true);
