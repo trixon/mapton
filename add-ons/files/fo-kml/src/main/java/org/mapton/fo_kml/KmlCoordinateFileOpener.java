@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.addon.files.coordinate_file_openers;
+package org.mapton.fo_kml;
 
 import org.mapton.api.MCoordinateFileOpener;
 import org.openide.util.lookup.ServiceProvider;

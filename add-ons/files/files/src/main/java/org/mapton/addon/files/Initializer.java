@@ -16,11 +16,8 @@
 package org.mapton.addon.files;
 
 import org.mapton.addon.files.api.CoordinateFileManager;
-import org.mapton.addon.files.coordinate_file_openers.GeoCoordinateFileOpener;
-import org.mapton.addon.files.coordinate_file_openers.KmlCoordinateFileOpener;
-import org.mapton.addon.files.coordinate_file_openers.ShpCoordinateFileOpener;
 import org.mapton.api.Mapton;
-import org.openide.modules.OnStart;
+import org.openide.windows.OnShowing;
 import org.openide.windows.WindowManager;
 import se.trixon.almond.nbp.Almond;
 
@@ -28,7 +25,7 @@ import se.trixon.almond.nbp.Almond;
  *
  * @author Patrik Karlström
  */
-@OnStart
+@OnShowing
 public class Initializer implements Runnable {
 
     public Initializer() {
@@ -37,14 +34,12 @@ public class Initializer implements Runnable {
     @Override
     public void run() {
         WindowManager.getDefault().invokeWhenUIReady(() -> {
-            CoordinateFileManager.getInstance().load();
-        });
+            var coordinateFileManager = CoordinateFileManager.getInstance();
+            coordinateFileManager.load();
 
-        Mapton.getGlobalState().addListener(gsce -> {
-            Almond.openAndActivateTopComponent("FilesTopComponent");
-        }, GeoCoordinateFileOpener.class.getName(),
-                KmlCoordinateFileOpener.class.getName(),
-                ShpCoordinateFileOpener.class.getName()
-        );
+            Mapton.getGlobalState().addListener(gsce -> {
+                Almond.openAndActivateTopComponent("FilesTopComponent");
+            }, coordinateFileManager.getFileOpenerKeys());
+        });
     }
 }

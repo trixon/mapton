@@ -36,12 +36,11 @@ import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
 import org.apache.commons.io.monitor.FileAlterationMonitor;
 import org.apache.commons.io.monitor.FileAlterationObserver;
-import org.mapton.addon.files.coordinate_file_openers.GeoCoordinateFileOpener;
-import org.mapton.addon.files.coordinate_file_openers.KmlCoordinateFileOpener;
-import org.mapton.addon.files.coordinate_file_openers.ShpCoordinateFileOpener;
 import org.mapton.api.MCoordinateFile;
+import org.mapton.api.MCoordinateFileOpener;
 import org.mapton.api.Mapton;
 import org.openide.util.Exceptions;
+import org.openide.util.Lookup;
 import se.trixon.almond.util.fx.FxHelper;
 
 /**
@@ -74,6 +73,16 @@ public class CoordinateFileManager {
         }
 
         return mConfigDir;
+    }
+
+    public String[] getFileOpenerKeys() {
+        var fileOpeners = new ArrayList(Lookup.getDefault().lookupAll(MCoordinateFileOpener.class));
+        String[] keys = new String[fileOpeners.size()];
+        for (int i = 0; i < fileOpeners.size(); i++) {
+            keys[i] = fileOpeners.get(i).getClass().getName();
+        }
+
+        return keys;
     }
 
     public ObservableList<MCoordinateFile> getItems() {
@@ -146,9 +155,11 @@ public class CoordinateFileManager {
         return mUpdatedProperty;
     }
 
-    private void addFiles(ArrayList<MCoordinateFile> fileOpenerFiles) {
-        for (MCoordinateFile fileOpenerFile : fileOpenerFiles) {
-            addIfMissing(fileOpenerFile);
+    private void addFiles(ArrayList<MCoordinateFile> coordinateFiles) {
+        if (coordinateFiles != null) {
+            for (var coordinateFile : coordinateFiles) {
+                addIfMissing(coordinateFile);
+            }
         }
 
         sort();
@@ -223,10 +234,7 @@ public class CoordinateFileManager {
             FxHelper.runLater(() -> {
                 addFiles(gsce.getValue());
             });
-        }, GeoCoordinateFileOpener.class.getName(),
-                KmlCoordinateFileOpener.class.getName(),
-                ShpCoordinateFileOpener.class.getName()
-        );
+        }, getFileOpenerKeys());
     }
 
     private static class Holder {
