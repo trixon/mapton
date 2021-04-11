@@ -49,6 +49,7 @@ import org.mapton.api.MPoiManager;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.mapton.api.ui.MFilterPopOver;
+import org.mapton.api.ui.MOptionsPopOver;
 import static org.mapton.api.ui.MPopOver.GAP;
 import static org.mapton.api.ui.MPopOver.autoSize;
 import org.openide.util.Lookup;
@@ -73,6 +74,7 @@ public class PoisView extends BorderPane {
     private Label mItemCountLabel;
     private ListView<MPoi> mListView;
     private final MPoiManager mManager = MPoiManager.getInstance();
+    private MOptionsPopOver mOptionsPopOver;
 
     public PoisView() {
         createUI();
@@ -86,6 +88,7 @@ public class PoisView extends BorderPane {
 
     private void createUI() {
         mFilterPopOver = new FilterPopOver();
+        mOptionsPopOver = new MOptionsPopOver();
 
         mFilterTextField = TextFields.createClearableTextField();
         mFilterTextField.setPromptText(String.format("%s %s", Dict.SEARCH.toString(), MDict.POI.toString()));
@@ -100,9 +103,7 @@ public class PoisView extends BorderPane {
         });
         refreshAction.setGraphic(MaterialIcon._Navigation.REFRESH.getImageView(getIconSizeToolBarInt()));
 
-        var optionsAction = new Action(Dict.OPTIONS.toString(), event -> {
-        });
-        optionsAction.setGraphic(MaterialIcon._Action.SETTINGS.getImageView(getIconSizeToolBarInt()));
+        var optionsAction = mOptionsPopOver.getAction();
         optionsAction.setDisabled(true);
 
         ArrayList<Action> actions = new ArrayList<>();

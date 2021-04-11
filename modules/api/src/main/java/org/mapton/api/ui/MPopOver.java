@@ -28,7 +28,7 @@ import se.trixon.almond.util.fx.PopOverWatcher;
  *
  * @author Patrik Karlström
  */
-public abstract class MPopOver extends PopOver {
+public class MPopOver extends PopOver {
 
     public static final int GAP = FxHelper.getUIScaled(8);
     public static final int WIDTH = FxHelper.getUIScaled(96);
@@ -69,6 +69,6 @@ public abstract class MPopOver extends PopOver {
     }
 
     public void setAction(Action action) {
-        this.mAction = action;
+        mAction = action;
     }
 }

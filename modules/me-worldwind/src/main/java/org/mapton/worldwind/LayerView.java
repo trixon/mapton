@@ -32,6 +32,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
+import javafx.event.ActionEvent;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.CheckBoxTreeItem;
 import javafx.scene.control.ContextMenu;
@@ -57,6 +58,7 @@ import org.mapton.api.MDict;
 import org.mapton.api.MKey;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
+import org.mapton.api.ui.MOptionsPopOver;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.NbPreferences;
@@ -64,7 +66,6 @@ import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.StringHelper;
 import se.trixon.almond.util.fx.DelayedResetRunner;
 import se.trixon.almond.util.fx.FxHelper;
-import se.trixon.almond.util.fx.PopOverWatcher;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 
 /**
@@ -81,7 +82,7 @@ public class LayerView extends BorderPane implements MActivatable {
     private final Map<String, CheckBoxTreeItem<Layer>> mLayerParents;
     private WorldWindowPanel mMap;
     private Action mOptionsAction;
-    private PopOver mOptionsPopOver;
+    private MOptionsPopOver mOptionsPopOver;
     private CheckBoxTreeItem<Layer> mRootItem;
     private ToolBar mToolBar;
     private final Set<CheckBoxTreeItem<Layer>> mTreeItemExpanderSet;
@@ -171,7 +172,7 @@ public class LayerView extends BorderPane implements MActivatable {
     }
 
     private void createUI() {
-        Layer rootLayer = new RenderableLayer();
+        var rootLayer = new RenderableLayer();
         rootLayer.setName("");
         mRootItem = new CheckBoxTreeItem<>(rootLayer);
         mTreeView = new CheckTreeView<>(mRootItem);
@@ -179,15 +180,17 @@ public class LayerView extends BorderPane implements MActivatable {
         mTreeView.setShowRoot(false);
         mTreeView.setCellFactory(param -> new LayerTreeCell());
 
-        mOptionsPopOver = new PopOver();
-        mOptionsPopOver.setTitle(Dict.OPTIONS.toString());
+        mOptionsPopOver = new MOptionsPopOver();
         mOptionsPopOver.setArrowLocation(PopOver.ArrowLocation.LEFT_CENTER);
-        mOptionsPopOver.setHeaderAlwaysVisible(true);
-        mOptionsPopOver.setCloseButtonEnabled(false);
-        mOptionsPopOver.setDetachable(false);
-        mOptionsPopOver.setAnimated(true);
+        mOptionsPopOver.setOnShowing(windowEvent -> {
+            var layerBundle = (LayerBundle) getSelectedTreeItem().getValue().getValue("layerBundle");
+            mOptionsPopOver.setContentNode(layerBundle.getOptionsView());
+        });
 
-        MaskerPane maskerPane = new MaskerPane();
+        mOptionsAction = mOptionsPopOver.getAction();
+        mOptionsAction.setDisabled(true);
+
+        var maskerPane = new MaskerPane();
         maskerPane.setText(MDict.LOADING_LAYERS.toString());
         maskerPane.setProgress(-1);
         setCenter(maskerPane);
@@ -197,7 +200,7 @@ public class LayerView extends BorderPane implements MActivatable {
         mFilterTextField.setMinWidth(20);
         final int iconSize = (int) (getIconSizeToolBarInt() * 0.8);
 
-        ActionGroup selectActionGroup = new ActionGroup(Dict.SHOW.toString(), MaterialIcon._Image.REMOVE_RED_EYE.getImageView(iconSize),
+        var selectActionGroup = new ActionGroup(Dict.SHOW.toString(), MaterialIcon._Image.REMOVE_RED_EYE.getImageView(iconSize),
                 new Action(Dict.SHOW.toString(), (event) -> {
                     setChecked(mRootItem, true);
                 }),
@@ -213,24 +216,6 @@ public class LayerView extends BorderPane implements MActivatable {
                 })
         );
 
-        mOptionsAction = new Action(Dict.OPTIONS.toString(), event -> {
-            if (mOptionsPopOver.isShowing()) {
-                mOptionsPopOver.hide();
-            } else {
-                var layerBundle = (LayerBundle) getSelectedTreeItem().getValue().getValue("layerBundle");
-                var optionsNode = layerBundle.getOptionsView();
-                var button = getOptionsToolBarButton();
-                var buttonBounds = button.localToScreen(button.getBoundsInLocal());
-                double x = buttonBounds.getMaxX() + 2;
-                double y = buttonBounds.getMinY() + buttonBounds.getHeight() / 4;//FIXME Is 4 strange?
-                mOptionsPopOver.setContentNode(optionsNode);
-                mOptionsPopOver.show(button, x, y);
-                PopOverWatcher.getInstance().registerPopOver(mOptionsPopOver, button);
-            }
-        });
-        mOptionsAction.setGraphic(MaterialIcon._Action.SETTINGS.getImageView(getIconSizeToolBarInt()));
-        mOptionsAction.setDisabled(true);
-
         Collection<? extends Action> actions = Arrays.asList(
                 selectActionGroup,
                 mOptionsAction
@@ -239,16 +224,18 @@ public class LayerView extends BorderPane implements MActivatable {
         mToolBar = ActionUtils.createToolBar(actions, ActionUtils.ActionTextBehavior.HIDE);
         FxHelper.adjustButtonWidth(mToolBar.getItems().stream(), iconSize);
         FxHelper.undecorateButtons(mToolBar.getItems().stream());
-        BorderPane topBorderPane = new BorderPane(mFilterTextField);
+        FxHelper.slimToolBar(mToolBar);
+
+        var topBorderPane = new BorderPane(mFilterTextField);
         topBorderPane.setRight(mToolBar);
         mToolBar.setMinWidth(iconSize * 4.8);
-        FxHelper.slimToolBar(mToolBar);
         setTop(topBorderPane);
 
         var optionsItem = new MenuItem(Dict.OPTIONS.toString());
         optionsItem.disableProperty().bind(mOptionsAction.disabledProperty());
         optionsItem.setOnAction(actionEvent -> {
-            mOptionsAction.handle(null);
+            mOptionsAction.handle(new ActionEvent(getOptionsToolBarButton(), this));
+
         });
 
         mContextMenu = new ContextMenu(optionsItem);

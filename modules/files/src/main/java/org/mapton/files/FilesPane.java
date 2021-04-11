@@ -20,17 +20,16 @@ import java.util.Arrays;
 import java.util.List;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
-import javafx.scene.control.ButtonBase;
-import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
 import javax.swing.SwingUtilities;
 import org.controlsfx.control.CheckListView;
 import org.controlsfx.control.IndexedCheckModel;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
-import org.mapton.api.MCoordinateFileManager;
 import org.mapton.api.MCoordinateFile;
+import org.mapton.api.MCoordinateFileManager;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
+import org.mapton.api.ui.MOptionsPopOver;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.util.Exceptions;
@@ -56,14 +55,14 @@ public class FilesPane extends BorderPane {
     }
 
     private void createUI() {
-        Action closeAction = new Action(Dict.CLOSE.toString(), event -> {
+        var closeAction = new Action(Dict.CLOSE.toString(), event -> {
             if (getSelected() != null) {
                 remove();
             }
         });
         closeAction.setGraphic(MaterialIcon._Content.REMOVE.getImageView(getIconSizeToolBarInt()));
 
-        Action closeAllAction = new Action(Dict.CLOSE_ALL.toString(), event -> {
+        var closeAllAction = new Action(Dict.CLOSE_ALL.toString(), event -> {
             if (!mListView.getItems().isEmpty()) {
                 removeAll();
             }
@@ -75,26 +74,21 @@ public class FilesPane extends BorderPane {
         });
         mRefreshAction.setGraphic(MaterialIcon._Navigation.REFRESH.getImageView(getIconSizeToolBarInt()));
 
-        Action optionsAction = new Action(Dict.OPTIONS.toString(), (event) -> {
-        });
-        optionsAction.setGraphic(MaterialIcon._Action.SETTINGS.getImageView(getIconSizeToolBarInt()));
-        optionsAction.setDisabled(true);
+        var optionsPopOver = new MOptionsPopOver();
+        optionsPopOver.getAction().setDisabled(true);
 
         mActions = Arrays.asList(
                 closeAction,
                 closeAllAction,
                 ActionUtils.ACTION_SPAN,
                 mRefreshAction,
-                optionsAction
+                optionsPopOver.getAction()
         );
 
-        ToolBar toolBar = ActionUtils.createToolBar(mActions, ActionUtils.ActionTextBehavior.HIDE);
+        var toolBar = ActionUtils.createToolBar(mActions, ActionUtils.ActionTextBehavior.HIDE);
 
         FxHelper.adjustButtonWidth(toolBar.getItems().stream(), getIconSizeToolBarInt());
-        toolBar.getItems().stream().filter((item) -> (item instanceof ButtonBase))
-                .map((item) -> (ButtonBase) item).forEachOrdered((buttonBase) -> {
-            FxHelper.undecorateButton(buttonBase);
-        });
+        FxHelper.undecorateButtons(toolBar.getItems().stream());
 
         FxHelper.slimToolBar(toolBar);
         setTop(toolBar);
