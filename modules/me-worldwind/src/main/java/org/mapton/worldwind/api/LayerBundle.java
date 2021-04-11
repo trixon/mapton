@@ -25,6 +25,7 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
+import org.mapton.api.MKey;
 import se.trixon.almond.util.Dict;
 
 /**
@@ -46,6 +47,16 @@ public abstract class LayerBundle {
     public LayerBundle() {
     }
 
+    private boolean getChildVisibility(Layer layer) {
+        boolean visible = true;
+        var visibility = layer.getValue(MKey.LAYER_SUB_VISIBILITY);
+        if (visibility != null) {
+            visible = (boolean) visibility;
+        }
+
+        return visible;
+    }
+
     public void addAllChildLayers(Layer... childLayers) {
         mChildLayers.addAll(Arrays.asList(childLayers));
         for (var childLayer : childLayers) {
@@ -56,7 +67,7 @@ public abstract class LayerBundle {
         mParentLayer.addPropertyChangeListener(pce -> {
             if (pce.getPropertyName().equals("Enabled")) {
                 for (var childLayer : mChildLayers) {
-                    childLayer.setEnabled(mParentLayer.isEnabled());
+                    childLayer.setEnabled(mParentLayer.isEnabled() && getChildVisibility(childLayer));
                 }
             }
         });

@@ -16,17 +16,11 @@
 package org.mapton.worldwind;
 
 import gov.nasa.worldwind.layers.RenderableLayer;
-import java.util.Locale;
-import javafx.collections.ListChangeListener;
-import org.apache.commons.io.FilenameUtils;
-import org.mapton.api.MCoordinateFile;
-import org.mapton.api.MCoordinateFileManager;
 import org.mapton.worldwind.api.CoordinateFileRendererWW;
 import org.mapton.worldwind.api.LayerBundle;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.swing.DelayedResetRunner;
 
 /**
  *
@@ -36,16 +30,12 @@ import se.trixon.almond.util.swing.DelayedResetRunner;
 public class FilesLayerBundle extends LayerBundle {
 
     private final RenderableLayer mLayer = new RenderableLayer();
-    private final MCoordinateFileManager mManager = MCoordinateFileManager.getInstance();
 
     public FilesLayerBundle() {
         init();
         initRepaint();
         initListeners();
-
-        for (var coordinateFileRendererWW : Lookup.getDefault().lookupAll(CoordinateFileRendererWW.class)) {
-            coordinateFileRendererWW.init(this);
-        }
+        initRenderers();
     }
 
     @Override
@@ -65,49 +55,20 @@ public class FilesLayerBundle extends LayerBundle {
     }
 
     private void initListeners() {
-        DelayedResetRunner delayedResetRunner = new DelayedResetRunner(100, () -> {
-            repaint();
-        });
-
-        mManager.getItems().addListener((ListChangeListener.Change<? extends MCoordinateFile> c) -> {
-            delayedResetRunner.reset();
-        });
-
-        mManager.updatedProperty().addListener((observable, oldValue, newValue) -> {
-            delayedResetRunner.reset();
-        });
-
         var result = Lookup.getDefault().lookupResult(CoordinateFileRendererWW.class);
         result.addLookupListener(lookupEvent -> {
+            //initRenderers();
         });
+    }
+
+    private void initRenderers() {
+        for (var coordinateFileRendererWW : Lookup.getDefault().lookupAll(CoordinateFileRendererWW.class)) {
+            coordinateFileRendererWW.init(this);
+        }
     }
 
     private void initRepaint() {
         setPainter(() -> {
-            mLayer.removeAllRenderables();
-
-            for (var coordinateFile : mManager.getItems()) {
-//                if (coordinateFile.isVisible()) { //TODO
-                String ext = FilenameUtils.getExtension(coordinateFile.getFile().getName()).toLowerCase(Locale.getDefault());
-                switch (ext) {
-                    case "geo":
-//                        GeoRenderer.render(coordinateFile, mLayer);
-                        break;
-
-                    case "kml":
-                    case "kmz":
-//                        KmlRenderer.render(coordinateFile, mLayer);
-                        break;
-
-                    case "shp":
-//                        mShpRenderer.render(coordinateFile);
-                        break;
-
-                    default:
-                        throw new AssertionError();
-                }
-            }
-//            }
         });
     }
 }

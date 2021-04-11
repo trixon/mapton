@@ -51,7 +51,7 @@ public class GeoRenderer extends CoordinateFileRendererWW {
     public GeoRenderer(MCoordinateFile coordinateFile, RenderableLayer layer) {
         mCoordinateFile = coordinateFile;
         mCooTrans = coordinateFile.getCooTrans();
-        mLayer = layer;
+        mParentLayer = layer;
         initAttributes();
     }
 
@@ -60,6 +60,10 @@ public class GeoRenderer extends CoordinateFileRendererWW {
 
     @Override
     public void init(LayerBundle layerBundle) {
+    }
+
+    @Override
+    public void render() {
     }
 
     @Override

@@ -42,7 +42,7 @@ public class KmlRenderer extends CoordinateFileRendererWW {
 
     public KmlRenderer(MCoordinateFile coordinateFile, RenderableLayer layer) {
         mCoordinateFile = coordinateFile;
-        mLayer = layer;
+        mParentLayer = layer;
     }
 
     public KmlRenderer() {
@@ -50,6 +50,10 @@ public class KmlRenderer extends CoordinateFileRendererWW {
 
     @Override
     public void init(LayerBundle layerBundle) {
+    }
+
+    @Override
+    public void render() {
     }
 
     @Override

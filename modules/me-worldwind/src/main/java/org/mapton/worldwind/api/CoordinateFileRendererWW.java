@@ -20,11 +20,17 @@ import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.Renderable;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
+import javafx.collections.ListChangeListener;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.codec.digest.MessageDigestAlgorithms;
 import org.mapton.api.MCooTrans;
 import org.mapton.api.MCoordinateFile;
+import org.mapton.api.MCoordinateFileManager;
+import org.mapton.core.api.MaptonNb;
+import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.swing.DelayedResetRunner;
 
 /**
  *
@@ -32,14 +38,19 @@ import org.mapton.api.MCoordinateFile;
  */
 public abstract class CoordinateFileRendererWW {
 
-    private LayerBundle mLayerBundle;
     public static final ConcurrentHashMap<String, ArrayList<Renderable>> DIGEST_RENDERABLE_MAP = new ConcurrentHashMap<>();
     protected MCooTrans mCooTrans;
+    @Deprecated
     protected MCoordinateFile mCoordinateFile;
-    protected Layer mLayer;
+    protected final MCoordinateFileManager mCoordinateFileManager = MCoordinateFileManager.getInstance();
+    protected final HashMap<MCoordinateFile, Layer> mCoordinateFileToLayer = new HashMap<>();
+    protected Layer mParentLayer;
     private final DigestUtils mDigestUtils = new DigestUtils(MessageDigestAlgorithms.SHA_256);
+    private LayerBundle mLayerBundle;
 
-    public abstract void init(LayerBundle layerBundle);
+    public CoordinateFileRendererWW() {
+        initListeners();
+    }
 
     public String getDigest() {
         try {
@@ -53,18 +64,48 @@ public abstract class CoordinateFileRendererWW {
         return mLayerBundle;
     }
 
+    public abstract void init(LayerBundle layerBundle);
+
+    public abstract void render();
+
     public void setLayerBundle(LayerBundle layerBundle) {
         mLayerBundle = layerBundle;
-        mLayer = mLayerBundle.getParentLayer();
-
+        mParentLayer = mLayerBundle.getParentLayer();
     }
 
-    protected abstract void render(RenderableLayer layer);
+    protected void messageStart(MCoordinateFile coordinateFile) {
+        MaptonNb.progressStart(String.format(Dict.OPENING_S.toString(), coordinateFile.getFile().getName()));
+    }
 
+    protected void messageStop(MCoordinateFile coordinateFile) {
+        MaptonNb.progressStop(String.format(Dict.OPENING_S.toString(), coordinateFile.getFile().getName()));
+    }
+
+    @Deprecated
+    protected void render(RenderableLayer layer) {
+    }
+
+    @Deprecated
     protected void render(Runnable r) {
         new Thread(() -> {
             r.run();
             LayerBundleManager.getInstance().redraw();
         }).start();
+    }
+
+    private void initListeners() {
+        var delayedResetRunner = new DelayedResetRunner(100, () -> {
+            if (mParentLayer != null && mParentLayer.isEnabled()) {
+                render();
+            }
+        });
+
+        mCoordinateFileManager.getItems().addListener((ListChangeListener.Change<? extends MCoordinateFile> c) -> {
+            delayedResetRunner.reset();
+        });
+
+        mCoordinateFileManager.updatedProperty().addListener((observable, oldValue, newValue) -> {
+            delayedResetRunner.reset();
+        });
     }
 }

@@ -19,16 +19,13 @@ import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.formats.shapefile.ShapefileLayerFactory;
 import gov.nasa.worldwind.layers.Layer;
-import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.util.Logging;
-import java.util.HashMap;
 import org.mapton.api.MCoordinateFile;
-import org.mapton.core.api.MaptonNb;
+import org.mapton.api.MKey;
 import org.mapton.worldwind.api.CoordinateFileRendererWW;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.worldwind.RandomShapeAttributes;
 import org.openide.util.lookup.ServiceProvider;
-import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.swing.SwingHelper;
 
 /**
@@ -39,7 +36,6 @@ import se.trixon.almond.util.swing.SwingHelper;
 public class ShpRenderer extends CoordinateFileRendererWW {
 
     private final RandomShapeAttributes mRandomShapeAttributes = new RandomShapeAttributes();
-    private final HashMap<MCoordinateFile, Layer> mCoordinateFileToLayer = new HashMap<>();
 
     public ShpRenderer() {
     }
@@ -49,11 +45,21 @@ public class ShpRenderer extends CoordinateFileRendererWW {
         setLayerBundle(layerBundle);
     }
 
-    public void render(final MCoordinateFile coordinateFile) {
+    @Override
+    public void render() {
+        for (var coordinateFile : mCoordinateFileManager.getSublistByExtensions("shp")) {
+            render(coordinateFile);
+        }
+    }
+
+    private void render(MCoordinateFile coordinateFile) {
+        boolean visible = coordinateFile.isVisible();
         if (mCoordinateFileToLayer.containsKey(coordinateFile)) {
-            mCoordinateFileToLayer.get(coordinateFile).setEnabled(coordinateFile.isVisible());
+            var layer = mCoordinateFileToLayer.get(coordinateFile);
+            layer.setEnabled(visible);
+            layer.setValue(MKey.LAYER_SUB_VISIBILITY, visible);
         } else {
-            if (!coordinateFile.isVisible()) {
+            if (!visible) {
                 return;
             }
             mRandomShapeAttributes.nextAttributes();
@@ -61,8 +67,8 @@ public class ShpRenderer extends CoordinateFileRendererWW {
             var shapefileLayerFactory = (ShapefileLayerFactory) WorldWind.createConfigurationComponent(AVKey.SHAPEFILE_LAYER_FACTORY);
             shapefileLayerFactory.setNormalPointAttributes(mRandomShapeAttributes.asPointAttributes());
             shapefileLayerFactory.setNormalShapeAttributes(mRandomShapeAttributes.asShapeAttributes());
-            String progressMessage = String.format("%s %s", Dict.OPEN.toString(), coordinateFile.getFile().getName());
-            MaptonNb.progressStart(progressMessage);
+
+            messageStart(coordinateFile);
             shapefileLayerFactory.createFromShapefileSource(coordinateFile.getFile(), new ShapefileLayerFactory.CompletionCallback() {
                 @Override
                 public void completion(Object result) {
@@ -71,9 +77,9 @@ public class ShpRenderer extends CoordinateFileRendererWW {
                         getLayerBundle().getLayers().add(layer);
                         getLayerBundle().addAllChildLayers(layer);
                         mCoordinateFileToLayer.put(coordinateFile, layer);
-                        layer.setEnabled(coordinateFile.isVisible());
+                        layer.setEnabled(visible);
 
-                        MaptonNb.progressStop(progressMessage);
+                        messageStop(coordinateFile);
                     });
                 }
 
@@ -83,9 +89,5 @@ public class ShpRenderer extends CoordinateFileRendererWW {
                 }
             });
         }
-    }
-
-    @Override
-    protected void render(RenderableLayer layer) {
     }
 }

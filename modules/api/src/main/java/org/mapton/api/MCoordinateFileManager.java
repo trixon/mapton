@@ -31,11 +31,13 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
 import org.apache.commons.io.monitor.FileAlterationMonitor;
 import org.apache.commons.io.monitor.FileAlterationObserver;
+import org.apache.commons.lang3.StringUtils;
 import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import se.trixon.almond.util.fx.FxHelper;
@@ -86,6 +88,19 @@ public class MCoordinateFileManager {
 
     public ObservableList<MCoordinateFile> getItems() {
         return mItemsProperty.get();
+    }
+
+    public ArrayList<MCoordinateFile> getSublistByExtensions(String... extensions) {
+        ArrayList<MCoordinateFile> coordinateFiles = new ArrayList<>();
+
+        for (var coordinateFile : mItemsProperty.get()) {
+            String ext = FilenameUtils.getExtension(coordinateFile.getFile().getName()).toLowerCase(Locale.getDefault());
+            if (StringUtils.equalsAnyIgnoreCase(ext, extensions)) {
+                coordinateFiles.add(coordinateFile);
+            }
+        }
+
+        return coordinateFiles;
     }
 
     public final ObjectProperty<ObservableList<MCoordinateFile>> itemsProperty() {
