@@ -18,9 +18,7 @@ package org.mapton.frww_kml;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.ogc.kml.KMLRoot;
 import gov.nasa.worldwind.ogc.kml.impl.KMLController;
-import gov.nasa.worldwind.render.Renderable;
 import java.io.IOException;
-import java.util.ArrayList;
 import javax.xml.stream.XMLStreamException;
 import org.mapton.api.MCoordinateFile;
 import org.mapton.worldwind.api.CoordinateFileRendererWW;
@@ -35,47 +33,30 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = CoordinateFileRendererWW.class)
 public class KmlRenderer extends CoordinateFileRendererWW {
 
-    public static void render(MCoordinateFile coordinateFile, RenderableLayer layer) {
-        KmlRenderer renderer = new KmlRenderer(coordinateFile, layer);
-        renderer.render(layer);
-    }
-
-    public KmlRenderer(MCoordinateFile coordinateFile, RenderableLayer layer) {
-        mCoordinateFile = coordinateFile;
-        mParentLayer = layer;
-    }
-
     public KmlRenderer() {
     }
 
     @Override
     public void init(LayerBundle layerBundle) {
+        setLayerBundle(layerBundle);
     }
 
     @Override
-    public void render() {
+    protected void load(MCoordinateFile coordinateFile) {
+        var layer = new RenderableLayer();
+        try {
+            var kmlRoot = KMLRoot.createAndParse(coordinateFile.getFile());
+            layer.addRenderable(new KMLController(kmlRoot));
+            addLayer(coordinateFile, layer);
+        } catch (IOException | XMLStreamException ex) {
+            Exceptions.printStackTrace(ex);
+        }
     }
 
     @Override
-    protected void render(RenderableLayer layer) {
-        render(() -> {
-            String digest = getDigest();
-            ArrayList<Renderable> renderables = DIGEST_RENDERABLE_MAP.computeIfAbsent(digest, k -> {
-                ArrayList<Renderable> newRenderables = new ArrayList<>();
-                try {
-                    KMLRoot kmlRoot = KMLRoot.createAndParse(mCoordinateFile.getFile());
-                    KMLController kmlController = new KMLController(kmlRoot);
-                    newRenderables.add(kmlController);
-                } catch (IOException | XMLStreamException ex) {
-                    Exceptions.printStackTrace(ex);
-                }
-
-                return newRenderables;
-            });
-
-            for (Renderable renderable : renderables) {
-                layer.addRenderable(renderable);
-            }
-        });
+    protected void render() {
+        for (var coordinateFile : mCoordinateFileManager.getSublistByExtensions("kml", "kmz")) {
+            render(coordinateFile);
+        }
     }
 }

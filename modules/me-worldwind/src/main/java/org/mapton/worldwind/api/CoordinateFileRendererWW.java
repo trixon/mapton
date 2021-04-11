@@ -16,9 +16,7 @@
 package org.mapton.worldwind.api;
 
 import gov.nasa.worldwind.layers.Layer;
-import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.Renderable;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
@@ -28,6 +26,7 @@ import org.apache.commons.codec.digest.MessageDigestAlgorithms;
 import org.mapton.api.MCooTrans;
 import org.mapton.api.MCoordinateFile;
 import org.mapton.api.MCoordinateFileManager;
+import org.mapton.api.MKey;
 import org.mapton.core.api.MaptonNb;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.swing.DelayedResetRunner;
@@ -40,11 +39,9 @@ public abstract class CoordinateFileRendererWW {
 
     public static final ConcurrentHashMap<String, ArrayList<Renderable>> DIGEST_RENDERABLE_MAP = new ConcurrentHashMap<>();
     protected MCooTrans mCooTrans;
-    @Deprecated
-    protected MCoordinateFile mCoordinateFile;
     protected final MCoordinateFileManager mCoordinateFileManager = MCoordinateFileManager.getInstance();
-    protected final HashMap<MCoordinateFile, Layer> mCoordinateFileToLayer = new HashMap<>();
     protected Layer mParentLayer;
+    private final HashMap<MCoordinateFile, Layer> mCoordinateFileToLayer = new HashMap<>();
     private final DigestUtils mDigestUtils = new DigestUtils(MessageDigestAlgorithms.SHA_256);
     private LayerBundle mLayerBundle;
 
@@ -52,21 +49,26 @@ public abstract class CoordinateFileRendererWW {
         initListeners();
     }
 
-    public String getDigest() {
-        try {
-            return mDigestUtils.digestAsHex(mCoordinateFile.getFile());
-        } catch (IOException ex) {
-            return "-";
-        }
+    public void addLayer(MCoordinateFile coordinateFile, Layer layer) {
+        getLayerBundle().getLayers().add(layer);
+        getLayerBundle().addAllChildLayers(layer);
+        mCoordinateFileToLayer.put(coordinateFile, layer);
+
+        messageStop(coordinateFile);
     }
 
+    //    public String getDigest() {
+//        try {
+//            return mDigestUtils.digestAsHex(mCoordinateFile.getFile());
+//        } catch (IOException ex) {
+//            return "-";
+//        }
+//    }
     public LayerBundle getLayerBundle() {
         return mLayerBundle;
     }
 
     public abstract void init(LayerBundle layerBundle);
-
-    public abstract void render();
 
     public void setLayerBundle(LayerBundle layerBundle) {
         mLayerBundle = layerBundle;
@@ -80,24 +82,25 @@ public abstract class CoordinateFileRendererWW {
         });
     }
 
-    protected void messageStart(MCoordinateFile coordinateFile) {
-        MaptonNb.progressStart(String.format(Dict.OPENING_S.toString(), coordinateFile.getFile().getName()));
-    }
+    protected abstract void load(MCoordinateFile coordinateFile);
 
-    protected void messageStop(MCoordinateFile coordinateFile) {
-        MaptonNb.progressStop(String.format(Dict.OPENING_S.toString(), coordinateFile.getFile().getName()));
-    }
+    protected abstract void render();
 
-    @Deprecated
-    protected void render(RenderableLayer layer) {
-    }
+    protected synchronized void render(MCoordinateFile coordinateFile) {
+        boolean visible = coordinateFile.isVisible();
 
-    @Deprecated
-    protected void render(Runnable r) {
-        new Thread(() -> {
-            r.run();
-            LayerBundleManager.getInstance().redraw();
-        }).start();
+        if (mCoordinateFileToLayer.containsKey(coordinateFile)) {
+            var layer = mCoordinateFileToLayer.get(coordinateFile);
+            layer.setEnabled(visible);
+            layer.setValue(MKey.LAYER_SUB_VISIBILITY, visible);
+        } else {
+            if (!visible) {
+                return;
+            }
+
+            messageStart(coordinateFile);
+            load(coordinateFile);
+        }
     }
 
     private void initListeners() {
@@ -115,4 +118,13 @@ public abstract class CoordinateFileRendererWW {
             delayedResetRunner.reset();
         });
     }
+
+    private void messageStart(MCoordinateFile coordinateFile) {
+        MaptonNb.progressStart(String.format(Dict.OPENING_S.toString(), coordinateFile.getFile().getName()));
+    }
+
+    private void messageStop(MCoordinateFile coordinateFile) {
+        MaptonNb.progressStop(String.format(Dict.OPENING_S.toString(), coordinateFile.getFile().getName()));
+    }
+
 }

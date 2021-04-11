@@ -20,14 +20,10 @@ import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.PointPlacemark;
-import gov.nasa.worldwind.render.Renderable;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import javafx.geometry.Point2D;
 import org.mapton.api.MCoordinateFile;
 import org.mapton.worldwind.api.CoordinateFileRendererWW;
-import static org.mapton.worldwind.api.CoordinateFileRendererWW.DIGEST_RENDERABLE_MAP;
 import org.mapton.worldwind.api.LayerBundle;
 import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
@@ -43,69 +39,57 @@ public class GeoRenderer extends CoordinateFileRendererWW {
 
     private BasicShapeAttributes mLineBasicShapeAttributes;
 
-    public static void render(MCoordinateFile coordinateFile, RenderableLayer layer) {
-        GeoRenderer renderer = new GeoRenderer(coordinateFile, layer);
-        renderer.render(layer);
-    }
-
-    public GeoRenderer(MCoordinateFile coordinateFile, RenderableLayer layer) {
-        mCoordinateFile = coordinateFile;
-        mCooTrans = coordinateFile.getCooTrans();
-        mParentLayer = layer;
-        initAttributes();
-    }
-
     public GeoRenderer() {
+        initAttributes();
     }
 
     @Override
     public void init(LayerBundle layerBundle) {
+        setLayerBundle(layerBundle);
     }
 
     @Override
-    public void render() {
+    protected void load(MCoordinateFile coordinateFile) {
+        mCooTrans = coordinateFile.getCooTrans();
+        var layer = new RenderableLayer();
+        Geo geo = new Geo();
+        try {
+            geo.read(coordinateFile.getFile());
+            renderPoints(layer, geo.getPoints());
+            System.out.println(geo.getLines().size());
+            //Dynamic transform
+            //Create Points
+            //Create Lines
+            System.out.println(geo.toString());
+        } catch (IOException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+
+        addLayer(coordinateFile, layer);
     }
 
     @Override
-    protected void render(RenderableLayer layer) {
-        render(() -> {
-            String digest = getDigest();
-            ArrayList<Renderable> renderables = DIGEST_RENDERABLE_MAP.computeIfAbsent(digest, k -> {
-                ArrayList<Renderable> newRenderables = new ArrayList<>();
-                Geo geo = new Geo();
-                try {
-                    geo.read(mCoordinateFile.getFile());
-                    renderPoints(newRenderables, geo.getPoints());
-                    System.out.println(geo.getLines().size());
-                    //Dynamic transform
-                    //Create Points
-                    //Create Lines
-                    System.out.println(geo.toString());
-                } catch (IOException ex) {
-                    Exceptions.printStackTrace(ex);
-                }
-                return newRenderables;
-            });
-
-            for (Renderable renderable : renderables) {
-                layer.addRenderable(renderable);
-            }
-        });
+    protected void render() {
+        for (var coordinateFile : mCoordinateFileManager.getSublistByExtensions("geo")) {
+            render(coordinateFile);
+        }
     }
 
     private void initAttributes() {
         mLineBasicShapeAttributes = new BasicShapeAttributes();
     }
 
-    private void renderPoints(ArrayList<Renderable> renderables, List<GeoPoint> points) {
-        for (GeoPoint point : points) {
-            if (mCooTrans.isWithinProjectedBounds(point.getX(), point.getY())) {
-                Point2D p = mCooTrans.toWgs84(point.getX(), point.getY());
-                PointPlacemark placemark = new PointPlacemark(Position.fromDegrees(p.getY(), p.getX()));
-                placemark.setLabelText(point.getPointId());
-                placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
-                placemark.setEnableLabelPicking(true);
-                renderables.add(placemark);
+    private void renderPoints(RenderableLayer layer, List<GeoPoint> geoPoints) {
+        for (var geoPoint : geoPoints) {
+            if (mCooTrans.isWithinProjectedBounds(geoPoint.getX(), geoPoint.getY())) {
+                var p = mCooTrans.toWgs84(geoPoint.getX(), geoPoint.getY());
+                var pointPlacemark = new PointPlacemark(Position.fromDegrees(p.getY(), p.getX()));
+
+                pointPlacemark.setLabelText(geoPoint.getPointId());
+                pointPlacemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
+                pointPlacemark.setEnableLabelPicking(true);
+
+                layer.addRenderable(pointPlacemark);
             }
         }
     }

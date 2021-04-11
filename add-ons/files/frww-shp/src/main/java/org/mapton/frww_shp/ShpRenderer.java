@@ -21,7 +21,6 @@ import gov.nasa.worldwind.formats.shapefile.ShapefileLayerFactory;
 import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.util.Logging;
 import org.mapton.api.MCoordinateFile;
-import org.mapton.api.MKey;
 import org.mapton.worldwind.api.CoordinateFileRendererWW;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.worldwind.RandomShapeAttributes;
@@ -46,48 +45,32 @@ public class ShpRenderer extends CoordinateFileRendererWW {
     }
 
     @Override
-    public void render() {
-        for (var coordinateFile : mCoordinateFileManager.getSublistByExtensions("shp")) {
-            render(coordinateFile);
-        }
+    protected void load(MCoordinateFile coordinateFile) {
+        mRandomShapeAttributes.nextAttributes();
+
+        var shapefileLayerFactory = (ShapefileLayerFactory) WorldWind.createConfigurationComponent(AVKey.SHAPEFILE_LAYER_FACTORY);
+        shapefileLayerFactory.setNormalPointAttributes(mRandomShapeAttributes.asPointAttributes());
+        shapefileLayerFactory.setNormalShapeAttributes(mRandomShapeAttributes.asShapeAttributes());
+
+        shapefileLayerFactory.createFromShapefileSource(coordinateFile.getFile(), new ShapefileLayerFactory.CompletionCallback() {
+            @Override
+            public void completion(Object result) {
+                SwingHelper.runLater(() -> {
+                    addLayer(coordinateFile, (Layer) result);
+                });
+            }
+
+            @Override
+            public void exception(Exception e) {
+                Logging.logger().log(java.util.logging.Level.SEVERE, e.getMessage(), e);
+            }
+        });
     }
 
-    private void render(MCoordinateFile coordinateFile) {
-        boolean visible = coordinateFile.isVisible();
-        if (mCoordinateFileToLayer.containsKey(coordinateFile)) {
-            var layer = mCoordinateFileToLayer.get(coordinateFile);
-            layer.setEnabled(visible);
-            layer.setValue(MKey.LAYER_SUB_VISIBILITY, visible);
-        } else {
-            if (!visible) {
-                return;
-            }
-            mRandomShapeAttributes.nextAttributes();
-
-            var shapefileLayerFactory = (ShapefileLayerFactory) WorldWind.createConfigurationComponent(AVKey.SHAPEFILE_LAYER_FACTORY);
-            shapefileLayerFactory.setNormalPointAttributes(mRandomShapeAttributes.asPointAttributes());
-            shapefileLayerFactory.setNormalShapeAttributes(mRandomShapeAttributes.asShapeAttributes());
-
-            messageStart(coordinateFile);
-            shapefileLayerFactory.createFromShapefileSource(coordinateFile.getFile(), new ShapefileLayerFactory.CompletionCallback() {
-                @Override
-                public void completion(Object result) {
-                    SwingHelper.runLater(() -> {
-                        var layer = (Layer) result;
-                        getLayerBundle().getLayers().add(layer);
-                        getLayerBundle().addAllChildLayers(layer);
-                        mCoordinateFileToLayer.put(coordinateFile, layer);
-                        layer.setEnabled(visible);
-
-                        messageStop(coordinateFile);
-                    });
-                }
-
-                @Override
-                public void exception(Exception e) {
-                    Logging.logger().log(java.util.logging.Level.SEVERE, e.getMessage(), e);
-                }
-            });
+    @Override
+    protected void render() {
+        for (var coordinateFile : mCoordinateFileManager.getSublistByExtensions("shp")) {
+            render(coordinateFile);
         }
     }
 }
