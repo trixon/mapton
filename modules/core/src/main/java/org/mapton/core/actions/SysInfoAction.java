@@ -17,11 +17,13 @@ package org.mapton.core.actions;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import org.mapton.core.api.MaptonNb;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle.Messages;
 import se.trixon.almond.nbp.dialogs.NbSystemInformation;
+import se.trixon.almond.util.Dict;
 
 @ActionID(
         category = "Tools",
@@ -37,7 +39,9 @@ public final class SysInfoAction implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         new Thread(() -> {
+            MaptonNb.progressStart(Dict.SYSTEM_INFORMATION.toString());
             new NbSystemInformation().displayDialog();
+            MaptonNb.progressStop(Dict.SYSTEM_INFORMATION.toString());
         }).start();
     }
 }
