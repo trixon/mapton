@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.worldwind.temp;
+package org.mapton.frww_shp;
 
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVKey;
@@ -24,8 +24,10 @@ import gov.nasa.worldwind.util.Logging;
 import java.util.HashMap;
 import org.mapton.api.MCoordinateFile;
 import org.mapton.core.api.MaptonNb;
+import org.mapton.worldwind.api.CoordinateFileRendererWW;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.worldwind.RandomShapeAttributes;
+import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.swing.SwingHelper;
 
@@ -33,15 +35,18 @@ import se.trixon.almond.util.swing.SwingHelper;
  *
  * @author Patrik Karlström
  */
-public class ShpRenderer extends Renderer {
+@ServiceProvider(service = CoordinateFileRendererWW.class)
+public class ShpRenderer extends CoordinateFileRendererWW {
 
     private final RandomShapeAttributes mRandomShapeAttributes = new RandomShapeAttributes();
-    private final LayerBundle mLayerBundle;
     private final HashMap<MCoordinateFile, Layer> mCoordinateFileToLayer = new HashMap<>();
 
-    public ShpRenderer(LayerBundle layerBundle) {
-        mLayerBundle = layerBundle;
-        mLayer = mLayerBundle.getParentLayer();
+    public ShpRenderer() {
+    }
+
+    @Override
+    public void init(LayerBundle layerBundle) {
+        setLayerBundle(layerBundle);
     }
 
     public void render(final MCoordinateFile coordinateFile) {
@@ -63,8 +68,8 @@ public class ShpRenderer extends Renderer {
                 public void completion(Object result) {
                     SwingHelper.runLater(() -> {
                         var layer = (Layer) result;
-                        mLayerBundle.getLayers().add(layer);
-                        mLayerBundle.addAllChildLayers(layer);
+                        getLayerBundle().getLayers().add(layer);
+                        getLayerBundle().addAllChildLayers(layer);
                         mCoordinateFileToLayer.put(coordinateFile, layer);
                         layer.setEnabled(coordinateFile.isVisible());
 

@@ -21,10 +21,9 @@ import javafx.collections.ListChangeListener;
 import org.apache.commons.io.FilenameUtils;
 import org.mapton.api.MCoordinateFile;
 import org.mapton.api.MCoordinateFileManager;
+import org.mapton.worldwind.api.CoordinateFileRendererWW;
 import org.mapton.worldwind.api.LayerBundle;
-import org.mapton.worldwind.temp.GeoRenderer;
-import org.mapton.worldwind.temp.KmlRenderer;
-import org.mapton.worldwind.temp.ShpRenderer;
+import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.swing.DelayedResetRunner;
@@ -38,13 +37,15 @@ public class FilesLayerBundle extends LayerBundle {
 
     private final RenderableLayer mLayer = new RenderableLayer();
     private final MCoordinateFileManager mManager = MCoordinateFileManager.getInstance();
-    private final ShpRenderer mShpRenderer;
 
     public FilesLayerBundle() {
         init();
         initRepaint();
         initListeners();
-        mShpRenderer = new ShpRenderer(this);
+
+        for (var coordinateFileRendererWW : Lookup.getDefault().lookupAll(CoordinateFileRendererWW.class)) {
+            coordinateFileRendererWW.init(this);
+        }
     }
 
     @Override
@@ -75,6 +76,10 @@ public class FilesLayerBundle extends LayerBundle {
         mManager.updatedProperty().addListener((observable, oldValue, newValue) -> {
             delayedResetRunner.reset();
         });
+
+        var result = Lookup.getDefault().lookupResult(CoordinateFileRendererWW.class);
+        result.addLookupListener(lookupEvent -> {
+        });
     }
 
     private void initRepaint() {
@@ -86,16 +91,16 @@ public class FilesLayerBundle extends LayerBundle {
                 String ext = FilenameUtils.getExtension(coordinateFile.getFile().getName()).toLowerCase(Locale.getDefault());
                 switch (ext) {
                     case "geo":
-                        GeoRenderer.render(coordinateFile, mLayer);
+//                        GeoRenderer.render(coordinateFile, mLayer);
                         break;
 
                     case "kml":
                     case "kmz":
-                        KmlRenderer.render(coordinateFile, mLayer);
+//                        KmlRenderer.render(coordinateFile, mLayer);
                         break;
 
                     case "shp":
-                        mShpRenderer.render(coordinateFile);
+//                        mShpRenderer.render(coordinateFile);
                         break;
 
                     default:

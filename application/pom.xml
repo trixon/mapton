@@ -277,6 +277,18 @@
             <artifactId>fo-shp</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <!--Mapton/File renderers-->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>frww-geo</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>frww-kml</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>frww-shp</artifactId>

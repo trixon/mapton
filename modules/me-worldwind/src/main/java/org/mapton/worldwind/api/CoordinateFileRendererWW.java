@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.worldwind.temp;
+package org.mapton.worldwind.api;
 
 import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.layers.RenderableLayer;
@@ -25,19 +25,21 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.codec.digest.MessageDigestAlgorithms;
 import org.mapton.api.MCooTrans;
 import org.mapton.api.MCoordinateFile;
-import org.mapton.worldwind.api.LayerBundleManager;
 
 /**
  *
  * @author Patrik Karlström
  */
-public abstract class Renderer {
+public abstract class CoordinateFileRendererWW {
 
-    protected static final ConcurrentHashMap<String, ArrayList<Renderable>> DIGEST_RENDERABLE_MAP = new ConcurrentHashMap<>();
+    private LayerBundle mLayerBundle;
+    public static final ConcurrentHashMap<String, ArrayList<Renderable>> DIGEST_RENDERABLE_MAP = new ConcurrentHashMap<>();
     protected MCooTrans mCooTrans;
     protected MCoordinateFile mCoordinateFile;
     protected Layer mLayer;
     private final DigestUtils mDigestUtils = new DigestUtils(MessageDigestAlgorithms.SHA_256);
+
+    public abstract void init(LayerBundle layerBundle);
 
     public String getDigest() {
         try {
@@ -45,6 +47,16 @@ public abstract class Renderer {
         } catch (IOException ex) {
             return "-";
         }
+    }
+
+    public LayerBundle getLayerBundle() {
+        return mLayerBundle;
+    }
+
+    public void setLayerBundle(LayerBundle layerBundle) {
+        mLayerBundle = layerBundle;
+        mLayer = mLayerBundle.getParentLayer();
+
     }
 
     protected abstract void render(RenderableLayer layer);

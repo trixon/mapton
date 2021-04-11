@@ -13,30 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.frww_shp;
-
-import org.mapton.api.MCoordinateFileOpener;
-import org.openide.util.lookup.ServiceProvider;
+package org.mapton.api;
 
 /**
  *
  * @author Patrik Karlström
  */
-@ServiceProvider(service = MCoordinateFileOpener.class)
-public class ShpCoordinateFileOpener extends MCoordinateFileOpener {
+public class MCoordinateFileRenderer {
 
-    @Override
-    public String getDescription() {
-        return "Basic map plot";
-    }
-
-    @Override
-    public String[] getExtensions() {
-        return new String[]{"shp"};
-    }
-
-    @Override
-    public String getName() {
-        return "Generic Plot";
-    }
 }

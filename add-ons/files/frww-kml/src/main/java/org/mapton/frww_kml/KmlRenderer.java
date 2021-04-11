@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.worldwind.temp;
+package org.mapton.frww_kml;
 
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.ogc.kml.KMLRoot;
@@ -23,13 +23,17 @@ import java.io.IOException;
 import java.util.ArrayList;
 import javax.xml.stream.XMLStreamException;
 import org.mapton.api.MCoordinateFile;
+import org.mapton.worldwind.api.CoordinateFileRendererWW;
+import org.mapton.worldwind.api.LayerBundle;
 import org.openide.util.Exceptions;
+import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class KmlRenderer extends Renderer {
+@ServiceProvider(service = CoordinateFileRendererWW.class)
+public class KmlRenderer extends CoordinateFileRendererWW {
 
     public static void render(MCoordinateFile coordinateFile, RenderableLayer layer) {
         KmlRenderer renderer = new KmlRenderer(coordinateFile, layer);
@@ -39,6 +43,13 @@ public class KmlRenderer extends Renderer {
     public KmlRenderer(MCoordinateFile coordinateFile, RenderableLayer layer) {
         mCoordinateFile = coordinateFile;
         mLayer = layer;
+    }
+
+    public KmlRenderer() {
+    }
+
+    @Override
+    public void init(LayerBundle layerBundle) {
     }
 
     @Override

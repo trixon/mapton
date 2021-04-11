@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.worldwind.temp;
+package org.mapton.frww_geo;
 
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.geom.Position;
@@ -25,9 +25,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.geometry.Point2D;
-import static org.mapton.worldwind.temp.Renderer.DIGEST_RENDERABLE_MAP;
 import org.mapton.api.MCoordinateFile;
+import org.mapton.worldwind.api.CoordinateFileRendererWW;
+import static org.mapton.worldwind.api.CoordinateFileRendererWW.DIGEST_RENDERABLE_MAP;
+import org.mapton.worldwind.api.LayerBundle;
 import org.openide.util.Exceptions;
+import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.io.Geo;
 import se.trixon.almond.util.io.GeoPoint;
 
@@ -35,7 +38,8 @@ import se.trixon.almond.util.io.GeoPoint;
  *
  * @author Patrik Karlström
  */
-public class GeoRenderer extends Renderer {
+@ServiceProvider(service = CoordinateFileRendererWW.class)
+public class GeoRenderer extends CoordinateFileRendererWW {
 
     private BasicShapeAttributes mLineBasicShapeAttributes;
 
@@ -49,6 +53,13 @@ public class GeoRenderer extends Renderer {
         mCooTrans = coordinateFile.getCooTrans();
         mLayer = layer;
         initAttributes();
+    }
+
+    public GeoRenderer() {
+    }
+
+    @Override
+    public void init(LayerBundle layerBundle) {
     }
 
     @Override
