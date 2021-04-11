@@ -71,6 +71,13 @@ public abstract class CoordinateFileRendererWW {
     public void setLayerBundle(LayerBundle layerBundle) {
         mLayerBundle = layerBundle;
         mParentLayer = mLayerBundle.getParentLayer();
+        mParentLayer.addPropertyChangeListener(pce -> {
+            if (pce.getPropertyName().equals("Enabled")) {
+                if ((Boolean) pce.getNewValue()) {
+                    render();
+                }
+            }
+        });
     }
 
     protected void messageStart(MCoordinateFile coordinateFile) {
