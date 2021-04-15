@@ -70,6 +70,13 @@ public abstract class CoordinateFileRendererWW {
 
     public abstract void init(LayerBundle layerBundle);
 
+    public void removeLayer(MCoordinateFile coordinateFile) {
+        var layer = mCoordinateFileToLayer.remove(coordinateFile);
+        if (layer != null) {
+            getLayerBundle().getLayers().remove(layer);
+        }
+    }
+
     public void setLayerBundle(LayerBundle layerBundle) {
         mLayerBundle = layerBundle;
         mParentLayer = mLayerBundle.getParentLayer();

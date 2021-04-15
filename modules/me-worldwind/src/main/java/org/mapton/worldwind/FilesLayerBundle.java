@@ -16,6 +16,10 @@
 package org.mapton.worldwind;
 
 import gov.nasa.worldwind.layers.RenderableLayer;
+import java.util.ArrayList;
+import javafx.collections.ListChangeListener;
+import org.mapton.api.MCoordinateFile;
+import org.mapton.api.MCoordinateFileManager;
 import org.mapton.worldwind.api.CoordinateFileRendererWW;
 import org.mapton.worldwind.api.LayerBundle;
 import org.openide.util.Lookup;
@@ -29,6 +33,7 @@ import se.trixon.almond.util.Dict;
 @ServiceProvider(service = LayerBundle.class)
 public class FilesLayerBundle extends LayerBundle {
 
+    private final MCoordinateFileManager mCoordinateFileManager = MCoordinateFileManager.getInstance();
     private final RenderableLayer mLayer = new RenderableLayer();
 
     public FilesLayerBundle() {
@@ -58,6 +63,17 @@ public class FilesLayerBundle extends LayerBundle {
         var result = Lookup.getDefault().lookupResult(CoordinateFileRendererWW.class);
         result.addLookupListener(lookupEvent -> {
             //initRenderers();
+        });
+
+        mCoordinateFileManager.getItems().addListener((ListChangeListener.Change<? extends MCoordinateFile> c) -> {
+            var renderers = new ArrayList<>(Lookup.getDefault().lookupAll(CoordinateFileRendererWW.class));
+            while (c.next()) {
+                c.getRemoved().forEach(coordinateFile -> {
+                    renderers.forEach(renderer -> {
+                        renderer.removeLayer(coordinateFile);
+                    });
+                });
+            }
         });
     }
 
