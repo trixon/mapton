@@ -26,8 +26,9 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
 public class MOptionsPopOver extends MPopOver {
 
     public MOptionsPopOver() {
-        setTitle(Dict.OPTIONS.toString());
-
+        String title = Dict.OPTIONS.toString();
+        setTitle(title);
+        getAction().setText(title);
         getAction().setGraphic(MaterialIcon._Action.SETTINGS.getImageView(getIconSizeToolBarInt()));
     }
 

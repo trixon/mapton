@@ -33,7 +33,11 @@ public abstract class MFilterPopOver extends MPopOver {
     private final HBox mButtonBox;
 
     public MFilterPopOver() {
-        setTitle(Dict.FILTER.toString());
+        String title = Dict.FILTER.toString();
+        setTitle(title);
+        getAction().setText(title);
+        getAction().setGraphic(MaterialIcon._Content.FILTER_LIST.getImageView(getIconSizeToolBarInt()));
+
         allButton.setOnAction((event) -> {
             reset();
         });
@@ -46,7 +50,6 @@ public abstract class MFilterPopOver extends MPopOver {
         mButtonBox = new HBox(GAP, allButton, clearButton);
         mButtonBox.setAlignment(Pos.CENTER);
 
-        getAction().setGraphic(MaterialIcon._Content.FILTER_LIST.getImageView(getIconSizeToolBarInt()));
     }
 
     public abstract void clear();
