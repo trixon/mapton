@@ -22,10 +22,20 @@ package org.mapton.api;
  */
 public abstract class MCoordinateFileOpener {
 
+    private boolean mUsedInFiles = true;
+
     public abstract String getDescription();
 
     public abstract String[] getExtensions();
 
     public abstract String getName();
+
+    public boolean isUsedInFiles() {
+        return mUsedInFiles;
+    }
+
+    public void setUsedInFiles(boolean usedInFiles) {
+        mUsedInFiles = usedInFiles;
+    }
 
 }

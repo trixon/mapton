@@ -26,6 +26,10 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = MCoordinateFileOpener.class)
 public class GridFileOpener extends MCoordinateFileOpener {
 
+    public GridFileOpener() {
+        setUsedInFiles(false);
+    }
+
     @Override
     public String getDescription() {
         return "Local grid";

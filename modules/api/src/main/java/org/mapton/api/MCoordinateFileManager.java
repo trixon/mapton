@@ -77,13 +77,15 @@ public class MCoordinateFileManager {
     }
 
     public String[] getFileOpenerKeys() {
-        var fileOpeners = new ArrayList(Lookup.getDefault().lookupAll(MCoordinateFileOpener.class));
-        String[] keys = new String[fileOpeners.size()];
-        for (int i = 0; i < fileOpeners.size(); i++) {
-            keys[i] = fileOpeners.get(i).getClass().getName();
-        }
+        var filterredFileOpeners = new ArrayList<String>();
 
-        return keys;
+        Lookup.getDefault().lookupAll(MCoordinateFileOpener.class).stream()
+                .filter(coordinateFileOpener -> (coordinateFileOpener.isUsedInFiles()))
+                .forEachOrdered(coordinateFileOpener -> {
+                    filterredFileOpeners.add(coordinateFileOpener.getClass().getName());
+                });
+
+        return filterredFileOpeners.toArray(new String[0]);
     }
 
     public ObservableList<MCoordinateFile> getItems() {
