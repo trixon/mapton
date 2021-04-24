@@ -269,6 +269,11 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>fo-geojson</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>fo-kml</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -282,6 +287,11 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>frww-geo</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>frww-geojson</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
