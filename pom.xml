@@ -516,27 +516,6 @@
     </dependencyManagement>
 
     <repositories>
-        <repository>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-            <id>bintray-trixon-maven</id>
-            <url>https://dl.bintray.com/trixon/maven</url>
-        </repository>
-        <repository>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-            <id>bintray-jerady-maven</id>
-            <url>https://dl.bintray.com/jerady/maven</url>
-        </repository>
-        <repository>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-            <id>bintray-dlsc-oss-maven</id>
-            <url>https://dl.bintray.com/dlsc-oss/repository</url>
-        </repository>
         <!--        <repository>
             <id>netbeans-next</id>
             <url>https://repository.apache.org/content/repositories/orgapachenetbeans-1082</url>
