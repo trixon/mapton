@@ -15,8 +15,8 @@
  */
 package org.mapton.poi_trv_ti.updater;
 
+import jakarta.xml.bind.JAXBException;
 import java.io.IOException;
-import javax.xml.bind.JAXBException;
 import org.mapton.api.MUpdater;
 import org.mapton.poi_trv_ti.TrafficInformationManager.Service;
 import org.openide.util.Exceptions;

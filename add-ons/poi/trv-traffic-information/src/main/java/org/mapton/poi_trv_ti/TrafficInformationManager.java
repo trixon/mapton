@@ -15,13 +15,13 @@
  */
 package org.mapton.poi_trv_ti;
 
+import jakarta.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-import javax.xml.bind.JAXBException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.api.MServiceKeyManager;
@@ -42,7 +42,6 @@ public class TrafficInformationManager {
     private final File mCacheDir;
     private final ConcurrentHashMap<String, String> mCameraGroupToPhotoUrl = new ConcurrentHashMap<>();
     private HashMap<File, Long> mFileToTimestamp = new HashMap<>();
-    private final TrafficInformationManager mManager = getInstance();
     private List<se.trixon.trv_traffic_information.road.camera.v1.RESULT> mResultsCamera;
     private List<se.trixon.trv_traffic_information.road.parking.v1_4.RESULT> mResultsParking;
     private List<se.trixon.trv_traffic_information.road.trafficsafetycamera.v1.RESULT> mResultsTrafficSafetyCamera;

@@ -106,7 +106,7 @@
         <dependency>
             <groupId>se.trixon</groupId>
             <artifactId>trv-traffic-information</artifactId>
-            <version>1.0.2</version>
+            <version>1.0.3-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
                     <groupId>jakarta.xml.bind</groupId>
