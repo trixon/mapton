@@ -13,4 +13,6 @@ Both can also be installed with https://sdkman.io/.
 ## Dependencies
 Clone and build https://github.com/trixon/almond3, also with a FX JDK.
 
+Clone and build https://github.com/trixon/trv-traffic-information
+
 ## Build Mapton
