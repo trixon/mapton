@@ -42,6 +42,7 @@
                         <publicPackage>org.slf4j.*</publicPackage>
                         <publicPackage>se.trixon.*</publicPackage>
                         <publicPackage>de.jensd.fx.glyphs.*</publicPackage>
+                        <publicPackage>de.gsi.*</publicPackage>
                     </publicPackages>
                     <nbmResources>
                         <nbmResource>
@@ -306,6 +307,17 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <dependency>
+            <groupId>de.gsi.chart</groupId>
+            <artifactId>chartfx-chart</artifactId>
+            <version>11.2.5</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.openjfx</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
 
         <!-- Apache -->
         <dependency>
@@ -391,7 +403,7 @@
         <dependency>
             <groupId>jakarta.xml.bind</groupId>
             <artifactId>jakarta.xml.bind-api</artifactId>
-            <version>3.0.0</version>
+            <version>3.0.1</version>
         </dependency>
         <dependency>
             <groupId>jakarta.activation</groupId>
@@ -401,7 +413,7 @@
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-impl</artifactId>
-            <version>3.0.0</version>
+            <version>3.0.1</version>
         </dependency>
 
     </dependencies>
