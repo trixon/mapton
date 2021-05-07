@@ -146,6 +146,13 @@
             <artifactId>poi-trv-traffic-information</artifactId>
         </dependency>
 
+        <!--Mapton/Chart engines-->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>ce-chartfx</artifactId>
+            <version>${mapton.version}</version>
+        </dependency>
+
         <!--Mapton/Search engines-->
         <dependency>
             <groupId>${project.groupId}</groupId>

@@ -42,7 +42,6 @@
                         <publicPackage>org.slf4j.*</publicPackage>
                         <publicPackage>se.trixon.*</publicPackage>
                         <publicPackage>de.jensd.fx.glyphs.*</publicPackage>
-                        <publicPackage>de.gsi.*</publicPackage>
                     </publicPackages>
                     <nbmResources>
                         <nbmResource>
@@ -300,17 +299,6 @@
         <dependency>
             <groupId>eu.hansolo</groupId>
             <artifactId>tilesfx</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.openjfx</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>de.gsi.chart</groupId>
-            <artifactId>chartfx-chart</artifactId>
-            <version>11.2.5</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.openjfx</groupId>

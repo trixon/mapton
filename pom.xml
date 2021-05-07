@@ -193,6 +193,9 @@
         <!--POI providers-->
         <module>modules/poi-bookmarks</module>
 
+        <!--Chart engines-->
+        <module>modules/ce-chartfx</module>
+
         <!--Search engines-->
         <module>modules/se-bookmarks</module>
         <module>modules/se-geonames</module>
@@ -325,6 +328,11 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>maintenance</artifactId>
+                <version>${mapton.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>ce-chartfx</artifactId>
                 <version>${mapton.version}</version>
             </dependency>
 

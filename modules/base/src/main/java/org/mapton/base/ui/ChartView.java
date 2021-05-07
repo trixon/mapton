@@ -28,6 +28,7 @@ import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBar;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.GlobalStateChangeEvent;
+import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 
 /**
@@ -90,5 +91,9 @@ public class ChartView extends BorderPane {
         }
 
         setCenter(centerObject);
+
+        if (!centerObject.getClass().getPackageName().equals("de.gsi.chart")) {
+            FxHelper.loadDarkTheme(centerObject.getScene());
+        }
     }
 }
