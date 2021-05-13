@@ -219,10 +219,12 @@
         <module>add-ons/base64/base64</module>
         <module>add-ons/files/fo-geo</module>
         <module>add-ons/files/fo-geojson</module>
+        <module>add-ons/files/fo-geotiff</module>
         <module>add-ons/files/fo-kml</module>
         <module>add-ons/files/fo-shp</module>
         <module>add-ons/files/frww-geo</module>
         <module>add-ons/files/frww-geojson</module>
+        <module>add-ons/files/frww-geotiff</module>
         <module>add-ons/files/frww-kml</module>
         <module>add-ons/files/frww-shp</module>
         <module>add-ons/geonames/geonames-ww</module>
