@@ -20,11 +20,9 @@ import com.google.gson.GsonBuilder;
 import java.io.File;
 import java.text.DateFormat;
 import java.util.HashMap;
-import java.util.Map;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Background;
@@ -70,20 +68,14 @@ public class Mapton {
     public static final double MYLAT = 57.66;
     public static final double MYLON = 12.0;
 
-    private static final File CACHE_DIR;
-    private static final File CONFIG_DIR;
+    private static File CACHE_DIR;
+    private static File CONFIG_DIR;
     private static final ExecutionFlow EXECUTION_FLOW = new ExecutionFlow();
     private static final Color ICON_COLOR = Color.BLACK;
     private static final HashMap<WebEngine, String> WEB_ENGINE_TO_STYLE = new HashMap<>();
     private static final GlobalState sGlobalState = new GlobalState();
     private static final Log sLog = new Log();
     private DoubleProperty mZoomProperty = new SimpleDoubleProperty();
-
-    static {
-        CONFIG_DIR = new File(System.getProperty("netbeans.user"), "mapton-modules");
-        CACHE_DIR = Places.getCacheDirectory();
-        System.setProperty("mapton.cache", CACHE_DIR.getAbsolutePath());//Used by WorldWind
-    }
 
     public static void applyHtmlCss(WebView webView, String filename) {
         WEB_ENGINE_TO_STYLE.put(webView.getEngine(), filename);
@@ -123,10 +115,10 @@ public class Mapton {
     }
 
     public static Label createTitle(String title, Background background) {
-        Label label = new Label(title);
+        var label = new Label(title);
 
         label.setBackground(background);
-        Color color = (Color) background.getFills().get(0).getFill();
+        var color = (Color) background.getFills().get(0).getFill();
         label.setStyle(String.format("-fx-background-color: %s;", FxHelper.colorToString(color)));
         label.setAlignment(Pos.BASELINE_CENTER);
         label.setFont(new Font(FxHelper.getScaledFontSize() * 1.2));
@@ -153,10 +145,18 @@ public class Mapton {
     }
 
     public static File getCacheDir() {
+        if (CACHE_DIR == null) {
+            CACHE_DIR = Places.getCacheDirectory();
+        }
+
         return CACHE_DIR;
     }
 
     public static File getConfigDir() {
+        if (CONFIG_DIR == null) {
+            CONFIG_DIR = new File(System.getProperty("netbeans.user"), "mapton-modules");
+        }
+
         return CONFIG_DIR;
     }
 
@@ -179,7 +179,7 @@ public class Mapton {
     public static MEngine getEngine() {
         MEngine defaultEngine = null;
 
-        for (MEngine mapEngine : Lookup.getDefault().lookupAll(MEngine.class)) {
+        for (var mapEngine : Lookup.getDefault().lookupAll(MEngine.class)) {
             defaultEngine = mapEngine;
             try {
                 if (StringUtils.equalsIgnoreCase(mapEngine.getName(), options().getEngine())) {
@@ -269,7 +269,7 @@ public class Mapton {
     }
 
     public static void notification(String type, String title, String text, Action... actions) {
-        Notifications notifications = Notifications.create()
+        var notifications = Notifications.create()
                 .title(title)
                 .text(text)
                 .hideAfter(Duration.INDEFINITE)
@@ -279,7 +279,7 @@ public class Mapton {
     }
 
     public static void notification(String type, String title, String text, Duration hideDuration, Action... actions) {
-        Notifications notifications = Notifications.create()
+        var notifications = Notifications.create()
                 .title(title)
                 .text(text)
                 .hideAfter(hideDuration)
@@ -294,8 +294,8 @@ public class Mapton {
 
     protected Mapton() {
         Platform.runLater(() -> {
-            options().nightModeProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
-                for (Map.Entry<WebEngine, String> entry : WEB_ENGINE_TO_STYLE.entrySet()) {
+            options().nightModeProperty().addListener((observable, oldValue, newValue) -> {
+                for (var entry : WEB_ENGINE_TO_STYLE.entrySet()) {
                     applyHtmlCss(entry.getKey(), entry.getValue());
                 }
             });

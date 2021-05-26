@@ -36,7 +36,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.LinkedHashMap;
 import java.util.TreeMap;
-import java.util.logging.Logger;
 import java.util.prefs.PreferenceChangeEvent;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingNode;
@@ -60,6 +59,7 @@ import org.mapton.api.Mapton;
 import static org.mapton.worldwind.ModuleOptions.*;
 import org.mapton.worldwind.api.MapStyle;
 import org.mapton.worldwind.ruler.RulerTabPane;
+import org.openide.modules.Places;
 import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
@@ -75,7 +75,6 @@ import se.trixon.almond.util.swing.SwingHelper;
 public class WorldWindMapEngine extends MEngine {
 
     public static final String LOG_TAG = "WorldWind";
-    private static final Logger LOGGER = Logger.getLogger(WorldWindMapEngine.class.getName());
     private boolean mInProgress;
     private boolean mInitialized;
     private final LayerView mLayerView;
@@ -90,14 +89,12 @@ public class WorldWindMapEngine extends MEngine {
     private long mZoomEpoch = System.currentTimeMillis();
     private final double[] mZoomLevels;
 
-    static {
+    public WorldWindMapEngine() {
+        System.setProperty("mapton.cache", Places.getCacheDirectory().getAbsolutePath());
         Configuration.setValue(
                 AVKey.DATA_FILE_STORE_CONFIGURATION_FILE_NAME,
                 "org/mapton/worldwind/CacheLocationConfiguration.xml"
         );
-    }
-
-    public WorldWindMapEngine() {
         mStyleView = new StyleView();
         mLayerView = LayerView.getInstance();
         mRulerTabPane = RulerTabPane.getInstance();
