@@ -23,6 +23,7 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.ImageView;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 import org.apache.commons.lang3.SystemUtils;
 import org.mapton.api.MKey;
 import org.mapton.api.MOptions;
@@ -78,11 +79,14 @@ public class Initializer implements Runnable {
         boolean mapOnly = mOptions.isMapOnly();
         FxHelper.setDarkThemeEnabled(mOptions.is(KEY_UI_LAF_DARK));
 
-        var windowManager = WindowManager.getDefault();
-        windowManager.invokeWhenUIReady(() -> {
+        SwingUtilities.invokeLater(() -> {
             var iconColor = mOptions.getIconColor();
             MaterialIcon.setDefaultColor(iconColor);
             se.trixon.almond.util.icons.material.swing.MaterialIcon.setDefaultColor(FxHelper.colorToColor(iconColor));
+        });
+
+        var windowManager = WindowManager.getDefault();
+        windowManager.invokeWhenUIReady(() -> {
             PopOverWatcher.getInstance().setFrame((JFrame) Almond.getFrame());
 
             if (SystemUtils.IS_OS_MAC) {
