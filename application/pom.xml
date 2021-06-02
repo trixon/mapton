@@ -77,14 +77,6 @@
                     <groupId>org.netbeans.modules</groupId>
                     <artifactId>org-netbeans-modules-templatesui</artifactId>
                 </exclusion>
-                <exclusion>
-                    <groupId>org.netbeans.modules</groupId>
-                    <artifactId>org-netbeans-modules-core-kit</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.netbeans.modules</groupId>
-                    <artifactId>org-netbeans-modules-janitor</artifactId>
-                </exclusion>
             </exclusions>
         </dependency>
 
