@@ -106,16 +106,6 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>core</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.netbeans.modules</groupId>
-                    <artifactId>org-netbeans-swing-laf-flatlaf</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.netbeans.api</groupId>
-                    <artifactId>org-netbeans-libs-flatlaf</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <!-- Trixon -->

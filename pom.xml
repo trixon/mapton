@@ -526,10 +526,10 @@
     </dependencyManagement>
 
     <repositories>
-        <repository>
+        <!--        <repository>
             <id>netbeans-next</id>
             <url>https://repository.apache.org/content/repositories/orgapachenetbeans-1087</url>
-        </repository>
+        </repository>-->
     </repositories>
 
     <pluginRepositories>
