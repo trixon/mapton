@@ -19,12 +19,10 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.prefs.BackingStoreException;
-import java.util.prefs.Preferences;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.ImageView;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
-import javax.swing.SwingUtilities;
 import org.apache.commons.lang3.SystemUtils;
 import org.mapton.api.MKey;
 import org.mapton.api.MOptions;
@@ -67,11 +65,8 @@ public class Initializer implements Runnable {
         try {
             final String key = "laf";
             final String defaultLAF = "com.formdev.flatlaf.FlatDarkLaf";
-            Preferences preferences = NbPreferences.root().node("laf");
+            var preferences = NbPreferences.root().node("laf");
             PrefsHelper.putIfAbsent(preferences, key, defaultLAF);
-            if (preferences.get(key, "-").equalsIgnoreCase("com.bulenkov.darcula.DarculaLaf")) {
-                preferences.put(key, defaultLAF);
-            }
         } catch (BackingStoreException ex) {
             //Exceptions.printStackTrace(ex);
         }
@@ -83,30 +78,25 @@ public class Initializer implements Runnable {
         boolean mapOnly = mOptions.isMapOnly();
         FxHelper.setDarkThemeEnabled(mOptions.is(KEY_UI_LAF_DARK));
 
-        SwingUtilities.invokeLater(() -> {
-            MaterialIcon.setDefaultColor(mOptions.getIconColor());
-            se.trixon.almond.util.icons.material.swing.MaterialIcon.setDefaultColor(FxHelper.colorToColor(mOptions.getIconColor()));
-            SwingHelper.runLaterDelayed(10, () -> {
-                JFrame frame = (JFrame) Almond.getFrame();
-                PopOverWatcher.getInstance().setFrame(frame);
-
-                if (SystemUtils.IS_OS_MAC) {
-                    AboutAction.setFx(true);
-                    try {
-                        String path = "/" + SystemHelper.getPackageAsPath(Initializer.class) + "logo.png";
-                        var bufferedImage = ImageIO.read(Initializer.class.getResource(path));
-                        var imageView = new ImageView(SwingFXUtils.toFXImage(bufferedImage, null));
-                        AboutAction.setAboutModel(new AboutModel(SystemHelper.getBundle(Initializer.class, "about"), imageView));
-                    } catch (IOException ex) {
-                        Exceptions.printStackTrace(ex);
-                    }
-                }
-            });
-        });
-
-        final WindowManager windowManager = WindowManager.getDefault();
-
+        var windowManager = WindowManager.getDefault();
         windowManager.invokeWhenUIReady(() -> {
+            var iconColor = mOptions.getIconColor();
+            MaterialIcon.setDefaultColor(iconColor);
+            se.trixon.almond.util.icons.material.swing.MaterialIcon.setDefaultColor(FxHelper.colorToColor(iconColor));
+            PopOverWatcher.getInstance().setFrame((JFrame) Almond.getFrame());
+
+            if (SystemUtils.IS_OS_MAC) {
+                AboutAction.setFx(true);
+                try {
+                    String path = "/" + SystemHelper.getPackageAsPath(Initializer.class) + "logo.png";
+                    var bufferedImage = ImageIO.read(Initializer.class.getResource(path));
+                    var imageView = new ImageView(SwingFXUtils.toFXImage(bufferedImage, null));
+                    AboutAction.setAboutModel(new AboutModel(SystemHelper.getBundle(Initializer.class, "about"), imageView));
+                } catch (IOException ex) {
+                    Exceptions.printStackTrace(ex);
+                }
+            }
+
             MaptonNb.progressStart(Dict.WARMING_UP.toString());
             Mapton.getGlobalState().put(MKey.APP_TOOL_LABEL, " ");//Forces repaint of AppMenuToolBar
             Mapton.getLog().setUseTimestamps(false);
