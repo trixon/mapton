@@ -465,7 +465,7 @@
             <dependency>
                 <groupId>com.healthmarketscience.sqlbuilder</groupId>
                 <artifactId>sqlbuilder</artifactId>
-                <version>3.0.1</version>
+                <version>3.0.2</version>
             </dependency>
             <dependency>
                 <groupId>com.h2database</groupId>
