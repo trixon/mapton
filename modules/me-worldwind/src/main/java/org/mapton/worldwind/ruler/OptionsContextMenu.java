@@ -194,8 +194,9 @@ public class OptionsContextMenu extends ContextMenu {
         });
 
         EventHandler<ActionEvent> colorActionEvent = (event) -> {
-            ColorPicker source = (ColorPicker) event.getSource();
-            Color color = source.getValue();
+            var source = (ColorPicker) event.getSource();
+            var color = source.getValue();
+            color = Color.color(color.getRed(), color.getGreen(), color.getBlue(), 0.1);
             java.awt.Color awtColor = FxHelper.colorToColor(color);
             String key = null;
 

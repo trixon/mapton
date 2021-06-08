@@ -60,6 +60,7 @@ public enum MDict {
     SET_HOME,
     SPHERE,
     STARS,
+    USE_GEO_FILTER,
     VIEW_CONTROLS,
     WORLD_MAP;
 

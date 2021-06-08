@@ -23,7 +23,6 @@ import gov.nasa.worldwind.util.measure.MeasureTool;
 import gov.nasa.worldwind.util.measure.MeasureToolController;
 import java.awt.Component;
 import java.awt.Cursor;
-import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -44,6 +43,7 @@ import javafx.scene.text.Font;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
+import org.mapton.api.MPolygonFilterManager;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.mapton.worldwind.ModuleOptions;
 import static org.mapton.worldwind.ModuleOptions.*;
@@ -149,7 +149,7 @@ public class RulerTab extends Tab {
     }
 
     private void initListeners() {
-        mMeasureTool.addPropertyChangeListener((PropertyChangeEvent propertyChangeEvent) -> {
+        mMeasureTool.addPropertyChangeListener(propertyChangeEvent -> {
             final String propertyName = propertyChangeEvent.getPropertyName();
 
             if (StringUtils.equalsAny(propertyName, MeasureTool.EVENT_POSITION_ADD, MeasureTool.EVENT_POSITION_REMOVE, MeasureTool.EVENT_POSITION_REPLACE)) {
@@ -190,6 +190,11 @@ public class RulerTab extends Tab {
         setOnClosed(event -> {
             mMeasureTool.setArmed(false);
             mMeasureTool.clear();
+            mPointListTextArea.clear();
+        });
+
+        mPointListTextArea.textProperty().addListener((observable, oldValue, newValue) -> {
+            MPolygonFilterManager.getInstance().put(getText(), newValue);
         });
     }
 
