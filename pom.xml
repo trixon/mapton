@@ -541,7 +541,7 @@
 
     <properties>
         <netbeans.version>RELEASE124</netbeans.version>
-        <netbeans.compile.on.save>all</netbeans.compile.on.save>
+        <netbeans.compile.on.save>none</netbeans.compile.on.save>
         <brandingToken>mapton</brandingToken>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <almond.version>11.0.8-SNAPSHOT</almond.version>

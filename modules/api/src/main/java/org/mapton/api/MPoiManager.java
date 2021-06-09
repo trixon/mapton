@@ -20,7 +20,9 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.TreeSet;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ListChangeListener;
 import org.apache.commons.lang3.ObjectUtils;
@@ -39,6 +41,8 @@ public class MPoiManager extends MBaseDataManager<MPoi> {
     private final ObjectProperty<TreeSet<String>> mCategoriesProperty = new SimpleObjectProperty<>();
     private DelayedResetRunner mDelayedResetRunner;
     private String mFilter = "";
+    private final MPolygonFilterManager mPolygonFilterManager = MPolygonFilterManager.getInstance();
+    private final BooleanProperty mPolygonFilterProperty = new SimpleBooleanProperty(false);
     private final SimpleObjectProperty<Long> mTrigRefreshCategoriesProperty = new SimpleObjectProperty<>();
 
     public static MPoiManager getInstance() {
@@ -55,6 +59,10 @@ public class MPoiManager extends MBaseDataManager<MPoi> {
 
     public ObjectProperty<TreeSet<String>> categoriesProperty() {
         return mCategoriesProperty;
+    }
+
+    public BooleanProperty polygonFilterProperty() {
+        return mPolygonFilterProperty;
     }
 
     public void refresh() {
@@ -134,6 +142,10 @@ public class MPoiManager extends MBaseDataManager<MPoi> {
         MBookmarkManager.getInstance().getItems().addListener((ListChangeListener.Change<? extends MBookmark> c) -> {
             refresh();
         });
+
+        mPolygonFilterManager.addListener(() -> {
+            refresh();
+        });
     }
 
     private void sendObjectProperties(MPoi poi) {
@@ -178,7 +190,9 @@ public class MPoiManager extends MBaseDataManager<MPoi> {
                 || StringHelper.matchesSimpleGlob(poi.getGroup(), filter, true, true)
                 || StringHelper.matchesSimpleGlob(poi.getDescription(), filter, true, true));
 
-        return valid;
+        boolean validCoordinate = !mPolygonFilterManager.hasItems() || !mPolygonFilterProperty.get() || mPolygonFilterProperty.get() && mPolygonFilterManager.contains(poi.getLatitude(), poi.getLongitude());
+
+        return valid && validCoordinate;
     }
 
     private static class Holder {

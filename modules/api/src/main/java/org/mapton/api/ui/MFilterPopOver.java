@@ -36,7 +36,7 @@ public abstract class MFilterPopOver extends MPopOver {
     private final Button clearButton = new Button(Dict.CLEAR.toString());
     private final VBox mBox;
     private final HBox mButtonBox;
-    private final CheckBox mFilterPolygonCheckBox = new CheckBox(MDict.USE_GEO_FILTER.toString());
+    private final CheckBox mPolygonFilterCheckBox = new CheckBox(MDict.USE_GEO_FILTER.toString());
 
     public MFilterPopOver() {
         String title = Dict.FILTER.toString();
@@ -56,8 +56,8 @@ public abstract class MFilterPopOver extends MPopOver {
         mButtonBox = new HBox(GAP, allButton, clearButton);
         mButtonBox.setAlignment(Pos.CENTER);
 
-        mBox = new VBox(8, mButtonBox, mFilterPolygonCheckBox);
-        mFilterPolygonCheckBox.setDisable(true);
+        mBox = new VBox(8, mButtonBox, mPolygonFilterCheckBox);
+        mPolygonFilterCheckBox.setDisable(true);
     }
 
     public abstract void clear();
@@ -66,12 +66,12 @@ public abstract class MFilterPopOver extends MPopOver {
         return mBox;
     }
 
-    public CheckBox getFilterPolygonCheckBox() {
-        return mFilterPolygonCheckBox;
+    public CheckBox getPolygonFilterCheckBox() {
+        return mPolygonFilterCheckBox;
     }
 
-    public boolean isFilterPolygons() {
-        return mFilterPolygonCheckBox.isSelected();
+    public boolean isPolygonFilters() {
+        return mPolygonFilterCheckBox.isSelected();
     }
 
     public abstract void reset();

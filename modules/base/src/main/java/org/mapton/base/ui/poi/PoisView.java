@@ -49,7 +49,6 @@ import org.mapton.api.MPoiManager;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.mapton.api.ui.MFilterPopOver;
-import org.mapton.api.ui.MOptionsPopOver;
 import static org.mapton.api.ui.MPopOver.GAP;
 import static org.mapton.api.ui.MPopOver.autoSize;
 import org.openide.util.Lookup;
@@ -74,7 +73,6 @@ public class PoisView extends BorderPane {
     private Label mItemCountLabel;
     private ListView<MPoi> mListView;
     private final MPoiManager mManager = MPoiManager.getInstance();
-    private MOptionsPopOver mOptionsPopOver;
 
     public PoisView() {
         createUI();
@@ -88,7 +86,6 @@ public class PoisView extends BorderPane {
 
     private void createUI() {
         mFilterPopOver = new FilterPopOver();
-        mOptionsPopOver = new MOptionsPopOver();
 
         mFilterTextField = TextFields.createClearableTextField();
         mFilterTextField.setPromptText(String.format("%s %s", Dict.SEARCH.toString(), MDict.POI.toString()));
@@ -103,20 +100,16 @@ public class PoisView extends BorderPane {
         });
         refreshAction.setGraphic(MaterialIcon._Navigation.REFRESH.getImageView(getIconSizeToolBarInt()));
 
-        var optionsAction = mOptionsPopOver.getAction();
-        optionsAction.setDisabled(true);
-
         ArrayList<Action> actions = new ArrayList<>();
         actions.add(refreshAction);
         actions.add(mFilterPopOver.getAction());
-        actions.add(optionsAction);
 
         var toolBar = ActionUtils.createToolBar(actions, ActionUtils.ActionTextBehavior.HIDE);
         FxHelper.adjustButtonWidth(toolBar.getItems().stream(), getIconSizeToolBarInt());
         FxHelper.undecorateButtons(toolBar.getItems().stream());
         var topBorderPane = new BorderPane(mFilterTextField);
         topBorderPane.setRight(toolBar);
-        toolBar.setMinWidth(getIconSizeToolBarInt() * 3 * 1.6);
+        toolBar.setMinWidth(getIconSizeToolBarInt() * 2 * 1.6);
 
         FxHelper.slimToolBar(toolBar);
 
@@ -243,6 +236,18 @@ public class PoisView extends BorderPane {
             createUI();
         }
 
+        @Override
+        public void clear() {
+            mCategoryCheckTreeView.getCheckModel().clearChecks();
+            getPolygonFilterCheckBox().setSelected(false);
+        }
+
+        @Override
+        public void reset() {
+            mCategoryCheckTreeView.getCheckModel().checkAll();
+            getPolygonFilterCheckBox().setSelected(false);
+        }
+
         private void createUI() {
             mCategoryCheckTreeView = new PoiCategoryCheckTreeView();
             VBox vBox = new VBox(GAP,
@@ -253,16 +258,13 @@ public class PoisView extends BorderPane {
 
             autoSize(vBox);
             setContentNode(vBox);
-        }
 
-        @Override
-        public void clear() {
-            mCategoryCheckTreeView.getCheckModel().clearChecks();
-        }
-
-        @Override
-        public void reset() {
-            mCategoryCheckTreeView.getCheckModel().checkAll();
+            getPolygonFilterCheckBox().setDisable(false);
+            var poiManager = MPoiManager.getInstance();
+            poiManager.polygonFilterProperty().bind(getPolygonFilterCheckBox().selectedProperty());
+            getPolygonFilterCheckBox().selectedProperty().addListener((observable, oldValue, newValue) -> {
+                poiManager.refresh();
+            });
         }
     }
 
