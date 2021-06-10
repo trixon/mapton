@@ -22,8 +22,11 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import org.mapton.api.MDict;
+import org.mapton.api.MPolygonFilterManager;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.fx.DelayedResetRunner;
+import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 
 /**
@@ -36,7 +39,9 @@ public abstract class MFilterPopOver extends MPopOver {
     private final Button clearButton = new Button(Dict.CLEAR.toString());
     private final VBox mBox;
     private final HBox mButtonBox;
+    private final DelayedResetRunner mDelayedResetRunner;
     private final CheckBox mPolygonFilterCheckBox = new CheckBox(MDict.USE_GEO_FILTER.toString());
+    private final MPolygonFilterManager mPolygonFilterManager = MPolygonFilterManager.getInstance();
 
     public MFilterPopOver() {
         String title = Dict.FILTER.toString();
@@ -56,8 +61,20 @@ public abstract class MFilterPopOver extends MPopOver {
         mButtonBox = new HBox(GAP, allButton, clearButton);
         mButtonBox.setAlignment(Pos.CENTER);
 
-        mBox = new VBox(8, mButtonBox, mPolygonFilterCheckBox);
-        mPolygonFilterCheckBox.setDisable(true);
+        mBox = new VBox(FxHelper.getUIScaled(8), mButtonBox, mPolygonFilterCheckBox);
+
+        mDelayedResetRunner = new DelayedResetRunner(500, () -> {
+            onPolygonFilterChange();
+        });
+
+        mPolygonFilterManager.addListener(() -> {
+            mDelayedResetRunner.reset();
+        });
+
+        mPolygonFilterCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            mDelayedResetRunner.reset();
+        });
+
     }
 
     public abstract void clear();
@@ -73,6 +90,8 @@ public abstract class MFilterPopOver extends MPopOver {
     public boolean isPolygonFilters() {
         return mPolygonFilterCheckBox.isSelected();
     }
+
+    public abstract void onPolygonFilterChange();
 
     public abstract void reset();
 

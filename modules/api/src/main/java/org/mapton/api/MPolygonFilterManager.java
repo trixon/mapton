@@ -66,6 +66,16 @@ public class MPolygonFilterManager {
         return !mNameToPolygon.isEmpty();
     }
 
+    public boolean isValidCoordinate(Double lat, Double lon, boolean usePolygonfilter) {
+        boolean validCoordinate = !hasItems() || !usePolygonfilter || usePolygonfilter && contains(lat, lon);
+
+        return validCoordinate;
+    }
+
+    public boolean isValidCoordinate(MLatLon latLon, boolean usePolygonfilter) {
+        return isValidCoordinate(latLon.getLatitude(), latLon.getLongitude(), usePolygonfilter);
+    }
+
     public Path2D.Double put(String key, String value) {
         return put(key, createPathFromString(value));
     }
