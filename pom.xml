@@ -4,7 +4,7 @@
 
     <groupId>org.mapton</groupId>
     <artifactId>mapton-parent</artifactId>
-    <version>2.2.1</version>
+    <version>2.2.2-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>mapton-parent</name>
@@ -545,7 +545,7 @@
         <brandingToken>mapton</brandingToken>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <almond.version>11.0.8-SNAPSHOT</almond.version>
-        <mapton.version>2.2.1</mapton.version>
+        <mapton.version>2.2.2-SNAPSHOT</mapton.version>
     </properties>
     <description>Some kind of map application</description>
 </project>
