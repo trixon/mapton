@@ -105,11 +105,11 @@ public class Initializer implements Runnable {
             Mapton.getGlobalState().put(MKey.APP_TOOL_LABEL, " ");//Forces repaint of AppMenuToolBar
             Mapton.getLog().setUseTimestamps(false);
             NbLog.setUseGlobalTag(false);
-            Mapton.getLog().setOut((String s) -> {
-                NbLog.i("", s);
+            Mapton.getLog().setOut(string -> {
+                NbLog.i("", string);
             });
-            Mapton.getLog().setErr((String s) -> {
-                NbLog.e("", s);
+            Mapton.getLog().setErr(string -> {
+                NbLog.e("", string);
             });
             Mapton.log(SystemHelper.getSystemInfo());
 
