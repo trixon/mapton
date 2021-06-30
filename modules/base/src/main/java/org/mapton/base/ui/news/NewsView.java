@@ -15,22 +15,27 @@
  */
 package org.mapton.base.ui.news;
 
-import javafx.scene.control.Separator;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import org.apache.commons.lang3.StringUtils;
 
 public class NewsView extends HBox {
 
-    private final AppNewsSection mStaticNewsSection = new AppNewsSection();
     private final DynamicNewsSection mDynamicNewsSection = new DynamicNewsSection();
+    private final AppNewsSection mStaticNewsSection = new AppNewsSection();
 
     public NewsView() {
-        getChildren().setAll(
-                mDynamicNewsSection,
-                new Separator(),
-                mStaticNewsSection
-        );
-        HBox.setHgrow(mDynamicNewsSection, Priority.ALWAYS);
-        HBox.setHgrow(mStaticNewsSection, Priority.ALWAYS);
+        var displayDynamic = StringUtils.equalsIgnoreCase(System.getProperty("mapton.news.dynamic", "false"), "true");
+        var displayStatic = StringUtils.equalsIgnoreCase(System.getProperty("mapton.news.static", "true"), "true");
+
+        if (displayDynamic) {
+            getChildren().add(mDynamicNewsSection);
+            HBox.setHgrow(mDynamicNewsSection, Priority.ALWAYS);
+        }
+
+        if (displayStatic) {
+            getChildren().add(mStaticNewsSection);
+            HBox.setHgrow(mStaticNewsSection, Priority.ALWAYS);
+        }
     }
 }
