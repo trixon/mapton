@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -80,6 +81,7 @@ public class LayerView extends BorderPane implements MActivatable {
     private TextField mFilterTextField;
     private final Set<Layer> mLayerEnabledListenerSet;
     private final Map<String, CheckBoxTreeItem<Layer>> mLayerParents;
+    private final HashMap<Layer, CheckBoxTreeCell<Layer>> mLayerToCheckBoxTreeCell = new HashMap<>();
     private WorldWindowPanel mMap;
     private Action mOptionsAction;
     private MOptionsPopOver mOptionsPopOver;
@@ -301,6 +303,7 @@ public class LayerView extends BorderPane implements MActivatable {
                 if (c.wasAdded()) {
                     c.getAddedSubList().forEach(treeItem -> {
                         if (!isCategoryTreeItem(treeItem) && !treeItem.getValue().isEnabled()) {
+                            lockCheckBoxTemporarily(treeItem.getValue());
                             treeItem.getValue().setEnabled(true);
                             mVisibilityPreferences.putBoolean(getLayerPath(treeItem.getValue()), true);
                         }
@@ -308,6 +311,7 @@ public class LayerView extends BorderPane implements MActivatable {
                 } else if (c.wasRemoved()) {
                     c.getRemoved().forEach(treeItem -> {
                         if (!isCategoryTreeItem(treeItem) && treeItem.getValue().isEnabled()) {
+                            lockCheckBoxTemporarily(treeItem.getValue());
                             treeItem.getValue().setEnabled(false);
                             mVisibilityPreferences.putBoolean(getLayerPath(treeItem.getValue()), false);
                         }
@@ -325,6 +329,17 @@ public class LayerView extends BorderPane implements MActivatable {
 
     private boolean isCategoryTreeItem(TreeItem<Layer> treeItem) {
         return !treeItem.getChildren().isEmpty();
+    }
+
+    private void lockCheckBoxTemporarily(Layer layer) {
+        var checkBoxTreeCell = mLayerToCheckBoxTreeCell.get(layer);
+        if (checkBoxTreeCell != null) {
+            checkBoxTreeCell.setDisable(true);
+            FxHelper.runLaterDelayed(2, () -> {
+                checkBoxTreeCell.setDisable(false);
+                checkBoxTreeCell.requestFocus();
+            });
+        }
     }
 
     private void postPopulate(CheckBoxTreeItem<Layer> treeItem) {
@@ -419,6 +434,7 @@ public class LayerView extends BorderPane implements MActivatable {
         @Override
         public void updateItem(Layer layer, boolean empty) {
             super.updateItem(layer, empty);
+            mLayerToCheckBoxTreeCell.put(layer, this);
             var treeItem = getTreeItem();
             if (treeItem != null) {
                 if (treeItem.isLeaf()) {
