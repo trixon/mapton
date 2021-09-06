@@ -18,6 +18,10 @@ package org.mapton.core.ui;
 import javafx.scene.Scene;
 import org.mapton.core.api.MTopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
+import org.openide.awt.ActionID;
+import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
+import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 import se.trixon.almond.util.Dict;
 
@@ -33,6 +37,18 @@ import se.trixon.almond.util.Dict;
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(mode = "topLeft", openAtStartup = false, position = 3)
+@TopComponent.OpenActionRegistration(
+        displayName = "#CTL_CommandBoxAction",
+        preferredID = "CommandBoxTopComponent"
+)
+@ActionID(category = "Mapton", id = "org.mapton.core.ui.CommandBoxTopComponent")
+@ActionReferences({
+    @ActionReference(path = "Shortcuts", name = "DS-A"),
+    @ActionReference(path = "Menu/Tools", position = 9)
+})
+@NbBundle.Messages({
+    "CTL_CommandBoxAction=Comm&ands"
+})
 public final class CommandBoxTopComponent extends MTopComponent {
 
     public CommandBoxTopComponent() {
