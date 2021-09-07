@@ -131,6 +131,7 @@ public class Initializer implements Runnable {
                     Almond.getTopComponent("UpdaterTopComponent");
                     Almond.getTopComponent("PropertiesTopComponent");
                     Almond.getTopComponent("ChartTopComponent");
+                    Almond.getTopComponent("BeforeAfterTopComponent");
 
                     if (mOptions.isFirstRun()) {
                         Actions.forID("Mapton", "org.mapton.core.actions.AboutMapsAction").actionPerformed(null);

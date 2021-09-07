@@ -46,7 +46,7 @@ import se.trixon.almond.util.Dict;
 @ActionID(category = "Mapton", id = "org.mapton.core.ui.NewsTopComponent")
 @ActionReferences({
     //    @ActionReference(path = "Shortcuts", name = "D-0"),
-    @ActionReference(path = "Menu/Tools", position = 10)
+    @ActionReference(path = "Menu/Tools", position = 11)
 })
 @NbBundle.Messages({
     "CTL_NewsAction=&News"

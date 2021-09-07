@@ -27,6 +27,7 @@ public class MKey {
     public static final String APP_TOOL_LABEL = "app_toolbar.label";
     public static final String APP_TOOL_STARTED = "app_tool.started";
     public static final String BACKGROUND_IMAGE = "background_image";
+    public static final String BEFORE_AFTER_IMAGE = "before_after_image";
     public static final String CHART = "chart";
     public static final String CHART_WAIT = "chart.wait";
     public static final String DATA_SOURCES_FILES = "data_sources.files";
