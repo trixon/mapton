@@ -42,9 +42,9 @@ public class BeforeAfterContextExtras extends MContextMenuItem {
     @Override
     public EventHandler<ActionEvent> getAction() {
         return event -> {
-            Almond.openAndActivateTopComponent("BeforeAfterTopComponent");
             try {
                 Mapton.getGlobalState().put(MKey.BEFORE_AFTER_IMAGE, Mapton.getEngine().getImageRenderer().call());
+                Almond.openAndActivateTopComponent("BeforeAfterTopComponent");
             } catch (Exception ex) {
                 Exceptions.printStackTrace(ex);
             }
