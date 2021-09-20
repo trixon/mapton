@@ -540,7 +540,7 @@
     </pluginRepositories>
 
     <properties>
-        <netbeans.version>RELEASE124</netbeans.version>
+        <netbeans.version>RELEASE125</netbeans.version>
         <netbeans.compile.on.save>none</netbeans.compile.on.save>
         <brandingToken>mapton</brandingToken>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
