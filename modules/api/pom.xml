@@ -29,8 +29,8 @@
                         <publicPackage>eu.hansolo.tilesfx.*</publicPackage>
                         <publicPackage>j2html.*</publicPackage>
                         <!--<publicPackage>javafx.*</publicPackage>-->
-                        <publicPackage>javax.activation.*</publicPackage>
-                        <publicPackage>javax.annotation.*</publicPackage>
+                        <!--<publicPackage>javax.activation.*</publicPackage>-->
+                        <!--<publicPackage>javax.annotation.*</publicPackage>-->
                         <publicPackage>javax.xml.*</publicPackage>
                         <publicPackage>jakarta.*</publicPackage>
                         <publicPackage>org.apache.commons.*</publicPackage>
@@ -399,8 +399,8 @@
             <version>2.1.0-RC1</version>
         </dependency>
         <dependency>
-            <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-impl</artifactId>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
             <version>3.0.2</version>
         </dependency>
         <dependency>
@@ -414,8 +414,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
-
     </dependencies>
 
     <properties>
