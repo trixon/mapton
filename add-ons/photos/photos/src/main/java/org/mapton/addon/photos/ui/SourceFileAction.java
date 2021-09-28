@@ -31,7 +31,7 @@ public abstract class SourceFileAction {
     protected final String mTitle = Dict.SOURCES.toString();
 
     public SourceFileAction() {
-        SimpleDialog.getExtensionFilters().put("mapo", new FileNameExtensionFilter("Mapton Mapollage (*.mapo)", "*.mapo"));
+        SimpleDialog.getExtensionFilters().put("mapo", new FileNameExtensionFilter("Mapton Mapollage (*.mapo)", "mapo"));
     }
 
     public abstract Action getAction();
