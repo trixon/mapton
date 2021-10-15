@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2021 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,16 +15,15 @@
  */
 package org.mapton.base.context_menu.copy;
 
-import java.util.Locale;
-import org.openide.util.lookup.ServiceProvider;
 import org.mapton.api.MContextMenuItem;
+import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
  * @author Patrik Karlström
  */
 @ServiceProvider(service = MContextMenuItem.class)
-public class ProjectedLatLon extends MContextMenuItem {
+public class ProjectedLatLon extends BaseLatLon {
 
     @Override
     public String getName() {
@@ -32,14 +31,10 @@ public class ProjectedLatLon extends MContextMenuItem {
     }
 
     @Override
-    public ContextType getType() {
-        return ContextType.COPY;
-    }
-
-    @Override
     public String getUrl() {
-        return String.format(Locale.ENGLISH, "%.6f, %.6f",
+        return String.format(getLocale(), "%.6f%s%.6f",
                 getLatitudeProj(),
+                getSeparator(),
                 getLongitudeProj()
         );
     }

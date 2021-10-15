@@ -19,7 +19,8 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ObservableValue;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.scene.paint.Color;
 import org.openide.util.NbPreferences;
 import se.trixon.almond.util.OptionsBase;
@@ -34,7 +35,8 @@ public class MOptions extends OptionsBase {
     public static final String DEFAULT_UI_LAF_ICON_COLOR_BRIGHT = "D3D3D3";
     public static final String DEFAULT_UI_LAF_ICON_COLOR_DARK = "1A1A1A";
     public static final String KEY_APP_FIRST_RUN = "app.first_run";
-
+    public static final String KEY_COPY_LOCATION_COORDINATE_SEPARATOR = "copyLocation.coordinateSeparator";
+    public static final String KEY_COPY_LOCATION_DECIMAL_SYMBOL = "copyLocation.decimalSymbol";
     public static final String KEY_GRID_GLOBAL_CLAMP_TO_GROUND = "global_clamp_to_ground";
     public static final String KEY_GRID_GLOBAL_EQUATOR = "grid.global.equator";
     public static final String KEY_GRID_GLOBAL_LATITUDES = "grid.global.latitudes";
@@ -57,6 +59,8 @@ public class MOptions extends OptionsBase {
     public static final String KEY_UI_LAF_ICON_COLOR_DARK = "ui.laf.icon_color_dark";
     public static final String KEY_UI_POPOVER = "ui.popover";
 
+    private static final String DEFAULT_COPY_LOCATION_COORDINATE_SEPARATOR = ",";
+    private static final String DEFAULT_COPY_LOCATION_DECIMAL_SYMBOL = ".";
     private static final boolean DEFAULT_FULL_SCREEN = false;
     private static final boolean DEFAULT_MAP_DISPLAY_CROSSHAIR = true;
     private static final boolean DEFAULT_MAP_DISPLAY_HOME_ICON = false;
@@ -73,6 +77,8 @@ public class MOptions extends OptionsBase {
     private static final String KEY_MAP_COO_TRANS = "map.coo_trans";
     private static final String KEY_MAP_HOME_ZOOM = "map.home_zoom";
     private static final String KEY_MAP_ZOOM = "map.zoom";
+    private final StringProperty mCoordinateSeparatorProperty = new SimpleStringProperty(DEFAULT_COPY_LOCATION_COORDINATE_SEPARATOR);
+    private final StringProperty mDecimalSymbolProperty = new SimpleStringProperty(DEFAULT_COPY_LOCATION_DECIMAL_SYMBOL);
 
     private final BooleanProperty mDisplayCrosshairProperty = new SimpleBooleanProperty(true);
     private final BooleanProperty mDisplayHomeIconProperty = new SimpleBooleanProperty(false);
@@ -94,6 +100,14 @@ public class MOptions extends OptionsBase {
         load();
     }
 
+    public StringProperty coordinateSeparatorProperty() {
+        return mCoordinateSeparatorProperty;
+    }
+
+    public StringProperty decimalSymbolProperty() {
+        return mDecimalSymbolProperty;
+    }
+
     public BooleanProperty displayCrosshairProperty() {
         return mDisplayCrosshairProperty;
     }
@@ -104,6 +118,14 @@ public class MOptions extends OptionsBase {
 
     public ObjectProperty<String> engineProperty() {
         return mEngineProperty;
+    }
+
+    public String getCoordinateSeparator() {
+        return mCoordinateSeparatorProperty.get();
+    }
+
+    public String getDecimalSymbol() {
+        return mDecimalSymbolProperty.get();
     }
 
     public String getEngine() {
@@ -255,23 +277,24 @@ public class MOptions extends OptionsBase {
                     break;
             }
         });
-        mNightModeProperty.addListener((ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1) -> {
+
+        mNightModeProperty.addListener((ov, t, t1) -> {
             put(KEY_UI_LAF_DARK, t1);
         });
 
-        mPreferPopoverProperty.addListener((ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1) -> {
+        mPreferPopoverProperty.addListener((ov, t, t1) -> {
             put(KEY_UI_POPOVER, t1);
         });
 
-        mDisplayCrosshairProperty.addListener((ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1) -> {
+        mDisplayCrosshairProperty.addListener((ov, t, t1) -> {
             put(KEY_MAP_DISPLAY_CROSSHAIR, t1);
         });
 
-        mDisplayHomeIconProperty.addListener((ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1) -> {
+        mDisplayHomeIconProperty.addListener((ov, t, t1) -> {
             put(KEY_MAP_DISPLAY_HOME_ICON, t1);
         });
 
-        mEngineProperty.addListener((ObservableValue<? extends String> ov, String t, String t1) -> {
+        mEngineProperty.addListener((ov, t, t1) -> {
             final MEngine oldEngine = Mapton.getEngine();
             try {
                 oldEngine.onDeactivate();
@@ -282,14 +305,21 @@ public class MOptions extends OptionsBase {
             put(KEY_MAP_ENGINE, t1);
         });
 
-        mIconColorBrightProperty.addListener((ObservableValue<? extends Color> ov, Color t, Color t1) -> {
+        mIconColorBrightProperty.addListener((ov, t, t1) -> {
             put(KEY_UI_LAF_ICON_COLOR_BRIGHT, FxHelper.colorToHexRGB(t1));
         });
 
-        mIconColorDarkProperty.addListener((ObservableValue<? extends Color> ov, Color t, Color t1) -> {
+        mIconColorDarkProperty.addListener((ov, t, t1) -> {
             put(KEY_UI_LAF_ICON_COLOR_DARK, FxHelper.colorToHexRGB(t1));
         });
 
+        mCoordinateSeparatorProperty.addListener((ov, t, t1) -> {
+            put(KEY_COPY_LOCATION_COORDINATE_SEPARATOR, t1);
+        });
+
+        mDecimalSymbolProperty.addListener((ov, t, t1) -> {
+            put(KEY_COPY_LOCATION_DECIMAL_SYMBOL, t1);
+        });
     }
 
     private void load() {
@@ -302,6 +332,9 @@ public class MOptions extends OptionsBase {
 
         mIconColorDarkProperty.set(FxHelper.colorFromHexRGBA(get(KEY_UI_LAF_ICON_COLOR_DARK, DEFAULT_UI_LAF_ICON_COLOR_DARK)));
         mIconColorBrightProperty.set(FxHelper.colorFromHexRGBA(get(KEY_UI_LAF_ICON_COLOR_BRIGHT, DEFAULT_UI_LAF_ICON_COLOR_BRIGHT)));
+
+        mCoordinateSeparatorProperty.set(get(KEY_COPY_LOCATION_COORDINATE_SEPARATOR, DEFAULT_COPY_LOCATION_COORDINATE_SEPARATOR));
+        mDecimalSymbolProperty.set(get(KEY_COPY_LOCATION_DECIMAL_SYMBOL, DEFAULT_COPY_LOCATION_DECIMAL_SYMBOL));
     }
 
     private static class Holder {
