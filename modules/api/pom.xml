@@ -391,7 +391,7 @@
         <dependency>
             <groupId>jakarta.xml.bind</groupId>
             <artifactId>jakarta.xml.bind-api</artifactId>
-            <version>4.0.0-RC1</version>
+            <version>4.0.0-RC2</version>
         </dependency>
         <dependency>
             <groupId>jakarta.activation</groupId>
