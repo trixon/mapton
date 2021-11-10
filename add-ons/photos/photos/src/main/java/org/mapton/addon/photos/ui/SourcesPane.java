@@ -77,6 +77,7 @@ public class SourcesPane extends BorderPane {
                 Thread.sleep(5000);
             } catch (InterruptedException ex) {
                 Exceptions.printStackTrace(ex);
+                Thread.currentThread().interrupt();
             }
             Mapton.getGlobalState().put(Mapo.KEY_SETTINGS_UPDATED, mMapo.getSettings());
         }).start();

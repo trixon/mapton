@@ -141,6 +141,7 @@ public class TrafficInformationManager {
                 } catch (IOException | InterruptedException | JAXBException ex) {
                     mResultsCamera = new ArrayList<>();
                     Exceptions.printStackTrace(ex);
+                    Thread.currentThread().interrupt();
                 }
             }
         } else {
@@ -160,6 +161,7 @@ public class TrafficInformationManager {
                 } catch (IOException | InterruptedException | JAXBException ex) {
                     mResultsParking = new ArrayList<>();
                     Exceptions.printStackTrace(ex);
+                    Thread.currentThread().interrupt();
                 }
             }
         } else {
@@ -179,6 +181,7 @@ public class TrafficInformationManager {
                 } catch (IOException | InterruptedException | JAXBException ex) {
                     mResultsTrafficSafetyCamera = new ArrayList<>();
                     Exceptions.printStackTrace(ex);
+                    Thread.currentThread().interrupt();
                 }
             }
         } else {
@@ -198,6 +201,7 @@ public class TrafficInformationManager {
                 } catch (IOException | InterruptedException | JAXBException ex) {
                     mResultsWeatherStation = new ArrayList<>();
                     Exceptions.printStackTrace(ex);
+                    Thread.currentThread().interrupt();
                 }
             }
         } else {

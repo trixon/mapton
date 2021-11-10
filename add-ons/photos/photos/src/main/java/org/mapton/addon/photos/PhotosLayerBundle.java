@@ -25,7 +25,6 @@ import gov.nasa.worldwind.render.Path;
 import gov.nasa.worldwind.render.UserFacingIcon;
 import java.awt.Dimension;
 import java.io.File;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -34,6 +33,7 @@ import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import javafx.scene.Node;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.time.FastDateFormat;
 import org.mapton.addon.photos.api.Mapo;
 import org.mapton.addon.photos.api.MapoPhoto;
 import org.mapton.addon.photos.api.MapoSettings;
@@ -61,7 +61,7 @@ import se.trixon.almond.util.fx.FxHelper;
 @ServiceProvider(service = LayerBundle.class)
 public class PhotosLayerBundle extends LayerBundle {
 
-    private final SimpleDateFormat mDateFormat = new SimpleDateFormat("yyyy-MM-dd HH.mm.ss");
+    private final FastDateFormat mDateFormat = FastDateFormat.getInstance("yyyy-MM-dd HH.mm.ss");
     private final IconLayer mIconLayer = new IconLayer();
     private final ArrayList<LineNode> mLineNodes = new ArrayList<>();
     private final MapoSourceManager mManager = MapoSourceManager.getInstance();
@@ -239,7 +239,7 @@ public class PhotosLayerBundle extends LayerBundle {
         gapAttributes.setOutlineMaterial(new Material(FxHelper.colorToColor(FxHelper.colorFromHexRGBA(mSettings.getColorGap()))));
 
         Collections.sort(mLineNodes, (LineNode o1, LineNode o2) -> o1.getDate().compareTo(o2.getDate()));
-        SimpleDateFormat dateFormat = new SimpleDateFormat(getPattern(mSettings.getSplitBy()));
+        var dateFormat = FastDateFormat.getInstance(getPattern(mSettings.getSplitBy()));
 
         TreeMap<String, ArrayList<LineNode>> periodLineNodeMap = new TreeMap<>();
         mLineNodes.forEach((node) -> {

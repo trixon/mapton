@@ -17,10 +17,10 @@ package org.mapton.api;
 
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import javafx.util.Duration;
 import javax.swing.Timer;
+import org.apache.commons.lang3.time.FastDateFormat;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
 
@@ -158,7 +158,7 @@ public abstract class MUpdater {
         public String getLastUpdated() {
             String lastUpdate = "-";
             if (mFile != null && mFile.isFile()) {
-                lastUpdate = new SimpleDateFormat("yyyy-MM-dd HH.mm.ss").format(new Date(mFile.lastModified()));
+                lastUpdate = FastDateFormat.getInstance("yyyy-MM-dd HH.mm.ss").format(new Date(mFile.lastModified()));
             }
 
             return String.format(Dict.UPDATED_S.toString(), lastUpdate);

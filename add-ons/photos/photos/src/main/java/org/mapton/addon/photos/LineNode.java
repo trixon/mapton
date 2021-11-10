@@ -15,9 +15,9 @@
  */
 package org.mapton.addon.photos;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import org.apache.commons.lang3.time.FastDateFormat;
 
 /**
  *
@@ -25,7 +25,7 @@ import java.util.Date;
  */
 public class LineNode {
 
-    private static final SimpleDateFormat sNameDateFormat = new SimpleDateFormat("yyyyMMdd HHmmss");
+    private static final FastDateFormat DATE_FORMAT = FastDateFormat.getInstance("yyyyMMdd HHmmss");
 
     private Date mDate;
     private double mLat;
@@ -33,16 +33,16 @@ public class LineNode {
 
     public static String getName(ArrayList<LineNode> previousNodes, ArrayList<LineNode> nodes) {
         String name = String.format("%s_%s",
-                sNameDateFormat.format(previousNodes.get(previousNodes.size() - 1).getDate()),
-                sNameDateFormat.format(nodes.get(0).getDate()));
+                DATE_FORMAT.format(previousNodes.get(previousNodes.size() - 1).getDate()),
+                DATE_FORMAT.format(nodes.get(0).getDate()));
 
         return name;
     }
 
     public static String getName(ArrayList<LineNode> nodes) {
         String name = String.format("%s_%s",
-                sNameDateFormat.format(nodes.get(0).getDate()),
-                sNameDateFormat.format(nodes.get(nodes.size() - 1).getDate()));
+                DATE_FORMAT.format(nodes.get(0).getDate()),
+                DATE_FORMAT.format(nodes.get(nodes.size() - 1).getDate()));
 
         return name;
     }

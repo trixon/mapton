@@ -49,7 +49,6 @@ import org.openide.util.Exceptions;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.trv_traffic_information.road.weatherstation.v1.Measurement;
-import se.trixon.trv_traffic_information.road.weatherstation.v1.Precipitation;
 import se.trixon.trv_traffic_information.road.weatherstation.v1.WeatherStation;
 
 /**
@@ -241,17 +240,13 @@ public class WeatherView extends BorderPane implements MGenericLoader<WeatherSta
 
     private void loadImage(WeatherStation weatherStation) {
         String url = mManager.getCameraGroupToPhotoUrl().getOrDefault(weatherStation.getId(), null);
-
-        Image image = mNullImage;
-        if (url != null) {
-            image = new Image(url);
-        }
+        var image = url != null ? new Image(url) : mNullImage;
 
         mCameraImageTile.setImage(image);
     }
 
     private void loadPreciptation(WeatherStation weatherStation) {
-        Precipitation precipitation = weatherStation.getMeasurement().getPrecipitation();
+        var precipitation = weatherStation.getMeasurement().getPrecipitation();
 
         try {
             final Float amount = precipitation.getAmount();
@@ -276,35 +271,39 @@ public class WeatherView extends BorderPane implements MGenericLoader<WeatherSta
     }
 
     private void loadTemperature(WeatherStation weatherStation) {
-        final Measurement measurement = weatherStation.getMeasurement();
-        var hasValue = measurement != null && measurement.getAir() != null;
+        var measurement = weatherStation.getMeasurement();
+        if (measurement != null) {
+            var hasValue = measurement.getAir() != null;
+            if (hasValue) {
+                mAirTemperatureTile.setValue(measurement.getAir().getTemp());
+            }
 
-        if (hasValue) {
-            mAirTemperatureTile.setValue(measurement.getAir().getTemp());
+            mAirTemperatureTile.setValueVisible(hasValue);
+            mAirTemperatureTile.setUnit(hasValue ? "°C" : "");
+            setTooltipText(mAirTemperatureTile, measurement.getAir());
+        } else {
+            setTooltipText(mAirTemperatureTile, "");
         }
-
-        mAirTemperatureTile.setValueVisible(hasValue);
-        mAirTemperatureTile.setUnit(hasValue ? "°C" : "");
-        setTooltipText(mAirTemperatureTile, measurement.getAir());
     }
 
     private void loadWind(WeatherStation weatherStation) {
         var wind = weatherStation.getMeasurement().getWind();
-        var hasValue = wind != null && wind.getForce() != null;
-//        var hasValue = wind != null && wind.getForce() != null && wind.getForce() > 0;
+        if (wind != null) {
+            var hasValue = wind.getForce() != null;
+            if (hasValue) {
+                mWindTile.setValue(wind.getForce());
+                mWindTile.setDescription(String.format("%s: %.1f m/s", "Max", wind.getForceMax()));
+                mWindTile.setImage(getImageForIconId(mManager.getIconUrl(wind)));
+            } else {
+                mWindTile.setValue(-1);
+                mWindTile.setDescription("");
+                mWindTile.setImage(mNullImage);
+            }
 
-        if (hasValue) {
-            mWindTile.setValue(wind.getForce());
-            mWindTile.setDescription(String.format("%s: %.1f m/s", "Max", wind.getForceMax()));
-            mWindTile.setImage(getImageForIconId(mManager.getIconUrl(wind)));
-        } else {
-            mWindTile.setValue(-1);
-            mWindTile.setDescription("");
-            mWindTile.setImage(mNullImage);
+            mWindTile.setValueVisible(hasValue);
+            mWindTile.setUnit(hasValue ? "m/s" : "");
         }
 
-        mWindTile.setValueVisible(hasValue);
-        mWindTile.setUnit(hasValue ? "m/s" : "");
         setTooltipText(mWindTile, wind);
     }
 

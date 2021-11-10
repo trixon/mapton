@@ -38,7 +38,6 @@ import de.micromata.opengis.kml.v_2_2_0.Vec2;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -46,6 +45,7 @@ import java.util.logging.Logger;
 import javafx.geometry.Point3D;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.FastDateFormat;
 import se.trixon.almond.util.ext.GrahamScan;
 
 /**
@@ -58,7 +58,7 @@ public abstract class MKmlCreator {
     protected final Document mDocument;
     protected final Kml mKml = new Kml();
     protected Folder mRootFolder;
-    protected final SimpleDateFormat mTimeStampDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
+    protected final FastDateFormat mTimeStampDateFormat = FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ssX");
 
     public static Comparator<Feature> getFeatureNameComparator() {
         return (Feature o1, Feature o2) -> o1.getName().compareTo(o2.getName());

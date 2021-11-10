@@ -23,7 +23,6 @@ import de.micromata.opengis.kml.v_2_2_0.Placemark;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.TreeMap;
@@ -33,6 +32,7 @@ import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.FastDateFormat;
 import org.controlsfx.control.PopOver;
 import org.controlsfx.control.action.Action;
 import org.mapton.api.MBookmark;
@@ -170,7 +170,7 @@ public class FileExportAction extends FileAction {
             LinkedHashMap<String, String> map = new LinkedHashMap<>();
             map.put("Application", "Mapton");
             map.put("Author", SystemHelper.getUserName());
-            map.put("Created", new SimpleDateFormat("yyyy-MM-dd HH.mm.ss").format(new Date()));
+            map.put("Created", FastDateFormat.getInstance("yyyy-MM-dd HH.mm.ss").format(new Date()));
             GeoHeader geoHeader = new GeoHeader("\"SBG Object Text v2.01\",\"Coordinate Document\"", map);
 
             Geo geo = new Geo();

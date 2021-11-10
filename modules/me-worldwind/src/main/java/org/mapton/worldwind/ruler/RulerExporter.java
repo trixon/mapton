@@ -19,12 +19,12 @@ import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.util.measure.MeasureTool;
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.time.FastDateFormat;
 import org.mapton.api.MKmlCreator;
 import org.mapton.api.MOptions;
 import org.mapton.core.api.MaptonNb;
@@ -45,7 +45,7 @@ import se.trixon.almond.util.swing.dialogs.SimpleDialog;
 public class RulerExporter {
 
     private final RulerTabPane mRulerTabPane;
-    private final SimpleDateFormat mSdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
+    private final FastDateFormat mDateFormat = FastDateFormat.getInstance("yyyyMMdd_HHmmss");
     private File mDestination;
 
     public RulerExporter(RulerTabPane rulerTabPane) {
@@ -63,7 +63,7 @@ public class RulerExporter {
         SimpleDialog.setTitle(String.format("%s %s", Dict.SAVE.toString(), Dict.COORDINATE_FILE.toString().toLowerCase()));
         SimpleDialog.setParent(MaptonNb.getFrame());
 
-        String epoch = mSdf.format(new Date());
+        String epoch = mDateFormat.format(new Date());
 
         SimpleDialog.setSelectedFile(new File(Dict.Geometry.GEOMETRIES.toString() + "_" + epoch));
         if (mDestination == null) {

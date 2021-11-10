@@ -15,13 +15,13 @@
  */
 package org.mapton.api;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import org.apache.commons.lang3.time.FastDateFormat;
 import se.trixon.almond.util.GlobalState;
 
 public class MPrint {
 
-    private SimpleDateFormat mDateFormat = new SimpleDateFormat("yyyy-MM-dd HH.mm.ss.SSS: ");
+    private FastDateFormat mDateFormat = FastDateFormat.getInstance("yyyy-MM-dd HH.mm.ss.SSS: ");
     private final GlobalState mGlobalState = Mapton.getGlobalState();
     private final String mKey;
     private boolean mUseTimestamps = true;
@@ -58,7 +58,7 @@ public class MPrint {
         }
     }
 
-    public void setDateFormat(SimpleDateFormat dateFormat) {
+    public void setDateFormat(FastDateFormat dateFormat) {
         mDateFormat = dateFormat;
     }
 

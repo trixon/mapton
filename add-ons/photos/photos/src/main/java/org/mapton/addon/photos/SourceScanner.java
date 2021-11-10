@@ -182,6 +182,7 @@ public class SourceScanner {
                     TimeUnit.NANOSECONDS.sleep(1);
                 } catch (InterruptedException ex) {
                     mInterrupted = true;
+                    Thread.currentThread().interrupt();
                     return;
                 }
             }
@@ -242,6 +243,7 @@ public class SourceScanner {
                         TimeUnit.NANOSECONDS.sleep(1);
                     } catch (InterruptedException ex) {
                         mInterrupted = true;
+                        Thread.currentThread().interrupt();
                         return FileVisitResult.TERMINATE;
                     }
 

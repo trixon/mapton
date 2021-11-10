@@ -17,7 +17,6 @@ package org.mapton.core.ui;
 
 import java.awt.Point;
 import java.io.File;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -31,6 +30,7 @@ import javafx.scene.control.MenuItem;
 import javax.imageio.ImageIO;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.FastDateFormat;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.MContextMenuItem;
@@ -90,7 +90,7 @@ public class MapContextMenu {
         SimpleDialog.setTitle(getBundleString("export_view"));
 
         SimpleDialog.setPath(mExportFile == null ? FileUtils.getUserDirectory() : mExportFile.getParentFile());
-        SimpleDialog.setSelectedFile(new File(new SimpleDateFormat("'Mapton_'yyyyMMdd_HHmmss").format(new Date())));
+        SimpleDialog.setSelectedFile(new File(FastDateFormat.getInstance("'Mapton_'yyyyMMdd_HHmmss").format(new Date())));
 
         mContextMenu.hide();
 
