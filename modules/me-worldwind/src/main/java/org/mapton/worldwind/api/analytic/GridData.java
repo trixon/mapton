@@ -88,13 +88,13 @@ public class GridData {
 
     public Double getCellMedian(Point p) {
         List<Double> list = getCellValues(p);
-        if (list.size() == 0) {
+        if (list.isEmpty()) {
             return 0d;
         }
         DoubleStream sortedValues = list.stream().mapToDouble(Double::doubleValue).sorted();
 
         double median = list.size() % 2 == 0
-                ? sortedValues.skip(list.size() / 2 - 1).limit(2).average().getAsDouble()
+                ? sortedValues.skip(list.size() / 2 - 1L).limit(2).average().getAsDouble()
                 : sortedValues.skip(list.size() / 2).findFirst().getAsDouble();
 
         return median;

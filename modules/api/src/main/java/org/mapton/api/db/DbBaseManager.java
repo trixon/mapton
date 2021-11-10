@@ -27,7 +27,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.HashMap;
-import java.util.Map;
 import org.openide.util.Exceptions;
 
 /**
@@ -83,12 +82,12 @@ public abstract class DbBaseManager {
 
         String sql = selectQuery.toString();
 
-        try {
-            PreparedStatement preparedStatement = mDb.getAutoCommitConnection().prepareStatement(sql, PreparedStatement.NO_GENERATED_KEYS);
-            for (Map.Entry<DbColumn, Object> entry : map.entrySet()) {
+        try ( var preparedStatement = mDb.getAutoCommitConnection().prepareStatement(sql, PreparedStatement.NO_GENERATED_KEYS)) {
+            for (var entry : map.entrySet()) {
                 placeHolders.get(entry.getKey()).setString((String) entry.getValue(), preparedStatement);
             }
-            ResultSet resultSet = preparedStatement.executeQuery();
+            var resultSet = preparedStatement.executeQuery();
+
             return resultSet.first();
         } catch (SQLException ex) {
             Exceptions.printStackTrace(ex);

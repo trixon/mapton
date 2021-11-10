@@ -39,8 +39,8 @@ public class MPopOver extends PopOver {
             VBox.setVgrow(node, Priority.ALWAYS);
 
             if (node instanceof Control) {
-                Control c = (Control) node;
-                c.setPrefWidth(2 * WIDTH + GAP);
+                var c = (Control) node;
+                c.setPrefWidth(2.0 * WIDTH + GAP);
             }
         }
         vBox.setPadding(FxHelper.getUIScaledInsets(GAP));

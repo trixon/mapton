@@ -15,6 +15,7 @@
  */
 package org.mapton.base;
 
+import java.util.concurrent.TimeUnit;
 import javafx.stage.FileChooser.ExtensionFilter;
 import org.openide.modules.OnStart;
 import se.trixon.almond.util.Dict;
@@ -29,7 +30,7 @@ public class Initializer implements Runnable {
 
     @Override
     public void run() {
-        FxHelper.runLaterDelayed(1000 * 10, () -> {
+        FxHelper.runLaterDelayed(TimeUnit.SECONDS.toMillis(10), () -> {
             var map = se.trixon.almond.util.fx.dialogs.SimpleDialog.getExtensionFilters();
             map.put("*", new ExtensionFilter(Dict.ALL_FILES.toString(), "*"));
             map.put("csv", new ExtensionFilter("Comma-separated value (*.csv)", "*.csv"));

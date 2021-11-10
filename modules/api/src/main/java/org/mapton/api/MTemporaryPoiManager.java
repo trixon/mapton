@@ -28,7 +28,7 @@ import org.apache.commons.lang3.ObjectUtils;
  */
 public class MTemporaryPoiManager {
 
-    private ObjectProperty<ObservableList<MPoi>> mItems = new SimpleObjectProperty<>();
+    private final ObjectProperty<ObservableList<MPoi>> mItemsProperty = new SimpleObjectProperty<>();
 
     public static void clear() {
         getInstance().getItems().clear();
@@ -39,7 +39,7 @@ public class MTemporaryPoiManager {
     }
 
     private MTemporaryPoiManager() {
-        mItems.setValue(FXCollections.observableArrayList());
+        mItemsProperty.setValue(FXCollections.observableArrayList());
     }
 
     public void fitToBounds() {
@@ -54,7 +54,7 @@ public class MTemporaryPoiManager {
     }
 
     public final ObservableList<MPoi> getItems() {
-        return mItems == null ? null : mItems.get();
+        return mItemsProperty.get();
     }
 
     public void goTo(MPoi poi) {
@@ -62,11 +62,7 @@ public class MTemporaryPoiManager {
     }
 
     public final ObjectProperty<ObservableList<MPoi>> itemsProperty() {
-        if (mItems == null) {
-            mItems = new SimpleObjectProperty<>(this, "items");
-        }
-
-        return mItems;
+        return mItemsProperty;
     }
 
     private static class Holder {

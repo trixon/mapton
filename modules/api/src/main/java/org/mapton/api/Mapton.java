@@ -24,6 +24,7 @@ import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Background;
 import javafx.scene.paint.Color;
@@ -31,6 +32,7 @@ import javafx.scene.text.Font;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.util.Duration;
+import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.Notifications;
@@ -177,7 +179,32 @@ public class Mapton {
     }
 
     public static MEngine getEngine() {
-        MEngine defaultEngine = null;
+        MEngine defaultEngine = new MEngine() {
+            @Override
+            public void create(Runnable postCreateRunnable) {
+                throw new UnsupportedOperationException("No engine found");
+            }
+
+            @Override
+            public JComponent getMapComponent() {
+                throw new UnsupportedOperationException("No engine found");
+            }
+
+            @Override
+            public Node getMapNode() {
+                throw new UnsupportedOperationException("No engine found");
+            }
+
+            @Override
+            public String getName() {
+                throw new UnsupportedOperationException("No engine found");
+            }
+
+            @Override
+            public Node getStyleView() {
+                throw new UnsupportedOperationException("No engine found");
+            }
+        };
 
         for (var mapEngine : Lookup.getDefault().lookupAll(MEngine.class)) {
             defaultEngine = mapEngine;

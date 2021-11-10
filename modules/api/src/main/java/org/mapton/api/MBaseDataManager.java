@@ -88,7 +88,7 @@ public abstract class MBaseDataManager<T> {
     }
 
     public final ObservableList<T> getAllItems() {
-        return mAllItemsProperty == null ? null : mAllItemsProperty.get();
+        return mAllItemsProperty.get();
     }
 
     public HashSet<T> getAllItemsSet() {
@@ -96,7 +96,7 @@ public abstract class MBaseDataManager<T> {
     }
 
     public ObservableList<T> getFilteredItems() {
-        return mFilteredItemsProperty == null ? null : mFilteredItemsProperty.get();
+        return mFilteredItemsProperty.get();
     }
 
     public HashSet<T> getFilteredItemsSet() {
@@ -108,7 +108,7 @@ public abstract class MBaseDataManager<T> {
     }
 
     public ObservableList<T> getTimeFilteredItems() {
-        return mTimeFilteredItemsProperty == null ? null : mTimeFilteredItemsProperty.get();
+        return mTimeFilteredItemsProperty.get();
     }
 
     public HashSet<T> getTimeFilteredItemsSet() {

@@ -188,11 +188,11 @@ public abstract class MKmlCreator {
             throw new IllegalArgumentException("Quality must be greater than 2");
         }
 
-        MLatLon center = new MLatLon(lat, lon);
-        ArrayList<Point3D> list = new ArrayList<>();
+        var center = new MLatLon(lat, lon);
+        var list = new ArrayList<Point3D>();
 
-        for (double i = 0; i < 360.0; i = i + 360 / quality) {
-            MLatLon latLon = center.getDestinationPoint(i, radius);
+        for (double i = 0; i < 360.0; i = i + 360.0 / quality) {
+            var latLon = center.getDestinationPoint(i, radius);
             list.add(new Point3D(latLon.getLongitude(), latLon.getLatitude(), 0));
         }
 

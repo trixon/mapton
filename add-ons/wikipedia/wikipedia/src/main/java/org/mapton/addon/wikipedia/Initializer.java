@@ -15,6 +15,7 @@
  */
 package org.mapton.addon.wikipedia;
 
+import java.util.concurrent.TimeUnit;
 import org.openide.modules.OnStart;
 import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.swing.SwingHelper;
@@ -28,7 +29,7 @@ public class Initializer implements Runnable {
 
     @Override
     public void run() {
-        SwingHelper.runLaterDelayed(45 * 1000, () -> {
+        SwingHelper.runLaterDelayed(TimeUnit.SECONDS.toMillis(45), () -> {
             //Pre-load but don't display
             Almond.getTopComponent("WikipediaTopComponent");
         });

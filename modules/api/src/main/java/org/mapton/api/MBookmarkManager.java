@@ -71,7 +71,7 @@ public class MBookmarkManager extends DbBaseManager {
     private final Columns mColumns = new Columns();
     private final DbColumn mDescription;
     private final DbColumn mDisplayMarker;
-    private ObjectProperty<ObservableList<MBookmark>> mItems = new SimpleObjectProperty<>();
+    private final ObjectProperty<ObservableList<MBookmark>> mItemsProperty = new SimpleObjectProperty<>();
     private final DbColumn mLatitude;
     private final DbColumn mLongitude;
     private final DbColumn mName;
@@ -103,7 +103,7 @@ public class MBookmarkManager extends DbBaseManager {
 
         addNotNullConstraints(mName, mCategory, mDescription);
         create();
-        mItems.setValue(FXCollections.observableArrayList());
+        mItemsProperty.setValue(FXCollections.observableArrayList());
         addMissingColumns();
         dbLoad();
     }
@@ -129,7 +129,7 @@ public class MBookmarkManager extends DbBaseManager {
     }
 
     public synchronized void dbDelete(String category) throws ClassNotFoundException, SQLException {
-        for (MBookmark bookmark : mItems.get()) {
+        for (MBookmark bookmark : mItemsProperty.get()) {
             if (StringUtils.startsWith(bookmark.getCategory(), category)) {
                 mDb.delete(mTable, mId, bookmark.getId());
             }
@@ -139,7 +139,7 @@ public class MBookmarkManager extends DbBaseManager {
     }
 
     public synchronized void dbDelete() throws ClassNotFoundException, SQLException {
-        for (MBookmark bookmark : mItems.get()) {
+        for (MBookmark bookmark : mItemsProperty.get()) {
             mDb.delete(mTable, mId, bookmark.getId());
         }
 
@@ -217,7 +217,7 @@ public class MBookmarkManager extends DbBaseManager {
             rs.beforeFirst();
 
             while (rs.next()) {
-                MBookmark bookmark = new MBookmark();
+                var bookmark = new MBookmark();
                 bookmark.setId(getLong(rs, mId));
                 bookmark.setName(getString(rs, mName));
                 bookmark.setCategory(getString(rs, mCategory));
@@ -317,7 +317,7 @@ public class MBookmarkManager extends DbBaseManager {
 
         TreeSet<String> categories = new TreeSet<>();
         categories.add("");
-        try (Statement statement = mDb.getAutoCommitConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
+        try ( Statement statement = mDb.getAutoCommitConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
             String sql = selectQuery.toString();
             ResultSet rs = statement.executeQuery(sql);
             rs.beforeFirst();
@@ -335,7 +335,7 @@ public class MBookmarkManager extends DbBaseManager {
     public MLatLonBox getExtents(String category) {
         ArrayList<MLatLon> latLons = new ArrayList<>();
 
-        mItems.get().stream()
+        mItemsProperty.get().stream()
                 .filter((bookmark) -> (StringUtils.startsWith(bookmark.getCategory(), category)))
                 .forEachOrdered((bookmark) -> {
                     latLons.add(new MLatLon(bookmark.getLatitude(), bookmark.getLongitude()));
@@ -345,7 +345,7 @@ public class MBookmarkManager extends DbBaseManager {
     }
 
     public final ObservableList<MBookmark> getItems() {
-        return mItems == null ? null : mItems.get();
+        return mItemsProperty.get();
     }
 
     public void goTo(MBookmark bookmark) throws ClassNotFoundException, SQLException {
@@ -353,11 +353,7 @@ public class MBookmarkManager extends DbBaseManager {
     }
 
     public final ObjectProperty<ObservableList<MBookmark>> itemsProperty() {
-        if (mItems == null) {
-            mItems = new SimpleObjectProperty<>(this, "items");
-        }
-
-        return mItems;
+        return mItemsProperty;
     }
 
     private void addMissingColumns() {

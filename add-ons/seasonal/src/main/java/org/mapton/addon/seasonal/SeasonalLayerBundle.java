@@ -97,6 +97,7 @@ public class SeasonalLayerBundle extends LayerBundle {
                     renderer.panTo();
                 } catch (InterruptedException ex) {
                     Exceptions.printStackTrace(ex);
+                    Thread.currentThread().interrupt();
                 }
             }).start();
         }

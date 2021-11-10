@@ -43,6 +43,9 @@ public class WeatherStationUpdater extends BaseUpdater {
                 } catch (IOException | InterruptedException | JAXBException ex) {
                     mPrint.err(ex.getMessage());
                     Exceptions.printStackTrace(ex);
+                    if (ex instanceof InterruptedException) {
+                        Thread.currentThread().interrupt();
+                    }
                 }
             } else {
                 mPrint.out("POI NOT SHOWING, SKIPPING AUTO UPDATE");

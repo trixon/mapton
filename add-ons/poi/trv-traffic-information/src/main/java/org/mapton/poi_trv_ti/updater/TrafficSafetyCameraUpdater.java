@@ -40,6 +40,9 @@ public class TrafficSafetyCameraUpdater extends BaseUpdater {
             } catch (IOException | InterruptedException | JAXBException ex) {
                 mPrint.err(ex.getMessage());
                 Exceptions.printStackTrace(ex);
+                if (ex instanceof InterruptedException) {
+                    Thread.currentThread().interrupt();
+                }
             }
         });
 

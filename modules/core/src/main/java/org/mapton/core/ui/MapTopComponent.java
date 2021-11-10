@@ -286,6 +286,7 @@ public final class MapTopComponent extends MTopComponent {
                     TimeUnit.SECONDS.sleep(1);
                 } catch (InterruptedException ex) {
                     Exceptions.printStackTrace(ex);
+                    Thread.currentThread().interrupt();
                 }
                 Mapton.getExecutionFlow().setReady(MKey.EXECUTION_FLOW_MAP_INITIALIZED);
 

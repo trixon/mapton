@@ -77,8 +77,8 @@ public class MaskLayer extends RenderableLayer {
             for (int lat = -1; lat < 2; lat = lat + 1) {
                 ArrayList<LatLon> l = new ArrayList<>();
                 l.add(LatLon.fromDegrees(lat * gap, lon));
-                l.add(LatLon.fromDegrees(lat * gap, lon + lonStep));
-                l.add(LatLon.fromDegrees(0, lon + lonStep));
+                l.add(LatLon.fromDegrees(lat * gap, (double) lon + lonStep));
+                l.add(LatLon.fromDegrees(0, (double) lon + lonStep));
                 l.add(LatLon.fromDegrees(0, lon));
 
                 addRenderable(new SurfacePolygon(mShapeAttributes, l));

@@ -137,6 +137,7 @@ public abstract class LayerBundle {
                         Thread.sleep(delay);
                     } catch (InterruptedException e) {
                         //nvm
+                        Thread.currentThread().interrupt();
                     }
                 }
                 mPainter.run();

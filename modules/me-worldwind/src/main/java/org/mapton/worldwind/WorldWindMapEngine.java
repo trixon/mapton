@@ -287,6 +287,7 @@ public class WorldWindMapEngine extends MEngine {
                         Thread.sleep(200);
                     } catch (InterruptedException ex) {
                         Exceptions.printStackTrace(ex);
+                        Thread.currentThread().interrupt();
                     }
                     Platform.runLater(() -> {
                         mSwingNode.resize(1, 1);

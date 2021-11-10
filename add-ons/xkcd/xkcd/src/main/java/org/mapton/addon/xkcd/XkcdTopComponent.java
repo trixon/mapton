@@ -93,6 +93,7 @@ public final class XkcdTopComponent extends MTopComponent {
                     mManager.goLast();
                 } catch (InterruptedException ex) {
                     Exceptions.printStackTrace(ex);
+                    Thread.currentThread().interrupt();
                 }
             }).start();
             mFirstRun = false;

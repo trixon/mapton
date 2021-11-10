@@ -18,6 +18,7 @@ package org.mapton.api;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 import org.openide.util.Exceptions;
 
@@ -27,7 +28,7 @@ import org.openide.util.Exceptions;
  */
 public class MSelectionLockManager {
 
-    public static long DEFAULT_TIMEOUT = 5 * 1000;
+    public static long DEFAULT_TIMEOUT = TimeUnit.SECONDS.toMillis(5);
     private static final Logger LOGGER = Logger.getLogger(MSelectionLockManager.class.getName());
 
     private final Set<Object> mLocks = Collections.synchronizedSet(new HashSet<>());
@@ -86,6 +87,7 @@ public class MSelectionLockManager {
                     }
                 } catch (InterruptedException ex) {
                     Exceptions.printStackTrace(ex);
+                    Thread.currentThread().interrupt();
                 }
             }).start();
         }
@@ -133,6 +135,7 @@ public class MSelectionLockManager {
                 removeLock(lockObject);
             } catch (InterruptedException ex) {
                 Exceptions.printStackTrace(ex);
+                Thread.currentThread().interrupt();
             }
         }).start();
     }

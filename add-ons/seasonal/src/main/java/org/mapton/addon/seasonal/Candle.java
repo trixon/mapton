@@ -63,7 +63,7 @@ public class Candle {
         mLit = now.isAfter(mStartDateTime);
 
         var minutes = ChronoUnit.MINUTES.between(mStartDateTime, now);
-        double periodMinutes = 60 * 24 * 26;
+        double periodMinutes = 60d * 24 * 26;
 
         var height = mHeight;
         if (minutes > 0) {

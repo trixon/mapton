@@ -88,6 +88,7 @@ public class GoogleSearchEngine {
                 TimeUnit.MILLISECONDS.sleep(1000);
             } catch (InterruptedException ex) {
                 Exceptions.printStackTrace(ex);
+                Thread.currentThread().interrupt();
             }
         } while (!mDone);
 
