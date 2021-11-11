@@ -54,12 +54,6 @@ import se.trixon.almond.util.swing.SwingHelper;
  */
 public class Mapton {
 
-    private static final Gson sGson = new GsonBuilder()
-            .setVersion(1.0)
-            .serializeNulls()
-            .setPrettyPrinting()
-            .create();
-
     public static final int ICON_SIZE_MODULE = 32;
     public static final int ICON_SIZE_MODULE_TOOLBAR = 40;
     public static final int ICON_SIZE_PROFILE = 32;
@@ -74,10 +68,45 @@ public class Mapton {
     private static File CONFIG_DIR;
     private static final ExecutionFlow EXECUTION_FLOW = new ExecutionFlow();
     private static final Color ICON_COLOR = Color.BLACK;
+    private static final MEngine NOOP_ENGINE;
     private static final HashMap<WebEngine, String> WEB_ENGINE_TO_STYLE = new HashMap<>();
     private static final GlobalState sGlobalState = new GlobalState();
+    private static final Gson sGson = new GsonBuilder()
+            .setVersion(1.0)
+            .serializeNulls()
+            .setPrettyPrinting()
+            .create();
     private static final Log sLog = new Log();
-    private DoubleProperty mZoomProperty = new SimpleDoubleProperty();
+    private final DoubleProperty mZoomProperty = new SimpleDoubleProperty();
+
+    static {
+        NOOP_ENGINE = new MEngine() {
+            @Override
+            public void create(Runnable postCreateRunnable) {
+                throw new UnsupportedOperationException("No engine found");
+            }
+
+            @Override
+            public JComponent getMapComponent() {
+                throw new UnsupportedOperationException("No engine found");
+            }
+
+            @Override
+            public Node getMapNode() {
+                throw new UnsupportedOperationException("No engine found");
+            }
+
+            @Override
+            public String getName() {
+                throw new UnsupportedOperationException("No engine found");
+            }
+
+            @Override
+            public Node getStyleView() {
+                throw new UnsupportedOperationException("No engine found");
+            }
+        };
+    }
 
     public static void applyHtmlCss(WebView webView, String filename) {
         WEB_ENGINE_TO_STYLE.put(webView.getEngine(), filename);
@@ -178,45 +207,18 @@ public class Mapton {
         return Color.WHITE;
     }
 
-    public static MEngine getEngine() {
-        MEngine defaultEngine = new MEngine() {
-            @Override
-            public void create(Runnable postCreateRunnable) {
-                throw new UnsupportedOperationException("No engine found");
-            }
-
-            @Override
-            public JComponent getMapComponent() {
-                throw new UnsupportedOperationException("No engine found");
-            }
-
-            @Override
-            public Node getMapNode() {
-                throw new UnsupportedOperationException("No engine found");
-            }
-
-            @Override
-            public String getName() {
-                throw new UnsupportedOperationException("No engine found");
-            }
-
-            @Override
-            public Node getStyleView() {
-                throw new UnsupportedOperationException("No engine found");
-            }
-        };
-
+    public static synchronized MEngine getEngine() {
         for (var mapEngine : Lookup.getDefault().lookupAll(MEngine.class)) {
-            defaultEngine = mapEngine;
             try {
                 if (StringUtils.equalsIgnoreCase(mapEngine.getName(), options().getEngine())) {
                     return mapEngine;
                 }
             } catch (Exception e) {
+                //nvm
             }
         }
 
-        return defaultEngine;
+        return NOOP_ENGINE;
     }
 
     public static ExecutionFlow getExecutionFlow() {
