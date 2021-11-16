@@ -242,9 +242,6 @@
         <!--<module>unstable/panopticon/panopticon</module>-->
         <!--<module>unstable/panopticon/panopticon-nb</module>-->
         <!--<module>unstable/panopticon/panopticon-ww</module>-->
-        <!--<module>unstable/worldclock/worldclock</module>-->
-        <!--<module>unstable/worldclock/worldclock-nb</module>-->
-        <!--<module>unstable/worldclock/worldclock-ww</module>-->
     </modules>
 
     <dependencyManagement>

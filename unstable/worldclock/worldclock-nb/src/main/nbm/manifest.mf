@@ -1,4 +1,0 @@
-Manifest-Version: 1.0
-OpenIDE-Module-Layer: org/mapton/addon/worldclock_nb/layer.xml
-OpenIDE-Module-Localizing-Bundle: org/mapton/addon/worldclock_nb/Bundle.properties
-
