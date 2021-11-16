@@ -317,11 +317,6 @@
         <!--Mapton/Unstable-->
         <!--        <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>demo</artifactId>
-            <version>${project.version}</version>
-        </dependency>-->
-        <!--        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>addon-world-clock</artifactId>
             <version>${project.version}</version>
         </dependency>
