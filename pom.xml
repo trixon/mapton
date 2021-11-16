@@ -239,9 +239,6 @@
         <module>add-ons/poi/trv-traffic-information</module>
 
         <!--Unstable-->
-        <!--<module>unstable/panopticon/panopticon</module>-->
-        <!--<module>unstable/panopticon/panopticon-nb</module>-->
-        <!--<module>unstable/panopticon/panopticon-ww</module>-->
     </modules>
 
     <dependencyManagement>

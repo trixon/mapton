@@ -315,36 +315,6 @@
         </dependency>
 
         <!--Mapton/Unstable-->
-        <!--        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>addon-world-clock</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>addon-world-clock-nb</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>addon-world-clock-ww</artifactId>
-            <version>${project.version}</version>
-        </dependency>-->
-        <!--        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>addon-panopticon</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>addon-panopticon-nb</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>addon-panopticon-ww</artifactId>
-            <version>${project.version}</version>
-        </dependency>-->
 
         <!-- Trixon -->
         <dependency>
