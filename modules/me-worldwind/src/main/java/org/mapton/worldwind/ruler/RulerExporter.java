@@ -98,14 +98,11 @@ public class RulerExporter {
     private class ExporterGeo {
 
         public ExporterGeo(String epoch) throws IOException {
-            LinkedHashMap<String, String> map = new LinkedHashMap<>();
+            var map = new LinkedHashMap<String, String>();
             map.put("Application", "Mapton");
             map.put("Author", SystemHelper.getUserName());
             map.put("Created", epoch);
-            GeoHeader geoHeader = new GeoHeader("\"SBG Object Text v2.01\",\"Coordinate Document\"", map);
-
-            Geo geo = new Geo();
-            geo.setHeader(geoHeader);
+            var geo = new Geo(new GeoHeader(map));
 
             mRulerTabPane.getTabs().stream()
                     .filter(tab -> (tab instanceof RulerTab))

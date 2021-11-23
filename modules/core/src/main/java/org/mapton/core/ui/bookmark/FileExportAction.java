@@ -167,17 +167,14 @@ public class FileExportAction extends FileAction {
     private class GeoExporter {
 
         public GeoExporter() throws IOException {
-            LinkedHashMap<String, String> map = new LinkedHashMap<>();
+            var map = new LinkedHashMap<String, String>();
             map.put("Application", "Mapton");
             map.put("Author", SystemHelper.getUserName());
             map.put("Created", FastDateFormat.getInstance("yyyy-MM-dd HH.mm.ss").format(new Date()));
-            GeoHeader geoHeader = new GeoHeader("\"SBG Object Text v2.01\",\"Coordinate Document\"", map);
+            var geo = new Geo(new GeoHeader(map));
 
-            Geo geo = new Geo();
-            geo.setHeader(geoHeader);
-
-            for (MBookmark bookmark : mManager.getItems()) {
-                GeoPoint point = new GeoPoint();
+            for (var bookmark : mManager.getItems()) {
+                var point = new GeoPoint();
                 point.setPointId(bookmark.getName());
                 point.setRemark(bookmark.getCategory());
                 point.setX(bookmark.getLatitude());
