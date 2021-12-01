@@ -44,6 +44,7 @@ public abstract class DbBaseManager {
     protected static final String SQL_INTEGER = "INTEGER";
     protected static final String SQL_TIMESTAMP = "TIMESTAMP";
     protected static final String SQL_VARCHAR = "VARCHAR";
+    protected static final int TYPE_LENGTH_1M = 1024 * 1024;
 
     protected final Db mDb;
     protected DbColumn mId;

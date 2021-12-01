@@ -19,7 +19,6 @@ import com.healthmarketscience.sqlbuilder.CreateTableQuery;
 import com.healthmarketscience.sqlbuilder.custom.mysql.MysObjects;
 import com.healthmarketscience.sqlbuilder.dbspec.basic.DbColumn;
 import com.healthmarketscience.sqlbuilder.dbspec.basic.DbConstraint;
-import com.healthmarketscience.sqlbuilder.dbspec.basic.DbSchema;
 import com.healthmarketscience.sqlbuilder.dbspec.basic.DbSpec;
 import com.healthmarketscience.sqlbuilder.dbspec.basic.DbTable;
 import java.io.File;
@@ -27,7 +26,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.lang3.StringUtils;
@@ -43,9 +41,7 @@ public class Db {
     private static final Logger LOGGER = Logger.getLogger(Db.class.getName());
     private Connection mAutoCommitConnection = null;
     private final String mConnString;
-//    private Connection mConnection = null;
     private final File mDbFile;
-    private DbSchema mSchema;
     private final DbSpec mSpec;
 
     public static Db getInstance() {
@@ -53,14 +49,14 @@ public class Db {
     }
 
     private Db() {
-        mDbFile = new File(Places.getUserDirectory(), "mapton" + DB_POSTFIX);
+        mDbFile = new File(Places.getUserDirectory(), "mapton_02" + DB_POSTFIX);
         mConnString = String.format("jdbc:h2:%s;DEFRAG_ALWAYS=true", StringUtils.removeEnd(mDbFile.getAbsolutePath(), DB_POSTFIX));
         mSpec = new DbSpec();
         init();
     }
 
     public void addMissingColumn(String table, String col, String type, String after) throws SQLException {
-        try (Statement statement = getAutoCommitConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
+        try ( var statement = getAutoCommitConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
             String sql = String.format("ALTER TABLE IF EXISTS %s ADD COLUMN IF NOT EXISTS %s %s AFTER %s;",
                     table,
                     col,
@@ -101,14 +97,14 @@ public class Db {
     public boolean create(DbTable table, boolean replace, DbConstraint... constraints) {
         boolean tableCreated;
 
-        try (Statement statement = getAutoCommitConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
+        try ( var statement = getAutoCommitConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
             if (table.getConstraints().isEmpty()) {
-                for (DbConstraint constraint : constraints) {
+                for (var constraint : constraints) {
                     table.addConstraint(constraint);
                 }
             }
 
-            CreateTableQuery createTableQuery = new CreateTableQuery(table, true);
+            var createTableQuery = new CreateTableQuery(table, true);
             if (!replace) {
                 createTableQuery.addCustomization(MysObjects.IF_NOT_EXISTS_TABLE);
             }
@@ -127,7 +123,7 @@ public class Db {
     }
 
     public void delete(DbTable table, DbColumn column, Long id) throws ClassNotFoundException, SQLException {
-        try (Statement statement = getAutoCommitConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
+        try ( var statement = getAutoCommitConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
             String sql = String.format("DELETE FROM %s WHERE %s=%d;", table.getName(), column.getName(), id);
             System.out.println(sql);
             statement.execute(sql);
@@ -135,7 +131,7 @@ public class Db {
     }
 
     public void drop(DbTable table, boolean cascade) throws ClassNotFoundException, SQLException {
-        try (Statement statement = getAutoCommitConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
+        try ( var statement = getAutoCommitConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
             String sql = String.format("DROP TABLE IF EXISTS %s %s;", table.getName(), cascade ? "CASCADE" : "");
             //System.out.println(sql);
             statement.execute(sql);
@@ -143,7 +139,7 @@ public class Db {
     }
 
     public void dropAllObjects() throws ClassNotFoundException, SQLException {
-        try (Statement statement = getAutoCommitConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
+        try ( var statement = getAutoCommitConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
             String sql = "DROP ALL OBJECTS;";
             System.out.println(sql);
             statement.execute(sql);
@@ -180,7 +176,7 @@ public class Db {
     }
 
     public void truncate(DbTable table) throws ClassNotFoundException, SQLException {
-        try (Statement statement = getAutoCommitConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
+        try ( var statement = getAutoCommitConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
             String sql = String.format("TRUNCATE TABLE %s;", table.getName());
             //System.out.println(sql);
             statement.execute(sql);

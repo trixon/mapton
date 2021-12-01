@@ -89,11 +89,11 @@ public class MBookmarkManager extends DbBaseManager {
         mTable = getSchema().addTable("bookmark");
 
         mId = mTable.addColumn(COL_ID, SQL_IDENTITY, null);
-        mName = mTable.addColumn(COL_NAME, SQL_VARCHAR, Integer.MAX_VALUE);
-        mCategory = mTable.addColumn(COL_CATEGORY, SQL_VARCHAR, Integer.MAX_VALUE);
-        mDescription = mTable.addColumn(COL_DESCRIPTION, SQL_VARCHAR, Integer.MAX_VALUE);
-        mUrl = mTable.addColumn(COL_URL, SQL_VARCHAR, Integer.MAX_VALUE);
-        mColor = mTable.addColumn(COL_COLOR, SQL_VARCHAR, Integer.MAX_VALUE);
+        mName = mTable.addColumn(COL_NAME, SQL_VARCHAR, TYPE_LENGTH_1M);
+        mCategory = mTable.addColumn(COL_CATEGORY, SQL_VARCHAR, TYPE_LENGTH_1M);
+        mDescription = mTable.addColumn(COL_DESCRIPTION, SQL_VARCHAR, TYPE_LENGTH_1M);
+        mUrl = mTable.addColumn(COL_URL, SQL_VARCHAR, TYPE_LENGTH_1M);
+        mColor = mTable.addColumn(COL_COLOR, SQL_VARCHAR, TYPE_LENGTH_1M);
         mDisplayMarker = mTable.addColumn(COL_DISPLAY_MARKER, SQL_BOOLEAN, null);
         mLatitude = mTable.addColumn(COL_LATITUDE, SQL_DOUBLE, null);
         mLongitude = mTable.addColumn(COL_LONGITUDE, SQL_DOUBLE, null);
