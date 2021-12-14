@@ -49,7 +49,7 @@ public abstract class MBaseDataManager<T> {
     private T mOldSelectedValue;
     private final ObjectProperty<T> mSelectedItemProperty = new SimpleObjectProperty<>();
     private final MTemporalManager mTemporalManager = MTemporalManager.getInstance();
-    private MTemporalRange mTemporalRange;
+    private final ObjectProperty<MTemporalRange> mTemporalRangeProperty = new SimpleObjectProperty<>();
     private final ObjectProperty<ObservableList<T>> mTimeFilteredItemsProperty = new SimpleObjectProperty<>();
     private final HashSet<T> mTimeFilteredItemsSet = new HashSet<>();
     private final DelayedResetRunner mUnlockDelayedResetRunner;
@@ -105,6 +105,10 @@ public abstract class MBaseDataManager<T> {
 
     public T getSelectedItem() {
         return mSelectedItemProperty.get();
+    }
+
+    public MTemporalRange getTemporalRange() {
+        return mTemporalRangeProperty.get();
     }
 
     public ObservableList<T> getTimeFilteredItems() {
@@ -174,20 +178,24 @@ public abstract class MBaseDataManager<T> {
     }
 
     public void setTemporalRange(MTemporalRange temporalRange) {
-        mTemporalRange = temporalRange;
         mTemporalManager.put(TEMPORAL_PREFIX, temporalRange);
+        mTemporalRangeProperty.set(temporalRange);
     }
 
     public void setTemporalVisibility(boolean visible) {
-        if (mTemporalRange != null) {
+        if (mTemporalRangeProperty != null && getTemporalRange() != null) {
             if (visible && !mTemporalManager.contains(TEMPORAL_PREFIX)) {
-                mTemporalManager.put(TEMPORAL_PREFIX, mTemporalRange);
+                mTemporalManager.put(TEMPORAL_PREFIX, getTemporalRange());
                 mTemporalManager.refresh();
             } else if (!visible && mTemporalManager.contains(TEMPORAL_PREFIX)) {
                 mTemporalManager.remove(TEMPORAL_PREFIX);
                 mTemporalManager.refresh();
             }
         }
+    }
+
+    public ObjectProperty<MTemporalRange> temporalRangeProperty() {
+        return mTemporalRangeProperty;
     }
 
     public ObjectProperty<ObservableList<T>> timeFilteredItemsProperty() {

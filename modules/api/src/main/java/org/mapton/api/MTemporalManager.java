@@ -22,7 +22,6 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Logger;
 import javafx.beans.property.SimpleObjectProperty;
 import org.apache.commons.lang3.StringUtils;
 import se.trixon.almond.util.fx.DelayedResetRunner;
@@ -33,8 +32,6 @@ import se.trixon.almond.util.fx.control.DateSelectionMode;
  * @author Patrik Karlström
  */
 public class MTemporalManager {
-
-    private static final Logger LOGGER = Logger.getLogger(MTemporalManager.class.getName());
 
     private final SimpleObjectProperty<DateSelectionMode> mDateSelectionModeProperty = new SimpleObjectProperty<>();
     private final DelayedResetRunner mDelayedResetRunner;
@@ -50,10 +47,10 @@ public class MTemporalManager {
 
     private MTemporalManager() {
         mDelayedResetRunner = new DelayedResetRunner(500, () -> {
-            TreeSet<MTemporalRange> fromRanges = new TreeSet<>((o1, o2) -> o1.getFromLocalDate().compareTo(o2.getFromLocalDate()));
-            TreeSet<MTemporalRange> toRanges = new TreeSet<>((o1, o2) -> o1.getToLocalDate().compareTo(o2.getToLocalDate()));
+            var fromRanges = new TreeSet<MTemporalRange>((o1, o2) -> o1.getFromLocalDate().compareTo(o2.getFromLocalDate()));
+            var toRanges = new TreeSet<MTemporalRange>((o1, o2) -> o1.getToLocalDate().compareTo(o2.getToLocalDate()));
 
-            for (MTemporalRange range : mRanges.values()) {
+            for (var range : mRanges.values()) {
                 fromRanges.add(range);
                 toRanges.add(range);
             }
@@ -82,7 +79,7 @@ public class MTemporalManager {
     }
 
     public synchronized ConcurrentHashMap<String, MTemporalRange> getAndRemoveSubSet(String prefix) {
-        ConcurrentHashMap<String, MTemporalRange> subSet = getSubSet(prefix);
+        var subSet = getSubSet(prefix);
         removeAll(prefix);
 
         return subSet;
@@ -109,9 +106,9 @@ public class MTemporalManager {
     }
 
     public synchronized ConcurrentHashMap<String, MTemporalRange> getSubSet(String prefix) {
-        ConcurrentHashMap<String, MTemporalRange> subSet = new ConcurrentHashMap<>();
+        var subSet = new ConcurrentHashMap<String, MTemporalRange>();
 
-        for (String key : mRanges.keySet()) {
+        for (var key : mRanges.keySet()) {
             if (StringUtils.startsWith(key, prefix)) {
                 subSet.put(key, mRanges.get(key));
             }
@@ -179,14 +176,14 @@ public class MTemporalManager {
     }
 
     public synchronized void removeAll(String prefix) {
-        ArrayList<String> keys = new ArrayList<>();
-        for (String key : mRanges.keySet()) {
+        var keys = new ArrayList<String>();
+        for (var key : mRanges.keySet()) {
             if (StringUtils.startsWith(key, prefix)) {
                 keys.add(key);
             }
         }
 
-        for (String key : keys) {
+        for (var key : keys) {
             mRanges.remove(key);
         }
 
