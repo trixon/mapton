@@ -49,6 +49,7 @@ public class IndicatorLayerBundle extends LayerBundle {
         setName(Dict.INDICATORS.toString());
         mLayer.setName(Dict.INDICATORS.toString());
         mLayer.setPickEnabled(false);
+        setParentLayer(mLayer);
     }
 
     private void initListeners() {
@@ -60,7 +61,7 @@ public class IndicatorLayerBundle extends LayerBundle {
 
     private void initRepaint() {
         setPainter(() -> {
-            mLayer.removeAllRenderables();
+            removeAllRenderables();
             if (mGsce.getValue() instanceof Renderable) {
                 mLayer.addRenderable(mGsce.getValue());
             } else if (mGsce.getValue() instanceof Renderable[]) {

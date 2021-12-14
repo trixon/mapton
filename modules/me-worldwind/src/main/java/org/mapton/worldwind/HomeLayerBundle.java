@@ -24,7 +24,6 @@ import gov.nasa.worldwind.render.PointPlacemarkAttributes;
 import java.awt.Color;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.value.ObservableValue;
-import org.mapton.api.MLatLon;
 import org.mapton.api.MOptions;
 import org.mapton.api.Mapton;
 import org.mapton.worldwind.api.LayerBundle;
@@ -61,6 +60,7 @@ public class HomeLayerBundle extends LayerBundle {
         setVisibleInLayerManager(mLayer, false);
         mLayer.setEnabled(mDisplayHomeIconProperty.get());
         mLayer.setPickEnabled(false);
+        setParentLayer(mLayer);
     }
 
     private void initListeners() {
@@ -79,13 +79,13 @@ public class HomeLayerBundle extends LayerBundle {
 
     private void initRepaint() {
         setPainter(() -> {
-            mLayer.removeAllRenderables();
+            removeAllRenderables();
 
-            MLatLon home = mOptions.getMapHome();
-            PointPlacemark placemark = new PointPlacemark(Position.fromDegrees(home.getLatitude(), home.getLongitude()));
+            var home = mOptions.getMapHome();
+            var placemark = new PointPlacemark(Position.fromDegrees(home.getLatitude(), home.getLongitude()));
             placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
 
-            PointPlacemarkAttributes attrs = new PointPlacemarkAttributes(placemark.getDefaultAttributes());
+            var attrs = new PointPlacemarkAttributes(placemark.getDefaultAttributes());
             attrs.setImage(GraphicsHelper.toBufferedImage(MaterialIcon._Action.HOME.getImageIcon(Mapton.getIconSizeToolBar() * 2, Color.RED).getImage()));
             attrs.setImageOffset(Offset.CENTER);
 

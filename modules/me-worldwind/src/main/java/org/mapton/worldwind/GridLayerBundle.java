@@ -96,6 +96,7 @@ public class GridLayerBundle extends LayerBundle {
 
         mLayer.setPickEnabled(false);
         attachTopComponentToLayer("GridTopComponent", mLayer);
+        setParentLayer(mLayer);
     }
 
     private void initAttributes() {
@@ -129,7 +130,7 @@ public class GridLayerBundle extends LayerBundle {
 
     private void initRepaint() {
         setPainter(() -> {
-            mLayer.removeAllRenderables();
+            removeAllRenderables();
             mAltitudeMode = mOptions.is(KEY_GRID_GLOBAL_CLAMP_TO_GROUND) ? WorldWind.CLAMP_TO_GROUND : WorldWind.ABSOLUTE;
 
             if (mOptions.is(KEY_GRID_GLOBAL_PLOT)) {

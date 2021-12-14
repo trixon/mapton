@@ -63,6 +63,7 @@ public class BookmarkLayerBundle extends LayerBundle {
         setName(Dict.BOOKMARKS.toString());
         mLayer.setEnabled(true);
         mLayer.setPickEnabled(true);
+        setParentLayer(mLayer);
     }
 
     private void initListeners() {
@@ -73,7 +74,7 @@ public class BookmarkLayerBundle extends LayerBundle {
 
     private void initRepaint() {
         setPainter(() -> {
-            mLayer.removeAllRenderables();
+            removeAllRenderables();
 
             for (var bookmark : mBookmarkManager.getItems()) {
                 if (bookmark.isDisplayMarker()) {

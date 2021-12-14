@@ -63,6 +63,7 @@ public class TemporaryPoiLayerBundle extends LayerBundle {
         setName(Dict.TEMPORARY_CONTENT.toString());
         mLayer.setEnabled(true);
         mLayer.setPickEnabled(false);
+        setParentLayer(mLayer);
     }
 
     private void initListeners() {
@@ -73,7 +74,7 @@ public class TemporaryPoiLayerBundle extends LayerBundle {
 
     private void initRepaint() {
         setPainter(() -> {
-            mLayer.removeAllRenderables();
+            removeAllRenderables();
 
             for (MPoi poi : mManager.getItems()) {
                 if (poi.isDisplayMarker() && ObjectUtils.allNotNull(poi.getLatitude(), poi.getLongitude())) {

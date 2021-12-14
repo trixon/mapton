@@ -15,7 +15,9 @@
  */
 package org.mapton.worldwind.api;
 
+import gov.nasa.worldwind.layers.IconLayer;
 import gov.nasa.worldwind.layers.Layer;
+import gov.nasa.worldwind.layers.RenderableLayer;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -35,7 +37,7 @@ import se.trixon.almond.util.Dict;
 public abstract class LayerBundle {
 
     public static final int DEFAULT_REPAINT_DELAY = 5000;
-    private static Set<Runnable> sActivePaintersSet = Collections.synchronizedSet(new HashSet());
+    private static final Set<Runnable> sActivePaintersSet = Collections.synchronizedSet(new HashSet());
     private HashSet<Layer> mChildLayers = new HashSet<>();
     private boolean mInitialized = false;
     private final ObservableList<Layer> mLayers = FXCollections.observableArrayList();
@@ -45,16 +47,6 @@ public abstract class LayerBundle {
     private boolean mPopulated = false;
 
     public LayerBundle() {
-    }
-
-    private boolean getChildVisibility(Layer layer) {
-        boolean visible = true;
-        var visibility = layer.getValue(MKey.LAYER_SUB_VISIBILITY);
-        if (visibility != null) {
-            visible = (boolean) visibility;
-        }
-
-        return visible;
     }
 
     public void addAllChildLayers(Layer... childLayers) {
@@ -75,18 +67,6 @@ public abstract class LayerBundle {
 
     public void attachTopComponentToLayer(String topComponentID, Layer layer) {
         layer.setValue(WWHelper.KEY_FAST_OPEN, topComponentID);
-    }
-
-    /**
-     *
-     * @param parentLayer
-     * @param childLayers
-     * @deprecated Use setAllChildLayers or addAllChildLayers instead
-     */
-    @Deprecated
-    public void connectChildLayers(Layer parentLayer, Layer... childLayers) {
-        mParentLayer = parentLayer;
-        setAllChildLayers(childLayers);
     }
 
     public ObservableList<Layer> getLayers() {
@@ -114,6 +94,42 @@ public abstract class LayerBundle {
     }
 
     public abstract void populate() throws Exception;
+
+    public void removeAllIcons(IconLayer... layers) {
+        for (var layer : layers) {
+            layer.removeAllIcons();
+        }
+    }
+
+    public void removeAllIcons() {
+        if (mParentLayer instanceof IconLayer) {
+            ((IconLayer) mParentLayer).removeAllIcons();
+        }
+
+        for (var layer : mChildLayers) {
+            if (layer instanceof IconLayer) {
+                ((IconLayer) layer).removeAllIcons();
+            }
+        }
+    }
+
+    public void removeAllRenderables() {
+        if (mParentLayer instanceof RenderableLayer) {
+            ((RenderableLayer) mParentLayer).removeAllRenderables();
+        }
+
+        for (var layer : mChildLayers) {
+            if (layer instanceof RenderableLayer) {
+                ((RenderableLayer) layer).removeAllRenderables();
+            }
+        }
+    }
+
+    public void removeAllRenderables(RenderableLayer... layers) {
+        for (var layer : layers) {
+            layer.removeAllRenderables();
+        }
+    }
 
     /**
      * Runs the repaintRunnable in its own thread after a delay.
@@ -194,5 +210,15 @@ public abstract class LayerBundle {
 
     public void setVisibleInLayerManager(Layer layer, boolean visibility) {
         layer.setValue(WWHelper.KEY_LAYER_HIDE_FROM_MANAGER, !visibility);
+    }
+
+    private boolean getChildVisibility(Layer layer) {
+        boolean visible = true;
+        var visibility = layer.getValue(MKey.LAYER_SUB_VISIBILITY);
+        if (visibility != null) {
+            visible = (boolean) visibility;
+        }
+
+        return visible;
     }
 }

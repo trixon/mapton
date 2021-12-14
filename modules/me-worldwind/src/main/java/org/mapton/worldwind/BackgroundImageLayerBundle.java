@@ -66,6 +66,7 @@ public class BackgroundImageLayerBundle extends LayerBundle {
         setName(Dict.IMAGE.toString());
         mLayer.setEnabled(true);
         mLayer.setPickEnabled(false);
+        setParentLayer(mLayer);
     }
 
     private void initListeners() {
@@ -81,7 +82,7 @@ public class BackgroundImageLayerBundle extends LayerBundle {
 
     private void initRepaint() {
         setPainter(() -> {
-            mLayer.removeAllRenderables();
+            removeAllRenderables();
             if (mBackgroundImage != null && mBackgroundImage.getImageSource() != null) {
                 mLayer.addRenderable(mScreenImage);
                 synchronized (this) {
