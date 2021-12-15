@@ -71,7 +71,7 @@ public class WikipediaLayerBundle extends LayerBundle {
 
     private void initRepaint() {
         setPainter(() -> {
-            mLayer.removeAllRenderables();
+            removeAllRenderables();
 
             String imageAddress = SystemHelper.getPackageAsPath(getClass()) + "Wikipedia-logo.png";
             for (var article : mWikipediaArticleManager.getAllItems()) {

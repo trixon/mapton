@@ -77,7 +77,7 @@ public class GeoNamesLayerBundle extends LayerBundle {
 
     private void initRepaint() {
         setPainter(() -> {
-            mLayer.removeAllRenderables();
+            removeAllRenderables();
 
             ObservableList<Country> countries = Mapton.getGlobalState().get(GeoN.KEY_LIST_SELECTION);
 

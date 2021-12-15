@@ -88,8 +88,7 @@ public class PhotosLayerBundle extends LayerBundle {
 
     @Override
     public void populate() throws Exception {
-        getLayers().add(mIconLayer);
-        getLayers().add(mRenderableLayer);
+        getLayers().addAll(mIconLayer, mRenderableLayer);
         repaint(DEFAULT_REPAINT_DELAY);
     }
 
@@ -159,8 +158,8 @@ public class PhotosLayerBundle extends LayerBundle {
                 return;
             }
 
-            mIconLayer.removeAllIcons();
-            mRenderableLayer.removeAllRenderables();
+            removeAllIcons();
+            removeAllRenderables();
             mLineNodes.clear();
 
             for (MapoSource source : mManager.getItems()) {

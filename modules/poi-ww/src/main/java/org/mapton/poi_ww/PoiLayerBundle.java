@@ -70,7 +70,7 @@ public class PoiLayerBundle extends LayerBundle {
 
     private void initRepaint() {
         setPainter(() -> {
-            mLayer.removeAllRenderables();
+            removeAllRenderables();
             for (var poi : new ArrayList<>(mPoiManager.getTimeFilteredItems())) {
                 if (poi.isDisplayMarker()) {
                     var placemark = new PointPlacemark(Position.fromDegrees(poi.getLatitude(), poi.getLongitude()));

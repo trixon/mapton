@@ -83,7 +83,7 @@ public class SeasonalLayerBundle extends LayerBundle {
     }
 
     private void refresh(BaseRenderer renderer) {
-        mLayer.removeAllRenderables();
+        removeAllRenderables();
         if (MSimpleObjectStorageManager.getInstance().getBoolean(SeasonalSOSB.class, true)) {
             new Thread(() -> {
                 try {

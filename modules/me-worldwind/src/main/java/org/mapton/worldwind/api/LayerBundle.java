@@ -106,11 +106,17 @@ public abstract class LayerBundle {
             ((IconLayer) mParentLayer).removeAllIcons();
         }
 
-        for (var layer : mChildLayers) {
-            if (layer instanceof IconLayer) {
-                ((IconLayer) layer).removeAllIcons();
-            }
-        }
+        mChildLayers.stream()
+                .filter(layer -> (layer instanceof IconLayer))
+                .forEachOrdered(layer -> {
+                    ((IconLayer) layer).removeAllIcons();
+                });
+
+        mLayers.stream()
+                .filter(layer -> (layer instanceof IconLayer))
+                .forEachOrdered(layer -> {
+                    ((IconLayer) layer).removeAllIcons();
+                });
     }
 
     public void removeAllRenderables() {
@@ -118,11 +124,17 @@ public abstract class LayerBundle {
             ((RenderableLayer) mParentLayer).removeAllRenderables();
         }
 
-        for (var layer : mChildLayers) {
-            if (layer instanceof RenderableLayer) {
-                ((RenderableLayer) layer).removeAllRenderables();
-            }
-        }
+        mChildLayers.stream()
+                .filter(layer -> (layer instanceof RenderableLayer))
+                .forEachOrdered(layer -> {
+                    ((RenderableLayer) layer).removeAllRenderables();
+                });
+
+        mLayers.stream()
+                .filter(layer -> (layer instanceof RenderableLayer))
+                .forEachOrdered(layer -> {
+                    ((RenderableLayer) layer).removeAllRenderables();
+                });
     }
 
     public void removeAllRenderables(RenderableLayer... layers) {
