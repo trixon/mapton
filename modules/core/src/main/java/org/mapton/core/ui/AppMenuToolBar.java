@@ -16,6 +16,7 @@
 package org.mapton.core.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Scene;
@@ -46,12 +47,16 @@ public class AppMenuToolBar extends JPanel {
 
     private void init() {
         setLayout(new BorderLayout());
-        setBackground(FxHelper.colorToColor(Mapton.getThemeColor()));
+        if (!Mapton.getThemeColor().equals(Mapton.getDefaultThemeColor())) {
+            setBackground(FxHelper.colorToColor(Mapton.getThemeColor()));
+        }
         add(mStatusLabel = new JLabel("", SwingConstants.CENTER), BorderLayout.CENTER);
         add(mFxPanel, BorderLayout.EAST);
         mStatusLabel.setText(Mapton.getGlobalState().getOrDefault(MKey.APP_TOOL_LABEL, null));
         mStatusLabel.setForeground(FxHelper.colorToColor(Mapton.getThemeForegroundColor()));
-
+        var dimension = new Dimension(20, 20);
+        setMaximumSize(dimension);
+        setPreferredSize(dimension);
         SystemHelper.runLaterDelayed(500, () -> {
             Platform.runLater(() -> {
                 var scene = new Scene(FxOnScreenDummy.getInstance());
