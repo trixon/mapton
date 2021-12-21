@@ -385,7 +385,7 @@ public class MapToolBar extends BaseToolBar {
             if (!mCommandMenuItems.isEmpty()) {
                 mCommandMenuItems.sort((o1, o2) -> o1.getText().compareTo(o2.getText()));
             }
-        }).start();
+        }, getClass().getCanonicalName()).start();
     }
 
     private void refreshEngine() {

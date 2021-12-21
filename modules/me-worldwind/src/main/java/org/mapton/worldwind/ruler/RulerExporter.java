@@ -91,7 +91,7 @@ public class RulerExporter {
                 } catch (IOException ex) {
                     Exceptions.printStackTrace(ex);
                 }
-            }).start();
+            }, getClass().getCanonicalName()).start();
         }
     }
 

@@ -119,7 +119,7 @@ public class FileImportAction extends FileAction {
                         Exceptions.printStackTrace(ex);
                     }
 
-                }).start();
+                }, getClass().getCanonicalName()).start();
             }
         });
 
@@ -142,7 +142,7 @@ public class FileImportAction extends FileAction {
             MBookmarkManager.COL_LATITUDE,
             MBookmarkManager.COL_LONGITUDE};
 
-        try (CSVParser records = CSVParser.parse(
+        try ( CSVParser records = CSVParser.parse(
                 mFile,
                 Charset.forName("utf-8"),
                 CSVFormat.DEFAULT.withFirstRecordAsHeader().withDelimiter(';')

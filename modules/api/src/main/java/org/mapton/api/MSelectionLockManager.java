@@ -89,7 +89,7 @@ public class MSelectionLockManager {
                     Exceptions.printStackTrace(ex);
                     Thread.currentThread().interrupt();
                 }
-            }).start();
+            }, getClass().getCanonicalName()).start();
         }
     }
 
@@ -137,7 +137,7 @@ public class MSelectionLockManager {
                 Exceptions.printStackTrace(ex);
                 Thread.currentThread().interrupt();
             }
-        }).start();
+        }, getClass().getCanonicalName()).start();
     }
 
     private static class Holder {

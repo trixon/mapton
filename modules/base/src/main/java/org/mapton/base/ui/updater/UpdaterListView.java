@@ -85,7 +85,7 @@ public class UpdaterListView extends ListView<MUpdater> {
                 getItems().setAll(updaters);
                 refreshSelectedProperty();
             });
-        }).start();
+        }, getClass().getCanonicalName()).start();
     }
 
     public BooleanProperty selectedProperty() {

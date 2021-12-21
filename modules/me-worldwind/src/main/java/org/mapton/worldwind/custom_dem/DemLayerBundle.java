@@ -65,7 +65,7 @@ public class DemLayerBundle extends LayerBundle {
             File dir = new File(FileUtils.getUserDirectory(), "test/dem");
             loadImages(dir);
             LayerBundleManager.getInstance().redraw();
-        });
+        }, getClass().getCanonicalName());
 
         thread.setPriority(Thread.MIN_PRIORITY);
         thread.start();

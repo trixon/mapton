@@ -234,7 +234,7 @@ public class MCoordinateFileManager {
             } catch (Exception ex) {
                 Exceptions.printStackTrace(ex);
             }
-        }).start();
+        }, getClass().getCanonicalName()).start();
     }
 
     private File getSourcesFile() {

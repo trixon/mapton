@@ -82,7 +82,7 @@ public class GeonamesManager {
                     Exceptions.printStackTrace(ex);
                 }
             }
-        }).start();
+        }, getClass().getCanonicalName()).start();
     }
 
     private static class Holder {

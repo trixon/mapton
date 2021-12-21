@@ -60,7 +60,7 @@ public class UpdaterMaskerPane extends MMaskerPaneBase {
                 notify(Dict.OPERATION_COMPLETED.toString());
                 mRunningProperty.set(false);
             });
-        }).start();
+        }, getClass().getCanonicalName()).start();
     }
 
 }

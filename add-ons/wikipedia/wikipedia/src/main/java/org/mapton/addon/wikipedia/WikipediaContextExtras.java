@@ -138,7 +138,7 @@ public class WikipediaContextExtras extends MContextMenuItem {
                     } catch (IOException ex) {
                         Exceptions.printStackTrace(ex);
                     }
-                }).start();
+                }, getClass().getCanonicalName()).start();
             } catch (MalformedURLException ex) {
                 Exceptions.printStackTrace(ex);
             } catch (IOException ex) {

@@ -87,6 +87,6 @@ public abstract class MReport extends MSplitNavMaskerPane {
             } catch (Exception ex) {
                 Exceptions.printStackTrace(ex);
             }
-        }).start();
+        }, getClass().getCanonicalName()).start();
     }
 }

@@ -63,7 +63,7 @@ public class ImageLayerBundle extends LayerBundle {
             loadImages(dir);
 
             LayerBundleManager.getInstance().redraw();
-        });
+        }, getClass().getCanonicalName());
 
         thread.setPriority(Thread.MIN_PRIORITY);
         thread.start();

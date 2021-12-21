@@ -38,6 +38,6 @@ public final class SysInfoAction implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         new Thread(() -> {
             new NbSystemInformation().displayDialog();
-        }).start();
+        }, getClass().getCanonicalName()).start();
     }
 }

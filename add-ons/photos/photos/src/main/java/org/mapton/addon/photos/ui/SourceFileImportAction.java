@@ -68,7 +68,7 @@ public class SourceFileImportAction extends SourceFileAction {
                     } catch (IOException ex) {
                         Exceptions.printStackTrace(ex);
                     }
-                }).start();
+                }, getClass().getCanonicalName()).start();
             }
         });
 

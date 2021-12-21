@@ -138,7 +138,7 @@ public class WorldWindMapEngine extends MEngine {
                     mMainPanel.add(mMap, BorderLayout.CENTER);
                     postCreateRunnable.run();
                 });
-            }).start();
+            }, getClass().getCanonicalName()).start();
         } else {
             postCreateRunnable.run();
         }
@@ -293,7 +293,7 @@ public class WorldWindMapEngine extends MEngine {
                         mSwingNode.resize(1, 1);
                         mSwingNode.setVisible(true);
                     });
-                }).start();;
+                }, getClass().getCanonicalName()).start();
             }
         });
     }

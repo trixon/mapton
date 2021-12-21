@@ -95,7 +95,7 @@ public final class XkcdTopComponent extends MTopComponent {
                     Exceptions.printStackTrace(ex);
                     Thread.currentThread().interrupt();
                 }
-            }).start();
+            }, getClass().getCanonicalName()).start();
             mFirstRun = false;
         }
 

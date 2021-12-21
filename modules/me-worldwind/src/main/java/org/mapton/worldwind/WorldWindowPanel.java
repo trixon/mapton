@@ -113,7 +113,7 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
             initFinalize();
             initListeners();
             postCreateRunnable.run();
-        }).start();
+        }, getClass().getCanonicalName()).start();
     }
 
     public void addCustomLayer(Layer layer) {
@@ -183,7 +183,7 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
             if (dir.isDirectory()) {
                 customElevationModelLoad(dir);
             }
-        });
+        }, getClass().getCanonicalName());
 
         thread.setPriority(Thread.MIN_PRIORITY);
         thread.start();

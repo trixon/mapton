@@ -264,6 +264,6 @@ public class MapContextMenu {
             } else {
                 //TODO err inf dialog
             }
-        }).start();
+        }, getClass().getCanonicalName()).start();
     }
 }

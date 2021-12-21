@@ -291,7 +291,7 @@ public final class MapTopComponent extends MTopComponent {
                 Mapton.getExecutionFlow().setReady(MKey.EXECUTION_FLOW_MAP_INITIALIZED);
 
                 NbSnapHelper.checkSnapStatus(Mapton.class, "snap", "mapton", "removable-media");
-            }).start();
+            }, getClass().getCanonicalName()).start();
         }
     }
 

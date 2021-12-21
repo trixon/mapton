@@ -178,7 +178,7 @@ public class MapJfxMapEngine extends MEngine {
                         Exceptions.printStackTrace(ex);
                         Thread.currentThread().interrupt();
                     }
-                }).start();
+                }, getClass().getCanonicalName()).start();
             }
         });
 

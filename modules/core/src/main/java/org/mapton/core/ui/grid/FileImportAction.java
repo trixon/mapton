@@ -71,7 +71,7 @@ public class FileImportAction extends FileAction {
                     } catch (IOException ex) {
                         Exceptions.printStackTrace(ex);
                     }
-                }).start();
+                }, getClass().getCanonicalName()).start();
             }
         });
 

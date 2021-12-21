@@ -118,7 +118,7 @@ public abstract class MSubReports extends MReport {
                 });
 
                 mMaskerPane.setVisible(false);
-            }).start();
+            }, getClass().getCanonicalName()).start();
         }
     }
 

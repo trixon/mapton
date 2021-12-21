@@ -80,7 +80,7 @@ public class SourcesPane extends BorderPane {
                 Thread.currentThread().interrupt();
             }
             Mapton.getGlobalState().put(Mapo.KEY_SETTINGS_UPDATED, mMapo.getSettings());
-        }).start();
+        }, getClass().getCanonicalName()).start();
     }
 
     private void createUI() {
@@ -109,7 +109,7 @@ public class SourcesPane extends BorderPane {
                 mRefreshThread = new Thread(() -> {
                     new SourceScanner();
                     setRunningState(RunState.STARTABLE);
-                });
+                }, getClass().getCanonicalName());
                 mRefreshThread.start();
             } else {
                 mRefreshThread.interrupt();

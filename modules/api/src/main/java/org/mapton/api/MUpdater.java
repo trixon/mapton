@@ -184,7 +184,7 @@ public abstract class MUpdater {
                         mTimer.setInitialDelay(defaultDelay);
                         mTimer.restart();
                     }
-                }).start();
+                }, getClass().getCanonicalName()).start();
             };
 
             mTimer = new Timer(defaultDelay, actionListener);

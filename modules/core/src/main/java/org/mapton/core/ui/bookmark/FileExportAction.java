@@ -118,7 +118,7 @@ public class FileExportAction extends FileAction {
                     } catch (IOException ex) {
                         Exceptions.printStackTrace(ex);
                     }
-                }).start();
+                }, getClass().getCanonicalName()).start();
             }
         });
 

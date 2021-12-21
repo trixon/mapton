@@ -99,7 +99,7 @@ public class SeasonalLayerBundle extends LayerBundle {
                     Exceptions.printStackTrace(ex);
                     Thread.currentThread().interrupt();
                 }
-            }).start();
+            }, getClass().getCanonicalName()).start();
         }
     }
 }

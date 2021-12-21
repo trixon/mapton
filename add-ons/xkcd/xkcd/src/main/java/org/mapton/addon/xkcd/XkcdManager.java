@@ -59,7 +59,7 @@ public class XkcdManager {
             } catch (IOException ex) {
                 //Exceptions.printStackTrace(ex);
             }
-        }).start();
+        }, getClass().getCanonicalName()).start();
     }
 
     void goLast() {
@@ -69,7 +69,7 @@ public class XkcdManager {
             } catch (IOException ex) {
                 //Exceptions.printStackTrace(ex);
             }
-        }).start();
+        }, getClass().getCanonicalName()).start();
     }
 
     void goNext() {
@@ -79,7 +79,7 @@ public class XkcdManager {
             } catch (IOException ex) {
                 //Exceptions.printStackTrace(ex);
             }
-        }).start();
+        }, getClass().getCanonicalName()).start();
     }
 
     void goPrevious() {
@@ -89,7 +89,7 @@ public class XkcdManager {
             } catch (IOException ex) {
                 //Exceptions.printStackTrace(ex);
             }
-        }).start();
+        }, getClass().getCanonicalName()).start();
     }
 
     void goRandom() {
@@ -99,7 +99,7 @@ public class XkcdManager {
             } catch (IOException ex) {
                 //Exceptions.printStackTrace(ex);
             }
-        }).start();
+        }, getClass().getCanonicalName()).start();
     }
 
     private Xkcd parse(int number) throws IOException {

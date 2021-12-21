@@ -77,7 +77,7 @@ public class SourceFileExportAction extends SourceFileAction {
                         } catch (IOException ex) {
                             Exceptions.printStackTrace(ex);
                         }
-                    }).start();
+                    }, getClass().getCanonicalName()).start();
                 }
             }
         });
