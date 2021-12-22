@@ -15,22 +15,18 @@
  */
 package org.mapton.geonames;
 
-import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.io.FileUtils;
 import org.mapton.api.MPrint;
 import org.mapton.api.Mapton;
@@ -92,29 +88,29 @@ public class GeonamesGenerator {
 
         URI uri = URI.create("jar:" + mCities1000zipFile.toURI().toString());
 
-        try (FileSystem fileSystem = FileSystems.newFileSystem(uri, env)) {
-            Path path = fileSystem.getPath("cities1000.txt");
+        try ( var fileSystem = FileSystems.newFileSystem(uri, env)) {
+            var path = fileSystem.getPath("cities1000.txt");
             FileUtils.writeByteArrayToFile(mCities1000txtFile, Files.readAllBytes(path));
         }
     }
 
     private void populateCities() throws IOException {
-        try (CSVParser records = CSVParser.parse(
+        try ( var csvRecords = CSVParser.parse(
                 new File(mCacheDir, "cities1000.txt"),
                 Charset.forName("utf-8"),
-                CSVFormat.DEFAULT.withDelimiter('\t')
+                CSVFormat.DEFAULT.builder().setHeader().setAllowMissingColumnNames(true).setDelimiter('\t').build()
         )) {
-            for (CSVRecord record : records) {
-                String name = record.get(1);
-                String asciiname = record.get(2);
-                String alternateames = record.get(3);
-                Double lat = MathHelper.convertStringToDouble(record.get(4));
-                Double lon = MathHelper.convertStringToDouble(record.get(5));
-                String countryCode = record.get(8);
-                Integer population = MathHelper.convertStringToInteger(record.get(14));
-                Integer elevation = MathHelper.convertStringToInteger(record.get(15));
+            for (var csvRecord : csvRecords) {
+                String name = csvRecord.get(1);
+                String asciiname = csvRecord.get(2);
+                String alternateames = csvRecord.get(3);
+                Double lat = MathHelper.convertStringToDouble(csvRecord.get(4));
+                Double lon = MathHelper.convertStringToDouble(csvRecord.get(5));
+                String countryCode = csvRecord.get(8);
+                Integer population = MathHelper.convertStringToInteger(csvRecord.get(14));
+                Integer elevation = MathHelper.convertStringToInteger(csvRecord.get(15));
 
-                Geoname geoname = new Geoname();
+                var geoname = new Geoname();
 
                 geoname.setName(name);
                 geoname.setAsciiName(asciiname);
@@ -133,7 +129,7 @@ public class GeonamesGenerator {
     }
 
     private void saveJson() throws IOException {
-        Gson gson = new GsonBuilder()
+        var gson = new GsonBuilder()
                 .setPrettyPrinting()
                 .create();
 

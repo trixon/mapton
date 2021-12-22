@@ -142,34 +142,34 @@ public class FileImportAction extends FileAction {
             MBookmarkManager.COL_LATITUDE,
             MBookmarkManager.COL_LONGITUDE};
 
-        try ( CSVParser records = CSVParser.parse(
+        try ( var csvRecords = CSVParser.parse(
                 mFile,
                 Charset.forName("utf-8"),
-                CSVFormat.DEFAULT.withFirstRecordAsHeader().withDelimiter(';')
+                CSVFormat.DEFAULT.builder().setHeader().setSkipHeaderRecord(true).setDelimiter(';').build()
         )) {
             String default_zoom = "0.85";
-            if (isValidCsv(records, requiredColumns)) {
+            if (isValidCsv(csvRecords, requiredColumns)) {
                 ArrayList<MBookmark> bookmarks = new ArrayList<>();
 
-                for (CSVRecord record : records) {
-                    String category = getOrDefault(record, MBookmarkManager.COL_CATEGORY, Dict.DEFAULT.toString());
-                    String description = getOrDefault(record, MBookmarkManager.COL_DESCRIPTION, "");
-                    String url = getOrDefault(record, MBookmarkManager.COL_URL, "");
-                    String color = getOrDefault(record, MBookmarkManager.COL_COLOR, "FFFF00");
-                    String displayMarker = getOrDefault(record, MBookmarkManager.COL_DISPLAY_MARKER, "1");
-                    String zoomString = getOrDefault(record, MBookmarkManager.COL_ZOOM, default_zoom);
+                for (var csvRecord : csvRecords) {
+                    String category = getOrDefault(csvRecord, MBookmarkManager.COL_CATEGORY, Dict.DEFAULT.toString());
+                    String description = getOrDefault(csvRecord, MBookmarkManager.COL_DESCRIPTION, "");
+                    String url = getOrDefault(csvRecord, MBookmarkManager.COL_URL, "");
+                    String color = getOrDefault(csvRecord, MBookmarkManager.COL_COLOR, "FFFF00");
+                    String displayMarker = getOrDefault(csvRecord, MBookmarkManager.COL_DISPLAY_MARKER, "1");
+                    String zoomString = getOrDefault(csvRecord, MBookmarkManager.COL_ZOOM, default_zoom);
                     if (!NumberUtils.isCreatable(zoomString)) {
                         zoomString = default_zoom;
                     }
 
-                    Double lat = MathHelper.convertStringToDouble(record.get(MBookmarkManager.COL_LATITUDE));
-                    Double lon = MathHelper.convertStringToDouble(record.get(MBookmarkManager.COL_LONGITUDE));
+                    Double lat = MathHelper.convertStringToDouble(csvRecord.get(MBookmarkManager.COL_LATITUDE));
+                    Double lon = MathHelper.convertStringToDouble(csvRecord.get(MBookmarkManager.COL_LONGITUDE));
                     Double zoom = MathHelper.convertStringToDouble(zoomString);
 
-                    MBookmark bookmark = new MBookmark();
+                    var bookmark = new MBookmark();
 
                     bookmark.setCategory(category);
-                    bookmark.setName(record.get(MBookmarkManager.COL_NAME));
+                    bookmark.setName(csvRecord.get(MBookmarkManager.COL_NAME));
                     bookmark.setDescription(description);
                     bookmark.setUrl(url);
                     bookmark.setColor(color);
