@@ -26,7 +26,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import org.apache.commons.io.FileUtils;
 import org.mapton.api.MCoordinateFileOpener;
 import org.mapton.core.api.BaseAction;
-import org.mapton.core.ui.AppMenuToolBar;
+import org.mapton.core.ui.BaseToolBar;
 import org.mapton.core.ui.FileDropSwitchboard;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -56,7 +56,7 @@ public final class OpenAction extends BaseAction {
     private File mFile;
 
     public OpenAction() {
-        mBundle = NbBundle.getBundle(AppMenuToolBar.class);
+        mBundle = NbBundle.getBundle(BaseToolBar.class);
     }
 
     @Override
