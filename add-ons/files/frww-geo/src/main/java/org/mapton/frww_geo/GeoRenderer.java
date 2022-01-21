@@ -15,19 +15,26 @@
  */
 package org.mapton.frww_geo;
 
-import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.geom.Position;
+import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
+import gov.nasa.worldwind.render.Material;
+import gov.nasa.worldwind.render.Path;
 import gov.nasa.worldwind.render.PointPlacemark;
+import gov.nasa.worldwind.render.Renderable;
+import gov.nasa.worldwind.render.ShapeAttributes;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import org.mapton.api.MCoordinateFile;
 import org.mapton.worldwind.api.CoordinateFileRendererWW;
 import org.mapton.worldwind.api.LayerBundle;
 import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
+import se.trixon.almond.util.MathHelper;
 import se.trixon.almond.util.io.Geo;
+import se.trixon.almond.util.io.GeoLine;
 import se.trixon.almond.util.io.GeoPoint;
 
 /**
@@ -51,45 +58,91 @@ public class GeoRenderer extends CoordinateFileRendererWW {
     @Override
     protected void load(MCoordinateFile coordinateFile) {
         mCooTrans = coordinateFile.getCooTrans();
-        var layer = new RenderableLayer();
-        Geo geo = new Geo();
-        try {
-            geo.read(coordinateFile.getFile());
-            renderPoints(layer, geo.getPoints());
-            System.out.println(geo.getLines().size());
-            //Dynamic transform
-            //Create Points
-            //Create Lines
-            System.out.println(geo.toString());
-        } catch (IOException ex) {
-            Exceptions.printStackTrace(ex);
-        }
-
-        addLayer(coordinateFile, layer);
+        new Thread(() -> {
+            try {
+                Geo geo = new Geo();
+                geo.read(coordinateFile.getFile());
+                RenderableLayer layer = new RenderableLayer();
+                layer.setPickEnabled(false);
+                renderPoints(layer, geo.getPoints());
+                renderLines(layer, geo.getLines());
+                addLayer(coordinateFile, (Layer) layer);
+            } catch (IOException ex) {
+                Exceptions.printStackTrace(ex);
+            }
+        }, getClass().getName() + " Load"
+        ).start();
     }
 
     @Override
     protected void render() {
-        for (var coordinateFile : mCoordinateFileManager.getSublistByExtensions("geo")) {
+        for (var coordinateFile : mCoordinateFileManager.getSublistByExtensions(new String[]{"geo"})) {
             render(coordinateFile);
         }
     }
 
     private void initAttributes() {
         mLineBasicShapeAttributes = new BasicShapeAttributes();
+        mLineBasicShapeAttributes.setOutlineMaterial(Material.RED);
+        mLineBasicShapeAttributes.setOutlineWidth(1.0D);
     }
 
+    private void renderLines(RenderableLayer layer, List<GeoLine> geoLines) {
+        for (var geoLine : geoLines) {
+            var positions = new ArrayList<Position>();
+            for (var geoPoint : geoLine.getPoints()) {
+                if (mCooTrans.isWithinProjectedBounds(geoPoint.getX(), geoPoint.getY())) {
+                    var p = mCooTrans.toWgs84(geoPoint.getX(), geoPoint.getY());
+                    positions.add(Position.fromDegrees(p.getY(), p.getX(), MathHelper.convertDoubleToDouble(geoPoint.getZ())));
+                }
+            }
+            if (positions.size() > 1) {
+                var path = new Path(positions);
+                path.setAttributes((ShapeAttributes) mLineBasicShapeAttributes);
+                path.setAltitudeMode(0);
+                layer.addRenderable((Renderable) path);
+            }
+        }
+    }
+
+//    private void renderPointCloud(RenderableLayer layer, List<GeoPoint> geoPoints) {
+//        PointPlacemark labelPlacemark = new PointPlacemark(Position.ZERO);
+//        PointPlacemarkAttributes pattrs = new PointPlacemarkAttributes(labelPlacemark.getDefaultAttributes());
+//        BufferedImage bi = GraphicsHelper.colorize(new BufferedImage(20, 20, 2), Color.RED);
+//        String imageAddress = SystemHelper.getPackageAsPath(LayerBundle.class) + "dot.png";
+//        pattrs.setUsePointAsDefaultImage(true);
+//        pattrs.setImageAddress(null);
+//        pattrs.setImageOffset(Offset.CENTER);
+//        pattrs.setDrawLabel(false);
+//        pattrs.setImageColor(Color.RED);
+//        int i = 0;
+//        int j = 0;
+//        System.out.println("renderPointCloud " + geoPoints.size());
+//        System.out.println(imageAddress);
+//        for (GeoPoint geoPoint : geoPoints) {
+//            i++;
+//            if (i % 10 == 0 && mCooTrans.isWithinProjectedBounds(geoPoint.getX(), geoPoint.getY())) {
+//                j++;
+//                Point2D p = mCooTrans.toWgs84(geoPoint.getX(), geoPoint.getY());
+//                Position position = Position.fromDegrees(p.getY(), p.getX(), MathHelper.convertDoubleToDouble(geoPoint.getZ()));
+//                PointPlacemark pointPlacemark = new PointPlacemark(position);
+//                pointPlacemark.setAttributes(pattrs);
+//                pointPlacemark.setLabelText("" + j);
+//                pointPlacemark.setAltitudeMode(0);
+//                layer.addRenderable((Renderable) pointPlacemark);
+//            }
+//        }
+//        System.out.println(j);
+//    }
     private void renderPoints(RenderableLayer layer, List<GeoPoint> geoPoints) {
         for (var geoPoint : geoPoints) {
             if (mCooTrans.isWithinProjectedBounds(geoPoint.getX(), geoPoint.getY())) {
                 var p = mCooTrans.toWgs84(geoPoint.getX(), geoPoint.getY());
                 var pointPlacemark = new PointPlacemark(Position.fromDegrees(p.getY(), p.getX()));
-
                 pointPlacemark.setLabelText(geoPoint.getPointId());
-                pointPlacemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
+                pointPlacemark.setAltitudeMode(1);
                 pointPlacemark.setEnableLabelPicking(true);
-
-                layer.addRenderable(pointPlacemark);
+                layer.addRenderable((Renderable) pointPlacemark);
             }
         }
     }
