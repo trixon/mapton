@@ -196,6 +196,7 @@
         <module>modules/base</module>
         <module>modules/core</module>
         <module>modules/editors</module>
+        <module>modules/geotools</module>
         <module>modules/google-maps</module>
         <module>modules/maintenance</module>
         <module>modules/poi-ww</module>
@@ -221,6 +222,7 @@
         <module>modules/se-poi</module>
 
         <!--Transformation engines-->
+        <module>modules/te-geotools</module>
         <module>modules/te-swetrans</module>
 
         <!--WMS-->
@@ -345,6 +347,11 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>ce-chartfx</artifactId>
+                <version>${mapton.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>geotools</artifactId>
                 <version>${mapton.version}</version>
             </dependency>
 
