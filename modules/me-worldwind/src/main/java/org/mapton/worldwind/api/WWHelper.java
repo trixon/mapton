@@ -18,6 +18,8 @@ package org.mapton.worldwind.api;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.render.Offset;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
+import java.util.ArrayList;
+import org.locationtech.jts.geom.Geometry;
 import org.mapton.api.MLatLon;
 import org.mapton.api.MPoiStyle.ImageLocation;
 
@@ -74,6 +76,16 @@ public class WWHelper {
 
     public static Position positionFromLatLon(MLatLon latLon, double elevation) {
         return Position.fromDegrees(latLon.getLatitude(), latLon.getLongitude(), elevation);
+    }
+
+    public static ArrayList<Position> positionsFromGeometry(Geometry geometry, double elevation) {
+        var positions = new ArrayList<Position>();
+
+        for (var coordinate : geometry.getCoordinates()) {
+            positions.add(Position.fromDegrees(coordinate.y, coordinate.x, elevation));
+        }
+
+        return positions;
     }
 
 }
