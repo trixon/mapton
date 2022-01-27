@@ -51,10 +51,6 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>mapton-api</artifactId>
         </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>geotools</artifactId>
-        </dependency>
     </dependencies>
     <properties>
         <netbeans.hint.license>apache20</netbeans.hint.license>

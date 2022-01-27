@@ -19,7 +19,9 @@
                 <extensions>true</extensions>
                 <configuration>
                     <publicPackages>
-                        <publicPackage>org.mapton.geotools.api</publicPackage>
+                        <publicPackage>org.mapton.geotools.api.*</publicPackage>
+                        <publicPackage>org.geotools.*</publicPackage>
+                        <publicPackage>org.opengis.*</publicPackage>
                     </publicPackages>
                 </configuration>            
             </plugin>
