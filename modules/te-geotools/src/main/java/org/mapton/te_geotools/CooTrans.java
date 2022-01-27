@@ -16,6 +16,7 @@
 package org.mapton.te_geotools;
 
 import javafx.geometry.Point2D;
+import org.apache.commons.lang3.StringUtils;
 import org.geotools.geometry.DirectPosition2D;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.referencing.CRS;
@@ -36,8 +37,9 @@ import se.trixon.almond.util.Dict;
  *
  * @author Patrik Karlström
  */
-public abstract class Base implements MCooTrans {
+public abstract class CooTrans implements MCooTrans {
 
+    private final String mCrsCode;
     private MathTransform mInverseMathTransform;
     private MathTransform mMathTransform;
     private MBounds mSourceBounds;
@@ -45,7 +47,9 @@ public abstract class Base implements MCooTrans {
     private MBounds mTargetBounds;
     private CoordinateReferenceSystem mTargetCrs;
 
-    public Base(String crsCode) {
+    public CooTrans(String crsCode) {
+        mCrsCode = crsCode;
+
         try {
             init(crsCode);
         } catch (FactoryException | NoninvertibleTransformException ex) {
@@ -72,6 +76,10 @@ public abstract class Base implements MCooTrans {
         return mSourceBounds;
     }
 
+    public String getCrsCode() {
+        return mCrsCode;
+    }
+
     @Override
     public double getLatitude(double latitude, double longitude) {
         return getPosition(mMathTransform, latitude, longitude).getCoordinate()[0];
@@ -94,7 +102,7 @@ public abstract class Base implements MCooTrans {
 
     @Override
     public String getName() {
-        return mTargetCrs.getName().toString();
+        return StringUtils.removeStart(mTargetCrs.getName().toString(), "EPSG:");
     }
 
     public CoordinateReferenceSystem getProjectedCrs() {

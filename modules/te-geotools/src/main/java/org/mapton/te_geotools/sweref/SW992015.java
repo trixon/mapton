@@ -16,7 +16,7 @@
 package org.mapton.te_geotools.sweref;
 
 import org.mapton.api.MCooTrans;
-import org.mapton.te_geotools.Base;
+import org.mapton.te_geotools.CooTrans;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -24,7 +24,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @author Patrik Karlström
  */
 @ServiceProvider(service = MCooTrans.class)
-public class SW992015 extends Base {
+public class SW992015 extends CooTrans {
 
     public SW992015() {
         super("EPSG:3016");
