@@ -106,10 +106,6 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>maintenance</artifactId>
         </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>geotools</artifactId>
-        </dependency>
 
         <!--Mapton/Map engines-->
         <dependency>
