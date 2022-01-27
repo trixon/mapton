@@ -430,7 +430,7 @@
         <dependency>
             <groupId>com.dlsc.gemsfx</groupId>
             <artifactId>gemsfx</artifactId>
-            <version>1.33.0</version>
+            <version>1.34.0</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.openjfx</groupId>
@@ -467,6 +467,6 @@
 
     <properties>
         <netbeans.hint.license>apache20</netbeans.hint.license>
-        <geotools.version>26.1</geotools.version>
+        <geotools.version>26.2</geotools.version>
     </properties>
 </project>
