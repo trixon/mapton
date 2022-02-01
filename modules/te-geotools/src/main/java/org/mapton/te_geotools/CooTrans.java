@@ -174,11 +174,12 @@ public abstract class CooTrans implements MCooTrans {
                 sourceEnvelope.getMaxY()
         );
 
+        //TODO Swap x & Y or not? Fix this for all target crs
         mTargetBounds = new MBounds(
-                targetEnvelope.getMinX(),
                 targetEnvelope.getMinY(),
-                targetEnvelope.getMaxX(),
-                targetEnvelope.getMaxY()
+                targetEnvelope.getMinX(),
+                targetEnvelope.getMaxY(),
+                targetEnvelope.getMaxX()
         );
     }
 }
