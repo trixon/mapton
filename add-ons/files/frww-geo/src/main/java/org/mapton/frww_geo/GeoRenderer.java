@@ -16,7 +16,6 @@
 package org.mapton.frww_geo;
 
 import gov.nasa.worldwind.geom.Position;
-import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Material;
@@ -60,13 +59,13 @@ public class GeoRenderer extends CoordinateFileRendererWW {
         mCooTrans = coordinateFile.getCooTrans();
         new Thread(() -> {
             try {
-                Geo geo = new Geo();
+                var geo = new Geo();
                 geo.read(coordinateFile.getFile());
-                RenderableLayer layer = new RenderableLayer();
+                var layer = new RenderableLayer();
                 layer.setPickEnabled(false);
                 renderPoints(layer, geo.getPoints());
                 renderLines(layer, geo.getLines());
-                addLayer(coordinateFile, (Layer) layer);
+                addLayer(coordinateFile, layer);
             } catch (IOException ex) {
                 Exceptions.printStackTrace(ex);
             }
@@ -105,35 +104,6 @@ public class GeoRenderer extends CoordinateFileRendererWW {
         }
     }
 
-//    private void renderPointCloud(RenderableLayer layer, List<GeoPoint> geoPoints) {
-//        PointPlacemark labelPlacemark = new PointPlacemark(Position.ZERO);
-//        PointPlacemarkAttributes pattrs = new PointPlacemarkAttributes(labelPlacemark.getDefaultAttributes());
-//        BufferedImage bi = GraphicsHelper.colorize(new BufferedImage(20, 20, 2), Color.RED);
-//        String imageAddress = SystemHelper.getPackageAsPath(LayerBundle.class) + "dot.png";
-//        pattrs.setUsePointAsDefaultImage(true);
-//        pattrs.setImageAddress(null);
-//        pattrs.setImageOffset(Offset.CENTER);
-//        pattrs.setDrawLabel(false);
-//        pattrs.setImageColor(Color.RED);
-//        int i = 0;
-//        int j = 0;
-//        System.out.println("renderPointCloud " + geoPoints.size());
-//        System.out.println(imageAddress);
-//        for (GeoPoint geoPoint : geoPoints) {
-//            i++;
-//            if (i % 10 == 0 && mCooTrans.isWithinProjectedBounds(geoPoint.getX(), geoPoint.getY())) {
-//                j++;
-//                Point2D p = mCooTrans.toWgs84(geoPoint.getX(), geoPoint.getY());
-//                Position position = Position.fromDegrees(p.getY(), p.getX(), MathHelper.convertDoubleToDouble(geoPoint.getZ()));
-//                PointPlacemark pointPlacemark = new PointPlacemark(position);
-//                pointPlacemark.setAttributes(pattrs);
-//                pointPlacemark.setLabelText("" + j);
-//                pointPlacemark.setAltitudeMode(0);
-//                layer.addRenderable((Renderable) pointPlacemark);
-//            }
-//        }
-//        System.out.println(j);
-//    }
     private void renderPoints(RenderableLayer layer, List<GeoPoint> geoPoints) {
         for (var geoPoint : geoPoints) {
             if (mCooTrans.isWithinProjectedBounds(geoPoint.getX(), geoPoint.getY())) {
