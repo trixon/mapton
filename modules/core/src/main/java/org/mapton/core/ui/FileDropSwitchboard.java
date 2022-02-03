@@ -43,13 +43,13 @@ public class FileDropSwitchboard {
     }
 
     private void displayDialog() {
-        JButton[] buttons = new JButton[]{new JButton(Dict.CANCEL.toString()), mDefaultButton};
-        SwitchboardDialogPanel dialogPanel = new SwitchboardDialogPanel(mFiles);
+        var buttons = new JButton[]{new JButton(Dict.CANCEL.toString()), mDefaultButton};
+        var dialogPanel = new SwitchboardDialogPanel(mFiles);
         dialogPanel.initFx(() -> {
         });
         dialogPanel.setPreferredSize(SwingHelper.getUIScaledDim(640, 480));
 
-        NotifyDescriptor d = new NotifyDescriptor(
+        var d = new NotifyDescriptor(
                 dialogPanel,
                 Dict.FILE_OPENER.toString(),
                 NotifyDescriptor.OK_CANCEL_OPTION,
@@ -64,7 +64,7 @@ public class FileDropSwitchboard {
 
     public class SwitchboardDialogPanel extends FxDialogPanel {
 
-        private FileDropSwitchboardView mFileOpenerView;
+        private FileDropSwitchboardView mFileDropSwitchboardView;
         private final List<File> mFiles;
         private BorderPane mRoot;
 
@@ -75,14 +75,14 @@ public class FileDropSwitchboard {
         @Override
         protected void fxConstructor() {
             setScene(createScene());
-            mRoot.setCenter(mFileOpenerView = new FileDropSwitchboardView(mFiles));
+            mRoot.setCenter(mFileDropSwitchboardView = new FileDropSwitchboardView(mFiles));
             SwingUtilities.invokeLater(() -> {
-                mDefaultButton.setEnabled(mFileOpenerView.hasFiles());
+                mDefaultButton.setEnabled(mFileDropSwitchboardView.hasFiles());
             });
         }
 
         void openFiles() {
-            mFileOpenerView.openFiles();
+            mFileDropSwitchboardView.openFiles();
         }
 
         private Scene createScene() {

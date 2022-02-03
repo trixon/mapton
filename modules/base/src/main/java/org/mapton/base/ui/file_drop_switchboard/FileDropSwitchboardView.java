@@ -58,17 +58,17 @@ public class FileDropSwitchboardView extends BorderPane {
     }
 
     public void openFiles() {
-        HashMap<MCoordinateFileOpener, ArrayList<MCoordinateFile>> openerToList = new HashMap<>();
+        var coordinateFileOpenerToCoordinateFiles = new HashMap<MCoordinateFileOpener, ArrayList<MCoordinateFile>>();
         mTabPane.getTabs().stream().filter(tab -> (tab instanceof ExtTab)).forEachOrdered(tab -> {
-            ((ExtTab) tab).getItems().forEach(fileOpener -> {
-                var fileOpenerFile = new MCoordinateFile();
-                fileOpenerFile.setFile(fileOpener.getFile());
-                fileOpenerFile.setCooTrans(fileOpener.getCooTrans());
-                openerToList.computeIfAbsent(fileOpener.getCoordinateFileOpener(), k -> new ArrayList<>()).add(fileOpenerFile);
+            ((ExtTab) tab).getItems().forEach(coordinateFileInput -> {
+                var coordinateFile = new MCoordinateFile();
+                coordinateFile.setFile(coordinateFileInput.getFile());
+                coordinateFile.setCooTrans(coordinateFileInput.getCooTrans());
+                coordinateFileOpenerToCoordinateFiles.computeIfAbsent(coordinateFileInput.getCoordinateFileOpener(), k -> new ArrayList<>()).add(coordinateFile);
             });
         });
 
-        openerToList.entrySet().forEach(entry -> {
+        coordinateFileOpenerToCoordinateFiles.entrySet().forEach(entry -> {
             Mapton.getGlobalState().put(entry.getKey().getClass().getName(), entry.getValue());
         });
     }
@@ -76,38 +76,38 @@ public class FileDropSwitchboardView extends BorderPane {
     private void createUI() {
         setCenter(mTabPane);
 
-        TreeMap<String, ArrayList<MCoordinateFileOpener>> extToFileOpeners = new TreeMap<>();
-        Lookup.getDefault().lookupAll(MCoordinateFileOpener.class).forEach(fileOpener -> {
-            for (String extension : fileOpener.getExtensions()) {
-                extToFileOpeners.computeIfAbsent(extension.toLowerCase(Locale.getDefault()), k -> new ArrayList<>()).add(fileOpener);
+        var extToCoordinateFileOpeners = new TreeMap<String, ArrayList<MCoordinateFileOpener>>();
+        Lookup.getDefault().lookupAll(MCoordinateFileOpener.class).forEach(coordinateFileOpener -> {
+            for (var extension : coordinateFileOpener.getExtensions()) {
+                extToCoordinateFileOpeners.computeIfAbsent(extension.toLowerCase(Locale.getDefault()), k -> new ArrayList<>()).add(coordinateFileOpener);
             }
         });
 
-        extToFileOpeners.values().forEach(fileOpeners -> {
-            fileOpeners.sort((MCoordinateFileOpener o1, MCoordinateFileOpener o2) -> o1.getName().compareToIgnoreCase(o2.getName()));
+        extToCoordinateFileOpeners.values().forEach(coordinateFileOpener -> {
+            coordinateFileOpener.sort((o1, o2) -> o1.getName().compareToIgnoreCase(o2.getName()));
         });
 
-        TreeMap<String, ArrayList<File>> extToFile = new TreeMap<>();
-
-        ListView<File> listView = new ListView<>();
+        var extToFiles = new TreeMap<String, ArrayList<File>>();
+        var listView = new ListView<File>();
+        
         mFiles.forEach(file -> {
-            String extension = FilenameUtils.getExtension(file.getName()).toLowerCase(Locale.getDefault());
-            if (extToFileOpeners.containsKey(extension)) {
-                extToFile.computeIfAbsent(extension, k -> new ArrayList<>()).add(file);
+            var extension = FilenameUtils.getExtension(file.getName()).toLowerCase(Locale.getDefault());
+            if (extToCoordinateFileOpeners.containsKey(extension)) {
+                extToFiles.computeIfAbsent(extension, k -> new ArrayList<>()).add(file);
             } else {
                 listView.getItems().add(file);
             }
         });
 
-        extToFile.entrySet().stream()
-                .map(entry -> new ExtTab(entry.getKey(), entry.getValue(), extToFileOpeners.get(entry.getKey())))
+        extToFiles.entrySet().stream()
+                .map(entry -> new ExtTab(entry.getKey(), entry.getValue(), extToCoordinateFileOpeners.get(entry.getKey())))
                 .forEachOrdered(extTab -> {
                     mTabPane.getTabs().add(extTab);
                 });
 
         if (!listView.getItems().isEmpty()) {
             listView.getItems().sort(File::compareTo);
-            Tab tab = new Tab(mBundle.getString("unassociated"), listView);
+            var tab = new Tab(mBundle.getString("unassociated"), listView);
             tab.setClosable(false);
             mTabPane.getTabs().add(tab);
         }
