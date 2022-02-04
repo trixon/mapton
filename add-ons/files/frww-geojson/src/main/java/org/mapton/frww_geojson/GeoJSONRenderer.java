@@ -16,6 +16,7 @@
 package org.mapton.frww_geojson;
 
 import org.mapton.api.MCoordinateFile;
+import org.mapton.api.file_opener.GeoJSONCoordinateFileOpener;
 import org.mapton.worldwind.api.CoordinateFileRendererWW;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.worldwind.GeoJSONLoader;
@@ -29,6 +30,7 @@ import org.openide.util.lookup.ServiceProvider;
 public class GeoJSONRenderer extends CoordinateFileRendererWW {
 
     public GeoJSONRenderer() {
+        addSupportedFileOpeners(GeoJSONCoordinateFileOpener.class);
     }
 
     @Override
@@ -46,7 +48,7 @@ public class GeoJSONRenderer extends CoordinateFileRendererWW {
 
     @Override
     protected void render() {
-        for (var coordinateFile : mCoordinateFileManager.getSublistByExtensions("geojson", "json")) {
+        for (var coordinateFile : mCoordinateFileManager.getSublistBySupportedOpeners(getSupportedFileOpeners())) {
             render(coordinateFile);
         }
     }

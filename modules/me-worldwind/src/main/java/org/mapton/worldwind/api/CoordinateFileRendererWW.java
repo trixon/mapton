@@ -19,6 +19,8 @@ import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.render.Renderable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import javafx.collections.ListChangeListener;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -26,6 +28,7 @@ import org.apache.commons.codec.digest.MessageDigestAlgorithms;
 import org.mapton.api.MCooTrans;
 import org.mapton.api.MCoordinateFile;
 import org.mapton.api.MCoordinateFileManager;
+import org.mapton.api.MCoordinateFileOpener;
 import org.mapton.api.MKey;
 import org.mapton.core.api.MaptonNb;
 import se.trixon.almond.util.Dict;
@@ -44,6 +47,7 @@ public abstract class CoordinateFileRendererWW {
     private final HashMap<MCoordinateFile, Layer> mCoordinateFileToLayer = new HashMap<>();
     private final DigestUtils mDigestUtils = new DigestUtils(MessageDigestAlgorithms.SHA_256);
     private LayerBundle mLayerBundle;
+    private Set<String> mSupportedFileOpeners = new HashSet<>();
 
     public CoordinateFileRendererWW() {
         initListeners();
@@ -68,6 +72,10 @@ public abstract class CoordinateFileRendererWW {
         return mLayerBundle;
     }
 
+    public Set<String> getSupportedFileOpeners() {
+        return mSupportedFileOpeners;
+    }
+
     public abstract void init(LayerBundle layerBundle);
 
     public void removeLayer(MCoordinateFile coordinateFile) {
@@ -87,6 +95,12 @@ public abstract class CoordinateFileRendererWW {
                 }
             }
         });
+    }
+
+    protected void addSupportedFileOpeners(Class<? extends MCoordinateFileOpener>... coordinateFileOpeners) {
+        for (var coordinateFileOpener : coordinateFileOpeners) {
+            mSupportedFileOpeners.add(coordinateFileOpener.getName());
+        }
     }
 
     protected abstract void load(MCoordinateFile coordinateFile);

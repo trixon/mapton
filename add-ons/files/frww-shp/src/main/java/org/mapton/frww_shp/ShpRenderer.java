@@ -21,6 +21,7 @@ import gov.nasa.worldwind.formats.shapefile.ShapefileLayerFactory;
 import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.util.Logging;
 import org.mapton.api.MCoordinateFile;
+import org.mapton.api.file_opener.ShpCoordinateFileOpener;
 import org.mapton.worldwind.api.CoordinateFileRendererWW;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.worldwind.RandomShapeAttributes;
@@ -37,6 +38,7 @@ public class ShpRenderer extends CoordinateFileRendererWW {
     private final RandomShapeAttributes mRandomShapeAttributes = new RandomShapeAttributes();
 
     public ShpRenderer() {
+        addSupportedFileOpeners(ShpCoordinateFileOpener.class);
     }
 
     @Override
@@ -69,7 +71,7 @@ public class ShpRenderer extends CoordinateFileRendererWW {
 
     @Override
     protected void render() {
-        for (var coordinateFile : mCoordinateFileManager.getSublistByExtensions("shp")) {
+        for (var coordinateFile : mCoordinateFileManager.getSublistBySupportedOpeners(getSupportedFileOpeners())) {            
             render(coordinateFile);
         }
     }

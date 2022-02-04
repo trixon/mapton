@@ -32,9 +32,20 @@ public class MCoordinateFile {
     private File mFile;
     @SerializedName("visible")
     private boolean mVisible = true;
-
+    @SerializedName("coordinateFileOpener")
+    private String mCoordinateFileOpenerName;
     public MCoordinateFile() {
     }
+
+    public String getCoordinateFileOpenerName() {
+        return mCoordinateFileOpenerName;
+    }
+
+    public void setCoordinateFileOpenerName(String coordinateFileOpenerName) {
+        mCoordinateFileOpenerName = coordinateFileOpenerName;
+    }
+
+
 
     public MCooTrans getCooTrans() {
         if (mCooTrans == null) {

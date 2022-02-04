@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Locale;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import javafx.application.Platform;
 import javafx.beans.property.LongProperty;
@@ -31,13 +32,11 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
 import org.apache.commons.io.monitor.FileAlterationMonitor;
 import org.apache.commons.io.monitor.FileAlterationObserver;
-import org.apache.commons.lang3.StringUtils;
 import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import se.trixon.almond.util.fx.FxHelper;
@@ -92,12 +91,24 @@ public class MCoordinateFileManager {
         return mItemsProperty.get();
     }
 
-    public ArrayList<MCoordinateFile> getSublistByExtensions(String... extensions) {
+//    public ArrayList<MCoordinateFile> getSublistByExtensions(String... extensions) {
+//        ArrayList<MCoordinateFile> coordinateFiles = new ArrayList<>();
+//
+//        for (var coordinateFile : mItemsProperty.get()) {
+//            String ext = FilenameUtils.getExtension(coordinateFile.getFile().getName()).toLowerCase(Locale.getDefault());
+//            if (StringUtils.equalsAnyIgnoreCase(ext, extensions)) {
+//                coordinateFiles.add(coordinateFile);
+//            }
+//        }
+//
+//        return coordinateFiles;
+//    }
+    public ArrayList<MCoordinateFile> getSublistBySupportedOpeners(Set<String> coordinateFileOpeners) {
         ArrayList<MCoordinateFile> coordinateFiles = new ArrayList<>();
 
         for (var coordinateFile : mItemsProperty.get()) {
-            String ext = FilenameUtils.getExtension(coordinateFile.getFile().getName()).toLowerCase(Locale.getDefault());
-            if (StringUtils.equalsAnyIgnoreCase(ext, extensions)) {
+            var opener = coordinateFile.getCoordinateFileOpenerName();
+            if (coordinateFileOpeners.contains(opener)) {
                 coordinateFiles.add(coordinateFile);
             }
         }

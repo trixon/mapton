@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.mapton.api.MCoordinateFile;
+import org.mapton.api.file_opener.GeoCoordinateFileOpener;
 import org.mapton.worldwind.api.CoordinateFileRendererWW;
 import org.mapton.worldwind.api.LayerBundle;
 import org.openide.util.Exceptions;
@@ -46,6 +47,7 @@ public class GeoRenderer extends CoordinateFileRendererWW {
     private BasicShapeAttributes mLineBasicShapeAttributes;
 
     public GeoRenderer() {
+        addSupportedFileOpeners(GeoCoordinateFileOpener.class);
         initAttributes();
     }
 
@@ -75,7 +77,7 @@ public class GeoRenderer extends CoordinateFileRendererWW {
 
     @Override
     protected void render() {
-        for (var coordinateFile : mCoordinateFileManager.getSublistByExtensions(new String[]{"geo"})) {
+        for (var coordinateFile : mCoordinateFileManager.getSublistBySupportedOpeners(getSupportedFileOpeners())) {
             render(coordinateFile);
         }
     }

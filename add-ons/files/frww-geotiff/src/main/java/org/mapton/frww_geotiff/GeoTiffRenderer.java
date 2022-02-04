@@ -18,6 +18,7 @@ package org.mapton.frww_geotiff;
 import gov.nasa.worldwind.layers.SurfaceImageLayer;
 import java.io.IOException;
 import org.mapton.api.MCoordinateFile;
+import org.mapton.api.file_opener.GeoTiffCoordinateFileOpener;
 import org.mapton.worldwind.api.CoordinateFileRendererWW;
 import org.mapton.worldwind.api.LayerBundle;
 import org.openide.util.Exceptions;
@@ -31,6 +32,7 @@ import org.openide.util.lookup.ServiceProvider;
 public class GeoTiffRenderer extends CoordinateFileRendererWW {
 
     public GeoTiffRenderer() {
+        addSupportedFileOpeners(GeoTiffCoordinateFileOpener.class);
     }
 
     @Override
@@ -53,7 +55,7 @@ public class GeoTiffRenderer extends CoordinateFileRendererWW {
 
     @Override
     protected void render() {
-        for (var coordinateFile : mCoordinateFileManager.getSublistByExtensions("geotif", "geotiff", "tif", "tiff")) {
+        for (var coordinateFile : mCoordinateFileManager.getSublistBySupportedOpeners(getSupportedFileOpeners())) {
             render(coordinateFile);
         }
     }

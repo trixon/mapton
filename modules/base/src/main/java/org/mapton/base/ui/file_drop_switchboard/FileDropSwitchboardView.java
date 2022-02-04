@@ -61,10 +61,12 @@ public class FileDropSwitchboardView extends BorderPane {
         var coordinateFileOpenerToCoordinateFiles = new HashMap<MCoordinateFileOpener, ArrayList<MCoordinateFile>>();
         mTabPane.getTabs().stream().filter(tab -> (tab instanceof ExtTab)).forEachOrdered(tab -> {
             ((ExtTab) tab).getItems().forEach(coordinateFileInput -> {
+                var coordinateFileOpener = coordinateFileInput.getCoordinateFileOpener();
                 var coordinateFile = new MCoordinateFile();
                 coordinateFile.setFile(coordinateFileInput.getFile());
                 coordinateFile.setCooTrans(coordinateFileInput.getCooTrans());
-                coordinateFileOpenerToCoordinateFiles.computeIfAbsent(coordinateFileInput.getCoordinateFileOpener(), k -> new ArrayList<>()).add(coordinateFile);
+                coordinateFile.setCoordinateFileOpenerName(coordinateFileOpener.getClass().getName());
+                coordinateFileOpenerToCoordinateFiles.computeIfAbsent(coordinateFileOpener, k -> new ArrayList<>()).add(coordinateFile);
             });
         });
 
