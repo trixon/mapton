@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.fo_geo;
+package org.mapton.api.file_opener;
 
 import org.mapton.api.MCoordinateFileOpener;
 import org.openide.util.lookup.ServiceProvider;
@@ -23,7 +23,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @author Patrik Karlström
  */
 @ServiceProvider(service = MCoordinateFileOpener.class)
-public class GeoCoordinateFileOpener extends MCoordinateFileOpener {
+public class KmlCoordinateFileOpener extends MCoordinateFileOpener {
 
     @Override
     public String getDescription() {
@@ -32,12 +32,11 @@ public class GeoCoordinateFileOpener extends MCoordinateFileOpener {
 
     @Override
     public String[] getExtensions() {
-        return new String[]{"geo"};
+        return new String[]{"kml", "kmz"};
     }
 
     @Override
     public String getName() {
         return "Generic Plot";
     }
-
 }

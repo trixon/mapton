@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.fo_geotiff;
+package org.mapton.api.file_opener;
 
 import org.mapton.api.MCoordinateFileOpener;
 import org.openide.util.lookup.ServiceProvider;
@@ -23,7 +23,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @author Patrik Karlström
  */
 @ServiceProvider(service = MCoordinateFileOpener.class)
-public class GeoTiffCoordinateFileOpener extends MCoordinateFileOpener {
+public class ShpCoordinateFileOpener extends MCoordinateFileOpener {
 
     @Override
     public String getDescription() {
@@ -32,7 +32,7 @@ public class GeoTiffCoordinateFileOpener extends MCoordinateFileOpener {
 
     @Override
     public String[] getExtensions() {
-        return new String[]{"geotif", "geotiff", "tif", "tiff"};
+        return new String[]{"shp"};
     }
 
     @Override

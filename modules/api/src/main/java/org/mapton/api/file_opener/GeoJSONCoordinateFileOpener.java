@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.fo_geojson;
+package org.mapton.api.file_opener;
 
 import org.mapton.api.MCoordinateFileOpener;
 import org.openide.util.lookup.ServiceProvider;

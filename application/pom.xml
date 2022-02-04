@@ -265,33 +265,6 @@
             <version>${project.version}</version>
         </dependency>
 
-        <!--Mapton/File openers-->
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>fo-geo</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>fo-geotiff</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>fo-geojson</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>fo-kml</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>fo-shp</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
         <!--Mapton/File renderers-->
         <dependency>
             <groupId>${project.groupId}</groupId>
