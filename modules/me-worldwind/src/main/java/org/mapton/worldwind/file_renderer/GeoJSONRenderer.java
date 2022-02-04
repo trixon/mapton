@@ -13,15 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.frww_geotiff;
+package org.mapton.worldwind.file_renderer;
 
-import gov.nasa.worldwind.layers.SurfaceImageLayer;
-import java.io.IOException;
 import org.mapton.api.MCoordinateFile;
-import org.mapton.api.file_opener.GeoTiffCoordinateFileOpener;
+import org.mapton.api.file_opener.GeoJSONCoordinateFileOpener;
 import org.mapton.worldwind.api.CoordinateFileRendererWW;
 import org.mapton.worldwind.api.LayerBundle;
-import org.openide.util.Exceptions;
+import org.mapton.worldwind.api.worldwind.GeoJSONLoader;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -29,10 +27,10 @@ import org.openide.util.lookup.ServiceProvider;
  * @author Patrik Karlström
  */
 @ServiceProvider(service = CoordinateFileRendererWW.class)
-public class GeoTiffRenderer extends CoordinateFileRendererWW {
+public class GeoJSONRenderer extends CoordinateFileRendererWW {
 
-    public GeoTiffRenderer() {
-        addSupportedFileOpeners(GeoTiffCoordinateFileOpener.class);
+    public GeoJSONRenderer() {
+        addSupportedFileOpeners(GeoJSONCoordinateFileOpener.class);
     }
 
     @Override
@@ -42,15 +40,10 @@ public class GeoTiffRenderer extends CoordinateFileRendererWW {
 
     @Override
     protected void load(MCoordinateFile coordinateFile) {
-        try {
-            var sourceFile = coordinateFile.getFile();
-            var layer = new SurfaceImageLayer();
-            layer.setPickEnabled(false);
-            layer.addImage(sourceFile.getPath());
-            addLayer(coordinateFile, layer);
-        } catch (IOException ex) {
-            Exceptions.printStackTrace(ex);
-        }
+        var geoJSONLoader = new GeoJSONLoader();
+        var layer = geoJSONLoader.createLayerFromSource(coordinateFile.getFile());
+
+        addLayer(coordinateFile, layer);
     }
 
     @Override

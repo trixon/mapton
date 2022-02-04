@@ -235,11 +235,6 @@
 
         <!--Add-ons-->
         <module>add-ons/base64/base64</module>
-        <module>add-ons/files/frww-geo</module>
-        <module>add-ons/files/frww-geojson</module>
-        <module>add-ons/files/frww-geotiff</module>
-        <module>add-ons/files/frww-kml</module>
-        <module>add-ons/files/frww-shp</module>
         <module>add-ons/geonames/geonames-ww</module>
         <module>add-ons/notes/notes</module>
         <module>add-ons/photos/photos</module>
