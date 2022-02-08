@@ -71,8 +71,7 @@ public class GeoRenderer extends CoordinateFileRendererWW {
             } catch (IOException ex) {
                 Exceptions.printStackTrace(ex);
             }
-        }, getClass().getName() + " Load"
-        ).start();
+        }, getClass().getName() + " Load").start();
     }
 
     @Override

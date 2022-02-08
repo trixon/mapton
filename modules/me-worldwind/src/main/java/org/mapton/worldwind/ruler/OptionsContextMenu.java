@@ -21,10 +21,8 @@ import gov.nasa.worldwind.WorldWindow;
 import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.util.measure.MeasureTool;
 import java.util.ResourceBundle;
-import java.util.prefs.PreferenceChangeEvent;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
@@ -36,6 +34,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.CustomMenuItem;
 import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
 import javafx.scene.control.Spinner;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -64,6 +63,7 @@ public class OptionsContextMenu extends ContextMenu {
     private ColorPicker mLineColorPicker;
     private Spinner<Double> mLineWidthSpinner;
     private final MeasureTool mMeasureTool;
+    private Slider mOpacitySlider;
     private final ModuleOptions mOptions = ModuleOptions.getInstance();
     private ComboBox<String> mPathTypeComboBox;
     private final String[] mPathTypes = {AVKey.LINEAR, AVKey.RHUMB_LINE, AVKey.GREAT_CIRCLE};
@@ -84,10 +84,10 @@ public class OptionsContextMenu extends ContextMenu {
     }
 
     private void createUI() {
-        VBox vbox = new VBox(8);
+        var vbox = new VBox(8);
 
         vbox.setPadding(new Insets(8, 16, 16, 16));
-        Label pathTypeLabel = new Label(mBundle.getString("ruler.option.path_type"));
+        var pathTypeLabel = new Label(mBundle.getString("ruler.option.path_type"));
         String[] pathTypes = StringUtils.split(mBundle.getString("ruler.option.path_types"), "|");
         mPathTypeComboBox = new ComboBox<>(FXCollections.observableArrayList(pathTypes));
         mPathTypeComboBox.getSelectionModel().select(RulerTab.DEFAULT_PATH_TYPE_INDEX);
@@ -96,6 +96,7 @@ public class OptionsContextMenu extends ContextMenu {
         mBackgroundColorPicker = new ColorPicker();
         mPointColorPicker = new ColorPicker();
         mAnnotationColorPicker = new ColorPicker();
+        mOpacitySlider = new Slider(0, 1, 0.1);
 
         mLineWidthSpinner = new Spinner<>(1.0, 10.0, 2.0);
         mLineWidthSpinner.prefWidthProperty().bind(mLineColorPicker.widthProperty());
@@ -117,6 +118,7 @@ public class OptionsContextMenu extends ContextMenu {
                 new VBox(new Label(Dict.Geometry.LINE.toString()), mLineColorPicker),
                 new VBox(new Label(MDict.LINE_WIDTH.toString()), mLineWidthSpinner),
                 new VBox(new Label(Dict.BACKGROUND.toString()), mBackgroundColorPicker),
+                new VBox(new Label(Dict.OPACITY.toString()), mOpacitySlider),
                 new VBox(new Label(Dict.Geometry.POINT.toString()), mPointColorPicker),
                 new VBox(new Label(mBundle.getString("ruler.option.annotation")), mAnnotationColorPicker),
                 new VBox(pathTypeLabel, mPathTypeComboBox),
@@ -132,21 +134,21 @@ public class OptionsContextMenu extends ContextMenu {
         mKeyCheckBoxes.put(ModuleOptions.KEY_RULER_CONTROL_POINTS, mControlPointsCheckBox);
         mKeyCheckBoxes.put(ModuleOptions.KEY_RULER_POINT_LIST, mPointListCheckBox);
 
-        CustomMenuItem customMenuItem = new CustomMenuItem(vbox, false);
+        var customMenuItem = new CustomMenuItem(vbox, false);
         getItems().setAll(customMenuItem);
     }
 
     private java.awt.Color initColors(ColorPicker colorPicker, String key, Color defaultColor) {
-        Color color = FxHelper.colorFromHexRGBA(mOptions.get(key, FxHelper.colorToHexRGBA(defaultColor)));
+        var color = FxHelper.colorFromHexRGBA(mOptions.get(key, FxHelper.colorToHexRGBA(defaultColor)));
         colorPicker.setValue(color);
 
         return FxHelper.colorToColor(color);
     }
 
     private void initListeners() {
-        mOptions.getPreferences().addPreferenceChangeListener((PreferenceChangeEvent evt) -> {
+        mOptions.getPreferences().addPreferenceChangeListener(pce -> {
             Platform.runLater(() -> {
-                switch (evt.getKey()) {
+                switch (pce.getKey()) {
                     case KEY_RULER_SHAPE:
                         mShapeIntegerProperty.set(mOptions.getInt(KEY_RULER_SHAPE));
                         break;
@@ -154,8 +156,8 @@ public class OptionsContextMenu extends ContextMenu {
             });
         });
 
-        EventHandler<ActionEvent> eventHandler = (ActionEvent event) -> {
-            CheckBox checkBox = (CheckBox) event.getSource();
+        EventHandler<ActionEvent> eventHandler = actionEvent -> {
+            var checkBox = (CheckBox) actionEvent.getSource();
             String key = mKeyCheckBoxes.inverse().get(checkBox);
             boolean selected = checkBox.isSelected();
             mOptions.put(key, selected);
@@ -193,10 +195,10 @@ public class OptionsContextMenu extends ContextMenu {
             mOptions.put(KEY_RULER_PATH_TYPE, index);
         });
 
-        EventHandler<ActionEvent> colorActionEvent = (event) -> {
-            var source = (ColorPicker) event.getSource();
+        EventHandler<ActionEvent> colorActionEvent = actionEvent -> {
+            var source = (ColorPicker) actionEvent.getSource();
             var color = source.getValue();
-            color = Color.color(color.getRed(), color.getGreen(), color.getBlue(), 0.1);
+            color = Color.color(color.getRed(), color.getGreen(), color.getBlue(), mOpacitySlider.getValue());
             java.awt.Color awtColor = FxHelper.colorToColor(color);
             String key = null;
 
@@ -218,11 +220,11 @@ public class OptionsContextMenu extends ContextMenu {
             mWorldWindow.redraw();
         };
 
-        EventHandler<Event> colorHiddenEvent = (event) -> {
+        EventHandler<Event> colorHiddenEvent = event -> {
             setAutoHide(true);
         };
 
-        EventHandler<Event> colorShowingEvent = (event) -> {
+        EventHandler<Event> colorShowingEvent = event -> {
             setAutoHide(false);
         };
 
@@ -241,8 +243,15 @@ public class OptionsContextMenu extends ContextMenu {
         mAnnotationColorPicker.setOnAction(colorActionEvent);
         mAnnotationColorPicker.setOnShowing(colorShowingEvent);
         mAnnotationColorPicker.setOnHidden(colorHiddenEvent);
-
-        mLineWidthSpinner.valueProperty().addListener((ObservableValue<? extends Double> observable, Double oldValue, Double newValue) -> {
+        mOpacitySlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            double opacity = newValue.doubleValue();
+            mOptions.put(KEY_RULER_OPACITY, opacity);
+            var color = mBackgroundColorPicker.getValue();
+            color = Color.color(color.getRed(), color.getGreen(), color.getBlue(), opacity);
+            java.awt.Color awtColor = FxHelper.colorToColor(color);
+            mMeasureTool.setFillColor(awtColor);
+        });
+        mLineWidthSpinner.valueProperty().addListener((observable, oldValue, newValue) -> {
             mMeasureTool.setLineWidth(newValue);
             mOptions.put(KEY_RULER_LINE_WIDTH, newValue);
         });
@@ -267,5 +276,8 @@ public class OptionsContextMenu extends ContextMenu {
         double lineWidth = mOptions.getDouble(KEY_RULER_LINE_WIDTH, 3.0);
         mLineWidthSpinner.getValueFactory().setValue(lineWidth);
         mMeasureTool.setLineWidth(lineWidth);
+
+        double opacity = mOptions.getDouble(KEY_RULER_OPACITY, 0.1);
+        mOpacitySlider.setValue(opacity);
     }
 }

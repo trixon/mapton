@@ -50,6 +50,7 @@ public class ModuleOptions extends OptionsBase {
     public static final String KEY_RULER_FOLLOW_TERRAIN = "ruler.follow_terrain";
     public static final String KEY_RULER_FREE_HAND = "ruler.free_hand";
     public static final String KEY_RULER_LINE_WIDTH = "ruler.line_width";
+    public static final String KEY_RULER_OPACITY = "ruler.opacity";
     public static final String KEY_RULER_PATH_TYPE = "ruler.path_type";
     public static final String KEY_RULER_POINT_LIST = "ruler.point_list";
     public static final String KEY_RULER_RUBBER_BAND = "ruler.rubber_band";
