@@ -15,12 +15,15 @@
  */
 package org.mapton.worldwind.api;
 
+import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.Position;
+import gov.nasa.worldwind.geom.Sector;
 import gov.nasa.worldwind.render.Offset;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
 import java.util.ArrayList;
 import org.locationtech.jts.geom.Geometry;
 import org.mapton.api.MLatLon;
+import org.mapton.api.MLatLonBox;
 import org.mapton.api.MPoiStyle.ImageLocation;
 
 /**
@@ -43,6 +46,13 @@ public class WWHelper {
         highlightAttrs.setLabelScale(attrs.getLabelScale() * scale);
 
         return highlightAttrs;
+    }
+
+    public static MLatLon latLonFromPosition(Position position) {
+        return new MLatLon(
+                position.getLatitude().getDegrees(),
+                position.getLongitude().getDegrees()
+        );
     }
 
     public static Offset offsetFromImageLocation(ImageLocation imageLocation) {
@@ -86,6 +96,15 @@ public class WWHelper {
         }
 
         return positions;
+    }
+
+    public static Sector sectorFromLatLonBox(MLatLonBox latLonBox) {
+        return new Sector(
+                Angle.fromDegreesLatitude(latLonBox.getSouthWest().getLatitude()),
+                Angle.fromDegreesLatitude(latLonBox.getNorthEast().getLatitude()),
+                Angle.fromDegreesLongitude(latLonBox.getSouthWest().getLongitude()),
+                Angle.fromDegreesLongitude(latLonBox.getNorthEast().getLongitude())
+        );
     }
 
 }

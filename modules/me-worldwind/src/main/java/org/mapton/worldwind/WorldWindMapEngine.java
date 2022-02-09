@@ -18,16 +18,11 @@ package org.mapton.worldwind;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLEventListener;
 import gov.nasa.worldwind.Configuration;
-import gov.nasa.worldwind.View;
 import gov.nasa.worldwind.WorldWind;
-import gov.nasa.worldwind.WorldWindow;
 import gov.nasa.worldwind.avlist.AVKey;
-import gov.nasa.worldwind.event.PositionEvent;
 import gov.nasa.worldwind.geom.Angle;
-import gov.nasa.worldwind.geom.Box;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.geom.Sector;
-import gov.nasa.worldwind.geom.Vec4;
 import java.awt.BorderLayout;
 import java.awt.Point;
 import java.awt.event.HierarchyBoundsListener;
@@ -36,19 +31,14 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.LinkedHashMap;
 import java.util.TreeMap;
-import java.util.prefs.PreferenceChangeEvent;
-import javafx.application.Platform;
-import javafx.embed.swing.SwingNode;
 import javafx.scene.Node;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.SystemUtils;
 import org.mapton.api.MAttribution;
 import org.mapton.api.MDocumentInfo;
 import org.mapton.api.MEngine;
@@ -58,12 +48,11 @@ import org.mapton.api.MLatLonBox;
 import org.mapton.api.Mapton;
 import static org.mapton.worldwind.ModuleOptions.*;
 import org.mapton.worldwind.api.MapStyle;
+import org.mapton.worldwind.api.WWHelper;
 import org.mapton.worldwind.ruler.RulerTabPane;
 import org.openide.modules.Places;
-import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.GlobalState;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.swing.SwingHelper;
 
@@ -85,7 +74,6 @@ public class WorldWindMapEngine extends MEngine {
     private final ModuleOptions mOptions = ModuleOptions.getInstance();
     private final RulerTabPane mRulerTabPane;
     private final StyleView mStyleView;
-    private SwingNode mSwingNode;
     private long mZoomEpoch = System.currentTimeMillis();
     private final double[] mZoomLevels;
 
@@ -151,7 +139,7 @@ public class WorldWindMapEngine extends MEngine {
         }
 
         try {
-            fitToBounds(toSector(latLonBox));
+            fitToBounds(WWHelper.sectorFromLatLonBox(latLonBox));
         } catch (NullPointerException e) {
             //nvm
         }
@@ -159,10 +147,10 @@ public class WorldWindMapEngine extends MEngine {
 
     @Override
     public MLatLon getCenter() {
-        Vec4 centerPoint = mMap.getView().getCenterPoint();
-        Position centerPosition = mMap.getView().getGlobe().computePositionFromPoint(centerPoint);
+        var centerPoint = mMap.getView().getCenterPoint();
+        var centerPosition = mMap.getView().getGlobe().computePositionFromPoint(centerPoint);
 
-        return toLatLon(centerPosition);
+        return WWHelper.latLonFromPosition(centerPosition);
     }
 
     @Override
@@ -183,13 +171,7 @@ public class WorldWindMapEngine extends MEngine {
 
     @Override
     public Node getMapNode() {
-        if (mSwingNode == null) {
-            mSwingNode = new SwingNode();
-            getMapComponent();
-            refreshUI();
-        }
-
-        return mSwingNode;
+        throw new UnsupportedOperationException("Not supported yet, not ever.");
     }
 
     @Override
@@ -250,7 +232,7 @@ public class WorldWindMapEngine extends MEngine {
     @Override
     public void panTo(MLatLon latLon, double zoom) {
         if (mInitialized && SystemHelper.age(mZoomEpoch) > 1000) {
-            mMap.getView().goTo(toPosition(latLon), toLocalZoom(zoom));
+            mMap.getView().goTo(WWHelper.positionFromLatLon(latLon), toLocalZoom(zoom));
         }
     }
 
@@ -259,11 +241,12 @@ public class WorldWindMapEngine extends MEngine {
         if (!mInitialized) {
             return;
         }
-        View view = mMap.getView();
-        Position eyePosition = view.getCurrentEyePosition();
-        Angle fieldOfView = view.getFieldOfView();
 
-        mMap.getView().goTo(toPosition(latLon), mMap.getView().getEyePosition().getAltitude());
+        var view = mMap.getView();
+        var eyePosition = view.getCurrentEyePosition();
+        var fieldOfView = view.getFieldOfView();
+
+        mMap.getView().goTo(WWHelper.positionFromLatLon(latLon), mMap.getView().getEyePosition().getAltitude());
         try {
             view.setEyePosition(eyePosition);
             view.setFieldOfView(fieldOfView);
@@ -273,43 +256,20 @@ public class WorldWindMapEngine extends MEngine {
 
     @Override
     public void refreshUI() {
-        SwingUtilities.invokeLater(() -> {
-            mSwingNode.setContent(mMap);
-
-            /*
-            The map doesn't resize itself well on Windows so we have to force that.
-             */
-            if (SystemUtils.IS_OS_WINDOWS) {
-                //FIXME Can this be done in a proper way?
-                new Thread(() -> {
-                    mSwingNode.setVisible(false);
-                    try {
-                        Thread.sleep(200);
-                    } catch (InterruptedException ex) {
-                        Exceptions.printStackTrace(ex);
-                        Thread.currentThread().interrupt();
-                    }
-                    Platform.runLater(() -> {
-                        mSwingNode.resize(1, 1);
-                        mSwingNode.setVisible(true);
-                    });
-                }, getClass().getCanonicalName()).start();
-            }
-        });
     }
 
     private void fitToBounds(Sector sector) {
-        WorldWindow wwd = mMap.getWwd();
+        var wwd = mMap.getWwd();
 
         if (sector == null) {
             throw new IllegalArgumentException();
         }
 
-        Box extent = Sector.computeBoundingBox(wwd.getModel().getGlobe(),
+        var boundingBox = Sector.computeBoundingBox(wwd.getModel().getGlobe(),
                 wwd.getSceneController().getVerticalExaggeration(), sector);
 
-        Angle fieldOfView = wwd.getView().getFieldOfView();
-        double zoom = extent.getRadius() / fieldOfView.cosHalfAngle() / fieldOfView.tanHalfAngle();
+        var fieldOfView = wwd.getView().getFieldOfView();
+        double zoom = boundingBox.getRadius() / fieldOfView.cosHalfAngle() / fieldOfView.tanHalfAngle();
 
         // Configure OrbitView to look at the center of the sector from our estimated distance. This causes OrbitView to
         // animate to the specified position over several seconds. To affect this change immediately use the following:
@@ -323,7 +283,7 @@ public class WorldWindMapEngine extends MEngine {
             var zoom = mOptions.getDouble(KEY_VIEW_ALTITUDE, -1d);
             if (zoom != -1) {
                 if (mMap.getView().getGlobe() != null) {
-                    mMap.getView().goTo(toPosition(options().getMapCenter()), zoom);
+                    mMap.getView().goTo(WWHelper.positionFromLatLon(options().getMapCenter()), zoom);
                 }
             }
 
@@ -340,28 +300,28 @@ public class WorldWindMapEngine extends MEngine {
             private Point mPoint;
 
             @Override
-            public void mousePressed(MouseEvent e) {
-                mPoint = e.getPoint();
+            public void mousePressed(MouseEvent mouseEvent) {
+                mPoint = mouseEvent.getPoint();
                 hideContextMenu();
             }
 
             @Override
-            public void mouseReleased(MouseEvent e) {
-                double distance = mPoint.distance(e.getPoint());
-                if (e.getButton() == MouseEvent.BUTTON3 && distance < 3) {
-                    displayContextMenu(e.getLocationOnScreen());
+            public void mouseReleased(MouseEvent mouseEvent) {
+                double distance = mPoint.distance(mouseEvent.getPoint());
+                if (mouseEvent.getButton() == MouseEvent.BUTTON3 && distance < 3) {
+                    displayContextMenu(mouseEvent.getLocationOnScreen());
                 }
             }
 
-            private void maybeShowPopup(MouseEvent e) {
-                if (e.isPopupTrigger()) {
-                    displayContextMenu(e.getLocationOnScreen());
+            private void maybeShowPopup(MouseEvent mouseEvent) {
+                if (mouseEvent.isPopupTrigger()) {
+                    displayContextMenu(mouseEvent.getLocationOnScreen());
                 }
             }
         });
 
-        mMap.addPositionListener((PositionEvent pe) -> {
-            Position position = pe.getPosition();
+        mMap.addPositionListener(positionEvent -> {
+            Position position = positionEvent.getPosition();
             if (position != null) {
                 Double altitude = null;
                 if (mMap.getView() != null && mMap.getView().getEyePosition() != null) {
@@ -375,7 +335,7 @@ public class WorldWindMapEngine extends MEngine {
                         }
                     }
                 }
-                setStatusMousePositionData(toLatLon(position), position.getElevation(), altitude);
+                setStatusMousePositionData(WWHelper.latLonFromPosition(position), position.getElevation(), altitude);
             } else {
 //                setStatusMousePositionData(null, null, null);
             }
@@ -420,8 +380,8 @@ public class WorldWindMapEngine extends MEngine {
             }
         });
 
-        mOptions.getPreferences().addPreferenceChangeListener((PreferenceChangeEvent evt) -> {
-            switch (evt.getKey()) {
+        mOptions.getPreferences().addPreferenceChangeListener(pce -> {
+            switch (pce.getKey()) {
                 case ModuleOptions.KEY_MAP_STYLE:
                     updateToolbarDocumentInfo();
                     break;
@@ -431,7 +391,7 @@ public class WorldWindMapEngine extends MEngine {
             }
         });
 
-        Timer downloadTimer = new Timer(100, (event) -> {
+        var downloadTimer = new Timer(100, event -> {
             boolean inProgress = WorldWind.getRetrievalService().hasActiveTasks();
             if (mInProgress != inProgress) {
                 mInProgress = inProgress;
@@ -469,39 +429,16 @@ public class WorldWindMapEngine extends MEngine {
         return level / (double) mZoomLevels.length;
     }
 
-    private MLatLon toLatLon(Position p) {
-        return new MLatLon(
-                p.getLatitude().getDegrees(),
-                p.getLongitude().getDegrees()
-        );
-    }
-
     private double toLocalZoom(double globalZoom) {
         return mZoomLevels[(int) ((mZoomLevels.length - 1) * globalZoom)];
     }
 
-    private Position toPosition(MLatLon latLon) {
-        Angle lat = Angle.fromDegreesLatitude(latLon.getLatitude());
-        Angle lon = Angle.fromDegreesLongitude(latLon.getLongitude());
-
-        return new Position(lat, lon, 0);
-    }
-
-    private Sector toSector(MLatLonBox latLonBox) {
-        return new Sector(
-                Angle.fromDegreesLatitude(latLonBox.getSouthWest().getLatitude()),
-                Angle.fromDegreesLatitude(latLonBox.getNorthEast().getLatitude()),
-                Angle.fromDegreesLongitude(latLonBox.getSouthWest().getLongitude()),
-                Angle.fromDegreesLongitude(latLonBox.getNorthEast().getLongitude())
-        );
-    }
-
     private void updateToolbarDocumentInfo() {
-        GlobalState globalState = Mapton.getGlobalState();
+        var globalState = Mapton.getGlobalState();
         String styleId = mOptions.get(KEY_MAP_STYLE, DEFAULT_MAP_STYLE);
         TreeMap<String, MAttribution> globalAttributions = globalState.get(MKey.DATA_SOURCES_WMS_ATTRIBUTIONS);
-        LinkedHashMap<String, MAttribution> attributions = new LinkedHashMap<>();
-        MapStyle mapStyle = MapStyle.getStyle(styleId);
+        var attributions = new LinkedHashMap<String, MAttribution>();
+        var mapStyle = MapStyle.getStyle(styleId);
 
         String[] layers = MapStyle.getLayers(styleId);
         if (layers != null) {
@@ -512,7 +449,7 @@ public class WorldWindMapEngine extends MEngine {
             }
         }
 
-        MDocumentInfo documentInfo = new MDocumentInfo(mapStyle.getName(), attributions);
+        var documentInfo = new MDocumentInfo(mapStyle.getName(), attributions);
 
         globalState.put(MKey.MAP_DOCUMENT_INFO, documentInfo);
     }
