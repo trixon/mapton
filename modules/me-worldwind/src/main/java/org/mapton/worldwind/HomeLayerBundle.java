@@ -93,6 +93,8 @@ public class HomeLayerBundle extends LayerBundle {
             placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(attrs, 1.0));
 
             mLayer.addRenderable(placemark);
+
+            setDragEnabled(false);
         });
     }
 }

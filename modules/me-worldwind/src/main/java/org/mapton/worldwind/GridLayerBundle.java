@@ -140,6 +140,8 @@ public class GridLayerBundle extends LayerBundle {
             if (mOptions.is(KEY_GRID_LOCAL_PLOT)) {
                 plotLocal();
             }
+
+            setDragEnabled(false);
         });
     }
 

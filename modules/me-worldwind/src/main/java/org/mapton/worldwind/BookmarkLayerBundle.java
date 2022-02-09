@@ -106,6 +106,8 @@ public class BookmarkLayerBundle extends LayerBundle {
                     mLayer.addRenderable(placemark);
                 }
             }
+
+            setDragEnabled(false);
         });
     }
 }

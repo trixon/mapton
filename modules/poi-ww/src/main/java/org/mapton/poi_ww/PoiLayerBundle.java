@@ -119,6 +119,8 @@ public class PoiLayerBundle extends LayerBundle {
                     mLayer.addRenderable(placemark);
                 }
             }
+
+            setDragEnabled(false);
         });
     }
 }

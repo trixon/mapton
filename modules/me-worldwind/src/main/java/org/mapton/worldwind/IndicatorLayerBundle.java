@@ -77,6 +77,8 @@ public class IndicatorLayerBundle extends LayerBundle {
                     }
                 }
             }
+
+            setDragEnabled(false);
         });
     }
 }

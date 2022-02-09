@@ -216,6 +216,8 @@ public class PhotosLayerBundle extends LayerBundle {
             if (mLineNodes.size() > 1) {
                 plotTracks();
             }
+
+            setDragEnabled(false);
         });
     }
 

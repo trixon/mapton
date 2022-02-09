@@ -85,6 +85,7 @@ public class FilesLayerBundle extends LayerBundle {
 
     private void initRepaint() {
         setPainter(() -> {
+            setDragEnabled(false);
         });
     }
 }

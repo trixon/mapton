@@ -100,6 +100,8 @@ public class WikipediaLayerBundle extends LayerBundle {
 
                 mLayer.addRenderable(placemark);
             }
+
+            setDragEnabled(false);
         });
     }
 }

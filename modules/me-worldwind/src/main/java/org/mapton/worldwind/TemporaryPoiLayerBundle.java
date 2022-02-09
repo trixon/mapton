@@ -102,6 +102,8 @@ public class TemporaryPoiLayerBundle extends LayerBundle {
                     mLayer.addRenderable(placemark);
                 }
             }
+
+            setDragEnabled(false);
         });
     }
 }

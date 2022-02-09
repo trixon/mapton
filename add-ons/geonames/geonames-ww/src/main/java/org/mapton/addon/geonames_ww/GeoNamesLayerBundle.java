@@ -98,6 +98,8 @@ public class GeoNamesLayerBundle extends LayerBundle {
                     }).forEachOrdered(analyticGrid -> {
                 mLayer.addRenderable(analyticGrid.getSurface());
             });
+
+            setDragEnabled(false);
         });
     }
 }

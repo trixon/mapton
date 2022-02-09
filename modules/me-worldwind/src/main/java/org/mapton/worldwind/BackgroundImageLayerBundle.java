@@ -93,6 +93,8 @@ public class BackgroundImageLayerBundle extends LayerBundle {
                     }
                 }
             }
+
+            setDragEnabled(false);
         });
     }
 }
