@@ -23,6 +23,7 @@ import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.geom.Sector;
+import gov.nasa.worldwind.util.BasicDragger;
 import java.awt.BorderLayout;
 import java.awt.Point;
 import java.awt.event.HierarchyBoundsListener;
@@ -64,6 +65,7 @@ import se.trixon.almond.util.swing.SwingHelper;
 public class WorldWindMapEngine extends MEngine {
 
     public static final String LOG_TAG = "WorldWind";
+    private BasicDragger mBasicDragger;
     private boolean mInProgress;
     private boolean mInitialized;
     private final LayerView mLayerView;
@@ -125,6 +127,9 @@ public class WorldWindMapEngine extends MEngine {
                     mMainPanel.removeAll();
                     mMainPanel.add(mMap, BorderLayout.CENTER);
                     postCreateRunnable.run();
+                    mBasicDragger = new BasicDragger(mMap);
+                    mMap.addSelectListener(mBasicDragger);
+
                 });
             }, getClass().getCanonicalName()).start();
         } else {

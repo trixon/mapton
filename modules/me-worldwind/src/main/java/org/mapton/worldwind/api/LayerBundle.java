@@ -15,6 +15,7 @@
  */
 package org.mapton.worldwind.api;
 
+import gov.nasa.worldwind.drag.Draggable;
 import gov.nasa.worldwind.layers.IconLayer;
 import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.layers.RenderableLayer;
@@ -202,6 +203,34 @@ public abstract class LayerBundle {
 
     public void setCategorySystem(Layer layer) {
         setCategory(layer, String.format("- %s -", Dict.SYSTEM.toString()));
+    }
+
+    public void setDragEnabled(boolean enabled, RenderableLayer... layers) {
+        for (var layer : layers) {
+            for (var renderable : layer.getRenderables()) {
+                if (renderable instanceof Draggable) {
+                    ((Draggable) renderable).setDragEnabled(enabled);
+                }
+            }
+        }
+    }
+
+    public void setDragEnabled(boolean enabled) {
+        if (mParentLayer instanceof RenderableLayer) {
+            setDragEnabled(enabled, (RenderableLayer) mParentLayer);
+        }
+
+        mChildLayers.stream()
+                .filter(layer -> (layer instanceof RenderableLayer))
+                .forEachOrdered(layer -> {
+                    setDragEnabled(enabled, (RenderableLayer) layer);
+                });
+
+        mLayers.stream()
+                .filter(layer -> (layer instanceof RenderableLayer))
+                .forEachOrdered(layer -> {
+                    setDragEnabled(enabled, (RenderableLayer) layer);
+                });
     }
 
     public final void setName(String value) {
