@@ -15,7 +15,9 @@
  */
 package org.mapton.worldwind.api;
 
+import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.drag.Draggable;
+import gov.nasa.worldwind.event.SelectEvent;
 import gov.nasa.worldwind.layers.IconLayer;
 import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.layers.RenderableLayer;
@@ -92,6 +94,9 @@ public abstract class LayerBundle {
 
     public final StringProperty nameProperty() {
         return mName;
+    }
+
+    public void onSelectEvent(Object o, SelectEvent selectEvent) {
     }
 
     public abstract void populate() throws Exception;
@@ -247,6 +252,11 @@ public abstract class LayerBundle {
 
     public void setPopulated(boolean populated) {
         mPopulated = populated;
+    }
+
+    public void setSelectEventWatcher(AVListImpl avListImpl, Object object) {
+        avListImpl.setValue(MKey.WW_DRAG_LAYER_BUNDLE, this);
+        avListImpl.setValue(MKey.WW_DRAG_OBJECT, object);
     }
 
     public void setVisibleInLayerManager(Layer layer, boolean visibility) {

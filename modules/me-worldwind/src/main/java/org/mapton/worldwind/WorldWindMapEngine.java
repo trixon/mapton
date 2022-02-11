@@ -20,6 +20,7 @@ import com.jogamp.opengl.GLEventListener;
 import gov.nasa.worldwind.Configuration;
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVKey;
+import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.geom.Sector;
@@ -48,6 +49,7 @@ import org.mapton.api.MLatLon;
 import org.mapton.api.MLatLonBox;
 import org.mapton.api.Mapton;
 import static org.mapton.worldwind.ModuleOptions.*;
+import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.MapStyle;
 import org.mapton.worldwind.api.WWHelper;
 import org.mapton.worldwind.ruler.RulerTabPane;
@@ -382,6 +384,18 @@ public class WorldWindMapEngine extends MEngine {
 
             @Override
             public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
+            }
+        });
+
+        mMap.getWwd().addSelectListener(selectEvent -> {
+            var topObject = selectEvent.getTopObject();
+            if (topObject instanceof AVListImpl) {
+                var avListImpl = (AVListImpl) topObject;
+                var valueDragLayerBundle = avListImpl.getValue(MKey.WW_DRAG_LAYER_BUNDLE);
+                if (valueDragLayerBundle != null && valueDragLayerBundle instanceof LayerBundle) {
+                    var layerBundle = (LayerBundle) valueDragLayerBundle;
+                    layerBundle.onSelectEvent(avListImpl.getValue(MKey.WW_DRAG_OBJECT), selectEvent);
+                }
             }
         });
 

@@ -15,6 +15,7 @@
  */
 package org.mapton.worldwind.api;
 
+import gov.nasa.worldwind.WorldWindow;
 import gov.nasa.worldwind.layers.Layer;
 import org.mapton.api.MEngine;
 import org.mapton.worldwind.WorldWindMapEngine;
@@ -47,6 +48,10 @@ public class LayerBundleManager {
 
     public void add(Layer layer) {
         getMap().addCustomLayer(layer);
+    }
+
+    public WorldWindow getWwd() {
+        return mMap.getWwd();
     }
 
     public void redraw() {
