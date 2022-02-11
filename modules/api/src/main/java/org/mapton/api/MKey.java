@@ -52,5 +52,7 @@ public class MKey {
     public static final String NOTIFICATION_FX_WARNING = "toolbar.notification.warning";
     public static final String OBJECT_PROPERTIES = "object.properties";
     public static final String UPDATER_LOGGER = "updater.logger";
+    public static final String WW_DRAG_LAYER_BUNDLE = "ww.drag.layer_bundle";
+    public static final String WW_DRAG_OBJECT = "ww.drag.object";
 
 }
