@@ -85,6 +85,10 @@ public abstract class CoordinateFileRendererWW {
         }
     }
 
+    public void setDragEnabled(boolean enabled) {
+        mLayerBundle.setDragEnabled(enabled);
+    }
+
     public void setLayerBundle(LayerBundle layerBundle) {
         mLayerBundle = layerBundle;
         mParentLayer = mLayerBundle.getParentLayer();
