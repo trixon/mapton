@@ -28,10 +28,7 @@
                         <publicPackage>de.micromata.*</publicPackage>
                         <publicPackage>eu.hansolo.tilesfx.*</publicPackage>
                         <publicPackage>j2html.*</publicPackage>
-                        <!--<publicPackage>javafx.*</publicPackage>-->
-                        <!--<publicPackage>javax.activation.*</publicPackage>-->
-                        <!--<publicPackage>javax.annotation.*</publicPackage>-->
-                        <publicPackage>javax.xml.*</publicPackage>
+                        <publicPackage>javax.*</publicPackage>
                         <publicPackage>jakarta.*</publicPackage>
                         <publicPackage>org.apache.commons.*</publicPackage>
                         <publicPackage>org.controlsfx.*</publicPackage>
