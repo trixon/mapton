@@ -21,8 +21,11 @@ import gov.nasa.worldwind.event.SelectEvent;
 import gov.nasa.worldwind.layers.IconLayer;
 import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.layers.RenderableLayer;
+import gov.nasa.worldwind.render.Renderable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import javafx.beans.property.SimpleStringProperty;
@@ -45,6 +48,7 @@ public abstract class LayerBundle {
     private boolean mInitialized = false;
     private final ObservableList<Layer> mLayers = FXCollections.observableArrayList();
     private final StringProperty mName = new SimpleStringProperty();
+    private final HashMap<Object, ArrayList<Renderable>> mObjectToRenderables = new HashMap<>();
     private Runnable mPainter;
     private Layer mParentLayer;
     private boolean mPopulated = false;
@@ -86,6 +90,12 @@ public abstract class LayerBundle {
 
     public Layer getParentLayer() {
         return mParentLayer;
+    }
+
+    public ArrayList<Renderable> getRenderablesForObject(Object o) {
+        return mObjectToRenderables.computeIfAbsent(o, k -> {
+            return new ArrayList<>();
+        });
     }
 
     public boolean isPopulated() {
