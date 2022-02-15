@@ -57,12 +57,12 @@
                 </exclusion>
                 <exclusion>
                     <groupId>org.apache.commons</groupId>
-                    <artifactId>commons-math3</artifactId>
+                    <artifactId>commons-lang3</artifactId>
                 </exclusion>
-                <!--                <exclusion>
+                <exclusion>
                     <groupId>org.controlsfx</groupId>
                     <artifactId>controlsfx</artifactId>
-                </exclusion>-->
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
