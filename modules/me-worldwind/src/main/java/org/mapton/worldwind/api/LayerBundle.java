@@ -22,6 +22,7 @@ import gov.nasa.worldwind.layers.IconLayer;
 import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.Renderable;
+import gov.nasa.worldwind.render.airspaces.AbstractAirspace;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -34,6 +35,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import org.mapton.api.MKey;
+import org.openide.util.Exceptions;
 import se.trixon.almond.util.Dict;
 
 /**
@@ -224,7 +226,11 @@ public abstract class LayerBundle {
         for (var layer : layers) {
             for (var renderable : layer.getRenderables()) {
                 if (renderable instanceof Draggable) {
-                    ((Draggable) renderable).setDragEnabled(enabled);
+                    if (renderable instanceof AbstractAirspace) {
+                        setDragEnabled((AbstractAirspace) renderable, enabled);
+                    } else {
+                        ((Draggable) renderable).setDragEnabled(enabled);
+                    }
                 }
             }
         }
@@ -281,5 +287,18 @@ public abstract class LayerBundle {
         }
 
         return visible;
+    }
+
+    private void setDragEnabled(AbstractAirspace abstractAirspace, boolean enabled) {
+        //TODO Remove this method once resolved: https://github.com/NASAWorldWind/WorldWindJava/issues/240
+        try {
+            var dragEnabledField = AbstractAirspace.class.getDeclaredField("dragEnabled");
+            boolean accessible = dragEnabledField.canAccess(abstractAirspace);
+            dragEnabledField.setAccessible(true);
+            dragEnabledField.set(abstractAirspace, enabled);
+            dragEnabledField.setAccessible(accessible);
+        } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException ex) {
+            Exceptions.printStackTrace(ex);
+        }
     }
 }
