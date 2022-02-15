@@ -390,7 +390,7 @@
         <dependency>
             <groupId>jakarta.xml.bind</groupId>
             <artifactId>jakarta.xml.bind-api</artifactId>
-            <version>4.0.0-RC2</version>
+            <version>4.0.0-RC3</version>
         </dependency>
         <dependency>
             <groupId>jakarta.activation</groupId>
@@ -406,6 +406,31 @@
             <groupId>com.dlsc.gemsfx</groupId>
             <artifactId>gemsfx</artifactId>
             <version>1.36.0</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.hansolo.fx</groupId>
+            <artifactId>countries</artifactId>
+            <version>17.0.16</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.hansolo.fx</groupId>
+            <artifactId>heatmap</artifactId>
+            <version>17.0.3</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.hansolo</groupId>
+            <artifactId>jdktools</artifactId>
+            <version>17.0.3</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.hansolo</groupId>
+            <artifactId>toolbox</artifactId>
+            <version>17.0.12</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.hansolo</groupId>
+            <artifactId>toolboxfx</artifactId>
+            <version>17.0.22</version>
         </dependency>
     </dependencies>
 
