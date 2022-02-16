@@ -59,19 +59,21 @@ public class Initializer implements Runnable {
 
     private final MOptions mOptions = MOptions.getInstance();
 
-    @Override
-    public void run() {
-        NbOptionalDialog.setPreferences(NbPreferences.forModule(NbOptionalDialog.class).node("optionalDialogState"));
-
+    static {
         try {
-            final String key = "laf";
-            final String defaultLAF = "com.formdev.flatlaf.FlatDarkLaf";
+            var key = "laf";
+            var defaultLAF = "com.formdev.flatlaf.FlatDarkLaf";
             var preferences = NbPreferences.root().node("laf");
             PrefsHelper.putIfAbsent(preferences, key, defaultLAF);
         } catch (BackingStoreException ex) {
             //Exceptions.printStackTrace(ex);
         }
 
+        NbOptionalDialog.setPreferences(NbPreferences.forModule(NbOptionalDialog.class).node("optionalDialogState"));
+    }
+
+    @Override
+    public void run() {
         System.setProperty("netbeans.winsys.no_help_in_dialogs", "true");
         System.setProperty("netbeans.winsys.no_toolbars", "true");
 
