@@ -25,7 +25,8 @@ import se.trixon.almond.nbp.dialogs.NbOptionalDialog;
 import se.trixon.almond.util.SnapHelper;
 
 /**
- * This class will notify the user of a change in user config/cache paths i.e. 2.1
+ * This class will notify the user of a change in user config/cache paths i.e.
+ * 2.1
  *
  * @author Patrik Karlström
  */
@@ -37,13 +38,18 @@ public class Settings21 implements Runnable {
     private final String mUser;
 
     public Settings21() {
-        mIntro = "First off, sorry about the inconvenience.\n\n"
-                + "The settings and cache directories has changed and you might want to take action.\n"
-                + "Close Mapton before any operations on the directories, and remember, backups are good.\n\n"
-                + "Your choices are:\n"
-                + " 1 Do nothing, old data will be kept but not used.\n"
-                + " 2 Delete OLD directories and start afresh.\n"
-                + " 3 a) Clear the contents of NEW, except OLD. b) Move the contents from OLD to NEW. c) Delete OLD.\n\n";
+        mIntro = """
+                 First off, sorry about the inconvenience.
+
+                 The settings and cache directories has changed and you might want to take action.
+                 Close Mapton before any operations on the directories, and remember, backups are good.
+
+                 Your choices are:
+                  1 Do nothing, old data will be kept but not used.
+                  2 Delete OLD directories and start afresh.
+                  3 a) Clear the contents of NEW, except OLD. b) Move the contents from OLD to NEW. c) Delete OLD.
+
+                 """;
 
         mUser = "Settings OLD: %s\nSettings NEW: %s\n";
         mCache = "\nCache OLD: %s\nCache NEW: %s\n";
