@@ -336,9 +336,7 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
             @Override
             public void mouseClicked(MouseEvent mouseEvent) {
                 if (mouseEvent.getButton() == MouseEvent.BUTTON1 && mLastHighlightObject != null) {
-                    if (mLastHighlightObject instanceof AVList) {
-                        AVList avList = (AVList) mLastHighlightObject;
-
+                    if (mLastHighlightObject instanceof AVList avList) {
                         if (mouseEvent.getClickCount() == 1) {
                             Runnable r = (Runnable) avList.getValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK);
                             if (r != null) {
@@ -370,41 +368,39 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
                 }
 
                 if (mLastHighlightObject != null) {
-                    if (mLastHighlightObject instanceof PointPlacemark) {
-                        PointPlacemark pointPlacemark = (PointPlacemark) mLastHighlightObject;
+                    if (mLastHighlightObject instanceof PointPlacemark pointPlacemark) {
                         pointPlacemark.setAlwaysOnTop(false);
                         pointPlacemark.setHighlighted(false);
                         if (pointPlacemark.hasKey(WWHelper.KEY_HOOVER_TEXT)) {
                             pointPlacemark.setLabelText(mLastHighlightText);
                         }
-                    } else if (mLastHighlightObject instanceof WWIcon) {
-                        ((WWIcon) mLastHighlightObject).setAlwaysOnTop(false);
-                        ((WWIcon) mLastHighlightObject).setHighlighted(false);
-                    } else if (mLastHighlightObject instanceof Highlightable) {
-                        ((Highlightable) mLastHighlightObject).setHighlighted(false);
+                    } else if (mLastHighlightObject instanceof WWIcon wwIcon) {
+                        wwIcon.setAlwaysOnTop(false);
+                        wwIcon.setHighlighted(false);
+                    } else if (mLastHighlightObject instanceof Highlightable highlightable) {
+                        highlightable.setHighlighted(false);
                     }
 
                     mLastHighlightObject = null;
                 }
 
                 mLastHighlightObject = o;
-                if (mLastHighlightObject instanceof PointPlacemark) {
-                    PointPlacemark pointPlacemark = (PointPlacemark) mLastHighlightObject;
+                if (mLastHighlightObject instanceof PointPlacemark pointPlacemark) {
                     pointPlacemark.setAlwaysOnTop(true);
                     pointPlacemark.setHighlighted(true);
                     if (pointPlacemark.hasKey(WWHelper.KEY_HOOVER_TEXT)) {
                         mLastHighlightText = pointPlacemark.getLabelText();
                         pointPlacemark.setLabelText(pointPlacemark.getStringValue(WWHelper.KEY_HOOVER_TEXT));
                     }
-                } else if (mLastHighlightObject instanceof WWIcon) {
-                    ((WWIcon) mLastHighlightObject).setAlwaysOnTop(true);
-                    ((WWIcon) mLastHighlightObject).setHighlighted(true);
-                } else if (mLastHighlightObject instanceof Highlightable) {
-                    ((Highlightable) mLastHighlightObject).setHighlighted(true);
+                } else if (mLastHighlightObject instanceof WWIcon wwIcon) {
+                    wwIcon.setAlwaysOnTop(true);
+                    wwIcon.setHighlighted(true);
+                } else if (mLastHighlightObject instanceof Highlightable highlightable) {
+                    highlightable.setHighlighted(true);
                 }
 
-                if (mLastHighlightObject instanceof AVList) {
-                    Runnable r = (Runnable) ((AVList) mLastHighlightObject).getValue(WWHelper.KEY_RUNNABLE_HOOVER);
+                if (mLastHighlightObject instanceof AVList avList) {
+                    Runnable r = (Runnable) avList.getValue(WWHelper.KEY_RUNNABLE_HOOVER);
                     if (r != null) {
                         r.run();
                     }

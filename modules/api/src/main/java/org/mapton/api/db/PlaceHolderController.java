@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2022 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -51,8 +51,8 @@ public class PlaceHolderController {
             return mPlaceHolders.get(column);
         } else {
             String objectString = column.toString();
-            if (column instanceof DbColumn) {
-                objectString = ((DbColumn) column).getColumnNameSQL();
+            if (column instanceof DbColumn dbColumn) {
+                objectString = dbColumn.getColumnNameSQL();
             }
             System.err.println(new NullPointerException("Column not in map: " + objectString));
             return null;

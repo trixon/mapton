@@ -77,8 +77,8 @@ public class ChartHelper {
 
     public static void zoomOrigin(Chart chart) {
         for (var plugin : chart.getPlugins()) {
-            if (plugin instanceof Zoomer) {
-                ((Zoomer) plugin).zoomOrigin();
+            if (plugin instanceof Zoomer zoomer) {
+                zoomer.zoomOrigin();
                 break;
             }
         }

@@ -62,17 +62,16 @@ public class IndicatorLayerBundle extends LayerBundle {
     private void initRepaint() {
         setPainter(() -> {
             removeAllRenderables();
-            if (mGsce.getValue() instanceof Renderable) {
-                mLayer.addRenderable(mGsce.getValue());
-            } else if (mGsce.getValue() instanceof Renderable[]) {
-                Renderable[] renderables = mGsce.getValue();
-                for (Renderable renderable : renderables) {
+            if (mGsce.getValue() instanceof Renderable renderable) {
+                mLayer.addRenderable(renderable);
+            } else if (mGsce.getValue() instanceof Renderable[] renderables) {
+                for (var renderable : renderables) {
                     mLayer.addRenderable(renderable);
                 }
             } else if (mGsce.getValue() instanceof ArrayList) {
                 ArrayList<?> arrayList = mGsce.getValue();
                 if (!arrayList.isEmpty() && arrayList.get(0) instanceof Renderable) {
-                    for (Renderable renderable : (ArrayList<Renderable>) arrayList) {
+                    for (var renderable : (ArrayList<Renderable>) arrayList) {
                         mLayer.addRenderable(renderable);
                     }
                 }

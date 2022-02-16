@@ -154,8 +154,8 @@ public class MPoiManager extends MBaseDataManager<MPoi> {
         if (poi != null) {
             if (poi.getPropertyNode() != null) {
                 propertyPresenter = poi.getPropertyNode();
-                if (propertyPresenter instanceof MGenericLoader) {
-                    ((MGenericLoader) propertyPresenter).load(poi.getPropertySource());
+                if (propertyPresenter instanceof MGenericLoader genericLoader) {
+                    genericLoader.load(poi.getPropertySource());
                 }
             } else {
                 Map<String, Object> propertyMap = new LinkedHashMap<>();

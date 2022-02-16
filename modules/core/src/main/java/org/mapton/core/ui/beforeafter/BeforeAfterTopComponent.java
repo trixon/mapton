@@ -113,9 +113,9 @@ public final class BeforeAfterTopComponent extends MTopComponent {
     }
 
     private void refresh(Object o) {
-        if (o instanceof BufferedImage) {
+        if (o instanceof BufferedImage bi) {
             mBeforeAfterView.setAfter(mBeforeAfterView.getBefore());
-            mBeforeAfterView.setBefore(new ImageView(SwingFXUtils.toFXImage((BufferedImage) o, null)));
+            mBeforeAfterView.setBefore(new ImageView(SwingFXUtils.toFXImage(bi, null)));
         } else if (o instanceof List) {
             List<File> files = (List<File>) o;
             if (files.size() > 1) {

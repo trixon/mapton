@@ -389,11 +389,9 @@ public class WorldWindMapEngine extends MEngine {
 
         mMap.getWwd().addSelectListener(selectEvent -> {
             var topObject = selectEvent.getTopObject();
-            if (topObject instanceof AVListImpl) {
-                var avListImpl = (AVListImpl) topObject;
+            if (topObject instanceof AVListImpl avListImpl) {
                 var valueDragLayerBundle = avListImpl.getValue(MKey.WW_DRAG_LAYER_BUNDLE);
-                if (valueDragLayerBundle != null && valueDragLayerBundle instanceof LayerBundle) {
-                    var layerBundle = (LayerBundle) valueDragLayerBundle;
+                if (valueDragLayerBundle != null && valueDragLayerBundle instanceof LayerBundle layerBundle) {
                     layerBundle.onSelectEvent(avListImpl.getValue(MKey.WW_DRAG_OBJECT), selectEvent);
                 }
             }

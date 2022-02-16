@@ -87,9 +87,9 @@ public class StringStorageTab<T extends MSimpleObjectStorageString> extends Base
             for (T stringStorage : simpleStorages) {
                 VBox box;
                 TextField textField;
-                if (stringStorage instanceof MSimpleObjectStorageString.Path) {
-                    MSimpleObjectStorageString.Path storagePath = (MSimpleObjectStorageString.Path) stringStorage;
-                    FileChooserPane fileChooserPane = new FileChooserPane("title", storagePath.getName(), storagePath.getObjectMode(), SelectionMode.SINGLE);
+                if (stringStorage instanceof MSimpleObjectStorageString.Path sossp) {
+                    var storagePath = sossp;
+                    var fileChooserPane = new FileChooserPane("title", storagePath.getName(), storagePath.getObjectMode(), SelectionMode.SINGLE);
                     textField = fileChooserPane.getTextField();
                     box = new VBox(fileChooserPane);
                 } else {

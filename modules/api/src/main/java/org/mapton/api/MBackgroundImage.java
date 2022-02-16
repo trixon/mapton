@@ -43,9 +43,9 @@ public class MBackgroundImage {
     }
 
     public Object getImageSource() {
-        if (mImageSource instanceof String && StringUtils.contains((String) mImageSource, "//")) {
+        if (mImageSource instanceof String s && StringUtils.contains((String) mImageSource, "//")) {
             try {
-                return ImageIO.read(new URL((String) mImageSource));
+                return ImageIO.read(new URL(s));
             } catch (IOException ex) {
                 return "";
             }

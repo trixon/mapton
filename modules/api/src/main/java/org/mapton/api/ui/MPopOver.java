@@ -38,8 +38,7 @@ public class MPopOver extends PopOver {
         for (var node : vBox.getChildren()) {
             VBox.setVgrow(node, Priority.ALWAYS);
 
-            if (node instanceof Control) {
-                var c = (Control) node;
+            if (node instanceof Control c) {
                 c.setPrefWidth(2.0 * WIDTH + GAP);
             }
         }

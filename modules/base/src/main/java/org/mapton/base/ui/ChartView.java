@@ -82,10 +82,10 @@ public class ChartView extends BorderPane {
 
         if (o == null) {
             centerObject = mPlaceholderLabel;
-        } else if (o instanceof MChartLine) {
-            centerObject = new LineChartX((MChartLine) o).getNode();
-        } else if (o instanceof Node) {
-            centerObject = (Node) o;
+        } else if (o instanceof MChartLine chartLine) {
+            centerObject = new LineChartX(chartLine).getNode();
+        } else if (o instanceof Node node) {
+            centerObject = node;
         } else {
             centerObject = mInvalidPlaceholderLabel;
         }

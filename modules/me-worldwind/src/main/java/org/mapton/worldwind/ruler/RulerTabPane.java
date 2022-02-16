@@ -63,8 +63,8 @@ public class RulerTabPane extends TabPane {
 
     private void initListeners() {
         getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends Tab> ov, Tab oldTab, Tab newTab) -> {
-            if (oldTab instanceof RulerTab) {
-                ((RulerTab) oldTab).getMeasureTool().setArmed(false);
+            if (oldTab instanceof RulerTab rulerTab) {
+                rulerTab.getMeasureTool().setArmed(false);
             }
 
             if (getSelectionModel().getSelectedIndex() == 0) {

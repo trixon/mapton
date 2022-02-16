@@ -20,7 +20,6 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
-import javafx.scene.Node;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ColorPicker;
@@ -150,13 +149,13 @@ public class OptionsView extends BorderPane {
 
     @SuppressWarnings("unchecked")
     private void initListeners(Pane pane, EventHandler<ActionEvent> event) {
-        for (Node node : pane.getChildren()) {
-            if (node instanceof Pane) {
-                initListeners((Pane) node, event);
-            } else if (node instanceof ButtonBase) {
-                ((ButtonBase) node).setOnAction(event);
-            } else if (node instanceof ComboBoxBase) {
-                ((ComboBoxBase) node).setOnAction(event);
+        for (var node : pane.getChildren()) {
+            if (node instanceof Pane pane2) {
+                initListeners(pane2, event);
+            } else if (node instanceof ButtonBase buttonBase) {
+                buttonBase.setOnAction(event);
+            } else if (node instanceof ComboBoxBase comboBoxBase) {
+                comboBoxBase.setOnAction(event);
             }
         }
     }

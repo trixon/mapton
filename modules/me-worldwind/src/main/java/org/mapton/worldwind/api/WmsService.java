@@ -52,11 +52,10 @@ public abstract class WmsService {
             public void populate() throws Exception {
                 addService(new URI(wmsSource.getUrl()));
 
-                for (LayerInfo layerInfo : getLayerInfos()) {
+                for (var layerInfo : getLayerInfos()) {
                     if (wmsSource.getLayers().keySet().contains(layerInfo.getName()) || wmsSource.getLayers().values().contains(layerInfo.getName())) {
                         Object component = createComponent(layerInfo.getWmsCapabilities(), layerInfo.getParams());
-                        if (component instanceof Layer) {
-                            Layer layer = (Layer) component;
+                        if (component instanceof Layer layer) {
                             layer.setName(wmsSource.getLayerName(layerInfo.getName()));
                             getLayers().add(layer);
                         }

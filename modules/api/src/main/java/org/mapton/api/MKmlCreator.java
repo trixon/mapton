@@ -312,8 +312,8 @@ public abstract class MKmlCreator {
 
     public void setVisible(Feature feature, boolean visible) {
         feature.setVisibility(visible);
-        if (feature instanceof Folder) {
-            ((Folder) feature).getFeature().forEach((f) -> {
+        if (feature instanceof Folder folder) {
+            folder.getFeature().forEach(f -> {
                 setVisible(f, visible);
             });
         }
@@ -326,9 +326,9 @@ public abstract class MKmlCreator {
     }
 
     public void sort(Comparator<Feature> c, Feature... features) {
-        for (Feature feature : features) {
-            if (feature instanceof Folder) {
-                final List<Feature> subFeatures = ((Folder) feature).getFeature();
+        for (var feature : features) {
+            if (feature instanceof Folder folder) {
+                var subFeatures = folder.getFeature();
                 subFeatures.sort(c);
                 subFeatures.forEach((f) -> {
                     sort(c, f);

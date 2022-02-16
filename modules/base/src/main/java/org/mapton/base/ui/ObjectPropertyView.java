@@ -104,11 +104,11 @@ public class ObjectPropertyView extends BorderPane {
         } else if (o.getClass().isInstance(mDummyMap)) {
             centerObject = mPropertySheet;
             loadMap((Map<String, Object>) o);
-        } else if (o instanceof Node) {
-            centerObject = (Node) o;
-        } else if (o instanceof String) {
+        } else if (o instanceof Node node) {
+            centerObject = node;
+        } else if (o instanceof String s) {
             centerObject = mLogPanel;
-            load(o.toString());
+            load(s);
         } else {
             centerObject = mLogPanel;
             load(ToStringBuilder.reflectionToString(o, ToStringStyle.MULTI_LINE_STYLE));

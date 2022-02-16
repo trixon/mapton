@@ -120,8 +120,8 @@ public abstract class LayerBundle {
     }
 
     public void removeAllIcons() {
-        if (mParentLayer instanceof IconLayer) {
-            ((IconLayer) mParentLayer).removeAllIcons();
+        if (mParentLayer instanceof IconLayer iconLayer) {
+            iconLayer.removeAllIcons();
         }
 
         mChildLayers.stream()
@@ -138,8 +138,8 @@ public abstract class LayerBundle {
     }
 
     public void removeAllRenderables() {
-        if (mParentLayer instanceof RenderableLayer) {
-            ((RenderableLayer) mParentLayer).removeAllRenderables();
+        if (mParentLayer instanceof RenderableLayer renderableLayer) {
+            renderableLayer.removeAllRenderables();
         }
 
         mChildLayers.stream()
@@ -225,11 +225,11 @@ public abstract class LayerBundle {
     public void setDragEnabled(boolean enabled, RenderableLayer... layers) {
         for (var layer : layers) {
             for (var renderable : layer.getRenderables()) {
-                if (renderable instanceof Draggable) {
-                    if (renderable instanceof AbstractAirspace) {
-                        setDragEnabled((AbstractAirspace) renderable, enabled);
+                if (renderable instanceof Draggable draggable) {
+                    if (draggable instanceof AbstractAirspace abstractAirspace) {
+                        setDragEnabled(abstractAirspace, enabled);
                     } else {
-                        ((Draggable) renderable).setDragEnabled(enabled);
+                        draggable.setDragEnabled(enabled);
                     }
                 }
             }
@@ -237,8 +237,8 @@ public abstract class LayerBundle {
     }
 
     public void setDragEnabled(boolean enabled) {
-        if (mParentLayer instanceof RenderableLayer) {
-            setDragEnabled(enabled, (RenderableLayer) mParentLayer);
+        if (mParentLayer instanceof RenderableLayer renderableLayer) {
+            setDragEnabled(enabled, renderableLayer);
         }
 
         mChildLayers.stream()
