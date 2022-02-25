@@ -69,7 +69,7 @@ public class ModuleOptions extends OptionsBase {
     static final boolean DEFAULT_DISPLAY_SCALE_BAR = true;
     static final boolean DEFAULT_DISPLAY_STARS = true;
     static final boolean DEFAULT_DISPLAY_WORLD_MAP = false;
-    static final boolean DEFAULT_MAP_ELEVATION = true;
+    static final boolean DEFAULT_MAP_ELEVATION = false;
     static final boolean DEFAULT_MAP_GLOBE = true;
     static final double DEFAULT_MAP_OPACITY = 1.0;
     static final int DEFAULT_MAP_PROJECTION = 1;
