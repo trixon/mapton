@@ -15,10 +15,8 @@
  */
 package org.mapton.core.api;
 
-import java.awt.Frame;
 import java.util.HashMap;
 import org.netbeans.api.progress.ProgressHandle;
-import org.openide.windows.WindowManager;
 
 /**
  *
@@ -27,10 +25,6 @@ import org.openide.windows.WindowManager;
 public class MaptonNb {
 
     private static final HashMap<String, ProgressHandle> mDisplayNameToProgressHandle = new HashMap<>();
-
-    public static Frame getFrame() {
-        return WindowManager.getDefault().getMainWindow();
-    }
 
     public static void progressClear() {
         for (var progressHandle : mDisplayNameToProgressHandle.values()) {

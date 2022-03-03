@@ -27,8 +27,8 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.mapton.api.MKmlCreator;
 import org.mapton.api.MOptions;
-import org.mapton.core.api.MaptonNb;
 import org.openide.util.Exceptions;
+import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.io.Geo;
@@ -61,7 +61,7 @@ public class RulerExporter {
         SimpleDialog.addFilters("kml", "geo");
         SimpleDialog.setFilter("kml");
         SimpleDialog.setTitle(String.format("%s %s", Dict.SAVE.toString(), Dict.COORDINATE_FILE.toString().toLowerCase()));
-        SimpleDialog.setParent(MaptonNb.getFrame());
+        SimpleDialog.setParent(Almond.getFrame());
 
         String epoch = mDateFormat.format(new Date());
 

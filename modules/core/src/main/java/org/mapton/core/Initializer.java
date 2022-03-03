@@ -25,12 +25,15 @@ import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import org.apache.commons.lang3.SystemUtils;
+import org.geotools.referencing.CRS;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.mapton.api.MKey;
 import org.mapton.api.MOptions;
 import static org.mapton.api.MOptions.KEY_UI_LAF_DARK;
 import org.mapton.api.Mapton;
 import org.mapton.core.api.MaptonNb;
 import org.mapton.core.updater.UpdateNotificator;
+import org.opengis.referencing.FactoryException;
 import org.openide.awt.Actions;
 import org.openide.awt.HtmlBrowser;
 import org.openide.modules.OnStart;
@@ -60,6 +63,8 @@ public class Initializer implements Runnable {
     private final MOptions mOptions = MOptions.getInstance();
 
     static {
+        new Thread(() -> {
+        }).start();
         try {
             var key = "laf";
             var defaultLAF = "com.formdev.flatlaf.FlatDarkLaf";
@@ -87,9 +92,16 @@ public class Initializer implements Runnable {
             se.trixon.almond.util.icons.material.swing.MaterialIcon.setDefaultColor(FxHelper.colorToColor(iconColor));
         });
 
+        try {//This is an attempt to reduce window system lag on start
+            var crs = DefaultGeographicCRS.WGS84;
+            CRS.decode("EPSG:3007");
+        } catch (FactoryException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+
         var windowManager = WindowManager.getDefault();
         windowManager.invokeWhenUIReady(() -> {
-            PopOverWatcher.getInstance().setFrame((JFrame) Almond.getFrame());
+            PopOverWatcher.getInstance().setFrame((JFrame) windowManager.getMainWindow());
 
             if (SystemUtils.IS_OS_MAC) {
                 AboutAction.setFx(true);
