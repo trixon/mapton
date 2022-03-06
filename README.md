@@ -6,7 +6,7 @@ Some kind of map application
 
 # Building Mapton
 ## JDK setup
-Building mapton requires a JDK >= 11 with bundled JavaFX modules.
+Building mapton requires a JDK >= 17 with bundled JavaFX modules.
 Azul provides their Zulu https://www.azul.com/downloads/zulu-community/ and BellSoft their Liberica https://bell-sw.com/pages/downloads/.
 
 Both can also be installed with https://sdkman.io/.
