@@ -77,6 +77,10 @@
                     <groupId>org.netbeans.modules</groupId>
                     <artifactId>org-netbeans-modules-templatesui</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>org.netbeans.modules</groupId>
+                    <artifactId>org-netbeans-modules-htmlui</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
 
@@ -284,6 +288,7 @@
                 <groupId>org.apache.netbeans.utilities</groupId>
                 <artifactId>nbm-maven-plugin</artifactId>
                 <configuration>
+                    <verifyRuntime>false</verifyRuntime>
                     <installerOsSolaris>false</installerOsSolaris>
                     <installerOsMacosx>false</installerOsMacosx>
                     <installerLicenseFile>../LICENSE</installerLicenseFile>
