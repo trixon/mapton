@@ -427,7 +427,7 @@
             <dependency>
                 <groupId>eu.hansolo</groupId>
                 <artifactId>tilesfx</artifactId>
-                <version>17.1.5</version>
+                <version>17.1.8</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
@@ -545,10 +545,10 @@
     </repositories>
 
     <pluginRepositories>
-        <pluginRepository>
+<!--        <pluginRepository>
             <id>netbeans-next</id>
             <url>https://repository.apache.org/content/repositories/orgapachenetbeans-1096/</url>
-        </pluginRepository>
+        </pluginRepository>-->
     </pluginRepositories>
 
     <properties>
