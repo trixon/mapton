@@ -55,6 +55,12 @@ public class WWHelper {
         );
     }
 
+    public static Position movePolar(Position position, double bearing, double distance) {
+        var latLon = latLonFromPosition(position).getDestinationPoint(bearing, distance);
+
+        return Position.fromDegrees(latLon.getLatitude(), latLon.getLongitude());
+    }
+
     public static Offset offsetFromImageLocation(ImageLocation imageLocation) {
         switch (imageLocation) {
             case BOTTOM_LEFT:
