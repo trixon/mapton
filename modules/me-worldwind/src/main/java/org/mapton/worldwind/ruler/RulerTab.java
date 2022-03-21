@@ -43,7 +43,11 @@ import javafx.scene.text.Font;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.mapton.api.MKey;
 import org.mapton.api.MPolygonFilterManager;
+import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.mapton.worldwind.ModuleOptions;
 import static org.mapton.worldwind.ModuleOptions.*;
@@ -63,6 +67,7 @@ public class RulerTab extends Tab {
     private BorderPane mBorderPane;
     private Action mCopyAction;
     private ImageView mCopyImageView;
+    private final GeometryFactory mGeometryFactory = new GeometryFactory();
     private BorderPane mLowerBorderPane;
     private final MeasureTool mMeasureTool;
     private TextArea mMetricsTextArea;
@@ -165,11 +170,12 @@ public class RulerTab extends Tab {
                     if (mRunState == RunState.STOPPABLE && shapeIndex != 1 && shapeIndex != 2) {
                         setRunState(RunState.STARTABLE);
                     }
+                    updateMetrics();
                 }
 
                 ((Component) mWorldWindow).setCursor(cursor);
             } else if (propertyName.equals(MeasureTool.EVENT_METRIC_CHANGED)) {
-                updateMetrics();
+                publishWkt();
             }
         });
 
@@ -277,6 +283,25 @@ public class RulerTab extends Tab {
         mMeasureTool.setShowAnnotation(mOptions.is(KEY_RULER_ANNOTATION));
         mMeasureTool.getController().setFreeHand(mOptions.is(KEY_RULER_FREE_HAND));
         mMeasureTool.getController().setUseRubberBand(mOptions.is(KEY_RULER_RUBBER_BAND));
+    }
+
+    private void publishWkt() {
+        var positions = mMeasureTool.getPositions();
+        Coordinate coordinates[] = new Coordinate[positions.size()];
+
+        for (int i = 0; i < positions.size(); i++) {
+            var position = positions.get(i);
+            coordinates[i] = new Coordinate(position.longitude.degrees, position.latitude.degrees);
+        }
+
+        String wkt;
+        if (StringUtils.equalsAny(mMeasureTool.getMeasureShapeType(), MeasureTool.SHAPE_LINE, MeasureTool.SHAPE_PATH)) {
+            wkt = mGeometryFactory.createLineString(coordinates).toString();
+        } else {
+            wkt = mGeometryFactory.createPolygon(coordinates).toString();
+        }
+
+        Mapton.getGlobalState().put(MKey.RULER_WKT, wkt);
     }
 
     private void setRunState(RunState runState) {
