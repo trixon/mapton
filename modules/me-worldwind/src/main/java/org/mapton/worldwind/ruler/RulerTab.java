@@ -88,6 +88,7 @@ public class RulerTab extends Tab {
     private ImageView mStartImageView;
     private FxActionCheck mStopAction;
     private ImageView mStopImageView;
+    private String mStoredWkt;
     private ToolBar mToolBar;
     private VBox mTopBox;
     private final WorldWindow mWorldWindow;
@@ -301,7 +302,10 @@ public class RulerTab extends Tab {
             wkt = mGeometryFactory.createPolygon(coordinates).toString();
         }
 
-        Mapton.getGlobalState().put(MKey.RULER_WKT, wkt);
+        if (!StringUtils.equals(mStoredWkt, wkt)) {
+            mStoredWkt = wkt;
+            Mapton.getGlobalState().put(MKey.RULER_WKT, wkt);
+        }
     }
 
     private void setRunState(RunState runState) {
