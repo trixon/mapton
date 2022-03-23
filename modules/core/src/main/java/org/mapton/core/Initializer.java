@@ -101,7 +101,9 @@ public class Initializer implements Runnable {
 
         var windowManager = WindowManager.getDefault();
         windowManager.invokeWhenUIReady(() -> {
-            PopOverWatcher.getInstance().setFrame((JFrame) windowManager.getMainWindow());
+            var frame = (JFrame) windowManager.getMainWindow();
+            PopOverWatcher.getInstance().setFrame(frame);
+            Almond.setFrame(frame);
 
             if (SystemUtils.IS_OS_MAC) {
                 AboutAction.setFx(true);
