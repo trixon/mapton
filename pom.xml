@@ -427,7 +427,7 @@
             <dependency>
                 <groupId>eu.hansolo</groupId>
                 <artifactId>tilesfx</artifactId>
-                <version>17.1.8</version>
+                <version>17.1.9</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>

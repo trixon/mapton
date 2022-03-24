@@ -419,12 +419,12 @@
         <dependency>
             <groupId>eu.hansolo.fx</groupId>
             <artifactId>countries</artifactId>
-            <version>17.0.21</version>
+            <version>17.0.22</version>
         </dependency>
         <dependency>
             <groupId>eu.hansolo.fx</groupId>
             <artifactId>heatmap</artifactId>
-            <version>17.0.8</version>
+            <version>17.0.9</version>
         </dependency>
         <dependency>
             <groupId>eu.hansolo</groupId>
