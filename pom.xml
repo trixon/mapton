@@ -236,6 +236,7 @@
         <!--WMS-->
         <module>modules/wms-bing</module>
         <module>modules/wms-eox</module>
+        <module>modules/wms-gothenburg</module>
         <module>modules/wms-lantmateriet</module>
         <module>modules/wms-nasa</module>
 
@@ -545,7 +546,7 @@
     </repositories>
 
     <pluginRepositories>
-<!--        <pluginRepository>
+        <!--        <pluginRepository>
             <id>netbeans-next</id>
             <url>https://repository.apache.org/content/repositories/orgapachenetbeans-1096/</url>
         </pluginRepository>-->

@@ -207,6 +207,11 @@
             <artifactId>wms-nasa</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>wms-gothenburg</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <!--Mapton/Other-->
         <dependency>
