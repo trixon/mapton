@@ -239,6 +239,7 @@
         <module>modules/wms-gothenburg</module>
         <module>modules/wms-lantmateriet</module>
         <module>modules/wms-nasa</module>
+        <module>modules/wms-sgu</module>
 
         <!--Other-->
         <module>modules/files</module>

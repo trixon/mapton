@@ -1,0 +1,46 @@
+[
+    {
+        "attributions": {
+            "se.sgu.jordart_grundlager25k": {
+                "licenseName": "CC BY 4.0",
+                "licenseUrl": "https://creativecommons.org/licenses/by/4.0/legalcode.sv",
+                "onlyRaw": false,
+                "providerName": "SGU",
+                "providerUrl": "https://sgu.se",
+                "rawHtml": null
+            }
+        },
+        "enabled": true,
+        "layers": {
+            "jord:SE.GOV.SGU.JORD.PUNKTER.25K": "se.sgu.jordart_punkter25k",
+            "jord:SE.GOV.SGU.JORD.LINJER.25K": "se.sgu.jordart_linjer25k",
+            "jord:SE.GOV.SGU.JORD.BLOCKIGHET.25K": "se.sgu.jordart_blockighet25k",
+            "jord:SE.GOV.SGU.JORD.YTLAGER_JY0.25K": "se.sgu.jordart_ytlager025k",
+            "jord:SE.GOV.SGU.JORD.YTLAGER_JY1.25K": "se.sgu.jordart_ytlager125k",
+            "jord:SE.GOV.SGU.JORD.UNDERLIGGANDE.25K": "se.sgu.jordart_underliggande25k",
+            "jord:SE.GOV.SGU.JORD.LANDFORM.25K": "se.sgu.jordart_landform25k",
+            "jord:SE.GOV.SGU.JORD.GRUNDLAGER.25K": "se.sgu.jordart_grundlager25k",
+            "jord:SE.GOV.SGU.JORD.TACKNINGSKARTA.25K": "se.sgu.jordart_tackning25k"
+        },
+        "name": "SGU J",
+        "url": "http://resource.sgu.se/service/wms/130/jordarter-25-100-tusen"
+    },
+        {
+        "attributions": {
+            "se.sgu.fastmark25k": {
+                "licenseName": "CC BY 4.0",
+                "licenseUrl": "https://creativecommons.org/licenses/by/4.0/legalcode.sv",
+                "onlyRaw": false,
+                "providerName": "SGU",
+                "providerUrl": "https://sgu.se",
+                "rawHtml": null
+            }
+        },
+        "enabled": true,
+        "layers": {
+            "SE.GOV.SGU.JORD.GRUNDLAGER.FASTMARK.25K": "se.sgu.fastmark25k"
+        },
+        "name": "SGU F",
+        "url": "https://resource.sgu.se/service/wms/130/jordarter-25-100-tusen-fastmark"
+    }
+]

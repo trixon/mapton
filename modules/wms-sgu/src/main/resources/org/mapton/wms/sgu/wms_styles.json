@@ -1,0 +1,49 @@
+[
+    {
+        "category": {
+            "": "Sweden",
+            "sv": "Sverige"
+        },
+        "description": {
+            "": "Översiktlig bild av jordarternas egenskaper",
+            "sv": "Översiktlig bild av jordarternas egenskaper"
+        },
+        "enabled": true,
+        "id": "se.sgu.jordart",
+        "layers": [
+            "se.sgu.jordart_punkter25k",
+            "se.sgu.jordart_linjer25k",
+            "se.sgu.jordart_blockighet25k",
+            "se.sgu.jordart_ytlager025k",
+            "se.sgu.jordart_ytlager125k",
+            "se.sgu.jordart_underliggande25k",
+            "se.sgu.jordart_landform25k",
+            "se.sgu.jordart_grundlager25k",
+            "at.eox.osm"
+        ],
+        "name": {
+            "": "SGU Jordartskarta"
+        },
+        "supplier": "SGU"
+    },
+    {
+        "category": {
+            "": "Sweden",
+            "sv": "Sverige"
+        },
+        "description": {
+            "": "Översiktlig bild av fastmark",
+            "sv": "Översiktlig bild av fastmark"
+        },
+        "enabled": true,
+        "id": "se.sgu.fastmark",
+        "layers": [
+            "se.sgu.fastmark25k",
+            "at.eox.osm"
+        ],
+        "name": {
+            "": "SGU Fastmark"
+        },
+        "supplier": "SGU"
+    }
+]
