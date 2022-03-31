@@ -17,8 +17,7 @@ package org.mapton.worldwind.ruler;
 
 import de.micromata.opengis.kml.v_2_2_0.Feature;
 import gov.nasa.worldwind.WorldWindow;
-import gov.nasa.worldwind.geom.Angle;
-import gov.nasa.worldwind.geom.Position;
+import gov.nasa.worldwind.util.UnitsFormat;
 import gov.nasa.worldwind.util.measure.MeasureTool;
 import gov.nasa.worldwind.util.measure.MeasureToolController;
 import java.awt.Component;
@@ -27,12 +26,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Locale;
-import java.util.Map;
 import javafx.application.Platform;
 import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.ButtonBase;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.ToolBar;
@@ -84,6 +81,7 @@ public class RulerTab extends Tab {
     private Action mShapeAction;
     private ShapeContextMenu mShapeContextMenu;
     private ImageView mShapeImageView;
+    private final UnitsFormat mSmallUnitsFormat = new UnitsFormat(UnitsFormat.METERS, UnitsFormat.SQUARE_METERS, false);
     private FxActionCheck mStartAction;
     private ImageView mStartImageView;
     private FxActionCheck mStopAction;
@@ -91,6 +89,7 @@ public class RulerTab extends Tab {
     private String mStoredWkt;
     private ToolBar mToolBar;
     private VBox mTopBox;
+    private final UnitsFormat mUnitsFormat = new UnitsFormat();
     private final WorldWindow mWorldWindow;
 
     public RulerTab(String title, WorldWindow worldWindow) {
@@ -138,9 +137,7 @@ public class RulerTab extends Tab {
         mPointListTextArea.setEditable(false);
 
         mLowerBorderPane = new BorderPane(mPointListTextArea);
-        mTopBox = new VBox(8
-        );
-
+        mTopBox = new VBox(8);
         mTopBox.setAlignment(Pos.CENTER);
 
         mLowerBorderPane.setTop(mTopBox);
@@ -161,12 +158,11 @@ public class RulerTab extends Tab {
             if (StringUtils.equalsAny(propertyName, MeasureTool.EVENT_POSITION_ADD, MeasureTool.EVENT_POSITION_REMOVE, MeasureTool.EVENT_POSITION_REPLACE)) {
                 updatePoints();
             } else if (propertyName.equals(MeasureTool.EVENT_ARMED)) {
-                Cursor cursor;
+                var cursor = Cursor.getDefaultCursor();
 
                 if (mMeasureTool.isArmed()) {
                     cursor = Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR);
                 } else {
-                    cursor = Cursor.getDefaultCursor();
                     int shapeIndex = mOptions.getInt(KEY_RULER_SHAPE);
                     if (mRunState == RunState.STOPPABLE && shapeIndex != 1 && shapeIndex != 2) {
                         setRunState(RunState.STARTABLE);
@@ -177,6 +173,10 @@ public class RulerTab extends Tab {
                 ((Component) mWorldWindow).setCursor(cursor);
             } else if (propertyName.equals(MeasureTool.EVENT_METRIC_CHANGED)) {
                 publishWkt();
+            }
+
+            if (propertyName.equals(MeasureTool.EVENT_METRIC_CHANGED)) {
+                updateMetrics();
             }
         });
 
@@ -242,9 +242,9 @@ public class RulerTab extends Tab {
             if (mOptionsContextMenu.isShowing()) {
                 mOptionsContextMenu.hide();
             } else {
-                Node node = FxHelper.getButtonForAction(mOptionsAction, mToolBar.getItems());
-                Bounds bounds = node.getBoundsInLocal();
-                Bounds screenBounds = node.localToScreen(bounds);
+                var node = FxHelper.getButtonForAction(mOptionsAction, mToolBar.getItems());
+                var bounds = node.getBoundsInLocal();
+                var screenBounds = node.localToScreen(bounds);
                 mOptionsContextMenu.show(node, screenBounds.getMinX(), screenBounds.getMaxY());
             }
         });
@@ -263,14 +263,9 @@ public class RulerTab extends Tab {
 
         mToolBar = ActionUtils.createToolBar(actions, ActionUtils.ActionTextBehavior.HIDE);
         FxHelper.slimToolBar(mToolBar);
+        FxHelper.adjustButtonWidth(mToolBar.getItems().stream(), getIconSizeToolBarInt() * 1.5);
+        FxHelper.undecorateButtons(mToolBar.getItems().stream());
 
-        Platform.runLater(() -> {
-            FxHelper.adjustButtonWidth(mToolBar.getItems().stream(), getIconSizeToolBarInt() * 1.5);
-            mToolBar.getItems().stream().filter((item) -> (item instanceof ButtonBase))
-                    .map((item) -> (ButtonBase) item).forEachOrdered((buttonBase) -> {
-                FxHelper.undecorateButton(buttonBase);
-            });
-        });
         mBorderPane.setTop(mToolBar);
     }
 
@@ -338,8 +333,27 @@ public class RulerTab extends Tab {
     }
 
     private void updateMetrics() {
-        double unitLimit;
+        double area = mMeasureTool.getArea();
         double length = mMeasureTool.getLength();
+        boolean smallObject;
+
+        if (area == -1) {
+            smallObject = length < 1000;
+        } else {
+            smallObject = area < 1000000;
+        }
+
+        if (smallObject) {
+            if (mMeasureTool.getUnitsFormat() != mSmallUnitsFormat) {
+                mMeasureTool.setUnitsFormat(mSmallUnitsFormat);
+            }
+        } else {
+            if (mMeasureTool.getUnitsFormat() != mUnitsFormat) {
+                mMeasureTool.setUnitsFormat(mUnitsFormat);
+            }
+        }
+
+        double unitLimit;
         String lenghtString;
         unitLimit = 1E3;
         if (length <= 0) {
@@ -350,15 +364,14 @@ public class RulerTab extends Tab {
             lenghtString = String.format("%,7.3f km", length / unitLimit);
         }
 
-        double area = mMeasureTool.getArea();
         String areaString;
-        unitLimit = 1E4;
+        unitLimit = 1E6;
         if (area < 0) {
             areaString = "-";
         } else if (area < unitLimit) {
             areaString = String.format("%,7.1f m²", area);
         } else {
-            areaString = String.format("%,7.3f km²", area / unitLimit / 1E2);
+            areaString = String.format("%,7.3f km²", area / unitLimit);
         }
 
         double width = mMeasureTool.getWidth();
@@ -383,7 +396,7 @@ public class RulerTab extends Tab {
             heightString = String.format("%,7.3f km", height / unitLimit);
         }
 
-        Angle angle = mMeasureTool.getOrientation();
+        var angle = mMeasureTool.getOrientation();
         String angleString;
         if (angle == null) {
             angleString = "-";
@@ -391,17 +404,17 @@ public class RulerTab extends Tab {
             angleString = String.format("%,6.2f\u00B0", angle.degrees);
         }
 
-        Position center = mMeasureTool.getCenterPosition();
+        var centerPosition = mMeasureTool.getCenterPosition();
         String centerString;
-        if (center == null) {
+        if (centerPosition == null) {
             centerString = "-";
         } else {
-            centerString = String.format("%,7.4f\u00B0 %,7.4f\u00B0", center.getLatitude().degrees, center.getLongitude().degrees);
+            centerString = String.format("%,7.4f\u00B0 %,7.4f\u00B0", centerPosition.getLatitude().degrees, centerPosition.getLongitude().degrees);
         }
 
         int maxKeyLength = Integer.MIN_VALUE;
         int maxValLength = Integer.MIN_VALUE;
-        LinkedHashMap<String, String> values = new LinkedHashMap<>();
+        var values = new LinkedHashMap<String, String>();
 
         values.put(isClosedShape() ? Dict.Geometry.PERIMETER.toString() : Dict.Geometry.LENGTH.toString(), lenghtString);
         values.put(Dict.Geometry.AREA.toString(), areaString);
@@ -410,15 +423,15 @@ public class RulerTab extends Tab {
         values.put(Dict.Geometry.HEIGHT.toString(), heightString);
         values.put(Dict.Geometry.CENTER.toString(), centerString);
 
-        for (Map.Entry<String, String> entry : values.entrySet()) {
+        for (var entry : values.entrySet()) {
             maxKeyLength = Math.max(maxKeyLength, entry.getKey().length());
             maxValLength = Math.max(maxValLength, entry.getValue().length());
         }
 
         String separator = " : ";
-        StringBuilder builder = new StringBuilder();
+        var builder = new StringBuilder();
 
-        for (Map.Entry<String, String> entry : values.entrySet()) {
+        for (var entry : values.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
             builder.append(StringUtils.leftPad(key, maxKeyLength)).append(separator).append(value).append("\n");
@@ -441,7 +454,7 @@ public class RulerTab extends Tab {
     private void updatePoints() {
         mPointListTextArea.clear();
         if (mMeasureTool.getPositions() != null) {
-            StringBuilder builder = new StringBuilder();
+            var builder = new StringBuilder();
 
             mMeasureTool.getPositions().forEach((pos) -> {
                 builder.append(String.format(Locale.ENGLISH, "%3.6f %2.6f\n", pos.getLongitude().getDegrees(), pos.getLatitude().getDegrees()));
