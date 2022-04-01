@@ -33,7 +33,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
-import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
 import org.apache.commons.io.monitor.FileAlterationMonitor;
 import org.apache.commons.io.monitor.FileAlterationObserver;
@@ -125,12 +124,21 @@ public class MCoordinateFileManager {
     }
 
     public void load() {
-        ArrayList<MCoordinateFile> loadedItems = new ArrayList<>();
+        var loadedItems = new ArrayList<MCoordinateFile>();
 
         try {
             if (getSourcesFile().isFile()) {
                 loadedItems = Mapton.getGson().fromJson(FileUtils.readFileToString(getSourcesFile(), "utf-8"), new TypeToken<ArrayList<MCoordinateFile>>() {
                 }.getType());
+
+                var invalidItems = new ArrayList<MCoordinateFile>();
+                for (var document : loadedItems) {
+                    if (!document.getFile().isFile()) {
+                        invalidItems.add(document);
+                    }
+                }
+
+                loadedItems.removeAll(invalidItems);
             }
         } catch (IOException | JsonSyntaxException ex) {
             Exceptions.printStackTrace(ex);
@@ -207,15 +215,15 @@ public class MCoordinateFileManager {
         var file = coordinateFile.getFile();
         var directory = file.getParentFile();
 
-        IOFileFilter directoryFilter = FileFilterUtils.and(
+        var directoryFilter = FileFilterUtils.and(
                 FileFilterUtils.directoryFileFilter(),
                 FileFilterUtils.nameFileFilter(directory.getName()));
 
-        IOFileFilter fileFilter = FileFilterUtils.and(
+        var fileFilter = FileFilterUtils.and(
                 FileFilterUtils.fileFileFilter(),
                 FileFilterUtils.nameFileFilter(file.getName()));
 
-        IOFileFilter filter = FileFilterUtils.or(directoryFilter, fileFilter);
+        var filter = FileFilterUtils.or(directoryFilter, fileFilter);
 
         var observer = new FileAlterationObserver(directory, filter);
         var monitor = new FileAlterationMonitor(TimeUnit.SECONDS.toMillis(5), observer);

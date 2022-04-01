@@ -23,7 +23,6 @@ import javafx.collections.ListChangeListener;
 import javafx.scene.layout.BorderPane;
 import javax.swing.SwingUtilities;
 import org.controlsfx.control.CheckListView;
-import org.controlsfx.control.IndexedCheckModel;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.MCoordinateFile;
@@ -89,8 +88,8 @@ public class FilesPane extends BorderPane {
 
         FxHelper.adjustButtonWidth(toolBar.getItems().stream(), getIconSizeToolBarInt());
         FxHelper.undecorateButtons(toolBar.getItems().stream());
-
         FxHelper.slimToolBar(toolBar);
+
         setTop(toolBar);
         setCenter(mListView);
 
@@ -117,8 +116,7 @@ public class FilesPane extends BorderPane {
             }
         });
 
-        final IndexedCheckModel<MCoordinateFile> checkModel = mListView.getCheckModel();
-
+        var checkModel = mListView.getCheckModel();
         checkModel.getCheckedItems().addListener((ListChangeListener.Change<? extends MCoordinateFile> c) -> {
             Platform.runLater(() -> {
                 mManager.getItems().forEach(document -> {
@@ -135,9 +133,9 @@ public class FilesPane extends BorderPane {
     }
 
     private void refreshCheckedStates() {
-        final IndexedCheckModel<MCoordinateFile> checkModel = mListView.getCheckModel();
+        var checkModel = mListView.getCheckModel();
 
-        for (MCoordinateFile document : mManager.getItems()) {
+        for (var document : mManager.getItems()) {
             if (document.isVisible()) {
                 checkModel.check(document);
             } else {
@@ -147,11 +145,11 @@ public class FilesPane extends BorderPane {
     }
 
     private void remove() {
-        final MCoordinateFile document = getSelected();
+        var document = getSelected();
 
         SwingUtilities.invokeLater(() -> {
-            String[] buttons = new String[]{Dict.CANCEL.toString(), Dict.CLOSE.toString()};
-            NotifyDescriptor d = new NotifyDescriptor(
+            var buttons = new String[]{Dict.CANCEL.toString(), Dict.CLOSE.toString()};
+            var d = new NotifyDescriptor(
                     String.format(Dict.Dialog.MESSAGE_FILE_CLOSE.toString(), document.getFile().getName()),
                     String.format(Dict.Dialog.TITLE_CLOSE_S.toString(), Dict.FILE.toString().toLowerCase()) + "?",
                     NotifyDescriptor.OK_CANCEL_OPTION,
@@ -169,8 +167,8 @@ public class FilesPane extends BorderPane {
 
     private void removeAll() {
         SwingUtilities.invokeLater(() -> {
-            String[] buttons = new String[]{Dict.CANCEL.toString(), Dict.CLOSE_ALL.toString()};
-            NotifyDescriptor d = new NotifyDescriptor(
+            var buttons = new String[]{Dict.CANCEL.toString(), Dict.CLOSE_ALL.toString()};
+            var d = new NotifyDescriptor(
                     Dict.Dialog.MESSAGE_FILE_CLOSE_ALL.toString(),
                     Dict.Dialog.TITLE_FILE_CLOSE_ALL.toString() + "?",
                     NotifyDescriptor.OK_CANCEL_OPTION,
