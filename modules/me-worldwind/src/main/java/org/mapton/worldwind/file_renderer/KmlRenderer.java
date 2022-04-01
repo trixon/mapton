@@ -46,6 +46,8 @@ public class KmlRenderer extends CoordinateFileRendererWW {
     @Override
     protected void load(MCoordinateFile coordinateFile) {
         var layer = new RenderableLayer();
+        layer.setPickEnabled(false);
+
         try {
             var kmlRoot = KMLRoot.createAndParse(coordinateFile.getFile());
             layer.addRenderable(new KMLController(kmlRoot));
