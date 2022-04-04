@@ -32,10 +32,6 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.FileFilterUtils;
-import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
-import org.apache.commons.io.monitor.FileAlterationMonitor;
-import org.apache.commons.io.monitor.FileAlterationObserver;
 import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import se.trixon.almond.util.fx.FxHelper;
@@ -49,6 +45,7 @@ public class MCoordinateFileManager {
     public static final String KEY_SOURCE_UPDATED = "files.source_updated";
 
     private File mConfigDir;
+    private final MFileWatcher mFileWatcher = MFileWatcher.getInstance();
     private ObjectProperty<ObservableList<MCoordinateFile>> mItemsProperty = new SimpleObjectProperty<>();
     private File mSourcesFile;
     private final LongProperty mUpdatedProperty = new SimpleLongProperty();
@@ -132,9 +129,9 @@ public class MCoordinateFileManager {
                 }.getType());
 
                 var invalidItems = new ArrayList<MCoordinateFile>();
-                for (var document : loadedItems) {
-                    if (!document.getFile().isFile()) {
-                        invalidItems.add(document);
+                for (var coordinateFile : loadedItems) {
+                    if (!coordinateFile.getFile().isFile()) {
+                        invalidItems.add(coordinateFile);
                     }
                 }
 
@@ -145,7 +142,7 @@ public class MCoordinateFileManager {
         }
 
         for (var coordinateFile : loadedItems) {
-            addMonitor(coordinateFile);
+            addWatcher(coordinateFile);
         }
 
         final var items = loadedItems; //Lambda below needs final
@@ -162,13 +159,13 @@ public class MCoordinateFileManager {
         }
     }
 
-    public void removeAll(MCoordinateFile... coordinateFile) {
+    public void removeAll(MCoordinateFile... coordinateFiles) {
         FxHelper.runLater(() -> {
             try {
-                if (coordinateFile == null || coordinateFile.length == 0) {
+                if (coordinateFiles == null || coordinateFiles.length == 0) {
                     mItemsProperty.get().clear();
                 } else {
-                    mItemsProperty.get().removeAll(coordinateFile);
+                    mItemsProperty.get().removeAll(coordinateFiles);
                 }
             } catch (Exception e) {
             }
@@ -203,7 +200,7 @@ public class MCoordinateFileManager {
     private boolean addIfMissing(MCoordinateFile coordinateFile) {
         if (!contains(coordinateFile)) {
             getItems().add(coordinateFile);
-            addMonitor(coordinateFile);
+            addWatcher(coordinateFile);
 
             return true;
         }
@@ -211,49 +208,24 @@ public class MCoordinateFileManager {
         return false;
     }
 
-    private void addMonitor(MCoordinateFile coordinateFile) {
-        var file = coordinateFile.getFile();
-        var directory = file.getParentFile();
-
-        var directoryFilter = FileFilterUtils.and(
-                FileFilterUtils.directoryFileFilter(),
-                FileFilterUtils.nameFileFilter(directory.getName()));
-
-        var fileFilter = FileFilterUtils.and(
-                FileFilterUtils.fileFileFilter(),
-                FileFilterUtils.nameFileFilter(file.getName()));
-
-        var filter = FileFilterUtils.or(directoryFilter, fileFilter);
-
-        var observer = new FileAlterationObserver(directory, filter);
-        var monitor = new FileAlterationMonitor(TimeUnit.SECONDS.toMillis(5), observer);
-        var listener = new FileAlterationListenerAdaptor() {
-            private final File fileToMonitor = file;
-
+    private void addWatcher(MCoordinateFile coordinateFile) {
+        mFileWatcher.addWatch(coordinateFile.getFile(), TimeUnit.SECONDS.toMillis(1), new MFileWatcherListener() {
             @Override
             public void onFileChange(File file) {
-                if (file.equals(fileToMonitor)) {
+                FxHelper.runLater(() -> {
+                    mItemsProperty.get().removeAll(coordinateFile);
+                    addIfMissing(coordinateFile);
+                    sort();
                     refresh();
-                }
+                });
             }
 
             @Override
             public void onFileDelete(File file) {
-                if (file.equals(fileToMonitor)) {
-                    removeAll(coordinateFile);
-                    refresh();
-                }
+                removeAll(coordinateFile);
+                refresh();
             }
-        };
-
-        new Thread(() -> {
-            observer.addListener(listener);
-            try {
-                monitor.start();
-            } catch (Exception ex) {
-                Exceptions.printStackTrace(ex);
-            }
-        }, getClass().getCanonicalName()).start();
+        });
     }
 
     private File getSourcesFile() {

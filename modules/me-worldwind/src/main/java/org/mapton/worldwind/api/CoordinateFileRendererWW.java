@@ -23,8 +23,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import javafx.collections.ListChangeListener;
-import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.codec.digest.MessageDigestAlgorithms;
 import org.mapton.api.MCooTrans;
 import org.mapton.api.MCoordinateFile;
 import org.mapton.api.MCoordinateFileManager;
@@ -45,9 +43,8 @@ public abstract class CoordinateFileRendererWW {
     protected final MCoordinateFileManager mCoordinateFileManager = MCoordinateFileManager.getInstance();
     protected Layer mParentLayer;
     private final HashMap<MCoordinateFile, Layer> mCoordinateFileToLayer = new HashMap<>();
-    private final DigestUtils mDigestUtils = new DigestUtils(MessageDigestAlgorithms.SHA_256);
     private LayerBundle mLayerBundle;
-    private Set<String> mSupportedFileOpeners = new HashSet<>();
+    private final Set<String> mSupportedFileOpeners = new HashSet<>();
 
     public CoordinateFileRendererWW() {
         initListeners();
