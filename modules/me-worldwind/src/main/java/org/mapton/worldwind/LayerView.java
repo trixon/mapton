@@ -18,7 +18,6 @@ package org.mapton.worldwind;
 import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -28,11 +27,9 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.prefs.Preferences;
 import javafx.application.Platform;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.CheckBoxTreeItem;
@@ -117,7 +114,7 @@ public class LayerView extends BorderPane implements MActivatable {
     synchronized void refresh(WorldWindowPanel map) {
         if (mMap == null) {
             mMap = map;
-            DelayedResetRunner delayedResetRunner = new DelayedResetRunner(100, () -> {
+            var delayedResetRunner = new DelayedResetRunner(100, () -> {
                 refresh(map);
             });
 
@@ -131,12 +128,12 @@ public class LayerView extends BorderPane implements MActivatable {
         FxHelper.runLater(() -> {
             mRootItem.getChildren().clear();
             mTreeItemListenerSet.clear();
-            Map<String, CheckBoxTreeItem<Layer>> layerParents = new TreeMap<>();
-            SortedList<Layer> sortedLayers = mMap.getCustomLayers().sorted((Layer o1, Layer o2) -> o1.getName().compareTo(o2.getName()));
+            var layerParents = new TreeMap<String, CheckBoxTreeItem<Layer>>();
+            var sortedLayers = mMap.getCustomLayers().sorted((o1, o2) -> o1.getName().compareTo(o2.getName()));
             ObservableList<Layer> filteredLayers = FXCollections.observableArrayList();
 
-            for (Layer layer : sortedLayers) {
-                Object hiddenValue = layer.getValue(WWHelper.KEY_LAYER_HIDE_FROM_MANAGER);
+            for (var layer : sortedLayers) {
+                var hiddenValue = layer.getValue(WWHelper.KEY_LAYER_HIDE_FROM_MANAGER);
                 boolean hidden = hiddenValue != null;
                 if (hidden) {
                     hidden = BooleanUtils.toBoolean(layer.getValue(WWHelper.KEY_LAYER_HIDE_FROM_MANAGER).toString());
@@ -152,17 +149,17 @@ public class LayerView extends BorderPane implements MActivatable {
                 }
             }
 
-            for (Layer layer : filteredLayers) {
-                CheckBoxTreeItem<Layer> layerTreeItem = new CheckBoxTreeItem<>(layer);
+            for (var layer : filteredLayers) {
+                var layerTreeItem = new CheckBoxTreeItem<Layer>(layer);
                 String category = getCategory(layer);
-                CheckBoxTreeItem<Layer> parent = layerParents.computeIfAbsent(category, k -> getParent(mRootItem, category));
+                var parent = layerParents.computeIfAbsent(category, k -> getParent(mRootItem, category));
                 parent.getChildren().add(layerTreeItem);
             }
             mLayerParents.clear();
             mLayerParents.putAll(mLayerParents);
             postPopulate(mRootItem);
 
-            mTreeItemExpanderSet.forEach((checkBoxTreeItem) -> {
+            mTreeItemExpanderSet.forEach(checkBoxTreeItem -> {
                 checkBoxTreeItem.setExpanded(true);
             });
 
@@ -203,22 +200,22 @@ public class LayerView extends BorderPane implements MActivatable {
         final int iconSize = (int) (getIconSizeToolBarInt() * 0.8);
 
         var selectActionGroup = new ActionGroup(Dict.SHOW.toString(), MaterialIcon._Image.REMOVE_RED_EYE.getImageView(iconSize),
-                new Action(Dict.SHOW.toString(), (event) -> {
+                new Action(Dict.SHOW.toString(), actionEvent -> {
                     setChecked(mRootItem, true);
                 }),
-                new Action(Dict.HIDE.toString(), (event) -> {
+                new Action(Dict.HIDE.toString(), actionEvent -> {
                     setChecked(mRootItem, false);
                 }),
                 ActionUtils.ACTION_SEPARATOR,
-                new Action(Dict.EXPAND.toString(), (event) -> {
+                new Action(Dict.EXPAND.toString(), actionEvent -> {
                     setExpanded(mRootItem, true);
                 }),
-                new Action(Dict.COLLAPSE.toString(), (event) -> {
+                new Action(Dict.COLLAPSE.toString(), actionEvent -> {
                     setExpanded(mRootItem, false);
                 })
         );
 
-        Collection<? extends Action> actions = Arrays.asList(
+        var actions = Arrays.asList(
                 selectActionGroup,
                 mOptionsAction
         );
@@ -256,17 +253,17 @@ public class LayerView extends BorderPane implements MActivatable {
     }
 
     private CheckBoxTreeItem<Layer> getParent(CheckBoxTreeItem<Layer> parent, String category) {
-        String[] categorySegments = StringUtils.split(category, "/");
-        StringBuilder sb = new StringBuilder();
+        var categorySegments = StringUtils.split(category, "/");
+        var sb = new StringBuilder();
 
-        for (String segment : categorySegments) {
+        for (var segment : categorySegments) {
             sb.append(segment);
             String path = sb.toString();
 
             if (mLayerParents.containsKey(path)) {
                 parent = mLayerParents.get(path);
             } else {
-                Layer layer = new RenderableLayer();
+                var layer = new RenderableLayer();
                 layer.setValue(WWHelper.KEY_LAYER_CATEGORY, path);
                 layer.setName(segment);
 
@@ -353,19 +350,19 @@ public class LayerView extends BorderPane implements MActivatable {
             }
 
             if (!mTreeItemListenerSet.contains(treeItem)) {
-                treeItem.expandedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
+                treeItem.expandedProperty().addListener((observable, oldValue, newValue) -> {
                     mExpandedPreferences.putBoolean(path, newValue);
                 });
 
                 mTreeItemListenerSet.add(treeItem);
             }
 
-            Comparator<TreeItem<Layer>> c1 = (TreeItem<Layer> o1, TreeItem<Layer> o2) -> Boolean.compare(isCategoryTreeItem(o1), isCategoryTreeItem(o2));
-            Comparator<TreeItem<Layer>> c2 = (TreeItem<Layer> o1, TreeItem<Layer> o2) -> o1.getValue().getName().compareTo(o2.getValue().getName());
+            Comparator<TreeItem<Layer>> c1 = (o1, o2) -> Boolean.compare(isCategoryTreeItem(o1), isCategoryTreeItem(o2));
+            Comparator<TreeItem<Layer>> c2 = (o1, o2) -> o1.getValue().getName().compareTo(o2.getValue().getName());
 
             treeItem.getChildren().sort(c1.reversed().thenComparing(c2));
 
-            for (TreeItem<Layer> childTreeItem : treeItem.getChildren()) {
+            for (var childTreeItem : treeItem.getChildren()) {
                 postPopulate((CheckBoxTreeItem<Layer>) childTreeItem);
             }
         } else {
@@ -373,11 +370,14 @@ public class LayerView extends BorderPane implements MActivatable {
                 mLayerEnabledListenerSet.add(layer);
                 layer.addPropertyChangeListener("Enabled", pce -> {
                     Platform.runLater(() -> {
-                        if ((boolean) pce.getNewValue()) {
+                        boolean newValue = (boolean) pce.getNewValue();
+                        if (newValue) {
                             mCheckModel.check(treeItem);
                         } else {
                             mCheckModel.clearCheck(treeItem);
                         }
+
+                        mVisibilityPreferences.putBoolean(getLayerPath(treeItem.getValue()), newValue);
                     });
                 });
             }
@@ -403,7 +403,7 @@ public class LayerView extends BorderPane implements MActivatable {
             }
         }
 
-        for (TreeItem<Layer> childTreeItem : treeItem.getChildren()) {
+        for (var childTreeItem : treeItem.getChildren()) {
             setChecked((CheckBoxTreeItem<Layer>) childTreeItem, checked);
         }
     }
@@ -414,7 +414,7 @@ public class LayerView extends BorderPane implements MActivatable {
                 treeItem.setExpanded(expanded);
             }
 
-            for (TreeItem<Layer> childTreeItem : treeItem.getChildren()) {
+            for (var childTreeItem : treeItem.getChildren()) {
                 setExpanded((CheckBoxTreeItem<Layer>) childTreeItem, expanded);
             }
         }
