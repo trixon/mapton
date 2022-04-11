@@ -393,7 +393,7 @@
         <dependency>
             <groupId>jakarta.xml.bind</groupId>
             <artifactId>jakarta.xml.bind-api</artifactId>
-            <version>4.0.0-RC3</version>
+            <version>4.0.0</version>
         </dependency>
         <dependency>
             <groupId>jakarta.activation</groupId>
@@ -408,7 +408,7 @@
         <dependency>
             <groupId>com.dlsc.gemsfx</groupId>
             <artifactId>gemsfx</artifactId>
-            <version>1.44.0</version>
+            <version>1.45.2</version>
         </dependency>
         <dependency>
             <groupId>eu.hansolo.fx</groupId>
