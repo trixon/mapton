@@ -27,7 +27,6 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDropEvent;
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -216,10 +215,15 @@ public final class MapTopComponent extends MTopComponent {
             public synchronized void drop(DropTargetDropEvent dtde) {
                 try {
                     dtde.acceptDrop(DnDConstants.ACTION_COPY);
-                    final List<File> files = (List<File>) dtde.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
-                    SwingHelper.runLaterDelayed(2, () -> {
-                        new FileDropSwitchboard(files);
-                    });
+                    var transferData = dtde.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
+                    if (transferData instanceof List dropObjects && !dropObjects.isEmpty()) {
+                        SwingUtilities.invokeLater(() -> {
+                            SwingUtilities.getWindowAncestor(MapTopComponent.this).requestFocus();
+                            SwingUtilities.invokeLater(() -> {
+                                new FileDropSwitchboard(dropObjects);
+                            });
+                        });
+                    }
                 } catch (UnsupportedFlavorException | IOException ex) {
                     Exceptions.printStackTrace(ex);
                 }
