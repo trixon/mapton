@@ -217,11 +217,8 @@ public final class MapTopComponent extends MTopComponent {
                     dtde.acceptDrop(DnDConstants.ACTION_COPY);
                     var transferData = dtde.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
                     if (transferData instanceof List dropObjects && !dropObjects.isEmpty()) {
-                        SwingUtilities.invokeLater(() -> {
-                            SwingUtilities.getWindowAncestor(MapTopComponent.this).requestFocus();
-                            SwingUtilities.invokeLater(() -> {
-                                new FileDropSwitchboard(dropObjects);
-                            });
+                        SwingHelper.requestWindowFocusAndRun(MapTopComponent.this, () -> {
+                            new FileDropSwitchboard(dropObjects);
                         });
                     }
                 } catch (UnsupportedFlavorException | IOException ex) {
