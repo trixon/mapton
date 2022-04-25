@@ -428,7 +428,7 @@
         <dependency>
             <groupId>eu.hansolo</groupId>
             <artifactId>toolbox</artifactId>
-            <version>17.0.22</version>
+            <version>17.0.23</version>
         </dependency>
         <dependency>
             <groupId>eu.hansolo</groupId>
