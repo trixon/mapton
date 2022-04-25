@@ -61,7 +61,7 @@ public abstract class CooTrans implements MCooTrans {
 
     @Override
     public Point2D fromWgs84(double latitude, double longitude) {
-        var position = getPosition(mInverseMathTransform, latitude, longitude);
+        var position = getPosition(mMathTransform, latitude, longitude);
 
         return new Point2D(position.getCoordinate()[1], position.getCoordinate()[0]);
     }
