@@ -251,6 +251,12 @@
             <version>${netbeans.version}</version>
             <type>nbm</type>
         </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-filesystems</artifactId>
+            <version>${netbeans.version}</version>
+            <type>nbm</type>
+        </dependency>
 
         <!-- Trixon -->
         <dependency>
@@ -440,12 +446,6 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-nop</artifactId>
             <version>1.7.36</version>
-        </dependency>
-        <dependency>
-            <groupId>org.netbeans.api</groupId>
-            <artifactId>org-openide-filesystems</artifactId>
-            <version>RELEASE130</version>
-            <type>jar</type>
         </dependency>
     </dependencies>
 

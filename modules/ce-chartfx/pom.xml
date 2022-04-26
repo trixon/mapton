@@ -49,7 +49,7 @@
         <dependency>
             <groupId>de.gsi.chart</groupId>
             <artifactId>chartfx-chart</artifactId>
-            <version>11.2.6</version>
+            <version>11.2.7</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.commons</groupId>
