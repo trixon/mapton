@@ -15,11 +15,24 @@
  */
 package org.mapton.api;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.prefs.Preferences;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import org.apache.commons.lang3.StringUtils;
 import org.geotools.referencing.CRS;
-import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.openide.util.Exceptions;
+import org.openide.util.NbPreferences;
+import se.trixon.almond.util.SystemHelper;
 
 /**
  *
@@ -27,30 +40,75 @@ import org.openide.util.Exceptions;
  */
 public class MCrsManager {
 
-    private final CoordinateReferenceSystem mSourceCrs = DefaultGeographicCRS.WGS84;
-
-    /*
-    lista - alla, aktiva, tillgängliga
-    spara och återställ aktiva
-     */
-    private MCrsManager() {
-        init();
-    }
+    private final String KEY_SELECTED = "crs.selected";
+    private final ArrayList<CoordinateReferenceSystem> mAllSystems = new ArrayList<>();
+    private final Preferences mPreferences = NbPreferences.forModule(MCrsManager.class);
+    private final ObjectProperty<CoordinateReferenceSystem> mSelectedSystemProperty = new SimpleObjectProperty<>();
+    private final ObservableList<CoordinateReferenceSystem> mSelectedSystems = FXCollections.observableArrayList();
 
     public static MCrsManager getInstance() {
         return Holder.INSTANCE;
     }
 
+    private MCrsManager() {
+        init();
+    }
+
+    public ArrayList<CoordinateReferenceSystem> getAllSystems() {
+        return mAllSystems;
+    }
+
+    public CoordinateReferenceSystem getSelectedSystem() {
+        return mSelectedSystemProperty.get();
+    }
+
+    public ObservableList<CoordinateReferenceSystem> getSelectedSystems() {
+        return mSelectedSystems;
+    }
+
+    /**
+     * This method should only be used by the application startup process
+     */
+    public void restore() {
+        //TODO populate selected
+    }
+
+    public void save(ObservableList<CoordinateReferenceSystem> coordinateReferenceSystems) {
+        var sb = new StringBuilder();
+        for (var crs : coordinateReferenceSystems) {
+            sb.append(String.format("%s\n", CRS.toSRS(crs)));
+        }
+        mPreferences.put(KEY_SELECTED, sb.toString());
+        mSelectedSystems.setAll(coordinateReferenceSystems);
+    }
+
+    public ObjectProperty<CoordinateReferenceSystem> selectedSystemProperty() {
+        return mSelectedSystemProperty;
+    }
+
+    public void setSelectedSystem(CoordinateReferenceSystem crs) {
+        mSelectedSystemProperty.set(crs);
+    }
+
     private void init() {
-        for (var supportedAuthority : CRS.getSupportedAuthorities(false)) {
-            for (var supportedCode : CRS.getSupportedCodes(supportedAuthority)) {
-                try {
-                    var crs = CRS.decode(String.format("%s:%s", supportedAuthority, supportedCode));
-                } catch (FactoryException ex) {
-                    Exceptions.printStackTrace(ex);
+        var items = StringUtils.split(mPreferences.get(KEY_SELECTED, ""), "\n");
+        var storedSystems = new HashSet<String>(Arrays.asList(items));
+        var codes = SystemHelper.getResourceAsString(getClass(), "AuthoritiesCodes.txt");
+
+        for (var ac : codes.lines().toList()) {
+            try {
+                var crs = CRS.decode(ac);
+                mAllSystems.add(crs);
+                if (storedSystems.contains(ac)) {
+                    mSelectedSystems.add(crs);
                 }
+            } catch (FactoryException ex) {
+                Logger.getLogger(MCrsManager.class.getName()).log(Level.SEVERE, null, ex);
             }
 
+            Comparator<CoordinateReferenceSystem> c = ((o1, o2) -> o1.getName().toString().compareToIgnoreCase(o2.getName().toString()));
+            Collections.sort(mAllSystems, c);
+            Collections.sort(mSelectedSystems, c);
         }
     }
 

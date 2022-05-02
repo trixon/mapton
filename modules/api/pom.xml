@@ -32,6 +32,7 @@
                         <publicPackage>jakarta.*</publicPackage>
                         <publicPackage>org.apache.commons.*</publicPackage>
                         <publicPackage>org.controlsfx.*</publicPackage>
+                        <publicPackage>impl.org.controlsfx.*</publicPackage>
                         <publicPackage>org.h2.*</publicPackage>
                         <publicPackage>org.locationtech.jts.*</publicPackage>
                         <publicPackage>org.jsoup.*</publicPackage>

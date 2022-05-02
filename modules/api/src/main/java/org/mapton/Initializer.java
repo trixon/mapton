@@ -17,6 +17,7 @@ package org.mapton;
 
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
+import org.mapton.api.MCrsManager;
 import org.openide.modules.OnStart;
 
 /**
@@ -31,5 +32,6 @@ public class Initializer implements Runnable {
     public void run() {
         Platform.setImplicitExit(false);
         new JFXPanel();
+        MCrsManager.getInstance().restore();
     }
 }
