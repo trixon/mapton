@@ -229,10 +229,6 @@
         <module>modules/se-nominatim</module>
         <module>modules/se-poi</module>
 
-        <!--Transformation engines-->
-        <module>modules/te-geotools</module>
-        <module>modules/te-swetrans</module>
-
         <!--WMS-->
         <module>modules/wms-bing</module>
         <module>modules/wms-eox</module>
@@ -500,11 +496,6 @@
                 <groupId>de.micromata.jak</groupId>
                 <artifactId>JavaAPIforKml</artifactId>
                 <version>2.2.1</version>
-            </dependency>
-            <dependency>
-                <groupId>com.github.goober</groupId>
-                <artifactId>coordinate-transformation-library</artifactId>
-                <version>1.1</version>
             </dependency>
             <dependency>
                 <groupId>com.j2html</groupId>

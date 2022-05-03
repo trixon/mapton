@@ -159,13 +159,17 @@ public class MOptions extends OptionsBase {
     }
 
     public MCooTrans getMapCooTrans() {
-        for (MCooTrans cooTrans : MCooTrans.getCooTrans()) {
+        var items = MCrsManager.getInstance().getItems();
+        for (var cooTrans : items) {
             if (cooTrans.getName().equalsIgnoreCase(getMapCooTransName())) {
                 return cooTrans;
             }
         }
 
-        return null;
+        var cooTrans = items.get(0);
+        setMapCooTrans(cooTrans.getName());
+
+        return cooTrans;
     }
 
     public String getMapCooTransName() {

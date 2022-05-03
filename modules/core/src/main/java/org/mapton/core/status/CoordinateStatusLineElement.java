@@ -87,11 +87,16 @@ public class CoordinateStatusLineElement implements StatusLineElementProvider {
                         elevation = String.format("%s %,6d %s", Dict.ELEVATION.toString(), (int) engine.getElevation().doubleValue(), Dict.METERS.toString().toLowerCase());
                     }
 
-                    String text = String.format("%s, %s, %s",
-                            altitude,
-                            elevation,
-                            MCooTrans.getCooTrans(MOptions.getInstance().getMapCooTransName()).getString(latitude, longitude)
-                    );
+                    String text = "";
+                    try {
+                        text = String.format("%s, %s, %s",
+                                altitude,
+                                elevation,
+                                MCooTrans.getCooTrans(MOptions.getInstance().getMapCooTransName()).getString(latitude, longitude)
+                        );
+                    } catch (Exception e) {
+                        //nvm
+                    }
 
                     mLabel.setText(StringUtils.removeStart(text, ", , "));
                 }

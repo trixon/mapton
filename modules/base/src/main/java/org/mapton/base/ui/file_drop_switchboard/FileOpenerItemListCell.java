@@ -23,6 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.mapton.api.MCooTrans;
 import org.mapton.api.MCoordinateFileInput;
 import org.mapton.api.MCoordinateFileOpener;
+import org.mapton.api.MCrsManager;
 import se.trixon.almond.util.fx.FxHelper;
 
 /**
@@ -87,7 +88,7 @@ class FileOpenerItemListCell extends ListCell<MCoordinateFileInput> {
         });
 
         mCooTransComboBox = new ComboBox<>();
-        mCooTransComboBox.getItems().setAll(MCooTrans.getCooTrans());
+        mCooTransComboBox.getItems().setAll(MCrsManager.getInstance().getItems());
         mCooTransComboBox.setItems(mCooTransComboBox.getItems().sorted());
 
         mCooTransComboBox.setOnAction(ae -> {

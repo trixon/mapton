@@ -20,7 +20,6 @@
                         <publicPackage>org.mapton.api.*</publicPackage>
                         <publicPackage>com.drew.*</publicPackage>
                         <publicPackage>com.dlsc.*</publicPackage>
-                        <publicPackage>com.github.goober.*</publicPackage>
                         <publicPackage>com.google.*</publicPackage>
                         <publicPackage>com.healthmarketscience.sqlbuilder.*</publicPackage>
                         <publicPackage>com.sun.*</publicPackage>
@@ -358,10 +357,6 @@
         <dependency>
             <groupId>de.micromata.jak</groupId>
             <artifactId>JavaAPIforKml</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.github.goober</groupId>
-            <artifactId>coordinate-transformation-library</artifactId>
         </dependency>
         <dependency>
             <groupId>com.j2html</groupId>

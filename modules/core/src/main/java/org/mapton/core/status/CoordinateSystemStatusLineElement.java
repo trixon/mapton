@@ -17,17 +17,16 @@ package org.mapton.core.status;
 
 import java.awt.Component;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.Collections;
+import javafx.collections.ListChangeListener;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.border.EmptyBorder;
 import org.mapton.api.MCooTrans;
+import org.mapton.api.MCrsManager;
 import static org.mapton.api.MEngine.KEY_STATUS_COORDINATE;
 import org.mapton.api.MOptions;
 import org.mapton.api.Mapton;
 import org.openide.awt.StatusLineElementProvider;
-import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.swing.SwingHelper;
 
@@ -38,10 +37,11 @@ import se.trixon.almond.util.swing.SwingHelper;
 @ServiceProvider(service = StatusLineElementProvider.class, position = 599)
 public class CoordinateSystemStatusLineElement implements StatusLineElementProvider {
 
+    private ActionListener mActionListener;
     private JComboBox<MCooTrans> mComboBox;
     private MCooTrans mCooTrans;
+    private final MCrsManager mManager = MCrsManager.getInstance();
     private final MOptions mOptions = MOptions.getInstance();
-    private ActionListener mActionListener;
 
     public CoordinateSystemStatusLineElement() {
     }
@@ -69,7 +69,7 @@ public class CoordinateSystemStatusLineElement implements StatusLineElementProvi
             updateMousePositionData();
         };
 
-        Lookup.getDefault().lookupResult(MCooTrans.class).addLookupListener(lookupEvent -> {
+        mManager.itemsProperty().get().addListener((ListChangeListener.Change<? extends MCooTrans> c) -> {
             updateProviders();
         });
     }
@@ -83,16 +83,15 @@ public class CoordinateSystemStatusLineElement implements StatusLineElementProvi
         SwingHelper.runLater(() -> {
             mComboBox.removeActionListener(mActionListener);
             mComboBox.removeAllItems();
-            final ArrayList<MCooTrans> cooTranses = MCooTrans.getCooTrans();
-            Collections.sort(cooTranses, (o1, o2) -> o1.getName().compareTo(o2.getName()));
+            var cooTranses = mManager.getItems().sorted((o1, o2) -> o1.getName().compareToIgnoreCase(o2.getName()));
             mComboBox.setModel(new DefaultComboBoxModel<>(cooTranses.toArray(new MCooTrans[0])));
 
-            for (MCooTrans cooTrans : cooTranses) {
+            for (var cooTrans : cooTranses) {
                 Mapton.logLoading("Coordinate Transformation", cooTrans.getName());
             }
 
             if (!cooTranses.isEmpty()) {
-                MCooTrans cooTrans = MCooTrans.getCooTrans(mOptions.getMapCooTransName());
+                var cooTrans = MCooTrans.getCooTrans(mOptions.getMapCooTransName());
 
                 if (cooTrans == null) {
                     cooTrans = mComboBox.getModel().getElementAt(0);

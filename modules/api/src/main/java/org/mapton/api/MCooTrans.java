@@ -15,9 +15,7 @@
  */
 package org.mapton.api;
 
-import java.util.ArrayList;
 import javafx.geometry.Point2D;
-import org.openide.util.Lookup;
 
 /**
  *
@@ -26,17 +24,17 @@ import org.openide.util.Lookup;
 public interface MCooTrans {
 
     public static MCooTrans getCooTrans(String name) {
-        for (MCooTrans cooTrans : getCooTrans()) {
+        var items = MCrsManager.getInstance().getItems();
+        for (var cooTrans : items) {
             if (cooTrans.getName().equalsIgnoreCase(name)) {
                 return cooTrans;
             }
         }
 
-        return null;
-    }
+        var cooTrans = items.get(0);
+        MOptions.getInstance().setMapCooTrans(cooTrans.getName());
 
-    public static ArrayList<MCooTrans> getCooTrans() {
-        return new ArrayList<>(Lookup.getDefault().lookupAll(MCooTrans.class));
+        return cooTrans;
     }
 
     Point2D fromWgs84(double latitude, double longitude);

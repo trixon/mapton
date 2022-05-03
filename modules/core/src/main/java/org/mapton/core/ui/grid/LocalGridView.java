@@ -36,6 +36,7 @@ import org.controlsfx.validation.ValidationResult;
 import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
 import org.mapton.api.MCooTrans;
+import org.mapton.api.MCrsManager;
 import org.mapton.api.MDict;
 import org.mapton.api.MLocalGrid;
 import org.openide.util.NbBundle;
@@ -243,7 +244,7 @@ public class LocalGridView extends GridPane {
         VBox.setMargin(latStartLabel, topInsets);
         VBox.setMargin(lonStartLabel, topInsets);
 
-        mCooTransComboBox.getItems().setAll(MCooTrans.getCooTrans());
+        mCooTransComboBox.getItems().setAll(MCrsManager.getInstance().getItems());
         mCooTransComboBox.setItems(mCooTransComboBox.getItems().sorted());
     }
 

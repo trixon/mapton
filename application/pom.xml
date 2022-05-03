@@ -174,18 +174,6 @@
             <artifactId>se-poi</artifactId>
         </dependency>
 
-        <!--Mapton/Transformation engines-->
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>te-swetrans</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>te-geotools</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
         <!--Mapton/WMS sources-->
         <dependency>
             <groupId>${project.groupId}</groupId>

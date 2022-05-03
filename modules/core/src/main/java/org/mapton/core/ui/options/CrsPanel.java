@@ -61,7 +61,6 @@ final class CrsPanel extends javax.swing.JPanel {
     private final CrsOptionsPanelController mController;
     private final Form mForm;
     private final MCrsManager mManager = MCrsManager.getInstance();
-    private final MOptions mOptions = MOptions.getInstance();
 
     CrsPanel(CrsOptionsPanelController controller) {
         mBundle = NbBundle.getBundle(MOptions.class);
@@ -210,6 +209,7 @@ final class CrsPanel extends javax.swing.JPanel {
                         dov = crs.getDomainOfValidity().getDescription().toString(Locale.getDefault());
                     }
                     if (StringUtils.containsIgnoreCase(crs.toWKT(), s)
+                            || StringUtils.containsIgnoreCase(crs.getName().toString(), s)
                             || StringUtils.containsIgnoreCase(dov, s)) {
                         mFilteredSystems.get().add(crs);
                     }

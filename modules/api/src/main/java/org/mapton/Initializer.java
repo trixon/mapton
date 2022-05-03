@@ -32,6 +32,6 @@ public class Initializer implements Runnable {
     public void run() {
         Platform.setImplicitExit(false);
         new JFXPanel();
-        MCrsManager.getInstance().restore();
+        MCrsManager.getInstance();
     }
 }

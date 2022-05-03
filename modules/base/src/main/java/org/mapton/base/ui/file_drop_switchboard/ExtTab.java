@@ -30,6 +30,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.mapton.api.MCooTrans;
 import org.mapton.api.MCoordinateFileInput;
 import org.mapton.api.MCoordinateFileOpener;
+import org.mapton.api.MCrsManager;
 import org.mapton.api.MOptions;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.fx.FxHelper;
@@ -73,7 +74,7 @@ public class ExtTab extends Tab {
         mCoordinateFileOpenerComboBox.setButtonCell(new FileOpenerListCell());
         mCoordinateFileOpenerComboBox.getSelectionModel().select(0);
 
-        mCooTransComboBox.getItems().setAll(MCooTrans.getCooTrans());
+        mCooTransComboBox.getItems().setAll(MCrsManager.getInstance().getItems());
         mCooTransComboBox.setItems(mCooTransComboBox.getItems().sorted());
         mCooTransComboBox.getSelectionModel().select(MOptions.getInstance().getMapCooTrans());
 

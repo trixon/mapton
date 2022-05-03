@@ -31,6 +31,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.geotools.referencing.CRS;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.openide.util.Lookup;
 import org.openide.util.NbPreferences;
 import se.trixon.almond.util.SystemHelper;
 
@@ -42,6 +43,7 @@ public class MCrsManager {
 
     private final String KEY_SELECTED = "crs.selected";
     private final ArrayList<CoordinateReferenceSystem> mAllSystems = new ArrayList<>();
+    private final ObjectProperty<ObservableList<MCooTrans>> mItemsProperty = new SimpleObjectProperty<>();
     private final Preferences mPreferences = NbPreferences.forModule(MCrsManager.class);
     private final ObjectProperty<CoordinateReferenceSystem> mSelectedSystemProperty = new SimpleObjectProperty<>();
     private final ObservableList<CoordinateReferenceSystem> mSelectedSystems = FXCollections.observableArrayList();
@@ -51,11 +53,19 @@ public class MCrsManager {
     }
 
     private MCrsManager() {
+        mItemsProperty.setValue(FXCollections.observableArrayList());
         init();
+        initListeners();
+
+        updateProviders();
     }
 
     public ArrayList<CoordinateReferenceSystem> getAllSystems() {
         return mAllSystems;
+    }
+
+    public final ObservableList<MCooTrans> getItems() {
+        return mItemsProperty.get();
     }
 
     public CoordinateReferenceSystem getSelectedSystem() {
@@ -66,11 +76,8 @@ public class MCrsManager {
         return mSelectedSystems;
     }
 
-    /**
-     * This method should only be used by the application startup process
-     */
-    public void restore() {
-        //TODO populate selected
+    public final ObjectProperty<ObservableList<MCooTrans>> itemsProperty() {
+        return mItemsProperty;
     }
 
     public void save(ObservableList<CoordinateReferenceSystem> coordinateReferenceSystems) {
@@ -80,6 +87,8 @@ public class MCrsManager {
         }
         mPreferences.put(KEY_SELECTED, sb.toString());
         mSelectedSystems.setAll(coordinateReferenceSystems);
+
+        updateProviders();
     }
 
     public ObjectProperty<CoordinateReferenceSystem> selectedSystemProperty() {
@@ -91,7 +100,22 @@ public class MCrsManager {
     }
 
     private void init() {
-        var items = StringUtils.split(mPreferences.get(KEY_SELECTED, ""), "\n");
+        var defaultSystems = """
+                             EPSG:3007
+                             EPSG:3008
+                             EPSG:3012
+                             EPSG:3009
+                             EPSG:3013
+                             EPSG:3010
+                             EPSG:3014
+                             EPSG:3011
+                             EPSG:3015
+                             EPSG:3016
+                             EPSG:3017
+                             EPSG:3018
+                             EPSG:3006
+                             """;
+        var items = StringUtils.split(mPreferences.get(KEY_SELECTED, defaultSystems), "\n");
         var storedSystems = new HashSet<String>(Arrays.asList(items));
         var codes = SystemHelper.getResourceAsString(getClass(), "AuthoritiesCodes.txt");
 
@@ -110,6 +134,23 @@ public class MCrsManager {
             Collections.sort(mAllSystems, c);
             Collections.sort(mSelectedSystems, c);
         }
+    }
+
+    private void initListeners() {
+        Lookup.getDefault().lookupResult(MCooTrans.class).addLookupListener(lookupEvent -> {
+            updateProviders();
+        });
+
+    }
+
+    private void updateProviders() {
+        var lookupItems = new ArrayList<>(Lookup.getDefault().lookupAll(MCooTrans.class));
+        var items = new ArrayList<MCooTrans>(lookupItems);
+        for (var crs : mSelectedSystems) {
+            items.add(new GeoToolsCooTrans(CRS.toSRS(crs)));
+        }
+
+        mItemsProperty.get().setAll(items);
     }
 
     private static class Holder {
