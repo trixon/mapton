@@ -15,14 +15,16 @@
  */
 package org.mapton.worldwind.file_renderer;
 
+import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
+import gov.nasa.worldwind.render.AbstractShape;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.Path;
 import gov.nasa.worldwind.render.PointPlacemark;
+import gov.nasa.worldwind.render.Polygon;
 import gov.nasa.worldwind.render.Renderable;
-import gov.nasa.worldwind.render.ShapeAttributes;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -83,6 +85,7 @@ public class GeoRenderer extends CoordinateFileRendererWW {
 
     private void initAttributes() {
         mLineBasicShapeAttributes = new BasicShapeAttributes();
+        mLineBasicShapeAttributes.setDrawInterior(false);
         mLineBasicShapeAttributes.setOutlineMaterial(Material.RED);
         mLineBasicShapeAttributes.setOutlineWidth(1.0D);
     }
@@ -96,11 +99,26 @@ public class GeoRenderer extends CoordinateFileRendererWW {
                     positions.add(Position.fromDegrees(p.getY(), p.getX(), MathHelper.convertDoubleToDouble(geoPoint.getZ())));
                 }
             }
-            if (positions.size() > 1) {
-                var path = new Path(positions);
-                path.setAttributes((ShapeAttributes) mLineBasicShapeAttributes);
-                path.setAltitudeMode(0);
-                layer.addRenderable((Renderable) path);
+
+            try {
+                if (positions.size() > 1) {
+                    AbstractShape path;
+                    if (geoLine.isClosedPolygon()) {
+                        path = new Polygon(positions);
+                    } else {
+                        path = new Path(positions);
+                    }
+
+                    path.setAttributes(mLineBasicShapeAttributes);
+                    path.setAltitudeMode(WorldWind.ABSOLUTE);
+                    layer.addRenderable(path);
+                }
+            } catch (IllegalArgumentException e) {
+                System.err.format("%s: %s, %s\n",
+                        getClass().getSimpleName(),
+                        "Invalid path",
+                        e.getMessage()
+                );
             }
         }
     }
