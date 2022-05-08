@@ -533,7 +533,7 @@
     <repositories>
         <repository>
             <id>netbeans-next</id>
-            <url>https://repository.apache.org/content/repositories/orgapachenetbeans-1104</url>
+            <url>https://repository.apache.org/content/repositories/orgapachenetbeans-1109</url>
         </repository>    
     </repositories>
 
