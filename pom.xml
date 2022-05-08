@@ -254,6 +254,7 @@
         <module>add-ons/poi/trv-traffic-information</module>
 
         <!--Unstable-->
+        <module>modules/transformation</module>
     </modules>
 
     <dependencyManagement>

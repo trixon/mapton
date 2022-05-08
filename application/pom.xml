@@ -268,6 +268,11 @@
         </dependency>
 
         <!--Mapton/Unstable-->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>transformation</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <!-- Trixon -->
         <dependency>
