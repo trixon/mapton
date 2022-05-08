@@ -41,6 +41,8 @@ import se.trixon.almond.util.SystemHelper;
  */
 public class MCrsManager {
 
+    private static final Logger LOGGER = Logger.getLogger(MCrsManager.class.getName());
+
     private final String KEY_SELECTED = "crs.selected";
     private final ArrayList<CoordinateReferenceSystem> mAllSystems = new ArrayList<>();
     private final ObjectProperty<ObservableList<MCooTrans>> mItemsProperty = new SimpleObjectProperty<>();
@@ -54,10 +56,12 @@ public class MCrsManager {
 
     private MCrsManager() {
         mItemsProperty.setValue(FXCollections.observableArrayList());
-        init();
-        initListeners();
+        new Thread(() -> {
+            init();
+            initListeners();
 
-        updateProviders();
+            updateProviders();
+        }).start();
     }
 
     public ArrayList<CoordinateReferenceSystem> getAllSystems() {
@@ -118,22 +122,29 @@ public class MCrsManager {
         var items = StringUtils.split(mPreferences.get(KEY_SELECTED, defaultSystems), "\n");
         var storedSystems = new HashSet<String>(Arrays.asList(items));
         var codes = SystemHelper.getResourceAsString(getClass(), "AuthoritiesCodes.txt");
+        Comparator<CoordinateReferenceSystem> comparator = ((o1, o2) -> o1.getName().toString().compareToIgnoreCase(o2.getName().toString()));
 
-        for (var ac : codes.lines().toList()) {
+        for (var ac : storedSystems) {
             try {
-                var crs = CRS.decode(ac);
-                mAllSystems.add(crs);
-                if (storedSystems.contains(ac)) {
-                    mSelectedSystems.add(crs);
-                }
+                mSelectedSystems.add(CRS.decode(ac));
             } catch (FactoryException ex) {
-                Logger.getLogger(MCrsManager.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.log(Level.SEVERE, null, ex);
+            }
+        }
+
+        Collections.sort(mSelectedSystems, comparator);
+
+        new Thread(() -> {
+            for (var ac : codes.lines().toList()) {
+                try {
+                    mAllSystems.add(CRS.decode(ac));
+                } catch (FactoryException ex) {
+                    LOGGER.log(Level.SEVERE, null, ex);
+                }
             }
 
-            Comparator<CoordinateReferenceSystem> c = ((o1, o2) -> o1.getName().toString().compareToIgnoreCase(o2.getName().toString()));
-            Collections.sort(mAllSystems, c);
-            Collections.sort(mSelectedSystems, c);
-        }
+            Collections.sort(mAllSystems, comparator);
+        }).start();
     }
 
     private void initListeners() {
