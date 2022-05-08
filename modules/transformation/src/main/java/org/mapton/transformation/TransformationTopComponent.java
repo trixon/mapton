@@ -48,7 +48,7 @@ import org.openide.windows.TopComponent;
     @ActionReference(path = "Menu/Tools", position = 1)
 })
 @NbBundle.Messages({
-    "CTL_TransformationAction=&Transformation"
+    "CTL_TransformationAction=&Transformer"
 })
 public final class TransformationTopComponent extends MTopComponent {
 
