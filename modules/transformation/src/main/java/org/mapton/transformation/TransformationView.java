@@ -34,7 +34,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
-import org.geotools.geometry.DirectPosition2D;
+import org.geotools.geometry.DirectPosition3D;
 import org.geotools.referencing.CRS;
 import org.mapton.api.MCrsManager;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
@@ -263,12 +263,11 @@ public class TransformationView extends BorderPane {
 
     private void transform(MathTransform mathTransform, GeoPoint point) {
         try {
-            var dp = mathTransform.transform(new DirectPosition2D(point.getX(), point.getY()), null);
+            double z = point.getZ();
+            var dp = mathTransform.transform(new DirectPosition3D(point.getX(), point.getY(), z), null);
             point.setX(dp.getCoordinate()[0]);
             point.setY(dp.getCoordinate()[1]);
-        } catch (MismatchedDimensionException ex) {
-            Exceptions.printStackTrace(ex);
-        } catch (TransformException ex) {
+        } catch (MismatchedDimensionException | TransformException ex) {
             Exceptions.printStackTrace(ex);
         }
 
