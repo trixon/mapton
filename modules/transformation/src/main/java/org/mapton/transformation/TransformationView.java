@@ -46,6 +46,7 @@ import org.opengis.referencing.operation.TransformException;
 import org.openide.util.Exceptions;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.MathHelper;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.control.LogPanel;
 import se.trixon.almond.util.icons.material.MaterialIcon;
@@ -263,7 +264,7 @@ public class TransformationView extends BorderPane {
 
     private void transform(MathTransform mathTransform, GeoPoint point) {
         try {
-            double z = point.getZ();
+            double z = MathHelper.convertDoubleToDouble(point.getZ());
             var dp = mathTransform.transform(new DirectPosition3D(point.getX(), point.getY(), z), null);
             point.setX(dp.getCoordinate()[0]);
             point.setY(dp.getCoordinate()[1]);
