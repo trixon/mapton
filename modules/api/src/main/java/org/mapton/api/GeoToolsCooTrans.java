@@ -78,6 +78,10 @@ public class GeoToolsCooTrans implements MCooTrans {
         return mCrsCode;
     }
 
+    public MathTransform getInverseMathTransform() {
+        return mInverseMathTransform;
+    }
+
     @Override
     public double getLatitude(double latitude, double longitude) {
         return getPosition(mMathTransform, latitude, longitude).getCoordinate()[0];
@@ -96,6 +100,10 @@ public class GeoToolsCooTrans implements MCooTrans {
     @Override
     public String getLongitudeString(double latitude, double longitude) {
         return String.format("%.1f E", getLongitude(latitude, longitude));
+    }
+
+    public MathTransform getMathTransform() {
+        return mMathTransform;
     }
 
     @Override
