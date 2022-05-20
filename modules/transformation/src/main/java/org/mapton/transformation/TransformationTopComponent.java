@@ -44,7 +44,7 @@ import org.openide.windows.TopComponent;
 )
 @ActionID(category = "Mapton", id = "org.mapton.transformation.TransformationTopComponent")
 @ActionReferences({
-    @ActionReference(path = "Shortcuts", name = "DS-T"),
+    @ActionReference(path = "Shortcuts", name = "DS-M"),
     @ActionReference(path = "Menu/Tools", position = 1)
 })
 @NbBundle.Messages({
