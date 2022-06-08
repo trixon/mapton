@@ -41,7 +41,7 @@
                 <plugin>
                     <groupId>org.apache.netbeans.utilities</groupId>
                     <artifactId>nbm-maven-plugin</artifactId>
-                    <version>4.7</version>
+                    <version>4.8</version>
                     <extensions>true</extensions>
                     <configuration>
                         <!--TODO Fix it-->
@@ -114,7 +114,7 @@
                                 <rules>
                                     <banDuplicatePomDependencyVersions/>
                                     <requireMavenVersion>
-                                        <version>3.1.0</version>
+                                        <version>3.6.3</version>
                                     </requireMavenVersion>
                                     <requireJavaVersion>
                                         <version>17</version>
@@ -534,7 +534,7 @@
     <repositories>
         <repository>
             <id>netbeans-next</id>
-            <url>https://repository.apache.org/content/repositories/orgapachenetbeans-1109</url>
+            <url>https://repository.apache.org/content/repositories/orgapachenetbeans-1114</url>
         </repository>    
     </repositories>
 
