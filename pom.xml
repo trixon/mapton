@@ -90,7 +90,7 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-site-plugin</artifactId>
-                    <version>3.12.0</version>
+                    <version>4.0.0-M1</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-resources-plugin</artifactId>
@@ -98,12 +98,12 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>3.0.0-M6</version>
+                    <version>3.0.0-M7</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-enforcer-plugin</artifactId>
-                    <version>3.0.0</version>
+                    <version>3.1.0</version>
                     <executions>
                         <execution>
                             <id>enforce</id>
@@ -114,7 +114,7 @@
                                 <rules>
                                     <banDuplicatePomDependencyVersions/>
                                     <requireMavenVersion>
-                                        <version>3.6.3</version>
+                                        <version>3.8.5</version>
                                     </requireMavenVersion>
                                     <requireJavaVersion>
                                         <version>17</version>
@@ -532,10 +532,10 @@
     </dependencyManagement>
 
     <repositories>
-        <repository>
+<!--        <repository>
             <id>netbeans-next</id>
             <url>https://repository.apache.org/content/repositories/orgapachenetbeans-1114</url>
-        </repository>    
+        </repository>    -->
     </repositories>
 
     <pluginRepositories>
