@@ -1,0 +1,83 @@
+[
+    {
+        "attributions": {
+            "se.stockholm.orto": {
+                "licenseName": "CC0 1.0",
+                "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.sv",
+                "providerName": "Göteborg",
+                "providerUrl": "https://stockholm.se",
+                "rawHtml": "<p>Bilddatum: Senaste</p>"
+            },
+            "se.stockholm.orto_2019": {
+                "licenseName": "CC0 1.0",
+                "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.sv",
+                "providerName": "Göteborg",
+                "providerUrl": "https://stockholm.se",
+                "rawHtml": "<p>Bilddatum: 2019</p>"
+            },
+            "se.stockholm.orto_2017": {
+                "licenseName": "CC0 1.0",
+                "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.sv",
+                "providerName": "Göteborg",
+                "providerUrl": "https://stockholm.se",
+                "rawHtml": "<p>Bilddatum: 2017</p>"
+            },
+            "se.stockholm.orto_2015": {
+                "licenseName": "CC0 1.0",
+                "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.sv",
+                "providerName": "Göteborg",
+                "providerUrl": "https://stockholm.se",
+                "rawHtml": "<p>Bilddatum: 2015</p>"
+            },
+            "se.stockholm.orto_2010": {
+                "licenseName": "CC0 1.0",
+                "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.sv",
+                "providerName": "Göteborg",
+                "providerUrl": "https://stockholm.se",
+                "rawHtml": "<p>Bilddatum: 2010</p>"
+            },
+            "se.stockholm.orto_2008": {
+                "licenseName": "CC0 1.0",
+                "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.sv",
+                "providerName": "Göteborg",
+                "providerUrl": "https://stockholm.se",
+                "rawHtml": "<p>Bilddatum: 2008</p>"
+            },
+            "se.stockholm.orto_2006": {
+                "licenseName": "CC0 1.0",
+                "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.sv",
+                "providerName": "Göteborg",
+                "providerUrl": "https://stockholm.se",
+                "rawHtml": "<p>Bilddatum: 2006</p>"
+            },
+            "se.stockholm.orto_2003": {
+                "licenseName": "CC0 1.0",
+                "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.sv",
+                "providerName": "Göteborg",
+                "providerUrl": "https://stockholm.se",
+                "rawHtml": "<p>Bilddatum: 2003</p>"
+            },
+            "se.stockholm.orto_1998": {
+                "licenseName": "CC0 1.0",
+                "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.sv",
+                "providerName": "Göteborg",
+                "providerUrl": "https://stockholm.se",
+                "rawHtml": "<p>Bilddatum: 1998</p>"
+            }
+        },
+        "enabled": true,
+        "layers": {
+            "orto": "se.stockholm.orto",
+            "orto_2019": "se.stockholm.orto_2019",
+            "orto_2017": "se.stockholm.orto_2017",
+            "orto_2015": "se.stockholm.orto_2015",
+            "orto_2010": "se.stockholm.orto_2010",
+            "orto_2008": "se.stockholm.orto_2008",
+            "orto_2006": "se.stockholm.orto_2006",
+            "orto_2003": "se.stockholm.orto_2003",
+            "orto_1998": "se.stockholm.orto_1998"
+        },
+        "name": "Göteborg",
+        "url": "https://opengeodata.stockholm.se/services/ortofoto/wms/v1"
+    }
+]

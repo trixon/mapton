@@ -1,0 +1,182 @@
+[
+    {
+        "category": {
+            "": "Sweden",
+            "sv": "Sverige"
+        },
+        "description": {
+            "": "Orthophoto",
+            "sv": "Ortofoto"
+        },
+        "enabled": true,
+        "id": "se.stockholm.orto",
+        "layers": [
+            "se.stockholm.orto",
+            "com.microsoft.ve-a"
+        ],
+        "name": {
+            "": "Göteborg"
+        },
+        "supplier": "Göteborgs stad SBK"
+    },
+    {
+        "category": {
+            "": "Sweden",
+            "sv": "Sverige"
+        },
+        "description": {
+            "": "Orthophoto",
+            "sv": "Ortofoto"
+        },
+        "enabled": true,
+        "id": "se.stockholm.orto_2019",
+        "layers": [
+            "se.stockholm.orto_2019",
+            "com.microsoft.ve-a"
+        ],
+        "name": {
+            "": "Göteborg 2019"
+        },
+        "supplier": "Göteborgs stad SBK"
+    },
+    {
+        "category": {
+            "": "Sweden",
+            "sv": "Sverige"
+        },
+        "description": {
+            "": "Orthophoto",
+            "sv": "Ortofoto"
+        },
+        "enabled": true,
+        "id": "se.stockholm.orto_2017",
+        "layers": [
+            "se.stockholm.orto_2017",
+            "com.microsoft.ve-a"
+        ],
+        "name": {
+            "": "Göteborg 2017"
+        },
+        "supplier": "Göteborgs stad SBK"
+    },
+    {
+        "category": {
+            "": "Sweden",
+            "sv": "Sverige"
+        },
+        "description": {
+            "": "Orthophoto",
+            "sv": "Ortofoto"
+        },
+        "enabled": true,
+        "id": "se.stockholm.orto_2015",
+        "layers": [
+            "se.stockholm.orto_2015",
+            "com.microsoft.ve-a"
+        ],
+        "name": {
+            "": "Göteborg 2015"
+        },
+        "supplier": "Göteborgs stad SBK"
+    },
+    {
+        "category": {
+            "": "Sweden",
+            "sv": "Sverige"
+        },
+        "description": {
+            "": "Orthophoto",
+            "sv": "Ortofoto"
+        },
+        "enabled": true,
+        "id": "se.stockholm.orto_2010",
+        "layers": [
+            "se.stockholm.orto_2010",
+            "com.microsoft.ve-a"
+        ],
+        "name": {
+            "": "Göteborg 2010"
+        },
+        "supplier": "Göteborgs stad SBK"
+    },
+    {
+        "category": {
+            "": "Sweden",
+            "sv": "Sverige"
+        },
+        "description": {
+            "": "Orthophoto",
+            "sv": "Ortofoto"
+        },
+        "enabled": true,
+        "id": "se.stockholm.orto_2008",
+        "layers": [
+            "se.stockholm.orto_2008",
+            "com.microsoft.ve-a"
+        ],
+        "name": {
+            "": "Göteborg 2008"
+        },
+        "supplier": "Göteborgs stad SBK"
+    },
+    {
+        "category": {
+            "": "Sweden",
+            "sv": "Sverige"
+        },
+        "description": {
+            "": "Orthophoto",
+            "sv": "Ortofoto"
+        },
+        "enabled": true,
+        "id": "se.stockholm.orto_2006",
+        "layers": [
+            "se.stockholm.orto_2006",
+            "com.microsoft.ve-a"
+        ],
+        "name": {
+            "": "Göteborg 2006"
+        },
+        "supplier": "Göteborgs stad SBK"
+    },
+    {
+        "category": {
+            "": "Sweden",
+            "sv": "Sverige"
+        },
+        "description": {
+            "": "Orthophoto",
+            "sv": "Ortofoto"
+        },
+        "enabled": true,
+        "id": "se.stockholm.orto_2003",
+        "layers": [
+            "se.stockholm.orto_2003",
+            "com.microsoft.ve-a"
+        ],
+        "name": {
+            "": "Göteborg 2003"
+        },
+        "supplier": "Göteborgs stad SBK"
+    },
+    {
+        "category": {
+            "": "Sweden",
+            "sv": "Sverige"
+        },
+        "description": {
+            "": "Orthophoto",
+            "sv": "Ortofoto"
+        },
+        "enabled": true,
+        "id": "se.stockholm.orto_1998",
+        "layers": [
+            "se.stockholm.orto_1998",
+            "com.microsoft.ve-a"
+        ],
+        "name": {
+            "": "Göteborg 1998"
+        },
+        "supplier": "Göteborgs stad SBK"
+    }
+]
