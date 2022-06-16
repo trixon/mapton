@@ -1,83 +1,189 @@
 [
     {
         "attributions": {
-            "se.stockholm.orto": {
+            "se.stockholm.orto_1995": {
                 "licenseName": "CC0 1.0",
                 "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.sv",
-                "providerName": "Göteborg",
-                "providerUrl": "https://stockholm.se",
-                "rawHtml": "<p>Bilddatum: Senaste</p>"
-            },
-            "se.stockholm.orto_2019": {
-                "licenseName": "CC0 1.0",
-                "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.sv",
-                "providerName": "Göteborg",
-                "providerUrl": "https://stockholm.se",
-                "rawHtml": "<p>Bilddatum: 2019</p>"
-            },
-            "se.stockholm.orto_2017": {
-                "licenseName": "CC0 1.0",
-                "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.sv",
-                "providerName": "Göteborg",
-                "providerUrl": "https://stockholm.se",
-                "rawHtml": "<p>Bilddatum: 2017</p>"
-            },
-            "se.stockholm.orto_2015": {
-                "licenseName": "CC0 1.0",
-                "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.sv",
-                "providerName": "Göteborg",
-                "providerUrl": "https://stockholm.se",
-                "rawHtml": "<p>Bilddatum: 2015</p>"
-            },
-            "se.stockholm.orto_2010": {
-                "licenseName": "CC0 1.0",
-                "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.sv",
-                "providerName": "Göteborg",
-                "providerUrl": "https://stockholm.se",
-                "rawHtml": "<p>Bilddatum: 2010</p>"
-            },
-            "se.stockholm.orto_2008": {
-                "licenseName": "CC0 1.0",
-                "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.sv",
-                "providerName": "Göteborg",
-                "providerUrl": "https://stockholm.se",
-                "rawHtml": "<p>Bilddatum: 2008</p>"
-            },
-            "se.stockholm.orto_2006": {
-                "licenseName": "CC0 1.0",
-                "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.sv",
-                "providerName": "Göteborg",
-                "providerUrl": "https://stockholm.se",
-                "rawHtml": "<p>Bilddatum: 2006</p>"
-            },
-            "se.stockholm.orto_2003": {
-                "licenseName": "CC0 1.0",
-                "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.sv",
-                "providerName": "Göteborg",
-                "providerUrl": "https://stockholm.se",
-                "rawHtml": "<p>Bilddatum: 2003</p>"
-            },
-            "se.stockholm.orto_1998": {
-                "licenseName": "CC0 1.0",
-                "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.sv",
-                "providerName": "Göteborg",
-                "providerUrl": "https://stockholm.se",
-                "rawHtml": "<p>Bilddatum: 1998</p>"
+                "providerName": "Stockholms stads SBK",
+                "providerUrl": "https://dataportalen.stockholm.se/dataportalen/?SplashScreen=No",
+                "rawHtml": "<p>Bilddatum: 1995</p>"
             }
         },
         "enabled": true,
         "layers": {
-            "orto": "se.stockholm.orto",
-            "orto_2019": "se.stockholm.orto_2019",
-            "orto_2017": "se.stockholm.orto_2017",
-            "orto_2015": "se.stockholm.orto_2015",
-            "orto_2010": "se.stockholm.orto_2010",
-            "orto_2008": "se.stockholm.orto_2008",
-            "orto_2006": "se.stockholm.orto_2006",
-            "orto_2003": "se.stockholm.orto_2003",
-            "orto_1998": "se.stockholm.orto_1998"
+            "p_1003060": "se.stockholm.orto_1995"
         },
-        "name": "Göteborg",
-        "url": "https://opengeodata.stockholm.se/services/ortofoto/wms/v1"
+        "name": "Stockholms stads SBK",
+        "url": "http://kartor.stockholm.se/bios/wms/app/baggis/web/WMS_STHLM_ORTOFOTO_1995"
+    },
+    {
+        "attributions": {
+            "se.stockholm.orto_2006": {
+                "licenseName": "CC0 1.0",
+                "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.sv",
+                "providerName": "Stockholms stads SBK",
+                "providerUrl": "https://dataportalen.stockholm.se/dataportalen/?SplashScreen=No",
+                "rawHtml": "<p>Bilddatum: 2006</p>"
+            }
+        },
+        "enabled": true,
+        "layers": {
+            "p_1002830": "se.stockholm.orto_2006"
+        },
+        "name": "Stockholms stads SBK",
+        "url": "http://kartor.stockholm.se/bios/wms/app/baggis/web/WMS_STHLM_ORTOFOTO_2006"
+    },
+    {
+        "attributions": {
+            "se.stockholm.orto_2009": {
+                "licenseName": "CC0 1.0",
+                "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.sv",
+                "providerName": "Stockholms stads SBK",
+                "providerUrl": "https://dataportalen.stockholm.se/dataportalen/?SplashScreen=No",
+                "rawHtml": "<p>Bilddatum: 2009</p>"
+            }
+        },
+        "enabled": true,
+        "layers": {
+            "p_1003000": "se.stockholm.orto_2009"
+        },
+        "name": "Stockholms stads SBK",
+        "url": "http://kartor.stockholm.se/bios/wms/app/baggis/web/WMS_STHLM_ORTOFOTO_2009"
+    },
+    {
+        "attributions": {
+            "se.stockholm.orto_2010": {
+                "licenseName": "CC0 1.0",
+                "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.sv",
+                "providerName": "Stockholms stads SBK",
+                "providerUrl": "https://dataportalen.stockholm.se/dataportalen/?SplashScreen=No",
+                "rawHtml": "<p>Bilddatum: 2010</p>"
+            }
+        },
+        "enabled": true,
+        "layers": {
+            "p_1003020": "se.stockholm.orto_2010"
+        },
+        "name": "Stockholms stads SBK",
+        "url": "http://kartor.stockholm.se/bios/wms/app/baggis/web/WMS_STHLM_ORTOFOTO_2010"
+    },
+    {
+        "attributions": {
+            "se.stockholm.orto_2012": {
+                "licenseName": "CC0 1.0",
+                "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.sv",
+                "providerName": "Stockholms stads SBK",
+                "providerUrl": "https://dataportalen.stockholm.se/dataportalen/?SplashScreen=No",
+                "rawHtml": "<p>Bilddatum: 2012</p>"
+            }
+        },
+        "enabled": true,
+        "layers": {
+            "p_1003040": "se.stockholm.orto_2012"
+        },
+        "name": "Stockholms stads SBK",
+        "url": "http://kartor.stockholm.se/bios/wms/app/baggis/web/WMS_STHLM_ORTOFOTO_2012"
+    },
+    {
+        "attributions": {
+            "se.stockholm.orto_2014": {
+                "licenseName": "CC0 1.0",
+                "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.sv",
+                "providerName": "Stockholms stads SBK",
+                "providerUrl": "https://dataportalen.stockholm.se/dataportalen/?SplashScreen=No",
+                "rawHtml": "<p>Bilddatum: 2014</p>"
+            }
+        },
+        "enabled": true,
+        "layers": {
+            "p_1003050": "se.stockholm.orto_2014"
+        },
+        "name": "Stockholms stads SBK",
+        "url": "http://kartor.stockholm.se/bios/wms/app/baggis/web/WMS_STHLM_ORTOFOTO_2014"
+    },
+    {
+        "attributions": {
+            "se.stockholm.orto_2015": {
+                "licenseName": "CC0 1.0",
+                "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.sv",
+                "providerName": "Stockholms stads SBK",
+                "providerUrl": "https://dataportalen.stockholm.se/dataportalen/?SplashScreen=No",
+                "rawHtml": "<p>Bilddatum: 2015</p>"
+            }
+        },
+        "enabled": true,
+        "layers": {
+            "p_1002820": "se.stockholm.orto_2015"
+        },
+        "name": "Stockholms stads SBK",
+        "url": "http://kartor.stockholm.se/bios/wms/app/baggis/web/WMS_STHLM_ORTOFOTO_2015"
+    },
+    {
+        "attributions": {
+            "se.stockholm.orto_2016": {
+                "licenseName": "CC0 1.0",
+                "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.sv",
+                "providerName": "Stockholms stads SBK",
+                "providerUrl": "https://dataportalen.stockholm.se/dataportalen/?SplashScreen=No",
+                "rawHtml": "<p>Bilddatum: 2016</p>"
+            }
+        },
+        "enabled": true,
+        "layers": {
+            "p_1002630": "se.stockholm.orto_2016"
+        },
+        "name": "Stockholms stads SBK",
+        "url": "http://kartor.stockholm.se/bios/wms/app/baggis/web/WMS_STHLM_ORTOFOTO_2016"
+    },
+    {
+        "attributions": {
+            "se.stockholm.orto_2017": {
+                "licenseName": "CC0 1.0",
+                "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.sv",
+                "providerName": "Stockholms stads SBK",
+                "providerUrl": "https://dataportalen.stockholm.se/dataportalen/?SplashScreen=No",
+                "rawHtml": "<p>Bilddatum: 2017</p>"
+            }
+        },
+        "enabled": true,
+        "layers": {
+            "p_1002980": "se.stockholm.orto_2017"
+        },
+        "name": "Stockholms stads SBK",
+        "url": "http://kartor.stockholm.se/bios/wms/app/baggis/web/WMS_STHLM_ORTOFOTO_2017"
+    },
+    {
+        "attributions": {
+            "se.stockholm.orto_2018": {
+                "licenseName": "CC0 1.0",
+                "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.sv",
+                "providerName": "Stockholms stads SBK",
+                "providerUrl": "https://dataportalen.stockholm.se/dataportalen/?SplashScreen=No",
+                "rawHtml": "<p>Bilddatum: 2018</p>"
+            }
+        },
+        "enabled": true,
+        "layers": {
+            "p_1003070": "se.stockholm.orto_2018"
+        },
+        "name": "Stockholms stads SBK",
+        "url": "http://kartor.stockholm.se/bios/wms/app/baggis/web/WMS_STHLM_ORTOFOTO_2018?"
+    },
+    {
+        "attributions": {
+            "se.stockholm.orto_2019": {
+                "licenseName": "CC0 1.0",
+                "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.sv",
+                "providerName": "Stockholms stads SBK",
+                "providerUrl": "https://dataportalen.stockholm.se/dataportalen/?SplashScreen=No",
+                "rawHtml": "<p>Bilddatum: 2019</p>"
+            }
+        },
+        "enabled": true,
+        "layers": {
+            "p_1003080": "se.stockholm.orto_2019"
+        },
+        "name": "Stockholms stads SBK",
+        "url": "http://kartor.stockholm.se/bios/wms/app/baggis/web/WMS_STHLM_ORTOFOTO_2019?"
     }
 ]
