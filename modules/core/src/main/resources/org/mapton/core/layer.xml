@@ -58,6 +58,14 @@ limitations under the License.
             <file name="org-openide-actions-ReplaceAction.shadow_hidden"/>
         </folder>
         <file name="GoTo_hidden"/>
+        <folder name="Navigate">
+            <attr name="position" intvalue="450"/>
+            <attr name="displayName" bundlevalue="org.mapton.core.actions.Bundle#Navigate"/>
+            <folder name="QuickNav">
+                <attr name="position" intvalue="10"/>
+                <attr name="displayName" bundlevalue="org.mapton.core.actions.Bundle#CTL_QuickNav"/>
+            </folder>
+        </folder>
         <folder name="Help">
             <file name="org-netbeans-modules-autoupdate-ui-actions-CheckForUpdatesAction.shadow_hidden"/>
         </folder>

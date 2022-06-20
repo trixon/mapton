@@ -13,38 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core.actions;
+package org.mapton.core.actions.quicknav;
 
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import javafx.application.Platform;
-import org.mapton.api.Mapton;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
-import org.openide.util.NbBundle.Messages;
-import se.trixon.almond.nbp.Almond;
+import org.openide.util.NbBundle;
 
 @ActionID(
         category = "Mapton",
-        id = "org.mapton.core.actions.HomeAction"
+        id = "org.mapton.core.actions.quicknav.QuickNavGet9Action"
 )
 @ActionRegistration(
-        displayName = "#CTL_HomeAction"
+        displayName = "#CTL_QuickNav9Get"
 )
 @ActionReferences({
-    @ActionReference(path = "Menu/Navigate", position = 0, separatorAfter = 1),
-    @ActionReference(path = "Shortcuts", name = "C-H")
+    @ActionReference(path = "Menu/Navigate/QuickNav", position = 90),
+    @ActionReference(path = "Shortcuts", name = "D-9")
 })
-@Messages("CTL_HomeAction=Home")
-public final class HomeAction implements ActionListener {
+@NbBundle.Messages("CTL_QuickNav9Get=Go to 9")
+public final class QuickNavGet9Action extends QuickNavAction {
+
+    public QuickNavGet9Action() {
+        super("9");
+    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        Almond.requestActive("MapTopComponent");
-        Platform.runLater(() -> {
-            Mapton.getEngine().goHome();
-        });
+        get();
     }
+
 }
