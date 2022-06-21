@@ -23,6 +23,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
+import javafx.scene.control.Tooltip;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
@@ -183,7 +184,9 @@ public class TransformationView extends BorderPane {
 
     private void open(File file) {
         mFile = file;
-        mSourceLabel.setText(file.getAbsolutePath());
+        mSourceLabel.setText(file.getName());
+        mSourceLabel.setTooltip(new Tooltip(file.getAbsolutePath()));
+
         try {
             mSourceGeo = new Geo();
             mSourceGeo.read(file);
