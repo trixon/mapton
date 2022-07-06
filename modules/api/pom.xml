@@ -415,12 +415,12 @@
         <dependency>
             <groupId>eu.hansolo.fx</groupId>
             <artifactId>countries</artifactId>
-            <version>17.0.22</version>
+            <version>17.0.23</version>
         </dependency>
         <dependency>
             <groupId>eu.hansolo.fx</groupId>
             <artifactId>heatmap</artifactId>
-            <version>17.0.9</version>
+            <version>17.0.12</version>
         </dependency>
         <dependency>
             <groupId>eu.hansolo</groupId>
@@ -430,12 +430,12 @@
         <dependency>
             <groupId>eu.hansolo</groupId>
             <artifactId>toolbox</artifactId>
-            <version>17.0.25</version>
+            <version>17.0.26</version>
         </dependency>
         <dependency>
             <groupId>eu.hansolo</groupId>
             <artifactId>toolboxfx</artifactId>
-            <version>17.0.28</version>
+            <version>17.0.29</version>
         </dependency>
 
         <dependency>
