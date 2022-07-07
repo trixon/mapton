@@ -103,7 +103,7 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
     private CompoundElevationModel mNormalElevationModel;
     private final ModuleOptions mOptions = ModuleOptions.getInstance();
     private Globe mRoundGlobe;
-    private ElevationModel mZeroElevationModel = new ZeroElevationModel();
+    private final ElevationModel mZeroElevationModel = new ZeroElevationModel();
 
     public WorldWindowPanel(Runnable postCreateRunnable) {
         MaptonNb.progressStart(MDict.MAP_ENGINE.toString());
@@ -291,31 +291,18 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
     private void initListeners() {
         mOptions.getPreferences().addPreferenceChangeListener(pce -> {
             switch (pce.getKey()) {
-                case ModuleOptions.KEY_MAP_OPACITY:
-                case ModuleOptions.KEY_MAP_STYLE:
+                case KEY_MAP_OPACITY, KEY_MAP_STYLE ->
                     updateStyle();
-                    break;
-                case ModuleOptions.KEY_MAP_ELEVATION:
+                case KEY_MAP_ELEVATION ->
                     updateElevation();
-                    break;
-                case ModuleOptions.KEY_MAP_GLOBE:
+                case KEY_MAP_GLOBE ->
                     updateMode();
-                    break;
-                case ModuleOptions.KEY_MAP_PROJECTION:
+                case KEY_MAP_PROJECTION ->
                     updateProjection();
-                    break;
-                case ModuleOptions.KEY_DISPLAY_ATMOSPHERE:
-                case ModuleOptions.KEY_DISPLAY_COMPASS:
-                case ModuleOptions.KEY_DISPLAY_CONTROLS:
-                case ModuleOptions.KEY_DISPLAY_PLACE_NAMES:
-                case ModuleOptions.KEY_DISPLAY_SCALE_BAR:
-                case ModuleOptions.KEY_DISPLAY_STARS:
-                case ModuleOptions.KEY_DISPLAY_WORLD_MAP:
+                case KEY_DISPLAY_ATMOSPHERE, KEY_DISPLAY_COMPASS, KEY_DISPLAY_CONTROLS, KEY_DISPLAY_PLACE_NAMES, KEY_DISPLAY_SCALE_BAR, KEY_DISPLAY_STARS, KEY_DISPLAY_WORLD_MAP ->
                     updateScreenLayers();
-                    break;
-
-                default:
-                    break;
+                default -> {
+                }
             }
         });
 
@@ -498,7 +485,7 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
     }
 
     private void updateElevation() {
-        wwd.getModel().getGlobe().setElevationModel(mOptions.is(KEY_MAP_ELEVATION) ? mNormalElevationModel : mZeroElevationModel);
+        wwd.getModel().getGlobe().setElevationModel(mOptions.is(KEY_MAP_ELEVATION, DEFAULT_MAP_ELEVATION) ? mNormalElevationModel : mZeroElevationModel);
         wwd.redraw();
     }
 
