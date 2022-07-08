@@ -185,7 +185,7 @@ public class Mapton {
 
     public static File getConfigDir() {
         if (CONFIG_DIR == null) {
-            CONFIG_DIR = new File(System.getProperty("netbeans.user"), "mapton-modules");
+            CONFIG_DIR = new File(Places.getUserDirectory(), "mapton-modules");
         }
 
         return CONFIG_DIR;
