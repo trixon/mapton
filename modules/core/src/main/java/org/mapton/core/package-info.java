@@ -15,7 +15,7 @@
  */
 @OptionsPanelController.ContainerRegistration(
         id = "Modules",
-        position = 2,
+        position = 3,
         categoryName = "#OptionsCategory_Name_Modules",
         iconBase = "org/mapton/core/modules.png",
         keywords = "#OptionsCategory_Keywords_Modules",

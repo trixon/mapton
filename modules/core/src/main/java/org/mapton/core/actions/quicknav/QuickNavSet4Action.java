@@ -31,7 +31,7 @@ import org.openide.util.NbBundle;
 )
 @ActionReferences({
     @ActionReference(path = "Menu/Navigate/QuickNav", position = 240),
-    @ActionReference(path = "Shortcuts", name = "DS-4")
+    @ActionReference(path = "Shortcuts", name = "DS-4", position = 1)
 })
 @NbBundle.Messages("CTL_QuickNav4Set=Set 4")
 public final class QuickNavSet4Action extends QuickNavAction {

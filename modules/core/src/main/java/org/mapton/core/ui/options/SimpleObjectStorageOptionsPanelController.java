@@ -24,7 +24,7 @@ import org.openide.util.HelpCtx;
 import org.openide.util.Lookup;
 
 @OptionsPanelController.TopLevelRegistration(
-        position = 1,
+        position = 2,
         categoryName = "#OptionsCategory_Name_SimpleObjectStorage",
         iconBase = "org/mapton/core/ui/options/simple_object_storage.png",
         keywords = "#OptionsCategory_Keywords_SimpleObjectStorage",

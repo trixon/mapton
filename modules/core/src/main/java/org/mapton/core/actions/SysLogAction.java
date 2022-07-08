@@ -32,7 +32,6 @@ import org.openide.util.NbBundle;
         displayName = "#CTL_SysLogAction"
 )
 @ActionReferences({
-    @ActionReference(path = "Shortcuts", name = "DS-4"),
     @ActionReference(path = "Menu/View", position = 1)
 })
 @NbBundle.Messages({

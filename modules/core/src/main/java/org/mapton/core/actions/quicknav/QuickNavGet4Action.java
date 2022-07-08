@@ -31,7 +31,7 @@ import org.openide.util.NbBundle;
 )
 @ActionReferences({
     @ActionReference(path = "Menu/Navigate/QuickNav", position = 40),
-    @ActionReference(path = "Shortcuts", name = "D-4")
+    @ActionReference(path = "Shortcuts", name = "D-4", position = 1)
 })
 @NbBundle.Messages("CTL_QuickNav4Get=Go to 4")
 public final class QuickNavGet4Action extends QuickNavAction {
@@ -44,5 +44,4 @@ public final class QuickNavGet4Action extends QuickNavAction {
     public void actionPerformed(ActionEvent e) {
         get();
     }
-
 }
