@@ -21,7 +21,6 @@ import javafx.scene.layout.BorderPane;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
-import org.mapton.base.ui.updater.UpdaterView;
 import org.mapton.core.api.MTopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.base.ui.updater;
+package org.mapton.core.updater;
 
 import java.util.ArrayList;
 import java.util.Comparator;
