@@ -15,7 +15,6 @@
  */
 package org.mapton.core.updater;
 
-import java.awt.event.ActionEvent;
 import java.util.ResourceBundle;
 import java.util.concurrent.TimeUnit;
 import javax.swing.Timer;
@@ -25,6 +24,7 @@ import org.mapton.api.MUpdater;
 import org.openide.awt.NotificationDisplayer;
 import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
+import org.openide.windows.OnShowing;
 import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.SystemHelper;
 
@@ -32,18 +32,24 @@ import se.trixon.almond.util.SystemHelper;
  *
  * @author Patrik Karlström
  */
-public class UpdateNotificator {
+@OnShowing
+public class UpdateNotificatorInitializer implements Runnable {
 
-    private final ResourceBundle mBundle = NbBundle.getBundle(UpdateNotificator.class);
-    private final Timer mTimer;
+    private final ResourceBundle mBundle = NbBundle.getBundle(UpdateNotificatorInitializer.class);
+    private final UpdaterManager mUpdaterManager = UpdaterManager.getInstance();
 
-    public UpdateNotificator() {
-        mTimer = new Timer((int) TimeUnit.HOURS.toMillis(1), (ActionEvent e) -> {
+    public UpdateNotificatorInitializer() {
+        mUpdaterManager.populate();
+    }
+
+    @Override
+    public void run() {
+        var timer = new Timer((int) TimeUnit.HOURS.toMillis(1), actionEvent -> {
             check();
         });
 
-        mTimer.setInitialDelay((int) TimeUnit.MINUTES.toMillis(2));
-        mTimer.start();
+        timer.setInitialDelay((int) TimeUnit.MINUTES.toMillis(2));
+        timer.start();
     }
 
     private void check() {

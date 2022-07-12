@@ -32,7 +32,6 @@ import org.mapton.api.MOptions;
 import static org.mapton.api.MOptions.KEY_UI_LAF_DARK;
 import org.mapton.api.Mapton;
 import org.mapton.core.api.MaptonNb;
-import org.mapton.core.updater.UpdateNotificator;
 import org.opengis.referencing.FactoryException;
 import org.openide.awt.Actions;
 import org.openide.awt.HtmlBrowser;
@@ -153,8 +152,6 @@ public class Initializer implements Runnable {
                     }
                 });
             });
-
-            new UpdateNotificator();
         });
 
         Mapton.getGlobalState().addListener(gsce -> {

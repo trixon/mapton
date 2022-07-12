@@ -15,12 +15,7 @@
  */
 package org.mapton.core.updater;
 
-import java.util.Arrays;
 import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
-import org.controlsfx.control.action.Action;
-import org.controlsfx.control.action.ActionUtils;
-import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.mapton.core.api.MTopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
@@ -29,8 +24,6 @@ import org.openide.awt.ActionReferences;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.fx.FxHelper;
-import se.trixon.almond.util.icons.material.MaterialIcon;
 
 /**
  * Top component which displays something.
@@ -79,40 +72,6 @@ public final class UpdaterTopComponent extends MTopComponent {
     }
 
     private Scene createScene() {
-        var updaterView = new UpdaterView();
-
-        var updateAction = new Action(Dict.UPDATE.toString(), event -> {
-            updaterView.update();
-        });
-        updateAction.setGraphic(MaterialIcon._Action.SYSTEM_UPDATE_ALT.getImageView(getIconSizeToolBarInt()));
-
-        var refreshAction = new Action(Dict.REFRESH.toString(), event -> {
-            updaterView.refreshUpdaters();
-        });
-        refreshAction.setGraphic(MaterialIcon._Navigation.REFRESH.getImageView(getIconSizeToolBarInt()));
-
-        var clearAction = new Action(Dict.CLEAR.toString(), event -> {
-            updaterView.clear();
-        });
-        clearAction.setGraphic(MaterialIcon._Content.CLEAR.getImageView(getIconSizeToolBarInt()));
-
-        var actions = Arrays.asList(
-                refreshAction,
-                updateAction,
-                clearAction
-        );
-
-        var toolBar = ActionUtils.createToolBar(actions, ActionUtils.ActionTextBehavior.SHOW);
-        FxHelper.undecorateButtons(toolBar.getItems().stream());
-        FxHelper.slimToolBar(toolBar);
-
-        updateAction.disabledProperty().bind(updaterView.runningProperty().or(updaterView.selectedProperty().not()));
-        refreshAction.disabledProperty().bind(updaterView.runningProperty());
-
-        var root = new BorderPane(updaterView.getLogPanel());
-        root.setLeft(updaterView.getListNode());
-        root.setTop(toolBar);
-
-        return new Scene(root);
+        return new Scene(new UpdaterView());
     }
 }

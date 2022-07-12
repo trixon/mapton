@@ -32,7 +32,7 @@ import se.trixon.almond.util.Dict;
  */
 public class UpdaterMaskerPane extends MMaskerPaneBase {
 
-    private MPrint mPrint = new MPrint(MKey.UPDATER_LOGGER);
+    private final MPrint mPrint = new MPrint(MKey.UPDATER_LOGGER);
     private final BooleanProperty mRunningProperty = new SimpleBooleanProperty(false);
 
     public UpdaterMaskerPane() {
@@ -46,7 +46,7 @@ public class UpdaterMaskerPane extends MMaskerPaneBase {
         mMaskerPane.setVisible(true);
         mRunningProperty.set(true);
         new Thread(() -> {
-            for (MUpdater updater : FXCollections.observableArrayList(updaters)) {//Avoid java.util.ConcurrentModificationException
+            for (var updater : FXCollections.observableArrayList(updaters)) {//Avoid java.util.ConcurrentModificationException
                 if (updater.isMarkedForUpdate()) {
                     mPrint.out(String.format("%s %s/%s", "Update", updater.getCategory(), updater.getName()));
                     updater.run();
