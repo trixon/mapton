@@ -33,7 +33,6 @@ import org.mapton.api.MKey;
 import org.mapton.api.MPrint;
 import org.mapton.api.MUpdater;
 import org.openide.util.Lookup;
-import org.openide.util.LookupEvent;
 import se.trixon.almond.util.fx.FxHelper;
 
 /**
@@ -47,18 +46,17 @@ public class UpdaterListView extends ListView<MUpdater> {
 
     public UpdaterListView() {
         setMinWidth(FxHelper.getUIScaled(350));
-        setCellFactory((ListView<MUpdater> param) -> new UpdaterListCell());
-        Lookup.getDefault().lookupResult(MUpdater.class).addLookupListener((LookupEvent ev) -> {
+        setCellFactory(listView -> new UpdaterListCell());
+
+        Lookup.getDefault().lookupResult(MUpdater.class).addLookupListener(lookupEvent -> {
             refreshUpdaters();
         });
-
-        refreshUpdaters();
     }
 
-    public void refreshUpdaters() {
+    public synchronized void refreshUpdaters() {
         new Thread(() -> {
-            ArrayList<MUpdater> updaters = new ArrayList<>(Lookup.getDefault().lookupAll(MUpdater.class));
-            for (MUpdater updater : updaters) {
+            var updaters = new ArrayList<>(Lookup.getDefault().lookupAll(MUpdater.class));
+            for (var updater : updaters) {
                 updater.setMarkedForUpdate(updater.isOutOfDate());
                 if (updater.isAutoUpdate()) {
                     updater.setAutoUpdatePostRunnable(() -> {
@@ -75,9 +73,9 @@ public class UpdaterListView extends ListView<MUpdater> {
                 mPrint.out(String.format("%s: %s %s", "Status check", updater.getName(), status));
             }
 
-            Comparator<MUpdater> c1 = (MUpdater o1, MUpdater o2) -> Boolean.compare(o2.isOutOfDate(), o1.isMarkedForUpdate());
-            Comparator<MUpdater> c2 = (MUpdater o1, MUpdater o2) -> o1.getCategory().compareTo(o2.getCategory());
-            Comparator<MUpdater> c3 = (MUpdater o1, MUpdater o2) -> o1.getName().compareTo(o2.getName());
+            Comparator<MUpdater> c1 = (o1, o2) -> Boolean.compare(o2.isOutOfDate(), o1.isMarkedForUpdate());
+            Comparator<MUpdater> c2 = (o1, o2) -> o1.getCategory().compareTo(o2.getCategory());
+            Comparator<MUpdater> c3 = (o1, o2) -> o1.getName().compareTo(o2.getName());
 
             updaters.sort(c1.thenComparing(c2).thenComparing(c3));
 
@@ -100,6 +98,7 @@ public class UpdaterListView extends ListView<MUpdater> {
                 break;
             }
         }
+
         mSelectedProperty.set(markedForUpdate);
     }
 
@@ -151,8 +150,8 @@ public class UpdaterListView extends ListView<MUpdater> {
 
         private void createUI() {
             mNameCheckBox.setFont(mHeaderFont);
-            Font font = Font.font(FxHelper.getScaledFontSize() * 0.9);
-            Font italicFont = Font.font(font.getFamily(), FontPosture.ITALIC, font.getSize());
+            var font = Font.font(FxHelper.getScaledFontSize() * 0.9);
+            var italicFont = Font.font(font.getFamily(), FontPosture.ITALIC, font.getSize());
             mCategoryLabel.setFont(font);
             mCommentLabel.setFont(italicFont);
             mLastUpdatedLabel.setFont(font);
@@ -167,7 +166,5 @@ public class UpdaterListView extends ListView<MUpdater> {
 
             mVBox.setPadding(FxHelper.getUIScaledInsets(4));
         }
-
     }
-
 }

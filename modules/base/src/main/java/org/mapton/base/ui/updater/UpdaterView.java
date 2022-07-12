@@ -19,7 +19,6 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.Node;
 import org.mapton.api.MKey;
-import org.mapton.api.MUpdater;
 import org.mapton.api.Mapton;
 import se.trixon.almond.util.LogListener;
 import se.trixon.almond.util.fx.control.LogPanel;
@@ -81,7 +80,7 @@ public class UpdaterView implements LogListener {
     }
 
     public void update() {
-        for (MUpdater updater : mListView.getItems()) {
+        for (var updater : mListView.getItems()) {
             if (updater.isMarkedForUpdate()) {
                 mUpdaterMaskerPane.update(mListView.getItems(), () -> {
                     refreshUpdaters();

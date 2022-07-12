@@ -16,11 +16,7 @@
 package org.mapton.core.updater;
 
 import java.util.Arrays;
-import java.util.List;
-import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.control.ButtonBase;
-import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
@@ -71,7 +67,6 @@ public final class UpdaterTopComponent extends MTopComponent {
     @Override
     protected void initFX() {
         setScene(createScene());
-
     }
 
     void readProperties(java.util.Properties p) {
@@ -85,42 +80,37 @@ public final class UpdaterTopComponent extends MTopComponent {
     }
 
     private Scene createScene() {
-        UpdaterView updaterView = new UpdaterView();
+        var updaterView = new UpdaterView();
 
-        Action updateAction = new Action(Dict.UPDATE.toString(), event -> {
+        var updateAction = new Action(Dict.UPDATE.toString(), event -> {
             updaterView.update();
         });
         updateAction.setGraphic(MaterialIcon._Action.SYSTEM_UPDATE_ALT.getImageView(getIconSizeToolBarInt()));
 
-        Action refreshAction = new Action(Dict.REFRESH.toString(), event -> {
+        var refreshAction = new Action(Dict.REFRESH.toString(), event -> {
             updaterView.refreshUpdaters();
         });
         refreshAction.setGraphic(MaterialIcon._Navigation.REFRESH.getImageView(getIconSizeToolBarInt()));
 
-        Action clearAction = new Action(Dict.CLEAR.toString(), event -> {
+        var clearAction = new Action(Dict.CLEAR.toString(), event -> {
             updaterView.clear();
         });
         clearAction.setGraphic(MaterialIcon._Content.CLEAR.getImageView(getIconSizeToolBarInt()));
 
-        List<Action> actions = Arrays.asList(
-                updateAction,
+        var actions = Arrays.asList(
                 refreshAction,
+                updateAction,
                 clearAction
         );
 
-        ToolBar toolBar = ActionUtils.createToolBar(actions, ActionUtils.ActionTextBehavior.SHOW);
-        toolBar.getItems().stream().filter((item) -> (item instanceof ButtonBase))
-                .map((item) -> (ButtonBase) item).forEachOrdered((buttonBase) -> {
-            FxHelper.undecorateButton(buttonBase);
-        });
-
-        toolBar.setStyle("-fx-spacing: 0px;");
-        toolBar.setPadding(Insets.EMPTY);
+        var toolBar = ActionUtils.createToolBar(actions, ActionUtils.ActionTextBehavior.SHOW);
+        FxHelper.undecorateButtons(toolBar.getItems().stream());
+        FxHelper.slimToolBar(toolBar);
 
         updateAction.disabledProperty().bind(updaterView.runningProperty().or(updaterView.selectedProperty().not()));
         refreshAction.disabledProperty().bind(updaterView.runningProperty());
 
-        BorderPane root = new BorderPane(updaterView.getLogPanel());
+        var root = new BorderPane(updaterView.getLogPanel());
         root.setLeft(updaterView.getListNode());
         root.setTop(toolBar);
 
