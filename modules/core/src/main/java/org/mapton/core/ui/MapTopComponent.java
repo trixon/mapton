@@ -100,7 +100,6 @@ public final class MapTopComponent extends MTopComponent {
         putClientProperty(PROP_DRAGGING_DISABLED, Boolean.TRUE);
         putClientProperty(PROP_MAXIMIZATION_DISABLED, Boolean.TRUE);
         putClientProperty(PROP_UNDOCKING_DISABLED, Boolean.TRUE);
-        putClientProperty("print.printable", Boolean.TRUE); // NOI18N
         putClientProperty("print.name", String.format("Mapton - %s", Dict.MAP.toString())); // NOI18N
 
         var map = se.trixon.almond.util.swing.dialogs.SimpleDialog.getExtensionFilters();
@@ -296,6 +295,7 @@ public final class MapTopComponent extends MTopComponent {
 
     private void setEngine(MEngine engine) {
         setToolTipText(String.format("%s: %s", MDict.MAP_ENGINE.toString(), engine.getName()));
+        putClientProperty("print.printable", !engine.getName().equalsIgnoreCase("WorldWind")); // NOI18N
 
         if (engine.isSwing()) {
             if (mProgressPanel == null) {
