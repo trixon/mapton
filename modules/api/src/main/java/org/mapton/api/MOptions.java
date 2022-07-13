@@ -35,6 +35,7 @@ public class MOptions extends OptionsBase {
     public static final String DEFAULT_UI_LAF_ICON_COLOR_BRIGHT = "D3D3D3";
     public static final String DEFAULT_UI_LAF_ICON_COLOR_DARK = "1A1A1A";
     public static final String KEY_APP_FIRST_RUN = "app.first_run";
+    public static final String KEY_APP_START_COUNTER = "app.start_counter";
     public static final String KEY_COPY_LOCATION_COORDINATE_SEPARATOR = "copyLocation.coordinateSeparator";
     public static final String KEY_COPY_LOCATION_DECIMAL_SYMBOL = "copyLocation.decimalSymbol";
     public static final String KEY_GRID_GLOBAL_CLAMP_TO_GROUND = "global_clamp_to_ground";

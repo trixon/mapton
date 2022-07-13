@@ -138,7 +138,7 @@ public class Initializer implements Runnable {
 
             Mapton.getExecutionFlow().executeWhenReady(MKey.EXECUTION_FLOW_MAP_INITIALIZED, () -> {
                 MaptonNb.progressStop(Dict.WARMING_UP.toString());
-                SwingHelper.runLaterDelayed(10000, () -> {
+                SwingHelper.runLaterDelayed(5000, () -> {
                     //Pre-load but don't display
                     Almond.getTopComponent("ReportsTopComponent");
                     Almond.getTopComponent("EditorsTopComponent");
@@ -147,7 +147,8 @@ public class Initializer implements Runnable {
                     Almond.getTopComponent("ChartTopComponent");
                     Almond.getTopComponent("BeforeAfterTopComponent");
 
-                    if (mOptions.isFirstRun()) {
+                    int startCounter = PrefsHelper.inc(mOptions.getPreferences(), MOptions.KEY_APP_START_COUNTER);
+                    if (startCounter == 2 || startCounter % 100 == 0) {
                         Actions.forID("Mapton", "org.mapton.core.actions.AboutMapsAction").actionPerformed(null);
                     }
                 });
