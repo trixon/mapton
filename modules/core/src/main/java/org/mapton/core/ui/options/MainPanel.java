@@ -147,7 +147,7 @@ final class MainPanel extends javax.swing.JPanel {
                 mIconBrightColorPicker.valueProperty().bindBidirectional(mOptions.iconColorBrightProperty());
                 mIconDarkColorPicker.valueProperty().bindBidirectional(mOptions.iconColorDarkProperty());
 
-                mEngineComboBox.valueProperty().bindBidirectional(mOptions.engineProperty());
+                mEngineComboBox.valueProperty().bindBidirectional(mOptions.engineInternalProperty());
                 mCrosshairToggleSwitch.selectedProperty().bindBidirectional(mOptions.displayCrosshairProperty());
                 mHomeIconToggleSwitch.selectedProperty().bindBidirectional(mOptions.displayHomeIconProperty());
 
@@ -194,7 +194,7 @@ final class MainPanel extends javax.swing.JPanel {
 
             mOptions.displayCrosshairProperty().set(mOldDisplayCrosshair);
             mOptions.displayHomeIconProperty().set(mOldDisplayHomeIcon);
-            mOptions.engineProperty().set(mOldEngine);
+            mOptions.engineInternalProperty().set(mOldEngine);
         });
     }
 

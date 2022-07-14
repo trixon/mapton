@@ -83,6 +83,7 @@ public class MOptions extends OptionsBase {
 
     private final BooleanProperty mDisplayCrosshairProperty = new SimpleBooleanProperty(true);
     private final BooleanProperty mDisplayHomeIconProperty = new SimpleBooleanProperty(false);
+    private final ObjectProperty<String> mEngineInternalProperty = new SimpleObjectProperty<>();
     private final ObjectProperty<String> mEngineProperty = new SimpleObjectProperty<>("WorldWind");
     private final ObjectProperty<Color> mIconColorBrightProperty = new SimpleObjectProperty<>(Color.valueOf(DEFAULT_UI_LAF_ICON_COLOR_BRIGHT));
     private final ObjectProperty<Color> mIconColorDarkProperty = new SimpleObjectProperty<>(Color.valueOf(DEFAULT_UI_LAF_ICON_COLOR_DARK));
@@ -115,6 +116,10 @@ public class MOptions extends OptionsBase {
 
     public BooleanProperty displayHomeIconProperty() {
         return mDisplayHomeIconProperty;
+    }
+
+    public ObjectProperty<String> engineInternalProperty() {
+        return mEngineInternalProperty;
     }
 
     public ObjectProperty<String> engineProperty() {
@@ -299,15 +304,19 @@ public class MOptions extends OptionsBase {
             put(KEY_MAP_DISPLAY_HOME_ICON, t1);
         });
 
-        mEngineProperty.addListener((ov, t, t1) -> {
-            final MEngine oldEngine = Mapton.getEngine();
+        mEngineInternalProperty.addListener((ov, t, t1) -> {
+            var oldEngine = Mapton.getEngine();
+
             try {
                 oldEngine.onDeactivate();
                 setMapZoom(oldEngine.getZoom());
                 setMapCenter(oldEngine.getCenter());
             } catch (NullPointerException e) {
+                //
             }
+
             put(KEY_MAP_ENGINE, t1);
+            mEngineProperty.set(t1);
         });
 
         mIconColorBrightProperty.addListener((ov, t, t1) -> {
