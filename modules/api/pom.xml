@@ -430,12 +430,12 @@
         <dependency>
             <groupId>eu.hansolo</groupId>
             <artifactId>toolbox</artifactId>
-            <version>17.0.26</version>
+            <version>17.0.27</version>
         </dependency>
         <dependency>
             <groupId>eu.hansolo</groupId>
             <artifactId>toolboxfx</artifactId>
-            <version>17.0.29</version>
+            <version>17.0.30</version>
         </dependency>
 
         <dependency>
