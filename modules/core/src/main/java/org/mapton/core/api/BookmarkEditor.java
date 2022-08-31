@@ -116,7 +116,7 @@ public class BookmarkEditor {
                             try {
                                 mManager.dbUpdate(bookmark);
                             } catch (SQLException ex) {
-                                bookmarkNames.add(String.format("%s/%s", oldCategory, bookmark.getName()));
+                                bookmarkNames.add("%s/%s".formatted(oldCategory, bookmark.getName()));
                             }
                         }
                     }
@@ -128,7 +128,7 @@ public class BookmarkEditor {
                     if (!bookmarkNames.isEmpty()) {
                         String delim = "\n ◆ ";
                         NbMessage.error(Dict.Dialog.ERROR.toString(),
-                                String.format("%s\n%s%s", mBundle.getString("bookmark_rename_category_error"), delim, String.join(delim, bookmarkNames))
+                                "%s\n%s%s".formatted(mBundle.getString("bookmark_rename_category_error"), delim, String.join(delim, bookmarkNames))
                         );
                     }
                 }
@@ -212,7 +212,7 @@ public class BookmarkEditor {
         SwingUtilities.invokeLater(() -> {
             String[] buttons = new String[]{Dict.CANCEL.toString(), Dict.REMOVE.toString()};
             var d = new NotifyDescriptor(
-                    String.format(Dict.Dialog.MESSAGE_PROFILE_REMOVE.toString(), bookmark.getName()),
+                    Dict.Dialog.MESSAGE_PROFILE_REMOVE.toString().formatted(bookmark.getName()),
                     Dict.Dialog.TITLE_BOOKMARK_REMOVE.toString() + "?",
                     NotifyDescriptor.OK_CANCEL_OPTION,
                     NotifyDescriptor.WARNING_MESSAGE,

@@ -76,20 +76,20 @@ public class CoordinateStatusLineElement implements StatusLineElementProvider {
                     if (engine.getAltitude() != null) {
                         double metersAltitude = engine.getAltitude();
                         if (Math.abs(metersAltitude) >= 1000) {
-                            altitude = String.format("%s %,7d km", Dict.ALTITUDE.toString(), (int) Math.round(metersAltitude / 1e3));
+                            altitude = "%s %,7d km".formatted(Dict.ALTITUDE.toString(), (int) Math.round(metersAltitude / 1e3));
                         } else {
-                            altitude = String.format("%s %,7d m", Dict.ALTITUDE.toString(), (int) Math.round(metersAltitude));
+                            altitude = "%s %,7d m".formatted(Dict.ALTITUDE.toString(), (int) Math.round(metersAltitude));
                         }
                     }
 
                     String elevation = "";
                     if (engine.getElevation() != null) {
-                        elevation = String.format("%s %,6d %s", Dict.ELEVATION.toString(), (int) engine.getElevation().doubleValue(), Dict.METERS.toString().toLowerCase());
+                        elevation = "%s %,6d %s".formatted(Dict.ELEVATION.toString(), (int) engine.getElevation().doubleValue(), Dict.METERS.toString().toLowerCase());
                     }
 
                     String text = "";
                     try {
-                        text = String.format("%s, %s, %s",
+                        text = "%s, %s, %s".formatted(
                                 altitude,
                                 elevation,
                                 MCooTrans.getCooTrans(MOptions.getInstance().getMapCooTransName()).getString(latitude, longitude)

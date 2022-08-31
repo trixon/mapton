@@ -245,7 +245,7 @@ public class LayerView extends BorderPane implements MActivatable {
     }
 
     private String getLayerPath(Layer layer) {
-        return String.format("%s/%s", getCategory(layer), layer.getName());
+        return "%s/%s".formatted(getCategory(layer), layer.getName());
     }
 
     private ButtonBase getOptionsToolBarButton() {

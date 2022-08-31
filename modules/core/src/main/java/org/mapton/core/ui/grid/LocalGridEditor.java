@@ -72,8 +72,8 @@ public class LocalGridEditor {
         SwingUtilities.invokeLater(() -> {
             String[] buttons = new String[]{Dict.CANCEL.toString(), Dict.REMOVE.toString()};
             NotifyDescriptor d = new NotifyDescriptor(
-                    String.format(Dict.Dialog.MESSAGE_PROFILE_REMOVE.toString(), localGrid.getName()),
-                    String.format(Dict.Dialog.TITLE_REMOVE_S.toString(), MDict.GRID.toString().toLowerCase()) + "?",
+                    Dict.Dialog.MESSAGE_PROFILE_REMOVE.toString().formatted(localGrid.getName()),
+                    Dict.Dialog.TITLE_REMOVE_S.toString().formatted(MDict.GRID.toString().toLowerCase()) + "?",
                     NotifyDescriptor.OK_CANCEL_OPTION,
                     NotifyDescriptor.WARNING_MESSAGE,
                     buttons,

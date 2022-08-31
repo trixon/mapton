@@ -142,11 +142,11 @@ public abstract class CoordinateFileRendererWW {
     }
 
     private void messageStart(MCoordinateFile coordinateFile) {
-        MaptonNb.progressStart(String.format(Dict.OPENING_S.toString(), coordinateFile.getFile().getName()));
+        MaptonNb.progressStart(Dict.OPENING_S.toString().formatted(coordinateFile.getFile().getName()));
     }
 
     private void messageStop(MCoordinateFile coordinateFile) {
-        MaptonNb.progressStop(String.format(Dict.OPENING_S.toString(), coordinateFile.getFile().getName()));
+        MaptonNb.progressStop(Dict.OPENING_S.toString().formatted(coordinateFile.getFile().getName()));
     }
 
 }

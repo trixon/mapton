@@ -87,7 +87,7 @@ public class MCrsManager {
     public void save(ObservableList<CoordinateReferenceSystem> coordinateReferenceSystems) {
         var sb = new StringBuilder();
         for (var crs : coordinateReferenceSystems) {
-            sb.append(String.format("%s\n", CRS.toSRS(crs)));
+            sb.append("%s\n".formatted(CRS.toSRS(crs)));
         }
         mPreferences.put(KEY_SELECTED, sb.toString());
         mSelectedSystems.setAll(coordinateReferenceSystems);

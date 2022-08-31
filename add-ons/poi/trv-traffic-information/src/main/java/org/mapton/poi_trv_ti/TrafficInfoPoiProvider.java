@@ -79,7 +79,7 @@ public class TrafficInfoPoiProvider implements MPoiProvider {
                     }
                     var poi = new MPoi();
                     poi.setDescription(camera.getDescription());
-                    poi.setCategory(String.format("%s", "Kameror"));
+                    poi.setCategory("%s".formatted("Kameror"));
                     poi.setCategory(camera.getType());
                     poi.setColor("ff0000");
                     poi.setDisplayMarker(true);
@@ -107,7 +107,7 @@ public class TrafficInfoPoiProvider implements MPoiProvider {
                 try {
                     var poi = new MPoi();
                     poi.setDescription(parking.getDescription());
-                    poi.setCategory(String.format("%s", "Parkering"));
+                    poi.setCategory("%s".formatted("Parkering"));
                     poi.setColor("00ff00");
                     poi.setDisplayMarker(true);
                     poi.setName(parking.getName());
@@ -133,7 +133,7 @@ public class TrafficInfoPoiProvider implements MPoiProvider {
                 try {
                     var poi = new MPoi();
                     poi.setDescription(camera.getBearing().toString());
-                    poi.setCategory(String.format("%s", "Trafiksäkerhetskameror"));
+                    poi.setCategory("%s".formatted("Trafiksäkerhetskameror"));
                     poi.setColor("00ff00");
                     poi.setDisplayMarker(true);
                     poi.setName(camera.getName());
@@ -165,7 +165,7 @@ public class TrafficInfoPoiProvider implements MPoiProvider {
                     }
 
                     var poi = new MPoi();
-                    poi.setCategory(String.format("%s", "Väderstation"));
+                    poi.setCategory("%s".formatted("Väderstation"));
                     poi.setDisplayMarker(true);
                     poi.setName(weatherStation.getName());
                     poi.setZoom(0.9);
@@ -177,10 +177,10 @@ public class TrafficInfoPoiProvider implements MPoiProvider {
                     poi.setStyle(style);
                     final var measurement = weatherStation.getMeasurement();
                     if (weatherStation.isActive()) {
-                        style.setLabelText(String.format("%.0f°", measurement.getAir().getTemp()));
+                        style.setLabelText("%.0f°".formatted(measurement.getAir().getTemp()));
                         style.setImageUrl(mManager.getIconUrl(measurement.getPrecipitation()));
                         try {
-                            poi.setDescription(String.format("%s %s",
+                            poi.setDescription("%s %s".formatted(
                                     measurement.getPrecipitation().getAmount(),
                                     measurement.getPrecipitation().getAmountName()
                             ));
@@ -188,7 +188,7 @@ public class TrafficInfoPoiProvider implements MPoiProvider {
                         }
                     } else {
                         style.setLabelText("NODATA");
-                        style.setImageUrl(String.format("%s%s.png", SystemHelper.getPackageAsPath(TrafficInfoPoiProvider.class), "precipitationNoData"));
+                        style.setImageUrl("%s%s.png".formatted(SystemHelper.getPackageAsPath(TrafficInfoPoiProvider.class), "precipitationNoData"));
                     }
 
                     style.setLabelScale(1.2);
@@ -205,7 +205,7 @@ public class TrafficInfoPoiProvider implements MPoiProvider {
     }
 
     private String getPlacemarkUrl(String iconId) {
-        return String.format("https://api.trafikinfo.trafikverket.se/v2/icons/%s", iconId);
+        return "https://api.trafikinfo.trafikverket.se/v2/icons/%s".formatted(iconId);
     }
 
     private void setLatLonFromGeometry(MPoi poi, String wkt) {

@@ -149,7 +149,7 @@ public class SourceScanner {
                 mapoPhoto.setChecksum(photoInfo.getChecksum());
                 mapoPhoto.setOrientation(photoInfo.getOrientation());
 
-                photoInfo.createThumbnail(mCurrentSource, new File(mCurrentSource.getThumbnailDir(), String.format("%s.jpg", photoInfo.getChecksum())));
+                photoInfo.createThumbnail(mCurrentSource, new File(mCurrentSource.getThumbnailDir(), "%s.jpg".formatted(photoInfo.getChecksum())));
                 mapoPhoto.setHeight(photoInfo.getHeight());
                 mapoPhoto.setWidth(photoInfo.getWidth());
 
@@ -161,7 +161,7 @@ public class SourceScanner {
     }
 
     private void process(MapoSource source) throws IOException {
-        mPrint.out(String.format("%s: %s", "BEGIN SCAN", source));
+        mPrint.out("%s: %s".formatted("BEGIN SCAN", source));
 
         mFiles.clear();
         mCurrentSource = source;
@@ -204,8 +204,8 @@ public class SourceScanner {
 
         source.save(mCurrentCollection);
 
-        mPrint.out(String.format("%s: %s", "SAVED", source.getCollectionFile().getAbsoluteFile()));
-        mPrint.out(String.format("%s: %s", "END SCAN", source));
+        mPrint.out("%s: %s".formatted("SAVED", source.getCollectionFile().getAbsoluteFile()));
+        mPrint.out("%s: %s".formatted("END SCAN", source));
     }
 
     public class FileVisitor extends SimpleFileVisitor<Path> {

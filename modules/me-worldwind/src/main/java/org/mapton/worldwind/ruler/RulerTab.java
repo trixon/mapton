@@ -359,9 +359,9 @@ public class RulerTab extends Tab {
         if (length <= 0) {
             lenghtString = "-";
         } else if (length < unitLimit) {
-            lenghtString = String.format("%,7.1f m", length);
+            lenghtString = "%,7.1f m".formatted(length);
         } else {
-            lenghtString = String.format("%,7.3f km", length / unitLimit);
+            lenghtString = "%,7.3f km".formatted(length / unitLimit);
         }
 
         String areaString;
@@ -369,9 +369,9 @@ public class RulerTab extends Tab {
         if (area < 0) {
             areaString = "-";
         } else if (area < unitLimit) {
-            areaString = String.format("%,7.1f m²", area);
+            areaString = "%,7.1f m²".formatted(area);
         } else {
-            areaString = String.format("%,7.3f km²", area / unitLimit);
+            areaString = "%,7.3f km²".formatted(area / unitLimit);
         }
 
         double width = mMeasureTool.getWidth();
@@ -380,9 +380,9 @@ public class RulerTab extends Tab {
         if (width < 0) {
             widthString = "-";
         } else if (width < unitLimit) {
-            widthString = String.format("%,7.1f m", width);
+            widthString = "%,7.1f m".formatted(width);
         } else {
-            widthString = String.format("%,7.3f km", width / unitLimit);
+            widthString = "%,7.3f km".formatted(width / unitLimit);
         }
 
         double height = mMeasureTool.getHeight();
@@ -391,9 +391,9 @@ public class RulerTab extends Tab {
         if (height < 0) {
             heightString = "-";
         } else if (height < unitLimit) {
-            heightString = String.format("%,7.1f m", height);
+            heightString = "%,7.1f m".formatted(height);
         } else {
-            heightString = String.format("%,7.3f km", height / unitLimit);
+            heightString = "%,7.3f km".formatted(height / unitLimit);
         }
 
         var angle = mMeasureTool.getOrientation();
@@ -401,7 +401,7 @@ public class RulerTab extends Tab {
         if (angle == null) {
             angleString = "-";
         } else {
-            angleString = String.format("%,6.2f\u00B0", angle.degrees);
+            angleString = "%,6.2f\u00B0".formatted(angle.degrees);
         }
 
         var centerPosition = mMeasureTool.getCenterPosition();
@@ -409,7 +409,7 @@ public class RulerTab extends Tab {
         if (centerPosition == null) {
             centerString = "-";
         } else {
-            centerString = String.format("%,7.4f\u00B0 %,7.4f\u00B0", centerPosition.getLatitude().degrees, centerPosition.getLongitude().degrees);
+            centerString = "%,7.4f\u00B0 %,7.4f\u00B0".formatted(centerPosition.getLatitude().degrees, centerPosition.getLongitude().degrees);
         }
 
         int maxKeyLength = Integer.MIN_VALUE;

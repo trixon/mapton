@@ -102,7 +102,7 @@ public class MFileWatcher {
             } catch (Exception ex) {
                 Exceptions.printStackTrace(ex);
             }
-        }, String.format("%s: %s", MFileWatcher.class.getName(), file.getName())).start();
+        }, "%s: %s".formatted(MFileWatcher.class.getName(), file.getName())).start();
     }
 
     private static class Holder {

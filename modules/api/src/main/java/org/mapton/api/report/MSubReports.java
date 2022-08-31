@@ -47,7 +47,7 @@ public abstract class MSubReports extends MReport {
     private WebView mWebView;
 
     public MSubReports() {
-        setParent(String.format("- %s -", Dict.SYSTEM.toString()));
+        setParent("- %s -".formatted(Dict.SYSTEM.toString()));
         mComparator = Comparator.comparing(MSubReport::getGroup)
                 .thenComparing(Comparator.comparing(MSubReport::getName));
     }

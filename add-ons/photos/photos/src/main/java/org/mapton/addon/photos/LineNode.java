@@ -32,7 +32,7 @@ public class LineNode {
     private double mLon;
 
     public static String getName(ArrayList<LineNode> previousNodes, ArrayList<LineNode> nodes) {
-        String name = String.format("%s_%s",
+        String name = "%s_%s".formatted(
                 DATE_FORMAT.format(previousNodes.get(previousNodes.size() - 1).getDate()),
                 DATE_FORMAT.format(nodes.get(0).getDate()));
 
@@ -40,7 +40,7 @@ public class LineNode {
     }
 
     public static String getName(ArrayList<LineNode> nodes) {
-        String name = String.format("%s_%s",
+        String name = "%s_%s".formatted(
                 DATE_FORMAT.format(nodes.get(0).getDate()),
                 DATE_FORMAT.format(nodes.get(nodes.size() - 1).getDate()));
 

@@ -158,7 +158,7 @@ public abstract class DbBaseManager {
         }
 
         if (!filter.contains("%")) {
-            filter = String.format("%%%s%%", filter);
+            filter = "%%%s%%".formatted(filter);
         }
 
         return filter;

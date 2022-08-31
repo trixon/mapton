@@ -50,14 +50,14 @@ public class Db {
 
     private Db() {
         mDbFile = new File(Places.getUserDirectory(), "mapton_02" + DB_POSTFIX);
-        mConnString = String.format("jdbc:h2:%s;DEFRAG_ALWAYS=true", StringUtils.removeEnd(mDbFile.getAbsolutePath(), DB_POSTFIX));
+        mConnString = "jdbc:h2:%s;DEFRAG_ALWAYS=true".formatted(StringUtils.removeEnd(mDbFile.getAbsolutePath(), DB_POSTFIX));
         mSpec = new DbSpec();
         init();
     }
 
     public void addMissingColumn(String table, String col, String type, String after) throws SQLException {
         try ( var statement = getAutoCommitConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
-            String sql = String.format("ALTER TABLE IF EXISTS %s ADD COLUMN IF NOT EXISTS %s %s AFTER %s;",
+            String sql = "ALTER TABLE IF EXISTS %s ADD COLUMN IF NOT EXISTS %s %s AFTER %s;".formatted(
                     table,
                     col,
                     type,
@@ -124,7 +124,7 @@ public class Db {
 
     public void delete(DbTable table, DbColumn column, Long id) throws ClassNotFoundException, SQLException {
         try ( var statement = getAutoCommitConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
-            String sql = String.format("DELETE FROM %s WHERE %s=%d;", table.getName(), column.getName(), id);
+            String sql = "DELETE FROM %s WHERE %s=%d;".formatted(table.getName(), column.getName(), id);
             System.out.println(sql);
             statement.execute(sql);
         }
@@ -132,7 +132,7 @@ public class Db {
 
     public void drop(DbTable table, boolean cascade) throws ClassNotFoundException, SQLException {
         try ( var statement = getAutoCommitConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
-            String sql = String.format("DROP TABLE IF EXISTS %s %s;", table.getName(), cascade ? "CASCADE" : "");
+            String sql = "DROP TABLE IF EXISTS %s %s;".formatted(table.getName(), cascade ? "CASCADE" : "");
             //System.out.println(sql);
             statement.execute(sql);
         }
@@ -177,7 +177,7 @@ public class Db {
 
     public void truncate(DbTable table) throws ClassNotFoundException, SQLException {
         try ( var statement = getAutoCommitConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
-            String sql = String.format("TRUNCATE TABLE %s;", table.getName());
+            String sql = "TRUNCATE TABLE %s;".formatted(table.getName());
             //System.out.println(sql);
             statement.execute(sql);
         }

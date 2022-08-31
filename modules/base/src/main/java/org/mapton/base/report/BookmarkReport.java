@@ -74,8 +74,8 @@ public class BookmarkReport extends MReportSystem {
                                                                 td(bookmark.getName()),
                                                                 td(StringUtils.defaultString(bookmark.getDescription())),
                                                                 td(StringUtils.defaultString(bookmark.getUrl())),
-                                                                td(String.format("%.6f", bookmark.getLatitude())),
-                                                                td(String.format("%.6f", bookmark.getLongitude()))
+                                                                td("%.6f".formatted(bookmark.getLatitude())),
+                                                                td("%.6f".formatted(bookmark.getLongitude()))
                                                         )
                                                         )
                                                 )

@@ -89,7 +89,7 @@ public class MSplitNavPane<T extends MSplitNavType> extends BorderPane {
         });
 
         mFilterTextField = TextFields.createClearableTextField();
-        mFilterTextField.setPromptText(String.format("%s %s", Dict.SEARCH.toString(), mTypeName.toLowerCase(Locale.getDefault())));
+        mFilterTextField.setPromptText("%s %s".formatted(Dict.SEARCH.toString(), mTypeName.toLowerCase(Locale.getDefault())));
         mFilterTextField.textProperty().addListener((observable, oldValue, newValue) -> {
             populate();
         });
@@ -102,7 +102,7 @@ public class MSplitNavPane<T extends MSplitNavType> extends BorderPane {
 
         mTitleLabel = new Label();
         mTitleLabel.setPrefHeight(Mapton.getIconSizeToolBarInt() * 1.3);
-        mTitleLabel.setStyle(String.format("-fx-font-size: %dpx;", (int) (getScaledFontSize() * 1.5)));
+        mTitleLabel.setStyle("-fx-font-size: %dpx;".formatted((int) (getScaledFontSize() * 1.5)));
         mTitleLabel.prefWidthProperty().bind(mDetailTopPane.widthProperty());
         mTitleLabel.setAlignment(Pos.CENTER);
         mTitleLabel.setTextFill(Mapton.getThemeForegroundColor());
@@ -206,7 +206,7 @@ public class MSplitNavPane<T extends MSplitNavType> extends BorderPane {
         if (color != null) {
             var background = FxHelper.createBackground(color);
             mDetailTopPane.setBackground(background);
-            mToolBar.setStyle(String.format("-fx-background-color: #%s;", FxHelper.colorToHexRGBA(color)));
+            mToolBar.setStyle("-fx-background-color: #%s;".formatted(FxHelper.colorToHexRGBA(color)));
         }
 
         final ObservableList<Node> children = mDetailTopPane.getChildren();
@@ -287,7 +287,7 @@ public class MSplitNavPane<T extends MSplitNavType> extends BorderPane {
 
     private void postPopulate(TreeItem<T> treeItem) {
         final var value = treeItem.getValue();
-        final var path = String.format("%s/%s", value.getParent(), value.getName());
+        final var path = "%s/%s".formatted(value.getParent(), value.getName());
 
         treeItem.setExpanded(mPreferences.getBoolean(path, false));
 

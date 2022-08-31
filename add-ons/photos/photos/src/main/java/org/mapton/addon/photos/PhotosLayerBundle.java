@@ -93,7 +93,7 @@ public class PhotosLayerBundle extends LayerBundle {
     }
 
     private String getCatKey(String category, String value) {
-        return String.format("%s#%s", category, value);
+        return "%s#%s".formatted(category, value);
     }
 
     private String getPattern(SplitBy splitBy) {
@@ -123,7 +123,7 @@ public class PhotosLayerBundle extends LayerBundle {
         mIconLayer.setEnabled(true);
 
         mRenderableLayer.setPickEnabled(false);
-        mRenderableLayer.setName(String.format("Mapollage - %s", Dict.Geometry.PATHS.toString()));
+        mRenderableLayer.setName("Mapollage - %s".formatted(Dict.Geometry.PATHS.toString()));
         mRenderableLayer.setEnabled(true);
 
         setVisibleInLayerManager(mRenderableLayer, false);
@@ -174,7 +174,7 @@ public class PhotosLayerBundle extends LayerBundle {
                         }
 
                         if (validDate) {
-                            String absolutePath = new File(source.getThumbnailDir(), String.format("%s.jpg", photo.getChecksum())).getAbsolutePath();
+                            String absolutePath = new File(source.getThumbnailDir(), "%s.jpg".formatted(photo.getChecksum())).getAbsolutePath();
                             UserFacingIcon icon = new UserFacingIcon(absolutePath, Position.fromDegrees(photo.getLat(), photo.getLon()));
                             int downSample = 10;
                             icon.setSize(new Dimension(photo.getWidth() / downSample, photo.getHeight() / downSample));
@@ -201,7 +201,7 @@ public class PhotosLayerBundle extends LayerBundle {
                                 if (f.isFile()) {
                                     SystemHelper.desktopOpen(new File(photo.getPath()));
                                 } else {
-                                    NbMessage.error(Dict.Dialog.TITLE_FILE_NOT_FOUND.toString(), String.format(Dict.Dialog.MESSAGE_FILE_NOT_FOUND.toString(), photo.getPath()));
+                                    NbMessage.error(Dict.Dialog.TITLE_FILE_NOT_FOUND.toString(), Dict.Dialog.MESSAGE_FILE_NOT_FOUND.toString().formatted(photo.getPath()));
                                 }
                             });
 

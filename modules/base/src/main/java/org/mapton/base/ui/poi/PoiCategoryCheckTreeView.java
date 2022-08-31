@@ -85,7 +85,7 @@ public class PoiCategoryCheckTreeView extends CheckTreeView<MPoi> {
     }
 
     private String getCategory(MPoi poi) {
-        return String.format("%s/%s",
+        return "%s/%s".formatted(
                 StringUtils.defaultString(poi.getProvider()),
                 StringUtils.defaultString(poi.getCategory())
         );

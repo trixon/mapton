@@ -46,7 +46,7 @@ public class FileImportAction extends FileAction {
             SimpleDialog.clearFilters();
             SimpleDialog.addFilters("grid");
             SimpleDialog.setFilter("grid");
-            final String dialogTitle = String.format("%s %s", Dict.IMPORT.toString(), mTitle.toLowerCase());
+            final String dialogTitle = "%s %s".formatted(Dict.IMPORT.toString(), mTitle.toLowerCase());
             SimpleDialog.setTitle(dialogTitle);
 
             if (mFile == null) {

@@ -78,7 +78,7 @@ public class UpdaterManager {
                     status = "OK";
                 }
 
-                mPrint.out(String.format("%s: %s %s", "Status check", updater.getName(), status));
+                mPrint.out("%s: %s %s".formatted("Status check", updater.getName(), status));
             }
 
             Comparator<MUpdater> c1 = (o1, o2) -> Boolean.compare(o2.isOutOfDate(), o1.isMarkedForUpdate());

@@ -52,7 +52,7 @@ public class SourceFileExportAction extends SourceFileAction {
                 SimpleDialog.addFilters("mapo");
                 SimpleDialog.setFilter("mapo");
 
-                final String dialogTitle = String.format("%s %s", Dict.EXPORT.toString(), mTitle.toLowerCase());
+                final String dialogTitle = "%s %s".formatted(Dict.EXPORT.toString(), mTitle.toLowerCase());
                 SimpleDialog.setTitle(dialogTitle);
 
                 if (mFile == null) {

@@ -26,7 +26,7 @@ public abstract class BaseOpenFileCommandBoxItem extends MCommandBoxItemSystem {
 
     @Override
     public String getParent() {
-        return String.format("%s/%s", super.getParent(), Dict.OPEN.toString());
+        return "%s/%s".formatted(super.getParent(), Dict.OPEN.toString());
     }
 
 }

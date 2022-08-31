@@ -100,7 +100,7 @@ public final class MapTopComponent extends MTopComponent {
         putClientProperty(PROP_DRAGGING_DISABLED, Boolean.TRUE);
         putClientProperty(PROP_MAXIMIZATION_DISABLED, Boolean.TRUE);
         putClientProperty(PROP_UNDOCKING_DISABLED, Boolean.TRUE);
-        putClientProperty("print.name", String.format("Mapton - %s", Dict.MAP.toString())); // NOI18N
+        putClientProperty("print.name", "Mapton - %s".formatted(Dict.MAP.toString())); // NOI18N
 
         var map = se.trixon.almond.util.swing.dialogs.SimpleDialog.getExtensionFilters();
         map.put("*", new FileNameExtensionFilter(Dict.ALL_FILES.toString(), "*"));
@@ -110,8 +110,8 @@ public final class MapTopComponent extends MTopComponent {
         map.put("kml", new FileNameExtensionFilter("Keyhole Markup Language (*.kml)", "kml"));
         map.put("kmz", new FileNameExtensionFilter("Keyhole Markup Language (*.kmz)", "kmz"));
         map.put("grid", new FileNameExtensionFilter("Mapton Grid (*.grid)", "grid"));
-        map.put("png", new FileNameExtensionFilter(String.format("%s (*.png)", Dict.IMAGE.toString()), "png"));
-        map.put("txt", new FileNameExtensionFilter(String.format("%s (*.txt)", Dict.TEXT.toString()), "txt"));
+        map.put("png", new FileNameExtensionFilter("%s (*.png)".formatted(Dict.IMAGE.toString()), "png"));
+        map.put("txt", new FileNameExtensionFilter("%s (*.txt)".formatted(Dict.TEXT.toString()), "txt"));
     }
 
     @Override
@@ -161,7 +161,7 @@ public final class MapTopComponent extends MTopComponent {
 
         SwingHelper.runLater(() -> {
             removeAll();
-            var label = new JLabel(String.format("<html>%s<br/><br/><br/></html>", Dict.PATIENCE_IS_A_VIRTUE.toString()));
+            var label = new JLabel("<html>%s<br/><br/><br/></html>".formatted(Dict.PATIENCE_IS_A_VIRTUE.toString()));
             label.setVerticalAlignment(SwingConstants.BOTTOM);
             label.setFont(label.getFont().deriveFont(label.getFont().getSize() * 2f));
             label.setHorizontalAlignment(SwingConstants.CENTER);
@@ -294,7 +294,7 @@ public final class MapTopComponent extends MTopComponent {
     }
 
     private void setEngine(MEngine engine) {
-        setToolTipText(String.format("%s: %s", MDict.MAP_ENGINE.toString(), engine.getName()));
+        setToolTipText("%s: %s".formatted(MDict.MAP_ENGINE.toString(), engine.getName()));
         putClientProperty("print.printable", !engine.getName().equalsIgnoreCase("WorldWind")); // NOI18N
 
         if (engine.isSwing()) {

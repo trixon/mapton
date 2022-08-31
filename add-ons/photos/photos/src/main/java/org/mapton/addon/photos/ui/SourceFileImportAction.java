@@ -43,7 +43,7 @@ public class SourceFileImportAction extends SourceFileAction {
             SimpleDialog.addFilters("mapo");
             SimpleDialog.setFilter("mapo");
 
-            final String dialogTitle = String.format("%s %s", Dict.IMPORT.toString(), mTitle.toLowerCase());
+            final String dialogTitle = "%s %s".formatted(Dict.IMPORT.toString(), mTitle.toLowerCase());
             SimpleDialog.setTitle(dialogTitle);
 
             if (mFile == null) {

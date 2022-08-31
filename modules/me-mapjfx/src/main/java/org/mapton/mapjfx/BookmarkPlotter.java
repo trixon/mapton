@@ -67,7 +67,7 @@ public class BookmarkPlotter {
 
         for (MBookmark bookmark : mBookmarkManager.getItems()) {
             if (bookmark.isDisplayMarker()) {
-                String markerFilename = String.format("%s.png", bookmark.getColor());
+                String markerFilename = "%s.png".formatted(bookmark.getColor());
                 File markerFile = new File(mEngine.getCacheDir(), markerFilename);
                 if (!markerFile.isFile()) {
                     BufferedImage colorizedImage = GraphicsHelper.colorize(whitePinBufferedImage, Color.decode("#" + bookmark.getColor()));

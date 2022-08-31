@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2022 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -37,7 +37,8 @@ public class MLatLon {
     }
 
     /**
-     * From v3_epoly.js, calculates the distance between this LatLong point and another.
+     * From v3_epoly.js, calculates the distance between this LatLong point and
+     * another.
      *
      * @param anotherLatLon The end point to calculate the distance to.
      * @return The distance, in metres, to the end point.
@@ -58,7 +59,8 @@ public class MLatLon {
     }
 
     /**
-     * Calculates the bearing, in degrees, of the end LatLong point from this LatLong point.
+     * Calculates the bearing, in degrees, of the end LatLong point from this
+     * LatLong point.
      *
      * @param end The point that the bearing is calculated for.
      * @return The bearing, in degrees, of the supplied point from this point.
@@ -88,7 +90,9 @@ public class MLatLon {
     }
 
     /**
-     * Calculates the LatLong position of the end point of a line the specified distance from this LatLong, along the provided bearing, where North is 0, East is 90 etc.
+     * Calculates the LatLong position of the end point of a line the specified
+     * distance from this LatLong, along the provided bearing, where North is 0,
+     * East is 90 etc.
      *
      * @param bearing The bearing, in degrees, with North as 0, East as 90 etc.
      * @param distance The distance in metres.
@@ -143,7 +147,7 @@ public class MLatLon {
 
     @Override
     public String toString() {
-        return "lat: " + String.format("%.8G", getLatitude()) + " lng: " + String.format("%.8G", getLongitude());
+        return "lat: " + "%.8G".formatted(getLatitude()) + " lng: " + "%.8G".formatted(getLongitude());
     }
 
 }

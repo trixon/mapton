@@ -59,7 +59,7 @@ public class RulerExporter {
         SimpleDialog.clearFilters();
         SimpleDialog.addFilters("kml", "geo");
         SimpleDialog.setFilter("kml");
-        SimpleDialog.setTitle(String.format("%s %s", Dict.SAVE.toString(), Dict.COORDINATE_FILE.toString().toLowerCase()));
+        SimpleDialog.setTitle("%s %s".formatted(Dict.SAVE.toString(), Dict.COORDINATE_FILE.toString().toLowerCase()));
 
         String epoch = mDateFormat.format(new Date());
 
@@ -155,7 +155,7 @@ public class RulerExporter {
     private class ExporterKml extends MKmlCreator {
 
         ExporterKml(String epoch) throws IOException {
-            mDocument.setName(String.format("%s_%s", Dict.Geometry.GEOMETRIES.toString(), epoch));
+            mDocument.setName("%s_%s".formatted(Dict.Geometry.GEOMETRIES.toString(), epoch));
 
             mRulerTabPane.getTabs().stream()
                     .filter(tab -> (tab instanceof RulerTab))

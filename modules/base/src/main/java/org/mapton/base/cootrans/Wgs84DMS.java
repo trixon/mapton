@@ -77,7 +77,7 @@ public class Wgs84DMS implements MCooTrans {
 
     @Override
     public String getString(double latitude, double longitude) {
-        return String.format("%s %s", getLatitudeString(latitude, longitude), getLongitudeString(latitude, longitude));
+        return "%s %s".formatted(getLatitudeString(latitude, longitude), getLongitudeString(latitude, longitude));
     }
 
     @Override

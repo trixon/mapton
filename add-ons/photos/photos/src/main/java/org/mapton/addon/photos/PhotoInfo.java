@@ -95,7 +95,7 @@ public class PhotoInfo {
             try {
                 ImageIO.write(borderedImage, "jpg", file);
             } catch (IOException ex) {
-                throw new IOException(String.format("E000 %s", file.getAbsolutePath()));
+                throw new IOException("E000 %s".formatted(file.getAbsolutePath()));
             }
         } else {
             Scaler scaler = new Scaler(getOriginalDimension());
@@ -202,7 +202,7 @@ public class PhotoInfo {
                 }
 
             } catch (IOException ex) {
-                throw new IOException(String.format("E000 %s", mFile.getAbsolutePath()));
+                throw new IOException("E000 %s".formatted(mFile.getAbsolutePath()));
             }
 
             if (mOriginalDimension == null) {
@@ -214,7 +214,7 @@ public class PhotoInfo {
     }
 
     private void init() throws ImageProcessingException, IOException, NullPointerException {
-        mChecksum = String.format("%08x", FileUtils.checksumCRC32(mFile));
+        mChecksum = "%08x".formatted(FileUtils.checksumCRC32(mFile));
         mMetadata = ImageMetadataReader.readMetadata(mFile);
         mExifDirectory = mMetadata.getFirstDirectoryOfType(ExifSubIFDDirectory.class);
         mGpsDirectory = mMetadata.getFirstDirectoryOfType(GpsDirectory.class);

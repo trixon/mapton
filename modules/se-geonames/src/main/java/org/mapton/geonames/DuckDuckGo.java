@@ -63,9 +63,7 @@ public class DuckDuckGo extends MContextMenuItem {
         }
 
         try {
-            return String.format("https://duckduckgo.com/?q=%s",
-                    URLEncoder.encode(nearest.getName(), "UTF-8")
-            );
+            return "https://duckduckgo.com/?q=%s".formatted(URLEncoder.encode(nearest.getName(), "UTF-8"));
         } catch (UnsupportedEncodingException ex) {
             return null;
         }

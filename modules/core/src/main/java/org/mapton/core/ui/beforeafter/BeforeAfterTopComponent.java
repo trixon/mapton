@@ -69,7 +69,7 @@ public final class BeforeAfterTopComponent extends MTopComponent {
         String name = Actions.cutAmpersand(Bundle.CTL_BeforeAfterAction());
         setName(name);
         putClientProperty("print.printable", Boolean.TRUE); // NOI18N
-        putClientProperty("print.name", String.format("Mapton - %s", name)); // NOI18N
+        putClientProperty("print.name", "Mapton - %s".formatted(name)); // NOI18N
     }
 
     @Override

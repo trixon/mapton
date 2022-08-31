@@ -162,7 +162,7 @@ public class CommandBoxView extends BorderPane {
 
     private void postPopulate(TreeItem<Action> treeItem, String level) {
         var value = treeItem.getValue();
-        final String path = String.format("%s/%s", mActionParents.get(value), value.getText());
+        final String path = "%s/%s".formatted(mActionParents.get(value), value.getText());
         treeItem.setExpanded(mPreferences.getBoolean(path, false));
 
         treeItem.expandedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {

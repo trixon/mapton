@@ -83,7 +83,7 @@ public class WeatherView extends BorderPane implements MGenericLoader<WeatherSta
             final Measurement measurement = weatherStation.getMeasurement();
             OffsetDateTime offsetDateTime = OffsetDateTime.parse(measurement.getMeasureTime().toString());
 
-            mTitleLabel.setText(String.format("%s %d, %s",
+            mTitleLabel.setText("%s %d, %s".formatted(
                     MDict.ROAD.toString(),
                     weatherStation.getRoadNumberNumeric(),
                     weatherStation.getName()
@@ -109,7 +109,7 @@ public class WeatherView extends BorderPane implements MGenericLoader<WeatherSta
         mTimeLabel = new Label();
         mTitleLabel = new Label();
 
-        mTitleLabel.setStyle(String.format(style, "bold", "normal", defaultSize * 1.2));
+        mTitleLabel.setStyle(style.formatted("bold", "normal", defaultSize * 1.2));
         setTop(mTitleLabel);
 
         mAirTemperatureTile = TileBuilder.create()
@@ -292,7 +292,7 @@ public class WeatherView extends BorderPane implements MGenericLoader<WeatherSta
             var hasValue = wind.getForce() != null;
             if (hasValue) {
                 mWindTile.setValue(wind.getForce());
-                mWindTile.setDescription(String.format("%s: %.1f m/s", "Max", wind.getForceMax()));
+                mWindTile.setDescription("%s: %.1f m/s".formatted("Max", wind.getForceMax()));
                 mWindTile.setImage(getImageForIconId(mManager.getIconUrl(wind)));
             } else {
                 mWindTile.setValue(-1);

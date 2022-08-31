@@ -25,7 +25,7 @@ public abstract class MCommandBoxItemSystem implements MCommandBoxItem {
 
     @Override
     public String getParent() {
-        return String.format("- %s -", Dict.SYSTEM.toString());
+        return "- %s -".formatted(Dict.SYSTEM.toString());
     }
 
 }

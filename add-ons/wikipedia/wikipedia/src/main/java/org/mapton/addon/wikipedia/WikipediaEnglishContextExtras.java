@@ -32,7 +32,7 @@ public class WikipediaEnglishContextExtras extends WikipediaContextExtras {
 
     @Override
     public String getName() {
-        return String.format("%s (%s)", super.getName(), mLocale.getDisplayLanguage());
+        return "%s (%s)".formatted(super.getName(), mLocale.getDisplayLanguage());
     }
 
 }

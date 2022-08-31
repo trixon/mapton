@@ -73,7 +73,7 @@ public class FileExportAction extends FileAction {
 
             hidePopOver();
 
-            final String dialogTitle = String.format("%s %s", Dict.EXPORT.toString(), mTitle.toLowerCase());
+            final String dialogTitle = "%s %s".formatted(Dict.EXPORT.toString(), mTitle.toLowerCase());
             SimpleDialog.setTitle(dialogTitle);
 
             if (mFile == null) {
@@ -206,7 +206,7 @@ public class FileExportAction extends FileAction {
         private final TreeMap<String, Folder> mCategories = new TreeMap<>();
 
         public KmlExporter() throws IOException {
-            mDocument.setName(String.format("Mapton %s", Dict.BOOKMARKS.toString()));
+            mDocument.setName("Mapton %s".formatted(Dict.BOOKMARKS.toString()));
             mManager.getItems().forEach((item) -> {
                 Placemark placemark = KmlFactory.createPlacemark()
                         .withName(item.getName())

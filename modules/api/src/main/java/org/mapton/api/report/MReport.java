@@ -33,7 +33,7 @@ public abstract class MReport extends MSplitNavMaskerPane {
     private WebView mWebView;
 
     public MReport() {
-        setParent(String.format("- %s -", Dict.SYSTEM.toString()));
+        setParent("- %s -".formatted(Dict.SYSTEM.toString()));
     }
 
     public ContainerTag getContent() {

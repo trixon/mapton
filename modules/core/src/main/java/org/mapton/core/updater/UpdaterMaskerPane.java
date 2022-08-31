@@ -48,9 +48,9 @@ public class UpdaterMaskerPane extends MMaskerPaneBase {
         new Thread(() -> {
             for (var updater : FXCollections.observableArrayList(updaters)) {//Avoid java.util.ConcurrentModificationException
                 if (updater.isMarkedForUpdate()) {
-                    mPrint.out(String.format("%s %s/%s", "Update", updater.getCategory(), updater.getName()));
+                    mPrint.out("%s %s/%s".formatted("Update", updater.getCategory(), updater.getName()));
                     updater.run();
-                    mPrint.out(String.format("%s %s/%s, %s", "Update", updater.getCategory(), updater.getName(), Dict.DONE.toString().toLowerCase()));
+                    mPrint.out("%s %s/%s, %s".formatted("Update", updater.getCategory(), updater.getName(), Dict.DONE.toString().toLowerCase()));
                 }
             }
 

@@ -145,17 +145,17 @@ public class TemporalView extends BorderPane {
     private void populatePresets() {
         final LocalDate now = LocalDate.now();
 
-        populatePreset(new TemporalPreset(String.format("%s + 1 %s", Dict.Time.TODAY.toString(), Dict.Time.YEAR.toString().toLowerCase()), now, now.plusYears(1)));
-        populatePreset(new TemporalPreset(String.format("%s + 1 %s", Dict.Time.TODAY.toString(), Dict.Time.MONTH.toString().toLowerCase()), now, now.plusMonths(1)));
-        populatePreset(new TemporalPreset(String.format("%s + 1 %s", Dict.Time.TODAY.toString(), Dict.Time.WEEK.toString().toLowerCase()), now, now.plusWeeks(1)));
-        populatePreset(new TemporalPreset(String.format("%s + 1 %s", Dict.Time.TODAY.toString(), Dict.Time.DAY.toString().toLowerCase()), now, now.plusDays(1)));
+        populatePreset(new TemporalPreset("%s + 1 %s".formatted(Dict.Time.TODAY.toString(), Dict.Time.YEAR.toString().toLowerCase()), now, now.plusYears(1)));
+        populatePreset(new TemporalPreset("%s + 1 %s".formatted(Dict.Time.TODAY.toString(), Dict.Time.MONTH.toString().toLowerCase()), now, now.plusMonths(1)));
+        populatePreset(new TemporalPreset("%s + 1 %s".formatted(Dict.Time.TODAY.toString(), Dict.Time.WEEK.toString().toLowerCase()), now, now.plusWeeks(1)));
+        populatePreset(new TemporalPreset("%s + 1 %s".formatted(Dict.Time.TODAY.toString(), Dict.Time.DAY.toString().toLowerCase()), now, now.plusDays(1)));
         mPresetSplitMenuButton.getItems().add(new SeparatorMenuItem());
         populatePreset(new TemporalPreset(Dict.Time.TODAY.toString(), now, now));
         mPresetSplitMenuButton.getItems().add(new SeparatorMenuItem());
-        populatePreset(new TemporalPreset(String.format("%s - 1 %s", Dict.Time.TODAY.toString(), Dict.Time.DAY.toString().toLowerCase()), now.minusDays(1), now));
-        populatePreset(new TemporalPreset(String.format("%s - 1 %s", Dict.Time.TODAY.toString(), Dict.Time.WEEK.toString().toLowerCase()), now.minusWeeks(1), now));
-        populatePreset(new TemporalPreset(String.format("%s - 1 %s", Dict.Time.TODAY.toString(), Dict.Time.MONTH.toString().toLowerCase()), now.minusMonths(1), now));
-        populatePreset(new TemporalPreset(String.format("%s - 1 %s", Dict.Time.TODAY.toString(), Dict.Time.YEAR.toString().toLowerCase()), now.minusYears(1), now));
+        populatePreset(new TemporalPreset("%s - 1 %s".formatted(Dict.Time.TODAY.toString(), Dict.Time.DAY.toString().toLowerCase()), now.minusDays(1), now));
+        populatePreset(new TemporalPreset("%s - 1 %s".formatted(Dict.Time.TODAY.toString(), Dict.Time.WEEK.toString().toLowerCase()), now.minusWeeks(1), now));
+        populatePreset(new TemporalPreset("%s - 1 %s".formatted(Dict.Time.TODAY.toString(), Dict.Time.MONTH.toString().toLowerCase()), now.minusMonths(1), now));
+        populatePreset(new TemporalPreset("%s - 1 %s".formatted(Dict.Time.TODAY.toString(), Dict.Time.YEAR.toString().toLowerCase()), now.minusYears(1), now));
 //        mPresetSplitMenuButton.getItems().add(new SeparatorMenuItem());
 //        int year = now.getYear();
 //        populatePreset(new TemporalPreset(String.format("%s %s", Dict.NEXT.toString(), Dict.Time.YEAR.toString().toLowerCase()),
@@ -189,7 +189,7 @@ public class TemporalView extends BorderPane {
                 String text = null;
                 switch (mDatePane.getDateSelectionMode()) {
                     case INTERVAL:
-                        text = String.format("%s %s %s",
+                        text = "%s %s %s".formatted(
                                 mManager.getLowDate(),
                                 Dict.TO.toString().toLowerCase(Locale.getDefault()),
                                 mManager.getHighDate()

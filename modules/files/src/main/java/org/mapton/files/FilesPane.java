@@ -150,8 +150,8 @@ public class FilesPane extends BorderPane {
         SwingUtilities.invokeLater(() -> {
             var buttons = new String[]{Dict.CANCEL.toString(), Dict.CLOSE.toString()};
             var d = new NotifyDescriptor(
-                    String.format(Dict.Dialog.MESSAGE_FILE_CLOSE.toString(), document.getFile().getName()),
-                    String.format(Dict.Dialog.TITLE_CLOSE_S.toString(), Dict.FILE.toString().toLowerCase()) + "?",
+                    Dict.Dialog.MESSAGE_FILE_CLOSE.toString().formatted(document.getFile().getName()),
+                    Dict.Dialog.TITLE_CLOSE_S.toString().formatted(Dict.FILE.toString().toLowerCase()) + "?",
                     NotifyDescriptor.OK_CANCEL_OPTION,
                     NotifyDescriptor.WARNING_MESSAGE,
                     buttons,

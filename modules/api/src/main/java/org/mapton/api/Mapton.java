@@ -116,7 +116,7 @@ public class Mapton {
     }
 
     public static void applyHtmlCss(WebEngine webEngine, String filename) {
-        var path = String.format("resources/css/%s", filename);
+        var path = "resources/css/%s".formatted(filename);
         var codeNameBase = Mapton.class.getPackage().getName();
         var file = InstalledFileLocator.getDefault().locate(path, codeNameBase, false);
 
@@ -150,7 +150,7 @@ public class Mapton {
 
         label.setBackground(background);
         var color = (Color) background.getFills().get(0).getFill();
-        label.setStyle(String.format("-fx-background-color: %s;", FxHelper.colorToString(color)));
+        label.setStyle("-fx-background-color: %s;".formatted(FxHelper.colorToString(color)));
         label.setAlignment(Pos.BASELINE_CENTER);
         label.setFont(new Font(FxHelper.getScaledFontSize() * 1.2));
         label.setTextFill(Color.WHITE);
@@ -278,19 +278,19 @@ public class Mapton {
     }
 
     public static void log(String category, String item) {
-        sLog.timedOut(String.format("%s: %s ", category, item));
+        sLog.timedOut("%s: %s ".formatted(category, item));
     }
 
     public static void logDownloading(String category, String item) {
-        sLog.timedOut(String.format("Downloading %s: %s ", category, item));
+        sLog.timedOut("Downloading %s: %s ".formatted(category, item));
     }
 
     public static void logLoading(String category, String item) {
-        sLog.timedOut(String.format("Loading %s: %s ", category, item));
+        sLog.timedOut("Loading %s: %s ".formatted(category, item));
     }
 
     public static void logRemoving(String category, String item) {
-        sLog.timedOut(String.format("Removing %s: %s ", category, item));
+        sLog.timedOut("Removing %s: %s ".formatted(category, item));
     }
 
     public static void notification(String type, String title, String text) {

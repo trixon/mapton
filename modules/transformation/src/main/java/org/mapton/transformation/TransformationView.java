@@ -200,9 +200,9 @@ public class TransformationView extends BorderPane {
         SimpleDialog.clearFilters();
         SimpleDialog.addFilters("geo");
         SimpleDialog.setFilter("geo");
-        SimpleDialog.setTitle(String.format("%s %s", Dict.SAVE.toString(), Dict.COORDINATE_FILE.toString().toLowerCase()));
+        SimpleDialog.setTitle("%s %s".formatted(Dict.SAVE.toString(), Dict.COORDINATE_FILE.toString().toLowerCase()));
         var toSystem = StringUtils.substringAfter(mDestComboBox.getValue().getName().toString(), ":");
-        var name = String.format("%s_%s.geo", FilenameUtils.getBaseName(mFile.getName()), toSystem);
+        var name = "%s_%s.geo".formatted(FilenameUtils.getBaseName(mFile.getName()), toSystem);
         var file = new File(mFile.getParentFile(), name);
         SimpleDialog.setSelectedFile(file);
         if (mDestination == null) {

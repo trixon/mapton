@@ -70,7 +70,7 @@ public class FileImportAction extends FileAction {
 
             hidePopOver();
 
-            final String dialogTitle = String.format("%s %s", Dict.IMPORT.toString(), mTitle.toLowerCase());
+            final String dialogTitle = "%s %s".formatted(Dict.IMPORT.toString(), mTitle.toLowerCase());
             SimpleDialog.setTitle(dialogTitle);
 
             if (mFile == null) {
@@ -186,7 +186,7 @@ public class FileImportAction extends FileAction {
                 mImports = result.x;
                 mErrors = result.y;
             } else {
-                String message = String.format(mBundle.getString("bookmark_import_error_csv_message"), String.join("\n ▶ ", requiredColumns));
+                String message = mBundle.getString("bookmark_import_error_csv_message").formatted(String.join("\n ▶ ", requiredColumns));
                 NotificationDisplayer.getDefault().notify(
                         mBundle.getString("bookmark_import_error_csv_title"),
                         MNotificationIcons.getErrorIcon(),

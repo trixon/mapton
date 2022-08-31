@@ -241,8 +241,8 @@ public class SourcesPane extends BorderPane {
         SwingUtilities.invokeLater(() -> {
             String[] buttons = new String[]{Dict.CANCEL.toString(), Dict.REMOVE.toString()};
             NotifyDescriptor d = new NotifyDescriptor(
-                    String.format(Dict.Dialog.MESSAGE_PROFILE_REMOVE.toString(), source.getName()),
-                    String.format(Dict.Dialog.TITLE_REMOVE_S.toString(), Dict.SOURCE.toString().toLowerCase()) + "?",
+                    Dict.Dialog.MESSAGE_PROFILE_REMOVE.toString().formatted(source.getName()),
+                    Dict.Dialog.TITLE_REMOVE_S.toString().formatted(Dict.SOURCE.toString().toLowerCase()) + "?",
                     NotifyDescriptor.OK_CANCEL_OPTION,
                     NotifyDescriptor.WARNING_MESSAGE,
                     buttons,

@@ -329,7 +329,7 @@ public class MapToolBar extends BaseToolBar {
         mLayerPopOver.setArrowLocation(ArrowLocation.TOP_CENTER);
 
         mStylePopOver = new PopOver();
-        initPopOver(mStylePopOver, String.format("%s & %s", Dict.TYPE.toString(), Dict.STYLE.toString()), new BorderPane(), true);
+        initPopOver(mStylePopOver, "%s & %s".formatted(Dict.TYPE.toString(), Dict.STYLE.toString()), new BorderPane(), true);
         mStylePopOver.setOnShowing(event -> {
             getButtonForAction(mStyleAction).getStylesheets().remove(CSS_FILE);
         });

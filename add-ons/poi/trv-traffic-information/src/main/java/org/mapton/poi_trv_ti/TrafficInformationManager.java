@@ -77,7 +77,7 @@ public class TrafficInformationManager {
     }
 
     public String getIconUrl(Wind wind) {
-        return String.format("%s%s.png", SystemHelper.getPackageAsPath(TrafficInfoPoiProvider.class), wind.getDirectionIconId());
+        return "%s%s.png".formatted(SystemHelper.getPackageAsPath(TrafficInfoPoiProvider.class), wind.getDirectionIconId());
     }
 
     public String getIconUrl(Precipitation precipitation) {
@@ -128,7 +128,7 @@ public class TrafficInformationManager {
                 throw new AssertionError();
         }
 
-        return String.format("%sprecipitation%s.png", SystemHelper.getPackageAsPath(TrafficInfoPoiProvider.class), basename);
+        return "%sprecipitation%s.png".formatted(SystemHelper.getPackageAsPath(TrafficInfoPoiProvider.class), basename);
     }
 
     public List<se.trixon.trv_traffic_information.road.camera.v1.RESULT> getResultsCamera() {

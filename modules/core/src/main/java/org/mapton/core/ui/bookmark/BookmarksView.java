@@ -184,7 +184,7 @@ public class BookmarksView extends BorderPane {
 
     private void postPopulate(TreeItem<MBookmark> treeItem, String level) {
         final var value = treeItem.getValue();
-        final String path = String.format("%s/%s", value.getCategory(), value.getName());
+        final String path = "%s/%s".formatted(value.getCategory(), value.getName());
         treeItem.setExpanded(mPreferences.getBoolean(path, false));
 
         treeItem.expandedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {

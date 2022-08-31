@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2022 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -65,7 +65,7 @@ public class MDecDegDMS {
     }
 
     public String format(String format, String pos, String neg) {
-        return String.format(format,
+        return format.formatted(
                 getDeg(),
                 getMin(),
                 getSec(),

@@ -424,7 +424,7 @@ public class WorldWindMapEngine extends MEngine {
         var progressBar = new JProgressBar();
         progressBar.setIndeterminate(true);
         mMainPanel.add(progressBar, BorderLayout.NORTH);
-        var label = new JLabel(String.format("<html>%s<br/><br/><br/></html>", Dict.PATIENCE_IS_A_VIRTUE.toString()));
+        var label = new JLabel("<html>%s<br/><br/><br/></html>".formatted(Dict.PATIENCE_IS_A_VIRTUE.toString()));
         label.setVerticalAlignment(SwingConstants.BOTTOM);
         label.setFont(label.getFont().deriveFont(label.getFont().getSize() * 2f));
         label.setHorizontalAlignment(SwingConstants.CENTER);

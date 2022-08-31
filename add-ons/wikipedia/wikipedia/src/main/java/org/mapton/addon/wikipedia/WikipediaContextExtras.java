@@ -105,7 +105,7 @@ public class WikipediaContextExtras extends MContextMenuItem {
                         var articles = new ArrayList<WikipediaArticle>();
                         if (result.getQuery() != null && result.getQuery().getPages() != null) {
                             var pages = result.getQuery().getPages();
-                            Mapton.getLog().v(LOG_TAG, String.format("Found %d articles", pages.size()));
+                            Mapton.getLog().v(LOG_TAG, "Found %d articles".formatted(pages.size()));
                             for (var page : pages.values()) {
                                 var article = new WikipediaArticle();
                                 article.setTitle(page.getTitle());

@@ -89,7 +89,7 @@ public class GeoToolsCooTrans implements MCooTrans {
 
     @Override
     public String getLatitudeString(double latitude, double longitude) {
-        return String.format("%.1f N", getLatitude(latitude, longitude));
+        return "%.1f N".formatted(getLatitude(latitude, longitude));
     }
 
     @Override
@@ -99,7 +99,7 @@ public class GeoToolsCooTrans implements MCooTrans {
 
     @Override
     public String getLongitudeString(double latitude, double longitude) {
-        return String.format("%.1f E", getLongitude(latitude, longitude));
+        return "%.1f E".formatted(getLongitude(latitude, longitude));
     }
 
     public MathTransform getMathTransform() {
@@ -118,7 +118,7 @@ public class GeoToolsCooTrans implements MCooTrans {
     @Override
     public String getString(double latitude, double longitude) {
         if (isWithinWgs84Bounds(latitude, longitude)) {
-            return String.format("%s  %s", getLatitudeString(latitude, longitude), getLongitudeString(latitude, longitude));
+            return "%s  %s".formatted(getLatitudeString(latitude, longitude), getLongitudeString(latitude, longitude));
         } else {
             return Dict.OUT_OF_BOUNDS.toString();
         }

@@ -24,6 +24,6 @@ import se.trixon.almond.util.Dict;
 public abstract class MEditor extends MSplitNavMaskerPane {
 
     public MEditor() {
-        setParent(String.format("- %s -", Dict.SYSTEM.toString()));
+        setParent("- %s -".formatted(Dict.SYSTEM.toString()));
     }
 }

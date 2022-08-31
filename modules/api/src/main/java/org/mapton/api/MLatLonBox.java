@@ -87,6 +87,6 @@ public class MLatLonBox {
 
     @Override
     public String toString() {
-        return String.format("sw: (%s), ne: (%s)", mSouthWest.toString(), mNorthEast.toString());
+        return "sw: (%s), ne: (%s)".formatted(mSouthWest.toString(), mNorthEast.toString());
     }
 }

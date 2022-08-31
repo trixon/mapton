@@ -25,6 +25,6 @@ public abstract class MCommandBoxItemAddOn implements MCommandBoxItem {
 
     @Override
     public String getParent() {
-        return String.format("- %s -", Dict.ADD_ONS.toString());
+        return "- %s -".formatted(Dict.ADD_ONS.toString());
     }
 }

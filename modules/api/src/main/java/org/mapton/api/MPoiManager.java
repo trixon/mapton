@@ -179,7 +179,7 @@ public class MPoiManager extends MBaseDataManager<MPoi> {
     }
 
     private boolean validPoi(MPoi poi, String filter) {
-        String category = String.format("%s/%s", poi.getProvider(), poi.getCategory());
+        String category = "%s/%s".formatted(poi.getProvider(), poi.getCategory());
         boolean valid
                 = mCategoriesProperty.get().contains(category)
                 && ObjectUtils.allNotNull(poi.getLatitude(), poi.getLongitude())

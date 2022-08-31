@@ -161,7 +161,7 @@ public abstract class MUpdater {
                 lastUpdate = FastDateFormat.getInstance("yyyy-MM-dd HH.mm.ss").format(new Date(mFile.lastModified()));
             }
 
-            return String.format(Dict.UPDATED_S.toString(), lastUpdate);
+            return Dict.UPDATED_S.toString().formatted(lastUpdate);
         }
 
         public void initAutoUpdater() {
@@ -169,9 +169,9 @@ public abstract class MUpdater {
             ActionListener actionListener = actionEvent -> {
                 new Thread(() -> {
                     if (isAutoUpdateEnabled()) {
-                        mPrint.out(String.format("%s %s/%s", "AutoUpdate", getCategory(), getName()));
+                        mPrint.out("%s %s/%s".formatted("AutoUpdate", getCategory(), getName()));
                         getRunnable().run();
-                        mPrint.out(String.format("%s %s/%s, %s", "AutoUpdate", getCategory(), getName(), Dict.DONE.toString().toLowerCase()));
+                        mPrint.out("%s %s/%s, %s".formatted("AutoUpdate", getCategory(), getName(), Dict.DONE.toString().toLowerCase()));
                         mTimer.setDelay(defaultDelay);
                         mTimer.setInitialDelay(defaultDelay);
                         mTimer.restart();

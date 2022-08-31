@@ -73,11 +73,11 @@ public class Settings21 implements Runnable {
 
             String message = mIntro;
             if (oldUserDir.isDirectory()) {
-                message += String.format(mUser, oldUserDir, newUserDir);
+                message += mUser.formatted(oldUserDir, newUserDir);
             }
 
             if (oldCacheDir.isDirectory()) {
-                message += String.format(mCache, oldCacheDir, newCacheDir);
+                message += mCache.formatted(oldCacheDir, newCacheDir);
             }
 
             if (!message.equals(mIntro)) {

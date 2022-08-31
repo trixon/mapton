@@ -88,7 +88,7 @@ public class PoisView extends BorderPane {
         mFilterPopOver = new FilterPopOver();
 
         mFilterTextField = TextFields.createClearableTextField();
-        mFilterTextField.setPromptText(String.format("%s %s", Dict.SEARCH.toString(), MDict.POI.toString()));
+        mFilterTextField.setPromptText("%s %s".formatted(Dict.SEARCH.toString(), MDict.POI.toString()));
         mFilterTextField.setMinWidth(20);
 
         mListView = new ListView<>();
@@ -136,7 +136,7 @@ public class PoisView extends BorderPane {
 
         mManager.getTimeFilteredItems().addListener((ListChangeListener.Change<? extends MPoi> c) -> {
             Platform.runLater(() -> {
-                mItemCountLabel.setText(String.format("%d/%d",
+                mItemCountLabel.setText("%d/%d".formatted(
                         mManager.getTimeFilteredItems().size(),
                         mManager.getAllItems().size()
                 ));
@@ -297,7 +297,7 @@ public class PoisView extends BorderPane {
             setText(null);
 
             mNameLabel.setText(poi.getName());
-            mDesc1Label.setText(String.format("%s: %s", poi.getProvider(), poi.getCategory()));
+            mDesc1Label.setText("%s: %s".formatted(poi.getProvider(), poi.getCategory()));
 
             LinkedHashMap<String, String> rows = new LinkedHashMap<>();
             rows.put(Dict.NAME.toString(), StringUtils.defaultString(poi.getName()));

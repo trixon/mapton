@@ -268,12 +268,12 @@ final class CrsPanel extends javax.swing.JPanel {
         }
 
         private void updateCounters() {
-            mSourceCountLabel.setText(String.format("%d/%d",
+            mSourceCountLabel.setText("%d/%d".formatted(
                     mListSelectionView.getSourceItems().size(),
                     mManager.getAllSystems().size()
             ));
 
-            mTargetCountLabel.setText(String.format("%d/%d",
+            mTargetCountLabel.setText("%d/%d".formatted(
                     mListSelectionView.getTargetItems().size(),
                     mManager.getAllSystems().size()
             ));

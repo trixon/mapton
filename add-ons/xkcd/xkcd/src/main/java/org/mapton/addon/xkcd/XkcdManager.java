@@ -103,7 +103,7 @@ public class XkcdManager {
     }
 
     private Xkcd parse(int number) throws IOException {
-        return parse(String.format("%s%d", BASE_URL, number));
+        return parse("%s%d".formatted(BASE_URL, number));
     }
 
     private Xkcd parse(String url) throws IOException {

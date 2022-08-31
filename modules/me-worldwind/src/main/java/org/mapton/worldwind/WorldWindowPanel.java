@@ -434,7 +434,7 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
                     NotificationDisplayer.getDefault().notify(
                             Dict.Dialog.TITLE_IO_ERROR.toString(),
                             MNotificationIcons.getErrorIcon(),
-                            String.format("WMS error: %s", wmsService.getName()),
+                            "WMS error: %s".formatted(wmsService.getName()),
                             null,
                             Priority.HIGH
                     );
@@ -546,7 +546,7 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         var mapStyle = MapStyle.getStyle(styleId);
 
         try {
-            Mapton.getLog().i(Dict.DOCUMENT.toString(), String.format("%s: (%s)", mapStyle.getName(), String.join(", ", styleLayers)));
+            Mapton.getLog().i(Dict.DOCUMENT.toString(), "%s: (%s)".formatted(mapStyle.getName(), String.join(", ", styleLayers)));
         } catch (NullPointerException e) {
         }
         getLayers().forEach((layer) -> {

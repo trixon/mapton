@@ -83,7 +83,7 @@ public final class OpenAction extends BaseAction {
                 return entry;
             }).forEachOrdered(entry -> {
                 entry.getValue().forEach(coordinateFileOpener -> {
-                    SimpleDialog.addFilter(new FileNameExtensionFilter(String.format("%s (%s)", coordinateFileOpener.getName(), entry.getKey()), entry.getKey()));
+                    SimpleDialog.addFilter(new FileNameExtensionFilter("%s (%s)".formatted(coordinateFileOpener.getName(), entry.getKey()), entry.getKey()));
                 });
             });
 

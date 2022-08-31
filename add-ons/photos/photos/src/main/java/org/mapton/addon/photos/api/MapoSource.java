@@ -86,7 +86,7 @@ public class MapoSource {
     }
 
     public File getCollectionFile() {
-        return new File(mManager.getCacheDir(), String.format("%d.json", getId()));
+        return new File(mManager.getCacheDir(), "%d.json".formatted(getId()));
     }
 
     public String getDescriptionString() {
@@ -237,7 +237,7 @@ public class MapoSource {
 
     @Override
     public String toString() {
-        return String.format("%s (%d)", mName, getCollection().getPhotos().size());
+        return "%s (%d)".formatted(mName, getCollection().getPhotos().size());
     }
 
 }

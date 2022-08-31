@@ -174,17 +174,17 @@ public final class WikipediaView extends BorderPane {
             final Double distance = article.getDistance();
 
             if (distance >= 10000) {
-                distanceString = String.format("%.0f km", distance / 1000);
+                distanceString = "%.0f km".formatted(distance / 1000);
             } else if (distance >= 1000) {
-                distanceString = String.format("%.1f km", distance / 1000);
+                distanceString = "%.1f km".formatted(distance / 1000);
             } else {
-                distanceString = String.format("%d m", distance.intValue());
+                distanceString = "%d m".formatted(distance.intValue());
             }
 
             if (StringUtils.isBlank(article.getDescription())) {
                 mDescLabel.setText(distanceString);
             } else {
-                mDescLabel.setText(String.format("%s, %s", distanceString, article.getDescription()));
+                mDescLabel.setText("%s, %s".formatted(distanceString, article.getDescription()));
             }
 
             String thumbnail = article.getThumbnail();

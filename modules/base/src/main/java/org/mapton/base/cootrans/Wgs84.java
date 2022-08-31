@@ -52,7 +52,7 @@ public class Wgs84 implements MCooTrans {
 
     @Override
     public String getLatitudeString(double latitude, double longitude) {
-        return String.format("%2.6f", latitude);
+        return "%2.6f".formatted(latitude);
     }
 
     @Override
@@ -62,7 +62,7 @@ public class Wgs84 implements MCooTrans {
 
     @Override
     public String getLongitudeString(double latitude, double longitude) {
-        return String.format("%3.6f", longitude);
+        return "%3.6f".formatted(longitude);
     }
 
     @Override
@@ -72,7 +72,7 @@ public class Wgs84 implements MCooTrans {
 
     @Override
     public String getString(double latitude, double longitude) {
-        return String.format("%s %s", getLatitudeString(latitude, longitude), getLongitudeString(latitude, longitude));
+        return "%s %s".formatted(getLatitudeString(latitude, longitude), getLongitudeString(latitude, longitude));
     }
 
     @Override

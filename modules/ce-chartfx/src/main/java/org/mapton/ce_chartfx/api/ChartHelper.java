@@ -30,8 +30,8 @@ public class ChartHelper {
 
             @Override
             public String toString(Number t) {
-                var format = String.format("%%.%df", decimals);
-                return String.format(format, t.doubleValue());
+                var format = "%%.%df".formatted(decimals);
+                return format.formatted(t.doubleValue());
             }
         };
     }
