@@ -118,6 +118,12 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>google-maps</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.openjfx</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- Trixon -->

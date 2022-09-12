@@ -59,6 +59,10 @@
                     <groupId>org.controlsfx</groupId>
                     <artifactId>controlsfx</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>org.openjfx</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
