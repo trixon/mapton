@@ -15,8 +15,11 @@
  */
 package org.mapton.core;
 
+import org.mapton.api.MEngine;
 import org.mapton.api.MOptions;
+import org.mapton.api.Mapton;
 import org.openide.modules.OnStop;
+import org.openide.util.Lookup;
 
 /**
  *
@@ -30,5 +33,21 @@ public class Finalizer implements Runnable {
     @Override
     public void run() {
         mOptions.put(MOptions.KEY_APP_FIRST_RUN, false);
+        var engine = Mapton.getEngine();
+
+        Mapton.execute(() -> {
+            try {
+                mOptions.setMapZoom(engine.getZoom());
+                mOptions.setMapCenter(engine.getCenter());
+            } catch (Exception e) {
+                System.err.println(e);
+            }
+        });
+
+        Lookup.getDefault().lookupAll(MEngine.class).forEach(mapEngine -> {
+            if (mapEngine.isInitialized()) {
+                Mapton.execute(mapEngine::onClosing);
+            }
+        });
     }
 }

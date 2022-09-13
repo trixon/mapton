@@ -18,9 +18,11 @@ package org.mapton.core;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.concurrent.TimeUnit;
 import java.util.prefs.BackingStoreException;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.ImageView;
+import javafx.stage.FileChooser;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
@@ -62,8 +64,6 @@ public class Initializer implements Runnable {
     private final MOptions mOptions = MOptions.getInstance();
 
     static {
-        new Thread(() -> {
-        }).start();
         try {
             var key = "laf";
             var defaultLAF = "com.formdev.flatlaf.FlatDarkLaf";
@@ -135,6 +135,17 @@ public class Initializer implements Runnable {
                 windowManager.findTopComponent("MapTopComponent").requestActive();
                 Actions.forID("Window", "org.netbeans.core.windows.actions.ShowEditorOnlyAction").actionPerformed(null);
             }
+
+            FxHelper.runLaterDelayed(TimeUnit.SECONDS.toMillis(10), () -> {
+                var map = se.trixon.almond.util.fx.dialogs.SimpleDialog.getExtensionFilters();
+                map.put("*", new FileChooser.ExtensionFilter(Dict.ALL_FILES.toString(), "*"));
+                map.put("csv", new FileChooser.ExtensionFilter("Comma-separated value (*.csv)", "*.csv"));
+                map.put("geo", new FileChooser.ExtensionFilter("SBG Geo (*.geo)", "*.geo"));
+                map.put("json", new FileChooser.ExtensionFilter("JSON (*.json)", "*.json"));
+                map.put("kml", new FileChooser.ExtensionFilter("Keyhole Markup Language (*.kml)", "*.kml"));
+                map.put("grid", new FileChooser.ExtensionFilter("Mapton Grid (*.grid)", "*.grid"));
+                map.put("png", new FileChooser.ExtensionFilter("%s (*.png)".formatted(Dict.IMAGE.toString()), "*.png"));
+            });
 
             Mapton.getExecutionFlow().executeWhenReady(MKey.EXECUTION_FLOW_MAP_INITIALIZED, () -> {
                 MaptonNb.progressStop(Dict.WARMING_UP.toString());

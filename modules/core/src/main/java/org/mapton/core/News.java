@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.base;
+package org.mapton.core;
 
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.core.news.NewsProvider;

@@ -173,9 +173,9 @@ limitations under the License.
         <folder name="Coordinate">
             <attr name="command" stringvalue="c"/>
             <attr name="position" intvalue="0"/>
-            <attr name="displayName" bundlevalue="org.mapton.base.Bundle#QuickSearch/Coordinate"/>
-            <file name="org-mapton-base-CoordinateQuickSearchProvider.instance">
-                <attr name="displayName" bundlevalue="org.mapton.base.Bundle#QuickSearch/Coordinate/org-mapton-base-CoordinateQuickSearchProvider.instance"/>
+            <attr name="displayName" bundlevalue="org.mapton.core.Bundle#QuickSearch/Coordinate"/>
+            <file name="org-mapton-core-CoordinateQuickSearchProvider.instance">
+                <attr name="displayName" bundlevalue="org.mapton.core.Bundle#QuickSearch/Coordinate/org-mapton-core-CoordinateQuickSearchProvider.instance"/>
             </file>
         </folder>
     </folder>

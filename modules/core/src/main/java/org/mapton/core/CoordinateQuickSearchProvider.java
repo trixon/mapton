@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.base;
+package org.mapton.core;
 
 import javafx.geometry.Point2D;
 import org.apache.commons.lang3.math.NumberUtils;
