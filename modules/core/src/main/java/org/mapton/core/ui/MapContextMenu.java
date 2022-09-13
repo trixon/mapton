@@ -41,7 +41,6 @@ import org.mapton.api.MKey;
 import org.mapton.api.MOptions;
 import org.mapton.api.MWhatsHereEngine;
 import org.mapton.api.Mapton;
-import org.mapton.base.ui.FxOnScreenDummy;
 import org.mapton.core.api.BookmarkEditor;
 import org.openide.util.Exceptions;
 import org.openide.util.Lookup;

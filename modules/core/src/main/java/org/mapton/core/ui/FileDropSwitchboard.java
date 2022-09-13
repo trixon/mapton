@@ -21,7 +21,7 @@ import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javax.swing.JButton;
 import javax.swing.SwingUtilities;
-import org.mapton.base.ui.file_drop_switchboard.FileDropSwitchboardView;
+import org.mapton.core.ui.file_drop_switchboard.FileDropSwitchboardView;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import se.trixon.almond.nbp.fx.FxDialogPanel;

@@ -13,36 +13,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.base.ui.simple_object_storage;
+package org.mapton.core.ui.simple_object_storage;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
+import javafx.scene.control.SelectionMode;
+import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.VBox;
 import org.apache.commons.lang3.StringUtils;
-import org.controlsfx.control.ToggleSwitch;
-import org.mapton.api.MSimpleObjectStorageBoolean;
+import org.mapton.api.MSimpleObjectStorageString;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import se.trixon.almond.util.fx.FxHelper;
+import se.trixon.almond.util.fx.control.FileChooserPane;
 
 /**
  *
  * @author Patrik Karlström
  * @param <T>
  */
-public class BooleanStorageTab<T extends MSimpleObjectStorageBoolean> extends BaseTab {
+public class StringStorageTab<T extends MSimpleObjectStorageString> extends BaseTab {
 
     private final Class<T> mClass;
-    private final HashMap<Class, ToggleSwitch> mClassToToggleSwitch = new HashMap<>();
+    private final HashMap<Class, TextField> mClassToTextField = new HashMap<>();
     private final VBox mItemBox = new VBox(FxHelper.getUIScaled(8));
     private final ScrollPane mScrollPane;
 
-    public BooleanStorageTab(Class<T> c, String title) {
+    public StringStorageTab(Class<T> c, String title) {
         super(title);
         mClass = c;
         setContent(mScrollPane = new ScrollPane(mItemBox));
@@ -60,14 +63,14 @@ public class BooleanStorageTab<T extends MSimpleObjectStorageBoolean> extends Ba
     @Override
     public void load(Object object) {
         Lookup.getDefault().lookupAll(mClass).forEach(simpleStorage -> {
-            mClassToToggleSwitch.get(simpleStorage.getClass()).setSelected(mManager.getBoolean(simpleStorage.getClass(), simpleStorage.getDefaultValue()));
+            mClassToTextField.get(simpleStorage.getClass()).setText(mManager.getString(simpleStorage.getClass(), simpleStorage.getDefaultValue()));
         });
     }
 
     @Override
     public void save(Object object) {
         Lookup.getDefault().lookupAll(mClass).forEach(simpleStorage -> {
-            mManager.putBoolean(simpleStorage.getClass(), mClassToToggleSwitch.get(simpleStorage.getClass()).isSelected());
+            mManager.putString(simpleStorage.getClass(), mClassToTextField.get(simpleStorage.getClass()).getText());
         });
     }
 
@@ -79,19 +82,27 @@ public class BooleanStorageTab<T extends MSimpleObjectStorageBoolean> extends Ba
 
             simpleStorages.sort(c1.thenComparing(c2));
             HashSet<String> groups = new HashSet<>();
-            mClassToToggleSwitch.clear();
+            mClassToTextField.clear();
 
-            for (T simpleStorage : simpleStorages) {
+            for (T stringStorage : simpleStorages) {
                 VBox box;
-                ToggleSwitch toggleSwitch = new ToggleSwitch(simpleStorage.getName());
-                toggleSwitch.prefWidthProperty().bind(mItemBox.widthProperty());
-                box = new VBox(toggleSwitch);
-                if (StringUtils.isNotBlank(simpleStorage.getTooltipText())) {
-                    toggleSwitch.setTooltip(new Tooltip(simpleStorage.getTooltipText()));
+                TextField textField;
+                if (stringStorage instanceof MSimpleObjectStorageString.Path sossp) {
+                    var storagePath = sossp;
+                    var fileChooserPane = new FileChooserPane("title", storagePath.getName(), storagePath.getObjectMode(), SelectionMode.SINGLE);
+                    textField = fileChooserPane.getTextField();
+                    box = new VBox(fileChooserPane);
+                } else {
+                    Label nameLabel = new Label(stringStorage.getName());
+                    textField = new TextField();
+                    textField.prefWidthProperty().bind(mItemBox.widthProperty());
+                    box = new VBox(nameLabel, textField);
                 }
-                mClassToToggleSwitch.put(simpleStorage.getClass(), toggleSwitch);
+                textField.setPromptText(stringStorage.getPromptText());
+                textField.setTooltip(new Tooltip(stringStorage.getTooltipText()));
+                mClassToTextField.put(stringStorage.getClass(), textField);
 
-                String group = simpleStorage.getGroup();
+                String group = stringStorage.getGroup();
                 if (!groups.contains(group)) {
                     groups.add(group);
                     box.getChildren().add(0, getGroupLabel(group));
@@ -101,4 +112,5 @@ public class BooleanStorageTab<T extends MSimpleObjectStorageBoolean> extends Ba
             }
         });
     }
+
 }

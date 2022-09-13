@@ -16,7 +16,7 @@
 package org.mapton.core.ui;
 
 import javafx.scene.Scene;
-import org.mapton.base.ui.news.NewsView;
+import org.mapton.core.ui.news.NewsView;
 import org.mapton.core.api.MTopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;

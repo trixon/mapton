@@ -13,21 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.base.ui.simple_object_storage;
+package org.mapton.core.ui.news;
 
-import org.mapton.api.MSimpleObjectStorageBoolean;
-import se.trixon.almond.util.Dict;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.web.WebView;
+import org.mapton.api.Mapton;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class BooleanStorageTabPane extends BaseTabPane {
+abstract class NewsSection extends BorderPane {
 
-    public BooleanStorageTabPane() {
-        getTabs().addAll(
-                new BooleanStorageTab(MSimpleObjectStorageBoolean.UpdaterAutoUpdate.class, mBundle.getString("automaticUpdates")),
-                new BooleanStorageTab(MSimpleObjectStorageBoolean.Misc.class, Dict.MISCELLANEOUS.toString())
-        );
+    protected final WebView mWebView = new WebView();
+
+    public NewsSection() {
+        setCenter(mWebView);
+
+        Mapton.applyHtmlCss(mWebView, "news.css");
     }
+
+    public abstract void refresh();
 }

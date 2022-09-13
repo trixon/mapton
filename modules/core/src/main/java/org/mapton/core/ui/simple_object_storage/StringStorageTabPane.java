@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.base.ui.simple_object_storage;
+package org.mapton.core.ui.simple_object_storage;
 
 import java.util.ResourceBundle;
 import org.mapton.api.MSimpleObjectStorageString;

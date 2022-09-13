@@ -26,7 +26,7 @@ import javax.swing.AbstractAction;
 import javax.swing.JPanel;
 import org.mapton.api.MKey;
 import org.mapton.api.Mapton;
-import org.mapton.base.ui.FxOnScreenDummy;
+import org.mapton.core.ui.FxOnScreenDummy;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;

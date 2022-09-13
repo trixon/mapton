@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.base.ui;
+package org.mapton.core.ui;
 
 import java.time.LocalDate;
 import java.util.Locale;

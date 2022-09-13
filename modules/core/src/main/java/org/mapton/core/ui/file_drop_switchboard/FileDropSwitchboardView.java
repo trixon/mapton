@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.base.ui.file_drop_switchboard;
+package org.mapton.core.ui.file_drop_switchboard;
 
 import java.io.File;
 import java.util.ArrayList;

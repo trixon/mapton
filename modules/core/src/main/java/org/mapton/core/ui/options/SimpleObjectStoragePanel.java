@@ -24,8 +24,8 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import org.mapton.api.MGenericLoader;
 import org.mapton.api.MGenericSaver;
-import org.mapton.base.ui.simple_object_storage.BooleanStorageTabPane;
-import org.mapton.base.ui.simple_object_storage.StringStorageTabPane;
+import org.mapton.core.ui.simple_object_storage.BooleanStorageTabPane;
+import org.mapton.core.ui.simple_object_storage.StringStorageTabPane;
 import org.openide.util.NbBundle;
 import se.trixon.almond.nbp.fx.FxPanel;
 

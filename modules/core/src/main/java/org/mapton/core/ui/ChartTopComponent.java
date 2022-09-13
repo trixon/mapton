@@ -18,7 +18,6 @@ package org.mapton.core.ui;
 import javafx.scene.Scene;
 import org.mapton.api.MKey;
 import org.mapton.api.Mapton;
-import org.mapton.base.ui.ChartView;
 import org.mapton.core.api.MTopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.windows.TopComponent;

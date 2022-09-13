@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.base.ui.news;
+package org.mapton.core.ui.news;
 
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;

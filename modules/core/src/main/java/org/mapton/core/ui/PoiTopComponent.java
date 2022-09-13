@@ -18,7 +18,7 @@ package org.mapton.core.ui;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import org.mapton.api.MDict;
-import org.mapton.base.ui.poi.PoisViewManager;
+import org.mapton.core.ui.poi.PoisViewManager;
 import org.mapton.core.api.MTopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.windows.TopComponent;
