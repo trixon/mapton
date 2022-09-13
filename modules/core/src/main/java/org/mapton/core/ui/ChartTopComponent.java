@@ -15,13 +15,26 @@
  */
 package org.mapton.core.ui;
 
+import javafx.application.Platform;
+import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.layout.BorderPane;
+import org.mapton.api.LineChartX;
+import org.mapton.api.MChartLine;
 import org.mapton.api.MKey;
+import org.mapton.api.MSelectionLockManager;
 import org.mapton.api.Mapton;
+import static org.mapton.api.Mapton.getIconSizeToolBar;
 import org.mapton.core.api.MTopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
+import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.GlobalStateChangeEvent;
+import se.trixon.almond.util.fx.FxHelper;
+import se.trixon.almond.util.icons.material.MaterialIcon;
 
 /**
  * Generic Property TopComponent
@@ -58,5 +71,68 @@ public final class ChartTopComponent extends MTopComponent {
         // better to version settings since initial version as advocated at
         // http://wiki.apidesign.org/wiki/PropertyFiles
         p.setProperty("version", "1.0");
+    }
+
+    class ChartView extends BorderPane {
+
+        private Label mInvalidPlaceholderLabel;
+        private Label mPlaceholderLabel;
+        private ProgressBar mProgressBar;
+
+        public ChartView() {
+            createUI();
+            initListeners();
+        }
+
+        private void createUI() {
+            mPlaceholderLabel = new Label(NbBundle.getMessage(ChartView.class, "chart_placeholder"), MaterialIcon._Editor.SHOW_CHART.getImageView(getIconSizeToolBar()));
+            mPlaceholderLabel.setDisable(true);
+
+            mInvalidPlaceholderLabel = new Label(NbBundle.getMessage(ChartView.class, "chart_invalid_object"), MaterialIcon._Editor.SHOW_CHART.getImageView(getIconSizeToolBar()));
+            mInvalidPlaceholderLabel.setDisable(true);
+
+            mProgressBar = new ProgressBar(-1);
+            mProgressBar.setPrefWidth(400);
+
+            setCenter(mPlaceholderLabel);
+        }
+
+        private void initListeners() {
+            Mapton.getGlobalState().addListener((GlobalStateChangeEvent evt) -> {
+                Platform.runLater(() -> {
+                    refresh(evt.getValue());
+                });
+            }, MKey.CHART);
+
+            Mapton.getGlobalState().addListener((GlobalStateChangeEvent evt) -> {
+                Platform.runLater(() -> {
+                    setCenter(mProgressBar);
+                });
+            }, MKey.CHART_WAIT);
+        }
+
+        private void refresh(Object o) {
+            if (MSelectionLockManager.getInstance().isLocked()) {
+                return;
+            }
+
+            Node centerObject = null;
+
+            if (o == null) {
+                centerObject = mPlaceholderLabel;
+            } else if (o instanceof MChartLine chartLine) {
+                centerObject = new LineChartX(chartLine).getNode();
+            } else if (o instanceof Node node) {
+                centerObject = node;
+            } else {
+                centerObject = mInvalidPlaceholderLabel;
+            }
+
+            setCenter(centerObject);
+
+            if (!centerObject.getClass().getPackageName().equals("de.gsi.chart")) {
+                FxHelper.loadDarkTheme(centerObject.getScene());
+            }
+        }
     }
 }

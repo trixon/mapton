@@ -15,6 +15,7 @@
  */
 package org.mapton.core.ui;
 
+import org.mapton.core.ui.file_drop_switchboard.FileDropSwitchboard;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;

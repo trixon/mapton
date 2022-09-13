@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core.ui;
+package org.mapton.core.ui.file_drop_switchboard;
 
 import java.io.File;
 import java.util.List;
@@ -21,7 +21,6 @@ import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javax.swing.JButton;
 import javax.swing.SwingUtilities;
-import org.mapton.core.ui.file_drop_switchboard.FileDropSwitchboardView;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import se.trixon.almond.nbp.fx.FxDialogPanel;

@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core.ui;
+package org.mapton.core.ui.news;
 
 import javafx.scene.Scene;
-import org.mapton.core.ui.news.NewsView;
 import org.mapton.core.api.MTopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
@@ -43,7 +42,7 @@ import se.trixon.almond.util.Dict;
         displayName = "#CTL_NewsAction",
         preferredID = "NewsTopComponent"
 )
-@ActionID(category = "Mapton", id = "org.mapton.core.ui.NewsTopComponent")
+@ActionID(category = "Mapton", id = "org.mapton.core.ui.news.NewsTopComponent")
 @ActionReferences({
     //    @ActionReference(path = "Shortcuts", name = "D-0"),
     @ActionReference(path = "Menu/Tools", position = 11)

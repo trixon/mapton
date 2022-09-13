@@ -27,7 +27,7 @@ import org.apache.commons.io.FileUtils;
 import org.mapton.api.MCoordinateFileOpener;
 import org.mapton.core.api.BaseAction;
 import org.mapton.core.ui.BaseToolBar;
-import org.mapton.core.ui.FileDropSwitchboard;
+import org.mapton.core.ui.file_drop_switchboard.FileDropSwitchboard;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
