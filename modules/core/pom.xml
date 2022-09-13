@@ -151,15 +151,15 @@
             <groupId>org.mapton</groupId>
             <artifactId>mapton-api</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.mapton</groupId>
-            <artifactId>mapton-base</artifactId>
-        </dependency>
 
         <!-- Trixon -->
         <dependency>
             <groupId>se.trixon.almond</groupId>
             <artifactId>almond-nbp</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>se.trixon.almond</groupId>
+            <artifactId>almond-nbp-core</artifactId>
         </dependency>
 
         <!-- Other -->

@@ -168,4 +168,15 @@ limitations under the License.
             <attr name="originalFile" stringvalue="Actions/Window/org-netbeans-core-windows-actions-DocumentsAction.instance"/>
         </file>
     </folder>
+
+    <folder name="QuickSearch">
+        <folder name="Coordinate">
+            <attr name="command" stringvalue="c"/>
+            <attr name="position" intvalue="0"/>
+            <attr name="displayName" bundlevalue="org.mapton.base.Bundle#QuickSearch/Coordinate"/>
+            <file name="org-mapton-base-CoordinateQuickSearchProvider.instance">
+                <attr name="displayName" bundlevalue="org.mapton.base.Bundle#QuickSearch/Coordinate/org-mapton-base-CoordinateQuickSearchProvider.instance"/>
+            </file>
+        </folder>
+    </folder>
 </filesystem>

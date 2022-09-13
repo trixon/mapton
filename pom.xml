@@ -219,7 +219,6 @@
 
         <!-- Common -->
         <module>modules/api</module>
-        <module>modules/base</module>
         <module>modules/core</module>
         <module>modules/editors</module>
         <module>modules/google-maps</module>
@@ -281,11 +280,6 @@
             <dependency>
                 <groupId>org.mapton</groupId>
                 <artifactId>mapton-api</artifactId>
-                <version>${mapton.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.mapton</groupId>
-                <artifactId>mapton-base</artifactId>
                 <version>${mapton.version}</version>
             </dependency>
             <dependency>
