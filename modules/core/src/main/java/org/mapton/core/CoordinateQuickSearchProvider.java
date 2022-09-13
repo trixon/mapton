@@ -21,7 +21,7 @@ import org.mapton.api.MCooTrans;
 import org.mapton.api.MLatLon;
 import org.mapton.api.MOptions;
 import org.mapton.api.Mapton;
-import org.mapton.base.cootrans.Wgs84DMS;
+import org.mapton.core.cootrans.Wgs84DMS;
 import org.netbeans.spi.quicksearch.SearchProvider;
 import org.netbeans.spi.quicksearch.SearchRequest;
 import org.netbeans.spi.quicksearch.SearchResponse;
