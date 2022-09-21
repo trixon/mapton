@@ -253,7 +253,7 @@
         <dependency>
             <groupId>org.glassfish.jaxb</groupId>
             <artifactId>jaxb-runtime</artifactId>
-            <version>4.0.0</version>
+            <version>4.0.1</version>
         </dependency>
         <dependency>
             <groupId>com.dlsc.gemsfx</groupId>
@@ -291,7 +291,7 @@
         <dependency>
             <groupId>eu.hansolo</groupId>
             <artifactId>jdktools</artifactId>
-            <version>17.0.18</version>
+            <version>17.0.19</version>
         </dependency>
         <dependency>
             <groupId>eu.hansolo</groupId>
