@@ -16,7 +16,6 @@
 package org.mapton.api.report;
 
 import static j2html.TagCreator.*;
-import j2html.tags.ContainerTag;
 import java.util.Comparator;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
@@ -94,7 +93,8 @@ public abstract class MSubReports extends MReport {
     }
 
     private void loadReport() {
-        MSubReport systemReport = mListView.getSelectionModel().getSelectedItem();
+        var systemReport = mListView.getSelectionModel().getSelectedItem();
+
         if (systemReport == null) {
             mWebView.getEngine().loadContent("");
 
@@ -103,7 +103,7 @@ public abstract class MSubReports extends MReport {
             mWebView.getEngine().loadContent("");
 
             new Thread(() -> {
-                ContainerTag html = html(
+                var html = html(
                         head(
                                 title(systemReport.getName())
                         ),
@@ -125,7 +125,7 @@ public abstract class MSubReports extends MReport {
     class SubReportListCell extends ListCell<MSubReport> {
 
         private final BorderPane mBorderPane = new BorderPane();
-        private Font mDefaultFont = Font.getDefault();
+        private final Font mDefaultFont = Font.getDefault();
         private final Label mGroupLabel = new Label();
         private final Label mNameLabel = new Label();
 
@@ -165,7 +165,7 @@ public abstract class MSubReports extends MReport {
             mGroupLabel.setFont(Font.font(fontFamily, FontWeight.NORMAL, fontSize * 0.8));
             mNameLabel.setFont(Font.font(fontFamily, FontWeight.BOLD, fontSize * 1));
 
-            VBox mainBox = new VBox(mGroupLabel, mNameLabel);
+            var mainBox = new VBox(mGroupLabel, mNameLabel);
             mainBox.setAlignment(Pos.CENTER_LEFT);
 
             mBorderPane.setCenter(mainBox);

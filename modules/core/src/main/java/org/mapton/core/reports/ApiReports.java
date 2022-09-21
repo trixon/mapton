@@ -17,12 +17,16 @@ package org.mapton.core.reports;
 
 import java.util.TreeMap;
 import java.util.TreeSet;
+import org.apache.commons.lang3.StringUtils;
 import org.mapton.api.MApiReport;
 import org.mapton.api.MContextMenuItem;
 import org.mapton.api.MCooTrans;
 import org.mapton.api.MCoordinateFileOpener;
 import org.mapton.api.MEngine;
 import org.mapton.api.MPoiProvider;
+import org.mapton.api.MSimpleObjectStorageBoolean;
+import org.mapton.api.MSimpleObjectStorageString;
+import org.mapton.api.MToolMapCommand;
 import org.mapton.api.MUpdater;
 import org.mapton.api.MWhatsHereEngine;
 import org.mapton.api.MWmsSourceProvider;
@@ -47,25 +51,19 @@ public class ApiReports implements MApiReport {
     public TreeMap<String, TreeSet<String>> getItems() {
         mItems.clear();
 
-        TreeSet<String> copyImplementations = new TreeSet<>();
-        TreeSet<String> extrasImplementations = new TreeSet<>();
-        TreeSet<String> openImplementations = new TreeSet<>();
+        var copyImplementations = new TreeSet<String>();
+        var extrasImplementations = new TreeSet<String>();
+        var openImplementations = new TreeSet<String>();
 
-        for (MContextMenuItem implementation : Lookup.getDefault().lookupAll(MContextMenuItem.class)) {
+        for (var implementation : Lookup.getDefault().lookupAll(MContextMenuItem.class)) {
             switch (implementation.getType()) {
-                case COPY:
+                case COPY ->
                     copyImplementations.add(implementation.getClass().getCanonicalName());
-                    break;
-
-                case EXTRAS:
+                case EXTRAS ->
                     extrasImplementations.add(implementation.getClass().getCanonicalName());
-                    break;
-
-                case OPEN:
+                case OPEN ->
                     openImplementations.add(implementation.getClass().getCanonicalName());
-                    break;
-
-                default:
+                default ->
                     throw new AssertionError();
             }
         }
@@ -74,27 +72,34 @@ public class ApiReports implements MApiReport {
         mItems.put(mCategory + "MContextMenu Extras", extrasImplementations);
         mItems.put(mCategory + "MContextMenu Open", openImplementations);
 
-        populate(MCooTrans.class);
-        populate(MCoordinateFileOpener.class);
-        populate(MEngine.class);
-        populate(MWhatsHereEngine.class);
-        populate(MUpdater.class);
-        populate(MWmsSourceProvider.class);
-        populate(MWmsStyleProvider.class);
-        populate(NewsProvider.class);
-        populate(MPoiProvider.class);
-        populate(MEditor.class);
-        populate(MReport.class);
+        populate(null, MCooTrans.class);
+        populate(null, MCoordinateFileOpener.class);
+        populate(null, MEngine.class);
+        populate(null, MWhatsHereEngine.class);
+        populate(null, MUpdater.class);
+        populate(null, MWmsSourceProvider.class);
+        populate(null, MWmsStyleProvider.class);
+        populate(null, NewsProvider.class);
+        populate(null, MPoiProvider.class);
+        populate(null, MEditor.class);
+        populate(null, MReport.class);
+        populate(null, MToolMapCommand.class);
+        populate(null, MSimpleObjectStorageBoolean.class);
+        populate("MSimpleObjectStorageString ", MSimpleObjectStorageString.ApiKey.class);
+        populate("MSimpleObjectStorageString ", MSimpleObjectStorageString.Misc.class);
+        populate("MSimpleObjectStorageString ", MSimpleObjectStorageString.Path.class);
+        populate("MSimpleObjectStorageString ", MSimpleObjectStorageString.Url.class);
 
         return mItems;
     }
 
-    private void populate(Class clazz) {
-        TreeSet<String> implementations = new TreeSet<>();
-        for (Object implementation : Lookup.getDefault().lookupAll(clazz)) {
+    private void populate(String prefix, Class clazz) {
+        var implementations = new TreeSet<String>();
+
+        for (var implementation : Lookup.getDefault().lookupAll(clazz)) {
             implementations.add(implementation.getClass().getCanonicalName());
         }
 
-        mItems.put(mCategory + clazz.getSimpleName(), implementations);
+        mItems.put(mCategory + StringUtils.defaultString(prefix) + clazz.getSimpleName(), implementations);
     }
 }

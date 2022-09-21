@@ -43,13 +43,13 @@ public class BookmarkReport extends MReportSystem {
 
     @Override
     public ContainerTag getContent() {
-        final TreeMap<String, ArrayList<MBookmark>> bookmarkCategories = new TreeMap<>();
+        var bookmarkCategories = new TreeMap<String, ArrayList<MBookmark>>();
 
-        for (MBookmark bookmark : mManager.dbLoad("*", false)) {
+        for (var bookmark : mManager.dbLoad("*", false)) {
             bookmarkCategories.computeIfAbsent(bookmark.getCategory(), k -> new ArrayList<>()).add(bookmark);
         }
 
-        ContainerTag html = html(
+        var html = html(
                 head(
                         title(mName)
                 ),

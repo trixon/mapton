@@ -22,7 +22,6 @@ import static j2html.TagCreator.ul;
 import j2html.tags.ContainerTag;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.api.MApiReport;
@@ -46,18 +45,18 @@ public class ApiReport extends MSubReportsSystem {
 
     @Override
     public Node getNode() {
-        Node node = super.getNode();
+        var node = super.getNode();
+        var implementations = new TreeMap<String, TreeSet<String>>();
 
-        TreeMap<String, TreeSet<String>> implementations = new TreeMap<>();
-        for (MApiReport implementation : Lookup.getDefault().lookupAll(MApiReport.class)) {
+        for (var implementation : Lookup.getDefault().lookupAll(MApiReport.class)) {
             implementations.putAll(implementation.getItems());
         }
 
-        final ObservableList<MSubReport> listItems = getListView().getItems();
+        var listItems = getListView().getItems();
         listItems.clear();
 
-        for (String key : implementations.keySet()) {
-            TreeSet<String> items = implementations.get(key);
+        for (var key : implementations.keySet()) {
+            var items = implementations.get(key);
             String[] headers = StringUtils.split(key, "/", 2);
             String tempGroup = "";
             String tempName;
@@ -71,14 +70,14 @@ public class ApiReport extends MSubReportsSystem {
                 tempName = headers[1];
             }
 
-            final String group = tempGroup;
-            final String name = tempName;
+            var group = tempGroup;
+            var name = tempName;
 
-            MSubReport subReport = new MSubReport() {
+            var subReport = new MSubReport() {
 
                 @Override
                 public ContainerTag getContent() {
-                    ContainerTag html = div(
+                    var html = div(
                             ul(
                                     each(items, item -> li(item))
                             )

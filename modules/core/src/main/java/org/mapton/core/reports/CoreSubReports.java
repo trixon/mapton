@@ -37,8 +37,8 @@ public class CoreSubReports extends MSubReports {
     public void subInit() {
         Lookup.getDefault().lookupAll(MSubReport.class).stream()
                 .sorted(getComparator())
-                .filter((subReport) -> (StringUtils.equals(subReport.getCategory(), Mapton.LOG_TAG)))
-                .forEachOrdered((subReport) -> {
+                .filter(subReport -> (StringUtils.equals(subReport.getCategory(), Mapton.LOG_TAG)))
+                .forEachOrdered(subReport -> {
                     getListView().getItems().add(subReport);
                 });
     }
