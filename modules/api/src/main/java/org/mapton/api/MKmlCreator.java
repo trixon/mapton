@@ -17,23 +17,14 @@ package org.mapton.api;
 
 import de.micromata.opengis.kml.v_2_2_0.AltitudeMode;
 import de.micromata.opengis.kml.v_2_2_0.BalloonStyle;
-import de.micromata.opengis.kml.v_2_2_0.Boundary;
 import de.micromata.opengis.kml.v_2_2_0.ColorMode;
 import de.micromata.opengis.kml.v_2_2_0.Coordinate;
 import de.micromata.opengis.kml.v_2_2_0.Document;
 import de.micromata.opengis.kml.v_2_2_0.Feature;
 import de.micromata.opengis.kml.v_2_2_0.Folder;
-import de.micromata.opengis.kml.v_2_2_0.Icon;
-import de.micromata.opengis.kml.v_2_2_0.IconStyle;
 import de.micromata.opengis.kml.v_2_2_0.Kml;
 import de.micromata.opengis.kml.v_2_2_0.KmlFactory;
-import de.micromata.opengis.kml.v_2_2_0.LineString;
-import de.micromata.opengis.kml.v_2_2_0.LineStyle;
-import de.micromata.opengis.kml.v_2_2_0.LinearRing;
 import de.micromata.opengis.kml.v_2_2_0.Placemark;
-import de.micromata.opengis.kml.v_2_2_0.PolyStyle;
-import de.micromata.opengis.kml.v_2_2_0.Polygon;
-import de.micromata.opengis.kml.v_2_2_0.Style;
 import de.micromata.opengis.kml.v_2_2_0.Vec2;
 import java.io.File;
 import java.io.IOException;
@@ -61,7 +52,7 @@ public abstract class MKmlCreator {
     protected final FastDateFormat mTimeStampDateFormat = FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ssX");
 
     public static Comparator<Feature> getFeatureNameComparator() {
-        return (Feature o1, Feature o2) -> o1.getName().compareTo(o2.getName());
+        return (o1, o2) -> o1.getName().compareTo(o2.getName());
     }
 
     public MKmlCreator() {
@@ -70,24 +61,24 @@ public abstract class MKmlCreator {
 
     public Placemark addCircle0(String name, ArrayList<Coordinate> coordinates, Folder folder) {
         try {
-            Placemark placemark = folder
+            var placemark = folder
                     .createAndAddPlacemark()
                     .withName(name);
 
-            Style style = placemark.createAndAddStyle();
-            LineStyle lineStyle = style.createAndSetLineStyle()
+            var style = placemark.createAndAddStyle();
+            var lineStyle = style.createAndSetLineStyle()
                     .withColor("00000000")
                     .withWidth(0.0);
 
-            PolyStyle polyStyle = style.createAndSetPolyStyle()
+            var polyStyle = style.createAndSetPolyStyle()
                     .withColor("ccffffff")
                     .withColorMode(ColorMode.RANDOM);
 
-            Polygon polygon = placemark.createAndSetPolygon();
-            Boundary boundary = polygon.createAndSetOuterBoundaryIs();
-            LinearRing linearRing = boundary.createAndSetLinearRing();
+            var polygon = placemark.createAndSetPolygon();
+            var boundary = polygon.createAndSetOuterBoundaryIs();
+            var linearRing = boundary.createAndSetLinearRing();
 
-            coordinates.forEach((node) -> {
+            coordinates.forEach(node -> {
                 linearRing.addToCoordinates(node.getLongitude(), node.getLatitude());
             });
             return placemark;
@@ -98,23 +89,23 @@ public abstract class MKmlCreator {
     }
 
     public void addConvexHullPolygon(String name, ArrayList<Coordinate> coordinates, Folder polygonFolder, String color, ColorMode colorMode) {
-        List<java.awt.geom.Point2D.Double> inputs = new ArrayList<>();
-        coordinates.forEach((coordinate) -> {
+        var inputs = new ArrayList<java.awt.geom.Point2D.Double>();
+        coordinates.forEach(coordinate -> {
             inputs.add(new java.awt.geom.Point2D.Double(coordinate.getLongitude(), coordinate.getLatitude()));
         });
 
         try {
-            List<java.awt.geom.Point2D.Double> convexHull = GrahamScan.getConvexHullDouble(inputs);
-            Placemark placemark = polygonFolder
+            var convexHull = GrahamScan.getConvexHullDouble(inputs);
+            var placemark = polygonFolder
                     .createAndAddPlacemark()
                     .withName(name);
 
-            Style style = placemark.createAndAddStyle();
-            LineStyle lineStyle = style.createAndSetLineStyle()
+            var style = placemark.createAndAddStyle();
+            var lineStyle = style.createAndSetLineStyle()
                     .withColor("00000000")
                     .withWidth(0.0);
 
-            PolyStyle polyStyle = style.createAndSetPolyStyle();
+            var polyStyle = style.createAndSetPolyStyle();
             if (color != null) {
                 polyStyle.setColor(color);
             }
@@ -122,11 +113,11 @@ public abstract class MKmlCreator {
                 polyStyle.setColorMode(colorMode);
             }
 
-            Polygon polygon = placemark.createAndSetPolygon();
-            Boundary boundary = polygon.createAndSetOuterBoundaryIs();
-            LinearRing linearRing = boundary.createAndSetLinearRing();
+            var polygon = placemark.createAndSetPolygon();
+            var boundary = polygon.createAndSetOuterBoundaryIs();
+            var linearRing = boundary.createAndSetLinearRing();
 
-            convexHull.forEach((node) -> {
+            convexHull.forEach(node -> {
                 linearRing.addToCoordinates(node.x, node.y);
 
             });
@@ -137,25 +128,25 @@ public abstract class MKmlCreator {
 
     public Placemark createCircle(String name, ArrayList<Point3D> coordinates, String color) {
         try {
-            Placemark placemark = KmlFactory.createPlacemark().withName(name);
-            Style style = placemark.createAndAddStyle();
-            if (color != null) {
+            var placemark = KmlFactory.createPlacemark().withName(name);
+            var style = placemark.createAndAddStyle();
 
-                LineStyle lineStyle = style.createAndSetLineStyle()
+            if (color != null) {
+                var lineStyle = style.createAndSetLineStyle()
                         .withColor(color)
                         .withWidth(0.0);
 
-                PolyStyle polyStyle = style.createAndSetPolyStyle()
+                var polyStyle = style.createAndSetPolyStyle()
                         .withColor(color)
                         .withFill(true)
                         .withColorMode(ColorMode.NORMAL);
             }
 
-            Polygon polygon = placemark.createAndSetPolygon();
-            Boundary boundary = polygon.createAndSetOuterBoundaryIs();
-            LinearRing linearRing = boundary.createAndSetLinearRing();
+            var polygon = placemark.createAndSetPolygon();
+            var boundary = polygon.createAndSetOuterBoundaryIs();
+            var linearRing = boundary.createAndSetLinearRing();
 
-            coordinates.forEach((node) -> {
+            coordinates.forEach(node -> {
                 linearRing.addToCoordinates(node.getX(), node.getY());
             });
             return placemark;
@@ -171,7 +162,7 @@ public abstract class MKmlCreator {
             throw new IllegalArgumentException("Quality must be greater than 2");
         }
 
-        ArrayList<Point3D> list = new ArrayList<>();
+        var list = new ArrayList<Point3D>();
         for (double phi = 0; phi < 2 * Math.PI; phi += 2 * Math.PI / quality) {
             double lat2 = Math.sin(phi);
             double lon2 = Math.cos(phi);
@@ -202,17 +193,17 @@ public abstract class MKmlCreator {
     }
 
     public Placemark createLine(String name, ArrayList<Point3D> coordinates, double width, String color, AltitudeMode altitudeMode) {
-        Placemark placemark = KmlFactory.createPlacemark().withName(name);
-        Style style = placemark.createAndAddStyle();
-        LineStyle lineStyle = style.createAndSetLineStyle()
+        var placemark = KmlFactory.createPlacemark().withName(name);
+        var style = placemark.createAndAddStyle();
+        var lineStyle = style.createAndSetLineStyle()
                 .withWidth(width);
 
         if (color != null) {
             lineStyle.setColor(color);
         }
 
-        LineString line = placemark.createAndSetLineString();
-        for (Point3D coordinate : coordinates) {
+        var line = placemark.createAndSetLineString();
+        for (var coordinate : coordinates) {
             line.addToCoordinates(coordinate.getX(), coordinate.getY(), coordinate.getZ());
         }
 
@@ -222,7 +213,7 @@ public abstract class MKmlCreator {
     }
 
     public Placemark createLine(String name, Point3D p1, Point3D p2, double width, String color, AltitudeMode altitudeMode) {
-        ArrayList<Point3D> coordinates = new ArrayList<>();
+        var coordinates = new ArrayList<Point3D>();
         coordinates.add(p1);
         coordinates.add(p2);
 
@@ -230,11 +221,11 @@ public abstract class MKmlCreator {
     }
 
     public Placemark createPlacemark(String name, double lat, double lon, double scale, String color, String href, Vec2 hotSpot, BalloonStyle balloonStyle) {
-        Placemark placemark = KmlFactory.createPlacemark().withName(name);
+        var placemark = KmlFactory.createPlacemark().withName(name);
 
         if (href != null) {
-            Style style = placemark.createAndAddStyle();
-            IconStyle iconStyle = style
+            var style = placemark.createAndAddStyle();
+            var iconStyle = style
                     .createAndSetIconStyle()
                     .withScale(scale);
 
@@ -250,7 +241,7 @@ public abstract class MKmlCreator {
                 iconStyle.setHotSpot(hotSpot);
             }
 
-            Icon icon = KmlFactory.createIcon().withHref(href);
+            var icon = KmlFactory.createIcon().withHref(href);
             iconStyle.setIcon(icon);
         }
 
@@ -260,14 +251,13 @@ public abstract class MKmlCreator {
     }
 
     public Placemark createPolygon(String name, ArrayList<Point3D> coordinates, double width, String lineColor, String fillColor, ColorMode colorMode, AltitudeMode altitudeMode) {
-        Placemark placemark = KmlFactory.createPlacemark().withName(name);
-
-        Style style = placemark.createAndAddStyle();
-        LineStyle lineStyle = style.createAndSetLineStyle()
+        var placemark = KmlFactory.createPlacemark().withName(name);
+        var style = placemark.createAndAddStyle();
+        var lineStyle = style.createAndSetLineStyle()
                 .withColor(lineColor)
                 .withWidth(width);
+        var polyStyle = style.createAndSetPolyStyle();
 
-        PolyStyle polyStyle = style.createAndSetPolyStyle();
         if (fillColor != null) {
             polyStyle.setColor(fillColor);
         }
@@ -275,11 +265,11 @@ public abstract class MKmlCreator {
             polyStyle.setColorMode(colorMode);
         }
 
-        Polygon polygon = placemark.createAndSetPolygon();
-        Boundary boundary = polygon.createAndSetOuterBoundaryIs();
-        LinearRing linearRing = boundary.createAndSetLinearRing();
+        var polygon = placemark.createAndSetPolygon();
+        var boundary = polygon.createAndSetOuterBoundaryIs();
+        var linearRing = boundary.createAndSetLinearRing();
 
-        coordinates.forEach((node) -> {
+        coordinates.forEach(node -> {
             linearRing.addToCoordinates(node.getX(), node.getY());
         });
 
@@ -293,9 +283,9 @@ public abstract class MKmlCreator {
     }
 
     public String save(File f, boolean cleanNS2, boolean cleanSpace) throws IOException {
-        StringWriter stringWriter = new StringWriter();
+        var stringWriter = new StringWriter();
         mKml.marshal(stringWriter);
-        String kmlString = stringWriter.toString();
+        var kmlString = stringWriter.toString();
 
         if (cleanNS2) {
             kmlString = cleanNS2(kmlString);
@@ -320,7 +310,7 @@ public abstract class MKmlCreator {
     }
 
     public void sort(Comparator<Feature> c, List<Feature> features) {
-        for (Feature feature : features) {
+        for (var feature : features) {
             sort(c, feature);
         }
     }
@@ -330,7 +320,7 @@ public abstract class MKmlCreator {
             if (feature instanceof Folder folder) {
                 var subFeatures = folder.getFeature();
                 subFeatures.sort(c);
-                subFeatures.forEach((f) -> {
+                subFeatures.forEach(f -> {
                     sort(c, f);
                 });
             }
@@ -359,5 +349,4 @@ public abstract class MKmlCreator {
 
         return kmlString;
     }
-
 }
