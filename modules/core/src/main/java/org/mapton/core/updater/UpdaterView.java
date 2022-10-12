@@ -64,7 +64,7 @@ public class UpdaterView extends BorderPane implements LogListener {
     }
 
     private void createUI() {
-        mListView = new ListView();
+        mListView = new ListView<>();
         mListView.setMinWidth(FxHelper.getUIScaled(350));
         mListView.setCellFactory(listView -> new UpdaterListCell());
         mListView.itemsProperty().bind(mUpdaterManager.itemsProperty());
