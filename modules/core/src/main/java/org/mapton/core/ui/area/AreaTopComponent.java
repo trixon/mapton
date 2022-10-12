@@ -13,57 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core.ui;
+package org.mapton.core.ui.area;
 
 import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.control.Label;
+import org.mapton.core.actions.AreaAction;
 import org.mapton.core.api.MTopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
-import org.openide.awt.ActionID;
-import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
-import se.trixon.almond.util.Dict;
 
 /**
  * Top component which displays something.
  */
 @ConvertAsProperties(
-        dtd = "-//org.mapton.core.layer//Layer//EN",
+        dtd = "-//org.mapton.core.ui.area//Area//EN",
         autostore = false
 )
 @TopComponent.Description(
-        preferredID = "LayerTopComponent",
+        preferredID = "AreaTopComponent",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
-@TopComponent.Registration(mode = "navigator", openAtStartup = false, position = 1)
-@ActionID(category = "Mapton", id = "org.mapton.core.layer.LayerTopComponent")
-@TopComponent.OpenActionRegistration(
-        displayName = "#CTL_LayerAction",
-        preferredID = "LayerTopComponent"
-)
-@Messages({
-    "CTL_LayerAction=Layer"
-})
-public final class LayerTopComponent extends MTopComponent {
+@TopComponent.Registration(mode = "navigator", openAtStartup = false, position = 2)
+public final class AreaTopComponent extends MTopComponent {
 
-    private BorderPane mBorderPane;
-
-    public LayerTopComponent() {
+    public AreaTopComponent() {
         putClientProperty(PROP_MAXIMIZATION_DISABLED, Boolean.TRUE);
         putClientProperty(PROP_SLIDING_DISABLED, Boolean.TRUE);
         putClientProperty(PROP_UNDOCKING_DISABLED, Boolean.TRUE);
         putClientProperty(PROP_KEEP_PREFERRED_SIZE_WHEN_SLIDED_IN, Boolean.TRUE);
 
-        setName(Dict.LAYERS.toString());
-        setPopOverHolder(true);
-    }
-
-    @Override
-    protected void fxComponentOpened() {
-        super.fxComponentOpened();
-        if (mBorderPane != null) {
-            mBorderPane.setCenter(LayerView.getInstance());
-        }
+        setName(AreaAction.getName());
+        setPopOverHolder(false);
     }
 
     @Override
@@ -82,8 +62,6 @@ public final class LayerTopComponent extends MTopComponent {
     }
 
     private Scene createScene() {
-        mBorderPane = new BorderPane(LayerView.getInstance());
-
-        return new Scene(mBorderPane);
+        return new Scene(new Label("Global area selector"));
     }
 }

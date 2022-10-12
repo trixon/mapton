@@ -130,6 +130,7 @@ limitations under the License.
         <folder name="Groups">
             <file name="MapGroup.wsgrp" url="MapGroupWsgrp.xml"/>
             <folder name="MapGroup">
+                <file name="AreaTopComponent.wstcgrp" url="ui/area/AreaTopComponentWstcgrp.xml"/>
                 <file name="BookmarkTopComponent.wstcgrp" url="ui/bookmark/BookmarkTopComponentWstcgrp.xml"/>
                 <file name="ChartTopComponent.wstcgrp" url="ui/ChartTopComponentWstcgrp.xml"/>
                 <file name="GridTopComponent.wstcgrp" url="ui/grid/GridTopComponentWstcgrp.xml"/>
