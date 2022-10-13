@@ -21,10 +21,36 @@ package org.mapton.api;
  */
 public class MArea {
 
+    private boolean mEnabled;
     private final String mKey;
+    private String mName;
 
     public MArea(String key) {
         mKey = key;
     }
 
+    public String getKey() {
+        return mKey;
+    }
+
+    public String getName() {
+        return mName;
+    }
+
+    public boolean isEnabled() {
+        return mEnabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        mEnabled = enabled;
+    }
+
+    public void setName(String name) {
+        mName = name;
+    }
+
+    @Override
+    public String toString() {
+        return mName;
+    }
 }
