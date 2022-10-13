@@ -24,6 +24,8 @@ import se.trixon.almond.util.SystemHelper;
  * @author Patrik Karlström
  */
 public enum MDict {
+    AREA,
+    AREAS,
     ATMOSPHERE,
     COMPASS,
     COORDINATE_SYSTEM,

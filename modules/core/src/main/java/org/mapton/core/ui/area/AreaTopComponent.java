@@ -16,8 +16,7 @@
 package org.mapton.core.ui.area;
 
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import org.mapton.core.actions.AreaAction;
+import org.mapton.api.MDict;
 import org.mapton.core.api.MTopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.windows.TopComponent;
@@ -42,7 +41,7 @@ public final class AreaTopComponent extends MTopComponent {
         putClientProperty(PROP_UNDOCKING_DISABLED, Boolean.TRUE);
         putClientProperty(PROP_KEEP_PREFERRED_SIZE_WHEN_SLIDED_IN, Boolean.TRUE);
 
-        setName(AreaAction.getName());
+        setName(MDict.AREAS.toString());
         setPopOverHolder(false);
     }
 
@@ -62,6 +61,6 @@ public final class AreaTopComponent extends MTopComponent {
     }
 
     private Scene createScene() {
-        return new Scene(new Label("Global area selector"));
+        return new Scene(new AreaPane());
     }
 }

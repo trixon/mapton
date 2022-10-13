@@ -21,7 +21,6 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
-import org.openide.awt.Actions;
 import org.openide.util.NbBundle;
 
 @ActionID(
@@ -36,13 +35,9 @@ import org.openide.util.NbBundle;
     @ActionReference(path = "Menu/MapTools", position = 1050)
 })
 @NbBundle.Messages({
-    "CTL_AreaAction=&Area"
+    "CTL_AreaAction=&Areas"
 })
 public final class AreaAction extends BaseAction {
-
-    public static String getName() {
-        return Actions.cutAmpersand(Bundle.CTL_AreaAction());
-    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
