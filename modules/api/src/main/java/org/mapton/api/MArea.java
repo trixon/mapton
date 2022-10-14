@@ -15,6 +15,8 @@
  */
 package org.mapton.api;
 
+import org.locationtech.jts.geom.Geometry;
+
 /**
  *
  * @author Patrik Karlström
@@ -22,11 +24,22 @@ package org.mapton.api;
 public class MArea {
 
     private boolean mEnabled;
+    private Geometry mGeometry;
     private final String mKey;
     private String mName;
+    private String mWktGeometry;
+
+    public MArea(String key, String wktGeometry) {
+        mKey = key;
+        mWktGeometry = wktGeometry;
+    }
 
     public MArea(String key) {
         mKey = key;
+    }
+
+    public Geometry getGeometry() {
+        return mGeometry;
     }
 
     public String getKey() {
@@ -37,6 +50,10 @@ public class MArea {
         return mName;
     }
 
+    public String getWktGeometry() {
+        return mWktGeometry;
+    }
+
     public boolean isEnabled() {
         return mEnabled;
     }
@@ -45,8 +62,16 @@ public class MArea {
         mEnabled = enabled;
     }
 
+    public void setGeometry(Geometry geometry) {
+        mGeometry = geometry;
+    }
+
     public void setName(String name) {
         mName = name;
+    }
+
+    public void setWktGeometry(String wktGeometry) {
+        mWktGeometry = wktGeometry;
     }
 
     @Override

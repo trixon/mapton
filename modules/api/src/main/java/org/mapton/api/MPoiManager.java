@@ -25,6 +25,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ListChangeListener;
+import javafx.scene.control.TreeItem;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openide.util.Lookup;
@@ -38,6 +39,7 @@ import se.trixon.almond.util.fx.DelayedResetRunner;
  */
 public class MPoiManager extends MBaseDataManager<MPoi> {
 
+    private final MAreaFilterManager mAreaFilterManager = MAreaFilterManager.getInstance();
     private final ObjectProperty<TreeSet<String>> mCategoriesProperty = new SimpleObjectProperty<>();
     private DelayedResetRunner mDelayedResetRunner;
     private String mFilter = "";
@@ -146,6 +148,10 @@ public class MPoiManager extends MBaseDataManager<MPoi> {
         mPolygonFilterManager.addListener(() -> {
             refresh();
         });
+
+        mAreaFilterManager.getCheckedItems().addListener((ListChangeListener.Change<? extends TreeItem<MArea>> c) -> {
+            refresh();
+        });
     }
 
     private void sendObjectProperties(MPoi poi) {
@@ -190,9 +196,10 @@ public class MPoiManager extends MBaseDataManager<MPoi> {
                 || StringHelper.matchesSimpleGlob(poi.getGroup(), filter, true, true)
                 || StringHelper.matchesSimpleGlob(poi.getDescription(), filter, true, true));
 
-        boolean validCoordinate = !mPolygonFilterManager.hasItems() || !mPolygonFilterProperty.get() || mPolygonFilterProperty.get() && mPolygonFilterManager.contains(poi.getLatitude(), poi.getLongitude());
+        boolean validAreaCoordinate = mAreaFilterManager.isValidCoordinate(poi.getLatitude(), poi.getLongitude());
+        boolean validRulerCoordinate = !mPolygonFilterManager.hasItems() || !mPolygonFilterProperty.get() || mPolygonFilterProperty.get() && mPolygonFilterManager.contains(poi.getLatitude(), poi.getLongitude());
 
-        return valid && validCoordinate;
+        return valid && validAreaCoordinate && validRulerCoordinate;
     }
 
     private static class Holder {
