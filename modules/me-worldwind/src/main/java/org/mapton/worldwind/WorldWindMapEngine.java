@@ -31,6 +31,7 @@ import java.awt.event.HierarchyBoundsListener;
 import java.awt.event.HierarchyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.TreeMap;
 import javafx.scene.Node;
@@ -41,6 +42,8 @@ import javax.swing.JProgressBar;
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
 import org.apache.commons.lang3.StringUtils;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
 import org.mapton.api.MAttribution;
 import org.mapton.api.MDocumentInfo;
 import org.mapton.api.MEngine;
@@ -136,6 +139,32 @@ public class WorldWindMapEngine extends MEngine {
             }, getClass().getCanonicalName()).start();
         } else {
             postCreateRunnable.run();
+        }
+    }
+
+    @Override
+    public void fitToBounds(ArrayList<Coordinate> coordinates) {
+        if (!mInitialized || coordinates.isEmpty()) {
+            return;
+        }
+
+        try {
+            fitToBounds(WWHelper.sectorFromCoordinates(coordinates));
+        } catch (Exception e) {
+            System.err.println(e);
+        }
+    }
+
+    @Override
+    public void fitToBounds(Geometry geometry) {
+        if (!mInitialized || geometry.getArea() == 0) {
+            return;
+        }
+
+        try {
+            fitToBounds(WWHelper.sectorFromGeometry(geometry));
+        } catch (Exception e) {
+            System.err.println(e);
         }
     }
 

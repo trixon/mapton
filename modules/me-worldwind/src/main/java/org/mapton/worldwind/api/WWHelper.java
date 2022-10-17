@@ -21,6 +21,9 @@ import gov.nasa.worldwind.geom.Sector;
 import gov.nasa.worldwind.render.Offset;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
 import java.util.ArrayList;
+import java.util.Arrays;
+import org.apache.commons.math3.util.FastMath;
+import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.mapton.api.MLatLon;
 import org.mapton.api.MLatLonBox;
@@ -102,6 +105,33 @@ public class WWHelper {
         }
 
         return positions;
+    }
+
+    public static Sector sectorFromCoordinates(ArrayList<Coordinate> coordinates) {
+        double minX = Double.MAX_VALUE;
+        double minY = Double.MAX_VALUE;
+        double maxX = Double.MIN_VALUE;
+        double maxY = Double.MIN_VALUE;
+
+        for (var coordinate : coordinates) {
+            minX = FastMath.min(minX, coordinate.x);
+            minY = FastMath.min(minY, coordinate.y);
+            maxX = FastMath.max(maxX, coordinate.x);
+            maxY = FastMath.max(maxY, coordinate.y);
+        }
+
+        var sector = new Sector(
+                Angle.fromDegreesLatitude(minY),
+                Angle.fromDegreesLatitude(maxY),
+                Angle.fromDegreesLongitude(minX),
+                Angle.fromDegreesLongitude(maxX)
+        );
+
+        return sector;
+    }
+
+    public static Sector sectorFromGeometry(Geometry geometry) {
+        return sectorFromCoordinates(new ArrayList<Coordinate>(Arrays.asList(geometry.getCoordinates())));
     }
 
     public static Sector sectorFromLatLonBox(MLatLonBox latLonBox) {

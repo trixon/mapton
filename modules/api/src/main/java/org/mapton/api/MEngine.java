@@ -17,6 +17,7 @@ package org.mapton.api;
 
 import java.awt.Point;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.TreeMap;
 import java.util.concurrent.Callable;
@@ -25,6 +26,8 @@ import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import javax.swing.JComponent;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
 import org.openide.util.Lookup;
 
 /**
@@ -110,6 +113,14 @@ public abstract class MEngine {
     }
 
     public void fitToBounds(MLatLonBox latLonBox) {
+        Mapton.getLog().i(getClass().getSimpleName(), "fitToBounds not implemented");
+    }
+
+    public void fitToBounds(Geometry geometry) {
+        Mapton.getLog().i(getClass().getSimpleName(), "fitToBounds not implemented");
+    }
+
+    public void fitToBounds(ArrayList<Coordinate> coordinates) {
         Mapton.getLog().i(getClass().getSimpleName(), "fitToBounds not implemented");
     }
 
