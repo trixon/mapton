@@ -44,14 +44,62 @@ public class AreaPane extends BorderPane {
         createUI();
     }
 
+    private void actionAdd() {
+        System.out.println("add");
+    }
+
+    private void actionEdit() {
+        System.out.println("edi");
+    }
+
+    private void actionRemove() {
+        System.out.println("remove");
+    }
+
     private void createUI() {
-        var browseAction = new Action(Dict.BROWSE.toString(), actionEvent -> {
+        var treeView = mAreaFilterManager.getTreeView();
+
+        var allAction = new Action(Dict.SELECT_ALL.toString(), actionEvent -> {
+            treeView.getCheckModel().checkAll();
         });
-        browseAction.setGraphic(MaterialIcon._Social.PUBL.getImageView(getIconSizeToolBarInt()));
-        browseAction.setDisabled(true);
+        allAction.setGraphic(MaterialIcon._Content.SELECT_ALL.getImageView(getIconSizeToolBarInt()));
+        allAction.disabledProperty().bind(treeView.getRoot().leafProperty());
+
+        var clearAction = new Action(Dict.CLEAR_SELECTION.toString(), actionEvent -> {
+            treeView.getCheckModel().clearChecks();
+        });
+        clearAction.setGraphic(MaterialIcon._Communication.CLEAR_ALL.getImageView(getIconSizeToolBarInt()));
+        clearAction.disabledProperty().bind(treeView.getRoot().leafProperty());
+
+        var addAction = new Action(Dict.ADD.toString(), actionEvent -> {
+            actionAdd();
+        });
+        addAction.setGraphic(MaterialIcon._Content.ADD.getImageView(getIconSizeToolBarInt()));
+
+        var remAction = new Action(Dict.REMOVE.toString(), actionEvent -> {
+            actionRemove();
+        });
+        remAction.setGraphic(MaterialIcon._Content.REMOVE.getImageView(getIconSizeToolBarInt()));
+        remAction.setDisabled(true);
+
+        var editAction = new Action(Dict.EDIT.toString(), actionEvent -> {
+            actionEdit();
+        });
+        editAction.setGraphic(MaterialIcon._Editor.MODE_EDIT.getImageView(getIconSizeToolBarInt()));
+        editAction.setDisabled(true);
+
+        mAreaFilterManager.selectedObjectProperty().addListener((observable, oldValue, newValue) -> {
+            remAction.setDisabled(newValue == null || !newValue.isLeaf());
+            editAction.setDisabled(newValue == null || !newValue.isLeaf());
+        });
 
         var actions = Arrays.asList(
-                browseAction,
+                allAction,
+                clearAction,
+                ActionUtils.ACTION_SEPARATOR,
+                addAction,
+                remAction,
+                editAction,
                 ActionUtils.ACTION_SPAN
         );
 
@@ -61,7 +109,6 @@ public class AreaPane extends BorderPane {
         FxHelper.slimToolBar(toolBar);
 
         setTop(toolBar);
-        var treeView = mAreaFilterManager.getTreeView();
         setCenter(treeView);
         treeView.setCellFactory(param -> new AreaTreeCell());
     }

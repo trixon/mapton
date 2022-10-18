@@ -53,6 +53,7 @@ public class MAreaFilterManager {
     private final GeometryFactory mGeometryFactory = new GeometryFactory();
     private final ObjectProperty<ObservableList<MArea>> mItemsProperty = new SimpleObjectProperty<>();
     private CheckBoxTreeItem<MArea> mRootItem;
+    private final ObjectProperty<TreeItem<MArea>> mSelectedObjectProperty = new SimpleObjectProperty<>();
     private final Set<CheckBoxTreeItem<MArea>> mTreeItemExpanderSet;
     private final Set<CheckBoxTreeItem<MArea>> mTreeItemListenerSet;
     private CheckTreeView<MArea> mTreeView;
@@ -74,8 +75,8 @@ public class MAreaFilterManager {
 
         createUI();
         initListeners();
+        initBindings();
         populate();
-
     }
 
     public void addAll(ArrayList<MArea> areas) {
@@ -131,6 +132,10 @@ public class MAreaFilterManager {
         return mItemsProperty;
     }
 
+    public ObjectProperty<TreeItem<MArea>> selectedObjectProperty() {
+        return mSelectedObjectProperty;
+    }
+
     private void createUI() {
         var rootArea = new MArea("");
         mRootItem = new CheckBoxTreeItem<>(rootArea);
@@ -168,6 +173,10 @@ public class MAreaFilterManager {
 
     private String getPath(MArea area) {
         return "%s_%s".formatted(getCategory(area), area.getName());
+    }
+
+    private void initBindings() {
+        mSelectedObjectProperty.bind(mTreeView.getSelectionModel().selectedItemProperty());
     }
 
     private void initListeners() {
