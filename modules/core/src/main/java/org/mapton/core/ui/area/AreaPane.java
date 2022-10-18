@@ -75,6 +75,7 @@ public class AreaPane extends BorderPane {
             actionAdd();
         });
         addAction.setGraphic(MaterialIcon._Content.ADD.getImageView(getIconSizeToolBarInt()));
+        addAction.setDisabled(true);
 
         var remAction = new Action(Dict.REMOVE.toString(), actionEvent -> {
             actionRemove();
@@ -89,8 +90,8 @@ public class AreaPane extends BorderPane {
         editAction.setDisabled(true);
 
         mAreaFilterManager.selectedObjectProperty().addListener((observable, oldValue, newValue) -> {
-            remAction.setDisabled(newValue == null || !newValue.isLeaf());
-            editAction.setDisabled(newValue == null || !newValue.isLeaf());
+//            remAction.setDisabled(newValue == null || !newValue.isLeaf());
+//            editAction.setDisabled(newValue == null || !newValue.isLeaf());
         });
 
         var actions = Arrays.asList(
