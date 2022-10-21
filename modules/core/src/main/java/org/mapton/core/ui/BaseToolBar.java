@@ -18,7 +18,6 @@ package org.mapton.core.ui;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import javafx.scene.Node;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.ToolBar;
@@ -58,10 +57,12 @@ public abstract class BaseToolBar extends ToolBar {
     }
 
     protected ArrayList<ButtonBase> getButtons() {
-        ArrayList<ButtonBase> buttonBases = new ArrayList<>();
-        getItems().stream().filter(node -> (node instanceof ButtonBase)).forEachOrdered(node -> {
-            buttonBases.add((ButtonBase) node);
-        });
+        var buttonBases = new ArrayList<ButtonBase>();
+        getItems().stream()
+                .filter(node -> (node instanceof ButtonBase))
+                .forEachOrdered(buttonbase -> {
+                    buttonBases.add((ButtonBase) buttonbase);
+                });
 
         return buttonBases;
     }
@@ -84,16 +85,16 @@ public abstract class BaseToolBar extends ToolBar {
     }
 
     protected void setPopOverWidths(double width, PopOver... popOvers) {
-        for (PopOver popOver : popOvers) {
+        for (var popOver : popOvers) {
             ((Region) popOver.getContentNode()).setPrefWidth(width);
         }
     }
 
     protected void setTextFromActions() {
-        for (Map.Entry<Action, Double> entry : mButtonWidths.entrySet()) {
-            ButtonBase b = getButtonForAction(entry.getKey());
-            b.setPrefWidth(entry.getValue());
-            b.textProperty().bind(entry.getKey().textProperty());
+        for (var entry : mButtonWidths.entrySet()) {
+            var buttonBase = getButtonForAction(entry.getKey());
+            buttonBase.setPrefWidth(entry.getValue());
+            buttonBase.textProperty().bind(entry.getKey().textProperty());
         }
     }
 
@@ -107,7 +108,7 @@ public abstract class BaseToolBar extends ToolBar {
     }
 
     protected void storeButtonWidths(Action... actions) {
-        for (Action action : actions) {
+        for (var action : actions) {
             mButtonWidths.put(action, getButtonForAction(action).prefWidthProperty().getValue());
         }
     }

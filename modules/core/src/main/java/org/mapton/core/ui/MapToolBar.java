@@ -41,8 +41,8 @@ import org.mapton.api.MOptions;
 import org.mapton.api.MToolMapCommand;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
-import org.mapton.core.ui.poi.PoisViewManager;
 import org.mapton.core.ui.bookmark.BookmarksView;
+import org.mapton.core.ui.poi.PoisViewManager;
 import org.openide.awt.Actions;
 import org.openide.util.Lookup;
 import se.trixon.almond.util.Dict;
@@ -136,7 +136,7 @@ public class MapToolBar extends BaseToolBar {
         setStyle("-fx-spacing: 0px;");
         setPadding(Insets.EMPTY);
 
-        ArrayList<Action> actions = new ArrayList<>();
+        var actions = new ArrayList<Action>();
         actions.addAll(Arrays.asList(
                 mHomeAction,
                 mCommandAction,
@@ -160,10 +160,12 @@ public class MapToolBar extends BaseToolBar {
             FxHelper.adjustButtonWidth(getItems().stream(), getIconSizeToolBarInt() * 1.0);
             setTextFromActions();
 
-            getItems().stream().filter(item -> (item instanceof ButtonBase))
-                    .map(item -> (ButtonBase) item).forEachOrdered((buttonBase) -> {
-                buttonBase.getStylesheets().add(CSS_FILE);
-            });
+            getItems().stream()
+                    .filter(item -> (item instanceof ButtonBase))
+                    .map(item -> (ButtonBase) item)
+                    .forEachOrdered(buttonBase -> {
+                        buttonBase.getStylesheets().add(CSS_FILE);
+                    });
 
             mCommandContextMenu = new ContextMenu();
             mCommandContextMenu.setOnHiding(windowEvent -> {
@@ -194,8 +196,6 @@ public class MapToolBar extends BaseToolBar {
                 });
             }
         });
-//        mBookmarkAction.setGraphic(MaterialIcon._Action.BOOKMARK_BORDER.getImageView(getIconSizeToolBarInt()));
-//        FxHelper.setTooltip(mBookmarkAction, new KeyCodeCombination(KeyCode.B, KeyCombination.SHORTCUT_DOWN));
 
         //POI
         mPoiAction = new Action(MDict.POI.toString(), event -> {
@@ -209,8 +209,6 @@ public class MapToolBar extends BaseToolBar {
                 });
             }
         });
-//        mPoiAction.setGraphic(MaterialIcon._Maps.PLACE.getImageView(getIconSizeToolBarInt()));
-//        FxHelper.setTooltip(mPoiAction, new KeyCodeCombination(KeyCode.I, KeyCombination.SHORTCUT_DOWN));
 
         //Layer
         mLayerAction = new Action(Dict.LAYERS.toString(), event -> {
@@ -224,8 +222,6 @@ public class MapToolBar extends BaseToolBar {
                 });
             }
         });
-//        mLayerAction.setGraphic(MaterialIcon._Maps.LAYERS.getImageView(getIconSizeToolBarInt()));
-//        FxHelper.setTooltip(mLayerAction, new KeyCodeCombination(KeyCode.L, KeyCombination.SHORTCUT_DOWN));
 
         //CommandAction
         mCommandAction = new Action(Dict.COMMANDS.toString(), event -> {
@@ -237,8 +233,8 @@ public class MapToolBar extends BaseToolBar {
         //Style
         mStyleAction = new Action(event -> {
             if (shouldOpen(mStylePopOver)) {
-                BorderPane pane = (BorderPane) mStylePopOver.getContentNode();
-                pane.setCenter(Mapton.getEngine().getStyleView());
+                var borderPane = (BorderPane) mStylePopOver.getContentNode();
+                borderPane.setCenter(Mapton.getEngine().getStyleView());
                 show(mStylePopOver, event.getSource());
             }
         });
@@ -372,7 +368,7 @@ public class MapToolBar extends BaseToolBar {
         new Thread(() -> {
             mCommandMenuItems.clear();
             Lookup.getDefault().lookupAll(MToolMapCommand.class).forEach(command -> {
-                MenuItem menuItem = new MenuItem(command.getAction().getText());
+                var menuItem = new MenuItem(command.getAction().getText());
                 menuItem.setAccelerator(command.getKeyCodeCombination());
                 menuItem.setOnAction(actionEvent -> {
                     command.getAction().handle(null);

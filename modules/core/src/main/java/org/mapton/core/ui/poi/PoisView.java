@@ -17,10 +17,8 @@ package org.mapton.core.ui.poi;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.Map;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.control.ContextMenu;
@@ -198,26 +196,26 @@ public class PoisView extends BorderPane {
         mContextCopyMenu.getItems().clear();
         mContextOpenMenu.getItems().clear();
 
-        for (MContextMenuItem provider : Lookup.getDefault().lookupAll(MContextMenuItem.class)) {
-            MenuItem item = new MenuItem(provider.getName());
+        for (var provider : Lookup.getDefault().lookupAll(MContextMenuItem.class)) {
+            var menuItem = new MenuItem(provider.getName());
             switch (provider.getType()) {
-                case COPY:
-                    mContextCopyMenu.getItems().add(item);
-                    item.setOnAction((ActionEvent event) -> {
+                case COPY -> {
+                    mContextCopyMenu.getItems().add(menuItem);
+                    menuItem.setOnAction(actionEvent -> {
                         String s = provider.getUrl();
                         Mapton.getLog().v("Open location", s);
                         SystemHelper.copyToClipboard(s);
                     });
-                    break;
+                }
 
-                case OPEN:
-                    mContextOpenMenu.getItems().add(item);
-                    item.setOnAction((ActionEvent event) -> {
+                case OPEN -> {
+                    mContextOpenMenu.getItems().add(menuItem);
+                    menuItem.setOnAction(actionEvent -> {
                         String s = provider.getUrl();
                         Mapton.getLog().v("Copy location", s);
                         SystemHelper.desktopBrowse(s);
                     });
-                    break;
+                }
             }
         }
 
@@ -255,7 +253,7 @@ public class PoisView extends BorderPane {
 
         private void createUI() {
             mCategoryCheckTreeView = new PoiCategoryCheckTreeView();
-            VBox vBox = new VBox(GAP,
+            var vBox = new VBox(GAP,
                     getButtonBox(),
                     new Separator(),
                     mCategoryCheckTreeView
@@ -299,7 +297,7 @@ public class PoisView extends BorderPane {
             mNameLabel.setText(poi.getName());
             mDesc1Label.setText("%s: %s".formatted(poi.getProvider(), poi.getCategory()));
 
-            LinkedHashMap<String, String> rows = new LinkedHashMap<>();
+            var rows = new LinkedHashMap<String, String>();
             rows.put(Dict.NAME.toString(), StringUtils.defaultString(poi.getName()));
             rows.put(Dict.CATEGORY.toString(), StringUtils.defaultString(poi.getCategory()));
             rows.put(Dict.SOURCE.toString(), StringUtils.defaultString(poi.getProvider()));
@@ -308,16 +306,16 @@ public class PoisView extends BorderPane {
             rows.put("URL", StringUtils.defaultString(poi.getUrl()));
 
             int length = 0;
-            for (String string : rows.keySet()) {
+            for (var string : rows.keySet()) {
                 length = Math.max(length, string.length());
             }
 
-            StringBuilder sb = new StringBuilder();
-            for (Map.Entry<String, String> entry : rows.entrySet()) {
+            var sb = new StringBuilder();
+            for (var entry : rows.entrySet()) {
                 sb.append(StringUtils.rightPad(entry.getKey(), length, " ")).append(" : ").append(entry.getValue()).append("\n");
             }
 
-            Tooltip tooltip = new Tooltip(sb.toString());
+            var tooltip = new Tooltip(sb.toString());
             tooltip.setFont(Font.font("monospaced"));
             setTooltip(tooltip);
 

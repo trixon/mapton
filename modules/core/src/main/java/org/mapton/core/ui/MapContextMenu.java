@@ -23,7 +23,6 @@ import java.util.Collection;
 import java.util.Date;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
-import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
@@ -44,7 +43,6 @@ import org.mapton.api.Mapton;
 import org.mapton.core.api.BookmarkEditor;
 import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
-import org.openide.util.LookupEvent;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.SystemHelperFx;
@@ -114,21 +112,21 @@ public class MapContextMenu {
     }
 
     private void initContextMenu() {
-        Action setHomeAction = new Action(MDict.SET_HOME.toString(), (ActionEvent t) -> {
+        var setHomeAction = new Action(MDict.SET_HOME.toString(), (ActionEvent t) -> {
             mMOptions.setMapHome(getEngine().getCenter());
             mMOptions.setMapHomeZoom(getEngine().getZoom());
         });
 
-        Action whatsHereAction = new Action(getBundleString("whats_here"), (ActionEvent t) -> {
+        var whatsHereAction = new Action(getBundleString("whats_here"), (ActionEvent t) -> {
             whatsHere();
         });
 
-        Action copyImageAction = new Action(getBundleString("copy_image"), (ActionEvent t) -> {
+        var copyImageAction = new Action(getBundleString("copy_image"), (ActionEvent t) -> {
             copyImage();
         });
         copyImageAction.setDisabled(true);
 
-        Action exportImageAction = new Action(getBundleString("export_image"), (ActionEvent t) -> {
+        var exportImageAction = new Action(getBundleString("export_image"), (ActionEvent t) -> {
             exportImage();
         });
         exportImageAction.setDisabled(true);
@@ -158,7 +156,7 @@ public class MapContextMenu {
             exportImageAction.setDisabled(getEngine().getImageRenderer() == null);
         });
 
-        Lookup.getDefault().lookupResult(MContextMenuItem.class).addLookupListener((LookupEvent ev) -> {
+        Lookup.getDefault().lookupResult(MContextMenuItem.class).addLookupListener(lookupEvent -> {
             populateContextProviders();
         });
 
@@ -173,7 +171,7 @@ public class MapContextMenu {
         MEngine.addEngineListener(new MEngineListener() {
             @Override
             public void displayContextMenu(Point screenXY) {
-                Node rootNode = FxOnScreenDummy.getInstance();
+                var rootNode = FxOnScreenDummy.getInstance();
                 rootNode.getScene().getWindow().requestFocus();
                 rootNode.requestFocus();
 
@@ -195,38 +193,38 @@ public class MapContextMenu {
             mContextOpenMenu.getItems().clear();
             mContextExtrasMenu.getItems().clear();
 
-            ArrayList<MContextMenuItem> contextMenues = new ArrayList<>(Lookup.getDefault().lookupAll(MContextMenuItem.class));
-            contextMenues.sort((MContextMenuItem o1, MContextMenuItem o2) -> o1.getName().compareTo(o2.getName()));
+            var contextMenues = new ArrayList<MContextMenuItem>(Lookup.getDefault().lookupAll(MContextMenuItem.class));
+            contextMenues.sort((o1, o2) -> o1.getName().compareTo(o2.getName()));
 
-            for (MContextMenuItem provider : contextMenues) {
-                MenuItem item = new MenuItem(provider.getName());
+            for (var provider : contextMenues) {
+                var menuItem = new MenuItem(provider.getName());
                 switch (provider.getType()) {
-                    case COPY:
-                        mContextCopyMenu.getItems().add(item);
-                        item.setOnAction(event -> {
+                    case COPY -> {
+                        mContextCopyMenu.getItems().add(menuItem);
+                        menuItem.setOnAction(event -> {
                             String s = provider.getUrl();
                             Mapton.getLog().v("Copy location", s);
                             SystemHelper.copyToClipboard(s);
                         });
-                        break;
+                    }
 
-                    case EXTRAS:
-                        mContextExtrasMenu.getItems().add(item);
-                        item.setOnAction(provider.getAction());
-                        break;
+                    case EXTRAS -> {
+                        mContextExtrasMenu.getItems().add(menuItem);
+                        menuItem.setOnAction(provider.getAction());
+                    }
 
-                    case OPEN:
-                        mContextOpenMenu.getItems().add(item);
-                        item.setOnAction(event -> {
+                    case OPEN -> {
+                        mContextOpenMenu.getItems().add(menuItem);
+                        menuItem.setOnAction(event -> {
                             String s = provider.getUrl();
                             if (!StringUtils.isBlank(s)) {
                                 Mapton.getLog().v("Open location", s);
                                 SystemHelper.desktopBrowse(s);
                             }
                         });
-                        break;
+                    }
 
-                    default:
+                    default ->
                         throw new AssertionError();
                 }
             }
@@ -246,10 +244,10 @@ public class MapContextMenu {
         Mapton.getGlobalState().put(MEngine.KEY_STATUS_PROGRESS, -1d);
 
         new Thread(() -> {
-            ArrayList< MWhatsHereEngine> engines = new ArrayList<>(Lookup.getDefault().lookupAll(MWhatsHereEngine.class));
+            var engines = new ArrayList< MWhatsHereEngine>(Lookup.getDefault().lookupAll(MWhatsHereEngine.class));
 
             if (!engines.isEmpty()) {
-                MWhatsHereEngine whatsHereEngine = engines.get(0);
+                var whatsHereEngine = engines.get(0);
                 int zoom = (int) (5 + getEngine().getZoom() * 18);
                 String s = whatsHereEngine.getResult(getEngine().getLatLonMouse(), zoom);
                 if (StringUtils.isNotBlank(s)) {
