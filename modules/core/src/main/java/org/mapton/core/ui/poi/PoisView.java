@@ -182,11 +182,11 @@ public class PoisView extends BorderPane {
         });
 
         mManager.selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            Platform.runLater(() -> {
+            if (mListView.getSelectionModel().getSelectedItem() != newValue) {
                 mListView.getSelectionModel().select(newValue);
                 mListView.getFocusModel().focus(mListView.getItems().indexOf(newValue));
                 FxHelper.scrollToItemIfNotVisible(mListView, newValue);
-            });
+            }
         });
 
         mBrowseMenuItem.setOnAction(actionEvent -> {

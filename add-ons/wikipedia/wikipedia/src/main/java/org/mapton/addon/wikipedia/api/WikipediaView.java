@@ -33,13 +33,10 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.MasterDetailPane;
 import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import static org.mapton.addon.wikipedia.Module.LOG_TAG;
 import org.mapton.api.Mapton;
 import org.openide.util.Exceptions;
@@ -73,24 +70,22 @@ public final class WikipediaView extends BorderPane {
     private void initListeners() {
         mListView.getSelectionModel().selectedItemProperty().addListener((ov, oldValue, newValue) -> {
             mWikipediaArticleManager.setSelectedItem(newValue);
+            Platform.runLater(() -> {
+                select(newValue);
+            });
         });
 
         mWikipediaArticleManager.selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            try {
-                Platform.runLater(() -> {
-                    select(newValue);
-                    mListView.getSelectionModel().select(newValue);
-                    mListView.getFocusModel().focus(mListView.getItems().indexOf(newValue));
-                    FxHelper.scrollToItemIfNotVisible(mListView, newValue);
-                });
-            } catch (Exception e) {
-
+            if (mListView.getSelectionModel().getSelectedItem() != newValue) {
+                mListView.getSelectionModel().select(newValue);
+                mListView.getFocusModel().focus(mListView.getItems().indexOf(newValue));
+                FxHelper.scrollToItemIfNotVisible(mListView, newValue);
             }
         });
     }
 
     private void select(WikipediaArticle article) {
-        WebEngine engine = mWebView.getEngine();
+        var engine = mWebView.getEngine();
 
         if (article == null) {
             engine.loadContent("");
@@ -104,30 +99,30 @@ public final class WikipediaView extends BorderPane {
             Mapton.getLog().d(LOG_TAG, article.getThumbnail());
 
             try {
-                Document doc = Jsoup.connect(url).get();
+                var doc = Jsoup.connect(url).get();
 
-                for (Element link : doc.select("a")) {
+                for (var link : doc.select("a")) {
                     link.attr("href", link.attr("abs:href"));
                 }
 
-                for (Element link : doc.select("link")) {
+                for (var link : doc.select("link")) {
                     link.attr("href", link.attr("abs:href"));
                 }
 
-                for (Element link : doc.select("img")) {
+                for (var link : doc.select("img")) {
                     link.attr("src", link.attr("abs:src"));
                     link.attr("srcset", link.attr("abs:srcset"));
                 }
 
-                for (Element element : doc.getElementsByClass("header-container")) {
+                for (var element : doc.getElementsByClass("header-container")) {
                     element.remove();
                 }
 
-                for (Element element : doc.getElementsByClass("page-actions-menu")) {
+                for (var element : doc.getElementsByClass("page-actions-menu")) {
                     element.remove();
                 }
 
-                for (Element element : doc.select("#mw-mf-page-left")) {
+                for (var element : doc.select("#mw-mf-page-left")) {
                     element.remove();
                 }
 
