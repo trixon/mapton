@@ -95,7 +95,7 @@ public class WikipediaLayerBundle extends LayerBundle {
                 placemark.setAttributes(attrs);
                 placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(attrs, 1.5));
                 placemark.setValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK, (Runnable) () -> {
-                    mWikipediaArticleManager.setSelectedItem(article);
+                    mWikipediaArticleManager.setSelectedItemAfterReset(article);
                 });
 
                 mLayer.addRenderable(placemark);

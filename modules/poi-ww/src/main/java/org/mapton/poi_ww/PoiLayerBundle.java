@@ -110,8 +110,9 @@ public class PoiLayerBundle extends LayerBundle {
                     placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(attrs, 1.5));
 
                     placemark.setValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK, (Runnable) () -> {
-                        mPoiManager.setSelectedItem(poi);
+                        mPoiManager.setSelectedItemAfterReset(poi);
                     });
+
                     placemark.setValue(WWHelper.KEY_RUNNABLE_LEFT_DOUBLE_CLICK, (Runnable) () -> {
                         Almond.openAndActivateTopComponent((String) mLayer.getValue(WWHelper.KEY_FAST_OPEN));
                     });

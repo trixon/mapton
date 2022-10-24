@@ -173,6 +173,15 @@ public abstract class MBaseDataManager<T> {
         });
     }
 
+    public void setSelectedItemAfterReset(T item) {
+        FxHelper.runLater(() -> {
+            mSelectedItemProperty.set(null);
+            FxHelper.runLaterDelayed(10, () -> {
+                mSelectedItemProperty.set(item);
+            });
+        });
+    }
+
     public void setTemporalRange(LocalDate first, LocalDate last) {
         setTemporalRange(new MTemporalRange(first, last));
     }
