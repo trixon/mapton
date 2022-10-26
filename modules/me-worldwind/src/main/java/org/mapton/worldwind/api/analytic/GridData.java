@@ -20,7 +20,6 @@ import gov.nasa.worldwind.util.BufferWrapper;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.DoubleStream;
 import org.mapton.api.MLatLon;
 import org.mapton.api.MLatLonBox;
@@ -47,8 +46,9 @@ public class GridData {
     public GridData(int width, int height, ArrayList<GridValue> values, CellAggregate cellAggregate) {
         //TODO Replace width & height with some calculated resulotion variant...?
         mCellAggregate = cellAggregate;
-        ArrayList<MLatLon> latLons = new ArrayList<>();
-        values.forEach((gridValue) -> {
+        var latLons = new ArrayList<MLatLon>();
+
+        values.forEach(gridValue -> {
             latLons.add(gridValue.getLatLon());
             if (gridValue.getValue() != null) {
                 mMin = Math.min(mMin, gridValue.getValue());
@@ -61,6 +61,7 @@ public class GridData {
         mHeight = height;
 
         mCellValues = new ArrayList[width][height];
+
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 mCellValues[x][y] = new ArrayList<>();
@@ -87,11 +88,11 @@ public class GridData {
     }
 
     public Double getCellMedian(Point p) {
-        List<Double> list = getCellValues(p);
+        var list = getCellValues(p);
         if (list.isEmpty()) {
             return 0d;
         }
-        DoubleStream sortedValues = list.stream().mapToDouble(Double::doubleValue).sorted();
+        var sortedValues = list.stream().mapToDouble(Double::doubleValue).sorted();
 
         double median = list.size() % 2 == 0
                 ? sortedValues.skip(list.size() / 2 - 1L).limit(2).average().getAsDouble()
@@ -121,13 +122,13 @@ public class GridData {
     }
 
     public double[] getGridAggregates(CellAggregate cellAggregate) {
-        Dimension dimension = new Dimension(mWidth, mHeight);
-        double[] values = new double[mWidth * mHeight];
+        var dimension = new Dimension(mWidth, mHeight);
+        var values = new double[mWidth * mHeight];
 
         for (int x = 0; x < mWidth; x++) {
             for (int y = 0; y < mHeight; y++) {
-                final int valueIndex = MathHelper.pointToIndex(new Point(x, y), dimension);
-                final Point cellPoint = new Point(x, mHeight - 1 - y);
+                int valueIndex = MathHelper.pointToIndex(new Point(x, y), dimension);
+                var cellPoint = new Point(x, mHeight - 1 - y);
 
                 switch (cellAggregate) {
                     case AVG:
@@ -164,8 +165,8 @@ public class GridData {
     }
 
     public BufferWrapper getGridWrapperAverages() {
-        Dimension dimension = new Dimension(mWidth, mHeight);
-        double[] values = new double[mWidth * mHeight];
+        var dimension = new Dimension(mWidth, mHeight);
+        var values = new double[mWidth * mHeight];
 
         for (int x = 0; x < mWidth; x++) {
             for (int y = 0; y < mHeight; y++) {
@@ -173,10 +174,10 @@ public class GridData {
             }
         }
 
-        BufferWrapper wrapper = new BufferFactory.DoubleBufferFactory().newBuffer(values.length);
-        wrapper.putDouble(0, values, 0, values.length);
+        var buffer = new BufferFactory.DoubleBufferFactory().newBuffer(values.length);
+        buffer.putDouble(0, values, 0, values.length);
 
-        return wrapper;
+        return buffer;
     }
 
     public int getHeight() {
@@ -222,8 +223,8 @@ public class GridData {
     public void setValues(ArrayList<GridValue> values) {
         mValues = values;
 
-        for (GridValue value : values) {
-            Point p = getCellPoint(value.getLatLon());
+        for (var value : values) {
+            var p = getCellPoint(value.getLatLon());
             getCellValues(p).add(value.getValue());
         }
     }
