@@ -69,15 +69,14 @@ public class MapoSource {
     }
 
     public void fitToBounds() {
-        ArrayList<MLatLon> latLons = new ArrayList<>();
+        var latLons = new ArrayList<MLatLon>();
 
-        for (MapoPhoto photo : getCollection().getPhotos()) {
+        for (var photo : getCollection().getPhotos()) {
             latLons.add(new MLatLon(photo.getLat(), photo.getLon()));
         }
 
         if (!latLons.isEmpty()) {
-            MLatLonBox latLonBox = new MLatLonBox(latLons);
-            Mapton.getEngine().fitToBounds(latLonBox);
+            Mapton.getEngine().fitToBounds(new MLatLonBox(latLons));
         }
     }
 

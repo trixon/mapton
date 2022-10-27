@@ -16,7 +16,6 @@
 package org.mapton.addon.photos.ui;
 
 import java.util.ResourceBundle;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -27,7 +26,6 @@ import javafx.scene.control.ComboBoxBase;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.Spinner;
-import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
@@ -35,7 +33,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import org.mapton.addon.photos.Options;
 import org.mapton.addon.photos.api.Mapo;
-import org.mapton.addon.photos.api.MapoSettings;
 import org.mapton.addon.photos.api.MapoSettings.SplitBy;
 import org.mapton.api.Mapton;
 import se.trixon.almond.util.Dict;
@@ -74,12 +71,11 @@ public class OptionsView extends BorderPane {
 
     private void createUI() {
         mRoot = new VBox();
-        VBox trackBox = new VBox();
-
-        Label widthLabel = new Label(Dict.Geometry.WIDTH.toString());
-        Label splitByLabel = new Label(Dict.SPLIT_BY.toString());
-        Label gapColorLabel = new Label(mBundle.getString("TabPath.colorGap"));
-        Label trackColorLabel = new Label(mBundle.getString("TabPath.colorTrack"));
+        var trackBox = new VBox();
+        var widthLabel = new Label(Dict.Geometry.WIDTH.toString());
+        var splitByLabel = new Label(Dict.SPLIT_BY.toString());
+        var gapColorLabel = new Label(mBundle.getString("TabPath.colorGap"));
+        var trackColorLabel = new Label(mBundle.getString("TabPath.colorTrack"));
 
         mWidthSpinner.setEditable(true);
         FxHelper.autoCommitSpinners(mWidthSpinner);
@@ -137,12 +133,12 @@ public class OptionsView extends BorderPane {
     }
 
     private void initListeners() {
-        EventHandler<ActionEvent> event = (evt) -> {
+        EventHandler<ActionEvent> event = evt -> {
             save();
         };
 
         initListeners(mRoot, event);
-        mWidthSpinner.valueProperty().addListener((ObservableValue<? extends Double> ov, Double t, Double t1) -> {
+        mWidthSpinner.valueProperty().addListener((ov, t, t1) -> {
             event.handle(null);
         });
     }
@@ -161,20 +157,20 @@ public class OptionsView extends BorderPane {
     }
 
     private void load() {
-        MapoSettings settings = mMapo.getSettings();
+        var settings = mMapo.getSettings();
 
         mDrawTrackCheckBox.setSelected(settings.isPlotTracks());
         mDrawGapCheckBox.setSelected(settings.isPlotGaps());
         mWidthSpinner.getValueFactory().setValue(settings.getWidth());
 
-        Color colorTrack = Color.RED;
+        var colorTrack = Color.RED;
         try {
             colorTrack = FxHelper.colorFromHexRGBA(settings.getColorTrack());
         } catch (Exception e) {
         }
         mTrackColorPicker.setValue(colorTrack);
 
-        Color colorGap = Color.BLACK;
+        var colorGap = Color.BLACK;
         try {
             colorGap = FxHelper.colorFromHexRGBA(settings.getColorGap());
         } catch (Exception e) {
@@ -184,31 +180,25 @@ public class OptionsView extends BorderPane {
         RadioButton splitByRadioButton;
 
         switch (settings.getSplitBy()) {
-            case HOUR:
+            case HOUR ->
                 splitByRadioButton = mSplitByHourRadioButton;
-                break;
 
-            case DAY:
+            case DAY ->
                 splitByRadioButton = mSplitByDayRadioButton;
-                break;
 
-            case WEEK:
+            case WEEK ->
                 splitByRadioButton = mSplitByWeekRadioButton;
-                break;
 
-            case MONTH:
+            case MONTH ->
                 splitByRadioButton = mSplitByMonthRadioButton;
-                break;
 
-            case YEAR:
+            case YEAR ->
                 splitByRadioButton = mSplitByYearRadioButton;
-                break;
 
-            case NONE:
+            case NONE ->
                 splitByRadioButton = mSplitByNoneRadioButton;
-                break;
 
-            default:
+            default ->
                 throw new AssertionError();
         }
 
@@ -216,7 +206,7 @@ public class OptionsView extends BorderPane {
     }
 
     private void save() {
-        MapoSettings settings = mMapo.getSettings();
+        var settings = mMapo.getSettings();
         settings.setPlotTracks(mDrawTrackCheckBox.isSelected());
         settings.setPlotGaps(mDrawGapCheckBox.isSelected());
         settings.setWidth(mWidthSpinner.getValue());
@@ -224,19 +214,19 @@ public class OptionsView extends BorderPane {
         settings.setColorTrack(FxHelper.colorToHexRGB(mTrackColorPicker.getValue()));
 
         SplitBy splitBy = null;
-        Toggle t = mToggleGroup.getSelectedToggle();
+        var toggle = mToggleGroup.getSelectedToggle();
 
-        if (t == mSplitByHourRadioButton) {
+        if (toggle == mSplitByHourRadioButton) {
             splitBy = SplitBy.HOUR;
-        } else if (t == mSplitByDayRadioButton) {
+        } else if (toggle == mSplitByDayRadioButton) {
             splitBy = SplitBy.DAY;
-        } else if (t == mSplitByWeekRadioButton) {
+        } else if (toggle == mSplitByWeekRadioButton) {
             splitBy = SplitBy.WEEK;
-        } else if (t == mSplitByMonthRadioButton) {
+        } else if (toggle == mSplitByMonthRadioButton) {
             splitBy = SplitBy.MONTH;
-        } else if (t == mSplitByYearRadioButton) {
+        } else if (toggle == mSplitByYearRadioButton) {
             splitBy = SplitBy.YEAR;
-        } else if (t == mSplitByNoneRadioButton) {
+        } else if (toggle == mSplitByNoneRadioButton) {
             splitBy = SplitBy.NONE;
         }
 

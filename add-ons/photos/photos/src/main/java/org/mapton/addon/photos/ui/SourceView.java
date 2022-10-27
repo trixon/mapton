@@ -80,7 +80,7 @@ public class SourceView extends VBox {
         mThumbnailSizeSpinner.getValueFactory().setValue(source.getThumbnailSize());
         mThumbnailBorderSizeSpinner.getValueFactory().setValue(source.getThumbnailBorderSize());
 
-        Color color = Color.YELLOW;
+        var color = Color.YELLOW;
         try {
             color = FxHelper.colorFromHexRGBA(source.getThumbnailBorderColor());
         } catch (Exception e) {
@@ -117,13 +117,13 @@ public class SourceView extends VBox {
         mSourceChooser = new FileChooserPane(Dict.SELECT.toString(), Dict.IMAGE_DIRECTORY.toString(), FileChooserPane.ObjectMode.DIRECTORY, SelectionMode.SINGLE);
         mThumnailForceCreation = new CheckBox(mBundle.getString("TabSource.forceThumbnail"));
 
-        Label nameLabel = new Label(Dict.NAME.toString());
-        Label descLabel = new Label(Dict.DESCRIPTION.toString());
-        Label filePatternLabel = new Label(Dict.FILE_PATTERN.toString());
-        Label excludeLabel = new Label(mBundle.getString("TabSource.excludeLabel"));
-        Label thumbnailLabel = new Label(Dict.IMAGE_SIZE.toString());
-        Label borderSizeLabel = new Label(mBundle.getString("TabSource.borderSizeLabel"));
-        Label colorLabel = new Label(Dict.COLOR.toString());
+        var nameLabel = new Label(Dict.NAME.toString());
+        var descLabel = new Label(Dict.DESCRIPTION.toString());
+        var filePatternLabel = new Label(Dict.FILE_PATTERN.toString());
+        var excludeLabel = new Label(mBundle.getString("TabSource.excludeLabel"));
+        var thumbnailLabel = new Label(Dict.IMAGE_SIZE.toString());
+        var borderSizeLabel = new Label(mBundle.getString("TabSource.borderSizeLabel"));
+        var colorLabel = new Label(Dict.COLOR.toString());
 
         mExcludeTextField.setTooltip(new Tooltip(mBundle.getString("TabSource.excludeTextField.toolTip")));
 
@@ -138,7 +138,7 @@ public class SourceView extends VBox {
                 mThumbnailSizeSpinner
         );
 
-        GridPane thumbGridPane = new GridPane();
+        var thumbGridPane = new GridPane();
         thumbGridPane.addColumn(0,
                 thumbnailLabel,
                 mThumbnailSizeSpinner
@@ -198,7 +198,7 @@ public class SourceView extends VBox {
         final String text_is_required = "Text is required";
         boolean indicateRequired = false;
 
-        ValidationSupport validationSupport = new ValidationSupport();
+        var validationSupport = new ValidationSupport();
         Validator<Object> emptyValidator = Validator.createEmptyValidator(text_is_required);
         validationSupport.registerValidator(mNameTextField, indicateRequired, emptyValidator);
 

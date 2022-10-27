@@ -16,7 +16,6 @@
 package org.mapton.addon.photos;
 
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import org.mapton.addon.photos.ui.SourcesPane;
 import org.mapton.api.Mapton;
@@ -77,7 +76,7 @@ public final class PhotosTopComponent extends MTopComponent {
     }
 
     private Scene createScene() {
-        Label titleLabel = Mapton.createTitle(Dict.PHOTOS.toString());
+        var titleLabel = Mapton.createTitle(Dict.PHOTOS.toString());
         mRoot = new BorderPane(new SourcesPane());
         mRoot.setTop(titleLabel);
         titleLabel.prefWidthProperty().bind(mRoot.widthProperty());

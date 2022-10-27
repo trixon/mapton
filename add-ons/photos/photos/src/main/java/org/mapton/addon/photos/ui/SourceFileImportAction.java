@@ -38,12 +38,12 @@ public class SourceFileImportAction extends SourceFileAction {
 
     @Override
     public Action getAction() {
-        FxActionSwing action = new FxActionSwing(Dict.IMPORT.toString(), () -> {
+        var action = new FxActionSwing(Dict.IMPORT.toString(), () -> {
             SimpleDialog.clearFilters();
             SimpleDialog.addFilters("mapo");
             SimpleDialog.setFilter("mapo");
 
-            final String dialogTitle = "%s %s".formatted(Dict.IMPORT.toString(), mTitle.toLowerCase());
+            var dialogTitle = "%s %s".formatted(Dict.IMPORT.toString(), mTitle.toLowerCase());
             SimpleDialog.setTitle(dialogTitle);
 
             if (mFile == null) {

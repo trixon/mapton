@@ -40,11 +40,11 @@ public class SourceFileExportAction extends SourceFileAction {
 
     @Override
     public Action getAction() {
-        FxActionSwing action = new FxActionSwing(Dict.EXPORT.toString(), () -> {
-            ArrayList<MapoSource> selectedSources = new ArrayList<>();
+        var action = new FxActionSwing(Dict.EXPORT.toString(), () -> {
+            var selectedSources = new ArrayList<MapoSource>();
             mManager.getItems().stream()
-                    .filter((source) -> (source.isVisible()))
-                    .forEachOrdered((source) -> {
+                    .filter(source -> (source.isVisible()))
+                    .forEachOrdered(source -> {
                         selectedSources.add(source);
                     });
             if (!selectedSources.isEmpty()) {
@@ -52,7 +52,7 @@ public class SourceFileExportAction extends SourceFileAction {
                 SimpleDialog.addFilters("mapo");
                 SimpleDialog.setFilter("mapo");
 
-                final String dialogTitle = "%s %s".formatted(Dict.EXPORT.toString(), mTitle.toLowerCase());
+                var dialogTitle = "%s %s".formatted(Dict.EXPORT.toString(), mTitle.toLowerCase());
                 SimpleDialog.setTitle(dialogTitle);
 
                 if (mFile == null) {

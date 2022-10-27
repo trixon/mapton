@@ -25,7 +25,6 @@ import com.drew.metadata.exif.ExifSubIFDDirectory;
 import com.drew.metadata.exif.GpsDirectory;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -68,14 +67,14 @@ public class PhotoInfo {
         int thumbnailSize = source.getThumbnailSize();
 
         if (source.isThumbnailForceCreation() || !file.exists()) {
-            BufferedImage scaledImage = mImageScaler.getScaledImage(mFile, new Dimension(thumbnailSize, thumbnailSize));
+            var scaledImage = mImageScaler.getScaledImage(mFile, new Dimension(thumbnailSize, thumbnailSize));
             scaledImage = GraphicsHelper.rotate(scaledImage, mOrientation);
 
             mHeight = scaledImage.getHeight();
             mWidth = scaledImage.getWidth();
 
             int borderSize = source.getThumbnailBorderSize();
-            BufferedImage borderedImage = scaledImage;
+            var borderedImage = scaledImage;
 
             if (borderSize > 0) {
                 int width = scaledImage.getWidth();
@@ -86,7 +85,7 @@ public class PhotoInfo {
 
                 borderedImage = new BufferedImage(borderedImageWidth, borderedImageHeight, BufferedImage.TYPE_3BYTE_BGR);
 
-                Graphics2D g2 = borderedImage.createGraphics();
+                var g2 = borderedImage.createGraphics();
                 g2.setColor(Color.decode("#" + source.getThumbnailBorderColor()));
                 g2.fillRect(0, 0, borderedImageWidth, borderedImageHeight);
                 g2.drawImage(scaledImage, borderSize, borderSize, width + borderSize, height + borderSize, 0, 0, width, height, Color.YELLOW, null);
@@ -98,7 +97,7 @@ public class PhotoInfo {
                 throw new IOException("E000 %s".formatted(file.getAbsolutePath()));
             }
         } else {
-            Scaler scaler = new Scaler(getOriginalDimension());
+            var scaler = new Scaler(getOriginalDimension());
             scaler.setHeight(thumbnailSize);
             scaler.setWidth(thumbnailSize);
 
@@ -135,8 +134,8 @@ public class PhotoInfo {
         } else {
             long millis = 0;
             try {
-                BasicFileAttributes attr = Files.readAttributes(mFile.toPath(), BasicFileAttributes.class);
-                millis = attr.lastModifiedTime().toMillis();
+                var basicFileAttributes = Files.readAttributes(mFile.toPath(), BasicFileAttributes.class);
+                millis = basicFileAttributes.lastModifiedTime().toMillis();
             } catch (IOException ex) {
                 millis = mFile.lastModified();
             } finally {
@@ -223,7 +222,7 @@ public class PhotoInfo {
             mGeoLocation = getGeoLocation();
 
             try {
-                ExifIFD0Directory rotationDirectory = mMetadata.getFirstDirectoryOfType(ExifIFD0Directory.class);
+                var rotationDirectory = mMetadata.getFirstDirectoryOfType(ExifIFD0Directory.class);
                 mOrientation = rotationDirectory.getInt(ExifSubIFDDirectory.TAG_ORIENTATION);
             } catch (MetadataException | NullPointerException ex) {
                 mOrientation = 1;

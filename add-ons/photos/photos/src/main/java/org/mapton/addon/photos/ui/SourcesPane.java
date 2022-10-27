@@ -24,18 +24,15 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
-import javafx.scene.control.ToolBar;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
 import javax.swing.SwingUtilities;
 import org.apache.commons.lang3.ObjectUtils;
 import org.controlsfx.control.CheckListView;
-import org.controlsfx.control.IndexedCheckModel;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.addon.photos.SourceScanner;
 import org.mapton.addon.photos.api.Mapo;
-import org.mapton.addon.photos.api.MapoCollection;
 import org.mapton.addon.photos.api.MapoSource;
 import org.mapton.addon.photos.api.MapoSourceManager;
 import org.mapton.api.MTemporalManager;
@@ -84,19 +81,19 @@ public class SourcesPane extends BorderPane {
     }
 
     private void createUI() {
-        Action addAction = new Action(Dict.ADD.toString(), (ActionEvent event) -> {
+        var addAction = new Action(Dict.ADD.toString(), (ActionEvent event) -> {
             mManager.edit(null);
         });
         addAction.setGraphic(MaterialIcon._Content.ADD.getImageView(getIconSizeToolBarInt()));
 
-        Action editAction = new Action(Dict.EDIT.toString(), (ActionEvent event) -> {
+        var editAction = new Action(Dict.EDIT.toString(), (ActionEvent event) -> {
             if (getSelected() != null) {
                 mManager.edit(getSelected());
             }
         });
         editAction.setGraphic(MaterialIcon._Editor.MODE_EDIT.getImageView(getIconSizeToolBarInt()));
 
-        Action remAction = new Action(Dict.REMOVE.toString(), (ActionEvent event) -> {
+        var remAction = new Action(Dict.REMOVE.toString(), (ActionEvent event) -> {
             if (getSelected() != null) {
                 remove();
             }
@@ -128,7 +125,7 @@ public class SourcesPane extends BorderPane {
                 mRefreshAction
         );
 
-        ToolBar toolBar = ActionUtils.createToolBar(mActions, ActionUtils.ActionTextBehavior.HIDE);
+        var toolBar = ActionUtils.createToolBar(mActions, ActionUtils.ActionTextBehavior.HIDE);
 
         FxHelper.adjustButtonWidth(toolBar.getItems().stream(), getIconSizeToolBarInt());
         FxHelper.undecorateButtons(toolBar.getItems().stream());
@@ -171,7 +168,7 @@ public class SourcesPane extends BorderPane {
             });
         });
 
-        final IndexedCheckModel<MapoSource> checkModel = mListView.getCheckModel();
+        var checkModel = mListView.getCheckModel();
 
         checkModel.getCheckedItems().addListener((ListChangeListener.Change<? extends MapoSource> c) -> {
             Platform.runLater(() -> {
@@ -208,9 +205,9 @@ public class SourcesPane extends BorderPane {
     }
 
     private void refreshCheckedStates() {
-        final IndexedCheckModel<MapoSource> checkModel = mListView.getCheckModel();
+        var checkModel = mListView.getCheckModel();
 
-        for (MapoSource source : mManager.getItems()) {
+        for (var source : mManager.getItems()) {
             if (source.isVisible()) {
                 checkModel.check(source);
             } else {
@@ -222,9 +219,9 @@ public class SourcesPane extends BorderPane {
     private void refreshTemporal() {
         Platform.runLater(() -> {
             mTemporalManager.removeAll(Mapo.KEY_TEMPORAL_PREFIX);
-            mManager.getItems().forEach((source) -> {
+            mManager.getItems().forEach(source -> {
                 if (source.isVisible()) {
-                    MapoCollection collection = source.getCollection();
+                    var collection = source.getCollection();
                     if (ObjectUtils.allNotNull(collection.getDateMin(), collection.getDateMax())) {
                         mTemporalManager.put(Mapo.KEY_TEMPORAL_PREFIX + source.getName(), new MTemporalRange(collection.getDateMin(), collection.getDateMax()));
                     }
@@ -236,11 +233,11 @@ public class SourcesPane extends BorderPane {
     }
 
     private void remove() {
-        final MapoSource source = getSelected();
+        var source = getSelected();
 
         SwingUtilities.invokeLater(() -> {
             String[] buttons = new String[]{Dict.CANCEL.toString(), Dict.REMOVE.toString()};
-            NotifyDescriptor d = new NotifyDescriptor(
+            var d = new NotifyDescriptor(
                     Dict.Dialog.MESSAGE_PROFILE_REMOVE.toString().formatted(source.getName()),
                     Dict.Dialog.TITLE_REMOVE_S.toString().formatted(Dict.SOURCE.toString().toLowerCase()) + "?",
                     NotifyDescriptor.OK_CANCEL_OPTION,
@@ -262,7 +259,7 @@ public class SourcesPane extends BorderPane {
             mRunState = runState;
 
             switch (runState) {
-                case CANCELABLE:
+                case CANCELABLE -> {
                     FxHelper.disableControls(getChildrenUnmodifiable(), true, mRefreshButton);
                     mRefreshAction.setText(Dict.CANCEL.toString());
                     mRefreshAction.setGraphic(MaterialIcon._Navigation.CANCEL.getImageView(getIconSizeToolBarInt()));
@@ -270,9 +267,9 @@ public class SourcesPane extends BorderPane {
                         action.setDisabled(true);
                     });
                     mRefreshAction.setDisabled(false);
-                    break;
+                }
 
-                case STARTABLE:
+                case STARTABLE -> {
                     mRefreshAction.setText(Dict.REFRESH.toString());
                     mRefreshAction.setGraphic(MaterialIcon._Navigation.REFRESH.getImageView(getIconSizeToolBarInt()));
                     try {
@@ -282,7 +279,7 @@ public class SourcesPane extends BorderPane {
                         FxHelper.disableControls(getChildrenUnmodifiable(), false, mRefreshButton);
                     } catch (Exception e) {
                     }
-                    break;
+                }
             }
         });
     }

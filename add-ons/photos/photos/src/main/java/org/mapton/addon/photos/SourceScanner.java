@@ -27,6 +27,7 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.concurrent.TimeUnit;
@@ -60,7 +61,7 @@ public class SourceScanner {
         mPrint.select();
         mPrint.out("BEGIN SCAN COLLECTION");
 
-        for (MapoSource source : mManager.getItems()) {
+        for (var source : mManager.getItems()) {
             if (source.isVisible()) {
                 try {
                     process(source);
@@ -97,7 +98,7 @@ public class SourceScanner {
 
     private void generateFileList(MapoSource source) throws IOException {
         mPrint.out(Dict.GENERATING_FILELIST.toString());
-        PathMatcher pathMatcher = source.getPathMatcher();
+        var pathMatcher = source.getPathMatcher();
 
         EnumSet<FileVisitOption> fileVisitOptions;
         if (source.isFollowLinks()) {
@@ -106,9 +107,9 @@ public class SourceScanner {
             fileVisitOptions = EnumSet.noneOf(FileVisitOption.class);
         }
 
-        File file = source.getDir();
+        var file = source.getDir();
         if (file.isDirectory()) {
-            FileVisitor fileVisitor = new FileVisitor(pathMatcher);
+            var fileVisitor = new FileVisitor(pathMatcher);
             try {
                 if (source.isRecursive()) {
                     Files.walkFileTree(file.toPath(), fileVisitOptions, Integer.MAX_VALUE, fileVisitor);
@@ -136,10 +137,10 @@ public class SourceScanner {
     private void process(File file) {
         mPrint.out(file);
         try {
-            PhotoInfo photoInfo = new PhotoInfo(file);
+            var photoInfo = new PhotoInfo(file);
 
             if (!photoInfo.isZeroCoordinate()) {
-                MapoPhoto mapoPhoto = new MapoPhoto();
+                var mapoPhoto = new MapoPhoto();
                 mapoPhoto.setPath(file.getAbsolutePath());
                 mapoPhoto.setLat(photoInfo.getLat());
                 mapoPhoto.setLon(photoInfo.getLon());
@@ -176,8 +177,8 @@ public class SourceScanner {
             mPrint.out("BEGIN PROCESSING PHOTOS");
             FileUtils.forceMkdir(source.getThumbnailDir());
 
-            for (File f : mFiles) {
-                process(f);
+            for (var file : mFiles) {
+                process(file);
                 try {
                     TimeUnit.NANOSECONDS.sleep(1);
                 } catch (InterruptedException ex) {
@@ -187,16 +188,16 @@ public class SourceScanner {
                 }
             }
 
-            ArrayList<MapoPhoto> photos = mCurrentCollection.getPhotos();
-            Collections.sort(photos, (MapoPhoto o1, MapoPhoto o2) -> o1.getDate().compareTo(o2.getDate()));
+            var photos = mCurrentCollection.getPhotos();
+            Collections.sort(photos, Comparator.comparing(MapoPhoto::getDate));
 
             try {
                 mCurrentCollection.setDateMin(photos.get(0).getDate());
                 mCurrentCollection.setDateMax(photos.get(photos.size() - 1).getDate());
             } catch (Exception e) {
-                Date d = new Date();
-                mCurrentCollection.setDateMin(d);
-                mCurrentCollection.setDateMax(d);
+                var date = new Date();
+                mCurrentCollection.setDateMin(date);
+                mCurrentCollection.setDateMax(date);
             }
 
             mPrint.out("END PROCESSING PHOTOS");
@@ -222,7 +223,7 @@ public class SourceScanner {
         public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
             mPrint.out(dir);
             if (mExcludePatterns != null) {
-                for (String excludePattern : mExcludePatterns) {
+                for (var excludePattern : mExcludePatterns) {
                     if (IOCase.SYSTEM.isCaseSensitive()) {
                         if (StringUtils.contains(dir.toString(), excludePattern)) {
                             return FileVisitResult.SKIP_SUBTREE;
@@ -235,10 +236,10 @@ public class SourceScanner {
                 }
             }
 
-            String[] filePaths = dir.toFile().list();
+            var filePaths = dir.toFile().list();
 
             if (filePaths != null && filePaths.length > 0) {
-                for (String fileName : filePaths) {
+                for (var fileName : filePaths) {
                     try {
                         TimeUnit.NANOSECONDS.sleep(1);
                     } catch (InterruptedException ex) {
@@ -247,11 +248,11 @@ public class SourceScanner {
                         return FileVisitResult.TERMINATE;
                     }
 
-                    File file = new File(dir.toFile(), fileName);
+                    var file = new File(dir.toFile(), fileName);
                     if (file.isFile() && mPathMatcher.matches(file.toPath().getFileName())) {
                         boolean exclude = false;
                         if (mExcludePatterns != null) {
-                            for (String excludePattern : mExcludePatterns) {
+                            for (var excludePattern : mExcludePatterns) {
                                 if (StringUtils.contains(file.getAbsolutePath(), excludePattern)) {
                                     exclude = true;
                                     break;

@@ -58,25 +58,25 @@ public class MapoSourceManager {
 
     public void edit(final MapoSource aSource) {
         SwingUtilities.invokeLater(() -> {
-            MapoSource newSource = aSource;
+            var newSource = aSource;
             boolean add = aSource == null;
             if (add) {
                 newSource = new MapoSource();
                 newSource.setId(System.currentTimeMillis());
             }
 
-            final MapoSource source = newSource;
-            SourcePanel localGridPanel = new SourcePanel();
-            DialogDescriptor d = new DialogDescriptor(localGridPanel, Dict.SOURCE.toString());
-            localGridPanel.setNotifyDescriptor(d);
-            localGridPanel.initFx(() -> {
-                localGridPanel.load(source);
+            var source = newSource;
+            var sourcePanel = new SourcePanel();
+            var d = new DialogDescriptor(sourcePanel, Dict.SOURCE.toString());
+            sourcePanel.setNotifyDescriptor(d);
+            sourcePanel.initFx(() -> {
+                sourcePanel.load(source);
             });
 
-            localGridPanel.setPreferredSize(SwingHelper.getUIScaledDim(600, 400));
+            sourcePanel.setPreferredSize(SwingHelper.getUIScaledDim(600, 400));
             if (DialogDescriptor.OK_OPTION == DialogDisplayer.getDefault().notify(d)) {
                 Platform.runLater(() -> {
-                    localGridPanel.save(source);
+                    sourcePanel.save(source);
                     if (add) {
                         mItems.get().add(source);
                     }
@@ -108,12 +108,12 @@ public class MapoSourceManager {
     }
 
     public LocalDate getMaxDate() {
-        LocalDate localDate = LocalDate.MIN;
+        var localDate = LocalDate.MIN;
 
-        for (MapoSource source : mItems.get()) {
+        for (var source : mItems.get()) {
             if (source.isVisible()) {
                 try {
-                    LocalDate collectionDate = source.getCollection().getDateMax().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                    var collectionDate = source.getCollection().getDateMax().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
                     if (collectionDate.isAfter(localDate)) {
                         localDate = collectionDate;
                     }
@@ -130,9 +130,9 @@ public class MapoSourceManager {
     }
 
     public LocalDate getMinDate() {
-        LocalDate localDate = LocalDate.MAX;
+        var localDate = LocalDate.MAX;
 
-        for (MapoSource source : mItems.get()) {
+        for (var source : mItems.get()) {
             if (source.isVisible()) {
                 try {
                     LocalDate collectionDate = source.getCollection().getDateMin().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
@@ -160,13 +160,13 @@ public class MapoSourceManager {
     }
 
     public void load() {
-        ArrayList<MapoSource> loadedItems = new ArrayList<>();
+        var loadedItems = new ArrayList<MapoSource>();
 
         try {
             if (getSourcesFile().isFile()) {
                 loadedItems = Mapo.getGson().fromJson(FileUtils.readFileToString(getSourcesFile(), "utf-8"), new TypeToken<ArrayList<MapoSource>>() {
                 }.getType());
-                for (MapoSource source : loadedItems) {
+                for (var source : loadedItems) {
                     try {
                         source.setCollection(source.loadCollection());
                     } catch (IOException ex) {
@@ -178,7 +178,7 @@ public class MapoSourceManager {
             Exceptions.printStackTrace(ex);
         }
 
-        final ArrayList<MapoSource> items = loadedItems;
+        var items = loadedItems;
         Platform.runLater(() -> {
             mItems.get().setAll(items);
             Mapton.getGlobalState().put(Mapo.KEY_SOURCE_UPDATED, this);

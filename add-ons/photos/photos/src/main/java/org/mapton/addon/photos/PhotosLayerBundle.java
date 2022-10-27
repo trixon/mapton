@@ -27,18 +27,16 @@ import java.awt.Dimension;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import javafx.scene.Node;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.mapton.addon.photos.api.Mapo;
-import org.mapton.addon.photos.api.MapoPhoto;
 import org.mapton.addon.photos.api.MapoSettings;
 import org.mapton.addon.photos.api.MapoSettings.SplitBy;
-import org.mapton.addon.photos.api.MapoSource;
 import org.mapton.addon.photos.api.MapoSourceManager;
 import org.mapton.addon.photos.ui.OptionsView;
 import org.mapton.api.MKey;
@@ -50,7 +48,6 @@ import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.dialogs.NbMessage;
 import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.GlobalState;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.FxHelper;
 
@@ -97,22 +94,22 @@ public class PhotosLayerBundle extends LayerBundle {
     }
 
     private String getPattern(SplitBy splitBy) {
-        switch (splitBy) {
-            case NONE:
-                return "'NO_SPLIT'";
-            case HOUR:
-                return "yyyyMMddHH";
-            case DAY:
-                return "yyyyMMdd";
-            case WEEK:
-                return "yyyyww";
-            case MONTH:
-                return "yyyyMM";
-            case YEAR:
-                return "yyyy";
-            default:
-                return null;
-        }
+        return switch (splitBy) {
+            case NONE ->
+                "'NO_SPLIT'";
+            case HOUR ->
+                "yyyyMMddHH";
+            case DAY ->
+                "yyyyMMdd";
+            case WEEK ->
+                "yyyyww";
+            case MONTH ->
+                "yyyyMM";
+            case YEAR ->
+                "yyyy";
+            default ->
+                null;
+        };
     }
 
     private void init() {
@@ -128,10 +125,13 @@ public class PhotosLayerBundle extends LayerBundle {
 
         setVisibleInLayerManager(mRenderableLayer, false);
         setName(Dict.PHOTOS.toString());
+
+        setParentLayer(mIconLayer);
+        setAllChildLayers(mRenderableLayer);
     }
 
     private void initListeners() {
-        GlobalState globalState = Mapton.getGlobalState();
+        var globalState = Mapton.getGlobalState();
         globalState.addListener(gsce -> {
             repaint();
         }, Mapo.KEY_MAPO);
@@ -142,7 +142,6 @@ public class PhotosLayerBundle extends LayerBundle {
         }, Mapo.KEY_SETTINGS_UPDATED);
 
         mIconLayer.addPropertyChangeListener("Enabled", pce -> {
-            mRenderableLayer.setEnabled(mIconLayer.isEnabled());
             if (mIconLayer.isEnabled()) {
                 repaint();
                 mTemporalManager.putAll(mTemporalRanges);
@@ -162,9 +161,9 @@ public class PhotosLayerBundle extends LayerBundle {
             removeAllRenderables();
             mLineNodes.clear();
 
-            for (MapoSource source : mManager.getItems()) {
+            for (var source : mManager.getItems()) {
                 if (source.isVisible()) {
-                    for (MapoPhoto photo : source.getCollection().getPhotos()) {
+                    for (var photo : source.getCollection().getPhotos()) {
                         boolean validDate;
 
                         try {
@@ -175,13 +174,13 @@ public class PhotosLayerBundle extends LayerBundle {
 
                         if (validDate) {
                             String absolutePath = new File(source.getThumbnailDir(), "%s.jpg".formatted(photo.getChecksum())).getAbsolutePath();
-                            UserFacingIcon icon = new UserFacingIcon(absolutePath, Position.fromDegrees(photo.getLat(), photo.getLon()));
+                            var userFacingIcon = new UserFacingIcon(absolutePath, Position.fromDegrees(photo.getLat(), photo.getLon()));
                             int downSample = 10;
-                            icon.setSize(new Dimension(photo.getWidth() / downSample, photo.getHeight() / downSample));
-                            icon.setHighlightScale(downSample);
+                            userFacingIcon.setSize(new Dimension(photo.getWidth() / downSample, photo.getHeight() / downSample));
+                            userFacingIcon.setHighlightScale(downSample);
 
-                            icon.setValue(WWHelper.KEY_RUNNABLE_HOOVER, (Runnable) () -> {
-                                Map<String, Object> propertyMap = new LinkedHashMap<>();
+                            userFacingIcon.setValue(WWHelper.KEY_RUNNABLE_HOOVER, (Runnable) () -> {
+                                var propertyMap = new LinkedHashMap<String, Object>();
                                 propertyMap.put(getCatKey(Dict.PHOTO.toString(), Dict.NAME.toString()), FilenameUtils.getBaseName(photo.getPath()));
                                 propertyMap.put(getCatKey(Dict.PHOTO.toString(), Dict.DATE.toString()), mDateFormat.format(photo.getDate()));
                                 propertyMap.put(getCatKey(Dict.PHOTO.toString(), Dict.PATH.toString()), photo.getPath());
@@ -196,9 +195,9 @@ public class PhotosLayerBundle extends LayerBundle {
                                 Mapton.getGlobalState().put(MKey.OBJECT_PROPERTIES, propertyMap);
                             });
 
-                            icon.setValue(WWHelper.KEY_RUNNABLE_LEFT_DOUBLE_CLICK, (Runnable) () -> {
-                                File f = new File(photo.getPath());
-                                if (f.isFile()) {
+                            userFacingIcon.setValue(WWHelper.KEY_RUNNABLE_LEFT_DOUBLE_CLICK, (Runnable) () -> {
+                                var file = new File(photo.getPath());
+                                if (file.isFile()) {
                                     SystemHelper.desktopOpen(new File(photo.getPath()));
                                 } else {
                                     NbMessage.error(Dict.Dialog.TITLE_FILE_NOT_FOUND.toString(), Dict.Dialog.MESSAGE_FILE_NOT_FOUND.toString().formatted(photo.getPath()));
@@ -206,8 +205,7 @@ public class PhotosLayerBundle extends LayerBundle {
                             });
 
                             mLineNodes.add(new LineNode(photo.getDate(), photo.getLat(), photo.getLon()));
-
-                            mIconLayer.addIcon(icon);
+                            mIconLayer.addIcon(userFacingIcon);
                         }
                     }
                 }
@@ -222,7 +220,7 @@ public class PhotosLayerBundle extends LayerBundle {
     }
 
     private void plotTrack(BasicShapeAttributes attributes, ArrayList<Position> positions) {
-        Path path = new Path(positions);
+        var path = new Path(positions);
         path.setFollowTerrain(true);
         path.setAttributes(attributes);
         path.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
@@ -230,30 +228,30 @@ public class PhotosLayerBundle extends LayerBundle {
     }
 
     private void plotTracks() {
-        BasicShapeAttributes trackAttributes = new BasicShapeAttributes();
+        var trackAttributes = new BasicShapeAttributes();
         trackAttributes.setDrawOutline(true);
         trackAttributes.setOutlineOpacity(0.8);
         trackAttributes.setOutlineWidth(mSettings.getWidth());
         trackAttributes.setOutlineMaterial(new Material(FxHelper.colorToColor(FxHelper.colorFromHexRGBA(mSettings.getColorTrack()))));
 
-        BasicShapeAttributes gapAttributes = (BasicShapeAttributes) trackAttributes.copy();
+        var gapAttributes = (BasicShapeAttributes) trackAttributes.copy();
         gapAttributes.setOutlineMaterial(new Material(FxHelper.colorToColor(FxHelper.colorFromHexRGBA(mSettings.getColorGap()))));
 
-        Collections.sort(mLineNodes, (LineNode o1, LineNode o2) -> o1.getDate().compareTo(o2.getDate()));
+        Collections.sort(mLineNodes, Comparator.comparing(LineNode::getDate));
         var dateFormat = FastDateFormat.getInstance(getPattern(mSettings.getSplitBy()));
+        var periodLineNodeMap = new TreeMap<String, ArrayList<LineNode>>();
 
-        TreeMap<String, ArrayList<LineNode>> periodLineNodeMap = new TreeMap<>();
-        mLineNodes.forEach((node) -> {
+        mLineNodes.forEach(node -> {
             periodLineNodeMap.computeIfAbsent(dateFormat.format(node.getDate()), k -> new ArrayList<>()).add(node);
         });
 
         if (mSettings.isPlotTracks()) {
             //Add track
-            for (ArrayList<LineNode> nodes : periodLineNodeMap.values()) {
+            for (var nodes : periodLineNodeMap.values()) {
                 if (nodes.size() > 1) {
-                    ArrayList<Position> positions = new ArrayList<>();
+                    var positions = new ArrayList<Position>();
 
-                    nodes.forEach((node) -> {
+                    nodes.forEach(node -> {
                         positions.add(Position.fromDegrees(node.getLat(), node.getLon()));
                     });
 
@@ -265,12 +263,12 @@ public class PhotosLayerBundle extends LayerBundle {
         if (mSettings.isPlotGaps()) {
             //Add gap
             ArrayList<LineNode> previousNodes = null;
-            for (ArrayList<LineNode> nodes : periodLineNodeMap.values()) {
+            for (var nodes : periodLineNodeMap.values()) {
                 if (previousNodes != null) {
-                    LineNode prevLast = previousNodes.get(previousNodes.size() - 1);
-                    LineNode currentFirst = nodes.get(0);
+                    var prevLast = previousNodes.get(previousNodes.size() - 1);
+                    var currentFirst = nodes.get(0);
+                    var positions = new ArrayList<Position>();
 
-                    ArrayList<Position> positions = new ArrayList<>();
                     positions.add(Position.fromDegrees(prevLast.getLat(), prevLast.getLon()));
                     positions.add(Position.fromDegrees(currentFirst.getLat(), currentFirst.getLon()));
                     plotTrack(gapAttributes, positions);
