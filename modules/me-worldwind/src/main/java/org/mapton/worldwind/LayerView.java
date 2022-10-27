@@ -201,17 +201,17 @@ public class LayerView extends BorderPane implements MActivatable {
 
         var selectActionGroup = new ActionGroup(Dict.SHOW.toString(), MaterialIcon._Image.REMOVE_RED_EYE.getImageView(iconSize),
                 new Action(Dict.SHOW.toString(), actionEvent -> {
-                    setChecked(mRootItem, true);
+                    setChecked(getSelectedCheckBoxTreeItem(), true);
                 }),
                 new Action(Dict.HIDE.toString(), actionEvent -> {
-                    setChecked(mRootItem, false);
+                    setChecked(getSelectedCheckBoxTreeItem(), false);
                 }),
                 ActionUtils.ACTION_SEPARATOR,
                 new Action(Dict.EXPAND.toString(), actionEvent -> {
-                    setExpanded(mRootItem, true);
+                    setExpanded(getSelectedCheckBoxTreeItem(), true);
                 }),
                 new Action(Dict.COLLAPSE.toString(), actionEvent -> {
-                    setExpanded(mRootItem, false);
+                    setExpanded(getSelectedCheckBoxTreeItem(), false);
                 })
         );
 
@@ -274,6 +274,10 @@ public class LayerView extends BorderPane implements MActivatable {
         }
 
         return parent;
+    }
+
+    private CheckBoxTreeItem<Layer> getSelectedCheckBoxTreeItem() {
+        return (CheckBoxTreeItem<Layer>) mTreeView.getSelectionModel().getSelectedItem();
     }
 
     private TreeItem<Layer> getSelectedTreeItem() {
@@ -395,6 +399,10 @@ public class LayerView extends BorderPane implements MActivatable {
     }
 
     private void setChecked(CheckBoxTreeItem<Layer> treeItem, boolean checked) {
+        if (treeItem == null) {
+            return;
+        }
+
         if (!isCategoryTreeItem(treeItem)) {
             if (checked) {
                 mCheckModel.check(treeItem);
@@ -409,6 +417,10 @@ public class LayerView extends BorderPane implements MActivatable {
     }
 
     private void setExpanded(CheckBoxTreeItem<Layer> treeItem, boolean expanded) {
+        if (treeItem == null) {
+            return;
+        }
+
         if (isCategoryTreeItem(treeItem)) {
             if (treeItem != mRootItem) {
                 treeItem.setExpanded(expanded);
