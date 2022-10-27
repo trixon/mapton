@@ -18,6 +18,7 @@ package org.mapton.worldwind.api;
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.drag.Draggable;
 import gov.nasa.worldwind.event.SelectEvent;
+import gov.nasa.worldwind.layers.AbstractLayer;
 import gov.nasa.worldwind.layers.IconLayer;
 import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.layers.RenderableLayer;
@@ -126,14 +127,16 @@ public abstract class LayerBundle {
 
         mChildLayers.stream()
                 .filter(layer -> (layer instanceof IconLayer))
-                .forEachOrdered(layer -> {
-                    ((IconLayer) layer).removeAllIcons();
+                .map(layer -> (IconLayer) layer)
+                .forEachOrdered(iconLayer -> {
+                    iconLayer.removeAllIcons();
                 });
 
         mLayers.stream()
                 .filter(layer -> (layer instanceof IconLayer))
-                .forEachOrdered(layer -> {
-                    ((IconLayer) layer).removeAllIcons();
+                .map(layer -> (IconLayer) layer)
+                .forEachOrdered(iconLayer -> {
+                    iconLayer.removeAllIcons();
                 });
     }
 
@@ -144,14 +147,16 @@ public abstract class LayerBundle {
 
         mChildLayers.stream()
                 .filter(layer -> (layer instanceof RenderableLayer))
-                .forEachOrdered(layer -> {
-                    ((RenderableLayer) layer).removeAllRenderables();
+                .map(layer -> (RenderableLayer) layer)
+                .forEachOrdered(renderableLayer -> {
+                    renderableLayer.removeAllRenderables();
                 });
 
         mLayers.stream()
                 .filter(layer -> (layer instanceof RenderableLayer))
-                .forEachOrdered(layer -> {
-                    ((RenderableLayer) layer).removeAllRenderables();
+                .map(layer -> (RenderableLayer) layer)
+                .forEachOrdered(renderableLayer -> {
+                    renderableLayer.removeAllRenderables();
                 });
     }
 
@@ -188,11 +193,6 @@ public abstract class LayerBundle {
                 }
                 mPainter.run();
                 LayerBundleManager.getInstance().redraw();
-//                try {
-//                    Thread.sleep(1000);
-//                } catch (InterruptedException ex) {
-//                    Exceptions.printStackTrace(ex);
-//                }
                 sActivePaintersSet.remove(mPainter);
             }, getClass().getName() + "->repaint").start();
         }
@@ -222,35 +222,48 @@ public abstract class LayerBundle {
         setCategory(layer, "- %s -".formatted(Dict.SYSTEM.toString()));
     }
 
-    public void setDragEnabled(boolean enabled, RenderableLayer... layers) {
-        for (var layer : layers) {
-            for (var renderable : layer.getRenderables()) {
-                if (renderable instanceof Draggable draggable) {
-                    if (draggable instanceof AbstractAirspace abstractAirspace) {
-                        setDragEnabled(abstractAirspace, enabled);
-                    } else {
+    public void setDragEnabled(boolean enabled, AbstractLayer... abstractLayers) {
+        for (var abstractLayer : abstractLayers) {
+            if (abstractLayer instanceof RenderableLayer renderableLayer) {
+                for (var renderable : renderableLayer.getRenderables()) {
+                    if (renderable instanceof Draggable draggable) {
+                        if (draggable instanceof AbstractAirspace abstractAirspace) {
+                            setDragEnabled(abstractAirspace, enabled);
+                        } else {
+                            draggable.setDragEnabled(enabled);
+                        }
+                    }
+                }
+            } else if (abstractLayer instanceof IconLayer iconLayer) {
+                for (var icon : iconLayer.getIcons()) {
+                    if (icon instanceof Draggable draggable) {
                         draggable.setDragEnabled(enabled);
                     }
                 }
+            } else {
+                System.err.println("Unhandled layer type in: " + getClass().getName());
+                System.err.println(abstractLayer.getClass().getName());
             }
         }
     }
 
     public void setDragEnabled(boolean enabled) {
-        if (mParentLayer instanceof RenderableLayer renderableLayer) {
+        if (mParentLayer instanceof AbstractLayer renderableLayer) {
             setDragEnabled(enabled, renderableLayer);
         }
 
         mChildLayers.stream()
                 .filter(layer -> (layer instanceof RenderableLayer))
-                .forEachOrdered(layer -> {
-                    setDragEnabled(enabled, (RenderableLayer) layer);
+                .map(layer -> (RenderableLayer) layer)
+                .forEachOrdered(renderableLayer -> {
+                    setDragEnabled(enabled, renderableLayer);
                 });
 
         mLayers.stream()
                 .filter(layer -> (layer instanceof RenderableLayer))
-                .forEachOrdered(layer -> {
-                    setDragEnabled(enabled, (RenderableLayer) layer);
+                .map(layer -> (RenderableLayer) layer)
+                .forEachOrdered(renderableLayer -> {
+                    setDragEnabled(enabled, renderableLayer);
                 });
     }
 
