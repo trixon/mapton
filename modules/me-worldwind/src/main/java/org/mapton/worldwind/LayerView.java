@@ -159,12 +159,16 @@ public class LayerView extends BorderPane implements MActivatable {
             mLayerParents.putAll(mLayerParents);
             postPopulate(mRootItem);
 
+            Mapton.getExecutionFlow().executeWhenReady(MKey.EXECUTION_FLOW_MAP_WW_INITIALIZED, () -> {
+                restoreLayerVisibility(mRootItem);
+                setCenter(mTreeView);
+            });
+
             mTreeItemExpanderSet.forEach(checkBoxTreeItem -> {
                 checkBoxTreeItem.setExpanded(true);
             });
 
             if (getCenter() != mTreeView) {
-                setCenter(mTreeView);
                 initListeners();
             }
         });
@@ -304,7 +308,6 @@ public class LayerView extends BorderPane implements MActivatable {
                 if (c.wasAdded()) {
                     c.getAddedSubList().forEach(treeItem -> {
                         if (!isCategoryTreeItem(treeItem) && !treeItem.getValue().isEnabled()) {
-                            lockCheckBoxTemporarily(treeItem.getValue());
                             treeItem.getValue().setEnabled(true);
                             mVisibilityPreferences.putBoolean(getLayerPath(treeItem.getValue()), true);
                         }
@@ -312,7 +315,6 @@ public class LayerView extends BorderPane implements MActivatable {
                 } else if (c.wasRemoved()) {
                     c.getRemoved().forEach(treeItem -> {
                         if (!isCategoryTreeItem(treeItem) && treeItem.getValue().isEnabled()) {
-                            lockCheckBoxTemporarily(treeItem.getValue());
                             treeItem.getValue().setEnabled(false);
                             mVisibilityPreferences.putBoolean(getLayerPath(treeItem.getValue()), false);
                         }
@@ -332,19 +334,8 @@ public class LayerView extends BorderPane implements MActivatable {
         return !treeItem.getChildren().isEmpty();
     }
 
-    private void lockCheckBoxTemporarily(Layer layer) {
-        var checkBoxTreeCell = mLayerToCheckBoxTreeCell.get(layer);
-        if (checkBoxTreeCell != null) {
-            checkBoxTreeCell.setDisable(true);
-            FxHelper.runLaterDelayed(2, () -> {
-                checkBoxTreeCell.setDisable(false);
-                checkBoxTreeCell.requestFocus();
-            });
-        }
-    }
-
     private void postPopulate(CheckBoxTreeItem<Layer> treeItem) {
-        final Layer layer = treeItem.getValue();
+        var layer = treeItem.getValue();
 
         if (isCategoryTreeItem(treeItem)) {
             final String path = getCategory(layer);
@@ -373,18 +364,26 @@ public class LayerView extends BorderPane implements MActivatable {
             if (!mLayerEnabledListenerSet.contains(layer)) {
                 mLayerEnabledListenerSet.add(layer);
                 layer.addPropertyChangeListener("Enabled", pce -> {
-                    Platform.runLater(() -> {
-                        boolean newValue = (boolean) pce.getNewValue();
-                        if (newValue) {
-                            mCheckModel.check(treeItem);
-                        } else {
-                            mCheckModel.clearCheck(treeItem);
-                        }
+                    boolean newValue = (boolean) pce.getNewValue();
+                    if (newValue) {
+                        mCheckModel.check(treeItem);
+                    } else {
+                        mCheckModel.clearCheck(treeItem);
+                    }
 
-                        mVisibilityPreferences.putBoolean(getLayerPath(treeItem.getValue()), newValue);
-                    });
+                    mVisibilityPreferences.putBoolean(getLayerPath(treeItem.getValue()), newValue);
                 });
             }
+        }
+    }
+
+    private void restoreLayerVisibility(CheckBoxTreeItem<Layer> treeItem) {
+        if (isCategoryTreeItem(treeItem)) {
+            for (var childTreeItem : treeItem.getChildren()) {
+                restoreLayerVisibility((CheckBoxTreeItem<Layer>) childTreeItem);
+            }
+        } else {
+            var layer = treeItem.getValue();
 
             if (mVisibilityPreferences.getBoolean(getLayerPath(layer), layer.isEnabled())) {
                 mCheckModel.check(treeItem);

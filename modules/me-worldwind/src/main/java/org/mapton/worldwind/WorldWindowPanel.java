@@ -415,34 +415,34 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
 
         for (var wmsService : wmsServices) {
             if (!wmsService.isPopulated()) {
-//                new Thread(() -> {
-                try {
-                    wmsService.populate();
-                    for (var layer : wmsService.getLayers()) {
-                        Mapton.logLoading("WMS Layer", layer.getName());
-                        layer.setEnabled(false);
-                        getLayers().addIfAbsent(layer);
+                new Thread(() -> {
+                    try {
+                        wmsService.populate();
+                        for (var layer : wmsService.getLayers()) {
+                            Mapton.logLoading("WMS Layer", layer.getName());
+                            layer.setEnabled(false);
+                            getLayers().addIfAbsent(layer);
+                        }
+                        updateStyle();
+                    } catch (SocketTimeoutException ex) {
+                        //aaaNbMessage.warning("ERROR", "initWmsService");//TODO Remove this once spotted
+                        Mapton.getLog().w(LOG_TAG, ex.toString());
+                    } catch (XMLStreamException ex) {
+                        Mapton.getLog().w(LOG_TAG, ex.toString());
+                    } catch (WWRuntimeException ex) {
+                        System.err.println(ex.toString());
+                        NotificationDisplayer.getDefault().notify(
+                                Dict.Dialog.TITLE_IO_ERROR.toString(),
+                                MNotificationIcons.getErrorIcon(),
+                                "WMS error: %s".formatted(wmsService.getName()),
+                                null,
+                                Priority.HIGH
+                        );
+                        Mapton.getLog().e(LOG_TAG, ex.toString());
+                    } catch (Exception ex) {
+                        Exceptions.printStackTrace(ex);
                     }
-                    updateStyle();
-                } catch (SocketTimeoutException ex) {
-                    //aaaNbMessage.warning("ERROR", "initWmsService");//TODO Remove this once spotted
-                    Mapton.getLog().w(LOG_TAG, ex.toString());
-                } catch (XMLStreamException ex) {
-                    Mapton.getLog().w(LOG_TAG, ex.toString());
-                } catch (WWRuntimeException ex) {
-                    System.err.println(ex.toString());
-                    NotificationDisplayer.getDefault().notify(
-                            Dict.Dialog.TITLE_IO_ERROR.toString(),
-                            MNotificationIcons.getErrorIcon(),
-                            "WMS error: %s".formatted(wmsService.getName()),
-                            null,
-                            Priority.HIGH
-                    );
-                    Mapton.getLog().e(LOG_TAG, ex.toString());
-                } catch (Exception ex) {
-                    Exceptions.printStackTrace(ex);
-                }
-//                }).start();
+                }).start();
             }
         }
     }
