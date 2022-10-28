@@ -192,7 +192,7 @@ public class PoisView extends BorderPane {
         });
     }
 
-    private void populateContextProviders() {
+    private synchronized void populateContextProviders() {
         mContextCopyMenu.getItems().clear();
         mContextOpenMenu.getItems().clear();
 

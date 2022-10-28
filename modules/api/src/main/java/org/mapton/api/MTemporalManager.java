@@ -20,6 +20,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import javafx.beans.property.SimpleObjectProperty;
@@ -46,9 +47,9 @@ public class MTemporalManager {
     }
 
     private MTemporalManager() {
-        mDelayedResetRunner = new DelayedResetRunner(500, () -> {
-            var fromRanges = new TreeSet<MTemporalRange>((o1, o2) -> o1.getFromLocalDate().compareTo(o2.getFromLocalDate()));
-            var toRanges = new TreeSet<MTemporalRange>((o1, o2) -> o1.getToLocalDate().compareTo(o2.getToLocalDate()));
+        mDelayedResetRunner = new DelayedResetRunner(100, () -> {
+            var fromRanges = new TreeSet<>(Comparator.comparing(MTemporalRange::getFromLocalDate));
+            var toRanges = new TreeSet<>(Comparator.comparing(MTemporalRange::getToLocalDate));
 
             for (var range : mRanges.values()) {
                 fromRanges.add(range);

@@ -58,6 +58,7 @@ public class PoiLayerBundle extends LayerBundle {
         setCategorySystem(mLayer);
         setName(MDict.POI.toString());
         attachTopComponentToLayer("PoiTopComponent", mLayer);
+        setParentLayer(mLayer);
         mLayer.setEnabled(true);
         mLayer.setPickEnabled(true);
     }
