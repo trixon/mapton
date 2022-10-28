@@ -160,8 +160,10 @@ public class LayerView extends BorderPane implements MActivatable {
             postPopulate(mRootItem);
 
             Mapton.getExecutionFlow().executeWhenReady(MKey.EXECUTION_FLOW_MAP_WW_INITIALIZED, () -> {
-                restoreLayerVisibility(mRootItem);
-                setCenter(mTreeView);
+                FxHelper.runLater(() -> {
+                    restoreLayerVisibility(mRootItem);
+                    setCenter(mTreeView);
+                });
             });
 
             mTreeItemExpanderSet.forEach(checkBoxTreeItem -> {
