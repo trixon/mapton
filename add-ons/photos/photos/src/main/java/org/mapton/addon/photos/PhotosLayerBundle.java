@@ -59,7 +59,7 @@ import se.trixon.almond.util.fx.FxHelper;
 public class PhotosLayerBundle extends LayerBundle {
 
     private final FastDateFormat mDateFormat = FastDateFormat.getInstance("yyyy-MM-dd HH.mm.ss");
-    private final IconLayer mIconLayer = new IconLayer();
+    private final IconLayer mLayer = new IconLayer();
     private final ArrayList<LineNode> mLineNodes = new ArrayList<>();
     private final MapoSourceManager mManager = MapoSourceManager.getInstance();
     private OptionsView mOptionsView;
@@ -85,7 +85,7 @@ public class PhotosLayerBundle extends LayerBundle {
 
     @Override
     public void populate() throws Exception {
-        getLayers().addAll(mIconLayer, mRenderableLayer);
+        getLayers().addAll(mLayer, mRenderableLayer);
         repaint(DEFAULT_REPAINT_DELAY);
     }
 
@@ -113,20 +113,18 @@ public class PhotosLayerBundle extends LayerBundle {
     }
 
     private void init() {
-        mIconLayer.setName(Dict.PHOTOS.toString());
-        setCategoryAddOns(mIconLayer);
-        attachTopComponentToLayer("PhotosTopComponent", mIconLayer);
+        mLayer.setName(Dict.PHOTOS.toString());
+        setCategoryAddOns(mLayer);
+        attachTopComponentToLayer("PhotosTopComponent", mLayer);
 
-        mIconLayer.setEnabled(true);
+        mLayer.setEnabled(true);
 
         mRenderableLayer.setPickEnabled(false);
-        mRenderableLayer.setName("Mapollage - %s".formatted(Dict.Geometry.PATHS.toString()));
         mRenderableLayer.setEnabled(true);
 
-        setVisibleInLayerManager(mRenderableLayer, false);
         setName(Dict.PHOTOS.toString());
 
-        setParentLayer(mIconLayer);
+        setParentLayer(mLayer);
         setAllChildLayers(mRenderableLayer);
     }
 
@@ -141,8 +139,8 @@ public class PhotosLayerBundle extends LayerBundle {
             repaint();
         }, Mapo.KEY_SETTINGS_UPDATED);
 
-        mIconLayer.addPropertyChangeListener("Enabled", pce -> {
-            if (mIconLayer.isEnabled()) {
+        mLayer.addPropertyChangeListener("Enabled", pce -> {
+            if (mLayer.isEnabled()) {
                 repaint();
                 mTemporalManager.putAll(mTemporalRanges);
             } else {
@@ -153,7 +151,7 @@ public class PhotosLayerBundle extends LayerBundle {
 
     private void initRepaint() {
         setPainter(() -> {
-            if (!mIconLayer.isEnabled() || mSettings == null) {
+            if (!mLayer.isEnabled() || mSettings == null) {
                 return;
             }
 
@@ -205,7 +203,7 @@ public class PhotosLayerBundle extends LayerBundle {
                             });
 
                             mLineNodes.add(new LineNode(photo.getDate(), photo.getLat(), photo.getLon()));
-                            mIconLayer.addIcon(userFacingIcon);
+                            mLayer.addIcon(userFacingIcon);
                         }
                     }
                 }
