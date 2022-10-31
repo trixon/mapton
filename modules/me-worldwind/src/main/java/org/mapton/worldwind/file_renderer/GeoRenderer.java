@@ -28,6 +28,7 @@ import gov.nasa.worldwind.render.airspaces.BasicAirspaceAttributes;
 import gov.nasa.worldwind.render.airspaces.CappedCylinder;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import javafx.geometry.Point2D;
 import org.apache.commons.lang3.StringUtils;
@@ -39,6 +40,7 @@ import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
+import se.trixon.almond.util.GraphicsHelper;
 import se.trixon.almond.util.MathHelper;
 import se.trixon.almond.util.io.Geo;
 import se.trixon.almond.util.io.GeoLine;
@@ -52,6 +54,7 @@ import se.trixon.almond.util.io.GeoPoint;
 public class GeoRenderer extends CoordinateFileRendererWW {
 
     private BasicAirspaceAttributes mCircleAttributes;
+    private final HashMap<String, BasicShapeAttributes> mColorToAttributeMap = new HashMap<>();
     private BasicShapeAttributes mLineBasicShapeAttributes;
 
     public GeoRenderer() {
@@ -222,6 +225,21 @@ public class GeoRenderer extends CoordinateFileRendererWW {
             var positions = new ArrayList<Position>();
             var ordinaryLine = true;
 
+            var attrs = new BasicShapeAttributes(attributes);
+            try {
+                if (geoLine.getAttributes().containsKey("COLOR")) {
+                    var intString = geoLine.getAttributes().get("COLOR");
+                    attrs = mColorToAttributeMap.computeIfAbsent(intString, k -> {
+                        var a = new BasicShapeAttributes(attributes);
+                        var intColor = Integer.valueOf(intString);
+                        a.setOutlineMaterial(new Material(GraphicsHelper.colorFromInt(intColor)));
+                        return a;
+                    });
+                }
+            } catch (Exception e) {
+                //
+            }
+
             for (var geoPoint : geoLine.getPoints()) {
                 if (StringUtils.equalsIgnoreCase(geoPoint.getSpecialCode(), "C")) {
                     geoPoints.add(geoPoint);
@@ -239,10 +257,10 @@ public class GeoRenderer extends CoordinateFileRendererWW {
             }
 
             if (ordinaryLine) {
-                renderLine(layer, positions, geoLine.isClosedPolygon(), attributes);
+                renderLine(layer, positions, geoLine.isClosedPolygon(), attrs);
             } else {
                 try {
-                    renderCurvedLine(layer, geoLine, elevation, attributes);
+                    renderCurvedLine(layer, geoLine, elevation, attrs);
                 } catch (Exception e) {
                     System.err.println("xxxxx");
                     System.err.println(e);
