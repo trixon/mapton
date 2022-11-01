@@ -157,7 +157,10 @@ public class LayerView extends BorderPane implements MActivatable {
             }
             mLayerParents.clear();
             mLayerParents.putAll(mLayerParents);
-            postPopulate(mRootItem);
+
+            synchronized (this) {
+                postPopulate(mRootItem);
+            }
 
             Mapton.getExecutionFlow().executeWhenReady(MKey.EXECUTION_FLOW_MAP_WW_INITIALIZED, () -> {
                 FxHelper.runLater(() -> {
@@ -306,21 +309,23 @@ public class LayerView extends BorderPane implements MActivatable {
         });
 
         mCheckModel.getCheckedItems().addListener((ListChangeListener.Change<? extends TreeItem<Layer>> c) -> {
-            while (c.next()) {
-                if (c.wasAdded()) {
-                    c.getAddedSubList().forEach(treeItem -> {
-                        if (!isCategoryTreeItem(treeItem) && !treeItem.getValue().isEnabled()) {
-                            treeItem.getValue().setEnabled(true);
-                            mVisibilityPreferences.putBoolean(getLayerPath(treeItem.getValue()), true);
-                        }
-                    });
-                } else if (c.wasRemoved()) {
-                    c.getRemoved().forEach(treeItem -> {
-                        if (!isCategoryTreeItem(treeItem) && treeItem.getValue().isEnabled()) {
-                            treeItem.getValue().setEnabled(false);
-                            mVisibilityPreferences.putBoolean(getLayerPath(treeItem.getValue()), false);
-                        }
-                    });
+            synchronized (this) {
+                while (c.next()) {
+                    if (c.wasAdded()) {
+                        c.getAddedSubList().forEach(treeItem -> {
+                            if (!isCategoryTreeItem(treeItem) && !treeItem.getValue().isEnabled()) {
+                                treeItem.getValue().setEnabled(true);
+                                mVisibilityPreferences.putBoolean(getLayerPath(treeItem.getValue()), true);
+                            }
+                        });
+                    } else if (c.wasRemoved()) {
+                        c.getRemoved().forEach(treeItem -> {
+                            if (!isCategoryTreeItem(treeItem) && treeItem.getValue().isEnabled()) {
+                                treeItem.getValue().setEnabled(false);
+                                mVisibilityPreferences.putBoolean(getLayerPath(treeItem.getValue()), false);
+                            }
+                        });
+                    }
                 }
             }
         });
