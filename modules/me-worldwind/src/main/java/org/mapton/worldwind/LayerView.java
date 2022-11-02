@@ -125,58 +125,54 @@ public class LayerView extends BorderPane implements MActivatable {
             return;
         }
 
-        FxHelper.runLater(() -> {
-            mRootItem.getChildren().clear();
-            mTreeItemListenerSet.clear();
-            var layerParents = new TreeMap<String, CheckBoxTreeItem<Layer>>();
-            var sortedLayers = mMap.getCustomLayers().sorted((o1, o2) -> o1.getName().compareTo(o2.getName()));
-            ObservableList<Layer> filteredLayers = FXCollections.observableArrayList();
+        mRootItem.getChildren().clear();
+        mTreeItemListenerSet.clear();
+        var layerParents = new TreeMap<String, CheckBoxTreeItem<Layer>>();
+        var sortedLayers = mMap.getCustomLayers().sorted((o1, o2) -> o1.getName().compareTo(o2.getName()));
+        ObservableList<Layer> filteredLayers = FXCollections.observableArrayList();
 
-            for (var layer : sortedLayers) {
-                var hiddenValue = layer.getValue(WWHelper.KEY_LAYER_HIDE_FROM_MANAGER);
-                boolean hidden = hiddenValue != null;
-                if (hidden) {
-                    hidden = BooleanUtils.toBoolean(layer.getValue(WWHelper.KEY_LAYER_HIDE_FROM_MANAGER).toString());
-                }
-
-                final String filter = mFilterTextField.getText();
-                final boolean validFilter
-                        = StringHelper.matchesSimpleGlob(getCategory(layer), filter, true, true)
-                        || StringHelper.matchesSimpleGlob(layer.getName(), filter, true, true);
-
-                if (!hidden && validFilter) {
-                    filteredLayers.add(layer);
-                }
+        for (var layer : sortedLayers) {
+            var hiddenValue = layer.getValue(WWHelper.KEY_LAYER_HIDE_FROM_MANAGER);
+            boolean hidden = hiddenValue != null;
+            if (hidden) {
+                hidden = BooleanUtils.toBoolean(layer.getValue(WWHelper.KEY_LAYER_HIDE_FROM_MANAGER).toString());
             }
 
-            for (var layer : filteredLayers) {
-                var layerTreeItem = new CheckBoxTreeItem<Layer>(layer);
-                String category = getCategory(layer);
-                var parent = layerParents.computeIfAbsent(category, k -> getParent(mRootItem, category));
-                parent.getChildren().add(layerTreeItem);
-            }
-            mLayerParents.clear();
-            mLayerParents.putAll(mLayerParents);
+            final String filter = mFilterTextField.getText();
+            final boolean validFilter
+                    = StringHelper.matchesSimpleGlob(getCategory(layer), filter, true, true)
+                    || StringHelper.matchesSimpleGlob(layer.getName(), filter, true, true);
 
-            synchronized (this) {
-                postPopulate(mRootItem);
+            if (!hidden && validFilter) {
+                filteredLayers.add(layer);
             }
+        }
 
-            Mapton.getExecutionFlow().executeWhenReady(MKey.EXECUTION_FLOW_MAP_WW_INITIALIZED, () -> {
-                FxHelper.runLater(() -> {
-                    restoreLayerVisibility(mRootItem);
-                    setCenter(mTreeView);
-                });
+        for (var layer : filteredLayers) {
+            var layerTreeItem = new CheckBoxTreeItem<Layer>(layer);
+            String category = getCategory(layer);
+            var parent = layerParents.computeIfAbsent(category, k -> getParent(mRootItem, category));
+            parent.getChildren().add(layerTreeItem);
+        }
+        mLayerParents.clear();
+        mLayerParents.putAll(mLayerParents);
+
+        postPopulate(mRootItem);
+
+        Mapton.getExecutionFlow().executeWhenReady(MKey.EXECUTION_FLOW_MAP_WW_INITIALIZED, () -> {
+            FxHelper.runLater(() -> {
+                restoreLayerVisibility(mRootItem);
+                setCenter(mTreeView);
             });
-
-            mTreeItemExpanderSet.forEach(checkBoxTreeItem -> {
-                checkBoxTreeItem.setExpanded(true);
-            });
-
-            if (getCenter() != mTreeView) {
-                initListeners();
-            }
         });
+
+        mTreeItemExpanderSet.forEach(checkBoxTreeItem -> {
+            checkBoxTreeItem.setExpanded(true);
+        });
+
+        if (getCenter() != mTreeView) {
+            initListeners();
+        }
     }
 
     private void createUI() {
