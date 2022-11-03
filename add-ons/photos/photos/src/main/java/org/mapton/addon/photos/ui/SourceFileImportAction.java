@@ -15,18 +15,17 @@
  */
 package org.mapton.addon.photos.ui;
 
-import java.io.File;
 import java.io.IOException;
-import org.apache.commons.io.FileUtils;
+import javax.swing.JFileChooser;
 import org.controlsfx.control.action.Action;
 import org.mapton.api.MNotificationIcons;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.openide.awt.NotificationDisplayer;
 import org.openide.util.Exceptions;
+import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxActionSwing;
 import se.trixon.almond.util.icons.material.MaterialIcon;
-import se.trixon.almond.util.swing.dialogs.SimpleDialog;
 
 /**
  *
@@ -34,30 +33,20 @@ import se.trixon.almond.util.swing.dialogs.SimpleDialog;
  */
 public class SourceFileImportAction extends SourceFileAction {
 
-    private File mFile;
-
     @Override
     public Action getAction() {
         var action = new FxActionSwing(Dict.IMPORT.toString(), () -> {
-            SimpleDialog.clearFilters();
-            SimpleDialog.addFilters("mapo");
-            SimpleDialog.setFilter("mapo");
+            var dialogTitle = "%s %s".formatted(Dict.IMPORT.toString(), Dict.SOURCES.toString().toLowerCase());
+            var fileChooser = mFileChooserBuilder
+                    .setTitle(dialogTitle)
+                    .setSelectionApprover(null)
+                    .createFileChooser();
 
-            var dialogTitle = "%s %s".formatted(Dict.IMPORT.toString(), mTitle.toLowerCase());
-            SimpleDialog.setTitle(dialogTitle);
-
-            if (mFile == null) {
-                SimpleDialog.setPath(FileUtils.getUserDirectory());
-            } else {
-                SimpleDialog.setPath(mFile.getParentFile());
-                SimpleDialog.setSelectedFile(new File(""));
-            }
-
-            if (SimpleDialog.openFile()) {
+            if (fileChooser.showOpenDialog(Almond.getFrame()) == JFileChooser.APPROVE_OPTION) {
                 new Thread(() -> {
-                    mFile = SimpleDialog.getPath();
+                    var file = fileChooser.getSelectedFile();
                     try {
-                        mManager.sourceImport(mFile);
+                        mManager.sourceImport(file);
                         NotificationDisplayer.getDefault().notify(
                                 Dict.OPERATION_COMPLETED.toString(),
                                 MNotificationIcons.getInformationIcon(),

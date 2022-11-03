@@ -16,10 +16,10 @@
 package org.mapton.addon.photos.ui;
 
 import javax.swing.filechooser.FileNameExtensionFilter;
+import org.apache.commons.io.FileUtils;
 import org.controlsfx.control.action.Action;
 import org.mapton.addon.photos.api.MapoSourceManager;
-import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.swing.dialogs.SimpleDialog;
+import org.openide.filesystems.FileChooserBuilder;
 
 /**
  *
@@ -27,11 +27,16 @@ import se.trixon.almond.util.swing.dialogs.SimpleDialog;
  */
 public abstract class SourceFileAction {
 
+    protected final FileChooserBuilder mFileChooserBuilder;
     protected final MapoSourceManager mManager = MapoSourceManager.getInstance();
-    protected final String mTitle = Dict.SOURCES.toString();
+    private final FileNameExtensionFilter mFileFilter = new FileNameExtensionFilter("Mapton Mapollage (*.mapo)", "mapo");
 
     public SourceFileAction() {
-        SimpleDialog.getExtensionFilters().put("mapo", new FileNameExtensionFilter("Mapton Mapollage (*.mapo)", "mapo"));
+        mFileChooserBuilder = new FileChooserBuilder(SourceFileAction.class)
+                .addFileFilter(mFileFilter)
+                .setDefaultWorkingDirectory(FileUtils.getUserDirectory())
+                .setFileFilter(mFileFilter)
+                .setFilesOnly(true);
     }
 
     public abstract Action getAction();

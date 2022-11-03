@@ -15,20 +15,21 @@
  */
 package org.mapton.addon.photos.ui;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import org.apache.commons.io.FileUtils;
+import java.util.stream.Collectors;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import org.controlsfx.control.action.Action;
-import org.mapton.addon.photos.api.MapoSource;
+import org.mapton.api.FileChooserHelper;
 import org.mapton.api.MNotificationIcons;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.openide.awt.NotificationDisplayer;
 import org.openide.util.Exceptions;
+import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxActionSwing;
 import se.trixon.almond.util.icons.material.MaterialIcon;
-import se.trixon.almond.util.swing.dialogs.SimpleDialog;
 
 /**
  *
@@ -36,37 +37,26 @@ import se.trixon.almond.util.swing.dialogs.SimpleDialog;
  */
 public class SourceFileExportAction extends SourceFileAction {
 
-    private File mFile;
-
     @Override
     public Action getAction() {
         var action = new FxActionSwing(Dict.EXPORT.toString(), () -> {
-            var selectedSources = new ArrayList<MapoSource>();
-            mManager.getItems().stream()
+            var selectedSources = mManager.getItems().stream()
                     .filter(source -> (source.isVisible()))
-                    .forEachOrdered(source -> {
-                        selectedSources.add(source);
-                    });
+                    .collect(Collectors.toCollection(ArrayList::new));
+
             if (!selectedSources.isEmpty()) {
-                SimpleDialog.clearFilters();
-                SimpleDialog.addFilters("mapo");
-                SimpleDialog.setFilter("mapo");
+                var dialogTitle = "%s %s".formatted(Dict.EXPORT.toString(), Dict.SOURCES.toString().toLowerCase());
+                var fileChooser = mFileChooserBuilder
+                        .setTitle(dialogTitle)
+                        .setSelectionApprover(FileChooserHelper.getFileExistSelectionApprover(Almond.getFrame()))
+                        .createFileChooser();
 
-                var dialogTitle = "%s %s".formatted(Dict.EXPORT.toString(), mTitle.toLowerCase());
-                SimpleDialog.setTitle(dialogTitle);
-
-                if (mFile == null) {
-                    SimpleDialog.setPath(FileUtils.getUserDirectory());
-                } else {
-                    SimpleDialog.setPath(mFile.getParentFile());
-                    SimpleDialog.setSelectedFile(new File(""));
-                }
-
-                if (SimpleDialog.saveFile(new String[]{"mapo"})) {
+                if (fileChooser.showSaveDialog(Almond.getFrame()) == JFileChooser.APPROVE_OPTION) {
                     new Thread(() -> {
-                        mFile = SimpleDialog.getPath();
+                        var file = FileChooserHelper.ensureProperExt((FileNameExtensionFilter) fileChooser.getFileFilter(), fileChooser.getSelectedFile());
+
                         try {
-                            mManager.sourceExport(mFile, selectedSources);
+                            mManager.sourceExport(file, selectedSources);
                             NotificationDisplayer.getDefault().notify(
                                     Dict.OPERATION_COMPLETED.toString(),
                                     MNotificationIcons.getInformationIcon(),

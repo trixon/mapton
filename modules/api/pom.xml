@@ -99,6 +99,12 @@
             <version>${netbeans.version}</version>
             <type>nbm</type>
         </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-filesystems-nb</artifactId>
+            <version>${netbeans.version}</version>
+            <type>nbm</type>
+        </dependency>
 
         <!-- Trixon -->
         <dependency>
