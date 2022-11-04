@@ -15,21 +15,24 @@
  */
 package org.mapton.core.ui.grid;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 import javafx.scene.Node;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import org.apache.commons.io.FileUtils;
 import org.controlsfx.control.action.Action;
-import org.mapton.api.MLocalGrid;
+import org.mapton.api.FileChooserHelper;
 import org.mapton.api.MNotificationIcons;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.openide.awt.NotificationDisplayer;
+import org.openide.filesystems.FileChooserBuilder;
 import org.openide.util.Exceptions;
+import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxActionSwing;
 import se.trixon.almond.util.icons.material.MaterialIcon;
-import se.trixon.almond.util.swing.dialogs.SimpleDialog;
 
 /**
  *
@@ -37,40 +40,33 @@ import se.trixon.almond.util.swing.dialogs.SimpleDialog;
  */
 public class FileExportAction extends FileAction {
 
-    private File mFile;
-
     public FileExportAction() {
     }
 
     @Override
     public Action getAction(Node owner) {
         FxActionSwing action = new FxActionSwing(Dict.EXPORT.toString(), () -> {
-            ArrayList<MLocalGrid> selectedGrids = new ArrayList<>();
-            mManager.getItems().stream()
-                    .filter((grid) -> (grid.isVisible()))
-                    .forEachOrdered((grid) -> {
-                        selectedGrids.add(grid);
-                    });
+            var selectedGrids = mManager.getItems().stream()
+                    .filter(grid -> grid.isVisible())
+                    .collect(Collectors.toCollection(ArrayList::new));
+
             if (!selectedGrids.isEmpty()) {
-                SimpleDialog.clearFilters();
-                SimpleDialog.addFilters("grid");
-                SimpleDialog.setFilter("grid");
+                var dialogTitle = "%s %s".formatted(Dict.EXPORT.toString(), mTitle.toLowerCase());
+                var extensionFilters = FileChooserHelper.getExtensionFilters();
+                var fileChooser = new FileChooserBuilder(FileExportAction.class)
+                        .addFileFilter(extensionFilters.get("grid"))
+                        .setDefaultWorkingDirectory(FileUtils.getUserDirectory())
+                        .setFileFilter(extensionFilters.get("grid"))
+                        .setFilesOnly(true)
+                        .setSelectionApprover(FileChooserHelper.getFileExistSelectionApprover(Almond.getFrame()))
+                        .setTitle(dialogTitle)
+                        .createFileChooser();
 
-                final String dialogTitle = "%s %s".formatted(Dict.EXPORT.toString(), mTitle.toLowerCase());
-                SimpleDialog.setTitle(dialogTitle);
-
-                if (mFile == null) {
-                    SimpleDialog.setPath(FileUtils.getUserDirectory());
-                } else {
-                    SimpleDialog.setPath(mFile.getParentFile());
-                    SimpleDialog.setSelectedFile(new File(""));
-                }
-
-                if (SimpleDialog.saveFile(new String[]{"grid"})) {
+                if (fileChooser.showSaveDialog(Almond.getFrame()) == JFileChooser.APPROVE_OPTION) {
                     new Thread(() -> {
-                        mFile = SimpleDialog.getPath();
+                        var file = FileChooserHelper.ensureProperExt((FileNameExtensionFilter) fileChooser.getFileFilter(), fileChooser.getSelectedFile());
                         try {
-                            mManager.gridExport(mFile, selectedGrids);
+                            mManager.gridExport(file, selectedGrids);
                             NotificationDisplayer.getDefault().notify(
                                     Dict.OPERATION_COMPLETED.toString(),
                                     MNotificationIcons.getInformationIcon(),

@@ -77,6 +77,7 @@ public class FileImportAction extends FileAction {
                     .setFileFilter(extensionFilters.get("csv"))
                     .setFilesOnly(true)
                     .setTitle(dialogTitle)
+                    .setSelectionApprover(FileChooserHelper.getFileExistOpenSelectionApprover(Almond.getFrame()))
                     .createFileChooser();
 
             if (fileChooser.showOpenDialog(Almond.getFrame()) == JFileChooser.APPROVE_OPTION) {

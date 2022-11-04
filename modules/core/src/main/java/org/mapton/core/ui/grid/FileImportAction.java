@@ -15,19 +15,21 @@
  */
 package org.mapton.core.ui.grid;
 
-import java.io.File;
 import java.io.IOException;
 import javafx.scene.Node;
+import javax.swing.JFileChooser;
 import org.apache.commons.io.FileUtils;
 import org.controlsfx.control.action.Action;
+import org.mapton.api.FileChooserHelper;
 import org.mapton.api.MNotificationIcons;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.openide.awt.NotificationDisplayer;
+import org.openide.filesystems.FileChooserBuilder;
 import org.openide.util.Exceptions;
+import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxActionSwing;
 import se.trixon.almond.util.icons.material.MaterialIcon;
-import se.trixon.almond.util.swing.dialogs.SimpleDialog;
 
 /**
  *
@@ -35,32 +37,28 @@ import se.trixon.almond.util.swing.dialogs.SimpleDialog;
  */
 public class FileImportAction extends FileAction {
 
-    private File mFile;
-
     public FileImportAction() {
     }
 
     @Override
     public Action getAction(Node owner) {
         FxActionSwing action = new FxActionSwing(Dict.IMPORT.toString(), () -> {
-            SimpleDialog.clearFilters();
-            SimpleDialog.addFilters("grid");
-            SimpleDialog.setFilter("grid");
-            final String dialogTitle = "%s %s".formatted(Dict.IMPORT.toString(), mTitle.toLowerCase());
-            SimpleDialog.setTitle(dialogTitle);
+            var dialogTitle = "%s %s".formatted(Dict.IMPORT.toString(), mTitle.toLowerCase());
+            var extensionFilters = FileChooserHelper.getExtensionFilters();
+            var fileChooser = new FileChooserBuilder(FileImportAction.class)
+                    .addFileFilter(extensionFilters.get("grid"))
+                    .setDefaultWorkingDirectory(FileUtils.getUserDirectory())
+                    .setFileFilter(extensionFilters.get("grid"))
+                    .setFilesOnly(true)
+                    .setTitle(dialogTitle)
+                    .setSelectionApprover(FileChooserHelper.getFileExistOpenSelectionApprover(Almond.getFrame()))
+                    .createFileChooser();
 
-            if (mFile == null) {
-                SimpleDialog.setPath(FileUtils.getUserDirectory());
-            } else {
-                SimpleDialog.setPath(mFile.getParentFile());
-                SimpleDialog.setSelectedFile(new File(""));
-            }
-
-            if (SimpleDialog.openFile()) {
+            if (fileChooser.showOpenDialog(Almond.getFrame()) == JFileChooser.APPROVE_OPTION) {
                 new Thread(() -> {
-                    mFile = SimpleDialog.getPath();
+                    var file = fileChooser.getSelectedFile();
                     try {
-                        mManager.gridImport(mFile);
+                        mManager.gridImport(file);
                         NotificationDisplayer.getDefault().notify(
                                 Dict.OPERATION_COMPLETED.toString(),
                                 MNotificationIcons.getInformationIcon(),
