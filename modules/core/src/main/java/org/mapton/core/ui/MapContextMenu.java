@@ -27,11 +27,14 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javax.imageio.ImageIO;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
+import org.mapton.api.FileChooserHelper;
 import org.mapton.api.MContextMenuItem;
 import org.mapton.api.MDict;
 import org.mapton.api.MEngine;
@@ -41,9 +44,11 @@ import org.mapton.api.MOptions;
 import org.mapton.api.MWhatsHereEngine;
 import org.mapton.api.Mapton;
 import org.mapton.core.api.BookmarkEditor;
+import org.openide.filesystems.FileChooserBuilder;
 import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
+import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.SystemHelperFx;
 import se.trixon.almond.util.fx.FxHelper;
@@ -60,7 +65,6 @@ public class MapContextMenu {
     private Menu mContextExtrasMenu;
     private ContextMenu mContextMenu;
     private Menu mContextOpenMenu;
-    private File mExportFile;
     private final MOptions mMOptions = MOptions.getInstance();
 
     public MapContextMenu() {
@@ -80,25 +84,33 @@ public class MapContextMenu {
     }
 
     private void exportImage() {
-        SimpleDialog.clearFilters();
-        SimpleDialog.addFilters("*", "png");
-        SimpleDialog.setFilter("png");
+        var pngFileNameExtensionFilter = SimpleDialog.getExtensionFilters().get("png");
+        var fileChooser = new FileChooserBuilder(MapContextMenu.class)
+                .addFileFilter(pngFileNameExtensionFilter)
+                .setDefaultWorkingDirectory(FileUtils.getUserDirectory())
+                .setFileFilter(pngFileNameExtensionFilter)
+                .setFilesOnly(true)
+                .setSelectionApprover(FileChooserHelper.getFileExistSelectionApprover(Almond.getFrame()))
+                .setTitle(getBundleString("export_view"))
+                .createFileChooser();
 
-        SimpleDialog.setTitle(getBundleString("export_view"));
+        var templateFile = new File(FastDateFormat.getInstance("'Mapton_'yyyyMMdd_HHmmss").format(new Date()));
 
-        SimpleDialog.setPath(mExportFile == null ? FileUtils.getUserDirectory() : mExportFile.getParentFile());
-        SimpleDialog.setSelectedFile(new File(FastDateFormat.getInstance("'Mapton_'yyyyMMdd_HHmmss").format(new Date())));
+        fileChooser.setSelectedFile(templateFile);
 
         mContextMenu.hide();
 
         FxHelper.runLaterDelayed(10, () -> {
-            if (SimpleDialog.saveFile(new String[]{"png"})) {
-                mExportFile = SimpleDialog.getPath();
-                try {
-                    ImageIO.write(getEngine().getImageRenderer().call(), "png", mExportFile);
-                } catch (Exception ex) {
-                    Exceptions.printStackTrace(ex);
-                }
+            if (fileChooser.showSaveDialog(Almond.getFrame()) == JFileChooser.APPROVE_OPTION) {
+                new Thread(() -> {
+                    var file = FileChooserHelper.ensureProperExt((FileNameExtensionFilter) fileChooser.getFileFilter(), fileChooser.getSelectedFile());
+
+                    try {
+                        ImageIO.write(getEngine().getImageRenderer().call(), "png", file);
+                    } catch (Exception ex) {
+                        Exceptions.printStackTrace(ex);
+                    }
+                }, getClass().getCanonicalName()).start();
             }
         });
     }
