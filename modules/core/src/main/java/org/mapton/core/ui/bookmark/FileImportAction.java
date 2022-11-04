@@ -15,7 +15,6 @@
  */
 package org.mapton.core.ui.bookmark;
 
-import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import java.awt.Point;
@@ -24,6 +23,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import javafx.scene.Node;
+import javax.swing.JFileChooser;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -32,20 +32,21 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.controlsfx.control.PopOver;
 import org.controlsfx.control.action.Action;
+import org.mapton.api.FileChooserHelper;
 import org.mapton.api.MBookmark;
 import org.mapton.api.MBookmarkManager;
 import org.mapton.api.MNotificationIcons;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.openide.awt.NotificationDisplayer;
 import org.openide.awt.NotificationDisplayer.Priority;
+import org.openide.filesystems.FileChooserBuilder;
 import org.openide.util.Exceptions;
+import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.MathHelper;
 import se.trixon.almond.util.fx.FxActionSwing;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 import se.trixon.almond.util.io.Geo;
-import se.trixon.almond.util.io.GeoPoint;
-import se.trixon.almond.util.swing.dialogs.SimpleDialog;
 
 /**
  *
@@ -64,45 +65,38 @@ public class FileImportAction extends FileAction {
     @Override
     public Action getAction(Node owner) {
         FxActionSwing action = new FxActionSwing(Dict.IMPORT.toString(), () -> {
-            SimpleDialog.clearFilters();
-            SimpleDialog.addFilters("csv", "geo", "json", "csv");
-            SimpleDialog.setFilter("csv");
-
             hidePopOver();
 
-            final String dialogTitle = "%s %s".formatted(Dict.IMPORT.toString(), mTitle.toLowerCase());
-            SimpleDialog.setTitle(dialogTitle);
+            var dialogTitle = "%s %s".formatted(Dict.IMPORT.toString(), mTitle.toLowerCase());
+            var extensionFilters = FileChooserHelper.getExtensionFilters();
+            var fileChooser = new FileChooserBuilder(FileExportAction.class)
+                    .addFileFilter(extensionFilters.get("csv"))
+                    .addFileFilter(extensionFilters.get("geo"))
+                    .addFileFilter(extensionFilters.get("json"))
+                    .setDefaultWorkingDirectory(FileUtils.getUserDirectory())
+                    .setFileFilter(extensionFilters.get("csv"))
+                    .setFilesOnly(true)
+                    .setTitle(dialogTitle)
+                    .createFileChooser();
 
-            if (mFile == null) {
-                SimpleDialog.setPath(FileUtils.getUserDirectory());
-            } else {
-                SimpleDialog.setPath(mFile.getParentFile());
-                SimpleDialog.setSelectedFile(new File(""));
-            }
-
-            if (SimpleDialog.openFile()) {
+            if (fileChooser.showOpenDialog(Almond.getFrame()) == JFileChooser.APPROVE_OPTION) {
                 new Thread(() -> {
-                    mFile = SimpleDialog.getPath();
+                    mFile = fileChooser.getSelectedFile();
                     mImports = 0;
                     mErrors = 0;
 
                     try {
                         switch (FilenameUtils.getExtension(mFile.getName())) {
-                            case "csv": {
+                            case "csv" ->
                                 importCsv();
-                            }
-                            break;
 
-                            case "geo": {
+                            case "geo" ->
                                 importGeo();
-                            }
-                            break;
 
-                            case "json":
+                            case "json" ->
                                 importJson();
-                                break;
 
-                            default:
+                            default ->
                                 throw new AssertionError();
                         }
 
@@ -118,7 +112,6 @@ public class FileImportAction extends FileAction {
                     } catch (IOException ex) {
                         Exceptions.printStackTrace(ex);
                     }
-
                 }, getClass().getCanonicalName()).start();
             }
         });
@@ -137,7 +130,7 @@ public class FileImportAction extends FileAction {
     }
 
     private void importCsv() throws IOException {
-        String[] requiredColumns = new String[]{
+        var requiredColumns = new String[]{
             MBookmarkManager.COL_NAME,
             MBookmarkManager.COL_LATITUDE,
             MBookmarkManager.COL_LONGITUDE};
@@ -149,7 +142,7 @@ public class FileImportAction extends FileAction {
         )) {
             String default_zoom = "0.85";
             if (isValidCsv(csvRecords, requiredColumns)) {
-                ArrayList<MBookmark> bookmarks = new ArrayList<>();
+                var bookmarks = new ArrayList<MBookmark>();
 
                 for (var csvRecord : csvRecords) {
                     String category = getOrDefault(csvRecord, MBookmarkManager.COL_CATEGORY, Dict.DEFAULT.toString());
@@ -199,16 +192,16 @@ public class FileImportAction extends FileAction {
     }
 
     private void importGeo() throws IOException {
-        Geo geo = new Geo();
+        var geo = new Geo();
         geo.read(mFile);
-        ArrayList<MBookmark> bookmarks = new ArrayList<>();
+        var bookmarks = new ArrayList<MBookmark>();
 
-        for (GeoPoint point : geo.getPoints()) {
-            MBookmark bookmark = new MBookmark();
-            bookmark.setName(point.getPointId());
-            bookmark.setCategory(point.getRemark());
-            bookmark.setLatitude(point.getX());
-            bookmark.setLongitude(point.getY());
+        for (var geoPoint : geo.getPoints()) {
+            var bookmark = new MBookmark();
+            bookmark.setName(geoPoint.getPointId());
+            bookmark.setCategory(geoPoint.getRemark());
+            bookmark.setLatitude(geoPoint.getX());
+            bookmark.setLongitude(geoPoint.getY());
             bookmark.setZoom(0.999);
 
             bookmarks.add(bookmark);
@@ -220,7 +213,7 @@ public class FileImportAction extends FileAction {
     }
 
     private void importJson() throws IOException {
-        Gson gson = new GsonBuilder()
+        var gson = new GsonBuilder()
                 .setVersion(1.0)
                 .setPrettyPrinting()
                 .setDateFormat("yyyy-MM-dd HH:mm:ss")
@@ -237,8 +230,7 @@ public class FileImportAction extends FileAction {
     }
 
     private boolean isValidCsv(CSVParser records, String[] columns) {
-
-        for (String column : columns) {
+        for (var column : columns) {
             if (records.getHeaderMap().containsKey(column)) {
                 continue;
             } else {

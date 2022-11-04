@@ -15,11 +15,9 @@
  */
 package org.mapton.core.ui.bookmark;
 
-import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import de.micromata.opengis.kml.v_2_2_0.Folder;
 import de.micromata.opengis.kml.v_2_2_0.KmlFactory;
-import de.micromata.opengis.kml.v_2_2_0.Placemark;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -27,22 +25,25 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.TreeMap;
 import javafx.scene.Node;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.controlsfx.control.PopOver;
 import org.controlsfx.control.action.Action;
-import org.mapton.api.MBookmark;
+import org.mapton.api.FileChooserHelper;
 import org.mapton.api.MBookmarkManager;
 import org.mapton.api.MKmlCreator;
 import org.mapton.api.MNotificationIcons;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.openide.awt.NotificationDisplayer;
 import org.openide.awt.NotificationDisplayer.Priority;
+import org.openide.filesystems.FileChooserBuilder;
 import org.openide.util.Exceptions;
+import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.FxActionSwing;
@@ -50,7 +51,6 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
 import se.trixon.almond.util.io.Geo;
 import se.trixon.almond.util.io.GeoHeader;
 import se.trixon.almond.util.io.GeoPoint;
-import se.trixon.almond.util.swing.dialogs.SimpleDialog;
 
 /**
  *
@@ -67,47 +67,43 @@ public class FileExportAction extends FileAction {
     @Override
     public Action getAction(Node owner) {
         FxActionSwing action = new FxActionSwing(Dict.EXPORT.toString(), () -> {
-            SimpleDialog.clearFilters();
-            SimpleDialog.addFilters("csv", "geo", "json", "kml", "csv");
-            SimpleDialog.setFilter("csv");
-
             hidePopOver();
 
-            final String dialogTitle = "%s %s".formatted(Dict.EXPORT.toString(), mTitle.toLowerCase());
-            SimpleDialog.setTitle(dialogTitle);
+            var dialogTitle = "%s %s".formatted(Dict.EXPORT.toString(), mTitle.toLowerCase());
+            var extensionFilters = FileChooserHelper.getExtensionFilters();
+            var fileChooser = new FileChooserBuilder(FileExportAction.class)
+                    .addFileFilter(extensionFilters.get("csv"))
+                    .addFileFilter(extensionFilters.get("geo"))
+                    .addFileFilter(extensionFilters.get("json"))
+                    .addFileFilter(extensionFilters.get("kml"))
+                    .setDefaultWorkingDirectory(FileUtils.getUserDirectory())
+                    .setFileFilter(extensionFilters.get("csv"))
+                    .setFilesOnly(true)
+                    .setSelectionApprover(FileChooserHelper.getFileExistSelectionApprover(Almond.getFrame()))
+                    .setTitle(dialogTitle)
+                    .createFileChooser();
 
-            if (mFile == null) {
-                SimpleDialog.setPath(FileUtils.getUserDirectory());
-            } else {
-                SimpleDialog.setPath(mFile.getParentFile());
-                SimpleDialog.setSelectedFile(new File(""));
-            }
-
-            if (SimpleDialog.saveFile(new String[]{"csv", "geo", "json", "kml"})) {
+            if (fileChooser.showSaveDialog(Almond.getFrame()) == JFileChooser.APPROVE_OPTION) {
                 new Thread(() -> {
-                    mFile = SimpleDialog.getPath();
-
+                    mFile = FileChooserHelper.ensureProperExt((FileNameExtensionFilter) fileChooser.getFileFilter(), fileChooser.getSelectedFile());
                     try {
                         switch (FilenameUtils.getExtension(mFile.getName())) {
-                            case "csv":
+                            case "csv" ->
                                 new CsvExporter();
-                                break;
 
-                            case "json":
+                            case "json" ->
                                 new JsonExporter();
-                                break;
 
-                            case "geo":
+                            case "geo" ->
                                 new GeoExporter();
-                                break;
 
-                            case "kml":
+                            case "kml" ->
                                 new KmlExporter();
-                                break;
 
-                            default:
+                            default ->
                                 throw new AssertionError();
                         }
+
                         NotificationDisplayer.getDefault().notify(
                                 Dict.OPERATION_COMPLETED.toString(),
                                 MNotificationIcons.getInformationIcon(),
@@ -130,8 +126,8 @@ public class FileExportAction extends FileAction {
     private class CsvExporter {
 
         public CsvExporter() throws IOException {
-            final StringWriter stringWriter = new StringWriter();
-            final CSVPrinter printer = CSVFormat.DEFAULT
+            var stringWriter = new StringWriter();
+            var printer = CSVFormat.DEFAULT
                     .withCommentMarker('#')
                     .withDelimiter(';')
                     .withHeader(
@@ -146,7 +142,7 @@ public class FileExportAction extends FileAction {
                             MBookmarkManager.COL_DISPLAY_MARKER)
                     .print(stringWriter);
 
-            for (MBookmark bookmark : mManager.getItems()) {
+            for (var bookmark : mManager.getItems()) {
                 printer.printRecord(
                         bookmark.getCategory(),
                         bookmark.getName(),
@@ -191,7 +187,7 @@ public class FileExportAction extends FileAction {
     private class JsonExporter {
 
         public JsonExporter() throws IOException {
-            Gson gson = new GsonBuilder()
+            var gson = new GsonBuilder()
                     .setVersion(1.0)
                     .setPrettyPrinting()
                     .setDateFormat("yyyy-MM-dd HH:mm:ss")
@@ -208,7 +204,7 @@ public class FileExportAction extends FileAction {
         public KmlExporter() throws IOException {
             mDocument.setName("Mapton %s".formatted(Dict.BOOKMARKS.toString()));
             mManager.getItems().forEach((item) -> {
-                Placemark placemark = KmlFactory.createPlacemark()
+                var placemark = KmlFactory.createPlacemark()
                         .withName(item.getName())
                         .withDescription(item.getDescription())
                         .withOpen(Boolean.TRUE);

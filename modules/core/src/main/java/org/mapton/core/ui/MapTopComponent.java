@@ -15,7 +15,6 @@
  */
 package org.mapton.core.ui;
 
-import org.mapton.core.ui.file_drop_switchboard.FileDropSwitchboard;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -43,6 +42,7 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import org.apache.commons.lang3.SystemUtils;
+import org.mapton.api.FileChooserHelper;
 import org.mapton.api.MDict;
 import org.mapton.api.MEngine;
 import org.mapton.api.MKey;
@@ -50,6 +50,7 @@ import org.mapton.api.MOptions;
 import org.mapton.api.Mapton;
 import org.mapton.core.api.MTopComponent;
 import org.mapton.core.api.MaptonNb;
+import org.mapton.core.ui.file_drop_switchboard.FileDropSwitchboard;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -103,7 +104,7 @@ public final class MapTopComponent extends MTopComponent {
         putClientProperty(PROP_UNDOCKING_DISABLED, Boolean.TRUE);
         putClientProperty("print.name", "Mapton - %s".formatted(Dict.MAP.toString())); // NOI18N
 
-        var map = se.trixon.almond.util.swing.dialogs.SimpleDialog.getExtensionFilters();
+        var map = FileChooserHelper.getExtensionFilters();
         map.put("*", new FileNameExtensionFilter(Dict.ALL_FILES.toString(), "*"));
         map.put("csv", new FileNameExtensionFilter("Comma-separated value (*.csv)", "csv"));
         map.put("geo", new FileNameExtensionFilter("SBG Geo (*.geo)", "geo"));
@@ -113,6 +114,9 @@ public final class MapTopComponent extends MTopComponent {
         map.put("grid", new FileNameExtensionFilter("Mapton Grid (*.grid)", "grid"));
         map.put("png", new FileNameExtensionFilter("%s (*.png)".formatted(Dict.IMAGE.toString()), "png"));
         map.put("txt", new FileNameExtensionFilter("%s (*.txt)".formatted(Dict.TEXT.toString()), "txt"));
+
+        //TODO Remove once no longer needed
+        se.trixon.almond.util.swing.dialogs.SimpleDialog.getExtensionFilters().putAll(map);
     }
 
     @Override

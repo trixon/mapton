@@ -52,7 +52,6 @@ import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.SystemHelperFx;
 import se.trixon.almond.util.fx.FxHelper;
-import se.trixon.almond.util.swing.dialogs.SimpleDialog;
 
 /**
  *
@@ -84,7 +83,7 @@ public class MapContextMenu {
     }
 
     private void exportImage() {
-        var pngFileNameExtensionFilter = SimpleDialog.getExtensionFilters().get("png");
+        var pngFileNameExtensionFilter = FileChooserHelper.getExtensionFilters().get("png");
         var fileChooser = new FileChooserBuilder(MapContextMenu.class)
                 .addFileFilter(pngFileNameExtensionFilter)
                 .setDefaultWorkingDirectory(FileUtils.getUserDirectory())
