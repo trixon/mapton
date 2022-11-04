@@ -76,6 +76,7 @@ public class FileExportAction extends FileAction {
                     .addFileFilter(extensionFilters.get("geo"))
                     .addFileFilter(extensionFilters.get("json"))
                     .addFileFilter(extensionFilters.get("kml"))
+                    .setAcceptAllFileFilterUsed(false)
                     .setDefaultWorkingDirectory(FileUtils.getUserDirectory())
                     .setFileFilter(extensionFilters.get("csv"))
                     .setFilesOnly(true)

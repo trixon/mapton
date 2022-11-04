@@ -53,6 +53,16 @@ public class FileChooserHelper {
         return sExtensionFilters;
     }
 
+    public static SelectionApprover getFileExistOpenSelectionApprover(Component parentComponent) {
+        SelectionApprover selectionApprover = (File[] selection) -> {
+            return selection != null
+                    && selection.length > 0
+                    && selection[0].isFile();
+        };
+
+        return selectionApprover;
+    }
+
     public static SelectionApprover getFileExistSelectionApprover(Component parentComponent) {
         SelectionApprover selectionApprover = (File[] selection) -> {
             var file = selection[0];

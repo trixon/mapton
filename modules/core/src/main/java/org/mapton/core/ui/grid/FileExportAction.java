@@ -55,6 +55,7 @@ public class FileExportAction extends FileAction {
                 var extensionFilters = FileChooserHelper.getExtensionFilters();
                 var fileChooser = new FileChooserBuilder(FileExportAction.class)
                         .addFileFilter(extensionFilters.get("grid"))
+                        .setAcceptAllFileFilterUsed(false)
                         .setDefaultWorkingDirectory(FileUtils.getUserDirectory())
                         .setFileFilter(extensionFilters.get("grid"))
                         .setFilesOnly(true)
