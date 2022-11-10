@@ -30,7 +30,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Font;
 import javax.swing.JFileChooser;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -58,6 +57,7 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
 import se.trixon.almond.util.io.CoordinateFormat;
 import se.trixon.almond.util.io.Geo;
 import se.trixon.almond.util.io.GeoPoint;
+import se.trixon.almond.util.swing.FileHelper;
 
 /**
  *
@@ -208,7 +208,7 @@ public class TransformationView extends BorderPane {
         var fileChooser = new FileChooserBuilder(TransformationView.class)
                 .addFileFilter(geoExtensionFilter)
                 .setAcceptAllFileFilterUsed(false)
-                .setDefaultWorkingDirectory(FileUtils.getUserDirectory())
+                .setDefaultWorkingDirectory(FileHelper.getDefaultDirectory())
                 .setFileFilter(geoExtensionFilter)
                 .setFilesOnly(true)
                 .setSelectionApprover(FileChooserHelper.getFileExistSelectionApprover(Almond.getFrame()))

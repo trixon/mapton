@@ -28,7 +28,6 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.controlsfx.control.action.Action;
@@ -51,6 +50,7 @@ import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.SystemHelperFx;
 import se.trixon.almond.util.fx.FxHelper;
+import se.trixon.almond.util.swing.FileHelper;
 
 /**
  *
@@ -85,7 +85,7 @@ public class MapContextMenu {
         var pngFileNameExtensionFilter = FileChooserHelper.getExtensionFilters().get("png");
         var fileChooser = new FileChooserBuilder(MapContextMenu.class)
                 .addFileFilter(pngFileNameExtensionFilter)
-                .setDefaultWorkingDirectory(FileUtils.getUserDirectory())
+                .setDefaultWorkingDirectory(FileHelper.getDefaultDirectory())
                 .setFileFilter(pngFileNameExtensionFilter)
                 .setFilesOnly(true)
                 .setSelectionApprover(FileChooserHelper.getFileExistSelectionApprover(Almond.getFrame()))

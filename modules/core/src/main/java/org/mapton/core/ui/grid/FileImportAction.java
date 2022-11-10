@@ -18,7 +18,6 @@ package org.mapton.core.ui.grid;
 import java.io.IOException;
 import javafx.scene.Node;
 import javax.swing.JFileChooser;
-import org.apache.commons.io.FileUtils;
 import org.controlsfx.control.action.Action;
 import org.mapton.api.FileChooserHelper;
 import org.mapton.api.MNotificationIcons;
@@ -30,6 +29,7 @@ import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxActionSwing;
 import se.trixon.almond.util.icons.material.MaterialIcon;
+import se.trixon.almond.util.swing.FileHelper;
 
 /**
  *
@@ -47,7 +47,7 @@ public class FileImportAction extends FileAction {
             var extensionFilters = FileChooserHelper.getExtensionFilters();
             var fileChooser = new FileChooserBuilder(FileImportAction.class)
                     .addFileFilter(extensionFilters.get("grid"))
-                    .setDefaultWorkingDirectory(FileUtils.getUserDirectory())
+                    .setDefaultWorkingDirectory(FileHelper.getDefaultDirectory())
                     .setFileFilter(extensionFilters.get("grid"))
                     .setFilesOnly(true)
                     .setTitle(dialogTitle)

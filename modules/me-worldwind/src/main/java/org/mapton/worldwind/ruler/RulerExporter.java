@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import javax.swing.JFileChooser;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.mapton.api.FileChooserHelper;
@@ -38,6 +37,7 @@ import se.trixon.almond.util.io.Geo;
 import se.trixon.almond.util.io.GeoHeader;
 import se.trixon.almond.util.io.GeoLine;
 import se.trixon.almond.util.io.GeoPoint;
+import se.trixon.almond.util.swing.FileHelper;
 import se.trixon.almond.util.swing.SwingHelper;
 
 /**
@@ -64,7 +64,7 @@ public class RulerExporter {
                 .addFileFilter(extensionFilters.get("kml"))
                 .addFileFilter(extensionFilters.get("geo"))
                 .setAcceptAllFileFilterUsed(false)
-                .setDefaultWorkingDirectory(FileUtils.getUserDirectory())
+                .setDefaultWorkingDirectory(FileHelper.getDefaultDirectory())
                 .setFileFilter(extensionFilters.get("kml"))
                 .setFilesOnly(true)
                 .setSelectionApprover(FileChooserHelper.getFileExistSelectionApprover(Almond.getFrame()))

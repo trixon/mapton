@@ -18,10 +18,10 @@ package org.mapton.worldwind.custom_image;
 import gov.nasa.worldwind.layers.SurfaceImageLayer;
 import java.io.File;
 import java.io.IOException;
-import org.apache.commons.io.FileUtils;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.LayerBundleManager;
 import org.openide.util.Exceptions;
+import se.trixon.almond.util.swing.FileHelper;
 
 /**
  *
@@ -59,7 +59,7 @@ public class ImageLayerBundle extends LayerBundle {
 
     private void refresh() {
         Thread thread = new Thread(() -> {
-            File dir = new File(FileUtils.getUserDirectory(), "test/img");
+            File dir = new File(FileHelper.getDefaultDirectory(), "test/img");
             loadImages(dir);
 
             LayerBundleManager.getInstance().redraw();

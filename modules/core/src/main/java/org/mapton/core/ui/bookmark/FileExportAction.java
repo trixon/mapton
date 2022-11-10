@@ -50,6 +50,7 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
 import se.trixon.almond.util.io.Geo;
 import se.trixon.almond.util.io.GeoHeader;
 import se.trixon.almond.util.io.GeoPoint;
+import se.trixon.almond.util.swing.FileHelper;
 
 /**
  *
@@ -76,7 +77,7 @@ public class FileExportAction extends FileAction {
                     .addFileFilter(extensionFilters.get("json"))
                     .addFileFilter(extensionFilters.get("kml"))
                     .setAcceptAllFileFilterUsed(false)
-                    .setDefaultWorkingDirectory(FileUtils.getUserDirectory())
+                    .setDefaultWorkingDirectory(FileHelper.getDefaultDirectory())
                     .setFileFilter(extensionFilters.get("csv"))
                     .setFilesOnly(true)
                     .setSelectionApprover(FileChooserHelper.getFileExistSelectionApprover(Almond.getFrame()))

@@ -17,9 +17,9 @@ package org.mapton.worldwind.custom_dem;
 
 import gov.nasa.worldwind.layers.SurfaceImageLayer;
 import java.io.File;
-import org.apache.commons.io.FileUtils;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.LayerBundleManager;
+import se.trixon.almond.util.swing.FileHelper;
 
 /**
  *
@@ -62,7 +62,7 @@ public class DemLayerBundle extends LayerBundle {
     private void refresh() {
         Thread thread = new Thread(() -> {
 //                File file = new File("c:/temp/orto.tif");
-            File dir = new File(FileUtils.getUserDirectory(), "test/dem");
+            File dir = new File(FileHelper.getDefaultDirectory(), "test/dem");
             loadImages(dir);
             LayerBundleManager.getInstance().redraw();
         }, getClass().getCanonicalName());

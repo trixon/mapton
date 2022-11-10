@@ -25,7 +25,6 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import org.apache.commons.io.FileUtils;
 import org.mapton.api.FileChooserHelper;
 import org.mapton.api.MCoordinateFileOpener;
 import org.mapton.core.api.BaseAction;
@@ -41,6 +40,7 @@ import org.openide.util.NbBundle;
 import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.nbp.dialogs.NbMessage;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.swing.FileHelper;
 
 @ActionID(
         category = "Mapton",
@@ -82,7 +82,7 @@ public final class OpenAction extends BaseAction {
             var fileNameExtensionFilters = new TreeSet<FileNameExtensionFilter>(Comparator.comparing(FileNameExtensionFilter::getDescription));
 
             var fileChooser = new FileChooserBuilder(OpenAction.class)
-                    .setDefaultWorkingDirectory(FileUtils.getUserDirectory())
+                    .setDefaultWorkingDirectory(FileHelper.getDefaultDirectory())
                     .setFilesOnly(true)
                     .setSelectionApprover(FileChooserHelper.getFileExistOpenSelectionApprover(Almond.getFrame()))
                     .setTitle(Dict.OPEN.toString())

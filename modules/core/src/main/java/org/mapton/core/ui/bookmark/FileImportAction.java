@@ -47,6 +47,7 @@ import se.trixon.almond.util.MathHelper;
 import se.trixon.almond.util.fx.FxActionSwing;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 import se.trixon.almond.util.io.Geo;
+import se.trixon.almond.util.swing.FileHelper;
 
 /**
  *
@@ -73,7 +74,7 @@ public class FileImportAction extends FileAction {
                     .addFileFilter(extensionFilters.get("csv"))
                     .addFileFilter(extensionFilters.get("geo"))
                     .addFileFilter(extensionFilters.get("json"))
-                    .setDefaultWorkingDirectory(FileUtils.getUserDirectory())
+                    .setDefaultWorkingDirectory(FileHelper.getDefaultDirectory())
                     .setFileFilter(extensionFilters.get("csv"))
                     .setFilesOnly(true)
                     .setTitle(dialogTitle)

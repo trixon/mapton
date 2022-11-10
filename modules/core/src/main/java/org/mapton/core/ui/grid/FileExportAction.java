@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.stream.Collectors;
 import javafx.scene.Node;
 import javax.swing.JFileChooser;
-import org.apache.commons.io.FileUtils;
 import org.controlsfx.control.action.Action;
 import org.mapton.api.FileChooserHelper;
 import org.mapton.api.MNotificationIcons;
@@ -32,6 +31,7 @@ import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxActionSwing;
 import se.trixon.almond.util.icons.material.MaterialIcon;
+import se.trixon.almond.util.swing.FileHelper;
 
 /**
  *
@@ -55,7 +55,7 @@ public class FileExportAction extends FileAction {
                 var fileChooser = new FileChooserBuilder(FileExportAction.class)
                         .addFileFilter(extensionFilters.get("grid"))
                         .setAcceptAllFileFilterUsed(false)
-                        .setDefaultWorkingDirectory(FileUtils.getUserDirectory())
+                        .setDefaultWorkingDirectory(FileHelper.getDefaultDirectory())
                         .setFileFilter(extensionFilters.get("grid"))
                         .setFilesOnly(true)
                         .setSelectionApprover(FileChooserHelper.getFileExistSelectionApprover(Almond.getFrame()))

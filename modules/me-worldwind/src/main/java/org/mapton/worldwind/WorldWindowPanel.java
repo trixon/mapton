@@ -66,7 +66,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javax.xml.stream.XMLStreamException;
-import org.apache.commons.io.FileUtils;
 import org.mapton.api.MDict;
 import org.mapton.api.MKey;
 import static org.mapton.api.MKey.*;
@@ -87,6 +86,7 @@ import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.GraphicsHelper;
+import se.trixon.almond.util.swing.FileHelper;
 
 /**
  *
@@ -179,7 +179,7 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
 
     private void customElevationModelRefresh() {
         var thread = new Thread(() -> {
-            var dir = new File(FileUtils.getUserDirectory(), "test/dem");
+            var dir = new File(FileHelper.getDefaultDirectory(), "test/dem");
             if (dir.isDirectory()) {
                 customElevationModelLoad(dir);
             }
