@@ -29,6 +29,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Font;
+import javax.swing.JFileChooser;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -37,6 +38,7 @@ import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
 import org.geotools.geometry.DirectPosition3D;
 import org.geotools.referencing.CRS;
+import org.mapton.api.FileChooserHelper;
 import org.mapton.api.MCrsManager;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.opengis.geometry.MismatchedDimensionException;
@@ -44,8 +46,10 @@ import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
+import org.openide.filesystems.FileChooserBuilder;
 import org.openide.util.Exceptions;
 import org.openide.util.NbBundle;
+import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.MathHelper;
 import se.trixon.almond.util.fx.FxHelper;
@@ -54,7 +58,6 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
 import se.trixon.almond.util.io.CoordinateFormat;
 import se.trixon.almond.util.io.Geo;
 import se.trixon.almond.util.io.GeoPoint;
-import se.trixon.almond.util.swing.dialogs.SimpleDialog;
 
 /**
  *
@@ -73,7 +76,6 @@ public class TransformationView extends BorderPane {
     private final LogPanel mSourceLogPanel = new LogPanel();
     private final Spinner<Integer> mXYSpinner = new Spinner<>(0, 9, 3);
     private final Spinner<Integer> mZSpinner = new Spinner<>(0, 9, 3);
-    private File mDestination;
     private final Label mSourceLabel = new Label();
 
     public TransformationView() {
@@ -197,27 +199,31 @@ public class TransformationView extends BorderPane {
     }
 
     private void save() {
-        SimpleDialog.clearFilters();
-        SimpleDialog.addFilters("geo");
-        SimpleDialog.setFilter("geo");
-        SimpleDialog.setTitle("%s %s".formatted(Dict.SAVE.toString(), Dict.COORDINATE_FILE.toString().toLowerCase()));
         var toSystem = StringUtils.substringAfter(mDestComboBox.getValue().getName().toString(), ":");
         var name = "%s_%s.geo".formatted(FilenameUtils.getBaseName(mFile.getName()), toSystem);
-        var file = new File(mFile.getParentFile(), name);
-        SimpleDialog.setSelectedFile(file);
-        if (mDestination == null) {
-            SimpleDialog.setPath(FileUtils.getUserDirectory());
-        } else {
-            SimpleDialog.setPath(mDestination.getParentFile());
-        }
+        var templateFile = new File(mFile.getParentFile(), name);
 
-        if (SimpleDialog.saveFile()) {
-            mDestination = SimpleDialog.getPath();
+        var dialogTitle = "%s %s".formatted(Dict.SAVE.toString(), Dict.COORDINATE_FILE.toString().toLowerCase());
+        var geoExtensionFilter = FileChooserHelper.getExtensionFilters().get("geo");
+        var fileChooser = new FileChooserBuilder(TransformationView.class)
+                .addFileFilter(geoExtensionFilter)
+                .setAcceptAllFileFilterUsed(false)
+                .setDefaultWorkingDirectory(FileUtils.getUserDirectory())
+                .setFileFilter(geoExtensionFilter)
+                .setFilesOnly(true)
+                .setSelectionApprover(FileChooserHelper.getFileExistSelectionApprover(Almond.getFrame()))
+                .setTitle(dialogTitle)
+                .createFileChooser();
+
+        fileChooser.setSelectedFile(templateFile);
+
+        if (fileChooser.showSaveDialog(Almond.getFrame()) == JFileChooser.APPROVE_OPTION) {
+            var file = FileChooserHelper.getFileWithProperExt(fileChooser);
             new Thread(() -> {
                 try {
-                    switch (FilenameUtils.getExtension(mDestination.getName())) {
+                    switch (FilenameUtils.getExtension(file.getName())) {
                         case "geo":
-                            mDestGeo.write(mDestination);
+                            mDestGeo.write(file);
                             break;
 
                         default:
@@ -256,11 +262,7 @@ public class TransformationView extends BorderPane {
             }
 
             mDestLogPanel.setText(mDestGeo.toString());
-        } catch (FactoryException ex) {
-            Exceptions.printStackTrace(ex);
-        } catch (MismatchedDimensionException ex) {
-            Exceptions.printStackTrace(ex);
-        } catch (IOException ex) {
+        } catch (FactoryException | MismatchedDimensionException | IOException ex) {
             Exceptions.printStackTrace(ex);
         }
     }
