@@ -22,12 +22,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
+import javax.swing.JFileChooser;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
+import org.mapton.api.FileChooserHelper;
 import org.mapton.api.MKmlCreator;
 import org.mapton.api.MOptions;
+import org.openide.filesystems.FileChooserBuilder;
 import org.openide.util.Exceptions;
+import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.io.Geo;
@@ -35,7 +39,6 @@ import se.trixon.almond.util.io.GeoHeader;
 import se.trixon.almond.util.io.GeoLine;
 import se.trixon.almond.util.io.GeoPoint;
 import se.trixon.almond.util.swing.SwingHelper;
-import se.trixon.almond.util.swing.dialogs.SimpleDialog;
 
 /**
  *
@@ -43,9 +46,8 @@ import se.trixon.almond.util.swing.dialogs.SimpleDialog;
  */
 public class RulerExporter {
 
-    private final RulerTabPane mRulerTabPane;
     private final FastDateFormat mDateFormat = FastDateFormat.getInstance("yyyyMMdd_HHmmss");
-    private File mDestination;
+    private final RulerTabPane mRulerTabPane;
 
     public RulerExporter(RulerTabPane rulerTabPane) {
         mRulerTabPane = rulerTabPane;
@@ -56,34 +58,35 @@ public class RulerExporter {
     }
 
     private void exportFile() {
-        SimpleDialog.clearFilters();
-        SimpleDialog.addFilters("kml", "geo");
-        SimpleDialog.setFilter("kml");
-        SimpleDialog.setTitle("%s %s".formatted(Dict.SAVE.toString(), Dict.COORDINATE_FILE.toString().toLowerCase()));
+        var dialogTitle = "%s %s".formatted(Dict.SAVE.toString(), Dict.COORDINATE_FILE.toString().toLowerCase());
+        var extensionFilters = FileChooserHelper.getExtensionFilters();
+        var fileChooser = new FileChooserBuilder(RulerExporter.class)
+                .addFileFilter(extensionFilters.get("kml"))
+                .addFileFilter(extensionFilters.get("geo"))
+                .setAcceptAllFileFilterUsed(false)
+                .setDefaultWorkingDirectory(FileUtils.getUserDirectory())
+                .setFileFilter(extensionFilters.get("kml"))
+                .setFilesOnly(true)
+                .setSelectionApprover(FileChooserHelper.getFileExistSelectionApprover(Almond.getFrame()))
+                .setTitle(dialogTitle)
+                .createFileChooser();
 
         String epoch = mDateFormat.format(new Date());
+        var templateFile = new File(Dict.Geometry.GEOMETRIES.toString() + "_" + epoch);
+        fileChooser.setSelectedFile(templateFile);
 
-        SimpleDialog.setSelectedFile(new File(Dict.Geometry.GEOMETRIES.toString() + "_" + epoch));
-        if (mDestination == null) {
-            SimpleDialog.setPath(FileUtils.getUserDirectory());
-        } else {
-            SimpleDialog.setPath(mDestination.getParentFile());
-        }
-
-        if (SimpleDialog.saveFile(new String[]{"geo", "kml"})) {
-            mDestination = SimpleDialog.getPath();
+        if (fileChooser.showSaveDialog(Almond.getFrame()) == JFileChooser.APPROVE_OPTION) {
+            var file = FileChooserHelper.getFileWithProperExt(fileChooser);
             new Thread(() -> {
                 try {
-                    switch (FilenameUtils.getExtension(mDestination.getName())) {
-                        case "geo":
-                            new ExporterGeo(epoch);
-                            break;
+                    switch (FilenameUtils.getExtension(file.getName())) {
+                        case "geo" ->
+                            new ExporterGeo(file, epoch);
 
-                        case "kml":
-                            new ExporterKml(epoch);
-                            break;
+                        case "kml" ->
+                            new ExporterKml(file, epoch);
 
-                        default:
+                        default ->
                             throw new AssertionError();
                     }
                 } catch (IOException ex) {
@@ -95,7 +98,7 @@ public class RulerExporter {
 
     private class ExporterGeo {
 
-        public ExporterGeo(String epoch) throws IOException {
+        public ExporterGeo(File file, String epoch) throws IOException {
             var map = new LinkedHashMap<String, String>();
             map.put("Application", "Mapton");
             map.put("Author", SystemHelper.getUserName());
@@ -103,35 +106,31 @@ public class RulerExporter {
             var geo = new Geo(new GeoHeader(map));
 
             mRulerTabPane.getTabs().stream()
-                    .filter(tab -> (tab instanceof RulerTab))
-                    .forEachOrdered(tab -> {
-                        geo.getLines().add(constructLine(((RulerTab) tab).getMeasureTool()));
+                    .filter(RulerTab.class::isInstance)
+                    .map(tab -> (RulerTab) tab)
+                    .forEachOrdered(rulerTab -> {
+                        geo.getLines().add(constructLine(rulerTab.getMeasureTool()));
                     });
 
-            geo.write(mDestination);
+            geo.write(file);
         }
 
         private GeoLine constructLine(MeasureTool measureTool) {
-            switch (measureTool.getMeasureShapeType()) {
-                case MeasureTool.SHAPE_LINE:
-                case MeasureTool.SHAPE_PATH:
-                    return generateLine(measureTool.getPositions());
-                case MeasureTool.SHAPE_ELLIPSE:
-                case MeasureTool.SHAPE_POLYGON:
-                case MeasureTool.SHAPE_SQUARE:
-                case MeasureTool.SHAPE_QUAD:
-                case MeasureTool.SHAPE_CIRCLE:
-                    return generatePolygon(measureTool.getPositions());
-                default:
-                    return null;
-            }
+            return switch (measureTool.getMeasureShapeType()) {
+                case MeasureTool.SHAPE_LINE, MeasureTool.SHAPE_PATH ->
+                    generateLine(measureTool.getPositions());
+                case MeasureTool.SHAPE_ELLIPSE, MeasureTool.SHAPE_POLYGON, MeasureTool.SHAPE_SQUARE, MeasureTool.SHAPE_QUAD, MeasureTool.SHAPE_CIRCLE ->
+                    generatePolygon(measureTool.getPositions());
+                default ->
+                    null;
+            };
         }
 
         private GeoLine generateLine(ArrayList<? extends Position> positions) {
             var line = new GeoLine();
             var cooTrans = MOptions.getInstance().getMapCooTrans();
 
-            for (Position position : positions) {
+            for (var position : positions) {
                 var point = new GeoPoint();
                 var p = cooTrans.fromWgs84(position.getLatitude().degrees, position.getLongitude().degrees);
                 point.setX(p.getY());
@@ -154,17 +153,16 @@ public class RulerExporter {
 
     private class ExporterKml extends MKmlCreator {
 
-        ExporterKml(String epoch) throws IOException {
+        ExporterKml(File file, String epoch) throws IOException {
             mDocument.setName("%s_%s".formatted(Dict.Geometry.GEOMETRIES.toString(), epoch));
 
             mRulerTabPane.getTabs().stream()
-                    .filter(tab -> (tab instanceof RulerTab))
+                    .filter(tab -> tab instanceof RulerTab)
                     .forEachOrdered(tab -> {
                         mDocument.addToFeature(((RulerTab) tab).getFeature());
                     });
 
-            save(mDestination, true, true);
-            SystemHelper.desktopOpen(mDestination);
+            save(file, true, true);
         }
     }
 }

@@ -28,7 +28,6 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
@@ -102,7 +101,7 @@ public class MapContextMenu {
         FxHelper.runLaterDelayed(10, () -> {
             if (fileChooser.showSaveDialog(Almond.getFrame()) == JFileChooser.APPROVE_OPTION) {
                 new Thread(() -> {
-                    var file = FileChooserHelper.ensureProperExt((FileNameExtensionFilter) fileChooser.getFileFilter(), fileChooser.getSelectedFile());
+                    var file = FileChooserHelper.getFileWithProperExt(fileChooser);
 
                     try {
                         ImageIO.write(getEngine().getImageRenderer().call(), "png", file);

@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import org.controlsfx.control.action.Action;
 import org.mapton.api.FileChooserHelper;
 import org.mapton.api.MNotificationIcons;
@@ -53,7 +52,7 @@ public class SourceFileExportAction extends SourceFileAction {
 
                 if (fileChooser.showSaveDialog(Almond.getFrame()) == JFileChooser.APPROVE_OPTION) {
                     new Thread(() -> {
-                        var file = FileChooserHelper.ensureProperExt((FileNameExtensionFilter) fileChooser.getFileFilter(), fileChooser.getSelectedFile());
+                        var file = FileChooserHelper.getFileWithProperExt(fileChooser);
 
                         try {
                             mManager.sourceExport(file, selectedSources);

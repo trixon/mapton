@@ -18,6 +18,7 @@ package org.mapton.api;
 import java.awt.Component;
 import java.io.File;
 import java.util.HashMap;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import org.openide.filesystems.FileChooserBuilder.SelectionApprover;
@@ -31,7 +32,10 @@ public class FileChooserHelper {
 
     private static final HashMap<String, FileNameExtensionFilter> sExtensionFilters = new HashMap<>();
 
-    public static File ensureProperExt(FileNameExtensionFilter fileNameExtensionFilter, File file) {
+    public static File getFileWithProperExt(JFileChooser fileChooser) {
+        var file = fileChooser.getSelectedFile();
+        var fileNameExtensionFilter = (FileNameExtensionFilter) fileChooser.getFileFilter();
+
         if (fileNameExtensionFilter.accept(file)) {
             return file;
         } else {

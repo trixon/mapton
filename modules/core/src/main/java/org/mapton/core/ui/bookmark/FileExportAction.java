@@ -26,7 +26,6 @@ import java.util.LinkedHashMap;
 import java.util.TreeMap;
 import javafx.scene.Node;
 import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -86,7 +85,7 @@ public class FileExportAction extends FileAction {
 
             if (fileChooser.showSaveDialog(Almond.getFrame()) == JFileChooser.APPROVE_OPTION) {
                 new Thread(() -> {
-                    mFile = FileChooserHelper.ensureProperExt((FileNameExtensionFilter) fileChooser.getFileFilter(), fileChooser.getSelectedFile());
+                    mFile = FileChooserHelper.getFileWithProperExt(fileChooser);
                     try {
                         switch (FilenameUtils.getExtension(mFile.getName())) {
                             case "csv" ->
