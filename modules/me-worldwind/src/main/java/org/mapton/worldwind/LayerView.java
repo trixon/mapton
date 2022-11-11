@@ -371,7 +371,11 @@ public class LayerView extends BorderPane implements MActivatable {
                     if (newValue) {
                         mCheckModel.check(treeItem);
                     } else {
-                        mCheckModel.clearCheck(treeItem);
+                        try {
+                            mCheckModel.clearCheck(treeItem);
+                        } catch (UnsupportedOperationException e) {
+                            System.err.println("Error detected in LayerView");
+                        }
                     }
 
                     mVisibilityPreferences.putBoolean(getLayerPath(treeItem.getValue()), newValue);
