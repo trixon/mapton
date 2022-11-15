@@ -19,6 +19,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import org.mapton.core.Initializer;
 import org.openide.awt.ActionID;
+import se.trixon.almond.nbp.core.ModuleHelper;
 import se.trixon.almond.nbp.dialogs.NbAbout;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.swing.AboutModel;
@@ -32,6 +33,8 @@ public final class AboutAction implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         var aboutModel = new AboutModel(SystemHelper.getBundle(Initializer.class, "about"), SystemHelper.getResourceAsImageIcon(Initializer.class, "logo.png"));
+        aboutModel.setAppDate(ModuleHelper.getBuildTime());
+
         var nbAbout = new NbAbout(aboutModel);
         nbAbout.display();
     }
