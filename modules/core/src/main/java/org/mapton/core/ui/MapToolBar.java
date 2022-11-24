@@ -22,7 +22,6 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Side;
-import javafx.scene.control.ButtonBase;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.KeyCode;
@@ -41,6 +40,7 @@ import org.mapton.api.MOptions;
 import org.mapton.api.MToolMapCommand;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
+import org.mapton.core.api.BaseToolBar;
 import org.mapton.core.ui.bookmark.BookmarksView;
 import org.mapton.core.ui.poi.PoisViewManager;
 import org.openide.awt.Actions;
@@ -156,16 +156,11 @@ public class MapToolBar extends BaseToolBar {
             ActionUtils.updateToolBar(this, actions, ActionUtils.ActionTextBehavior.HIDE);
 
             storeButtonWidths(mStyleAction, mTemporalAction, mRulerAction);
-            FxHelper.adjustButtonHeight(getItems().stream(), getIconSizeToolBarInt() * 1.7);
+            FxHelper.adjustButtonHeight(getItems().stream(), getIconSizeToolBarInt() * 1.5);
             FxHelper.adjustButtonWidth(getItems().stream(), getIconSizeToolBarInt() * 1.0);
+            FxHelper.undecorateButtons(this.getItems().stream());
+            FxHelper.slimToolBar(this);
             setTextFromActions();
-
-            getItems().stream()
-                    .filter(item -> (item instanceof ButtonBase))
-                    .map(item -> (ButtonBase) item)
-                    .forEachOrdered(buttonBase -> {
-                        buttonBase.getStylesheets().add(CSS_FILE);
-                    });
 
             mCommandContextMenu = new ContextMenu();
             mCommandContextMenu.setOnHiding(windowEvent -> {

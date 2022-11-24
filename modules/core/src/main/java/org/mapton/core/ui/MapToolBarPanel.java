@@ -44,7 +44,7 @@ public class MapToolBarPanel {
 
     private MapToolBarPanel() {
         mToolBarPanel.setVisible(false);
-        mToolBarPanel.setPreferredSize(new Dimension(100, (int) (getIconSizeToolBarInt() * 1.7)));
+        mToolBarPanel.setPreferredSize(new Dimension(100, (int) (getIconSizeToolBarInt() * 1.5)));
 
         mToolBar = new MapToolBar();
         Platform.runLater(() -> {

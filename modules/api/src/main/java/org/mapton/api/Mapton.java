@@ -152,7 +152,7 @@ public class Mapton {
         var color = (Color) background.getFills().get(0).getFill();
         label.setStyle("-fx-background-color: %s;".formatted(FxHelper.colorToString(color)));
         label.setAlignment(Pos.BASELINE_CENTER);
-        label.setFont(new Font(FxHelper.getScaledFontSize() * 1.2));
+        label.setFont(new Font(FxHelper.getScaledFontSize() * 0.9));
         label.setTextFill(Color.WHITE);
 
         return label;

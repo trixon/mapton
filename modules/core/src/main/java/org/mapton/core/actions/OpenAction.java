@@ -28,7 +28,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import org.mapton.api.FileChooserHelper;
 import org.mapton.api.MCoordinateFileOpener;
 import org.mapton.core.api.BaseAction;
-import org.mapton.core.ui.BaseToolBar;
+import org.mapton.core.api.BaseToolBar;
 import org.mapton.core.ui.file_drop_switchboard.FileDropSwitchboard;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
