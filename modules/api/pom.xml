@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.mapton</groupId>
         <artifactId>mapton-parent</artifactId>
-        <version>3.0.0-SNAPSHOT</version>
+        <version>3.0.0</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <artifactId>mapton-api</artifactId>
@@ -264,7 +264,7 @@
         <dependency>
             <groupId>com.dlsc.gemsfx</groupId>
             <artifactId>gemsfx</artifactId>
-            <version>1.51.0</version>
+            <version>1.52.0</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.openjfx</groupId>
