@@ -1,10 +1,10 @@
 name: mapton
 title: Mapton
-base: core20
-version: '2.2.1'
+base: core22
+version: '3.0.0'
 summary: Some kind of map application
 description: |
-    **Mapton is an open-source map application** for Linux, MacOS and Windows that lets you quickly and easily explore the world.
+    **Mapton is an open-source map application** for Linux, MacOS and Windows that lets you explore the world.
 
 
     Mapton consists of a rich set of background maps and a toolbox, a toolbox that like the maps, can be extended with custom plugins.
@@ -14,13 +14,12 @@ description: |
 
 
     **Features**
-    * 3d, 4d when looking at time coded data
+    * 3d objects, 4d when looking at time coded data
     * Time slider
     * Geographical bookmarks and Point of Interests
     * Layer management
     * WMS support
-    * Search in different data sources
-    * Ruler
+    * Measuring tools
     * Extensible with custom plugins
 
 
@@ -42,7 +41,7 @@ license: Apache-2.0
 apps:
   mapton:
     command: mapton/bin/mapton
-    extensions: [gnome-3-38]
+    extensions: [gnome]
     plugs:
         - home
         - removable-media
