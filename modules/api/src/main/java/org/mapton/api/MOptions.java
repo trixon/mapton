@@ -34,8 +34,6 @@ public class MOptions extends OptionsBase {
 
     public static final String DEFAULT_UI_LAF_ICON_COLOR_BRIGHT = "D3D3D3";
     public static final String DEFAULT_UI_LAF_ICON_COLOR_DARK = "1A1A1A";
-    public static final String KEY_APP_FIRST_RUN = "app.first_run";
-    public static final String KEY_APP_START_COUNTER = "app.start_counter";
     public static final String KEY_COPY_LOCATION_COORDINATE_SEPARATOR = "copyLocation.coordinateSeparator";
     public static final String KEY_COPY_LOCATION_DECIMAL_SYMBOL = "copyLocation.decimalSymbol";
     public static final String KEY_GRID_GLOBAL_CLAMP_TO_GROUND = "global_clamp_to_ground";
@@ -62,7 +60,6 @@ public class MOptions extends OptionsBase {
 
     private static final String DEFAULT_COPY_LOCATION_COORDINATE_SEPARATOR = ",";
     private static final String DEFAULT_COPY_LOCATION_DECIMAL_SYMBOL = ".";
-    private static final boolean DEFAULT_FULL_SCREEN = false;
     private static final boolean DEFAULT_MAP_DISPLAY_CROSSHAIR = true;
     private static final boolean DEFAULT_MAP_DISPLAY_HOME_ICON = false;
     private static final String DEFAULT_MAP_ENGINE = "WorldWind";
@@ -72,7 +69,6 @@ public class MOptions extends OptionsBase {
     private static final double DEFAULT_MAP_ZOOM = 0.7f;
     private static final boolean DEFAULT_UI_LAF_NIGHT_MODE = true;
     private static final boolean DEFAULT_UI_POPOVER = false;
-    private static final String KEY_FULL_SCREEN = "fullscreen";
     private static final String KEY_MAP_CENTER_LAT = "map.center_lat";
     private static final String KEY_MAP_CENTER_LON = "map.center_lon";
     private static final String KEY_MAP_COO_TRANS = "map.coo_trans";
