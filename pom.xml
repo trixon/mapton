@@ -504,10 +504,10 @@
     </dependencyManagement>
 
     <repositories>
-        <repository>
+<!--        <repository>
             <id>netbeans-next</id>
             <url>https://repository.apache.org/content/repositories/orgapachenetbeans-1122</url>
-        </repository>    
+        </repository>    -->
         <repository>
             <id>mapton</id>
             <url>https://mapton.org/repo/maven/</url>

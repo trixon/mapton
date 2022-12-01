@@ -100,6 +100,11 @@
             <artifactId>org-netbeans-swing-tabcontrol</artifactId>
             <version>${netbeans.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-filesystems-nb</artifactId>
+            <version>${netbeans.version}</version>
+        </dependency>
 
         <!-- Mapton -->
         <dependency>
@@ -118,11 +123,6 @@
         <!-- Trixon -->
 
         <!-- Other -->
-        <dependency>
-            <groupId>org.netbeans.api</groupId>
-            <artifactId>org-openide-filesystems-nb</artifactId>
-            <version>RELEASE150</version>
-        </dependency>
     </dependencies>
     <properties>
         <netbeans.hint.license>apache20</netbeans.hint.license>
