@@ -40,6 +40,7 @@ import gov.nasa.worldwind.layers.CompassLayer;
 import gov.nasa.worldwind.layers.CrosshairLayer;
 import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.layers.LayerList;
+import gov.nasa.worldwind.layers.SurfaceImageLayer;
 import gov.nasa.worldwind.layers.ViewControlsLayer;
 import gov.nasa.worldwind.layers.ViewControlsSelectListener;
 import gov.nasa.worldwind.layers.WorldMapLayer;
@@ -121,6 +122,8 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
             Mapton.logLoading("Custom Layer", layer.getName());
             mCustomLayers.add(layer);
             insertLayerBefore(layer, CompassLayer.class);
+
+            moveSurfaceImageLayersToTop();
         }
     }
 
@@ -464,6 +467,15 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         return getModel().getGlobe() instanceof FlatGlobe;
     }
 
+    private void moveSurfaceImageLayersToTop() {
+        for (var layer : getLayers()) {
+            if (layer instanceof SurfaceImageLayer) {
+                getLayers().remove(layer);
+                getLayers().add(layer);
+            }
+        }
+    }
+
     private synchronized void orderLayers(String[] styleLayers) {
         if (styleLayers == null) {
             return;
@@ -482,6 +494,8 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
                 Mapton.getLog().e(Dict.DOCUMENT.toString(), "Layer not found: " + layerName);
             }
         }
+
+        moveSurfaceImageLayersToTop();
     }
 
     private void updateElevation() {

@@ -21,6 +21,7 @@ import org.mapton.api.MCoordinateFile;
 import org.mapton.api.file_opener.GeoTiffCoordinateFileOpener;
 import org.mapton.worldwind.api.CoordinateFileRendererWW;
 import org.mapton.worldwind.api.LayerBundle;
+import org.mapton.worldwind.api.LayerBundleManager;
 import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
 
@@ -47,6 +48,11 @@ public class GeoTiffRenderer extends CoordinateFileRendererWW {
             var layer = new SurfaceImageLayer();
             layer.setPickEnabled(false);
             layer.addImage(sourceFile.getPath());
+            layer.addPropertyChangeListener("Enabled", pce -> {
+                var layers = LayerBundleManager.getInstance().getWwd().getModel().getLayers();
+                layers.remove(layer);
+                layers.add(layer);
+            });
             addLayer(coordinateFile, layer);
         } catch (IOException ex) {
             Exceptions.printStackTrace(ex);
