@@ -112,6 +112,8 @@ public class GeoRenderer extends CoordinateFileRendererWW {
         mLineBasicShapeAttributes.setDrawInterior(false);
         mLineBasicShapeAttributes.setOutlineMaterial(Material.RED);
         mLineBasicShapeAttributes.setOutlineWidth(1.0D);
+        mLineBasicShapeAttributes.setEnableAntialiasing(false);
+        mLineBasicShapeAttributes.setEnableLighting(false);
 
         mCircleAttributes = new BasicAirspaceAttributes(mLineBasicShapeAttributes);
     }
@@ -186,9 +188,10 @@ public class GeoRenderer extends CoordinateFileRendererWW {
                 }
 
                 curvePositions.add(WWHelper.positionFromLatLon(lastLatLon, elevation));
-                renderLine(layer, curvePositions, false, attributes);
             }
         }
+
+        renderLine(layer, curvePositions, false, attributes);
 
         if (!straightPositions.isEmpty()) {
             renderLine(layer, straightPositions, false, attributes);
@@ -224,8 +227,8 @@ public class GeoRenderer extends CoordinateFileRendererWW {
         for (var geoLine : geoLines) {
             var positions = new ArrayList<Position>();
             var ordinaryLine = true;
+            BasicShapeAttributes attrs = null;
 
-            var attrs = new BasicShapeAttributes(attributes);
             try {
                 if (geoLine.getAttributes().containsKey("COLOR")) {
                     var intString = geoLine.getAttributes().get("COLOR");
@@ -238,6 +241,10 @@ public class GeoRenderer extends CoordinateFileRendererWW {
                 }
             } catch (Exception e) {
                 //
+            }
+
+            if (attrs == null) {
+                attrs = new BasicShapeAttributes(attributes);
             }
 
             for (var geoPoint : geoLine.getPoints()) {
@@ -281,7 +288,7 @@ public class GeoRenderer extends CoordinateFileRendererWW {
                     String remark = StringUtils.replace(geoPoint.getRemark(), "_", " ");
                     var raw = StringUtils.split(remark, " ");
                     var raw2 = StringUtils.replace(raw[0], ",", ".");
-                    double r = Double.valueOf(raw2);
+                    double r = Double.parseDouble(raw2);
 
                     var cappedCylinder = new CappedCylinder(position, r);
                     cappedCylinder.setAltitudes(0.0, 0.1);
