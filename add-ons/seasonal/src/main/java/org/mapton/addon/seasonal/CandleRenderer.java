@@ -42,10 +42,10 @@ public class CandleRenderer extends BaseRenderer {
     private void initAdvent() {
         LocalDateTime[] startTimes = {
             //            LocalDateTime.parse("2021-11-01T00:00:00"),
-            LocalDateTime.parse("2022-11-27T00:00:00"),
-            LocalDateTime.parse("2022-12-04T00:00:00"),
-            LocalDateTime.parse("2022-12-11T00:00:00"),
-            LocalDateTime.parse("2022-12-18T00:00:00")
+            LocalDateTime.parse("2023-12-03T00:00:00"),
+            LocalDateTime.parse("2023-12-10T00:00:00"),
+            LocalDateTime.parse("2023-12-17T00:00:00"),
+            LocalDateTime.parse("2023-12-24T00:00:00")
         };
 
         double[] lats;
