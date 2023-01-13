@@ -33,7 +33,7 @@ public final class AboutAction implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         var aboutModel = new AboutModel(SystemHelper.getBundle(Initializer.class, "about"), SystemHelper.getResourceAsImageIcon(Initializer.class, "logo.png"));
-        aboutModel.setAppDate(ModuleHelper.getBuildTime());
+        aboutModel.setAppDate(ModuleHelper.getBuildTime(AboutAction.class));
 
         var nbAbout = new NbAbout(aboutModel);
         nbAbout.display();
