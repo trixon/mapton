@@ -259,12 +259,12 @@
         <dependency>
             <groupId>org.glassfish.jaxb</groupId>
             <artifactId>jaxb-runtime</artifactId>
-            <version>4.0.1</version>
+            <version>4.0.2</version>
         </dependency>
         <dependency>
             <groupId>com.dlsc.gemsfx</groupId>
             <artifactId>gemsfx</artifactId>
-            <version>1.61.0</version>
+            <version>1.62.0</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.openjfx</groupId>
