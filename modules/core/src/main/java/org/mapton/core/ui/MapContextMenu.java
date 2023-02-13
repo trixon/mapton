@@ -15,6 +15,7 @@
  */
 package org.mapton.core.ui;
 
+import java.awt.Dimension;
 import java.awt.Point;
 import java.io.File;
 import java.util.ArrayList;
@@ -28,8 +29,15 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.FileChooserHelper;
@@ -47,6 +55,7 @@ import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
 import se.trixon.almond.nbp.Almond;
+import se.trixon.almond.util.Scaler;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.SystemHelperFx;
 import se.trixon.almond.util.fx.FxHelper;
@@ -83,8 +92,10 @@ public class MapContextMenu {
 
     private void exportImage() {
         var pngFileNameExtensionFilter = FileChooserHelper.getExtensionFilters().get("png");
+        var pdfFileNameExtensionFilter = FileChooserHelper.getExtensionFilters().get("pdf");
         var fileChooser = new FileChooserBuilder(MapContextMenu.class)
                 .addFileFilter(pngFileNameExtensionFilter)
+                .addFileFilter(pdfFileNameExtensionFilter)
                 .setDefaultWorkingDirectory(FileHelper.getDefaultDirectory())
                 .setFileFilter(pngFileNameExtensionFilter)
                 .setFilesOnly(true)
@@ -104,7 +115,32 @@ public class MapContextMenu {
                     var file = FileChooserHelper.getFileWithProperExt(fileChooser);
 
                     try {
-                        ImageIO.write(getEngine().getImageRenderer().call(), "png", file);
+                        var bufferedImage = getEngine().getImageRenderer().call();
+                        if (FilenameUtils.isExtension(file.getName(), "png")) {
+                            ImageIO.write(bufferedImage, "png", file);
+                        } else {
+                            var doc = new PDDocument();
+                            var rectangle = PDRectangle.A4;
+                            var page = new PDPage(new PDRectangle(rectangle.getHeight(), rectangle.getWidth()));
+
+                            doc.addPage(page);
+                            var pdImage = LosslessFactory.createFromImage(doc, bufferedImage);
+                            try (var pageContentStream = new PDPageContentStream(doc, page, AppendMode.APPEND, true, true)) {
+                                var scaler = new Scaler(new Dimension(pdImage.getWidth(), pdImage.getHeight()));
+                                int pageHeight = (int) rectangle.getWidth();
+                                int pageWidth = (int) rectangle.getHeight();
+                                scaler.setHeight(pageHeight);
+                                scaler.setWidth(pageWidth);
+                                var dim = scaler.getDimension();
+                                float width = (float) dim.getWidth();
+                                int height = dim.height;
+                                var x = (pageWidth - width) / 2;
+                                var y = (pageHeight - height) / 2;
+                                pageContentStream.drawImage(pdImage, x, y, width, height);
+                            }
+                            doc.save(file);
+                            doc.close();
+                        }
                     } catch (Exception ex) {
                         Exceptions.printStackTrace(ex);
                     }

@@ -30,6 +30,7 @@
                         <publicPackage>javax.*</publicPackage>
                         <publicPackage>jakarta.*</publicPackage>
                         <publicPackage>org.apache.commons.*</publicPackage>
+                        <publicPackage>org.apache.pdfbox.*</publicPackage>
                         <publicPackage>org.controlsfx.*</publicPackage>
                         <publicPackage>impl.org.controlsfx.*</publicPackage>
                         <publicPackage>org.h2.*</publicPackage>
@@ -327,6 +328,13 @@
             <artifactId>slf4j-nop</artifactId>
             <version>1.7.36</version>
         </dependency>
+        
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>pdfbox</artifactId>
+            <version>2.0.27</version>
+        </dependency>
+
     </dependencies>
 
     <repositories>

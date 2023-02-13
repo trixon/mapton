@@ -114,6 +114,7 @@ public final class MapTopComponent extends MTopComponent {
         map.put("grid", new FileNameExtensionFilter("Mapton Grid (*.grid)", "grid"));
         map.put("png", new FileNameExtensionFilter("%s (*.png)".formatted(Dict.IMAGE.toString()), "png"));
         map.put("txt", new FileNameExtensionFilter("%s (*.txt)".formatted(Dict.TEXT.toString()), "txt"));
+        map.put("pdf", new FileNameExtensionFilter("Portable Document Format (*.pdf)", "pdf"));
 
         //TODO Remove once no longer needed
         se.trixon.almond.util.swing.dialogs.SimpleDialog.getExtensionFilters().putAll(map);
