@@ -31,9 +31,11 @@ import java.awt.event.HierarchyBoundsListener;
 import java.awt.event.HierarchyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.TreeMap;
+import java.util.concurrent.Callable;
 import javafx.scene.Node;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -190,6 +192,11 @@ public class WorldWindMapEngine extends MEngine {
     }
 
     @Override
+    public Callable<BufferedImage> getImageStitchRenderer() {
+        return super.getImageStitchRenderer();
+    }
+
+    @Override
     public Node getLayerView() {
         return mLayerView;
     }
@@ -327,6 +334,7 @@ public class WorldWindMapEngine extends MEngine {
         mLayerView.refresh(mMap);
         mRulerTabPane.refresh(mMap);
         setImageRenderer(mMap.getImageRenderer());
+        setImageStitchRenderer(mMap.getImageStitchRenderer());
 
         Mapton.getLog().i(LOG_TAG, "Loaded and ready");
     }

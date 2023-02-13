@@ -22,7 +22,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
@@ -81,6 +80,28 @@ public class MapContextMenu {
         }
     }
 
+    private void copyStitchImage() {
+        mContextMenu.hide();
+
+        System.out.println("stitch");
+        try {
+            var x = getEngine().getImageStitchRenderer().call();
+            System.out.println(x);
+        } catch (Exception ex) {
+            Exceptions.printStackTrace(ex);
+        }
+
+        /*
+        Fråga efter flyhöjd: copy image ig higher than current
+        sout
+         */
+//        try {
+//            SystemHelperFx.copyToClipboard(getEngine().getImageRenderer().call());
+//        } catch (Exception ex) {
+//            Exceptions.printStackTrace(ex);
+//        }
+    }
+
     private void exportImage() {
         var pngFileNameExtensionFilter = FileChooserHelper.getExtensionFilters().get("png");
         var fileChooser = new FileChooserBuilder(MapContextMenu.class)
@@ -122,21 +143,26 @@ public class MapContextMenu {
     }
 
     private void initContextMenu() {
-        var setHomeAction = new Action(MDict.SET_HOME.toString(), (ActionEvent t) -> {
+        var setHomeAction = new Action(MDict.SET_HOME.toString(), actionEvent -> {
             mMOptions.setMapHome(getEngine().getCenter());
             mMOptions.setMapHomeZoom(getEngine().getZoom());
         });
 
-        var whatsHereAction = new Action(getBundleString("whats_here"), (ActionEvent t) -> {
+        var whatsHereAction = new Action(getBundleString("whats_here"), actionEvent -> {
             whatsHere();
         });
 
-        var copyImageAction = new Action(getBundleString("copy_image"), (ActionEvent t) -> {
+        var copyImageAction = new Action(getBundleString("copy_image"), actionEvent -> {
             copyImage();
         });
         copyImageAction.setDisabled(true);
 
-        var exportImageAction = new Action(getBundleString("export_image"), (ActionEvent t) -> {
+        var stitchImageAction = new Action(getBundleString("stitch_image"), actionEvent -> {
+            copyStitchImage();
+        });
+        stitchImageAction.setDisabled(true);
+
+        var exportImageAction = new Action(getBundleString("export_image"), actionEvent -> {
             exportImage();
         });
         exportImageAction.setDisabled(true);
@@ -147,6 +173,7 @@ public class MapContextMenu {
                 ActionUtils.ACTION_SEPARATOR,
                 copyImageAction,
                 exportImageAction,
+                stitchImageAction,
                 ActionUtils.ACTION_SEPARATOR,
                 ActionUtils.ACTION_SEPARATOR,
                 setHomeAction
@@ -164,6 +191,7 @@ public class MapContextMenu {
         mContextMenu.setOnShowing(event -> {
             copyImageAction.setDisabled(getEngine().getImageRenderer() == null);
             exportImageAction.setDisabled(getEngine().getImageRenderer() == null);
+            stitchImageAction.setDisabled(getEngine().getImageStitchRenderer() == null);
         });
 
         Lookup.getDefault().lookupResult(MContextMenuItem.class).addLookupListener(lookupEvent -> {

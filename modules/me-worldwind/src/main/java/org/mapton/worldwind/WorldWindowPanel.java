@@ -153,6 +153,16 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         };
     }
 
+    Callable<BufferedImage> getImageStitchRenderer() {
+        return () -> {
+            //TODO Save unwanted layer state and hide them
+            var image = GraphicsHelper.componentToImage(this, null);
+            //TODO Restore
+
+            return image;
+        };
+    }
+
     LayerList getLayers() {
         return getModel().getLayers();
     }

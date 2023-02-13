@@ -46,6 +46,7 @@ public abstract class MEngine {
     private Double mAltitude;
     private Double mElevation;
     private Callable<BufferedImage> mImageRenderer;
+    private Callable<BufferedImage> mImageStitchRenderer;
     private boolean mInitialized;
     private MLatLon mLatLonMouse;
     private Double mLatitude;
@@ -138,6 +139,10 @@ public abstract class MEngine {
     }
 
     public Callable<BufferedImage> getImageRenderer() {
+        return mImageRenderer;
+    }
+
+    public Callable<BufferedImage> getImageStitchRenderer() {
         return mImageRenderer;
     }
 
@@ -291,6 +296,10 @@ public abstract class MEngine {
 
     public void setImageRenderer(Callable<BufferedImage> imageRenderer) {
         mImageRenderer = imageRenderer;
+    }
+
+    public void setImageStitchRenderer(Callable<BufferedImage> imageStitchRenderer) {
+        mImageStitchRenderer = imageStitchRenderer;
     }
 
     public void setLatitude(double latitude) {
