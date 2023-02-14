@@ -49,6 +49,7 @@ import org.mapton.api.MKey;
 import org.mapton.api.MOptions;
 import org.mapton.api.MWhatsHereEngine;
 import org.mapton.api.Mapton;
+import org.mapton.core.api.AutoOpener;
 import org.mapton.core.api.BookmarkEditor;
 import org.openide.filesystems.FileChooserBuilder;
 import org.openide.util.Exceptions;
@@ -141,6 +142,9 @@ public class MapContextMenu {
                             doc.save(file);
                             doc.close();
                         }
+
+                        AutoOpener.openIfActivated(file);
+
                     } catch (Exception ex) {
                         Exceptions.printStackTrace(ex);
                     }

@@ -86,6 +86,8 @@ public class MSimpleObjectStorageManager {
             return mClassToPreferenceNode.computeIfAbsent(MSimpleObjectStorageString.Url.class, k -> parentNode.node("url"));
         } else if (MSimpleObjectStorageString.Misc.class.isAssignableFrom(c)) {
             return mClassToPreferenceNode.computeIfAbsent(MSimpleObjectStorageString.Misc.class, k -> parentNode.node("misc"));
+        } else if (MSimpleObjectStorageBoolean.AutoOpen.class.isAssignableFrom(c)) {
+            return mClassToPreferenceNode.computeIfAbsent(MSimpleObjectStorageBoolean.AutoOpen.class, k -> parentNode.node("autoOpen"));
         } else if (MSimpleObjectStorageBoolean.UpdaterAutoUpdate.class.isAssignableFrom(c)) {
             return mClassToPreferenceNode.computeIfAbsent(MSimpleObjectStorageBoolean.UpdaterAutoUpdate.class, k -> parentNode.node("updaterAutoUpdate"));
         } else {

@@ -26,6 +26,7 @@ public class BooleanStorageTabPane extends BaseTabPane {
 
     public BooleanStorageTabPane() {
         getTabs().addAll(
+                new BooleanStorageTab(MSimpleObjectStorageBoolean.AutoOpen.class, mBundle.getString("autoOpen")),
                 new BooleanStorageTab(MSimpleObjectStorageBoolean.UpdaterAutoUpdate.class, mBundle.getString("automaticUpdates")),
                 new BooleanStorageTab(MSimpleObjectStorageBoolean.Misc.class, Dict.MISCELLANEOUS.toString())
         );

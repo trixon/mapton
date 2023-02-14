@@ -13,28 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.api;
+package org.mapton.core.sos;
+
+import org.mapton.api.MSimpleObjectStorageBoolean;
+import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
  * @author Patrik Karlström
  */
-public abstract class MSimpleObjectStorageBoolean extends MSimpleObjectStorage<Boolean> {
+@ServiceProvider(service = MSimpleObjectStorageBoolean.AutoOpen.class)
+public class AutoOpenPngSOSB extends AutoOpen {
 
-    public MSimpleObjectStorageBoolean() {
-        setDefaultValue(false);
-    }
-
-    public static abstract class AutoOpen extends MSimpleObjectStorageBoolean {
-
-    }
-
-    public static abstract class Misc extends MSimpleObjectStorageBoolean {
-
-    }
-
-    public static abstract class UpdaterAutoUpdate extends MSimpleObjectStorageBoolean {
-
+    public AutoOpenPngSOSB() {
+        setName("png");
     }
 
 }

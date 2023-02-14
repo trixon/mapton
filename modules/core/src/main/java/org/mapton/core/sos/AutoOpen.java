@@ -13,28 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.api;
+package org.mapton.core.sos;
+
+import java.util.ResourceBundle;
+import org.mapton.api.MSimpleObjectStorageBoolean;
+import org.openide.util.NbBundle;
 
 /**
  *
  * @author Patrik Karlström
  */
-public abstract class MSimpleObjectStorageBoolean extends MSimpleObjectStorage<Boolean> {
+public abstract class AutoOpen extends MSimpleObjectStorageBoolean.AutoOpen {
 
-    public MSimpleObjectStorageBoolean() {
-        setDefaultValue(false);
-    }
+    protected final ResourceBundle mBundle = NbBundle.getBundle(AutoOpen.class);
 
-    public static abstract class AutoOpen extends MSimpleObjectStorageBoolean {
-
-    }
-
-    public static abstract class Misc extends MSimpleObjectStorageBoolean {
-
-    }
-
-    public static abstract class UpdaterAutoUpdate extends MSimpleObjectStorageBoolean {
-
+    public AutoOpen() {
+        setGroup("");
+        setDefaultValue(true);
     }
 
 }
