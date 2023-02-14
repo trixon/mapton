@@ -25,10 +25,10 @@ import org.openide.util.NbBundle;
  */
 public abstract class AutoOpen extends MSimpleObjectStorageBoolean.AutoOpen {
 
-    protected final ResourceBundle mBundle = NbBundle.getBundle(AutoOpen.class);
+    protected final ResourceBundle mBundle = NbBundle.getBundle(org.mapton.core.sos.AutoOpen.class);
 
     public AutoOpen() {
-        setGroup("");
+        setGroup(mBundle.getString("group"));
         setDefaultValue(true);
     }
 
