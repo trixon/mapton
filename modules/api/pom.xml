@@ -42,6 +42,7 @@
                         <publicPackage>de.jensd.fx.glyphs.*</publicPackage>
                         <publicPackage>org.geotools.*</publicPackage>
                         <publicPackage>org.opengis.*</publicPackage>
+                        <publicPackage>com.helger.*</publicPackage>
                     </publicPackages>
                     <nbmResources>
                         <nbmResource>
@@ -334,7 +335,27 @@
             <artifactId>pdfbox</artifactId>
             <version>2.0.27</version>
         </dependency>
-
+        
+        <dependency>
+            <groupId>com.helger</groupId>
+            <artifactId>ph-pdf-layout</artifactId>
+            <version>7.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.helger.font</groupId>
+            <artifactId>ph-fonts-api</artifactId>
+            <version>5.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.helger.font</groupId>
+            <artifactId>ph-fonts-open-sans</artifactId>
+            <version>5.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.helger.font</groupId>
+            <artifactId>ph-fonts-roboto</artifactId>
+            <version>5.0.0</version>
+        </dependency>
     </dependencies>
 
     <repositories>
