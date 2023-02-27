@@ -27,9 +27,9 @@ public class ModuleOptions extends OptionsBase {
     public static final String KEY_BACKGROUND_IMAGE_OPACITY = "background_image.opacity";
     public static final String KEY_DISPLAY_ATMOSPHERE = "display_atmosphere";
     public static final String KEY_DISPLAY_COMPASS = "display_compass";
-    public static final String KEY_DISPLAY_CONTROLS = "display_controls";
+    public static final String KEY_DISPLAY_CONTROLS = "display_controls2";
     public static final String KEY_DISPLAY_MASK = "display_mask";
-    public static final String KEY_DISPLAY_PLACE_NAMES = "display_place_names";
+    public static final String KEY_DISPLAY_PLACE_NAMES = "display_place_names2";
     public static final String KEY_DISPLAY_SCALE_BAR = "display_scale_bar";
     public static final String KEY_DISPLAY_STARS = "display_stars";
     public static final String KEY_DISPLAY_WORLD_MAP = "display_world_map";
@@ -63,9 +63,9 @@ public class ModuleOptions extends OptionsBase {
     static final double DEFAULT_BACKGROUND_IMAGE_OPACITY = 1.0;
     static final boolean DEFAULT_DISPLAY_ATMOSPHERE = true;
     static final boolean DEFAULT_DISPLAY_COMPASS = true;
-    static final boolean DEFAULT_DISPLAY_CONTROLS = true;
+    static final boolean DEFAULT_DISPLAY_CONTROLS = false;
     static final boolean DEFAULT_DISPLAY_MASK = false;
-    static final boolean DEFAULT_DISPLAY_PLACE_NAMES = true;
+    static final boolean DEFAULT_DISPLAY_PLACE_NAMES = false;
     static final boolean DEFAULT_DISPLAY_SCALE_BAR = true;
     static final boolean DEFAULT_DISPLAY_STARS = true;
     static final boolean DEFAULT_DISPLAY_WORLD_MAP = false;

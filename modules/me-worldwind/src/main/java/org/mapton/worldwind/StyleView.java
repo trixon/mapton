@@ -144,6 +144,7 @@ public class StyleView extends HBox {
         GridPane.setMargin(mScaleBarCheckBox, topInsets);
 
         mControlsCheckBox = new CheckBox(MDict.VIEW_CONTROLS.toString());
+        mControlsCheckBox.setDisable(true);
         GridPane.setMargin(mControlsCheckBox, topInsets);
 
         mCompassCheckBox = new CheckBox(MDict.COMPASS.toString());
@@ -156,6 +157,7 @@ public class StyleView extends HBox {
         GridPane.setMargin(mAtmosphereCheckBox, topInsets);
 
         mPlaceNameCheckBox = new CheckBox(Dict.PLACE_NAMES.toString());
+        mPlaceNameCheckBox.setDisable(true);
         GridPane.setMargin(mPlaceNameCheckBox, topInsets);
 
         mProjComboBox.getItems().addAll(mProjections);
