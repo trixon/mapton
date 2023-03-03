@@ -36,6 +36,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import org.mapton.api.MKey;
+import org.mapton.api.Mapton;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.Dict;
 
@@ -277,6 +278,9 @@ public abstract class LayerBundle {
 
     public void setParentLayer(Layer parentLayer) {
         mParentLayer = parentLayer;
+        mParentLayer.addPropertyChangeListener("Enabled", pce -> {
+            Mapton.getGlobalState().put(getClass().getCanonicalName() + "_Enabled", mParentLayer.isEnabled());
+        });
     }
 
     public void setPopulated(boolean populated) {
