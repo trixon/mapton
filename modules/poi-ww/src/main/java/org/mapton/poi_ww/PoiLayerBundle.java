@@ -20,7 +20,6 @@ import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
-import java.util.ArrayList;
 import javafx.collections.ListChangeListener;
 import org.mapton.api.MDict;
 import org.mapton.api.MPoi;
@@ -72,7 +71,7 @@ public class PoiLayerBundle extends LayerBundle {
     private void initRepaint() {
         setPainter(() -> {
             removeAllRenderables();
-            for (var poi : new ArrayList<>(mPoiManager.getTimeFilteredItems())) {
+            for (var poi : mPoiManager.getTimeFilteredItems()) {
                 if (poi.isDisplayMarker()) {
                     var placemark = new PointPlacemark(Position.fromDegrees(poi.getLatitude(), poi.getLongitude()));
                     placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);

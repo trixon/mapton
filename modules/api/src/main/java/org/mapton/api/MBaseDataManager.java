@@ -57,9 +57,9 @@ public abstract class MBaseDataManager<T> {
     public MBaseDataManager(Class<T> typeParameterClass) {
         TEMPORAL_PREFIX = typeParameterClass.getName();
 
-        mAllItemsProperty.setValue(FXCollections.observableArrayList());
-        mFilteredItemsProperty.setValue(FXCollections.observableArrayList());
-        mTimeFilteredItemsProperty.setValue(FXCollections.observableArrayList());
+        mAllItemsProperty.setValue(FXCollections.synchronizedObservableList(FXCollections.observableArrayList()));
+        mFilteredItemsProperty.setValue(FXCollections.synchronizedObservableList(FXCollections.observableArrayList()));
+        mTimeFilteredItemsProperty.setValue(FXCollections.synchronizedObservableList(FXCollections.observableArrayList()));
 
         mUnlockDelayedResetRunner = new DelayedResetRunner(100, () -> {
             mSelectionLockManager.removeLock(this);
