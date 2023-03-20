@@ -266,7 +266,7 @@
         <dependency>
             <groupId>com.dlsc.gemsfx</groupId>
             <artifactId>gemsfx</artifactId>
-            <version>1.66.0</version>
+            <version>1.67.0</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.openjfx</groupId>
