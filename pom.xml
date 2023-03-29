@@ -233,7 +233,6 @@
         <!--Map engines-->
         <module>modules/me-gmapsfx</module>
         <module>modules/me-jxmapviewer2</module>
-        <module>modules/me-mapjfx</module>
         <module>modules/me-worldwind</module>
 
         <!--POI providers-->
@@ -479,11 +478,6 @@
                 <groupId>org.jxmapviewer</groupId>
                 <artifactId>jxmapviewer2</artifactId>
                 <version>2.6</version>
-            </dependency>
-            <dependency>
-                <groupId>com.sothawo</groupId>
-                <artifactId>mapjfx</artifactId>
-                <version>3.1.0</version>
             </dependency>
             <dependency>
                 <groupId>com.github.pcmehlitz</groupId>

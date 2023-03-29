@@ -153,12 +153,6 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>me-worldwind</artifactId>
         </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>me-mapjfx</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
 
         <!--Mapton/POI providers-->
         <dependency>
