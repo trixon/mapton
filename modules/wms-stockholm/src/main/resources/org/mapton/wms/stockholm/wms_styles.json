@@ -178,5 +178,45 @@
             "": "Stockholm 2019"
         },
         "supplier": "Stockholms stads SBK"
+    },
+    {
+        "category": {
+            "": "Sweden",
+            "sv": "Sverige"
+        },
+        "description": {
+            "": "Orthophoto",
+            "sv": "Ortofoto"
+        },
+        "enabled": true,
+        "id": "se.stockholm.orto_2020",
+        "layers": [
+            "se.stockholm.orto_2020",
+            "com.microsoft.ve-a"
+        ],
+        "name": {
+            "": "Stockholm 2020"
+        },
+        "supplier": "Stockholms stads SBK"
+    },
+    {
+        "category": {
+            "": "Sweden",
+            "sv": "Sverige"
+        },
+        "description": {
+            "": "Orthophoto",
+            "sv": "Ortofoto"
+        },
+        "enabled": true,
+        "id": "se.stockholm.orto_2022",
+        "layers": [
+            "se.stockholm.orto_2022",
+            "com.microsoft.ve-a"
+        ],
+        "name": {
+            "": "Stockholm 2022"
+        },
+        "supplier": "Stockholms stads SBK"
     }
 ]
