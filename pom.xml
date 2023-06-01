@@ -462,7 +462,7 @@
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
-                <version>31.1-jre</version>
+                <version>32.0.0-jre</version>
             </dependency>
             <dependency>
                 <groupId>de.micromata.jak</groupId>
@@ -498,10 +498,10 @@
     </dependencyManagement>
 
     <repositories>
-        <repository>
+        <!--        <repository>
             <id>netbeans-next</id>
-            <url>https://repository.apache.org/content/repositories/orgapachenetbeans-1128</url>
-        </repository>
+            <url>https://repository.apache.org/content/repositories/orgapachenetbeans-1129</url>
+        </repository>-->
         <repository>
             <id>mapton</id>
             <url>https://mapton.org/repo/maven/</url>
@@ -517,7 +517,7 @@
 
     <properties>
         <netbeans.version>RELEASE180</netbeans.version>
-        <netbeans.compile.on.save>none</netbeans.compile.on.save>
+        <netbeans.compile.on.save>all</netbeans.compile.on.save>
         <brandingToken>mapton</brandingToken>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <almond.version>17.0.0-SNAPSHOT</almond.version>
