@@ -24,6 +24,6 @@
             "OI.Histortho_75": "se.lm.hist_orto_75"
         },
         "name": "Lantmäteriet",
-        "url": "https://api.lantmateriet.se/historiska-ortofoton/wms/v1/token/6633c97e-a9b3-3f0f-95d1-4b50401ac8cd/?request=getcapabilities&service=wms"
+        "url": "https://api.lantmateriet.se/historiska-ortofoton/wms/v1/token/:::REPLACEME:::25f6210a-442e-4597-adbd-2f86fcf63846:::/?request=getcapabilities&service=wms"
     }
 ]
