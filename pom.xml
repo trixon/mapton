@@ -4,7 +4,7 @@
 
     <groupId>org.mapton</groupId>
     <artifactId>mapton-parent</artifactId>
-    <version>3.1.0-SNAPSHOT</version>
+    <version>3.1.0</version>
     <packaging>pom</packaging>
 
     <name>mapton-parent</name>
@@ -521,7 +521,7 @@
         <brandingToken>mapton</brandingToken>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <almond.version>17.0.0-SNAPSHOT</almond.version>
-        <mapton.version>3.1.0-SNAPSHOT</mapton.version>
+        <mapton.version>3.1.0</mapton.version>
         <openjfx.version>[20.0.1]</openjfx.version>
     </properties>
     <description>Some kind of map application</description>

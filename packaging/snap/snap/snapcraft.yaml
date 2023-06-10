@@ -1,7 +1,7 @@
 name: mapton
 title: Mapton
 base: core22
-version: '3.0.0'
+version: '3.1.0'
 summary: Some kind of map application
 description: |
     **Mapton is an open-source map application** for Linux, MacOS and Windows that lets you explore the world.
