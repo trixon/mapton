@@ -33,7 +33,6 @@ import org.apache.commons.lang3.StringUtils;
 import static org.mapton.api.MKey.*;
 import org.openide.modules.OnStart;
 import org.openide.util.Lookup;
-import org.openide.util.LookupEvent;
 import org.openide.util.NbPreferences;
 
 /**
@@ -56,25 +55,22 @@ public class MDataSourceInitializer implements Runnable {
     public MDataSourceInitializer() {
         mPreferences.addPreferenceChangeListener((PreferenceChangeEvent evt) -> {
             switch (evt.getKey()) {
-                case DATA_SOURCES_FILES:
+                case DATA_SOURCES_FILES ->
                     applyFile();
-                    break;
 
-                case DATA_SOURCES_WMS_SOURCES:
+                case DATA_SOURCES_WMS_SOURCES ->
                     applyWmsSource();
-                    break;
 
-                case DATA_SOURCES_WMS_STYLES:
+                case DATA_SOURCES_WMS_STYLES ->
                     applyWmsStyle();
-                    break;
             }
         });
 
-        Lookup.getDefault().lookupResult(MWmsSourceProvider.class).addLookupListener((LookupEvent ev) -> {
+        Lookup.getDefault().lookupResult(MWmsSourceProvider.class).addLookupListener(lookupEvent -> {
             applyWmsSource();
         });
 
-        Lookup.getDefault().lookupResult(MWmsStyleProvider.class).addLookupListener((LookupEvent ev) -> {
+        Lookup.getDefault().lookupResult(MWmsStyleProvider.class).addLookupListener(lookupEvent -> {
             applyWmsStyle();
         });
     }
@@ -91,9 +87,9 @@ public class MDataSourceInitializer implements Runnable {
         //TODO Support simple attributes such as colors, line width and markers.
         //TODO Don't put any burden on map engine renderers, unless needed
         //TODO Get importers from lookup
-        ArrayList<File> files = new ArrayList<>();
-        for (String line : mPreferences.get(DATA_SOURCES_FILES, "").split("\n")) {
-            File file = new File(line);
+        var files = new ArrayList<File>();
+        for (var line : mPreferences.get(DATA_SOURCES_FILES, "").split("\n")) {
+            var file = new File(line);
             if (file.exists()) {
                 files.add(file);
             }
@@ -103,13 +99,13 @@ public class MDataSourceInitializer implements Runnable {
     }
 
     private void applyWmsSource() {
-        ArrayList<MWmsSource> allSources = new ArrayList<>();
+        var allSources = new ArrayList<MWmsSource>();
 
-        for (String json : getJsons(mPreferences.get(DATA_SOURCES_WMS_SOURCES, MDataSource.getDefaultSources()))) {
+        for (var json : getJsons(mPreferences.get(DATA_SOURCES_WMS_SOURCES, MDataSource.getDefaultSources()))) {
             try {
                 deserializeSource(json).stream()
-                        .filter((wmsSource) -> (wmsSource.isEnabled()))
-                        .forEachOrdered((wmsSource) -> {
+                        .filter(wmsSource -> (wmsSource.isEnabled()))
+                        .forEachOrdered(wmsSource -> {
                             allSources.add(wmsSource);
                         });
             } catch (NullPointerException ex) {
@@ -119,11 +115,11 @@ public class MDataSourceInitializer implements Runnable {
             }
         }
 
-        for (MWmsSourceProvider wmsSourceProvider : Lookup.getDefault().lookupAll(MWmsSourceProvider.class)) {
+        for (var wmsSourceProvider : Lookup.getDefault().lookupAll(MWmsSourceProvider.class)) {
             try {
                 deserializeSource(wmsSourceProvider.getJson()).stream()
-                        .filter((wmsSource) -> (wmsSource.isEnabled()))
-                        .forEachOrdered((wmsSource) -> {
+                        .filter(wmsSource -> (wmsSource.isEnabled()))
+                        .forEachOrdered(wmsSource -> {
                             allSources.add(wmsSource);
                         });
             } catch (NullPointerException ex) {
@@ -135,8 +131,8 @@ public class MDataSourceInitializer implements Runnable {
 
         Mapton.getGlobalState().put(DATA_SOURCES_WMS_SOURCES, allSources);
 
-        TreeMap<String, MAttribution> attributions = new TreeMap<>();
-        for (MWmsSource wmsSource : allSources) {
+        var attributions = new TreeMap<String, MAttribution>();
+        for (var wmsSource : allSources) {
             attributions.putAll(wmsSource.getAttributions());
         }
 
@@ -144,13 +140,13 @@ public class MDataSourceInitializer implements Runnable {
     }
 
     private void applyWmsStyle() {
-        ArrayList<MWmsStyle> allStyles = new ArrayList<>();
+        var allStyles = new ArrayList<MWmsStyle>();
 
-        for (String json : getJsons(mPreferences.get(DATA_SOURCES_WMS_STYLES, MDataSource.getDefaultStyles()))) {
+        for (var json : getJsons(mPreferences.get(DATA_SOURCES_WMS_STYLES, MDataSource.getDefaultStyles()))) {
             try {
                 deserializeStyle(json).stream()
-                        .filter((wmsStyle) -> (wmsStyle.isEnabled()))
-                        .forEachOrdered((wmsStyle) -> {
+                        .filter(wmsStyle -> wmsStyle.isEnabled())
+                        .forEachOrdered(wmsStyle -> {
                             allStyles.add(wmsStyle);
                         });
             } catch (NullPointerException | JsonSyntaxException ex) {
@@ -158,11 +154,11 @@ public class MDataSourceInitializer implements Runnable {
             }
         }
 
-        for (MWmsStyleProvider wmsStyleProvider : Lookup.getDefault().lookupAll(MWmsStyleProvider.class)) {
+        for (var wmsStyleProvider : Lookup.getDefault().lookupAll(MWmsStyleProvider.class)) {
             try {
                 deserializeStyle(wmsStyleProvider.getJson()).stream()
-                        .filter((wmsStyle) -> (wmsStyle.isEnabled()))
-                        .forEachOrdered((wmsStyle) -> {
+                        .filter(wmsStyle -> wmsStyle.isEnabled())
+                        .forEachOrdered(wmsStyle -> {
                             allStyles.add(wmsStyle);
                         });
             } catch (JsonSyntaxException ex) {

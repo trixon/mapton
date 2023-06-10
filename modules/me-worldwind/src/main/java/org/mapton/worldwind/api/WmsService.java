@@ -27,9 +27,9 @@ import gov.nasa.worldwind.ogc.wms.WMSLayerStyle;
 import gov.nasa.worldwind.util.WWUtil;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Set;
 import java.util.TreeSet;
 import org.mapton.api.MWmsSource;
+import org.mapton.api.Mapton;
 
 /**
  *
@@ -50,11 +50,12 @@ public abstract class WmsService {
 
             @Override
             public void populate() throws Exception {
-                addService(new URI(wmsSource.getUrl()));
+                var url = Mapton.replaceSubstring(wmsSource.getUrl());
+                addService(new URI(url));
 
                 for (var layerInfo : getLayerInfos()) {
                     if (wmsSource.getLayers().keySet().contains(layerInfo.getName()) || wmsSource.getLayers().values().contains(layerInfo.getName())) {
-                        Object component = createComponent(layerInfo.getWmsCapabilities(), layerInfo.getParams());
+                        var component = createComponent(layerInfo.getWmsCapabilities(), layerInfo.getParams());
                         if (component instanceof Layer layer) {
                             layer.setName(wmsSource.getLayerName(layerInfo.getName()));
                             getLayers().add(layer);
@@ -93,15 +94,15 @@ public abstract class WmsService {
     }
 
     protected void addService(URI uri) throws Exception {
-        WMSCapabilities wmsCapabilities = WMSCapabilities.retrieve(uri);
+        var wmsCapabilities = WMSCapabilities.retrieve(uri);
         wmsCapabilities.parse();
 
-        for (WMSLayerCapabilities wmsLayerCapabilities : wmsCapabilities.getNamedLayers()) {
-            Set<WMSLayerStyle> wmsLayerStyles = wmsLayerCapabilities.getStyles();
+        for (var wmsLayerCapabilities : wmsCapabilities.getNamedLayers()) {
+            var wmsLayerStyles = wmsLayerCapabilities.getStyles();
             if (wmsLayerStyles == null || wmsLayerStyles.isEmpty()) {
                 mLayerInfos.add(new LayerInfo(wmsCapabilities, wmsLayerCapabilities, null));
             } else {
-                for (WMSLayerStyle wmsLayerStyle : wmsLayerStyles) {
+                for (var wmsLayerStyle : wmsLayerStyles) {
                     mLayerInfos.add(new LayerInfo(wmsCapabilities, wmsLayerCapabilities, wmsLayerStyle));
                 }
             }
@@ -109,15 +110,16 @@ public abstract class WmsService {
     }
 
     protected Object createComponent(WMSCapabilities wmsCapabilities, AVList params) {
-        AVList configParams = params.copy();
+        var configParams = params.copy();
 
         configParams.setValue(AVKey.URL_CONNECT_TIMEOUT, 30000);
         configParams.setValue(AVKey.URL_READ_TIMEOUT, 30000);
         configParams.setValue(AVKey.RETRIEVAL_QUEUE_STALE_REQUEST_LIMIT, 60000);
 
         try {
-            String factoryKey = getFactoryKeyForCapabilities(wmsCapabilities);
-            Factory factory = (Factory) WorldWind.createConfigurationComponent(factoryKey);
+            var factoryKey = getFactoryKeyForCapabilities(wmsCapabilities);
+            var factory = (Factory) WorldWind.createConfigurationComponent(factoryKey);
+
             return factory.createFromConfigSource(wmsCapabilities, configParams);
         } catch (IllegalArgumentException | IllegalStateException e) {
             // nvm
@@ -129,7 +131,7 @@ public abstract class WmsService {
     private String getFactoryKeyForCapabilities(WMSCapabilities wmsCapabilities) {
         boolean hasApplicationBilFormat = false;
 
-        for (String format : wmsCapabilities.getImageFormats()) {
+        for (var format : wmsCapabilities.getImageFormats()) {
             if (format.contains("application/bil")) {
                 hasApplicationBilFormat = true;
                 break;

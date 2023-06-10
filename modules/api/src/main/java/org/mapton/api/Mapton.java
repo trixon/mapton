@@ -321,6 +321,28 @@ public class Mapton {
         return MOptions.getInstance();
     }
 
+    public static String replaceSubstring(String s) {
+        if (StringUtils.contains(s, ":::REPLACEME:::")) {
+            s = StringUtils.remove(s, ":::REPLACEME");
+            var id = StringUtils.substringBetween(s, ":::");
+            var replacer = Lookup.getDefault().lookupAll(MReplacer.class)
+                    .stream()
+                    .filter(m -> m.getKey().equalsIgnoreCase(id))
+                    .findFirst();
+
+            if (replacer.isEmpty()) {
+                return s;
+            } else {
+                var replacement = replacer.get().getValue();
+                s = StringUtils.replace(s, ":::" + id + ":::", replacement);
+
+                return s;
+            }
+        } else {
+            return s;
+        }
+    }
+
     protected Mapton() {
         Platform.runLater(() -> {
             options().nightModeProperty().addListener((observable, oldValue, newValue) -> {
