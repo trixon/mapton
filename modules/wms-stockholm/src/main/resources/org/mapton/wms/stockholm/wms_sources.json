@@ -202,22 +202,5 @@
         },
         "name": "Stockholms stads SBK",
         "url": "http://kartor.stockholm.se/bios/wms/app/baggis/web/WMS_STHLM_ORTOFOTO_2020?"
-    },
-    {
-        "attributions": {
-            "se.stockholm.orto_2022": {
-                "licenseName": "CC0 1.0",
-                "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.sv",
-                "providerName": "Stockholms stads SBK",
-                "providerUrl": "https://dataportalen.stockholm.se/dataportalen/?SplashScreen=No",
-                "rawHtml": "<p>Bilddatum: 2022</p>"
-            }
-        },
-        "enabled": true,
-        "layers": {
-            "p_1003220": "se.stockholm.orto_2022"
-        },
-        "name": "Stockholms stads SBK",
-        "url": "http://kartor.stockholm.se/bios/wms/app/baggis/web/WMS_STHLM_ORTOFOTO_2022?"
     }
 ]
