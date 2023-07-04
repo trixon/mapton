@@ -45,7 +45,7 @@
                     <extensions>true</extensions>
                     <configuration>
                         <!--TODO Fix it-->
-                        <!--<verifyRuntime>false</verifyRuntime>-->
+                        <verifyRuntime>warn</verifyRuntime>
                         <brandingToken>${brandingToken}</brandingToken>
                         <cluster>${brandingToken}</cluster>
                         <additionalArguments>-J-Xmx768m</additionalArguments>

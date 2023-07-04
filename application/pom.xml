@@ -318,7 +318,6 @@
                 <groupId>org.apache.netbeans.utilities</groupId>
                 <artifactId>nbm-maven-plugin</artifactId>
                 <configuration>
-                    <verifyRuntime>false</verifyRuntime>
                     <installerOsSolaris>false</installerOsSolaris>
                     <installerOsMacosx>false</installerOsMacosx>
                     <installerLicenseFile>../LICENSE</installerLicenseFile>

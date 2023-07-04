@@ -17,7 +17,6 @@
                 <extensions>true</extensions>
                 <configuration>
                     <moduleType>eager</moduleType>
-                    <verifyRuntime>false</verifyRuntime>
                     <publicPackages>
                         <publicPackage>se.trixon.almond.nbp.*</publicPackage>
                         <publicPackage>org.mapton.core.api.*</publicPackage>

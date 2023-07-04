@@ -20,7 +20,6 @@
                         <publicPackage>org.mapton.google_maps.api.*</publicPackage>
                         <publicPackage>com.dlsc.gmapsfx.*</publicPackage>
                     </publicPackages>
-                    <verifyRuntime>false</verifyRuntime>
                 </configuration>
             </plugin>
             <plugin>

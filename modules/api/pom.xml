@@ -277,7 +277,7 @@
         <dependency>
             <groupId>eu.hansolo.fx</groupId>
             <artifactId>countries</artifactId>
-            <version>17.0.23</version>
+            <version>17.0.27</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.openjfx</groupId>
