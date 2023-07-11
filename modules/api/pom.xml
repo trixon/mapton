@@ -44,9 +44,9 @@
                         <publicPackage>org.opengis.*</publicPackage>
                         <publicPackage>com.helger.*</publicPackage>
                         <!--Required by TilesFX -->
-                        <publicPackage>com.sun.*</publicPackage>
+                        <!--<publicPackage>com.sun.*</publicPackage>-->
                         <!--Required by TilesFX -->
-                        <publicPackage>javafx.*</publicPackage>
+                        <!--<publicPackage>javafx.*</publicPackage>-->
                     </publicPackages>
                     <nbmResources>
                         <nbmResource>
@@ -134,6 +134,10 @@
                 <exclusion>
                     <groupId>org.openjfx</groupId>
                     <artifactId>*</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>eu.hansolo.fx</groupId>
+                    <artifactId>countries</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -271,17 +275,6 @@
             <groupId>com.dlsc.gemsfx</groupId>
             <artifactId>gemsfx</artifactId>
             <version>1.74.0</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.openjfx</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>eu.hansolo.fx</groupId>
-            <artifactId>countries</artifactId>
-            <version>17.0.29</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.openjfx</groupId>

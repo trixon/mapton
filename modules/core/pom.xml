@@ -16,6 +16,8 @@
                 <artifactId>nbm-maven-plugin</artifactId>
                 <extensions>true</extensions>
                 <configuration>
+                    <!--org-netbeans-modules-extbrowser-->
+                    <verifyRuntime>warn</verifyRuntime>
                     <moduleType>eager</moduleType>
                     <publicPackages>
                         <publicPackage>se.trixon.almond.nbp.*</publicPackage>
@@ -148,7 +150,6 @@
             <groupId>org.netbeans.modules</groupId>
             <artifactId>org-netbeans-modules-extbrowser</artifactId>
             <version>${netbeans.version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.netbeans.api</groupId>
