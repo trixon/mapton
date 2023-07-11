@@ -148,6 +148,7 @@
             <groupId>org.netbeans.modules</groupId>
             <artifactId>org-netbeans-modules-extbrowser</artifactId>
             <version>${netbeans.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.netbeans.api</groupId>

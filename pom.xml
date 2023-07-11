@@ -44,8 +44,7 @@
                     <version>4.8</version>
                     <extensions>true</extensions>
                     <configuration>
-                        <!--TODO Fix it-->
-                        <verifyRuntime>warn</verifyRuntime>
+                        <!--<verifyRuntime>warn</verifyRuntime>-->
                         <brandingToken>${brandingToken}</brandingToken>
                         <cluster>${brandingToken}</cluster>
                         <additionalArguments>-J-Xmx768m</additionalArguments>
@@ -398,6 +397,12 @@
                 <groupId>eu.hansolo</groupId>
                 <artifactId>tilesfx</artifactId>
                 <version>17.1.21</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.openjfx</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
