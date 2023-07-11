@@ -17,7 +17,6 @@ package org.mapton.poi_trv_ti;
 
 import eu.hansolo.tilesfx.Tile;
 import eu.hansolo.tilesfx.TileBuilder;
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -30,7 +29,6 @@ import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.image.WritableImage;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
@@ -48,7 +46,6 @@ import org.mapton.api.MGenericLoader;
 import org.openide.util.Exceptions;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.fx.FxHelper;
-import se.trixon.trv_traffic_information.road.weatherstation.v1.Measurement;
 import se.trixon.trv_traffic_information.road.weatherstation.v1.WeatherStation;
 
 /**
@@ -80,24 +77,47 @@ public class WeatherView extends BorderPane implements MGenericLoader<WeatherSta
     @Override
     public void load(WeatherStation weatherStation) {
         FxHelper.runLater(() -> {
-            final Measurement measurement = weatherStation.getMeasurement();
-            OffsetDateTime offsetDateTime = OffsetDateTime.parse(measurement.getMeasureTime().toString());
+            var measurement = weatherStation.getMeasurement();
 
             mTitleLabel.setText("%s %d, %s".formatted(
                     MDict.ROAD.toString(),
                     weatherStation.getRoadNumberNumeric(),
                     weatherStation.getName()
             ));
-            final LocalDateTime measLocalDateTime = offsetDateTime.atZoneSameInstant(mZoneOffset).toLocalDateTime();
-            mTimeLabel.setText(measLocalDateTime.format(mDtf));
 
-            loadTemperature(weatherStation);
-            loadPreciptation(weatherStation);
-            loadHumidity(weatherStation);
-            loadWind(weatherStation);
-            loadImage(weatherStation);
+            var time = "NODATA";
+            if (measurement != null) {
+                var offsetDateTime = OffsetDateTime.parse(measurement.getMeasureTime().toString());
+                var measLocalDateTime = offsetDateTime.atZoneSameInstant(mZoneOffset).toLocalDateTime();
+                time = measLocalDateTime.format(mDtf);
+
+                loadTemperature(weatherStation);
+                loadPreciptation(weatherStation);
+                loadHumidity(weatherStation);
+                loadWind(weatherStation);
+                loadImage(weatherStation);
+            } else {
+                mAirTemperatureTile.setValue(999);
+                setTooltipText(mAirTemperatureTile, "");
+
+                mPrecipitationTile.setValueVisible(false);
+                mPrecipitationTile.setUnit("");
+                mPrecipitationTile.setImage(mNullImage);
+                setTooltipText(mPrecipitationTile, "");
+
+                mAirHumidityTile.setValue(-1);
+
+                mWindTile.setValue(-1);
+                mWindTile.setDescription("");
+                mWindTile.setImage(mNullImage);
+                mWindTile.setValueVisible(false);
+                mWindTile.setUnit("");
+
+                mCameraImageTile.setImage(mNullImage);
+            }
 
             //debug(weatherStation);
+            mTimeLabel.setText(time);
         });
     }
 
@@ -159,7 +179,7 @@ public class WeatherView extends BorderPane implements MGenericLoader<WeatherSta
                 .roundedCorners(true)
                 .build();
 
-        GridPane gp = new GridPane();
+        var gp = new GridPane();
         gp.setPadding(FxHelper.getUIScaledInsets(8));
         gp.setHgap(FxHelper.getUIScaled(8));
         gp.setVgap(FxHelper.getUIScaled(8));
@@ -182,9 +202,9 @@ public class WeatherView extends BorderPane implements MGenericLoader<WeatherSta
         mCameraImageTile.setMaxWidth(Double.MAX_VALUE);
 
         double width = 100.0 / 3.0;
-        ColumnConstraints col1 = new ColumnConstraints();
+        var col1 = new ColumnConstraints();
         col1.setPercentWidth(width);
-        ColumnConstraints col2 = new ColumnConstraints();
+        var col2 = new ColumnConstraints();
         col2.setPercentWidth(width * 2);
         gp.getColumnConstraints().addAll(col1, col2);
 
@@ -216,7 +236,7 @@ public class WeatherView extends BorderPane implements MGenericLoader<WeatherSta
 //        pane.setPadding(new Insets(148));
             var snapshotParameters = new SnapshotParameters();
             snapshotParameters.setFill(Color.WHITESMOKE);
-            WritableImage image = imageView.snapshot(snapshotParameters, null);
+            var image = imageView.snapshot(snapshotParameters, null);
 
             return image;
         });
@@ -272,18 +292,14 @@ public class WeatherView extends BorderPane implements MGenericLoader<WeatherSta
 
     private void loadTemperature(WeatherStation weatherStation) {
         var measurement = weatherStation.getMeasurement();
-        if (measurement != null) {
-            var hasValue = measurement.getAir() != null;
-            if (hasValue) {
-                mAirTemperatureTile.setValue(measurement.getAir().getTemp());
-            }
-
-            mAirTemperatureTile.setValueVisible(hasValue);
-            mAirTemperatureTile.setUnit(hasValue ? "°C" : "");
-            setTooltipText(mAirTemperatureTile, measurement.getAir());
-        } else {
-            setTooltipText(mAirTemperatureTile, "");
+        var hasValue = measurement.getAir() != null;
+        if (hasValue) {
+            mAirTemperatureTile.setValue(measurement.getAir().getTemp());
         }
+
+        mAirTemperatureTile.setValueVisible(hasValue);
+        mAirTemperatureTile.setUnit(hasValue ? "°C" : "");
+        setTooltipText(mAirTemperatureTile, measurement.getAir());
     }
 
     private void loadWind(WeatherStation weatherStation) {
