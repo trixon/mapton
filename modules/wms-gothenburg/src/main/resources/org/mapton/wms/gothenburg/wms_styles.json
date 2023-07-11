@@ -198,5 +198,47 @@
             "": "Göteborg 1998"
         },
         "supplier": "Göteborgs stad SBK"
+    },
+    {
+        "category": {
+            "": "Sweden",
+            "sv": "Sverige"
+        },
+        "description": {
+            "": "City map",
+            "sv": "Stadskarta"
+        },
+        "enabled": true,
+        "id": "se.goteborg.citymap_color",
+        "layers": [
+            "se.goteborg.citymap_color",
+            "at.eox.terrain"
+        ],
+        "name": {
+            "": "Göteborg City map (color)",
+            "sv": "Göteborg Stadskarta (färg)"
+        },
+        "supplier": "Göteborgs stad SBK"
+    },
+    {
+        "category": {
+            "": "Sweden",
+            "sv": "Sverige"
+        },
+        "description": {
+            "": "City map",
+            "sv": "Stadskarta"
+        },
+        "enabled": true,
+        "id": "se.goteborg.citymap_gray",
+        "layers": [
+            "se.goteborg.citymap_gray",
+            "at.eox.terrain-light"
+        ],
+        "name": {
+            "": "Göteborg City map (gray)",
+            "sv": "Göteborg Stadskarta (grå)"
+        },
+        "supplier": "Göteborgs stad SBK"
     }
 ]

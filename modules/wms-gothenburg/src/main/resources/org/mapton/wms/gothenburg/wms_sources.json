@@ -87,5 +87,30 @@
         },
         "name": "Göteborg",
         "url": "https://opengeodata.goteborg.se/services/ortofoto/wms/v1"
+    },
+    {
+        "attributions": {
+            "se.goteborg.citymap_color": {
+                "licenseName": "CC0 1.0",
+                "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.sv",
+                "providerName": "Göteborg",
+                "providerUrl": "https://goteborg.se",
+                "rawHtml": "<p>2019</p>"
+            },
+            "se.goteborg.citymap_gray": {
+                "licenseName": "CC0 1.0",
+                "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.sv",
+                "providerName": "Göteborg",
+                "providerUrl": "https://goteborg.se",
+                "rawHtml": "<p>2019</p>"
+            }
+        },
+        "enabled": true,
+        "layers": {
+            "stadskarta": "se.goteborg.citymap_color",
+            "stadskarta_nedtonad": "se.goteborg.citymap_gray"
+        },
+        "name": "Göteborg",
+        "url": "https://opengeodata.goteborg.se/services/stadskarta/wms/v4"
     }
 ]
