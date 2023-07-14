@@ -156,6 +156,9 @@ public class TrafficInfoPoiProvider implements MPoiProvider {
     private void addWeatherStations(ArrayList<MPoi> pois) {
         mManager.getResultsWeatherStation().forEach(result -> {
             for (var weatherStation : result.getWeatherStation()) {
+                if (weatherStation.getGeometry() == null) {
+                    continue;
+                }
                 try {
                     if ( //                        (weatherStation.getRoadNumberNumeric() != null && weatherStation.getRoadNumberNumeric() > 0)
                             //                        (weatherStation.isActive() != null && !weatherStation.isActive())
@@ -175,7 +178,7 @@ public class TrafficInfoPoiProvider implements MPoiProvider {
 
                     var style = new MPoiStyle();
                     poi.setStyle(style);
-                    final var measurement = weatherStation.getMeasurement();
+                    var measurement = weatherStation.getMeasurement();
                     if (weatherStation.isActive()) {
                         style.setLabelText("%.0f°".formatted(measurement.getAir().getTemp()));
                         style.setImageUrl(mManager.getIconUrl(measurement.getPrecipitation()));
