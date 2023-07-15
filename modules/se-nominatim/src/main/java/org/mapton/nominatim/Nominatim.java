@@ -20,7 +20,7 @@ import fr.dudie.nominatim.client.NominatimOptions;
 import fr.dudie.nominatim.model.Address;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
 import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
@@ -68,8 +68,8 @@ public class Nominatim {
     private JsonNominatimClient getClient() {
         try {
             int timeout = 5000;
-
-            var urlConnection = new URL("https://mapton.org/files/nominatim-client.properties").openConnection();
+            String url = "https://mapton.org/files/nominatim-client.properties";
+            var urlConnection = URI.create(url).toURL().openConnection();
             urlConnection.setConnectTimeout(timeout);
             urlConnection.setReadTimeout(timeout);
             urlConnection.connect();

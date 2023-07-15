@@ -17,7 +17,7 @@ package org.mapton.addon.wikipedia;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -89,9 +89,9 @@ public class WikipediaContextExtras extends MContextMenuItem {
             );
 
             try {
-                URL url = new URL(base + StringUtils.replaceEach(URLEncoder.encode(template, "utf-8"),
+                var url = URI.create(base + StringUtils.replaceEach(URLEncoder.encode(template, "utf-8"),
                         new String[]{"%26", "%3D"},
-                        new String[]{"&", "="}));
+                        new String[]{"&", "="})).toURL();
 
                 Mapton.getLog().v(LOG_TAG, url.toString());
 

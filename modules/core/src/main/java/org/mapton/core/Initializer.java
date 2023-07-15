@@ -17,7 +17,7 @@ package org.mapton.core;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
 import java.util.concurrent.TimeUnit;
 import java.util.prefs.BackingStoreException;
 import javafx.embed.swing.SwingFXUtils;
@@ -173,7 +173,7 @@ public class Initializer implements Runnable {
 
         SystemHelper.setDesktopBrowser(url -> {
             try {
-                HtmlBrowser.URLDisplayer.getDefault().showURL(new URL(url));
+                HtmlBrowser.URLDisplayer.getDefault().showURL(URI.create(url).toURL());
             } catch (MalformedURLException ex) {
                 Exceptions.printStackTrace(ex);
             }

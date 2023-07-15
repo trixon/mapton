@@ -19,7 +19,6 @@ import com.google.gson.GsonBuilder;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -73,8 +72,9 @@ public class GeonamesGenerator {
 
     public void update(MPrint print) throws IOException {
         mPrint = print;
-        mPrint.out("GeoNames: Download https://download.geonames.org/export/dump/cities1000.zip");
-        FileUtils.copyURLToFile(new URL("https://download.geonames.org/export/dump/cities1000.zip"), mCities1000zipFile, 5000, 5000);
+        String url = "https://download.geonames.org/export/dump/cities1000.zip";
+        mPrint.out("GeoNames: Download " + url);
+        FileUtils.copyURLToFile(URI.create(url).toURL(), mCities1000zipFile, 5000, 5000);
         mPrint.out("GeoNames: Extract cities1000.txt");
         extractZip();
         populateCities();
@@ -88,14 +88,14 @@ public class GeonamesGenerator {
 
         URI uri = URI.create("jar:" + mCities1000zipFile.toURI().toString());
 
-        try ( var fileSystem = FileSystems.newFileSystem(uri, env)) {
+        try (var fileSystem = FileSystems.newFileSystem(uri, env)) {
             var path = fileSystem.getPath("cities1000.txt");
             FileUtils.writeByteArrayToFile(mCities1000txtFile, Files.readAllBytes(path));
         }
     }
 
     private void populateCities() throws IOException {
-        try ( var csvRecords = CSVParser.parse(
+        try (var csvRecords = CSVParser.parse(
                 new File(mCacheDir, "cities1000.txt"),
                 Charset.forName("utf-8"),
                 CSVFormat.DEFAULT.builder().setHeader().setAllowMissingColumnNames(true).setDelimiter('\t').build()

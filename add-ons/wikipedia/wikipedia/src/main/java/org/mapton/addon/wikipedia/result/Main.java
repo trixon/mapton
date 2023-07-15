@@ -17,7 +17,7 @@ package org.mapton.addon.wikipedia.result;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
 import java.util.LinkedHashMap;
 import org.apache.commons.io.IOUtils;
 
@@ -31,7 +31,8 @@ public class Main {
      * @param args the command line arguments
      */
     public static void main(String[] args) throws MalformedURLException, IOException {
-        String json = IOUtils.toString(new URL("https://sv.wikipedia.org/w/api.php?action=query&prop=coordinates%7Cpageimages%7Cpageterms&colimit=50&piprop=thumbnail&pithumbsize=144&pilimit=50&wbptterms=description&generator=geosearch&ggscoord=57.694580%7C12.120856&ggsradius=10000&ggslimit=50&format=json"), "utf-8");
+        String url = "https://sv.wikipedia.org/w/api.php?action=query&prop=coordinates%7Cpageimages%7Cpageterms&colimit=50&piprop=thumbnail&pithumbsize=144&pilimit=50&wbptterms=description&generator=geosearch&ggscoord=57.694580%7C12.120856&ggsradius=10000&ggslimit=50&format=json";
+        String json = IOUtils.toString(URI.create(url).toURL(), "utf-8");
         System.out.println(json);
         ApiResult result = ApiResult.load(json);
         System.out.println(result.toString());
