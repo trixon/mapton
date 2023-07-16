@@ -123,6 +123,7 @@ public class MSplitNavPane<T extends MSplitNavType> extends BorderPane {
         populate();
     }
 
+    @SuppressWarnings("unchecked")
     private TreeItem<T> getParent(TreeItem<T> parent, String category) {
         String[] categorySegments = StringUtils.split(category, "/");
         StringBuilder sb = new StringBuilder();
@@ -223,6 +224,7 @@ public class MSplitNavPane<T extends MSplitNavType> extends BorderPane {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private synchronized void populate() {
         mParents.clear();
 

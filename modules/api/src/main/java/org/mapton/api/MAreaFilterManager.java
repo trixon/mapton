@@ -69,9 +69,9 @@ public class MAreaFilterManager {
         mVisibilityPreferences = NbPreferences.forModule(MAreaFilterManager.class).node("area_visibility");
         mExpandedPreferences = NbPreferences.forModule(MAreaFilterManager.class).node("area_expanded");
         mAreaParents = new TreeMap<>();
-        mAreaEnabledListenerSet = Collections.synchronizedSet(new HashSet());
-        mTreeItemListenerSet = Collections.synchronizedSet(new HashSet());
-        mTreeItemExpanderSet = Collections.synchronizedSet(new HashSet());
+        mAreaEnabledListenerSet = Collections.synchronizedSet(new HashSet<>());
+        mTreeItemListenerSet = Collections.synchronizedSet(new HashSet<>());
+        mTreeItemExpanderSet = Collections.synchronizedSet(new HashSet<>());
 
         createUI();
         initListeners();

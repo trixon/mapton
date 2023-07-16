@@ -59,6 +59,7 @@ public class IndicatorLayerBundle extends LayerBundle {
         }, MKey.INDICATOR_LAYER_LOAD);
     }
 
+    @SuppressWarnings("unchecked")
     private void initRepaint() {
         setPainter(() -> {
             removeAllRenderables();

@@ -32,6 +32,7 @@ public abstract class BaseTabPane extends TabPane implements MGenericLoader<Obje
     public BaseTabPane() {
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void load(Object object) {
         getTabs().stream().filter(tab -> (tab instanceof MGenericLoader)).forEachOrdered(tab -> {
@@ -39,6 +40,7 @@ public abstract class BaseTabPane extends TabPane implements MGenericLoader<Obje
         });
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void save(Object object) {
         getTabs().stream().filter(tab -> (tab instanceof MGenericSaver)).forEachOrdered(tab -> {

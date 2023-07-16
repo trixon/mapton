@@ -145,9 +145,9 @@ final class CrsPanel extends javax.swing.JPanel {
         private ListSelectionView<CoordinateReferenceSystem> mListSelectionView;
         private final LogPanel mLogPanel = new LogPanel();
         private final Label mSourceCountLabel = new Label();
-        private ListView mSourceListView;
+        private ListView<CoordinateReferenceSystem> mSourceListView;
         private final Label mTargetCountLabel = new Label();
-        private ListView mTargetListView;
+        private ListView<CoordinateReferenceSystem> mTargetListView;
 
         public Form() {
             mDelayedResetRunner = new DelayedResetRunner(300, () -> {
@@ -221,6 +221,7 @@ final class CrsPanel extends javax.swing.JPanel {
             updateCounters();
         }
 
+        @SuppressWarnings("unchecked")
         private void initListeners() {
             mFilterTextField.textProperty().addListener((observable, oldValue, newValue) -> {
                 mDelayedResetRunner.reset();

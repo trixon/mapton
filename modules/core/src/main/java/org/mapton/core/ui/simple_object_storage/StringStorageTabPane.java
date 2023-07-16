@@ -28,6 +28,7 @@ public class StringStorageTabPane extends BaseTabPane {
 
     private final ResourceBundle mBundle = NbBundle.getBundle(StringStorageTabPane.class);
 
+    @SuppressWarnings("unchecked")
     public StringStorageTabPane() {
         getTabs().addAll(
                 new StringStorageTab(MSimpleObjectStorageString.ApiKey.class, mBundle.getString("api_key")),

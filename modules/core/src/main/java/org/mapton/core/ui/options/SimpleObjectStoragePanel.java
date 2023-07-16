@@ -72,6 +72,7 @@ final class SimpleObjectStoragePanel extends javax.swing.JPanel {
         add(mFxPanel, BorderLayout.CENTER);
     }
 
+    @SuppressWarnings("unchecked")
     void load() {
         Platform.runLater(() -> {
             mTabPane.getTabs().stream()
@@ -83,6 +84,7 @@ final class SimpleObjectStoragePanel extends javax.swing.JPanel {
         });
     }
 
+    @SuppressWarnings("unchecked")
     void store() {
         Platform.runLater(() -> {
             mTabPane.getTabs().stream()

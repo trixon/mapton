@@ -43,6 +43,7 @@ public class GridData {
     public GridData() {
     }
 
+    @SuppressWarnings("unchecked")
     public GridData(int width, int height, ArrayList<GridValue> values, CellAggregate cellAggregate) {
         //TODO Replace width & height with some calculated resulotion variant...?
         mCellAggregate = cellAggregate;
@@ -60,8 +61,7 @@ public class GridData {
         mWidth = width;
         mHeight = height;
 
-        mCellValues = new ArrayList[width][height];
-
+        mCellValues = (ArrayList<Double>[][]) new ArrayList[width][height];
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 mCellValues[x][y] = new ArrayList<>();

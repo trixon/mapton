@@ -154,6 +154,7 @@ public class MPoiManager extends MBaseDataManager<MPoi> {
         });
     }
 
+    @SuppressWarnings("unchecked")
     private void sendObjectProperties(MPoi poi) {
         Object propertyPresenter = null;
 

@@ -98,7 +98,8 @@ public abstract class CoordinateFileRendererWW {
         });
     }
 
-    protected void addSupportedFileOpeners(Class<? extends MCoordinateFileOpener>... coordinateFileOpeners) {
+    @SafeVarargs
+    protected final void addSupportedFileOpeners(Class<? extends MCoordinateFileOpener>... coordinateFileOpeners) {
         for (var coordinateFileOpener : coordinateFileOpeners) {
             mSupportedFileOpeners.add(coordinateFileOpener.getName());
         }

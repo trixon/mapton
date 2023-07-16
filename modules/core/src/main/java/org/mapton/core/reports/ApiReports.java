@@ -93,6 +93,7 @@ public class ApiReports implements MApiReport {
         return mItems;
     }
 
+    @SuppressWarnings("unchecked")
     private void populate(String prefix, Class clazz) {
         var implementations = new TreeSet<String>();
 

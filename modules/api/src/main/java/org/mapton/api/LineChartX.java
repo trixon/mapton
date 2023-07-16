@@ -35,6 +35,7 @@ public class LineChartX {
     private XYChart.Series<String, Number>[] mSeries;
     private CategoryAxis mXAxis;
 
+    @SuppressWarnings("unchecked")
     public LineChartX(MChartLine chart) {
         mChart = chart;
         mXAxis = new CategoryAxis();
@@ -48,7 +49,7 @@ public class LineChartX {
         mXAxis.setStartMargin(0);
         mLineChart.setTitle(chart.getChartTitle());
 
-        mSeries = new XYChart.Series[chart.getTitles().length];
+        mSeries = (XYChart.Series<String, Number>[]) new XYChart.Series[chart.getTitles().length];
         for (int i = 0; i < mSeries.length; i++) {
             ObservableList<XYChart.Data<String, Number>> data = FXCollections.observableArrayList();
             ObservableList<Number> values = chart.getValues()[i];

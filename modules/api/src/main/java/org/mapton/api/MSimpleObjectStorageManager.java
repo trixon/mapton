@@ -49,7 +49,8 @@ public class MSimpleObjectStorageManager {
         getNode(category, clazz).addPreferenceChangeListener(pcl);
     }
 
-    public void addListeners(PreferenceChangeListener pcl, Class<? extends MSimpleObjectStorage>... clazzes) {
+    @SafeVarargs
+    public final void addListeners(PreferenceChangeListener pcl, Class<? extends MSimpleObjectStorage>... clazzes) {
         for (var clazz : clazzes) {
             addListener(pcl, clazz);
         }

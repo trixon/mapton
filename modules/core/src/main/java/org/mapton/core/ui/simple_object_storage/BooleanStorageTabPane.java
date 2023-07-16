@@ -24,6 +24,7 @@ import se.trixon.almond.util.Dict;
  */
 public class BooleanStorageTabPane extends BaseTabPane {
 
+    @SuppressWarnings("unchecked")
     public BooleanStorageTabPane() {
         getTabs().addAll(
                 new BooleanStorageTab(MSimpleObjectStorageBoolean.AutoOpen.class, mBundle.getString("autoOpen")),

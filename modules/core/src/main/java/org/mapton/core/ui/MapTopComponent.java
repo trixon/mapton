@@ -214,6 +214,7 @@ public final class MapTopComponent extends MTopComponent {
 
     private void initListeners() {
         setDropTarget(new DropTarget() {
+            @SuppressWarnings("unchecked")
             @Override
             public synchronized void drop(DropTargetDropEvent dtde) {
                 try {

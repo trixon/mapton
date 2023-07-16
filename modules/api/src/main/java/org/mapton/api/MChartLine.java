@@ -71,10 +71,11 @@ public class MChartLine extends MChart {
         mPlotSymbols = plotSymbols;
     }
 
+    @SuppressWarnings("unchecked")
     public void setTitles(String... titles) {
         mTitles = titles;
 
-        mValues = new ObservableList[mTitles.length];
+        mValues = (ObservableList<Number>[]) new ObservableList[mTitles.length];
 
         for (int i = 0; i < getNumOfSeries(); i++) {
             mValues[i] = FXCollections.observableArrayList();

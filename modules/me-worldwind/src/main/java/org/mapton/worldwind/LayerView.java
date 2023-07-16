@@ -97,9 +97,9 @@ public class LayerView extends BorderPane implements MActivatable {
         mVisibilityPreferences = NbPreferences.forModule(LayerView.class).node("layer_visibility");
         mExpandedPreferences = NbPreferences.forModule(LayerView.class).node("layer_group_expanded");
         mLayerParents = new TreeMap<>();
-        mLayerEnabledListenerSet = Collections.synchronizedSet(new HashSet());
-        mTreeItemListenerSet = Collections.synchronizedSet(new HashSet());
-        mTreeItemExpanderSet = Collections.synchronizedSet(new HashSet());
+        mLayerEnabledListenerSet = Collections.synchronizedSet(new HashSet<>());
+        mTreeItemListenerSet = Collections.synchronizedSet(new HashSet<>());
+        mTreeItemExpanderSet = Collections.synchronizedSet(new HashSet<>());
 
         Platform.runLater(() -> {
             createUI();

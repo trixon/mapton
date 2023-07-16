@@ -16,7 +16,7 @@
 package org.mapton.api;
 
 import java.io.IOException;
-import java.net.URL;
+import java.net.URI;
 import javax.imageio.ImageIO;
 import org.apache.commons.lang3.StringUtils;
 
@@ -45,7 +45,7 @@ public class MBackgroundImage {
     public Object getImageSource() {
         if (mImageSource instanceof String s && StringUtils.contains((String) mImageSource, "//")) {
             try {
-                return ImageIO.read(new URL(s));
+                return ImageIO.read(URI.create(s).toURL());
             } catch (IOException ex) {
                 return "";
             }

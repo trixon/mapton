@@ -47,7 +47,7 @@ import se.trixon.almond.util.Dict;
 public abstract class LayerBundle {
 
     public static final int DEFAULT_REPAINT_DELAY = 5000;
-    private static final Set<Runnable> sActivePaintersSet = Collections.synchronizedSet(new HashSet());
+    private static final Set<Runnable> sActivePaintersSet = Collections.synchronizedSet(new HashSet<>());
     private HashSet<Layer> mChildLayers = new HashSet<>();
     private boolean mInitialized = false;
     private final ObservableList<Layer> mLayers = FXCollections.observableArrayList();
