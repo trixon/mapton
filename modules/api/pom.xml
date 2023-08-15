@@ -285,7 +285,7 @@
         <dependency>
             <groupId>eu.hansolo.fx</groupId>
             <artifactId>heatmap</artifactId>
-            <version>17.0.21</version>
+            <version>17.0.23</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.openjfx</groupId>
@@ -307,7 +307,7 @@
         <dependency>
             <groupId>eu.hansolo</groupId>
             <artifactId>toolbox</artifactId>
-            <version>17.0.47</version>
+            <version>17.0.53</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.openjfx</groupId>
@@ -318,7 +318,7 @@
         <dependency>
             <groupId>eu.hansolo</groupId>
             <artifactId>toolboxfx</artifactId>
-            <version>17.0.41</version>
+            <version>17.0.43</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.openjfx</groupId>
@@ -342,7 +342,7 @@
         <dependency>
             <groupId>com.helger</groupId>
             <artifactId>ph-pdf-layout</artifactId>
-            <version>7.0.0</version>
+            <version>7.0.1</version>
         </dependency>
         <dependency>
             <groupId>com.helger.font</groupId>
