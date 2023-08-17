@@ -16,6 +16,7 @@
 package org.mapton.worldwind;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.TreeMap;
 import javafx.application.Platform;
@@ -23,13 +24,10 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Side;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ColorPicker;
 import javafx.scene.control.CustomMenuItem;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -37,30 +35,28 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MultipleSelectionModel;
 import javafx.scene.control.Separator;
-import javafx.scene.control.Slider;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ToolBar;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import org.apache.commons.lang3.StringUtils;
+import org.controlsfx.control.PopOver;
+import org.controlsfx.control.action.Action;
+import org.controlsfx.control.action.ActionUtils;
+import org.controlsfx.control.textfield.TextFields;
 import org.mapton.api.MKey;
 import org.mapton.api.MWmsStyle;
 import org.mapton.api.Mapton;
-import static org.mapton.worldwind.ModuleOptions.DEFAULT_DISPLAY_MASK;
-import static org.mapton.worldwind.ModuleOptions.DEFAULT_MAP_OPACITY;
-import static org.mapton.worldwind.ModuleOptions.DEFAULT_MASK_COLOR;
-import static org.mapton.worldwind.ModuleOptions.DEFAULT_MASK_OPACITY;
-import static org.mapton.worldwind.ModuleOptions.KEY_DISPLAY_MASK;
-import static org.mapton.worldwind.ModuleOptions.KEY_MAP_OPACITY;
+import static org.mapton.api.Mapton.getIconSizeToolBarInt;
+import org.mapton.api.ui.MOptionsPopOver;
 import static org.mapton.worldwind.ModuleOptions.KEY_MAP_STYLE;
 import static org.mapton.worldwind.ModuleOptions.KEY_MAP_STYLE_PREV;
-import static org.mapton.worldwind.ModuleOptions.KEY_MASK_COLOR;
-import static org.mapton.worldwind.ModuleOptions.KEY_MASK_OPACITY;
 import org.mapton.worldwind.api.MapStyle;
 import org.openide.util.Lookup;
 import se.trixon.almond.util.Dict;
@@ -73,14 +69,12 @@ import se.trixon.almond.util.fx.FxHelper;
  */
 public class LayerBackgroundView extends BorderPane {
 
-    private VBox mMapOpacityBox;
-    private final Slider mMapOpacitySlider = new Slider(0, 1, 1);
-    private CheckBox mMaskCheckBox;
-    private ColorPicker mMaskColorPicker;
-    private VBox mMaskOpacityBox;
-    private final Slider mMaskOpacitySlider = new Slider(0, 1, 1);
     private final ModuleOptions mOptions = ModuleOptions.getInstance();
     private final VBox mStyleBox = new VBox(16);
+    private TextField mFilterTextField;
+    private Action mOptionsAction;
+    private MOptionsPopOver mOptionsPopOver;
+    private ToolBar mToolBar;
 
     public static LayerBackgroundView getInstance() {
         return Holder.INSTANCE;
@@ -89,7 +83,6 @@ public class LayerBackgroundView extends BorderPane {
     private LayerBackgroundView() {
         createUI();
         initListeners();
-        load();
 
         Lookup.getDefault().lookupResult(MapStyle.class).addLookupListener(lookupEvent -> {
             initStyle();
@@ -99,37 +92,34 @@ public class LayerBackgroundView extends BorderPane {
     }
 
     private void createUI() {
-        mMaskCheckBox = new CheckBox(Dict.MASK.toString());
-        mMaskColorPicker = new ColorPicker();
-        mMaskColorPicker.prefWidthProperty().bind(widthProperty());
-        mMaskColorPicker.disableProperty().bind(mMaskCheckBox.selectedProperty().not());
-        Color color = FxHelper.colorFromHexRGBA(mOptions.get(KEY_MASK_COLOR, DEFAULT_MASK_COLOR));
-        mMaskColorPicker.setValue(color);
+        mOptionsPopOver = new MOptionsPopOver();
+        mOptionsPopOver.setArrowLocation(PopOver.ArrowLocation.LEFT_CENTER);
+        mOptionsPopOver.setContentNode(new LayerBackgroundOptionsView());
 
-        mMapOpacityBox = new VBox(new Label(Dict.OPACITY.toString()), mMapOpacitySlider);
-        mMaskOpacityBox = new VBox(FxHelper.getUIScaled(8), mMaskCheckBox, mMaskOpacitySlider, mMaskColorPicker);
-        mMaskCheckBox.setOnAction(event -> {
-            mOptions.put(KEY_DISPLAY_MASK, mMaskCheckBox.isSelected());
-        });
-        mMaskOpacitySlider.disableProperty().bind(mMaskCheckBox.selectedProperty().not());
+        mFilterTextField = TextFields.createClearableTextField();
+        mFilterTextField.setPromptText(Dict.LAYER_SEARCH.toString());
+        mFilterTextField.setMinWidth(20);
+        final int iconSize = (int) (getIconSizeToolBarInt() * 0.8);
+
+        mOptionsAction = mOptionsPopOver.getAction();
+        var actions = Arrays.asList(
+                //                selectActionGroup,
+                mOptionsAction
+        );
+        mToolBar = ActionUtils.createToolBar(actions, ActionUtils.ActionTextBehavior.HIDE);
+        FxHelper.adjustButtonWidth(mToolBar.getItems().stream(), iconSize);
+        FxHelper.undecorateButtons(mToolBar.getItems().stream());
+        FxHelper.slimToolBar(mToolBar);
+
+        var topBorderPane = new BorderPane(mFilterTextField);
+        topBorderPane.setRight(mToolBar);
+        mToolBar.setMinWidth(iconSize * 2.8);
+        setTop(topBorderPane);
 
         setCenter(mStyleBox);
-
     }
 
     private void initListeners() {
-        mMapOpacitySlider.valueProperty().addListener((ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
-            mOptions.put(KEY_MAP_OPACITY, mMapOpacitySlider.getValue());
-        });
-
-        mMaskOpacitySlider.valueProperty().addListener((ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
-            mOptions.put(KEY_MASK_OPACITY, mMaskOpacitySlider.getValue());
-        });
-
-        mMaskColorPicker.valueProperty().addListener((ObservableValue<? extends Color> ov, Color t, Color t1) -> {
-            mOptions.put(KEY_MASK_COLOR, FxHelper.colorToHexRGB(t1));
-        });
-
         Mapton.getGlobalState().addListener((GlobalStateChangeEvent evt) -> {
             initStyle();
         }, MKey.DATA_SOURCES_WMS_STYLES);
@@ -143,18 +133,18 @@ public class LayerBackgroundView extends BorderPane {
             ArrayList<MWmsStyle> wmsStyles = Mapton.getGlobalState().get(MKey.DATA_SOURCES_WMS_STYLES);
 
             if (wmsStyles != null) {
-                for (MWmsStyle wmsStyle : wmsStyles) {
+                for (var wmsStyle : wmsStyles) {
                     styles.add(MapStyle.createFromWmsStyle(wmsStyle));
                 }
             }
 
-            Collections.sort(styles, (MapStyle o1, MapStyle o2) -> o1.getName().compareTo(o2.getName()));
-            TreeMap<String, ObservableList<MapStyle>> categoryStyles = new TreeMap<>();
-            for (MapStyle mapStyle : styles) {
+            Collections.sort(styles, (o1, o2) -> o1.getName().compareTo(o2.getName()));
+            var categoryStyles = new TreeMap<String, ObservableList<MapStyle>>();
+            for (var mapStyle : styles) {
                 if (StringUtils.isBlank(mapStyle.getCategory())) {
-                    Button button = new Button(mapStyle.getName());
+                    var button = new Button(mapStyle.getName());
                     button.prefWidthProperty().bind(widthProperty());
-                    button.setOnAction((ActionEvent event) -> {
+                    button.setOnAction(actionEvent -> {
                         mOptions.put(KEY_MAP_STYLE_PREV, mOptions.get(KEY_MAP_STYLE));
                         mOptions.put(KEY_MAP_STYLE, mapStyle.getId());
                     });
@@ -171,8 +161,8 @@ public class LayerBackgroundView extends BorderPane {
 
             mStyleBox.getChildren().add(new Separator());
 
-            for (String category : categoryStyles.keySet()) {
-                ListView<MapStyle> listView = new ListView<>(categoryStyles.get(category));
+            for (var category : categoryStyles.keySet()) {
+                var listView = new ListView<>(categoryStyles.get(category));
                 listView.setPrefWidth(FxHelper.getUIScaled(250));
                 listView.setCellFactory((ListView<MapStyle> param) -> new MapStyleListCell());
                 listView.parentProperty().addListener((ObservableValue<? extends Parent> observable, Parent oldValue, Parent newValue) -> {
@@ -215,15 +205,7 @@ public class LayerBackgroundView extends BorderPane {
 
                 mStyleBox.getChildren().add(menuButton);
             }
-
-            mStyleBox.getChildren().addAll(new Separator(), mMapOpacityBox, mMaskOpacityBox);
         });
-    }
-
-    private void load() {
-        mMapOpacitySlider.setValue(mOptions.getDouble(KEY_MAP_OPACITY, DEFAULT_MAP_OPACITY));
-        mMaskOpacitySlider.setValue(mOptions.getFloat(KEY_MASK_OPACITY, DEFAULT_MASK_OPACITY));
-        mMaskCheckBox.setSelected(mOptions.is(KEY_DISPLAY_MASK, DEFAULT_DISPLAY_MASK));
     }
 
     private static class Holder {
