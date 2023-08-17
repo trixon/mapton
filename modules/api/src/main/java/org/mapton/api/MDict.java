@@ -44,6 +44,7 @@ public enum MDict {
     MAP_TOOLS,
     OPEN_LOCATION,
     ORIGIN,
+    OVERLAY,
     POI,
     PREVIOUS_STYLE,
     PROJECTION,

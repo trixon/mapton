@@ -70,7 +70,7 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
  *
  * @author Patrik Karlström
  */
-public class LayerView extends BorderPane implements MActivatable {
+public class LayerObjectView extends BorderPane implements MActivatable {
 
     private CheckModel<TreeItem<Layer>> mCheckModel;
     private ContextMenu mContextMenu;
@@ -89,13 +89,13 @@ public class LayerView extends BorderPane implements MActivatable {
     private CheckTreeView<Layer> mTreeView;
     private final Preferences mVisibilityPreferences;
 
-    public static LayerView getInstance() {
+    public static LayerObjectView getInstance() {
         return Holder.INSTANCE;
     }
 
-    private LayerView() {
-        mVisibilityPreferences = NbPreferences.forModule(LayerView.class).node("layer_visibility");
-        mExpandedPreferences = NbPreferences.forModule(LayerView.class).node("layer_group_expanded");
+    private LayerObjectView() {
+        mVisibilityPreferences = NbPreferences.forModule(LayerObjectView.class).node("layer_visibility");
+        mExpandedPreferences = NbPreferences.forModule(LayerObjectView.class).node("layer_group_expanded");
         mLayerParents = new TreeMap<>();
         mLayerEnabledListenerSet = Collections.synchronizedSet(new HashSet<>());
         mTreeItemListenerSet = Collections.synchronizedSet(new HashSet<>());
@@ -440,7 +440,7 @@ public class LayerView extends BorderPane implements MActivatable {
 
     private static class Holder {
 
-        private static final LayerView INSTANCE = new LayerView();
+        private static final LayerObjectView INSTANCE = new LayerObjectView();
     }
 
     class LayerTreeCell extends CheckBoxTreeCell<Layer> {

@@ -73,14 +73,15 @@ public class WorldWindMapEngine extends MEngine {
     private BasicDragger mBasicDragger;
     private boolean mInProgress;
     private boolean mInitialized;
-    private final LayerView mLayerView;
+    private LayerBackgroundView mLayerBackgroundView;
+    private LayerObjectView mLayerObjectView;
+    private LayerOverlayView mLayerOverlayView;
     private JPanel mMainPanel;
     private WorldWindowPanel mMap;
     private double mOldAltitude;
     private double mOldGlobalZoom;
     private final ModuleOptions mOptions = ModuleOptions.getInstance();
     private final RulerTabPane mRulerTabPane;
-    private final StyleView mStyleView;
     private long mZoomEpoch = System.currentTimeMillis();
     private final double[] mZoomLevels;
 
@@ -90,8 +91,10 @@ public class WorldWindMapEngine extends MEngine {
                 AVKey.DATA_FILE_STORE_CONFIGURATION_FILE_NAME,
                 "org/mapton/worldwind/CacheLocationConfiguration.xml"
         );
-        mStyleView = new StyleView();
-        mLayerView = LayerView.getInstance();
+
+        mLayerObjectView = LayerObjectView.getInstance();
+//        mLayerOverlayView = LayerOverlayView.getInstance();
+        mLayerBackgroundView = LayerBackgroundView.getInstance();
         mRulerTabPane = RulerTabPane.getInstance();
 
         mZoomLevels = new double[]{
@@ -190,8 +193,18 @@ public class WorldWindMapEngine extends MEngine {
     }
 
     @Override
-    public Node getLayerView() {
-        return mLayerView;
+    public Node getLayerBackgroundView() {
+        return mLayerBackgroundView;
+    }
+
+    @Override
+    public Node getLayerObjectView() {
+        return mLayerObjectView;
+    }
+
+    @Override
+    public Node getLayerOverlayView() {
+        return mLayerOverlayView;
     }
 
     public WorldWindowPanel getMap() {
@@ -222,7 +235,7 @@ public class WorldWindMapEngine extends MEngine {
 
     @Override
     public Node getStyleView() {
-        return mStyleView;
+        return null;
     }
 
     @Override
@@ -324,7 +337,7 @@ public class WorldWindMapEngine extends MEngine {
             }
 
         });
-        mLayerView.refresh(mMap);
+        mLayerObjectView.refresh(mMap);
         mRulerTabPane.refresh(mMap);
         setImageRenderer(mMap.getImageRenderer());
 

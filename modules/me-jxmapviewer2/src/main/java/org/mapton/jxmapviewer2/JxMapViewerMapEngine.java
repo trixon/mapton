@@ -85,11 +85,6 @@ public class JxMapViewerMapEngine extends MEngine {
         return toLatLon(mMapKit.getCenterPosition());
     }
 
-    @Override
-    public Node getLayerView() {
-        return null;
-    }
-
     public JXMapViewer getMap() {
         return mMap;
     }

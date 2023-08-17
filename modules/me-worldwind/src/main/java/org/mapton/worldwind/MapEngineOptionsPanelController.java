@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.core.ui.options;
+package org.mapton.worldwind;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -25,16 +25,17 @@ import org.openide.util.Lookup;
 
 @OptionsPanelController.SubRegistration(
         location = "Modules",
-        displayName = "#AdvancedOption_DisplayName_Basic",
-        keywords = "#AdvancedOption_Keywords_Basic",
-        keywordsCategory = "Modules/Basic",
-        position = 1
+        displayName = "#AdvancedOption_DisplayName_MapEngine",
+        keywords = "#AdvancedOption_Keywords_MapEngine",
+        keywordsCategory = "Modules/MapEngine",
+        position = 2
 )
-@org.openide.util.NbBundle.Messages({"AdvancedOption_DisplayName_Basic=Basic", "AdvancedOption_Keywords_Basic=basic"})
-public final class BasicOptionsPanelController extends OptionsPanelController {
+@org.openide.util.NbBundle.Messages({"AdvancedOption_DisplayName_MapEngine=WorldWind", "AdvancedOption_Keywords_MapEngine=worldwind"})
+public final class MapEngineOptionsPanelController extends OptionsPanelController {
 
     private boolean mChanged;
-    private BasicPanel mPanel;
+
+    private MapEnginePanel mPanel;
     private final PropertyChangeSupport mPropertyChangeSupport = new PropertyChangeSupport(this);
 
     @Override
@@ -94,9 +95,9 @@ public final class BasicOptionsPanelController extends OptionsPanelController {
         mPropertyChangeSupport.firePropertyChange(OptionsPanelController.PROP_VALID, null, null);
     }
 
-    private BasicPanel getPanel() {
+    private MapEnginePanel getPanel() {
         if (mPanel == null) {
-            mPanel = new BasicPanel(this);
+            mPanel = new MapEnginePanel(this);
         }
         return mPanel;
     }
