@@ -156,14 +156,20 @@ public abstract class MEngine {
         return options().getMapCooTrans().getLatitude(mLatitude, mLongitude);
     }
 
+    public Node getLayerBackgroundView() {
+        Mapton.getLog().i(getClass().getSimpleName(), "getLayerBackgroundView not implemented");
+
+        return null;
+    }
+
     public Node getLayerObjectView() {
         Mapton.getLog().i(getClass().getSimpleName(), "getLayerObjectView not implemented");
 
         return null;
     }
 
-    public Node getLayerBackgroundView() {
-        Mapton.getLog().i(getClass().getSimpleName(), "getLayerBackgroundView not implemented");
+    public Node getLayerOptionsView() {
+        Mapton.getLog().i(getClass().getSimpleName(), "getLayerOptionsView not implemented");
 
         return null;
     }

@@ -75,6 +75,7 @@ public class WorldWindMapEngine extends MEngine {
     private boolean mInitialized;
     private LayerBackgroundView mLayerBackgroundView;
     private LayerObjectView mLayerObjectView;
+    private LayerOptionsView mLayerOptionsView;
     private LayerOverlayView mLayerOverlayView;
     private JPanel mMainPanel;
     private WorldWindowPanel mMap;
@@ -95,6 +96,7 @@ public class WorldWindMapEngine extends MEngine {
         mLayerObjectView = LayerObjectView.getInstance();
 //        mLayerOverlayView = LayerOverlayView.getInstance();
         mLayerBackgroundView = LayerBackgroundView.getInstance();
+        mLayerOptionsView = new LayerOptionsView();
         mRulerTabPane = RulerTabPane.getInstance();
 
         mZoomLevels = new double[]{
@@ -200,6 +202,11 @@ public class WorldWindMapEngine extends MEngine {
     @Override
     public Node getLayerObjectView() {
         return mLayerObjectView;
+    }
+
+    @Override
+    public Node getLayerOptionsView() {
+        return mLayerOptionsView;
     }
 
     @Override

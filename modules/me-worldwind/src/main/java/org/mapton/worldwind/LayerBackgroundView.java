@@ -18,29 +18,18 @@ package org.mapton.worldwind;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.TreeMap;
 import javafx.application.Platform;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
-import javafx.geometry.Insets;
-import javafx.geometry.Side;
-import javafx.scene.Parent;
 import javafx.scene.control.Button;
-import javafx.scene.control.CustomMenuItem;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
-import javafx.scene.control.MenuButton;
 import javafx.scene.control.MultipleSelectionModel;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToolBar;
 import javafx.scene.control.Tooltip;
-import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
@@ -70,11 +59,13 @@ import se.trixon.almond.util.fx.FxHelper;
 public class LayerBackgroundView extends BorderPane {
 
     private final ModuleOptions mOptions = ModuleOptions.getInstance();
-    private final VBox mStyleBox = new VBox(16);
+    private final VBox mSpeedDial = new VBox(16);
     private TextField mFilterTextField;
     private Action mOptionsAction;
     private MOptionsPopOver mOptionsPopOver;
     private ToolBar mToolBar;
+    private ListView<MapStyle> listView = new ListView<>();
+    private BorderPane borderPane = new BorderPane();
 
     public static LayerBackgroundView getInstance() {
         return Holder.INSTANCE;
@@ -94,7 +85,7 @@ public class LayerBackgroundView extends BorderPane {
     private void createUI() {
         mOptionsPopOver = new MOptionsPopOver();
         mOptionsPopOver.setArrowLocation(PopOver.ArrowLocation.LEFT_CENTER);
-        mOptionsPopOver.setContentNode(new LayerBackgroundOptionsView());
+        //mOptionsPopOver.setContentNode(new LayerOptionsView());
 
         mFilterTextField = TextFields.createClearableTextField();
         mFilterTextField.setPromptText(Dict.LAYER_SEARCH.toString());
@@ -110,13 +101,13 @@ public class LayerBackgroundView extends BorderPane {
         FxHelper.adjustButtonWidth(mToolBar.getItems().stream(), iconSize);
         FxHelper.undecorateButtons(mToolBar.getItems().stream());
         FxHelper.slimToolBar(mToolBar);
-
         var topBorderPane = new BorderPane(mFilterTextField);
         topBorderPane.setRight(mToolBar);
-        mToolBar.setMinWidth(iconSize * 2.8);
+        mToolBar.setMinWidth(iconSize * 2.5);
         setTop(topBorderPane);
-
-        setCenter(mStyleBox);
+        setCenter(borderPane);
+        borderPane.setTop(mSpeedDial);
+        borderPane.setCenter(listView);
     }
 
     private void initListeners() {
@@ -127,10 +118,11 @@ public class LayerBackgroundView extends BorderPane {
 
     private void initStyle() {
         Platform.runLater(() -> {
-            mStyleBox.getChildren().clear();
+            mSpeedDial.getChildren().clear();
 
             ArrayList<MapStyle> styles = new ArrayList<>(Lookup.getDefault().lookupAll(MapStyle.class));
             ArrayList<MWmsStyle> wmsStyles = Mapton.getGlobalState().get(MKey.DATA_SOURCES_WMS_STYLES);
+            ArrayList<MapStyle> stylesList = new ArrayList<>();
 
             if (wmsStyles != null) {
                 for (var wmsStyle : wmsStyles) {
@@ -139,7 +131,7 @@ public class LayerBackgroundView extends BorderPane {
             }
 
             Collections.sort(styles, (o1, o2) -> o1.getName().compareTo(o2.getName()));
-            var categoryStyles = new TreeMap<String, ObservableList<MapStyle>>();
+//            var categoryStyles = new TreeMap<String, ObservableList<MapStyle>>();
             for (var mapStyle : styles) {
                 if (StringUtils.isBlank(mapStyle.getCategory())) {
                     var button = new Button(mapStyle.getName());
@@ -153,59 +145,39 @@ public class LayerBackgroundView extends BorderPane {
                         button.setTooltip(new Tooltip(mapStyle.getDescription()));
                     }
 
-                    mStyleBox.getChildren().add(button);
+                    mSpeedDial.getChildren().add(button);
                 } else {
-                    categoryStyles.computeIfAbsent(mapStyle.getCategory(), k -> FXCollections.observableArrayList()).add(mapStyle);
+//                    categoryStyles.computeIfAbsent(mapStyle.getCategory(), k -> FXCollections.observableArrayList()).add(mapStyle);
+                    stylesList.add(mapStyle);
                 }
             }
 
-            mStyleBox.getChildren().add(new Separator());
+            mSpeedDial.getChildren().add(new Separator());
 
-            for (var category : categoryStyles.keySet()) {
-                var listView = new ListView<>(categoryStyles.get(category));
-                listView.setPrefWidth(FxHelper.getUIScaled(250));
-                listView.setCellFactory((ListView<MapStyle> param) -> new MapStyleListCell());
-                listView.parentProperty().addListener((ObservableValue<? extends Parent> observable, Parent oldValue, Parent newValue) -> {
-                    Region region = (Region) newValue;
-                    region.setPadding(Insets.EMPTY);
-                    region.setBorder(Border.EMPTY);
-                });
+            listView.getItems().setAll(stylesList);
+//            for (var category : categoryStyles.keySet()) {
+//                listView.setPrefWidth(FxHelper.getUIScaled(250));
+            listView.setCellFactory((ListView<MapStyle> param) -> new MapStyleListCell());
+//                listView.parentProperty().addListener((ObservableValue<? extends Parent> observable, Parent oldValue, Parent newValue) -> {
+//                    Region region = (Region) newValue;
+//                    region.setPadding(Insets.EMPTY);
+//                    region.setBorder(Border.EMPTY);
+//                });
 
-                MultipleSelectionModel<MapStyle> selectionModel = listView.getSelectionModel();
-                selectionModel.getSelectedItems().addListener((ListChangeListener.Change<? extends MapStyle> change) -> {
-                    change.next();
-                    if (change.wasAdded() || change.wasReplaced()) {
-                        try {
-                            mOptions.put(KEY_MAP_STYLE_PREV, mOptions.get(KEY_MAP_STYLE));
-                            mOptions.put(KEY_MAP_STYLE, selectionModel.getSelectedItem().getId());
-                        } catch (Exception e) {
-                        }
+            MultipleSelectionModel<MapStyle> selectionModel = listView.getSelectionModel();
+            selectionModel.getSelectedItems().addListener((ListChangeListener.Change<? extends MapStyle> change) -> {
+                change.next();
+                if (change.wasAdded() || change.wasReplaced()) {
+                    try {
+                        mOptions.put(KEY_MAP_STYLE_PREV, mOptions.get(KEY_MAP_STYLE));
+                        mOptions.put(KEY_MAP_STYLE, selectionModel.getSelectedItem().getId());
+                    } catch (Exception e) {
                     }
-                });
+                }
+            });
 
-                MenuButton menuButton = new MenuButton(category);
-                menuButton.setPopupSide(Side.RIGHT);
-                CustomMenuItem menuItem = new CustomMenuItem(listView);
-                menuButton.setOnShowing(event -> {
-                    listView.getSelectionModel().clearSelection();
-                });
-                menuButton.setOnShown(event -> {
-                    listView.requestFocus();
-                    for (MapStyle item : listView.getItems()) {
-                        if (item.getId().equalsIgnoreCase(mOptions.get(KEY_MAP_STYLE))) {
-                            listView.getSelectionModel().select(item);
-                            break;
-                        }
-                    }
-
-                });
-                menuItem.setHideOnClick(false);
-                menuButton.getItems().add(menuItem);
-                menuButton.prefWidthProperty().bind(widthProperty());
-
-                mStyleBox.getChildren().add(menuButton);
-            }
-        });
+        }
+        );
     }
 
     private static class Holder {

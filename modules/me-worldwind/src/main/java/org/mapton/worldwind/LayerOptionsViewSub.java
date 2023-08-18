@@ -35,7 +35,7 @@ import se.trixon.almond.util.fx.FxHelper;
  *
  * @author Patrik Karlström
  */
-public class MapEngineView extends HBox {
+public class LayerOptionsViewSub extends HBox {
 
     private CheckBox mAtmosphereCheckBox;
     private CheckBox mCompassCheckBox;
@@ -53,7 +53,7 @@ public class MapEngineView extends HBox {
     private CheckBox mStarsCheckBox;
     private CheckBox mWorldMapCheckBox;
 
-    public MapEngineView() {
+    public LayerOptionsViewSub() {
         mProjections.add(MDict.PROJ_LAT_LON.toString());
         mProjections.add(MDict.PROJ_MERCATOR.toString());
         mProjections.add(MDict.PROJ_POLAR_NORTH.toString());

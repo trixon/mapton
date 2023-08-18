@@ -37,7 +37,7 @@ import se.trixon.almond.util.fx.FxHelper;
  *
  * @author Patrik Karlström
  */
-public class LayerBackgroundOptionsView extends VBox {
+public class LayerOptionsView extends VBox {
 
     private VBox mMapOpacityBox;
     private final Slider mMapOpacitySlider = new Slider(0, 1, 1);
@@ -47,7 +47,7 @@ public class LayerBackgroundOptionsView extends VBox {
     private final Slider mMaskOpacitySlider = new Slider(0, 1, 1);
     private final ModuleOptions mOptions = ModuleOptions.getInstance();
 
-    public LayerBackgroundOptionsView() {
+    public LayerOptionsView() {
         createUI();
         initListeners();
         load();
@@ -72,7 +72,7 @@ public class LayerBackgroundOptionsView extends VBox {
         });
         mMaskOpacitySlider.disableProperty().bind(mMaskCheckBox.selectedProperty().not());
 
-        getChildren().setAll(mMapOpacityBox, mMaskOpacityBox);
+        getChildren().setAll(mMapOpacityBox, mMaskOpacityBox, new LayerOptionsViewSub());
     }
 
     private void initListeners() {

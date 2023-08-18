@@ -17,6 +17,7 @@ package org.mapton.core.ui;
 
 import javafx.application.Platform;
 import javafx.geometry.Side;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
@@ -32,6 +33,7 @@ import se.trixon.almond.util.fx.FxHelper;
  */
 public class LayerView extends BorderPane {
 
+    private final Tab mOptionsTab = new Tab(Dict.OPTIONS.toString());
     private final Tab mBackgroundTab = new Tab(Dict.BACKGROUND.toString());
     private final Tab mDataTab = new Tab(Dict.OBJECT.toString());
     private final Tab mOverlayTab = new Tab(MDict.OVERLAY.toString());
@@ -51,15 +53,16 @@ public class LayerView extends BorderPane {
     }
 
     private void createUI() {
-        mDataTab.setDisable(true);
-        mBackgroundTab.setDisable(true);
-        mOverlayTab.setDisable(true);
+//        mDataTab.setDisable(true);
+//        mBackgroundTab.setDisable(true);
+//        mOverlayTab.setDisable(true);
 
         mTabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
         mTabPane.setSide(Side.LEFT);
         mTabPane.getTabs().addAll(mDataTab,
                 mOverlayTab,
-                mBackgroundTab
+                mBackgroundTab,
+                mOptionsTab
         );
 
         setCenter(mTabPane);
@@ -79,6 +82,11 @@ public class LayerView extends BorderPane {
 
             mBackgroundTab.setContent(Mapton.getEngine().getLayerBackgroundView());
             mBackgroundTab.setDisable(mBackgroundTab.getContent() == null);
+
+            var layerOptionsView = Mapton.getEngine().getLayerOptionsView();
+            var optionsScrollPane = new ScrollPane(layerOptionsView);
+            mOptionsTab.setContent(optionsScrollPane);
+            mOptionsTab.setDisable(layerOptionsView == null);
         });
     }
 
