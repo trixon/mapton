@@ -15,41 +15,25 @@
  */
 package org.mapton.worldwind;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
-import javafx.scene.control.MultipleSelectionModel;
-import javafx.scene.control.Separator;
 import javafx.scene.control.TextField;
-import javafx.scene.control.ToolBar;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import org.apache.commons.lang3.StringUtils;
-import org.controlsfx.control.PopOver;
-import org.controlsfx.control.action.Action;
-import org.controlsfx.control.action.ActionUtils;
 import org.controlsfx.control.textfield.TextFields;
-import org.mapton.api.MKey;
-import org.mapton.api.MWmsStyle;
-import org.mapton.api.Mapton;
-import static org.mapton.api.Mapton.getIconSizeToolBarInt;
-import org.mapton.api.ui.MOptionsPopOver;
 import static org.mapton.worldwind.ModuleOptions.KEY_MAP_STYLE;
 import static org.mapton.worldwind.ModuleOptions.KEY_MAP_STYLE_PREV;
 import org.mapton.worldwind.api.MapStyle;
-import org.openide.util.Lookup;
 import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.GlobalStateChangeEvent;
 import se.trixon.almond.util.fx.FxHelper;
 
 /**
@@ -58,14 +42,14 @@ import se.trixon.almond.util.fx.FxHelper;
  */
 public class LayerBackgroundView extends BorderPane {
 
-    private final ModuleOptions mOptions = ModuleOptions.getInstance();
-    private final VBox mSpeedDial = new VBox(16);
+    private final BorderPane mBorderPane = new BorderPane();
     private TextField mFilterTextField;
-    private Action mOptionsAction;
-    private MOptionsPopOver mOptionsPopOver;
-    private ToolBar mToolBar;
-    private ListView<MapStyle> listView = new ListView<>();
-    private BorderPane borderPane = new BorderPane();
+    private final ListView<MapStyle> mListView = new ListView<>();
+    private final LayerMapStyleManager mManager = LayerMapStyleManager.getInstance();
+    private final ModuleOptions mOptions = ModuleOptions.getInstance();
+    private final HBox mSpeedDialDynamic = new HBox(FxHelper.getUIScaled(16));
+    private final HBox mSpeedDialFixed = new HBox(FxHelper.getUIScaled(16));
+    private final VBox mSpeedDial = new VBox(FxHelper.getUIScaled(16), mSpeedDialFixed, mSpeedDialDynamic);
 
     public static LayerBackgroundView getInstance() {
         return Holder.INSTANCE;
@@ -75,109 +59,93 @@ public class LayerBackgroundView extends BorderPane {
         createUI();
         initListeners();
 
-        Lookup.getDefault().lookupResult(MapStyle.class).addLookupListener(lookupEvent -> {
-            initStyle();
-        });
-
-        initStyle();
+        populate();
+        FxHelper.runLaterDelayed(1000, () -> mManager.refresh());
     }
 
     private void createUI() {
-        mOptionsPopOver = new MOptionsPopOver();
-        mOptionsPopOver.setArrowLocation(PopOver.ArrowLocation.LEFT_CENTER);
-        //mOptionsPopOver.setContentNode(new LayerOptionsView());
+        mSpeedDial.setPadding(FxHelper.getUIScaledInsets(8));
 
         mFilterTextField = TextFields.createClearableTextField();
-        mFilterTextField.setPromptText(Dict.LAYER_SEARCH.toString());
+        mFilterTextField.setPromptText(Dict.SEARCH.toString());
         mFilterTextField.setMinWidth(20);
-        final int iconSize = (int) (getIconSizeToolBarInt() * 0.8);
 
-        mOptionsAction = mOptionsPopOver.getAction();
-        var actions = Arrays.asList(
-                //                selectActionGroup,
-                mOptionsAction
-        );
-        mToolBar = ActionUtils.createToolBar(actions, ActionUtils.ActionTextBehavior.HIDE);
-        FxHelper.adjustButtonWidth(mToolBar.getItems().stream(), iconSize);
-        FxHelper.undecorateButtons(mToolBar.getItems().stream());
-        FxHelper.slimToolBar(mToolBar);
-        var topBorderPane = new BorderPane(mFilterTextField);
-        topBorderPane.setRight(mToolBar);
-        mToolBar.setMinWidth(iconSize * 2.5);
-        setTop(topBorderPane);
-        setCenter(borderPane);
-        borderPane.setTop(mSpeedDial);
-        borderPane.setCenter(listView);
+        mListView.itemsProperty().bind(mManager.timeFilteredItemsProperty());
+        mListView.setCellFactory(listView -> new MapStyleListCell());
+
+        setTop(mSpeedDial);
+        setCenter(mBorderPane);
+        mBorderPane.setTop(mFilterTextField);
+        mBorderPane.setCenter(mListView);
     }
 
     private void initListeners() {
-        Mapton.getGlobalState().addListener((GlobalStateChangeEvent evt) -> {
-            initStyle();
-        }, MKey.DATA_SOURCES_WMS_STYLES);
+        mFilterTextField.textProperty().addListener((p, o, n) -> {
+            mManager.refresh(n);
+        });
+
+        mManager.getAllItems().addListener((ListChangeListener.Change<? extends MapStyle> c) -> {
+            populateSpeedDialFixed();
+        });
+        var selectionModel = mListView.getSelectionModel();
+        selectionModel.selectedItemProperty().addListener((p, o, n) -> {
+            mManager.setSelectedItem(n);
+        });
+
+        mManager.selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (mListView.getSelectionModel().getSelectedItem() != newValue) {
+                mListView.getSelectionModel().select(newValue);
+                mListView.getFocusModel().focus(mListView.getItems().indexOf(newValue));
+                FxHelper.scrollToItemIfNotVisible(mListView, newValue);
+            }
+        });
+
+        selectionModel.getSelectedItems().addListener((ListChangeListener.Change<? extends MapStyle> change) -> {
+            change.next();
+            if (change.wasAdded() || change.wasReplaced()) {
+                try {
+                    mOptions.put(KEY_MAP_STYLE_PREV, mOptions.get(KEY_MAP_STYLE));
+                    mOptions.put(KEY_MAP_STYLE, selectionModel.getSelectedItem().getId());
+                } catch (Exception e) {
+                }
+            }
+        });
     }
 
-    private void initStyle() {
-        Platform.runLater(() -> {
-            mSpeedDial.getChildren().clear();
+    private void populate() {
+        populateSpeedDialFixed();
+        populateSpeedDialDynamic();
+    }
 
-            ArrayList<MapStyle> styles = new ArrayList<>(Lookup.getDefault().lookupAll(MapStyle.class));
-            ArrayList<MWmsStyle> wmsStyles = Mapton.getGlobalState().get(MKey.DATA_SOURCES_WMS_STYLES);
-            ArrayList<MapStyle> stylesList = new ArrayList<>();
-
-            if (wmsStyles != null) {
-                for (var wmsStyle : wmsStyles) {
-                    styles.add(MapStyle.createFromWmsStyle(wmsStyle));
-                }
-            }
-
-            Collections.sort(styles, (o1, o2) -> o1.getName().compareTo(o2.getName()));
-//            var categoryStyles = new TreeMap<String, ObservableList<MapStyle>>();
-            for (var mapStyle : styles) {
-                if (StringUtils.isBlank(mapStyle.getCategory())) {
-                    var button = new Button(mapStyle.getName());
-                    button.prefWidthProperty().bind(widthProperty());
-                    button.setOnAction(actionEvent -> {
-                        mOptions.put(KEY_MAP_STYLE_PREV, mOptions.get(KEY_MAP_STYLE));
-                        mOptions.put(KEY_MAP_STYLE, mapStyle.getId());
-                    });
-
-                    if (mapStyle.getSuppliers() != null) {
-                        button.setTooltip(new Tooltip(mapStyle.getDescription()));
-                    }
-
-                    mSpeedDial.getChildren().add(button);
-                } else {
-//                    categoryStyles.computeIfAbsent(mapStyle.getCategory(), k -> FXCollections.observableArrayList()).add(mapStyle);
-                    stylesList.add(mapStyle);
-                }
-            }
-
-            mSpeedDial.getChildren().add(new Separator());
-
-            listView.getItems().setAll(stylesList);
-//            for (var category : categoryStyles.keySet()) {
-//                listView.setPrefWidth(FxHelper.getUIScaled(250));
-            listView.setCellFactory((ListView<MapStyle> param) -> new MapStyleListCell());
-//                listView.parentProperty().addListener((ObservableValue<? extends Parent> observable, Parent oldValue, Parent newValue) -> {
-//                    Region region = (Region) newValue;
-//                    region.setPadding(Insets.EMPTY);
-//                    region.setBorder(Border.EMPTY);
-//                });
-
-            MultipleSelectionModel<MapStyle> selectionModel = listView.getSelectionModel();
-            selectionModel.getSelectedItems().addListener((ListChangeListener.Change<? extends MapStyle> change) -> {
-                change.next();
-                if (change.wasAdded() || change.wasReplaced()) {
-                    try {
-                        mOptions.put(KEY_MAP_STYLE_PREV, mOptions.get(KEY_MAP_STYLE));
-                        mOptions.put(KEY_MAP_STYLE, selectionModel.getSelectedItem().getId());
-                    } catch (Exception e) {
-                    }
-                }
-            });
-
+    private void populateSpeedDialDynamic() {
+        for (int i = 0; i < 6; i++) {
+            var button = new Button(Integer.toString(i + 1));
+            button.prefWidthProperty().bind(widthProperty());
+            mSpeedDialDynamic.getChildren().add(button);
         }
-        );
+    }
+
+    private void populateSpeedDialFixed() {
+        FxHelper.runLater(() -> {
+            mSpeedDialFixed.getChildren().clear();
+            mManager.getAllItems().stream()
+                    .filter(mapStyle -> StringUtils.isBlank(mapStyle.getCategory()))
+                    .forEachOrdered(mapStyle -> {
+                        var button = new Button(mapStyle.getName());
+                        button.prefWidthProperty().bind(widthProperty());
+                        button.setOnAction(actionEvent -> {
+                            mOptions.put(KEY_MAP_STYLE_PREV, mOptions.get(KEY_MAP_STYLE));
+                            mOptions.put(KEY_MAP_STYLE, mapStyle.getId());
+                        });
+
+                        if (mapStyle.getSuppliers() != null) {
+                            button.setTooltip(new Tooltip(mapStyle.getDescription()));
+                        }
+
+                        mSpeedDialFixed.getChildren().add(button);
+                        button.prefHeightProperty().bind(mSpeedDialFixed.heightProperty());
+                    });
+        });
     }
 
     private static class Holder {
@@ -188,6 +156,7 @@ public class LayerBackgroundView extends BorderPane {
     class MapStyleListCell extends ListCell<MapStyle> {
 
         private final VBox mBox = new VBox();
+        private final Label mCategoryLabel = new Label();
         private final Label mDescLabel = new Label();
         private final Label mNameLabel = new Label();
 
@@ -210,6 +179,7 @@ public class LayerBackgroundView extends BorderPane {
             setText(null);
 
             mNameLabel.setText(mapStyle.getName());
+            mCategoryLabel.setText(mapStyle.getCategory());
             mDescLabel.setText(mapStyle.getDescription());
 
             setGraphic(mBox);
@@ -223,11 +193,17 @@ public class LayerBackgroundView extends BorderPane {
         private void createUI() {
             String fontFamily = Font.getDefault().getFamily();
             double fontSize = FxHelper.getScaledFontSize();
+
+            mCategoryLabel.setFont(Font.font(fontFamily, FontWeight.THIN, fontSize));
             mNameLabel.setFont(Font.font(fontFamily, FontWeight.BOLD, fontSize));
             mDescLabel.setFont(Font.font(fontFamily, FontPosture.ITALIC, fontSize));
 
-            mBox.setSpacing(FxHelper.getUIScaled(4));
-            mBox.getChildren().setAll(mNameLabel, mDescLabel);
+            mBox.setSpacing(FxHelper.getUIScaled(2));
+            mBox.getChildren().setAll(
+                    mNameLabel,
+                    mCategoryLabel,
+                    mDescLabel
+            );
         }
     }
 }
