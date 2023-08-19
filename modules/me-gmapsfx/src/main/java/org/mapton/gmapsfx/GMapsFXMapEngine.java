@@ -93,6 +93,11 @@ public class GMapsFXMapEngine extends MEngine {
         return toLatLon(mMap.getCenter());
     }
 
+    @Override
+    public Node getLayerBackgroundView() {
+        return mStyleView;
+    }
+
     public GoogleMap getMap() {
         return mMap;
     }
@@ -116,7 +121,7 @@ public class GMapsFXMapEngine extends MEngine {
 
     @Override
     public Node getStyleView() {
-        return mStyleView;
+        return null;
     }
 
     @Override
