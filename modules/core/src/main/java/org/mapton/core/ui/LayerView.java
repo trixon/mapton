@@ -15,6 +15,7 @@
  */
 package org.mapton.core.ui;
 
+import java.util.prefs.Preferences;
 import javafx.application.Platform;
 import javafx.geometry.Side;
 import javafx.scene.control.ScrollPane;
@@ -33,11 +34,12 @@ import se.trixon.almond.util.fx.FxHelper;
  */
 public class LayerView extends BorderPane {
 
-    private final Tab mOptionsTab = new Tab(Dict.OPTIONS.toString());
     private final Tab mBackgroundTab = new Tab(Dict.BACKGROUND.toString());
     private final Tab mDataTab = new Tab(Dict.OBJECT.toString());
+    private final Tab mOptionsTab = new Tab(Dict.OPTIONS.toString());
     private final Tab mOverlayTab = new Tab(MDict.OVERLAY.toString());
     private final TabPane mTabPane = new TabPane();
+    private final Preferences mPreferences = MOptions.getInstance().getPreferences().node("layerView");
 
     public static LayerView getInstance() {
         return Holder.INSTANCE;
@@ -53,10 +55,6 @@ public class LayerView extends BorderPane {
     }
 
     private void createUI() {
-//        mDataTab.setDisable(true);
-//        mBackgroundTab.setDisable(true);
-//        mOverlayTab.setDisable(true);
-
         mTabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
         mTabPane.setSide(Side.LEFT);
         mTabPane.getTabs().addAll(mDataTab,
@@ -68,7 +66,6 @@ public class LayerView extends BorderPane {
         setCenter(mTabPane);
 
         setPrefWidth(FxHelper.getUIScaled(300));
-
         loadLayerView();
     }
 
@@ -87,6 +84,12 @@ public class LayerView extends BorderPane {
             var optionsScrollPane = new ScrollPane(layerOptionsView);
             mOptionsTab.setContent(optionsScrollPane);
             mOptionsTab.setDisable(layerOptionsView == null);
+
+            int activeTab = mPreferences.getInt("activeTab", 0);
+            mTabPane.getSelectionModel().select(activeTab);
+            mTabPane.getSelectionModel().selectedIndexProperty().addListener((p, o, n) -> {
+                mPreferences.putInt("activeTab", n.intValue());
+            });
         });
     }
 
