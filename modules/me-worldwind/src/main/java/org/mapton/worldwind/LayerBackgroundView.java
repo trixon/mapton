@@ -47,9 +47,9 @@ public class LayerBackgroundView extends BorderPane {
     private final ListView<MapStyle> mListView = new ListView<>();
     private final LayerMapStyleManager mManager = LayerMapStyleManager.getInstance();
     private final ModuleOptions mOptions = ModuleOptions.getInstance();
-    private final HBox mSpeedDialDynamic = new HBox(FxHelper.getUIScaled(16));
-    private final HBox mSpeedDialFixed = new HBox(FxHelper.getUIScaled(16));
-    private final VBox mSpeedDial = new VBox(FxHelper.getUIScaled(16), mSpeedDialFixed, mSpeedDialDynamic);
+    private final HBox mSpeedDialDynamic = new HBox(FxHelper.getUIScaled(2));
+    private final HBox mSpeedDialFixed = new HBox(FxHelper.getUIScaled(2));
+    private final VBox mSpeedDial = new VBox(FxHelper.getUIScaled(2), mSpeedDialFixed, mSpeedDialDynamic);
 
     public static LayerBackgroundView getInstance() {
         return Holder.INSTANCE;
@@ -121,6 +121,8 @@ public class LayerBackgroundView extends BorderPane {
         for (int i = 0; i < 6; i++) {
             var button = new Button(Integer.toString(i + 1));
             button.prefWidthProperty().bind(widthProperty());
+            button.setPadding(FxHelper.getUIScaledInsets(3));
+
             mSpeedDialDynamic.getChildren().add(button);
         }
     }
@@ -133,6 +135,7 @@ public class LayerBackgroundView extends BorderPane {
                     .forEachOrdered(mapStyle -> {
                         var button = new Button(mapStyle.getName());
                         button.prefWidthProperty().bind(widthProperty());
+                        button.setPadding(FxHelper.getUIScaledInsets(3));
                         button.setOnAction(actionEvent -> {
                             mOptions.put(KEY_MAP_STYLE_PREV, mOptions.get(KEY_MAP_STYLE));
                             mOptions.put(KEY_MAP_STYLE, mapStyle.getId());
@@ -143,7 +146,6 @@ public class LayerBackgroundView extends BorderPane {
                         }
 
                         mSpeedDialFixed.getChildren().add(button);
-                        button.prefHeightProperty().bind(mSpeedDialFixed.heightProperty());
                     });
         });
     }
