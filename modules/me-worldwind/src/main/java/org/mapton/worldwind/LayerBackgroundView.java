@@ -15,6 +15,7 @@
  */
 package org.mapton.worldwind;
 
+import java.util.ArrayList;
 import javafx.collections.ListChangeListener;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -26,7 +27,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
-import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.textfield.TextFields;
@@ -128,7 +128,7 @@ public class LayerBackgroundView extends BorderPane {
     private void populateSpeedDialFixed() {
         FxHelper.runLater(() -> {
             mSpeedDialFixed.getChildren().clear();
-            mManager.getAllItems().stream()
+            new ArrayList<>(mManager.getAllItems()).stream()
                     .filter(mapStyle -> StringUtils.isBlank(mapStyle.getCategory()))
                     .forEachOrdered(mapStyle -> {
                         var button = new Button(mapStyle.getName());
@@ -157,7 +157,6 @@ public class LayerBackgroundView extends BorderPane {
 
         private final VBox mBox = new VBox();
         private final Label mCategoryLabel = new Label();
-        private final Label mDescLabel = new Label();
         private final Label mNameLabel = new Label();
 
         public MapStyleListCell() {
@@ -180,9 +179,10 @@ public class LayerBackgroundView extends BorderPane {
 
             mNameLabel.setText(mapStyle.getName());
             mCategoryLabel.setText(mapStyle.getCategory());
-            mDescLabel.setText(mapStyle.getDescription());
-
             setGraphic(mBox);
+            if (StringUtils.isNotBlank(mapStyle.getDescription())) {
+                setTooltip(new Tooltip(mapStyle.getDescription()));
+            }
         }
 
         private void clearContent() {
@@ -196,13 +196,11 @@ public class LayerBackgroundView extends BorderPane {
 
             mCategoryLabel.setFont(Font.font(fontFamily, FontWeight.THIN, fontSize));
             mNameLabel.setFont(Font.font(fontFamily, FontWeight.BOLD, fontSize));
-            mDescLabel.setFont(Font.font(fontFamily, FontPosture.ITALIC, fontSize));
 
             mBox.setSpacing(FxHelper.getUIScaled(2));
             mBox.getChildren().setAll(
                     mNameLabel,
-                    mCategoryLabel,
-                    mDescLabel
+                    mCategoryLabel
             );
         }
     }
