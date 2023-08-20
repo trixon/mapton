@@ -82,6 +82,7 @@ public class LayerView extends BorderPane {
 
             var layerOptionsView = Mapton.getEngine().getLayerOptionsView();
             var optionsScrollPane = new ScrollPane(layerOptionsView);
+            optionsScrollPane.setFitToWidth(true);
             mOptionsTab.setContent(optionsScrollPane);
             mOptionsTab.setDisable(layerOptionsView == null);
 
