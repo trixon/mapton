@@ -19,12 +19,8 @@ import gov.nasa.worldwind.Factory;
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.avlist.AVList;
-import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.ogc.wms.WMSCapabilities;
-import gov.nasa.worldwind.ogc.wms.WMSLayerCapabilities;
-import gov.nasa.worldwind.ogc.wms.WMSLayerStyle;
-import gov.nasa.worldwind.util.WWUtil;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.TreeSet;
@@ -37,7 +33,7 @@ import org.mapton.api.Mapton;
  */
 public abstract class WmsService {
 
-    private final TreeSet<LayerInfo> mLayerInfos = new TreeSet<>((LayerInfo o1, LayerInfo o2) -> o1.getName().compareTo(o2.getName()));
+    private final TreeSet<LayerInfo> mLayerInfos = new TreeSet<>((o1, o2) -> o1.getName().compareTo(o2.getName()));
     private final ArrayList<Layer> mLayers = new ArrayList<>();
     private boolean mPopulated = false;
 
@@ -141,42 +137,4 @@ public abstract class WmsService {
         return hasApplicationBilFormat ? AVKey.ELEVATION_MODEL_FACTORY : AVKey.LAYER_FACTORY;
     }
 
-    protected class LayerInfo {
-
-        private final AVListImpl mParams = new AVListImpl();
-        private final WMSCapabilities mWmsCapabilities;
-
-        public LayerInfo(WMSCapabilities wmsCapabilities, WMSLayerCapabilities wmsLayerCapabilities, WMSLayerStyle wmsLayerstyle) {
-            mWmsCapabilities = wmsCapabilities;
-            mParams.setValue(AVKey.LAYER_NAMES, wmsLayerCapabilities.getName());
-            if (wmsLayerstyle != null) {
-                mParams.setValue(AVKey.STYLE_NAMES, wmsLayerstyle.getName());
-            }
-            String abs = wmsLayerCapabilities.getLayerAbstract();
-            if (!WWUtil.isEmpty(abs)) {
-                mParams.setValue(AVKey.LAYER_ABSTRACT, abs);
-            }
-
-        }
-
-        public String getAbstract() {
-            return mParams.getStringValue(AVKey.LAYER_ABSTRACT);
-        }
-
-        public String getName() {
-            return mParams.getStringValue(AVKey.LAYER_NAMES);
-        }
-
-        public AVListImpl getParams() {
-            return mParams;
-        }
-
-        public String getTitle() {
-            return mParams.getStringValue(AVKey.DISPLAY_NAME);
-        }
-
-        public WMSCapabilities getWmsCapabilities() {
-            return mWmsCapabilities;
-        }
-    }
 }

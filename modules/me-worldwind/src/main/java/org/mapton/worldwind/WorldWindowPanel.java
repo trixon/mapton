@@ -23,7 +23,6 @@ import gov.nasa.worldwind.avlist.AVList;
 import gov.nasa.worldwind.awt.WorldWindowGLJPanel;
 import gov.nasa.worldwind.event.SelectEvent;
 import gov.nasa.worldwind.event.SelectListener;
-import gov.nasa.worldwind.exception.WWRuntimeException;
 import gov.nasa.worldwind.globes.EarthFlat;
 import gov.nasa.worldwind.globes.ElevationModel;
 import gov.nasa.worldwind.globes.FlatGlobe;
@@ -55,34 +54,29 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.net.SocketTimeoutException;
 import java.nio.BufferUnderflowException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.stream.Stream;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javax.xml.stream.XMLStreamException;
 import org.mapton.api.MDict;
 import org.mapton.api.MKey;
 import static org.mapton.api.MKey.*;
-import org.mapton.api.MNotificationIcons;
 import org.mapton.api.MOptions;
 import org.mapton.api.MWmsSource;
 import org.mapton.api.Mapton;
 import org.mapton.core.api.MaptonNb;
 import static org.mapton.worldwind.ModuleOptions.*;
-import static org.mapton.worldwind.WorldWindMapEngine.LOG_TAG;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.MapStyle;
 import org.mapton.worldwind.api.WWHelper;
-import org.mapton.worldwind.api.WmsService;
-import org.openide.awt.NotificationDisplayer;
-import org.openide.awt.NotificationDisplayer.Priority;
+import org.mapton.worldwind.api.WmsLayerLoader;
 import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import se.trixon.almond.util.Dict;
@@ -104,6 +98,8 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
     private CompoundElevationModel mNormalElevationModel;
     private final ModuleOptions mOptions = ModuleOptions.getInstance();
     private Globe mRoundGlobe;
+    private final WmsLayerLoader mWmsLayerLoader = new WmsLayerLoader();
+    private final HashSet<String> mWmsLoadedLayers = new HashSet<>();
     private final ElevationModel mZeroElevationModel = new ZeroElevationModel();
 
     public WorldWindowPanel(Runnable postCreateRunnable) {
@@ -251,10 +247,10 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         updateElevation();
         MaptonNb.progressStop(MDict.MAP_ENGINE.toString());
         Mapton.getExecutionFlow().setReady(MKey.EXECUTION_FLOW_MAP_WW_INITIALIZED);
-        initLayerBundles();
-        initWmsService();
-
         updateStyle();
+
+        initLayerBundles();
+
         customElevationModelRefresh();
     }
 
@@ -309,16 +305,8 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
             }
         });
 
-        Mapton.getGlobalState().addListener(gsce -> {
-            initWmsService();
-        }, DATA_SOURCES_WMS_SOURCES);
-
         Lookup.getDefault().lookupResult(LayerBundle.class).addLookupListener(lookupEvent -> {
             initLayerBundles();
-        });
-
-        Lookup.getDefault().lookupResult(WmsService.class).addLookupListener(lookupEvent -> {
-            initWmsService();
         });
 
         var highlightClickAdapter = new MouseAdapter() {
@@ -401,53 +389,9 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         getWwd().addSelectListener(rolloverSelectListener);
         getWwd().getInputHandler().addMouseListener(highlightClickAdapter);
 
-        MOptions.getInstance().displayCrosshairProperty().addListener((observable, oldValue, newValue) -> {
-            mCrosshairLayer.setEnabled(newValue);
+        MOptions.getInstance().displayCrosshairProperty().addListener((p, o, n) -> {
+            mCrosshairLayer.setEnabled(n);
         });
-    }
-
-    private void initWmsService() {
-        ArrayList<WmsService> wmsServices = new ArrayList<>(Lookup.getDefault().lookupAll(WmsService.class));
-        ArrayList<MWmsSource> wmsSources = Mapton.getGlobalState().get(DATA_SOURCES_WMS_SOURCES);
-
-        if (wmsSources != null) {
-            for (var wmsSource : wmsSources) {
-                wmsServices.add(WmsService.createFromWmsSource(wmsSource));
-            }
-        }
-
-        for (var wmsService : wmsServices) {
-            if (!wmsService.isPopulated()) {
-                new Thread(() -> {
-                    try {
-                        wmsService.populate();
-                        for (var layer : wmsService.getLayers()) {
-                            Mapton.logLoading("WMS Layer", layer.getName());
-                            layer.setEnabled(false);
-                            getLayers().addIfAbsent(layer);
-                        }
-                        updateStyle();
-                    } catch (SocketTimeoutException ex) {
-                        //aaaNbMessage.warning("ERROR", "initWmsService");//TODO Remove this once spotted
-                        Mapton.getLog().w(LOG_TAG, ex.toString());
-                    } catch (XMLStreamException ex) {
-                        Mapton.getLog().w(LOG_TAG, ex.toString());
-                    } catch (WWRuntimeException ex) {
-                        System.err.println(ex.toString());
-                        NotificationDisplayer.getDefault().notify(
-                                Dict.Dialog.TITLE_IO_ERROR.toString(),
-                                MNotificationIcons.getErrorIcon(),
-                                "WMS error: %s".formatted(wmsService.getName()),
-                                null,
-                                Priority.HIGH
-                        );
-                        Mapton.getLog().e(LOG_TAG, ex.toString());
-                    } catch (Exception ex) {
-                        Exceptions.printStackTrace(ex);
-                    }
-                }).start();
-            }
-        }
     }
 
     private void insertLayerBefore(Layer aLayer, Class type) {
@@ -482,7 +426,7 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         }
 
         var allLayers = getLayers();
-        List<String> documentLayers = Arrays.asList(styleLayers);
+        var documentLayers = Arrays.asList(styleLayers);
         Collections.reverse(documentLayers);
 
         for (var layerName : documentLayers) {
@@ -543,39 +487,67 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
     }
 
     private synchronized void updateStyle() {
-        HashSet<String> blacklist = new HashSet<>();
-        blacklist.add("Compass");
-        blacklist.add("World Map");
-        blacklist.add("Scale bar");
-        blacklist.add("View Controls");
-        blacklist.add("Stars");
-        blacklist.add("Atmosphere");
-        blacklist.add("Place Names");
-        blacklist.add("Measure Tool");
-        blacklist.add("Mask");
-        blacklist.add("Crosshairs");
+        var blocklist = Set.of(
+                "Compass",
+                "World Map",
+                "Scale bar",
+                "View Controls",
+                "Stars",
+                "Atmosphere",
+                "Place Names",
+                "Measure Tool",
+                "Mask",
+                "Crosshairs"
+        );
 
-        String styleId = mOptions.get(KEY_MAP_STYLE, DEFAULT_MAP_STYLE);
-        String[] styleLayers = MapStyle.getLayers(styleId);
+        var styleId = mOptions.get(KEY_MAP_STYLE, DEFAULT_MAP_STYLE);
         var mapStyle = MapStyle.getStyle(styleId);
 
         try {
-            Mapton.getLog().i(Dict.DOCUMENT.toString(), "%s: (%s)".formatted(mapStyle.getName(), String.join(", ", styleLayers)));
+            Mapton.getLog().i(Dict.DOCUMENT.toString(), "%s: (%s)".formatted(mapStyle.getName(), String.join(", ", mapStyle.getLayers())));
         } catch (NullPointerException e) {
         }
-        getLayers().forEach((layer) -> {
+
+        ((Stream<String>) Arrays.stream(mapStyle.getLayers()))
+                .filter(id -> !mWmsLoadedLayers.contains(id))
+                .forEachOrdered(id -> {
+                    ArrayList<MWmsSource> wmsSources = Mapton.getGlobalState().get(DATA_SOURCES_WMS_SOURCES);
+
+                    if (wmsSources != null) {
+                        Layer layer = null;
+
+                        for (var wmsSource : wmsSources) {
+                            for (var entry : wmsSource.getLayers().entrySet()) {
+                                var key = entry.getKey();
+                                var val = entry.getValue();
+
+                                if (val.equalsIgnoreCase(id)) {
+                                    layer = mWmsLayerLoader.load(id, wmsSource.getUrl(), key);
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (layer != null) {
+                            layer.setOpacity(mOptions.getDouble(KEY_MAP_OPACITY, DEFAULT_MAP_OPACITY));
+                            getLayers().addIfAbsent(layer);
+                            mWmsLoadedLayers.add(id);
+                        }
+                    }
+                });
+
+        getLayers().forEach(layer -> {
             try {
-                final String name = layer.getName();
-                if (!blacklist.contains(name) && !mCustomLayers.contains(layer)) {
-                    layer.setEnabled(Arrays.asList(styleLayers).contains(name));
-                    layer.setOpacity(mOptions.getDouble(KEY_MAP_OPACITY, DEFAULT_MAP_OPACITY));
+                var name = layer.getName();
+                if (!blocklist.contains(name) && !mCustomLayers.contains(layer)) {
+                    layer.setEnabled(Arrays.asList(mapStyle.getLayers()).contains(name));
                 }
             } catch (NullPointerException e) {
                 //nvm
             }
         });
 
-        orderLayers(styleLayers);
+        orderLayers(mapStyle.getLayers());
 
         redraw();
     }

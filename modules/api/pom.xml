@@ -285,7 +285,7 @@
         <dependency>
             <groupId>eu.hansolo.fx</groupId>
             <artifactId>heatmap</artifactId>
-            <version>17.0.23</version>
+            <version>17.0.27</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.openjfx</groupId>
@@ -307,7 +307,7 @@
         <dependency>
             <groupId>eu.hansolo</groupId>
             <artifactId>toolbox</artifactId>
-            <version>17.0.53</version>
+            <version>17.0.57</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.openjfx</groupId>
@@ -318,7 +318,7 @@
         <dependency>
             <groupId>eu.hansolo</groupId>
             <artifactId>toolboxfx</artifactId>
-            <version>17.0.43</version>
+            <version>17.0.47</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.openjfx</groupId>
@@ -336,13 +336,13 @@
         <dependency>
             <groupId>org.apache.pdfbox</groupId>
             <artifactId>pdfbox</artifactId>
-            <version>2.0.29</version>
+            <version>3.0.0</version>
         </dependency>
 
         <dependency>
             <groupId>com.helger</groupId>
             <artifactId>ph-pdf-layout</artifactId>
-            <version>7.0.1</version>
+            <version>7.1.0</version>
         </dependency>
         <dependency>
             <groupId>com.helger.font</groupId>
@@ -388,6 +388,6 @@
 
     <properties>
         <netbeans.hint.license>apache20</netbeans.hint.license>
-        <geotools.version>29.0</geotools.version>
+        <geotools.version>29.2</geotools.version>
     </properties>
 </project>

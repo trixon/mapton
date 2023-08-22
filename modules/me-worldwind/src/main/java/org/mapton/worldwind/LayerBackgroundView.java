@@ -92,11 +92,11 @@ public class LayerBackgroundView extends BorderPane {
             mManager.setSelectedItem(n);
         });
 
-        mManager.selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (mListView.getSelectionModel().getSelectedItem() != newValue) {
-                mListView.getSelectionModel().select(newValue);
-                mListView.getFocusModel().focus(mListView.getItems().indexOf(newValue));
-                FxHelper.scrollToItemIfNotVisible(mListView, newValue);
+        mManager.selectedItemProperty().addListener((p, o, n) -> {
+            if (mListView.getSelectionModel().getSelectedItem() != n) {
+                mListView.getSelectionModel().select(n);
+                mListView.getFocusModel().focus(mListView.getItems().indexOf(n));
+                FxHelper.scrollToItemIfNotVisible(mListView, n);
             }
         });
 
@@ -137,6 +137,7 @@ public class LayerBackgroundView extends BorderPane {
                         button.prefWidthProperty().bind(widthProperty());
                         button.setPadding(FxHelper.getUIScaledInsets(3));
                         button.setOnAction(actionEvent -> {
+                            mListView.getSelectionModel().clearSelection();
                             mOptions.put(KEY_MAP_STYLE_PREV, mOptions.get(KEY_MAP_STYLE));
                             mOptions.put(KEY_MAP_STYLE, mapStyle.getId());
                         });
