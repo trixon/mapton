@@ -17,12 +17,14 @@ package org.mapton.core.ui;
 
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
+import org.mapton.api.MOptions;
 import org.mapton.core.api.MTopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.fx.FxHelper;
 
 /**
  * Top component which displays something.
@@ -47,6 +49,7 @@ import se.trixon.almond.util.Dict;
 public final class LayerTopComponent extends MTopComponent {
 
     private BorderPane mBorderPane;
+    private final MOptions mOptions = MOptions.getInstance();
 
     public LayerTopComponent() {
         putClientProperty(PROP_MAXIMIZATION_DISABLED, Boolean.TRUE);
@@ -56,6 +59,10 @@ public final class LayerTopComponent extends MTopComponent {
 
         setName(Dict.LAYERS.toString());
         setPopOverHolder(true);
+
+        mOptions.mapOnlyProperty().addListener((p, o, n) -> {
+            FxHelper.runLaterDelayed(200, () -> fxComponentOpened());
+        });
     }
 
     @Override

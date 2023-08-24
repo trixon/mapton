@@ -83,6 +83,7 @@ public class MOptions extends OptionsBase {
     private final ObjectProperty<String> mEngineProperty = new SimpleObjectProperty<>("WorldWind");
     private final ObjectProperty<Color> mIconColorBrightProperty = new SimpleObjectProperty<>(Color.valueOf(DEFAULT_UI_LAF_ICON_COLOR_BRIGHT));
     private final ObjectProperty<Color> mIconColorDarkProperty = new SimpleObjectProperty<>(Color.valueOf(DEFAULT_UI_LAF_ICON_COLOR_DARK));
+    private final BooleanProperty mMapOnlyProperty = new SimpleBooleanProperty(false);
     private final BooleanProperty mMaximizedMapProperty = new SimpleBooleanProperty(true);
     private final BooleanProperty mNightModeProperty = new SimpleBooleanProperty(true);
     private final BooleanProperty mPreferPopoverProperty = new SimpleBooleanProperty(true);
@@ -232,6 +233,10 @@ public class MOptions extends OptionsBase {
         return mPreferPopoverProperty.get();
     }
 
+    public BooleanProperty mapOnlyProperty() {
+        return mMapOnlyProperty;
+    }
+
     public BooleanProperty maximizedMapProperty() {
         return mMaximizedMapProperty;
     }
@@ -277,30 +282,31 @@ public class MOptions extends OptionsBase {
     private void initListeners() {
         mPreferences.addPreferenceChangeListener(pcl -> {
             switch (pcl.getKey()) {
-                case KEY_UI_POPOVER:
-                    //Allow setting default value on startup
+                case KEY_MAP_ONLY ->
+                    mMapOnlyProperty.set(is(KEY_MAP_ONLY));
+
+                case KEY_UI_POPOVER -> //Allow setting default value on startup
                     mPreferPopoverProperty.set(is(KEY_UI_POPOVER));
-                    break;
             }
         });
 
-        mNightModeProperty.addListener((ov, t, t1) -> {
-            put(KEY_UI_LAF_DARK, t1);
+        mNightModeProperty.addListener((p, o, n) -> {
+            put(KEY_UI_LAF_DARK, n);
         });
 
-        mPreferPopoverProperty.addListener((ov, t, t1) -> {
-            put(KEY_UI_POPOVER, t1);
+        mPreferPopoverProperty.addListener((p, o, n) -> {
+            put(KEY_UI_POPOVER, n);
         });
 
-        mDisplayCrosshairProperty.addListener((ov, t, t1) -> {
-            put(KEY_MAP_DISPLAY_CROSSHAIR, t1);
+        mDisplayCrosshairProperty.addListener((p, o, n) -> {
+            put(KEY_MAP_DISPLAY_CROSSHAIR, n);
         });
 
-        mDisplayHomeIconProperty.addListener((ov, t, t1) -> {
-            put(KEY_MAP_DISPLAY_HOME_ICON, t1);
+        mDisplayHomeIconProperty.addListener((p, o, n) -> {
+            put(KEY_MAP_DISPLAY_HOME_ICON, n);
         });
 
-        mEngineInternalProperty.addListener((ov, t, t1) -> {
+        mEngineInternalProperty.addListener((p, o, n) -> {
             var oldEngine = Mapton.getEngine();
 
             try {
@@ -311,24 +317,24 @@ public class MOptions extends OptionsBase {
                 //
             }
 
-            put(KEY_MAP_ENGINE, t1);
-            mEngineProperty.set(t1);
+            put(KEY_MAP_ENGINE, n);
+            mEngineProperty.set(n);
         });
 
-        mIconColorBrightProperty.addListener((ov, t, t1) -> {
-            put(KEY_UI_LAF_ICON_COLOR_BRIGHT, FxHelper.colorToHexRGB(t1));
+        mIconColorBrightProperty.addListener((p, o, n) -> {
+            put(KEY_UI_LAF_ICON_COLOR_BRIGHT, FxHelper.colorToHexRGB(n));
         });
 
-        mIconColorDarkProperty.addListener((ov, t, t1) -> {
-            put(KEY_UI_LAF_ICON_COLOR_DARK, FxHelper.colorToHexRGB(t1));
+        mIconColorDarkProperty.addListener((p, o, n) -> {
+            put(KEY_UI_LAF_ICON_COLOR_DARK, FxHelper.colorToHexRGB(n));
         });
 
-        mCoordinateSeparatorProperty.addListener((ov, t, t1) -> {
-            put(KEY_COPY_LOCATION_COORDINATE_SEPARATOR, t1);
+        mCoordinateSeparatorProperty.addListener((p, o, n) -> {
+            put(KEY_COPY_LOCATION_COORDINATE_SEPARATOR, n);
         });
 
-        mDecimalSymbolProperty.addListener((ov, t, t1) -> {
-            put(KEY_COPY_LOCATION_DECIMAL_SYMBOL, t1);
+        mDecimalSymbolProperty.addListener((p, o, n) -> {
+            put(KEY_COPY_LOCATION_DECIMAL_SYMBOL, n);
         });
     }
 

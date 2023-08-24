@@ -18,7 +18,6 @@ package org.mapton.core.ui;
 import java.util.ArrayList;
 import java.util.Arrays;
 import javafx.application.Platform;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Side;
@@ -35,7 +34,6 @@ import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.MDict;
 import org.mapton.api.MDocumentInfo;
 import org.mapton.api.MKey;
-import org.mapton.api.MOptions;
 import org.mapton.api.MToolMapCommand;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
@@ -44,6 +42,7 @@ import org.mapton.core.ui.bookmark.BookmarksView;
 import org.mapton.core.ui.poi.PoisViewManager;
 import org.openide.awt.Actions;
 import org.openide.util.Lookup;
+import org.openide.windows.WindowManager;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxActionSwing;
 import se.trixon.almond.util.fx.FxHelper;
@@ -65,7 +64,7 @@ public class MapToolBar extends BaseToolBar {
     private ContextMenu mCommandContextMenu;
     private ObservableList<MenuItem> mCommandMenuItems;
     private FxActionSwing mHomeAction;
-    private Action mLayerAction;
+    private FxActionSwing mLayerAction;
     private PopOver mLayerPopOver;
     private Action mPoiAction;
     private PopOver mPoiPopOver;
@@ -133,12 +132,12 @@ public class MapToolBar extends BaseToolBar {
         actions.addAll(Arrays.asList(
                 mHomeAction,
                 mCommandAction,
+                mLayerAction,
                 mStyleSwapAction,
                 mAttributionAction,
                 //mToolboxAction,
                 mBookmarkAction,
                 mPoiAction,
-                mLayerAction,
                 ActionUtils.ACTION_SPAN,
                 mTemporalAction,
                 mRulerAction
@@ -164,7 +163,6 @@ public class MapToolBar extends BaseToolBar {
             });
             populateCommands();
 
-            getButtonForAction(mLayerAction).setVisible(false);
             getButtonForAction(mPoiAction).setVisible(false);
             getButtonForAction(mBookmarkAction).setVisible(false);
         });
@@ -193,19 +191,6 @@ public class MapToolBar extends BaseToolBar {
             } else {
                 SwingUtilities.invokeLater(() -> {
                     Actions.forID("Mapton", "org.mapton.core.actions.PoiAction").actionPerformed(null);
-                });
-            }
-        });
-
-        //Layer
-        mLayerAction = new Action(Dict.LAYERS.toString(), event -> {
-            if (usePopOver(mLayerPopOver)) {
-                if (shouldOpen(mLayerPopOver)) {
-                    show(mLayerPopOver, this);
-                }
-            } else {
-                SwingUtilities.invokeLater(() -> {
-                    Actions.forID("Mapton", "org.mapton.core.actions.LayerAction").actionPerformed(null);
                 });
             }
         });
@@ -260,10 +245,32 @@ public class MapToolBar extends BaseToolBar {
         mStyleSwapAction.setGraphic(MaterialIcon._Action.SWAP_HORIZ.getImageView(getIconSizeToolBarInt()));
         mStyleSwapAction.setDisabled(true);
         FxHelper.setTooltip(mStyleSwapAction, new KeyCodeCombination(KeyCode.S, KeyCombination.SHORTCUT_DOWN, KeyCodeCombination.SHIFT_DOWN));
+
+        //Layer
+        mLayerAction = new FxActionSwing(Dict.LAYERS.toString(), () -> {
+            var tc = WindowManager.getDefault().findTopComponent("LayerTopComponent");
+
+            if (tc.isOpened() && !mOptions.isMapOnly()) {
+                tc.requestVisible();
+                tc.requestAttention(true);
+            } else {
+                FxHelper.runLater(() -> {
+                    if (shouldOpen(mLayerPopOver)) {
+                        show(mLayerPopOver, getButtonForAction(mLayerAction));
+                    }
+                });
+            }
+        });
+
+        mLayerAction.setGraphic(MaterialIcon._Maps.LAYERS.getImageView(getIconSizeToolBarInt()));
     }
 
     private void initListeners() {
-        MOptions.getInstance().engineProperty().addListener((ObservableValue<? extends String> ov, String t, String t1) -> {
+        mOptions.mapOnlyProperty().addListener((p, o, n) -> {
+            FxHelper.runLater(() -> mLayerPopOver.hide());
+        });
+
+        mOptions.engineProperty().addListener((p, o, n) -> {
             refreshEngine();
         });
 
@@ -295,7 +302,7 @@ public class MapToolBar extends BaseToolBar {
             mLayerPopOver.setContentNode(LayerView.getInstance());
             setPopOverWidths(FxHelper.getUIScaled(DEFAULT_POP_OVER_WIDTH), mLayerPopOver);
         });
-        mLayerPopOver.setArrowLocation(ArrowLocation.TOP_CENTER);
+        mLayerPopOver.setArrowLocation(ArrowLocation.TOP_LEFT);
 
         mRulerPopOver = new PopOver();
         initPopOver(mRulerPopOver, Dict.RULER.toString(), new RulerView(), true);

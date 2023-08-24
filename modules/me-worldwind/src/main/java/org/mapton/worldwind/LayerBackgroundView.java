@@ -30,6 +30,8 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.textfield.TextFields;
+import org.mapton.api.MKey;
+import org.mapton.api.Mapton;
 import static org.mapton.worldwind.ModuleOptions.KEY_MAP_STYLE;
 import static org.mapton.worldwind.ModuleOptions.KEY_MAP_STYLE_PREV;
 import org.mapton.worldwind.api.MapStyle;
@@ -60,7 +62,12 @@ public class LayerBackgroundView extends BorderPane {
         initListeners();
 
         populate();
-        FxHelper.runLaterDelayed(1000, () -> mManager.refresh());
+
+        Mapton.getExecutionFlow().executeWhenReady(MKey.EXECUTION_FLOW_MAP_WW_INITIALIZED, () -> {
+            FxHelper.runLater(() -> {
+                mManager.refresh();
+            });
+        });
     }
 
     private void createUI() {

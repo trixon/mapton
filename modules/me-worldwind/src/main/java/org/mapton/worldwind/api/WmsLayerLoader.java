@@ -19,6 +19,7 @@ import gov.nasa.worldwind.Factory;
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.avlist.AVList;
+import gov.nasa.worldwind.exception.WWRuntimeException;
 import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.ogc.wms.WMSCapabilities;
 import java.net.URI;
@@ -46,6 +47,8 @@ public class WmsLayerLoader {
                 var capabilities = WMSCapabilities.retrieve(new URI(k));
                 capabilities.parse();
                 return capabilities;
+            } catch (WWRuntimeException ex) {
+                Exceptions.printStackTrace(ex);
             } catch (URISyntaxException ex) {
                 Exceptions.printStackTrace(ex);
             } catch (Exception ex) {
@@ -54,13 +57,15 @@ public class WmsLayerLoader {
             return null;
         });
 
-        var wmsLayerCapabilities = wmsCapabilities.getLayerByName(layerName);
-        var wmsLayerStyles = wmsLayerCapabilities.getStyles();
-        var layerInfo = new LayerInfo(wmsCapabilities, wmsLayerCapabilities, null);
-        var component = createComponent(layerInfo.getWmsCapabilities(), layerInfo.getParams());
-        if (component instanceof Layer layer) {
-            layer.setName(id);
-            return layer;
+        if (wmsCapabilities != null) {
+            var wmsLayerCapabilities = wmsCapabilities.getLayerByName(layerName);
+            var wmsLayerStyles = wmsLayerCapabilities.getStyles();
+            var layerInfo = new LayerInfo(wmsCapabilities, wmsLayerCapabilities, null);
+            var component = createComponent(layerInfo.getWmsCapabilities(), layerInfo.getParams());
+            if (component instanceof Layer layer) {
+                layer.setName(id);
+                return layer;
+            }
         }
 
         return null;
