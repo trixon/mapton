@@ -146,9 +146,9 @@ public class GeoToolsCooTrans implements MCooTrans {
         return new Point2D(position.getCoordinate()[0], position.getCoordinate()[1]);
     }
 
-    private DirectPosition getPosition(MathTransform mMathTransform, double latitude, double longitude) {
+    private DirectPosition getPosition(MathTransform mathTransform, double latitude, double longitude) {
         try {
-            return mMathTransform.transform(new DirectPosition2D(longitude, latitude), null);
+            return mathTransform.transform(new DirectPosition2D(longitude, latitude), null);
         } catch (MismatchedDimensionException | TransformException ex) {
             Exceptions.printStackTrace(ex);
         }
