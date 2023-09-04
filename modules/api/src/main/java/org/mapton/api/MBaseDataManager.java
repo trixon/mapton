@@ -103,6 +103,10 @@ public abstract class MBaseDataManager<T> {
         return mFilteredItemsSet;
     }
 
+    public Object getObjectProperties(T selectedObject) {
+        return Boolean.FALSE;
+    }
+
     public T getSelectedItem() {
         return mSelectedItemProperty.get();
     }
@@ -234,6 +238,13 @@ public abstract class MBaseDataManager<T> {
         mSelectedItemProperty.addListener((ObservableValue<? extends T> observable, T oldValue, T newValue) -> {
             if (newValue != null) {
                 mOldSelectedValue = newValue;
+            }
+        });
+
+        selectedItemProperty().addListener((p, o, n) -> {
+            var objectProperties = getObjectProperties(n);
+            if (objectProperties != Boolean.FALSE) {
+                Mapton.getGlobalState().put(MKey.OBJECT_PROPERTIES, objectProperties);
             }
         });
     }
