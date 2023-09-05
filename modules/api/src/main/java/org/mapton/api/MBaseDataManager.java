@@ -103,7 +103,19 @@ public abstract class MBaseDataManager<T> {
         return mFilteredItemsSet;
     }
 
-    public Object getObjectProperties(T selectedObject) {
+    public MLatLonBox getLatLonBoxForItem(T t) {
+        return null;
+    }
+
+    public MLatLon getLatLonForItem(T t) {
+        return null;
+    }
+
+    public Object getMapIndicator(T t) {
+        return null;
+    }
+
+    public Object getObjectProperties(T t) {
         return Boolean.FALSE;
     }
 
@@ -246,6 +258,9 @@ public abstract class MBaseDataManager<T> {
             if (objectProperties != Boolean.FALSE) {
                 Mapton.getGlobalState().put(MKey.OBJECT_PROPERTIES, objectProperties);
             }
+
+            var mapIndicator = getMapIndicator(n);
+            Mapton.getGlobalState().put(MKey.INDICATOR_LAYER_LOAD, mapIndicator);
         });
     }
 }

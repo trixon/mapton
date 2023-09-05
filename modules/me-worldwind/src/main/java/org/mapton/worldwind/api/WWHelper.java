@@ -18,8 +18,12 @@ package org.mapton.worldwind.api;
 import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.geom.Sector;
+import gov.nasa.worldwind.render.BasicShapeAttributes;
+import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.Offset;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
+import gov.nasa.worldwind.render.Renderable;
+import gov.nasa.worldwind.render.SurfaceCircle;
 import java.util.ArrayList;
 import java.util.Arrays;
 import org.apache.commons.math3.util.FastMath;
@@ -49,6 +53,19 @@ public class WWHelper {
         highlightAttrs.setLabelScale(attrs.getLabelScale() * scale);
 
         return highlightAttrs;
+    }
+
+    public static Renderable createIndicator(MLatLon latLon) {
+        return createIndicator(latLon, 2.0);
+    }
+
+    public static Renderable createIndicator(MLatLon latLon, double radius) {
+        var sa = new BasicShapeAttributes();
+        sa.setDrawInterior(false);
+        sa.setOutlineMaterial(Material.RED);
+        var circle = new SurfaceCircle(sa, positionFromLatLon(latLon), radius);
+
+        return circle;
     }
 
     public static MLatLon latLonFromPosition(Position position) {

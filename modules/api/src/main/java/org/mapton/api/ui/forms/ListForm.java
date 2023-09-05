@@ -24,6 +24,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.ToolBar;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import org.controlsfx.control.action.ActionUtils;
@@ -119,6 +120,18 @@ public class ListForm<ManagerType extends MBaseDataManager, ItemType> {
 
         mListView.getSelectionModel().selectedItemProperty().addListener((p, o, n) -> {
             mManager.setSelectedItem(n);
+        });
+
+        mListView.setOnMouseClicked(mouseEvent -> {
+            if (mouseEvent.getButton() == MouseButton.PRIMARY && mouseEvent.getClickCount() == 2) {
+                var item = mListView.getSelectionModel().getSelectedItem();
+
+                try {
+                    Mapton.getEngine().panTo(mManager.getLatLonForItem(item));
+                } catch (NullPointerException e) {
+                    //
+                }
+            }
         });
 
         mManager.selectedItemProperty().addListener((p, o, n) -> {
