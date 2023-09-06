@@ -16,7 +16,6 @@
 package org.mapton.api.ui.forms;
 
 import javafx.application.Platform;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Pos;
@@ -32,7 +31,6 @@ import org.mapton.api.MBaseDataManager;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.fx.DelayedResetRunner;
 import se.trixon.almond.util.fx.FxHelper;
 
 /**
@@ -43,9 +41,7 @@ import se.trixon.almond.util.fx.FxHelper;
  */
 public class ListForm<ManagerType extends MBaseDataManager, ItemType> {
 
-    private final DelayedResetRunner mFilterDelayedResetRunner;
     private final TextArea mFilterTextArea = new TextArea();
-    private StringProperty mFilterTextProperty = new SimpleStringProperty();
     private final Label mItemCountLabel = new Label();
     private ListFormConfiguration mListFormConfiguration;
     private final ListView<ItemType> mListView = new ListView<>();
@@ -58,9 +54,6 @@ public class ListForm<ManagerType extends MBaseDataManager, ItemType> {
     public ListForm(MBaseDataManager manager, String title) {
         mManager = manager;
         mTitle = title;
-        mFilterDelayedResetRunner = new DelayedResetRunner(200, () -> {
-            mFilterTextProperty.set(mFilterTextArea.getText());
-        });
 
         createUI();
         initListeners();
@@ -78,8 +71,8 @@ public class ListForm<ManagerType extends MBaseDataManager, ItemType> {
         }
     }
 
-    public StringProperty filterTextProperty() {
-        return mFilterTextProperty;
+    public StringProperty freeTextProperty() {
+        return mFilterTextArea.textProperty();
     }
 
     public ListView<ItemType> getListView() {
@@ -140,10 +133,6 @@ public class ListForm<ManagerType extends MBaseDataManager, ItemType> {
                 mListView.getFocusModel().focus(mListView.getItems().indexOf(n));
                 FxHelper.scrollToItemIfNotVisible(mListView, n);
             }
-        });
-
-        mFilterTextArea.textProperty().addListener((p, o, n) -> {
-            mFilterDelayedResetRunner.reset();
         });
     }
 
