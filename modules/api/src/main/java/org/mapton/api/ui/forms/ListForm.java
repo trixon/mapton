@@ -15,19 +15,14 @@
  */
 package org.mapton.api.ui.forms;
 
-import javafx.application.Platform;
 import javafx.beans.property.StringProperty;
-import javafx.collections.ListChangeListener;
-import javafx.geometry.Pos;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
+import javafx.scene.Node;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.ToolBar;
-import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import org.controlsfx.control.action.ActionUtils;
-import org.mapton.api.MBaseDataManager;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import se.trixon.almond.util.Dict;
@@ -36,27 +31,20 @@ import se.trixon.almond.util.fx.FxHelper;
 /**
  *
  * @author Patrik Karlström
- * @param <ManagerType>
- * @param <ItemType>
  */
-public class ListForm<ManagerType extends MBaseDataManager, ItemType> {
+public class ListForm {
 
     private final TextArea mFilterTextArea = new TextArea();
-    private final Label mItemCountLabel = new Label();
     private ListFormConfiguration mListFormConfiguration;
-    private final ListView<ItemType> mListView = new ListView<>();
-    private final MBaseDataManager mManager;
     private final BorderPane mRoot = new BorderPane();
     private final String mTitle;
     private ToolBar mToolBar = new ToolBar();
     private final BorderPane mTopBorderPane = new BorderPane();
 
-    public ListForm(MBaseDataManager manager, String title) {
-        mManager = manager;
+    public ListForm(String title) {
         mTitle = title;
 
         createUI();
-        initListeners();
     }
 
     public void applyConfiguration(ListFormConfiguration lfc) {
@@ -75,65 +63,22 @@ public class ListForm<ManagerType extends MBaseDataManager, ItemType> {
         return mFilterTextArea.textProperty();
     }
 
-    public ListView<ItemType> getListView() {
-        return mListView;
+    public Pane getView() {
+        return mRoot;
     }
 
-    public BorderPane getView() {
-        return mRoot;
+    public void setContent(Node node) {
+        mRoot.setCenter(node);
     }
 
     private void createUI() {
         var titleLabel = Mapton.createTitle(mTitle);
 
         mRoot.setTop(new VBox(titleLabel, mTopBorderPane));
-        mRoot.setCenter(mListView);
-        mRoot.setBottom(mItemCountLabel);
-
-        mItemCountLabel.setAlignment(Pos.BASELINE_RIGHT);
         mFilterTextArea.setPromptText(Dict.FILTER.toString());
         mFilterTextArea.setPrefRowCount(4);
 
-        mListView.itemsProperty().bind(mManager.timeFilteredItemsProperty());
         titleLabel.prefWidthProperty().bind(mRoot.widthProperty());
-        mItemCountLabel.prefWidthProperty().bind(mRoot.widthProperty());
-    }
-
-    private void initListeners() {
-        mManager.getTimeFilteredItems().addListener((ListChangeListener.Change c) -> {
-            Platform.runLater(() -> {
-                mItemCountLabel.setText("%d/%d".formatted(
-                        mManager.getTimeFilteredItems().size(),
-                        mManager.getAllItems().size()
-                ));
-
-                mManager.restoreSelection();
-            });
-        });
-
-        mListView.getSelectionModel().selectedItemProperty().addListener((p, o, n) -> {
-            mManager.setSelectedItem(n);
-        });
-
-        mListView.setOnMouseClicked(mouseEvent -> {
-            if (mouseEvent.getButton() == MouseButton.PRIMARY && mouseEvent.getClickCount() == 2) {
-                var item = mListView.getSelectionModel().getSelectedItem();
-
-                try {
-                    Mapton.getEngine().panTo(mManager.getLatLonForItem(item));
-                } catch (NullPointerException e) {
-                    //
-                }
-            }
-        });
-
-        mManager.selectedItemProperty().addListener((p, o, n) -> {
-            if (mListView.getSelectionModel().getSelectedItem() != n) {
-                mListView.getSelectionModel().select((ItemType) n);
-                mListView.getFocusModel().focus(mListView.getItems().indexOf(n));
-                FxHelper.scrollToItemIfNotVisible(mListView, n);
-            }
-        });
     }
 
     private void initToolbar() {
