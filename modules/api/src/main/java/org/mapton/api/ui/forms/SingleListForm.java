@@ -15,6 +15,8 @@
  */
 package org.mapton.api.ui.forms;
 
+import javafx.beans.property.StringProperty;
+import javafx.scene.control.ListView;
 import javafx.scene.layout.Pane;
 import org.mapton.api.MBaseDataManager;
 
@@ -33,6 +35,18 @@ public class SingleListForm<ManagerType extends MBaseDataManager, ItemType> {
         mListForm = new ListForm(title);
         mManagedList = new ManagedList<>(manager);
         mListForm.setContent(mManagedList.getView());
+    }
+
+    public void applyConfiguration(ListFormConfiguration listFormConfiguration) {
+        mListForm.applyConfiguration(listFormConfiguration);
+    }
+
+    public StringProperty freeTextProperty() {
+        return mListForm.freeTextProperty();
+    }
+
+    public ListView<ItemType> getListView() {
+        return mManagedList.getListView();
     }
 
     public ManagedList<ManagerType, ItemType> getManagedList() {

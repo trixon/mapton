@@ -52,9 +52,11 @@ public abstract class MBaseDataManager<T> {
     private final ObjectProperty<MTemporalRange> mTemporalRangeProperty = new SimpleObjectProperty<>();
     private final ObjectProperty<ObservableList<T>> mTimeFilteredItemsProperty = new SimpleObjectProperty<>();
     private final HashSet<T> mTimeFilteredItemsSet = new HashSet<>();
+    private final Class<T> mTypeParameterClass;
     private final DelayedResetRunner mUnlockDelayedResetRunner;
 
     public MBaseDataManager(Class<T> typeParameterClass) {
+        mTypeParameterClass = typeParameterClass;
         TEMPORAL_PREFIX = typeParameterClass.getName();
 
         mAllItemsProperty.setValue(FXCollections.synchronizedObservableList(FXCollections.observableArrayList()));
@@ -133,6 +135,10 @@ public abstract class MBaseDataManager<T> {
 
     public HashSet<T> getTimeFilteredItemsSet() {
         return mTimeFilteredItemsSet;
+    }
+
+    public Class<T> getTypeParameterClass() {
+        return mTypeParameterClass;
     }
 
     public boolean isSelectionLocked() {
