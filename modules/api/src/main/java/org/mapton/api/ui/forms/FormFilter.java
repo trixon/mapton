@@ -44,6 +44,10 @@ public abstract class FormFilter<ManagerType extends MBaseDataManager> {
         initListeners();
     }
 
+    public void bindFreeTextProperty(StringProperty freeTextProperty) {
+        freeTextProperty.bindBidirectional(freeTextProperty());
+    }
+
     public StringProperty freeTextProperty() {
         return mFreeTextProperty;
     }

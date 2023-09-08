@@ -15,6 +15,7 @@
  */
 package org.mapton.api.ui;
 
+import com.dlsc.gemsfx.util.SessionManager;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -24,6 +25,7 @@ import javafx.scene.layout.VBox;
 import org.mapton.api.MDict;
 import org.mapton.api.MPolygonFilterManager;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
+import org.openide.util.NbPreferences;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.DelayedResetRunner;
 import se.trixon.almond.util.fx.FxHelper;
@@ -35,13 +37,14 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
  */
 public abstract class MFilterPopOver extends MPopOver {
 
-    private final Button allButton = new Button(Dict.SHOW_ALL.toString());
+    private final Button allButton = new Button(Dict.DEFAULT.toString());
     private final Button clearButton = new Button(Dict.CLEAR.toString());
     private final VBox mBox;
     private final HBox mButtonBox;
     private final DelayedResetRunner mDelayedResetRunner;
     private final CheckBox mPolygonFilterCheckBox = new CheckBox(MDict.USE_GEO_FILTER.toString());
     private final MPolygonFilterManager mPolygonFilterManager = MPolygonFilterManager.getInstance();
+    private SessionManager mSessionManager;
 
     public MFilterPopOver() {
         String title = Dict.FILTER.toString();
@@ -85,6 +88,14 @@ public abstract class MFilterPopOver extends MPopOver {
 
     public CheckBox getPolygonFilterCheckBox() {
         return mPolygonFilterCheckBox;
+    }
+
+    public SessionManager getSessionManager() {
+        if (mSessionManager == null) {
+            mSessionManager = new SessionManager(NbPreferences.forModule(getClass()));
+        }
+
+        return mSessionManager;
     }
 
     public boolean isPolygonFilters() {
