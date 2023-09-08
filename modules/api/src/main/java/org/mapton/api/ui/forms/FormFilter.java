@@ -15,11 +15,15 @@
  */
 package org.mapton.api.ui.forms;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ListChangeListener;
+import org.mapton.api.MAreaFilterManager;
 import org.mapton.api.MBaseDataManager;
+import org.mapton.api.MPolygonFilterManager;
 import se.trixon.almond.util.fx.DelayedResetRunner;
 
 /**
@@ -31,9 +35,12 @@ public abstract class FormFilter<ManagerType extends MBaseDataManager> {
 
     protected ChangeListener<Boolean> mChangeListenerBoolean;
     protected ChangeListener<String> mChangeListenerString;
+    private final MAreaFilterManager mAreaFilterManager = MAreaFilterManager.getInstance();
     private final DelayedResetRunner mDelayedResetRunner;
     private final StringProperty mFreeTextProperty = new SimpleStringProperty();
     private final MBaseDataManager mManager;
+    private final MPolygonFilterManager mPolygonFilterManager = MPolygonFilterManager.getInstance();
+    private final BooleanProperty mPolygonFilterProperty = new SimpleBooleanProperty(false);
 
     public FormFilter(MBaseDataManager manager) {
         mManager = manager;
@@ -56,7 +63,25 @@ public abstract class FormFilter<ManagerType extends MBaseDataManager> {
         return freeTextProperty().get();
     }
 
+    public BooleanProperty polygonFilterProperty() {
+        return mPolygonFilterProperty;
+    }
+
     public abstract void update();
+
+    public boolean validateCoordinateArea(Double lat, Double lon) {
+        boolean valid = mAreaFilterManager.isValidCoordinate(lat, lon);
+
+        return valid;
+    }
+
+    public boolean validateCoordinateRuler(Double lat, Double lon) {
+        boolean valid = !mPolygonFilterManager.hasItems()
+                || !polygonFilterProperty().get()
+                || polygonFilterProperty().get() && mPolygonFilterManager.contains(lat, lon);
+
+        return valid;
+    }
 
     private void initListeners() {
         mManager.getAllItems().addListener((ListChangeListener.Change c) -> {

@@ -21,6 +21,7 @@ import java.util.HashSet;
 import javafx.collections.FXCollections;
 import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableMap;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -50,8 +51,12 @@ public class MPolygonFilterManager {
     }
 
     public boolean contains(Double lat, Double lon) {
-        return mNameToPolygon.values().stream()
-                .anyMatch(path -> (path.contains(lon, lat)));
+        if (ObjectUtils.anyNull(lat, lon)) {
+            return false;
+        } else {
+            return mNameToPolygon.values().stream()
+                    .anyMatch(path -> (path.contains(lon, lat)));
+        }
     }
 
     public boolean contains(MLatLon latLon) {

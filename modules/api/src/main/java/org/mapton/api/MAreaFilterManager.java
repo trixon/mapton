@@ -29,6 +29,7 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.control.CheckBoxTreeItem;
 import javafx.scene.control.TreeItem;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.CheckModel;
 import org.controlsfx.control.CheckTreeView;
@@ -106,22 +107,26 @@ public class MAreaFilterManager {
     }
 
     public boolean isValidCoordinate(Double lat, Double lon) {
-        if (mCheckModel.getCheckedItems().isEmpty()) {
-            return true;
+        if (ObjectUtils.anyNull(lat, lon)) {
+            return false;
         } else {
-            var point = mGeometryFactory.createPoint(new Coordinate(lon, lat));
+            if (mCheckModel.getCheckedItems().isEmpty()) {
+                return true;
+            } else {
+                var point = mGeometryFactory.createPoint(new Coordinate(lon, lat));
 
-            for (var checkedTreeItem : mCheckModel.getCheckedItems()) {
-                if (checkedTreeItem.isLeaf()) {
-                    var areaGeometry = checkedTreeItem.getValue().getGeometry();
-                    if (areaGeometry.contains(point)) {
-                        return true;
+                for (var checkedTreeItem : mCheckModel.getCheckedItems()) {
+                    if (checkedTreeItem.isLeaf()) {
+                        var areaGeometry = checkedTreeItem.getValue().getGeometry();
+                        if (areaGeometry.contains(point)) {
+                            return true;
+                        }
                     }
                 }
             }
-        }
 
-        return false;
+            return false;
+        }
     }
 
     public boolean isValidCoordinate(MLatLon latLon) {
