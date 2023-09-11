@@ -30,12 +30,15 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import org.mapton.api.MKey;
+import org.mapton.api.MTemporalManager;
+import org.mapton.api.MTemporalRange;
 import org.mapton.api.Mapton;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.Dict;
@@ -56,6 +59,9 @@ public abstract class LayerBundle {
     private Runnable mPainter;
     private Layer mParentLayer;
     private boolean mPopulated = false;
+    private final MTemporalManager mTemporalManager = MTemporalManager.getInstance();
+    private ConcurrentHashMap<String, MTemporalRange> mTemporalRanges;
+    private MTemporalRange mTemporalRange;
 
     public LayerBundle() {
     }
@@ -100,6 +106,18 @@ public abstract class LayerBundle {
         return mObjectToRenderables.computeIfAbsent(o, k -> {
             return new ArrayList<>();
         });
+    }
+
+    public MTemporalManager getTemporalManager() {
+        return mTemporalManager;
+    }
+
+    public MTemporalRange getTemporalRange() {
+        return mTemporalRange;
+    }
+
+    public ConcurrentHashMap<String, MTemporalRange> getTemporalRanges() {
+        return mTemporalRanges;
     }
 
     public boolean isPopulated() {
@@ -290,6 +308,14 @@ public abstract class LayerBundle {
     public void setSelectEventWatcher(AVListImpl avListImpl, Object object) {
         avListImpl.setValue(MKey.WW_DRAG_LAYER_BUNDLE, this);
         avListImpl.setValue(MKey.WW_DRAG_OBJECT, object);
+    }
+
+    public void setTemporalRange(MTemporalRange temporalRange) {
+        this.mTemporalRange = temporalRange;
+    }
+
+    public void setTemporalRanges(ConcurrentHashMap<String, MTemporalRange> temporalRanges) {
+        this.mTemporalRanges = temporalRanges;
     }
 
     public void setVisibleInLayerManager(Layer layer, boolean visibility) {

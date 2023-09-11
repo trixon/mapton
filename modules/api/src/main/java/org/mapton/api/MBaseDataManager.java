@@ -48,6 +48,7 @@ public abstract class MBaseDataManager<T> {
     private final HashSet<T> mFilteredItemsSet = new HashSet<>();
     private T mOldSelectedValue;
     private final ObjectProperty<T> mSelectedItemProperty = new SimpleObjectProperty<>();
+    private MTemporalRange mStoredTemporalRange;
     private final MTemporalManager mTemporalManager = MTemporalManager.getInstance();
     private final ObjectProperty<MTemporalRange> mTemporalRangeProperty = new SimpleObjectProperty<>();
     private final ObjectProperty<ObservableList<T>> mTimeFilteredItemsProperty = new SimpleObjectProperty<>();
@@ -125,6 +126,10 @@ public abstract class MBaseDataManager<T> {
         return mSelectedItemProperty.get();
     }
 
+    public MTemporalManager getTemporalManager() {
+        return mTemporalManager;
+    }
+
     public MTemporalRange getTemporalRange() {
         return mTemporalRangeProperty.get();
     }
@@ -139,6 +144,12 @@ public abstract class MBaseDataManager<T> {
 
     public Class<T> getTypeParameterClass() {
         return mTypeParameterClass;
+    }
+
+    public void initAllItems(ArrayList<T> items) {
+        getAllItems().setAll(items);
+        getFilteredItems().setAll(items);
+        getTimeFilteredItems().setAll(items);
     }
 
     public boolean isSelectionLocked() {
@@ -209,6 +220,7 @@ public abstract class MBaseDataManager<T> {
     }
 
     public void setTemporalRange(MTemporalRange temporalRange) {
+        mStoredTemporalRange = temporalRange;
         mTemporalManager.put(TEMPORAL_PREFIX, temporalRange);
         mTemporalRangeProperty.set(temporalRange);
     }
@@ -231,6 +243,18 @@ public abstract class MBaseDataManager<T> {
 
     public ObjectProperty<ObservableList<T>> timeFilteredItemsProperty() {
         return mTimeFilteredItemsProperty;
+    }
+
+    public void updateTemporal(boolean layerBundleEnabled) {
+        if (layerBundleEnabled) {
+            if (mStoredTemporalRange != null) {
+                mTemporalManager.put(TEMPORAL_PREFIX, mStoredTemporalRange);
+            }
+        } else {
+            mTemporalManager.remove(TEMPORAL_PREFIX);
+        }
+
+        mTemporalManager.refresh();
     }
 
     protected abstract void applyTemporalFilter();
