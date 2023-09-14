@@ -16,6 +16,8 @@
 package org.mapton.api.ui;
 
 import com.dlsc.gemsfx.util.SessionManager;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -37,10 +39,11 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
  */
 public abstract class MFilterPopOver extends MPopOver {
 
-    private final Button allButton = new Button(Dict.DEFAULT.toString());
-    private final Button clearButton = new Button(Dict.CLEAR.toString());
+    private final Button mAllButton = new Button(Dict.DEFAULT.toString());
     private final VBox mBox;
     private final HBox mButtonBox;
+    private final Button mClearButton = new Button(Dict.CLEAR.toString());
+    private final Button mCopyNamesButton = new Button(Dict.COPY_NAMES.toString());
     private final DelayedResetRunner mDelayedResetRunner;
     private final CheckBox mPolygonFilterCheckBox = new CheckBox(MDict.USE_GEO_FILTER.toString());
     private final MPolygonFilterManager mPolygonFilterManager = MPolygonFilterManager.getInstance();
@@ -52,19 +55,22 @@ public abstract class MFilterPopOver extends MPopOver {
         getAction().setText(title);
         getAction().setGraphic(MaterialIcon._Content.FILTER_LIST.getImageView(getIconSizeToolBarInt()));
 
-        allButton.setOnAction(event -> {
+        mAllButton.setOnAction(event -> {
             reset();
         });
-        clearButton.setOnAction(event -> {
+        mClearButton.setOnAction(event -> {
             clear();
         });
 
-        allButton.setPrefWidth(WIDTH);
-        clearButton.setPrefWidth(WIDTH);
-        mButtonBox = new HBox(GAP, allButton, clearButton);
+        mAllButton.setPrefWidth(WIDTH);
+        mClearButton.setPrefWidth(WIDTH);
+        mButtonBox = new HBox(GAP, mAllButton, mClearButton);
         mButtonBox.setAlignment(Pos.CENTER);
 
-        mBox = new VBox(FxHelper.getUIScaled(8), mButtonBox, mPolygonFilterCheckBox);
+        mBox = new VBox(FxHelper.getUIScaled(8),
+                mButtonBox,
+                mPolygonFilterCheckBox
+        );
 
         mDelayedResetRunner = new DelayedResetRunner(500, () -> {
             onPolygonFilterChange();
@@ -77,13 +83,20 @@ public abstract class MFilterPopOver extends MPopOver {
         mPolygonFilterCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
             mDelayedResetRunner.reset();
         });
+    }
 
+    public void activateCopyNames(EventHandler<ActionEvent> eventHandler) {
+        mCopyNamesButton.setOnAction(eventHandler);
     }
 
     public abstract void clear();
 
     public Node getButtonBox() {
         return mBox;
+    }
+
+    public Button getCopyNamesButton() {
+        return mCopyNamesButton;
     }
 
     public CheckBox getPolygonFilterCheckBox() {

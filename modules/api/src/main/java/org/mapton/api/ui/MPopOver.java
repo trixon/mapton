@@ -31,7 +31,7 @@ import se.trixon.almond.util.fx.PopOverWatcher;
 public class MPopOver extends PopOver {
 
     public static final int GAP = FxHelper.getUIScaled(8);
-    public static final int WIDTH = FxHelper.getUIScaled(96);
+    public static final int WIDTH = FxHelper.getUIScaled(128);
     private Action mAction;
 
     public static void autoSize(VBox vBox) {

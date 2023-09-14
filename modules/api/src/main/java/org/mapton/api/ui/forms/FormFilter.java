@@ -21,6 +21,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ListChangeListener;
+import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.MAreaFilterManager;
 import org.mapton.api.MBaseDataManager;
 import org.mapton.api.MPolygonFilterManager;
@@ -35,6 +36,7 @@ public abstract class FormFilter<ManagerType extends MBaseDataManager> {
 
     protected ChangeListener<Boolean> mChangeListenerBoolean;
     protected ChangeListener<String> mChangeListenerString;
+    protected ListChangeListener<Object> mListChangeListener;
     private final MAreaFilterManager mAreaFilterManager = MAreaFilterManager.getInstance();
     private final DelayedResetRunner mDelayedResetRunner;
     private final StringProperty mFreeTextProperty = new SimpleStringProperty();
@@ -69,6 +71,10 @@ public abstract class FormFilter<ManagerType extends MBaseDataManager> {
 
     public abstract void update();
 
+    public boolean validateCheck(IndexedCheckModel checkModel, Object o) {
+        return checkModel.isEmpty() || checkModel.isChecked(o);
+    }
+
     public boolean validateCoordinateArea(Double lat, Double lon) {
         boolean valid = mAreaFilterManager.isValidCoordinate(lat, lon);
 
@@ -93,6 +99,10 @@ public abstract class FormFilter<ManagerType extends MBaseDataManager> {
         };
 
         mChangeListenerString = (p, o, n) -> {
+            mDelayedResetRunner.reset();
+        };
+
+        mListChangeListener = c -> {
             mDelayedResetRunner.reset();
         };
 
