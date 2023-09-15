@@ -19,6 +19,7 @@ import javafx.beans.property.StringProperty;
 import javafx.scene.Node;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.ToolBar;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -69,6 +70,16 @@ public class ListForm {
 
     public void setContent(Node node) {
         mRoot.setCenter(node);
+    }
+
+    public void setFreeTextTooltip(String... strings) {
+        var sb = new StringBuilder(Dict.FILTER.toString()).append("\r\r");
+
+        for (var string : strings) {
+            sb.append("‣ ").append(string).append("\r");
+        }
+
+        mFilterTextArea.setTooltip(new Tooltip(sb.toString()));
     }
 
     private void createUI() {

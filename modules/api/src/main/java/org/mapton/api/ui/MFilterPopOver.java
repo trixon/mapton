@@ -16,6 +16,7 @@
 package org.mapton.api.ui;
 
 import com.dlsc.gemsfx.util.SessionManager;
+import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
@@ -27,6 +28,7 @@ import javafx.scene.layout.VBox;
 import org.mapton.api.MDict;
 import org.mapton.api.MPolygonFilterManager;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
+import org.openide.util.NbBundle;
 import org.openide.util.NbPreferences;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.DelayedResetRunner;
@@ -90,6 +92,10 @@ public abstract class MFilterPopOver extends MPopOver {
     }
 
     public abstract void clear();
+
+    public ResourceBundle getBundle() {
+        return NbBundle.getBundle(getClass());
+    }
 
     public Node getButtonBox() {
         return mBox;
