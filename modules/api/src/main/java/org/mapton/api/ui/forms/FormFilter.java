@@ -34,8 +34,7 @@ import se.trixon.almond.util.fx.DelayedResetRunner;
  */
 public abstract class FormFilter<ManagerType extends MBaseDataManager> {
 
-    protected ChangeListener<Boolean> mChangeListenerBoolean;
-    protected ChangeListener<String> mChangeListenerString;
+    protected ChangeListener<Object> mChangeListenerObject;
     protected ListChangeListener<Object> mListChangeListener;
     private final MAreaFilterManager mAreaFilterManager = MAreaFilterManager.getInstance();
     private final DelayedResetRunner mDelayedResetRunner;
@@ -94,11 +93,7 @@ public abstract class FormFilter<ManagerType extends MBaseDataManager> {
             mDelayedResetRunner.reset();
         });
 
-        mChangeListenerBoolean = (p, o, n) -> {
-            mDelayedResetRunner.reset();
-        };
-
-        mChangeListenerString = (p, o, n) -> {
+        mChangeListenerObject = (p, o, n) -> {
             mDelayedResetRunner.reset();
         };
 
@@ -106,7 +101,7 @@ public abstract class FormFilter<ManagerType extends MBaseDataManager> {
             mDelayedResetRunner.reset();
         };
 
-        freeTextProperty().addListener(mChangeListenerString);
+        freeTextProperty().addListener(mChangeListenerObject);
     }
 
 }
