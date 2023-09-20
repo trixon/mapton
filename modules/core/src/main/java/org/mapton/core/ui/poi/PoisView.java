@@ -242,7 +242,7 @@ public class PoisView extends BorderPane {
 
         @Override
         public void onPolygonFilterChange() {
-            //nvm
+            mManager.refresh();
         }
 
         @Override
@@ -262,11 +262,7 @@ public class PoisView extends BorderPane {
             autoSize(vBox);
             setContentNode(vBox);
 
-            var poiManager = MPoiManager.getInstance();
-            poiManager.polygonFilterProperty().bind(getPolygonFilterCheckBox().selectedProperty());
-            getPolygonFilterCheckBox().selectedProperty().addListener((observable, oldValue, newValue) -> {
-                poiManager.refresh();
-            });
+            mManager.polygonFilterProperty().bind(getPolygonFilterCheckBox().selectedProperty());
         }
     }
 
