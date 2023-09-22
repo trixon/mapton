@@ -16,6 +16,8 @@
 package org.mapton.api.ui;
 
 import com.dlsc.gemsfx.util.SessionManager;
+import java.util.List;
+import java.util.Locale;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -31,6 +33,7 @@ import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.openide.util.NbBundle;
 import org.openide.util.NbPreferences;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.DelayedResetRunner;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.icons.material.MaterialIcon;
@@ -47,6 +50,7 @@ public abstract class MFilterPopOver extends MPopOver {
     private final Button mClearButton = new Button(Dict.CLEAR.toString());
     private final Button mCopyNamesButton = new Button(Dict.COPY_NAMES.toString());
     private final DelayedResetRunner mDelayedResetRunner;
+    private final Button mPasteNameButton = new Button("%s %s".formatted(Dict.PASTE.toString(), Dict.NAME.toString().toLowerCase(Locale.ROOT)));
     private final CheckBox mPolygonFilterCheckBox = new CheckBox(MDict.USE_GEO_FILTER.toString());
     private final MPolygonFilterManager mPolygonFilterManager = MPolygonFilterManager.getInstance();
     private SessionManager mSessionManager;
@@ -91,7 +95,15 @@ public abstract class MFilterPopOver extends MPopOver {
         mCopyNamesButton.setOnAction(eventHandler);
     }
 
+    public void activatePasteName(EventHandler<ActionEvent> eventHandler) {
+        mPasteNameButton.setOnAction(eventHandler);
+    }
+
     public abstract void clear();
+
+    public void copyNames(List<String> names) {
+        SystemHelper.copyToClipboard(String.join("\n", names) + "\n");
+    }
 
     public ResourceBundle getBundle() {
         return NbBundle.getBundle(getClass());
@@ -103,6 +115,10 @@ public abstract class MFilterPopOver extends MPopOver {
 
     public Button getCopyNamesButton() {
         return mCopyNamesButton;
+    }
+
+    public Button getPasteNameButton() {
+        return mPasteNameButton;
     }
 
     public CheckBox getPolygonFilterCheckBox() {

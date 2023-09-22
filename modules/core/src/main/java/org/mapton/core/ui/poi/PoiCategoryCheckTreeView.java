@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.prefs.Preferences;
@@ -117,7 +118,7 @@ public class PoiCategoryCheckTreeView extends CheckTreeView<MPoi> {
     }
 
     private String getPath(MPoi poi) {
-        return StringUtils.defaultString(poi.getCategory(), "DEFAULT");
+        return Objects.toString(poi.getCategory(), "DEFAULT");
     }
 
     private void initListeners() {
