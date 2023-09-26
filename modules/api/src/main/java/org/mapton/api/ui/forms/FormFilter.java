@@ -15,16 +15,21 @@
  */
 package org.mapton.api.ui.forms;
 
+import java.util.ResourceBundle;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
+import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.MAreaFilterManager;
 import org.mapton.api.MBaseDataManager;
 import org.mapton.api.MPolygonFilterManager;
+import org.mapton.api.ui.MInfoPopOver;
+import org.openide.util.NbBundle;
 import se.trixon.almond.util.fx.DelayedResetRunner;
 
 /**
@@ -39,6 +44,8 @@ public abstract class FormFilter<ManagerType extends MBaseDataManager> {
     private final MAreaFilterManager mAreaFilterManager = MAreaFilterManager.getInstance();
     private final DelayedResetRunner mDelayedResetRunner;
     private final StringProperty mFreeTextProperty = new SimpleStringProperty();
+    private final MInfoPopOver mInfoPopOver = new MInfoPopOver() {
+    };
     private final MBaseDataManager mManager;
     private final MPolygonFilterManager mPolygonFilterManager = MPolygonFilterManager.getInstance();
     private final BooleanProperty mPolygonFilterProperty = new SimpleBooleanProperty(false);
@@ -60,8 +67,24 @@ public abstract class FormFilter<ManagerType extends MBaseDataManager> {
         return mFreeTextProperty;
     }
 
+    public ResourceBundle getBundle() {
+        return NbBundle.getBundle(getClass());
+    }
+
     public String getFreeText() {
         return freeTextProperty().get();
+    }
+
+    public MInfoPopOver getInfoPopOver() {
+        return mInfoPopOver;
+    }
+
+    public String makeInfo(ObservableList<String> list) {
+        return String.join(",", list);
+    }
+
+    public String makeInfo(String s, String empty) {
+        return StringUtils.equalsIgnoreCase(s, empty) ? "" : s;
     }
 
     public BooleanProperty polygonFilterProperty() {
