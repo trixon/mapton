@@ -87,6 +87,10 @@ public abstract class FormFilter<ManagerType extends MBaseDataManager> {
         return StringUtils.equalsIgnoreCase(s, empty) ? "" : s;
     }
 
+    public String makeInfoInteger(ObservableList<Integer> list) {
+        return String.join(",", list.stream().map(o -> Integer.toString(o)).toList());
+    }
+
     public BooleanProperty polygonFilterProperty() {
         return mPolygonFilterProperty;
     }
