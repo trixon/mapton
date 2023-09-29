@@ -275,7 +275,7 @@
         <dependency>
             <groupId>com.dlsc.gemsfx</groupId>
             <artifactId>gemsfx</artifactId>
-            <version>1.78.0</version>
+            <version>1.82.0</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.openjfx</groupId>
@@ -286,7 +286,7 @@
         <dependency>
             <groupId>eu.hansolo.fx</groupId>
             <artifactId>heatmap</artifactId>
-            <version>17.0.27</version>
+            <version>17.0.29</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.openjfx</groupId>
@@ -319,7 +319,7 @@
         <dependency>
             <groupId>eu.hansolo</groupId>
             <artifactId>toolboxfx</artifactId>
-            <version>17.0.47</version>
+            <version>17.0.49</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.openjfx</groupId>

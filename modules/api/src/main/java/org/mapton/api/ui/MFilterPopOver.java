@@ -17,7 +17,6 @@ package org.mapton.api.ui;
 
 import com.dlsc.gemsfx.util.SessionManager;
 import java.util.List;
-import java.util.Locale;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -50,7 +49,7 @@ public abstract class MFilterPopOver extends MPopOver {
     private final Button mClearButton = new Button(Dict.CLEAR.toString());
     private final Button mCopyNamesButton = new Button(Dict.COPY_NAMES.toString());
     private final DelayedResetRunner mDelayedResetRunner;
-    private final Button mPasteNameButton = new Button("%s %s".formatted(Dict.PASTE.toString(), Dict.NAME.toString().toLowerCase(Locale.ROOT)));
+    private final Button mPasteNameButton = new Button("%s %s".formatted(Dict.PASTE.toString(), Dict.NAME.toLower()));
     private final CheckBox mPolygonFilterCheckBox = new CheckBox(MDict.USE_GEO_FILTER.toString());
     private final MPolygonFilterManager mPolygonFilterManager = MPolygonFilterManager.getInstance();
     private SessionManager mSessionManager;

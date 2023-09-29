@@ -77,8 +77,16 @@ public enum MDict {
         }
     }
 
+    public String toLower() {
+        return toString().toLowerCase(Locale.ROOT);
+    }
+
     @Override
     public String toString() {
-        return getString(mResourceBundle, name().toLowerCase());
+        return getString(mResourceBundle, name().toLowerCase(Locale.ROOT));
+    }
+
+    public String toUpper() {
+        return toString().toUpperCase(Locale.ROOT);
     }
 }
