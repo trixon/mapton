@@ -24,6 +24,7 @@ import org.locationtech.jts.io.WKTReader;
 import org.mapton.api.MPoi;
 import org.mapton.api.MPoiProvider;
 import org.mapton.api.MPoiStyle;
+import org.mapton.api.MSimpleObjectStorageManager;
 import org.openide.util.Exceptions;
 import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
@@ -77,6 +78,11 @@ public class TrafficInfoPoiProvider implements MPoiProvider {
                     } catch (NullPointerException e) {
                         //System.out.println(ToStringBuilder.reflectionToString(camera, ToStringStyle.MULTI_LINE_STYLE));
                     }
+                    var urlExtraArg = "";
+                    if (MSimpleObjectStorageManager.getInstance().getBoolean(ImageSizeSOSB.class, ImageSizeSOSB.DEFAULT_VALUE)) {
+                        urlExtraArg = "?type=fullsize";
+                    }
+
                     var poi = new MPoi();
                     poi.setDescription(camera.getDescription());
                     poi.setCategory("%s".formatted("Kameror"));
@@ -85,7 +91,7 @@ public class TrafficInfoPoiProvider implements MPoiProvider {
                     poi.setDisplayMarker(true);
                     poi.setName(camera.getName());
                     poi.setZoom(0.9);
-                    poi.setExternalImageUrl(camera.getPhotoUrl() + "?type=fullsize");
+                    poi.setExternalImageUrl(camera.getPhotoUrl() + urlExtraArg);
                     setLatLonFromGeometry(poi, camera.getGeometry().getWGS84());
 
                     var style = new MPoiStyle();
