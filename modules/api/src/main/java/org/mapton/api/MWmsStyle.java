@@ -19,7 +19,6 @@ import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.TreeMap;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  *
@@ -114,7 +113,7 @@ public class MWmsStyle {
         if (treeMap == null) {
             return null;
         } else {
-            return treeMap.getOrDefault(Locale.getDefault().getLanguage(), StringUtils.defaultString(treeMap.get(""), defaultValue));
+            return treeMap.getOrDefault(Locale.getDefault().getLanguage(), treeMap.getOrDefault("", defaultValue));
         }
     }
 }

@@ -23,10 +23,10 @@ import org.apache.commons.lang3.Range;
  */
 public class MDecDegDMS {
 
-    private static final Range<Integer> LAT_RANGE = Range.between(-90, 90);
-    private static final Range<Integer> LON_RANGE = Range.between(-180, 180);
-    private static final Range<Integer> MIN_RANGE = Range.between(0, 59);
-    private static final Range<Double> SEC_RANGE = Range.between(0.0, 59.999999);
+    private static final Range<Integer> LAT_RANGE = Range.of(-90, 90);
+    private static final Range<Integer> LON_RANGE = Range.of(-180, 180);
+    private static final Range<Integer> MIN_RANGE = Range.of(0, 59);
+    private static final Range<Double> SEC_RANGE = Range.of(0.0, 59.999999);
 
     private boolean mAbsolute;
     private double mDecDeg;

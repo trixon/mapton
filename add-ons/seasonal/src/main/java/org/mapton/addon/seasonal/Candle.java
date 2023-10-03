@@ -26,7 +26,7 @@ import java.awt.Color;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import org.apache.commons.lang3.RandomUtils;
+import java.util.Random;
 import org.mapton.api.MLatLon;
 
 /**
@@ -41,6 +41,7 @@ public class Candle {
     private final double mHeight;
     private final MLatLon mLatLon;
     private boolean mLit;
+    private final Random mRandom = new Random();
     private final ArrayList<Renderable> mRenderables = new ArrayList<>();
     private final LocalDateTime mStartDateTime;
     private Cone mTopCone;
@@ -104,10 +105,10 @@ public class Candle {
         }
 
         var offset = 0.000008;
-        final var coneHeight = RandomUtils.nextInt(23, 28);
+        final var coneHeight = mRandom.nextInt(23, 28);
         final var wickPosition = Position.fromDegrees(
-                mLatLon.getLatitude() + RandomUtils.nextDouble(0, offset) * (RandomUtils.nextBoolean() ? 1 : -1),
-                mLatLon.getLongitude() + RandomUtils.nextDouble(0, offset) * (RandomUtils.nextBoolean() ? 1 : -1),
+                mLatLon.getLatitude() + mRandom.nextDouble(0, offset) * (mRandom.nextBoolean() ? 1 : -1),
+                mLatLon.getLongitude() + mRandom.nextDouble(0, offset) * (mRandom.nextBoolean() ? 1 : -1),
                 height + wickHeight * .7 + coneHeight * .5
         );
 

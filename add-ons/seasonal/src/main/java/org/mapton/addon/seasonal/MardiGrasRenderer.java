@@ -25,7 +25,7 @@ import gov.nasa.worldwind.render.airspaces.Orbit;
 import gov.nasa.worldwind.render.airspaces.Polygon;
 import java.awt.Color;
 import java.util.Arrays;
-import org.apache.commons.lang3.RandomUtils;
+import java.util.Random;
 import org.mapton.api.MLatLon;
 
 /**
@@ -33,6 +33,8 @@ import org.mapton.api.MLatLon;
  * @author Patrik Karlström
  */
 public class MardiGrasRenderer extends BaseRenderer {
+
+    private final Random mRandom = new Random();
 
     public MardiGrasRenderer(RenderableLayer layer) {
         super(layer);
@@ -98,13 +100,13 @@ public class MardiGrasRenderer extends BaseRenderer {
         }
 
         for (int i = 0; i < 2000; i++) {
-            double lat = RandomUtils.nextDouble(50, 90);
-            double lon = RandomUtils.nextDouble(0, 360) - 180;
+            double lat = mRandom.nextDouble(50, 90);
+            double lon = mRandom.nextDouble(0, 360) - 180;
 
             CappedCylinder sugarCylinder = new CappedCylinder(sugarAttrs);
             sugarCylinder.setCenter(LatLon.fromDegrees(lat, lon));
-            sugarCylinder.setRadii(0.0, 7 * 10000.0 * RandomUtils.nextDouble(0.3, 1.2));
-            sugarCylinder.setAltitudes(highAlt, highAlt * RandomUtils.nextDouble(1, 1.01));
+            sugarCylinder.setRadii(0.0, 7 * 10000.0 * mRandom.nextDouble(0.3, 1.2));
+            sugarCylinder.setAltitudes(highAlt, highAlt * mRandom.nextDouble(1, 1.01));
             sugarCylinder.setTerrainConforming(false, false);
             sugarCylinder.setDragEnabled(false);
             mLayer.addRenderable(sugarCylinder);

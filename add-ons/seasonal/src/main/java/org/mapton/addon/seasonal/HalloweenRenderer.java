@@ -25,7 +25,7 @@ import gov.nasa.worldwind.render.airspaces.CappedCylinder;
 import gov.nasa.worldwind.render.airspaces.Polygon;
 import java.awt.Color;
 import java.util.ArrayList;
-import org.apache.commons.lang3.RandomUtils;
+import java.util.Random;
 import org.controlsfx.control.action.Action;
 import org.mapton.api.MKey;
 import org.mapton.api.MLatLon;
@@ -114,10 +114,11 @@ public class HalloweenRenderer extends BaseRenderer {
         var mouthList = new ArrayList<LatLon>();
         double baseLat = -10;
         int lonSpan = 100;
+        var random = new Random();
         for (int i = -lonSpan / 2; i <= lonSpan / 2; i += 10) {
             double lon = i;
             boolean odd = (i / 10 & 1) != 0;
-            double span = (odd ? 2 : 3) * RandomUtils.nextDouble(0.8, 1.2);
+            double span = (odd ? 2 : 3) * random.nextDouble(0.8, 1.2);
             double lat = baseLat + span;
             mouthList.add(LatLon.fromDegrees(lat, lon));
         }

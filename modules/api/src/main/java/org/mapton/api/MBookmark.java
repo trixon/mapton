@@ -17,8 +17,8 @@ package org.mapton.api;
 
 import com.google.gson.annotations.SerializedName;
 import java.sql.Timestamp;
+import java.util.Objects;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  *
@@ -62,7 +62,7 @@ public class MBookmark extends MObject {
     }
 
     public String getColor() {
-        return StringUtils.defaultString(mColor, "FFFF00");
+        return Objects.toString(mColor, "FFFF00");
     }
 
     public String getDescription() {

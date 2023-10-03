@@ -17,13 +17,13 @@ package org.mapton.addon.geonames_ww;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Scene;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
-import org.apache.commons.lang3.RandomUtils;
 import org.controlsfx.control.CheckListView;
 import org.controlsfx.control.IndexedCheckModel;
 import org.controlsfx.control.action.Action;
@@ -97,11 +97,12 @@ public final class GeoNamesTopComponent extends MTopComponent {
     }
 
     private Scene createScene() {
+        var random = new Random();
 
         Action randomAction = new Action(Dict.RANDOM.toString(), event -> {
             mListView.getCheckModel().getCheckedItems().removeListener(mListChangeListener);
             int randomSpan = 10;
-            int offset = RandomUtils.nextInt(0, randomSpan);
+            int offset = random.nextInt(0, randomSpan);
             for (int i = offset; i < mListView.getItems().size(); i = i + randomSpan) {
                 mListView.getCheckModel().check(i);
             }
