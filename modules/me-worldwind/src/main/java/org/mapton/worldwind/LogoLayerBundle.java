@@ -57,7 +57,9 @@ public class LogoLayerBundle extends LayerBundle {
             var screenImage = new ScreenImage();
             try {
                 URL url = Mapton.getGlobalState().get(MKey.MAP_LOGO_URL);
-                screenImage.setImageSource(ImageIO.read(url));
+                if (url != null) {
+                    screenImage.setImageSource(ImageIO.read(url));
+                }
             } catch (IOException ex) {
                 Exceptions.printStackTrace(ex);
             }
