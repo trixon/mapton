@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+OpenIDE-Module-Layer: org/mapton/butterfly_alarms/layer.xml
+OpenIDE-Module-Localizing-Bundle: org/mapton/butterfly_alarms/Bundle.properties
+OpenIDE-Module-Requires: org.openide.windows.WindowManager
+
