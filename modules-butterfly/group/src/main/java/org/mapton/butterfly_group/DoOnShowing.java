@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_core;
+package org.mapton.butterfly_group;
 
 import org.mapton.api.MOptions;
 import org.openide.windows.OnShowing;
