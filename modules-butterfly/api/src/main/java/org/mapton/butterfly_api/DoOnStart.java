@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,10 +15,13 @@
  */
 package org.mapton.butterfly_api;
 
-import org.mapton.butterfly_api.api.ButterflyManager;
+import org.mapton.api.MCooTrans;
 import org.mapton.api.MKey;
 import org.mapton.api.Mapton;
+import org.mapton.butterfly_api.api.ButterflyConfig;
+import org.mapton.butterfly_api.api.ButterflyManager;
 import org.openide.modules.OnStart;
+import org.openide.util.NbPreferences;
 
 /**
  *
@@ -29,6 +32,13 @@ public class DoOnStart implements Runnable {
 
     @Override
     public void run() {
+        var coosysPlane = ButterflyConfig.getInstance().getConfig().getString("COOSYS.PLANE");
+
+        if (coosysPlane != null) {
+            var preferences = NbPreferences.forModule(MCooTrans.class);
+            preferences.put("map.coo_trans", coosysPlane);
+        }
+
         Mapton.getExecutionFlow().executeWhenReady(MKey.EXECUTION_FLOW_MAP_WW_INITIALIZED, () -> {
             ButterflyManager.getInstance().load();
         });

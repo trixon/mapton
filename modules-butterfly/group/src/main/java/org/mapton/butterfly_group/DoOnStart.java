@@ -15,15 +15,11 @@
  */
 package org.mapton.butterfly_group;
 
-import java.util.prefs.BackingStoreException;
-import org.mapton.api.MCooTrans;
 import org.mapton.api.MKey;
 import org.mapton.api.MOptions;
 import org.mapton.api.Mapton;
 import org.openide.modules.OnStart;
-import org.openide.util.Exceptions;
 import org.openide.util.NbPreferences;
-import se.trixon.almond.util.PrefsHelper;
 
 /**
  *
@@ -38,20 +34,12 @@ public class DoOnStart implements Runnable {
     public void run() {
         Mapton.getGlobalState().put(MKey.MAP_LOGO_URL, getClass().getResource("scior-logo.png"));
 
-        var preferences = NbPreferences.forModule(MCooTrans.class);
-
-        try {
-            PrefsHelper.putIfAbsent(preferences, "map.coo_trans", "SWEREF99 12 00");
-            var firstRun = mOptions.getPreferences().getInt(MOptions.KEY_APP_START_COUNTER, 1) == 1;
-
-            if (firstRun) {
-                var key = "laf";
-                var defaultLAF = "com.formdev.flatlaf.FlatLightLaf";
-                NbPreferences.root().node("laf").put(key, defaultLAF);
-                mOptions.put(MOptions.KEY_UI_LAF_DARK, false);
-            }
-        } catch (BackingStoreException ex) {
-            Exceptions.printStackTrace(ex);
+        var firstRun = mOptions.getPreferences().getInt(MOptions.KEY_APP_START_COUNTER, 1) == 1;
+        if (firstRun) {
+            var key = "laf";
+            var defaultLAF = "com.formdev.flatlaf.FlatLightLaf";
+            NbPreferences.root().node("laf").put(key, defaultLAF);
+            mOptions.put(MOptions.KEY_UI_LAF_DARK, false);
         }
     }
 }

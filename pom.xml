@@ -69,7 +69,7 @@
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>versions-maven-plugin</artifactId>
-                    <version>2.16.0</version>
+                    <version>2.16.1</version>
                     <configuration>
                         <generateBackupPoms>false</generateBackupPoms>
                     </configuration>
@@ -107,7 +107,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-enforcer-plugin</artifactId>
-                    <version>3.4.0</version>
+                    <version>3.4.1</version>
                     <executions>
                         <execution>
                             <id>enforce</id>
@@ -271,7 +271,6 @@
         <!--Butterfly-->
         <module>modules-butterfly/alarms</module>
         <module>modules-butterfly/api</module>
-        <module>modules-butterfly/core</module>
         <module>modules-butterfly/format</module>
         <module>modules-butterfly/group</module>
         <module>modules-butterfly/hydrological</module>
@@ -340,23 +339,54 @@
                 <version>${mapton.version}</version>
             </dependency>
             <dependency>
-                <groupId>${project.groupId}</groupId>
+                <groupId>org.mapton</groupId>
                 <artifactId>datasources</artifactId>
                 <version>${mapton.version}</version>
             </dependency>
             <dependency>
-                <groupId>${project.groupId}</groupId>
+                <groupId>org.mapton</groupId>
                 <artifactId>google-maps</artifactId>
                 <version>${mapton.version}</version>
             </dependency>
             <dependency>
-                <groupId>${project.groupId}</groupId>
+                <groupId>org.mapton</groupId>
                 <artifactId>maintenance</artifactId>
                 <version>${mapton.version}</version>
             </dependency>
             <dependency>
-                <groupId>${project.groupId}</groupId>
+                <groupId>org.mapton</groupId>
                 <artifactId>ce-chartfx</artifactId>
+                <version>${mapton.version}</version>
+            </dependency>
+            <!-- Butterfly -->
+            <dependency>
+                <groupId>org.mapton</groupId>
+                <artifactId>butterfly-format</artifactId>
+                <version>${mapton.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mapton</groupId>
+                <artifactId>butterfly-core</artifactId>
+                <version>${mapton.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mapton</groupId>
+                <artifactId>butterfly-api</artifactId>
+                <version>${mapton.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mapton</groupId>
+                <artifactId>butterfly-alarms</artifactId>
+                <version>${mapton.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mapton</groupId>
+                <artifactId>butterfly-topo</artifactId>
+                <version>${mapton.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mapton</groupId>
+                <artifactId>butterfly-hydro</artifactId>
                 <version>${mapton.version}</version>
             </dependency>
 
@@ -448,6 +478,11 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-geometry-euclidean</artifactId>
                 <version>1.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-configuration2</artifactId>
+                <version>2.9.0</version>
             </dependency>
             <dependency>
                 <groupId>net.sourceforge.jtds</groupId>

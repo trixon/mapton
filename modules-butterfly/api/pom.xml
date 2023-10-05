@@ -53,15 +53,16 @@ limitations under the License.
     <dependencies>
         <!--NetBeans-->
         <dependency>
-            <groupId>org.mapton</groupId>
-            <artifactId>me-worldwind</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-netbeans-api-annotations-common</artifactId>
             <version>${netbeans.version}</version>
         </dependency>
-        
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-util</artifactId>
+            <version>${netbeans.version}</version>
+        </dependency>
+
         <!--Mapton-->
         <dependency>
             <groupId>org.mapton</groupId>
@@ -71,14 +72,17 @@ limitations under the License.
             <groupId>org.mapton</groupId>
             <artifactId>core</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.mapton</groupId>
+            <artifactId>me-worldwind</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mapton</groupId>
+            <artifactId>butterfly-format</artifactId>
+        </dependency>
         
         <!--Trixon-->
         
         <!--Other-->
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>butterfly-format</artifactId>
-            <version>${mapton.version}</version>
-        </dependency>
     </dependencies>
 </project>

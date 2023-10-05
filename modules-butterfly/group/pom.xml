@@ -55,24 +55,20 @@
 
         <!-- Butterfly -->
         <dependency>
-            <groupId>${project.groupId}</groupId>
+            <groupId>org.mapton</groupId>
             <artifactId>butterfly-api</artifactId>
-            <version>${mapton.version}</version>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
+            <groupId>org.mapton</groupId>
             <artifactId>butterfly-alarms</artifactId>
-            <version>${mapton.version}</version>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
+            <groupId>org.mapton</groupId>
             <artifactId>butterfly-topo</artifactId>
-            <version>${mapton.version}</version>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
+            <groupId>org.mapton</groupId>
             <artifactId>butterfly-hydro</artifactId>
-            <version>${mapton.version}</version>
         </dependency>
 
     </dependencies>

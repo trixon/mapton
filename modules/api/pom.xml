@@ -177,6 +177,10 @@
             <artifactId>commons-numbers-core</artifactId>
             <version>1.1</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-configuration2</artifactId>
+        </dependency>
 
         <!-- GeoTools -->
         <dependency>
