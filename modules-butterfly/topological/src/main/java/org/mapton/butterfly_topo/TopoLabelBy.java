@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_topo;
 
+import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 import java.util.function.Function;
 import org.apache.commons.lang3.ObjectUtils;
@@ -84,23 +85,33 @@ public enum TopoLabelBy {
     MISC_FREQUENCY(Strings.CAT_MISC, SDict.FREQUENCY.toString(), p -> {
         return p.getFrequency() != null ? p.getFrequency().toString() : "--";
     }),
-    MISC_MEAS_LATEST_OPERATOR(Strings.CAT_MEAS, SDict.LATEST_S.toString().formatted(SDict.OPERATOR.toLower()), p -> {
+    MEAS_LATEST_OPERATOR(Strings.CAT_MEAS, SDict.LATEST_S.toString().formatted(SDict.OPERATOR.toLower()), p -> {
         return p.ext().getObservationsRaw().getLast().getOperator();
     }),
-    MISC_MEAS_COUNT_ALL(Strings.CAT_MEAS, Strings.MEAS_COUNT_ALL, p -> {
+    MEAS_COUNT_ALL(Strings.CAT_MEAS, Strings.MEAS_COUNT_ALL, p -> {
         return "%d".formatted(
                 p.ext().getNumOfObservations()
         );
     }),
-    MISC_MEAS_COUNT_SELECTION(Strings.CAT_MEAS, Strings.MEAS_COUNT_SELECTION, p -> {
+    MEAS_COUNT_SELECTION(Strings.CAT_MEAS, Strings.MEAS_COUNT_SELECTION, p -> {
         return "%d".formatted(
                 p.ext().getNumOfObservationsTimeFiltered()
         );
     }),
-    MISC_MEAS_COUNT_SELECTION_ALL(Strings.CAT_MEAS, Strings.MEAS_COUNT, p -> {
+    MEAS_COUNT_SELECTION_ALL(Strings.CAT_MEAS, Strings.MEAS_COUNT, p -> {
         return "%d / %d".formatted(
                 p.ext().getNumOfObservationsTimeFiltered(),
                 p.ext().getNumOfObservations()
+        );
+    }),
+    MEAS_AGE(Strings.CAT_MEAS, Dict.AGE.toString(), p -> {
+        return "%d".formatted(
+                p.ext().getMeasurementAge(ChronoUnit.DAYS)
+        );
+    }),
+    MEAS_NEED(Strings.CAT_MEAS, Dict.NEED.toString(), p -> {
+        return "%d".formatted(
+                p.ext().getMeasurementUntilNext(ChronoUnit.DAYS)
         );
     }),
     ZZZ("Z", "z", p -> {

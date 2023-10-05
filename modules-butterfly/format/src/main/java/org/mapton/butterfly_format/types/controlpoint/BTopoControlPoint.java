@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,6 +18,8 @@ package org.mapton.butterfly_format.types.controlpoint;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import org.mapton.butterfly_format.types.BDimension;
 
@@ -125,6 +127,19 @@ public class BTopoControlPoint extends BBaseControlPoint {
 
         private transient ArrayList<BTopoControlPointObservation> observationsCalculated;
         private transient ArrayList<BTopoControlPointObservation> observationsRaw;
+
+        public long getMeasurementAge(ChronoUnit chronoUnit) {
+            var latest = getDateLatest() != null ? getDateLatest().toLocalDate() : LocalDate.MIN;
+
+            return chronoUnit.between(latest, LocalDate.now());
+        }
+
+        public long getMeasurementUntilNext(ChronoUnit chronoUnit) {
+            var latest = getDateLatest() != null ? getDateLatest().toLocalDate() : LocalDate.MIN;
+            var nextMeas = latest.plusDays(getFrequency());
+
+            return chronoUnit.between(LocalDate.now(), nextMeas);
+        }
 
         public int getNumOfObservations() {
             return getObservationsRaw().size();

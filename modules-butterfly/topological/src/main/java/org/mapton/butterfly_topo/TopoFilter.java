@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -44,9 +44,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.ui.forms.FormFilter;
 import org.mapton.api.ui.forms.FormHelper;
+import org.mapton.butterfly_api.api.ButterflyManager;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.controlpoint.BTopoControlPoint;
-import org.mapton.butterfly_api.api.ButterflyManager;
 import se.trixon.almond.util.BooleanHelper;
 import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
@@ -390,14 +390,14 @@ public class TopoFilter extends FormFilter<TopoManager> {
         }
     }
 
-    private boolean validateNextMeas(BTopoControlPoint o) {
+    private boolean validateNextMeas(BTopoControlPoint p) {
         //TODO Verify exact days...
 
-        var frequency = o.getFrequency();
-        var latest = o.getDateLatest() != null ? o.getDateLatest().toLocalDate() : LocalDate.MIN;
+        var frequency = p.getFrequency();
+        var latest = p.getDateLatest() != null ? p.getDateLatest().toLocalDate() : LocalDate.MIN;
         var today = LocalDate.now();
         var nextMeas = latest.plusDays(frequency);
-        var remainingDays = ChronoUnit.DAYS.between(today, nextMeas);
+        var remainingDays = p.ext().getMeasurementUntilNext(ChronoUnit.DAYS);
 
         if (mNextMeasCheckModel.isEmpty()) {
             return true;
