@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,46 +15,50 @@
  */
 package org.mapton.butterfly_topo;
 
-import com.dlsc.gemsfx.util.SessionManager;
 import java.util.LinkedHashMap;
+import java.util.stream.Stream;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import javafx.util.StringConverter;
 import org.apache.commons.lang3.StringUtils;
-import org.openide.util.NbPreferences;
+import org.controlsfx.control.CheckComboBox;
+import org.controlsfx.control.IndexedCheckModel;
+import org.mapton.worldwind.api.MOptionsView;
+import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.Direction;
 import se.trixon.almond.util.fx.FxHelper;
+import se.trixon.almond.util.fx.session.CheckModelSession;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class TopoOptionsView extends BorderPane {
+public class TopoOptionsView extends MOptionsView<TopoLayerBundle> {
 
+    private final CheckComboBox<Direction> mIndicatorCheckComboBox = new CheckComboBox<>();
+    private final CheckModelSession mIndicatorCheckModelSession = new CheckModelSession(mIndicatorCheckComboBox.getCheckModel());
     private final SimpleStringProperty mLabelByIdProperty = new SimpleStringProperty("NAME");
     private final SimpleObjectProperty<TopoLabelBy> mLabelByProperty = new SimpleObjectProperty<>();
-    private final MenuButton mMenuButton = new MenuButton();
-    private SessionManager mSessionManager;
+    private final MenuButton mLabelMenuButton = new MenuButton();
 
-    public TopoOptionsView() {
+    public TopoOptionsView(TopoLayerBundle layerBundle) {
+        super(layerBundle);
         createUI();
         initListeners();
+        initSession();
+    }
+
+    public IndexedCheckModel<Direction> getIndicatorCheckModel() {
+        return mIndicatorCheckComboBox.getCheckModel();
     }
 
     public TopoLabelBy getLabelBy() {
         return mLabelByProperty.get();
-    }
-
-    public SessionManager getSessionManager() {
-        if (mSessionManager == null) {
-            mSessionManager = new SessionManager(NbPreferences.forModule(getClass()));
-        }
-
-        return mSessionManager;
     }
 
     public SimpleObjectProperty<TopoLabelBy> labelByProperty() {
@@ -62,9 +66,46 @@ public class TopoOptionsView extends BorderPane {
     }
 
     private void createUI() {
-        populateMenuButton();
+        mIndicatorCheckComboBox.setTitle(Dict.INDICATORS.toString());
+        mIndicatorCheckComboBox.setShowCheckedCount(true);
+        mIndicatorCheckComboBox.getItems().addAll(
+                Direction.NORTH,
+                Direction.SOUTH,
+                Direction.WEST
+        );
+
+        mIndicatorCheckComboBox.setConverter(new StringConverter<Direction>() {
+            @Override
+            public Direction fromString(String string) {
+                throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+            }
+
+            @Override
+            public String toString(Direction direction) {
+                var base = direction.getName() + "\t ";
+
+                switch (direction) {
+                    case NORTH -> {
+                        return base + Dict.Geometry.HEIGHT.toString();
+                    }
+                    case SOUTH -> {
+                        return base + Dict.Geometry.PLANE.toString();
+                    }
+                    case WEST -> {
+                        return base + getBundle().getString("nextMeasCheckComboBoxTitle");
+                    }
+
+                    default ->
+                        throw new AssertionError();
+                }
+            }
+        });
+
+        populateLabelMenuButton();
+
         var box = new VBox(
-                mMenuButton
+                mLabelMenuButton,
+                mIndicatorCheckComboBox
         );
         box.setPadding(FxHelper.getUIScaledInsets(8));
 
@@ -75,14 +116,22 @@ public class TopoOptionsView extends BorderPane {
         getSessionManager().register("options.labelBy", mLabelByIdProperty);
 
         mLabelByProperty.addListener((p, o, n) -> {
-            mMenuButton.setText(n.getName());
+            mLabelMenuButton.setText(n.getName());
             mLabelByIdProperty.set(n.name());
         });
 
         mLabelByProperty.set(TopoLabelBy.valueOf(mLabelByIdProperty.get()));
+
+        Stream.of(
+                mIndicatorCheckComboBox
+        ).forEachOrdered(ccb -> ccb.getCheckModel().getCheckedItems().addListener(getListChangeListener()));
     }
 
-    private void populateMenuButton() {
+    private void initSession() {
+        getSessionManager().register("view.checkedIndicators", mIndicatorCheckModelSession.checkedStringProperty());
+    }
+
+    private void populateLabelMenuButton() {
         var categoryToMenu = new LinkedHashMap<String, Menu>();
 
         for (var topoLabel : TopoLabelBy.values()) {
@@ -97,12 +146,12 @@ public class TopoOptionsView extends BorderPane {
             menu.getItems().add(menuItem);
         }
 
-        mMenuButton.getItems().addAll(categoryToMenu.get("").getItems());
-        mMenuButton.getItems().add(new SeparatorMenuItem());
+        mLabelMenuButton.getItems().addAll(categoryToMenu.get("").getItems());
+        mLabelMenuButton.getItems().add(new SeparatorMenuItem());
 
         for (var entry : categoryToMenu.entrySet()) {
             if (StringUtils.isNotBlank(entry.getKey())) {
-                mMenuButton.getItems().add(entry.getValue());
+                mLabelMenuButton.getItems().add(entry.getValue());
             }
         }
     }
