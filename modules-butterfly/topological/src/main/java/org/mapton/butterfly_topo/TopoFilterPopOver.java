@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,15 +24,16 @@ import javafx.scene.control.Separator;
 import javafx.scene.control.Spinner;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.controlsfx.control.CheckComboBox;
 import static org.mapton.api.ui.MPopOver.GAP;
 import static org.mapton.api.ui.MPopOver.autoSize;
 import org.mapton.api.ui.forms.NegPosStringConverterDouble;
 import org.mapton.api.ui.forms.NegPosStringConverterInteger;
+import org.mapton.butterfly_api.api.BaseFilterPopOver;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BDimension;
-import org.mapton.butterfly_api.api.BaseFilterPopOver;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SDict;
 import se.trixon.almond.util.fx.FxHelper;
@@ -287,7 +288,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
 
             @Override
             public String toString(String s) {
-                var timeUnit = s.equalsIgnoreCase("1") ? Dict.Time.DAY.toString() : Dict.Time.DAYS.toString();
+                var timeUnit = StringUtils.equalsIgnoreCase(s, "1") ? Dict.Time.DAY.toString() : Dict.Time.DAYS.toString();
 
                 return "%s: %s %s".formatted(
                         Dict.Time.MAX_AGE.toString(),
