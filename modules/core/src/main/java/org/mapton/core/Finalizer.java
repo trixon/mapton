@@ -39,6 +39,7 @@ public class Finalizer implements Runnable {
             try {
                 mOptions.setMapZoom(engine.getZoom());
                 mOptions.setMapCenter(engine.getCenter());
+                mOptions.sync();
             } catch (Exception e) {
                 System.err.println(e);
             }

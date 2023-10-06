@@ -270,6 +270,7 @@ public class WorldWindMapEngine extends MEngine {
         mOptions.put(KEY_VIEW_PITCH, view.getPitch().getDegrees());
         mOptions.put(KEY_VIEW_ROLL, view.getRoll().getDegrees());
         mOptions.put(KEY_VIEW_ALTITUDE, view.getEyePosition().getAltitude());
+        mOptions.sync();
     }
 
     @Override

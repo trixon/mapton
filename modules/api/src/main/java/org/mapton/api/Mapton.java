@@ -33,7 +33,6 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.util.Duration;
 import javax.swing.JComponent;
-import javax.swing.SwingUtilities;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.Notifications;
 import org.controlsfx.control.action.Action;
@@ -169,9 +168,9 @@ public class Mapton {
      */
     public static void execute(Runnable runnable) {
         if (getEngine().isSwing()) {
-            SwingUtilities.invokeLater(runnable);
+            SwingHelper.runLater(runnable);
         } else {
-            Platform.runLater(runnable);
+            FxHelper.runLater(runnable);
         }
     }
 
