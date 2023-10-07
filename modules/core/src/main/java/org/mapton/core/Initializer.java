@@ -61,14 +61,21 @@ import se.trixon.almond.util.swing.SwingHelper;
 @OnStart
 public class Initializer implements Runnable {
 
-    private final MOptions mOptions = MOptions.getInstance();
+    private static final MOptions sOptions = MOptions.getInstance();
 
     static {
         try {
             var key = "laf";
-            var defaultLAF = "com.formdev.flatlaf.FlatDarkLaf";
             var preferences = NbPreferences.root().node("laf");
-            PrefsHelper.putIfAbsent(preferences, key, defaultLAF);
+
+            if (!PrefsHelper.keyExists(preferences, key)) {
+                var useDarkAsDefault = false;
+                sOptions.nightModeProperty().set(useDarkAsDefault);
+                var darkLAF = "com.formdev.flatlaf.FlatDarkLaf";
+                var lightLAF = "com.formdev.flatlaf.FlatLightLaf";
+
+                PrefsHelper.putIfAbsent(preferences, key, useDarkAsDefault ? darkLAF : lightLAF);
+            }
         } catch (BackingStoreException ex) {
             //Exceptions.printStackTrace(ex);
         }
@@ -81,12 +88,12 @@ public class Initializer implements Runnable {
         System.setProperty("netbeans.winsys.no_help_in_dialogs", "true");
         System.setProperty("netbeans.winsys.no_toolbars", "true");
 
-        boolean fullscreen = mOptions.isFullscreen();
-        boolean mapOnly = mOptions.isMapOnly();
-        FxHelper.setDarkThemeEnabled(mOptions.is(KEY_UI_LAF_DARK));
+        boolean fullscreen = sOptions.isFullscreen();
+        boolean mapOnly = sOptions.isMapOnly();
+        FxHelper.setDarkThemeEnabled(sOptions.is(KEY_UI_LAF_DARK));
 
         SwingUtilities.invokeLater(() -> {
-            var iconColor = mOptions.getIconColor();
+            var iconColor = sOptions.getIconColor();
             MaterialIcon.setDefaultColor(iconColor);
             se.trixon.almond.util.icons.material.swing.MaterialIcon.setDefaultColor(FxHelper.colorToColor(iconColor));
         });
@@ -159,7 +166,7 @@ public class Initializer implements Runnable {
                     Almond.getTopComponent("ChartTopComponent");
                     Almond.getTopComponent("BeforeAfterTopComponent");
 
-                    int startCounter = PrefsHelper.inc(mOptions.getPreferences(), MOptions.KEY_APP_START_COUNTER);
+                    int startCounter = PrefsHelper.inc(sOptions.getPreferences(), MOptions.KEY_APP_START_COUNTER);
                     if (startCounter == 2 || startCounter % 100 == 0) {
                         Actions.forID("Mapton", "org.mapton.core.actions.AboutMapsAction").actionPerformed(null);
                     }
