@@ -48,6 +48,10 @@ public class LayerMapStyleManager extends MBaseDataManager<MapStyle> {
         mDelayedResetRunner.reset();
     }
 
+    public MapStyle getById(String id) {
+        return getAllItems().stream().filter(s -> StringUtils.equalsIgnoreCase(id, s.getId())).findAny().orElse(null);
+    }
+
     public void refresh() {
         refresh(mFilter);
     }

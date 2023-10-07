@@ -16,15 +16,24 @@
 package org.mapton.worldwind;
 
 import java.util.ArrayList;
+import java.util.prefs.Preferences;
 import javafx.collections.ListChangeListener;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.RadioMenuItem;
+import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -32,9 +41,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.textfield.TextFields;
 import org.mapton.api.MKey;
 import org.mapton.api.Mapton;
-import static org.mapton.worldwind.ModuleOptions.KEY_MAP_STYLE;
-import static org.mapton.worldwind.ModuleOptions.KEY_MAP_STYLE_PREV;
 import org.mapton.worldwind.api.MapStyle;
+import org.openide.util.NbPreferences;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
 
@@ -70,6 +78,11 @@ public class LayerBackgroundView extends BorderPane {
         });
     }
 
+    private void activateStyle(String id) {
+        mOptions.put(ModuleOptions.KEY_MAP_STYLE_PREV, mOptions.get(ModuleOptions.KEY_MAP_STYLE));
+        mOptions.put(ModuleOptions.KEY_MAP_STYLE, id);
+    }
+
     private void createUI() {
         mSpeedDial.setPadding(FxHelper.getUIScaledInsets(8));
 
@@ -94,6 +107,7 @@ public class LayerBackgroundView extends BorderPane {
         mManager.getAllItems().addListener((ListChangeListener.Change<? extends MapStyle> c) -> {
             populateSpeedDialFixed();
         });
+
         var selectionModel = mListView.getSelectionModel();
         selectionModel.selectedItemProperty().addListener((p, o, n) -> {
             mManager.setSelectedItem(n);
@@ -111,8 +125,7 @@ public class LayerBackgroundView extends BorderPane {
             change.next();
             if (change.wasAdded() || change.wasReplaced()) {
                 try {
-                    mOptions.put(KEY_MAP_STYLE_PREV, mOptions.get(KEY_MAP_STYLE));
-                    mOptions.put(KEY_MAP_STYLE, selectionModel.getSelectedItem().getId());
+                    activateStyle(selectionModel.getSelectedItem().getId());
                 } catch (Exception e) {
                 }
             }
@@ -126,11 +139,12 @@ public class LayerBackgroundView extends BorderPane {
 
     private void populateSpeedDialDynamic() {
         for (int i = 0; i < 6; i++) {
-            var button = new Button(Integer.toString(i + 1));
-            button.prefWidthProperty().bind(widthProperty());
-            button.setPadding(FxHelper.getUIScaledInsets(3));
+            var speedDialButton = new SpeedDialButton(i);
+            var pane = speedDialButton.getRoot();
+            pane.prefWidthProperty().bind(widthProperty());
+            pane.setPadding(FxHelper.getUIScaledInsets(3));
 
-            mSpeedDialDynamic.getChildren().add(button);
+            mSpeedDialDynamic.getChildren().add(pane);
         }
     }
 
@@ -140,13 +154,15 @@ public class LayerBackgroundView extends BorderPane {
             new ArrayList<>(mManager.getAllItems()).stream()
                     .filter(mapStyle -> StringUtils.isBlank(mapStyle.getCategory()))
                     .forEachOrdered(mapStyle -> {
-                        var button = new Button(mapStyle.getName());
+                        var name = StringUtils.replaceEach(mapStyle.getName(),
+                                new String[]{"OpenStreetMap"},
+                                new String[]{"OSM"});
+                        var button = new Button(name);
                         button.prefWidthProperty().bind(widthProperty());
                         button.setPadding(FxHelper.getUIScaledInsets(3));
                         button.setOnAction(actionEvent -> {
                             mListView.getSelectionModel().clearSelection();
-                            mOptions.put(KEY_MAP_STYLE_PREV, mOptions.get(KEY_MAP_STYLE));
-                            mOptions.put(KEY_MAP_STYLE, mapStyle.getId());
+                            activateStyle(mapStyle.getId());
                         });
 
                         if (mapStyle.getSuppliers() != null) {
@@ -212,6 +228,115 @@ public class LayerBackgroundView extends BorderPane {
                     mNameLabel,
                     mCategoryLabel
             );
+        }
+    }
+
+    private class SpeedDialButton {
+
+        private final Button mButton = new Button();
+        private final int mIndex;
+        private MapStyle mMapStyle;
+        private final Label mNameLabel = new Label();
+        private final Preferences mPreferences = NbPreferences.forModule(SpeedDialButton.class).node("speedDial");
+        private MenuItem mResetMenuItem;
+        private final StackPane mRoot = new StackPane();
+
+        public SpeedDialButton(int index) {
+            mIndex = index;
+            createUI();
+            initListeners();
+            initContextMenu();
+
+            load();
+        }
+
+        public Button getButton() {
+            return mButton;
+        }
+
+        public Pane getRoot() {
+            return mRoot;
+        }
+
+        private void createUI() {
+            var internalBox = new VBox();
+            internalBox.getChildren().setAll(mNameLabel);
+            internalBox.setAlignment(Pos.CENTER);
+            mButton.setGraphic(internalBox);
+            mRoot.getChildren().add(mButton);
+
+            FxHelper.autoSizeRegionHorizontal(mButton);
+            FxHelper.autoSizeRegionVertical(mButton);
+
+            mNameLabel.setStyle("-fx-font-size: 1.2em;-fx-font-weight: bolder;");
+        }
+
+        private String getKey() {
+            return "button_%d".formatted(mIndex);
+        }
+
+        private void initContextMenu() {
+            var contextMenu = new ContextMenu();
+
+            mResetMenuItem = new MenuItem(Dict.RESET.toString());
+            mResetMenuItem.setOnAction(actionEvent -> {
+                mPreferences.remove(getKey());
+                load();
+            });
+
+            contextMenu.getItems().setAll(mResetMenuItem);
+
+            if (!mManager.getAllItems().isEmpty()) {
+                contextMenu.getItems().add(new SeparatorMenuItem());
+                var toggleGroup = new ToggleGroup();
+                mManager.getAllItems().stream()
+                        .filter(s -> StringUtils.isNotBlank(s.getCategory()))
+                        .forEachOrdered(s -> {
+                            var menuItem = new RadioMenuItem(s.getName());
+                            menuItem.setToggleGroup(toggleGroup);
+                            menuItem.setSelected(StringUtils.equalsIgnoreCase(mPreferences.get(getKey(), null), s.getId()));
+                            menuItem.setOnAction(actionEvent -> {
+                                mPreferences.put(getKey(), s.getId());
+                                load();
+                            });
+
+                            contextMenu.getItems().add(menuItem);
+                        });
+            }
+            mButton.setContextMenu(contextMenu);
+            mRoot.setOnMousePressed(mouseEvent -> {
+                contextMenu.show(mRoot, mouseEvent.getScreenX(), mouseEvent.getScreenY());
+            });
+
+            mResetMenuItem.disableProperty().bind(mButton.disableProperty());
+        }
+
+        private void initListeners() {
+            mManager.getAllItems().addListener((ListChangeListener.Change<? extends MapStyle> c) -> {
+                initContextMenu();
+                load();
+            });
+
+            mButton.setOnAction(actionEvent -> {
+                mListView.getSelectionModel().clearSelection();
+                activateStyle(mMapStyle.getId());
+            });
+        }
+
+        private void load() {
+            var styleId = mPreferences.get(getKey(), null);
+            mMapStyle = mManager.getById(styleId);
+            var disabled = mMapStyle == null;
+
+            mButton.setDisable(disabled);
+
+            if (disabled) {
+                mButton.setTooltip(null);
+                FxHelper.clearLabel(mNameLabel);
+            } else {
+                mButton.setTooltip(new Tooltip("%s\r%s".formatted(mMapStyle.getName(), mMapStyle.getDescription())));
+                mNameLabel.setText(Integer.toString(mIndex + 1));
+            }
         }
     }
 }
