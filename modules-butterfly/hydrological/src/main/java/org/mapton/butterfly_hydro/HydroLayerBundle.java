@@ -24,11 +24,12 @@ import java.awt.Color;
 import java.util.ArrayList;
 import javafx.collections.ListChangeListener;
 import org.apache.commons.lang3.ObjectUtils;
+import org.mapton.butterfly_format.types.controlpoint.BHydroControlPoint;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
-import org.mapton.butterfly_format.types.controlpoint.BHydroControlPoint;
 import se.trixon.almond.nbp.Almond;
+import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
@@ -45,7 +46,7 @@ public class HydroLayerBundle extends LayerBundle {
         initRepaint();
         initListeners();
 
-//        mManager.updateTemporal(mLayer.isEnabled());
+        FxHelper.runLaterDelayed(1000, () -> mManager.updateTemporal(mLayer.isEnabled()));
     }
 
     @Override
@@ -60,7 +61,7 @@ public class HydroLayerBundle extends LayerBundle {
         setName(Bundle.CTL_HydroAction());
         attachTopComponentToLayer("HydroTopComponent", mLayer);
         setParentLayer(mLayer);
-        mLayer.setEnabled(true);
+//        mLayer.setEnabled(true);
         mLayer.setPickEnabled(true);
     }
 

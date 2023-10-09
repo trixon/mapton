@@ -359,6 +359,13 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
                         highlightable.setHighlighted(false);
                     }
 
+                    if (mLastHighlightObject instanceof AVList avList) {
+                        Runnable r = (Runnable) avList.getValue(WWHelper.KEY_RUNNABLE_HOOVER_OFF);
+                        if (r != null) {
+                            r.run();
+                        }
+                    }
+
                     mLastHighlightObject = null;
                 }
 
@@ -378,7 +385,7 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
                 }
 
                 if (mLastHighlightObject instanceof AVList avList) {
-                    Runnable r = (Runnable) avList.getValue(WWHelper.KEY_RUNNABLE_HOOVER);
+                    Runnable r = (Runnable) avList.getValue(WWHelper.KEY_RUNNABLE_HOOVER_ON);
                     if (r != null) {
                         r.run();
                     }
