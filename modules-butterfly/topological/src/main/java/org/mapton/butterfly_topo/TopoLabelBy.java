@@ -114,6 +114,10 @@ public enum TopoLabelBy {
                 p.ext().getMeasurementUntilNext(ChronoUnit.DAYS)
         );
     }),
+    VALUE_Z(Strings.CAT_VALUE, "Z", p -> {
+        var z = p.getZeroZ();
+        return z == null ? "-" : "%+.3f".formatted(z);
+    }),
     ZZZ("Z", "z", p -> {
         return "Z";
     });
