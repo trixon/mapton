@@ -34,25 +34,25 @@ public class TopoConfig extends BaseConfig {
     }
 
     public Color getColor(BTopoControlPoint point) {
-        //TODO use prefix
-        var s = getConfig().getString("color_default", "#888888");
+        var colorCode = getConfig().getString("color.default", "#888888");
 
-        for (var iterator = getConfig().getKeys(); iterator.hasNext();) {
+        for (var iterator = getConfig().getKeys("color"); iterator.hasNext();) {
             var key = iterator.next();
             var pattern = StringUtils.substringAfterLast(key, "_");
 
-            if (StringUtils.startsWith(key, "color_cat") && macthes(point.getCategory(), pattern)
-                    || StringUtils.startsWith(key, "color_name") && macthes(point.getName(), pattern)
-                    || StringUtils.startsWith(key, "color_group") && macthes(point.getGroup(), pattern)) {
-                s = getConfig().getString(key);
+            if (StringUtils.startsWith(key, "color.cat") && macthes(pattern, point.getCategory())
+                    || StringUtils.startsWith(key, "color.name") && macthes(pattern, point.getName())
+                    || StringUtils.startsWith(key, "color.alarm") && macthes(pattern, point.getNameOfAlarmHeight(), point.getNameOfAlarmPlane())
+                    || StringUtils.startsWith(key, "color.group") && macthes(pattern, point.getGroup())) {
+                colorCode = getConfig().getString(key);
             }
         }
 
-        return Color.decode(s);
+        return Color.decode(colorCode);
     }
 
-    private boolean macthes(String s, String pattern) {
-        return StringHelper.matchesSimpleGlob(s, pattern, true, false);
+    private boolean macthes(String pattern, String... strings) {
+        return StringHelper.matchesSimpleGlob(pattern, true, false, strings);
     }
 
 }
