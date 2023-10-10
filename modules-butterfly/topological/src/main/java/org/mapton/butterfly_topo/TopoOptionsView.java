@@ -41,7 +41,7 @@ import se.trixon.almond.util.fx.session.CheckModelSession;
 public class TopoOptionsView extends MOptionsView<TopoLayerBundle> {
 
     private final CheckComboBox<Direction> mIndicatorCheckComboBox = new CheckComboBox<>();
-    private final CheckModelSession mIndicatorCheckModelSession = new CheckModelSession(mIndicatorCheckComboBox.getCheckModel());
+    private final CheckModelSession mIndicatorCheckModelSession = new CheckModelSession(mIndicatorCheckComboBox);
     private final SimpleStringProperty mLabelByIdProperty = new SimpleStringProperty("NAME");
     private final SimpleObjectProperty<TopoLabelBy> mLabelByProperty = new SimpleObjectProperty<>();
     private final MenuButton mLabelMenuButton = new MenuButton();

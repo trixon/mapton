@@ -18,11 +18,13 @@ package org.mapton.butterfly_topo;
 import java.util.List;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
+import javafx.event.EventType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Separator;
 import javafx.scene.control.Spinner;
 import javafx.scene.layout.VBox;
+import javafx.stage.WindowEvent;
 import javafx.util.StringConverter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -49,39 +51,40 @@ import se.trixon.almond.util.fx.session.SpinnerIntegerSession;
 public class TopoFilterPopOver extends BaseFilterPopOver {
 
     private final CheckComboBox<String> mCategoryCheckComboBox = new CheckComboBox<>();
-    private final CheckModelSession mCategoryCheckModelSession = new CheckModelSession(mCategoryCheckComboBox.getCheckModel());
+    private final CheckModelSession mCategoryCheckModelSession = new CheckModelSession(mCategoryCheckComboBox);
     private final double mDefaultDiffValue = 0.020;
     private final int mDefaultNumOfMeasfValue = 1;
     private final CheckBox mDiffMeasCheckbox = new CheckBox();
     private final Spinner<Double> mDiffMeasSpinner = new Spinner<>(-1.0, 1.0, mDefaultDiffValue, 0.001);
     private final SpinnerDoubleSession mDiffSpinnerSession = new SpinnerDoubleSession(mDiffMeasSpinner);
     private final CheckComboBox<BDimension> mDimensionCheckComboBox = new CheckComboBox<>();
-    private final CheckModelSession mDimensionCheckModelSession = new CheckModelSession(mDimensionCheckComboBox.getCheckModel());
+    private final CheckModelSession mDimensionCheckModelSession = new CheckModelSession(mDimensionCheckComboBox);
     private final TopoFilter mFilter;
+    private boolean mFirstRun = true;
     private final CheckComboBox<Integer> mFrequencyCheckComboBox = new CheckComboBox<>();
-    private final CheckModelSession mFrequencyCheckModelSession = new CheckModelSession(mFrequencyCheckComboBox.getCheckModel());
+    private final CheckModelSession mFrequencyCheckModelSession = new CheckModelSession(mFrequencyCheckComboBox);
     private final CheckComboBox<String> mGroupCheckComboBox = new CheckComboBox<>();
-    private final CheckModelSession mGroupCheckModelSession = new CheckModelSession(mGroupCheckComboBox.getCheckModel());
+    private final CheckModelSession mGroupCheckModelSession = new CheckModelSession(mGroupCheckComboBox);
     private final CheckComboBox<String> mHasDateFromToComboBox = new CheckComboBox<>();
-    private final CheckModelSession mHasDateFromToCheckModelSession = new CheckModelSession(mHasDateFromToComboBox.getCheckModel());
+    private final CheckModelSession mHasDateFromToCheckModelSession = new CheckModelSession(mHasDateFromToComboBox);
     private final TopoManager mManager = TopoManager.getInstance();
     private final ComboBox<String> mMaxAgeComboBox = new ComboBox<>();
     private final SelectionModelSession mMaxAgeSelectionModelSession = new SelectionModelSession(mMaxAgeComboBox.getSelectionModel());
     private final CheckComboBox<String> mMeasCodeCheckComboBox = new CheckComboBox<>();
-    private final CheckModelSession mMeasCodeCheckModelSession = new CheckModelSession(mMeasCodeCheckComboBox.getCheckModel());
+    private final CheckModelSession mMeasCodeCheckModelSession = new CheckModelSession(mMeasCodeCheckComboBox);
     private final CheckBox mMeasLatestOperatorCheckbox = new CheckBox();
     private final CheckComboBox<String> mMeasOperatorsCheckComboBox = new CheckComboBox<>();
-    private final CheckModelSession mMeasOperatorsCheckModelSession = new CheckModelSession(mMeasOperatorsCheckComboBox.getCheckModel());
+    private final CheckModelSession mMeasOperatorsCheckModelSession = new CheckModelSession(mMeasOperatorsCheckComboBox);
     private final CheckComboBox<String> mNextMeasCheckComboBox = new CheckComboBox<>();
-    private final CheckModelSession mNextMeasCheckModelSession = new CheckModelSession(mNextMeasCheckComboBox.getCheckModel());
+    private final CheckModelSession mNextMeasCheckModelSession = new CheckModelSession(mNextMeasCheckComboBox);
     private final CheckBox mNumOfMeasCheckbox = new CheckBox();
     private final Spinner<Integer> mNumOfMeasSpinner = new Spinner<>(Integer.MIN_VALUE, Integer.MAX_VALUE, mDefaultNumOfMeasfValue);
     private final SpinnerIntegerSession mNumOfMeasSession = new SpinnerIntegerSession(mNumOfMeasSpinner);
     private final CheckComboBox<String> mOperatorCheckComboBox = new CheckComboBox<>();
-    private final CheckModelSession mOperatorCheckModelSession = new CheckModelSession(mOperatorCheckComboBox.getCheckModel());
+    private final CheckModelSession mOperatorCheckModelSession = new CheckModelSession(mOperatorCheckComboBox);
     private final CheckBox mSameAlarmCheckbox = new CheckBox();
     private final CheckComboBox<String> mStatusCheckComboBox = new CheckComboBox<>();
-    private final CheckModelSession mStatusCheckModelSession = new CheckModelSession(mStatusCheckComboBox.getCheckModel());
+    private final CheckModelSession mStatusCheckModelSession = new CheckModelSession(mStatusCheckComboBox);
 
     public TopoFilterPopOver(TopoFilter filter) {
         mFilter = filter;
@@ -347,6 +350,16 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
         activatePasteName(actionEvent -> {
             mFilter.freeTextProperty().set(mManager.getSelectedItem().getName());
             mSameAlarmCheckbox.setSelected(true);
+        });
+
+        addEventHandler(EventType.ROOT, event -> {
+            if (mFirstRun && event.getEventType() == WindowEvent.WINDOW_SHOWN) {
+                var dropDownCount = 25;
+                FxHelper.getComboBox(mGroupCheckComboBox).setVisibleRowCount(dropDownCount);
+                FxHelper.getComboBox(mCategoryCheckComboBox).setVisibleRowCount(dropDownCount);
+                FxHelper.getComboBox(mMeasOperatorsCheckComboBox).setVisibleRowCount(dropDownCount);
+                mFirstRun = false;
+            }
         });
 
         mFilter.numOfMeasProperty().bind(mNumOfMeasCheckbox.selectedProperty());
