@@ -19,6 +19,7 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.TreeSet;
@@ -104,6 +105,14 @@ public class MTemporalManager {
 
     public LocalDate getMinDate() {
         return mMinDateProperty.getValue();
+    }
+
+    public long getSpan() {
+        return getSpan(ChronoUnit.DAYS);
+    }
+
+    public long getSpan(ChronoUnit chronoUnit) {
+        return chronoUnit.between(getLowDate(), getHighDate());
     }
 
     public synchronized ConcurrentHashMap<String, MTemporalRange> getSubSet(String prefix) {

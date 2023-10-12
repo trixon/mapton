@@ -46,13 +46,13 @@ public enum TopoLabelBy {
     ALARM_P_VALUE(Strings.CAT_ALARM, Strings.PLANE_VALUE, p -> {
         return "NODATA";
     }),
-    DATE_FIRST(Strings.CAT_DATE, Dict.FIRST.toString(), p -> {
-        var date = p.getDateZero();
+    DATE_LATEST(Strings.CAT_DATE, SDict.LATEST.toString(), p -> {
+        var date = p.getDateLatest();
 
         return date == null ? "-" : date.toString();
     }),
-    DATE_LATEST(Strings.CAT_DATE, SDict.LATEST.toString(), p -> {
-        var date = p.getDateLatest();
+    DATE_FIRST(Strings.CAT_DATE, Dict.FIRST.toString(), p -> {
+        var date = p.getDateZero();
 
         return date == null ? "-" : date.toString();
     }),
@@ -78,6 +78,9 @@ public enum TopoLabelBy {
     }),
     MISC_CATEGORY(Strings.CAT_MISC, Dict.CATEGORY.toString(), p -> {
         return Objects.toString(p.getCategory(), "NODATA");
+    }),
+    MISC_STATUS(Strings.CAT_MISC, Dict.STATUS.toString(), p -> {
+        return Objects.toString(p.getStatus(), "NODATA");
     }),
     MISC_OPERATOR(Strings.CAT_MISC, SDict.OPERATOR.toString(), p -> {
         return Objects.toString(p.getOperator(), "NODATA");

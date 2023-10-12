@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,15 +15,17 @@
  */
 package org.mapton.butterfly_topo;
 
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
-import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.api.MTemporalRange;
-import org.openide.util.Exceptions;
+import org.mapton.butterfly_api.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.controlpoint.BTopoControlPoint;
-import org.mapton.butterfly_api.api.BaseManager;
+import org.openide.util.Exceptions;
+import se.trixon.almond.util.CollectionHelper;
 
 /**
  *
@@ -67,6 +69,7 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
     @Override
     protected void applyTemporalFilter() {
         //TODO Is never measured valid or invalid?
+        DateTimeFormatter measCountStatsDateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM");
         var timeFilteredItems = getFilteredItems().stream()
                 .filter(o -> o.getDateLatest() == null ? true : getTemporalManager().isValid(o.getDateLatest()))
                 .toList();
@@ -76,50 +79,16 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
                     .filter(o -> getTemporalManager().isValid(o.getDate()))
                     .toList();
             p.ext().setObservationsCalculated(new ArrayList<>(timefilteredObservations));
-//            System.out.println(timefilteredObservations.size());
-            if (false && !timefilteredObservations.isEmpty()) {
-                var latestZero = timefilteredObservations.stream()
-                        .filter(o -> o.isZeroMeasurement())
-                        .reduce((first, second) -> second).get();
 
-                if (latestZero == null) {
-                    latestZero = timefilteredObservations.getFirst();
-                }
+            var measCountStats = new LinkedHashMap<String, Integer>();
+            p.ext().setMeasurementCountStats(measCountStats);
 
-                Double zX = latestZero.getMeasuredX();
-                Double zY = latestZero.getMeasuredY();
-                Double zZ = latestZero.getMeasuredZ();
-
+            if (!timefilteredObservations.isEmpty()) {
                 for (int i = 0; i < timefilteredObservations.size(); i++) {
                     var o = timefilteredObservations.get(i);
-//                    var prev = timefilteredObservations.get(i - 1);
-                    Double x = o.getMeasuredX();
-                    Double y = o.getMeasuredY();
-                    Double z = o.getMeasuredZ();
-
-                    if (ObjectUtils.allNotNull(x, zX)) {
-                        o.ext().setDeltaX(x - zX);
-                    }
-                    if (ObjectUtils.allNotNull(y, zY)) {
-                        o.ext().setDeltaY(y - zY);
-                    }
-                    if (ObjectUtils.allNotNull(z, zY)) {
-                        o.ext().setDeltaY(y - zY);
-                    }
-
+                    CollectionHelper.incInteger(measCountStats, o.getDate().format(measCountStatsDateTimeFormatter));
                 }
-
             }
-
-            var replacements = timefilteredObservations.stream()
-                    .filter(o -> o.isReplacementMeasurement())
-                    .toList();
-
-            //TODO: Recalculate deltas
-            /*
-ta reda på senaste noll
-            ta reda på alla ersättningar
-             */
         });
 
         getTimeFilteredItems().setAll(timeFilteredItems);
