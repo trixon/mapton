@@ -21,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import org.mapton.butterfly_format.types.BDimension;
 
 /**
@@ -125,6 +126,7 @@ public class BTopoControlPoint extends BBaseControlPoint {
 
     public class Ext extends BBaseControlPoint.Ext {
 
+        private transient LinkedHashMap<String, Integer> measuremenCountStats = new LinkedHashMap<>();
         private transient ArrayList<BTopoControlPointObservation> observationsCalculated;
         private transient ArrayList<BTopoControlPointObservation> observationsRaw;
 
@@ -132,6 +134,10 @@ public class BTopoControlPoint extends BBaseControlPoint {
             var latest = getDateLatest() != null ? getDateLatest().toLocalDate() : LocalDate.MIN;
 
             return chronoUnit.between(latest, LocalDate.now());
+        }
+
+        public LinkedHashMap<String, Integer> getMeasurementCountStats() {
+            return measuremenCountStats;
         }
 
         public long getMeasurementUntilNext(ChronoUnit chronoUnit) {
@@ -163,6 +169,10 @@ public class BTopoControlPoint extends BBaseControlPoint {
             }
 
             return observationsRaw;
+        }
+
+        public void setMeasurementCountStats(LinkedHashMap<String, Integer> measuremenCountStats) {
+            this.measuremenCountStats = measuremenCountStats;
         }
 
         public void setObservationsCalculated(ArrayList<BTopoControlPointObservation> observationsCalculated) {
