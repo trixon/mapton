@@ -69,6 +69,7 @@ public class TopoFilter extends FormFilter<TopoManager> {
     private final TopoManager mManager = TopoManager.getInstance();
     private final SimpleStringProperty mMaxAgeProperty = new SimpleStringProperty();
     private IndexedCheckModel<String> mMeasCodeCheckModel;
+    private final SimpleBooleanProperty mMeasIncludeWithout = new SimpleBooleanProperty();
     private final SimpleBooleanProperty mMeasLatestOperator = new SimpleBooleanProperty();
     private IndexedCheckModel mMeasOperatorsCheckModel;
     private IndexedCheckModel<String> mNextMeasCheckModel;
@@ -94,6 +95,10 @@ public class TopoFilter extends FormFilter<TopoManager> {
 
     public SimpleStringProperty maxAgeProperty() {
         return mMaxAgeProperty;
+    }
+
+    public SimpleBooleanProperty measIncludeWithoutProperty() {
+        return mMeasIncludeWithout;
     }
 
     public SimpleBooleanProperty measLatestOperatorProperty() {
@@ -176,6 +181,7 @@ public class TopoFilter extends FormFilter<TopoManager> {
                 .filter(o -> validateFrequency(o.getFrequency()))
                 .filter(o -> validateMaxAge(o.getDateLatest()))
                 .filter(o -> validateNextMeas(o))
+                .filter(o -> validateMeasCount(o))
                 .filter(o -> validateMeasCode(o))
                 .filter(o -> validateMeasOperators(o))
                 .filter(o -> validateDateFromToHas(o.getDateValidFrom(), o.getDateValidTo()))
@@ -259,6 +265,7 @@ public class TopoFilter extends FormFilter<TopoManager> {
     }
 
     private void initListeners() {
+        mMeasIncludeWithout.addListener(mChangeListenerObject);
         mMeasLatestOperator.addListener(mChangeListenerObject);
         mDiffMeasProperty.addListener(mChangeListenerObject);
         mDiffMeasValueProperty.addListener(mChangeListenerObject);
@@ -366,6 +373,13 @@ public class TopoFilter extends FormFilter<TopoManager> {
         var valid = mMeasCodeCheckModel.isEmpty()
                 || mMeasCodeCheckModel.isChecked(getBundle().getString("measZeroCount")) && p.ext().getObservationsRaw().stream().filter(oo -> oo.isZeroMeasurement()).count() > 1
                 || mMeasCodeCheckModel.isChecked(getBundle().getString("measReplacementCount")) && p.ext().getObservationsRaw().stream().filter(oo -> oo.isReplacementMeasurement()).count() > 0;
+
+        return valid;
+    }
+
+    private boolean validateMeasCount(BTopoControlPoint p) {
+        var valid = mMeasIncludeWithout.get()
+                || p.ext().getNumOfObservations() > 0;
 
         return valid;
     }
