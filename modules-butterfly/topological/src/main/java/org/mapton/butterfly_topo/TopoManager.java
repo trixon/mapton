@@ -24,6 +24,7 @@ import org.mapton.api.MTemporalRange;
 import org.mapton.butterfly_api.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.controlpoint.BTopoControlPoint;
+import org.mapton.butterfly_format.types.controlpoint.BTopoControlPointObservation;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.CollectionHelper;
 
@@ -50,12 +51,25 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
 
     @Override
     public void initObjectToItemMap() {
+        for (var item : getAllItems()) {
+            getAllItemsMap().put(item.getName(), item);
+        }
     }
 
     @Override
     public void load(Butterfly butterfly) {
         try {
             initAllItems(butterfly.getTopoControlPoints());
+            initObjectToItemMap();
+
+            var nameToTopoControlPointObservations = new LinkedHashMap<String, ArrayList<BTopoControlPointObservation>>();
+            for (var o : butterfly.getTopoControlPointsObservations()) {
+                nameToTopoControlPointObservations.computeIfAbsent(o.getName(), k -> new ArrayList<>()).add(o);
+            }
+
+            for (var p : butterfly.getTopoControlPoints()) {
+                p.ext().setObservationsRaw(nameToTopoControlPointObservations.get(p.getName()));
+            }
 
             var dates = new TreeSet<>(getAllItems().stream()
                     .map(o -> o.getDateLatest())
@@ -72,8 +86,7 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
 
     @Override
     protected void applyTemporalFilter() {
-        //TODO Is never measured valid or invalid?
-        DateTimeFormatter measCountStatsDateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM");
+        var measCountStatsDateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM");
         var timeFilteredItems = getFilteredItems().stream()
                 .filter(o -> o.getDateLatest() == null ? true : getTemporalManager().isValid(o.getDateLatest()))
                 .toList();

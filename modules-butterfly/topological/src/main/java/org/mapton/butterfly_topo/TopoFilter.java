@@ -44,7 +44,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.ui.forms.FormFilter;
 import org.mapton.api.ui.forms.FormHelper;
-import org.mapton.butterfly_api.api.ButterflyManager;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.controlpoint.BTopoControlPoint;
 import se.trixon.almond.util.BooleanHelper;
@@ -430,14 +429,13 @@ public class TopoFilter extends FormFilter<TopoManager> {
         }
     }
 
-    private boolean validateNumOfMeas(BTopoControlPoint o) {
+    private boolean validateNumOfMeas(BTopoControlPoint p) {
         if (!mNumOfMeasProperty.get()) {
             return true;
         }
-        var butterfly = ButterflyManager.getInstance().getButterfly();
-        var observations = butterfly.getTopoControlPointObservations(o.getName());
+
         var lim = mNumOfMeasValueProperty.get();
-        var size = observations.size();
+        var size = p.ext().getObservationsRaw().size();
 
         if (lim == 0) {
             return size == 0;
@@ -446,7 +444,7 @@ public class TopoFilter extends FormFilter<TopoManager> {
         } else if (lim > 0) {
             return size >= lim;
         }
-        //TODO
+
         return true;
     }
 

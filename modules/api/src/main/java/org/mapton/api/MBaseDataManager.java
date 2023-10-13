@@ -112,6 +112,10 @@ public abstract class MBaseDataManager<T> {
         return mFilteredItemsSet;
     }
 
+    public T getItemForKey(Object key) {
+        return mAllItemsMap.get(key);
+    }
+
     public MLatLonBox getLatLonBoxForItem(T t) {
         return null;
     }
