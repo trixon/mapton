@@ -60,7 +60,7 @@
         </dependency>
         <dependency>
             <groupId>org.mapton</groupId>
-            <artifactId>butterfly-alarms</artifactId>
+            <artifactId>butterfly-alarm</artifactId>
         </dependency>
         <dependency>
             <groupId>org.mapton</groupId>

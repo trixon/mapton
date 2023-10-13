@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,25 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_alarms;
+package org.mapton.butterfly_alarm;
 
 import java.util.ArrayList;
-import org.openide.util.Exceptions;
+import org.mapton.butterfly_api.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BAlarm;
-import org.mapton.butterfly_api.api.BaseManager;
+import org.openide.util.Exceptions;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class AlarmsManager extends BaseManager<BAlarm> {
+public class AlarmManager extends BaseManager<BAlarm> {
 
-    public static AlarmsManager getInstance() {
+    public static AlarmManager getInstance() {
         return Holder.INSTANCE;
     }
 
-    private AlarmsManager() {
+    private AlarmManager() {
         super(BAlarm.class);
     }
 
@@ -41,9 +41,18 @@ public class AlarmsManager extends BaseManager<BAlarm> {
     }
 
     @Override
+    public void initObjectToItemMap() {
+        getAllItemsMap().clear();
+        for (var item : getAllItems()) {
+            getAllItemsMap().put(item.getId(), item);
+        }
+    }
+
+    @Override
     public void load(Butterfly butterfly) {
         try {
             initAllItems(butterfly.getAlarms());
+            initObjectToItemMap();
         } catch (Exception e) {
             Exceptions.printStackTrace(e);
         }
@@ -61,6 +70,6 @@ public class AlarmsManager extends BaseManager<BAlarm> {
 
     private static class Holder {
 
-        private static final AlarmsManager INSTANCE = new AlarmsManager();
+        private static final AlarmManager INSTANCE = new AlarmManager();
     }
 }

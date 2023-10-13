@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_alarms;
+package org.mapton.butterfly_alarm;
 
 import javafx.scene.Scene;
 import org.mapton.core.api.MTopComponent;
@@ -28,31 +28,31 @@ import org.openide.windows.TopComponent;
  * Top component which displays something.
  */
 @ConvertAsProperties(
-        dtd = "-//org.mapton.butterfly-alarms//Alarms//EN",
+        dtd = "-//org.mapton.butterfly-alarm//Alarm//EN",
         autostore = false
 )
 @TopComponent.Description(
-        preferredID = "AlarmsTopComponent",
+        preferredID = "AlarmTopComponent",
         //iconBase="SET/PATH/TO/ICON/HERE",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(mode = "mapTools", openAtStartup = false)
-@ActionID(category = "Butterfly", id = "org.mapton.butterfly-alarms.AlarmsTopComponent")
+@ActionID(category = "Butterfly", id = "org.mapton.butterfly-alarm.AlarmTopComponent")
 @ActionReferences({
     //    @ActionReference(path = "Shortcuts", name = "DO-A"),
     @ActionReference(path = "Menu/MapTools/Butterfly", position = 1001, separatorBefore = 1000)
 })
 @TopComponent.OpenActionRegistration(
-        displayName = "#CTL_AlarmsAction",
-        preferredID = "AlarmsTopComponent"
+        displayName = "#CTL_AlarmAction",
+        preferredID = "AlarmTopComponent"
 )
 @Messages({
-    "CTL_AlarmsAction=Alarm"
+    "CTL_AlarmAction=Alarm"
 })
-public final class AlarmsTopComponent extends MTopComponent {
+public final class AlarmTopComponent extends MTopComponent {
 
-    public AlarmsTopComponent() {
-        setName(Bundle.CTL_AlarmsAction());
+    public AlarmTopComponent() {
+        setName(Bundle.CTL_AlarmAction());
     }
 
     @Override
@@ -61,9 +61,9 @@ public final class AlarmsTopComponent extends MTopComponent {
     }
 
     private Scene createScene() {
-        var alarmsView = new AlarmsView();
+        var alarmView = new AlarmView();
 
-        return new Scene(alarmsView.getView());
+        return new Scene(alarmView.getView());
     }
 
     void writeProperties(java.util.Properties p) {

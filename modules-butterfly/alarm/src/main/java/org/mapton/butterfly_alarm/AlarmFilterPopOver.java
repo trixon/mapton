@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_alarms;
+package org.mapton.butterfly_alarm;
 
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Separator;
@@ -26,12 +26,12 @@ import static org.mapton.api.ui.MPopOver.autoSize;
  *
  * @author Patrik Karlström
  */
-public class AlarmsFilterPopOver extends MFilterPopOver {
+public class AlarmFilterPopOver extends MFilterPopOver {
 
     private final CheckBox mCheckbox = new CheckBox("TEST");
-    private final AlarmsFilter mFilter;
+    private final AlarmFilter mFilter;
 
-    public AlarmsFilterPopOver(AlarmsFilter filter) {
+    public AlarmFilterPopOver(AlarmFilter filter) {
         mFilter = filter;
         createUI();
         initListeners();

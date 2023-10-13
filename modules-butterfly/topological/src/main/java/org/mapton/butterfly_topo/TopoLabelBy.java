@@ -19,6 +19,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 import java.util.function.Function;
 import org.apache.commons.lang3.ObjectUtils;
+import org.mapton.butterfly_alarm.api.AlarmHelper;
+import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.controlpoint.BTopoControlPoint;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SDict;
@@ -38,13 +40,13 @@ public enum TopoLabelBy {
         return p.getNameOfAlarmHeight();
     }),
     ALARM_H_VALUE(Strings.CAT_ALARM, Strings.HEIGHT_VALUE, p -> {
-        return "NODATA";
+        return AlarmHelper.getInstance().getLimitsAsString(BComponent.HEIGHT, p);
     }),
     ALARM_P_NAME(Strings.CAT_ALARM, Strings.PLANE_NAME, p -> {
         return p.getNameOfAlarmPlane();
     }),
     ALARM_P_VALUE(Strings.CAT_ALARM, Strings.PLANE_VALUE, p -> {
-        return "NODATA";
+        return AlarmHelper.getInstance().getLimitsAsString(BComponent.PLANE, p);
     }),
     DATE_LATEST(Strings.CAT_DATE, SDict.LATEST.toString(), p -> {
         var date = p.getDateLatest();
@@ -156,9 +158,9 @@ public enum TopoLabelBy {
         public static final String CAT_ROOT = "";
         public static final String CAT_VALUE = Dict.VALUE.toString();
         public static final String HEIGHT_NAME = "%s, %s".formatted(Dict.Geometry.HEIGHT, Dict.NAME.toLower());
-        public static final String HEIGHT_VALUE = "*%s, %s".formatted(Dict.Geometry.HEIGHT, Dict.VALUE.toLower());
+        public static final String HEIGHT_VALUE = "%s, %s".formatted(Dict.Geometry.HEIGHT, Dict.VALUE.toLower());
         public static final String PLANE_NAME = "%s, %s".formatted(Dict.Geometry.PLANE, Dict.NAME.toLower());
-        public static final String PLANE_VALUE = "*%s, %s".formatted(Dict.Geometry.PLANE, Dict.VALUE.toLower());
+        public static final String PLANE_VALUE = "%s, %s".formatted(Dict.Geometry.PLANE, Dict.VALUE.toLower());
         public static final String MEAS_COUNT = Dict.NUM_OF_S.toString().formatted(SDict.MEASUREMENTS.toLower());
         public static final String MEAS_COUNT_ALL = "%s (%s)".formatted(MEAS_COUNT, Dict.ALL.toLower());
         public static final String MEAS_COUNT_SELECTION = "%s (%s)".formatted(MEAS_COUNT, Dict.SELECTION.toLower());

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,9 +17,9 @@ package org.mapton.butterfly_api.api;
 
 import org.mapton.api.MBaseDataManager;
 import org.mapton.api.MLatLon;
-import org.mapton.worldwind.api.WWHelper;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.controlpoint.BBaseControlPoint;
+import org.mapton.worldwind.api.WWHelper;
 
 /**
  *
@@ -70,6 +70,8 @@ public abstract class BaseManager<T> extends MBaseDataManager<T> {
 
         return null;
     }
+
+    public abstract void initObjectToItemMap();
 
     public abstract void load(Butterfly butterfly);
 }

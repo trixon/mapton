@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_alarms;
+package org.mapton.butterfly_alarm;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -26,13 +26,13 @@ import se.trixon.almond.util.StringHelper;
  *
  * @author Patrik Karlström
  */
-public class AlarmsFilter extends FormFilter<AlarmsManager> {
+public class AlarmFilter extends FormFilter<AlarmManager> {
 
-    private final AlarmsManager mManager = AlarmsManager.getInstance();
+    private final AlarmManager mManager = AlarmManager.getInstance();
     private final BooleanProperty mProperty = new SimpleBooleanProperty();
 
-    public AlarmsFilter() {
-        super(AlarmsManager.getInstance());
+    public AlarmFilter() {
+        super(AlarmManager.getInstance());
 
         initListeners();
     }

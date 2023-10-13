@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_alarms;
+package org.mapton.butterfly_alarm;
 
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -24,14 +24,14 @@ import org.mapton.butterfly_format.types.BAlarm;
  *
  * @author Patrik Karlström
  */
-class AlarmsListCell extends ListCell<BAlarm> {
+class AlarmListCell extends ListCell<BAlarm> {
 
     private final Label mDesc1Label = new Label();
     private final Label mNameLabel = new Label();
     private final String mStyleBold = "-fx-font-weight: bold;";
     private VBox mVBox;
 
-    public AlarmsListCell() {
+    public AlarmListCell() {
         createUI();
     }
 

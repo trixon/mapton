@@ -33,8 +33,8 @@ limitations under the License.
         <module>group</module>
         <module>format</module>
         <module>api</module>
-        <module>alarms</module>
         <module>hydrological</module>
         <module>topological</module>
+        <module>alarm</module>
     </modules>
 </project>

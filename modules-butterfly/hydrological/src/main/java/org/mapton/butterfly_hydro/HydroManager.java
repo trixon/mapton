@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,10 +19,10 @@ import java.util.ArrayList;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import org.mapton.api.MTemporalRange;
-import org.openide.util.Exceptions;
+import org.mapton.butterfly_api.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.controlpoint.BHydroControlPoint;
-import org.mapton.butterfly_api.api.BaseManager;
+import org.openide.util.Exceptions;
 
 /**
  *
@@ -41,6 +41,10 @@ public class HydroManager extends BaseManager<BHydroControlPoint> {
     @Override
     public Object getObjectProperties(BHydroControlPoint selectedObject) {
         return selectedObject;
+    }
+
+    @Override
+    public void initObjectToItemMap() {
     }
 
     @Override

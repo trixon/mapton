@@ -22,7 +22,7 @@ limitations under the License.
         <artifactId>butterfly-parent</artifactId>
         <version>3.2.0-SNAPSHOT</version>
     </parent>
-    <artifactId>butterfly-alarms</artifactId>
+    <artifactId>butterfly-alarm</artifactId>
     <packaging>nbm</packaging>
     <build>
         <plugins>
@@ -30,6 +30,11 @@ limitations under the License.
                 <groupId>org.apache.netbeans.utilities</groupId>
                 <artifactId>nbm-maven-plugin</artifactId>
                 <extensions>true</extensions>
+                <configuration>
+                    <publicPackages>
+                        <publicPackage>org.mapton.butterfly_alarm.api</publicPackage>
+                    </publicPackages>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -102,4 +107,5 @@ limitations under the License.
 
         <!--Other-->
     </dependencies>
+    <name>butterfly-alarm</name>
 </project>

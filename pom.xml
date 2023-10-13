@@ -269,7 +269,6 @@
         <module>add-ons/poi/trv-traffic-information</module>
 
         <!--Butterfly-->
-        <module>modules-butterfly/alarms</module>
         <module>modules-butterfly/api</module>
         <module>modules-butterfly/format</module>
         <module>modules-butterfly/group</module>
@@ -278,6 +277,7 @@
 
         <!--Unstable-->
         <module>modules/transformation</module>
+        <module>modules-butterfly/alarm</module>
     </modules>
 
     <dependencyManagement>
@@ -376,7 +376,7 @@
             </dependency>
             <dependency>
                 <groupId>org.mapton</groupId>
-                <artifactId>butterfly-alarms</artifactId>
+                <artifactId>butterfly-alarm</artifactId>
                 <version>${mapton.version}</version>
             </dependency>
             <dependency>
@@ -507,7 +507,7 @@
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
-                <version>32.1.2-jre</version>
+                <version>32.1.3-jre</version>
             </dependency>
             <dependency>
                 <groupId>de.micromata.jak</groupId>

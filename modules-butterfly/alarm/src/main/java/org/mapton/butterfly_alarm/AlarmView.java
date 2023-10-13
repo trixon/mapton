@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_alarms;
+package org.mapton.butterfly_alarm;
 
 import java.util.Arrays;
 import javafx.scene.layout.Pane;
@@ -27,27 +27,27 @@ import se.trixon.almond.util.Dict;
  *
  * @author Patrik Karlström
  */
-public class AlarmsView {
+public class AlarmView {
 
-    private final AlarmsFilter mFilter = new AlarmsFilter();
-    private final AlarmsFilterPopOver mFilterPopOver = new AlarmsFilterPopOver(mFilter);
-    private final SingleListForm<AlarmsManager, BAlarm> mListForm;
-    private final AlarmsManager mManager = AlarmsManager.getInstance();
+    private final AlarmFilter mFilter = new AlarmFilter();
+    private final AlarmFilterPopOver mFilterPopOver = new AlarmFilterPopOver(mFilter);
+    private final SingleListForm<AlarmManager, BAlarm> mListForm;
+    private final AlarmManager mManager = AlarmManager.getInstance();
 
-    public AlarmsView() {
+    public AlarmView() {
         var actions = Arrays.asList(
                 ActionUtils.ACTION_SPAN,
                 mFilterPopOver.getAction()
         );
 
-        mListForm = new SingleListForm<>(mManager, Bundle.CTL_AlarmsAction());
+        mListForm = new SingleListForm<>(mManager, Bundle.CTL_AlarmAction());
         var listFormConfiguration = new ListFormConfiguration()
                 .setUseTextFilter(true)
                 .setToolbarActions(actions);
 
         mFilter.bindFreeTextProperty(mListForm.freeTextProperty());
         mListForm.applyConfiguration(listFormConfiguration);
-        mListForm.getListView().setCellFactory(listView -> new AlarmsListCell());
+        mListForm.getListView().setCellFactory(listView -> new AlarmListCell());
         mListForm.setFreeTextTooltip(
                 Dict.NAME.toString(),
                 Dict.DESCRIPTION.toString(),

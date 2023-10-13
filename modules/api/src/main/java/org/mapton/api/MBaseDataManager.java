@@ -20,6 +20,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.logging.Logger;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -41,6 +42,7 @@ public abstract class MBaseDataManager<T> {
     protected final MSelectionLockManager mSelectionLockManager = MSelectionLockManager.getInstance();
 
     private final String TEMPORAL_PREFIX;
+    private final LinkedHashMap<Object, T> mAllItemsMap = new LinkedHashMap<>();
     private final ObjectProperty<ObservableList<T>> mAllItemsProperty = new SimpleObjectProperty<>();
     private final HashSet<T> mAllItemsSet = new HashSet<>();
     private final DelayedResetRunner mDelayedResetRunner;
@@ -92,6 +94,10 @@ public abstract class MBaseDataManager<T> {
 
     public final ObservableList<T> getAllItems() {
         return mAllItemsProperty.get();
+    }
+
+    public LinkedHashMap<Object, T> getAllItemsMap() {
+        return mAllItemsMap;
     }
 
     public HashSet<T> getAllItemsSet() {

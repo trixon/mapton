@@ -49,6 +49,10 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
     }
 
     @Override
+    public void initObjectToItemMap() {
+    }
+
+    @Override
     public void load(Butterfly butterfly) {
         try {
             initAllItems(butterfly.getTopoControlPoints());
