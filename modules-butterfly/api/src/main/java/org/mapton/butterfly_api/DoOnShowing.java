@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_group;
+package org.mapton.butterfly_api;
 
 import org.mapton.api.MOptions;
 import org.openide.windows.OnShowing;
@@ -30,9 +30,7 @@ public class DoOnShowing implements Runnable {
 
     @Override
     public void run() {
-        var firstRun = mOptions.getPreferences().getInt(MOptions.KEY_APP_START_COUNTER, 1) == 1;
-
-        if (firstRun) {
+        if (mOptions.isFirstRun()) {
             Almond.openTopComponent("PoiTopComponent");
             Almond.openTopComponent("LayerTopComponent");
             Almond.openTopComponent("PropertiesTopComponent");

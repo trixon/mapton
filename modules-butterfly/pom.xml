@@ -30,7 +30,6 @@ limitations under the License.
     <packaging>pom</packaging>
 
     <modules>
-        <module>group</module>
         <module>format</module>
         <module>api</module>
         <module>hydrological</module>

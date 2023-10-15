@@ -268,16 +268,8 @@
         <!--POI data sources-->
         <module>add-ons/poi/trv-traffic-information</module>
 
-        <!--Butterfly-->
-        <module>modules-butterfly/api</module>
-        <module>modules-butterfly/format</module>
-        <module>modules-butterfly/group</module>
-        <module>modules-butterfly/hydrological</module>
-        <module>modules-butterfly/topological</module>
-
         <!--Unstable-->
         <module>modules/transformation</module>
-        <module>modules-butterfly/alarm</module>
     </modules>
 
     <dependencyManagement>
@@ -560,6 +552,15 @@
         </pluginRepository>-->
     </pluginRepositories>
 
+    <profiles>
+        <profile>
+            <id>butterfly</id>
+            <modules>
+                <module>modules-butterfly</module>
+            </modules>
+        </profile>
+    </profiles>
+
     <properties>
         <netbeans.version>RELEASE190</netbeans.version>
         <netbeans.compile.on.save>all</netbeans.compile.on.save>
@@ -567,7 +568,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <almond.version>17.0.0-SNAPSHOT</almond.version>
         <mapton.version>3.2.0-SNAPSHOT</mapton.version>
-        <openjfx.version>[20.0.2]</openjfx.version>
+        <openjfx.version>[21]</openjfx.version>
     </properties>
     <description>Some kind of map application</description>
 </project>

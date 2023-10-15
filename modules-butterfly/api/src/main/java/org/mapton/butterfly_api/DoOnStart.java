@@ -32,6 +32,7 @@ public class DoOnStart implements Runnable {
 
     @Override
     public void run() {
+        Mapton.getGlobalState().put(MKey.MAP_LOGO_URL, getClass().getResource("scior-logo.png"));
         var coosysPlane = ButterflyConfig.getInstance().getConfig().getString("COOSYS.PLANE");
 
         if (coosysPlane != null) {
