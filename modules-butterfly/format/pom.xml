@@ -28,9 +28,9 @@ limitations under the License.
     <packaging>jar</packaging>
 
     <build>
-        
+
     </build>
-    
+
     <dependencies>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -39,12 +39,12 @@ limitations under the License.
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-csv</artifactId>
-            <version>2.15.2</version>
+            <version>${jackson.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
-            <version>2.15.2</version>
+            <version>${jackson.version}</version>
         </dependency>
     </dependencies>
 </project>
