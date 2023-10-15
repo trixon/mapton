@@ -294,13 +294,6 @@
             <version>${project.version}</version>
         </dependency>
 
-        <!--Mapton/Unstable-->
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>transformation</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
         <!-- Trixon -->
         <dependency>
             <groupId>se.trixon.almond</groupId>
@@ -341,6 +334,38 @@
         <profile>
             <id>butterfly</id>
             <dependencies>
+                <!--Exclude defaults-->
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>me-gmapsfx</artifactId>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>me-jxmapviewer2</artifactId>
+                    <version>${project.version}</version>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>addon-geonames-ww</artifactId>
+                    <version>${project.version}</version>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>addon-notes</artifactId>
+                    <version>${project.version}</version>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>addon-xkcd</artifactId>
+                    <version>${project.version}</version>
+                    <scope>provided</scope>
+                </dependency>
+
+                <!--Included extras-->
                 <dependency>
                     <groupId>${project.groupId}</groupId>
                     <artifactId>butterfly-hydro</artifactId>
@@ -349,6 +374,16 @@
                 <dependency>
                     <groupId>${project.groupId}</groupId>
                     <artifactId>butterfly-topo</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>unstable</id>
+            <dependencies>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>transformation</artifactId>
                     <version>${project.version}</version>
                 </dependency>
             </dependencies>
