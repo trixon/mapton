@@ -35,16 +35,16 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
-import org.geotools.geometry.DirectPosition3D;
+import org.geotools.api.geometry.MismatchedDimensionException;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.operation.MathTransform;
+import org.geotools.api.referencing.operation.TransformException;
+import org.geotools.geometry.Position3D;
 import org.geotools.referencing.CRS;
 import org.mapton.api.FileChooserHelper;
 import org.mapton.api.MCrsManager;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
-import org.opengis.geometry.MismatchedDimensionException;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.operation.MathTransform;
-import org.opengis.referencing.operation.TransformException;
 import org.openide.filesystems.FileChooserBuilder;
 import org.openide.util.Exceptions;
 import org.openide.util.NbBundle;
@@ -270,7 +270,7 @@ public class TransformationView extends BorderPane {
     private void transform(MathTransform mathTransform, GeoPoint point) {
         try {
             double z = MathHelper.convertDoubleToDouble(point.getZ());
-            var dp = mathTransform.transform(new DirectPosition3D(point.getX(), point.getY(), z), null);
+            var dp = mathTransform.transform(new Position3D(point.getX(), point.getY(), z), null);
             point.setX(dp.getCoordinate()[0]);
             point.setY(dp.getCoordinate()[1]);
         } catch (MismatchedDimensionException | TransformException ex) {

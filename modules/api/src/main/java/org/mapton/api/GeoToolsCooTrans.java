@@ -17,17 +17,17 @@ package org.mapton.api;
 
 import javafx.geometry.Point2D;
 import org.apache.commons.lang3.StringUtils;
-import org.geotools.geometry.DirectPosition2D;
+import org.geotools.api.geometry.MismatchedDimensionException;
+import org.geotools.api.geometry.Position;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.operation.MathTransform;
+import org.geotools.api.referencing.operation.NoninvertibleTransformException;
+import org.geotools.api.referencing.operation.TransformException;
+import org.geotools.geometry.Position2D;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.opengis.geometry.DirectPosition;
-import org.opengis.geometry.MismatchedDimensionException;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.operation.MathTransform;
-import org.opengis.referencing.operation.NoninvertibleTransformException;
-import org.opengis.referencing.operation.TransformException;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.Dict;
 
@@ -146,14 +146,14 @@ public class GeoToolsCooTrans implements MCooTrans {
         return new Point2D(position.getCoordinate()[0], position.getCoordinate()[1]);
     }
 
-    private DirectPosition getPosition(MathTransform mathTransform, double latitude, double longitude) {
+    private Position getPosition(MathTransform mathTransform, double latitude, double longitude) {
         try {
-            return mathTransform.transform(new DirectPosition2D(longitude, latitude), null);
+            return mathTransform.transform(new Position2D(longitude, latitude), null);
         } catch (MismatchedDimensionException | TransformException ex) {
             Exceptions.printStackTrace(ex);
         }
 
-        return new DirectPosition2D();
+        return new Position2D();
     }
 
     private void init(String crsCode) throws FactoryException, NoninvertibleTransformException, TransformException {

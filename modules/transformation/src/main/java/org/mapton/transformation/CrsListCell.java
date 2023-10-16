@@ -18,7 +18,7 @@ package org.mapton.transformation;
 import java.util.Locale;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.Tooltip;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 
 /**
  *

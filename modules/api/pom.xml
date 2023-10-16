@@ -42,7 +42,6 @@
                         <publicPackage>se.trixon.*</publicPackage>
                         <publicPackage>de.jensd.fx.glyphs.*</publicPackage>
                         <publicPackage>org.geotools.*</publicPackage>
-                        <publicPackage>org.opengis.*</publicPackage>
                         <publicPackage>com.helger.*</publicPackage>
                         <!--Required by TilesFX -->
                         <!--<publicPackage>com.sun.*</publicPackage>-->
@@ -210,10 +209,9 @@
         </dependency>
         <dependency>
             <groupId>org.geotools</groupId>
-            <artifactId>gt-opengis</artifactId>
+            <artifactId>gt-api</artifactId>
             <version>${geotools.version}</version>
         </dependency>
-
         <!-- Other -->
         <dependency>
             <groupId>com.google.code.gson</groupId>

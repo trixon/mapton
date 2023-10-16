@@ -569,7 +569,7 @@
         <almond.version>17.0.0-SNAPSHOT</almond.version>
         <mapton.version>3.2.0-SNAPSHOT</mapton.version>
         <openjfx.version>[21]</openjfx.version>
-        <geotools.version>29.2</geotools.version>
+        <geotools.version>30.0</geotools.version>
         <jackson.version>2.15.3</jackson.version>
     </properties>
     <description>Some kind of map application</description>
