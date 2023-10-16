@@ -22,7 +22,9 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.butterfly_format.types.BDimension;
+import se.trixon.almond.util.StringHelper;
 
 /**
  *
@@ -129,6 +131,76 @@ public class BTopoControlPoint extends BBaseControlPoint {
         private transient LinkedHashMap<String, Integer> measuremenCountStats = new LinkedHashMap<>();
         private transient ArrayList<BTopoControlPointObservation> observationsCalculated;
         private transient ArrayList<BTopoControlPointObservation> observationsRaw;
+
+        public String getDelta(int decimals) {
+            return StringHelper.joinNonNulls(", ",
+                    getDelta1(decimals),
+                    getDelta2(decimals),
+                    getDelta3(decimals)
+            );
+        }
+
+        public Double getDelta1() {
+            return getDeltaZ();
+        }
+
+        public String getDelta1(int decimals) {
+            var delta = getDelta1();
+            return delta == null ? null : StringHelper.round(delta, decimals, "Δ1d=", "");
+        }
+
+        public String getDelta2(int decimals) {
+            var delta = getDelta2();
+            return delta == null ? null : StringHelper.round(delta, decimals, "Δ2d=", "");
+        }
+
+        public Double getDelta2() {
+            if (ObjectUtils.allNotNull(getDeltaX(), getDeltaY())) {
+                return Math.hypot(getDeltaX(), getDeltaY());
+            } else {
+                return null;
+            }
+        }
+
+        public String getDelta3(int decimals) {
+            var delta = getDelta3();
+            return delta == null ? null : StringHelper.round(delta, decimals, "Δ3d=", "");
+        }
+
+        public Double getDelta3() {
+            if (ObjectUtils.allNotNull(getDelta1(), getDelta2())) {
+                return Math.hypot(getDelta1(), getDelta2());
+            } else {
+                return null;
+            }
+        }
+
+        public String getDeltaX(int decimals) {
+            var delta = getDeltaX();
+            return delta == null ? null : StringHelper.round(delta, decimals, "ΔX=", "");
+        }
+
+        public Double getDeltaX() {
+            return getObservationsCalculated().isEmpty() ? null : getObservationsCalculated().getLast().ext().getDeltaX();
+        }
+
+        public String getDeltaY(int decimals) {
+            var delta = getDeltaY();
+            return delta == null ? null : StringHelper.round(delta, decimals, "ΔY=", "");
+        }
+
+        public Double getDeltaY() {
+            return getObservationsCalculated().isEmpty() ? null : getObservationsCalculated().getLast().ext().getDeltaY();
+        }
+
+        public String getDeltaZ(int decimals) {
+            var delta = getDeltaZ();
+            return delta == null ? null : StringHelper.round(delta, decimals, "ΔZ=", "");
+        }
+
+        public Double getDeltaZ() {
+            return getObservationsCalculated().isEmpty() ? null : getObservationsCalculated().getLast().ext().getDeltaZ();
+        }
 
         public long getMeasurementAge(ChronoUnit chronoUnit) {
             var latest = getDateLatest() != null ? getDateLatest().toLocalDate() : LocalDate.MIN;

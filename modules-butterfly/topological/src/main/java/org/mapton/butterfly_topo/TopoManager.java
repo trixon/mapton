@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.api.MTemporalRange;
 import org.mapton.butterfly_api.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
@@ -101,9 +102,60 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
             p.ext().setMeasurementCountStats(measCountStats);
 
             if (!timefilteredObservations.isEmpty()) {
+                var latestZero = timefilteredObservations.stream()
+                        .filter(o -> o.isZeroMeasurement())
+                        .reduce((first, second) -> second).orElse(timefilteredObservations.getFirst());
+
+                Double zX = latestZero.getMeasuredX();
+                Double zY = latestZero.getMeasuredY();
+                Double zZ = latestZero.getMeasuredZ();
+                var rX = 0.0;
+                var rY = 0.0;
+                var rZ = 0.0;
+
                 for (int i = 0; i < timefilteredObservations.size(); i++) {
                     var o = timefilteredObservations.get(i);
                     CollectionHelper.incInteger(measCountStats, o.getDate().format(measCountStatsDateTimeFormatter));
+                    BTopoControlPointObservation prev = null;
+                    if (i > 0) {
+                        prev = timefilteredObservations.get(i - 1);
+                    }
+                    Double x = o.getMeasuredX();
+                    Double y = o.getMeasuredY();
+                    Double z = o.getMeasuredZ();
+
+                    if (ObjectUtils.allNotNull(x, zX)) {
+                        o.ext().setDeltaX(x - zX);
+                    }
+                    if (ObjectUtils.allNotNull(y, zY)) {
+                        o.ext().setDeltaY(y - zY);
+                    }
+                    if (ObjectUtils.allNotNull(z, zZ)) {
+                        o.ext().setDeltaZ(z - zZ);
+                    }
+
+                    if (o.isReplacementMeasurement() && prev != null) {
+                        var mX = o.getMeasuredX();
+                        var pX = prev.getMeasuredX();
+                        if (ObjectUtils.allNotNull(mX, pX)) {
+                            rX = rX + mX - pX;
+                            o.ext().setDeltaX(o.ext().getDeltaX() + rX);
+                        }
+
+                        var mY = o.getMeasuredY();
+                        var pY = prev.getMeasuredY();
+                        if (ObjectUtils.allNotNull(mY, pY)) {
+                            rY = rY + mY - pY;
+                            o.ext().setDeltaY(o.ext().getDeltaY() + rY);
+                        }
+
+                        var mZ = o.getMeasuredZ();
+                        var pZ = prev.getMeasuredZ();
+                        if (ObjectUtils.allNotNull(mZ, pZ)) {
+                            rZ = rZ + mZ - pZ;
+                            o.ext().setDeltaZ(o.ext().getDeltaZ() + rZ);
+                        }
+                    }
                 }
             }
         });

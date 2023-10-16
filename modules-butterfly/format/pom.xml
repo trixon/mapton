@@ -46,5 +46,9 @@ limitations under the License.
             <artifactId>jackson-datatype-jsr310</artifactId>
             <version>${jackson.version}</version>
         </dependency>
+        <dependency>
+            <groupId>se.trixon.almond</groupId>
+            <artifactId>almond-util</artifactId>
+        </dependency>
     </dependencies>
 </project>

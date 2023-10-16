@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -45,37 +45,38 @@ class TopoListCell extends ListCell<BTopoControlPoint> {
     }
 
     @Override
-    protected void updateItem(BTopoControlPoint tcp, boolean empty) {
-        super.updateItem(tcp, empty);
-        if (tcp == null || empty) {
+    protected void updateItem(BTopoControlPoint p, boolean empty) {
+        super.updateItem(p, empty);
+        if (p == null || empty) {
             clearContent();
         } else {
-            addContent(tcp);
+            addContent(p);
         }
     }
 
-    private void addContent(BTopoControlPoint o) {
+    private void addContent(BTopoControlPoint p) {
         setText(null);
-        var header = o.getName();
-        if (StringUtils.isNotBlank(o.getStatus())) {
-            header = "%s [%s]".formatted(header, o.getStatus());
+        var header = p.getName();
+        if (StringUtils.isNotBlank(p.getStatus())) {
+            header = "%s [%s]".formatted(header, p.getStatus());
         }
 
         var alarms = StringHelper.getJoinedUnique(", ",
-                StringUtils.removeEndIgnoreCase(o.getNameOfAlarmHeight(), "_h"),
-                StringUtils.removeEndIgnoreCase(o.getNameOfAlarmPlane(), "_p")
+                StringUtils.removeEndIgnoreCase(p.getNameOfAlarmHeight(), "_h"),
+                StringUtils.removeEndIgnoreCase(p.getNameOfAlarmPlane(), "_p")
         );
 
-        var desc1 = "%s: %s".formatted(StringUtils.defaultIfBlank(o.getCategory(), "NOVALUE"), alarms);
+        var desc1 = "%s: %s".formatted(StringUtils.defaultIfBlank(p.getCategory(), "NOVALUE"), alarms);
 
-        var dateLatest = StringHelper.toString(o.getDateLatest() == null ? null : o.getDateLatest().toLocalDate(), "NOVALUE");
+        var dateLatest = StringHelper.toString(p.getDateLatest() == null ? null : p.getDateLatest().toLocalDate(), "NOVALUE");
         var desc2 = dateLatest + " TODO: geometry";
 
-        var dateRolling = StringHelper.toString(o.getDateRolling(), "NOVALUE");
+        var dateRolling = StringHelper.toString(p.getDateRolling(), "NOVALUE");
         var desc3 = dateRolling + " TODO: Δ123 R";
 
-        var dateZero = StringHelper.toString(o.getDateZero(), "NOVALUE");
-        var desc4 = dateZero + " TODO: Δ123 0";
+        var dateZero = StringHelper.toString(p.getDateZero(), "NOVALUE");
+        String deltaZero = p.ext().getDelta(3);
+        var desc4 = "%s: %s".formatted(dateZero, deltaZero);
 
         mHeaderLabel.setText(header);
         mDesc1Label.setText(desc1);
@@ -83,8 +84,8 @@ class TopoListCell extends ListCell<BTopoControlPoint> {
         mDesc3Label.setText(desc3);
         mDesc4Label.setText(desc4);
 
-        mHeaderLabel.setTooltip(new Tooltip("Add custom tooltip: " + o.getName()));
-        mTooltip.setText("asdfwaf");
+        mHeaderLabel.setTooltip(new Tooltip("Add custom tooltip: " + p.getName()));
+        mTooltip.setText("TODO");
         setGraphic(mVBox);
     }
 
