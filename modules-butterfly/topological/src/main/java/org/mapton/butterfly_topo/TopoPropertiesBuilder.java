@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -57,10 +57,17 @@ public class TopoPropertiesBuilder extends PropertiesBuilder<BTopoControlPoint> 
                 p.ext().getObservationsRaw().stream().filter(obs -> obs.isZeroMeasurement()).count(),
                 p.ext().getObservationsRaw().stream().filter(obs -> obs.isReplacementMeasurement()).count()
         );
+        var delta = ", Δ";
         propertyMap.put(getCatKey(cat1, SDict.MEASUREMENTS.toString()), measurements);
         propertyMap.put(getCatKey(cat1, SDict.LATEST.toString()), DateHelper.toDateString(p.getDateLatest()));
         propertyMap.put(getCatKey(cat1, SDict.ROLLING.toString()), DateHelper.toDateString(p.getDateRolling()));
+        propertyMap.put(getCatKey(cat1, SDict.ROLLING.toString()), DateHelper.toDateString(p.getDateRolling()));
         propertyMap.put(getCatKey(cat1, Dict.FIRST.toString()), DateHelper.toDateString(p.getDateZero()));
+        propertyMap.put(getCatKey(cat1, SDict.ROLLING.toString() + delta), p.ext().deltaRolling().getDelta(3));
+        propertyMap.put(getCatKey(cat1, Dict.FIRST.toString() + delta), p.ext().deltaZero().getDelta(3));
+        propertyMap.put(getCatKey(cat1, "N"), StringHelper.round(p.getZeroY(), 3));
+        propertyMap.put(getCatKey(cat1, "E"), StringHelper.round(p.getZeroX(), 3));
+        propertyMap.put(getCatKey(cat1, "H"), StringHelper.round(p.getZeroZ(), 3));
 
         /* TODO
         dateValidFrom=

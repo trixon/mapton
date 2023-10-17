@@ -72,10 +72,11 @@ class TopoListCell extends ListCell<BTopoControlPoint> {
         var desc2 = dateLatest + " TODO: geometry";
 
         var dateRolling = StringHelper.toString(p.getDateRolling(), "NOVALUE");
-        var desc3 = dateRolling + " TODO: Δ123 R";
+        String deltaRolling = p.ext().deltaRolling().getDelta(3);
+        var desc3 = "%s: %s".formatted(dateRolling, deltaRolling);
 
         var dateZero = StringHelper.toString(p.getDateZero(), "NOVALUE");
-        String deltaZero = p.ext().getDelta(3);
+        String deltaZero = p.ext().deltaZero().getDelta(3);
         var desc4 = "%s: %s".formatted(dateZero, deltaZero);
 
         mHeaderLabel.setText(header);

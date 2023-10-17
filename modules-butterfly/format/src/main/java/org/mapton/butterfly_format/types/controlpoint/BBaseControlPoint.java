@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -42,6 +42,9 @@ public abstract class BBaseControlPoint {
     private Integer numOfDecZ;
     private String operator;
     private String origin;
+    private Double rollingX;
+    private Double rollingY;
+    private Double rollingZ;
     private String status;
     private String tag;
     private Double zeroX;
@@ -117,6 +120,18 @@ public abstract class BBaseControlPoint {
 
     public String getOrigin() {
         return origin;
+    }
+
+    public Double getRollingX() {
+        return rollingX;
+    }
+
+    public Double getRollingY() {
+        return rollingY;
+    }
+
+    public Double getRollingZ() {
+        return rollingZ;
     }
 
     public String getStatus() {
@@ -205,6 +220,18 @@ public abstract class BBaseControlPoint {
 
     public void setOrigin(String origin) {
         this.origin = origin;
+    }
+
+    public void setRollingX(Double rollingX) {
+        this.rollingX = rollingX;
+    }
+
+    public void setRollingY(Double rollingY) {
+        this.rollingY = rollingY;
+    }
+
+    public void setRollingZ(Double rollingZ) {
+        this.rollingZ = rollingZ;
     }
 
     public void setStatus(String status) {

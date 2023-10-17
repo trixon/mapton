@@ -123,11 +123,17 @@ public enum TopoLabelBy {
         var z = p.getZeroZ();
         return z == null ? "-" : "%+.3f".formatted(z);
     }),
-    VALUE_DELTA_ZERO(Strings.CAT_VALUE, "Δ", p -> {
-        return p.ext().getDelta(3);
+    VALUE_DELTA_ZERO(Strings.CAT_VALUE, "Δ₀", p -> {
+        return p.ext().deltaZero().getDelta(3);
     }),
-    VALUE_DELTA_ZERO_Z(Strings.CAT_VALUE, "Δ1d", p -> {
-        return p.ext().getDelta1(3);
+    VALUE_DELTA_ZERO_Z(Strings.CAT_VALUE, "ΔZ₀", p -> {
+        return p.ext().deltaZero().getDelta1(3);
+    }),
+    VALUE_DELTA_ROLLING(Strings.CAT_VALUE, "Δᵣ", p -> {
+        return p.ext().deltaRolling().getDelta(3);
+    }),
+    VALUE_DELTA_ROLLING_Z(Strings.CAT_VALUE, "ΔZᵣ", p -> {
+        return p.ext().deltaRolling().getDelta1(3);
     }),
     ZZZ("Z", "z", p -> {
         return "Z";

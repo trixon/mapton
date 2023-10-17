@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,6 +17,7 @@ package org.mapton.butterfly_format.types.controlpoint;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import org.apache.commons.lang3.ObjectUtils;
 
 /**
  *
@@ -86,6 +87,21 @@ public class BTopoControlPointObservation extends BBaseControlPointObservation {
         //TODO, add alarm levels too???
 
         public Ext() {
+        }
+
+        public Double getDelta() {
+            Double d2;
+            if (ObjectUtils.allNotNull(getDeltaX(), getDeltaY())) {
+                d2 = Math.hypot(getDeltaX(), getDeltaY());
+            } else {
+                return getDeltaZ();
+            }
+
+            if (getDeltaZ() == null) {
+                return d2;
+            } else {
+                return Math.hypot(getDeltaZ(), d2);
+            }
         }
 
         public Double getDeltaX() {

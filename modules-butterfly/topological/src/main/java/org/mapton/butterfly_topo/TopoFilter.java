@@ -404,9 +404,9 @@ public class TopoFilter extends FormFilter<TopoManager> {
     }
 
     private boolean validateMeasDisplacementAll(BTopoControlPoint p) {
-        if (mDiffMeasAllProperty.get() && p.ext().getDelta() != null) {
+        if (mDiffMeasAllProperty.get() && p.ext().deltaZero().getDelta() != null) {
             double lim = mDiffMeasAllValueProperty.get();
-            double value = Math.abs(p.ext().getDelta());
+            double value = Math.abs(p.ext().deltaZero().getDelta());
 
             if (lim == 0) {
                 return value == 0;

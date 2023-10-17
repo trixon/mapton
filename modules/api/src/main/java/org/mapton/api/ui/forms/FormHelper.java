@@ -24,6 +24,8 @@ import org.apache.commons.lang3.StringUtils;
 public class FormHelper {
 
     public static Double ltGtToNegPos(String s) {
+        s = StringUtils.replace(s, ",", ".");
+
         if (StringUtils.equalsIgnoreCase(s, "= 0")) {
             return 0d;
         } else if (StringUtils.startsWith(s, "<")) {
