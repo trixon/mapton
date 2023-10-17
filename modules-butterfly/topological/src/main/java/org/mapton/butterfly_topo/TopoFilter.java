@@ -40,6 +40,7 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.ui.forms.FormFilter;
@@ -60,8 +61,10 @@ public class TopoFilter extends FormFilter<TopoManager> {
 
     private IndexedCheckModel mCategoryCheckModel;
     private IndexedCheckModel mDateFromToCheckModel;
-    private final SimpleBooleanProperty mDiffMeasProperty = new SimpleBooleanProperty();
-    private final SimpleDoubleProperty mDiffMeasValueProperty = new SimpleDoubleProperty();
+    private final SimpleBooleanProperty mDiffMeasAllProperty = new SimpleBooleanProperty();
+    private final SimpleDoubleProperty mDiffMeasAllValueProperty = new SimpleDoubleProperty();
+    private final SimpleBooleanProperty mDiffMeasLatestProperty = new SimpleBooleanProperty();
+    private final SimpleDoubleProperty mDiffMeasLatestValueProperty = new SimpleDoubleProperty();
     private IndexedCheckModel mDimensionCheckModel;
     private IndexedCheckModel<Integer> mFrequencyCheckModel;
     private IndexedCheckModel mGroupCheckModel;
@@ -84,12 +87,20 @@ public class TopoFilter extends FormFilter<TopoManager> {
         initListeners();
     }
 
-    public SimpleBooleanProperty diffMeasProperty() {
-        return mDiffMeasProperty;
+    public SimpleBooleanProperty diffMeasAllProperty() {
+        return mDiffMeasAllProperty;
     }
 
-    public SimpleDoubleProperty diffMeasValueProperty() {
-        return mDiffMeasValueProperty;
+    public SimpleDoubleProperty diffMeasAllValueProperty() {
+        return mDiffMeasAllValueProperty;
+    }
+
+    public SimpleBooleanProperty diffMeasLatestProperty() {
+        return mDiffMeasLatestProperty;
+    }
+
+    public SimpleDoubleProperty diffMeasLatestValueProperty() {
+        return mDiffMeasLatestValueProperty;
     }
 
     public SimpleStringProperty maxAgeProperty() {
@@ -174,13 +185,14 @@ public class TopoFilter extends FormFilter<TopoManager> {
                 .filter(o -> validateStatus(o.getStatus()))
                 .filter(o -> validateGroup(o.getGroup()))
                 .filter(o -> validateCategory(o.getCategory()))
-                .filter(o -> validateLatestDeviation(o))
-                .filter(o -> validateNumOfMeas(o))
+                .filter(o -> validateMeasDisplacementAll(o))
+                .filter(o -> validateMeasDisplacementLatest(o))
+                .filter(o -> validateMeasCount(o))
                 .filter(o -> validateOperator(o.getOperator()))
                 .filter(o -> validateFrequency(o.getFrequency()))
                 .filter(o -> validateMaxAge(o.getDateLatest()))
                 .filter(o -> validateNextMeas(o))
-                .filter(o -> validateMeasCount(o))
+                .filter(o -> validateMeasWithout(o))
                 .filter(o -> validateMeasCode(o))
                 .filter(o -> validateMeasOperators(o))
                 .filter(o -> validateDateFromToHas(o.getDateValidFrom(), o.getDateValidTo()))
@@ -232,8 +244,12 @@ public class TopoFilter extends FormFilter<TopoManager> {
             map.put(getBundle().getString("numOfMeasCheckBoxText"), FormHelper.negPosToLtGt(value));
         }
 
-        if (mDiffMeasProperty.get()) {
-            map.put(getBundle().getString("diffMeasCheckBoxText"), FormHelper.negPosToLtGt(mDiffMeasValueProperty.get()));
+        if (mDiffMeasAllProperty.get()) {
+            map.put(getBundle().getString("diffMeasAllCheckBoxText"), FormHelper.negPosToLtGt(mDiffMeasAllValueProperty.get()));
+        }
+
+        if (mDiffMeasLatestProperty.get()) {
+            map.put(getBundle().getString("diffMeasLatestCheckBoxText"), FormHelper.negPosToLtGt(mDiffMeasLatestValueProperty.get()));
         }
 
         if (mSameAlarmProperty.get()) {
@@ -266,8 +282,10 @@ public class TopoFilter extends FormFilter<TopoManager> {
     private void initListeners() {
         mMeasIncludeWithout.addListener(mChangeListenerObject);
         mMeasLatestOperator.addListener(mChangeListenerObject);
-        mDiffMeasProperty.addListener(mChangeListenerObject);
-        mDiffMeasValueProperty.addListener(mChangeListenerObject);
+        mDiffMeasLatestProperty.addListener(mChangeListenerObject);
+        mDiffMeasLatestValueProperty.addListener(mChangeListenerObject);
+        mDiffMeasAllProperty.addListener(mChangeListenerObject);
+        mDiffMeasAllValueProperty.addListener(mChangeListenerObject);
         mNumOfMeasValueProperty.addListener(mChangeListenerObject);
         mNumOfMeasProperty.addListener(mChangeListenerObject);
         mSameAlarmProperty.addListener(mChangeListenerObject);
@@ -336,16 +354,6 @@ public class TopoFilter extends FormFilter<TopoManager> {
         return validateCheck(mGroupCheckModel, s);
     }
 
-    private boolean validateLatestDeviation(BTopoControlPoint o) {
-        if (mDiffMeasProperty.get()) {
-            //TODO Check against measurements
-            //Zero, Greater or Less
-            return true;
-        } else {
-            return true;
-        }
-    }
-
     private boolean validateMaxAge(LocalDateTime dateTime) {
         var ageFilter = mMaxAgeProperty.get();
 
@@ -377,10 +385,68 @@ public class TopoFilter extends FormFilter<TopoManager> {
     }
 
     private boolean validateMeasCount(BTopoControlPoint p) {
-        var valid = mMeasIncludeWithout.get()
-                || p.ext().getNumOfObservations() > 0;
+        if (!mNumOfMeasProperty.get()) {
+            return true;
+        }
 
-        return valid;
+        var lim = mNumOfMeasValueProperty.get();
+        var value = p.ext().getObservationsRaw().size();
+
+        if (lim == 0) {
+            return value == 0;
+        } else if (lim < 0) {
+            return value <= Math.abs(lim) && value != 0;
+        } else if (lim > 0) {
+            return value >= lim;
+        }
+
+        return true;
+    }
+
+    private boolean validateMeasDisplacementAll(BTopoControlPoint p) {
+        if (mDiffMeasAllProperty.get() && p.ext().getDelta() != null) {
+            double lim = mDiffMeasAllValueProperty.get();
+            double value = Math.abs(p.ext().getDelta());
+
+            if (lim == 0) {
+                return value == 0;
+            } else if (lim < 0) {
+                return value <= Math.abs(lim);
+            } else {
+                return value >= lim;
+            }
+        } else {
+            return true;
+        }
+    }
+
+    private boolean validateMeasDisplacementLatest(BTopoControlPoint p) {
+        if (!mDiffMeasLatestProperty.get()) {
+            return true;
+        }
+
+        var observations = p.ext().getObservationsCalculated();
+        if (observations.size() > 1) {
+            var first = observations.get(observations.size() - 2);
+            var last = observations.get(observations.size() - 1);
+            double lim = mDiffMeasLatestValueProperty.get();
+            Double lastDelta = last.ext().getDelta();
+            Double firstDelta = first.ext().getDelta();
+            if (ObjectUtils.anyNull(firstDelta, lastDelta)) {
+                return false;
+            }
+            double value = Math.abs(lastDelta - firstDelta);
+
+            if (lim == 0) {
+                return value == 0;
+            } else if (lim < 0) {
+                return value <= Math.abs(lim);
+            } else {
+                return value >= lim;
+            }
+        } else {
+            return false;
+        }
     }
 
     private boolean validateMeasOperators(BTopoControlPoint p) {
@@ -401,6 +467,13 @@ public class TopoFilter extends FormFilter<TopoManager> {
 
             return false;
         }
+    }
+
+    private boolean validateMeasWithout(BTopoControlPoint p) {
+        var valid = mMeasIncludeWithout.get()
+                || p.ext().getNumOfObservations() > 0;
+
+        return valid;
     }
 
     private boolean validateNextMeas(BTopoControlPoint p) {
@@ -427,25 +500,6 @@ public class TopoFilter extends FormFilter<TopoManager> {
                         return remainingDays >= start && remainingDays <= end;
                     });
         }
-    }
-
-    private boolean validateNumOfMeas(BTopoControlPoint p) {
-        if (!mNumOfMeasProperty.get()) {
-            return true;
-        }
-
-        var lim = mNumOfMeasValueProperty.get();
-        var size = p.ext().getObservationsRaw().size();
-
-        if (lim == 0) {
-            return size == 0;
-        } else if (lim < 0) {
-            return size <= Math.abs(lim) && size != 0;
-        } else if (lim > 0) {
-            return size >= lim;
-        }
-
-        return true;
     }
 
     private boolean validateOperator(String s) {
