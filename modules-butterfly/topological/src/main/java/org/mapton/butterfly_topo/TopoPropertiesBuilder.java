@@ -16,7 +16,11 @@
 package org.mapton.butterfly_topo;
 
 import java.util.LinkedHashMap;
+import java.util.Objects;
+import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.api.ui.forms.PropertiesBuilder;
+import org.mapton.butterfly_alarm.api.AlarmHelper;
+import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.controlpoint.BTopoControlPoint;
 import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
@@ -37,50 +41,45 @@ public class TopoPropertiesBuilder extends PropertiesBuilder<BTopoControlPoint> 
         //TODO Add some gauges at the top: Alarm, mätbehov...
         var propertyMap = new LinkedHashMap<String, Object>();
         var cat1 = Dict.BASIC.toString();
-        propertyMap.put(getCatKey(cat1, Dict.NAME.toString()), p.getName());
         propertyMap.put(getCatKey(cat1,
-                StringHelper.join(SEPARATOR, "", SDict.DIMENSION.toString(), Dict.STATUS.toString())),
-                StringHelper.join(SEPARATOR, "", String.valueOf(p.getDimension().ordinal() + 1), p.getStatus()));
+                StringHelper.join(SEPARATOR, "", Dict.NAME.toString(), Dict.STATUS.toString())),
+                StringHelper.join(SEPARATOR, "", p.getName(), p.getStatus()));
         propertyMap.put(getCatKey(cat1,
                 StringHelper.join(SEPARATOR, "", Dict.GROUP.toString(), Dict.CATEGORY.toString())),
                 StringHelper.join(SEPARATOR, "", p.getGroup(), p.getCategory()));
-        propertyMap.put(getCatKey(cat1,
-                StringHelper.join(SEPARATOR, "", SDict.ALARM.toString() + " " + Dict.Geometry.HEIGHT.toString(), Dict.Geometry.PLANE.toString())),
-                StringHelper.join(SEPARATOR, "", p.getNameOfAlarmHeight(), p.getNameOfAlarmPlane()));
         propertyMap.put(getCatKey(cat1, SDict.OPERATOR.toString()), p.getOperator());
-        propertyMap.put(getCatKey(cat1, Dict.TAG.toString()), p.getTag());
         propertyMap.put(getCatKey(cat1, Dict.COMMENT.toString()), p.getComment());
-        propertyMap.put(getCatKey(cat1, SDict.FREQUENCY.toString()), p.getFrequency());// frekevens/sedan/kvar  även label by
+        propertyMap.put(getCatKey(cat1, SDict.ALARM.toString()), StringHelper.join(SEPARATOR, "", p.getNameOfAlarmHeight(), p.getNameOfAlarmPlane()));
+        propertyMap.put(getCatKey(cat1, Dict.Geometry.HEIGHT.toString()), AlarmHelper.getInstance().getLimitsAsString(BComponent.HEIGHT, p));
+        propertyMap.put(getCatKey(cat1, Dict.Geometry.PLANE.toString()), AlarmHelper.getInstance().getLimitsAsString(BComponent.PLANE, p));
+        propertyMap.put(getCatKey(cat1, SDict.FREQUENCY.toString()), p.getFrequency());
         var measurements = "%d / %d    (%d - %d)".formatted(
                 p.ext().getNumOfObservationsTimeFiltered(),
                 p.ext().getNumOfObservations(),
                 p.ext().getObservationsRaw().stream().filter(obs -> obs.isZeroMeasurement()).count(),
                 p.ext().getObservationsRaw().stream().filter(obs -> obs.isReplacementMeasurement()).count()
         );
-        var delta = ", Δ";
+        String validFromTo = null;
+        if (ObjectUtils.anyNotNull(p.getDateValidFrom(), p.getDateValidTo())) {
+            var fromDat = Objects.toString(DateHelper.toDateString(p.getDateValidFrom()), "1970-01-01");
+            var toDat = Objects.toString(DateHelper.toDateString(p.getDateValidTo()), "2099-12-31");
+            validFromTo = StringHelper.joinNonNulls(" // ", fromDat, toDat);
+        }
         propertyMap.put(getCatKey(cat1, SDict.MEASUREMENTS.toString()), measurements);
-        propertyMap.put(getCatKey(cat1, SDict.LATEST.toString()), DateHelper.toDateString(p.getDateLatest()));
-        propertyMap.put(getCatKey(cat1, SDict.ROLLING.toString()), DateHelper.toDateString(p.getDateRolling()));
-        propertyMap.put(getCatKey(cat1, SDict.ROLLING.toString()), DateHelper.toDateString(p.getDateRolling()));
-        propertyMap.put(getCatKey(cat1, Dict.FIRST.toString()), DateHelper.toDateString(p.getDateZero()));
-        propertyMap.put(getCatKey(cat1, SDict.ROLLING.toString() + delta), p.ext().deltaRolling().getDelta(3));
-        propertyMap.put(getCatKey(cat1, Dict.FIRST.toString() + delta), p.ext().deltaZero().getDelta(3));
+        propertyMap.put(getCatKey(cat1, "%s - %s".formatted(Dict.FROM.toString(), Dict.TO.toLower())), validFromTo);
+        propertyMap.put(getCatKey(cat1, Dict.DATE.toString()),
+                StringHelper.join(SEPARATOR, "", DateHelper.toDateString(p.getDateLatest()),
+                        DateHelper.toDateString(p.getDateRolling()),
+                        DateHelper.toDateString(p.getDateZero())));
+        var delta = "Δ ";
+        propertyMap.put(getCatKey(cat1, delta + SDict.ROLLING.toString()), p.ext().deltaRolling().getDelta(3));
+        propertyMap.put(getCatKey(cat1, delta + Dict.FIRST.toString()), p.ext().deltaZero().getDelta(3));
         propertyMap.put(getCatKey(cat1, "N"), StringHelper.round(p.getZeroY(), 3));
         propertyMap.put(getCatKey(cat1, "E"), StringHelper.round(p.getZeroX(), 3));
         propertyMap.put(getCatKey(cat1, "H"), StringHelper.round(p.getZeroZ(), 3));
 
         /* TODO
-        dateValidFrom=
-        dateValidTo=
-
-        offsetX=
-        offsetY=
-        offsetZ=
         origin=
-        zeroX=
-        zeroY=
-        zeroZ=
-
          */
         return propertyMap;
     }
