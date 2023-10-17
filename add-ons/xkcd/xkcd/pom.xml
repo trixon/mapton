@@ -99,7 +99,7 @@
         <!-- Mapton -->
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>mapton-api</artifactId>
+            <artifactId>api</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>

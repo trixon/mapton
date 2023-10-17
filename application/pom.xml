@@ -8,7 +8,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>application</artifactId>
+    <artifactId>mapton-application</artifactId>
     <packaging>nbm-application</packaging>
 
     <properties>
@@ -124,7 +124,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>mapton-api</artifactId>
+            <artifactId>api</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
