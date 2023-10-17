@@ -54,7 +54,7 @@
         <!-- Mapton -->
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>mapton-api</artifactId>
+            <artifactId>api</artifactId>
         </dependency>
 
         <!-- Other -->

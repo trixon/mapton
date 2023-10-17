@@ -83,7 +83,7 @@
         <!-- Mapton -->
         <dependency>
             <groupId>org.mapton</groupId>
-            <artifactId>mapton-api</artifactId>
+            <artifactId>api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.mapton</groupId>
