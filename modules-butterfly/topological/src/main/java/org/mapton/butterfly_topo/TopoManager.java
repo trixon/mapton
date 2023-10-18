@@ -88,9 +88,20 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
     @Override
     protected void applyTemporalFilter() {
         var measCountStatsDateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM");
-        var timeFilteredItems = getFilteredItems().stream()
-                .filter(o -> o.getDateLatest() == null ? true : getTemporalManager().isValid(o.getDateLatest()))
-                .toList();
+        var timeFilteredItems = new ArrayList<BTopoControlPoint>();
+        p:
+        for (var p : getFilteredItems()) {
+            if (p.getDateLatest() == null) {
+                timeFilteredItems.add(p);
+            } else {
+                for (var o : p.ext().getObservationsRaw()) {
+                    if (getTemporalManager().isValid(o.getDate())) {
+                        timeFilteredItems.add(p);
+                        continue p;
+                    }
+                }
+            }
+        }
 
         timeFilteredItems.stream().forEach(p -> {
             var timefilteredObservations = p.ext().getObservationsRaw().stream()

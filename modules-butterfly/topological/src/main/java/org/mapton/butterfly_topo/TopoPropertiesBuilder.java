@@ -67,13 +67,26 @@ public class TopoPropertiesBuilder extends PropertiesBuilder<BTopoControlPoint> 
         }
         propertyMap.put(getCatKey(cat1, SDict.MEASUREMENTS.toString()), measurements);
         propertyMap.put(getCatKey(cat1, "%s - %s".formatted(Dict.FROM.toString(), Dict.TO.toLower())), validFromTo);
-        propertyMap.put(getCatKey(cat1, Dict.DATE.toString()),
-                StringHelper.join(SEPARATOR, "", DateHelper.toDateString(p.getDateLatest()),
-                        DateHelper.toDateString(p.getDateRolling()),
-                        DateHelper.toDateString(p.getDateZero())));
+
+        var firstRaw = Objects.toString(DateHelper.toDateString(p.ext().getObservationRawFirstDate()), "-");
+        var firstFiltered = Objects.toString(DateHelper.toDateString(p.ext().getObservationFilteredFirstDate()), "-");
+        var lastRaw = Objects.toString(DateHelper.toDateString(p.ext().getObservationRawLastDate()), "-");
+        var lastFiltered = Objects.toString(DateHelper.toDateString(p.ext().getObservationFilteredLastDate()), "-");
+
+        propertyMap.put(getCatKey(cat1, Dict.LATEST.toString()),
+                "%s (%s)".formatted(lastRaw, lastFiltered)
+        );
+        propertyMap.put(getCatKey(cat1, Dict.FIRST.toString()),
+                "%s (%s)".formatted(firstRaw, firstFiltered)
+        );
+        propertyMap.put(getCatKey(cat1, Dict.REFERENCE.toString()),
+                "%s (%s)".formatted(
+                        Objects.toString(DateHelper.toDateString(p.getDateZero()), "-"),
+                        Objects.toString(DateHelper.toDateString(p.getDateRolling()), "-"))
+        );
         var delta = "Δ ";
         propertyMap.put(getCatKey(cat1, delta + SDict.ROLLING.toString()), p.ext().deltaRolling().getDelta(3));
-        propertyMap.put(getCatKey(cat1, delta + Dict.FIRST.toString()), p.ext().deltaZero().getDelta(3));
+        propertyMap.put(getCatKey(cat1, delta + Dict.REFERENCE.toString()), p.ext().deltaZero().getDelta(3));
         propertyMap.put(getCatKey(cat1, "N"), StringHelper.round(p.getZeroY(), 3));
         propertyMap.put(getCatKey(cat1, "E"), StringHelper.round(p.getZeroX(), 3));
         propertyMap.put(getCatKey(cat1, "H"), StringHelper.round(p.getZeroZ(), 3));

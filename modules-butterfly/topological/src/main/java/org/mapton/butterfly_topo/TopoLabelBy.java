@@ -49,12 +49,18 @@ public enum TopoLabelBy {
         return AlarmHelper.getInstance().getLimitsAsString(BComponent.PLANE, p);
     }),
     DATE_LATEST(Strings.CAT_DATE, SDict.LATEST.toString(), p -> {
-        var date = p.getDateLatest();
+        var date = p.ext().getObservationFilteredLastDate();
+//        var date = p.getDateLatest();
 
         return date == null ? "-" : date.toString();
     }),
     DATE_FIRST(Strings.CAT_DATE, Dict.FIRST.toString(), p -> {
-        var date = p.getDateZero();
+//        try {
+//            return p.ext().getObservationsFiltered().getFirst().getDate().toLocalDate().toString();
+//        } catch (Exception e) {
+//            return "-";
+//        }
+        var date = p.ext().getObservationFilteredFirstDate();
 
         return date == null ? "-" : date.toString();
     }),

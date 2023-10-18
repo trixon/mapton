@@ -425,7 +425,7 @@ public class TopoFilter extends FormFilter<TopoManager> {
             return true;
         }
 
-        var observations = p.ext().getObservationsCalculated();
+        var observations = p.ext().getObservationsFiltered();
         if (observations.size() > 1) {
             var first = observations.get(observations.size() - 2);
             var last = observations.get(observations.size() - 1);

@@ -170,10 +170,74 @@ public class BTopoControlPoint extends BBaseControlPoint {
         }
 
         public int getNumOfObservationsTimeFiltered() {
-            return getObservationsCalculated().size();
+            return getObservationsFiltered().size();
         }
 
-        public ArrayList<BTopoControlPointObservation> getObservationsCalculated() {
+        public BTopoControlPointObservation getObservationFilteredFirst() {
+            try {
+                return getObservationsFiltered().getFirst();
+            } catch (Exception e) {
+                return null;
+            }
+        }
+
+        public LocalDate getObservationFilteredFirstDate() {
+            try {
+                return getObservationFilteredFirst().getDate().toLocalDate();
+            } catch (Exception e) {
+                return null;
+            }
+        }
+
+        public LocalDate getObservationRawFirstDate() {
+            try {
+                return getObservationRawFirst().getDate().toLocalDate();
+            } catch (Exception e) {
+                return null;
+            }
+        }
+
+        public BTopoControlPointObservation getObservationFilteredLast() {
+            try {
+                return getObservationsFiltered().getLast();
+            } catch (Exception e) {
+                return null;
+            }
+        }
+
+        public LocalDate getObservationFilteredLastDate() {
+            try {
+                return getObservationFilteredLast().getDate().toLocalDate();
+            } catch (Exception e) {
+                return null;
+            }
+        }
+
+        public LocalDate getObservationRawLastDate() {
+            try {
+                return getObservationRawLast().getDate().toLocalDate();
+            } catch (Exception e) {
+                return null;
+            }
+        }
+
+        public BTopoControlPointObservation getObservationRawFirst() {
+            try {
+                return getObservationsRaw().getFirst();
+            } catch (Exception e) {
+                return null;
+            }
+        }
+
+        public BTopoControlPointObservation getObservationRawLast() {
+            try {
+                return getObservationsRaw().getLast();
+            } catch (Exception e) {
+                return null;
+            }
+        }
+
+        public ArrayList<BTopoControlPointObservation> getObservationsFiltered() {
             if (observationsCalculated == null) {
                 observationsCalculated = new ArrayList<>();
             }
@@ -330,17 +394,17 @@ public class BTopoControlPoint extends BBaseControlPoint {
 
             @Override
             public Double getDeltaX() {
-                return getObservationsCalculated().isEmpty() ? null : getObservationsCalculated().getLast().ext().getDeltaX();
+                return getObservationsFiltered().isEmpty() ? null : getObservationsFiltered().getLast().ext().getDeltaX();
             }
 
             @Override
             public Double getDeltaY() {
-                return getObservationsCalculated().isEmpty() ? null : getObservationsCalculated().getLast().ext().getDeltaY();
+                return getObservationsFiltered().isEmpty() ? null : getObservationsFiltered().getLast().ext().getDeltaY();
             }
 
             @Override
             public Double getDeltaZ() {
-                return getObservationsCalculated().isEmpty() ? null : getObservationsCalculated().getLast().ext().getDeltaZ();
+                return getObservationsFiltered().isEmpty() ? null : getObservationsFiltered().getLast().ext().getDeltaZ();
             }
         }
 

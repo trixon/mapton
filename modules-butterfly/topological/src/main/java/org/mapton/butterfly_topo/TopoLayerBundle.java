@@ -219,7 +219,7 @@ public class TopoLayerBundle extends LayerBundle {
 
     private ArrayList<AVListImpl> plotBearing(BTopoControlPoint p, Position position) {
         var mapObjects = new ArrayList<AVListImpl>();
-        int size = p.ext().getObservationsCalculated().size();
+        int size = p.ext().getObservationsFiltered().size();
         if (!mOptionsView.getPlotCheckModel().isChecked(Dict.BEARING.toString())
                 || p.getDimension() == BDimension._1d
                 || p.ext().getNumOfObservationsTimeFiltered() == 0) {
@@ -230,7 +230,7 @@ public class TopoLayerBundle extends LayerBundle {
 
         boolean first = true;
         for (int i = size - 1; i >= size - maxNumberOfItemsToPlot + 1; i--) {
-            var o = p.ext().getObservationsCalculated().get(i);
+            var o = p.ext().getObservationsFiltered().get(i);
 
             try {
                 var bearing = o.ext().getBearing();
@@ -252,7 +252,7 @@ public class TopoLayerBundle extends LayerBundle {
                     first = false;
                     sa.setOutlineWidth(2.0);
                 } else {
-                    sa.setOutlineWidth(8.0);
+                    sa.setOutlineWidth(4.0);
                     sa.setOutlineOpacity(0.05);
                 }
 
