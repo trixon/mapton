@@ -94,9 +94,6 @@ public class TopoLayerBundle extends LayerBundle {
         attachTopComponentToLayer("TopoTopComponent", mLayer);
         mLabelLayer.setEnabled(true);
         mLabelLayer.setMaxActiveAltitude(2000);
-        var pinSymbolCutOff = 400.0;
-        mSymbolLayer.setMaxActiveAltitude(pinSymbolCutOff);
-        mPinLayer.setMinActiveAltitude(pinSymbolCutOff);
         setParentLayer(mLayer);
         setAllChildLayers(mLabelLayer, mSymbolLayer, mPinLayer);
 
@@ -157,6 +154,37 @@ public class TopoLayerBundle extends LayerBundle {
     private void initRepaint() {
         setPainter(() -> {
             removeAllRenderables();
+
+            var pinSymbolCutOff = 0.0;
+
+            var pointBy = mOptionsView.getPointBy();
+            switch (pointBy) {
+                case AUTO -> {
+                    mPinLayer.setEnabled(true);
+                    mSymbolLayer.setEnabled(true);
+                    pinSymbolCutOff = 400.0;
+                    mSymbolLayer.setMaxActiveAltitude(pinSymbolCutOff);
+                    mPinLayer.setMinActiveAltitude(pinSymbolCutOff);
+                }
+                case NONE -> {
+                    mPinLayer.setEnabled(false);
+                    mSymbolLayer.setEnabled(false);
+                }
+                case PIN -> {
+                    mSymbolLayer.setEnabled(false);
+                    mPinLayer.setEnabled(true);
+                    mPinLayer.setMinActiveAltitude(Double.MIN_VALUE);
+                    mPinLayer.setMaxActiveAltitude(Double.MAX_VALUE);
+                }
+                case SYMBOL -> {
+                    mPinLayer.setEnabled(false);
+                    mSymbolLayer.setEnabled(true);
+                    mSymbolLayer.setMinActiveAltitude(Double.MIN_VALUE);
+                    mSymbolLayer.setMaxActiveAltitude(Double.MAX_VALUE);
+                }
+                default ->
+                    throw new AssertionError();
+            }
 
             for (var p : new ArrayList<>(mManager.getTimeFilteredItems())) {
                 if (ObjectUtils.allNotNull(p.getLat(), p.getLon())) {

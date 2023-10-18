@@ -19,6 +19,8 @@ import java.util.LinkedHashMap;
 import java.util.stream.Stream;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
@@ -28,11 +30,13 @@ import javafx.util.StringConverter;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.CheckComboBox;
 import org.controlsfx.control.IndexedCheckModel;
+import org.mapton.butterfly_topo.shared.PointBy;
 import org.mapton.worldwind.api.MOptionsView;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.Direction;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.session.CheckModelSession;
+import se.trixon.almond.util.fx.session.SelectionModelSession;
 
 /**
  *
@@ -47,6 +51,8 @@ public class TopoOptionsView extends MOptionsView<TopoLayerBundle> {
     private final MenuButton mLabelMenuButton = new MenuButton();
     private final CheckComboBox<String> mPlotCheckComboBox = new CheckComboBox<>();
     private final CheckModelSession mPlotCheckModelSession = new CheckModelSession(mPlotCheckComboBox);
+    private final ComboBox<PointBy> mPointComboBox = new ComboBox<>();
+    private final SelectionModelSession mPointSelectionModelSession = new SelectionModelSession(mPointComboBox.getSelectionModel());
 
     public TopoOptionsView(TopoLayerBundle layerBundle) {
         super(layerBundle);
@@ -67,11 +73,18 @@ public class TopoOptionsView extends MOptionsView<TopoLayerBundle> {
         return mPlotCheckComboBox.getCheckModel();
     }
 
+    public PointBy getPointBy() {
+        return mPointComboBox.valueProperty().get();
+    }
+
     public SimpleObjectProperty<TopoLabelBy> labelByProperty() {
         return mLabelByProperty;
     }
 
     private void createUI() {
+        mPointComboBox.getItems().setAll(PointBy.values());
+        mPointComboBox.setValue(PointBy.AUTO);
+
         mPlotCheckComboBox.setTitle(Dict.ITEM.toString());
         mPlotCheckComboBox.setShowCheckedCount(true);
         mPlotCheckComboBox.getItems().addAll(
@@ -114,8 +127,12 @@ public class TopoOptionsView extends MOptionsView<TopoLayerBundle> {
         });
 
         populateLabelMenuButton();
-
+        var pointLabel = new Label(Dict.Geometry.POINT.toString());
+        var labelLabel = new Label(Dict.LABEL.toString());
         var box = new VBox(
+                pointLabel,
+                mPointComboBox,
+                labelLabel,
                 mLabelMenuButton,
                 mIndicatorCheckComboBox,
                 mPlotCheckComboBox
@@ -131,7 +148,7 @@ public class TopoOptionsView extends MOptionsView<TopoLayerBundle> {
             mLabelByIdProperty.set(n.name());
         });
 
-        mLabelByProperty.set(TopoLabelBy.valueOf(mLabelByIdProperty.get()));
+        mPointComboBox.valueProperty().addListener(getChangeListener());
 
         Stream.of(
                 mIndicatorCheckComboBox,
@@ -140,9 +157,12 @@ public class TopoOptionsView extends MOptionsView<TopoLayerBundle> {
     }
 
     private void initSession() {
+        getSessionManager().register("options.pointBy", mPointSelectionModelSession.selectedIndexProperty());
         getSessionManager().register("options.labelBy", mLabelByIdProperty);
         getSessionManager().register("options.checkedPlot", mPlotCheckModelSession.checkedStringProperty());
         getSessionManager().register("options.checkedIndicators", mIndicatorCheckModelSession.checkedStringProperty());
+
+        mLabelByProperty.set(TopoLabelBy.valueOf(mLabelByIdProperty.get()));
     }
 
     private void populateLabelMenuButton() {

@@ -15,6 +15,7 @@
  */
 package org.mapton.worldwind.api;
 
+import javafx.beans.value.ChangeListener;
 import javafx.collections.ListChangeListener;
 
 /**
@@ -24,6 +25,7 @@ import javafx.collections.ListChangeListener;
  */
 public class MOptionsView<T extends LayerBundle> extends org.mapton.api.ui.MOptionsView {
 
+    private ChangeListener<Object> mChangeListener;
     private final T mLayerBundle;
     private ListChangeListener<Object> mListChangeListener;
 
@@ -33,13 +35,25 @@ public class MOptionsView<T extends LayerBundle> extends org.mapton.api.ui.MOpti
         initListeners();
     }
 
+    public ChangeListener<Object> getChangeListener() {
+        return mChangeListener;
+    }
+
     public ListChangeListener<Object> getListChangeListener() {
         return mListChangeListener;
     }
 
     private void initListeners() {
-        mListChangeListener = c -> {
+        Runnable r = () -> {
             mLayerBundle.repaint();
+        };
+
+        mChangeListener = (p, o, n) -> {
+            r.run();
+        };
+
+        mListChangeListener = c -> {
+            r.run();
         };
     }
 
