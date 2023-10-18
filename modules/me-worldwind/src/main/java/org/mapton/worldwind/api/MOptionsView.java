@@ -20,6 +20,7 @@ import javafx.collections.ListChangeListener;
 /**
  *
  * @author Patrik Karlström
+ * @param <T>
  */
 public class MOptionsView<T extends LayerBundle> extends org.mapton.api.ui.MOptionsView {
 

@@ -34,11 +34,13 @@ import java.util.ArrayList;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import org.apache.commons.lang3.ObjectUtils;
+import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.controlpoint.BTopoControlPoint;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.Almond;
+import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.Direction;
 import se.trixon.almond.util.fx.FxHelper;
 
@@ -165,6 +167,7 @@ public class TopoLayerBundle extends LayerBundle {
                     mapObjects.add(labelPlacemark);
                     mapObjects.add(plotPin(p, position, labelPlacemark));
                     mapObjects.addAll(plotSymbol(p, position, labelPlacemark));
+                    mapObjects.addAll(plotBearing(p, position));
                     mapObjects.addAll(plotIndicators(p, position));
 
                     var leftClickRunnable = (Runnable) () -> {
@@ -184,6 +187,55 @@ public class TopoLayerBundle extends LayerBundle {
 
             setDragEnabled(false);
         });
+    }
+
+    private ArrayList<AVListImpl> plotBearing(BTopoControlPoint p, Position position) {
+        var mapObjects = new ArrayList<AVListImpl>();
+        int size = p.ext().getObservationsCalculated().size();
+        if (!mOptionsView.getPlotCheckModel().isChecked(Dict.BEARING.toString())
+                || p.getDimension() == BDimension._1d
+                || p.ext().getNumOfObservationsTimeFiltered() == 0) {
+            return mapObjects;
+        }
+
+        int maxNumberOfItemsToPlot = Math.min(10, p.ext().getNumOfObservationsTimeFiltered());
+
+        boolean first = true;
+        for (int i = size - 1; i >= size - maxNumberOfItemsToPlot + 1; i--) {
+            var o = p.ext().getObservationsCalculated().get(i);
+
+            try {
+                var bearing = o.ext().getBearing();
+                if (bearing == null || bearing.isNaN()) {
+                    continue;
+                }
+
+                var length = 10.0;
+                var p2 = WWHelper.movePolar(position, bearing, length);
+                var z = first ? 0.2 : 0.1;
+                position = WWHelper.positionFromPosition(position, z);
+                p2 = WWHelper.positionFromPosition(p2, z);
+                var path = new Path(position, p2);
+                var sa = new BasicShapeAttributes();
+                sa.setOutlineMaterial(Material.BLUE);
+                path.setAttributes(sa);
+
+                if (first) {
+                    first = false;
+                    sa.setOutlineWidth(2.0);
+                } else {
+                    sa.setOutlineWidth(8.0);
+                    sa.setOutlineOpacity(0.05);
+                }
+
+                mLayer.addRenderable(path);
+                mapObjects.add(path);
+            } catch (Exception e) {
+                System.err.println(e);
+            }
+        }
+
+        return mapObjects;
     }
 
     private void plotConnector(Position p1, Position p2) {

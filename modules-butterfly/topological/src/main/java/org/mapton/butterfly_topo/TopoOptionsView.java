@@ -45,6 +45,8 @@ public class TopoOptionsView extends MOptionsView<TopoLayerBundle> {
     private final SimpleStringProperty mLabelByIdProperty = new SimpleStringProperty("NAME");
     private final SimpleObjectProperty<TopoLabelBy> mLabelByProperty = new SimpleObjectProperty<>();
     private final MenuButton mLabelMenuButton = new MenuButton();
+    private final CheckComboBox<String> mPlotCheckComboBox = new CheckComboBox<>();
+    private final CheckModelSession mPlotCheckModelSession = new CheckModelSession(mPlotCheckComboBox);
 
     public TopoOptionsView(TopoLayerBundle layerBundle) {
         super(layerBundle);
@@ -61,11 +63,21 @@ public class TopoOptionsView extends MOptionsView<TopoLayerBundle> {
         return mLabelByProperty.get();
     }
 
+    public IndexedCheckModel<String> getPlotCheckModel() {
+        return mPlotCheckComboBox.getCheckModel();
+    }
+
     public SimpleObjectProperty<TopoLabelBy> labelByProperty() {
         return mLabelByProperty;
     }
 
     private void createUI() {
+        mPlotCheckComboBox.setTitle(Dict.ITEM.toString());
+        mPlotCheckComboBox.setShowCheckedCount(true);
+        mPlotCheckComboBox.getItems().addAll(
+                Dict.BEARING.toString()
+        );
+
         mIndicatorCheckComboBox.setTitle(Dict.INDICATORS.toString());
         mIndicatorCheckComboBox.setShowCheckedCount(true);
         mIndicatorCheckComboBox.getItems().addAll(
@@ -105,7 +117,8 @@ public class TopoOptionsView extends MOptionsView<TopoLayerBundle> {
 
         var box = new VBox(
                 mLabelMenuButton,
-                mIndicatorCheckComboBox
+                mIndicatorCheckComboBox,
+                mPlotCheckComboBox
         );
         box.setPadding(FxHelper.getUIScaledInsets(8));
 
@@ -113,8 +126,6 @@ public class TopoOptionsView extends MOptionsView<TopoLayerBundle> {
     }
 
     private void initListeners() {
-        getSessionManager().register("options.labelBy", mLabelByIdProperty);
-
         mLabelByProperty.addListener((p, o, n) -> {
             mLabelMenuButton.setText(n.getName());
             mLabelByIdProperty.set(n.name());
@@ -123,12 +134,15 @@ public class TopoOptionsView extends MOptionsView<TopoLayerBundle> {
         mLabelByProperty.set(TopoLabelBy.valueOf(mLabelByIdProperty.get()));
 
         Stream.of(
-                mIndicatorCheckComboBox
+                mIndicatorCheckComboBox,
+                mPlotCheckComboBox
         ).forEachOrdered(ccb -> ccb.getCheckModel().getCheckedItems().addListener(getListChangeListener()));
     }
 
     private void initSession() {
-        getSessionManager().register("view.checkedIndicators", mIndicatorCheckModelSession.checkedStringProperty());
+        getSessionManager().register("options.labelBy", mLabelByIdProperty);
+        getSessionManager().register("options.checkedPlot", mPlotCheckModelSession.checkedStringProperty());
+        getSessionManager().register("options.checkedIndicators", mIndicatorCheckModelSession.checkedStringProperty());
     }
 
     private void populateLabelMenuButton() {
