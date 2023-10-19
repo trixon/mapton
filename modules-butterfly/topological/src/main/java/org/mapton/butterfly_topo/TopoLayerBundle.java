@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import org.apache.commons.lang3.ObjectUtils;
+import org.mapton.api.MOptions;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.controlpoint.BTopoControlPoint;
 import org.mapton.worldwind.api.LayerBundle;
@@ -42,6 +43,8 @@ import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.Direction;
+import se.trixon.almond.util.MathHelper;
+import se.trixon.almond.util.SDict;
 import se.trixon.almond.util.fx.FxHelper;
 
 /**
@@ -54,21 +57,17 @@ public class TopoLayerBundle extends LayerBundle {
     private final double SYMBOL_HEIGHT = 4.0;
     private final double SYMBOL_RADIUS = 1.5;
     private final ArrayList<AVListImpl> mEmptyDummyList = new ArrayList<>();
-    private BasicShapeAttributes[] mIndicatorNeedAttributes;
     private final RenderableLayer mLabelLayer = new RenderableLayer();
-    private PointPlacemarkAttributes mLabelPlacemarkAttributes;
     private final RenderableLayer mLayer = new RenderableLayer();
     private final TopoManager mManager = TopoManager.getInstance();
     private final TopoOptionsView mOptionsView;
-    private PointPlacemarkAttributes mPinAttributes;
     private final RenderableLayer mPinLayer = new RenderableLayer();
-    private final BasicShapeAttributes mSymbolAttributes = new BasicShapeAttributes();
     private final RenderableLayer mSymbolLayer = new RenderableLayer();
     private final TopoConfig mTopoConfig = new TopoConfig();
+    private final TopoAttributeManager mAttributeManager = TopoAttributeManager.getInstance();
 
     public TopoLayerBundle() {
         init();
-        initAttributes();
         initRepaint();
         mOptionsView = new TopoOptionsView(this);
         initListeners();
@@ -98,38 +97,6 @@ public class TopoLayerBundle extends LayerBundle {
         setAllChildLayers(mLabelLayer, mSymbolLayer, mPinLayer);
 
         mLayer.setPickEnabled(true);
-    }
-
-    private void initAttributes() {
-        //***
-        var indicatorNeed = new BasicShapeAttributes();
-        var indicatorNeed0 = new BasicShapeAttributes(indicatorNeed);
-        var indicatorNeed1 = new BasicShapeAttributes(indicatorNeed);
-        var indicatorNeed2 = new BasicShapeAttributes(indicatorNeed);
-        indicatorNeed0.setInteriorMaterial(Material.GREEN);
-        indicatorNeed1.setInteriorMaterial(Material.ORANGE);
-        indicatorNeed2.setInteriorMaterial(Material.RED);
-
-        mIndicatorNeedAttributes = new BasicShapeAttributes[]{
-            indicatorNeed0,
-            indicatorNeed1,
-            indicatorNeed2
-        };
-
-        //***
-        mLabelPlacemarkAttributes = new PointPlacemarkAttributes();
-        mLabelPlacemarkAttributes.setLabelScale(1.6);
-        mLabelPlacemarkAttributes.setDrawImage(false);
-
-        //***
-        mSymbolAttributes.setEnableLighting(true);
-        mSymbolAttributes.setDrawOutline(false);
-
-        //***
-        mPinAttributes = new PointPlacemarkAttributes(new PointPlacemark(Position.ZERO).getDefaultAttributes());
-        mPinAttributes.setScale(0.75);
-        mPinAttributes.setImageAddress("images/pushpins/plain-white.png");
-
     }
 
     private void initListeners() {
@@ -197,6 +164,7 @@ public class TopoLayerBundle extends LayerBundle {
                     mapObjects.addAll(plotSymbol(p, position, labelPlacemark));
                     mapObjects.addAll(plotBearing(p, position));
                     mapObjects.addAll(plotIndicators(p, position));
+                    mapObjects.addAll(plotTrace(p, position));
 
                     var leftClickRunnable = (Runnable) () -> {
                         mManager.setSelectedItemAfterReset(p);
@@ -300,7 +268,7 @@ public class TopoLayerBundle extends LayerBundle {
             }
 
             var p2 = WWHelper.movePolar(position, untilNextDirection.getAzimuth(), indicatorDistance);
-            var circle = new SurfaceCircle(mIndicatorNeedAttributes[idx], p2, radius);
+            var circle = new SurfaceCircle(mAttributeManager.getIndicatorNeedAttributes()[idx], p2, radius);
             plotConnector(position, p2);
             mLayer.addRenderable(circle);
             mapObjects.add(circle);
@@ -324,8 +292,8 @@ public class TopoLayerBundle extends LayerBundle {
         var offsetPosition = WWHelper.movePolar(position, 45, SYMBOL_RADIUS * 1.2);
         var placemark = new PointPlacemark(offsetPosition);
         placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
-        placemark.setAttributes(mLabelPlacemarkAttributes);
-        placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(mLabelPlacemarkAttributes, 1.5));
+        placemark.setAttributes(mAttributeManager.getLabelPlacemarkAttributes());
+        placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(mAttributeManager.getLabelPlacemarkAttributes(), 1.5));
         placemark.setLabelText(label);
         mLabelLayer.addRenderable(placemark);
 
@@ -333,7 +301,7 @@ public class TopoLayerBundle extends LayerBundle {
     }
 
     private PointPlacemark plotPin(BTopoControlPoint p, Position position, PointPlacemark labelPlacemark) {
-        var attrs = new PointPlacemarkAttributes(mPinAttributes);
+        var attrs = new PointPlacemarkAttributes(mAttributeManager.getPinAttributes());
         attrs.setImageColor(mTopoConfig.getColor(p));
 
         var placemark = new PointPlacemark(position);
@@ -375,7 +343,7 @@ public class TopoLayerBundle extends LayerBundle {
             }
         }
 
-        var sa = new BasicShapeAttributes(mSymbolAttributes);
+        var sa = new BasicShapeAttributes(mAttributeManager.getSymbolAttributes());
         sa.setInteriorMaterial(new Material(mTopoConfig.getColor(p)));
         abstractShape.setAttributes(sa);
         mapObjects.add(abstractShape);
@@ -391,5 +359,66 @@ public class TopoLayerBundle extends LayerBundle {
         }
 
         return mapObjects;
+    }
+
+    private ArrayList<AVListImpl> plotTrace(BTopoControlPoint p, Position position) {
+        var mapObjects = new ArrayList<AVListImpl>();
+        if (mOptionsView.getPlotCheckModel().isChecked(SDict.TRACE_1D.toString()) && p.getDimension() == BDimension._1d) {
+            plotTrace1d(p, position, mapObjects);
+        } else if (mOptionsView.getPlotCheckModel().isChecked(SDict.TRACE_2D.toString()) && p.getDimension() == BDimension._2d) {
+            plotTrace2d(p, position, mapObjects);
+        } else if (mOptionsView.getPlotCheckModel().isChecked(SDict.TRACE_3D.toString()) && p.getDimension() == BDimension._3d) {
+            plotTrace3d(p, position, mapObjects);
+        }
+
+        return mapObjects;
+    }
+
+    private void plotTrace1d(BTopoControlPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
+    }
+
+    private void plotTrace2d(BTopoControlPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
+    }
+
+    private void plotTrace3d(BTopoControlPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
+        var Z_OFFSET = 10.0;
+        var ZERO_SIZE = 0.5;
+        var END_SIZE = 0.5;
+        var zeroPosition = WWHelper.positionFromPosition(position, Z_OFFSET);
+        var ellipsoid = new Ellipsoid(zeroPosition, ZERO_SIZE, ZERO_SIZE, ZERO_SIZE);
+        mapObjects.add(ellipsoid);
+        mLayer.addRenderable(ellipsoid);
+
+        var groundPath = new Path(position, zeroPosition);
+        mapObjects.add(groundPath);
+        mLayer.addRenderable(groundPath);
+
+        if (ObjectUtils.anyNull(p.getZeroX(), p.getZeroY(), p.getZeroZ())) {
+            return;
+        }
+
+        var cootrans = MOptions.getInstance().getMapCooTrans();
+        var scaleFactor = 500.0;
+        var collectedNodes = p.ext().getObservationsFiltered().stream()
+                .map(o -> {
+                    var x = p.getZeroX() + MathHelper.convertDoubleToDouble(o.ext().getDeltaX()) * scaleFactor;
+                    var y = p.getZeroY() + MathHelper.convertDoubleToDouble(o.ext().getDeltaY()) * scaleFactor;
+                    var z = p.getZeroZ() + MathHelper.convertDoubleToDouble(o.ext().getDeltaZ()) * scaleFactor + Z_OFFSET;
+
+                    var wgs84 = cootrans.toWgs84(y, x);
+                    var p0 = Position.fromDegrees(wgs84.getY(), wgs84.getX(), z);
+                    return p0;
+                }).toList();
+
+        var nodes = new ArrayList<Position>(collectedNodes);
+        nodes.add(0, zeroPosition);
+        var path = new Path(nodes);
+        mapObjects.add(path);
+        mLayer.addRenderable(path);
+
+        var endEllipsoid = new Ellipsoid(nodes.getLast(), END_SIZE, END_SIZE, END_SIZE);
+        mapObjects.add(endEllipsoid);
+        mLayer.addRenderable(endEllipsoid);
+
     }
 }

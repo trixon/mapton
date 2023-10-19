@@ -34,6 +34,7 @@ import org.mapton.butterfly_topo.shared.PointBy;
 import org.mapton.worldwind.api.MOptionsView;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.Direction;
+import se.trixon.almond.util.SDict;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.session.CheckModelSession;
 import se.trixon.almond.util.fx.session.SelectionModelSession;
@@ -85,10 +86,13 @@ public class TopoOptionsView extends MOptionsView<TopoLayerBundle> {
         mPointComboBox.getItems().setAll(PointBy.values());
         mPointComboBox.setValue(PointBy.AUTO);
 
-        mPlotCheckComboBox.setTitle(Dict.ITEM.toString());
+        mPlotCheckComboBox.setTitle(Dict.COMPONENT.toString());
         mPlotCheckComboBox.setShowCheckedCount(true);
         mPlotCheckComboBox.getItems().addAll(
-                Dict.BEARING.toString()
+                Dict.BEARING.toString(),
+                SDict.TRACE_1D.toString(),
+                SDict.TRACE_2D.toString(),
+                SDict.TRACE_3D.toString()
         );
 
         mIndicatorCheckComboBox.setTitle(Dict.INDICATORS.toString());

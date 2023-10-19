@@ -350,15 +350,11 @@
                 <artifactId>ce-chartfx</artifactId>
                 <version>${mapton.version}</version>
             </dependency>
+            
             <!-- Butterfly -->
             <dependency>
                 <groupId>org.mapton</groupId>
                 <artifactId>butterfly-format</artifactId>
-                <version>${mapton.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.mapton</groupId>
-                <artifactId>butterfly-core</artifactId>
                 <version>${mapton.version}</version>
             </dependency>
             <dependency>

@@ -17,8 +17,8 @@ package org.mapton.butterfly_format.types.controlpoint;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import javafx.geometry.Point2D;
 import org.apache.commons.lang3.ObjectUtils;
+import se.trixon.almond.util.MathHelper;
 
 /**
  *
@@ -82,8 +82,6 @@ public class BTopoControlPointObservation extends BBaseControlPointObservation {
 
     public class Ext {
 
-        private final double almostZero = 1.0E-12;
-        private final Point2D mCloseToOrigo = new Point2D(almostZero, almostZero);
         private Double mDeltaX;
         private Double mDeltaY;
         private Double mDeltaZ;
@@ -95,12 +93,9 @@ public class BTopoControlPointObservation extends BBaseControlPointObservation {
         public Double getBearing() {
             if (ObjectUtils.anyNull(getDeltaX(), getDeltaY())) {
                 return null;
+            } else {
+                return MathHelper.bearingCWInDegrees(getDeltaX(), getDeltaY());
             }
-
-            //var p = new Point2D(getDeltaX() + almostZero, getDeltaY() + almostZero);
-            var p = new Point2D(getDeltaX(), getDeltaY());
-
-            return mCloseToOrigo.angle(p);
         }
 
         public Double getDelta() {
