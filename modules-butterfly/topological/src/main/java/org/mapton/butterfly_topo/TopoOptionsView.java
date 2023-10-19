@@ -92,7 +92,10 @@ public class TopoOptionsView extends MOptionsView<TopoLayerBundle> {
                 Dict.BEARING.toString(),
                 SDict.TRACE_1D.toString(),
                 SDict.TRACE_2D.toString(),
-                SDict.TRACE_3D.toString()
+                SDict.TRACE_3D.toString(),
+                SDict.VECTOR_1D.toString(),
+                SDict.VECTOR_2D.toString(),
+                SDict.VECTOR_3D.toString()
         );
 
         mIndicatorCheckComboBox.setTitle(Dict.INDICATORS.toString());
