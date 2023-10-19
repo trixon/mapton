@@ -42,10 +42,8 @@ import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.Almond;
-import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.Direction;
 import se.trixon.almond.util.MathHelper;
-import se.trixon.almond.util.SDict;
 import se.trixon.almond.util.fx.FxHelper;
 
 /**
@@ -193,7 +191,7 @@ public class TopoLayerBundle extends LayerBundle {
     private ArrayList<AVListImpl> plotBearing(BTopoControlPoint p, Position position) {
         var mapObjects = new ArrayList<AVListImpl>();
         int size = p.ext().getObservationsFiltered().size();
-        if (!mOptionsView.getPlotCheckModel().isChecked(Dict.BEARING.toString())
+        if (!mOptionsView.getPlotCheckModel().isChecked(RenderComponent.BEARING)
                 || p.getDimension() == BDimension._1d
                 || p.ext().getNumOfObservationsTimeFiltered() == 0) {
             return mapObjects;
@@ -370,11 +368,11 @@ public class TopoLayerBundle extends LayerBundle {
         var mapObjects = new ArrayList<AVListImpl>();
         var checkModel = mOptionsView.getPlotCheckModel();
 
-        if (checkModel.isChecked(SDict.TRACE_1D.toString()) && p.getDimension() == BDimension._1d) {
+        if (checkModel.isChecked(RenderComponent.TRACE_1D) && p.getDimension() == BDimension._1d) {
             plotTrace1d(p, position, mapObjects);
-        } else if (checkModel.isChecked(SDict.TRACE_2D.toString()) && p.getDimension() == BDimension._2d) {
+        } else if (checkModel.isChecked(RenderComponent.TRACE_2D) && p.getDimension() == BDimension._2d) {
             plotTrace2d(p, position, mapObjects);
-        } else if (checkModel.isChecked(SDict.TRACE_3D.toString()) && p.getDimension() == BDimension._3d) {
+        } else if (checkModel.isChecked(RenderComponent.TRACE_3D) && p.getDimension() == BDimension._3d) {
             plotTrace3d(p, position, mapObjects);
         }
 
@@ -389,7 +387,7 @@ public class TopoLayerBundle extends LayerBundle {
 
     private Position[] plot3dOffsetPole(BTopoControlPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
         return mPointToPositionMap.computeIfAbsent(p, k -> {
-            var ZERO_SIZE = 0.5;
+            var ZERO_SIZE = 0.1;
             var END_SIZE = 0.5;
             var startPosition = WWHelper.positionFromPosition(position, Z_OFFSET);
             var ellipsoid = new Ellipsoid(startPosition, ZERO_SIZE, ZERO_SIZE, ZERO_SIZE);
@@ -448,11 +446,11 @@ public class TopoLayerBundle extends LayerBundle {
         var mapObjects = new ArrayList<AVListImpl>();
         var checkModel = mOptionsView.getPlotCheckModel();
 
-        if (checkModel.isChecked(SDict.VECTOR_1D.toString()) && p.getDimension() == BDimension._1d) {
+        if (checkModel.isChecked(RenderComponent.VECTOR_1D) && p.getDimension() == BDimension._1d) {
             plotVector1d(p, position, mapObjects);
-        } else if (checkModel.isChecked(SDict.VECTOR_2D.toString()) && p.getDimension() == BDimension._2d) {
+        } else if (checkModel.isChecked(RenderComponent.VECTOR_2D) && p.getDimension() == BDimension._2d) {
             plotVector2d(p, position, mapObjects);
-        } else if (checkModel.isChecked(SDict.VECTOR_3D.toString()) && p.getDimension() == BDimension._3d) {
+        } else if (checkModel.isChecked(RenderComponent.VECTOR_3D) && p.getDimension() == BDimension._3d) {
             plotVector3d(p, position, mapObjects);
         }
 

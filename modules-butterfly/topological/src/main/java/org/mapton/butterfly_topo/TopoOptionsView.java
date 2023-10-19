@@ -34,7 +34,6 @@ import org.mapton.butterfly_topo.shared.PointBy;
 import org.mapton.worldwind.api.MOptionsView;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.Direction;
-import se.trixon.almond.util.SDict;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.session.CheckModelSession;
 import se.trixon.almond.util.fx.session.SelectionModelSession;
@@ -50,7 +49,7 @@ public class TopoOptionsView extends MOptionsView<TopoLayerBundle> {
     private final SimpleStringProperty mLabelByIdProperty = new SimpleStringProperty("NAME");
     private final SimpleObjectProperty<TopoLabelBy> mLabelByProperty = new SimpleObjectProperty<>();
     private final MenuButton mLabelMenuButton = new MenuButton();
-    private final CheckComboBox<String> mPlotCheckComboBox = new CheckComboBox<>();
+    private final CheckComboBox<RenderComponent> mPlotCheckComboBox = new CheckComboBox<>();
     private final CheckModelSession mPlotCheckModelSession = new CheckModelSession(mPlotCheckComboBox);
     private final ComboBox<PointBy> mPointComboBox = new ComboBox<>();
     private final SelectionModelSession mPointSelectionModelSession = new SelectionModelSession(mPointComboBox.getSelectionModel());
@@ -70,7 +69,7 @@ public class TopoOptionsView extends MOptionsView<TopoLayerBundle> {
         return mLabelByProperty.get();
     }
 
-    public IndexedCheckModel<String> getPlotCheckModel() {
+    public IndexedCheckModel<RenderComponent> getPlotCheckModel() {
         return mPlotCheckComboBox.getCheckModel();
     }
 
@@ -88,15 +87,7 @@ public class TopoOptionsView extends MOptionsView<TopoLayerBundle> {
 
         mPlotCheckComboBox.setTitle(Dict.COMPONENT.toString());
         mPlotCheckComboBox.setShowCheckedCount(true);
-        mPlotCheckComboBox.getItems().addAll(
-                Dict.BEARING.toString(),
-                SDict.TRACE_1D.toString(),
-                SDict.TRACE_2D.toString(),
-                SDict.TRACE_3D.toString(),
-                SDict.VECTOR_1D.toString(),
-                SDict.VECTOR_2D.toString(),
-                SDict.VECTOR_3D.toString()
-        );
+        mPlotCheckComboBox.getItems().setAll(RenderComponent.values());
 
         mIndicatorCheckComboBox.setTitle(Dict.INDICATORS.toString());
         mIndicatorCheckComboBox.setShowCheckedCount(true);
