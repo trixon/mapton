@@ -137,7 +137,7 @@ public class BTopoControlPoint extends BBaseControlPoint {
         private transient final DeltaRolling deltaRolling = new DeltaRolling();
         private transient final DeltaZero deltaZero = new DeltaZero();
         private transient LinkedHashMap<String, Integer> measuremenCountStats = new LinkedHashMap<>();
-        private transient ArrayList<BTopoControlPointObservation> observationsCalculated;
+        private transient ArrayList<BTopoControlPointObservation> observationsFiltered;
         private transient ArrayList<BTopoControlPointObservation> observationsRaw;
 
         public DeltaRolling deltaRolling() {
@@ -169,7 +169,7 @@ public class BTopoControlPoint extends BBaseControlPoint {
             return getObservationsRaw().size();
         }
 
-        public int getNumOfObservationsTimeFiltered() {
+        public int getNumOfObservationsFiltered() {
             return getObservationsFiltered().size();
         }
 
@@ -238,11 +238,11 @@ public class BTopoControlPoint extends BBaseControlPoint {
         }
 
         public ArrayList<BTopoControlPointObservation> getObservationsFiltered() {
-            if (observationsCalculated == null) {
-                observationsCalculated = new ArrayList<>();
+            if (observationsFiltered == null) {
+                observationsFiltered = new ArrayList<>();
             }
 
-            return observationsCalculated;
+            return observationsFiltered;
         }
 
         public ArrayList<BTopoControlPointObservation> getObservationsRaw() {
@@ -257,8 +257,8 @@ public class BTopoControlPoint extends BBaseControlPoint {
             this.measuremenCountStats = measuremenCountStats;
         }
 
-        public void setObservationsCalculated(ArrayList<BTopoControlPointObservation> observationsCalculated) {
-            this.observationsCalculated = observationsCalculated;
+        public void setObservationsFiltered(ArrayList<BTopoControlPointObservation> observationsFiltered) {
+            this.observationsFiltered = observationsFiltered;
         }
 
         public void setObservationsRaw(ArrayList<BTopoControlPointObservation> observationsRaw) {
@@ -352,7 +352,7 @@ public class BTopoControlPoint extends BBaseControlPoint {
 
             @Override
             public Double getDeltaX() {
-                var observations = ext().observationsCalculated;
+                var observations = ext().observationsFiltered;
                 if (observations == null || observations.isEmpty()) {
                     return null;
                 }
@@ -365,7 +365,7 @@ public class BTopoControlPoint extends BBaseControlPoint {
 
             @Override
             public Double getDeltaY() {
-                var observations = ext().observationsCalculated;
+                var observations = ext().observationsFiltered;
                 if (observations == null || observations.isEmpty()) {
                     return null;
                 }
@@ -378,7 +378,7 @@ public class BTopoControlPoint extends BBaseControlPoint {
 
             @Override
             public Double getDeltaZ() {
-                var observations = ext().observationsCalculated;
+                var observations = ext().observationsFiltered;
                 if (observations == null || observations.isEmpty()) {
                     return null;
                 }

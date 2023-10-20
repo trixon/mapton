@@ -31,19 +31,15 @@ import gov.nasa.worldwind.render.Pyramid;
 import gov.nasa.worldwind.render.SurfaceCircle;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.HashMap;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import org.apache.commons.lang3.ObjectUtils;
-import org.mapton.api.MOptions;
-import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.controlpoint.BTopoControlPoint;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.Direction;
-import se.trixon.almond.util.MathHelper;
 import se.trixon.almond.util.fx.FxHelper;
 
 /**
@@ -53,26 +49,27 @@ import se.trixon.almond.util.fx.FxHelper;
 @ServiceProvider(service = LayerBundle.class)
 public class TopoLayerBundle extends LayerBundle {
 
-    private static final double Z_OFFSET = 10.0;
-    private static final double SCALE_FACTOR = 500.0;
+    public static final double SCALE_FACTOR = 500.0;
+    public static final double Z_OFFSET = 10.0;
 
     private final double SYMBOL_HEIGHT = 4.0;
     private final double SYMBOL_RADIUS = 1.5;
+    private final TopoAttributeManager mAttributeManager = TopoAttributeManager.getInstance();
     private final ArrayList<AVListImpl> mEmptyDummyList = new ArrayList<>();
     private final RenderableLayer mLabelLayer = new RenderableLayer();
     private final RenderableLayer mLayer = new RenderableLayer();
+    private final ComponentRenderer mComponentRenderer;
     private final TopoManager mManager = TopoManager.getInstance();
     private final TopoOptionsView mOptionsView;
     private final RenderableLayer mPinLayer = new RenderableLayer();
     private final RenderableLayer mSymbolLayer = new RenderableLayer();
     private final TopoConfig mTopoConfig = new TopoConfig();
-    private final TopoAttributeManager mAttributeManager = TopoAttributeManager.getInstance();
-    private final HashMap<BTopoControlPoint, Position[]> mPointToPositionMap = new HashMap<>();
 
     public TopoLayerBundle() {
         init();
         initRepaint();
         mOptionsView = new TopoOptionsView(this);
+        mComponentRenderer = new ComponentRenderer(mLayer, mOptionsView.getComponentCheckModel());
         initListeners();
 
         FxHelper.runLaterDelayed(1000, () -> mManager.updateTemporal(mLayer.isEnabled()));
@@ -124,7 +121,10 @@ public class TopoLayerBundle extends LayerBundle {
     private void initRepaint() {
         setPainter(() -> {
             removeAllRenderables();
-            mPointToPositionMap.clear();
+            mComponentRenderer.reset();
+            if (!mLayer.isEnabled()) {
+                return;
+            }
 
             var pointBy = mOptionsView.getPointBy();
             switch (pointBy) {
@@ -164,10 +164,9 @@ public class TopoLayerBundle extends LayerBundle {
                     mapObjects.add(labelPlacemark);
                     mapObjects.add(plotPin(p, position, labelPlacemark));
                     mapObjects.addAll(plotSymbol(p, position, labelPlacemark));
-                    mapObjects.addAll(plotBearing(p, position));
                     mapObjects.addAll(plotIndicators(p, position));
-                    mapObjects.addAll(plotTrace(p, position));
-                    mapObjects.addAll(plotVector(p, position));
+
+                    mComponentRenderer.plot(p, position, mapObjects);
 
                     var leftClickRunnable = (Runnable) () -> {
                         mManager.setSelectedItemAfterReset(p);
@@ -186,55 +185,6 @@ public class TopoLayerBundle extends LayerBundle {
 
             setDragEnabled(false);
         });
-    }
-
-    private ArrayList<AVListImpl> plotBearing(BTopoControlPoint p, Position position) {
-        var mapObjects = new ArrayList<AVListImpl>();
-        int size = p.ext().getObservationsFiltered().size();
-        if (!mOptionsView.getPlotCheckModel().isChecked(RenderComponent.BEARING)
-                || p.getDimension() == BDimension._1d
-                || p.ext().getNumOfObservationsTimeFiltered() == 0) {
-            return mapObjects;
-        }
-
-        int maxNumberOfItemsToPlot = Math.min(10, p.ext().getNumOfObservationsTimeFiltered());
-
-        boolean first = true;
-        for (int i = size - 1; i >= size - maxNumberOfItemsToPlot + 1; i--) {
-            var o = p.ext().getObservationsFiltered().get(i);
-
-            try {
-                var bearing = o.ext().getBearing();
-                if (bearing == null || bearing.isNaN()) {
-                    continue;
-                }
-
-                var length = 10.0;
-                var p2 = WWHelper.movePolar(position, bearing, length);
-                var z = first ? 0.2 : 0.1;
-                position = WWHelper.positionFromPosition(position, z);
-                p2 = WWHelper.positionFromPosition(p2, z);
-                var path = new Path(position, p2);
-                var sa = new BasicShapeAttributes();
-                sa.setOutlineMaterial(Material.BLUE);
-                path.setAttributes(sa);
-
-                if (first) {
-                    first = false;
-                    sa.setOutlineWidth(2.0);
-                } else {
-                    sa.setOutlineWidth(4.0);
-                    sa.setOutlineOpacity(0.05);
-                }
-
-                mLayer.addRenderable(path);
-                mapObjects.add(path);
-            } catch (Exception e) {
-                System.err.println(e);
-            }
-        }
-
-        return mapObjects;
     }
 
     private void plotConnector(Position p1, Position p2) {
@@ -364,131 +314,4 @@ public class TopoLayerBundle extends LayerBundle {
         return mapObjects;
     }
 
-    private ArrayList<AVListImpl> plotTrace(BTopoControlPoint p, Position position) {
-        var mapObjects = new ArrayList<AVListImpl>();
-        var checkModel = mOptionsView.getPlotCheckModel();
-
-        if (checkModel.isChecked(RenderComponent.TRACE_1D) && p.getDimension() == BDimension._1d) {
-            plotTrace1d(p, position, mapObjects);
-        } else if (checkModel.isChecked(RenderComponent.TRACE_2D) && p.getDimension() == BDimension._2d) {
-            plotTrace2d(p, position, mapObjects);
-        } else if (checkModel.isChecked(RenderComponent.TRACE_3D) && p.getDimension() == BDimension._3d) {
-            plotTrace3d(p, position, mapObjects);
-        }
-
-        return mapObjects;
-    }
-
-    private void plotTrace1d(BTopoControlPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
-    }
-
-    private void plotTrace2d(BTopoControlPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
-    }
-
-    private Position[] plot3dOffsetPole(BTopoControlPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
-        return mPointToPositionMap.computeIfAbsent(p, k -> {
-            var ZERO_SIZE = 0.1;
-            var END_SIZE = 0.5;
-            var startPosition = WWHelper.positionFromPosition(position, Z_OFFSET);
-            var ellipsoid = new Ellipsoid(startPosition, ZERO_SIZE, ZERO_SIZE, ZERO_SIZE);
-            mapObjects.add(ellipsoid);
-            mLayer.addRenderable(ellipsoid);
-
-            var groundPath = new Path(position, startPosition);
-            mapObjects.add(groundPath);
-            mLayer.addRenderable(groundPath);
-            var endPosition = startPosition;
-            var o = p.ext().getObservationsFiltered().getLast();
-            if (o.ext().getDeltaZ() != null) {
-                var x = p.getZeroX() + MathHelper.convertDoubleToDouble(o.ext().getDeltaX()) * SCALE_FACTOR;
-                var y = p.getZeroY() + MathHelper.convertDoubleToDouble(o.ext().getDeltaY()) * SCALE_FACTOR;
-                var z = p.getZeroZ() + MathHelper.convertDoubleToDouble(o.ext().getDeltaZ()) * SCALE_FACTOR + Z_OFFSET;
-
-                var wgs84 = MOptions.getInstance().getMapCooTrans().toWgs84(y, x);
-                endPosition = Position.fromDegrees(wgs84.getY(), wgs84.getX(), z);
-            }
-
-            var endEllipsoid = new Ellipsoid(endPosition, END_SIZE, END_SIZE, END_SIZE);
-            mapObjects.add(endEllipsoid);
-            mLayer.addRenderable(endEllipsoid);
-
-            return new Position[]{startPosition, endPosition};
-        });
-    }
-
-    private void plotTrace3d(BTopoControlPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
-        var positions = plot3dOffsetPole(p, position, mapObjects);
-        if (ObjectUtils.anyNull(p.getZeroX(), p.getZeroY(), p.getZeroZ())) {
-            return;
-        }
-
-        var collectedNodes = p.ext().getObservationsFiltered().stream()
-                .map(o -> {
-                    var x = p.getZeroX() + MathHelper.convertDoubleToDouble(o.ext().getDeltaX()) * SCALE_FACTOR;
-                    var y = p.getZeroY() + MathHelper.convertDoubleToDouble(o.ext().getDeltaY()) * SCALE_FACTOR;
-                    var z = p.getZeroZ() + MathHelper.convertDoubleToDouble(o.ext().getDeltaZ()) * SCALE_FACTOR + Z_OFFSET;
-
-                    var wgs84 = MOptions.getInstance().getMapCooTrans().toWgs84(y, x);
-                    var p0 = Position.fromDegrees(wgs84.getY(), wgs84.getX(), z);
-
-                    return p0;
-                }).toList();
-
-        var nodes = new ArrayList<Position>(collectedNodes);
-        nodes.add(0, positions[0]);
-        var path = new Path(nodes);
-        path.setShowPositions(true);
-        mapObjects.add(path);
-        mLayer.addRenderable(path);
-    }
-
-    private ArrayList<AVListImpl> plotVector(BTopoControlPoint p, Position position) {
-        var mapObjects = new ArrayList<AVListImpl>();
-        var checkModel = mOptionsView.getPlotCheckModel();
-
-        if (checkModel.isChecked(RenderComponent.VECTOR_1D) && p.getDimension() == BDimension._1d) {
-            plotVector1d(p, position, mapObjects);
-        } else if (checkModel.isChecked(RenderComponent.VECTOR_2D) && p.getDimension() == BDimension._2d) {
-            plotVector2d(p, position, mapObjects);
-        } else if (checkModel.isChecked(RenderComponent.VECTOR_3D) && p.getDimension() == BDimension._3d) {
-            plotVector3d(p, position, mapObjects);
-        }
-
-        return mapObjects;
-    }
-
-    private void plotVector1d(BTopoControlPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
-    }
-
-    private void plotVector2d(BTopoControlPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
-    }
-
-    private void plotVector3d(BTopoControlPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
-        var positions = plot3dOffsetPole(p, position, mapObjects);
-        var startPosition = positions[0];
-        var endPosition = positions[1];
-
-        var path = new Path(startPosition, endPosition);
-        mapObjects.add(path);
-        mLayer.addRenderable(path);
-
-        //plot dZ
-        var endDeltaZ = Position.fromDegrees(startPosition.latitude.degrees, startPosition.longitude.degrees, endPosition.getAltitude());
-        var pathDeltaZ = new Path(startPosition, endDeltaZ);
-        var sa = new BasicShapeAttributes();
-        sa.setDrawOutline(true);
-        sa.setOutlineWidth(10);
-        pathDeltaZ.setAttributes(sa);
-        mapObjects.add(pathDeltaZ);
-        mLayer.addRenderable(pathDeltaZ);
-
-        //plot dR
-        var pathDeltaR = new Path(endDeltaZ, endPosition);
-        var sar = new BasicShapeAttributes();
-        sar.setDrawOutline(true);
-        sar.setOutlineWidth(10);
-        pathDeltaR.setAttributes(sar);
-        mapObjects.add(pathDeltaR);
-        mLayer.addRenderable(pathDeltaR);
-    }
 }

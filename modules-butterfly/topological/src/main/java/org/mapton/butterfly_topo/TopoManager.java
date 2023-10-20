@@ -107,7 +107,7 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
             var timefilteredObservations = p.ext().getObservationsRaw().stream()
                     .filter(o -> getTemporalManager().isValid(o.getDate()))
                     .toList();
-            p.ext().setObservationsCalculated(new ArrayList<>(timefilteredObservations));
+            p.ext().setObservationsFiltered(new ArrayList<>(timefilteredObservations));
 
             var measCountStats = new LinkedHashMap<String, Integer>();
             p.ext().setMeasurementCountStats(measCountStats);

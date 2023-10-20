@@ -106,12 +106,12 @@ public enum TopoLabelBy {
     }),
     MEAS_COUNT_SELECTION(Strings.CAT_MEAS, Strings.MEAS_COUNT_SELECTION, p -> {
         return "%d".formatted(
-                p.ext().getNumOfObservationsTimeFiltered()
+                p.ext().getNumOfObservationsFiltered()
         );
     }),
     MEAS_COUNT_SELECTION_ALL(Strings.CAT_MEAS, Strings.MEAS_COUNT, p -> {
         return "%d / %d".formatted(
-                p.ext().getNumOfObservationsTimeFiltered(),
+                p.ext().getNumOfObservationsFiltered(),
                 p.ext().getNumOfObservations()
         );
     }),

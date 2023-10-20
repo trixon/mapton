@@ -41,9 +41,10 @@ public class TopoPropertiesBuilder extends PropertiesBuilder<BTopoControlPoint> 
         //TODO Add some gauges at the top: Alarm, mätbehov...
         var propertyMap = new LinkedHashMap<String, Object>();
         var cat1 = Dict.BASIC.toString();
+        propertyMap.put(getCatKey(cat1, Dict.NAME.toString()), p.getName());
         propertyMap.put(getCatKey(cat1,
-                StringHelper.join(SEPARATOR, "", Dict.NAME.toString(), Dict.STATUS.toString())),
-                StringHelper.join(SEPARATOR, "", p.getName(), p.getStatus()));
+                StringHelper.join(SEPARATOR, "", Dict.STATUS.toString(), SDict.DIMENSION.toString())),
+                StringHelper.join(SEPARATOR, "", p.getStatus(), p.getDimension().getName()));
         propertyMap.put(getCatKey(cat1,
                 StringHelper.join(SEPARATOR, "", Dict.GROUP.toString(), Dict.CATEGORY.toString())),
                 StringHelper.join(SEPARATOR, "", p.getGroup(), p.getCategory()));
@@ -54,7 +55,7 @@ public class TopoPropertiesBuilder extends PropertiesBuilder<BTopoControlPoint> 
         propertyMap.put(getCatKey(cat1, Dict.Geometry.PLANE.toString()), AlarmHelper.getInstance().getLimitsAsString(BComponent.PLANE, p));
         propertyMap.put(getCatKey(cat1, SDict.FREQUENCY.toString()), p.getFrequency());
         var measurements = "%d / %d    (%d - %d)".formatted(
-                p.ext().getNumOfObservationsTimeFiltered(),
+                p.ext().getNumOfObservationsFiltered(),
                 p.ext().getNumOfObservations(),
                 p.ext().getObservationsRaw().stream().filter(obs -> obs.isZeroMeasurement()).count(),
                 p.ext().getObservationsRaw().stream().filter(obs -> obs.isReplacementMeasurement()).count()
