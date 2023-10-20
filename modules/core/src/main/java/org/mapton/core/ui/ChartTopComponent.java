@@ -15,12 +15,15 @@
  */
 package org.mapton.core.ui;
 
+import java.awt.BorderLayout;
+import java.util.concurrent.Callable;
 import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.BorderPane;
+import javax.swing.JComponent;
 import org.mapton.api.LineChartX;
 import org.mapton.api.MChartLine;
 import org.mapton.api.MKey;
@@ -29,10 +32,10 @@ import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBar;
 import org.mapton.core.api.MTopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
+import org.openide.util.Exceptions;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.GlobalStateChangeEvent;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 
@@ -98,13 +101,13 @@ public final class ChartTopComponent extends MTopComponent {
         }
 
         private void initListeners() {
-            Mapton.getGlobalState().addListener((GlobalStateChangeEvent evt) -> {
+            Mapton.getGlobalState().addListener(gsce -> {
                 Platform.runLater(() -> {
-                    refresh(evt.getValue());
+                    refresh(gsce.getValue());
                 });
             }, MKey.CHART);
 
-            Mapton.getGlobalState().addListener((GlobalStateChangeEvent evt) -> {
+            Mapton.getGlobalState().addListener(gsce -> {
                 Platform.runLater(() -> {
                     setCenter(mProgressBar);
                 });
@@ -116,23 +119,44 @@ public final class ChartTopComponent extends MTopComponent {
                 return;
             }
 
-            Node centerObject = null;
+            Object centerObject = null;
 
             if (o == null) {
                 centerObject = mPlaceholderLabel;
             } else if (o instanceof MChartLine chartLine) {
                 centerObject = new LineChartX(chartLine).getNode();
+            } else if (o instanceof JComponent component) {
+                centerObject = component;
             } else if (o instanceof Node node) {
                 centerObject = node;
+            } else if (o instanceof Callable callable) {
+                centerObject = mProgressBar;
+                new Thread(() -> {
+                    try {
+                        Mapton.getGlobalState().put(MKey.CHART, callable.call());
+                    } catch (Exception ex) {
+                        Exceptions.printStackTrace(ex);
+                    }
+                }).start();
             } else {
                 centerObject = mInvalidPlaceholderLabel;
             }
 
-            setCenter(centerObject);
+            if (centerObject instanceof Node node) {
+                resetFx();
+                setCenter(node);
+                if (!centerObject.getClass().getPackageName().equals("io.fair_acc.chartfx")) {
+                    FxHelper.loadDarkTheme(node.getScene());
+                }
 
-            if (!centerObject.getClass().getPackageName().equals("de.gsi.chart")) {
-                FxHelper.loadDarkTheme(centerObject.getScene());
+            } else if (centerObject instanceof JComponent component) {
+                removeAll();
+                add(component, BorderLayout.CENTER);
+                repaint();
+                revalidate();
+            } else {
             }
+
         }
     }
 }

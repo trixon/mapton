@@ -35,7 +35,8 @@ import se.trixon.almond.util.CollectionHelper;
  */
 public class TopoManager extends BaseManager<BTopoControlPoint> {
 
-    private final TopoPropertiesBuilder mTopoPropertiesBuilder = new TopoPropertiesBuilder();
+    private final TopoChartBuilder mChartBuilder = new TopoChartBuilder();
+    private final TopoPropertiesBuilder mPropertiesBuilder = new TopoPropertiesBuilder();
 
     public static TopoManager getInstance() {
         return TopoManagerHolder.INSTANCE;
@@ -46,8 +47,13 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
     }
 
     @Override
+    public Object getObjectChart(BTopoControlPoint selectedObject) {
+        return mChartBuilder.build(selectedObject);
+    }
+
+    @Override
     public Object getObjectProperties(BTopoControlPoint selectedObject) {
-        return mTopoPropertiesBuilder.build(selectedObject);
+        return mPropertiesBuilder.build(selectedObject);
     }
 
     @Override

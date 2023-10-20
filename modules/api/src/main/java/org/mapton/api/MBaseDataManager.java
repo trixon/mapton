@@ -128,6 +128,10 @@ public abstract class MBaseDataManager<T> {
         return null;
     }
 
+    public Object getObjectChart(T t) {
+        return Boolean.FALSE;
+    }
+
     public Object getObjectProperties(T t) {
         return Boolean.FALSE;
     }
@@ -297,6 +301,11 @@ public abstract class MBaseDataManager<T> {
             var objectProperties = getObjectProperties(n);
             if (objectProperties != Boolean.FALSE) {
                 Mapton.getGlobalState().put(MKey.OBJECT_PROPERTIES, objectProperties);
+            }
+
+            var objectChart = getObjectChart(n);
+            if (objectChart != Boolean.FALSE) {
+                Mapton.getGlobalState().put(MKey.CHART, objectChart);
             }
 
             var mapIndicator = getMapIndicator(n);

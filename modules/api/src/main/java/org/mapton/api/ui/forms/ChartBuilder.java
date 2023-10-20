@@ -20,17 +20,11 @@ package org.mapton.api.ui.forms;
  * @author Patrik Karlström
  * @param <T>
  */
-public abstract class PropertiesBuilder<T> {
+public abstract class ChartBuilder<T> {
 
-    public static final String SEPARATOR = " :: ";
-
-    public PropertiesBuilder() {
+    public ChartBuilder() {
     }
 
     public abstract Object build(T selectedObject);
-
-    public String getCatKey(String category, String value) {
-        return "%s#%s".formatted(category, value);
-    }
 
 }

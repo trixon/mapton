@@ -15,10 +15,35 @@
  */
 package org.mapton.ce_jfreechart.api;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import org.jfree.data.time.Day;
+import org.jfree.data.time.Minute;
+
 /**
  *
  * @author Patrik Karlström
  */
 public class ChartHelper {
 
+    public ChartHelper() {
+    }
+
+    public Day convertToDay(LocalDate ld) {
+        return new Day(
+                ld.getDayOfMonth(),
+                ld.getMonthValue(),
+                ld.getYear()
+        );
+    }
+
+    public Minute convertToMinute(LocalDateTime ldt) {
+        return new Minute(
+                ldt.getMinute(),
+                ldt.getHour(),
+                ldt.getDayOfMonth(),
+                ldt.getMonthValue(),
+                ldt.getYear()
+        );
+    }
 }
