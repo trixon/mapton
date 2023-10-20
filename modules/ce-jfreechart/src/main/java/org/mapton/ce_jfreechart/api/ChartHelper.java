@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_format.types;
+package org.mapton.ce_jfreechart.api;
 
 /**
  *
  * @author Patrik Karlström
  */
-public enum BComponent {
-    PLANE, HEIGHT;
+public class ChartHelper {
+
 }

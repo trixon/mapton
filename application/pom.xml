@@ -168,7 +168,10 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>ce-chartfx</artifactId>
-            <version>${mapton.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>ce-jfreechart</artifactId>
         </dependency>
 
         <!--Mapton/Search engines-->
@@ -361,6 +364,12 @@
                 <dependency>
                     <groupId>${project.groupId}</groupId>
                     <artifactId>addon-xkcd</artifactId>
+                    <version>${project.version}</version>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>ce-chartfx</artifactId>
                     <version>${project.version}</version>
                     <scope>provided</scope>
                 </dependency>

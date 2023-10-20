@@ -235,6 +235,7 @@
 
         <!--Chart engines-->
         <module>modules/ce-chartfx</module>
+        <module>modules/ce-jfreechart</module>
 
         <!--Search engines-->
         <module>modules/se-bookmarks</module>
@@ -348,6 +349,11 @@
             <dependency>
                 <groupId>org.mapton</groupId>
                 <artifactId>ce-chartfx</artifactId>
+                <version>${mapton.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mapton</groupId>
+                <artifactId>ce-jfreechart</artifactId>
                 <version>${mapton.version}</version>
             </dependency>
             
@@ -559,7 +565,7 @@
 
     <properties>
         <netbeans.version>RELEASE190</netbeans.version>
-        <netbeans.compile.on.save>all</netbeans.compile.on.save>
+        <netbeans.compile.on.save>none</netbeans.compile.on.save>
         <brandingToken>mapton</brandingToken>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <almond.version>17.0.0-SNAPSHOT</almond.version>
