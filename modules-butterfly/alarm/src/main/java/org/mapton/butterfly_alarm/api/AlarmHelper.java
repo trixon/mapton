@@ -42,9 +42,17 @@ public class AlarmHelper {
         var alarmP = mManager.getAllItemsMap().get(controlPoint.getNameOfAlarmPlane());
 
         if (component == BComponent.HEIGHT) {
-            result = StringHelper.join(" // ", "-", alarmH.getLimit1(), alarmH.getLimit2());
+            if (alarmH != null) {
+                result = StringHelper.join(" // ", "-", alarmH.getLimit1(), alarmH.getLimit2());
+            } else {
+                System.out.println("Alarm H not found: %s, %s".formatted(controlPoint.getName(), controlPoint.getNameOfAlarmHeight()));
+            }
         } else if (controlPoint.getDimension() != BDimension._1d) {
-            result = StringHelper.join(" // ", "-", alarmP.getLimit1(), alarmP.getLimit2());
+            if (alarmP != null) {
+                result = StringHelper.join(" // ", "-", alarmP.getLimit1(), alarmP.getLimit2());
+            } else {
+                System.out.println("Alarm P not found: %s, %s".formatted(controlPoint.getName(), controlPoint.getNameOfAlarmPlane()));
+            }
         }
 
         return result;

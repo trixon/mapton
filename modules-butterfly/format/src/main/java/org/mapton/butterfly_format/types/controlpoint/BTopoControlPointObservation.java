@@ -113,6 +113,28 @@ public class BTopoControlPointObservation extends BBaseControlPointObservation {
             }
         }
 
+        public Double getDelta2d() {
+            Double deltaX = getDeltaX();
+            Double deltaY = getDeltaY();
+
+            if (ObjectUtils.allNotNull(deltaX, deltaY)) {
+                return Math.hypot(deltaX, deltaY);
+            } else {
+                return null;
+            }
+        }
+
+        public Double getDelta3d() {
+            Double delta2d = getDelta2d();
+            Double deltaZ = getDeltaZ();
+
+            if (ObjectUtils.allNotNull(delta2d, deltaZ)) {
+                return Math.hypot(delta2d, deltaZ);
+            } else {
+                return null;
+            }
+        }
+
         public Double getDeltaX() {
             return mDeltaX;
         }
