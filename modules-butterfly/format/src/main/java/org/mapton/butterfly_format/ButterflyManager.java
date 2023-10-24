@@ -43,6 +43,7 @@ public class ButterflyManager {
 
     public void load(File path) {
         butterfly.load(path);
+        butterfly.postLoad();
     }
 
     private static class Holder {

@@ -113,6 +113,10 @@ public class TopoLayerBundle extends LayerBundle {
             }
         });
 
+        mOptionsView.colorByProperty().addListener((p, o, n) -> {
+            mAttributeManager.setColorBy(n);
+            repaint();
+        });
         mOptionsView.labelByProperty().addListener((p, o, n) -> {
             repaint();
         });
@@ -256,6 +260,7 @@ public class TopoLayerBundle extends LayerBundle {
     private PointPlacemark plotPin(BTopoControlPoint p, Position position, PointPlacemark labelPlacemark) {
         var attrs = new PointPlacemarkAttributes(mAttributeManager.getPinAttributes());
         attrs.setImageColor(mTopoConfig.getColor(p));
+        attrs.setImageColor(mAttributeManager.getAlarmColorHeight(p));//FIXME
 
         var placemark = new PointPlacemark(position);
         placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_format.io;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.csv.CsvGenerator;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
@@ -58,6 +59,7 @@ public abstract class ImportFromCsv<T> {
                     .enable(CsvGenerator.Feature.ALWAYS_QUOTE_STRINGS)
                     .addModule(new JavaTimeModule())
                     .addModule(simpleModule)
+                    .configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true)
                     .build();
 
             var schema = mapper.schemaFor(classOfT).withHeader().withQuoteChar('"');

@@ -41,6 +41,7 @@ public class ComponentRenderer {
     private final HashMap<BTopoControlPoint, Position[]> mPointToPositionMap = new HashMap<>();
     private final RenderableLayer mLayer;
     private final IndexedCheckModel<RenderComponent> mCheckModel;
+    private final TopoAttributeManager mAttributeManager = TopoAttributeManager.getInstance();
 
     public ComponentRenderer(RenderableLayer layer, IndexedCheckModel<RenderComponent> checkModel) {
         mLayer = layer;
@@ -160,6 +161,9 @@ public class ComponentRenderer {
             }
 
             var endEllipsoid = new Ellipsoid(endPosition, END_SIZE, END_SIZE, END_SIZE);
+            var sa = new BasicShapeAttributes();
+            sa.setInteriorMaterial(mAttributeManager.getAlarmMaterial(p));
+            endEllipsoid.setAttributes(sa);
             mapObjects.add(endEllipsoid);
             mLayer.addRenderable(endEllipsoid);
 

@@ -69,9 +69,14 @@ class TopoListCell extends ListCell<BTopoControlPoint> {
         var desc1 = "%s: %s".formatted(StringUtils.defaultIfBlank(p.getCategory(), "NOVALUE"), alarms);
 
         var dateLatest = StringHelper.toString(p.getDateLatest() == null ? null : p.getDateLatest().toLocalDate(), "NOVALUE");
-        var desc2 = dateLatest + " TODO: geometry";
+        var lastO = p.ext().getObservationFilteredLast();
+
+        var levelH = p.ext().getAlarmLevelHeight(lastO);
+        var levelP = p.ext().getAlarmLevelPlane(lastO);
+        var desc2 = "%s %d %d".formatted(dateLatest + " TODO: geometry", levelH, levelP);
 
         var dateRolling = StringHelper.toString(p.getDateRolling(), "NOVALUE");
+
         String deltaRolling = p.ext().deltaRolling().getDelta(3);
         var desc3 = "%s: %s".formatted(dateRolling, deltaRolling);
 

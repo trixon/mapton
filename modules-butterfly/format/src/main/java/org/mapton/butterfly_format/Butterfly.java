@@ -75,4 +75,19 @@ public class Butterfly {
         new ImportFromCsv<BHydroControlPointObservation>(BHydroControlPointObservation.class) {
         }.load(new File(sourceDir, "hydroControlPointsObservations.csv"), mHydroControlPointsObservations);
     }
+
+    public void postLoad() {
+        for (var a : mAlarms) {
+            a.setButterfly(this);
+            a.ext().populateRanges();
+        }
+
+        for (var p : mTopoControlPoints) {
+            p.setButterfly(this);
+        }
+    }
+
+    public class Ext {
+
+    }
 }

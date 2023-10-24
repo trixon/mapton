@@ -17,6 +17,7 @@ package org.mapton.butterfly_topo;
 
 import java.util.LinkedHashMap;
 import java.util.stream.Stream;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.ComboBox;
@@ -30,6 +31,7 @@ import javafx.util.StringConverter;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.CheckComboBox;
 import org.controlsfx.control.IndexedCheckModel;
+import org.mapton.butterfly_topo.shared.ColorBy;
 import org.mapton.butterfly_topo.shared.PointBy;
 import org.mapton.worldwind.api.MOptionsView;
 import se.trixon.almond.util.Dict;
@@ -44,9 +46,10 @@ import se.trixon.almond.util.fx.session.SelectionModelSession;
  */
 public class TopoOptionsView extends MOptionsView<TopoLayerBundle> {
 
+    private final ComboBox<ColorBy> mColorComboBox = new ComboBox<>();
+    private final SelectionModelSession mColorSelectionModelSession = new SelectionModelSession(mColorComboBox.getSelectionModel());
     private final CheckComboBox<RenderComponent> mComponentCheckComboBox = new CheckComboBox<>();
     private final CheckModelSession mComponentCheckModelSession = new CheckModelSession(mComponentCheckComboBox);
-
     private final CheckComboBox<Direction> mIndicatorCheckComboBox = new CheckComboBox<>();
     private final CheckModelSession mIndicatorCheckModelSession = new CheckModelSession(mIndicatorCheckComboBox);
     private final SimpleStringProperty mLabelByIdProperty = new SimpleStringProperty("NAME");
@@ -60,6 +63,10 @@ public class TopoOptionsView extends MOptionsView<TopoLayerBundle> {
         createUI();
         initListeners();
         initSession();
+    }
+
+    public ColorBy getColorBy() {
+        return mColorComboBox.valueProperty().get();
     }
 
     public IndexedCheckModel<RenderComponent> getComponentCheckModel() {
@@ -82,9 +89,15 @@ public class TopoOptionsView extends MOptionsView<TopoLayerBundle> {
         return mLabelByProperty;
     }
 
+    public ObjectProperty<ColorBy> colorByProperty() {
+        return mColorComboBox.valueProperty();
+    }
+
     private void createUI() {
         mPointComboBox.getItems().setAll(PointBy.values());
         mPointComboBox.setValue(PointBy.AUTO);
+        mColorComboBox.getItems().setAll(ColorBy.values());
+        mColorComboBox.setValue(ColorBy.STYLE);
 
         mComponentCheckComboBox.setTitle(Dict.COMPONENT.toString());
         mComponentCheckComboBox.setShowCheckedCount(true);
@@ -127,10 +140,13 @@ public class TopoOptionsView extends MOptionsView<TopoLayerBundle> {
 
         populateLabelMenuButton();
         var pointLabel = new Label(Dict.Geometry.POINT.toString());
+        var colorLabel = new Label(Dict.COLOR.toString());
         var labelLabel = new Label(Dict.LABEL.toString());
         var box = new VBox(
                 pointLabel,
                 mPointComboBox,
+                colorLabel,
+                mColorComboBox,
                 labelLabel,
                 mLabelMenuButton,
                 mIndicatorCheckComboBox,
@@ -148,6 +164,7 @@ public class TopoOptionsView extends MOptionsView<TopoLayerBundle> {
         });
 
         mPointComboBox.valueProperty().addListener(getChangeListener());
+        mColorComboBox.valueProperty().addListener(getChangeListener());
 
         Stream.of(
                 mIndicatorCheckComboBox,
@@ -157,6 +174,7 @@ public class TopoOptionsView extends MOptionsView<TopoLayerBundle> {
 
     private void initSession() {
         getSessionManager().register("options.pointBy", mPointSelectionModelSession.selectedIndexProperty());
+        getSessionManager().register("options.colorBy", mColorSelectionModelSession.selectedIndexProperty());
         getSessionManager().register("options.labelBy", mLabelByIdProperty);
         getSessionManager().register("options.checkedPlot", mComponentCheckModelSession.checkedStringProperty());
         getSessionManager().register("options.checkedIndicators", mIndicatorCheckModelSession.checkedStringProperty());

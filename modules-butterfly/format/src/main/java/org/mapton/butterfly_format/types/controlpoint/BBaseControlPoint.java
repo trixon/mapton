@@ -18,12 +18,13 @@ package org.mapton.butterfly_format.types.controlpoint;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import org.mapton.butterfly_format.types.BBase;
 
 /**
  *
  * @author Patrik Karlström <patrik@trixon.se>
  */
-public abstract class BBaseControlPoint {
+public abstract class BBaseControlPoint extends BBase {
 
     private String category;
     private String comment;

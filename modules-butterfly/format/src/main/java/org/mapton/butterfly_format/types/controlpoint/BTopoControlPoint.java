@@ -23,6 +23,9 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.mapton.butterfly_format.types.BAlarm;
+import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
 import static org.mapton.butterfly_format.types.BDimension._1d;
 import static org.mapton.butterfly_format.types.BDimension._2d;
@@ -148,6 +151,41 @@ public class BTopoControlPoint extends BBaseControlPoint {
             return deltaZero;
         }
 
+        public BAlarm getAlarm(BComponent component) {
+            var alarm = getButterfly().getAlarms().stream()
+                    .filter(a -> {
+                        if (component == BComponent.HEIGHT) {
+                            return StringUtils.equals(a.getId(), nameOfAlarmHeight);
+                        } else {
+                            return StringUtils.equals(a.getId(), nameOfAlarmPlane);
+                        }
+                    }).findAny().orElse(null);
+
+            return alarm;
+        }
+
+        public int getAlarmLevel(BComponent component, BTopoControlPointObservation o) {
+            var alarm = getAlarm(component);
+
+            if (ObjectUtils.anyNull(alarm, o)) {
+                return -1;
+            } else {
+                return alarm.ext().getLevel(component == BComponent.HEIGHT ? o.ext().getDeltaZ() : o.ext().getDelta2d());
+            }
+        }
+
+        public int getAlarmLevel(BTopoControlPointObservation o) {
+            return Math.max(getAlarmLevelHeight(o), getAlarmLevelPlane(o));
+        }
+
+        public int getAlarmLevelHeight(BTopoControlPointObservation o) {
+            return getAlarmLevel(BComponent.HEIGHT, o);
+        }
+
+        public int getAlarmLevelPlane(BTopoControlPointObservation o) {
+            return getAlarmLevel(BComponent.PLANE, o);
+        }
+
         public long getMeasurementAge(ChronoUnit chronoUnit) {
             var latest = getDateLatest() != null ? getDateLatest().toLocalDate() : LocalDate.MIN;
 
@@ -189,14 +227,6 @@ public class BTopoControlPoint extends BBaseControlPoint {
             }
         }
 
-        public LocalDate getObservationRawFirstDate() {
-            try {
-                return getObservationRawFirst().getDate().toLocalDate();
-            } catch (Exception e) {
-                return null;
-            }
-        }
-
         public BTopoControlPointObservation getObservationFilteredLast() {
             try {
                 return getObservationsFiltered().getLast();
@@ -213,14 +243,6 @@ public class BTopoControlPoint extends BBaseControlPoint {
             }
         }
 
-        public LocalDate getObservationRawLastDate() {
-            try {
-                return getObservationRawLast().getDate().toLocalDate();
-            } catch (Exception e) {
-                return null;
-            }
-        }
-
         public BTopoControlPointObservation getObservationRawFirst() {
             try {
                 return getObservationsRaw().getFirst();
@@ -229,9 +251,25 @@ public class BTopoControlPoint extends BBaseControlPoint {
             }
         }
 
+        public LocalDate getObservationRawFirstDate() {
+            try {
+                return getObservationRawFirst().getDate().toLocalDate();
+            } catch (Exception e) {
+                return null;
+            }
+        }
+
         public BTopoControlPointObservation getObservationRawLast() {
             try {
                 return getObservationsRaw().getLast();
+            } catch (Exception e) {
+                return null;
+            }
+        }
+
+        public LocalDate getObservationRawLastDate() {
+            try {
+                return getObservationRawLast().getDate().toLocalDate();
             } catch (Exception e) {
                 return null;
             }

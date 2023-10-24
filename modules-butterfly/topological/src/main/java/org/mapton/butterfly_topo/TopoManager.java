@@ -76,6 +76,9 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
 
             for (var p : butterfly.getTopoControlPoints()) {
                 p.ext().setObservationsRaw(nameToTopoControlPointObservations.get(p.getName()));
+                for (var o : p.ext().getObservationsRaw()) {
+                    o.ext().setControlPoint(p);
+                }
             }
 
             var dates = new TreeSet<>(getAllItems().stream()

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +16,10 @@
 package org.mapton.butterfly_format.types;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import java.util.Arrays;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.Range;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  *
@@ -23,22 +27,29 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  */
 @JsonPropertyOrder({
     "id",
+    "type",
     "name",
     "description"
 })
-public class BAlarm {
+public class BAlarm extends BBase {
 
     private String description;
     private String id;
     private String limit1;
     private String limit2;
     private String limit3;
+    private final transient Ext mExt = new Ext();
     private String name;
     private String ratio1;
     private String ratio2;
     private String ratio3;
+    private String type;
 
     public BAlarm() {
+    }
+
+    public Ext ext() {
+        return mExt;
     }
 
     public String getDescription() {
@@ -77,6 +88,10 @@ public class BAlarm {
         return ratio3;
     }
 
+    public String getType() {
+        return type;
+    }
+
     public void setDescription(String description) {
         this.description = description;
     }
@@ -113,4 +128,102 @@ public class BAlarm {
         this.ratio3 = ratio3;
     }
 
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public class Ext {
+
+        private Range<Double> mRange0 = null;
+        private Range<Double> mRange1 = null;
+        private Range<Double> mRange2 = null;
+
+        public Ext() {
+        }
+
+        public int getLevel(Double value) {
+            if (ObjectUtils.anyNull(value, mRange0, mRange1)) {
+                return -1;
+            } else if (mRange0.contains(value)) {
+                return 0;
+            } else if (mRange1.contains(value)) {
+                return 1;
+            } else {
+                return 2;
+            }
+        }
+
+        public void populateRanges() {
+            String l1s = getLimit1();
+            String l2s = getLimit2();
+            String l3s = getLimit3();
+
+            switch (getType()) {
+                case "+" -> {
+                    if (StringUtils.isNotBlank(l1s)) {
+                        mRange0 = Range.of(Double.MIN_VALUE, Double.valueOf(l1s));
+
+                        if (StringUtils.isNotBlank(l2s)) {
+                            mRange1 = Range.of(Double.MIN_VALUE, Double.valueOf(l2s));
+
+                            if (StringUtils.isNotBlank(l3s)) {
+                                mRange2 = Range.of(Double.MIN_VALUE, Double.valueOf(l3s));
+                            }
+                        }
+                    }
+                }
+
+                case "-" -> {
+                    if (StringUtils.isNotBlank(l1s)) {
+                        mRange0 = Range.of(Double.valueOf(l1s), Double.MAX_VALUE);
+
+                        if (StringUtils.isNotBlank(l2s)) {
+                            mRange1 = Range.of(Double.valueOf(l2s), Double.MAX_VALUE);
+
+                            if (StringUtils.isNotBlank(l3s)) {
+                                mRange2 = Range.of(Double.valueOf(l3s), Double.MAX_VALUE);
+                            }
+                        }
+                    }
+                }
+
+                case ":" -> {
+                    if (StringUtils.isNotBlank(l1s)) {
+                        var values1 = Arrays.stream(StringUtils.split(l1s, "..")).map(k -> Double.valueOf(k)).toArray(Double[]::new);
+                        mRange0 = Range.of(values1[0], values1[1]);
+
+                        if (StringUtils.isNotBlank(l2s)) {
+                            var values2 = Arrays.stream(StringUtils.split(l2s, "..")).map(k -> Double.valueOf(k)).toArray(Double[]::new);
+                            mRange1 = Range.of(values2[0], values2[1]);
+
+                            if (StringUtils.isNotBlank(l3s)) {
+                                var values3 = Arrays.stream(StringUtils.split(l3s, "..")).map(k -> Double.valueOf(k)).toArray(Double[]::new);
+                                mRange2 = Range.of(values3[0], values3[1]);
+                            }
+                        }
+                    }
+                }
+
+                case "±" -> {
+                    if (StringUtils.isNotBlank(l1s)) {
+                        var lim1 = Double.parseDouble(StringUtils.substringAfter(l1s, "±"));
+                        mRange0 = Range.of(-lim1, lim1);
+
+                        if (StringUtils.isNotBlank(l2s)) {
+                            var lim2 = Double.parseDouble(StringUtils.substringAfter(l2s, "±"));
+                            mRange1 = Range.of(-lim2, lim2);
+
+                            if (StringUtils.isNotBlank(l3s)) {
+                                var lim3 = Double.parseDouble(StringUtils.substringAfter(l3s, "±"));
+                                mRange2 = Range.of(-lim3, lim3);
+                            }
+                        }
+                    }
+                }
+                default -> {
+                    throw new AssertionError();
+                }
+            }
+        }
+    }
 }

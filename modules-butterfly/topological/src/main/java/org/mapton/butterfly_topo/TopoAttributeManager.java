@@ -20,6 +20,9 @@ import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
+import java.awt.Color;
+import org.mapton.butterfly_format.types.controlpoint.BTopoControlPoint;
+import org.mapton.butterfly_topo.shared.ColorBy;
 
 /**
  *
@@ -27,17 +30,53 @@ import gov.nasa.worldwind.render.PointPlacemarkAttributes;
  */
 public class TopoAttributeManager {
 
+    private final Color[] mAlarmColors = new Color[]{Color.BLUE, Color.GREEN, Color.YELLOW, Color.RED};
+    private final Material[] mAlarmMaterials = new Material[]{Material.BLUE, Material.GREEN, Material.YELLOW, Material.RED};
+
+    private ColorBy mColorBy;
+
     private BasicShapeAttributes[] mIndicatorNeedAttributes;
-    private final BasicShapeAttributes mSymbolAttributes = new BasicShapeAttributes();
     private PointPlacemarkAttributes mLabelPlacemarkAttributes;
     private PointPlacemarkAttributes mPinAttributes;
+    private final BasicShapeAttributes mSymbolAttributes = new BasicShapeAttributes();
+
+    public static TopoAttributeManager getInstance() {
+        return Holder.INSTANCE;
+    }
 
     private TopoAttributeManager() {
         initAttributes();
     }
 
-    public static TopoAttributeManager getInstance() {
-        return Holder.INSTANCE;
+//    public Color getAlarmColor(BTopoControlPoint p) {
+//        return mAlarmColors[1 + p.ext().getAlarmLevelPlane(p.ext().getObservationFilteredLast())];
+//    }
+    public Color getAlarmColor(BTopoControlPoint p) {
+        return mAlarmColors[1 + p.ext().getAlarmLevel(p.ext().getObservationFilteredLast())];
+    }
+
+    public Color getAlarmColorHeight(BTopoControlPoint p) {
+        return mAlarmColors[1 + p.ext().getAlarmLevelHeight(p.ext().getObservationFilteredLast())];
+    }
+
+    public Color getAlarmColorPlane(BTopoControlPoint p) {
+        return mAlarmColors[1 + p.ext().getAlarmLevelPlane(p.ext().getObservationFilteredLast())];
+    }
+
+    public Material getAlarmMaterial(BTopoControlPoint p) {
+        return mAlarmMaterials[1 + p.ext().getAlarmLevel(p.ext().getObservationFilteredLast())];
+    }
+
+    public Material getAlarmMaterialHeight(BTopoControlPoint p) {
+        return mAlarmMaterials[1 + p.ext().getAlarmLevelHeight(p.ext().getObservationFilteredLast())];
+    }
+
+    public Material getAlarmMaterialPlane(BTopoControlPoint p) {
+        return mAlarmMaterials[1 + p.ext().getAlarmLevelPlane(p.ext().getObservationFilteredLast())];
+    }
+
+    public ColorBy getColorBy() {
+        return mColorBy;
     }
 
     public BasicShapeAttributes[] getIndicatorNeedAttributes() {
@@ -54,6 +93,10 @@ public class TopoAttributeManager {
 
     public BasicShapeAttributes getSymbolAttributes() {
         return mSymbolAttributes;
+    }
+
+    public void setColorBy(ColorBy colorBy) {
+        this.mColorBy = colorBy;
     }
 
     private void initAttributes() {
