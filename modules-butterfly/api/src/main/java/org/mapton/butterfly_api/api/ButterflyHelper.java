@@ -32,7 +32,7 @@ public class ButterflyHelper {
     };
     private static final javafx.scene.paint.Color[] mAlarmColorsFx = new javafx.scene.paint.Color[]{
         javafx.scene.paint.Color.BLUE,
-        javafx.scene.paint.Color.GREEN,
+        javafx.scene.paint.Color.LIGHTGREEN,
         javafx.scene.paint.Color.YELLOW,
         javafx.scene.paint.Color.RED
     };

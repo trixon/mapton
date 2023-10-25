@@ -45,8 +45,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.ui.forms.FormFilter;
 import org.mapton.api.ui.forms.FormHelper;
+import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.controlpoint.BTopoControlPoint;
+import org.mapton.butterfly_topo.shared.AlarmFilter;
 import se.trixon.almond.util.BooleanHelper;
 import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
@@ -60,6 +62,7 @@ import se.trixon.almond.util.StringHelper;
 public class TopoFilter extends FormFilter<TopoManager> {
 
     private IndexedCheckModel mCategoryCheckModel;
+    private IndexedCheckModel<AlarmFilter> mAlarmCheckModel;
     private IndexedCheckModel mDateFromToCheckModel;
     private final SimpleBooleanProperty mDiffMeasAllProperty = new SimpleBooleanProperty();
     private final SimpleDoubleProperty mDiffMeasAllValueProperty = new SimpleDoubleProperty();
@@ -127,6 +130,11 @@ public class TopoFilter extends FormFilter<TopoManager> {
         return mSameAlarmProperty;
     }
 
+    public void setCheckModelAlarm(IndexedCheckModel<AlarmFilter> checkModel) {
+        mAlarmCheckModel = checkModel;
+        checkModel.getCheckedItems().addListener(mListChangeListener);
+    }
+
     public void setCheckModelCategory(IndexedCheckModel checkModel) {
         mCategoryCheckModel = checkModel;
         checkModel.getCheckedItems().addListener(mListChangeListener);
@@ -180,25 +188,26 @@ public class TopoFilter extends FormFilter<TopoManager> {
     @Override
     public void update() {
         var filteredItems = mManager.getAllItems().stream()
-                .filter(o -> StringUtils.isBlank(getFreeText()) || validateFreeText(o))
-                .filter(o -> validateDimension(o.getDimension()))
-                .filter(o -> validateStatus(o.getStatus()))
-                .filter(o -> validateGroup(o.getGroup()))
-                .filter(o -> validateCategory(o.getCategory()))
-                .filter(o -> validateMeasDisplacementAll(o))
-                .filter(o -> validateMeasDisplacementLatest(o))
-                .filter(o -> validateMeasCount(o))
-                .filter(o -> validateOperator(o.getOperator()))
-                .filter(o -> validateFrequency(o.getFrequency()))
-                .filter(o -> validateMaxAge(o.getDateLatest()))
-                .filter(o -> validateNextMeas(o))
-                .filter(o -> validateMeasWithout(o))
-                .filter(o -> validateMeasCode(o))
-                .filter(o -> validateMeasOperators(o))
-                .filter(o -> validateDateFromToHas(o.getDateValidFrom(), o.getDateValidTo()))
-                .filter(o -> validateDateFromToIs(o.getDateValidFrom(), o.getDateValidTo()))
-                .filter(o -> validateCoordinateArea(o.getLat(), o.getLon()))
-                .filter(o -> validateCoordinateRuler(o.getLat(), o.getLon()))
+                .filter(p -> StringUtils.isBlank(getFreeText()) || validateFreeText(p))
+                .filter(p -> validateDimension(p.getDimension()))
+                .filter(p -> validateStatus(p.getStatus()))
+                .filter(p -> validateGroup(p.getGroup()))
+                .filter(p -> validateCategory(p.getCategory()))
+                .filter(p -> validateAlarm(p))
+                .filter(p -> validateMeasDisplacementAll(p))
+                .filter(p -> validateMeasDisplacementLatest(p))
+                .filter(p -> validateMeasCount(p))
+                .filter(p -> validateOperator(p.getOperator()))
+                .filter(p -> validateFrequency(p.getFrequency()))
+                .filter(p -> validateMaxAge(p.getDateLatest()))
+                .filter(p -> validateNextMeas(p))
+                .filter(p -> validateMeasWithout(p))
+                .filter(p -> validateMeasCode(p))
+                .filter(p -> validateMeasOperators(p))
+                .filter(p -> validateDateFromToHas(p.getDateValidFrom(), p.getDateValidTo()))
+                .filter(p -> validateDateFromToIs(p.getDateValidFrom(), p.getDateValidTo()))
+                .filter(p -> validateCoordinateArea(p.getLat(), p.getLon()))
+                .filter(p -> validateCoordinateRuler(p.getLat(), p.getLon()))
                 .toList();
 
         if (mSameAlarmProperty.get()) {
@@ -294,6 +303,24 @@ public class TopoFilter extends FormFilter<TopoManager> {
 
     private String makeInfoDimension(ObservableList<BDimension> checkedItems) {
         return String.join(", ", checkedItems.stream().map(d -> d.getName()).toList());
+    }
+
+    private boolean validateAlarm(BTopoControlPoint p) {
+        if (mAlarmCheckModel.isEmpty()) {
+            return true;
+        }
+        var levelH = TopoHelper.getAlarmLevelHeight(p);
+        var levelP = TopoHelper.getAlarmLevelPlane(p);
+
+        for (var alarmFilter : AlarmFilter.values()) {
+            var validH = mAlarmCheckModel.isChecked(alarmFilter) && alarmFilter.getComponent() == BComponent.HEIGHT && alarmFilter.getLevel() == levelH;
+            var validP = mAlarmCheckModel.isChecked(alarmFilter) && alarmFilter.getComponent() == BComponent.PLANE && alarmFilter.getLevel() == levelP;
+            if (validH || validP) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private boolean validateCategory(String s) {

@@ -50,6 +50,18 @@ public class TopoHelper {
         return ButterflyHelper.getAlarmColorFx(getAlarmLevelPlane(p));
     }
 
+    public static int getAlarmLevel(BTopoControlPoint p) {
+        return p.ext().getAlarmLevel(p.ext().getObservationFilteredLast());
+    }
+
+    public static int getAlarmLevelHeight(BTopoControlPoint p) {
+        return p.ext().getAlarmLevelHeight(p.ext().getObservationFilteredLast());
+    }
+
+    public static int getAlarmLevelPlane(BTopoControlPoint p) {
+        return p.ext().getAlarmLevelPlane(p.ext().getObservationFilteredLast());
+    }
+
     public static Material getAlarmMaterial(BTopoControlPoint p) {
         return ButterflyHelper.getAlarmMaterial(getAlarmLevel(p));
     }
@@ -60,18 +72,6 @@ public class TopoHelper {
 
     public static Material getAlarmMaterialPlane(BTopoControlPoint p) {
         return ButterflyHelper.getAlarmMaterial(getAlarmLevelPlane(p));
-    }
-
-    private static int getAlarmLevel(BTopoControlPoint p) {
-        return p.ext().getAlarmLevel(p.ext().getObservationFilteredLast());
-    }
-
-    private static int getAlarmLevelHeight(BTopoControlPoint p) {
-        return p.ext().getAlarmLevelHeight(p.ext().getObservationFilteredLast());
-    }
-
-    private static int getAlarmLevelPlane(BTopoControlPoint p) {
-        return p.ext().getAlarmLevelPlane(p.ext().getObservationFilteredLast());
     }
 
 }

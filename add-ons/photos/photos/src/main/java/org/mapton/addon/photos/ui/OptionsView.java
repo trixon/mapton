@@ -35,8 +35,8 @@ import org.mapton.addon.photos.Options;
 import org.mapton.addon.photos.api.Mapo;
 import org.mapton.addon.photos.api.MapoSettings.SplitBy;
 import org.mapton.api.Mapton;
+import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.FxHelper;
 
 /**
@@ -45,7 +45,7 @@ import se.trixon.almond.util.fx.FxHelper;
  */
 public class OptionsView extends BorderPane {
 
-    private final ResourceBundle mBundle = SystemHelper.getBundle(OptionsView.class, "Bundle");
+    private final ResourceBundle mBundle = NbBundle.getBundle(OptionsView.class);
     private final CheckBox mDrawGapCheckBox = new CheckBox(mBundle.getString("TabPath.drawGapCheckBox"));
     private final CheckBox mDrawTrackCheckBox = new CheckBox(mBundle.getString("TabPath.drawTrackCheckBox"));
     private final ColorPicker mGapColorPicker = new ColorPicker();

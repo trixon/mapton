@@ -36,6 +36,7 @@ import org.mapton.api.ui.forms.NegPosStringConverterInteger;
 import org.mapton.butterfly_api.api.BaseFilterPopOver;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BDimension;
+import org.mapton.butterfly_topo.shared.AlarmFilter;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SDict;
 import se.trixon.almond.util.fx.FxHelper;
@@ -50,6 +51,8 @@ import se.trixon.almond.util.fx.session.SpinnerIntegerSession;
  */
 public class TopoFilterPopOver extends BaseFilterPopOver {
 
+    private final CheckComboBox<AlarmFilter> mAlarmCheckComboBox = new CheckComboBox<>();
+    private final CheckModelSession mAlarmCheckModelSession = new CheckModelSession(mAlarmCheckComboBox);
     private final CheckComboBox<String> mCategoryCheckComboBox = new CheckComboBox<>();
     private final CheckModelSession mCategoryCheckModelSession = new CheckModelSession(mCategoryCheckComboBox);
     private final double mDefaultDiffValue = 0.020;
@@ -121,6 +124,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
         mGroupCheckComboBox.getCheckModel().clearChecks();
         mCategoryCheckComboBox.getCheckModel().clearChecks();
         mOperatorCheckComboBox.getCheckModel().clearChecks();
+        mAlarmCheckComboBox.getCheckModel().clearChecks();
         mNextMeasCheckComboBox.getCheckModel().clearChecks();
         mMeasCodeCheckComboBox.getCheckModel().clearChecks();
         mHasDateFromToComboBox.getCheckModel().clearChecks();
@@ -195,6 +199,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
         mFrequencyCheckModelSession.load();
         mMaxAgeSelectionModelSession.load();
         mNextMeasCheckModelSession.load();
+        mAlarmCheckModelSession.load();
         mMeasCodeCheckModelSession.load();
         mHasDateFromToCheckModelSession.load();
         mDiffMeasLatestSpinnerSession.load();
@@ -220,6 +225,10 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
 
         mNextMeasCheckComboBox.setShowCheckedCount(true);
         mNextMeasCheckComboBox.setTitle(getBundle().getString("nextMeasCheckComboBoxTitle"));
+
+        mAlarmCheckComboBox.setShowCheckedCount(true);
+        mAlarmCheckComboBox.setTitle(SDict.ALARM.toString());
+        mAlarmCheckComboBox.getItems().setAll(AlarmFilter.values());
 
         mMeasCodeCheckComboBox.setShowCheckedCount(true);
         mMeasCodeCheckComboBox.setTitle(getBundle().getString("measCodeCheckComboBoxTitle"));
@@ -331,6 +340,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
                 mOperatorCheckComboBox,
                 mFrequencyCheckComboBox,
                 mHasDateFromToComboBox,
+                mAlarmCheckComboBox,
                 mNextMeasCheckComboBox,
                 mMaxAgeComboBox,
                 mMeasCodeCheckComboBox,
@@ -396,6 +406,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
         mFilter.setCheckModelCategory(mCategoryCheckComboBox.getCheckModel());
         mFilter.setCheckModelOperator(mOperatorCheckComboBox.getCheckModel());
         mFilter.setCheckModelNextMeas(mNextMeasCheckComboBox.getCheckModel());
+        mFilter.setCheckModelAlarm(mAlarmCheckComboBox.getCheckModel());
         mFilter.setCheckModelMeasCode(mMeasCodeCheckComboBox.getCheckModel());
         mFilter.setCheckModelDateFromTo(mHasDateFromToComboBox.getCheckModel());
         mFilter.setCheckModelFrequency(mFrequencyCheckComboBox.getCheckModel());
@@ -413,6 +424,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
         getSessionManager().register("filter.checkedGroup", mGroupCheckModelSession.checkedStringProperty());
         getSessionManager().register("filter.checkedCategory", mCategoryCheckModelSession.checkedStringProperty());
         getSessionManager().register("filter.checkedPerformers", mOperatorCheckModelSession.checkedStringProperty());
+        getSessionManager().register("filter.checkedNextAlarm", mAlarmCheckModelSession.checkedStringProperty());
         getSessionManager().register("filter.checkedNextMeas", mNextMeasCheckModelSession.checkedStringProperty());
         getSessionManager().register("filter.checkedMeasCode", mMeasCodeCheckModelSession.checkedStringProperty());
         getSessionManager().register("filter.checkedDateFromTo", mHasDateFromToCheckModelSession.checkedStringProperty());
