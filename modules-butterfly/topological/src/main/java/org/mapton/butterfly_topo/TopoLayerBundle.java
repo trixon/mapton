@@ -260,7 +260,7 @@ public class TopoLayerBundle extends LayerBundle {
     private PointPlacemark plotPin(BTopoControlPoint p, Position position, PointPlacemark labelPlacemark) {
         var attrs = new PointPlacemarkAttributes(mAttributeManager.getPinAttributes());
         attrs.setImageColor(mTopoConfig.getColor(p));
-        attrs.setImageColor(mAttributeManager.getAlarmColorHeight(p));//FIXME
+        attrs.setImageColor(TopoHelper.getAlarmColorHeightAwt(p));//FIXME
 
         var placemark = new PointPlacemark(position);
         placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);

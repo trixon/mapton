@@ -162,7 +162,7 @@ public class ComponentRenderer {
 
             var endEllipsoid = new Ellipsoid(endPosition, END_SIZE, END_SIZE, END_SIZE);
             var sa = new BasicShapeAttributes();
-            sa.setInteriorMaterial(mAttributeManager.getAlarmMaterial(p));
+            sa.setInteriorMaterial(TopoHelper.getAlarmMaterial(p));
             endEllipsoid.setAttributes(sa);
             mapObjects.add(endEllipsoid);
             mLayer.addRenderable(endEllipsoid);

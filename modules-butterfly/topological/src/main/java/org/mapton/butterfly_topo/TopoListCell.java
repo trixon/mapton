@@ -19,11 +19,17 @@ import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.Tooltip;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Polygon;
 import javafx.util.Duration;
 import org.apache.commons.lang3.StringUtils;
+import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.controlpoint.BTopoControlPoint;
 import se.trixon.almond.util.StringHelper;
+import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
@@ -31,14 +37,15 @@ import se.trixon.almond.util.StringHelper;
  */
 class TopoListCell extends ListCell<BTopoControlPoint> {
 
+    private final AlarmIndicator mAlarmIndicator = new AlarmIndicator();
     private final Label mDesc1Label = new Label();
     private final Label mDesc2Label = new Label();
     private final Label mDesc3Label = new Label();
     private final Label mDesc4Label = new Label();
     private final Label mHeaderLabel = new Label();
     private final String mStyleBold = "-fx-font-weight: bold;";
-    private VBox mVBox;
     private final Tooltip mTooltip = new Tooltip();
+    private VBox mVBox;
 
     public TopoListCell() {
         createUI();
@@ -68,13 +75,7 @@ class TopoListCell extends ListCell<BTopoControlPoint> {
 
         var desc1 = "%s: %s".formatted(StringUtils.defaultIfBlank(p.getCategory(), "NOVALUE"), alarms);
 
-        var dateLatest = StringHelper.toString(p.getDateLatest() == null ? null : p.getDateLatest().toLocalDate(), "NOVALUE");
-        var lastO = p.ext().getObservationFilteredLast();
-
-        var levelH = p.ext().getAlarmLevelHeight(lastO);
-        var levelP = p.ext().getAlarmLevelPlane(lastO);
-        var desc2 = "%s %d %d".formatted(dateLatest + " TODO: geometry", levelH, levelP);
-
+        var desc2 = StringHelper.toString(p.getDateLatest() == null ? null : p.getDateLatest().toLocalDate(), "NOVALUE");
         var dateRolling = StringHelper.toString(p.getDateRolling(), "NOVALUE");
 
         String deltaRolling = p.ext().deltaRolling().getDelta(3);
@@ -84,6 +85,7 @@ class TopoListCell extends ListCell<BTopoControlPoint> {
         String deltaZero = p.ext().deltaZero().getDelta(3);
         var desc4 = "%s: %s".formatted(dateZero, deltaZero);
 
+        mAlarmIndicator.update(p);
         mHeaderLabel.setText(header);
         mDesc1Label.setText(desc1);
         mDesc2Label.setText(desc2);
@@ -110,6 +112,9 @@ class TopoListCell extends ListCell<BTopoControlPoint> {
                 mDesc4Label
         );
 
+        mHeaderLabel.setGraphic(mAlarmIndicator);
+        mHeaderLabel.setGraphicTextGap(FxHelper.getUIScaled(8));
+
         mVBox.getChildren().stream()
                 .filter(c -> c instanceof Control)
                 .map(c -> (Control) c)
@@ -118,4 +123,37 @@ class TopoListCell extends ListCell<BTopoControlPoint> {
         mTooltip.setShowDelay(Duration.seconds(2));
     }
 
+    private class AlarmIndicator extends HBox {
+
+        private static final double SIZE = FxHelper.getUIScaled(12);
+        private Circle mHeightShape;
+        private Polygon mPlaneShape;
+
+        public AlarmIndicator() {
+            super(SIZE / 4);
+            createUI();
+        }
+
+        public void update(BTopoControlPoint p) {
+            mHeightShape.setFill(TopoHelper.getAlarmColorHeightFx(p));
+            mHeightShape.setVisible(p.getDimension() != BDimension._2d);
+            mPlaneShape.setFill(TopoHelper.getAlarmColorPlaneFx(p));
+            mPlaneShape.setVisible(p.getDimension() != BDimension._1d);
+        }
+
+        private void createUI() {
+            mHeightShape = new Circle(SIZE / 2);
+            var hPane = new StackPane(mHeightShape);
+
+            mPlaneShape = new Polygon();
+            mPlaneShape.getPoints().addAll(new Double[]{
+                SIZE / 2, 0.0,
+                SIZE, SIZE,
+                0.0, SIZE
+            });
+            var pPane = new StackPane(mPlaneShape);
+
+            getChildren().setAll(hPane, pPane);
+        }
+    }
 }
