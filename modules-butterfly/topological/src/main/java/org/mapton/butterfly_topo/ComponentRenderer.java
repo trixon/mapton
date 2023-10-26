@@ -18,9 +18,7 @@ package org.mapton.butterfly_topo;
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
-import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Ellipsoid;
-import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,18 +36,14 @@ import se.trixon.almond.util.MathHelper;
  */
 public class ComponentRenderer {
 
-    private final HashMap<BTopoControlPoint, Position[]> mPointToPositionMap = new HashMap<>();
-    private final RenderableLayer mLayer;
-    private final IndexedCheckModel<RenderComponent> mCheckModel;
     private final TopoAttributeManager mAttributeManager = TopoAttributeManager.getInstance();
+    private final IndexedCheckModel<RenderComponent> mCheckModel;
+    private final RenderableLayer mLayer;
+    private final HashMap<BTopoControlPoint, Position[]> mPointToPositionMap = new HashMap<>();
 
     public ComponentRenderer(RenderableLayer layer, IndexedCheckModel<RenderComponent> checkModel) {
         mLayer = layer;
         mCheckModel = checkModel;
-    }
-
-    public void reset() {
-        mPointToPositionMap.clear();
     }
 
     public void plot(BTopoControlPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
@@ -60,6 +54,59 @@ public class ComponentRenderer {
             mapObjects.addAll(plotVector(p, position));
         }
 
+    }
+
+    public void reset() {
+        mPointToPositionMap.clear();
+    }
+
+    private boolean isValidForTraceVector3dPlot(BTopoControlPoint p) {
+        var o1 = p.ext().getObservationsFiltered().getFirst();
+        var o2 = p.ext().getObservationsFiltered().getLast();
+
+        return ObjectUtils.allNotNull(o1.getMeasuredZ(), o2.getMeasuredZ());
+    }
+
+    private Position[] plot3dOffsetPole(BTopoControlPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
+        return mPointToPositionMap.computeIfAbsent(p, k -> {
+            var ZERO_SIZE = 0.5;
+            var CURRENT_SIZE = 2.0;
+
+            var startPosition = WWHelper.positionFromPosition(position, TopoLayerBundle.Z_OFFSET);
+            var startEllipsoid = new Ellipsoid(startPosition, ZERO_SIZE, ZERO_SIZE, ZERO_SIZE);
+            startEllipsoid.setAttributes(mAttributeManager.getComponentZeroAttributes());
+
+            mapObjects.add(startEllipsoid);
+            mLayer.addRenderable(startEllipsoid);
+
+            var groundPath = new Path(position, startPosition);
+            groundPath.setAttributes(mAttributeManager.getComponentGroundPathAttributes());
+            mapObjects.add(groundPath);
+            mLayer.addRenderable(groundPath);
+
+            var currentPosition = startPosition;
+//            var o1 = p.ext().getObservationsFiltered().getFirst();
+            var o2 = p.ext().getObservationsFiltered().getLast();
+
+            if (o2.ext().getDeltaZ() != null) {
+                var x = p.getZeroX() + MathHelper.convertDoubleToDouble(o2.ext().getDeltaX()) * TopoLayerBundle.SCALE_FACTOR;
+                var y = p.getZeroY() + MathHelper.convertDoubleToDouble(o2.ext().getDeltaY()) * TopoLayerBundle.SCALE_FACTOR;
+                var z = p.getZeroZ()
+                        + o2.getMeasuredZ()
+                        + TopoLayerBundle.Z_OFFSET
+                        + MathHelper.convertDoubleToDouble(o2.ext().getDeltaZ()) * TopoLayerBundle.SCALE_FACTOR;
+
+                var wgs84 = MOptions.getInstance().getMapCooTrans().toWgs84(y, x);
+                currentPosition = Position.fromDegrees(wgs84.getY(), wgs84.getX(), z);
+            }
+
+            var currentEllipsoid = new Ellipsoid(currentPosition, CURRENT_SIZE, CURRENT_SIZE, CURRENT_SIZE);
+            currentEllipsoid.setAttributes(mAttributeManager.getComponentVectorCurrentAttributes(p));
+            mapObjects.add(currentEllipsoid);
+            mLayer.addRenderable(currentEllipsoid);
+
+            return new Position[]{startPosition, currentPosition};
+        });
     }
 
     private ArrayList<AVListImpl> plotBearing(BTopoControlPoint p, Position position) {
@@ -89,17 +136,8 @@ public class ComponentRenderer {
                 position = WWHelper.positionFromPosition(position, z);
                 p2 = WWHelper.positionFromPosition(p2, z);
                 var path = new Path(position, p2);
-                var sa = new BasicShapeAttributes();
-                sa.setOutlineMaterial(Material.BLUE);
-                path.setAttributes(sa);
-
-                if (first) {
-                    first = false;
-                    sa.setOutlineWidth(2.0);
-                } else {
-                    sa.setOutlineWidth(4.0);
-                    sa.setOutlineOpacity(0.05);
-                }
+                path.setAttributes(mAttributeManager.getBearingAttribute(first));
+                first = false;
 
                 mLayer.addRenderable(path);
                 mapObjects.add(path);
@@ -129,46 +167,6 @@ public class ComponentRenderer {
     }
 
     private void plotTrace2d(BTopoControlPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
-    }
-
-    private Position[] plot3dOffsetPole(BTopoControlPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
-        return mPointToPositionMap.computeIfAbsent(p, k -> {
-            var ZERO_SIZE = 0.1;
-            var END_SIZE = 0.5;
-
-            var startPosition = WWHelper.positionFromPosition(position, TopoLayerBundle.Z_OFFSET);
-            var startEllipsoid = new Ellipsoid(startPosition, ZERO_SIZE, ZERO_SIZE, ZERO_SIZE);
-            mapObjects.add(startEllipsoid);
-            mLayer.addRenderable(startEllipsoid);
-
-            var groundPath = new Path(position, startPosition);
-            mapObjects.add(groundPath);
-            mLayer.addRenderable(groundPath);
-            var endPosition = startPosition;
-//            var o1 = p.ext().getObservationsFiltered().getFirst();
-            var o2 = p.ext().getObservationsFiltered().getLast();
-
-            if (o2.ext().getDeltaZ() != null) {
-                var x = p.getZeroX() + MathHelper.convertDoubleToDouble(o2.ext().getDeltaX()) * TopoLayerBundle.SCALE_FACTOR;
-                var y = p.getZeroY() + MathHelper.convertDoubleToDouble(o2.ext().getDeltaY()) * TopoLayerBundle.SCALE_FACTOR;
-                var z = p.getZeroZ()
-                        + o2.getMeasuredZ()
-                        + TopoLayerBundle.Z_OFFSET
-                        + MathHelper.convertDoubleToDouble(o2.ext().getDeltaZ()) * TopoLayerBundle.SCALE_FACTOR;
-
-                var wgs84 = MOptions.getInstance().getMapCooTrans().toWgs84(y, x);
-                endPosition = Position.fromDegrees(wgs84.getY(), wgs84.getX(), z);
-            }
-
-            var endEllipsoid = new Ellipsoid(endPosition, END_SIZE, END_SIZE, END_SIZE);
-            var sa = new BasicShapeAttributes();
-            sa.setInteriorMaterial(TopoHelper.getAlarmMaterial(p));
-            endEllipsoid.setAttributes(sa);
-            mapObjects.add(endEllipsoid);
-            mLayer.addRenderable(endEllipsoid);
-
-            return new Position[]{startPosition, endPosition};
-        });
     }
 
     private void plotTrace3d(BTopoControlPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
@@ -215,7 +213,6 @@ public class ComponentRenderer {
         var startEllipsoid = new Ellipsoid(nodes.getFirst(), END_SIZE, END_SIZE, END_SIZE);
         mapObjects.add(startEllipsoid);
         mLayer.addRenderable(startEllipsoid);
-
     }
 
     private ArrayList<AVListImpl> plotVector(BTopoControlPoint p, Position position) {
@@ -238,41 +235,30 @@ public class ComponentRenderer {
     private void plotVector2d(BTopoControlPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
     }
 
-    private boolean isValidForTraceVector3dPlot(BTopoControlPoint p) {
-        var o1 = p.ext().getObservationsFiltered().getFirst();
-        var o2 = p.ext().getObservationsFiltered().getLast();
-
-        return ObjectUtils.allNotNull(o1.getMeasuredZ());
-    }
-
     private void plotVector3d(BTopoControlPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
         if (!isValidForTraceVector3dPlot(p)) {
             return;
         }
+
         var positions = plot3dOffsetPole(p, position, mapObjects);
         var startPosition = positions[0];
         var endPosition = positions[1];
 
         var path = new Path(startPosition, endPosition);
+        path.setAttributes(mAttributeManager.getComponentVector3dAttributes(p));
         mapObjects.add(path);
         mLayer.addRenderable(path);
 
         //plot dZ
         var endDeltaZ = Position.fromDegrees(startPosition.latitude.degrees, startPosition.longitude.degrees, endPosition.getAltitude());
         var pathDeltaZ = new Path(startPosition, endDeltaZ);
-        var sa = new BasicShapeAttributes();
-        sa.setDrawOutline(true);
-        sa.setOutlineWidth(4);
-        pathDeltaZ.setAttributes(sa);
+        pathDeltaZ.setAttributes(mAttributeManager.getComponentVector1dAttributes(p));
         mapObjects.add(pathDeltaZ);
         mLayer.addRenderable(pathDeltaZ);
 
         //plot dR
         var pathDeltaR = new Path(endDeltaZ, endPosition);
-        var sar = new BasicShapeAttributes();
-        sar.setDrawOutline(true);
-        sar.setOutlineWidth(4);
-        pathDeltaR.setAttributes(sar);
+        pathDeltaR.setAttributes(mAttributeManager.getComponentVector2dAttributes(p));
         mapObjects.add(pathDeltaR);
         mLayer.addRenderable(pathDeltaR);
     }

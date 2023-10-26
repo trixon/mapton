@@ -35,6 +35,7 @@ import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.butterfly_format.types.controlpoint.BTopoControlPoint;
+import org.mapton.butterfly_topo.shared.ColorBy;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
@@ -192,11 +193,8 @@ public class TopoLayerBundle extends LayerBundle {
     }
 
     private void plotConnector(Position p1, Position p2) {
-        var path = new Path(p1, p2);
-        var sa = new BasicShapeAttributes();
-        sa.setOutlineMaterial(Material.DARK_GRAY);
-        sa.setOutlineWidth(2.0);
-        path.setAttributes(sa);
+        var path = new Path(WWHelper.positionFromPosition(p1, 0.1), WWHelper.positionFromPosition(p2, 0.1));
+        path.setAttributes(mAttributeManager.getIndicatorConnectorAttribute());
         mLayer.addRenderable(path);
     }
 
@@ -258,9 +256,11 @@ public class TopoLayerBundle extends LayerBundle {
     }
 
     private PointPlacemark plotPin(BTopoControlPoint p, Position position, PointPlacemark labelPlacemark) {
-        var attrs = new PointPlacemarkAttributes(mAttributeManager.getPinAttributes());
-        attrs.setImageColor(mTopoConfig.getColor(p));
-        attrs.setImageColor(TopoHelper.getAlarmColorHeightAwt(p));//FIXME
+        var attrs = mAttributeManager.getPinAttributes(p);
+        if (mOptionsView.getColorBy() == ColorBy.STYLE) {
+            attrs = new PointPlacemarkAttributes(attrs);
+            attrs.setImageColor(mTopoConfig.getColor(p));
+        }
 
         var placemark = new PointPlacemark(position);
         placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
@@ -301,9 +301,13 @@ public class TopoLayerBundle extends LayerBundle {
             }
         }
 
-        var sa = new BasicShapeAttributes(mAttributeManager.getSymbolAttributes());
-        sa.setInteriorMaterial(new Material(mTopoConfig.getColor(p)));
-        abstractShape.setAttributes(sa);
+        var attrs = mAttributeManager.getSymbolAttributes(p);
+        if (mOptionsView.getColorBy() == ColorBy.STYLE) {
+            attrs = new BasicShapeAttributes(attrs);
+            attrs.setInteriorMaterial(new Material(mTopoConfig.getColor(p)));
+        }
+
+        abstractShape.setAttributes(attrs);
         mapObjects.add(abstractShape);
         mSymbolLayer.addRenderable(abstractShape);
 
@@ -318,5 +322,4 @@ public class TopoLayerBundle extends LayerBundle {
 
         return mapObjects;
     }
-
 }
