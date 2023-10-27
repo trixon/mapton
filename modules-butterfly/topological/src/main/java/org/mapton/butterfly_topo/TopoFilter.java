@@ -33,6 +33,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import static java.time.temporal.ChronoUnit.DAYS;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.stream.Collectors;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -61,8 +62,8 @@ import se.trixon.almond.util.StringHelper;
  */
 public class TopoFilter extends FormFilter<TopoManager> {
 
-    private IndexedCheckModel mCategoryCheckModel;
     private IndexedCheckModel<AlarmFilter> mAlarmCheckModel;
+    private IndexedCheckModel mCategoryCheckModel;
     private IndexedCheckModel mDateFromToCheckModel;
     private final SimpleBooleanProperty mDiffMeasAllProperty = new SimpleBooleanProperty();
     private final SimpleDoubleProperty mDiffMeasAllValueProperty = new SimpleDoubleProperty();
@@ -71,6 +72,7 @@ public class TopoFilter extends FormFilter<TopoManager> {
     private IndexedCheckModel mDimensionCheckModel;
     private IndexedCheckModel<Integer> mFrequencyCheckModel;
     private IndexedCheckModel mGroupCheckModel;
+    private final SimpleBooleanProperty mInvertProperty = new SimpleBooleanProperty();
     private final TopoManager mManager = TopoManager.getInstance();
     private final SimpleStringProperty mMaxAgeProperty = new SimpleStringProperty();
     private IndexedCheckModel<String> mMeasCodeCheckModel;
@@ -104,6 +106,10 @@ public class TopoFilter extends FormFilter<TopoManager> {
 
     public SimpleDoubleProperty diffMeasLatestValueProperty() {
         return mDiffMeasLatestValueProperty;
+    }
+
+    public SimpleBooleanProperty invertProperty() {
+        return mInvertProperty;
     }
 
     public SimpleStringProperty maxAgeProperty() {
@@ -227,6 +233,13 @@ public class TopoFilter extends FormFilter<TopoManager> {
                     .toList();
         }
 
+        if (mInvertProperty.get()) {
+            var toBeExluded = new HashSet<>(filteredItems);
+            filteredItems = mManager.getAllItems().stream()
+                    .filter(p -> !toBeExluded.contains(p))
+                    .toList();
+        }
+
         mManager.getFilteredItems().setAll(filteredItems);
 
         getInfoPopOver().loadContent(createInfoContent().renderFormatted());
@@ -294,6 +307,7 @@ public class TopoFilter extends FormFilter<TopoManager> {
         mDiffMeasLatestProperty.addListener(mChangeListenerObject);
         mDiffMeasLatestValueProperty.addListener(mChangeListenerObject);
         mDiffMeasAllProperty.addListener(mChangeListenerObject);
+        mInvertProperty.addListener(mChangeListenerObject);
         mDiffMeasAllValueProperty.addListener(mChangeListenerObject);
         mNumOfMeasValueProperty.addListener(mChangeListenerObject);
         mNumOfMeasProperty.addListener(mChangeListenerObject);

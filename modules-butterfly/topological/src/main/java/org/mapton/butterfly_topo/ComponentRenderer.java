@@ -40,10 +40,10 @@ public class ComponentRenderer extends ComponentRendererBase {
     }
 
     public void plot(BTopoControlPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
+        ComponentRendererBase.sMapObjects = mapObjects;
         plotBearing(p, position);
 
         if (p.ext().getNumOfObservationsFiltered() > 1) {
-            ComponentRendererBase.sMapObjects = mapObjects;
             mTraceRenderer.plot(p, position);
             mVectorRenderer.plot(p, position);
         }
