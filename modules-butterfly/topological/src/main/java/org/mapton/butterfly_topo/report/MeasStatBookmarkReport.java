@@ -24,7 +24,7 @@ import j2html.tags.ContainerTag;
 import java.util.TreeSet;
 import org.mapton.api.MTemporalManager;
 import org.mapton.api.report.MReport;
-import org.mapton.butterfly_topo.TopoManager;
+import org.mapton.butterfly_topo.api.TopoManager;
 import org.openide.util.lookup.ServiceProvider;
 
 /**

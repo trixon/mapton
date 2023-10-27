@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_topo;
 
+import org.mapton.butterfly_topo.api.TopoManager;
 import java.util.Arrays;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;

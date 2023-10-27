@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_topo;
 
+import org.mapton.butterfly_topo.api.TopoManager;
 import java.util.List;
 import java.util.TreeSet;
 import java.util.stream.Collectors;

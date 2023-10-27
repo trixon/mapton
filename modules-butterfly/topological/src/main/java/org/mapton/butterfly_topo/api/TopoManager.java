@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_topo;
+package org.mapton.butterfly_topo.api;
 
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -26,6 +26,8 @@ import org.mapton.butterfly_api.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.controlpoint.BTopoControlPoint;
 import org.mapton.butterfly_format.types.controlpoint.BTopoControlPointObservation;
+import org.mapton.butterfly_topo.TopoChartBuilder;
+import org.mapton.butterfly_topo.TopoPropertiesBuilder;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.CollectionHelper;
 

@@ -35,5 +35,6 @@ limitations under the License.
         <module>hydrological</module>
         <module>topological</module>
         <module>alarm</module>
+        <module>projektnav</module>
     </modules>
 </project>

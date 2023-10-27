@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_topo;
 
+import org.mapton.butterfly_topo.api.TopoManager;
 import static j2html.TagCreator.b;
 import static j2html.TagCreator.body;
 import static j2html.TagCreator.each;
