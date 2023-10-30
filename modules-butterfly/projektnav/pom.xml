@@ -49,6 +49,10 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>butterfly-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>butterfly-topo</artifactId>
         </dependency>
     </dependencies>
