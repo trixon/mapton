@@ -15,9 +15,9 @@
  */
 package org.mapton.butterfly_projektnav.editor.topo;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.TreeSet;
 import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
@@ -54,7 +54,11 @@ public class ParameterEditor extends BaseTopoEditor {
     private final LogPanel mPreviewLogPanel = new LogPanel();
     private final TextArea mSourceTextArea = new TextArea();
     private final CheckBox mStatusCheckBox = new CheckBox("Status");
+    private final CheckBox mGruppCheckBox = new CheckBox("Grupp");
+    private final CheckBox mKategoriCheckBox = new CheckBox("Kategori");
     private final ComboBox<String> mStatusComboBox = new ComboBox<>();
+    private final ComboBox<String> mGruppComboBox = new ComboBox<>();
+    private final ComboBox<String> mKategoriComboBox = new ComboBox<>();
 
     public ParameterEditor() {
         setName("Parametrar");
@@ -96,45 +100,27 @@ public class ParameterEditor extends BaseTopoEditor {
     private void createUIParameter() {
         mStatusComboBox.getItems().setAll("S0", "S1", "S2", "S3", "S4", "S5");
         mStatusComboBox.getSelectionModel().select("S1");
+
+        var grupper = new TreeSet<>(mManager.getAllItems().stream().map(p -> p.getGroup()).toList());
+        mGruppComboBox.getItems().setAll(grupper);
+        var kategorier = new TreeSet<>(mManager.getAllItems().stream().map(p -> p.getCategory()).toList());
+        mKategoriComboBox.getItems().setAll(kategorier);
+
         mDagSpinner.disableProperty().bind(mDagCheckBox.selectedProperty().not());
         mStatusComboBox.disableProperty().bind(mStatusCheckBox.selectedProperty().not());
 
         var settingsGridPane = new GridPane();
-        settingsGridPane.addColumn(0, mDagCheckBox, mDagSpinner);
-        settingsGridPane.addColumn(1, mStatusCheckBox, mStatusComboBox);
+        int col = 0;
+        settingsGridPane.addColumn(col++, mDagCheckBox, mDagSpinner);
+        settingsGridPane.addColumn(col++, mStatusCheckBox, mStatusComboBox);
+        settingsGridPane.addColumn(col++, mGruppCheckBox, mGruppComboBox);
+        settingsGridPane.addColumn(col++, mKategoriCheckBox, mKategoriComboBox);
         FxHelper.setEditable(true, mDagSpinner);
         FxHelper.autoCommitSpinners(mDagSpinner);
+        FxHelper.setEditable(true, mGruppComboBox, mKategoriComboBox);
+
         mBorderPane.setTop(settingsGridPane);
 
-    }
-
-    private ArrayList<String> getPointWithNavetNames() {
-        var names = new ArrayList<String>();
-        for (var name : StringUtils.split(mSourceTextArea.getText(), "\n")) {
-            var p = mManager.getItemForKey(name);
-
-            if (p != null) {
-                if (null == p.getDimension()) {
-                    names.add(name + "_P");
-                } else {
-                    switch (p.getDimension()) {
-                        case _1d ->
-                            names.add(name);
-                        case _2d ->
-                            names.add(name + "_P");
-                        case _3d -> {
-                            names.add(name + "_P");
-                            names.add(name + "_H");
-                        }
-                    }
-                }
-            } else {
-                System.err.println("Point not found: " + name);
-            }
-            mManager.getAllItemsSet();
-        }
-
-        return names;
     }
 
     private void importPoints() {
@@ -193,12 +179,16 @@ public class ParameterEditor extends BaseTopoEditor {
         var sb = new StringBuilder("nr");
         addConditionlly(sb, mDagCheckBox.isSelected(), "dag");
         addConditionlly(sb, mStatusCheckBox.isSelected(), "status");
+        addConditionlly(sb, mGruppCheckBox.isSelected(), "grupp");
+        addConditionlly(sb, mKategoriCheckBox.isSelected(), "kategori");
         sb.append("\n");
 
-        for (var name : getPointWithNavetNames()) {
+        for (var name : getPointWithNavetNames(StringUtils.split(mSourceTextArea.getText(), "\n"))) {
             sb.append(name);
             addConditionlly(sb, mDagCheckBox.isSelected(), mDagSpinner.getValue());
             addConditionlly(sb, mStatusCheckBox.isSelected(), mStatusComboBox.getValue());
+            addConditionlly(sb, mGruppCheckBox.isSelected(), mGruppComboBox.getValue());
+            addConditionlly(sb, mKategoriCheckBox.isSelected(), mKategoriComboBox.getValue());
 
             sb.append("\n");
         }
