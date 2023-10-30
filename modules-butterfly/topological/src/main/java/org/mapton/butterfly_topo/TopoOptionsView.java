@@ -65,6 +65,10 @@ public class TopoOptionsView extends MOptionsView<TopoLayerBundle> {
         initSession();
     }
 
+    public ObjectProperty<ColorBy> colorByProperty() {
+        return mColorComboBox.valueProperty();
+    }
+
     public ColorBy getColorBy() {
         return mColorComboBox.valueProperty().get();
     }
@@ -87,10 +91,6 @@ public class TopoOptionsView extends MOptionsView<TopoLayerBundle> {
 
     public SimpleObjectProperty<TopoLabelBy> labelByProperty() {
         return mLabelByProperty;
-    }
-
-    public ObjectProperty<ColorBy> colorByProperty() {
-        return mColorComboBox.valueProperty();
     }
 
     private void createUI() {
@@ -159,7 +159,7 @@ public class TopoOptionsView extends MOptionsView<TopoLayerBundle> {
 
     private void initListeners() {
         mLabelByProperty.addListener((p, o, n) -> {
-            mLabelMenuButton.setText(n.getName());
+            mLabelMenuButton.setText(n.getFullName());
             mLabelByIdProperty.set(n.name());
         });
 

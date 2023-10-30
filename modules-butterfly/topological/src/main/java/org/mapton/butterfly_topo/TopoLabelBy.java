@@ -19,6 +19,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 import java.util.function.Function;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.mapton.butterfly_alarm.api.AlarmHelper;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.controlpoint.BTopoControlPoint;
@@ -51,6 +52,11 @@ public enum TopoLabelBy {
     DATE_LATEST(Strings.CAT_DATE, SDict.LATEST.toString(), p -> {
         var date = p.ext().getObservationFilteredLastDate();
 //        var date = p.getDateLatest();
+
+        return date == null ? "-" : date.toString();
+    }),
+    DATE_ZERO(Strings.CAT_DATE, SDict.ZERO.toString(), p -> {
+        var date = p.getDateZero();
 
         return date == null ? "-" : date.toString();
     }),
@@ -158,6 +164,14 @@ public enum TopoLabelBy {
         return mCategory;
     }
 
+    public String getFullName() {
+        if (StringUtils.isBlank(mCategory)) {
+            return mName;
+        } else {
+            return "%s/%s".formatted(mCategory, mName);
+        }
+    }
+
     public String getLabel(BTopoControlPoint o) {
         return mFunction.apply(o);
     }
@@ -177,11 +191,11 @@ public enum TopoLabelBy {
         public static final String CAT_VALUE = Dict.VALUE.toString();
         public static final String HEIGHT_NAME = "%s, %s".formatted(Dict.Geometry.HEIGHT, Dict.NAME.toLower());
         public static final String HEIGHT_VALUE = "%s, %s".formatted(Dict.Geometry.HEIGHT, Dict.VALUE.toLower());
-        public static final String PLANE_NAME = "%s, %s".formatted(Dict.Geometry.PLANE, Dict.NAME.toLower());
-        public static final String PLANE_VALUE = "%s, %s".formatted(Dict.Geometry.PLANE, Dict.VALUE.toLower());
         public static final String MEAS_COUNT = Dict.NUM_OF_S.toString().formatted(SDict.MEASUREMENTS.toLower());
         public static final String MEAS_COUNT_ALL = "%s (%s)".formatted(MEAS_COUNT, Dict.ALL.toLower());
         public static final String MEAS_COUNT_SELECTION = "%s (%s)".formatted(MEAS_COUNT, Dict.SELECTION.toLower());
+        public static final String PLANE_NAME = "%s, %s".formatted(Dict.Geometry.PLANE, Dict.NAME.toLower());
+        public static final String PLANE_VALUE = "%s, %s".formatted(Dict.Geometry.PLANE, Dict.VALUE.toLower());
 
     }
 }
