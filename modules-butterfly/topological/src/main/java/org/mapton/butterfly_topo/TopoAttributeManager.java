@@ -20,6 +20,7 @@ import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
+import java.awt.Color;
 import org.mapton.butterfly_api.api.ButterflyHelper;
 import org.mapton.butterfly_format.types.controlpoint.BTopoControlPoint;
 import org.mapton.butterfly_topo.shared.ColorBy;
@@ -207,6 +208,27 @@ public class TopoAttributeManager {
 
     public void setColorBy(ColorBy colorBy) {
         mColorBy = colorBy;
+    }
+
+    public Color getColorForFrequency(BTopoControlPoint p) {
+        Color color;
+
+        var f = p.getFrequency();
+        if (f == null || f == 0) {
+            color = Color.WHITE;
+        } else if (f == null || f == 1) {
+            color = Color.RED;
+        } else if (f <= 7) {
+            color = Color.ORANGE;
+        } else if (f <= 28) {
+            color = Color.YELLOW;
+        } else if (f <= 365) {
+            color = Color.GREEN;
+        } else {
+            color = Color.BLACK;
+        }
+
+        return color;
     }
 
     private void initAttributes() {

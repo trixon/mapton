@@ -24,6 +24,7 @@ import se.trixon.almond.util.SDict;
  */
 public enum ColorBy {
     ALARM(SDict.ALARM.toString()),
+    FREQUENCY(SDict.FREQUENCY.toString()),
     STYLE(Dict.STYLE.toString());
     private final String mName;
 

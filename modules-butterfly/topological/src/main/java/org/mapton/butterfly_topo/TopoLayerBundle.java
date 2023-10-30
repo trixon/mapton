@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_topo;
 
-import org.mapton.butterfly_topo.api.TopoManager;
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
@@ -36,6 +35,7 @@ import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.butterfly_format.types.controlpoint.BTopoControlPoint;
+import org.mapton.butterfly_topo.api.TopoManager;
 import org.mapton.butterfly_topo.shared.ColorBy;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
@@ -261,6 +261,9 @@ public class TopoLayerBundle extends LayerBundle {
         if (mOptionsView.getColorBy() == ColorBy.STYLE) {
             attrs = new PointPlacemarkAttributes(attrs);
             attrs.setImageColor(mTopoConfig.getColor(p));
+        } else if (mOptionsView.getColorBy() == ColorBy.FREQUENCY) {
+            attrs = new PointPlacemarkAttributes(attrs);
+            attrs.setImageColor(mAttributeManager.getColorForFrequency(p));
         }
 
         var placemark = new PointPlacemark(position);
@@ -306,6 +309,9 @@ public class TopoLayerBundle extends LayerBundle {
         if (mOptionsView.getColorBy() == ColorBy.STYLE) {
             attrs = new BasicShapeAttributes(attrs);
             attrs.setInteriorMaterial(new Material(mTopoConfig.getColor(p)));
+        } else if (mOptionsView.getColorBy() == ColorBy.FREQUENCY) {
+            attrs = new BasicShapeAttributes(attrs);
+            attrs.setInteriorMaterial(new Material(mAttributeManager.getColorForFrequency(p)));
         }
 
         abstractShape.setAttributes(attrs);
