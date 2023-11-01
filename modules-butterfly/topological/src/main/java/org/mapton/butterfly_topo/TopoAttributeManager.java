@@ -21,9 +21,14 @@ import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
 import java.awt.Color;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import org.mapton.butterfly_api.api.ButterflyHelper;
 import org.mapton.butterfly_format.types.controlpoint.BTopoControlPoint;
 import org.mapton.butterfly_topo.shared.ColorBy;
+import static org.mapton.butterfly_topo.shared.ColorBy.FREQUENCY;
+import static org.mapton.butterfly_topo.shared.ColorBy.MEAS_NEED;
+import static org.mapton.butterfly_topo.shared.ColorBy.STYLE;
 
 /**
  *
@@ -43,6 +48,7 @@ public class TopoAttributeManager {
     private PointPlacemarkAttributes mLabelPlacemarkAttributes;
     private PointPlacemarkAttributes[] mPinAttributes;
     private BasicShapeAttributes[] mSymbolAttributes;
+    private final TopoConfig mTopoConfig = new TopoConfig();
 
     public static TopoAttributeManager getInstance() {
         return Holder.INSTANCE;
@@ -188,7 +194,14 @@ public class TopoAttributeManager {
             }
         }
 
-        return mPinAttributes[TopoHelper.getAlarmLevelHeight(p) + 1];
+        var attrs = mPinAttributes[TopoHelper.getAlarmLevelHeight(p) + 1];
+
+        if (mColorBy != null && mColorBy != ColorBy.ALARM) {
+            attrs = new PointPlacemarkAttributes(attrs);
+            attrs.setImageColor(getColor(mColorBy, p));
+        }
+
+        return attrs;
     }
 
     public BasicShapeAttributes getSymbolAttributes(BTopoControlPoint p) {
@@ -203,26 +216,74 @@ public class TopoAttributeManager {
             }
         }
 
-        return mSymbolAttributes[TopoHelper.getAlarmLevelHeight(p) + 1];
+        var attrs = mSymbolAttributes[TopoHelper.getAlarmLevelHeight(p) + 1];
+        if (mColorBy != null && mColorBy != ColorBy.ALARM) {
+            attrs = new BasicShapeAttributes(attrs);
+            attrs.setInteriorMaterial(new Material(getColor(mColorBy, p)));
+        }
+
+        return attrs;
     }
 
     public void setColorBy(ColorBy colorBy) {
         mColorBy = colorBy;
     }
 
-    public Color getColorForFrequency(BTopoControlPoint p) {
+    private Color getColor(ColorBy mColorBy, BTopoControlPoint p) {
+        switch (mColorBy) {
+            case STYLE -> {
+                return mTopoConfig.getColor(p);
+            }
+            case FREQUENCY -> {
+                return getColorForFrequency(p);
+            }
+            case MEAS_NEED -> {
+                return getColorForMeasNeed(p);
+            }
+            default ->
+                throw new AssertionError();
+        }
+    }
+
+    private Color getColorForFrequency(BTopoControlPoint p) {
         Color color;
 
         var f = p.getFrequency();
         if (f == null || f == 0) {
             color = Color.WHITE;
-        } else if (f == null || f == 1) {
+        } else if (f == 1) {
             color = Color.RED;
         } else if (f <= 7) {
             color = Color.ORANGE;
         } else if (f <= 28) {
             color = Color.YELLOW;
         } else if (f <= 365) {
+            color = Color.GREEN;
+        } else {
+            color = Color.BLACK;
+        }
+
+        return color;
+    }
+
+    private Color getColorForMeasNeed(BTopoControlPoint p) {
+        var frequency = p.getFrequency();
+        var latest = p.getDateLatest() != null ? p.getDateLatest().toLocalDate() : LocalDate.MIN;
+        var today = LocalDate.now();
+        var nextMeas = latest.plusDays(frequency);
+        var remainingDays = p.ext().getMeasurementUntilNext(ChronoUnit.DAYS);
+
+        Color color;
+
+        if (frequency == null || frequency == 0) {
+            color = Color.WHITE;
+        } else if (remainingDays < 0) {
+            color = Color.RED;
+        } else if (remainingDays <= 7) {
+            color = Color.ORANGE;
+        } else if (remainingDays <= 28) {
+            color = Color.YELLOW;
+        } else if (remainingDays <= 365) {
             color = Color.GREEN;
         } else {
             color = Color.BLACK;

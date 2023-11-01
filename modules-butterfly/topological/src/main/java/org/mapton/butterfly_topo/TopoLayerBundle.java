@@ -20,13 +20,10 @@ import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.AbstractShape;
-import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Cylinder;
 import gov.nasa.worldwind.render.Ellipsoid;
-import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.Path;
 import gov.nasa.worldwind.render.PointPlacemark;
-import gov.nasa.worldwind.render.PointPlacemarkAttributes;
 import gov.nasa.worldwind.render.Pyramid;
 import gov.nasa.worldwind.render.SurfaceCircle;
 import java.time.temporal.ChronoUnit;
@@ -36,7 +33,6 @@ import javafx.scene.Node;
 import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.butterfly_format.types.controlpoint.BTopoControlPoint;
 import org.mapton.butterfly_topo.api.TopoManager;
-import org.mapton.butterfly_topo.shared.ColorBy;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
@@ -57,15 +53,14 @@ public class TopoLayerBundle extends LayerBundle {
     private final double SYMBOL_HEIGHT = 4.0;
     private final double SYMBOL_RADIUS = 1.5;
     private final TopoAttributeManager mAttributeManager = TopoAttributeManager.getInstance();
+    private final ComponentRenderer mComponentRenderer;
     private final ArrayList<AVListImpl> mEmptyDummyList = new ArrayList<>();
     private final RenderableLayer mLabelLayer = new RenderableLayer();
     private final RenderableLayer mLayer = new RenderableLayer();
-    private final ComponentRenderer mComponentRenderer;
     private final TopoManager mManager = TopoManager.getInstance();
     private final TopoOptionsView mOptionsView;
     private final RenderableLayer mPinLayer = new RenderableLayer();
     private final RenderableLayer mSymbolLayer = new RenderableLayer();
-    private final TopoConfig mTopoConfig = new TopoConfig();
 
     public TopoLayerBundle() {
         init();
@@ -73,6 +68,7 @@ public class TopoLayerBundle extends LayerBundle {
         mOptionsView = new TopoOptionsView(this);
         mComponentRenderer = new ComponentRenderer(mLayer, mOptionsView.getComponentCheckModel());
         initListeners();
+        mAttributeManager.setColorBy(mOptionsView.getColorBy());
 
         FxHelper.runLaterDelayed(1000, () -> mManager.updateTemporal(mLayer.isEnabled()));
     }
@@ -119,6 +115,7 @@ public class TopoLayerBundle extends LayerBundle {
             mAttributeManager.setColorBy(n);
             repaint();
         });
+
         mOptionsView.labelByProperty().addListener((p, o, n) -> {
             repaint();
         });
@@ -258,13 +255,6 @@ public class TopoLayerBundle extends LayerBundle {
 
     private PointPlacemark plotPin(BTopoControlPoint p, Position position, PointPlacemark labelPlacemark) {
         var attrs = mAttributeManager.getPinAttributes(p);
-        if (mOptionsView.getColorBy() == ColorBy.STYLE) {
-            attrs = new PointPlacemarkAttributes(attrs);
-            attrs.setImageColor(mTopoConfig.getColor(p));
-        } else if (mOptionsView.getColorBy() == ColorBy.FREQUENCY) {
-            attrs = new PointPlacemarkAttributes(attrs);
-            attrs.setImageColor(mAttributeManager.getColorForFrequency(p));
-        }
 
         var placemark = new PointPlacemark(position);
         placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
@@ -306,13 +296,6 @@ public class TopoLayerBundle extends LayerBundle {
         }
 
         var attrs = mAttributeManager.getSymbolAttributes(p);
-        if (mOptionsView.getColorBy() == ColorBy.STYLE) {
-            attrs = new BasicShapeAttributes(attrs);
-            attrs.setInteriorMaterial(new Material(mTopoConfig.getColor(p)));
-        } else if (mOptionsView.getColorBy() == ColorBy.FREQUENCY) {
-            attrs = new BasicShapeAttributes(attrs);
-            attrs.setInteriorMaterial(new Material(mAttributeManager.getColorForFrequency(p)));
-        }
 
         abstractShape.setAttributes(attrs);
         mapObjects.add(abstractShape);
