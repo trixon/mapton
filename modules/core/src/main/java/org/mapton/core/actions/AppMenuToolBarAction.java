@@ -24,7 +24,6 @@ import javafx.embed.swing.JFXPanel;
 import javafx.scene.Scene;
 import javax.swing.AbstractAction;
 import javax.swing.JPanel;
-import org.mapton.api.MKey;
 import org.mapton.api.Mapton;
 import org.mapton.core.ui.FxOnScreenDummy;
 import org.openide.awt.ActionID;
@@ -33,7 +32,6 @@ import org.openide.awt.ActionRegistration;
 import org.openide.util.actions.Presenter;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.FxHelper;
-import se.trixon.almond.util.swing.SwingHelper;
 
 @ActionID(category = "Mapton", id = "org.mapton.core.actions.MenuToolBarAction")
 @ActionRegistration(lazy = false, displayName = "menu tool bar")
@@ -68,8 +66,8 @@ public final class AppMenuToolBarAction extends AbstractAction implements Presen
     }
 
     private void init() {
-        if (!Mapton.getThemeColor().equals(Mapton.getDefaultThemeColor())) {
-            mPanel.setBackground(FxHelper.colorToColor(Mapton.getThemeColor()));
+        if (!Mapton.getThemeBackgroundColor().equals(Mapton.getThemeBackgroundColor())) {
+            mPanel.setBackground(FxHelper.colorToColor(Mapton.getThemeBackgroundColor()));
         }
 
         mPanel.add(mFxPanel, BorderLayout.EAST);
@@ -95,10 +93,10 @@ public final class AppMenuToolBarAction extends AbstractAction implements Presen
     private void initListeners() {
         var globalState = Mapton.getGlobalState();
 
-        globalState.addListener(gsce -> {
-            SwingHelper.runLater(() -> {
-                mPanel.setBackground(FxHelper.colorToColor(Mapton.getThemeColor()));
-            });
-        }, MKey.APP_THEME_BACKGROUND, MKey.APP_THEME_FOREGROUND);
+//        globalState.addListener(gsce -> {
+//            SwingHelper.runLater(() -> {
+//                mPanel.setBackground(FxHelper.colorToColor(Mapton.getThemeColorBackground()));
+//            });
+//        }, MKey.APP_THEME_BACKGROUND, MKey.APP_THEME_FOREGROUND);
     }
 }

@@ -24,7 +24,7 @@ import org.mapton.api.Mapton;
 public abstract class MReportSystem extends MReport {
 
     public MReportSystem() {
-        mSplitNavSetting.setTitleColor(Mapton.getDefaultThemeColor());
+        mSplitNavSetting.setTitleColor(Mapton.getThemeBackgroundColor());
     }
 
 }

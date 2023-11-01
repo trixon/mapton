@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.prefs.BackingStoreException;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.ImageView;
+import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
@@ -76,6 +77,16 @@ public class Initializer implements Runnable {
 
                 PrefsHelper.putIfAbsent(preferences, key, useDarkAsDefault ? darkLAF : lightLAF);
             }
+
+            var brandingFG = System.getProperty("brandingFG", "#FFFFFF");
+            Mapton.setThemeForegroundColor(Color.web(brandingFG));
+            var brandingBG = System.getProperty("brandingBG", "#102039");
+            Mapton.setThemeBackgroundColor(Color.web(brandingBG));
+            var brandingAccent = System.getProperty("brandingAccent", "#FF0000");
+
+            preferences = NbPreferences.root().node("org/netbeans/swing/laf/flatlaf");
+            PrefsHelper.putIfAbsent(preferences, "accentColor", brandingAccent);
+
         } catch (BackingStoreException ex) {
             //Exceptions.printStackTrace(ex);
         }

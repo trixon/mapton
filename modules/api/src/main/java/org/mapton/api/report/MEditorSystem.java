@@ -24,7 +24,7 @@ import org.mapton.api.Mapton;
 public abstract class MEditorSystem extends MEditor {
 
     public MEditorSystem() {
-        mSplitNavSetting.setTitleColor(Mapton.getDefaultThemeColor());
+        mSplitNavSetting.setTitleColor(Mapton.getThemeBackgroundColor());
     }
 
 }

@@ -28,7 +28,7 @@ import org.mapton.api.Mapton;
 public class MSplitNavSettings {
 
     private String mTitle = null;
-    private Color mTitleColor = Mapton.getThemeColor();
+    private Color mTitleColor = Mapton.getThemeBackgroundColor();
     private TitleMode mTitleMode = TitleMode.FULL_PATH;
     private ObservableList<Node> mToolBarItems = FXCollections.observableArrayList();
 

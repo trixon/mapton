@@ -76,6 +76,8 @@ public class Mapton {
             .setPrettyPrinting()
             .create();
     private static final Log sLog = new Log();
+    private static Color sThemeBackgroundColor;
+    private static Color sThemeForegroundColor;
     private final DoubleProperty mZoomProperty = new SimpleDoubleProperty();
 
     static {
@@ -141,24 +143,27 @@ public class Mapton {
     }
 
     public static Label createTitle(String title) {
-        return createTitle(title, Mapton.getDefaultThemeBackground());
+        return createTitle(title, getThemeBackground(), getThemeForegroundColor());
     }
 
-    public static Label createTitle(String title, Background background) {
+    public static Label createTitle(String title, Background background, Color foregroundColor) {
         var label = new Label(title);
 
         label.setBackground(background);
         var color = (Color) background.getFills().get(0).getFill();
-        label.setStyle("-fx-background-color: %s;".formatted(FxHelper.colorToString(color)));
+        label.setStyle("-fx-background-color: %s; -fx-text-fill: %s;".formatted(
+                FxHelper.colorToString(color),
+                FxHelper.colorToString(foregroundColor))
+        );
         label.setAlignment(Pos.BASELINE_CENTER);
-        label.setFont(new Font(FxHelper.getScaledFontSize() * 0.9));
-        label.setTextFill(Color.WHITE);
+        label.setFont(new Font(FxHelper.getScaledFontSize() * 0.95));
+        label.setTextFill(getThemeForegroundColor());
 
         return label;
     }
 
     public static Label createTitleDev(String title) {
-        return createTitle(title + "-dev", FxHelper.createBackground(Color.RED));
+        return createTitle(title + "-dev", FxHelper.createBackground(Color.RED), Color.WHITE);
     }
 
     /**
@@ -192,18 +197,6 @@ public class Mapton {
 
     public static DateFormat getDefaultDateFormat() {
         return DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM);
-    }
-
-    public static Background getDefaultThemeBackground() {
-        return FxHelper.createBackground(getDefaultThemeColor());
-    }
-
-    public static Color getDefaultThemeColor() {
-        return Color.web("#102039");
-    }
-
-    public static Color getDefaultThemeForegroundColor() {
-        return Color.WHITE;
     }
 
     public static synchronized MEngine getEngine() {
@@ -257,15 +250,15 @@ public class Mapton {
     }
 
     public static Background getThemeBackground() {
-        return FxHelper.createBackground(getThemeColor());
+        return FxHelper.createBackground(getThemeBackgroundColor());
     }
 
-    public static Color getThemeColor() {
-        return Mapton.getGlobalState().getOrDefault(MKey.APP_THEME_BACKGROUND, getDefaultThemeColor());
+    public static Color getThemeBackgroundColor() {
+        return sThemeBackgroundColor;
     }
 
     public static Color getThemeForegroundColor() {
-        return Mapton.getGlobalState().getOrDefault(MKey.APP_THEME_FOREGROUND, getDefaultThemeForegroundColor());
+        return sThemeForegroundColor;
     }
 
     public static boolean isNightMode() {
@@ -340,6 +333,14 @@ public class Mapton {
         } else {
             return s;
         }
+    }
+
+    public static void setThemeBackgroundColor(Color color) {
+        sThemeBackgroundColor = color;
+    }
+
+    public static void setThemeForegroundColor(Color color) {
+        sThemeForegroundColor = color;
     }
 
     protected Mapton() {
