@@ -51,14 +51,16 @@ public class ParameterEditor extends BaseTopoEditor {
     private final ResourceBundle mBundle = NbBundle.getBundle(ParameterEditor.class);
     private final CheckBox mDagCheckBox = new CheckBox("Dag");
     private final Spinner mDagSpinner = new Spinner<Integer>(0, 999, 1);
+    private final CheckBox mGruppCheckBox = new CheckBox("Grupp");
+    private final ComboBox<String> mGruppComboBox = new ComboBox<>();
+    private final CheckBox mKategoriCheckBox = new CheckBox("Kategori");
+    private final ComboBox<String> mKategoriComboBox = new ComboBox<>();
     private final LogPanel mPreviewLogPanel = new LogPanel();
     private final TextArea mSourceTextArea = new TextArea();
     private final CheckBox mStatusCheckBox = new CheckBox("Status");
-    private final CheckBox mGruppCheckBox = new CheckBox("Grupp");
-    private final CheckBox mKategoriCheckBox = new CheckBox("Kategori");
     private final ComboBox<String> mStatusComboBox = new ComboBox<>();
-    private final ComboBox<String> mGruppComboBox = new ComboBox<>();
-    private final ComboBox<String> mKategoriComboBox = new ComboBox<>();
+    private final CheckBox mUtforareCheckBox = new CheckBox("Utförare");
+    private final ComboBox<String> mUtforareComboBox = new ComboBox<>();
 
     public ParameterEditor() {
         setName("Parametrar");
@@ -105,9 +107,14 @@ public class ParameterEditor extends BaseTopoEditor {
         mGruppComboBox.getItems().setAll(grupper);
         var kategorier = new TreeSet<>(mManager.getAllItems().stream().map(p -> p.getCategory()).toList());
         mKategoriComboBox.getItems().setAll(kategorier);
+        var utforare = new TreeSet<>(mManager.getAllItems().stream().map(p -> p.getOperator()).toList());
+        mUtforareComboBox.getItems().setAll(utforare);
 
         mDagSpinner.disableProperty().bind(mDagCheckBox.selectedProperty().not());
         mStatusComboBox.disableProperty().bind(mStatusCheckBox.selectedProperty().not());
+        mUtforareComboBox.disableProperty().bind(mUtforareCheckBox.selectedProperty().not());
+        mGruppComboBox.disableProperty().bind(mGruppCheckBox.selectedProperty().not());
+        mKategoriComboBox.disableProperty().bind(mKategoriCheckBox.selectedProperty().not());
 
         var settingsGridPane = new GridPane();
         int col = 0;
@@ -115,9 +122,10 @@ public class ParameterEditor extends BaseTopoEditor {
         settingsGridPane.addColumn(col++, mStatusCheckBox, mStatusComboBox);
         settingsGridPane.addColumn(col++, mGruppCheckBox, mGruppComboBox);
         settingsGridPane.addColumn(col++, mKategoriCheckBox, mKategoriComboBox);
+        settingsGridPane.addColumn(col++, mUtforareCheckBox, mUtforareComboBox);
         FxHelper.setEditable(true, mDagSpinner);
         FxHelper.autoCommitSpinners(mDagSpinner);
-        FxHelper.setEditable(true, mGruppComboBox, mKategoriComboBox);
+        FxHelper.setEditable(true, mGruppComboBox, mKategoriComboBox, mUtforareComboBox);
 
         mBorderPane.setTop(settingsGridPane);
 
@@ -181,6 +189,7 @@ public class ParameterEditor extends BaseTopoEditor {
         addConditionlly(sb, mStatusCheckBox.isSelected(), "status");
         addConditionlly(sb, mGruppCheckBox.isSelected(), "grupp");
         addConditionlly(sb, mKategoriCheckBox.isSelected(), "kategori");
+        addConditionlly(sb, mUtforareCheckBox.isSelected(), "utf");
         sb.append("\n");
 
         for (var name : getPointWithNavetNames(StringUtils.split(mSourceTextArea.getText(), "\n"))) {
@@ -189,11 +198,14 @@ public class ParameterEditor extends BaseTopoEditor {
             addConditionlly(sb, mStatusCheckBox.isSelected(), mStatusComboBox.getValue());
             addConditionlly(sb, mGruppCheckBox.isSelected(), mGruppComboBox.getValue());
             addConditionlly(sb, mKategoriCheckBox.isSelected(), mKategoriComboBox.getValue());
+            addConditionlly(sb, mUtforareCheckBox.isSelected(), mUtforareComboBox.getValue());
 
             sb.append("\n");
         }
 
-        mPreviewLogPanel.println(sb.toString());
+        var result = StringUtils.removeEnd(sb.toString(), "\n");
+        result = StringUtils.removeEnd(result, "\n");
+        mPreviewLogPanel.println(result);
     }
 
 }
