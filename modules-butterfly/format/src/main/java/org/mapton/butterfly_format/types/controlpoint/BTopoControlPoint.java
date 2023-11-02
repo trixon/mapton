@@ -22,6 +22,7 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.butterfly_format.types.BAlarm;
@@ -140,8 +141,71 @@ public class BTopoControlPoint extends BBaseControlPoint {
         private transient final DeltaRolling deltaRolling = new DeltaRolling();
         private transient final DeltaZero deltaZero = new DeltaZero();
         private transient LinkedHashMap<String, Integer> measuremenCountStats = new LinkedHashMap<>();
-        private transient ArrayList<BTopoControlPointObservation> observationsFiltered;
-        private transient ArrayList<BTopoControlPointObservation> observationsRaw;
+        private transient ArrayList<BTopoControlPointObservation> observationsAllCalculated;
+        private transient ArrayList<BTopoControlPointObservation> observationsAllRaw;
+        private transient ArrayList<BTopoControlPointObservation> observationsTimeFiltered;
+
+        public void calculateObservations(List<BTopoControlPointObservation> observations) {
+            if (observations.isEmpty()) {
+                return;
+            }
+
+            var latestZero = observations.stream()
+                    .filter(o -> o.isZeroMeasurement())
+                    .reduce((first, second) -> second).orElse(observations.getFirst());
+
+            Double zX = latestZero.getMeasuredX();
+            Double zY = latestZero.getMeasuredY();
+            Double zZ = latestZero.getMeasuredZ();
+            var rX = 0.0;
+            var rY = 0.0;
+            var rZ = 0.0;
+
+            for (int i = 0; i < observations.size(); i++) {
+                var o = observations.get(i);
+                BTopoControlPointObservation prev = null;
+                if (i > 0) {
+                    prev = observations.get(i - 1);
+                }
+                Double x = o.getMeasuredX();
+                Double y = o.getMeasuredY();
+                Double z = o.getMeasuredZ();
+
+                if (ObjectUtils.allNotNull(x, zX)) {
+                    o.ext().setDeltaX(x - zX);
+                }
+                if (ObjectUtils.allNotNull(y, zY)) {
+                    o.ext().setDeltaY(y - zY);
+                }
+                if (ObjectUtils.allNotNull(z, zZ)) {
+                    o.ext().setDeltaZ(z - zZ);
+                }
+
+                if (o.isReplacementMeasurement() && prev != null) {
+                    var mX = o.getMeasuredX();
+                    var pX = prev.getMeasuredX();
+                    if (ObjectUtils.allNotNull(mX, pX)) {
+                        rX = rX + mX - pX;
+                        o.ext().setDeltaX(o.ext().getDeltaX() + rX);
+                    }
+
+                    var mY = o.getMeasuredY();
+                    var pY = prev.getMeasuredY();
+                    if (ObjectUtils.allNotNull(mY, pY)) {
+                        rY = rY + mY - pY;
+                        o.ext().setDeltaY(o.ext().getDeltaY() + rY);
+                    }
+
+                    var mZ = o.getMeasuredZ();
+                    var pZ = prev.getMeasuredZ();
+                    if (ObjectUtils.allNotNull(mZ, pZ)) {
+                        rZ = rZ + mZ - pZ;
+                        o.ext().setDeltaZ(o.ext().getDeltaZ() + rZ);
+                    }
+                }
+            }
+
+        }
 
         public DeltaRolling deltaRolling() {
             return deltaRolling;
@@ -204,16 +268,16 @@ public class BTopoControlPoint extends BBaseControlPoint {
         }
 
         public int getNumOfObservations() {
-            return getObservationsRaw().size();
+            return getObservationsAllRaw().size();
         }
 
         public int getNumOfObservationsFiltered() {
-            return getObservationsFiltered().size();
+            return getObservationsTimeFiltered().size();
         }
 
         public BTopoControlPointObservation getObservationFilteredFirst() {
             try {
-                return getObservationsFiltered().getFirst();
+                return getObservationsTimeFiltered().getFirst();
             } catch (Exception e) {
                 return null;
             }
@@ -229,7 +293,7 @@ public class BTopoControlPoint extends BBaseControlPoint {
 
         public BTopoControlPointObservation getObservationFilteredLast() {
             try {
-                return getObservationsFiltered().getLast();
+                return getObservationsTimeFiltered().getLast();
             } catch (Exception e) {
                 return null;
             }
@@ -245,7 +309,7 @@ public class BTopoControlPoint extends BBaseControlPoint {
 
         public BTopoControlPointObservation getObservationRawFirst() {
             try {
-                return getObservationsRaw().getFirst();
+                return getObservationsAllRaw().getFirst();
             } catch (Exception e) {
                 return null;
             }
@@ -261,7 +325,7 @@ public class BTopoControlPoint extends BBaseControlPoint {
 
         public BTopoControlPointObservation getObservationRawLast() {
             try {
-                return getObservationsRaw().getLast();
+                return getObservationsAllRaw().getLast();
             } catch (Exception e) {
                 return null;
             }
@@ -275,32 +339,44 @@ public class BTopoControlPoint extends BBaseControlPoint {
             }
         }
 
-        public ArrayList<BTopoControlPointObservation> getObservationsFiltered() {
-            if (observationsFiltered == null) {
-                observationsFiltered = new ArrayList<>();
+        public ArrayList<BTopoControlPointObservation> getObservationsAllCalculated() {
+            if (observationsAllCalculated == null) {
+                observationsAllCalculated = new ArrayList<>();
             }
 
-            return observationsFiltered;
+            return observationsAllCalculated;
         }
 
-        public ArrayList<BTopoControlPointObservation> getObservationsRaw() {
-            if (observationsRaw == null) {
-                observationsRaw = new ArrayList<>();
+        public ArrayList<BTopoControlPointObservation> getObservationsAllRaw() {
+            if (observationsAllRaw == null) {
+                observationsAllRaw = new ArrayList<>();
             }
 
-            return observationsRaw;
+            return observationsAllRaw;
+        }
+
+        public ArrayList<BTopoControlPointObservation> getObservationsTimeFiltered() {
+            if (observationsTimeFiltered == null) {
+                observationsTimeFiltered = new ArrayList<>();
+            }
+
+            return observationsTimeFiltered;
         }
 
         public void setMeasurementCountStats(LinkedHashMap<String, Integer> measuremenCountStats) {
             this.measuremenCountStats = measuremenCountStats;
         }
 
-        public void setObservationsFiltered(ArrayList<BTopoControlPointObservation> observationsFiltered) {
-            this.observationsFiltered = observationsFiltered;
+        public void setObservationsAllCalculated(ArrayList<BTopoControlPointObservation> observationsCalculated) {
+            this.observationsAllCalculated = observationsCalculated;
         }
 
-        public void setObservationsRaw(ArrayList<BTopoControlPointObservation> observationsRaw) {
-            this.observationsRaw = observationsRaw;
+        public void setObservationsAllRaw(ArrayList<BTopoControlPointObservation> observationsAllRaw) {
+            this.observationsAllRaw = observationsAllRaw;
+        }
+
+        public void setObservationsTimeFiltered(ArrayList<BTopoControlPointObservation> observationsTimeFiltered) {
+            this.observationsTimeFiltered = observationsTimeFiltered;
         }
 
         public abstract class Delta {
@@ -390,10 +466,11 @@ public class BTopoControlPoint extends BBaseControlPoint {
 
             @Override
             public Double getDeltaX() {
-                var observations = ext().observationsFiltered;
+                var observations = ext().observationsTimeFiltered;
                 if (observations == null || observations.isEmpty()) {
                     return null;
                 }
+
                 if (ObjectUtils.allNotNull(getRollingX(), observations.getLast().getMeasuredX())) {
                     return observations.getLast().getMeasuredX() - getRollingX();
                 } else {
@@ -403,10 +480,11 @@ public class BTopoControlPoint extends BBaseControlPoint {
 
             @Override
             public Double getDeltaY() {
-                var observations = ext().observationsFiltered;
+                var observations = ext().observationsTimeFiltered;
                 if (observations == null || observations.isEmpty()) {
                     return null;
                 }
+
                 if (ObjectUtils.allNotNull(getRollingY(), observations.getLast().getMeasuredY())) {
                     return observations.getLast().getMeasuredY() - getRollingY();
                 } else {
@@ -416,10 +494,11 @@ public class BTopoControlPoint extends BBaseControlPoint {
 
             @Override
             public Double getDeltaZ() {
-                var observations = ext().observationsFiltered;
+                var observations = ext().observationsTimeFiltered;
                 if (observations == null || observations.isEmpty()) {
                     return null;
                 }
+
                 if (ObjectUtils.allNotNull(getRollingZ(), observations.getLast().getMeasuredZ())) {
                     return observations.getLast().getMeasuredZ() - getRollingZ();
                 } else {
@@ -432,17 +511,17 @@ public class BTopoControlPoint extends BBaseControlPoint {
 
             @Override
             public Double getDeltaX() {
-                return getObservationsFiltered().isEmpty() ? null : getObservationsFiltered().getLast().ext().getDeltaX();
+                return getObservationsTimeFiltered().isEmpty() ? null : getObservationsTimeFiltered().getLast().ext().getDeltaX();
             }
 
             @Override
             public Double getDeltaY() {
-                return getObservationsFiltered().isEmpty() ? null : getObservationsFiltered().getLast().ext().getDeltaY();
+                return getObservationsTimeFiltered().isEmpty() ? null : getObservationsTimeFiltered().getLast().ext().getDeltaY();
             }
 
             @Override
             public Double getDeltaZ() {
-                return getObservationsFiltered().isEmpty() ? null : getObservationsFiltered().getLast().ext().getDeltaZ();
+                return getObservationsTimeFiltered().isEmpty() ? null : getObservationsTimeFiltered().getLast().ext().getDeltaZ();
             }
         }
 

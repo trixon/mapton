@@ -420,8 +420,8 @@ public class TopoFilter extends FormFilter<TopoManager> {
 
     private boolean validateMeasCode(BTopoControlPoint p) {
         var valid = mMeasCodeCheckModel.isEmpty()
-                || mMeasCodeCheckModel.isChecked(getBundle().getString("measZeroCount")) && p.ext().getObservationsRaw().stream().filter(oo -> oo.isZeroMeasurement()).count() > 1
-                || mMeasCodeCheckModel.isChecked(getBundle().getString("measReplacementCount")) && p.ext().getObservationsRaw().stream().filter(oo -> oo.isReplacementMeasurement()).count() > 0;
+                || mMeasCodeCheckModel.isChecked(getBundle().getString("measZeroCount")) && p.ext().getObservationsAllRaw().stream().filter(oo -> oo.isZeroMeasurement()).count() > 1
+                || mMeasCodeCheckModel.isChecked(getBundle().getString("measReplacementCount")) && p.ext().getObservationsAllRaw().stream().filter(oo -> oo.isReplacementMeasurement()).count() > 0;
 
         return valid;
     }
@@ -432,7 +432,7 @@ public class TopoFilter extends FormFilter<TopoManager> {
         }
 
         var lim = mNumOfMeasValueProperty.get();
-        var value = p.ext().getObservationsRaw().size();
+        var value = p.ext().getObservationsAllRaw().size();
 
         if (lim == 0) {
             return value == 0;
@@ -467,7 +467,7 @@ public class TopoFilter extends FormFilter<TopoManager> {
             return true;
         }
 
-        var observations = p.ext().getObservationsFiltered();
+        var observations = p.ext().getObservationsTimeFiltered();
         if (observations.size() > 1) {
             var first = observations.get(observations.size() - 2);
             var last = observations.get(observations.size() - 1);
@@ -497,9 +497,9 @@ public class TopoFilter extends FormFilter<TopoManager> {
         }
 
         if (mMeasLatestOperator.get()) {
-            return mMeasOperatorsCheckModel.getCheckedItems().contains(p.ext().getObservationsRaw().getLast().getOperator());
+            return mMeasOperatorsCheckModel.getCheckedItems().contains(p.ext().getObservationsAllRaw().getLast().getOperator());
         } else {
-            var pointOperators = p.ext().getObservationsRaw().stream().map(o -> o.getOperator()).collect(Collectors.toSet());
+            var pointOperators = p.ext().getObservationsAllRaw().stream().map(o -> o.getOperator()).collect(Collectors.toSet());
 
             for (var operator : mMeasOperatorsCheckModel.getCheckedItems()) {
                 if (pointOperators.contains(operator)) {

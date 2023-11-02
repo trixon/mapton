@@ -54,7 +54,7 @@ public class ComponentRenderer extends ComponentRendererBase {
     }
 
     private void plotBearing(BTopoControlPoint p, Position position) {
-        int size = p.ext().getObservationsFiltered().size();
+        int size = p.ext().getObservationsTimeFiltered().size();
         if (!sCheckModel.isChecked(RenderComponent.BEARING)
                 || p.getDimension() == BDimension._1d
                 || p.ext().getNumOfObservationsFiltered() == 0) {
@@ -65,7 +65,7 @@ public class ComponentRenderer extends ComponentRendererBase {
 
         boolean first = true;
         for (int i = size - 1; i >= size - maxNumberOfItemsToPlot + 1; i--) {
-            var o = p.ext().getObservationsFiltered().get(i);
+            var o = p.ext().getObservationsTimeFiltered().get(i);
 
             try {
                 var bearing = o.ext().getBearing();

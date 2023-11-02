@@ -156,7 +156,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
         var measOperatorsCheckModel = mMeasOperatorsCheckComboBox.getCheckModel();
         var checkedMeasOperators = measOperatorsCheckModel.getCheckedItems();
         var allMeasOperator = new TreeSet<>(topoControlPoints.stream()
-                .flatMap(p -> p.ext().getObservationsRaw().stream().map(o -> o.getOperator()))
+                .flatMap(p -> p.ext().getObservationsAllRaw().stream().map(o -> o.getOperator()))
                 .collect(Collectors.toSet()));
 
         mMeasOperatorsCheckComboBox.getItems().setAll(allMeasOperator);

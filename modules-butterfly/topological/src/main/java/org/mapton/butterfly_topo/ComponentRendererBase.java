@@ -54,8 +54,8 @@ public abstract class ComponentRendererBase {
     }
 
     public boolean isValidForTraceVector3dPlot(BTopoControlPoint p) {
-        var o1 = p.ext().getObservationsFiltered().getFirst();
-        var o2 = p.ext().getObservationsFiltered().getLast();
+        var o1 = p.ext().getObservationsTimeFiltered().getFirst();
+        var o2 = p.ext().getObservationsTimeFiltered().getLast();
 
         return ObjectUtils.allNotNull(o1.getMeasuredZ(), o2.getMeasuredZ());
     }
@@ -76,8 +76,8 @@ public abstract class ComponentRendererBase {
             addRenderable(groundPath, true);
 
             var currentPosition = startPosition;
-//            var o1 = p.ext().getObservationsFiltered().getFirst();
-            var o2 = p.ext().getObservationsFiltered().getLast();
+//            var o1 = p.ext().getObservationsTimeFiltered().getFirst();
+            var o2 = p.ext().getObservationsTimeFiltered().getLast();
 
             if (o2.ext().getDeltaZ() != null) {
                 var x = p.getZeroX() + MathHelper.convertDoubleToDouble(o2.ext().getDeltaX()) * TopoLayerBundle.SCALE_FACTOR;

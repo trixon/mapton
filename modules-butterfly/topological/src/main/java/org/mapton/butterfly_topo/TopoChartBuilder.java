@@ -126,7 +126,7 @@ public class TopoChartBuilder extends ChartBuilder<BTopoControlPoint> {
         mTimeSeries2d.clear();
         mTimeSeries3d.clear();
 
-        p.ext().getObservationsFiltered().forEach(o -> {
+        p.ext().getObservationsTimeFiltered().forEach(o -> {
             var minute = mChartHelper.convertToMinute(o.getDate());
             if (p.getDimension() == BDimension._1d || p.getDimension() == BDimension._3d) {
                 mTimeSeriesH.add(minute, o.ext().getDeltaZ());

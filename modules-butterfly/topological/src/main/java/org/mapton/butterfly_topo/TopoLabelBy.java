@@ -62,7 +62,7 @@ public enum TopoLabelBy {
     }),
     DATE_FIRST(Strings.CAT_DATE, Dict.FIRST.toString(), p -> {
 //        try {
-//            return p.ext().getObservationsFiltered().getFirst().getDate().toLocalDate().toString();
+//            return p.ext().getObservationsTimeFiltered().getFirst().getDate().toLocalDate().toString();
 //        } catch (Exception e) {
 //            return "-";
 //        }
@@ -103,7 +103,7 @@ public enum TopoLabelBy {
         return p.getFrequency() != null ? p.getFrequency().toString() : "--";
     }),
     MEAS_LATEST_OPERATOR(Strings.CAT_MEAS, SDict.LATEST_S.toString().formatted(SDict.OPERATOR.toLower()), p -> {
-        return p.ext().getObservationsRaw().getLast().getOperator();
+        return p.ext().getObservationsAllRaw().getLast().getOperator();
     }),
     MEAS_COUNT_ALL(Strings.CAT_MEAS, Strings.MEAS_COUNT_ALL, p -> {
         return "%d".formatted(

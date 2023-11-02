@@ -57,8 +57,8 @@ public class TopoPropertiesBuilder extends PropertiesBuilder<BTopoControlPoint> 
         var measurements = "%d / %d    (%d - %d)".formatted(
                 p.ext().getNumOfObservationsFiltered(),
                 p.ext().getNumOfObservations(),
-                p.ext().getObservationsRaw().stream().filter(obs -> obs.isZeroMeasurement()).count(),
-                p.ext().getObservationsRaw().stream().filter(obs -> obs.isReplacementMeasurement()).count()
+                p.ext().getObservationsAllRaw().stream().filter(obs -> obs.isZeroMeasurement()).count(),
+                p.ext().getObservationsAllRaw().stream().filter(obs -> obs.isReplacementMeasurement()).count()
         );
         String validFromTo = null;
         if (ObjectUtils.anyNotNull(p.getDateValidFrom(), p.getDateValidTo())) {

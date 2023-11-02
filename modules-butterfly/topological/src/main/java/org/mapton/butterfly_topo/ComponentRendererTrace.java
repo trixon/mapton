@@ -61,9 +61,9 @@ public class ComponentRendererTrace extends ComponentRendererBase {
         if (ObjectUtils.anyNull(p.getZeroX(), p.getZeroY(), p.getZeroZ())) {
             return;
         }
-        var o1 = p.ext().getObservationsFiltered().getFirst();
+        var o1 = p.ext().getObservationsTimeFiltered().getFirst();
 
-        var collectedNodes = p.ext().getObservationsFiltered().stream()
+        var collectedNodes = p.ext().getObservationsTimeFiltered().stream()
                 .map(o -> {
                     var x = o1.getMeasuredX() + MathHelper.convertDoubleToDouble(o.ext().getDeltaX()) * TopoLayerBundle.SCALE_FACTOR;
                     var y = o1.getMeasuredY() + MathHelper.convertDoubleToDouble(o.ext().getDeltaY()) * TopoLayerBundle.SCALE_FACTOR;
