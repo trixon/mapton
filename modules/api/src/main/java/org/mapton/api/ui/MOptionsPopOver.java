@@ -15,8 +15,11 @@
  */
 package org.mapton.api.ui;
 
+import org.mapton.api.MKey;
+import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 
 /**
@@ -29,7 +32,13 @@ public class MOptionsPopOver extends MPopOver {
         String title = Dict.OPTIONS.toString();
         setTitle(title);
         getAction().setText(title);
-        getAction().setGraphic(MaterialIcon._Action.SETTINGS.getImageView(getIconSizeToolBarInt()));
+
+        //Due to the lookup we get here before Core.init, so set the icon later
+        Mapton.getExecutionFlow().executeWhenReady(MKey.EXECUTION_FLOW_MAP_INITIALIZED, () -> {
+            FxHelper.runLater(() -> {
+                getAction().setGraphic(MaterialIcon._Action.SETTINGS.getImageView(getIconSizeToolBarInt()));
+            });
+        });
     }
 
 }

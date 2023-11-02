@@ -86,7 +86,6 @@ public class Initializer implements Runnable {
 
             preferences = NbPreferences.root().node("org/netbeans/swing/laf/flatlaf");
             PrefsHelper.putIfAbsent(preferences, "accentColor", brandingAccent);
-
         } catch (BackingStoreException ex) {
             //Exceptions.printStackTrace(ex);
         }

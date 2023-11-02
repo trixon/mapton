@@ -35,6 +35,7 @@ import javafx.scene.control.ButtonBase;
 import javafx.scene.control.CheckBoxTreeItem;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToolBar;
 import javafx.scene.control.TreeItem;
@@ -42,6 +43,7 @@ import javafx.scene.control.cell.CheckBoxTreeCell;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.CheckModel;
 import org.controlsfx.control.CheckTreeView;
@@ -102,7 +104,14 @@ public class LayerObjectView extends BorderPane implements MActivatable {
         mTreeItemExpanderSet = Collections.synchronizedSet(new HashSet<>());
 
         Platform.runLater(() -> {
-            createUI();
+            setCenter(new ProgressIndicator());
+        });
+
+        Mapton.getExecutionFlow().executeWhenReady(MKey.EXECUTION_FLOW_MAP_INITIALIZED, () -> {
+            FxHelper.runLater(() -> {
+                createUI();
+                refresh(mMap);
+            });
         });
     }
 
@@ -112,7 +121,7 @@ public class LayerObjectView extends BorderPane implements MActivatable {
     }
 
     synchronized void refresh(WorldWindowPanel map) {
-        if (mMap == null) {
+        if (ObjectUtils.anyNull(mRootItem, mMap)) {
             mMap = map;
             var delayedResetRunner = new DelayedResetRunner(100, () -> {
                 refresh(map);
