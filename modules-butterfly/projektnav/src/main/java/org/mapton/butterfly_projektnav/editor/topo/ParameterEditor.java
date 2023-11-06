@@ -21,8 +21,10 @@ import java.util.TreeSet;
 import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import org.apache.commons.lang3.StringUtils;
@@ -61,6 +63,12 @@ public class ParameterEditor extends BaseTopoEditor {
     private final ComboBox<String> mStatusComboBox = new ComboBox<>();
     private final CheckBox mUtforareCheckBox = new CheckBox("Utförare");
     private final ComboBox<String> mUtforareComboBox = new ComboBox<>();
+    private final CheckBox mDatFromCheckBox = new CheckBox("Från");
+    private final CheckBox mDatToCheckBox = new CheckBox("Till");
+    private final CheckBox mUtglesningCheckBox = new CheckBox("Utglesning");
+    private final TextField mUtglesningTextField = new TextField("MEDIAN / 21D ");
+    private final DatePicker mDatFromDatePicker = new DatePicker();
+    private final DatePicker mDatToDatePicker = new DatePicker();
 
     public ParameterEditor() {
         setName("Parametrar");
@@ -115,6 +123,9 @@ public class ParameterEditor extends BaseTopoEditor {
         mUtforareComboBox.disableProperty().bind(mUtforareCheckBox.selectedProperty().not());
         mGruppComboBox.disableProperty().bind(mGruppCheckBox.selectedProperty().not());
         mKategoriComboBox.disableProperty().bind(mKategoriCheckBox.selectedProperty().not());
+        mDatFromDatePicker.disableProperty().bind(mDatFromCheckBox.selectedProperty().not());
+        mDatToDatePicker.disableProperty().bind(mDatToCheckBox.selectedProperty().not());
+        mUtglesningTextField.disableProperty().bind(mUtglesningCheckBox.selectedProperty().not());
 
         var settingsGridPane = new GridPane();
         int col = 0;
@@ -123,6 +134,9 @@ public class ParameterEditor extends BaseTopoEditor {
         settingsGridPane.addColumn(col++, mGruppCheckBox, mGruppComboBox);
         settingsGridPane.addColumn(col++, mKategoriCheckBox, mKategoriComboBox);
         settingsGridPane.addColumn(col++, mUtforareCheckBox, mUtforareComboBox);
+        settingsGridPane.addColumn(col++, mDatFromCheckBox, mDatFromDatePicker);
+        settingsGridPane.addColumn(col++, mDatToCheckBox, mDatToDatePicker);
+        settingsGridPane.addColumn(col++, mUtglesningCheckBox, mUtglesningTextField);
         FxHelper.setEditable(true, mDagSpinner);
         FxHelper.autoCommitSpinners(mDagSpinner);
         FxHelper.setEditable(true, mGruppComboBox, mKategoriComboBox, mUtforareComboBox);
@@ -190,6 +204,9 @@ public class ParameterEditor extends BaseTopoEditor {
         addConditionlly(sb, mGruppCheckBox.isSelected(), "grupp");
         addConditionlly(sb, mKategoriCheckBox.isSelected(), "kategori");
         addConditionlly(sb, mUtforareCheckBox.isSelected(), "utf");
+        addConditionlly(sb, mDatFromCheckBox.isSelected(), "df");
+        addConditionlly(sb, mDatToCheckBox.isSelected(), "dt");
+        addConditionlly(sb, mUtglesningCheckBox.isSelected(), "sparse");
         sb.append("\n");
 
         for (var name : getPointWithNavetNames(StringUtils.split(mSourceTextArea.getText(), "\n"))) {
@@ -199,6 +216,9 @@ public class ParameterEditor extends BaseTopoEditor {
             addConditionlly(sb, mGruppCheckBox.isSelected(), mGruppComboBox.getValue());
             addConditionlly(sb, mKategoriCheckBox.isSelected(), mKategoriComboBox.getValue());
             addConditionlly(sb, mUtforareCheckBox.isSelected(), mUtforareComboBox.getValue());
+            addConditionlly(sb, mDatFromCheckBox.isSelected(), mDatFromDatePicker.getValue() == null ? "ERROR" : mDatFromDatePicker.getValue().toString());
+            addConditionlly(sb, mDatToCheckBox.isSelected(), mDatToDatePicker.getValue() == null ? "ERROR" : mDatToDatePicker.getValue().toString());
+            addConditionlly(sb, mUtglesningCheckBox.isSelected(), mUtglesningTextField.getText());
 
             sb.append("\n");
         }
