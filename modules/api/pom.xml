@@ -277,7 +277,7 @@
         <dependency>
             <groupId>com.dlsc.gemsfx</groupId>
             <artifactId>gemsfx</artifactId>
-            <version>1.84.0</version>
+            <version>1.90.0</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.openjfx</groupId>
@@ -299,7 +299,7 @@
         <dependency>
             <groupId>eu.hansolo</groupId>
             <artifactId>jdktools</artifactId>
-            <version>17.0.39</version>
+            <version>17.0.41</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.openjfx</groupId>
