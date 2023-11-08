@@ -242,8 +242,7 @@ public class TopoLayerBundle extends LayerBundle {
             label = "ERROR %s <<<<<<<<".formatted(p.getName());
         }
 
-        var offsetPosition = WWHelper.movePolar(position, 45, SYMBOL_RADIUS * 1.2);
-        var placemark = new PointPlacemark(offsetPosition);
+        var placemark = new PointPlacemark(position);
         placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
         placemark.setAttributes(mAttributeManager.getLabelPlacemarkAttributes());
         placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(mAttributeManager.getLabelPlacemarkAttributes(), 1.5));

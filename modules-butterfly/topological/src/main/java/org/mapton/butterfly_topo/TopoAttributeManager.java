@@ -29,6 +29,7 @@ import org.mapton.butterfly_topo.shared.ColorBy;
 import static org.mapton.butterfly_topo.shared.ColorBy.FREQUENCY;
 import static org.mapton.butterfly_topo.shared.ColorBy.MEAS_NEED;
 import static org.mapton.butterfly_topo.shared.ColorBy.STYLE;
+import se.trixon.almond.util.GraphicsHelper;
 
 /**
  *
@@ -49,6 +50,7 @@ public class TopoAttributeManager {
     private PointPlacemarkAttributes[] mPinAttributes;
     private BasicShapeAttributes[] mSymbolAttributes;
     private final TopoConfig mTopoConfig = new TopoConfig();
+    private BasicShapeAttributes mTraceAttribute;
 
     public static TopoAttributeManager getInstance() {
         return Holder.INSTANCE;
@@ -77,6 +79,22 @@ public class TopoAttributeManager {
 
     public ColorBy getColorBy() {
         return mColorBy;
+    }
+
+    public BasicShapeAttributes getComponentCurrentAttributes(BTopoControlPoint p) {
+        if (mComponentVectorCurrentAttributes == null) {
+            mComponentVectorCurrentAttributes = new BasicShapeAttributes[4];
+            for (int i = 0; i < 4; i++) {
+                var attrs = new BasicShapeAttributes();
+                attrs.setDrawOutline(false);
+                attrs.setInteriorMaterial(ButterflyHelper.getAlarmMaterial(i - 1));
+                attrs.setEnableLighting(true);
+                attrs.setInteriorOpacity(0.75);
+                mComponentVectorCurrentAttributes[i] = attrs;
+            }
+        }
+
+        return mComponentVectorCurrentAttributes[TopoHelper.getAlarmLevel(p) + 1];
     }
 
     public BasicShapeAttributes getComponentGroundPathAttributes() {
@@ -113,21 +131,6 @@ public class TopoAttributeManager {
         }
 
         return mComponentVector3dAttributes[TopoHelper.getAlarmLevel(p) + 1];
-    }
-
-    public BasicShapeAttributes getComponentVectorCurrentAttributes(BTopoControlPoint p) {
-        if (mComponentVectorCurrentAttributes == null) {
-            mComponentVectorCurrentAttributes = new BasicShapeAttributes[4];
-            for (int i = 0; i < 4; i++) {
-                var attrs = new BasicShapeAttributes();
-                attrs.setDrawOutline(false);
-                attrs.setInteriorMaterial(ButterflyHelper.getAlarmMaterial(i - 1));
-                attrs.setEnableLighting(true);
-                mComponentVectorCurrentAttributes[i] = attrs;
-            }
-        }
-
-        return mComponentVectorCurrentAttributes[TopoHelper.getAlarmLevel(p) + 1];
     }
 
     public BasicShapeAttributes getComponentZeroAttributes() {
@@ -175,7 +178,9 @@ public class TopoAttributeManager {
         if (mLabelPlacemarkAttributes == null) {
             mLabelPlacemarkAttributes = new PointPlacemarkAttributes();
             mLabelPlacemarkAttributes.setLabelScale(1.6);
-            mLabelPlacemarkAttributes.setDrawImage(false);
+            mLabelPlacemarkAttributes.setImageColor(GraphicsHelper.colorAddAlpha(Color.RED, 0));
+            mLabelPlacemarkAttributes.setScale(0.75);
+            mLabelPlacemarkAttributes.setImageAddress("images/pushpins/plain-white.png");
         }
 
         return mLabelPlacemarkAttributes;
@@ -194,7 +199,7 @@ public class TopoAttributeManager {
             }
         }
 
-        var attrs = mPinAttributes[TopoHelper.getAlarmLevelHeight(p) + 1];
+        var attrs = mPinAttributes[TopoHelper.getAlarmLevel(p) + 1];
 
         if (mColorBy != null && mColorBy != ColorBy.ALARM) {
             attrs = new PointPlacemarkAttributes(attrs);
@@ -216,13 +221,25 @@ public class TopoAttributeManager {
             }
         }
 
-        var attrs = mSymbolAttributes[TopoHelper.getAlarmLevelHeight(p) + 1];
+        var attrs = mSymbolAttributes[TopoHelper.getAlarmLevel(p) + 1];
         if (mColorBy != null && mColorBy != ColorBy.ALARM) {
             attrs = new BasicShapeAttributes(attrs);
             attrs.setInteriorMaterial(new Material(getColor(mColorBy, p)));
         }
 
         return attrs;
+    }
+
+    public BasicShapeAttributes getTraceAttribute() {
+        if (mTraceAttribute == null) {
+            mTraceAttribute = new BasicShapeAttributes();
+            mTraceAttribute.setDrawOutline(true);
+            mTraceAttribute.setOutlineMaterial(Material.CYAN);
+            mTraceAttribute.setEnableLighting(false);
+            mTraceAttribute.setOutlineWidth(0.6);
+        }
+
+        return mTraceAttribute;
     }
 
     public void setColorBy(ColorBy colorBy) {
