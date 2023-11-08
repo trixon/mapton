@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_topo;
 
-import org.mapton.butterfly_topo.api.TopoManager;
 import static j2html.TagCreator.b;
 import static j2html.TagCreator.body;
 import static j2html.TagCreator.each;
@@ -50,6 +49,7 @@ import org.mapton.api.ui.forms.FormHelper;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.controlpoint.BTopoControlPoint;
+import org.mapton.butterfly_topo.api.TopoManager;
 import org.mapton.butterfly_topo.shared.AlarmFilter;
 import se.trixon.almond.util.BooleanHelper;
 import se.trixon.almond.util.DateHelper;
@@ -419,9 +419,10 @@ public class TopoFilter extends FormFilter<TopoManager> {
     }
 
     private boolean validateMeasCode(BTopoControlPoint p) {
+        var firstNotZero = !p.ext().getObservationRawFirstDate().equals(p.getDateZero());
         var valid = mMeasCodeCheckModel.isEmpty()
-                || mMeasCodeCheckModel.isChecked(getBundle().getString("measZeroCount")) && p.ext().getObservationsAllRaw().stream().filter(oo -> oo.isZeroMeasurement()).count() > 1
-                || mMeasCodeCheckModel.isChecked(getBundle().getString("measReplacementCount")) && p.ext().getObservationsAllRaw().stream().filter(oo -> oo.isReplacementMeasurement()).count() > 0;
+                || mMeasCodeCheckModel.isChecked(getBundle().getString("measCodeZero")) && firstNotZero
+                || mMeasCodeCheckModel.isChecked(getBundle().getString("measCodeReplacement")) && p.ext().getObservationsAllRaw().stream().filter(oo -> oo.isReplacementMeasurement()).count() > 0;
 
         return valid;
     }

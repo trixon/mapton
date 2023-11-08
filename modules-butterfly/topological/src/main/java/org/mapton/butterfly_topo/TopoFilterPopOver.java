@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_topo;
 
-import org.mapton.butterfly_topo.api.TopoManager;
 import java.util.List;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
@@ -37,6 +36,7 @@ import org.mapton.api.ui.forms.NegPosStringConverterInteger;
 import org.mapton.butterfly_api.api.BaseFilterPopOver;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BDimension;
+import org.mapton.butterfly_topo.api.TopoManager;
 import org.mapton.butterfly_topo.shared.AlarmFilter;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SDict;
@@ -286,8 +286,8 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
         ));
 
         mMeasCodeCheckComboBox.getItems().setAll(List.of(
-                getBundle().getString("measZeroCount"),
-                getBundle().getString("measReplacementCount")
+                getBundle().getString("measCodeZero"),
+                getBundle().getString("measCodeReplacement")
         ));
 
         mMaxAgeComboBox.getItems().setAll(List.of(
