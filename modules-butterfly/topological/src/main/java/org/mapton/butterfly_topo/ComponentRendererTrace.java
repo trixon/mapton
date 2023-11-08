@@ -53,7 +53,7 @@ public class ComponentRendererTrace extends ComponentRendererBase {
     }
 
     private void plot3d(BTopoControlPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
-        if (!isValidForTraceVector3dPlot(p)) {
+        if (!isValidFor3dPlot(p)) {
             return;
         }
 
@@ -64,16 +64,13 @@ public class ComponentRendererTrace extends ComponentRendererBase {
         var o1 = p.ext().getObservationsTimeFiltered().getFirst();
 
         var collectedNodes = p.ext().getObservationsTimeFiltered().stream()
+                .filter(o -> ObjectUtils.allNotNull(o.ext().getDeltaX(), o.ext().getDeltaY(), o.ext().getDeltaZ()))
                 .map(o -> {
                     var x = o1.getMeasuredX() + MathHelper.convertDoubleToDouble(o.ext().getDeltaX()) * TopoLayerBundle.SCALE_FACTOR;
                     var y = o1.getMeasuredY() + MathHelper.convertDoubleToDouble(o.ext().getDeltaY()) * TopoLayerBundle.SCALE_FACTOR;
                     var z = o1.getMeasuredZ()
                             + MathHelper.convertDoubleToDouble(o.ext().getDeltaZ()) * TopoLayerBundle.SCALE_FACTOR
                             + TopoLayerBundle.Z_OFFSET;
-//                var z = o1.getMeasuredZ()
-//                        + o2.getMeasuredZ()
-//                        + TopoLayerBundle.Z_OFFSET
-//                        + MathHelper.convertDoubleToDouble(o2.ext().getDeltaZ()) * TopoLayerBundle.SCALE_FACTOR;
 
                     var wgs84 = MOptions.getInstance().getMapCooTrans().toWgs84(y, x);
                     var p0 = Position.fromDegrees(wgs84.getY(), wgs84.getX(), z);
@@ -83,16 +80,34 @@ public class ComponentRendererTrace extends ComponentRendererBase {
 
         var nodes = new ArrayList<Position>(collectedNodes);
 //        nodes.add(0, positions[0]);
-        var path = new Path(nodes);
-        path.setShowPositions(true);
-        addRenderable(path, true);
+        var colorByAlarm = false;
+        if (colorByAlarm) {
+            for (int i = 0; i < nodes.size(); i++) {
+                var path = new Path(nodes.get(i - 1), nodes.get(i));
+                var o = p.ext().getObservationsTimeFiltered().get(i);
+                path.setShowPositions(true);
+                path.setAttributes(mAttributeManager.getTraceAttribute());
+                //TODO Add alarm level attribute
+                addRenderable(path, true);
+            }
+        } else {
+            var path = new Path(nodes);
+            path.setShowPositions(true);
+            path.setAttributes(mAttributeManager.getTraceAttribute());
+            addRenderable(path, true);
+        }
+
         var END_SIZE = 0.25;
+        if (nodes.isEmpty()) {
+//            System.out.println(p.getName());
+        } else {
 
-        var endEllipsoid = new Ellipsoid(nodes.getLast(), END_SIZE, END_SIZE, END_SIZE);
-        addRenderable(endEllipsoid, true);
+            var startEllipsoid = new Ellipsoid(nodes.getFirst(), END_SIZE, END_SIZE, END_SIZE);
+            addRenderable(startEllipsoid, true);
 
-        var startEllipsoid = new Ellipsoid(nodes.getFirst(), END_SIZE, END_SIZE, END_SIZE);
-        addRenderable(startEllipsoid, true);
+            var endEllipsoid = new Ellipsoid(nodes.getLast(), END_SIZE, END_SIZE, END_SIZE);
+            addRenderable(endEllipsoid, true);
+        }
     }
 
 }

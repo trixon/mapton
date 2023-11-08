@@ -49,7 +49,7 @@ public class ComponentRendererVector extends ComponentRendererBase {
     }
 
     private void plot3d(BTopoControlPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
-        if (!isValidForTraceVector3dPlot(p)) {
+        if (!isValidFor3dPlot(p)) {
             return;
         }
 

@@ -53,7 +53,7 @@ public abstract class ComponentRendererBase {
         }
     }
 
-    public boolean isValidForTraceVector3dPlot(BTopoControlPoint p) {
+    public boolean isValidFor3dPlot(BTopoControlPoint p) {
         var o1 = p.ext().getObservationsTimeFiltered().getFirst();
         var o2 = p.ext().getObservationsTimeFiltered().getLast();
 
@@ -62,10 +62,11 @@ public abstract class ComponentRendererBase {
 
     public Position[] plot3dOffsetPole(BTopoControlPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
         return sPointToPositionMap.computeIfAbsent(p, k -> {
-            var ZERO_SIZE = 0.5;
-            var CURRENT_SIZE = 2.0;
+            var ZERO_SIZE = 1.2;
+            var CURRENT_SIZE = 1.0;
+            var zeroZ = p.getZeroZ();
 
-            var startPosition = WWHelper.positionFromPosition(position, TopoLayerBundle.Z_OFFSET);
+            var startPosition = WWHelper.positionFromPosition(position, zeroZ + TopoLayerBundle.Z_OFFSET);
             var startEllipsoid = new Ellipsoid(startPosition, ZERO_SIZE, ZERO_SIZE, ZERO_SIZE);
             startEllipsoid.setAttributes(mAttributeManager.getComponentZeroAttributes());
 
@@ -82,8 +83,7 @@ public abstract class ComponentRendererBase {
             if (o2.ext().getDeltaZ() != null) {
                 var x = p.getZeroX() + MathHelper.convertDoubleToDouble(o2.ext().getDeltaX()) * TopoLayerBundle.SCALE_FACTOR;
                 var y = p.getZeroY() + MathHelper.convertDoubleToDouble(o2.ext().getDeltaY()) * TopoLayerBundle.SCALE_FACTOR;
-                var z = p.getZeroZ()
-                        + o2.getMeasuredZ()
+                var z = +o2.getMeasuredZ()
                         + TopoLayerBundle.Z_OFFSET
                         + MathHelper.convertDoubleToDouble(o2.ext().getDeltaZ()) * TopoLayerBundle.SCALE_FACTOR;
 
@@ -92,7 +92,7 @@ public abstract class ComponentRendererBase {
             }
 
             var currentEllipsoid = new Ellipsoid(currentPosition, CURRENT_SIZE, CURRENT_SIZE, CURRENT_SIZE);
-            currentEllipsoid.setAttributes(mAttributeManager.getComponentVectorCurrentAttributes(p));
+            currentEllipsoid.setAttributes(mAttributeManager.getComponentCurrentAttributes(p));
             addRenderable(currentEllipsoid, true);
 
             return new Position[]{startPosition, currentPosition};
