@@ -66,7 +66,7 @@ public class ParameterEditor extends BaseTopoEditor {
     private final CheckBox mDatFromCheckBox = new CheckBox("Från");
     private final CheckBox mDatToCheckBox = new CheckBox("Till");
     private final CheckBox mUtglesningCheckBox = new CheckBox("Utglesning");
-    private final TextField mUtglesningTextField = new TextField("MEDIAN / 21D ");
+    private final TextField mUtglesningTextField = new TextField("MEDIAN / 2D");
     private final DatePicker mDatFromDatePicker = new DatePicker();
     private final DatePicker mDatToDatePicker = new DatePicker();
 
