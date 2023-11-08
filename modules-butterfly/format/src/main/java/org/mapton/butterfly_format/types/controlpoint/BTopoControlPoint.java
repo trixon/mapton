@@ -150,9 +150,10 @@ public class BTopoControlPoint extends BBaseControlPoint {
                 return;
             }
 
-            var latestZero = observations.stream()
+            observations.getFirst().setZeroMeasurement(true);
+            var latestZero = observations.reversed().stream()
                     .filter(o -> o.isZeroMeasurement())
-                    .reduce((first, second) -> second).orElse(observations.getFirst());
+                    .findFirst().orElse(observations.getFirst());
 
             Double zX = latestZero.getMeasuredX();
             Double zY = latestZero.getMeasuredY();
@@ -198,7 +199,7 @@ public class BTopoControlPoint extends BBaseControlPoint {
 
                     var mZ = o.getMeasuredZ();
                     var pZ = prev.getMeasuredZ();
-                    if (ObjectUtils.allNotNull(mZ, pZ)) {
+                    if (ObjectUtils.allNotNull(mZ, pZ, o.ext().getDeltaZ())) {
                         rZ = rZ + mZ - pZ;
                         o.ext().setDeltaZ(o.ext().getDeltaZ() + rZ);
                     }

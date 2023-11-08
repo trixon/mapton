@@ -153,6 +153,18 @@ public class BAlarm extends BBase {
             }
         }
 
+        public Range<Double> getRange0() {
+            return mRange0;
+        }
+
+        public Range<Double> getRange1() {
+            return mRange1;
+        }
+
+        public Range<Double> getRange2() {
+            return mRange2;
+        }
+
         public void populateRanges() {
             String l1s = getLimit1();
             String l2s = getLimit2();

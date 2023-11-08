@@ -116,6 +116,7 @@ public class TopoChartBuilder extends ChartBuilder<BTopoControlPoint> {
         );
 
         mChart.setBackgroundPaint(Color.white);
+        mChart.getTitle().setBackgroundPaint(Color.GRAY);
 
         var plot = (XYPlot) mChart.getPlot();
         plot.setBackgroundPaint(Color.lightGray);
@@ -139,16 +140,17 @@ public class TopoChartBuilder extends ChartBuilder<BTopoControlPoint> {
         mChartPanel.setMouseZoomable(true, false);
         mChartPanel.setDisplayToolTips(true);
 //        mChartPanel.setDomainZoomable(true);
-        mChartPanel.setMouseWheelEnabled(true);
+        mChartPanel.setMouseWheelEnabled(false);
 
         var font = new Font("monospaced", Font.BOLD, SwingHelper.getUIScaled(12));
         mDateSubTextTitle = new TextTitle("", font, Color.BLACK, RectangleEdge.TOP, HorizontalAlignment.LEFT, VerticalAlignment.TOP, RectangleInsets.ZERO_INSETS);
         mDeltaSubTextTitle = new TextTitle("", font, Color.BLACK, RectangleEdge.TOP, HorizontalAlignment.RIGHT, VerticalAlignment.TOP, RectangleInsets.ZERO_INSETS);
-        var blockContainer = new BlockContainer(new BorderArrangement());
 
+        var blockContainer = new BlockContainer(new BorderArrangement());
         blockContainer.add(mDateSubTextTitle, RectangleEdge.LEFT);
         blockContainer.add(mDeltaSubTextTitle, RectangleEdge.RIGHT);
         blockContainer.add(new EmptyBlock(2000, 0));
+
         var compositeTitle = new CompositeTitle(blockContainer);
         compositeTitle.setPadding(new RectangleInsets(0, 20, 0, 20));
         mChart.addSubtitle(compositeTitle);
@@ -206,11 +208,10 @@ public class TopoChartBuilder extends ChartBuilder<BTopoControlPoint> {
 
     private void setTitle(BTopoControlPoint p) {
         mChart.setTitle(p.getName());
-        mChart.getTitle().setBackgroundPaint(Color.GRAY);
         mChart.getTitle().setPaint(TopoHelper.getAlarmColorAwt(p));
-        var dateFirst = Objects.toString(DateHelper.toDateString(p.ext().getObservationRawFirstDate()), "");
+        var dateFirst = Objects.toString(DateHelper.toDateString(p.getDateZero()), "");
         var dateLast = Objects.toString(DateHelper.toDateString(p.ext().getObservationRawLastDate()), "");
-        var date = "%s → %s".formatted(dateFirst, dateLast);
+        var date = "(%s) → %s".formatted(dateFirst, dateLast);
         mDateSubTextTitle.setText(date);
 
         var sb = new StringBuilder();

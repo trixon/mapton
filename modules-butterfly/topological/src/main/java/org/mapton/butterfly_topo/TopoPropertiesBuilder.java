@@ -67,7 +67,7 @@ public class TopoPropertiesBuilder extends PropertiesBuilder<BTopoControlPoint> 
             validFromTo = StringHelper.joinNonNulls(" // ", fromDat, toDat);
         }
         propertyMap.put(getCatKey(cat1, SDict.MEASUREMENTS.toString()), measurements);
-        propertyMap.put(getCatKey(cat1, "%s - %s".formatted(Dict.FROM.toString(), Dict.TO.toLower())), validFromTo);
+        propertyMap.put(getCatKey(cat1, "%s %s - %s".formatted(Dict.VALID.toString(), Dict.FROM.toLower(), Dict.TO.toLower())), validFromTo);
 
         var firstRaw = Objects.toString(DateHelper.toDateString(p.ext().getObservationRawFirstDate()), "-");
         var firstFiltered = Objects.toString(DateHelper.toDateString(p.ext().getObservationFilteredFirstDate()), "-");

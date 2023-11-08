@@ -109,7 +109,7 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
             if (p.getDateLatest() == null) {
                 timeFilteredItems.add(p);
             } else {
-                for (var o : p.ext().getObservationsAllRaw()) {
+                for (var o : p.ext().getObservationsAllCalculated()) {
                     if (getTemporalManager().isValid(o.getDate())) {
                         timeFilteredItems.add(p);
                         continue p;
