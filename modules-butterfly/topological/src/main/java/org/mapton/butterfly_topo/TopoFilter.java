@@ -44,6 +44,7 @@ import javafx.collections.ObservableList;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.IndexedCheckModel;
+import org.mapton.api.MTemporalManager;
 import org.mapton.api.ui.forms.FormFilter;
 import org.mapton.api.ui.forms.FormHelper;
 import org.mapton.butterfly_format.types.BComponent;
@@ -64,6 +65,7 @@ import se.trixon.almond.util.StringHelper;
 public class TopoFilter extends FormFilter<TopoManager> {
 
     private IndexedCheckModel<AlarmFilter> mAlarmCheckModel;
+    private final SimpleBooleanProperty mAlarmLevelChangeProperty = new SimpleBooleanProperty();
     private IndexedCheckModel mCategoryCheckModel;
     private IndexedCheckModel mDateFromToCheckModel;
     private final SimpleBooleanProperty mDiffMeasAllProperty = new SimpleBooleanProperty();
@@ -91,6 +93,10 @@ public class TopoFilter extends FormFilter<TopoManager> {
         super(TopoManager.getInstance());
 
         initListeners();
+    }
+
+    public SimpleBooleanProperty alarmLevelChangeProperty() {
+        return mAlarmLevelChangeProperty;
     }
 
     public SimpleBooleanProperty diffMeasAllProperty() {
@@ -201,6 +207,7 @@ public class TopoFilter extends FormFilter<TopoManager> {
                 .filter(p -> validateGroup(p.getGroup()))
                 .filter(p -> validateCategory(p.getCategory()))
                 .filter(p -> validateAlarm(p))
+                .filter(p -> validateAlarmLevelchange(p))
                 .filter(p -> validateMeasDisplacementAll(p))
                 .filter(p -> validateMeasDisplacementLatest(p))
                 .filter(p -> validateMeasCount(p))
@@ -313,6 +320,7 @@ public class TopoFilter extends FormFilter<TopoManager> {
         mNumOfMeasValueProperty.addListener(mChangeListenerObject);
         mNumOfMeasProperty.addListener(mChangeListenerObject);
         mSameAlarmProperty.addListener(mChangeListenerObject);
+        mAlarmLevelChangeProperty.addListener(mChangeListenerObject);
         mMaxAgeProperty.addListener(mChangeListenerObject);
     }
 
@@ -336,6 +344,24 @@ public class TopoFilter extends FormFilter<TopoManager> {
         }
 
         return false;
+    }
+
+    private boolean validateAlarmLevelchange(BTopoControlPoint p) {
+        if (!mAlarmLevelChangeProperty.get()) {
+            return true;
+        }
+
+        var hLevels = new HashSet<Integer>();
+        var pLevels = new HashSet<Integer>();
+
+        p.ext().getObservationsAllCalculated().stream()
+                .filter(o -> MTemporalManager.getInstance().isValid(o.getDate()))
+                .forEachOrdered(o -> {
+                    hLevels.add(p.ext().getAlarmLevelHeight(o));
+                    pLevels.add(p.ext().getAlarmLevelPlane(o));
+                });
+
+        return hLevels.size() > 1 || pLevels.size() > 1;
     }
 
     private boolean validateCategory(String s) {
