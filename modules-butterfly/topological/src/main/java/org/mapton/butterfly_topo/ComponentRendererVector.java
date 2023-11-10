@@ -33,8 +33,8 @@ public class ComponentRendererVector extends ComponentRendererBase {
 
         if (sCheckModel.isChecked(RenderComponent.VECTOR_1D) && p.getDimension() == BDimension._1d) {
             plot1d(p, position, mapObjects);
-        } else if (sCheckModel.isChecked(RenderComponent.VECTOR_2D) && p.getDimension() == BDimension._2d) {
-            plot2d(p, position, mapObjects);
+//        } else if (sCheckModel.isChecked(RenderComponent.VECTOR_2D) && p.getDimension() == BDimension._2d) {
+//            plot2d(p, position, mapObjects);
         } else if (sCheckModel.isChecked(RenderComponent.VECTOR_3D) && p.getDimension() == BDimension._3d) {
             plot3d(p, position, mapObjects);
         }

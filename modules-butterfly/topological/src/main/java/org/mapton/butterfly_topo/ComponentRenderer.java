@@ -51,6 +51,7 @@ public class ComponentRenderer extends ComponentRendererBase {
 
     public void reset() {
         sPointToPositionMap.clear();
+        sObjectCounter.clear();
     }
 
     private void plotBearing(BTopoControlPoint p, Position position) {

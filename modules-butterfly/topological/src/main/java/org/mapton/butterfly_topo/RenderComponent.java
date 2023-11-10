@@ -23,21 +23,27 @@ import se.trixon.almond.util.SDict;
  * @author Patrik Karlström
  */
 public enum RenderComponent {
-    BEARING(Dict.BEARING.toString()),
-    TRACE_1D(SDict.TRACE_1D.toString()),
-    VECTOR_1D(SDict.VECTOR_1D.toString()),
-    TRACE_2D(SDict.TRACE_2D.toString()),
-    VECTOR_2D(SDict.VECTOR_2D.toString()),
-    TRACE_3D(SDict.TRACE_3D.toString()),
-    VECTOR_3D(SDict.VECTOR_3D.toString());
+    BEARING(Dict.BEARING.toString(), Integer.MAX_VALUE),
+    TRACE_1D(SDict.TRACE_1D.toString(), 100 * 100),
+    VECTOR_1D(SDict.VECTOR_1D.toString(), 100),
+    //    TRACE_2D(SDict.TRACE_2D.toString()),
+    //    VECTOR_2D(SDict.VECTOR_2D.toString()),
+    TRACE_3D(SDict.TRACE_3D.toString(), Integer.MAX_VALUE),
+    VECTOR_3D(SDict.VECTOR_3D.toString(), Integer.MAX_VALUE);
     private final String mName;
+    private final int mPlotLimit;
 
-    private RenderComponent(String name) {
+    private RenderComponent(String name, int plotLimit) {
         mName = name;
+        mPlotLimit = plotLimit;
     }
 
     public String getName() {
         return mName;
+    }
+
+    public int getPlotLimit() {
+        return mPlotLimit;
     }
 
     @Override

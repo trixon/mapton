@@ -17,13 +17,18 @@ package org.mapton.butterfly_topo;
 
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
+import gov.nasa.worldwind.render.BasicShapeAttributes;
+import gov.nasa.worldwind.render.Cylinder;
 import gov.nasa.worldwind.render.Ellipsoid;
 import gov.nasa.worldwind.render.Path;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.api.MOptions;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.controlpoint.BTopoControlPoint;
+import org.mapton.worldwind.api.WWHelper;
 import se.trixon.almond.util.MathHelper;
 
 /**
@@ -37,8 +42,8 @@ public class ComponentRendererTrace extends ComponentRendererBase {
 
         if (sCheckModel.isChecked(RenderComponent.TRACE_1D) && p.getDimension() == BDimension._1d) {
             plot1d(p, position, mapObjects);
-        } else if (sCheckModel.isChecked(RenderComponent.TRACE_2D) && p.getDimension() == BDimension._2d) {
-            plot2d(p, position, mapObjects);
+//        } else if (sCheckModel.isChecked(RenderComponent.TRACE_2D) && p.getDimension() == BDimension._2d) {
+//            plot2d(p, position, mapObjects);
         } else if (sCheckModel.isChecked(RenderComponent.TRACE_3D) && p.getDimension() == BDimension._3d) {
             plot3d(p, position, mapObjects);
         }
@@ -47,6 +52,49 @@ public class ComponentRendererTrace extends ComponentRendererBase {
     }
 
     private void plot1d(BTopoControlPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
+        if (isPlotLimitReached(RenderComponent.TRACE_1D, position)) {
+            return;
+        }
+        var reversedList = p.ext().getObservationsTimeFiltered().reversed();
+        var prevDate = LocalDateTime.now();
+        var altitude = 0.0;
+        var prevHeight = 0.0;
+
+        for (int i = 0; i < reversedList.size(); i++) {
+            var o = reversedList.get(i);
+
+            var timeSpan = ChronoUnit.MINUTES.between(o.getDate(), prevDate);
+            var height = timeSpan / 24000.0;
+            altitude = altitude + height * 0.5 + prevHeight * 0.5;
+            prevDate = o.getDate();
+            prevHeight = height;
+
+            if (o.ext().getDeltaZ() == null) {
+                continue;
+            }
+
+            var pos = WWHelper.positionFromPosition(position, altitude);
+            var maxRadius = 10.0;
+
+            var dZ = o.ext().getDeltaZ();
+            var radius = Math.min(maxRadius, Math.abs(dZ) * 250 + 0.05);
+            var maximus = radius == maxRadius;
+
+            var cylinder = new Cylinder(pos, height, radius);
+            var alarmLevel = p.ext().getAlarmLevelHeight(o);
+            var rise = Math.signum(dZ) > 0;
+            var attrs = mAttributeManager.getComponentTrace1dAttributes(p, alarmLevel, rise, maximus);
+
+            if (i == 0 && ChronoUnit.DAYS.between(o.getDate(), LocalDateTime.now()) > 180) {
+                attrs = new BasicShapeAttributes(attrs);
+                attrs.setInteriorOpacity(0.25);
+                attrs.setOutlineOpacity(0.20);
+            }
+
+            cylinder.setAttributes(attrs);
+            addRenderable(cylinder, true);
+            incPlotCounter(RenderComponent.TRACE_1D);
+        }
     }
 
     private void plot2d(BTopoControlPoint p, Position position, ArrayList<AVListImpl> mapObjects) {

@@ -68,10 +68,10 @@ public class TopoChartBuilder extends ChartBuilder<BTopoControlPoint> {
     private TextTitle mDateSubTextTitle;
     private TextTitle mDeltaSubTextTitle;
     private final MTemporalManager mTemporalManager = MTemporalManager.getInstance();
-    private final TimeSeries mTimeSeries2d = new TimeSeries("2d");
+    private final TimeSeries mTimeSeries2d = new TimeSeries(Dict.Geometry.PLANE);
     private final TimeSeries mTimeSeries3d = new TimeSeries("3d");
     private final TimeSeries mTimeSeriesE = new TimeSeries("E");
-    private final TimeSeries mTimeSeriesH = new TimeSeries("H");
+    private final TimeSeries mTimeSeriesH = new TimeSeries(Dict.Geometry.HEIGHT);
     private final TimeSeries mTimeSeriesN = new TimeSeries("N");
 
     public TopoChartBuilder() {
@@ -116,7 +116,7 @@ public class TopoChartBuilder extends ChartBuilder<BTopoControlPoint> {
         );
 
         mChart.setBackgroundPaint(Color.white);
-        mChart.getTitle().setBackgroundPaint(Color.GRAY);
+        mChart.getTitle().setBackgroundPaint(Color.LIGHT_GRAY);
 
         var plot = (XYPlot) mChart.getPlot();
         plot.setBackgroundPaint(Color.lightGray);

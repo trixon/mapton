@@ -16,18 +16,22 @@
 package org.mapton.butterfly_topo;
 
 import gov.nasa.worldwind.avlist.AVListImpl;
+import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
+import gov.nasa.worldwind.render.Box;
 import gov.nasa.worldwind.render.Ellipsoid;
 import gov.nasa.worldwind.render.Path;
 import gov.nasa.worldwind.render.Renderable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import org.apache.commons.lang3.ObjectUtils;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.MOptions;
 import org.mapton.butterfly_format.types.controlpoint.BTopoControlPoint;
 import org.mapton.worldwind.api.WWHelper;
+import se.trixon.almond.util.CollectionHelper;
 import se.trixon.almond.util.MathHelper;
 
 /**
@@ -39,6 +43,7 @@ public abstract class ComponentRendererBase {
     protected static IndexedCheckModel<RenderComponent> sCheckModel;
     protected static RenderableLayer sInteractiveLayer;
     protected static ArrayList<AVListImpl> sMapObjects;
+    protected static final Map<String, Integer> sObjectCounter = new HashMap<>();
     protected static HashMap<BTopoControlPoint, Position[]> sPointToPositionMap = new HashMap<>();
     protected final TopoAttributeManager mAttributeManager = TopoAttributeManager.getInstance();
 
@@ -97,5 +102,28 @@ public abstract class ComponentRendererBase {
 
             return new Position[]{startPosition, currentPosition};
         });
+    }
+
+    protected void incPlotCounter(RenderComponent renderComponent) {
+        CollectionHelper.incInteger(sObjectCounter, renderComponent.name());
+    }
+
+    protected boolean isPlotLimitReached(RenderComponent renderComponent, Position position) {
+        var count = sObjectCounter.getOrDefault(renderComponent.name(), 0);
+        boolean limitReached = count > renderComponent.getPlotLimit();
+
+        if (limitReached) {
+            //plot skip indicator
+            var radii = 1.0;
+//            var altitude = radii * 0.5 * Math.sqrt(2);
+            var altitude = radii * 2;
+            var p = WWHelper.positionFromPosition(position, altitude);
+            var angle = Angle.fromDegrees(45);
+            var box = new Box(p, radii, radii, radii, angle, angle, angle);
+            box.setAttributes(mAttributeManager.getSkipPlotAttribute());
+            addRenderable(box, true);
+        }
+
+        return limitReached;
     }
 }
