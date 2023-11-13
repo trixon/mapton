@@ -66,6 +66,7 @@ public class TopoFilter extends FormFilter<TopoManager> {
 
     private IndexedCheckModel<AlarmFilter> mAlarmCheckModel;
     private final SimpleBooleanProperty mAlarmLevelChangeProperty = new SimpleBooleanProperty();
+    private IndexedCheckModel mAlarmNameCheckModel;
     private IndexedCheckModel mCategoryCheckModel;
     private IndexedCheckModel mDateFromToCheckModel;
     private final SimpleBooleanProperty mDiffMeasAllProperty = new SimpleBooleanProperty();
@@ -148,6 +149,11 @@ public class TopoFilter extends FormFilter<TopoManager> {
         checkModel.getCheckedItems().addListener(mListChangeListener);
     }
 
+    public void setCheckModelAlarmName(IndexedCheckModel checkModel) {
+        mAlarmNameCheckModel = checkModel;
+        checkModel.getCheckedItems().addListener(mListChangeListener);
+    }
+
     public void setCheckModelCategory(IndexedCheckModel checkModel) {
         mCategoryCheckModel = checkModel;
         checkModel.getCheckedItems().addListener(mListChangeListener);
@@ -206,6 +212,7 @@ public class TopoFilter extends FormFilter<TopoManager> {
                 .filter(p -> validateStatus(p.getStatus()))
                 .filter(p -> validateGroup(p.getGroup()))
                 .filter(p -> validateCategory(p.getCategory()))
+                .filter(p -> validateAlarmName(p))
                 .filter(p -> validateAlarm(p))
                 .filter(p -> validateAlarmLevelchange(p))
                 .filter(p -> validateMeasDisplacementAll(p))
@@ -262,6 +269,7 @@ public class TopoFilter extends FormFilter<TopoManager> {
         map.put(Dict.STATUS.toString(), makeInfo(mStatusCheckModel.getCheckedItems()));
         map.put(Dict.GROUP.toString(), makeInfo(mGroupCheckModel.getCheckedItems()));
         map.put(Dict.CATEGORY.toString(), makeInfo(mCategoryCheckModel.getCheckedItems()));
+        map.put(SDict.ALARMS.toString(), makeInfo(mAlarmNameCheckModel.getCheckedItems()));
         map.put(SDict.OPERATOR.toString(), makeInfo(mOperatorCheckModel.getCheckedItems()));
         map.put(SDict.FREQUENCY.toString(), makeInfoInteger(mFrequencyCheckModel.getCheckedItems()));
         map.put(SDict.VALID_FROM_TO.toString(), makeInfo(mDateFromToCheckModel.getCheckedItems()));
@@ -362,6 +370,25 @@ public class TopoFilter extends FormFilter<TopoManager> {
                 });
 
         return hLevels.size() > 1 || pLevels.size() > 1;
+    }
+
+    private boolean validateAlarmName(BTopoControlPoint p) {
+        var ah = p.getNameOfAlarmHeight();
+        var ap = p.getNameOfAlarmPlane();
+
+        switch (p.getDimension()) {
+            case _1d -> {
+                return validateCheck(mAlarmNameCheckModel, ah);
+            }
+            case _2d -> {
+                return validateCheck(mAlarmNameCheckModel, ap);
+            }
+            case _3d -> {
+                return validateCheck(mAlarmNameCheckModel, ah) && validateCheck(mAlarmNameCheckModel, ap);
+            }
+        }
+
+        return true;
     }
 
     private boolean validateCategory(String s) {

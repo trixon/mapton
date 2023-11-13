@@ -59,6 +59,8 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
     private final CheckComboBox<AlarmFilter> mAlarmCheckComboBox = new CheckComboBox<>();
     private final CheckModelSession mAlarmCheckModelSession = new CheckModelSession(mAlarmCheckComboBox);
     private final CheckBox mAlarmLevelChangeCheckbox = new CheckBox();
+    private final CheckComboBox<String> mAlarmNameCheckComboBox = new CheckComboBox<>();
+    private final CheckModelSession mAlarmNameCheckModelSession = new CheckModelSession(mAlarmNameCheckComboBox);
     private final CheckComboBox<String> mCategoryCheckComboBox = new CheckComboBox<>();
     private final CheckModelSession mCategoryCheckModelSession = new CheckModelSession(mCategoryCheckComboBox);
     private final double mDefaultDiffValue = 0.020;
@@ -132,6 +134,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
         mMeasOperatorsCheckComboBox.getCheckModel().clearChecks();
         mGroupCheckComboBox.getCheckModel().clearChecks();
         mCategoryCheckComboBox.getCheckModel().clearChecks();
+        mAlarmNameCheckComboBox.getCheckModel().clearChecks();
         mOperatorCheckComboBox.getCheckModel().clearChecks();
         mAlarmCheckComboBox.getCheckModel().clearChecks();
         mNextMeasCheckComboBox.getCheckModel().clearChecks();
@@ -182,6 +185,14 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
         mCategoryCheckComboBox.getItems().setAll(allCategory);
         checkedCategory.stream().forEach(d -> categoryCheckModel.check(d));
 //
+        var alarmNameCheckModel = mAlarmNameCheckComboBox.getCheckModel();
+        var checkedAlarm = alarmNameCheckModel.getCheckedItems();
+        var allAlarmName = new TreeSet<>(topoControlPoints.stream().map(o -> o.getNameOfAlarmHeight()).collect(Collectors.toSet()));
+        allAlarmName.addAll(topoControlPoints.stream().map(o -> o.getNameOfAlarmPlane()).collect(Collectors.toSet()));
+
+        mAlarmNameCheckComboBox.getItems().setAll(allAlarmName);
+        checkedAlarm.stream().forEach(d -> alarmNameCheckModel.check(d));
+//
         var performerCheckModel = mOperatorCheckComboBox.getCheckModel();
         var checkedPerformer = performerCheckModel.getCheckedItems();
         var allPerformers = new TreeSet<>(topoControlPoints.stream().map(o -> o.getOperator()).collect(Collectors.toSet()));
@@ -203,6 +214,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
         mStatusCheckModelSession.load();
         mMeasOperatorsCheckModelSession.load();
         mCategoryCheckModelSession.load();
+        mAlarmNameCheckModelSession.load();
         mGroupCheckModelSession.load();
         mOperatorCheckModelSession.load();
         mFrequencyCheckModelSession.load();
@@ -236,7 +248,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
         mNextMeasCheckComboBox.setTitle(getBundle().getString("nextMeasCheckComboBoxTitle"));
 
         mAlarmCheckComboBox.setShowCheckedCount(true);
-        mAlarmCheckComboBox.setTitle(SDict.ALARM.toString());
+        mAlarmCheckComboBox.setTitle(SDict.ALARM_LEVEL.toString());
         mAlarmCheckComboBox.getItems().setAll(AlarmFilter.values());
 
         mMeasCodeCheckComboBox.setShowCheckedCount(true);
@@ -253,6 +265,9 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
 
         mCategoryCheckComboBox.setShowCheckedCount(true);
         mCategoryCheckComboBox.setTitle(Dict.CATEGORY.toString());
+
+        mAlarmNameCheckComboBox.setShowCheckedCount(true);
+        mAlarmNameCheckComboBox.setTitle(SDict.ALARMS.toString());
 
         mOperatorCheckComboBox.setShowCheckedCount(true);
         mOperatorCheckComboBox.setTitle(SDict.OPERATOR.toString());
@@ -348,6 +363,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
                 mStatusCheckComboBox,
                 mGroupCheckComboBox,
                 mCategoryCheckComboBox,
+                mAlarmNameCheckComboBox,
                 mOperatorCheckComboBox,
                 mFrequencyCheckComboBox,
                 mHasDateFromToComboBox
@@ -445,6 +461,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
                 var dropDownCount = 25;
                 FxHelper.getComboBox(mGroupCheckComboBox).setVisibleRowCount(dropDownCount);
                 FxHelper.getComboBox(mCategoryCheckComboBox).setVisibleRowCount(dropDownCount);
+                FxHelper.getComboBox(mAlarmNameCheckComboBox).setVisibleRowCount(dropDownCount);
                 FxHelper.getComboBox(mMeasOperatorsCheckComboBox).setVisibleRowCount(dropDownCount);
                 mFirstRun = false;
             }
@@ -470,6 +487,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
         mFilter.setCheckModelMeasOperators(mMeasOperatorsCheckComboBox.getCheckModel());
         mFilter.setCheckModelGroup(mGroupCheckComboBox.getCheckModel());
         mFilter.setCheckModelCategory(mCategoryCheckComboBox.getCheckModel());
+        mFilter.setCheckModelAlarmName(mAlarmNameCheckComboBox.getCheckModel());
         mFilter.setCheckModelOperator(mOperatorCheckComboBox.getCheckModel());
         mFilter.setCheckModelNextMeas(mNextMeasCheckComboBox.getCheckModel());
         mFilter.setCheckModelAlarm(mAlarmCheckComboBox.getCheckModel());
@@ -490,6 +508,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
         sessionManager.register("filter.checkedMeasOperators", mMeasOperatorsCheckModelSession.checkedStringProperty());
         sessionManager.register("filter.checkedGroup", mGroupCheckModelSession.checkedStringProperty());
         sessionManager.register("filter.checkedCategory", mCategoryCheckModelSession.checkedStringProperty());
+        sessionManager.register("filter.checkedAlarmName", mAlarmNameCheckModelSession.checkedStringProperty());
         sessionManager.register("filter.checkedPerformers", mOperatorCheckModelSession.checkedStringProperty());
         sessionManager.register("filter.checkedNextAlarm", mAlarmCheckModelSession.checkedStringProperty());
         sessionManager.register("filter.checkedNextMeas", mNextMeasCheckModelSession.checkedStringProperty());
