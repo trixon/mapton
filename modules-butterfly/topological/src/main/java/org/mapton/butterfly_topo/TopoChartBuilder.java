@@ -18,10 +18,12 @@ package org.mapton.butterfly_topo;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.numbers.core.Precision;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -117,6 +119,7 @@ public class TopoChartBuilder extends ChartBuilder<BTopoControlPoint> {
 
         mChart.setBackgroundPaint(Color.white);
         mChart.getTitle().setBackgroundPaint(Color.LIGHT_GRAY);
+        mChart.getTitle().setExpandToFitSpace(true);
 
         var plot = (XYPlot) mChart.getPlot();
         plot.setBackgroundPaint(Color.lightGray);
@@ -125,6 +128,9 @@ public class TopoChartBuilder extends ChartBuilder<BTopoControlPoint> {
         plot.setAxisOffset(new RectangleInsets(5.0, 5.0, 5.0, 5.0));
         plot.setDomainCrosshairVisible(true);
         plot.setRangeCrosshairVisible(true);
+
+        var yAxis = (NumberAxis) plot.getRangeAxis();
+        yAxis.setNumberFormatOverride(new DecimalFormat("0.000"));
 
         var itemRenderer = plot.getRenderer();
         if (itemRenderer instanceof XYLineAndShapeRenderer renderer) {
@@ -194,13 +200,17 @@ public class TopoChartBuilder extends ChartBuilder<BTopoControlPoint> {
         if (pa != null) {
             var range0 = pa.ext().getRange0();
             if (range0 != null) {
-                plotAlarmIndicator(BComponent.PLANE, range0.getMinimum(), Color.YELLOW);
+                if (!Precision.equals(range0.getMinimum(), 0.0)) {
+                    plotAlarmIndicator(BComponent.PLANE, range0.getMinimum(), Color.YELLOW);
+                }
                 plotAlarmIndicator(BComponent.PLANE, range0.getMaximum(), Color.YELLOW);
             }
 
             var range1 = pa.ext().getRange1();
             if (range1 != null) {
-                plotAlarmIndicator(BComponent.PLANE, range1.getMinimum(), Color.RED);
+                if (!Precision.equals(range1.getMinimum(), 0.0)) {
+                    plotAlarmIndicator(BComponent.PLANE, range1.getMinimum(), Color.RED);
+                }
                 plotAlarmIndicator(BComponent.PLANE, range1.getMaximum(), Color.RED);
             }
         }
@@ -208,7 +218,11 @@ public class TopoChartBuilder extends ChartBuilder<BTopoControlPoint> {
 
     private void setTitle(BTopoControlPoint p) {
         mChart.setTitle(p.getName());
-        mChart.getTitle().setPaint(TopoHelper.getAlarmColorAwt(p));
+        Color color = TopoHelper.getAlarmColorAwt(p);
+        if (color == Color.RED || color == Color.GREEN) {
+            color = color.darker();
+        }
+        mChart.getTitle().setPaint(color);
         var dateFirst = Objects.toString(DateHelper.toDateString(p.getDateZero()), "");
         var dateLast = Objects.toString(DateHelper.toDateString(p.ext().getObservationRawLastDate()), "");
         var date = "(%s) → %s".formatted(dateFirst, dateLast);
