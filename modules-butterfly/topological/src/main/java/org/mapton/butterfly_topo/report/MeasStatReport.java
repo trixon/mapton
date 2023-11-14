@@ -32,14 +32,13 @@ import org.openide.util.lookup.ServiceProvider;
  * @author Patrik Karlström
  */
 @ServiceProvider(service = MReport.class)
-public class MeasStatBookmarkReport extends BaseTopoReport {
+public class MeasStatReport extends BaseTopoReport {
 
     private final TopoManager mManager = TopoManager.getInstance();
     private final String mName = "MeasStat";
 
-    public MeasStatBookmarkReport() {
+    public MeasStatReport() {
         setName(mName);
-        setParent("%s/%s".formatted("Butterfly", "Topo"));
     }
 
     @Override

@@ -13,18 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_topo.report;
+package org.mapton.butterfly_topo.report.maintenance;
 
-import org.mapton.butterfly_api.api.BaseReport;
+import org.mapton.butterfly_topo.report.BaseTopoReport;
+import se.trixon.almond.util.Dict;
 
 /**
  *
  * @author Patrik Karlström
  */
-public abstract class BaseTopoReport extends BaseReport {
+public abstract class BaseTopoMaintenanceReport extends BaseTopoReport {
 
-    public BaseTopoReport() {
-        setParent("%s/%s".formatted("Butterfly", "Topo"));
+    public BaseTopoMaintenanceReport() {
+        setParent("%s/%s".formatted(super.getParent(), Dict.MAINTENANCE.toString()));
     }
 
 }
