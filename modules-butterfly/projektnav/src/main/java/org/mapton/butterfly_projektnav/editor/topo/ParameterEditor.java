@@ -55,6 +55,10 @@ public class ParameterEditor extends BaseTopoEditor {
     private final Spinner mDagSpinner = new Spinner<Integer>(0, 999, 1);
     private final CheckBox mGruppCheckBox = new CheckBox("Grupp");
     private final ComboBox<String> mGruppComboBox = new ComboBox<>();
+    private final CheckBox mLarmHCheckBox = new CheckBox("Larm H");
+    private final ComboBox<String> mLarmHComboBox = new ComboBox<>();
+    private final CheckBox mLarmPCheckBox = new CheckBox("Larm P");
+    private final ComboBox<String> mLarmPComboBox = new ComboBox<>();
     private final CheckBox mKategoriCheckBox = new CheckBox("Kategori");
     private final ComboBox<String> mKategoriComboBox = new ComboBox<>();
     private final LogPanel mPreviewLogPanel = new LogPanel();
@@ -111,6 +115,14 @@ public class ParameterEditor extends BaseTopoEditor {
         mStatusComboBox.getItems().setAll("S0", "S1", "S2", "S3", "S4", "S5");
         mStatusComboBox.getSelectionModel().select("S1");
 
+        var larmH = new TreeSet<>(mManager.getAllItems().stream()
+                .map(p -> p.getNameOfAlarmHeight())
+                .toList());
+        mLarmHComboBox.getItems().setAll(larmH);
+        var larmP = new TreeSet<>(mManager.getAllItems().stream()
+                .map(p -> p.getNameOfAlarmPlane())
+                .toList());
+        mLarmPComboBox.getItems().setAll(larmP);
         var grupper = new TreeSet<>(mManager.getAllItems().stream().map(p -> p.getGroup()).toList());
         mGruppComboBox.getItems().setAll(grupper);
         var kategorier = new TreeSet<>(mManager.getAllItems().stream().map(p -> p.getCategory()).toList());
@@ -122,6 +134,8 @@ public class ParameterEditor extends BaseTopoEditor {
         mStatusComboBox.disableProperty().bind(mStatusCheckBox.selectedProperty().not());
         mUtforareComboBox.disableProperty().bind(mUtforareCheckBox.selectedProperty().not());
         mGruppComboBox.disableProperty().bind(mGruppCheckBox.selectedProperty().not());
+        mLarmHComboBox.disableProperty().bind(mLarmHCheckBox.selectedProperty().not());
+        mLarmPComboBox.disableProperty().bind(mLarmPCheckBox.selectedProperty().not());
         mKategoriComboBox.disableProperty().bind(mKategoriCheckBox.selectedProperty().not());
         mDatFromDatePicker.disableProperty().bind(mDatFromCheckBox.selectedProperty().not());
         mDatToDatePicker.disableProperty().bind(mDatToCheckBox.selectedProperty().not());
@@ -133,6 +147,8 @@ public class ParameterEditor extends BaseTopoEditor {
         settingsGridPane.addColumn(col++, mStatusCheckBox, mStatusComboBox);
         settingsGridPane.addColumn(col++, mGruppCheckBox, mGruppComboBox);
         settingsGridPane.addColumn(col++, mKategoriCheckBox, mKategoriComboBox);
+        settingsGridPane.addColumn(col++, mLarmHCheckBox, mLarmHComboBox);
+        settingsGridPane.addColumn(col++, mLarmPCheckBox, mLarmPComboBox);
         settingsGridPane.addColumn(col++, mUtforareCheckBox, mUtforareComboBox);
         settingsGridPane.addColumn(col++, mDatFromCheckBox, mDatFromDatePicker);
         settingsGridPane.addColumn(col++, mDatToCheckBox, mDatToDatePicker);
@@ -204,17 +220,28 @@ public class ParameterEditor extends BaseTopoEditor {
         addConditionlly(sb, mGruppCheckBox.isSelected(), "grupp");
         addConditionlly(sb, mKategoriCheckBox.isSelected(), "kategori");
         addConditionlly(sb, mUtforareCheckBox.isSelected(), "utf");
+        addConditionlly(sb, mLarmHCheckBox.isSelected() || mLarmPCheckBox.isSelected(), "larm");
         addConditionlly(sb, mDatFromCheckBox.isSelected(), "df");
         addConditionlly(sb, mDatToCheckBox.isSelected(), "dt");
         addConditionlly(sb, mUtglesningCheckBox.isSelected(), "sparse");
         sb.append("\n");
 
         for (var name : getPointWithNavetNames(StringUtils.split(mSourceTextArea.getText(), "\n"))) {
+            String larm = null;
+            if (mLarmHCheckBox.isSelected() || mLarmPCheckBox.isSelected()) {
+                if (StringUtils.endsWith(name, "_P")) {
+                    larm = mLarmPComboBox.getValue();
+                } else {
+                    larm = mLarmHComboBox.getValue();
+                }
+            }
+
             sb.append(name);
             addConditionlly(sb, mDagCheckBox.isSelected(), mDagSpinner.getValue());
             addConditionlly(sb, mStatusCheckBox.isSelected(), mStatusComboBox.getValue());
             addConditionlly(sb, mGruppCheckBox.isSelected(), mGruppComboBox.getValue());
             addConditionlly(sb, mKategoriCheckBox.isSelected(), mKategoriComboBox.getValue());
+            addConditionlly(sb, larm != null, larm);
             addConditionlly(sb, mUtforareCheckBox.isSelected(), mUtforareComboBox.getValue());
             addConditionlly(sb, mDatFromCheckBox.isSelected(), mDatFromDatePicker.getValue() == null ? "ERROR" : mDatFromDatePicker.getValue().toString());
             addConditionlly(sb, mDatToCheckBox.isSelected(), mDatToDatePicker.getValue() == null ? "ERROR" : mDatToDatePicker.getValue().toString());
@@ -225,6 +252,8 @@ public class ParameterEditor extends BaseTopoEditor {
 
         var result = StringUtils.removeEnd(sb.toString(), "\n");
         result = StringUtils.removeEnd(result, "\n");
+        result = StringUtils.replace(result, "/", "_");
+
         mPreviewLogPanel.println(result);
     }
 
