@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_topo.report;
+package org.mapton.butterfly_topo.report.measurement;
 
 import static j2html.TagCreator.body;
 import static j2html.TagCreator.h1;
@@ -32,12 +32,12 @@ import org.openide.util.lookup.ServiceProvider;
  * @author Patrik Karlström
  */
 @ServiceProvider(service = MReport.class)
-public class MeasStatReport extends BaseTopoReport {
+public class ActualFrequencyReport extends BaseTopoMeasurementReport {
 
     private final TopoManager mManager = TopoManager.getInstance();
-    private final String mName = "MeasStat";
+    private final String mName = "Verklig frekvens";
 
-    public MeasStatReport() {
+    public ActualFrequencyReport() {
         setName(mName);
     }
 
