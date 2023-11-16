@@ -23,8 +23,10 @@ import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.scene.control.TreeItem;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.IndexedCheckModel;
+import org.mapton.api.MArea;
 import org.mapton.api.MAreaFilterManager;
 import org.mapton.api.MBaseDataManager;
 import org.mapton.api.MPolygonFilterManager;
@@ -129,6 +131,10 @@ public abstract class FormFilter<ManagerType extends MBaseDataManager> {
         };
 
         freeTextProperty().addListener(mChangeListenerObject);
+
+        mAreaFilterManager.getCheckedItems().addListener((ListChangeListener.Change<? extends TreeItem<MArea>> c) -> {
+            mDelayedResetRunner.reset();
+        });
     }
 
 }

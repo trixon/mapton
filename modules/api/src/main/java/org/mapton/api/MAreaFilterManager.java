@@ -94,6 +94,14 @@ public class MAreaFilterManager {
         getItems().addAll(areas);
     }
 
+    public void clear() {
+        getItems().clear();
+    }
+
+    public void clearByPrefix(String prefix) {
+        getItems().removeAll(getItems().stream().filter(area -> StringUtils.startsWith(area.getKey(), prefix)).toList());
+    }
+
     public ObservableList<TreeItem<MArea>> getCheckedItems() {
         return mCheckModel.getCheckedItems();
     }

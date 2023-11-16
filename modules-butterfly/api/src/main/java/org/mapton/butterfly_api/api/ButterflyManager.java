@@ -21,6 +21,8 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.mapton.api.MArea;
+import org.mapton.api.MAreaFilterManager;
 import org.mapton.api.MCooTrans;
 import org.mapton.api.MOptions;
 import org.mapton.butterfly_format.Butterfly;
@@ -33,6 +35,7 @@ import org.mapton.butterfly_format.types.controlpoint.BBaseControlPoint;
 public class ButterflyManager {
 
     private final ObjectProperty<Butterfly> mButterflyProperty = new SimpleObjectProperty<>();
+    private final MAreaFilterManager mAreaFilterManager = MAreaFilterManager.getInstance();
 
     public static ButterflyManager getInstance() {
         return Holder.INSTANCE;
@@ -57,6 +60,17 @@ public class ButterflyManager {
         calculateLatLons(butterfly.getHydroControlPoints());
         calculateLatLons(butterfly.getTopoControlPoints());
 
+        var areas = new ArrayList<MArea>();
+        var prefix = "BUTTERFLY_";
+        butterfly.getAreaFilters().stream().forEachOrdered(areaFilter -> {
+            var area = new MArea(prefix + areaFilter.getId());
+            area.setName(areaFilter.getName());
+            area.setWktGeometry(areaFilter.getWktGeometry());
+            areas.add(area);
+        });
+
+        mAreaFilterManager.clearByPrefix(prefix);
+        mAreaFilterManager.addAll(areas);
         setButterfly(butterfly);
     }
 

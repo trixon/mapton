@@ -19,6 +19,7 @@ import java.io.File;
 import java.util.ArrayList;
 import org.mapton.butterfly_format.io.ImportFromCsv;
 import org.mapton.butterfly_format.types.BAlarm;
+import org.mapton.butterfly_format.types.BAreaFilter;
 import org.mapton.butterfly_format.types.controlpoint.BHydroControlPoint;
 import org.mapton.butterfly_format.types.controlpoint.BHydroControlPointObservation;
 import org.mapton.butterfly_format.types.controlpoint.BTopoControlPoint;
@@ -31,6 +32,7 @@ import org.mapton.butterfly_format.types.controlpoint.BTopoControlPointObservati
 public class Butterfly {
 
     private final ArrayList<BAlarm> mAlarms = new ArrayList<>();
+    private final ArrayList<BAreaFilter> mAreaFilters = new ArrayList<>();
     private final ArrayList<BHydroControlPoint> mHydroControlPoints = new ArrayList<>();
     private final ArrayList<BHydroControlPointObservation> mHydroControlPointsObservations = new ArrayList<>();
     private final ArrayList<BTopoControlPoint> mTopoControlPoints = new ArrayList<>();
@@ -41,6 +43,10 @@ public class Butterfly {
 
     public ArrayList<BAlarm> getAlarms() {
         return mAlarms;
+    }
+
+    public ArrayList<BAreaFilter> getAreaFilters() {
+        return mAreaFilters;
     }
 
     public ArrayList<BHydroControlPoint> getHydroControlPoints() {
@@ -62,6 +68,9 @@ public class Butterfly {
     public void load(File sourceDir) {
         new ImportFromCsv<BAlarm>(BAlarm.class) {
         }.load(new File(sourceDir, "alarms.csv"), mAlarms);
+
+        new ImportFromCsv<BAreaFilter>(BAreaFilter.class) {
+        }.load(new File(sourceDir, "areaFilters.csv"), mAreaFilters);
 
         new ImportFromCsv<BTopoControlPoint>(BTopoControlPoint.class) {
         }.load(new File(sourceDir, "topoControlPoints.csv"), mTopoControlPoints);

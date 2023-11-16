@@ -452,7 +452,7 @@ public class TopoFilter extends FormFilter<TopoManager> {
     private boolean validateMaxAge(LocalDateTime dateTime) {
         var ageFilter = mMaxAgeProperty.get();
 
-        if (ageFilter.equalsIgnoreCase("*")) {
+        if (ageFilter == null || ageFilter.equalsIgnoreCase("*")) {
             return true;
         }
 
