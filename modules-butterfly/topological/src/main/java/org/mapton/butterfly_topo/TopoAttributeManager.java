@@ -39,6 +39,7 @@ public class TopoAttributeManager {
 
     private BasicShapeAttributes[] mBearingAttributes;
     private ColorBy mColorBy;
+    private BasicShapeAttributes[][] mComponentCircle1dAttributes;
     private BasicShapeAttributes mComponentGroundPathAttributes;
     private BasicShapeAttributes[][] mComponentTrace1dAttributes;
     private BasicShapeAttributes[] mComponentVector12dAttributes;
@@ -49,10 +50,10 @@ public class TopoAttributeManager {
     private BasicShapeAttributes[] mIndicatorNeedAttributes;
     private PointPlacemarkAttributes mLabelPlacemarkAttributes;
     private PointPlacemarkAttributes[] mPinAttributes;
+    private BasicShapeAttributes mSkipPlotAttribute;
     private BasicShapeAttributes[] mSymbolAttributes;
     private final TopoConfig mTopoConfig = new TopoConfig();
     private BasicShapeAttributes mTraceAttribute;
-    private BasicShapeAttributes mSkipPlotAttribute;
 
     public static TopoAttributeManager getInstance() {
         return Holder.INSTANCE;
@@ -81,6 +82,48 @@ public class TopoAttributeManager {
 
     public ColorBy getColorBy() {
         return mColorBy;
+    }
+
+    public BasicShapeAttributes getComponentCircle1dAttributes(BTopoControlPoint p, int alarmLevel, boolean rise, boolean maximus) {
+        if (mComponentCircle1dAttributes == null) {
+            mComponentCircle1dAttributes = new BasicShapeAttributes[5][2];
+
+            for (int i = 0; i < 5; i++) {
+                for (int j = 0; j < 2; j++) {
+                    var attrs = new BasicShapeAttributes();
+                    attrs.setDrawOutline(false);
+                    Material material;
+                    if (i < 4) {
+                        material = ButterflyHelper.getAlarmMaterial(i - 1);
+                    } else {
+                        material = new Material(Color.decode("#800080"));
+                    }
+                    attrs.setInteriorMaterial(material);
+                    attrs.setEnableLighting(true);
+                    attrs.setInteriorOpacity(0.85);
+
+                    if (j == 1) {
+                        attrs.setDrawOutline(true);
+                        if (i < 4) {
+                            attrs.setOutlineMaterial(Material.LIGHT_GRAY);
+                        } else {
+                            attrs.setOutlineMaterial(Material.YELLOW);
+                        }
+                    }
+
+                    mComponentCircle1dAttributes[i][j] = attrs;
+                }
+            }
+        }
+
+        int offset = 1;
+        if (maximus) {
+            offset++;
+        }
+        var i = alarmLevel + offset;
+        var j = rise ? 1 : 0;
+
+        return mComponentCircle1dAttributes[i][j];
     }
 
     public BasicShapeAttributes getComponentCurrentAttributes(BTopoControlPoint p) {

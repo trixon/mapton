@@ -40,11 +40,11 @@ public class ComponentRendererTrace extends ComponentRendererBase {
     public ArrayList<AVListImpl> plot(BTopoControlPoint p, Position position) {
         var mapObjects = new ArrayList<AVListImpl>();
 
-        if (sCheckModel.isChecked(RenderComponent.TRACE_1D) && p.getDimension() == BDimension._1d) {
+        if (sCheckModel.isChecked(ComponentRendererItem.TRACE_1D) && p.getDimension() == BDimension._1d) {
             plot1d(p, position, mapObjects);
-//        } else if (sCheckModel.isChecked(RenderComponent.TRACE_2D) && p.getDimension() == BDimension._2d) {
+//        } else if (sCheckModel.isChecked(ComponentRendererItem.TRACE_2D) && p.getDimension() == BDimension._2d) {
 //            plot2d(p, position, mapObjects);
-        } else if (sCheckModel.isChecked(RenderComponent.TRACE_3D) && p.getDimension() == BDimension._3d) {
+        } else if (sCheckModel.isChecked(ComponentRendererItem.TRACE_3D) && p.getDimension() == BDimension._3d) {
             plot3d(p, position, mapObjects);
         }
 
@@ -52,7 +52,7 @@ public class ComponentRendererTrace extends ComponentRendererBase {
     }
 
     private void plot1d(BTopoControlPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
-        if (isPlotLimitReached(RenderComponent.TRACE_1D, position)) {
+        if (isPlotLimitReached(ComponentRendererItem.TRACE_1D, position)) {
             return;
         }
         var reversedList = p.ext().getObservationsTimeFiltered().reversed();
@@ -93,7 +93,7 @@ public class ComponentRendererTrace extends ComponentRendererBase {
 
             cylinder.setAttributes(attrs);
             addRenderable(cylinder, true);
-            incPlotCounter(RenderComponent.TRACE_1D);
+            incPlotCounter(ComponentRendererItem.TRACE_1D);
         }
     }
 

@@ -40,7 +40,7 @@ import se.trixon.almond.util.MathHelper;
  */
 public abstract class ComponentRendererBase {
 
-    protected static IndexedCheckModel<RenderComponent> sCheckModel;
+    protected static IndexedCheckModel<ComponentRendererItem> sCheckModel;
     protected static RenderableLayer sInteractiveLayer;
     protected static ArrayList<AVListImpl> sMapObjects;
     protected static final Map<String, Integer> sObjectCounter = new HashMap<>();
@@ -104,13 +104,13 @@ public abstract class ComponentRendererBase {
         });
     }
 
-    protected void incPlotCounter(RenderComponent renderComponent) {
-        CollectionHelper.incInteger(sObjectCounter, renderComponent.name());
+    protected void incPlotCounter(ComponentRendererItem rendererItem) {
+        CollectionHelper.incInteger(sObjectCounter, rendererItem.name());
     }
 
-    protected boolean isPlotLimitReached(RenderComponent renderComponent, Position position) {
-        var count = sObjectCounter.getOrDefault(renderComponent.name(), 0);
-        boolean limitReached = count > renderComponent.getPlotLimit();
+    protected boolean isPlotLimitReached(ComponentRendererItem rendererItem, Position position) {
+        var count = sObjectCounter.getOrDefault(rendererItem.name(), 0);
+        boolean limitReached = count > rendererItem.getPlotLimit();
 
         if (limitReached) {
             //plot skip indicator

@@ -31,10 +31,11 @@ import org.mapton.worldwind.api.WWHelper;
  */
 public class ComponentRenderer extends ComponentRendererBase {
 
+    private final ComponentRendererCircle mCircleRenderer = new ComponentRendererCircle();
     private final ComponentRendererTrace mTraceRenderer = new ComponentRendererTrace();
     private final ComponentRendererVector mVectorRenderer = new ComponentRendererVector();
 
-    public ComponentRenderer(RenderableLayer layer, IndexedCheckModel<RenderComponent> checkModel) {
+    public ComponentRenderer(RenderableLayer layer, IndexedCheckModel<ComponentRendererItem> checkModel) {
         sInteractiveLayer = layer;
         sCheckModel = checkModel;
     }
@@ -44,6 +45,7 @@ public class ComponentRenderer extends ComponentRendererBase {
         plotBearing(p, position);
 
         if (p.ext().getNumOfObservationsFiltered() > 1) {
+            mCircleRenderer.plot(p, position);
             mTraceRenderer.plot(p, position);
             mVectorRenderer.plot(p, position);
         }
@@ -56,7 +58,7 @@ public class ComponentRenderer extends ComponentRendererBase {
 
     private void plotBearing(BTopoControlPoint p, Position position) {
         int size = p.ext().getObservationsTimeFiltered().size();
-        if (!sCheckModel.isChecked(RenderComponent.BEARING)
+        if (!sCheckModel.isChecked(ComponentRendererItem.BEARING)
                 || p.getDimension() == BDimension._1d
                 || p.ext().getNumOfObservationsFiltered() == 0) {
             return;

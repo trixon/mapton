@@ -48,7 +48,7 @@ public class TopoOptionsView extends MOptionsView<TopoLayerBundle> {
 
     private final ComboBox<ColorBy> mColorComboBox = new ComboBox<>();
     private final SelectionModelSession mColorSelectionModelSession = new SelectionModelSession(mColorComboBox.getSelectionModel());
-    private final CheckComboBox<RenderComponent> mComponentCheckComboBox = new CheckComboBox<>();
+    private final CheckComboBox<ComponentRendererItem> mComponentCheckComboBox = new CheckComboBox<>();
     private final CheckModelSession mComponentCheckModelSession = new CheckModelSession(mComponentCheckComboBox);
     private final CheckComboBox<Direction> mIndicatorCheckComboBox = new CheckComboBox<>();
     private final CheckModelSession mIndicatorCheckModelSession = new CheckModelSession(mIndicatorCheckComboBox);
@@ -73,7 +73,7 @@ public class TopoOptionsView extends MOptionsView<TopoLayerBundle> {
         return mColorComboBox.valueProperty().get();
     }
 
-    public IndexedCheckModel<RenderComponent> getComponentCheckModel() {
+    public IndexedCheckModel<ComponentRendererItem> getComponentCheckModel() {
         return mComponentCheckComboBox.getCheckModel();
     }
 
@@ -101,7 +101,7 @@ public class TopoOptionsView extends MOptionsView<TopoLayerBundle> {
 
         mComponentCheckComboBox.setTitle(Dict.COMPONENT.toString());
         mComponentCheckComboBox.setShowCheckedCount(true);
-        mComponentCheckComboBox.getItems().setAll(RenderComponent.values());
+        mComponentCheckComboBox.getItems().setAll(ComponentRendererItem.values());
 
         mIndicatorCheckComboBox.setTitle(Dict.INDICATORS.toString());
         mIndicatorCheckComboBox.setShowCheckedCount(true);
