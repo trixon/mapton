@@ -292,6 +292,8 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
         mHasDateFromToComboBox.getItems().setAll(List.of(
                 SDict.HAS_VALID_FROM.toString(),
                 SDict.HAS_VALID_TO.toString(),
+                SDict.WITHOUT_VALID_FROM.toString(),
+                SDict.WITHOUT_VALID_TO.toString(),
                 SDict.IS_VALID.toString(),
                 SDict.IS_INVALID.toString()
         ));

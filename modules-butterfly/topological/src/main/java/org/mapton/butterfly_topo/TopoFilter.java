@@ -226,6 +226,7 @@ public class TopoFilter extends FormFilter<TopoManager> {
                 .filter(p -> validateMeasCode(p))
                 .filter(p -> validateMeasOperators(p))
                 .filter(p -> validateDateFromToHas(p.getDateValidFrom(), p.getDateValidTo()))
+                .filter(p -> validateDateFromToWithout(p.getDateValidFrom(), p.getDateValidTo()))
                 .filter(p -> validateDateFromToIs(p.getDateValidFrom(), p.getDateValidTo()))
                 .filter(p -> validateCoordinateArea(p.getLat(), p.getLon()))
                 .filter(p -> validateCoordinateRuler(p.getLat(), p.getLon()))
@@ -401,6 +402,16 @@ public class TopoFilter extends FormFilter<TopoManager> {
         var valid = (!validFromChecked && !validToChecked)
                 || (fromDate != null && validFromChecked)
                 || (toDate != null && validToChecked);
+
+        return valid;
+    }
+
+    private boolean validateDateFromToWithout(LocalDate fromDate, LocalDate toDate) {
+        var validFromChecked = mDateFromToCheckModel.isChecked(SDict.WITHOUT_VALID_FROM.toString());
+        var validToChecked = mDateFromToCheckModel.isChecked(SDict.WITHOUT_VALID_TO.toString());
+        var valid = (!validFromChecked && !validToChecked)
+                || (fromDate == null && validFromChecked)
+                || (toDate == null && validToChecked);
 
         return valid;
     }

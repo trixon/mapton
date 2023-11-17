@@ -92,9 +92,6 @@ public class TopoPropertiesBuilder extends PropertiesBuilder<BTopoControlPoint> 
         propertyMap.put(getCatKey(cat1, "E"), StringHelper.round(p.getZeroX(), 3));
         propertyMap.put(getCatKey(cat1, "H"), StringHelper.round(p.getZeroZ(), 3));
 
-        /* TODO
-        origin=
-         */
         return propertyMap;
     }
 

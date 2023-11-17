@@ -53,26 +53,27 @@ public class ParameterEditor extends BaseTopoEditor {
     private final ResourceBundle mBundle = NbBundle.getBundle(ParameterEditor.class);
     private final CheckBox mDagCheckBox = new CheckBox("Dag");
     private final Spinner mDagSpinner = new Spinner<Integer>(0, 999, 1);
+    private final CheckBox mDatFromCheckBox = new CheckBox("Från");
+    private final DatePicker mDatFromDatePicker = new DatePicker();
+    private final CheckBox mDatToCheckBox = new CheckBox("Till");
+    private final DatePicker mDatToDatePicker = new DatePicker();
+    private final CheckBox mDatToLatestCheckBox = new CheckBox("Till (senaste)");
     private final CheckBox mGruppCheckBox = new CheckBox("Grupp");
     private final ComboBox<String> mGruppComboBox = new ComboBox<>();
+    private final CheckBox mKategoriCheckBox = new CheckBox("Kategori");
+    private final ComboBox<String> mKategoriComboBox = new ComboBox<>();
     private final CheckBox mLarmHCheckBox = new CheckBox("Larm H");
     private final ComboBox<String> mLarmHComboBox = new ComboBox<>();
     private final CheckBox mLarmPCheckBox = new CheckBox("Larm P");
     private final ComboBox<String> mLarmPComboBox = new ComboBox<>();
-    private final CheckBox mKategoriCheckBox = new CheckBox("Kategori");
-    private final ComboBox<String> mKategoriComboBox = new ComboBox<>();
     private final LogPanel mPreviewLogPanel = new LogPanel();
     private final TextArea mSourceTextArea = new TextArea();
     private final CheckBox mStatusCheckBox = new CheckBox("Status");
     private final ComboBox<String> mStatusComboBox = new ComboBox<>();
     private final CheckBox mUtforareCheckBox = new CheckBox("Utförare");
     private final ComboBox<String> mUtforareComboBox = new ComboBox<>();
-    private final CheckBox mDatFromCheckBox = new CheckBox("Från");
-    private final CheckBox mDatToCheckBox = new CheckBox("Till");
     private final CheckBox mUtglesningCheckBox = new CheckBox("Utglesning");
     private final TextField mUtglesningTextField = new TextField("MEDIAN / 2D");
-    private final DatePicker mDatFromDatePicker = new DatePicker();
-    private final DatePicker mDatToDatePicker = new DatePicker();
 
     public ParameterEditor() {
         setName("Parametrar");
@@ -152,6 +153,7 @@ public class ParameterEditor extends BaseTopoEditor {
         settingsGridPane.addColumn(col++, mUtforareCheckBox, mUtforareComboBox);
         settingsGridPane.addColumn(col++, mDatFromCheckBox, mDatFromDatePicker);
         settingsGridPane.addColumn(col++, mDatToCheckBox, mDatToDatePicker);
+        settingsGridPane.addColumn(col++, mDatToLatestCheckBox);
         settingsGridPane.addColumn(col++, mUtglesningCheckBox, mUtglesningTextField);
         FxHelper.setEditable(true, mDagSpinner);
         FxHelper.autoCommitSpinners(mDagSpinner);
@@ -223,6 +225,9 @@ public class ParameterEditor extends BaseTopoEditor {
         addConditionlly(sb, mLarmHCheckBox.isSelected() || mLarmPCheckBox.isSelected(), "larm");
         addConditionlly(sb, mDatFromCheckBox.isSelected(), "df");
         addConditionlly(sb, mDatToCheckBox.isSelected(), "dt");
+        if (mDatToCheckBox.isSelected()) {
+            addConditionlly(sb, mDatToLatestCheckBox.isSelected(), "dt");
+        }
         addConditionlly(sb, mUtglesningCheckBox.isSelected(), "sparse");
         sb.append("\n");
 
@@ -236,6 +241,16 @@ public class ParameterEditor extends BaseTopoEditor {
                 }
             }
 
+            var baseName = StringUtils.removeEnd(name, "_H");
+            baseName = StringUtils.removeEnd(baseName, "_P");
+            var p = mManager.getAllItemsMap().get(baseName);
+            var toDate = "ERROR";
+            if (p != null) {
+                var date = p.ext().getObservationRawLastDate();
+                if (date != null) {
+                    toDate = date.toString();
+                }
+            }
             sb.append(name);
             addConditionlly(sb, mDagCheckBox.isSelected(), mDagSpinner.getValue());
             addConditionlly(sb, mStatusCheckBox.isSelected(), mStatusComboBox.getValue());
@@ -245,6 +260,9 @@ public class ParameterEditor extends BaseTopoEditor {
             addConditionlly(sb, mUtforareCheckBox.isSelected(), mUtforareComboBox.getValue());
             addConditionlly(sb, mDatFromCheckBox.isSelected(), mDatFromDatePicker.getValue() == null ? "ERROR" : mDatFromDatePicker.getValue().toString());
             addConditionlly(sb, mDatToCheckBox.isSelected(), mDatToDatePicker.getValue() == null ? "ERROR" : mDatToDatePicker.getValue().toString());
+            if (!mDatToCheckBox.isSelected()) {
+                addConditionlly(sb, mDatToLatestCheckBox.isSelected(), toDate);
+            }
             addConditionlly(sb, mUtglesningCheckBox.isSelected(), mUtglesningTextField.getText());
 
             sb.append("\n");
