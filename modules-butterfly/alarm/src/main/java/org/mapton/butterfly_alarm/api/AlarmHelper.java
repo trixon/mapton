@@ -18,6 +18,7 @@ package org.mapton.butterfly_alarm.api;
 import org.mapton.butterfly_alarm.AlarmManager;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
+import org.mapton.butterfly_format.types.controlpoint.BHydroControlPoint;
 import org.mapton.butterfly_format.types.controlpoint.BTopoControlPoint;
 import se.trixon.almond.util.StringHelper;
 
@@ -36,23 +37,36 @@ public class AlarmHelper {
     private AlarmHelper() {
     }
 
-    public String getLimitsAsString(BComponent component, BTopoControlPoint controlPoint) {
+    public String getLimitsAsString(BComponent component, BTopoControlPoint p) {
         var result = "";
-        var alarmH = mManager.getAllItemsMap().get(controlPoint.getNameOfAlarmHeight());
-        var alarmP = mManager.getAllItemsMap().get(controlPoint.getNameOfAlarmPlane());
+        var alarmH = mManager.getAllItemsMap().get(p.getNameOfAlarmHeight());
+        var alarmP = mManager.getAllItemsMap().get(p.getNameOfAlarmPlane());
 
         if (component == BComponent.HEIGHT) {
             if (alarmH != null) {
                 result = StringHelper.join(" // ", "-", alarmH.getLimit1(), alarmH.getLimit2());
             } else {
-                System.out.println("Alarm H not found: %s, %s".formatted(controlPoint.getName(), controlPoint.getNameOfAlarmHeight()));
+                System.out.println("Alarm H not found: %s, %s".formatted(p.getName(), p.getNameOfAlarmHeight()));
             }
-        } else if (controlPoint.getDimension() != BDimension._1d) {
+        } else if (p.getDimension() != BDimension._1d) {
             if (alarmP != null) {
                 result = StringHelper.join(" // ", "-", alarmP.getLimit1(), alarmP.getLimit2());
             } else {
-                System.out.println("Alarm P not found: %s, %s".formatted(controlPoint.getName(), controlPoint.getNameOfAlarmPlane()));
+                System.out.println("Alarm P not found: %s, %s".formatted(p.getName(), p.getNameOfAlarmPlane()));
             }
+        }
+
+        return result;
+    }
+
+    public String getLimitsAsString(BHydroControlPoint p) {
+        var result = "";
+        var alarm = mManager.getAllItemsMap().get(p.getNameOfAlarm());
+
+        if (alarm != null) {
+            result = StringHelper.join(" // ", "-", alarm.getLimit1(), alarm.getLimit2());
+        } else {
+            System.out.println("Alarm H not found: %s, %s".formatted(p.getName(), p.getNameOfAlarm()));
         }
 
         return result;

@@ -104,6 +104,10 @@ limitations under the License.
             <artifactId>butterfly-api</artifactId>
             <version>${mapton.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.mapton</groupId>
+            <artifactId>butterfly-alarm</artifactId>
+        </dependency>
 
         <!--Other-->
     </dependencies>

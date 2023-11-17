@@ -30,6 +30,8 @@ import org.openide.util.Exceptions;
  */
 public class HydroManager extends BaseManager<BHydroControlPoint> {
 
+    private final HydroPropertiesBuilder mPropertiesBuilder = new HydroPropertiesBuilder();
+
     public static HydroManager getInstance() {
         return HydroManagerHolder.INSTANCE;
     }
@@ -40,7 +42,7 @@ public class HydroManager extends BaseManager<BHydroControlPoint> {
 
     @Override
     public Object getObjectProperties(BHydroControlPoint selectedObject) {
-        return selectedObject;
+        return mPropertiesBuilder.build(selectedObject);
     }
 
     @Override
