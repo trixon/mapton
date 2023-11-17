@@ -17,6 +17,7 @@ package org.mapton.butterfly_format.types.controlpoint;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import org.mapton.butterfly_format.types.BBase;
 
@@ -262,7 +263,107 @@ public abstract class BBaseControlPoint extends BBase {
 
     public abstract class Ext {
 
+        private transient ArrayList<BTopoControlPointObservation> observationsAllCalculated;
+        private transient ArrayList<BTopoControlPointObservation> observationsAllRaw;
+        private transient ArrayList<BTopoControlPointObservation> observationsTimeFiltered;
+
         private transient final HashMap<Object, Object> values = new HashMap<>();
+
+        public int getNumOfObservations() {
+            return getObservationsAllRaw().size();
+        }
+
+        public int getNumOfObservationsFiltered() {
+            return getObservationsTimeFiltered().size();
+        }
+
+        public BTopoControlPointObservation getObservationFilteredFirst() {
+            try {
+                return getObservationsTimeFiltered().getFirst();
+            } catch (Exception e) {
+                return null;
+            }
+        }
+
+        public LocalDate getObservationFilteredFirstDate() {
+            try {
+                return getObservationFilteredFirst().getDate().toLocalDate();
+            } catch (Exception e) {
+                return null;
+            }
+        }
+
+        public BTopoControlPointObservation getObservationFilteredLast() {
+            try {
+                return getObservationsTimeFiltered().getLast();
+            } catch (Exception e) {
+                return null;
+            }
+        }
+
+        public LocalDate getObservationFilteredLastDate() {
+            try {
+                return getObservationFilteredLast().getDate().toLocalDate();
+            } catch (Exception e) {
+                return null;
+            }
+        }
+
+        public BTopoControlPointObservation getObservationRawFirst() {
+            try {
+                return getObservationsAllRaw().getFirst();
+            } catch (Exception e) {
+                return null;
+            }
+        }
+
+        public LocalDate getObservationRawFirstDate() {
+            try {
+                return getObservationRawFirst().getDate().toLocalDate();
+            } catch (Exception e) {
+                return null;
+            }
+        }
+
+        public BTopoControlPointObservation getObservationRawLast() {
+            try {
+                return getObservationsAllRaw().getLast();
+            } catch (Exception e) {
+                return null;
+            }
+        }
+
+        public LocalDate getObservationRawLastDate() {
+            try {
+                return getObservationRawLast().getDate().toLocalDate();
+            } catch (Exception e) {
+                return null;
+            }
+        }
+
+        public ArrayList<BTopoControlPointObservation> getObservationsAllCalculated() {
+            if (observationsAllCalculated == null) {
+                observationsAllCalculated = new ArrayList<>();
+            }
+
+            return observationsAllCalculated;
+        }
+
+        public ArrayList<BTopoControlPointObservation> getObservationsAllRaw() {
+            if (observationsAllRaw == null) {
+                observationsAllRaw = new ArrayList<>();
+            }
+
+            return observationsAllRaw;
+        }
+
+        public ArrayList<BTopoControlPointObservation> getObservationsTimeFiltered() {
+            if (observationsTimeFiltered == null) {
+                observationsTimeFiltered = new ArrayList<>();
+            }
+
+            return observationsTimeFiltered;
+        }
 
         public Object getValue(Object key) {
             return getValues().get(key);
@@ -274,6 +375,18 @@ public abstract class BBaseControlPoint extends BBase {
 
         public HashMap<Object, Object> getValues() {
             return values;
+        }
+
+        public void setObservationsAllCalculated(ArrayList<BTopoControlPointObservation> observationsCalculated) {
+            this.observationsAllCalculated = observationsCalculated;
+        }
+
+        public void setObservationsAllRaw(ArrayList<BTopoControlPointObservation> observationsAllRaw) {
+            this.observationsAllRaw = observationsAllRaw;
+        }
+
+        public void setObservationsTimeFiltered(ArrayList<BTopoControlPointObservation> observationsTimeFiltered) {
+            this.observationsTimeFiltered = observationsTimeFiltered;
         }
 
         public Object setValue(Object key, Object value) {

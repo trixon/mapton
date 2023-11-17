@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_format.types.controlpoint;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
@@ -45,12 +46,22 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 })
 public class BHydroControlPoint extends BBaseControlPoint {
 
+    @JsonIgnore
+    private Ext mExt;
     private String nameOfAlarm;
     private Double offsetX;
     private Double offsetY;
     private Double offsetZ;
 
     public BHydroControlPoint() {
+    }
+
+    public Ext ext() {
+        if (mExt == null) {
+            mExt = new Ext();
+        }
+
+        return mExt;
     }
 
     public String getNameOfAlarm() {
@@ -83,6 +94,10 @@ public class BHydroControlPoint extends BBaseControlPoint {
 
     public void setOffsetZ(Double offsetZ) {
         this.offsetZ = offsetZ;
+    }
+
+    public class Ext extends BBaseControlPoint.Ext {
+
     }
 
 }
