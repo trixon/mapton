@@ -377,6 +377,11 @@
                 <!--Included extras-->
                 <dependency>
                     <groupId>${project.groupId}</groupId>
+                    <artifactId>butterfly-activities</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
                     <artifactId>butterfly-hydro</artifactId>
                     <version>${project.version}</version>
                 </dependency>

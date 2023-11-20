@@ -21,12 +21,15 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKTReader;
 import org.mapton.api.MArea;
 import org.mapton.api.MAreaFilterManager;
 import org.mapton.api.MCooTrans;
 import org.mapton.api.MOptions;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.controlpoint.BBaseControlPoint;
+import org.openide.util.Exceptions;
 
 /**
  *
@@ -36,6 +39,7 @@ public class ButterflyManager {
 
     private final ObjectProperty<Butterfly> mButterflyProperty = new SimpleObjectProperty<>();
     private final MAreaFilterManager mAreaFilterManager = MAreaFilterManager.getInstance();
+    private final WKTReader mWktReader = new WKTReader();
 
     public static ButterflyManager getInstance() {
         return Holder.INSTANCE;
@@ -71,6 +75,17 @@ public class ButterflyManager {
 
         mAreaFilterManager.clearByPrefix(prefix);
         mAreaFilterManager.addAll(areas);
+
+        for (var area : butterfly.getAreaActivities()) {
+            try {
+                var geometry = mWktReader.read(area.getWkt());
+                area.setGeometry(geometry);
+            } catch (ParseException ex) {
+                Exceptions.printStackTrace(ex);
+            }
+
+        }
+
         setButterfly(butterfly);
     }
 

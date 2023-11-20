@@ -15,7 +15,9 @@
  */
 package org.mapton.butterfly_format.types;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import org.locationtech.jts.geom.Geometry;
 
 /**
  *
@@ -31,6 +33,8 @@ public class BAreaBase {
 
     private String description;
     private String id;
+    @JsonIgnore
+    private Geometry mGeometry;
     private String name;
     private String wkt;
 
@@ -39,6 +43,10 @@ public class BAreaBase {
 
     public String getDescription() {
         return description;
+    }
+
+    public Geometry getGeometry() {
+        return mGeometry;
     }
 
     public String getId() {
@@ -55,6 +63,10 @@ public class BAreaBase {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public void setGeometry(Geometry geometry) {
+        this.mGeometry = geometry;
     }
 
     public void setId(String id) {

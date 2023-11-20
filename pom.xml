@@ -375,6 +375,11 @@
             </dependency>
             <dependency>
                 <groupId>org.mapton</groupId>
+                <artifactId>butterfly-activities</artifactId>
+                <version>${mapton.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mapton</groupId>
                 <artifactId>butterfly-topo</artifactId>
                 <version>${mapton.version}</version>
             </dependency>

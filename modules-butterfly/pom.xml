@@ -32,6 +32,7 @@ limitations under the License.
     <modules>
         <module>format</module>
         <module>api</module>
+        <module>activities</module>
         <module>hydrological</module>
         <module>topological</module>
         <module>alarm</module>
