@@ -388,6 +388,11 @@
                 <artifactId>butterfly-hydro</artifactId>
                 <version>${mapton.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.mapton</groupId>
+                <artifactId>butterfly-acoustic</artifactId>
+                <version>${mapton.version}</version>
+            </dependency>
 
             <!-- Trixon -->
             <dependency>

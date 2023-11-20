@@ -19,27 +19,22 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
-import org.mapton.butterfly_format.types.BBase;
+import org.mapton.butterfly_format.types.BBasePoint;
 
 /**
  *
  * @author Patrik Karlström <patrik@trixon.se>
  */
-public abstract class BBaseControlPoint extends BBase {
+public abstract class BBaseControlPoint extends BBasePoint {
 
     private String category;
-    private String comment;
     private LocalDateTime dateLatest;
     private LocalDate dateRolling;
     private LocalDate dateValidFrom;
     private LocalDate dateValidTo;
     private LocalDate dateZero;
     private Integer frequency;
-    private String group;
-    private Double lat;
-    private Double lon;
     private String meta;
-    private String name;
     private Integer numOfDecXY;
     private Integer numOfDecZ;
     private String operator;
@@ -58,10 +53,6 @@ public abstract class BBaseControlPoint extends BBase {
 
     public String getCategory() {
         return category;
-    }
-
-    public String getComment() {
-        return comment;
     }
 
     public LocalDateTime getDateLatest() {
@@ -88,24 +79,8 @@ public abstract class BBaseControlPoint extends BBase {
         return frequency;
     }
 
-    public String getGroup() {
-        return group;
-    }
-
-    public Double getLat() {
-        return lat;
-    }
-
-    public Double getLon() {
-        return lon;
-    }
-
     public String getMeta() {
         return meta;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public Integer getNumOfDecXY() {
@@ -160,10 +135,6 @@ public abstract class BBaseControlPoint extends BBase {
         this.category = category;
     }
 
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
-
     public void setDateLatest(LocalDateTime dateLatest) {
         this.dateLatest = dateLatest;
     }
@@ -188,24 +159,8 @@ public abstract class BBaseControlPoint extends BBase {
         this.frequency = frequency;
     }
 
-    public void setGroup(String group) {
-        this.group = group;
-    }
-
-    public void setLat(Double lat) {
-        this.lat = lat;
-    }
-
-    public void setLon(Double lon) {
-        this.lon = lon;
-    }
-
     public void setMeta(String meta) {
         this.meta = meta;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public void setNumOfDecXY(Integer numOfDecXY) {
