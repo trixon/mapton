@@ -19,7 +19,8 @@ import java.io.File;
 import java.util.ArrayList;
 import org.mapton.butterfly_format.io.ImportFromCsv;
 import org.mapton.butterfly_format.types.BAlarm;
-import org.mapton.butterfly_format.types.BAreaFilter;
+import org.mapton.butterfly_format.types.BAreaActivity;
+import org.mapton.butterfly_format.types.BAreaBase;
 import org.mapton.butterfly_format.types.controlpoint.BHydroControlPoint;
 import org.mapton.butterfly_format.types.controlpoint.BHydroControlPointObservation;
 import org.mapton.butterfly_format.types.controlpoint.BTopoControlPoint;
@@ -32,7 +33,8 @@ import org.mapton.butterfly_format.types.controlpoint.BTopoControlPointObservati
 public class Butterfly {
 
     private final ArrayList<BAlarm> mAlarms = new ArrayList<>();
-    private final ArrayList<BAreaFilter> mAreaFilters = new ArrayList<>();
+    private final ArrayList<BAreaActivity> mAreaActivities = new ArrayList<>();
+    private final ArrayList<BAreaBase> mAreaFilters = new ArrayList<>();
     private final ArrayList<BHydroControlPoint> mHydroControlPoints = new ArrayList<>();
     private final ArrayList<BHydroControlPointObservation> mHydroControlPointsObservations = new ArrayList<>();
     private final ArrayList<BTopoControlPoint> mTopoControlPoints = new ArrayList<>();
@@ -45,7 +47,11 @@ public class Butterfly {
         return mAlarms;
     }
 
-    public ArrayList<BAreaFilter> getAreaFilters() {
+    public ArrayList<BAreaActivity> getAreaActivities() {
+        return mAreaActivities;
+    }
+
+    public ArrayList<BAreaBase> getAreaFilters() {
         return mAreaFilters;
     }
 
@@ -69,7 +75,10 @@ public class Butterfly {
         new ImportFromCsv<BAlarm>(BAlarm.class) {
         }.load(new File(sourceDir, "alarms.csv"), mAlarms);
 
-        new ImportFromCsv<BAreaFilter>(BAreaFilter.class) {
+        new ImportFromCsv<BAreaActivity>(BAreaActivity.class) {
+        }.load(new File(sourceDir, "areaActivities.csv"), mAreaActivities);
+
+        new ImportFromCsv<BAreaBase>(BAreaBase.class) {
         }.load(new File(sourceDir, "areaFilters.csv"), mAreaFilters);
 
         new ImportFromCsv<BTopoControlPoint>(BTopoControlPoint.class) {

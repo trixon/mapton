@@ -27,46 +27,46 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
     "description",
     "wkt"
 })
-public class BAreaFilter {
+public class BAreaBase {
 
-    private String mDescription;
-    private String mId;
-    private String mName;
-    private String mWktGeometry;
+    private String description;
+    private String id;
+    private String name;
+    private String wkt;
 
-    public BAreaFilter() {
+    public BAreaBase() {
     }
 
     public String getDescription() {
-        return mDescription;
+        return description;
     }
 
     public String getId() {
-        return mId;
+        return id;
     }
 
     public String getName() {
-        return mName;
+        return name;
     }
 
-    public String getWktGeometry() {
-        return mWktGeometry;
+    public String getWkt() {
+        return wkt;
     }
 
     public void setDescription(String description) {
-        mDescription = description;
+        this.description = description;
     }
 
     public void setId(String id) {
-        mId = id;
+        this.id = id;
     }
 
     public void setName(String name) {
-        mName = name;
+        this.name = name;
     }
 
-    public void setWktGeometry(String wktGeometry) {
-        mWktGeometry = wktGeometry;
+    public void setWkt(String wkt) {
+        this.wkt = wkt;
     }
 
 }

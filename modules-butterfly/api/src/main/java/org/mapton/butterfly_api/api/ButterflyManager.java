@@ -61,11 +61,11 @@ public class ButterflyManager {
         calculateLatLons(butterfly.getTopoControlPoints());
 
         var areas = new ArrayList<MArea>();
-        var prefix = "BUTTERFLY_";
+        var prefix = "Haga/";
         butterfly.getAreaFilters().stream().forEachOrdered(areaFilter -> {
-            var area = new MArea(prefix + areaFilter.getId());
+            var area = new MArea(areaFilter.getName());
             area.setName(areaFilter.getName());
-            area.setWktGeometry(areaFilter.getWktGeometry());
+            area.setWktGeometry(areaFilter.getWkt());
             areas.add(area);
         });
 
