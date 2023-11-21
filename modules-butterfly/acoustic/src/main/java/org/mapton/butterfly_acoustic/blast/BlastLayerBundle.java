@@ -29,6 +29,7 @@ import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.Almond;
+import se.trixon.almond.util.SDict;
 import se.trixon.almond.util.fx.FxHelper;
 
 /**
@@ -57,7 +58,7 @@ public class BlastLayerBundle extends LayerBundle {
 
     private void init() {
         mLayer.setName(Bundle.CTL_BlastAction());
-        setCategory(mLayer, "Butterfly");
+        setCategory(mLayer, "%s/%s".formatted("Butterfly", SDict.ACOUSTIC.toString()));
         setName(Bundle.CTL_BlastAction());
         attachTopComponentToLayer("BlastTopComponent", mLayer);
         setParentLayer(mLayer);

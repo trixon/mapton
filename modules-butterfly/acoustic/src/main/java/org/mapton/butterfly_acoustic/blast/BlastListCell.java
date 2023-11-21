@@ -15,10 +15,12 @@
  */
 package org.mapton.butterfly_acoustic.blast;
 
+import java.util.Objects;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.layout.VBox;
 import org.mapton.butterfly_format.types.acoustic.BAcoBlast;
+import se.trixon.almond.util.DateHelper;
 
 /**
  *
@@ -26,8 +28,9 @@ import org.mapton.butterfly_format.types.acoustic.BAcoBlast;
  */
 class BlastListCell extends ListCell<BAcoBlast> {
 
-    private final Label mDesc1Label = new Label();
+    private final Label mDateLabel = new Label();
     private final Label mNameLabel = new Label();
+    private final Label mGroupLabel = new Label();
     private final String mStyleBold = "-fx-font-weight: bold;";
     private VBox mVBox;
 
@@ -36,19 +39,21 @@ class BlastListCell extends ListCell<BAcoBlast> {
     }
 
     @Override
-    protected void updateItem(BAcoBlast hcp, boolean empty) {
-        super.updateItem(hcp, empty);
-        if (hcp == null || empty) {
+    protected void updateItem(BAcoBlast blast, boolean empty) {
+        super.updateItem(blast, empty);
+        if (blast == null || empty) {
             clearContent();
         } else {
-            addContent(hcp);
+            addContent(blast);
         }
     }
 
-    private void addContent(BAcoBlast hcp) {
+    private void addContent(BAcoBlast blast) {
         setText(null);
-        mNameLabel.setText(hcp.getName());
-        mDesc1Label.setText("%s: %s".formatted(hcp.getGroup(), "xxx"));
+        var date = Objects.toString(DateHelper.toDateString(blast.getDateTime()), "-");
+        mNameLabel.setText(blast.getName());
+        mDateLabel.setText("%s %s".formatted(date, blast.getComment()));
+        mGroupLabel.setText(blast.getGroup());
         setGraphic(mVBox);
     }
 
@@ -59,7 +64,11 @@ class BlastListCell extends ListCell<BAcoBlast> {
 
     private void createUI() {
         mNameLabel.setStyle(mStyleBold);
-        mVBox = new VBox(mNameLabel, mDesc1Label);
+        mVBox = new VBox(
+                mNameLabel,
+                mDateLabel,
+                mGroupLabel
+        );
     }
 
 }

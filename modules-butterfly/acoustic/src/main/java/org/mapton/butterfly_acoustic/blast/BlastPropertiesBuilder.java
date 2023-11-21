@@ -16,9 +16,12 @@
 package org.mapton.butterfly_acoustic.blast;
 
 import java.util.LinkedHashMap;
+import java.util.Objects;
 import org.mapton.api.ui.forms.PropertiesBuilder;
 import org.mapton.butterfly_format.types.acoustic.BAcoBlast;
+import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.MathHelper;
 
 /**
  *
@@ -34,7 +37,13 @@ public class BlastPropertiesBuilder extends PropertiesBuilder<BAcoBlast> {
 
         var propertyMap = new LinkedHashMap<String, Object>();
         var cat1 = Dict.BASIC.toString();
+        var date = Objects.toString(DateHelper.toDateString(p.getDateTime()), "-");
+
         propertyMap.put(getCatKey(cat1, Dict.NAME.toString()), p.getName());
+        propertyMap.put(getCatKey(cat1, Dict.GROUP.toString()), p.getGroup());
+        propertyMap.put(getCatKey(cat1, Dict.COMMENT.toString()), p.getComment());
+        propertyMap.put(getCatKey(cat1, Dict.DATE.toString()), date);
+        propertyMap.put(getCatKey(cat1, "Z"), MathHelper.convertDoubleToString(p.getZ(), 1));
 
         return propertyMap;
     }
