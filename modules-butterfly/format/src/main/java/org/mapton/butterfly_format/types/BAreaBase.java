@@ -34,7 +34,7 @@ public class BAreaBase {
     private String description;
     private String id;
     @JsonIgnore
-    private Geometry mGeometry;
+    private Geometry geometry;
     private String name;
     private String wkt;
 
@@ -46,7 +46,7 @@ public class BAreaBase {
     }
 
     public Geometry getGeometry() {
-        return mGeometry;
+        return geometry;
     }
 
     public String getId() {
@@ -66,7 +66,7 @@ public class BAreaBase {
     }
 
     public void setGeometry(Geometry geometry) {
-        this.mGeometry = geometry;
+        this.geometry = geometry;
     }
 
     public void setId(String id) {

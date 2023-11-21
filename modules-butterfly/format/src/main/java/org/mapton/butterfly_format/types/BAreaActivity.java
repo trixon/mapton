@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_format.types;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.time.LocalDateTime;
 
@@ -32,6 +33,7 @@ import java.time.LocalDateTime;
     "lon",
     "wkt"
 })
+@JsonIgnoreProperties(value = {"geometry"})
 public class BAreaActivity extends BAreaBase {
 
     private LocalDateTime datFrom;
