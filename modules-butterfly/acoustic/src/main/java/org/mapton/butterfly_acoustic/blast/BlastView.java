@@ -37,6 +37,7 @@ public class BlastView {
     public BlastView() {
         var actions = Arrays.asList(
                 ActionUtils.ACTION_SPAN,
+                mFilter.getInfoPopOver().getAction(),
                 mFilterPopOver.getAction()
         );
 
@@ -51,8 +52,8 @@ public class BlastView {
 
         mListForm.setFreeTextTooltip(
                 Dict.NAME.toString(),
-                Dict.CATEGORY.toString(),
-                Dict.GROUP.toString()
+                Dict.GROUP.toString(),
+                Dict.COMMENT.toString()
         );
     }
 

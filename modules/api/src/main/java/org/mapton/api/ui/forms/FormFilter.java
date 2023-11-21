@@ -15,6 +15,21 @@
  */
 package org.mapton.api.ui.forms;
 
+import static j2html.TagCreator.b;
+import static j2html.TagCreator.body;
+import static j2html.TagCreator.each;
+import static j2html.TagCreator.filter;
+import static j2html.TagCreator.h1;
+import static j2html.TagCreator.head;
+import static j2html.TagCreator.hr;
+import static j2html.TagCreator.html;
+import static j2html.TagCreator.table;
+import static j2html.TagCreator.tbody;
+import static j2html.TagCreator.td;
+import static j2html.TagCreator.title;
+import static j2html.TagCreator.tr;
+import j2html.tags.ContainerTag;
+import java.util.LinkedHashMap;
 import java.util.ResourceBundle;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -32,6 +47,7 @@ import org.mapton.api.MBaseDataManager;
 import org.mapton.api.MPolygonFilterManager;
 import org.mapton.api.ui.MInfoPopOver;
 import org.openide.util.NbBundle;
+import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.DelayedResetRunner;
 
 /**
@@ -63,6 +79,30 @@ public abstract class FormFilter<ManagerType extends MBaseDataManager> {
 
     public void bindFreeTextProperty(StringProperty freeTextProperty) {
         freeTextProperty.bindBidirectional(freeTextProperty());
+    }
+
+    public ContainerTag createHtmlFilterInfo(LinkedHashMap<String, String> map) {
+        var html = html(
+                head(
+                        title(Dict.FILTER.toString())
+                ),
+                body(
+                        h1(Dict.FILTER.toString()),
+                        hr(),
+                        table(
+                                tbody(
+                                        each(filter(map.entrySet(), entry -> StringUtils.isNotBlank(entry.getValue())), entry
+                                                -> tr(
+                                                td(entry.getKey()),
+                                                td(b(entry.getValue()))
+                                        )
+                                        )
+                                )
+                        ),
+                        hr()//Temp last line
+                ));
+
+        return html;
     }
 
     public StringProperty freeTextProperty() {

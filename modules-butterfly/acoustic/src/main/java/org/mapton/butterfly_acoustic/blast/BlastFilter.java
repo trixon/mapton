@@ -15,10 +15,13 @@
  */
 package org.mapton.butterfly_acoustic.blast;
 
+import j2html.tags.ContainerTag;
+import java.util.LinkedHashMap;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.ui.forms.FormFilter;
 import org.mapton.butterfly_format.types.acoustic.BAcoBlast;
+import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.StringHelper;
 
 /**
@@ -51,6 +54,19 @@ public class BlastFilter extends FormFilter<BlastManager> {
                 .toList();
 
         mManager.getFilteredItems().setAll(filteredItems);
+
+        getInfoPopOver().loadContent(createInfoContent().renderFormatted());
+    }
+
+    private ContainerTag createInfoContent() {
+        //TODO Add measOperator+latest
+        var map = new LinkedHashMap<String, String>();
+
+        map.put(Dict.TEXT.toString(), getFreeText());
+        map.put(Dict.GROUP.toString(), makeInfo(mGroupCheckModel.getCheckedItems()));
+
+        return createHtmlFilterInfo(map);
+
     }
 
     private void initListeners() {

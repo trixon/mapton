@@ -28,7 +28,6 @@ import org.mapton.butterfly_format.types.BBasePoint;
     "dateTime",
     "lat",
     "lon",
-    "active",
     "name",
     "z",
     "comment",
@@ -36,7 +35,6 @@ import org.mapton.butterfly_format.types.BBasePoint;
 })
 public class BAcoBlast extends BBasePoint {
 
-    private boolean active;
     private LocalDateTime dateTime;
     private Long id;
     private Double z;
@@ -54,14 +52,6 @@ public class BAcoBlast extends BBasePoint {
 
     public Double getZ() {
         return z;
-    }
-
-    public boolean isActive() {
-        return active;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
     }
 
     public void setDateTime(LocalDateTime dateTime) {

@@ -15,19 +15,6 @@
  */
 package org.mapton.butterfly_topo;
 
-import static j2html.TagCreator.b;
-import static j2html.TagCreator.body;
-import static j2html.TagCreator.each;
-import static j2html.TagCreator.filter;
-import static j2html.TagCreator.h1;
-import static j2html.TagCreator.head;
-import static j2html.TagCreator.hr;
-import static j2html.TagCreator.html;
-import static j2html.TagCreator.table;
-import static j2html.TagCreator.tbody;
-import static j2html.TagCreator.td;
-import static j2html.TagCreator.title;
-import static j2html.TagCreator.tr;
 import j2html.tags.ContainerTag;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -295,27 +282,7 @@ public class TopoFilter extends FormFilter<TopoManager> {
             map.put(getBundle().getString("sameAlarmCheckBoxText"), BooleanHelper.asYesNo(mSameAlarmProperty.get()));
         }
 
-        var html = html(
-                head(
-                        title(Dict.FILTER.toString())
-                ),
-                body(
-                        h1(Dict.FILTER.toString()),
-                        hr(),
-                        table(
-                                tbody(
-                                        each(filter(map.entrySet(), entry -> StringUtils.isNotBlank(entry.getValue())), entry
-                                                -> tr(
-                                                td(entry.getKey()),
-                                                td(b(entry.getValue()))
-                                        )
-                                        )
-                                )
-                        ),
-                        hr()//Temp last line
-                ));
-
-        return html;
+        return createHtmlFilterInfo(map);
     }
 
     private void initListeners() {
