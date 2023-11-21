@@ -15,6 +15,8 @@
  */
 package org.mapton.butterfly_acoustic.blast;
 
+import gov.nasa.worldwind.render.BasicShapeAttributes;
+import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
 import java.awt.Color;
 import se.trixon.almond.util.GraphicsHelper;
@@ -25,6 +27,8 @@ import se.trixon.almond.util.GraphicsHelper;
  */
 public class BlastAttributeManager {
 
+    private BasicShapeAttributes mComponentEllipsoidAttributes;
+    private BasicShapeAttributes mComponentGroundPathAttributes;
     private PointPlacemarkAttributes mLabelPlacemarkAttributes;
     private PointPlacemarkAttributes mPinAttributes;
 
@@ -33,6 +37,29 @@ public class BlastAttributeManager {
     }
 
     private BlastAttributeManager() {
+    }
+
+    public BasicShapeAttributes getComponentEllipsoidAttributes() {
+        if (mComponentEllipsoidAttributes == null) {
+            mComponentEllipsoidAttributes = new BasicShapeAttributes();
+            mComponentEllipsoidAttributes.setDrawOutline(false);
+            mComponentEllipsoidAttributes.setInteriorMaterial(Material.ORANGE);
+            mComponentEllipsoidAttributes.setEnableLighting(true);
+        }
+
+        return mComponentEllipsoidAttributes;
+    }
+
+    public BasicShapeAttributes getComponentGroundPathAttributes() {
+        if (mComponentGroundPathAttributes == null) {
+            mComponentGroundPathAttributes = new BasicShapeAttributes();
+            mComponentGroundPathAttributes.setDrawOutline(true);
+            mComponentGroundPathAttributes.setOutlineMaterial(Material.LIGHT_GRAY);
+            mComponentGroundPathAttributes.setEnableLighting(false);
+            mComponentGroundPathAttributes.setOutlineWidth(1);
+        }
+
+        return mComponentGroundPathAttributes;
     }
 
     public PointPlacemarkAttributes getLabelPlacemarkAttributes() {

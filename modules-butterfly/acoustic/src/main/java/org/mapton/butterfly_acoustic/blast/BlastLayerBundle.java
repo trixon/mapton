@@ -40,6 +40,7 @@ import se.trixon.almond.util.fx.FxHelper;
 public class BlastLayerBundle extends LayerBundle {
 
     private final BlastAttributeManager mAttributeManager = BlastAttributeManager.getInstance();
+    private final ComponentRenderer mComponentRenderer;
     private final RenderableLayer mLabelLayer = new RenderableLayer();
     private final RenderableLayer mLayer = new RenderableLayer();
     private final BlastManager mManager = BlastManager.getInstance();
@@ -51,6 +52,7 @@ public class BlastLayerBundle extends LayerBundle {
         init();
         initRepaint();
         mOptionsView = new BlastOptionsView(this);
+        mComponentRenderer = new ComponentRenderer(mLayer);
         initListeners();
 
         FxHelper.runLaterDelayed(1000, () -> mManager.updateTemporal(mLayer.isEnabled()));
@@ -102,7 +104,7 @@ public class BlastLayerBundle extends LayerBundle {
     private void initRepaint() {
         setPainter(() -> {
             removeAllRenderables();
-            //mComponentRenderer.reset();
+            mComponentRenderer.reset();
             if (!mLayer.isEnabled()) {
                 return;
             }
@@ -132,6 +134,8 @@ public class BlastLayerBundle extends LayerBundle {
                     mapObjects.add(labelPlacemark);
                     mapObjects.add(plotPin(position, labelPlacemark));
 
+                    mComponentRenderer.plot(p, position, mapObjects);
+
                     var leftClickRunnable = (Runnable) () -> {
                         mManager.setSelectedItemAfterReset(p);
                     };
@@ -144,28 +148,6 @@ public class BlastLayerBundle extends LayerBundle {
                         r.setValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK, leftClickRunnable);
                         r.setValue(WWHelper.KEY_RUNNABLE_LEFT_DOUBLE_CLICK, leftDoubleClickRunnable);
                     });
-
-//                    var placemark = new PointPlacemark(Position.fromDegrees(p.getLat(), p.getLon()));
-//                    placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
-//                    placemark.setEnableLabelPicking(true);
-//                    var attrs = new PointPlacemarkAttributes(placemark.getDefaultAttributes());
-//
-//                    placemark.setLabelText(p.getName());
-//                    attrs.setImageAddress("images/pushpins/plain-white.png");
-//                    attrs.setImageColor(Color.RED);
-//
-//                    placemark.setAttributes(attrs);
-//                    placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(attrs, 1.5));
-//
-//                    placemark.setValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK, (Runnable) () -> {
-//                        mManager.setSelectedItemAfterReset(p);
-//                    });
-//
-//                    placemark.setValue(WWHelper.KEY_RUNNABLE_LEFT_DOUBLE_CLICK, (Runnable) () -> {
-//                        Almond.openAndActivateTopComponent((String) mLayer.getValue(WWHelper.KEY_FAST_OPEN));
-//                    });
-//
-//                    mLayer.addRenderable(placemark);
                 }
             }
 
