@@ -15,6 +15,8 @@
  */
 package org.mapton.butterfly_api.api;
 
+import javafx.event.EventType;
+import javafx.stage.WindowEvent;
 import org.mapton.api.ui.MFilterPopOver;
 import org.mapton.butterfly_format.Butterfly;
 
@@ -26,6 +28,7 @@ public abstract class BaseFilterPopOver extends MFilterPopOver {
 
     private Butterfly mButterfly;
     private final ButterflyManager mButterflyManager = ButterflyManager.getInstance();
+    private boolean mFirstRun = true;
 
     public BaseFilterPopOver() {
         var butterflyProperty = mButterflyManager.butterflyProperty();
@@ -34,6 +37,15 @@ public abstract class BaseFilterPopOver extends MFilterPopOver {
             load(n);
         });
 
+        addEventHandler(EventType.ROOT, event -> {
+            if (mFirstRun && event.getEventType() == WindowEvent.WINDOW_SHOWN) {
+                onShownFirstTime();
+                mFirstRun = false;
+            }
+        });
+    }
+
+    public void onShownFirstTime() {
     }
 
     public Butterfly getButterfly() {

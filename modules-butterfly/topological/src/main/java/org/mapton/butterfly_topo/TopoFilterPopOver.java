@@ -18,7 +18,6 @@ package org.mapton.butterfly_topo;
 import java.util.List;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
-import javafx.event.EventType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Separator;
@@ -27,7 +26,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import javafx.stage.WindowEvent;
 import javafx.util.StringConverter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -74,7 +72,6 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
     private final CheckComboBox<BDimension> mDimensionCheckComboBox = new CheckComboBox<>();
     private final CheckModelSession mDimensionCheckModelSession = new CheckModelSession(mDimensionCheckComboBox);
     private final TopoFilter mFilter;
-    private boolean mFirstRun = true;
     private final CheckComboBox<Integer> mFrequencyCheckComboBox = new CheckComboBox<>();
     private final CheckModelSession mFrequencyCheckModelSession = new CheckModelSession(mFrequencyCheckComboBox);
     private final CheckComboBox<String> mGroupCheckComboBox = new CheckComboBox<>();
@@ -231,6 +228,15 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
     @Override
     public void onPolygonFilterChange() {
         mFilter.update();
+    }
+
+    @Override
+    public void onShownFirstTime() {
+        var dropDownCount = 25;
+        FxHelper.getComboBox(mGroupCheckComboBox).setVisibleRowCount(dropDownCount);
+        FxHelper.getComboBox(mCategoryCheckComboBox).setVisibleRowCount(dropDownCount);
+        FxHelper.getComboBox(mAlarmNameCheckComboBox).setVisibleRowCount(dropDownCount);
+        FxHelper.getComboBox(mMeasOperatorsCheckComboBox).setVisibleRowCount(dropDownCount);
     }
 
     @Override
@@ -456,17 +462,6 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
         activatePasteName(actionEvent -> {
             mFilter.freeTextProperty().set(mManager.getSelectedItem().getName());
             mSameAlarmCheckbox.setSelected(true);
-        });
-
-        addEventHandler(EventType.ROOT, event -> {
-            if (mFirstRun && event.getEventType() == WindowEvent.WINDOW_SHOWN) {
-                var dropDownCount = 25;
-                FxHelper.getComboBox(mGroupCheckComboBox).setVisibleRowCount(dropDownCount);
-                FxHelper.getComboBox(mCategoryCheckComboBox).setVisibleRowCount(dropDownCount);
-                FxHelper.getComboBox(mAlarmNameCheckComboBox).setVisibleRowCount(dropDownCount);
-                FxHelper.getComboBox(mMeasOperatorsCheckComboBox).setVisibleRowCount(dropDownCount);
-                mFirstRun = false;
-            }
         });
 
         mFilter.numOfMeasProperty().bind(mNumOfMeasCheckbox.selectedProperty());

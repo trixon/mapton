@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,21 +15,28 @@
  */
 package org.mapton.butterfly_acoustic.blast;
 
-import javafx.scene.control.CheckBox;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 import javafx.scene.control.Separator;
 import javafx.scene.layout.VBox;
-import org.mapton.api.ui.MFilterPopOver;
+import org.controlsfx.control.CheckComboBox;
 import static org.mapton.api.ui.MPopOver.GAP;
 import static org.mapton.api.ui.MPopOver.autoSize;
+import org.mapton.butterfly_api.api.BaseFilterPopOver;
+import org.mapton.butterfly_format.Butterfly;
+import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.fx.FxHelper;
+import se.trixon.almond.util.fx.session.CheckModelSession;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class BlastFilterPopOver extends MFilterPopOver {
+public class BlastFilterPopOver extends BaseFilterPopOver {
 
-    private final CheckBox mCheckbox = new CheckBox("TEST");
     private final BlastFilter mFilter;
+    private final CheckComboBox<String> mGroupCheckComboBox = new CheckComboBox<>();
+    private final CheckModelSession mGroupCheckModelSession = new CheckModelSession(mGroupCheckComboBox);
 
     public BlastFilterPopOver(BlastFilter filter) {
         mFilter = filter;
@@ -42,12 +49,33 @@ public class BlastFilterPopOver extends MFilterPopOver {
     public void clear() {
         getPolygonFilterCheckBox().setSelected(false);
         mFilter.freeTextProperty().set("");
-        mCheckbox.setSelected(false);
+        mGroupCheckComboBox.getCheckModel().clearChecks();
+
+    }
+
+    @Override
+    public void load(Butterfly butterfly) {
+        var blasts = butterfly.getAcoBlasts();
+
+        var groupCheckModel = mGroupCheckComboBox.getCheckModel();
+        var checkedGroup = groupCheckModel.getCheckedItems();
+        var allGroupss = new TreeSet<>(blasts.stream().map(o -> o.getGroup()).collect(Collectors.toSet()));
+
+        mGroupCheckComboBox.getItems().setAll(allGroupss);
+        checkedGroup.stream().forEach(d -> groupCheckModel.check(d));
+
+        mGroupCheckModelSession.load();
     }
 
     @Override
     public void onPolygonFilterChange() {
         mFilter.update();
+    }
+
+    @Override
+    public void onShownFirstTime() {
+        var dropDownCount = 25;
+        FxHelper.getComboBox(mGroupCheckComboBox).setVisibleRowCount(dropDownCount);
     }
 
     @Override
@@ -57,10 +85,13 @@ public class BlastFilterPopOver extends MFilterPopOver {
     }
 
     private void createUI() {
+        mGroupCheckComboBox.setShowCheckedCount(true);
+        mGroupCheckComboBox.setTitle(Dict.GROUP.toString());
+
         var vBox = new VBox(GAP,
                 getButtonBox(),
                 new Separator(),
-                mCheckbox
+                mGroupCheckComboBox
         );
 
         autoSize(vBox);
@@ -68,12 +99,16 @@ public class BlastFilterPopOver extends MFilterPopOver {
     }
 
     private void initListeners() {
-        mFilter.property().bind(mCheckbox.selectedProperty());
         mFilter.polygonFilterProperty().bind(getPolygonFilterCheckBox().selectedProperty());
+
+        mFilter.setCheckModelGroup(mGroupCheckComboBox.getCheckModel());
+
     }
 
     private void initSession() {
-        getSessionManager().register("freeText", mFilter.freeTextProperty());
+        var sessionManager = getSessionManager();
+        sessionManager.register("filter.freeText", mFilter.freeTextProperty());
+        sessionManager.register("filter.checkedGroup", mGroupCheckModelSession.checkedStringProperty());
 
     }
 

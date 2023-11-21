@@ -15,9 +15,8 @@
  */
 package org.mapton.butterfly_acoustic.blast;
 
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import org.apache.commons.lang3.StringUtils;
+import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.ui.forms.FormFilter;
 import org.mapton.butterfly_format.types.acoustic.BAcoBlast;
 import se.trixon.almond.util.StringHelper;
@@ -28,8 +27,8 @@ import se.trixon.almond.util.StringHelper;
  */
 public class BlastFilter extends FormFilter<BlastManager> {
 
+    private IndexedCheckModel mGroupCheckModel;
     private final BlastManager mManager = BlastManager.getInstance();
-    private final BooleanProperty mProperty = new SimpleBooleanProperty();
 
     public BlastFilter() {
         super(BlastManager.getInstance());
@@ -37,31 +36,36 @@ public class BlastFilter extends FormFilter<BlastManager> {
         initListeners();
     }
 
-    public BooleanProperty property() {
-        return mProperty;
+    public void setCheckModelGroup(IndexedCheckModel checkModel) {
+        mGroupCheckModel = checkModel;
+        checkModel.getCheckedItems().addListener(mListChangeListener);
     }
 
     @Override
     public void update() {
         var filteredItems = mManager.getAllItems().stream()
-                .filter(o -> StringUtils.isBlank(getFreeText()) || validateFreeText(o))
-                //                .filter(o -> validateDimension(o))
-                .filter(o -> validateCoordinateArea(o.getLat(), o.getLon()))
-                .filter(o -> validateCoordinateRuler(o.getLat(), o.getLon()))
+                .filter(b -> StringUtils.isBlank(getFreeText()) || validateFreeText(b))
+                .filter(b -> validateGroup(b.getGroup()))
+                .filter(b -> validateCoordinateArea(b.getLat(), b.getLon()))
+                .filter(b -> validateCoordinateRuler(b.getLat(), b.getLon()))
                 .toList();
 
         mManager.getFilteredItems().setAll(filteredItems);
     }
 
     private void initListeners() {
-        mProperty.addListener(mChangeListenerObject);
     }
 
-    private boolean validateFreeText(BAcoBlast o) {
+    private boolean validateFreeText(BAcoBlast b) {
         return StringHelper.matchesSimpleGlobByWord(getFreeText(), true, false,
-                o.getName(),
-                o.getGroup()
+                b.getName(),
+                b.getGroup(),
+                b.getComment()
         );
+    }
+
+    private boolean validateGroup(String s) {
+        return validateCheck(mGroupCheckModel, s);
     }
 
 }
