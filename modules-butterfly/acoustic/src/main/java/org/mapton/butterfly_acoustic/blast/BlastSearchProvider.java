@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,7 +27,7 @@ public class BlastSearchProvider implements SearchProvider {
     @Override
     public void evaluate(SearchRequest request, SearchResponse response) {
         for (var o : BlastManager.getInstance().getAllItems()) {
-            if (StringHelper.matchesSimpleGlob(o.getName(), request.getText(), true, true)) {
+            if (StringHelper.matchesSimpleGlob(request.getText(), true, true, o.getName(), o.getGroup())) {
                 if (!response.addResult(() -> {
                     Mapton.getEngine().panTo(new MLatLon(o.getLat(), o.getLon()), .95);
                 }, o.getName())) {

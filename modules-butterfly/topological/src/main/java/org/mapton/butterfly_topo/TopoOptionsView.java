@@ -173,11 +173,12 @@ public class TopoOptionsView extends MOptionsView<TopoLayerBundle> {
     }
 
     private void initSession() {
-        getSessionManager().register("options.pointBy", mPointSelectionModelSession.selectedIndexProperty());
-        getSessionManager().register("options.colorBy", mColorSelectionModelSession.selectedIndexProperty());
-        getSessionManager().register("options.labelBy", mLabelByIdProperty);
-        getSessionManager().register("options.checkedPlot", mComponentCheckModelSession.checkedStringProperty());
-        getSessionManager().register("options.checkedIndicators", mIndicatorCheckModelSession.checkedStringProperty());
+        var sessionManager = getSessionManager();
+        sessionManager.register("options.pointBy", mPointSelectionModelSession.selectedIndexProperty());
+        sessionManager.register("options.colorBy", mColorSelectionModelSession.selectedIndexProperty());
+        sessionManager.register("options.labelBy", mLabelByIdProperty);
+        sessionManager.register("options.checkedPlot", mComponentCheckModelSession.checkedStringProperty());
+        sessionManager.register("options.checkedIndicators", mIndicatorCheckModelSession.checkedStringProperty());
 
         mLabelByProperty.set(TopoLabelBy.valueOf(mLabelByIdProperty.get()));
     }

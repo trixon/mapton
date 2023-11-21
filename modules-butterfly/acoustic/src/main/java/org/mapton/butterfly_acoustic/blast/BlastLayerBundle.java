@@ -16,13 +16,13 @@
 package org.mapton.butterfly_acoustic.blast;
 
 import gov.nasa.worldwind.WorldWind;
+import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.PointPlacemark;
-import gov.nasa.worldwind.render.PointPlacemarkAttributes;
-import java.awt.Color;
 import java.util.ArrayList;
 import javafx.collections.ListChangeListener;
+import javafx.scene.Node;
 import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.butterfly_format.types.acoustic.BAcoBlast;
 import org.mapton.worldwind.api.LayerBundle;
@@ -39,20 +39,31 @@ import se.trixon.almond.util.fx.FxHelper;
 @ServiceProvider(service = LayerBundle.class)
 public class BlastLayerBundle extends LayerBundle {
 
+    private final BlastAttributeManager mAttributeManager = BlastAttributeManager.getInstance();
+    private final RenderableLayer mLabelLayer = new RenderableLayer();
     private final RenderableLayer mLayer = new RenderableLayer();
     private final BlastManager mManager = BlastManager.getInstance();
+    private final BlastOptionsView mOptionsView;
+    private final RenderableLayer mPinLayer = new RenderableLayer();
+    private final RenderableLayer mSymbolLayer = new RenderableLayer();
 
     public BlastLayerBundle() {
         init();
         initRepaint();
+        mOptionsView = new BlastOptionsView(this);
         initListeners();
 
         FxHelper.runLaterDelayed(1000, () -> mManager.updateTemporal(mLayer.isEnabled()));
     }
 
     @Override
+    public Node getOptionsView() {
+        return mOptionsView;
+    }
+
+    @Override
     public void populate() throws Exception {
-        getLayers().add(mLayer);
+        getLayers().addAll(mLayer, mLabelLayer, mSymbolLayer, mPinLayer);
         repaint(DEFAULT_REPAINT_DELAY);
     }
 
@@ -61,8 +72,11 @@ public class BlastLayerBundle extends LayerBundle {
         setCategory(mLayer, "%s/%s".formatted("Butterfly", SDict.ACOUSTIC.toString()));
         setName(Bundle.CTL_BlastAction());
         attachTopComponentToLayer("BlastTopComponent", mLayer);
+        mLabelLayer.setEnabled(true);
+        mLabelLayer.setMaxActiveAltitude(2000);
         setParentLayer(mLayer);
-//        mLayer.setEnabled(true);
+        setAllChildLayers(mLabelLayer, mSymbolLayer, mPinLayer);
+
         mLayer.setPickEnabled(true);
     }
 
@@ -79,39 +93,127 @@ public class BlastLayerBundle extends LayerBundle {
                 repaint();
             }
         });
+
+        mOptionsView.labelByProperty().addListener((p, o, n) -> {
+            repaint();
+        });
     }
 
     private void initRepaint() {
         setPainter(() -> {
             removeAllRenderables();
+            //mComponentRenderer.reset();
+            if (!mLayer.isEnabled()) {
+                return;
+            }
+            var pointBy = mOptionsView.getPointBy();
+            switch (pointBy) {
+                case NONE -> {
+                    mPinLayer.setEnabled(false);
+                    mSymbolLayer.setEnabled(false);
+                }
+                case PIN -> {
+                    mSymbolLayer.setEnabled(false);
+                    mPinLayer.setEnabled(true);
+                    mPinLayer.setMinActiveAltitude(Double.MIN_VALUE);
+                    mPinLayer.setMaxActiveAltitude(Double.MAX_VALUE);
+                }
+                default ->
+                    throw new AssertionError();
+            }
 
-            for (var cp : new ArrayList<>(mManager.getTimeFilteredItems())) {
-                if (ObjectUtils.allNotNull(cp.getLat(), cp.getLon())) {
-                    var placemark = new PointPlacemark(Position.fromDegrees(cp.getLat(), cp.getLon()));
-                    placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
-                    placemark.setEnableLabelPicking(true);
-                    var attrs = new PointPlacemarkAttributes(placemark.getDefaultAttributes());
+            for (var p : new ArrayList<>(mManager.getTimeFilteredItems())) {
+                if (ObjectUtils.allNotNull(p.getLat(), p.getLon())) {
+                    var position = Position.fromDegrees(p.getLat(), p.getLon());
 
-                    placemark.setLabelText(cp.getName());
-                    attrs.setImageAddress("images/pushpins/plain-white.png");
-                    attrs.setImageColor(Color.RED);
+                    var labelPlacemark = plotLabel(p, mOptionsView.getLabelBy(), position);
+                    var mapObjects = new ArrayList<AVListImpl>();
 
-                    placemark.setAttributes(attrs);
-                    placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(attrs, 1.5));
+                    mapObjects.add(labelPlacemark);
+                    mapObjects.add(plotPin(position, labelPlacemark));
 
-                    placemark.setValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK, (Runnable) () -> {
-                        mManager.setSelectedItemAfterReset(cp);
-                    });
+                    var leftClickRunnable = (Runnable) () -> {
+                        mManager.setSelectedItemAfterReset(p);
+                    };
 
-                    placemark.setValue(WWHelper.KEY_RUNNABLE_LEFT_DOUBLE_CLICK, (Runnable) () -> {
+                    var leftDoubleClickRunnable = (Runnable) () -> {
                         Almond.openAndActivateTopComponent((String) mLayer.getValue(WWHelper.KEY_FAST_OPEN));
+                    };
+
+                    mapObjects.stream().filter(r -> r != null).forEach(r -> {
+                        r.setValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK, leftClickRunnable);
+                        r.setValue(WWHelper.KEY_RUNNABLE_LEFT_DOUBLE_CLICK, leftDoubleClickRunnable);
                     });
 
-                    mLayer.addRenderable(placemark);
+//                    var placemark = new PointPlacemark(Position.fromDegrees(p.getLat(), p.getLon()));
+//                    placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
+//                    placemark.setEnableLabelPicking(true);
+//                    var attrs = new PointPlacemarkAttributes(placemark.getDefaultAttributes());
+//
+//                    placemark.setLabelText(p.getName());
+//                    attrs.setImageAddress("images/pushpins/plain-white.png");
+//                    attrs.setImageColor(Color.RED);
+//
+//                    placemark.setAttributes(attrs);
+//                    placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(attrs, 1.5));
+//
+//                    placemark.setValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK, (Runnable) () -> {
+//                        mManager.setSelectedItemAfterReset(p);
+//                    });
+//
+//                    placemark.setValue(WWHelper.KEY_RUNNABLE_LEFT_DOUBLE_CLICK, (Runnable) () -> {
+//                        Almond.openAndActivateTopComponent((String) mLayer.getValue(WWHelper.KEY_FAST_OPEN));
+//                    });
+//
+//                    mLayer.addRenderable(placemark);
                 }
             }
 
             setDragEnabled(false);
         });
     }
+
+    private PointPlacemark plotLabel(BAcoBlast p, BlastLabelBy labelBy, Position position) {
+        if (labelBy == BlastLabelBy.NONE) {
+            return null;
+        }
+
+        String label;
+        try {
+            label = mOptionsView.getLabelBy().getLabel(p);
+        } catch (Exception e) {
+            label = "ERROR %s <<<<<<<<".formatted(p.getName());
+        }
+
+        var placemark = new PointPlacemark(position);
+        placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
+        placemark.setAttributes(mAttributeManager.getLabelPlacemarkAttributes());
+        placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(mAttributeManager.getLabelPlacemarkAttributes(), 1.5));
+        placemark.setLabelText(label);
+        mLabelLayer.addRenderable(placemark);
+
+        return placemark;
+    }
+
+    private PointPlacemark plotPin(Position position, PointPlacemark labelPlacemark) {
+        var attrs = mAttributeManager.getPinAttributes();
+
+        var placemark = new PointPlacemark(position);
+        placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
+        placemark.setAttributes(attrs);
+        placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(attrs, 1.5));
+
+        mPinLayer.addRenderable(placemark);
+        if (labelPlacemark != null) {
+            placemark.setValue(WWHelper.KEY_RUNNABLE_HOOVER_ON, (Runnable) () -> {
+                labelPlacemark.setHighlighted(true);
+            });
+            placemark.setValue(WWHelper.KEY_RUNNABLE_HOOVER_OFF, (Runnable) () -> {
+                labelPlacemark.setHighlighted(false);
+            });
+        }
+
+        return placemark;
+    }
+
 }

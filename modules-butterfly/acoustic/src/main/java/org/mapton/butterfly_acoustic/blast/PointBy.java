@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,22 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_acoustic;
+package org.mapton.butterfly_acoustic.blast;
 
-import org.openide.windows.OnShowing;
-import se.trixon.almond.nbp.Almond;
+import se.trixon.almond.util.Dict;
 
 /**
  *
  * @author Patrik Karlström
  */
-@OnShowing
-public class DoOnShowing implements Runnable {
+public enum PointBy {
+    PIN(Dict.PIN.toString()),
+    NONE(Dict.NONE.toString());
+    private final String mName;
+
+    private PointBy(String name) {
+        mName = name;
+    }
 
     @Override
-    public void run() {
-        //Pre-load but don't display
-        Almond.getTopComponent("BlastTopComponent");
+    public String toString() {
+        return mName;
     }
 
 }
