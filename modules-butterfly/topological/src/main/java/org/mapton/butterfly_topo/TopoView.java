@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_topo;
 
-import org.mapton.butterfly_topo.api.TopoManager;
 import java.util.Arrays;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -25,6 +24,7 @@ import org.mapton.api.ui.forms.ListForm;
 import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.ManagedList;
 import org.mapton.butterfly_format.types.controlpoint.BTopoControlPoint;
+import org.mapton.butterfly_topo.api.TopoManager;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SDict;
 
@@ -46,7 +46,7 @@ public class TopoView {
                 mFilterPopOver.getAction()
         );
 
-        mListForm = new ListForm(Bundle.CTL_TopoAction());
+        mListForm = new ListForm(Bundle.CTL_ControlPointAction());
         var pointManagedList = new ManagedList<TopoManager, BTopoControlPoint>(mManager);
         var pointTab = new Tab(SDict.POINTS.toString(), pointManagedList.getView());
         var tabPane = new TabPane(pointTab);

@@ -43,16 +43,16 @@ import org.openide.windows.TopComponent;
     @ActionReference(path = "Menu/MapTools/Butterfly", position = 0)
 })
 @TopComponent.OpenActionRegistration(
-        displayName = "#CTL_TopoAction",
+        displayName = "#CTL_ControlPointAction",
         preferredID = "TopoTopComponent"
 )
 @Messages({
-    "CTL_TopoAction=Topo"
+    "CTL_ControlPointAction=Control point"
 })
 public final class TopoTopComponent extends MTopComponent {
 
     public TopoTopComponent() {
-        setName(Bundle.CTL_TopoAction());
+        setName(Bundle.CTL_ControlPointAction());
     }
 
     @Override

@@ -34,16 +34,18 @@ import org.mapton.worldwind.api.WWHelper;
 public class ComponentRenderer {
 
     private final BlastAttributeManager mAttributeManager = BlastAttributeManager.getInstance();
-    private final RenderableLayer mLayer;
+    private final RenderableLayer mEllipsoidLayer;
     private ArrayList<AVListImpl> mMapObjects;
+    private final RenderableLayer mGroundConnectorLayer;
 
-    public ComponentRenderer(RenderableLayer layer) {
-        mLayer = layer;
+    public ComponentRenderer(RenderableLayer ellipsoidLayer, RenderableLayer groundConnectorLayer) {
+        mEllipsoidLayer = ellipsoidLayer;
+        mGroundConnectorLayer = groundConnectorLayer;
     }
 
-    public void addRenderable(Renderable renderable, boolean interactiveLayer) {
-        if (interactiveLayer) {
-            mLayer.addRenderable(renderable);
+    public void addRenderable(RenderableLayer layer, Renderable renderable) {
+        layer.addRenderable(renderable);
+        if (layer == mEllipsoidLayer) {
             if (renderable instanceof AVListImpl avlist) {
                 mMapObjects.add(avlist);
             }
@@ -62,11 +64,11 @@ public class ComponentRenderer {
         var radius = 1.2;
         var endEllipsoid = new Ellipsoid(endPosition, radius, radius, radius);
         endEllipsoid.setAttributes(mAttributeManager.getComponentEllipsoidAttributes());
-        addRenderable(endEllipsoid, true);
+        addRenderable(mEllipsoidLayer, endEllipsoid);
 
         var groundPath = new Path(startPosition, endPosition);
         groundPath.setAttributes(mAttributeManager.getComponentGroundPathAttributes());
-        addRenderable(groundPath, true);
+        addRenderable(mGroundConnectorLayer, groundPath);
     }
 
     public void reset() {

@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import org.apache.commons.lang3.ObjectUtils;
+import org.mapton.butterfly_api.api.BfLayerBundle;
 import org.mapton.butterfly_format.types.controlpoint.BTopoControlPoint;
 import org.mapton.butterfly_topo.api.TopoManager;
 import org.mapton.worldwind.api.LayerBundle;
@@ -38,6 +39,7 @@ import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.Direction;
+import se.trixon.almond.util.SDict;
 import se.trixon.almond.util.fx.FxHelper;
 
 /**
@@ -45,7 +47,7 @@ import se.trixon.almond.util.fx.FxHelper;
  * @author Patrik Karlström
  */
 @ServiceProvider(service = LayerBundle.class)
-public class TopoLayerBundle extends LayerBundle {
+public class TopoLayerBundle extends BfLayerBundle {
 
     public static final double SCALE_FACTOR = 500.0;
     public static final double Z_OFFSET = 10.0;
@@ -85,9 +87,9 @@ public class TopoLayerBundle extends LayerBundle {
     }
 
     private void init() {
-        mLayer.setName(Bundle.CTL_TopoAction());
-        setCategory(mLayer, "Butterfly");
-        setName(Bundle.CTL_TopoAction());
+        mLayer.setName(Bundle.CTL_ControlPointAction());
+        setCategory(mLayer, SDict.TOPOGRAPHY.toString());
+        setName(Bundle.CTL_ControlPointAction());
         attachTopComponentToLayer("TopoTopComponent", mLayer);
         mLabelLayer.setEnabled(true);
         mLabelLayer.setMaxActiveAltitude(2000);

@@ -24,11 +24,13 @@ import java.awt.Color;
 import java.util.ArrayList;
 import javafx.collections.ListChangeListener;
 import org.apache.commons.lang3.ObjectUtils;
+import org.mapton.butterfly_api.api.BfLayerBundle;
 import org.mapton.butterfly_format.types.controlpoint.BHydroControlPoint;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.Almond;
+import se.trixon.almond.util.SDict;
 import se.trixon.almond.util.fx.FxHelper;
 
 /**
@@ -36,7 +38,7 @@ import se.trixon.almond.util.fx.FxHelper;
  * @author Patrik Karlström
  */
 @ServiceProvider(service = LayerBundle.class)
-public class HydroLayerBundle extends LayerBundle {
+public class HydroLayerBundle extends BfLayerBundle {
 
     private final RenderableLayer mLayer = new RenderableLayer();
     private final HydroManager mManager = HydroManager.getInstance();
@@ -56,9 +58,9 @@ public class HydroLayerBundle extends LayerBundle {
     }
 
     private void init() {
-        mLayer.setName(Bundle.CTL_HydroAction());
-        setCategory(mLayer, "Butterfly");
-        setName(Bundle.CTL_HydroAction());
+        mLayer.setName(Bundle.CTL_GroundwaterAction());
+        setCategory(mLayer, SDict.HYDROGEOLOGY.toString());
+        setName(Bundle.CTL_GroundwaterAction());
         attachTopComponentToLayer("HydroTopComponent", mLayer);
         setParentLayer(mLayer);
 //        mLayer.setEnabled(true);

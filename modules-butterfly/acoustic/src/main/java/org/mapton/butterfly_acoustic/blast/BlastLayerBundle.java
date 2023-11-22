@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import org.apache.commons.lang3.ObjectUtils;
+import org.mapton.butterfly_api.api.BfLayerBundle;
 import org.mapton.butterfly_format.types.acoustic.BAcoBlast;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
@@ -37,7 +38,7 @@ import se.trixon.almond.util.fx.FxHelper;
  * @author Patrik Karlström
  */
 @ServiceProvider(service = LayerBundle.class)
-public class BlastLayerBundle extends LayerBundle {
+public class BlastLayerBundle extends BfLayerBundle {
 
     private final BlastAttributeManager mAttributeManager = BlastAttributeManager.getInstance();
     private final ComponentRenderer mComponentRenderer;
@@ -46,13 +47,14 @@ public class BlastLayerBundle extends LayerBundle {
     private final BlastManager mManager = BlastManager.getInstance();
     private final BlastOptionsView mOptionsView;
     private final RenderableLayer mPinLayer = new RenderableLayer();
+    private final RenderableLayer mGroundConnectorLayer = new RenderableLayer();
     private final RenderableLayer mSymbolLayer = new RenderableLayer();
 
     public BlastLayerBundle() {
         init();
         initRepaint();
         mOptionsView = new BlastOptionsView(this);
-        mComponentRenderer = new ComponentRenderer(mLayer);
+        mComponentRenderer = new ComponentRenderer(mLayer, mGroundConnectorLayer);
         initListeners();
 
         FxHelper.runLaterDelayed(1000, () -> mManager.updateTemporal(mLayer.isEnabled()));
@@ -65,19 +67,22 @@ public class BlastLayerBundle extends LayerBundle {
 
     @Override
     public void populate() throws Exception {
-        getLayers().addAll(mLayer, mLabelLayer, mSymbolLayer, mPinLayer);
+        getLayers().addAll(mLayer, mLabelLayer, mSymbolLayer, mPinLayer, mGroundConnectorLayer);
         repaint(DEFAULT_REPAINT_DELAY);
     }
 
     private void init() {
         mLayer.setName(Bundle.CTL_BlastAction());
-        setCategory(mLayer, "%s/%s".formatted("Butterfly", SDict.ACOUSTIC.toString()));
+        setCategory(mLayer, SDict.ACOUSTIC.toString());
         setName(Bundle.CTL_BlastAction());
         attachTopComponentToLayer("BlastTopComponent", mLayer);
         mLabelLayer.setEnabled(true);
-        mLabelLayer.setMaxActiveAltitude(2000);
+        mLayer.setMaxActiveAltitude(6000);
+        mPinLayer.setMaxActiveAltitude(300);
+        mLabelLayer.setMaxActiveAltitude(200);
+        mGroundConnectorLayer.setMaxActiveAltitude(1000);
         setParentLayer(mLayer);
-        setAllChildLayers(mLabelLayer, mSymbolLayer, mPinLayer);
+        setAllChildLayers(mLabelLayer, mSymbolLayer, mPinLayer, mGroundConnectorLayer);
 
         mLayer.setPickEnabled(true);
     }
@@ -117,8 +122,6 @@ public class BlastLayerBundle extends LayerBundle {
                 case PIN -> {
                     mSymbolLayer.setEnabled(false);
                     mPinLayer.setEnabled(true);
-                    mPinLayer.setMinActiveAltitude(Double.MIN_VALUE);
-                    mPinLayer.setMaxActiveAltitude(Double.MAX_VALUE);
                 }
                 default ->
                     throw new AssertionError();

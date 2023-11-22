@@ -37,7 +37,7 @@ import se.trixon.almond.util.fx.session.SelectionModelSession;
  */
 public class BlastOptionsView extends MOptionsView<BlastLayerBundle> {
 
-    private final SimpleStringProperty mLabelByIdProperty = new SimpleStringProperty("NAME");
+    private final SimpleStringProperty mLabelByIdProperty = new SimpleStringProperty("NONE");
     private final SimpleObjectProperty<BlastLabelBy> mLabelByProperty = new SimpleObjectProperty<>();
     private final MenuButton mLabelMenuButton = new MenuButton();
     private final ComboBox<PointBy> mPointComboBox = new ComboBox<>();
@@ -64,7 +64,7 @@ public class BlastOptionsView extends MOptionsView<BlastLayerBundle> {
 
     private void createUI() {
         mPointComboBox.getItems().setAll(PointBy.values());
-        mPointComboBox.setValue(PointBy.PIN);
+        mPointComboBox.setValue(PointBy.NONE);
 
         populateLabelMenuButton();
 

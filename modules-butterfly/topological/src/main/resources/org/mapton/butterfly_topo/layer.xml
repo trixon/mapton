@@ -19,7 +19,7 @@ limitations under the License.
 <filesystem>
     <folder name="QuickSearch">
         <folder name="Topo">
-            <attr name="displayName" bundlevalue="org.mapton.butterfly_topo.Bundle#CTL_TopoAction"/>
+            <attr name="displayName" bundlevalue="org.mapton.butterfly_topo.Bundle#CTL_ControlPointAction"/>
             <attr name="command" stringvalue="t"/>
             <attr name="position" intvalue="0"/>
             <file name="org-mapton-butterfly_topo-TopoSearchProvider.instance"/>

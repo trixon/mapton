@@ -43,16 +43,16 @@ import org.openide.windows.TopComponent;
     @ActionReference(path = "Menu/MapTools/Butterfly", position = 1)
 })
 @TopComponent.OpenActionRegistration(
-        displayName = "#CTL_HydroAction",
+        displayName = "#CTL_GroundwaterAction",
         preferredID = "HydroTopComponent"
 )
 @Messages({
-    "CTL_HydroAction=Hydro"
+    "CTL_GroundwaterAction=Groundwater"
 })
 public final class HydroTopComponent extends MTopComponent {
 
     public HydroTopComponent() {
-        setName(Bundle.CTL_HydroAction());
+        setName(Bundle.CTL_GroundwaterAction());
     }
 
     @Override

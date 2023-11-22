@@ -40,7 +40,7 @@ public class HydroView {
                 mFilterPopOver.getAction()
         );
 
-        mListForm = new SingleListForm<>(mManager, Bundle.CTL_HydroAction());
+        mListForm = new SingleListForm<>(mManager, Bundle.CTL_GroundwaterAction());
         var listFormConfiguration = new ListFormConfiguration()
                 .setUseTextFilter(true)
                 .setToolbarActions(actions);

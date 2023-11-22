@@ -54,7 +54,7 @@ public class BlastAttributeManager {
         if (mComponentGroundPathAttributes == null) {
             mComponentGroundPathAttributes = new BasicShapeAttributes();
             mComponentGroundPathAttributes.setDrawOutline(true);
-            mComponentGroundPathAttributes.setOutlineMaterial(Material.LIGHT_GRAY);
+            mComponentGroundPathAttributes.setOutlineMaterial(Material.YELLOW);
             mComponentGroundPathAttributes.setEnableLighting(false);
             mComponentGroundPathAttributes.setOutlineWidth(1);
         }
