@@ -49,12 +49,13 @@ public class BlastLayerBundle extends BfLayerBundle {
     private final RenderableLayer mPinLayer = new RenderableLayer();
     private final RenderableLayer mGroundConnectorLayer = new RenderableLayer();
     private final RenderableLayer mSymbolLayer = new RenderableLayer();
+    private final RenderableLayer mSurfaceLayer = new RenderableLayer();
 
     public BlastLayerBundle() {
         init();
         initRepaint();
         mOptionsView = new BlastOptionsView(this);
-        mComponentRenderer = new ComponentRenderer(mLayer, mGroundConnectorLayer);
+        mComponentRenderer = new ComponentRenderer(mLayer, mGroundConnectorLayer, mSurfaceLayer);
         initListeners();
 
         FxHelper.runLaterDelayed(1000, () -> mManager.updateTemporal(mLayer.isEnabled()));
@@ -67,7 +68,7 @@ public class BlastLayerBundle extends BfLayerBundle {
 
     @Override
     public void populate() throws Exception {
-        getLayers().addAll(mLayer, mLabelLayer, mSymbolLayer, mPinLayer, mGroundConnectorLayer);
+        getLayers().addAll(mLayer, mLabelLayer, mSymbolLayer, mPinLayer, mGroundConnectorLayer, mSurfaceLayer);
         repaint(DEFAULT_REPAINT_DELAY);
     }
 
@@ -78,13 +79,15 @@ public class BlastLayerBundle extends BfLayerBundle {
         attachTopComponentToLayer("BlastTopComponent", mLayer);
         mLabelLayer.setEnabled(true);
         mLayer.setMaxActiveAltitude(6000);
+        mSurfaceLayer.setMaxActiveAltitude(6000);
         mPinLayer.setMaxActiveAltitude(300);
         mLabelLayer.setMaxActiveAltitude(200);
         mGroundConnectorLayer.setMaxActiveAltitude(1000);
         setParentLayer(mLayer);
-        setAllChildLayers(mLabelLayer, mSymbolLayer, mPinLayer, mGroundConnectorLayer);
+        setAllChildLayers(mLabelLayer, mSymbolLayer, mPinLayer, mGroundConnectorLayer, mSurfaceLayer);
 
         mLayer.setPickEnabled(true);
+        mSurfaceLayer.setPickEnabled(false);
     }
 
     private void initListeners() {

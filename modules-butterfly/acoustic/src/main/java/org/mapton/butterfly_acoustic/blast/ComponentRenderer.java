@@ -18,9 +18,11 @@ package org.mapton.butterfly_acoustic.blast;
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
+import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Ellipsoid;
 import gov.nasa.worldwind.render.Path;
 import gov.nasa.worldwind.render.Renderable;
+import gov.nasa.worldwind.render.SurfaceCircle;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -37,10 +39,12 @@ public class ComponentRenderer {
     private final RenderableLayer mEllipsoidLayer;
     private ArrayList<AVListImpl> mMapObjects;
     private final RenderableLayer mGroundConnectorLayer;
+    private final RenderableLayer mSurfaceLayer;
 
-    public ComponentRenderer(RenderableLayer ellipsoidLayer, RenderableLayer groundConnectorLayer) {
+    public ComponentRenderer(RenderableLayer ellipsoidLayer, RenderableLayer groundConnectorLayer, RenderableLayer surfaceLayer) {
         mEllipsoidLayer = ellipsoidLayer;
         mGroundConnectorLayer = groundConnectorLayer;
+        mSurfaceLayer = surfaceLayer;
     }
 
     public void addRenderable(RenderableLayer layer, Renderable renderable) {
@@ -69,6 +73,21 @@ public class ComponentRenderer {
         var groundPath = new Path(startPosition, endPosition);
         groundPath.setAttributes(mAttributeManager.getComponentGroundPathAttributes());
         addRenderable(mGroundConnectorLayer, groundPath);
+
+        var age = p.ext().getAge(ChronoUnit.DAYS);
+        var maxAge = 30.0;
+
+        if (age < maxAge) {
+            var circle = new SurfaceCircle(position, 100.0);
+            var attrs = new BasicShapeAttributes(mAttributeManager.getSurfaceAttributes());
+            var reducer = age / maxAge;//  1/30   15/30 30/30
+            var maxOpacity = 0.2;
+            var opacity = maxOpacity - reducer * maxOpacity;
+            attrs.setInteriorOpacity(opacity);
+            circle.setAttributes(attrs);
+
+            addRenderable(mSurfaceLayer, circle);
+        }
     }
 
     public void reset() {

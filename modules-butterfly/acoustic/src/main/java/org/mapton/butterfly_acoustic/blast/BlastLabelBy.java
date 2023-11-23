@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_acoustic.blast;
 
-import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 import java.util.function.Function;
@@ -42,9 +41,7 @@ public enum BlastLabelBy {
         return date;
     }),
     MISC_AGE(Strings.CAT_MISC, Dict.AGE.toString(), p -> {
-        var latest = p.getDateTime() != null ? p.getDateTime().toLocalDate() : LocalDate.MIN;
-
-        return String.valueOf(ChronoUnit.DAYS.between(latest, LocalDate.now()));
+        return String.valueOf(p.ext().getAge(ChronoUnit.DAYS));
     }),
     MISC_GROUP(Strings.CAT_MISC, Dict.GROUP.toString(), p -> {
         return Objects.toString(p.getGroup(), "NODATA");

@@ -29,6 +29,7 @@ public class BlastAttributeManager {
 
     private BasicShapeAttributes mComponentEllipsoidAttributes;
     private BasicShapeAttributes mComponentGroundPathAttributes;
+    private BasicShapeAttributes mSurfaceAttributes;
     private PointPlacemarkAttributes mLabelPlacemarkAttributes;
     private PointPlacemarkAttributes mPinAttributes;
 
@@ -60,6 +61,18 @@ public class BlastAttributeManager {
         }
 
         return mComponentGroundPathAttributes;
+    }
+
+    public BasicShapeAttributes getSurfaceAttributes() {
+        if (mSurfaceAttributes == null) {
+            mSurfaceAttributes = new BasicShapeAttributes();
+            mSurfaceAttributes.setDrawOutline(false);
+            mSurfaceAttributes.setDrawInterior(true);
+            mSurfaceAttributes.setInteriorMaterial(Material.RED);
+            mSurfaceAttributes.setEnableLighting(false);
+        }
+
+        return mSurfaceAttributes;
     }
 
     public PointPlacemarkAttributes getLabelPlacemarkAttributes() {

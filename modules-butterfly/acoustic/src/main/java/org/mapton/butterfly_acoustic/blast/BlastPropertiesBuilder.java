@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_acoustic.blast;
 
+import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
 import java.util.Objects;
 import org.mapton.api.ui.forms.PropertiesBuilder;
@@ -43,6 +44,7 @@ public class BlastPropertiesBuilder extends PropertiesBuilder<BAcoBlast> {
         propertyMap.put(getCatKey(cat1, Dict.GROUP.toString()), p.getGroup());
         propertyMap.put(getCatKey(cat1, Dict.COMMENT.toString()), p.getComment());
         propertyMap.put(getCatKey(cat1, Dict.DATE.toString()), date);
+        propertyMap.put(getCatKey(cat1, Dict.AGE.toString()), p.ext().getAge(ChronoUnit.DAYS));
         propertyMap.put(getCatKey(cat1, "Z"), MathHelper.convertDoubleToString(p.getZ(), 1));
 
         return propertyMap;
