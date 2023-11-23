@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_hydro;
+package org.mapton.butterfly_hydro.groundwater;
 
 import org.mapton.api.MLatLon;
 import org.mapton.api.Mapton;
@@ -22,11 +22,11 @@ import org.netbeans.spi.quicksearch.SearchRequest;
 import org.netbeans.spi.quicksearch.SearchResponse;
 import se.trixon.almond.util.StringHelper;
 
-public class HydroSearchProvider implements SearchProvider {
+public class GroundwaterSearchProvider implements SearchProvider {
 
     @Override
     public void evaluate(SearchRequest request, SearchResponse response) {
-        for (var o : HydroManager.getInstance().getAllItems()) {
+        for (var o : GroundwaterManager.getInstance().getAllItems()) {
             if (StringHelper.matchesSimpleGlob(o.getName(), request.getText(), true, true)) {
                 if (!response.addResult(() -> {
                     Mapton.getEngine().panTo(new MLatLon(o.getLat(), o.getLon()), .95);

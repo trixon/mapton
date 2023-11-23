@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_hydro;
+package org.mapton.butterfly_hydro.groundwater;
 
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -24,14 +24,14 @@ import org.mapton.butterfly_format.types.controlpoint.BHydroControlPoint;
  *
  * @author Patrik Karlström
  */
-class HydroListCell extends ListCell<BHydroControlPoint> {
+class GroundwaterListCell extends ListCell<BHydroControlPoint> {
 
     private final Label mDesc1Label = new Label();
     private final Label mNameLabel = new Label();
     private final String mStyleBold = "-fx-font-weight: bold;";
     private VBox mVBox;
 
-    public HydroListCell() {
+    public GroundwaterListCell() {
         createUI();
     }
 

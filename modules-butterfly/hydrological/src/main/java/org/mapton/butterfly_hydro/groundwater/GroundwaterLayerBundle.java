@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_hydro;
+package org.mapton.butterfly_hydro.groundwater;
 
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.geom.Position;
@@ -38,12 +38,12 @@ import se.trixon.almond.util.fx.FxHelper;
  * @author Patrik Karlström
  */
 @ServiceProvider(service = LayerBundle.class)
-public class HydroLayerBundle extends BfLayerBundle {
+public class GroundwaterLayerBundle extends BfLayerBundle {
 
     private final RenderableLayer mLayer = new RenderableLayer();
-    private final HydroManager mManager = HydroManager.getInstance();
+    private final GroundwaterManager mManager = GroundwaterManager.getInstance();
 
-    public HydroLayerBundle() {
+    public GroundwaterLayerBundle() {
         init();
         initRepaint();
         initListeners();
@@ -61,7 +61,7 @@ public class HydroLayerBundle extends BfLayerBundle {
         mLayer.setName(Bundle.CTL_GroundwaterAction());
         setCategory(mLayer, SDict.HYDROGEOLOGY.toString());
         setName(Bundle.CTL_GroundwaterAction());
-        attachTopComponentToLayer("HydroTopComponent", mLayer);
+        attachTopComponentToLayer("GroundwaterTopComponent", mLayer);
         setParentLayer(mLayer);
 //        mLayer.setEnabled(true);
         mLayer.setPickEnabled(true);

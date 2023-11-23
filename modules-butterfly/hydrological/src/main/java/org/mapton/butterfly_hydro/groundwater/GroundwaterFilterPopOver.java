@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_hydro;
+package org.mapton.butterfly_hydro.groundwater;
 
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Separator;
@@ -26,12 +26,12 @@ import static org.mapton.api.ui.MPopOver.autoSize;
  *
  * @author Patrik Karlström
  */
-public class HydroFilterPopOver extends MFilterPopOver {
+public class GroundwaterFilterPopOver extends MFilterPopOver {
 
     private final CheckBox mCheckbox = new CheckBox("TEST");
-    private final HydroFilter mFilter;
+    private final GroundwaterFilter mFilter;
 
-    public HydroFilterPopOver(HydroFilter filter) {
+    public GroundwaterFilterPopOver(GroundwaterFilter filter) {
         mFilter = filter;
         createUI();
         initListeners();

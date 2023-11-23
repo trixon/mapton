@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_hydro;
+package org.mapton.butterfly_hydro.groundwater;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -26,13 +26,13 @@ import se.trixon.almond.util.StringHelper;
  *
  * @author Patrik Karlström
  */
-public class HydroFilter extends FormFilter<HydroManager> {
+public class GroundwaterFilter extends FormFilter<GroundwaterManager> {
 
-    private final HydroManager mManager = HydroManager.getInstance();
+    private final GroundwaterManager mManager = GroundwaterManager.getInstance();
     private final BooleanProperty mProperty = new SimpleBooleanProperty();
 
-    public HydroFilter() {
-        super(HydroManager.getInstance());
+    public GroundwaterFilter() {
+        super(GroundwaterManager.getInstance());
 
         initListeners();
     }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_hydro;
+package org.mapton.butterfly_hydro.groundwater;
 
 import javafx.scene.Scene;
 import org.mapton.core.api.MTopComponent;
@@ -28,30 +28,30 @@ import org.openide.windows.TopComponent;
  * Top component which displays something.
  */
 @ConvertAsProperties(
-        dtd = "-//org.mapton.butterfly-hydro//Hydro//EN",
+        dtd = "-//org.mapton.butterfly-hydro//Groundwater//EN",
         autostore = false
 )
 @TopComponent.Description(
-        preferredID = "HydroTopComponent",
+        preferredID = "GroundwaterTopComponent",
         //iconBase="SET/PATH/TO/ICON/HERE",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(mode = "mapTools", openAtStartup = false)
-@ActionID(category = "Butterfly", id = "org.mapton.butterfly-hydro.HydroTopComponent")
+@ActionID(category = "Butterfly", id = "org.mapton.butterfly-hydro.GroundwaterTopComponent")
 @ActionReferences({
     @ActionReference(path = "Shortcuts", name = "DO-G"),
     @ActionReference(path = "Menu/MapTools/Butterfly", position = 1)
 })
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_GroundwaterAction",
-        preferredID = "HydroTopComponent"
+        preferredID = "GroundwaterTopComponent"
 )
 @Messages({
     "CTL_GroundwaterAction=Groundwater"
 })
-public final class HydroTopComponent extends MTopComponent {
+public final class GroundwaterTopComponent extends MTopComponent {
 
-    public HydroTopComponent() {
+    public GroundwaterTopComponent() {
         setName(Bundle.CTL_GroundwaterAction());
     }
 
@@ -61,9 +61,9 @@ public final class HydroTopComponent extends MTopComponent {
     }
 
     private Scene createScene() {
-        var hydroView = new HydroView();
+        var groundwaterView = new GroundwaterView();
 
-        return new Scene(hydroView.getView());
+        return new Scene(groundwaterView.getView());
     }
 
     void writeProperties(java.util.Properties p) {

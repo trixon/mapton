@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_hydro;
+package org.mapton.butterfly_hydro.groundwater;
 
 import java.util.ArrayList;
 import java.util.TreeSet;
@@ -28,15 +28,15 @@ import org.openide.util.Exceptions;
  *
  * @author Patrik Karlström
  */
-public class HydroManager extends BaseManager<BHydroControlPoint> {
+public class GroundwaterManager extends BaseManager<BHydroControlPoint> {
 
-    private final HydroPropertiesBuilder mPropertiesBuilder = new HydroPropertiesBuilder();
+    private final GroundwaterPropertiesBuilder mPropertiesBuilder = new GroundwaterPropertiesBuilder();
 
-    public static HydroManager getInstance() {
-        return HydroManagerHolder.INSTANCE;
+    public static GroundwaterManager getInstance() {
+        return Holder.INSTANCE;
     }
 
-    private HydroManager() {
+    private GroundwaterManager() {
         super(BHydroControlPoint.class);
     }
 
@@ -82,8 +82,8 @@ public class HydroManager extends BaseManager<BHydroControlPoint> {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    private static class HydroManagerHolder {
+    private static class Holder {
 
-        private static final HydroManager INSTANCE = new HydroManager();
+        private static final GroundwaterManager INSTANCE = new GroundwaterManager();
     }
 }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_hydro;
+package org.mapton.butterfly_hydro.groundwater;
 
 import java.util.LinkedHashMap;
 import java.util.Objects;
@@ -30,7 +30,7 @@ import se.trixon.almond.util.StringHelper;
  *
  * @author Patrik Karlström
  */
-public class HydroPropertiesBuilder extends PropertiesBuilder<BHydroControlPoint> {
+public class GroundwaterPropertiesBuilder extends PropertiesBuilder<BHydroControlPoint> {
 
     @Override
     public Object build(BHydroControlPoint p) {

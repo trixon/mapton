@@ -28,7 +28,7 @@ public class DoOnShowing implements Runnable {
     @Override
     public void run() {
         //Pre-load but don't display
-        Almond.getTopComponent("HydroTopComponent");
+        Almond.getTopComponent("GroundwaterTopComponent");
     }
 
 }

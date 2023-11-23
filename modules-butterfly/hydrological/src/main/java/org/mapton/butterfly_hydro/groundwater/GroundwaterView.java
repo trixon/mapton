@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_hydro;
+package org.mapton.butterfly_hydro.groundwater;
 
 import java.util.Arrays;
 import javafx.scene.layout.Pane;
@@ -27,14 +27,14 @@ import se.trixon.almond.util.Dict;
  *
  * @author Patrik Karlström
  */
-public class HydroView {
+public class GroundwaterView {
 
-    private final HydroFilter mFilter = new HydroFilter();
-    private final HydroFilterPopOver mFilterPopOver = new HydroFilterPopOver(mFilter);
-    private final SingleListForm<HydroManager, BHydroControlPoint> mListForm;
-    private final HydroManager mManager = HydroManager.getInstance();
+    private final GroundwaterFilter mFilter = new GroundwaterFilter();
+    private final GroundwaterFilterPopOver mFilterPopOver = new GroundwaterFilterPopOver(mFilter);
+    private final SingleListForm<GroundwaterManager, BHydroControlPoint> mListForm;
+    private final GroundwaterManager mManager = GroundwaterManager.getInstance();
 
-    public HydroView() {
+    public GroundwaterView() {
         var actions = Arrays.asList(
                 ActionUtils.ACTION_SPAN,
                 mFilterPopOver.getAction()
@@ -47,7 +47,7 @@ public class HydroView {
 
         mFilter.bindFreeTextProperty(mListForm.freeTextProperty());
         mListForm.applyConfiguration(listFormConfiguration);
-        mListForm.getListView().setCellFactory(listView -> new HydroListCell());
+        mListForm.getListView().setCellFactory(listView -> new GroundwaterListCell());
 
         mListForm.setFreeTextTooltip(
                 Dict.NAME.toString(),
