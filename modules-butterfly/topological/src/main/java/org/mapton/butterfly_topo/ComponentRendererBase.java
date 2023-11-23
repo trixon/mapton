@@ -29,7 +29,7 @@ import java.util.Map;
 import org.apache.commons.lang3.ObjectUtils;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.MOptions;
-import org.mapton.butterfly_format.types.controlpoint.BTopoControlPoint;
+import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.worldwind.api.WWHelper;
 import se.trixon.almond.util.CollectionHelper;
 import se.trixon.almond.util.MathHelper;

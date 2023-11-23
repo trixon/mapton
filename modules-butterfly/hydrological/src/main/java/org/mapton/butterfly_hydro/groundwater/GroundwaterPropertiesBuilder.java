@@ -20,7 +20,7 @@ import java.util.Objects;
 import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.api.ui.forms.PropertiesBuilder;
 import org.mapton.butterfly_alarm.api.AlarmHelper;
-import org.mapton.butterfly_format.types.controlpoint.BHydroControlPoint;
+import org.mapton.butterfly_format.types.hydro.BHydroControlPoint;
 import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SDict;

@@ -22,7 +22,7 @@ import gov.nasa.worldwind.render.Path;
 import java.util.ArrayList;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.butterfly_format.types.BDimension;
-import org.mapton.butterfly_format.types.controlpoint.BTopoControlPoint;
+import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.worldwind.api.WWHelper;
 
 /**

@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 import org.mapton.api.MTemporalRange;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
-import org.mapton.butterfly_format.types.controlpoint.BHydroControlPoint;
+import org.mapton.butterfly_format.types.hydro.BHydroControlPoint;
 import org.openide.util.Exceptions;
 
 /**

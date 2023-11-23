@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_format.types.controlpoint;
+package org.mapton.butterfly_format.types;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
-import org.mapton.butterfly_format.types.BBasePoint;
+import org.mapton.butterfly_format.types.topo.BTopoControlPointObservation;
 
 /**
  *

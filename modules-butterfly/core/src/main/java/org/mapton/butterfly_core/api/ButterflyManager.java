@@ -28,7 +28,7 @@ import org.mapton.api.MAreaFilterManager;
 import org.mapton.api.MCooTrans;
 import org.mapton.api.MOptions;
 import org.mapton.butterfly_format.Butterfly;
-import org.mapton.butterfly_format.types.controlpoint.BBaseControlPoint;
+import org.mapton.butterfly_format.types.BBaseControlPoint;
 import org.openide.util.Exceptions;
 
 /**

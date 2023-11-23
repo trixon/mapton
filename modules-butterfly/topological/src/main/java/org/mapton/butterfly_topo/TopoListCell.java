@@ -27,7 +27,7 @@ import javafx.scene.shape.Polygon;
 import javafx.util.Duration;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.butterfly_format.types.BDimension;
-import org.mapton.butterfly_format.types.controlpoint.BTopoControlPoint;
+import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import se.trixon.almond.util.StringHelper;
 import se.trixon.almond.util.fx.FxHelper;
 

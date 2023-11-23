@@ -20,8 +20,8 @@ import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.render.Cylinder;
 import java.util.ArrayList;
 import org.mapton.butterfly_format.types.BDimension;
-import org.mapton.butterfly_format.types.controlpoint.BTopoControlPoint;
-import org.mapton.butterfly_format.types.controlpoint.BTopoControlPointObservation;
+import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
+import org.mapton.butterfly_format.types.topo.BTopoControlPointObservation;
 import org.mapton.worldwind.api.WWHelper;
 
 /**

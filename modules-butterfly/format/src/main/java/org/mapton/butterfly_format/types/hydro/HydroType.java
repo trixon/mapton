@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_format.types.controlpoint;
+package org.mapton.butterfly_format.types.hydro;
 
 /**
  *
  * @author Patrik Karlström <patrik@trixon.se>
  */
-public enum HydroAquifer {
-    LOWER, MID, UPPER;
+public enum HydroType {
+    GROUND_WATER, RAIN
+//vattenstånd, tapp och dämm
 }

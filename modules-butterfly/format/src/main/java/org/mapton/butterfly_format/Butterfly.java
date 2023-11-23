@@ -22,10 +22,10 @@ import org.mapton.butterfly_format.types.BAlarm;
 import org.mapton.butterfly_format.types.BAreaActivity;
 import org.mapton.butterfly_format.types.BAreaBase;
 import org.mapton.butterfly_format.types.acoustic.BAcoBlast;
-import org.mapton.butterfly_format.types.controlpoint.BHydroControlPoint;
-import org.mapton.butterfly_format.types.controlpoint.BHydroControlPointObservation;
-import org.mapton.butterfly_format.types.controlpoint.BTopoControlPoint;
-import org.mapton.butterfly_format.types.controlpoint.BTopoControlPointObservation;
+import org.mapton.butterfly_format.types.hydro.BHydroControlPoint;
+import org.mapton.butterfly_format.types.hydro.BHydroControlPointObservation;
+import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
+import org.mapton.butterfly_format.types.topo.BTopoControlPointObservation;
 
 /**
  *

@@ -20,7 +20,7 @@ import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.render.Path;
 import java.util.ArrayList;
 import org.mapton.butterfly_format.types.BDimension;
-import org.mapton.butterfly_format.types.controlpoint.BTopoControlPoint;
+import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 
 /**
  *

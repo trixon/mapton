@@ -24,7 +24,7 @@ import java.awt.Color;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import org.mapton.butterfly_core.api.ButterflyHelper;
-import org.mapton.butterfly_format.types.controlpoint.BTopoControlPoint;
+import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_topo.shared.ColorBy;
 import static org.mapton.butterfly_topo.shared.ColorBy.FREQUENCY;
 import static org.mapton.butterfly_topo.shared.ColorBy.MEAS_NEED;

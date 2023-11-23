@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,7 +18,7 @@ package org.mapton.butterfly_hydro.groundwater;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.layout.VBox;
-import org.mapton.butterfly_format.types.controlpoint.BHydroControlPoint;
+import org.mapton.butterfly_format.types.hydro.BHydroControlPoint;
 
 /**
  *

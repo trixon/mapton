@@ -19,7 +19,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.api.ui.forms.FormFilter;
-import org.mapton.butterfly_format.types.controlpoint.BHydroControlPoint;
+import org.mapton.butterfly_format.types.hydro.BHydroControlPoint;
 import se.trixon.almond.util.StringHelper;
 
 /**

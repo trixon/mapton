@@ -18,8 +18,8 @@ package org.mapton.butterfly_alarm.api;
 import org.mapton.butterfly_alarm.AlarmManager;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
-import org.mapton.butterfly_format.types.controlpoint.BHydroControlPoint;
-import org.mapton.butterfly_format.types.controlpoint.BTopoControlPoint;
+import org.mapton.butterfly_format.types.hydro.BHydroControlPoint;
+import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import se.trixon.almond.util.StringHelper;
 
 /**

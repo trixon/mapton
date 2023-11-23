@@ -19,7 +19,7 @@ import org.mapton.api.MBaseDataManager;
 import org.mapton.api.MLatLon;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BBasePoint;
-import org.mapton.butterfly_format.types.controlpoint.BBaseControlPoint;
+import org.mapton.butterfly_format.types.BBaseControlPoint;
 import org.mapton.worldwind.api.WWHelper;
 
 /**

@@ -20,7 +20,7 @@ import javafx.scene.layout.Pane;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.SingleListForm;
-import org.mapton.butterfly_format.types.controlpoint.BHydroControlPoint;
+import org.mapton.butterfly_format.types.hydro.BHydroControlPoint;
 import se.trixon.almond.util.Dict;
 
 /**
