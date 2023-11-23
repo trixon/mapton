@@ -21,7 +21,7 @@ import org.mapton.butterfly_format.io.ImportFromCsv;
 import org.mapton.butterfly_format.types.BAlarm;
 import org.mapton.butterfly_format.types.BAreaActivity;
 import org.mapton.butterfly_format.types.BAreaBase;
-import org.mapton.butterfly_format.types.acoustic.BAcoBlast;
+import org.mapton.butterfly_format.types.acoustic.BBlast;
 import org.mapton.butterfly_format.types.hydro.BGroundwaterObservation;
 import org.mapton.butterfly_format.types.hydro.BGroundwaterPoint;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
@@ -33,10 +33,11 @@ import org.mapton.butterfly_format.types.topo.BTopoControlPointObservation;
  */
 public class Butterfly {
 
-    private final ArrayList<BAcoBlast> mAcoBlasts = new ArrayList<>();
+    private final Acoustic mAcoustic = new Acoustic();
     private final ArrayList<BAlarm> mAlarms = new ArrayList<>();
     private final ArrayList<BAreaActivity> mAreaActivities = new ArrayList<>();
     private final ArrayList<BAreaBase> mAreaFilters = new ArrayList<>();
+    private final ArrayList<BBlast> mBlasts = new ArrayList<>();
     private final Hydro mHydro = new Hydro();
     private final ArrayList<BGroundwaterObservation> mHydroGroundwaterObservations = new ArrayList<>();
     private final ArrayList<BGroundwaterPoint> mHydroGroundwaterPoints = new ArrayList<>();
@@ -47,8 +48,8 @@ public class Butterfly {
     public Butterfly() {
     }
 
-    public ArrayList<BAcoBlast> getAcoBlasts() {
-        return mAcoBlasts;
+    public Acoustic acoustic() {
+        return mAcoustic;
     }
 
     public ArrayList<BAlarm> getAlarms() {
@@ -68,8 +69,8 @@ public class Butterfly {
     }
 
     public void load(File sourceDir) {
-        new ImportFromCsv<BAcoBlast>(BAcoBlast.class) {
-        }.load(new File(sourceDir, "acousticBlasts.csv"), mAcoBlasts);
+        new ImportFromCsv<BBlast>(BBlast.class) {
+        }.load(new File(sourceDir, "acousticBlasts.csv"), mBlasts);
 
         new ImportFromCsv<BAlarm>(BAlarm.class) {
         }.load(new File(sourceDir, "alarms.csv"), mAlarms);
@@ -106,6 +107,14 @@ public class Butterfly {
 
     public Topo topo() {
         return mTopo;
+    }
+
+    public class Acoustic {
+
+        public ArrayList<BBlast> getBlasts() {
+            return mBlasts;
+        }
+
     }
 
     public class Ext {

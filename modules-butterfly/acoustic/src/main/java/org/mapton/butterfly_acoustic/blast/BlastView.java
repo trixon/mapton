@@ -20,7 +20,7 @@ import javafx.scene.layout.Pane;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.SingleListForm;
-import org.mapton.butterfly_format.types.acoustic.BAcoBlast;
+import org.mapton.butterfly_format.types.acoustic.BBlast;
 import se.trixon.almond.util.Dict;
 
 /**
@@ -31,7 +31,7 @@ public class BlastView {
 
     private final BlastFilter mFilter = new BlastFilter();
     private final BlastFilterPopOver mFilterPopOver = new BlastFilterPopOver(mFilter);
-    private final SingleListForm<BlastManager, BAcoBlast> mListForm;
+    private final SingleListForm<BlastManager, BBlast> mListForm;
     private final BlastManager mManager = BlastManager.getInstance();
 
     public BlastView() {

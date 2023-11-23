@@ -20,7 +20,7 @@ import java.util.LinkedHashMap;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.ui.forms.FormFilter;
-import org.mapton.butterfly_format.types.acoustic.BAcoBlast;
+import org.mapton.butterfly_format.types.acoustic.BBlast;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.StringHelper;
 
@@ -72,7 +72,7 @@ public class BlastFilter extends FormFilter<BlastManager> {
     private void initListeners() {
     }
 
-    private boolean validateFreeText(BAcoBlast b) {
+    private boolean validateFreeText(BBlast b) {
         return StringHelper.matchesSimpleGlobByWord(getFreeText(), true, false,
                 b.getName(),
                 b.getGroup(),

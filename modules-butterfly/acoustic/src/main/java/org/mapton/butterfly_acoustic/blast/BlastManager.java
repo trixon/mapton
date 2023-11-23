@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,14 +21,14 @@ import java.util.stream.Collectors;
 import org.mapton.api.MTemporalRange;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
-import org.mapton.butterfly_format.types.acoustic.BAcoBlast;
+import org.mapton.butterfly_format.types.acoustic.BBlast;
 import org.openide.util.Exceptions;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class BlastManager extends BaseManager<BAcoBlast> {
+public class BlastManager extends BaseManager<BBlast> {
 
     private final BlastPropertiesBuilder mPropertiesBuilder = new BlastPropertiesBuilder();
 
@@ -37,11 +37,11 @@ public class BlastManager extends BaseManager<BAcoBlast> {
     }
 
     private BlastManager() {
-        super(BAcoBlast.class);
+        super(BBlast.class);
     }
 
     @Override
-    public Object getObjectProperties(BAcoBlast selectedObject) {
+    public Object getObjectProperties(BBlast selectedObject) {
         return mPropertiesBuilder.build(selectedObject);
     }
 
@@ -52,7 +52,7 @@ public class BlastManager extends BaseManager<BAcoBlast> {
     @Override
     public void load(Butterfly butterfly) {
         try {
-            initAllItems(butterfly.getAcoBlasts());
+            initAllItems(butterfly.acoustic().getBlasts());
 
             var dates = new TreeSet<>(getAllItems().stream()
                     .map(o -> o.getDateTime())
@@ -78,7 +78,7 @@ public class BlastManager extends BaseManager<BAcoBlast> {
     }
 
     @Override
-    protected void load(ArrayList<BAcoBlast> items) {
+    protected void load(ArrayList<BBlast> items) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

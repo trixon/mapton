@@ -19,7 +19,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 import java.util.function.Function;
 import org.apache.commons.lang3.StringUtils;
-import org.mapton.butterfly_format.types.acoustic.BAcoBlast;
+import org.mapton.butterfly_format.types.acoustic.BBlast;
 import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.MathHelper;
@@ -50,10 +50,10 @@ public enum BlastLabelBy {
         return MathHelper.convertDoubleToString(p.getZ(), 1);
     });
     private final String mCategory;
-    private final Function<BAcoBlast, String> mFunction;
+    private final Function<BBlast, String> mFunction;
     private final String mName;
 
-    private BlastLabelBy(String category, String name, Function<BAcoBlast, String> function) {
+    private BlastLabelBy(String category, String name, Function<BBlast, String> function) {
         mCategory = category;
         mName = name;
         mFunction = function;
@@ -71,7 +71,7 @@ public enum BlastLabelBy {
         }
     }
 
-    public String getLabel(BAcoBlast o) {
+    public String getLabel(BBlast o) {
         return mFunction.apply(o);
     }
 

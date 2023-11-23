@@ -35,7 +35,7 @@ import org.mapton.butterfly_format.types.BBasePoint;
     "comment",
     "group"
 })
-public class BAcoBlast extends BBasePoint {
+public class BBlast extends BBasePoint {
 
     private LocalDateTime dateTime;
     private Long id;
@@ -44,7 +44,7 @@ public class BAcoBlast extends BBasePoint {
 
     private Double z;
 
-    public BAcoBlast() {
+    public BBlast() {
     }
 
     public Ext ext() {

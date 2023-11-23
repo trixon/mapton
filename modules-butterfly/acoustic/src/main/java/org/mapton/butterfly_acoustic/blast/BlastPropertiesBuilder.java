@@ -19,7 +19,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
 import java.util.Objects;
 import org.mapton.api.ui.forms.PropertiesBuilder;
-import org.mapton.butterfly_format.types.acoustic.BAcoBlast;
+import org.mapton.butterfly_format.types.acoustic.BBlast;
 import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.MathHelper;
@@ -28,10 +28,10 @@ import se.trixon.almond.util.MathHelper;
  *
  * @author Patrik Karlström
  */
-public class BlastPropertiesBuilder extends PropertiesBuilder<BAcoBlast> {
+public class BlastPropertiesBuilder extends PropertiesBuilder<BBlast> {
 
     @Override
-    public Object build(BAcoBlast p) {
+    public Object build(BBlast p) {
         if (p == null) {
             return p;
         }

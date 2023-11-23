@@ -25,7 +25,7 @@ import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.butterfly_core.api.BfLayerBundle;
-import org.mapton.butterfly_format.types.acoustic.BAcoBlast;
+import org.mapton.butterfly_format.types.acoustic.BBlast;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
@@ -91,7 +91,7 @@ public class BlastLayerBundle extends BfLayerBundle {
     }
 
     private void initListeners() {
-        mManager.getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BAcoBlast> c) -> {
+        mManager.getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BBlast> c) -> {
             repaint();
         });
 
@@ -161,7 +161,7 @@ public class BlastLayerBundle extends BfLayerBundle {
         });
     }
 
-    private PointPlacemark plotLabel(BAcoBlast p, BlastLabelBy labelBy, Position position) {
+    private PointPlacemark plotLabel(BBlast p, BlastLabelBy labelBy, Position position) {
         if (labelBy == BlastLabelBy.NONE) {
             return null;
         }

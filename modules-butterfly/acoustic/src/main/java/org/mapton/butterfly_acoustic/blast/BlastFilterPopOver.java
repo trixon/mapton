@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -55,7 +55,7 @@ public class BlastFilterPopOver extends BaseFilterPopOver {
 
     @Override
     public void load(Butterfly butterfly) {
-        var blasts = butterfly.getAcoBlasts();
+        var blasts = butterfly.acoustic().getBlasts();
 
         var groupCheckModel = mGroupCheckComboBox.getCheckModel();
         var checkedGroup = groupCheckModel.getCheckedItems();

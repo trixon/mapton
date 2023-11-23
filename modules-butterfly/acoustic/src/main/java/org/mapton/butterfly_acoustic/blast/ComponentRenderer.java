@@ -26,7 +26,7 @@ import gov.nasa.worldwind.render.SurfaceCircle;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import org.mapton.butterfly_format.types.acoustic.BAcoBlast;
+import org.mapton.butterfly_format.types.acoustic.BBlast;
 import org.mapton.worldwind.api.WWHelper;
 
 /**
@@ -58,7 +58,7 @@ public class ComponentRenderer {
         }
     }
 
-    public void plot(BAcoBlast p, Position position, ArrayList<AVListImpl> mapObjects) {
+    public void plot(BBlast p, Position position, ArrayList<AVListImpl> mapObjects) {
         mMapObjects = mapObjects;
 
         var timeSpan = ChronoUnit.MINUTES.between(p.getDateTime(), LocalDateTime.now());

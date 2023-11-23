@@ -19,14 +19,14 @@ import java.util.Objects;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.layout.VBox;
-import org.mapton.butterfly_format.types.acoustic.BAcoBlast;
+import org.mapton.butterfly_format.types.acoustic.BBlast;
 import se.trixon.almond.util.DateHelper;
 
 /**
  *
  * @author Patrik Karlström
  */
-class BlastListCell extends ListCell<BAcoBlast> {
+class BlastListCell extends ListCell<BBlast> {
 
     private final Label mDateLabel = new Label();
     private final Label mNameLabel = new Label();
@@ -39,7 +39,7 @@ class BlastListCell extends ListCell<BAcoBlast> {
     }
 
     @Override
-    protected void updateItem(BAcoBlast blast, boolean empty) {
+    protected void updateItem(BBlast blast, boolean empty) {
         super.updateItem(blast, empty);
         if (blast == null || empty) {
             clearContent();
@@ -48,7 +48,7 @@ class BlastListCell extends ListCell<BAcoBlast> {
         }
     }
 
-    private void addContent(BAcoBlast blast) {
+    private void addContent(BBlast blast) {
         setText(null);
         var date = Objects.toString(DateHelper.toDateString(blast.getDateTime()), "-");
         mNameLabel.setText(blast.getName());
