@@ -22,8 +22,8 @@ import org.mapton.butterfly_format.types.BAlarm;
 import org.mapton.butterfly_format.types.BAreaActivity;
 import org.mapton.butterfly_format.types.BAreaBase;
 import org.mapton.butterfly_format.types.acoustic.BAcoBlast;
-import org.mapton.butterfly_format.types.hydro.BHydroControlPoint;
-import org.mapton.butterfly_format.types.hydro.BHydroControlPointObservation;
+import org.mapton.butterfly_format.types.hydro.BGroundwaterObservation;
+import org.mapton.butterfly_format.types.hydro.BGroundwaterPoint;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.topo.BTopoControlPointObservation;
 
@@ -33,12 +33,14 @@ import org.mapton.butterfly_format.types.topo.BTopoControlPointObservation;
  */
 public class Butterfly {
 
-    private final ArrayList<BAlarm> mAlarms = new ArrayList<>();
     private final ArrayList<BAcoBlast> mAcoBlasts = new ArrayList<>();
+    private final ArrayList<BAlarm> mAlarms = new ArrayList<>();
     private final ArrayList<BAreaActivity> mAreaActivities = new ArrayList<>();
     private final ArrayList<BAreaBase> mAreaFilters = new ArrayList<>();
-    private final ArrayList<BHydroControlPoint> mHydroControlPoints = new ArrayList<>();
-    private final ArrayList<BHydroControlPointObservation> mHydroControlPointsObservations = new ArrayList<>();
+    private final Hydro mHydro = new Hydro();
+    private final ArrayList<BGroundwaterObservation> mHydroGroundwaterObservations = new ArrayList<>();
+    private final ArrayList<BGroundwaterPoint> mHydroGroundwaterPoints = new ArrayList<>();
+    private final Topo mTopo = new Topo();
     private final ArrayList<BTopoControlPoint> mTopoControlPoints = new ArrayList<>();
     private final ArrayList<BTopoControlPointObservation> mTopoControlPointsObservations = new ArrayList<>();
 
@@ -61,20 +63,8 @@ public class Butterfly {
         return mAreaFilters;
     }
 
-    public ArrayList<BHydroControlPoint> getHydroControlPoints() {
-        return mHydroControlPoints;
-    }
-
-    public ArrayList<BHydroControlPointObservation> getHydroControlPointsObservations() {
-        return mHydroControlPointsObservations;
-    }
-
-    public ArrayList<BTopoControlPoint> getTopoControlPoints() {
-        return mTopoControlPoints;
-    }
-
-    public ArrayList<BTopoControlPointObservation> getTopoControlPointsObservations() {
-        return mTopoControlPointsObservations;
+    public Hydro hydro() {
+        return mHydro;
     }
 
     public void load(File sourceDir) {
@@ -96,11 +86,11 @@ public class Butterfly {
         new ImportFromCsv<BTopoControlPointObservation>(BTopoControlPointObservation.class) {
         }.load(new File(sourceDir, "topoControlPointsObservations.csv"), mTopoControlPointsObservations);
 
-        new ImportFromCsv<BHydroControlPoint>(BHydroControlPoint.class) {
-        }.load(new File(sourceDir, "hydroControlPoints.csv"), mHydroControlPoints);
+        new ImportFromCsv<BGroundwaterPoint>(BGroundwaterPoint.class) {
+        }.load(new File(sourceDir, "hydroGroundwaterPoints.csv"), mHydroGroundwaterPoints);
 
-        new ImportFromCsv<BHydroControlPointObservation>(BHydroControlPointObservation.class) {
-        }.load(new File(sourceDir, "hydroControlPointsObservations.csv"), mHydroControlPointsObservations);
+        new ImportFromCsv<BGroundwaterObservation>(BGroundwaterObservation.class) {
+        }.load(new File(sourceDir, "hydroGroundwaterObservations.csv"), mHydroGroundwaterObservations);
     }
 
     public void postLoad() {
@@ -114,7 +104,35 @@ public class Butterfly {
         }
     }
 
+    public Topo topo() {
+        return mTopo;
+    }
+
     public class Ext {
+
+    }
+
+    public class Hydro {
+
+        public ArrayList<BGroundwaterPoint> getGroundwaterPoints() {
+            return mHydroGroundwaterPoints;
+        }
+
+        public ArrayList<BGroundwaterObservation> getGroundwaterObservations() {
+            return mHydroGroundwaterObservations;
+        }
+
+    }
+
+    public class Topo {
+
+        public ArrayList<BTopoControlPoint> getControlPoints() {
+            return mTopoControlPoints;
+        }
+
+        public ArrayList<BTopoControlPointObservation> getControlPointsObservations() {
+            return mTopoControlPointsObservations;
+        }
 
     }
 }

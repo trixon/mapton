@@ -45,7 +45,7 @@ import org.mapton.butterfly_format.types.BBaseControlPoint;
     "comment",
     "meta"
 })
-public class BHydroControlPoint extends BBaseControlPoint {
+public class BGroundwaterPoint extends BBaseControlPoint {
 
     @JsonIgnore
     private Ext mExt;
@@ -54,7 +54,7 @@ public class BHydroControlPoint extends BBaseControlPoint {
     private Double offsetY;
     private Double offsetZ;
 
-    public BHydroControlPoint() {
+    public BGroundwaterPoint() {
     }
 
     public Ext ext() {

@@ -35,7 +35,7 @@ import org.mapton.butterfly_format.types.BBaseControlPointObservation;
     "replacementMeasurement",
     "zeroMeasurement"
 })
-public class BHydroControlPointObservation extends BBaseControlPointObservation {
+public class BGroundwaterObservation extends BBaseControlPointObservation {
 
     /*
     zm: down measurement from top-edge
@@ -53,7 +53,7 @@ m6: pressure from sensor in mVp
     private Double topEdge;
     private Double preasureMvp;
 
-    public BHydroControlPointObservation() {
+    public BGroundwaterObservation() {
     }
 
     public Double getGroundWaterLevel() {

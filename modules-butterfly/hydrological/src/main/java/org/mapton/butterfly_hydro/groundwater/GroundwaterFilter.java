@@ -19,7 +19,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.api.ui.forms.FormFilter;
-import org.mapton.butterfly_format.types.hydro.BHydroControlPoint;
+import org.mapton.butterfly_format.types.hydro.BGroundwaterPoint;
 import se.trixon.almond.util.StringHelper;
 
 /**
@@ -57,7 +57,7 @@ public class GroundwaterFilter extends FormFilter<GroundwaterManager> {
         mProperty.addListener(mChangeListenerObject);
     }
 
-    private boolean validateDimension(BHydroControlPoint o) {
+    private boolean validateDimension(BGroundwaterPoint o) {
         if (mProperty.get()) {
             return o.getFrequency() == 1;
         } else {
@@ -65,11 +65,11 @@ public class GroundwaterFilter extends FormFilter<GroundwaterManager> {
         }
     }
 
-    private boolean validateFreeText(BHydroControlPoint o) {
+    private boolean validateFreeText(BGroundwaterPoint gw) {
         return StringHelper.matchesSimpleGlobByWord(getFreeText(), true, false,
-                o.getName(),
-                o.getCategory(),
-                o.getGroup()
+                gw.getName(),
+                gw.getCategory(),
+                gw.getGroup()
         );
     }
 

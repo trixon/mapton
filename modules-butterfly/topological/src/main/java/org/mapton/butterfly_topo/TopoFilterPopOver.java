@@ -143,7 +143,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
 
     @Override
     public void load(Butterfly butterfly) {
-        var topoControlPoints = butterfly.getTopoControlPoints();
+        var topoControlPoints = butterfly.topo().getControlPoints();
 
         var dimensionCheckModel = mDimensionCheckComboBox.getCheckModel();
         var checkedDimensions = dimensionCheckModel.getCheckedItems();

@@ -61,8 +61,8 @@ public class ButterflyManager {
 
         wrappedManager.load(new File(FileUtils.getTempDirectory(), "butterfly"));
         var butterfly = wrappedManager.getButterfly();
-        calculateLatLons(butterfly.getHydroControlPoints());
-        calculateLatLons(butterfly.getTopoControlPoints());
+        calculateLatLons(butterfly.hydro().getGroundwaterPoints());
+        calculateLatLons(butterfly.topo().getControlPoints());
 
         var areas = new ArrayList<MArea>();
         var prefix = "Haga/";

@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import javafx.collections.ListChangeListener;
 import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.butterfly_core.api.BfLayerBundle;
-import org.mapton.butterfly_format.types.hydro.BHydroControlPoint;
+import org.mapton.butterfly_format.types.hydro.BGroundwaterPoint;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
@@ -68,7 +68,7 @@ public class GroundwaterLayerBundle extends BfLayerBundle {
     }
 
     private void initListeners() {
-        mManager.getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BHydroControlPoint> c) -> {
+        mManager.getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BGroundwaterPoint> c) -> {
             repaint();
         });
 

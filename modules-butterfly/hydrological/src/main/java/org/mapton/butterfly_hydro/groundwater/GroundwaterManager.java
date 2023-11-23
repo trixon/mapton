@@ -21,14 +21,14 @@ import java.util.stream.Collectors;
 import org.mapton.api.MTemporalRange;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
-import org.mapton.butterfly_format.types.hydro.BHydroControlPoint;
+import org.mapton.butterfly_format.types.hydro.BGroundwaterPoint;
 import org.openide.util.Exceptions;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class GroundwaterManager extends BaseManager<BHydroControlPoint> {
+public class GroundwaterManager extends BaseManager<BGroundwaterPoint> {
 
     private final GroundwaterPropertiesBuilder mPropertiesBuilder = new GroundwaterPropertiesBuilder();
 
@@ -37,11 +37,11 @@ public class GroundwaterManager extends BaseManager<BHydroControlPoint> {
     }
 
     private GroundwaterManager() {
-        super(BHydroControlPoint.class);
+        super(BGroundwaterPoint.class);
     }
 
     @Override
-    public Object getObjectProperties(BHydroControlPoint selectedObject) {
+    public Object getObjectProperties(BGroundwaterPoint selectedObject) {
         return mPropertiesBuilder.build(selectedObject);
     }
 
@@ -52,7 +52,7 @@ public class GroundwaterManager extends BaseManager<BHydroControlPoint> {
     @Override
     public void load(Butterfly butterfly) {
         try {
-            initAllItems(butterfly.getHydroControlPoints());
+            initAllItems(butterfly.hydro().getGroundwaterPoints());
 
             var dates = new TreeSet<>(getAllItems().stream()
                     .map(o -> o.getDateLatest())
@@ -78,7 +78,7 @@ public class GroundwaterManager extends BaseManager<BHydroControlPoint> {
     }
 
     @Override
-    protected void load(ArrayList<BHydroControlPoint> items) {
+    protected void load(ArrayList<BGroundwaterPoint> items) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

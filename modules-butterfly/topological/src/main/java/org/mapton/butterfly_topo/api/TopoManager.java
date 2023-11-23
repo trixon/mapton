@@ -21,10 +21,10 @@ import java.util.LinkedHashMap;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import org.mapton.api.MTemporalRange;
-import org.mapton.butterfly_api.api.BaseManager;
+import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
-import org.mapton.butterfly_format.types.controlpoint.BTopoControlPoint;
-import org.mapton.butterfly_format.types.controlpoint.BTopoControlPointObservation;
+import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
+import org.mapton.butterfly_format.types.topo.BTopoControlPointObservation;
 import org.mapton.butterfly_topo.TopoChartBuilder;
 import org.mapton.butterfly_topo.TopoPropertiesBuilder;
 import org.openide.util.Exceptions;
@@ -67,15 +67,15 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
     @Override
     public void load(Butterfly butterfly) {
         try {
-            initAllItems(butterfly.getTopoControlPoints());
+            initAllItems(butterfly.topo().getControlPoints());
             initObjectToItemMap();
 
             var nameToTopoControlPointObservations = new LinkedHashMap<String, ArrayList<BTopoControlPointObservation>>();
-            for (var o : butterfly.getTopoControlPointsObservations()) {
+            for (var o : butterfly.topo().getControlPointsObservations()) {
                 nameToTopoControlPointObservations.computeIfAbsent(o.getName(), k -> new ArrayList<>()).add(o);
             }
 
-            for (var p : butterfly.getTopoControlPoints()) {
+            for (var p : butterfly.topo().getControlPoints()) {
                 p.ext().setObservationsAllRaw(nameToTopoControlPointObservations.get(p.getName()));
                 p.ext().getObservationsAllRaw().forEach(o -> o.ext().setControlPoint(p));
             }
@@ -104,6 +104,13 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
     protected void applyTemporalFilter() {
         var measCountStatsDateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM");
         var timeFilteredItems = new ArrayList<BTopoControlPoint>();
+
+//        for (var p : getFilteredItems()) {
+//            for (var o : p.ext().getObservationsAllCalculated()) {
+//                //o.setZeroMeasurement(false);
+//                //TODO Reset zero meas but dont destroy original info
+//            }
+//        }
         p:
         for (var p : getFilteredItems()) {
             if (p.getDateLatest() == null) {
