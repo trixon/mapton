@@ -49,7 +49,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>butterfly-api</artifactId>
+            <artifactId>butterfly-core</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>

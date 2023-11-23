@@ -17,7 +17,7 @@ package org.mapton.butterfly_topo;
 
 import gov.nasa.worldwind.render.Material;
 import java.awt.Color;
-import org.mapton.butterfly_api.api.ButterflyHelper;
+import org.mapton.butterfly_core.api.ButterflyHelper;
 import org.mapton.butterfly_format.types.controlpoint.BTopoControlPoint;
 
 /**

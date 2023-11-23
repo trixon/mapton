@@ -23,7 +23,7 @@ limitations under the License.
         <version>3.2.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    <artifactId>butterfly-api</artifactId>
+    <artifactId>butterfly-core</artifactId>
     <packaging>nbm</packaging>
    
     <build>
@@ -35,7 +35,7 @@ limitations under the License.
                 <configuration>
                     <publicPackages>
                         <publicPackage>org.mapton.butterfly_format.*</publicPackage>
-                        <publicPackage>org.mapton.butterfly_api.api.*</publicPackage>
+                        <publicPackage>org.mapton.butterfly_core.api.*</publicPackage>
                     </publicPackages>
                 </configuration>
             </plugin>

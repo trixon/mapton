@@ -23,7 +23,7 @@ import gov.nasa.worldwind.render.PointPlacemarkAttributes;
 import java.awt.Color;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import org.mapton.butterfly_api.api.ButterflyHelper;
+import org.mapton.butterfly_core.api.ButterflyHelper;
 import org.mapton.butterfly_format.types.controlpoint.BTopoControlPoint;
 import org.mapton.butterfly_topo.shared.ColorBy;
 import static org.mapton.butterfly_topo.shared.ColorBy.FREQUENCY;

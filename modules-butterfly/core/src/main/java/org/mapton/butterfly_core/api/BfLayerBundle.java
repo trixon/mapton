@@ -13,28 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_api;
+package org.mapton.butterfly_core.api;
 
-import org.mapton.api.MOptions;
-import org.openide.windows.OnShowing;
-import se.trixon.almond.nbp.Almond;
+import gov.nasa.worldwind.layers.Layer;
+import org.mapton.worldwind.api.LayerBundle;
 
 /**
  *
  * @author Patrik Karlström
  */
-@OnShowing
-public class DoOnShowing implements Runnable {
-
-    private final MOptions mOptions = MOptions.getInstance();
+public abstract class BfLayerBundle extends LayerBundle {
 
     @Override
-    public void run() {
-        if (mOptions.isFirstRun()) {
-            Almond.openTopComponent("PoiTopComponent");
-            Almond.openTopComponent("LayerTopComponent");
-            Almond.openTopComponent("PropertiesTopComponent");
-        }
+    public void setCategory(Layer layer, String category) {
+        super.setCategory(layer, "%s/%s".formatted("Butterfly", category));
     }
 
 }

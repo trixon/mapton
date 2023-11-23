@@ -365,7 +365,7 @@
             </dependency>
             <dependency>
                 <groupId>org.mapton</groupId>
-                <artifactId>butterfly-api</artifactId>
+                <artifactId>butterfly-core</artifactId>
                 <version>${mapton.version}</version>
             </dependency>
             <dependency>

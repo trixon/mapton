@@ -15,7 +15,7 @@
  */
 package org.mapton.butterfly_topo.report;
 
-import org.mapton.butterfly_api.api.BaseReport;
+import org.mapton.butterfly_core.api.BaseReport;
 
 /**
  *

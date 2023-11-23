@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_api;
+package org.mapton.butterfly_core;
 
 import org.mapton.api.MCooTrans;
 import org.mapton.api.MKey;
 import org.mapton.api.Mapton;
-import org.mapton.butterfly_api.api.ButterflyConfig;
-import org.mapton.butterfly_api.api.ButterflyManager;
+import org.mapton.butterfly_core.api.ButterflyConfig;
+import org.mapton.butterfly_core.api.ButterflyManager;
 import org.openide.modules.OnStart;
 import org.openide.util.NbPreferences;
 

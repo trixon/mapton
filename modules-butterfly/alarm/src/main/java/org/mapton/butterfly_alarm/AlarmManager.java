@@ -16,7 +16,7 @@
 package org.mapton.butterfly_alarm;
 
 import java.util.ArrayList;
-import org.mapton.butterfly_api.api.BaseManager;
+import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BAlarm;
 import org.openide.util.Exceptions;

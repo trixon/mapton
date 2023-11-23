@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_api.api;
+package org.mapton.butterfly_core.api;
 
 import gov.nasa.worldwind.render.Material;
 import java.awt.Color;

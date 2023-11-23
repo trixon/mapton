@@ -101,8 +101,7 @@ limitations under the License.
         <!--Butterfly-->
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>butterfly-api</artifactId>
-            <version>${mapton.version}</version>
+            <artifactId>butterfly-core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.mapton</groupId>

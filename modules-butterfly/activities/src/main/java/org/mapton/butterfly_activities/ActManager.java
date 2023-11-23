@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import org.mapton.api.MTemporalRange;
-import org.mapton.butterfly_api.api.BaseManager;
+import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BAreaActivity;
 import org.openide.util.Exceptions;

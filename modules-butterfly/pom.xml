@@ -30,8 +30,8 @@ limitations under the License.
     <packaging>pom</packaging>
 
     <modules>
+        <module>core</module>
         <module>format</module>
-        <module>api</module>
         <module>activities</module>
         <module>acoustic</module>
         <module>hydrological</module>

@@ -30,7 +30,7 @@ import javafx.collections.ListChangeListener;
 import org.apache.commons.lang3.ObjectUtils;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Polygon;
-import org.mapton.butterfly_api.api.BfLayerBundle;
+import org.mapton.butterfly_core.api.BfLayerBundle;
 import org.mapton.butterfly_format.types.BAreaActivity;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;

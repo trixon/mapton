@@ -22,7 +22,7 @@ import javafx.scene.layout.VBox;
 import org.controlsfx.control.CheckComboBox;
 import static org.mapton.api.ui.MPopOver.GAP;
 import static org.mapton.api.ui.MPopOver.autoSize;
-import org.mapton.butterfly_api.api.BaseFilterPopOver;
+import org.mapton.butterfly_core.api.BaseFilterPopOver;
 import org.mapton.butterfly_format.Butterfly;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;

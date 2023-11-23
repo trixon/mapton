@@ -34,7 +34,7 @@ import static org.mapton.api.ui.MPopOver.GAP;
 import static org.mapton.api.ui.MPopOver.autoSize;
 import org.mapton.api.ui.forms.NegPosStringConverterDouble;
 import org.mapton.api.ui.forms.NegPosStringConverterInteger;
-import org.mapton.butterfly_api.api.BaseFilterPopOver;
+import org.mapton.butterfly_core.api.BaseFilterPopOver;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_topo.api.TopoManager;
