@@ -15,8 +15,10 @@
  */
 package org.mapton.butterfly_format.types.acoustic;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import org.mapton.butterfly_format.types.BBasePoint;
 
 /**
@@ -37,9 +39,20 @@ public class BAcoBlast extends BBasePoint {
 
     private LocalDateTime dateTime;
     private Long id;
+    @JsonIgnore
+    private Ext mExt;
+
     private Double z;
 
     public BAcoBlast() {
+    }
+
+    public Ext ext() {
+        if (mExt == null) {
+            mExt = new Ext();
+        }
+
+        return mExt;
     }
 
     public LocalDateTime getDateTime() {
@@ -65,4 +78,15 @@ public class BAcoBlast extends BBasePoint {
     public void setZ(Double z) {
         this.z = z;
     }
+
+    public class Ext {
+
+        public long getAge(ChronoUnit chronoUnit) {
+            var latest = getDateTime() != null ? getDateTime() : LocalDateTime.now().minusDays(1);
+
+            return chronoUnit.between(latest, LocalDateTime.now());
+        }
+
+    }
+
 }
