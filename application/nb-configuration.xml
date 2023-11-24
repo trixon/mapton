@@ -14,4 +14,9 @@
         Any value defined here will override the pom.xml file value but is only applicable to the current project.
         -->
     </properties>
+    <config-data xmlns="http://www.netbeans.org/ns/maven-config-data/1">
+        <configurations>
+            <configuration id="butterfly-with-internals" profiles="butterfly butterfly-internal"/>
+        </configurations>
+    </config-data>
 </project-shared-configuration>

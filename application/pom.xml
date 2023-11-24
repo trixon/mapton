@@ -403,6 +403,17 @@
             </dependencies>
         </profile>
         <profile>
+            <id>butterfly-internal</id>
+            <dependencies>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>butterfly-internal01</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+            </dependencies>
+        </profile>
+
+        <profile>
             <id>unstable</id>
             <dependencies>
                 <dependency>
