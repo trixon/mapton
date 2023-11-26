@@ -25,7 +25,7 @@ limitations under the License.
     </parent>
     <artifactId>butterfly-core</artifactId>
     <packaging>nbm</packaging>
-   
+
     <build>
         <plugins>
             <plugin>
@@ -80,9 +80,9 @@ limitations under the License.
             <groupId>org.mapton</groupId>
             <artifactId>butterfly-format</artifactId>
         </dependency>
-        
+
         <!--Trixon-->
-        
+
         <!--Other-->
         <dependency>
             <groupId>org.netbeans.api</groupId>

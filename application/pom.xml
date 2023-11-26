@@ -20,100 +20,25 @@
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-windows</artifactId>
-            <version>${netbeans.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.netbeans.cluster</groupId>
-            <artifactId>platform</artifactId>
-            <version>${netbeans.version}</version>
+            <groupId>se.trixon.netbeans-platform</groupId>
+            <artifactId>basic</artifactId>
+            <version>0.1-SNAPSHOT</version>
             <type>pom</type>
-            <exclusions>
-                <!--EXCLUDE TEST-->
-                <exclusion>
-                    <groupId>org.netbeans.modules</groupId>
-                    <artifactId>org-netbeans-modules-junitlib</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.netbeans.api</groupId>
-                    <artifactId>org-netbeans-libs-junit4</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.netbeans.api</groupId>
-                    <artifactId>org-netbeans-libs-testng</artifactId>
-                </exclusion>
-
-                <!--EXCLUDE COMPAT8-->
-                <exclusion>
-                    <groupId>org.netbeans.api</groupId>
-                    <artifactId>org-openide-execution-compat8</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.netbeans.api</groupId>
-                    <artifactId>org-netbeans-api-progress-compat8</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.netbeans.api</groupId>
-                    <artifactId>org-openide-compat</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.netbeans.api</groupId>
-                    <artifactId>org-openide-filesystems-compat8</artifactId>
-                </exclusion>
-
-                <!--EXCLUDE GUI-->
-                <exclusion>
-                    <groupId>org.netbeans.api</groupId>
-                    <artifactId>org-jdesktop-layout</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.netbeans.api</groupId>
-                    <artifactId>org-netbeans-libs-javafx</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.netbeans.api</groupId>
-                    <artifactId>org-netbeans-api-htmlui</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.netbeans.modules</groupId>
-                    <artifactId>org-netbeans-modules-templatesui</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.netbeans.modules</groupId>
-                    <artifactId>org-netbeans-modules-htmlui</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.netbeans.html</groupId>
-                    <artifactId>net.java.html.boot.fx</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.netbeans.html</groupId>
-                    <artifactId>net.java.html</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.netbeans.api</groupId>
-                    <artifactId>org-netbeans-api-htmlui</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.netbeans.html</groupId>
-                    <artifactId>net.java.html.geo</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.netbeans.html</groupId>
-                    <artifactId>net.java.html.boot</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.netbeans.html</groupId>
-                    <artifactId>net.java.html.sound</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.netbeans.html</groupId>
-                    <artifactId>net.java.html.json</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.netbeans.html</groupId>
-                    <artifactId>net.java.html.boot.script</artifactId>
-                </exclusion>
-            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-netbeans-modules-extexecution-base</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-netbeans-modules-extexecution</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-netbeans-core-ide</artifactId>
+            <version>${netbeans.version}</version>
         </dependency>
 
         <!-- Mapton -->
@@ -402,6 +327,7 @@
                 </dependency>
             </dependencies>
         </profile>
+
         <profile>
             <id>butterfly-internal</id>
             <dependencies>
