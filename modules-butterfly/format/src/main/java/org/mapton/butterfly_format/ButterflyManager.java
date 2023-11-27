@@ -43,6 +43,7 @@ public class ButterflyManager {
 
     public void load(File path) {
         butterfly.load(path);
+        butterfly.loadTmoMatobjekt(path);
         butterfly.postLoad();
     }
 
