@@ -29,6 +29,7 @@ import org.mapton.api.MCooTrans;
 import org.mapton.api.MOptions;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BBaseControlPoint;
+import org.mapton.butterfly_format.types.tmo.BBasObjekt;
 import org.openide.util.Exceptions;
 
 /**
@@ -63,6 +64,7 @@ public class ButterflyManager {
         var butterfly = wrappedManager.getButterfly();
         calculateLatLons(butterfly.hydro().getGroundwaterPoints());
         calculateLatLons(butterfly.topo().getControlPoints());
+        calculateLatLonsTmo(butterfly.tmo().getGrundvatten());
 
         var areas = new ArrayList<MArea>();
         var prefix = "Haga/";
@@ -97,6 +99,19 @@ public class ButterflyManager {
         for (var cp : baseControlPoints) {
             var x = cp.getZeroX();
             var y = cp.getZeroY();
+
+            if (ObjectUtils.allNotNull(x, y)) {
+                var wgs84 = getCooTrans().toWgs84(y, x);
+                cp.setLat(wgs84.getY());
+                cp.setLon(wgs84.getX());
+            }
+        }
+    }
+
+    private void calculateLatLonsTmo(ArrayList<? extends BBasObjekt> baseControlPoints) {
+        for (var cp : baseControlPoints) {
+            var x = cp.getX();
+            var y = cp.getY();
 
             if (ObjectUtils.allNotNull(x, y)) {
                 var wgs84 = getCooTrans().toWgs84(y, x);

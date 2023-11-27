@@ -38,5 +38,6 @@ limitations under the License.
         <module>topological</module>
         <module>alarm</module>
         <module>projektnav</module>
+        <module>tmo</module>
     </modules>
 </project>
