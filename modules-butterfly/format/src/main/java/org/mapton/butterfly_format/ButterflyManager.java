@@ -41,9 +41,10 @@ public class ButterflyManager {
         return butterfly;
     }
 
-    public void load(File path) {
-        butterfly.load(path);
-        butterfly.loadTmoMatobjekt(path);
+    public void load(File sourceDir) {
+        butterfly.load(sourceDir);
+        butterfly.loadTmoObjekt(sourceDir);
+        butterfly.loadTmoObservations(sourceDir);
         butterfly.postLoad();
     }
 

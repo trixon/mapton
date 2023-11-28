@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,18 +15,14 @@
  */
 package org.mapton.butterfly_format.types;
 
-import java.time.LocalDateTime;
-
 /**
  *
  * @author Patrik Karlström <patrik@trixon.se>
  */
-public abstract class BBaseControlPointObservation {
+public abstract class BBaseControlPointObservation extends BBasePointObservation {
 
     private String comment;
-    private LocalDateTime date;
     private String instrument;
-    private String name;
     private String operator;
     private boolean replacementMeasurement;
     private Integer status;
@@ -39,16 +35,8 @@ public abstract class BBaseControlPointObservation {
         return comment;
     }
 
-    public LocalDateTime getDate() {
-        return date;
-    }
-
     public String getInstrument() {
         return instrument;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public String getOperator() {
@@ -71,16 +59,8 @@ public abstract class BBaseControlPointObservation {
         this.comment = comment;
     }
 
-    public void setDate(LocalDateTime date) {
-        this.date = date;
-    }
-
     public void setInstrument(String instrument) {
         this.instrument = instrument;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public void setOperator(String operator) {

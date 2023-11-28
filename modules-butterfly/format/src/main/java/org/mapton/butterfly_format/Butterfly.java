@@ -25,6 +25,7 @@ import org.mapton.butterfly_format.types.acoustic.BBlast;
 import org.mapton.butterfly_format.types.hydro.BGroundwaterObservation;
 import org.mapton.butterfly_format.types.hydro.BGroundwaterPoint;
 import org.mapton.butterfly_format.types.tmo.BGrundvatten;
+import org.mapton.butterfly_format.types.tmo.BGrundvattenObservation;
 import org.mapton.butterfly_format.types.tmo.BInfiltration;
 import org.mapton.butterfly_format.types.tmo.BRorelse;
 import org.mapton.butterfly_format.types.tmo.BTunnelvatten;
@@ -101,24 +102,29 @@ public class Butterfly {
         }.load(new File(sourceDir, "hydroGroundwaterObservations.csv"), mHydroGroundwaterObservations);
     }
 
-    public void loadTmoMatobjekt(File sourceDir) {
+    public void loadTmoObjekt(File sourceDir) {
         new ImportFromCsv<BGrundvatten>(BGrundvatten.class) {
-        }.load(new File(sourceDir, "tmoMatobjektGrundvatten.csv"), mTmo.getGrundvatten());
+        }.load(new File(sourceDir, "tmoGrundvatten.csv"), mTmo.getGrundvatten());
 
         new ImportFromCsv<BInfiltration>(BInfiltration.class) {
-        }.load(new File(sourceDir, "tmoMatobjektInfiltration.csv"), mTmo.getInfiltration());
+        }.load(new File(sourceDir, "tmoInfiltration.csv"), mTmo.getInfiltration());
 
         new ImportFromCsv<BRorelse>(BRorelse.class) {
-        }.load(new File(sourceDir, "tmoMatobjektRorelse.csv"), mTmo.getRörelse());
+        }.load(new File(sourceDir, "tmoRorelse.csv"), mTmo.getRörelse());
 
         new ImportFromCsv<BTunnelvatten>(BTunnelvatten.class) {
-        }.load(new File(sourceDir, "tmoMatobjektTunnelvatten.csv"), mTmo.getTunnelvatten());
+        }.load(new File(sourceDir, "tmoTunnelvatten.csv"), mTmo.getTunnelvatten());
 
         new ImportFromCsv<BVattenkemi>(BVattenkemi.class) {
-        }.load(new File(sourceDir, "tmoMatobjektVattenkemi.csv"), mTmo.getVattenkemi());
+        }.load(new File(sourceDir, "tmoVattenkemi.csv"), mTmo.getVattenkemi());
 
         new ImportFromCsv<BVaderstation>(BVaderstation.class) {
-        }.load(new File(sourceDir, "tmoMatobjektVaderstation.csv"), mTmo.getVaderstation());
+        }.load(new File(sourceDir, "tmoVaderstation.csv"), mTmo.getVaderstation());
+    }
+
+    public void loadTmoObservations(File sourceDir) {
+        new ImportFromCsv<BGrundvattenObservation>(BGrundvattenObservation.class) {
+        }.load(new File(sourceDir, "tmoGrundvattenObservations.csv"), mTmo.getGrundvattenObservations());
     }
 
     public void postLoad() {
@@ -145,7 +151,6 @@ public class Butterfly {
         public ArrayList<BBlast> getBlasts() {
             return mBlasts;
         }
-
     }
 
     public class Ext {
@@ -167,6 +172,7 @@ public class Butterfly {
     public class Tmo {
 
         private final ArrayList<BGrundvatten> mGrundvatten = new ArrayList<>();
+        private final ArrayList<BGrundvattenObservation> mGrundvattenObservations = new ArrayList<>();
         private final ArrayList<BInfiltration> mInfiltration = new ArrayList<>();
         private final ArrayList<BRorelse> mRörelse = new ArrayList<>();
         private final ArrayList<BTunnelvatten> mTunnelvatten = new ArrayList<>();
@@ -175,6 +181,10 @@ public class Butterfly {
 
         public ArrayList<BGrundvatten> getGrundvatten() {
             return mGrundvatten;
+        }
+
+        public ArrayList<BGrundvattenObservation> getGrundvattenObservations() {
+            return mGrundvattenObservations;
         }
 
         public ArrayList<BInfiltration> getInfiltration() {
