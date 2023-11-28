@@ -20,14 +20,14 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.LinkedHashMap;
 import java.util.List;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.butterfly_format.types.BAlarm;
+import org.mapton.butterfly_format.types.BBase;
+import org.mapton.butterfly_format.types.BBaseControlPoint;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
-import org.mapton.butterfly_format.types.BBaseControlPoint;
 import static org.mapton.butterfly_format.types.BDimension._1d;
 import static org.mapton.butterfly_format.types.BDimension._2d;
 import static org.mapton.butterfly_format.types.BDimension._3d;
@@ -136,11 +136,14 @@ public class BTopoControlPoint extends BBaseControlPoint {
         this.offsetZ = offsetZ;
     }
 
-    public class Ext extends BBaseControlPoint.Ext {
+    public class Ext extends BBase.Ext<BTopoControlPointObservation> {
 
         private transient final DeltaRolling deltaRolling = new DeltaRolling();
         private transient final DeltaZero deltaZero = new DeltaZero();
-        private transient LinkedHashMap<String, Integer> measuremenCountStats = new LinkedHashMap<>();
+
+        public Ext() {
+            Ext.this.getObservationFilteredFirst();
+        }
 
         public void calculateObservations(List<BTopoControlPointObservation> observations) {
             if (observations.isEmpty()) {
@@ -253,19 +256,11 @@ public class BTopoControlPoint extends BBaseControlPoint {
             return chronoUnit.between(latest, LocalDate.now());
         }
 
-        public LinkedHashMap<String, Integer> getMeasurementCountStats() {
-            return measuremenCountStats;
-        }
-
         public long getMeasurementUntilNext(ChronoUnit chronoUnit) {
             var latest = getDateLatest() != null ? getDateLatest().toLocalDate() : LocalDate.MIN;
             var nextMeas = latest.plusDays(getFrequency());
 
             return chronoUnit.between(LocalDate.now(), nextMeas);
-        }
-
-        public void setMeasurementCountStats(LinkedHashMap<String, Integer> measuremenCountStats) {
-            this.measuremenCountStats = measuremenCountStats;
         }
 
         public abstract class Delta {

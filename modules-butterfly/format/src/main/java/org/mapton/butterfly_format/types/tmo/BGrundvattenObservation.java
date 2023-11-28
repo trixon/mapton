@@ -23,9 +23,18 @@ import org.mapton.butterfly_format.types.BBasePointObservation;
  */
 public class BGrundvattenObservation extends BBasePointObservation {
 
+    private Ext mExt;
     private Double nivå;
 
     public BGrundvattenObservation() {
+    }
+
+    public Ext ext() {
+        if (mExt == null) {
+            mExt = new Ext();
+        }
+
+        return mExt;
     }
 
     public Double getNivå() {
@@ -36,4 +45,17 @@ public class BGrundvattenObservation extends BBasePointObservation {
         this.nivå = nivå;
     }
 
+    public class Ext {
+
+        private BGrundvatten mParent;
+
+        public BGrundvatten getParent() {
+            return mParent;
+        }
+
+        public void setParent(BGrundvatten p) {
+            mParent = p;
+        }
+
+    }
 }

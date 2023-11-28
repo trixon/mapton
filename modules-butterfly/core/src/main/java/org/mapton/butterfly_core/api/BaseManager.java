@@ -18,15 +18,16 @@ package org.mapton.butterfly_core.api;
 import org.mapton.api.MBaseDataManager;
 import org.mapton.api.MLatLon;
 import org.mapton.butterfly_format.Butterfly;
-import org.mapton.butterfly_format.types.BBasePoint;
+import org.mapton.butterfly_format.types.BBase;
 import org.mapton.butterfly_format.types.BBaseControlPoint;
+import org.mapton.butterfly_format.types.BBasePoint;
 import org.mapton.worldwind.api.WWHelper;
 
 /**
  *
  * @author Patrik Karlström
  */
-public abstract class BaseManager<T> extends MBaseDataManager<T> {
+public abstract class BaseManager<T extends BBase> extends MBaseDataManager<T> {
 
     private Butterfly mButterfly;
     private final ButterflyManager mButterflyManager = ButterflyManager.getInstance();
@@ -72,7 +73,11 @@ public abstract class BaseManager<T> extends MBaseDataManager<T> {
         return null;
     }
 
-    public abstract void initObjectToItemMap();
+    public void initObjectToItemMap() {
+        for (var item : getAllItems()) {
+            getAllItemsMap().put(item.getName(), item);
+        }
+    }
 
     public abstract void load(Butterfly butterfly);
 }

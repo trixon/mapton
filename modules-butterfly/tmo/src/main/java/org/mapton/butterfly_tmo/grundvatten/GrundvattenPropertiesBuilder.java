@@ -21,6 +21,7 @@ import org.mapton.api.ui.forms.PropertiesBuilder;
 import org.mapton.butterfly_format.types.tmo.BGrundvatten;
 import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.SDict;
 
 /**
  *
@@ -42,6 +43,7 @@ public class GrundvattenPropertiesBuilder extends PropertiesBuilder<BGrundvatten
         propertyMap.put(getCatKey(cat1, Dict.GROUP.toString()), p.getGroup());
         propertyMap.put(getCatKey(cat1, Dict.COMMENT.toString()), p.getComment());
         propertyMap.put(getCatKey(cat1, Dict.DATE.toString()), date);
+        propertyMap.put(getCatKey(cat1, SDict.MEASUREMENTS.toString()), p.ext().getNumOfObservations());
 //        propertyMap.put(getCatKey(cat1, Dict.AGE.toString()), p.ext().getAge(ChronoUnit.DAYS));
 //        propertyMap.put(getCatKey(cat1, "Z"), MathHelper.convertDoubleToString(p.getZ(), 1));
 

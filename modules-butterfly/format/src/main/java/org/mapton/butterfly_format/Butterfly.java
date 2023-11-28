@@ -136,6 +136,10 @@ public class Butterfly {
         for (var p : mTopoControlPoints) {
             p.setButterfly(this);
         }
+
+        for (var p : tmo().mGrundvatten) {
+            p.setButterfly(this);
+        }
     }
 
     public Tmo tmo() {

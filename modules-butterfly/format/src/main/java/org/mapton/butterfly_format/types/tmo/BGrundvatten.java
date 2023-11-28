@@ -15,18 +15,31 @@
  */
 package org.mapton.butterfly_format.types.tmo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.mapton.butterfly_format.types.BBase;
+
 /**
  *
  * @author Patrik Karlström
  */
 public class BGrundvatten extends BBasVatten {
 
+    @JsonIgnore
+    private Ext mExt;
     private String mFiltertyp;
     private Integer mGradning;
     private Double mReferensnivå;
     private String mSpetstyp;
 
     public BGrundvatten() {
+    }
+
+    public Ext ext() {
+        if (mExt == null) {
+            mExt = new Ext();
+        }
+
+        return mExt;
     }
 
     public String getFiltertyp() {
@@ -60,4 +73,9 @@ public class BGrundvatten extends BBasVatten {
     public void setSpetstyp(String spetstyp) {
         this.mSpetstyp = spetstyp;
     }
+
+    public class Ext extends BBase.Ext<BGrundvattenObservation> {
+
+    }
+
 }

@@ -83,10 +83,10 @@ public class BTopoControlPointObservation extends BBaseControlPointObservation {
 
     public class Ext {
 
-        private BTopoControlPoint mControlPoint;
         private Double mDeltaX;
         private Double mDeltaY;
         private Double mDeltaZ;
+        private BTopoControlPoint mParent;
 
         public Ext() {
         }
@@ -97,10 +97,6 @@ public class BTopoControlPointObservation extends BBaseControlPointObservation {
             } else {
                 return MathHelper.bearingCWInDegrees(getDeltaX(), getDeltaY());
             }
-        }
-
-        public BTopoControlPoint getControlPoint() {
-            return mControlPoint;
         }
 
         public Double getDelta() {
@@ -152,8 +148,8 @@ public class BTopoControlPointObservation extends BBaseControlPointObservation {
             return mDeltaZ;
         }
 
-        public void setControlPoint(BTopoControlPoint controlPoint) {
-            this.mControlPoint = controlPoint;
+        public BTopoControlPoint getParent() {
+            return mParent;
         }
 
         public void setDeltaX(Double deltaX) {
@@ -166,6 +162,10 @@ public class BTopoControlPointObservation extends BBaseControlPointObservation {
 
         public void setDeltaZ(Double deltaZ) {
             this.mDeltaZ = deltaZ;
+        }
+
+        public void setParent(BTopoControlPoint controlPoint) {
+            this.mParent = controlPoint;
         }
     }
 }

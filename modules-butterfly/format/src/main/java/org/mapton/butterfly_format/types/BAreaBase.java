@@ -29,13 +29,12 @@ import org.locationtech.jts.geom.Geometry;
     "description",
     "wkt"
 })
-public class BAreaBase {
+public class BAreaBase extends BBase {
 
     private String description;
     private String id;
     @JsonIgnore
     private Geometry geometry;
-    private String name;
     private String wkt;
 
     public BAreaBase() {
@@ -53,10 +52,6 @@ public class BAreaBase {
         return id;
     }
 
-    public String getName() {
-        return name;
-    }
-
     public String getWkt() {
         return wkt;
     }
@@ -71,10 +66,6 @@ public class BAreaBase {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public void setWkt(String wkt) {

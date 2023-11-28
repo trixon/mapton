@@ -15,14 +15,18 @@
  */
 package org.mapton.butterfly_tmo.grundvatten;
 
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import org.mapton.api.MTemporalRange;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.tmo.BGrundvatten;
+import org.mapton.butterfly_format.types.tmo.BGrundvattenObservation;
 import org.openide.util.Exceptions;
+import se.trixon.almond.util.CollectionHelper;
 
 /**
  *
@@ -46,22 +50,41 @@ public class GrundvattenManager extends BaseManager<BGrundvatten> {
     }
 
     @Override
-    public void initObjectToItemMap() {
-    }
-
-    @Override
     public void load(Butterfly butterfly) {
         try {
             initAllItems(butterfly.tmo().getGrundvatten());
+            initObjectToItemMap();
+
+            var nameToObservations = new LinkedHashMap<String, ArrayList<BGrundvattenObservation>>();
+            for (var o : butterfly.tmo().getGrundvattenObservations()) {
+                nameToObservations.computeIfAbsent(o.getName(), k -> new ArrayList<>()).add(o);
+            }
+
+            for (var p : butterfly.tmo().getGrundvatten()) {
+                p.ext().setObservationsAllRaw(nameToObservations.get(p.getName()));
+                p.ext().getObservationsAllRaw().forEach(o -> o.ext().setParent(p));
+
+                var grundvattenObservations = p.ext().getObservationsAllRaw();
+                if (!grundvattenObservations.isEmpty()) {
+                    p.ext().setDataLatest(grundvattenObservations.getFirst().getDate());
+                }
+            }
 
             var dates = new TreeSet<>(getAllItems().stream()
-                    .map(o -> o.getInstallationsdatum()) //TODO use latest observation date
+                    .map(p -> p.ext().getDateLatest())
                     .filter(d -> d != null)
                     .collect(Collectors.toSet()));
 
             if (!dates.isEmpty()) {
                 setTemporalRange(new MTemporalRange(dates.first(), dates.last()));
             }
+
+            getAllItems().stream().forEach(p -> {
+                var calculatedObservations = new ArrayList<>(p.ext().getObservationsAllRaw());
+                p.ext().setObservationsAllCalculated(calculatedObservations);
+                //TODO or not TODO? p.ext().calculateObservations(calculatedObservations);
+            });
+
         } catch (Exception e) {
             Exceptions.printStackTrace(e);
         }
@@ -69,11 +92,38 @@ public class GrundvattenManager extends BaseManager<BGrundvatten> {
 
     @Override
     protected void applyTemporalFilter() {
-//        var timeFilteredItems = getFilteredItems().stream()
-//                .filter(o -> o.getDateTime() == null ? true : getTemporalManager().isValid(o.getDateTime()))
-//                .toList();
+        var measCountStatsDateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM");
+        var timeFilteredItems = new ArrayList<BGrundvatten>();
 
-        getTimeFilteredItems().setAll(getFilteredItems());
+        p:
+        for (var p : getFilteredItems()) {
+            if (p.ext().getDateLatest() == null) {
+                timeFilteredItems.add(p);
+            } else {
+                for (var o : p.ext().getObservationsAllCalculated()) {
+                    if (getTemporalManager().isValid(o.getDate())) {
+                        timeFilteredItems.add(p);
+                        continue p;
+                    }
+                }
+            }
+        }
+
+        timeFilteredItems.stream().forEach(p -> {
+            var timefilteredObservations = p.ext().getObservationsAllRaw().stream()
+                    .filter(o -> getTemporalManager().isValid(o.getDate()))
+                    .toList();
+            p.ext().setObservationsTimeFiltered(new ArrayList<>(timefilteredObservations));
+
+            var measCountStats = new LinkedHashMap<String, Integer>();
+            p.ext().setMeasurementCountStats(measCountStats);
+            //p.ext().calculateObservations(timefilteredObservations);
+            timefilteredObservations.forEach(o -> {
+                CollectionHelper.incInteger(measCountStats, o.getDate().format(measCountStatsDateTimeFormatter));
+            });
+        });
+
+        getTimeFilteredItems().setAll(timeFilteredItems);
     }
 
     @Override

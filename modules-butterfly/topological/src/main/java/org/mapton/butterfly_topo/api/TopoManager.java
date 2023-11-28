@@ -58,30 +58,23 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
     }
 
     @Override
-    public void initObjectToItemMap() {
-        for (var item : getAllItems()) {
-            getAllItemsMap().put(item.getName(), item);
-        }
-    }
-
-    @Override
     public void load(Butterfly butterfly) {
         try {
             initAllItems(butterfly.topo().getControlPoints());
             initObjectToItemMap();
 
-            var nameToTopoControlPointObservations = new LinkedHashMap<String, ArrayList<BTopoControlPointObservation>>();
+            var nameToObservations = new LinkedHashMap<String, ArrayList<BTopoControlPointObservation>>();
             for (var o : butterfly.topo().getControlPointsObservations()) {
-                nameToTopoControlPointObservations.computeIfAbsent(o.getName(), k -> new ArrayList<>()).add(o);
+                nameToObservations.computeIfAbsent(o.getName(), k -> new ArrayList<>()).add(o);
             }
 
             for (var p : butterfly.topo().getControlPoints()) {
-                p.ext().setObservationsAllRaw(nameToTopoControlPointObservations.get(p.getName()));
-                p.ext().getObservationsAllRaw().forEach(o -> o.ext().setControlPoint(p));
+                p.ext().setObservationsAllRaw(nameToObservations.get(p.getName()));
+                p.ext().getObservationsAllRaw().forEach(o -> o.ext().setParent(p));
             }
 
             var dates = new TreeSet<>(getAllItems().stream()
-                    .map(o -> o.getDateLatest())
+                    .map(p -> p.getDateLatest())
                     .filter(d -> d != null)
                     .collect(Collectors.toSet()));
 
