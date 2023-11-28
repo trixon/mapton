@@ -40,7 +40,7 @@ import org.openide.windows.TopComponent;
 @ActionID(category = "Butterfly", id = "org.mapton.butterfly-tmo.vattenkemi.VattenkemiTopComponent")
 @ActionReferences({
     @ActionReference(path = "Shortcuts", name = "DO-V"),
-    @ActionReference(path = "Menu/MapTools/Butterfly/TMO", position = 1)
+    @ActionReference(path = "Menu/MapTools/Butterfly/TMO", position = 3)
 })
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_VattenkemiAction",

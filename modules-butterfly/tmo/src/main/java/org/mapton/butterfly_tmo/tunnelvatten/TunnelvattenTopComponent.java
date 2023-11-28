@@ -40,7 +40,7 @@ import org.openide.windows.TopComponent;
 @ActionID(category = "Butterfly", id = "org.mapton.butterfly-tmo.tunnelvatten.TunnelvattenTopComponent")
 @ActionReferences({
     @ActionReference(path = "Shortcuts", name = "DO-T"),
-    @ActionReference(path = "Menu/MapTools/Butterfly", position = 1)
+    @ActionReference(path = "Menu/MapTools/Butterfly/TMO", position = 3)
 })
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_TunnelvattenAction",

@@ -39,8 +39,8 @@ import org.openide.windows.TopComponent;
 @TopComponent.Registration(mode = "mapTools", openAtStartup = false)
 @ActionID(category = "Butterfly", id = "org.mapton.butterfly-tmo.infiltration.InfiltrationTopComponent")
 @ActionReferences({
-    @ActionReference(path = "Shortcuts", name = "DO-G"),
-    @ActionReference(path = "Menu/MapTools/Butterfly", position = 1)
+    @ActionReference(path = "Shortcuts", name = "DO-I"),
+    @ActionReference(path = "Menu/MapTools/Butterfly/TMO", position = 2)
 })
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_InfiltrationAction",

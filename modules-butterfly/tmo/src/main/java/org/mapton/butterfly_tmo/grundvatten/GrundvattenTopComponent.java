@@ -40,14 +40,14 @@ import org.openide.windows.TopComponent;
 @ActionID(category = "Butterfly", id = "org.mapton.butterfly-tmo.grundvatten.GrundvattenTopComponent")
 @ActionReferences({
     @ActionReference(path = "Shortcuts", name = "DO-G"),
-    @ActionReference(path = "Menu/MapTools/Butterfly", position = 1)
+    @ActionReference(path = "Menu/MapTools/Butterfly/TMO", position = 1)
 })
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_GrundvattenAction",
         preferredID = "GrundvattenTopComponent"
 )
 @Messages({
-    "CTL_GrundvattenAction=Groundwater"
+    "CTL_GrundvattenAction=Grundvatten"
 })
 public final class GrundvattenTopComponent extends MTopComponent {
 
