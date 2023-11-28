@@ -28,6 +28,7 @@ import org.mapton.butterfly_format.types.tmo.BGrundvatten;
 import org.mapton.butterfly_format.types.tmo.BInfiltration;
 import org.mapton.butterfly_format.types.tmo.BRorelse;
 import org.mapton.butterfly_format.types.tmo.BTunnelvatten;
+import org.mapton.butterfly_format.types.tmo.BVaderstation;
 import org.mapton.butterfly_format.types.tmo.BVattenkemi;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.topo.BTopoControlPointObservation;
@@ -115,6 +116,9 @@ public class Butterfly {
 
         new ImportFromCsv<BVattenkemi>(BVattenkemi.class) {
         }.load(new File(sourceDir, "tmoMatobjektVattenkemi.csv"), mTmo.getVattenkemi());
+
+        new ImportFromCsv<BVaderstation>(BVaderstation.class) {
+        }.load(new File(sourceDir, "tmoMatobjektVaderstation.csv"), mTmo.getVaderstation());
     }
 
     public void postLoad() {
@@ -166,6 +170,7 @@ public class Butterfly {
         private final ArrayList<BInfiltration> mInfiltration = new ArrayList<>();
         private final ArrayList<BRorelse> mRörelse = new ArrayList<>();
         private final ArrayList<BTunnelvatten> mTunnelvatten = new ArrayList<>();
+        private final ArrayList<BVaderstation> mVaderstation = new ArrayList<>();
         private final ArrayList<BVattenkemi> mVattenkemi = new ArrayList<>();
 
         public ArrayList<BGrundvatten> getGrundvatten() {
@@ -182,6 +187,10 @@ public class Butterfly {
 
         public ArrayList<BTunnelvatten> getTunnelvatten() {
             return mTunnelvatten;
+        }
+
+        public ArrayList<BVaderstation> getVaderstation() {
+            return mVaderstation;
         }
 
         public ArrayList<BVattenkemi> getVattenkemi() {

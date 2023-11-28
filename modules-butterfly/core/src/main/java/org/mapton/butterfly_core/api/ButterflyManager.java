@@ -69,6 +69,7 @@ public class ButterflyManager {
         calculateLatLonsTmo(butterfly.tmo().getInfiltration());
         calculateLatLonsTmo(butterfly.tmo().getRörelse());
         calculateLatLonsTmo(butterfly.tmo().getTunnelvatten());
+        calculateLatLonsTmo(butterfly.tmo().getVaderstation());
         calculateLatLonsTmo(butterfly.tmo().getVattenkemi());
 
         var areas = new ArrayList<MArea>();
