@@ -60,7 +60,14 @@ limitations under the License.
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-util</artifactId>
-            <version>${netbeans.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-modules</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-util-ui</artifactId>
         </dependency>
 
         <!--Mapton-->
@@ -78,21 +85,15 @@ limitations under the License.
         </dependency>
         <dependency>
             <groupId>org.mapton</groupId>
+            <artifactId>ce-jfreechart</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mapton</groupId>
             <artifactId>butterfly-format</artifactId>
         </dependency>
 
         <!--Trixon-->
 
         <!--Other-->
-        <dependency>
-            <groupId>org.netbeans.api</groupId>
-            <artifactId>org-openide-modules</artifactId>
-            <version>${netbeans.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.netbeans.api</groupId>
-            <artifactId>org-openide-util-ui</artifactId>
-            <version>${netbeans.version}</version>
-        </dependency>
     </dependencies>
 </project>

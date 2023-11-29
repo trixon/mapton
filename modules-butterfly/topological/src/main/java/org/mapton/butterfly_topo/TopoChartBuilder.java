@@ -216,7 +216,8 @@ public class TopoChartBuilder extends ChartBuilder<BTopoControlPoint> {
         }
     }
 
-    private void setTitle(BTopoControlPoint p) {
+    @Override
+    public void setTitle(BTopoControlPoint p) {
         mChart.setTitle(p.getName());
         Color color = TopoHelper.getAlarmColorAwt(p);
         if (color == Color.RED || color == Color.GREEN) {
@@ -261,7 +262,8 @@ public class TopoChartBuilder extends ChartBuilder<BTopoControlPoint> {
         mDeltaSubTextTitle.setText(rightTitle);
     }
 
-    private void updateDataset(BTopoControlPoint p) {
+    @Override
+    public void updateDataset(BTopoControlPoint p) {
         mDataset.removeAllSeries();
         mTimeSeriesN.clear();
         mTimeSeriesE.clear();

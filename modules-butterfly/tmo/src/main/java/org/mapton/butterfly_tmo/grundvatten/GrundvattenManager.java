@@ -35,6 +35,7 @@ import se.trixon.almond.util.CollectionHelper;
 public class GrundvattenManager extends BaseManager<BGrundvatten> {
 
     private final GrundvattenPropertiesBuilder mPropertiesBuilder = new GrundvattenPropertiesBuilder();
+    private final GrundvattenChartBuilder mChartBuilder = new GrundvattenChartBuilder();
 
     public static GrundvattenManager getInstance() {
         return Holder.INSTANCE;
@@ -42,6 +43,11 @@ public class GrundvattenManager extends BaseManager<BGrundvatten> {
 
     private GrundvattenManager() {
         super(BGrundvatten.class);
+    }
+
+    @Override
+    public Object getObjectChart(BGrundvatten selectedObject) {
+        return mChartBuilder.build(selectedObject);
     }
 
     @Override
