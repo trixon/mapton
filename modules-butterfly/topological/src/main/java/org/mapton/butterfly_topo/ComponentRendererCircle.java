@@ -41,7 +41,7 @@ public class ComponentRendererCircle extends ComponentRendererBase {
     }
 
     private void plot1dCircle(BTopoControlPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
-        if (isPlotLimitReached(ComponentRendererItem.CIRCLE_1D, position)) {
+        if (isPlotLimitReached(p.getName(), ComponentRendererItem.CIRCLE_1D, position)) {
             return;
         }
 

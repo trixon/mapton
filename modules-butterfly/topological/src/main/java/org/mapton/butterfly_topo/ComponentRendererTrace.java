@@ -52,7 +52,7 @@ public class ComponentRendererTrace extends ComponentRendererBase {
     }
 
     private void plot1d(BTopoControlPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
-        if (isPlotLimitReached(ComponentRendererItem.TRACE_1D, position)) {
+        if (isPlotLimitReached(p.getName(), ComponentRendererItem.TRACE_1D, position)) {
             return;
         }
         var reversedList = p.ext().getObservationsTimeFiltered().reversed();

@@ -25,7 +25,9 @@ import gov.nasa.worldwind.render.Path;
 import gov.nasa.worldwind.render.Renderable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import org.apache.commons.lang3.ObjectUtils;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.MOptions;
@@ -45,6 +47,7 @@ public abstract class ComponentRendererBase {
     protected static ArrayList<AVListImpl> sMapObjects;
     protected static final Map<String, Integer> sObjectCounter = new HashMap<>();
     protected static HashMap<BTopoControlPoint, Position[]> sPointToPositionMap = new HashMap<>();
+    private static final Set<Object> sAllowList = new HashSet();
     protected final TopoAttributeManager mAttributeManager = TopoAttributeManager.getInstance();
 
     public void addRenderable(Renderable renderable, boolean interactiveLayer) {
@@ -56,6 +59,10 @@ public abstract class ComponentRendererBase {
         } else {
             //mLayerXYZ.addRenderable(renderable); //TODO Add to a non responsive layer
         }
+    }
+
+    public void addToAllowList(String name) {
+        sAllowList.add(name);
     }
 
     public boolean isValidFor3dPlot(BTopoControlPoint p) {
@@ -108,9 +115,12 @@ public abstract class ComponentRendererBase {
         CollectionHelper.incInteger(sObjectCounter, rendererItem.name());
     }
 
-    protected boolean isPlotLimitReached(ComponentRendererItem rendererItem, Position position) {
+    protected boolean isPlotLimitReached(String name, ComponentRendererItem rendererItem, Position position) {
         var count = sObjectCounter.getOrDefault(rendererItem.name(), 0);
         boolean limitReached = count > rendererItem.getPlotLimit();
+        if (limitReached && sAllowList.contains(name)) {
+            limitReached = false;
+        }
 
         if (limitReached) {
             //plot skip indicator
@@ -119,6 +129,7 @@ public abstract class ComponentRendererBase {
             var altitude = radii * 2;
             var p = WWHelper.positionFromPosition(position, altitude);
             var angle = Angle.fromDegrees(45);
+            //TODO Fix rotated position
             var box = new Box(p, radii, radii, radii, angle, angle, angle);
             box.setAttributes(mAttributeManager.getSkipPlotAttribute());
             addRenderable(box, true);
