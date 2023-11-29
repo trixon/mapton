@@ -92,7 +92,7 @@ public class GrundvattenAttributeManager {
             mPinAttributes = new PointPlacemarkAttributes();
             mPinAttributes.setScale(0.75);
             mPinAttributes.setImageAddress("images/pushpins/plain-white.png");
-            mPinAttributes.setImageColor(Color.ORANGE);
+            mPinAttributes.setImageColor(Color.BLUE.brighter());
         }
 
         return mPinAttributes;

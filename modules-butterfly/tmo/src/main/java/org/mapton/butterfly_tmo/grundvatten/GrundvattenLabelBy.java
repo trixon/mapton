@@ -18,34 +18,57 @@ package org.mapton.butterfly_tmo.grundvatten;
 import java.util.Objects;
 import java.util.function.Function;
 import org.apache.commons.lang3.StringUtils;
+import org.mapton.butterfly_core.api.LabelByCategories;
 import org.mapton.butterfly_format.types.tmo.BGrundvatten;
 import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.SDict;
 
 /**
  *
  * @author Patrik Karlström
  */
 public enum GrundvattenLabelBy {
-    NAME(Strings.CAT_ROOT, Dict.NAME.toString(), p -> {
+    NAME(LabelByCategories.ROOT, Dict.NAME.toString(), p -> {
         return p.getName();
     }),
-    NONE(Strings.CAT_ROOT, Dict.NONE.toString(), p -> {
+    NONE(LabelByCategories.ROOT, Dict.NONE.toString(), p -> {
         return "";
     }),
-    MISC_DATE(Strings.CAT_MISC, Dict.DATE.toString(), p -> {
+    DATE_LATEST(LabelByCategories.DATE, SDict.LATEST.toString(), p -> {
+        var date = p.ext().getObservationFilteredLastDate();
+//        var date = p.getDateLatest();
+
+        return date == null ? "-" : date.toString();
+    }),
+    //    DATE_ZERO(LabelByCategories.DATE, SDict.ZERO.toString(), p -> {
+    //        var date = p.getDateZero();
+    //
+    //        return date == null ? "-" : date.toString();
+    //    }),
+    DATE_FIRST(LabelByCategories.DATE, Dict.FIRST.toString(), p -> {
+//        try {
+//            return p.ext().getObservationsTimeFiltered().getFirst().getDate().toLocalDate().toString();
+//        } catch (Exception e) {
+//            return "-";
+//        }
+        var date = p.ext().getObservationFilteredFirstDate();
+
+        return date == null ? "-" : date.toString();
+    }),
+    MISC_DATE(LabelByCategories.MISC, Dict.DATE.toString(), p -> {
         var date = Objects.toString(DateHelper.toDateString(p.getInstallationsdatum()), "-");
 
         return date;
     }),
-    MISC_AGE(Strings.CAT_MISC, Dict.AGE.toString(), p -> {
+    MISC_AGE(LabelByCategories.MISC, Dict.AGE.toString(), p -> {
         return "?";
 //        return String.valueOf(p.ext().getAge(ChronoUnit.DAYS));
     }),
-    MISC_GROUP(Strings.CAT_MISC, Dict.GROUP.toString(), p -> {
+    MISC_GROUP(LabelByCategories.MISC, Dict.GROUP.toString(), p -> {
         return Objects.toString(p.getGroup(), "NODATA");
     }),
-    MISC_Z(Strings.CAT_MISC, "Z", p -> {
+    MISC_Z(LabelByCategories.MISC, "Z", p -> {
         return "?";
 //        return MathHelper.convertDoubleToString(p.getZ(), 1);
     });
@@ -80,9 +103,6 @@ public enum GrundvattenLabelBy {
     }
 
     private class Strings {
-
-        public static final String CAT_MISC = Dict.MISCELLANEOUS.toString();
-        public static final String CAT_ROOT = "";
 
     }
 }

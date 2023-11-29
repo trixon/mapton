@@ -170,7 +170,7 @@ public class TopoAttributeManager {
                     }
                     attrs.setInteriorMaterial(material);
                     attrs.setEnableLighting(true);
-                    attrs.setInteriorOpacity(0.75);
+                    attrs.setInteriorOpacity(0.95);
 
                     if (j == 1) {
                         attrs.setDrawOutline(true);

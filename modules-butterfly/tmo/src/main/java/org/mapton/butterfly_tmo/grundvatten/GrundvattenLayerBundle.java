@@ -115,19 +115,21 @@ public class GrundvattenLayerBundle extends BfLayerBundle {
             if (!mLayer.isEnabled()) {
                 return;
             }
+
             var pointBy = mOptionsView.getPointBy();
-//            switch (pointBy) {
-//                case NONE -> {
-//                    mPinLayer.setEnabled(false);
-//                    mSymbolLayer.setEnabled(false);
-//                }
-//                case PIN -> {
-//                    mSymbolLayer.setEnabled(false);
-//                    mPinLayer.setEnabled(true);
-//                }
-//                default ->
-//                    throw new AssertionError();
-//            }
+
+            switch (pointBy) {
+                case NONE -> {
+                    mPinLayer.setEnabled(false);
+                    mSymbolLayer.setEnabled(false);
+                }
+                case PIN -> {
+                    mSymbolLayer.setEnabled(false);
+                    mPinLayer.setEnabled(true);
+                }
+                default ->
+                    throw new AssertionError();
+            }
 
             for (var p : new ArrayList<>(mManager.getTimeFilteredItems())) {
                 if (ObjectUtils.allNotNull(p.getLat(), p.getLon())) {
@@ -166,11 +168,11 @@ public class GrundvattenLayerBundle extends BfLayerBundle {
 
         String label;
         try {
-//            label = mOptionsView.getLabelBy().getLabel(p);
+            label = mOptionsView.getLabelBy().getLabel(p);
         } catch (Exception e) {
             label = "ERROR %s <<<<<<<<".formatted(p.getName());
         }
-        label = p.getBenämning();
+
         var placemark = new PointPlacemark(position);
         placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
         placemark.setAttributes(mAttributeManager.getLabelPlacemarkAttributes());
