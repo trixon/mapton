@@ -24,6 +24,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import org.apache.commons.lang3.ObjectUtils;
+import org.mapton.butterfly_core.api.PlotLimiter;
 import org.mapton.butterfly_format.types.tmo.BGrundvatten;
 import org.mapton.worldwind.api.WWHelper;
 
@@ -33,17 +34,20 @@ import org.mapton.worldwind.api.WWHelper;
  */
 public class ComponentRenderer {
 
+    private static final String KEY_TIME_SERIES = "timeSeries";
+
     private final GrundvattenAttributeManager mAttributeManager = GrundvattenAttributeManager.getInstance();
     private final RenderableLayer mEllipsoidLayer;
-    private ArrayList<AVListImpl> mMapObjects;
     private final RenderableLayer mGroundConnectorLayer;
+    private ArrayList<AVListImpl> mMapObjects;
+    private final PlotLimiter mPlotLimiter = new PlotLimiter();
     private final RenderableLayer mSurfaceLayer;
-    int limit = 0;
 
     public ComponentRenderer(RenderableLayer ellipsoidLayer, RenderableLayer groundConnectorLayer, RenderableLayer surfaceLayer) {
         mEllipsoidLayer = ellipsoidLayer;
         mGroundConnectorLayer = groundConnectorLayer;
         mSurfaceLayer = surfaceLayer;
+        mPlotLimiter.setLimit(KEY_TIME_SERIES, 10000);
     }
 
     public void addRenderable(RenderableLayer layer, Renderable renderable) {
@@ -59,13 +63,9 @@ public class ComponentRenderer {
 
     public void plot(BGrundvatten p, Position position, ArrayList<AVListImpl> mapObjects) {
         mMapObjects = mapObjects;
-        if (limit > 1000) {
-//            return;
+        if (isPlotLimitReached(KEY_TIME_SERIES, p.getName(), position)) {
+            return;
         }
-        limit++;
-//        if (isPlotLimitReached(p.getName(), ComponentRendererItem.TRACE_1D, position)) {
-//            return;
-//        }
         var reversedList = p.ext().getObservationsTimeFiltered().reversed();
         var prevDate = LocalDateTime.now();
         var altitude = 0.0;
@@ -75,7 +75,7 @@ public class ComponentRenderer {
             var o = reversedList.get(i);
 
             if (ChronoUnit.DAYS.between(o.getDate(), prevDate) < 100) {
-                continue;
+//                continue;
             }
 
             var timeSpan = ChronoUnit.MINUTES.between(o.getDate(), prevDate);
@@ -93,11 +93,8 @@ public class ComponentRenderer {
 
             var dZ = p.getReferensnivå() - o.getNivå();
             var radius = Math.min(maxRadius, Math.abs(dZ) * 1 + 0.05);
-            var maximus = radius == maxRadius;
 
             var cylinder = new Cylinder(pos, height, radius);
-//            var alarmLevel = p.ext().getAlarmLevelHeight(o);
-            var rise = Math.signum(dZ) > 0;
             var attrs = mAttributeManager.getTimeSeriesAttributes(p);
 
 //            if (i == 0 && ChronoUnit.DAYS.between(o.getDate(), LocalDateTime.now()) > 180) {
@@ -107,12 +104,25 @@ public class ComponentRenderer {
 //            }
             cylinder.setAttributes(attrs);
             addRenderable(mEllipsoidLayer, cylinder);
-//            incPlotCounter(ComponentRendererItem.TRACE_1D);
+            mPlotLimiter.incPlotCounter(KEY_TIME_SERIES);
         }
-
     }
 
     public void reset() {
+        mPlotLimiter.reset();
+    }
+
+    public void addToAllowList(String name) {
+        mPlotLimiter.addToAllowList(name);
+    }
+
+    private boolean isPlotLimitReached(Object key, String allowListKey, Position position) {
+        if (mPlotLimiter.isLimitReached(key, allowListKey)) {
+            addRenderable(mEllipsoidLayer, mPlotLimiter.getPlotLimitIndicator(position));
+            return true;
+        } else {
+            return false;
+        }
     }
 
 }

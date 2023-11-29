@@ -107,8 +107,8 @@ public abstract class ComponentRendererBase {
         });
     }
 
-    protected boolean isPlotLimitReached(String name, ComponentRendererItem rendererItem, Position position) {
-        if (sPlotLimiter.isLimitReached(rendererItem, name)) {
+    protected boolean isPlotLimitReached(Object key, String allowListKey, Position position) {
+        if (sPlotLimiter.isLimitReached(key, allowListKey)) {
             addRenderable(sPlotLimiter.getPlotLimitIndicator(position), true);
             return true;
         } else {

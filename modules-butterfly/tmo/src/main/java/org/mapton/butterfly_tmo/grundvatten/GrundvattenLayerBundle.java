@@ -155,6 +155,8 @@ public class GrundvattenLayerBundle extends BfLayerBundle {
 
                     var leftDoubleClickRunnable = (Runnable) () -> {
                         Almond.openAndActivateTopComponent((String) mLayer.getValue(WWHelper.KEY_FAST_OPEN));
+                        mComponentRenderer.addToAllowList(p.getName());
+                        repaint();
                     };
 
                     mapObjects.stream().filter(r -> r != null).forEach(r -> {
