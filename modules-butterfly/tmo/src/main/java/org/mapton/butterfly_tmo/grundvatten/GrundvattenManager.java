@@ -66,7 +66,8 @@ public class GrundvattenManager extends BaseManager<BGrundvatten> {
 
                 var grundvattenObservations = p.ext().getObservationsAllRaw();
                 if (!grundvattenObservations.isEmpty()) {
-                    p.ext().setDataLatest(grundvattenObservations.getFirst().getDate());
+                    p.ext().setDateFirst(grundvattenObservations.getFirst().getDate());
+                    p.ext().setDateLatest(grundvattenObservations.getLast().getDate());
                 }
             }
 

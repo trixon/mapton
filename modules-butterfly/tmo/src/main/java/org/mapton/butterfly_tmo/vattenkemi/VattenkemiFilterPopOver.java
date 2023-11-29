@@ -107,8 +107,8 @@ public class VattenkemiFilterPopOver extends BaseFilterPopOver {
 
     private void initSession() {
         var sessionManager = getSessionManager();
-        sessionManager.register("filter.freeText", mFilter.freeTextProperty());
-        sessionManager.register("filter.checkedGroup", mGroupCheckModelSession.checkedStringProperty());
+        sessionManager.register("filter.vattenkemi.freeText", mFilter.freeTextProperty());
+        sessionManager.register("filter.vattenkemi.checkedGroup", mGroupCheckModelSession.checkedStringProperty());
 
     }
 

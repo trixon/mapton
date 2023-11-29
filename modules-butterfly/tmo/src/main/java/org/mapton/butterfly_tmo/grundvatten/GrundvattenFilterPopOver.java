@@ -107,8 +107,8 @@ public class GrundvattenFilterPopOver extends BaseFilterPopOver {
 
     private void initSession() {
         var sessionManager = getSessionManager();
-        sessionManager.register("filter.freeText", mFilter.freeTextProperty());
-        sessionManager.register("filter.checkedGroup", mGroupCheckModelSession.checkedStringProperty());
+        sessionManager.register("filter.grundvatten.freeText", mFilter.freeTextProperty());
+        sessionManager.register("filter.grundvatten.checkedGroup", mGroupCheckModelSession.checkedStringProperty());
 
     }
 

@@ -107,8 +107,8 @@ public class VaderstationFilterPopOver extends BaseFilterPopOver {
 
     private void initSession() {
         var sessionManager = getSessionManager();
-        sessionManager.register("filter.freeText", mFilter.freeTextProperty());
-        sessionManager.register("filter.checkedGroup", mGroupCheckModelSession.checkedStringProperty());
+        sessionManager.register("filter.vaderstation.freeText", mFilter.freeTextProperty());
+        sessionManager.register("filter.vaderstation.checkedGroup", mGroupCheckModelSession.checkedStringProperty());
 
     }
 

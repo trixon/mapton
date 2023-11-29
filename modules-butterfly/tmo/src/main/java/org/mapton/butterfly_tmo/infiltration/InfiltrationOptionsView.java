@@ -95,8 +95,8 @@ public class InfiltrationOptionsView extends MOptionsView<InfiltrationLayerBundl
 
     private void initSession() {
         var sessionManager = getSessionManager();
-        sessionManager.register("options.pointBy", mPointSelectionModelSession.selectedIndexProperty());
-        sessionManager.register("options.labelBy", mLabelByIdProperty);
+        sessionManager.register("options.infiltration.pointBy", mPointSelectionModelSession.selectedIndexProperty());
+        sessionManager.register("options.infiltration.labelBy", mLabelByIdProperty);
 
         mLabelByProperty.set(InfiltrationLabelBy.valueOf(mLabelByIdProperty.get()));
     }

@@ -106,6 +106,10 @@ public class GrundvattenLayerBundle extends BfLayerBundle {
         mOptionsView.labelByProperty().addListener((p, o, n) -> {
             repaint();
         });
+
+        mOptionsView.timeSeriesProperty().addListener((p, o, n) -> {
+            repaint();
+        });
     }
 
     private void initRepaint() {
@@ -139,9 +143,12 @@ public class GrundvattenLayerBundle extends BfLayerBundle {
                     var mapObjects = new ArrayList<AVListImpl>();
 
                     mapObjects.add(labelPlacemark);
-                    mapObjects.add(plotPin(position, labelPlacemark));
+                    mapObjects.add(plotPin(p, position, labelPlacemark));
 
-//                    mComponentRenderer.plot(p, position, mapObjects);
+                    if (mOptionsView.timeSeriesProperty().get()) {
+                        mComponentRenderer.plot(p, position, mapObjects);
+                    }
+
                     var leftClickRunnable = (Runnable) () -> {
                         mManager.setSelectedItemAfterReset(p);
                     };
@@ -183,8 +190,8 @@ public class GrundvattenLayerBundle extends BfLayerBundle {
         return placemark;
     }
 
-    private PointPlacemark plotPin(Position position, PointPlacemark labelPlacemark) {
-        var attrs = mAttributeManager.getPinAttributes();
+    private PointPlacemark plotPin(BGrundvatten grundvatten, Position position, PointPlacemark labelPlacemark) {
+        var attrs = mAttributeManager.getPinAttributes(grundvatten);
 
         var placemark = new PointPlacemark(position);
         placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);

@@ -95,8 +95,8 @@ public class TunnelvattenOptionsView extends MOptionsView<TunnelvattenLayerBundl
 
     private void initSession() {
         var sessionManager = getSessionManager();
-        sessionManager.register("options.pointBy", mPointSelectionModelSession.selectedIndexProperty());
-        sessionManager.register("options.labelBy", mLabelByIdProperty);
+        sessionManager.register("options.tunnelvatten.pointBy", mPointSelectionModelSession.selectedIndexProperty());
+        sessionManager.register("options.tunnelvatten.labelBy", mLabelByIdProperty);
 
         mLabelByProperty.set(TunnelvattenLabelBy.valueOf(mLabelByIdProperty.get()));
     }

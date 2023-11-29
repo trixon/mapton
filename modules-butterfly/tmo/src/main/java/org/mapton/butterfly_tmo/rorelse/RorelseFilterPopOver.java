@@ -107,8 +107,8 @@ public class RorelseFilterPopOver extends BaseFilterPopOver {
 
     private void initSession() {
         var sessionManager = getSessionManager();
-        sessionManager.register("filter.freeText", mFilter.freeTextProperty());
-        sessionManager.register("filter.checkedGroup", mGroupCheckModelSession.checkedStringProperty());
+        sessionManager.register("filter.rorelse.freeText", mFilter.freeTextProperty());
+        sessionManager.register("filter.rorelse.checkedGroup", mGroupCheckModelSession.checkedStringProperty());
 
     }
 

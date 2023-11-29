@@ -15,12 +15,10 @@
  */
 package org.mapton.butterfly_tmo.grundvatten;
 
-import java.util.Objects;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.layout.VBox;
 import org.mapton.butterfly_format.types.tmo.BGrundvatten;
-import se.trixon.almond.util.DateHelper;
 
 /**
  *
@@ -30,7 +28,7 @@ class GrundvattenListCell extends ListCell<BGrundvatten> {
 
     private final Label mDateLabel = new Label();
     private final Label mNameLabel = new Label();
-    private final Label mGroupLabel = new Label();
+    private final Label mMagasinLabel = new Label();
     private final String mStyleBold = "-fx-font-weight: bold;";
     private VBox mVBox;
 
@@ -50,10 +48,16 @@ class GrundvattenListCell extends ListCell<BGrundvatten> {
 
     private void addContent(BGrundvatten grundvatten) {
         setText(null);
-        var date = Objects.toString(DateHelper.toDateString(grundvatten.getInstallationsdatum()), "-");
-        mNameLabel.setText(grundvatten.getName());
-        mDateLabel.setText("%s %s".formatted(date, grundvatten.getComment()));
-        mGroupLabel.setText(grundvatten.getGroup());
+        var date = "-";
+        try {
+            date = GrundvattenHelper.getLevelAndDate(grundvatten.ext().getObservationRawLast());
+        } catch (Exception e) {
+            //nvm
+        }
+
+        mNameLabel.setText("%s [%s]".formatted(grundvatten.getName(), grundvatten.getStatus()));
+        mMagasinLabel.setText(grundvatten.getGrundvattenmagasin());
+        mDateLabel.setText(date);
         setGraphic(mVBox);
     }
 
@@ -66,8 +70,8 @@ class GrundvattenListCell extends ListCell<BGrundvatten> {
         mNameLabel.setStyle(mStyleBold);
         mVBox = new VBox(
                 mNameLabel,
-                mDateLabel,
-                mGroupLabel
+                mMagasinLabel,
+                mDateLabel
         );
     }
 

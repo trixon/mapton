@@ -95,8 +95,8 @@ public class VattenkemiOptionsView extends MOptionsView<VattenkemiLayerBundle> {
 
     private void initSession() {
         var sessionManager = getSessionManager();
-        sessionManager.register("options.pointBy", mPointSelectionModelSession.selectedIndexProperty());
-        sessionManager.register("options.labelBy", mLabelByIdProperty);
+        sessionManager.register("options.vattenkemi.pointBy", mPointSelectionModelSession.selectedIndexProperty());
+        sessionManager.register("options.vattenkemi.labelBy", mLabelByIdProperty);
 
         mLabelByProperty.set(VattenkemiLabelBy.valueOf(mLabelByIdProperty.get()));
     }

@@ -95,8 +95,8 @@ public class RorelseOptionsView extends MOptionsView<RorelseLayerBundle> {
 
     private void initSession() {
         var sessionManager = getSessionManager();
-        sessionManager.register("options.pointBy", mPointSelectionModelSession.selectedIndexProperty());
-        sessionManager.register("options.labelBy", mLabelByIdProperty);
+        sessionManager.register("options.rorelse.pointBy", mPointSelectionModelSession.selectedIndexProperty());
+        sessionManager.register("options.rorelse.labelBy", mLabelByIdProperty);
 
         mLabelByProperty.set(RorelseLabelBy.valueOf(mLabelByIdProperty.get()));
     }

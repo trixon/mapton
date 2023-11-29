@@ -16,8 +16,10 @@
 package org.mapton.butterfly_tmo.grundvatten;
 
 import java.util.LinkedHashMap;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
@@ -42,6 +44,7 @@ public class GrundvattenOptionsView extends MOptionsView<GrundvattenLayerBundle>
     private final MenuButton mLabelMenuButton = new MenuButton();
     private final ComboBox<PointBy> mPointComboBox = new ComboBox<>();
     private final SelectionModelSession mPointSelectionModelSession = new SelectionModelSession(mPointComboBox.getSelectionModel());
+    private final CheckBox mTimeSeriesCheckBox = new CheckBox("Tidsserie");
 
     public GrundvattenOptionsView(GrundvattenLayerBundle layerBundle) {
         super(layerBundle);
@@ -56,6 +59,10 @@ public class GrundvattenOptionsView extends MOptionsView<GrundvattenLayerBundle>
 
     public PointBy getPointBy() {
         return mPointComboBox.valueProperty().get();
+    }
+
+    public BooleanProperty timeSeriesProperty() {
+        return mTimeSeriesCheckBox.selectedProperty();
     }
 
     public SimpleObjectProperty<GrundvattenLabelBy> labelByProperty() {
@@ -75,7 +82,8 @@ public class GrundvattenOptionsView extends MOptionsView<GrundvattenLayerBundle>
                 pointLabel,
                 mPointComboBox,
                 labelLabel,
-                mLabelMenuButton
+                mLabelMenuButton,
+                mTimeSeriesCheckBox
         );
         box.setPadding(FxHelper.getUIScaledInsets(8));
 
@@ -95,8 +103,9 @@ public class GrundvattenOptionsView extends MOptionsView<GrundvattenLayerBundle>
 
     private void initSession() {
         var sessionManager = getSessionManager();
-        sessionManager.register("options.pointBy", mPointSelectionModelSession.selectedIndexProperty());
-        sessionManager.register("options.labelBy", mLabelByIdProperty);
+        sessionManager.register("options.grundvatten.pointBy", mPointSelectionModelSession.selectedIndexProperty());
+        sessionManager.register("options.grundvatten.labelBy", mLabelByIdProperty);
+        sessionManager.register("options.grundvatten.timeSeries", timeSeriesProperty());
 
         mLabelByProperty.set(GrundvattenLabelBy.valueOf(mLabelByIdProperty.get()));
     }

@@ -19,6 +19,7 @@ import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
 import java.awt.Color;
+import org.mapton.butterfly_format.types.tmo.BGrundvatten;
 import se.trixon.almond.util.GraphicsHelper;
 
 /**
@@ -27,28 +28,17 @@ import se.trixon.almond.util.GraphicsHelper;
  */
 public class GrundvattenAttributeManager {
 
-    private BasicShapeAttributes mComponentEllipsoidAttributes;
     private BasicShapeAttributes mComponentGroundPathAttributes;
-    private BasicShapeAttributes mSurfaceAttributes;
     private PointPlacemarkAttributes mLabelPlacemarkAttributes;
     private PointPlacemarkAttributes mPinAttributes;
+    private BasicShapeAttributes mSurfaceAttributes;
+    private BasicShapeAttributes mTimeSeriesAttributes;
 
     public static GrundvattenAttributeManager getInstance() {
         return Holder.INSTANCE;
     }
 
     private GrundvattenAttributeManager() {
-    }
-
-    public BasicShapeAttributes getComponentEllipsoidAttributes() {
-        if (mComponentEllipsoidAttributes == null) {
-            mComponentEllipsoidAttributes = new BasicShapeAttributes();
-            mComponentEllipsoidAttributes.setDrawOutline(false);
-            mComponentEllipsoidAttributes.setInteriorMaterial(Material.ORANGE);
-            mComponentEllipsoidAttributes.setEnableLighting(true);
-        }
-
-        return mComponentEllipsoidAttributes;
     }
 
     public BasicShapeAttributes getComponentGroundPathAttributes() {
@@ -63,18 +53,6 @@ public class GrundvattenAttributeManager {
         return mComponentGroundPathAttributes;
     }
 
-    public BasicShapeAttributes getSurfaceAttributes() {
-        if (mSurfaceAttributes == null) {
-            mSurfaceAttributes = new BasicShapeAttributes();
-            mSurfaceAttributes.setDrawOutline(false);
-            mSurfaceAttributes.setDrawInterior(true);
-            mSurfaceAttributes.setInteriorMaterial(Material.RED);
-            mSurfaceAttributes.setEnableLighting(false);
-        }
-
-        return mSurfaceAttributes;
-    }
-
     public PointPlacemarkAttributes getLabelPlacemarkAttributes() {
         if (mLabelPlacemarkAttributes == null) {
             mLabelPlacemarkAttributes = new PointPlacemarkAttributes();
@@ -87,7 +65,7 @@ public class GrundvattenAttributeManager {
         return mLabelPlacemarkAttributes;
     }
 
-    public PointPlacemarkAttributes getPinAttributes() {
+    public PointPlacemarkAttributes getPinAttributes(BGrundvatten grundvatten) {
         if (mPinAttributes == null) {
             mPinAttributes = new PointPlacemarkAttributes();
             mPinAttributes.setScale(0.75);
@@ -95,7 +73,70 @@ public class GrundvattenAttributeManager {
             mPinAttributes.setImageColor(Color.BLUE.brighter());
         }
 
-        return mPinAttributes;
+        var attrs = new PointPlacemarkAttributes(mPinAttributes);
+        attrs.setImageColor(getColor(grundvatten));
+
+        return attrs;
+    }
+
+    public BasicShapeAttributes getSurfaceAttributes() {
+        if (mSurfaceAttributes == null) {
+            mSurfaceAttributes = new BasicShapeAttributes();
+            mSurfaceAttributes.setDrawOutline(false);
+            mSurfaceAttributes.setDrawInterior(true);
+            mSurfaceAttributes.setInteriorMaterial(Material.RED);
+            mSurfaceAttributes.setEnableLighting(false);
+        }
+
+        return mSurfaceAttributes;
+    }
+
+    private Color getColor(BGrundvatten grundvatten) {
+        switch (grundvatten.getGrundvattenmagasin()) {
+            case "Övre" -> {
+                return Color.BLUE;
+            }
+            case "Undre" -> {
+                return Color.BLUE.brighter();
+            }
+            case "Mellan" -> {
+                return Color.decode("#87cefa");
+            }
+            case "Sjönivå" -> {
+                return Color.decode("#000080");
+            }
+            case "Portryck" -> {
+                return Color.decode("#126180");
+            }
+            case "Osäkert" -> {
+                return Color.decode("#ff0000");
+            }
+            case "Energibrunn" -> {
+                return Color.decode("#0fc0fc");
+            }
+            case "Berg" -> {
+                return Color.decode("#e7feff");
+            }
+
+            default -> {
+                return Color.GRAY;
+            }
+        }
+
+    }
+
+    public BasicShapeAttributes getTimeSeriesAttributes(BGrundvatten grundvatten) {
+        if (mTimeSeriesAttributes == null) {
+            mTimeSeriesAttributes = new BasicShapeAttributes();
+            mTimeSeriesAttributes.setDrawOutline(false);
+            mTimeSeriesAttributes.setInteriorMaterial(Material.BLUE);
+            mTimeSeriesAttributes.setEnableLighting(true);
+        }
+
+        var attrs = new BasicShapeAttributes(mTimeSeriesAttributes);
+        attrs.setInteriorMaterial(new Material(getColor(grundvatten)));
+
+        return attrs;
     }
 
     private static class Holder {

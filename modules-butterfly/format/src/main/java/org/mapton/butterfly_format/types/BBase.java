@@ -40,6 +40,7 @@ public abstract class BBase {
 
     public abstract class Ext<T extends BBasePointObservation> {
 
+        private LocalDateTime mDateFirst;
         private LocalDateTime mDateLatest;
         private transient LinkedHashMap<String, Integer> measuremenCountStats = new LinkedHashMap<>();
         private transient ArrayList<T> observationsAllCalculated;
@@ -47,8 +48,20 @@ public abstract class BBase {
         private transient ArrayList<T> observationsTimeFiltered;
         private transient final HashMap<Object, Object> values = new HashMap<>();
 
+        public LocalDateTime getDateFirst() {
+            return mDateFirst;
+        }
+
+        public String getDateFirstAsString() {
+            return mDateFirst != null ? mDateFirst.toString() : "-";
+        }
+
         public LocalDateTime getDateLatest() {
             return mDateLatest;
+        }
+
+        public String getDateLatestAsString() {
+            return mDateLatest != null ? mDateLatest.toString() : "-";
         }
 
         public LinkedHashMap<String, Integer> getMeasurementCountStats() {
@@ -163,8 +176,12 @@ public abstract class BBase {
             return values;
         }
 
-        public void setDataLatest(LocalDateTime dateTime) {
+        public void setDateLatest(LocalDateTime dateTime) {
             mDateLatest = dateTime;
+        }
+
+        public void setDateFirst(LocalDateTime dateFirst) {
+            mDateFirst = dateFirst;
         }
 
         public void setMeasurementCountStats(LinkedHashMap<String, Integer> measuremenCountStats) {

@@ -107,8 +107,8 @@ public class InfiltrationFilterPopOver extends BaseFilterPopOver {
 
     private void initSession() {
         var sessionManager = getSessionManager();
-        sessionManager.register("filter.freeText", mFilter.freeTextProperty());
-        sessionManager.register("filter.checkedGroup", mGroupCheckModelSession.checkedStringProperty());
+        sessionManager.register("filter.infiltration.freeText", mFilter.freeTextProperty());
+        sessionManager.register("filter.infiltration.checkedGroup", mGroupCheckModelSession.checkedStringProperty());
 
     }
 

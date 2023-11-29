@@ -95,8 +95,8 @@ public class VaderstationOptionsView extends MOptionsView<VaderstationLayerBundl
 
     private void initSession() {
         var sessionManager = getSessionManager();
-        sessionManager.register("options.pointBy", mPointSelectionModelSession.selectedIndexProperty());
-        sessionManager.register("options.labelBy", mLabelByIdProperty);
+        sessionManager.register("options.vaderstation.pointBy", mPointSelectionModelSession.selectedIndexProperty());
+        sessionManager.register("options.vaderstation.labelBy", mLabelByIdProperty);
 
         mLabelByProperty.set(VaderstationLabelBy.valueOf(mLabelByIdProperty.get()));
     }

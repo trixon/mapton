@@ -18,14 +18,12 @@ package org.mapton.butterfly_tmo.grundvatten;
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
-import gov.nasa.worldwind.render.BasicShapeAttributes;
-import gov.nasa.worldwind.render.Ellipsoid;
-import gov.nasa.worldwind.render.Path;
+import gov.nasa.worldwind.render.Cylinder;
 import gov.nasa.worldwind.render.Renderable;
-import gov.nasa.worldwind.render.SurfaceCircle;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.butterfly_format.types.tmo.BGrundvatten;
 import org.mapton.worldwind.api.WWHelper;
 
@@ -40,6 +38,7 @@ public class ComponentRenderer {
     private ArrayList<AVListImpl> mMapObjects;
     private final RenderableLayer mGroundConnectorLayer;
     private final RenderableLayer mSurfaceLayer;
+    int limit = 0;
 
     public ComponentRenderer(RenderableLayer ellipsoidLayer, RenderableLayer groundConnectorLayer, RenderableLayer surfaceLayer) {
         mEllipsoidLayer = ellipsoidLayer;
@@ -60,34 +59,57 @@ public class ComponentRenderer {
 
     public void plot(BGrundvatten p, Position position, ArrayList<AVListImpl> mapObjects) {
         mMapObjects = mapObjects;
-
-        var timeSpan = ChronoUnit.MINUTES.between(p.getInstallationsdatum(), LocalDateTime.now());
-        var altitude = timeSpan / 24000.0;
-        var startPosition = WWHelper.positionFromPosition(position, 0.0);
-        var endPosition = WWHelper.positionFromPosition(position, altitude);
-        var radius = 1.2;
-        var endEllipsoid = new Ellipsoid(endPosition, radius, radius, radius);
-        endEllipsoid.setAttributes(mAttributeManager.getComponentEllipsoidAttributes());
-        addRenderable(mEllipsoidLayer, endEllipsoid);
-
-        var groundPath = new Path(startPosition, endPosition);
-        groundPath.setAttributes(mAttributeManager.getComponentGroundPathAttributes());
-        addRenderable(mGroundConnectorLayer, groundPath);
-
-        var age = 666;//p.ext().getAge(ChronoUnit.DAYS);
-        var maxAge = 30.0;
-
-        if (age < maxAge) {
-            var circle = new SurfaceCircle(position, 100.0);
-            var attrs = new BasicShapeAttributes(mAttributeManager.getSurfaceAttributes());
-            var reducer = age / maxAge;//  1/30   15/30 30/30
-            var maxOpacity = 0.2;
-            var opacity = maxOpacity - reducer * maxOpacity;
-            attrs.setInteriorOpacity(opacity);
-            circle.setAttributes(attrs);
-
-            addRenderable(mSurfaceLayer, circle);
+        if (limit > 1000) {
+//            return;
         }
+        limit++;
+//        if (isPlotLimitReached(p.getName(), ComponentRendererItem.TRACE_1D, position)) {
+//            return;
+//        }
+        var reversedList = p.ext().getObservationsTimeFiltered().reversed();
+        var prevDate = LocalDateTime.now();
+        var altitude = 0.0;
+        var prevHeight = 0.0;
+
+        for (int i = 0; i < reversedList.size(); i++) {
+            var o = reversedList.get(i);
+
+            if (ChronoUnit.DAYS.between(o.getDate(), prevDate) < 100) {
+                continue;
+            }
+
+            var timeSpan = ChronoUnit.MINUTES.between(o.getDate(), prevDate);
+            var height = timeSpan / 24000.0;
+            altitude = altitude + height * 0.5 + prevHeight * 0.5;
+            prevDate = o.getDate();
+            prevHeight = height;
+
+            if (ObjectUtils.anyNull(p.getReferensnivå(), o.getNivå())) {
+                continue;
+            }
+
+            var pos = WWHelper.positionFromPosition(position, altitude);
+            var maxRadius = 10.0;
+
+            var dZ = p.getReferensnivå() - o.getNivå();
+            var radius = Math.min(maxRadius, Math.abs(dZ) * 1 + 0.05);
+            var maximus = radius == maxRadius;
+
+            var cylinder = new Cylinder(pos, height, radius);
+//            var alarmLevel = p.ext().getAlarmLevelHeight(o);
+            var rise = Math.signum(dZ) > 0;
+            var attrs = mAttributeManager.getTimeSeriesAttributes(p);
+
+//            if (i == 0 && ChronoUnit.DAYS.between(o.getDate(), LocalDateTime.now()) > 180) {
+//                attrs = new BasicShapeAttributes(attrs);
+//                attrs.setInteriorOpacity(0.25);
+//                attrs.setOutlineOpacity(0.20);
+//            }
+            cylinder.setAttributes(attrs);
+            addRenderable(mEllipsoidLayer, cylinder);
+//            incPlotCounter(ComponentRendererItem.TRACE_1D);
+        }
+
     }
 
     public void reset() {

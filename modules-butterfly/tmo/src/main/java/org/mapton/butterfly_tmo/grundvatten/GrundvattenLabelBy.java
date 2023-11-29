@@ -22,6 +22,7 @@ import org.mapton.butterfly_core.api.LabelByCategories;
 import org.mapton.butterfly_format.types.tmo.BGrundvatten;
 import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.MathHelper;
 import se.trixon.almond.util.SDict;
 
 /**
@@ -67,6 +68,11 @@ public enum GrundvattenLabelBy {
     }),
     MISC_GROUP(LabelByCategories.MISC, Dict.GROUP.toString(), p -> {
         return Objects.toString(p.getGroup(), "NODATA");
+    }),
+    MISC_MARKNIVA(LabelByCategories.MISC, "Marknivå", p -> {
+        var z = p.getMarknivå();
+
+        return z == null ? "-" : MathHelper.convertDoubleToStringWithSign(z, 2);
     }),
     MISC_Z(LabelByCategories.MISC, "Z", p -> {
         return "?";

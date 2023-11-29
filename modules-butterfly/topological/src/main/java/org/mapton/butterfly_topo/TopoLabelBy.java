@@ -25,6 +25,7 @@ import org.mapton.butterfly_core.api.LabelByCategories;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.MathHelper;
 import se.trixon.almond.util.SDict;
 
 /**
@@ -134,7 +135,8 @@ public enum TopoLabelBy {
     }),
     VALUE_Z(LabelByCategories.VALUE, "Z", p -> {
         var z = p.getZeroZ();
-        return z == null ? "-" : "%+.3f".formatted(z);
+
+        return z == null ? "-" : MathHelper.convertDoubleToStringWithSign(z, 3);
     }),
     VALUE_DELTA_ZERO(LabelByCategories.VALUE, "Δ₀", p -> {
         return p.ext().deltaZero().getDelta(3);
