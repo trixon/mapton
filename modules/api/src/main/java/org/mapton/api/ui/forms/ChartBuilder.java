@@ -27,4 +27,8 @@ public abstract class ChartBuilder<T> {
 
     public abstract Object build(T selectedObject);
 
+    public abstract void setTitle(T selectedObject);
+
+    public abstract void updateDataset(T selectedObject);
+
 }

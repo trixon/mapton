@@ -69,6 +69,6 @@ public class ComponentRendererCircle extends ComponentRendererBase {
 
         cylinder.setAttributes(attrs);
         addRenderable(cylinder, true);
-        incPlotCounter(ComponentRendererItem.CIRCLE_1D);
+        sPlotLimiter.incPlotCounter(ComponentRendererItem.CIRCLE_1D);
     }
 }

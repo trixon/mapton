@@ -53,7 +53,11 @@ public class ComponentRenderer extends ComponentRendererBase {
 
     public void reset() {
         sPointToPositionMap.clear();
-        sObjectCounter.clear();
+        sPlotLimiter.reset();
+    }
+
+    public void addToAllowList(String name) {
+        sPlotLimiter.addToAllowList(name);
     }
 
     private void plotBearing(BTopoControlPoint p, Position position) {

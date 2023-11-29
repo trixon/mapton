@@ -93,7 +93,7 @@ public class ComponentRendererTrace extends ComponentRendererBase {
 
             cylinder.setAttributes(attrs);
             addRenderable(cylinder, true);
-            incPlotCounter(ComponentRendererItem.TRACE_1D);
+            sPlotLimiter.incPlotCounter(ComponentRendererItem.TRACE_1D);
         }
     }
 
