@@ -41,20 +41,20 @@ public class GrundvattenLayerBundle extends BfLayerBundle {
 
     private final GrundvattenAttributeManager mAttributeManager = GrundvattenAttributeManager.getInstance();
     private final ComponentRenderer mComponentRenderer;
+    private final RenderableLayer mGroundConnectorLayer = new RenderableLayer();
     private final RenderableLayer mLabelLayer = new RenderableLayer();
     private final RenderableLayer mLayer = new RenderableLayer();
     private final GrundvattenManager mManager = GrundvattenManager.getInstance();
     private final GrundvattenOptionsView mOptionsView;
     private final RenderableLayer mPinLayer = new RenderableLayer();
-    private final RenderableLayer mGroundConnectorLayer = new RenderableLayer();
-    private final RenderableLayer mSymbolLayer = new RenderableLayer();
     private final RenderableLayer mSurfaceLayer = new RenderableLayer();
+    private final RenderableLayer mSymbolLayer = new RenderableLayer();
 
     public GrundvattenLayerBundle() {
         init();
         initRepaint();
         mOptionsView = new GrundvattenOptionsView(this);
-        mComponentRenderer = new ComponentRenderer(mLayer, mGroundConnectorLayer, mSurfaceLayer);
+        mComponentRenderer = new ComponentRenderer(mLayer);
         initListeners();
 
         FxHelper.runLaterDelayed(1000, () -> mManager.updateTemporal(mLayer.isEnabled()));
@@ -155,8 +155,10 @@ public class GrundvattenLayerBundle extends BfLayerBundle {
 
                     var leftDoubleClickRunnable = (Runnable) () -> {
                         Almond.openAndActivateTopComponent((String) mLayer.getValue(WWHelper.KEY_FAST_OPEN));
-                        mComponentRenderer.addToAllowList(p.getName());
-                        repaint();
+                        if (!p.ext().getObservationsTimeFiltered().isEmpty()) {
+                            mComponentRenderer.getPlotLimiter().addToAllowList(p.getName());
+                            repaint();
+                        }
                     };
 
                     mapObjects.stream().filter(r -> r != null).forEach(r -> {

@@ -16,6 +16,7 @@
 package org.mapton.butterfly_format.types.tmo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.Comparator;
 import org.mapton.butterfly_format.types.BBase;
 
 /**
@@ -76,6 +77,12 @@ public class BGrundvatten extends BBasVatten {
 
     public class Ext extends BBase.Ext<BGrundvattenObservation> {
 
-    }
+        public BGrundvattenObservation getMaxObservation() {
+            return getObservationsAllRaw().stream().max(Comparator.comparing(BGrundvattenObservation::getNivå)).orElse(null);
+        }
 
+        public BGrundvattenObservation getMinObservation() {
+            return getObservationsAllRaw().stream().min(Comparator.comparing(BGrundvattenObservation::getNivå)).orElse(null);
+        }
+    }
 }

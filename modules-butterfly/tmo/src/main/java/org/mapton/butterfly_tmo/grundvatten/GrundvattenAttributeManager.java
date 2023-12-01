@@ -19,6 +19,7 @@ import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
 import java.awt.Color;
+import java.util.HashMap;
 import org.mapton.butterfly_format.types.tmo.BGrundvatten;
 import se.trixon.almond.util.GraphicsHelper;
 
@@ -30,6 +31,7 @@ public class GrundvattenAttributeManager {
 
     private BasicShapeAttributes mComponentGroundPathAttributes;
     private PointPlacemarkAttributes mLabelPlacemarkAttributes;
+    private final HashMap<String, BasicShapeAttributes> mMagasinToAttributes = new HashMap<>();
     private PointPlacemarkAttributes mPinAttributes;
     private BasicShapeAttributes mSurfaceAttributes;
     private BasicShapeAttributes mTimeSeriesAttributes;
@@ -91,6 +93,24 @@ public class GrundvattenAttributeManager {
         return mSurfaceAttributes;
     }
 
+    public BasicShapeAttributes getTimeSeriesAttributes(BGrundvatten grundvatten) {
+        if (mTimeSeriesAttributes == null) {
+            mTimeSeriesAttributes = new BasicShapeAttributes();
+            mTimeSeriesAttributes.setDrawOutline(false);
+            mTimeSeriesAttributes.setInteriorMaterial(Material.BLUE);
+            mTimeSeriesAttributes.setEnableLighting(true);
+        }
+
+        BasicShapeAttributes attrs = mMagasinToAttributes.computeIfAbsent(grundvatten.getGrundvattenmagasin(), k -> {
+            var a = new BasicShapeAttributes(mTimeSeriesAttributes);
+            a.setInteriorMaterial(new Material(getColor(grundvatten)));
+
+            return a;
+        });
+
+        return attrs;
+    }
+
     private Color getColor(BGrundvatten grundvatten) {
         switch (grundvatten.getGrundvattenmagasin()) {
             case "Övre" -> {
@@ -115,7 +135,7 @@ public class GrundvattenAttributeManager {
                 return Color.decode("#0fc0fc");
             }
             case "Berg" -> {
-                return Color.decode("#e7feff");
+                return Color.decode("#e7feff").darker();
             }
 
             default -> {
@@ -123,20 +143,6 @@ public class GrundvattenAttributeManager {
             }
         }
 
-    }
-
-    public BasicShapeAttributes getTimeSeriesAttributes(BGrundvatten grundvatten) {
-        if (mTimeSeriesAttributes == null) {
-            mTimeSeriesAttributes = new BasicShapeAttributes();
-            mTimeSeriesAttributes.setDrawOutline(false);
-            mTimeSeriesAttributes.setInteriorMaterial(Material.BLUE);
-            mTimeSeriesAttributes.setEnableLighting(true);
-        }
-
-        var attrs = new BasicShapeAttributes(mTimeSeriesAttributes);
-        attrs.setInteriorMaterial(new Material(getColor(grundvatten)));
-
-        return attrs;
     }
 
     private static class Holder {

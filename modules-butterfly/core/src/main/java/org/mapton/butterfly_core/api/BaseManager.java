@@ -19,7 +19,6 @@ import org.mapton.api.MBaseDataManager;
 import org.mapton.api.MLatLon;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BBase;
-import org.mapton.butterfly_format.types.BBaseControlPoint;
 import org.mapton.butterfly_format.types.BBasePoint;
 import org.mapton.worldwind.api.WWHelper;
 
@@ -62,9 +61,9 @@ public abstract class BaseManager<T extends BBase> extends MBaseDataManager<T> {
 
     @Override
     public Object getMapIndicator(T t) {
-        if (t instanceof BBaseControlPoint cp) {
+        if (t instanceof BBasePoint) {
             try {
-                return WWHelper.createIndicator(new MLatLon(cp.getLat(), cp.getLon()));
+                return WWHelper.createIndicator(getLatLonForItem(t));
             } catch (NullPointerException e) {
                 //
             }

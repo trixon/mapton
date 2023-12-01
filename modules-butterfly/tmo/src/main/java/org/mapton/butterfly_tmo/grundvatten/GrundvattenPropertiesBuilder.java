@@ -15,11 +15,9 @@
  */
 package org.mapton.butterfly_tmo.grundvatten;
 
-import java.util.Comparator;
 import java.util.LinkedHashMap;
 import org.mapton.api.ui.forms.PropertiesBuilder;
 import org.mapton.butterfly_format.types.tmo.BGrundvatten;
-import org.mapton.butterfly_format.types.tmo.BGrundvattenObservation;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.MathHelper;
 
@@ -70,16 +68,8 @@ public class GrundvattenPropertiesBuilder extends PropertiesBuilder<BGrundvatten
 //        propertyMap.put(getCatKey(cat1, ""), p.get);
         propertyMap.put(getCatKey(cat1, "Mätvärden"), p.ext().getNumOfObservations());
         if (!p.ext().getObservationsAllRaw().isEmpty()) {
-            var minObs = p.ext().getObservationsAllRaw().stream()
-                    .min(Comparator.comparing(BGrundvattenObservation::getNivå))
-                    .orElse(new BGrundvattenObservation());
-
-            var maxObs = p.ext().getObservationsAllRaw().stream()
-                    .max(Comparator.comparing(BGrundvattenObservation::getNivå))
-                    .orElse(new BGrundvattenObservation());
-
-            propertyMap.put(getCatKey(cat1, "Min"), GrundvattenHelper.getLevelAndDate(minObs));
-            propertyMap.put(getCatKey(cat1, "Max"), GrundvattenHelper.getLevelAndDate(maxObs));
+            propertyMap.put(getCatKey(cat1, "Min"), GrundvattenHelper.getLevelAndDate(p.ext().getMinObservation()));
+            propertyMap.put(getCatKey(cat1, "Max"), GrundvattenHelper.getLevelAndDate(p.ext().getMaxObservation()));
             propertyMap.put(getCatKey(cat1, "Första"), GrundvattenHelper.getLevelAndDate(p.ext().getObservationRawFirst()));
             propertyMap.put(getCatKey(cat1, "Senaste"), GrundvattenHelper.getLevelAndDate(p.ext().getObservationRawLast()));
         }

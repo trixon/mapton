@@ -107,9 +107,9 @@ public abstract class ComponentRendererBase {
         });
     }
 
-    protected boolean isPlotLimitReached(Object key, String allowListKey, Position position) {
-        if (sPlotLimiter.isLimitReached(key, allowListKey)) {
-            addRenderable(sPlotLimiter.getPlotLimitIndicator(position), true);
+    protected boolean isPlotLimitReached(BTopoControlPoint p, Object key, Position position) {
+        if (sPlotLimiter.isLimitReached(key, p.getName())) {
+            addRenderable(sPlotLimiter.getPlotLimitIndicator(position, p.ext().getObservationsTimeFiltered().isEmpty()), true);
             return true;
         } else {
             return false;

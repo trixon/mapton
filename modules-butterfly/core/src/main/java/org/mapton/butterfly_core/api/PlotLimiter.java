@@ -37,23 +37,24 @@ public class PlotLimiter {
     private final Map<Object, Integer> mObjectCounter = new HashMap<>();
     private final Map<Object, Integer> mObjectLimits = new HashMap<>();
     private BasicShapeAttributes mSkipPlotAttribute;
+    private BasicShapeAttributes mSkipPlotNoDataAttributes;
 
-    public void addToAllowList(String name) {
-        mAllowList.add(name);
+    public void addToAllowList(Object allowListKey) {
+        mAllowList.add(allowListKey);
     }
 
     public int getItemCount(Object key) {
         return mObjectCounter.getOrDefault(key, 0);
     }
 
-    public Box getPlotLimitIndicator(Position position) {
+    public Box getPlotLimitIndicator(Position position, boolean noData) {
         var radii = 1.0;
         var altitude = radii * 2;
         var p = WWHelper.positionFromPosition(position, altitude);
         var angle = Angle.fromDegrees(45);
 
         var box = new Box(p, radii, radii, radii, angle, angle, angle);
-        box.setAttributes(getSkipPlotAttribute());
+        box.setAttributes(noData ? getSkipPlotNoDataAttributes() : getSkipPlotAttribute());
 
         return box;
     }
@@ -69,8 +70,21 @@ public class PlotLimiter {
         return mSkipPlotAttribute;
     }
 
+    public BasicShapeAttributes getSkipPlotNoDataAttributes() {
+        if (mSkipPlotNoDataAttributes == null) {
+            mSkipPlotNoDataAttributes = new BasicShapeAttributes(getSkipPlotAttribute());
+            mSkipPlotNoDataAttributes.setInteriorMaterial(Material.BLACK);
+        }
+
+        return mSkipPlotNoDataAttributes;
+    }
+
     public void incPlotCounter(Object key) {
         mObjectCounter.put(key, mObjectCounter.getOrDefault(key, 0) + 1);
+    }
+
+    public boolean isAllowed(Object allowListKey) {
+        return mAllowList.contains(allowListKey);
     }
 
     public boolean isLimitReached(Object key, String allowListKey) {
@@ -93,5 +107,9 @@ public class PlotLimiter {
 
     public void setSkipPlotAttribute(BasicShapeAttributes skipPlotAttribute) {
         this.mSkipPlotAttribute = skipPlotAttribute;
+    }
+
+    public void setSkipPlotNoDataAttributes(BasicShapeAttributes skipPlotNoDataAttributes) {
+        this.mSkipPlotNoDataAttributes = skipPlotNoDataAttributes;
     }
 }
