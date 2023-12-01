@@ -17,10 +17,13 @@ package org.mapton.butterfly_topo;
 
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
+import gov.nasa.worldwind.render.Ellipsoid;
 import gov.nasa.worldwind.render.Path;
 import java.util.ArrayList;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
+import org.mapton.worldwind.api.WWHelper;
+import se.trixon.almond.util.MathHelper;
 
 /**
  *
@@ -43,6 +46,46 @@ public class ComponentRendererVector extends ComponentRendererBase {
     }
 
     private void plot1d(BTopoControlPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
+        plot1dVector(p, position, mapObjects);
+    }
+
+    private void plot1dVector(BTopoControlPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
+        var ZERO_SIZE = 0.4;
+        var CURRENT_SIZE = 1.0;
+        var zeroZ = p.getZeroZ();
+        if (zeroZ == null) {
+            return;
+        }
+        var zeroPosition = WWHelper.positionFromPosition(position, zeroZ + TopoLayerBundle.Z_OFFSET);
+        var zeroEllipsoid = new Ellipsoid(zeroPosition, ZERO_SIZE, ZERO_SIZE, ZERO_SIZE);
+        zeroEllipsoid.setAttributes(mAttributeManager.getComponentZeroAttributes());
+        addRenderable(zeroEllipsoid, true);
+
+        var currentPosition = zeroPosition;
+        var o = p.ext().getObservationsTimeFiltered().getLast();
+        var direction = o.ext().getDeltaZ() != null && o.ext().getDeltaZ() < 0 ? -1 : 1;
+
+        if (o.ext().getDeltaZ() != null) {
+            var z = +o.getMeasuredZ()
+                    + TopoLayerBundle.Z_OFFSET
+                    + MathHelper.convertDoubleToDouble(o.ext().getDeltaZ()) * TopoLayerBundle.SCALE_FACTOR_Z;
+
+            currentPosition = WWHelper.positionFromPosition(currentPosition, z);
+        }
+
+        var currentEllipsoid = new Ellipsoid(currentPosition, CURRENT_SIZE, CURRENT_SIZE, CURRENT_SIZE);
+        currentEllipsoid.setAttributes(mAttributeManager.getComponentCurrentAttributes(p));
+        addRenderable(currentEllipsoid, true);
+
+        var currentPositionTop = WWHelper.positionFromPosition(currentPosition, currentPosition.getAltitude() - CURRENT_SIZE * direction);
+        var deltaPath = new Path(zeroPosition, currentPositionTop);
+        deltaPath.setAttributes(mAttributeManager.getComponentGroundPathAttributes());
+        addRenderable(deltaPath, true);
+
+        var currentPositionBottom = WWHelper.positionFromPosition(currentPosition, currentPosition.getAltitude() + CURRENT_SIZE * direction);
+        var groundPath = new Path(position, currentPositionBottom);
+        groundPath.setAttributes(mAttributeManager.getComponentGroundPathAttributes());
+        addRenderable(groundPath, true);
     }
 
     private void plot2d(BTopoControlPoint p, Position position, ArrayList<AVListImpl> mapObjects) {

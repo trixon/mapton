@@ -50,6 +50,7 @@ import se.trixon.almond.util.fx.FxHelper;
 public class TopoLayerBundle extends BfLayerBundle {
 
     public static final double SCALE_FACTOR = 500.0;
+    public static final double SCALE_FACTOR_Z = 1000.0;
     public static final double Z_OFFSET = 10.0;
 
     private final double SYMBOL_HEIGHT = 4.0;
