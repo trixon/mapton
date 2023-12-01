@@ -15,8 +15,10 @@
  */
 package org.mapton.butterfly_tmo.grundvatten;
 
+import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Material;
+import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
 import java.awt.Color;
 import java.util.HashMap;
@@ -69,7 +71,7 @@ public class GrundvattenAttributeManager {
 
     public PointPlacemarkAttributes getPinAttributes(BGrundvatten grundvatten) {
         if (mPinAttributes == null) {
-            mPinAttributes = new PointPlacemarkAttributes();
+            mPinAttributes = new PointPlacemarkAttributes(new PointPlacemark(Position.ZERO).getDefaultAttributes());
             mPinAttributes.setScale(0.75);
             mPinAttributes.setImageAddress("images/pushpins/plain-white.png");
             mPinAttributes.setImageColor(Color.BLUE.brighter());
