@@ -54,6 +54,7 @@ public class TopoAttributeManager {
     private BasicShapeAttributes[] mSymbolAttributes;
     private final TopoConfig mTopoConfig = new TopoConfig();
     private BasicShapeAttributes mTraceAttribute;
+    private BasicShapeAttributes[] mVectorAlarmAttributes;
 
     public static TopoAttributeManager getInstance() {
         return Holder.INSTANCE;
@@ -124,22 +125,6 @@ public class TopoAttributeManager {
         var j = rise ? 1 : 0;
 
         return mComponentCircle1dAttributes[i][j];
-    }
-
-    public BasicShapeAttributes getComponentCurrentAttributes(BTopoControlPoint p) {
-        if (mComponentVectorCurrentAttributes == null) {
-            mComponentVectorCurrentAttributes = new BasicShapeAttributes[4];
-            for (int i = 0; i < 4; i++) {
-                var attrs = new BasicShapeAttributes();
-                attrs.setDrawOutline(false);
-                attrs.setInteriorMaterial(ButterflyHelper.getAlarmMaterial(i - 1));
-                attrs.setEnableLighting(true);
-                attrs.setInteriorOpacity(0.75);
-                mComponentVectorCurrentAttributes[i] = attrs;
-            }
-        }
-
-        return mComponentVectorCurrentAttributes[TopoHelper.getAlarmLevel(p) + 1];
     }
 
     public BasicShapeAttributes getComponentGroundPathAttributes() {
@@ -217,6 +202,40 @@ public class TopoAttributeManager {
         }
 
         return mComponentVector3dAttributes[TopoHelper.getAlarmLevel(p) + 1];
+    }
+
+    public BasicShapeAttributes getComponentVectorAlarmAttributes(int level) {
+        if (mVectorAlarmAttributes == null) {
+            mVectorAlarmAttributes = new BasicShapeAttributes[3];
+
+            for (int i = 0; i < 3; i++) {
+                var attrs = new BasicShapeAttributes();
+                attrs.setDrawOutline(false);
+                attrs.setInteriorMaterial(ButterflyHelper.getAlarmMaterial(i - 1));
+                attrs.setEnableLighting(true);
+                attrs.setInteriorOpacity(0.5);
+                mVectorAlarmAttributes[i] = attrs;
+            }
+        }
+
+        return mVectorAlarmAttributes[level + 1];
+    }
+
+    public BasicShapeAttributes getComponentVectorCurrentAttributes(BTopoControlPoint p) {
+        if (mComponentVectorCurrentAttributes == null) {
+            mComponentVectorCurrentAttributes = new BasicShapeAttributes[4];
+
+            for (int i = 0; i < 4; i++) {
+                var attrs = new BasicShapeAttributes();
+                attrs.setDrawOutline(false);
+                attrs.setInteriorMaterial(ButterflyHelper.getAlarmMaterial(i - 1));
+                attrs.setEnableLighting(true);
+                attrs.setInteriorOpacity(0.75);
+                mComponentVectorCurrentAttributes[i] = attrs;
+            }
+        }
+
+        return mComponentVectorCurrentAttributes[TopoHelper.getAlarmLevel(p) + 1];
     }
 
     public BasicShapeAttributes getComponentZeroAttributes() {
@@ -331,7 +350,7 @@ public class TopoAttributeManager {
         if (mTraceAttribute == null) {
             mTraceAttribute = new BasicShapeAttributes();
             mTraceAttribute.setDrawOutline(true);
-            mTraceAttribute.setOutlineMaterial(Material.CYAN);
+            mTraceAttribute.setOutlineMaterial(Material.RED);
             mTraceAttribute.setEnableLighting(false);
             mTraceAttribute.setOutlineWidth(0.6);
         }
@@ -408,6 +427,7 @@ public class TopoAttributeManager {
 
     private void initAttributes() {
         mComponentVector12dAttributes = new BasicShapeAttributes[4];
+
         for (int i = 0; i < 4; i++) {
             var attrs = new BasicShapeAttributes();
             attrs.setDrawOutline(true);

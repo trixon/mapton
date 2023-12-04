@@ -100,7 +100,7 @@ public abstract class ComponentRendererBase {
             }
 
             var currentEllipsoid = new Ellipsoid(currentPosition, CURRENT_SIZE, CURRENT_SIZE, CURRENT_SIZE);
-            currentEllipsoid.setAttributes(mAttributeManager.getComponentCurrentAttributes(p));
+            currentEllipsoid.setAttributes(mAttributeManager.getComponentVectorCurrentAttributes(p));
             addRenderable(currentEllipsoid, true);
 
             return new Position[]{startPosition, currentPosition};

@@ -28,6 +28,7 @@ public enum ComponentRendererItem {
     CIRCLE_3D("3d Delta", Integer.MAX_VALUE),
     TRACE_1D(SDict.TRACE_1D.toString(), 100 * 100),
     VECTOR_1D(SDict.VECTOR_1D.toString(), 100),
+    VECTOR_1D_ALARM("%s (%s)".formatted(SDict.VECTOR_1D.toString(), SDict.ALARM_LEVEL.toLower()), 100),
     //    TRACE_2D(SDict.TRACE_2D.toString()),
     //    VECTOR_2D(SDict.VECTOR_2D.toString()),
     TRACE_3D(SDict.TRACE_3D.toString(), Integer.MAX_VALUE),
