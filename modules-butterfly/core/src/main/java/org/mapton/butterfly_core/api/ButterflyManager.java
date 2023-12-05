@@ -38,8 +38,8 @@ import org.openide.util.Exceptions;
  */
 public class ButterflyManager {
 
-    private final ObjectProperty<Butterfly> mButterflyProperty = new SimpleObjectProperty<>();
     private final MAreaFilterManager mAreaFilterManager = MAreaFilterManager.getInstance();
+    private final ObjectProperty<Butterfly> mButterflyProperty = new SimpleObjectProperty<>();
     private final WKTReader mWktReader = new WKTReader();
 
     public static ButterflyManager getInstance() {

@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_tmo.grundvatten;
 
+import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
 import org.mapton.api.ui.forms.PropertiesBuilder;
 import org.mapton.butterfly_format.types.tmo.BGrundvatten;
@@ -68,10 +69,11 @@ public class GrundvattenPropertiesBuilder extends PropertiesBuilder<BGrundvatten
 //        propertyMap.put(getCatKey(cat1, ""), p.get);
         propertyMap.put(getCatKey(cat1, "Mätvärden"), p.ext().getNumOfObservations());
         if (!p.ext().getObservationsAllRaw().isEmpty()) {
+            propertyMap.put(getCatKey(cat1, Dict.AGE.toString()), p.ext().getMeasurementAge(ChronoUnit.DAYS));
+            propertyMap.put(getCatKey(cat1, "Senaste"), GrundvattenHelper.getLevelAndDate(p.ext().getObservationRawLast()));
+            propertyMap.put(getCatKey(cat1, "Första"), GrundvattenHelper.getLevelAndDate(p.ext().getObservationRawFirst()));
             propertyMap.put(getCatKey(cat1, "Min"), GrundvattenHelper.getLevelAndDate(p.ext().getMinObservation()));
             propertyMap.put(getCatKey(cat1, "Max"), GrundvattenHelper.getLevelAndDate(p.ext().getMaxObservation()));
-            propertyMap.put(getCatKey(cat1, "Första"), GrundvattenHelper.getLevelAndDate(p.ext().getObservationRawFirst()));
-            propertyMap.put(getCatKey(cat1, "Senaste"), GrundvattenHelper.getLevelAndDate(p.ext().getObservationRawLast()));
         }
 
         return propertyMap;

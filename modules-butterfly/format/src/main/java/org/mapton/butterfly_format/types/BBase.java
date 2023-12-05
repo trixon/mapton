@@ -7,6 +7,7 @@ package org.mapton.butterfly_format.types;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -62,6 +63,14 @@ public abstract class BBase {
 
         public String getDateLatestAsString() {
             return mDateLatest != null ? mDateLatest.toString() : "-";
+        }
+
+        public long getMeasurementAge(ChronoUnit chronoUnit) {
+            if (getDateLatest() != null) {
+                return chronoUnit.between(getDateLatest().toLocalDate(), LocalDate.now());
+            } else {
+                return -1L;
+            }
         }
 
         public LinkedHashMap<String, Integer> getMeasurementCountStats() {
@@ -176,12 +185,12 @@ public abstract class BBase {
             return values;
         }
 
-        public void setDateLatest(LocalDateTime dateTime) {
-            mDateLatest = dateTime;
-        }
-
         public void setDateFirst(LocalDateTime dateFirst) {
             mDateFirst = dateFirst;
+        }
+
+        public void setDateLatest(LocalDateTime dateTime) {
+            mDateLatest = dateTime;
         }
 
         public void setMeasurementCountStats(LinkedHashMap<String, Integer> measuremenCountStats) {

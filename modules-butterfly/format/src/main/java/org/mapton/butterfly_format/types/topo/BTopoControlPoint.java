@@ -250,12 +250,6 @@ public class BTopoControlPoint extends BBaseControlPoint {
             return getAlarmLevel(BComponent.PLANE, o);
         }
 
-        public long getMeasurementAge(ChronoUnit chronoUnit) {
-            var latest = getDateLatest() != null ? getDateLatest().toLocalDate() : LocalDate.MIN;
-
-            return chronoUnit.between(latest, LocalDate.now());
-        }
-
         public long getMeasurementUntilNext(ChronoUnit chronoUnit) {
             var latest = getDateLatest() != null ? getDateLatest().toLocalDate() : LocalDate.MIN;
             var nextMeas = latest.plusDays(getFrequency());

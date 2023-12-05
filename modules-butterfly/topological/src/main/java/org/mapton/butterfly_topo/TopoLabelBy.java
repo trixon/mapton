@@ -124,9 +124,9 @@ public enum TopoLabelBy {
         );
     }),
     MEAS_AGE(LabelByCategories.MEAS, Dict.AGE.toString(), p -> {
-        return "%d".formatted(
-                p.ext().getMeasurementAge(ChronoUnit.DAYS)
-        );
+        var daysSinceMeasurement = p.ext().getMeasurementAge(ChronoUnit.DAYS);
+
+        return "%d".formatted(daysSinceMeasurement);
     }),
     MEAS_NEED(LabelByCategories.MEAS, Dict.NEED.toString(), p -> {
         return "%d".formatted(

@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_tmo.grundvatten;
 
+import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 import java.util.function.Function;
 import org.apache.commons.lang3.StringUtils;
@@ -63,8 +64,9 @@ public enum GrundvattenLabelBy {
         return date;
     }),
     MISC_AGE(LabelByCategories.MISC, Dict.AGE.toString(), p -> {
-        return "?";
-//        return String.valueOf(p.ext().getAge(ChronoUnit.DAYS));
+        var daysSinceMeasurement = p.ext().getMeasurementAge(ChronoUnit.DAYS);
+
+        return "%d".formatted(daysSinceMeasurement);
     }),
     MISC_GROUP(LabelByCategories.MISC, Dict.GROUP.toString(), p -> {
         return Objects.toString(p.getGroup(), "NODATA");

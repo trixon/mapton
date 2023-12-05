@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_topo;
 
+import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
 import java.util.Objects;
 import org.apache.commons.lang3.ObjectUtils;
@@ -74,6 +75,7 @@ public class TopoPropertiesBuilder extends PropertiesBuilder<BTopoControlPoint> 
         var lastRaw = Objects.toString(DateHelper.toDateString(p.ext().getObservationRawLastDate()), "-");
         var lastFiltered = Objects.toString(DateHelper.toDateString(p.ext().getObservationFilteredLastDate()), "-");
 
+        propertyMap.put(getCatKey(cat1, Dict.AGE.toString()), p.ext().getMeasurementAge(ChronoUnit.DAYS));
         propertyMap.put(getCatKey(cat1, Dict.LATEST.toString()),
                 "%s (%s)".formatted(lastRaw, lastFiltered)
         );

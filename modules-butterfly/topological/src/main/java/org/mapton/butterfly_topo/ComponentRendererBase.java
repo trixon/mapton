@@ -65,7 +65,7 @@ public abstract class ComponentRendererBase {
         var o1 = p.ext().getObservationsTimeFiltered().getFirst();
         var o2 = p.ext().getObservationsTimeFiltered().getLast();
 
-        return ObjectUtils.allNotNull(o1.getMeasuredZ(), o2.getMeasuredZ());
+        return ObjectUtils.allNotNull(p.getZeroX(), p.getZeroY(), p.getZeroZ(), o1.getMeasuredZ(), o2.getMeasuredZ());
     }
 
     public Position[] plot3dOffsetPole(BTopoControlPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
