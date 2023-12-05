@@ -15,8 +15,6 @@
  */
 package org.mapton.butterfly_tmo.grundvatten;
 
-import java.util.TreeSet;
-import java.util.stream.Collectors;
 import javafx.scene.control.Separator;
 import javafx.scene.layout.VBox;
 import org.controlsfx.control.CheckComboBox;
@@ -39,6 +37,10 @@ public class GrundvattenFilterPopOver extends BaseFilterPopOver {
     private final CheckModelSession mGrundvattenmagasinCheckModelSession = new CheckModelSession(mGrundvattenmagasinCheckComboBox);
     private final CheckComboBox<String> mStatusCheckComboBox = new CheckComboBox<>();
     private final CheckModelSession mStatusCheckModelSession = new CheckModelSession(mStatusCheckComboBox);
+    private final CheckComboBox<String> mRörtypCheckComboBox = new CheckComboBox<>();
+    private final CheckModelSession mRörtypCheckModelSession = new CheckModelSession(mRörtypCheckComboBox);
+    private final CheckComboBox<String> mFiltertypCheckComboBox = new CheckComboBox<>();
+    private final CheckModelSession mFiltertypCheckModelSession = new CheckModelSession(mFiltertypCheckComboBox);
 
     public GrundvattenFilterPopOver(GrundvattenFilter filter) {
         mFilter = filter;
@@ -52,30 +54,19 @@ public class GrundvattenFilterPopOver extends BaseFilterPopOver {
         getPolygonFilterCheckBox().setSelected(false);
         mFilter.freeTextProperty().set("");
         mGrundvattenmagasinCheckComboBox.getCheckModel().clearChecks();
+        mFiltertypCheckComboBox.getCheckModel().clearChecks();
+        mRörtypCheckComboBox.getCheckModel().clearChecks();
         mStatusCheckComboBox.getCheckModel().clearChecks();
     }
 
     @Override
     public void load(Butterfly butterfly) {
         var grundvatten = butterfly.tmo().getGrundvatten();
-//
-        var magasinCheckModel = mGrundvattenmagasinCheckComboBox.getCheckModel();
-        var checkedMagasin = magasinCheckModel.getCheckedItems();
-        var allMagasin = new TreeSet<>(grundvatten.stream().map(o -> o.getGrundvattenmagasin()).collect(Collectors.toSet()));
 
-        mGrundvattenmagasinCheckComboBox.getItems().setAll(allMagasin);
-        checkedMagasin.stream().forEach(d -> magasinCheckModel.check(d));
-
-        mGrundvattenmagasinCheckModelSession.load();
-//
-        var statusCheckModel = mStatusCheckComboBox.getCheckModel();
-        var checkedStatus = statusCheckModel.getCheckedItems();
-        var allStatus = new TreeSet<>(grundvatten.stream().map(o -> o.getStatus()).collect(Collectors.toSet()));
-
-        mStatusCheckComboBox.getItems().setAll(allStatus);
-        checkedStatus.stream().forEach(d -> statusCheckModel.check(d));
-
-        mStatusCheckModelSession.load();
+        FxHelper.loadAndRestoreCheckItems(mGrundvattenmagasinCheckComboBox, mGrundvattenmagasinCheckModelSession, grundvatten.stream().map(o -> o.getGrundvattenmagasin()));
+        FxHelper.loadAndRestoreCheckItems(mFiltertypCheckComboBox, mFiltertypCheckModelSession, grundvatten.stream().map(o -> o.getFiltertyp()));
+        FxHelper.loadAndRestoreCheckItems(mRörtypCheckComboBox, mRörtypCheckModelSession, grundvatten.stream().map(o -> o.getRörtyp()));
+        FxHelper.loadAndRestoreCheckItems(mStatusCheckComboBox, mStatusCheckModelSession, grundvatten.stream().map(o -> o.getStatus()));
     }
 
     @Override
@@ -85,9 +76,12 @@ public class GrundvattenFilterPopOver extends BaseFilterPopOver {
 
     @Override
     public void onShownFirstTime() {
-        var dropDownCount = 25;
-        FxHelper.getComboBox(mGrundvattenmagasinCheckComboBox).setVisibleRowCount(dropDownCount);
-        FxHelper.getComboBox(mStatusCheckComboBox).setVisibleRowCount(dropDownCount);
+        FxHelper.setVisibleRowCount(25,
+                mGrundvattenmagasinCheckComboBox,
+                mFiltertypCheckComboBox,
+                mRörtypCheckComboBox,
+                mStatusCheckComboBox
+        );
     }
 
     @Override
@@ -97,17 +91,25 @@ public class GrundvattenFilterPopOver extends BaseFilterPopOver {
     }
 
     private void createUI() {
-        mGrundvattenmagasinCheckComboBox.setShowCheckedCount(true);
-        mGrundvattenmagasinCheckComboBox.setTitle("Grundvattenmagasin");
+        FxHelper.setShowCheckedCount(true,
+                mGrundvattenmagasinCheckComboBox,
+                mFiltertypCheckComboBox,
+                mRörtypCheckComboBox,
+                mStatusCheckComboBox
+        );
 
-        mStatusCheckComboBox.setShowCheckedCount(true);
+        mGrundvattenmagasinCheckComboBox.setTitle("Grundvattenmagasin");
+        mFiltertypCheckComboBox.setTitle("Filtertyp");
+        mRörtypCheckComboBox.setTitle("Rörtyp");
         mStatusCheckComboBox.setTitle(Dict.STATUS.toString());
 
         var vBox = new VBox(GAP,
                 getButtonBox(),
                 new Separator(),
                 mStatusCheckComboBox,
-                mGrundvattenmagasinCheckComboBox
+                mGrundvattenmagasinCheckComboBox,
+                mRörtypCheckComboBox,
+                mFiltertypCheckComboBox
         );
 
         autoSize(vBox);
@@ -118,6 +120,8 @@ public class GrundvattenFilterPopOver extends BaseFilterPopOver {
         mFilter.polygonFilterProperty().bind(getPolygonFilterCheckBox().selectedProperty());
 
         mFilter.mGrundvattenmagasinCheckModel = mGrundvattenmagasinCheckComboBox.getCheckModel();
+        mFilter.mFiltertypCheckModel = mFiltertypCheckComboBox.getCheckModel();
+        mFilter.mRörtypCheckModel = mRörtypCheckComboBox.getCheckModel();
         mFilter.mStatusCheckModel = mStatusCheckComboBox.getCheckModel();
 
         mFilter.initCheckModelListeners();
@@ -126,8 +130,10 @@ public class GrundvattenFilterPopOver extends BaseFilterPopOver {
     private void initSession() {
         var sessionManager = getSessionManager();
         sessionManager.register("filter.grundvatten.freeText", mFilter.freeTextProperty());
-        sessionManager.register("filter.grundvatten.checkedStatus", mStatusCheckModelSession.checkedStringProperty());
         sessionManager.register("filter.grundvatten.checkedGrundvattenmagasin", mGrundvattenmagasinCheckModelSession.checkedStringProperty());
+        sessionManager.register("filter.grundvatten.checkedFiltertyp", mFiltertypCheckModelSession.checkedStringProperty());
+        sessionManager.register("filter.grundvatten.checkedRörrtyp", mRörtypCheckModelSession.checkedStringProperty());
+        sessionManager.register("filter.grundvatten.checkedStatus", mStatusCheckModelSession.checkedStringProperty());
     }
 
 }

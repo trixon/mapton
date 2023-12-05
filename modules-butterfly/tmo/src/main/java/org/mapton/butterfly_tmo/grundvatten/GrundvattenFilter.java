@@ -30,7 +30,9 @@ import se.trixon.almond.util.StringHelper;
  */
 public class GrundvattenFilter extends FormFilter<GrundvattenManager> {
 
+    IndexedCheckModel mFiltertypCheckModel;
     IndexedCheckModel mGrundvattenmagasinCheckModel;
+    IndexedCheckModel mRörtypCheckModel;
     IndexedCheckModel mStatusCheckModel;
     private final GrundvattenManager mManager = GrundvattenManager.getInstance();
 
@@ -44,8 +46,10 @@ public class GrundvattenFilter extends FormFilter<GrundvattenManager> {
     public void update() {
         var filteredItems = mManager.getAllItems().stream()
                 .filter(g -> StringUtils.isBlank(getFreeText()) || validateFreeText(g))
-                .filter(g -> validateCheck(mStatusCheckModel, g.getStatus()))
                 .filter(g -> validateCheck(mGrundvattenmagasinCheckModel, g.getGrundvattenmagasin()))
+                .filter(g -> validateCheck(mFiltertypCheckModel, g.getFiltertyp()))
+                .filter(g -> validateCheck(mRörtypCheckModel, g.getRörtyp()))
+                .filter(g -> validateCheck(mStatusCheckModel, g.getStatus()))
                 .filter(g -> validateCoordinateArea(g.getLat(), g.getLon()))
                 .filter(g -> validateCoordinateRuler(g.getLat(), g.getLon()))
                 .toList();
@@ -57,6 +61,8 @@ public class GrundvattenFilter extends FormFilter<GrundvattenManager> {
 
     void initCheckModelListeners() {
         mGrundvattenmagasinCheckModel.getCheckedItems().addListener(mListChangeListener);
+        mFiltertypCheckModel.getCheckedItems().addListener(mListChangeListener);
+        mRörtypCheckModel.getCheckedItems().addListener(mListChangeListener);
         mStatusCheckModel.getCheckedItems().addListener(mListChangeListener);
     }
 
