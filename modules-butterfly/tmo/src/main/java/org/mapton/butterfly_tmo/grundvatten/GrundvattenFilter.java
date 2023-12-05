@@ -30,7 +30,8 @@ import se.trixon.almond.util.StringHelper;
  */
 public class GrundvattenFilter extends FormFilter<GrundvattenManager> {
 
-    private IndexedCheckModel mGroupCheckModel;
+    IndexedCheckModel mGrundvattenmagasinCheckModel;
+    IndexedCheckModel mStatusCheckModel;
     private final GrundvattenManager mManager = GrundvattenManager.getInstance();
 
     public GrundvattenFilter() {
@@ -39,18 +40,14 @@ public class GrundvattenFilter extends FormFilter<GrundvattenManager> {
         initListeners();
     }
 
-    public void setCheckModelGroup(IndexedCheckModel checkModel) {
-        mGroupCheckModel = checkModel;
-        checkModel.getCheckedItems().addListener(mListChangeListener);
-    }
-
     @Override
     public void update() {
         var filteredItems = mManager.getAllItems().stream()
-                .filter(b -> StringUtils.isBlank(getFreeText()) || validateFreeText(b))
-                //                .filter(b -> validateGroup(b.getGroup()))
-                .filter(b -> validateCoordinateArea(b.getLat(), b.getLon()))
-                .filter(b -> validateCoordinateRuler(b.getLat(), b.getLon()))
+                .filter(g -> StringUtils.isBlank(getFreeText()) || validateFreeText(g))
+                .filter(g -> validateCheck(mStatusCheckModel, g.getStatus()))
+                .filter(g -> validateCheck(mGrundvattenmagasinCheckModel, g.getGrundvattenmagasin()))
+                .filter(g -> validateCoordinateArea(g.getLat(), g.getLon()))
+                .filter(g -> validateCoordinateRuler(g.getLat(), g.getLon()))
                 .toList();
 
         mManager.getFilteredItems().setAll(filteredItems);
@@ -58,15 +55,18 @@ public class GrundvattenFilter extends FormFilter<GrundvattenManager> {
         getInfoPopOver().loadContent(createInfoContent().renderFormatted());
     }
 
+    void initCheckModelListeners() {
+        mGrundvattenmagasinCheckModel.getCheckedItems().addListener(mListChangeListener);
+        mStatusCheckModel.getCheckedItems().addListener(mListChangeListener);
+    }
+
     private ContainerTag createInfoContent() {
-        //TODO Add measOperator+latest
         var map = new LinkedHashMap<String, String>();
 
         map.put(Dict.TEXT.toString(), getFreeText());
-        map.put(Dict.GROUP.toString(), makeInfo(mGroupCheckModel.getCheckedItems()));
+        map.put(Dict.STATUS.toString(), makeInfo(mStatusCheckModel.getCheckedItems()));
 
         return createHtmlFilterInfo(map);
-
     }
 
     private void initListeners() {
@@ -80,9 +80,4 @@ public class GrundvattenFilter extends FormFilter<GrundvattenManager> {
                 b.getComment()
         );
     }
-
-    private boolean validateGroup(String s) {
-        return validateCheck(mGroupCheckModel, s);
-    }
-
 }
