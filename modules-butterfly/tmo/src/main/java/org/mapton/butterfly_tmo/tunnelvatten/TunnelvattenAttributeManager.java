@@ -15,8 +15,10 @@
  */
 package org.mapton.butterfly_tmo.tunnelvatten;
 
+import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Material;
+import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
 import java.awt.Color;
 import se.trixon.almond.util.GraphicsHelper;
@@ -89,7 +91,7 @@ public class TunnelvattenAttributeManager {
 
     public PointPlacemarkAttributes getPinAttributes() {
         if (mPinAttributes == null) {
-            mPinAttributes = new PointPlacemarkAttributes();
+            mPinAttributes = new PointPlacemarkAttributes(new PointPlacemark(Position.ZERO).getDefaultAttributes());
             mPinAttributes.setScale(0.75);
             mPinAttributes.setImageAddress("images/pushpins/plain-white.png");
             mPinAttributes.setImageColor(Color.ORANGE);
