@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_topo;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
@@ -44,6 +45,7 @@ import se.trixon.almond.util.SDict;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.session.CheckModelSession;
 import se.trixon.almond.util.fx.session.SelectionModelSession;
+import se.trixon.almond.util.fx.session.SessionCheckComboBox;
 import se.trixon.almond.util.fx.session.SpinnerDoubleSession;
 import se.trixon.almond.util.fx.session.SpinnerIntegerSession;
 import se.trixon.almond.util.swing.SwingHelper;
@@ -57,10 +59,8 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
     private final CheckComboBox<AlarmFilter> mAlarmCheckComboBox = new CheckComboBox<>();
     private final CheckModelSession mAlarmCheckModelSession = new CheckModelSession(mAlarmCheckComboBox);
     private final CheckBox mAlarmLevelChangeCheckbox = new CheckBox();
-    private final CheckComboBox<String> mAlarmNameCheckComboBox = new CheckComboBox<>();
-    private final CheckModelSession mAlarmNameCheckModelSession = new CheckModelSession(mAlarmNameCheckComboBox);
-    private final CheckComboBox<String> mCategoryCheckComboBox = new CheckComboBox<>();
-    private final CheckModelSession mCategoryCheckModelSession = new CheckModelSession(mCategoryCheckComboBox);
+    private final SessionCheckComboBox<String> mAlarmNameSccb = new SessionCheckComboBox<>();
+    private final SessionCheckComboBox<String> mCategorySccb = new SessionCheckComboBox<>();
     private final double mDefaultDiffValue = 0.020;
     private final int mDefaultNumOfMeasfValue = 1;
     private final CheckBox mDiffMeasAllCheckbox = new CheckBox();
@@ -74,30 +74,23 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
     private final TopoFilter mFilter;
     private final CheckComboBox<Integer> mFrequencyCheckComboBox = new CheckComboBox<>();
     private final CheckModelSession mFrequencyCheckModelSession = new CheckModelSession(mFrequencyCheckComboBox);
-    private final CheckComboBox<String> mGroupCheckComboBox = new CheckComboBox<>();
-    private final CheckModelSession mGroupCheckModelSession = new CheckModelSession(mGroupCheckComboBox);
-    private final CheckComboBox<String> mHasDateFromToComboBox = new CheckComboBox<>();
-    private final CheckModelSession mHasDateFromToCheckModelSession = new CheckModelSession(mHasDateFromToComboBox);
+    private final SessionCheckComboBox<String> mGroupSccb = new SessionCheckComboBox<>();
+    private final SessionCheckComboBox<String> mHasDateFromToSccb = new SessionCheckComboBox<>();
     private final CheckBox mInvertCheckbox = new CheckBox();
     private final TopoManager mManager = TopoManager.getInstance();
     private final ComboBox<String> mMaxAgeComboBox = new ComboBox<>();
     private final SelectionModelSession mMaxAgeSelectionModelSession = new SelectionModelSession(mMaxAgeComboBox.getSelectionModel());
-    private final CheckComboBox<String> mMeasCodeCheckComboBox = new CheckComboBox<>();
-    private final CheckModelSession mMeasCodeCheckModelSession = new CheckModelSession(mMeasCodeCheckComboBox);
+    private final SessionCheckComboBox<String> mMeasCodeSccb = new SessionCheckComboBox<>();
     private final CheckBox mMeasIncludeWithoutCheckbox = new CheckBox();
     private final CheckBox mMeasLatestOperatorCheckbox = new CheckBox();
-    private final CheckComboBox<String> mMeasOperatorsCheckComboBox = new CheckComboBox<>();
-    private final CheckModelSession mMeasOperatorsCheckModelSession = new CheckModelSession(mMeasOperatorsCheckComboBox);
-    private final CheckComboBox<String> mNextMeasCheckComboBox = new CheckComboBox<>();
-    private final CheckModelSession mNextMeasCheckModelSession = new CheckModelSession(mNextMeasCheckComboBox);
+    private final SessionCheckComboBox<String> mMeasNextSccb = new SessionCheckComboBox<>();
+    private final SessionCheckComboBox<String> mMeasOperatorSccb = new SessionCheckComboBox<>();
     private final CheckBox mNumOfMeasCheckbox = new CheckBox();
     private final Spinner<Integer> mNumOfMeasSpinner = new Spinner<>(Integer.MIN_VALUE, Integer.MAX_VALUE, mDefaultNumOfMeasfValue);
     private final SpinnerIntegerSession mNumOfMeasSession = new SpinnerIntegerSession(mNumOfMeasSpinner);
-    private final CheckComboBox<String> mOperatorCheckComboBox = new CheckComboBox<>();
-    private final CheckModelSession mOperatorCheckModelSession = new CheckModelSession(mOperatorCheckComboBox);
+    private final SessionCheckComboBox<String> mOperatorSccb = new SessionCheckComboBox<>();
     private final CheckBox mSameAlarmCheckbox = new CheckBox();
-    private final CheckComboBox<String> mStatusCheckComboBox = new CheckComboBox<>();
-    private final CheckModelSession mStatusCheckModelSession = new CheckModelSession(mStatusCheckComboBox);
+    private final SessionCheckComboBox<String> mStatusSccb = new SessionCheckComboBox<>();
 
     public TopoFilterPopOver(TopoFilter filter) {
         mFilter = filter;
@@ -126,80 +119,46 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
         mDiffMeasAllSpinner.getValueFactory().setValue(mDefaultDiffValue);
         mNumOfMeasSpinner.getValueFactory().setValue(mDefaultNumOfMeasfValue);
         mDimensionCheckComboBox.getCheckModel().clearChecks();
-        mStatusCheckComboBox.getCheckModel().clearChecks();
-        mMeasOperatorsCheckComboBox.getCheckModel().clearChecks();
-        mMeasOperatorsCheckComboBox.getCheckModel().clearChecks();
-        mGroupCheckComboBox.getCheckModel().clearChecks();
-        mCategoryCheckComboBox.getCheckModel().clearChecks();
-        mAlarmNameCheckComboBox.getCheckModel().clearChecks();
-        mOperatorCheckComboBox.getCheckModel().clearChecks();
+        mStatusSccb.clearChecks();
+        mMeasOperatorSccb.clearChecks();
+        mGroupSccb.clearChecks();
+        mCategorySccb.clearChecks();
+        mAlarmNameSccb.clearChecks();
+        mOperatorSccb.clearChecks();
         mAlarmCheckComboBox.getCheckModel().clearChecks();
-        mNextMeasCheckComboBox.getCheckModel().clearChecks();
-        mMeasCodeCheckComboBox.getCheckModel().clearChecks();
-        mHasDateFromToComboBox.getCheckModel().clearChecks();
+        mMeasNextSccb.clearChecks();
+        mMeasCodeSccb.clearChecks();
+        mHasDateFromToSccb.clearChecks();
         mFrequencyCheckComboBox.getCheckModel().clearChecks();
         mMaxAgeComboBox.getSelectionModel().select(0);
     }
 
     @Override
     public void load(Butterfly butterfly) {
-        var topoControlPoints = butterfly.topo().getControlPoints();
+        var items = butterfly.topo().getControlPoints();
 
         var dimensionCheckModel = mDimensionCheckComboBox.getCheckModel();
         var checkedDimensions = dimensionCheckModel.getCheckedItems();
-        var allDimensions = new TreeSet<>(topoControlPoints.stream().map(o -> o.getDimension()).collect(Collectors.toSet()));
+        var allDimensions = new TreeSet<>(items.stream().map(o -> o.getDimension()).collect(Collectors.toSet()));
 
         mDimensionCheckComboBox.getItems().setAll(allDimensions);
         checkedDimensions.stream().forEach(d -> dimensionCheckModel.check(d));
 //
-        var statusCheckModel = mStatusCheckComboBox.getCheckModel();
-        var checkedStatus = statusCheckModel.getCheckedItems();
-        var allStatus = new TreeSet<>(topoControlPoints.stream().map(o -> o.getStatus()).collect(Collectors.toSet()));
-
-        mStatusCheckComboBox.getItems().setAll(allStatus);
-        checkedStatus.stream().forEach(d -> statusCheckModel.check(d));
+        var allAlarmNames = items.stream().map(o -> o.getNameOfAlarmHeight()).collect(Collectors.toCollection(HashSet::new));
+        allAlarmNames.addAll(items.stream().map(o -> o.getNameOfAlarmPlane()).collect(Collectors.toSet()));
+        mAlarmNameSccb.loadAndRestoreCheckItems(allAlarmNames.stream());
+        mMeasOperatorSccb.loadAndRestoreCheckItems(items.stream().flatMap(p -> p.ext().getObservationsAllRaw().stream().map(o -> o.getOperator())));
+        mGroupSccb.loadAndRestoreCheckItems(items.stream().map(o -> o.getGroup()));
+        mCategorySccb.loadAndRestoreCheckItems(items.stream().map(o -> o.getCategory()));
+        mOperatorSccb.loadAndRestoreCheckItems(items.stream().map(o -> o.getOperator()));
+        mStatusSccb.loadAndRestoreCheckItems(items.stream().map(o -> o.getStatus()));
+        mMeasCodeSccb.loadAndRestoreCheckItems();
+        mMeasNextSccb.loadAndRestoreCheckItems();
 //
-        var measOperatorsCheckModel = mMeasOperatorsCheckComboBox.getCheckModel();
-        var checkedMeasOperators = measOperatorsCheckModel.getCheckedItems();
-        var allMeasOperator = new TreeSet<>(topoControlPoints.stream()
-                .flatMap(p -> p.ext().getObservationsAllRaw().stream().map(o -> o.getOperator()))
-                .collect(Collectors.toSet()));
-
-        mMeasOperatorsCheckComboBox.getItems().setAll(allMeasOperator);
-        checkedMeasOperators.stream().forEach(d -> measOperatorsCheckModel.check(d));
-//
-        var groupCheckModel = mGroupCheckComboBox.getCheckModel();
-        var checkedGroup = groupCheckModel.getCheckedItems();
-        var allGroupss = new TreeSet<>(topoControlPoints.stream().map(o -> o.getGroup()).collect(Collectors.toSet()));
-
-        mGroupCheckComboBox.getItems().setAll(allGroupss);
-        checkedGroup.stream().forEach(d -> groupCheckModel.check(d));
-//
-        var categoryCheckModel = mCategoryCheckComboBox.getCheckModel();
-        var checkedCategory = categoryCheckModel.getCheckedItems();
-        var allCategory = new TreeSet<>(topoControlPoints.stream().map(o -> o.getCategory()).collect(Collectors.toSet()));
-
-        mCategoryCheckComboBox.getItems().setAll(allCategory);
-        checkedCategory.stream().forEach(d -> categoryCheckModel.check(d));
-//
-        var alarmNameCheckModel = mAlarmNameCheckComboBox.getCheckModel();
-        var checkedAlarm = alarmNameCheckModel.getCheckedItems();
-        var allAlarmName = new TreeSet<>(topoControlPoints.stream().map(o -> o.getNameOfAlarmHeight()).collect(Collectors.toSet()));
-        allAlarmName.addAll(topoControlPoints.stream().map(o -> o.getNameOfAlarmPlane()).collect(Collectors.toSet()));
-
-        mAlarmNameCheckComboBox.getItems().setAll(allAlarmName);
-        checkedAlarm.stream().forEach(d -> alarmNameCheckModel.check(d));
-//
-        var performerCheckModel = mOperatorCheckComboBox.getCheckModel();
-        var checkedPerformer = performerCheckModel.getCheckedItems();
-        var allPerformers = new TreeSet<>(topoControlPoints.stream().map(o -> o.getOperator()).collect(Collectors.toSet()));
-
-        mOperatorCheckComboBox.getItems().setAll(allPerformers);
-        checkedPerformer.stream().forEach(d -> performerCheckModel.check(d));
 
         var frequencyCheckModel = mFrequencyCheckComboBox.getCheckModel();
         var checkedFrequency = frequencyCheckModel.getCheckedItems();
-        var allFrequency = new TreeSet<>(topoControlPoints.stream()
+        var allFrequency = new TreeSet<>(items.stream()
                 .filter(o -> o.getFrequency() != null)
                 .map(o -> o.getFrequency())
                 .collect(Collectors.toSet()));
@@ -208,18 +167,9 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
         checkedFrequency.stream().forEach(d -> frequencyCheckModel.check(d));
 
         mDimensionCheckModelSession.load();
-        mStatusCheckModelSession.load();
-        mMeasOperatorsCheckModelSession.load();
-        mCategoryCheckModelSession.load();
-        mAlarmNameCheckModelSession.load();
-        mGroupCheckModelSession.load();
-        mOperatorCheckModelSession.load();
         mFrequencyCheckModelSession.load();
         mMaxAgeSelectionModelSession.load();
-        mNextMeasCheckModelSession.load();
         mAlarmCheckModelSession.load();
-        mMeasCodeCheckModelSession.load();
-        mHasDateFromToCheckModelSession.load();
         mDiffMeasLatestSpinnerSession.load();
         mDiffMeasAllSpinnerSession.load();
         mNumOfMeasSession.load();
@@ -232,11 +182,12 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
 
     @Override
     public void onShownFirstTime() {
-        var dropDownCount = 25;
-        FxHelper.getComboBox(mGroupCheckComboBox).setVisibleRowCount(dropDownCount);
-        FxHelper.getComboBox(mCategoryCheckComboBox).setVisibleRowCount(dropDownCount);
-        FxHelper.getComboBox(mAlarmNameCheckComboBox).setVisibleRowCount(dropDownCount);
-        FxHelper.getComboBox(mMeasOperatorsCheckComboBox).setVisibleRowCount(dropDownCount);
+        FxHelper.setVisibleRowCount(25,
+                mGroupSccb,
+                mCategorySccb,
+                mAlarmNameSccb,
+                mMeasOperatorSccb
+        );
     }
 
     @Override
@@ -247,42 +198,35 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
     }
 
     private void createUI() {
-        mHasDateFromToComboBox.setShowCheckedCount(true);
-        mHasDateFromToComboBox.setTitle(SDict.VALID_FROM_TO.toString());
+        FxHelper.setShowCheckedCount(true,
+                mHasDateFromToSccb,
+                mMeasNextSccb,
+                mAlarmCheckComboBox,
+                mMeasCodeSccb,
+                mMeasOperatorSccb,
+                mStatusSccb,
+                mGroupSccb,
+                mCategorySccb,
+                mAlarmNameSccb,
+                mOperatorSccb,
+                mFrequencyCheckComboBox,
+                mDimensionCheckComboBox
+        );
 
-        mNextMeasCheckComboBox.setShowCheckedCount(true);
-        mNextMeasCheckComboBox.setTitle(getBundle().getString("nextMeasCheckComboBoxTitle"));
-
-        mAlarmCheckComboBox.setShowCheckedCount(true);
+        mHasDateFromToSccb.setTitle(SDict.VALID_FROM_TO.toString());
+        mMeasNextSccb.setTitle(getBundle().getString("nextMeasCheckComboBoxTitle"));
         mAlarmCheckComboBox.setTitle(SDict.ALARM_LEVEL.toString());
         mAlarmCheckComboBox.getItems().setAll(AlarmFilter.values());
-
-        mMeasCodeCheckComboBox.setShowCheckedCount(true);
-        mMeasCodeCheckComboBox.setTitle(getBundle().getString("measCodeCheckComboBoxTitle"));
-
-        mMeasOperatorsCheckComboBox.setShowCheckedCount(true);
-        mMeasOperatorsCheckComboBox.setTitle(SDict.SURVEYORS.toString());
-
-        mStatusCheckComboBox.setShowCheckedCount(true);
-        mStatusCheckComboBox.setTitle(Dict.STATUS.toString());
-
-        mGroupCheckComboBox.setShowCheckedCount(true);
-        mGroupCheckComboBox.setTitle(Dict.GROUP.toString());
-
-        mCategoryCheckComboBox.setShowCheckedCount(true);
-        mCategoryCheckComboBox.setTitle(Dict.CATEGORY.toString());
-
-        mAlarmNameCheckComboBox.setShowCheckedCount(true);
-        mAlarmNameCheckComboBox.setTitle(SDict.ALARMS.toString());
-
-        mOperatorCheckComboBox.setShowCheckedCount(true);
-        mOperatorCheckComboBox.setTitle(SDict.OPERATOR.toString());
-
-        mFrequencyCheckComboBox.setShowCheckedCount(true);
+        mMeasCodeSccb.setTitle(getBundle().getString("measCodeCheckComboBoxTitle"));
+        mMeasOperatorSccb.setTitle(SDict.SURVEYORS.toString());
+        mStatusSccb.setTitle(Dict.STATUS.toString());
+        mGroupSccb.setTitle(Dict.GROUP.toString());
+        mCategorySccb.setTitle(Dict.CATEGORY.toString());
+        mAlarmNameSccb.setTitle(SDict.ALARMS.toString());
+        mOperatorSccb.setTitle(SDict.OPERATOR.toString());
         mFrequencyCheckComboBox.setTitle(SDict.FREQUENCY.toString());
-
-        mDimensionCheckComboBox.setShowCheckedCount(true);
         mDimensionCheckComboBox.setTitle(SDict.DIMENSION.toString());
+
         mDimensionCheckComboBox.setConverter(new StringConverter<BDimension>() {
             @Override
             public BDimension fromString(String string) {
@@ -295,7 +239,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
             }
         });
 
-        mHasDateFromToComboBox.getItems().setAll(List.of(
+        mHasDateFromToSccb.getItems().setAll(List.of(
                 SDict.HAS_VALID_FROM.toString(),
                 SDict.HAS_VALID_TO.toString(),
                 SDict.WITHOUT_VALID_FROM.toString(),
@@ -304,7 +248,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
                 SDict.IS_INVALID.toString()
         ));
 
-        mNextMeasCheckComboBox.getItems().setAll(List.of(
+        mMeasNextSccb.getItems().setAll(List.of(
                 "<0",
                 "0",
                 "1-7",
@@ -314,7 +258,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
                 "∞"
         ));
 
-        mMeasCodeCheckComboBox.getItems().setAll(List.of(
+        mMeasCodeSccb.getItems().setAll(List.of(
                 getBundle().getString("measCodeZero"),
                 getBundle().getString("measCodeReplacement")
         ));
@@ -368,22 +312,22 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
 
         var leftBox = new VBox(rowGap,
                 mDimensionCheckComboBox,
-                mStatusCheckComboBox,
-                mGroupCheckComboBox,
-                mCategoryCheckComboBox,
-                mAlarmNameCheckComboBox,
-                mOperatorCheckComboBox,
+                mStatusSccb,
+                mGroupSccb,
+                mCategorySccb,
+                mAlarmNameSccb,
+                mOperatorSccb,
                 mFrequencyCheckComboBox,
-                mHasDateFromToComboBox
+                mHasDateFromToSccb
         );
 
         var rightBox = new VBox(rowGap,
                 mAlarmCheckComboBox,
-                mNextMeasCheckComboBox,
+                mMeasNextSccb,
                 mMaxAgeComboBox,
-                mMeasCodeCheckComboBox,
+                mMeasCodeSccb,
                 new VBox(titleGap,
-                        mMeasOperatorsCheckComboBox,
+                        mMeasOperatorSccb,
                         mMeasLatestOperatorCheckbox
                 ),
                 new VBox(titleGap,
@@ -439,7 +383,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
         mDiffMeasLatestSpinner.prefWidthProperty().bind(rightBox.widthProperty());
         mDiffMeasAllSpinner.prefWidthProperty().bind(rightBox.widthProperty());
         mNumOfMeasSpinner.prefWidthProperty().bind(rightBox.widthProperty());
-        mMeasOperatorsCheckComboBox.prefWidthProperty().bind(rightBox.widthProperty());
+        mMeasOperatorSccb.prefWidthProperty().bind(rightBox.widthProperty());
 
         leftBox.setPrefWidth(FxHelper.getUIScaled(200));
         rightBox.setPrefWidth(FxHelper.getUIScaled(200));
@@ -480,16 +424,16 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
         mFilter.maxAgeProperty().bind(mMaxAgeComboBox.getSelectionModel().selectedItemProperty());
         mFilter.polygonFilterProperty().bind(getPolygonFilterCheckBox().selectedProperty());
         mFilter.setCheckModelDimension(mDimensionCheckComboBox.getCheckModel());
-        mFilter.setCheckModelStatus(mStatusCheckComboBox.getCheckModel());
-        mFilter.setCheckModelMeasOperators(mMeasOperatorsCheckComboBox.getCheckModel());
-        mFilter.setCheckModelGroup(mGroupCheckComboBox.getCheckModel());
-        mFilter.setCheckModelCategory(mCategoryCheckComboBox.getCheckModel());
-        mFilter.setCheckModelAlarmName(mAlarmNameCheckComboBox.getCheckModel());
-        mFilter.setCheckModelOperator(mOperatorCheckComboBox.getCheckModel());
-        mFilter.setCheckModelNextMeas(mNextMeasCheckComboBox.getCheckModel());
+        mFilter.setCheckModelStatus(mStatusSccb.getCheckModel());
+        mFilter.setCheckModelMeasOperators(mMeasOperatorSccb.getCheckModel());
+        mFilter.setCheckModelGroup(mGroupSccb.getCheckModel());
+        mFilter.setCheckModelCategory(mCategorySccb.getCheckModel());
+        mFilter.setCheckModelAlarmName(mAlarmNameSccb.getCheckModel());
+        mFilter.setCheckModelOperator(mOperatorSccb.getCheckModel());
+        mFilter.setCheckModelNextMeas(mMeasNextSccb.getCheckModel());
         mFilter.setCheckModelAlarm(mAlarmCheckComboBox.getCheckModel());
-        mFilter.setCheckModelMeasCode(mMeasCodeCheckComboBox.getCheckModel());
-        mFilter.setCheckModelDateFromTo(mHasDateFromToComboBox.getCheckModel());
+        mFilter.setCheckModelMeasCode(mMeasCodeSccb.getCheckModel());
+        mFilter.setCheckModelDateFromTo(mHasDateFromToSccb.getCheckModel());
         mFilter.setCheckModelFrequency(mFrequencyCheckComboBox.getCheckModel());
 
         mNumOfMeasSpinner.disableProperty().bind(mNumOfMeasCheckbox.selectedProperty().not());
@@ -501,16 +445,16 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
         var sessionManager = getSessionManager();
         sessionManager.register("filter.freeText", mFilter.freeTextProperty());
         sessionManager.register("filter.checkedDimensions", mDimensionCheckModelSession.checkedStringProperty());
-        sessionManager.register("filter.checkedStatus", mStatusCheckModelSession.checkedStringProperty());
-        sessionManager.register("filter.checkedMeasOperators", mMeasOperatorsCheckModelSession.checkedStringProperty());
-        sessionManager.register("filter.checkedGroup", mGroupCheckModelSession.checkedStringProperty());
-        sessionManager.register("filter.checkedCategory", mCategoryCheckModelSession.checkedStringProperty());
-        sessionManager.register("filter.checkedAlarmName", mAlarmNameCheckModelSession.checkedStringProperty());
-        sessionManager.register("filter.checkedPerformers", mOperatorCheckModelSession.checkedStringProperty());
+        sessionManager.register("filter.checkedStatus", mStatusSccb.checkedStringProperty());
+        sessionManager.register("filter.checkedMeasOperators", mMeasOperatorSccb.checkedStringProperty());
+        sessionManager.register("filter.checkedGroup", mGroupSccb.checkedStringProperty());
+        sessionManager.register("filter.checkedCategory", mCategorySccb.checkedStringProperty());
+        sessionManager.register("filter.checkedAlarmName", mAlarmNameSccb.checkedStringProperty());
+        sessionManager.register("filter.checkedPerformers", mOperatorSccb.checkedStringProperty());
         sessionManager.register("filter.checkedNextAlarm", mAlarmCheckModelSession.checkedStringProperty());
-        sessionManager.register("filter.checkedNextMeas", mNextMeasCheckModelSession.checkedStringProperty());
-        sessionManager.register("filter.checkedMeasCode", mMeasCodeCheckModelSession.checkedStringProperty());
-        sessionManager.register("filter.checkedDateFromTo", mHasDateFromToCheckModelSession.checkedStringProperty());
+        sessionManager.register("filter.checkedNextMeas", mMeasNextSccb.checkedStringProperty());
+        sessionManager.register("filter.checkedMeasCode", mMeasCodeSccb.checkedStringProperty());
+        sessionManager.register("filter.checkedDateFromTo", mHasDateFromToSccb.checkedStringProperty());
         sessionManager.register("filter.checkedFrequency", mFrequencyCheckModelSession.checkedStringProperty());
         sessionManager.register("filter.maxAge", mMaxAgeSelectionModelSession.selectedIndexProperty());
         sessionManager.register("filter.diffMeasLatestValue", mDiffMeasLatestSpinnerSession.valueProperty());
