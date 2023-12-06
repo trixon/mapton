@@ -32,7 +32,10 @@ public class GrundvattenFilter extends FormFilter<GrundvattenManager> {
 
     IndexedCheckModel mFiltertypCheckModel;
     IndexedCheckModel mGrundvattenmagasinCheckModel;
+    IndexedCheckModel mInformationskällaCheckModel;
+    IndexedCheckModel mKontrollprogramCheckModel;
     IndexedCheckModel mRörtypCheckModel;
+    IndexedCheckModel mSpetstypCheckModel;
     IndexedCheckModel mStatusCheckModel;
     private final GrundvattenManager mManager = GrundvattenManager.getInstance();
 
@@ -48,7 +51,10 @@ public class GrundvattenFilter extends FormFilter<GrundvattenManager> {
                 .filter(g -> StringUtils.isBlank(getFreeText()) || validateFreeText(g))
                 .filter(g -> validateCheck(mGrundvattenmagasinCheckModel, g.getGrundvattenmagasin()))
                 .filter(g -> validateCheck(mFiltertypCheckModel, g.getFiltertyp()))
+                .filter(g -> validateCheck(mInformationskällaCheckModel, g.getInformationskällor()))
+                .filter(g -> validateCheck(mKontrollprogramCheckModel, g.getKontrollprogram()))
                 .filter(g -> validateCheck(mRörtypCheckModel, g.getRörtyp()))
+                .filter(g -> validateCheck(mSpetstypCheckModel, g.getSpetstyp()))
                 .filter(g -> validateCheck(mStatusCheckModel, g.getStatus()))
                 .filter(g -> validateCoordinateArea(g.getLat(), g.getLon()))
                 .filter(g -> validateCoordinateRuler(g.getLat(), g.getLon()))
@@ -62,7 +68,10 @@ public class GrundvattenFilter extends FormFilter<GrundvattenManager> {
     void initCheckModelListeners() {
         mGrundvattenmagasinCheckModel.getCheckedItems().addListener(mListChangeListener);
         mFiltertypCheckModel.getCheckedItems().addListener(mListChangeListener);
+        mInformationskällaCheckModel.getCheckedItems().addListener(mListChangeListener);
         mRörtypCheckModel.getCheckedItems().addListener(mListChangeListener);
+        mSpetstypCheckModel.getCheckedItems().addListener(mListChangeListener);
+        mKontrollprogramCheckModel.getCheckedItems().addListener(mListChangeListener);
         mStatusCheckModel.getCheckedItems().addListener(mListChangeListener);
     }
 
@@ -71,6 +80,12 @@ public class GrundvattenFilter extends FormFilter<GrundvattenManager> {
 
         map.put(Dict.TEXT.toString(), getFreeText());
         map.put(Dict.STATUS.toString(), makeInfo(mStatusCheckModel.getCheckedItems()));
+        map.put("Grundvattenmagasin", makeInfo(mGrundvattenmagasinCheckModel.getCheckedItems()));
+        map.put("Rörtyp", makeInfo(mRörtypCheckModel.getCheckedItems()));
+        map.put("Filtertyp", makeInfo(mFiltertypCheckModel.getCheckedItems()));
+        map.put("Spetstyp", makeInfo(mSpetstypCheckModel.getCheckedItems()));
+        map.put("Informationskälla", makeInfo(mInformationskällaCheckModel.getCheckedItems()));
+        map.put("Kontrollprogram", makeInfo(mKontrollprogramCheckModel.getCheckedItems()));
 
         return createHtmlFilterInfo(map);
     }
