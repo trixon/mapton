@@ -29,19 +29,19 @@ import org.mapton.worldwind.api.WWHelper;
  *
  * @author Patrik Karlström
  */
-public class ComponentRenderer extends ComponentRendererBase {
+public class GraphicRenderer extends GraphicRendererBase {
 
-    private final ComponentRendererCircle mCircleRenderer = new ComponentRendererCircle();
-    private final ComponentRendererTrace mTraceRenderer = new ComponentRendererTrace();
-    private final ComponentRendererVector mVectorRenderer = new ComponentRendererVector();
+    private final GraphicRendererCircle mCircleRenderer = new GraphicRendererCircle();
+    private final GraphicRendererTrace mTraceRenderer = new GraphicRendererTrace();
+    private final GraphicRendererVector mVectorRenderer = new GraphicRendererVector();
 
-    public ComponentRenderer(RenderableLayer layer, IndexedCheckModel<ComponentRendererItem> checkModel) {
+    public GraphicRenderer(RenderableLayer layer, IndexedCheckModel<GraphicRendererItem> checkModel) {
         sInteractiveLayer = layer;
         sCheckModel = checkModel;
     }
 
     public void plot(BTopoControlPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
-        ComponentRendererBase.sMapObjects = mapObjects;
+        GraphicRendererBase.sMapObjects = mapObjects;
         plotBearing(p, position);
 
         if (p.ext().getNumOfObservationsFiltered() > 1) {
@@ -62,7 +62,7 @@ public class ComponentRenderer extends ComponentRendererBase {
 
     private void plotBearing(BTopoControlPoint p, Position position) {
         int size = p.ext().getObservationsTimeFiltered().size();
-        if (!sCheckModel.isChecked(ComponentRendererItem.BEARING)
+        if (!sCheckModel.isChecked(GraphicRendererItem.BEARING)
                 || p.getDimension() == BDimension._1d
                 || p.ext().getNumOfObservationsFiltered() == 0) {
             return;

@@ -19,13 +19,13 @@ package org.mapton.butterfly_acoustic.blast;
  *
  * @author Patrik Karlström
  */
-public enum ComponentRendererItem {
+public enum GraphicRendererItem {
     BALLS("Klot", Integer.MAX_VALUE),
     RECENT("Senaste cirklar", Integer.MAX_VALUE);
     private final String mName;
     private final int mPlotLimit;
 
-    private ComponentRendererItem(String name, int plotLimit) {
+    private GraphicRendererItem(String name, int plotLimit) {
         mName = name;
         mPlotLimit = plotLimit;
     }

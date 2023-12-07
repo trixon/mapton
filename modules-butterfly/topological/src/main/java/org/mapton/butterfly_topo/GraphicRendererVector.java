@@ -32,20 +32,20 @@ import se.trixon.almond.util.MathHelper;
  *
  * @author Patrik Karlström
  */
-public class ComponentRendererVector extends ComponentRendererBase {
+public class GraphicRendererVector extends GraphicRendererBase {
 
     public ArrayList<AVListImpl> plot(BTopoControlPoint p, Position position) {
         var mapObjects = new ArrayList<AVListImpl>();
 
-        if (sCheckModel.isChecked(ComponentRendererItem.VECTOR_1D) && p.getDimension() == BDimension._1d) {
+        if (sCheckModel.isChecked(GraphicRendererItem.VECTOR_1D) && p.getDimension() == BDimension._1d) {
             plot1d(p, position, mapObjects);
         }
 
-        if (sCheckModel.isChecked(ComponentRendererItem.VECTOR_1D_ALARM) && p.getDimension() == BDimension._1d) {
+        if (sCheckModel.isChecked(GraphicRendererItem.VECTOR_1D_ALARM) && p.getDimension() == BDimension._1d) {
             plot1dVectorAlarm(p, position, mapObjects);
         }
 
-        if (sCheckModel.isChecked(ComponentRendererItem.VECTOR_3D) && p.getDimension() == BDimension._3d) {
+        if (sCheckModel.isChecked(GraphicRendererItem.VECTOR_3D) && p.getDimension() == BDimension._3d) {
             plot3d(p, position, mapObjects);
         }
 

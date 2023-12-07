@@ -56,7 +56,7 @@ public class TopoLayerBundle extends BfLayerBundle {
     private final double SYMBOL_HEIGHT = 4.0;
     private final double SYMBOL_RADIUS = 1.5;
     private final TopoAttributeManager mAttributeManager = TopoAttributeManager.getInstance();
-    private final ComponentRenderer mComponentRenderer;
+    private final GraphicRenderer mGraphicRenderer;
     private final ArrayList<AVListImpl> mEmptyDummyList = new ArrayList<>();
     private final RenderableLayer mLabelLayer = new RenderableLayer();
     private final RenderableLayer mLayer = new RenderableLayer();
@@ -69,7 +69,7 @@ public class TopoLayerBundle extends BfLayerBundle {
         init();
         initRepaint();
         mOptionsView = new TopoOptionsView(this);
-        mComponentRenderer = new ComponentRenderer(mLayer, mOptionsView.getComponentCheckModel());
+        mGraphicRenderer = new GraphicRenderer(mLayer, mOptionsView.getComponentCheckModel());
         initListeners();
         mAttributeManager.setColorBy(mOptionsView.getColorBy());
 
@@ -127,7 +127,7 @@ public class TopoLayerBundle extends BfLayerBundle {
     private void initRepaint() {
         setPainter(() -> {
             removeAllRenderables();
-            mComponentRenderer.reset();
+            mGraphicRenderer.reset();
             if (!mLayer.isEnabled()) {
                 return;
             }
@@ -172,7 +172,7 @@ public class TopoLayerBundle extends BfLayerBundle {
                     mapObjects.addAll(plotSymbol(p, position, labelPlacemark));
                     mapObjects.addAll(plotIndicators(p, position));
 
-                    mComponentRenderer.plot(p, position, mapObjects);
+                    mGraphicRenderer.plot(p, position, mapObjects);
 
                     var leftClickRunnable = (Runnable) () -> {
                         mManager.setSelectedItemAfterReset(p);
@@ -180,7 +180,7 @@ public class TopoLayerBundle extends BfLayerBundle {
 
                     var leftDoubleClickRunnable = (Runnable) () -> {
                         Almond.openAndActivateTopComponent((String) mLayer.getValue(WWHelper.KEY_FAST_OPEN));
-                        mComponentRenderer.addToAllowList(p.getName());
+                        mGraphicRenderer.addToAllowList(p.getName());
                         repaint();
                     };
 

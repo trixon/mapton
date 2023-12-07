@@ -40,12 +40,12 @@ import se.trixon.almond.util.fx.session.SessionCheckComboBox;
  */
 public class BlastOptionsView extends MOptionsView<BlastLayerBundle> {
 
+    private final SessionCheckComboBox<GraphicRendererItem> mGraphicSccb = new SessionCheckComboBox<>();
     private final SimpleStringProperty mLabelByIdProperty = new SimpleStringProperty("NONE");
     private final SimpleObjectProperty<BlastLabelBy> mLabelByProperty = new SimpleObjectProperty<>();
     private final MenuButton mLabelMenuButton = new MenuButton();
     private final ComboBox<PointBy> mPointComboBox = new ComboBox<>();
     private final SelectionModelSession mPointSelectionModelSession = new SelectionModelSession(mPointComboBox.getSelectionModel());
-    private final SessionCheckComboBox<ComponentRendererItem> mComponentSccb = new SessionCheckComboBox<>();
 
     public BlastOptionsView(BlastLayerBundle layerBundle) {
         super(layerBundle);
@@ -54,8 +54,8 @@ public class BlastOptionsView extends MOptionsView<BlastLayerBundle> {
         initSession();
     }
 
-    public IndexedCheckModel<ComponentRendererItem> getComponentCheckModel() {
-        return mComponentSccb.getCheckModel();
+    public IndexedCheckModel<GraphicRendererItem> getGraphicCheckModel() {
+        return mGraphicSccb.getCheckModel();
     }
 
     public BlastLabelBy getLabelBy() {
@@ -74,9 +74,9 @@ public class BlastOptionsView extends MOptionsView<BlastLayerBundle> {
         mPointComboBox.getItems().setAll(PointBy.values());
         mPointComboBox.setValue(PointBy.NONE);
 
-        mComponentSccb.setTitle(Dict.GRAPHICS.toString());
-        mComponentSccb.setShowCheckedCount(true);
-        mComponentSccb.getItems().setAll(ComponentRendererItem.values());
+        mGraphicSccb.setTitle(Dict.GRAPHICS.toString());
+        mGraphicSccb.setShowCheckedCount(true);
+        mGraphicSccb.getItems().setAll(GraphicRendererItem.values());
 
         populateLabelMenuButton();
 
@@ -88,7 +88,7 @@ public class BlastOptionsView extends MOptionsView<BlastLayerBundle> {
                 mPointComboBox,
                 labelLabel,
                 mLabelMenuButton,
-                mComponentSccb
+                mGraphicSccb
         );
         box.setPadding(FxHelper.getUIScaledInsets(8));
 
@@ -105,7 +105,7 @@ public class BlastOptionsView extends MOptionsView<BlastLayerBundle> {
         mPointComboBox.valueProperty().addListener(getChangeListener());
 
         Stream.of(
-                mComponentSccb)
+                mGraphicSccb)
                 .forEachOrdered(ccb -> ccb.getCheckModel().getCheckedItems().addListener(getListChangeListener()));
 
     }
@@ -114,7 +114,7 @@ public class BlastOptionsView extends MOptionsView<BlastLayerBundle> {
         var sessionManager = getSessionManager();
         sessionManager.register("options.pointBy", mPointSelectionModelSession.selectedIndexProperty());
         sessionManager.register("options.labelBy", mLabelByIdProperty);
-        sessionManager.register("options.checkedPlot", mComponentSccb.checkedStringProperty());
+        sessionManager.register("options.checkedGraphics", mGraphicSccb.checkedStringProperty());
 
         mLabelByProperty.set(BlastLabelBy.valueOf(mLabelByIdProperty.get()));
     }

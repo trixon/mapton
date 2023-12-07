@@ -35,17 +35,17 @@ import se.trixon.almond.util.MathHelper;
  *
  * @author Patrik Karlström
  */
-public abstract class ComponentRendererBase {
+public abstract class GraphicRendererBase {
 
-    protected static IndexedCheckModel<ComponentRendererItem> sCheckModel;
+    protected static IndexedCheckModel<GraphicRendererItem> sCheckModel;
     protected static RenderableLayer sInteractiveLayer;
     protected static ArrayList<AVListImpl> sMapObjects;
     protected static PlotLimiter sPlotLimiter = new PlotLimiter();
     protected static HashMap<BTopoControlPoint, Position[]> sPointToPositionMap = new HashMap<>();
     protected final TopoAttributeManager mAttributeManager = TopoAttributeManager.getInstance();
 
-    public ComponentRendererBase() {
-        for (var renderItem : ComponentRendererItem.values()) {
+    public GraphicRendererBase() {
+        for (var renderItem : GraphicRendererItem.values()) {
             sPlotLimiter.setLimit(renderItem, renderItem.getPlotLimit());
         }
     }

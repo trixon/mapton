@@ -41,21 +41,21 @@ import se.trixon.almond.util.fx.FxHelper;
 public class BlastLayerBundle extends BfLayerBundle {
 
     private final BlastAttributeManager mAttributeManager = BlastAttributeManager.getInstance();
-    private final ComponentRenderer mComponentRenderer;
+    private final GraphicRenderer mGraphicRenderer;
+    private final RenderableLayer mGroundConnectorLayer = new RenderableLayer();
     private final RenderableLayer mLabelLayer = new RenderableLayer();
     private final RenderableLayer mLayer = new RenderableLayer();
     private final BlastManager mManager = BlastManager.getInstance();
     private final BlastOptionsView mOptionsView;
     private final RenderableLayer mPinLayer = new RenderableLayer();
-    private final RenderableLayer mGroundConnectorLayer = new RenderableLayer();
-    private final RenderableLayer mSymbolLayer = new RenderableLayer();
     private final RenderableLayer mSurfaceLayer = new RenderableLayer();
+    private final RenderableLayer mSymbolLayer = new RenderableLayer();
 
     public BlastLayerBundle() {
         init();
         initRepaint();
         mOptionsView = new BlastOptionsView(this);
-        mComponentRenderer = new ComponentRenderer(mLayer, mGroundConnectorLayer, mSurfaceLayer, mOptionsView.getComponentCheckModel());
+        mGraphicRenderer = new GraphicRenderer(mLayer, mGroundConnectorLayer, mSurfaceLayer, mOptionsView.getGraphicCheckModel());
         initListeners();
 
         FxHelper.runLaterDelayed(1000, () -> mManager.updateTemporal(mLayer.isEnabled()));
@@ -112,7 +112,7 @@ public class BlastLayerBundle extends BfLayerBundle {
     private void initRepaint() {
         setPainter(() -> {
             removeAllRenderables();
-            mComponentRenderer.reset();
+            mGraphicRenderer.reset();
             if (!mLayer.isEnabled()) {
                 return;
             }
@@ -140,7 +140,7 @@ public class BlastLayerBundle extends BfLayerBundle {
                     mapObjects.add(labelPlacemark);
                     mapObjects.add(plotPin(position, labelPlacemark));
 
-                    mComponentRenderer.plot(p, position, mapObjects);
+                    mGraphicRenderer.plot(p, position, mapObjects);
 
                     var leftClickRunnable = (Runnable) () -> {
                         mManager.setSelectedItemAfterReset(p);

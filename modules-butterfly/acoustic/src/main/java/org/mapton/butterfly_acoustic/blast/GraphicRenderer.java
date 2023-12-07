@@ -34,16 +34,16 @@ import org.mapton.worldwind.api.WWHelper;
  *
  * @author Patrik Karlström
  */
-public class ComponentRenderer {
+public class GraphicRenderer {
 
     private final BlastAttributeManager mAttributeManager = BlastAttributeManager.getInstance();
-    private final IndexedCheckModel<ComponentRendererItem> mCheckModel;
+    private final IndexedCheckModel<GraphicRendererItem> mCheckModel;
     private final RenderableLayer mEllipsoidLayer;
     private ArrayList<AVListImpl> mMapObjects;
     private final RenderableLayer mGroundConnectorLayer;
     private final RenderableLayer mSurfaceLayer;
 
-    public ComponentRenderer(RenderableLayer ellipsoidLayer, RenderableLayer groundConnectorLayer, RenderableLayer surfaceLayer, IndexedCheckModel<ComponentRendererItem> checkModel) {
+    public GraphicRenderer(RenderableLayer ellipsoidLayer, RenderableLayer groundConnectorLayer, RenderableLayer surfaceLayer, IndexedCheckModel<GraphicRendererItem> checkModel) {
         mEllipsoidLayer = ellipsoidLayer;
         mGroundConnectorLayer = groundConnectorLayer;
         mSurfaceLayer = surfaceLayer;
@@ -63,7 +63,7 @@ public class ComponentRenderer {
 
     public void plot(BBlast p, Position position, ArrayList<AVListImpl> mapObjects) {
         mMapObjects = mapObjects;
-        if (mCheckModel.isChecked(ComponentRendererItem.BALLS)) {
+        if (mCheckModel.isChecked(GraphicRendererItem.BALLS)) {
 
             var timeSpan = ChronoUnit.MINUTES.between(p.getDateTime(), LocalDateTime.now());
             var altitude = timeSpan / 24000.0;
@@ -79,7 +79,7 @@ public class ComponentRenderer {
             addRenderable(mGroundConnectorLayer, groundPath);
         }
 
-        if (mCheckModel.isChecked(ComponentRendererItem.RECENT)) {
+        if (mCheckModel.isChecked(GraphicRendererItem.RECENT)) {
             var age = p.ext().getAge(ChronoUnit.DAYS);
             var maxAge = 30.0;
 

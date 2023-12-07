@@ -45,7 +45,7 @@ import se.trixon.almond.util.fx.session.SessionComboBox;
 public class TopoOptionsView extends MOptionsView<TopoLayerBundle> {
 
     private final SessionComboBox<ColorBy> mColorScb = new SessionComboBox<>();
-    private final SessionCheckComboBox<ComponentRendererItem> mComponentSccb = new SessionCheckComboBox<>();
+    private final SessionCheckComboBox<GraphicRendererItem> mGraphicSccb = new SessionCheckComboBox<>();
     private final SessionCheckComboBox<Direction> mIndicatorSccb = new SessionCheckComboBox<>();
     private final SimpleStringProperty mLabelByIdProperty = new SimpleStringProperty("NAME");
     private final SimpleObjectProperty<TopoLabelBy> mLabelByProperty = new SimpleObjectProperty<>();
@@ -67,8 +67,8 @@ public class TopoOptionsView extends MOptionsView<TopoLayerBundle> {
         return mColorScb.valueProperty().get();
     }
 
-    public IndexedCheckModel<ComponentRendererItem> getComponentCheckModel() {
-        return mComponentSccb.getCheckModel();
+    public IndexedCheckModel<GraphicRendererItem> getComponentCheckModel() {
+        return mGraphicSccb.getCheckModel();
     }
 
     public IndexedCheckModel<Direction> getIndicatorCheckModel() {
@@ -93,9 +93,9 @@ public class TopoOptionsView extends MOptionsView<TopoLayerBundle> {
         mColorScb.getItems().setAll(ColorBy.values());
         mColorScb.setValue(ColorBy.STYLE);
 
-        mComponentSccb.setTitle(Dict.GRAPHICS.toString());
-        mComponentSccb.setShowCheckedCount(true);
-        mComponentSccb.getItems().setAll(ComponentRendererItem.values());
+        mGraphicSccb.setTitle(Dict.GRAPHICS.toString());
+        mGraphicSccb.setShowCheckedCount(true);
+        mGraphicSccb.getItems().setAll(GraphicRendererItem.values());
 
         mIndicatorSccb.setTitle(Dict.INDICATORS.toString());
         mIndicatorSccb.setShowCheckedCount(true);
@@ -144,7 +144,7 @@ public class TopoOptionsView extends MOptionsView<TopoLayerBundle> {
                 labelLabel,
                 mLabelMenuButton,
                 mIndicatorSccb,
-                mComponentSccb
+                mGraphicSccb
         );
         box.setPadding(FxHelper.getUIScaledInsets(8));
 
@@ -162,7 +162,7 @@ public class TopoOptionsView extends MOptionsView<TopoLayerBundle> {
 
         Stream.of(
                 mIndicatorSccb,
-                mComponentSccb
+                mGraphicSccb
         ).forEachOrdered(ccb -> ccb.getCheckModel().getCheckedItems().addListener(getListChangeListener()));
     }
 
@@ -171,7 +171,7 @@ public class TopoOptionsView extends MOptionsView<TopoLayerBundle> {
         sessionManager.register("options.pointBy", mPointScb.selectedIndexProperty());
         sessionManager.register("options.colorBy", mColorScb.selectedIndexProperty());
         sessionManager.register("options.labelBy", mLabelByIdProperty);
-        sessionManager.register("options.checkedPlot", mComponentSccb.checkedStringProperty());
+        sessionManager.register("options.checkedGraphics", mGraphicSccb.checkedStringProperty());
         sessionManager.register("options.checkedIndicators", mIndicatorSccb.checkedStringProperty());
 
         mLabelByProperty.set(TopoLabelBy.valueOf(mLabelByIdProperty.get()));

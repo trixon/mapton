@@ -28,12 +28,12 @@ import org.mapton.worldwind.api.WWHelper;
  *
  * @author Patrik Karlström
  */
-public class ComponentRendererCircle extends ComponentRendererBase {
+public class GraphicRendererCircle extends GraphicRendererBase {
 
     public ArrayList<AVListImpl> plot(BTopoControlPoint p, Position position) {
         var mapObjects = new ArrayList<AVListImpl>();
 
-        if (sCheckModel.isChecked(ComponentRendererItem.CIRCLE_1D) && p.getDimension() == BDimension._1d) {
+        if (sCheckModel.isChecked(GraphicRendererItem.CIRCLE_1D) && p.getDimension() == BDimension._1d) {
             plot1dCircle(p, position, mapObjects);
         }
 
@@ -41,7 +41,7 @@ public class ComponentRendererCircle extends ComponentRendererBase {
     }
 
     private void plot1dCircle(BTopoControlPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
-        if (isPlotLimitReached(p, ComponentRendererItem.CIRCLE_1D, position)) {
+        if (isPlotLimitReached(p, GraphicRendererItem.CIRCLE_1D, position)) {
             return;
         }
 
@@ -69,6 +69,6 @@ public class ComponentRendererCircle extends ComponentRendererBase {
 
         cylinder.setAttributes(attrs);
         addRenderable(cylinder, true);
-        sPlotLimiter.incPlotCounter(ComponentRendererItem.CIRCLE_1D);
+        sPlotLimiter.incPlotCounter(GraphicRendererItem.CIRCLE_1D);
     }
 }

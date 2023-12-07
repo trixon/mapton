@@ -22,7 +22,7 @@ import se.trixon.almond.util.SDict;
  *
  * @author Patrik Karlström
  */
-public enum ComponentRendererItem {
+public enum GraphicRendererItem {
     BEARING(Dict.BEARING.toString(), Integer.MAX_VALUE),
     CIRCLE_1D("1d Delta", Integer.MAX_VALUE),
     CIRCLE_3D("3d Delta", Integer.MAX_VALUE),
@@ -36,7 +36,7 @@ public enum ComponentRendererItem {
     private final String mName;
     private final int mPlotLimit;
 
-    private ComponentRendererItem(String name, int plotLimit) {
+    private GraphicRendererItem(String name, int plotLimit) {
         mName = name;
         mPlotLimit = plotLimit;
     }
