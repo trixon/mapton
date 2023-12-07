@@ -26,6 +26,7 @@ import gov.nasa.worldwind.render.SurfaceCircle;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.butterfly_format.types.acoustic.BBlast;
 import org.mapton.worldwind.api.WWHelper;
 
@@ -36,15 +37,17 @@ import org.mapton.worldwind.api.WWHelper;
 public class ComponentRenderer {
 
     private final BlastAttributeManager mAttributeManager = BlastAttributeManager.getInstance();
+    private final IndexedCheckModel<ComponentRendererItem> mCheckModel;
     private final RenderableLayer mEllipsoidLayer;
     private ArrayList<AVListImpl> mMapObjects;
     private final RenderableLayer mGroundConnectorLayer;
     private final RenderableLayer mSurfaceLayer;
 
-    public ComponentRenderer(RenderableLayer ellipsoidLayer, RenderableLayer groundConnectorLayer, RenderableLayer surfaceLayer) {
+    public ComponentRenderer(RenderableLayer ellipsoidLayer, RenderableLayer groundConnectorLayer, RenderableLayer surfaceLayer, IndexedCheckModel<ComponentRendererItem> checkModel) {
         mEllipsoidLayer = ellipsoidLayer;
         mGroundConnectorLayer = groundConnectorLayer;
         mSurfaceLayer = surfaceLayer;
+        mCheckModel = checkModel;
     }
 
     public void addRenderable(RenderableLayer layer, Renderable renderable) {
@@ -60,33 +63,37 @@ public class ComponentRenderer {
 
     public void plot(BBlast p, Position position, ArrayList<AVListImpl> mapObjects) {
         mMapObjects = mapObjects;
+        if (mCheckModel.isChecked(ComponentRendererItem.BALLS)) {
 
-        var timeSpan = ChronoUnit.MINUTES.between(p.getDateTime(), LocalDateTime.now());
-        var altitude = timeSpan / 24000.0;
-        var startPosition = WWHelper.positionFromPosition(position, 0.0);
-        var endPosition = WWHelper.positionFromPosition(position, altitude);
-        var radius = 1.2;
-        var endEllipsoid = new Ellipsoid(endPosition, radius, radius, radius);
-        endEllipsoid.setAttributes(mAttributeManager.getComponentEllipsoidAttributes());
-        addRenderable(mEllipsoidLayer, endEllipsoid);
+            var timeSpan = ChronoUnit.MINUTES.between(p.getDateTime(), LocalDateTime.now());
+            var altitude = timeSpan / 24000.0;
+            var startPosition = WWHelper.positionFromPosition(position, 0.0);
+            var endPosition = WWHelper.positionFromPosition(position, altitude);
+            var radius = 1.2;
+            var endEllipsoid = new Ellipsoid(endPosition, radius, radius, radius);
+            endEllipsoid.setAttributes(mAttributeManager.getComponentEllipsoidAttributes());
+            addRenderable(mEllipsoidLayer, endEllipsoid);
 
-        var groundPath = new Path(startPosition, endPosition);
-        groundPath.setAttributes(mAttributeManager.getComponentGroundPathAttributes());
-        addRenderable(mGroundConnectorLayer, groundPath);
+            var groundPath = new Path(startPosition, endPosition);
+            groundPath.setAttributes(mAttributeManager.getComponentGroundPathAttributes());
+            addRenderable(mGroundConnectorLayer, groundPath);
+        }
 
-        var age = p.ext().getAge(ChronoUnit.DAYS);
-        var maxAge = 30.0;
+        if (mCheckModel.isChecked(ComponentRendererItem.RECENT)) {
+            var age = p.ext().getAge(ChronoUnit.DAYS);
+            var maxAge = 30.0;
 
-        if (age < maxAge) {
-            var circle = new SurfaceCircle(position, 100.0);
-            var attrs = new BasicShapeAttributes(mAttributeManager.getSurfaceAttributes());
-            var reducer = age / maxAge;//  1/30   15/30 30/30
-            var maxOpacity = 0.2;
-            var opacity = maxOpacity - reducer * maxOpacity;
-            attrs.setInteriorOpacity(opacity);
-            circle.setAttributes(attrs);
+            if (age < maxAge) {
+                var circle = new SurfaceCircle(position, 100.0);
+                var attrs = new BasicShapeAttributes(mAttributeManager.getSurfaceAttributes());
+                var reducer = age / maxAge;//  1/30   15/30 30/30
+                var maxOpacity = 0.2;
+                var opacity = maxOpacity - reducer * maxOpacity;
+                attrs.setInteriorOpacity(opacity);
+                circle.setAttributes(attrs);
 
-            addRenderable(mSurfaceLayer, circle);
+                addRenderable(mSurfaceLayer, circle);
+            }
         }
     }
 

@@ -16,6 +16,7 @@
 package org.mapton.butterfly_acoustic.blast;
 
 import java.util.LinkedHashMap;
+import java.util.stream.Stream;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.ComboBox;
@@ -26,10 +27,12 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.layout.VBox;
 import org.apache.commons.lang3.StringUtils;
+import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.worldwind.api.MOptionsView;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.session.SelectionModelSession;
+import se.trixon.almond.util.fx.session.SessionCheckComboBox;
 
 /**
  *
@@ -42,12 +45,17 @@ public class BlastOptionsView extends MOptionsView<BlastLayerBundle> {
     private final MenuButton mLabelMenuButton = new MenuButton();
     private final ComboBox<PointBy> mPointComboBox = new ComboBox<>();
     private final SelectionModelSession mPointSelectionModelSession = new SelectionModelSession(mPointComboBox.getSelectionModel());
+    private final SessionCheckComboBox<ComponentRendererItem> mComponentSccb = new SessionCheckComboBox<>();
 
     public BlastOptionsView(BlastLayerBundle layerBundle) {
         super(layerBundle);
         createUI();
         initListeners();
         initSession();
+    }
+
+    public IndexedCheckModel<ComponentRendererItem> getComponentCheckModel() {
+        return mComponentSccb.getCheckModel();
     }
 
     public BlastLabelBy getLabelBy() {
@@ -66,6 +74,10 @@ public class BlastOptionsView extends MOptionsView<BlastLayerBundle> {
         mPointComboBox.getItems().setAll(PointBy.values());
         mPointComboBox.setValue(PointBy.NONE);
 
+        mComponentSccb.setTitle(Dict.GRAPHICS.toString());
+        mComponentSccb.setShowCheckedCount(true);
+        mComponentSccb.getItems().setAll(ComponentRendererItem.values());
+
         populateLabelMenuButton();
 
         var pointLabel = new Label(Dict.Geometry.POINT.toString());
@@ -75,7 +87,8 @@ public class BlastOptionsView extends MOptionsView<BlastLayerBundle> {
                 pointLabel,
                 mPointComboBox,
                 labelLabel,
-                mLabelMenuButton
+                mLabelMenuButton,
+                mComponentSccb
         );
         box.setPadding(FxHelper.getUIScaledInsets(8));
 
@@ -91,12 +104,17 @@ public class BlastOptionsView extends MOptionsView<BlastLayerBundle> {
 
         mPointComboBox.valueProperty().addListener(getChangeListener());
 
+        Stream.of(
+                mComponentSccb)
+                .forEachOrdered(ccb -> ccb.getCheckModel().getCheckedItems().addListener(getListChangeListener()));
+
     }
 
     private void initSession() {
         var sessionManager = getSessionManager();
         sessionManager.register("options.pointBy", mPointSelectionModelSession.selectedIndexProperty());
         sessionManager.register("options.labelBy", mLabelByIdProperty);
+        sessionManager.register("options.checkedPlot", mComponentSccb.checkedStringProperty());
 
         mLabelByProperty.set(BlastLabelBy.valueOf(mLabelByIdProperty.get()));
     }

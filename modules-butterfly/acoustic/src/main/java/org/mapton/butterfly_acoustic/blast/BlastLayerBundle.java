@@ -55,7 +55,7 @@ public class BlastLayerBundle extends BfLayerBundle {
         init();
         initRepaint();
         mOptionsView = new BlastOptionsView(this);
-        mComponentRenderer = new ComponentRenderer(mLayer, mGroundConnectorLayer, mSurfaceLayer);
+        mComponentRenderer = new ComponentRenderer(mLayer, mGroundConnectorLayer, mSurfaceLayer, mOptionsView.getComponentCheckModel());
         initListeners();
 
         FxHelper.runLaterDelayed(1000, () -> mManager.updateTemporal(mLayer.isEnabled()));

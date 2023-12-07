@@ -20,7 +20,6 @@ import java.util.stream.Stream;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuButton;
@@ -29,7 +28,6 @@ import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
 import org.apache.commons.lang3.StringUtils;
-import org.controlsfx.control.CheckComboBox;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.butterfly_topo.shared.ColorBy;
 import org.mapton.butterfly_topo.shared.PointBy;
@@ -37,8 +35,8 @@ import org.mapton.worldwind.api.MOptionsView;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.Direction;
 import se.trixon.almond.util.fx.FxHelper;
-import se.trixon.almond.util.fx.session.CheckModelSession;
-import se.trixon.almond.util.fx.session.SelectionModelSession;
+import se.trixon.almond.util.fx.session.SessionCheckComboBox;
+import se.trixon.almond.util.fx.session.SessionComboBox;
 
 /**
  *
@@ -46,17 +44,13 @@ import se.trixon.almond.util.fx.session.SelectionModelSession;
  */
 public class TopoOptionsView extends MOptionsView<TopoLayerBundle> {
 
-    private final ComboBox<ColorBy> mColorComboBox = new ComboBox<>();
-    private final SelectionModelSession mColorSelectionModelSession = new SelectionModelSession(mColorComboBox.getSelectionModel());
-    private final CheckComboBox<ComponentRendererItem> mComponentCheckComboBox = new CheckComboBox<>();
-    private final CheckModelSession mComponentCheckModelSession = new CheckModelSession(mComponentCheckComboBox);
-    private final CheckComboBox<Direction> mIndicatorCheckComboBox = new CheckComboBox<>();
-    private final CheckModelSession mIndicatorCheckModelSession = new CheckModelSession(mIndicatorCheckComboBox);
+    private final SessionComboBox<ColorBy> mColorScb = new SessionComboBox<>();
+    private final SessionCheckComboBox<ComponentRendererItem> mComponentSccb = new SessionCheckComboBox<>();
+    private final SessionCheckComboBox<Direction> mIndicatorSccb = new SessionCheckComboBox<>();
     private final SimpleStringProperty mLabelByIdProperty = new SimpleStringProperty("NAME");
     private final SimpleObjectProperty<TopoLabelBy> mLabelByProperty = new SimpleObjectProperty<>();
     private final MenuButton mLabelMenuButton = new MenuButton();
-    private final ComboBox<PointBy> mPointComboBox = new ComboBox<>();
-    private final SelectionModelSession mPointSelectionModelSession = new SelectionModelSession(mPointComboBox.getSelectionModel());
+    private final SessionComboBox<PointBy> mPointScb = new SessionComboBox<>();
 
     public TopoOptionsView(TopoLayerBundle layerBundle) {
         super(layerBundle);
@@ -66,19 +60,19 @@ public class TopoOptionsView extends MOptionsView<TopoLayerBundle> {
     }
 
     public ObjectProperty<ColorBy> colorByProperty() {
-        return mColorComboBox.valueProperty();
+        return mColorScb.valueProperty();
     }
 
     public ColorBy getColorBy() {
-        return mColorComboBox.valueProperty().get();
+        return mColorScb.valueProperty().get();
     }
 
     public IndexedCheckModel<ComponentRendererItem> getComponentCheckModel() {
-        return mComponentCheckComboBox.getCheckModel();
+        return mComponentSccb.getCheckModel();
     }
 
     public IndexedCheckModel<Direction> getIndicatorCheckModel() {
-        return mIndicatorCheckComboBox.getCheckModel();
+        return mIndicatorSccb.getCheckModel();
     }
 
     public TopoLabelBy getLabelBy() {
@@ -86,7 +80,7 @@ public class TopoOptionsView extends MOptionsView<TopoLayerBundle> {
     }
 
     public PointBy getPointBy() {
-        return mPointComboBox.valueProperty().get();
+        return mPointScb.valueProperty().get();
     }
 
     public SimpleObjectProperty<TopoLabelBy> labelByProperty() {
@@ -94,24 +88,24 @@ public class TopoOptionsView extends MOptionsView<TopoLayerBundle> {
     }
 
     private void createUI() {
-        mPointComboBox.getItems().setAll(PointBy.values());
-        mPointComboBox.setValue(PointBy.AUTO);
-        mColorComboBox.getItems().setAll(ColorBy.values());
-        mColorComboBox.setValue(ColorBy.STYLE);
+        mPointScb.getItems().setAll(PointBy.values());
+        mPointScb.setValue(PointBy.AUTO);
+        mColorScb.getItems().setAll(ColorBy.values());
+        mColorScb.setValue(ColorBy.STYLE);
 
-        mComponentCheckComboBox.setTitle(Dict.COMPONENT.toString());
-        mComponentCheckComboBox.setShowCheckedCount(true);
-        mComponentCheckComboBox.getItems().setAll(ComponentRendererItem.values());
+        mComponentSccb.setTitle(Dict.GRAPHICS.toString());
+        mComponentSccb.setShowCheckedCount(true);
+        mComponentSccb.getItems().setAll(ComponentRendererItem.values());
 
-        mIndicatorCheckComboBox.setTitle(Dict.INDICATORS.toString());
-        mIndicatorCheckComboBox.setShowCheckedCount(true);
-        mIndicatorCheckComboBox.getItems().addAll(
+        mIndicatorSccb.setTitle(Dict.INDICATORS.toString());
+        mIndicatorSccb.setShowCheckedCount(true);
+        mIndicatorSccb.getItems().addAll(
                 Direction.NORTH,
                 Direction.SOUTH,
                 Direction.WEST
         );
 
-        mIndicatorCheckComboBox.setConverter(new StringConverter<Direction>() {
+        mIndicatorSccb.setConverter(new StringConverter<Direction>() {
             @Override
             public Direction fromString(String string) {
                 throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
@@ -144,13 +138,13 @@ public class TopoOptionsView extends MOptionsView<TopoLayerBundle> {
         var labelLabel = new Label(Dict.LABEL.toString());
         var box = new VBox(
                 pointLabel,
-                mPointComboBox,
+                mPointScb,
                 colorLabel,
-                mColorComboBox,
+                mColorScb,
                 labelLabel,
                 mLabelMenuButton,
-                mIndicatorCheckComboBox,
-                mComponentCheckComboBox
+                mIndicatorSccb,
+                mComponentSccb
         );
         box.setPadding(FxHelper.getUIScaledInsets(8));
 
@@ -163,22 +157,22 @@ public class TopoOptionsView extends MOptionsView<TopoLayerBundle> {
             mLabelByIdProperty.set(n.name());
         });
 
-        mPointComboBox.valueProperty().addListener(getChangeListener());
-        mColorComboBox.valueProperty().addListener(getChangeListener());
+        mPointScb.valueProperty().addListener(getChangeListener());
+        mColorScb.valueProperty().addListener(getChangeListener());
 
         Stream.of(
-                mIndicatorCheckComboBox,
-                mComponentCheckComboBox
+                mIndicatorSccb,
+                mComponentSccb
         ).forEachOrdered(ccb -> ccb.getCheckModel().getCheckedItems().addListener(getListChangeListener()));
     }
 
     private void initSession() {
         var sessionManager = getSessionManager();
-        sessionManager.register("options.pointBy", mPointSelectionModelSession.selectedIndexProperty());
-        sessionManager.register("options.colorBy", mColorSelectionModelSession.selectedIndexProperty());
+        sessionManager.register("options.pointBy", mPointScb.selectedIndexProperty());
+        sessionManager.register("options.colorBy", mColorScb.selectedIndexProperty());
         sessionManager.register("options.labelBy", mLabelByIdProperty);
-        sessionManager.register("options.checkedPlot", mComponentCheckModelSession.checkedStringProperty());
-        sessionManager.register("options.checkedIndicators", mIndicatorCheckModelSession.checkedStringProperty());
+        sessionManager.register("options.checkedPlot", mComponentSccb.checkedStringProperty());
+        sessionManager.register("options.checkedIndicators", mIndicatorSccb.checkedStringProperty());
 
         mLabelByProperty.set(TopoLabelBy.valueOf(mLabelByIdProperty.get()));
     }
