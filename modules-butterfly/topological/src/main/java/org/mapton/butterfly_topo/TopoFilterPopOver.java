@@ -62,8 +62,6 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
     private final Spinner<Double> mDiffMeasAllSpinner = new Spinner<>(-1.0, 1.0, mDefaultDiffValue, 0.001);
     private final SpinnerDoubleSession mDiffMeasAllSpinnerSession = new SpinnerDoubleSession(mDiffMeasAllSpinner);
     private final CheckBox mDiffMeasLatestCheckbox = new CheckBox();
-    private final Spinner<Double> mDiffMeasLatestSpinner = new Spinner<>(-1.0, 1.0, mDefaultDiffValue, 0.001);
-    private final SpinnerDoubleSession mDiffMeasLatestSpinnerSession = new SpinnerDoubleSession(mDiffMeasLatestSpinner);
     private final SessionCheckComboBox<BDimension> mDimensionSccb = new SessionCheckComboBox<>();
     private final TopoFilter mFilter;
     private final SessionCheckComboBox<Integer> mFrequencySccb = new SessionCheckComboBox<>();
@@ -72,14 +70,16 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
     private final CheckBox mInvertCheckbox = new CheckBox();
     private final TopoManager mManager = TopoManager.getInstance();
     private final SessionCheckComboBox<String> mMeasCodeSccb = new SessionCheckComboBox<>();
+    private final Spinner<Double> mMeasDiffLatestSpinner = new Spinner<>(-1.0, 1.0, mDefaultDiffValue, 0.001);
+    private final SpinnerDoubleSession mMeasDiffLatestSpinnerSession = new SpinnerDoubleSession(mMeasDiffLatestSpinner);
     private final CheckBox mMeasIncludeWithoutCheckbox = new CheckBox();
     private final CheckBox mMeasLatestOperatorCheckbox = new CheckBox();
     private final SessionComboBox<String> mMeasMaxAgeScb = new SessionComboBox<>();
     private final SessionCheckComboBox<String> mMeasNextSccb = new SessionCheckComboBox<>();
+    private final Spinner<Integer> mMeasNumOfSpinner = new Spinner<>(Integer.MIN_VALUE, Integer.MAX_VALUE, mDefaultNumOfMeasfValue);
+    private final SpinnerIntegerSession mMeasNumOfSession = new SpinnerIntegerSession(mMeasNumOfSpinner);
     private final SessionCheckComboBox<String> mMeasOperatorSccb = new SessionCheckComboBox<>();
     private final CheckBox mNumOfMeasCheckbox = new CheckBox();
-    private final Spinner<Integer> mNumOfMeasSpinner = new Spinner<>(Integer.MIN_VALUE, Integer.MAX_VALUE, mDefaultNumOfMeasfValue);
-    private final SpinnerIntegerSession mNumOfMeasSession = new SpinnerIntegerSession(mNumOfMeasSpinner);
     private final SessionCheckComboBox<String> mOperatorSccb = new SessionCheckComboBox<>();
     private final CheckBox mSameAlarmCheckbox = new CheckBox();
     private final SessionCheckComboBox<String> mStatusSccb = new SessionCheckComboBox<>();
@@ -107,9 +107,9 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
         mMeasIncludeWithoutCheckbox.setSelected(false);
         mNumOfMeasCheckbox.setSelected(false);
 
-        mDiffMeasLatestSpinner.getValueFactory().setValue(mDefaultDiffValue);
+        mMeasDiffLatestSpinner.getValueFactory().setValue(mDefaultDiffValue);
         mDiffMeasAllSpinner.getValueFactory().setValue(mDefaultDiffValue);
-        mNumOfMeasSpinner.getValueFactory().setValue(mDefaultNumOfMeasfValue);
+        mMeasNumOfSpinner.getValueFactory().setValue(mDefaultNumOfMeasfValue);
 
         mDimensionSccb.clearChecks();
         mStatusSccb.clearChecks();
@@ -148,9 +148,9 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
         mAlarmSccb.loadAndRestoreCheckItems();
 
         mMeasMaxAgeScb.load();
-        mDiffMeasLatestSpinnerSession.load();
+        mMeasDiffLatestSpinnerSession.load();
         mDiffMeasAllSpinnerSession.load();
-        mNumOfMeasSession.load();
+        mMeasNumOfSession.load();
     }
 
     @Override
@@ -272,7 +272,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
             }
         });
 
-        mNumOfMeasSpinner.getValueFactory().setConverter(new NegPosStringConverterInteger());
+        mMeasNumOfSpinner.getValueFactory().setConverter(new NegPosStringConverterInteger());
         mSameAlarmCheckbox.setText(getBundle().getString("sameAlarmCheckBoxText"));
         mAlarmLevelChangeCheckbox.setText(getBundle().getString("alarmLevelChangeCheckBoxText"));
         mDiffMeasLatestCheckbox.setText(getBundle().getString("diffMeasLatestCheckBoxText"));
@@ -281,7 +281,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
         mMeasLatestOperatorCheckbox.setText(getBundle().getString("measLatesOperatorCheckBoxText"));
         mMeasIncludeWithoutCheckbox.setText(getBundle().getString("measIncludeWithoutCheckboxText"));
         mNumOfMeasCheckbox.setText(getBundle().getString("numOfMeasCheckBoxText"));
-        mDiffMeasLatestSpinner.getValueFactory().setConverter(new NegPosStringConverterDouble());
+        mMeasDiffLatestSpinner.getValueFactory().setConverter(new NegPosStringConverterDouble());
         mDiffMeasAllSpinner.getValueFactory().setConverter(new NegPosStringConverterDouble());
 
         int columnGap = SwingHelper.getUIScaled(16);
@@ -310,7 +310,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
                 ),
                 new VBox(titleGap,
                         mNumOfMeasCheckbox,
-                        mNumOfMeasSpinner
+                        mMeasNumOfSpinner
                 ),
                 new VBox(titleGap,
                         mDiffMeasAllCheckbox,
@@ -318,7 +318,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
                 ),
                 new VBox(titleGap,
                         mDiffMeasLatestCheckbox,
-                        mDiffMeasLatestSpinner
+                        mMeasDiffLatestSpinner
                 )
         );
 
@@ -341,8 +341,8 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
                 mInvertCheckbox
         );
 
-        FxHelper.setEditable(true, mDiffMeasAllSpinner, mDiffMeasLatestSpinner, mNumOfMeasSpinner);
-        FxHelper.autoCommitSpinners(mDiffMeasAllSpinner, mDiffMeasLatestSpinner, mNumOfMeasSpinner);
+        FxHelper.setEditable(true, mDiffMeasAllSpinner, mMeasDiffLatestSpinner, mMeasNumOfSpinner);
+        FxHelper.autoCommitSpinners(mDiffMeasAllSpinner, mMeasDiffLatestSpinner, mMeasNumOfSpinner);
 
         leftBox.getChildren().stream()
                 .filter(node -> node instanceof Region)
@@ -358,9 +358,9 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
                     region.prefWidthProperty().bind(rightBox.widthProperty());
                 });
 
-        mDiffMeasLatestSpinner.prefWidthProperty().bind(rightBox.widthProperty());
+        mMeasDiffLatestSpinner.prefWidthProperty().bind(rightBox.widthProperty());
         mDiffMeasAllSpinner.prefWidthProperty().bind(rightBox.widthProperty());
-        mNumOfMeasSpinner.prefWidthProperty().bind(rightBox.widthProperty());
+        mMeasNumOfSpinner.prefWidthProperty().bind(rightBox.widthProperty());
         mMeasOperatorSccb.prefWidthProperty().bind(rightBox.widthProperty());
 
         leftBox.setPrefWidth(FxHelper.getUIScaled(200));
@@ -386,65 +386,71 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
             mSameAlarmCheckbox.setSelected(true);
         });
 
-        mFilter.numOfMeasProperty().bind(mNumOfMeasCheckbox.selectedProperty());
-        mFilter.diffMeasAllProperty().bind(mDiffMeasAllCheckbox.selectedProperty());
+        mFilter.measNumOfProperty().bind(mNumOfMeasCheckbox.selectedProperty());
+        mFilter.measDiffAllProperty().bind(mDiffMeasAllCheckbox.selectedProperty());
         mFilter.invertProperty().bind(mInvertCheckbox.selectedProperty());
-        mFilter.diffMeasLatestProperty().bind(mDiffMeasLatestCheckbox.selectedProperty());
+        mFilter.measDiffLatestProperty().bind(mDiffMeasLatestCheckbox.selectedProperty());
         mFilter.measLatestOperatorProperty().bind(mMeasLatestOperatorCheckbox.selectedProperty());
         mFilter.measIncludeWithoutProperty().bind(mMeasIncludeWithoutCheckbox.selectedProperty());
 
-        mFilter.numOfMeasValueProperty().bind(mNumOfMeasSession.valueProperty());
-        mFilter.diffMeasAllValueProperty().bind(mDiffMeasAllSpinnerSession.valueProperty());
-        mFilter.diffMeasLatestValueProperty().bind(mDiffMeasLatestSpinnerSession.valueProperty());
+        mFilter.measNumOfValueProperty().bind(mMeasNumOfSession.valueProperty());
+        mFilter.measDiffAllValueProperty().bind(mDiffMeasAllSpinnerSession.valueProperty());
+        mFilter.measDiffLatestValueProperty().bind(mMeasDiffLatestSpinnerSession.valueProperty());
 
         mFilter.alarmLevelChangeProperty().bind(mAlarmLevelChangeCheckbox.selectedProperty());
         mFilter.sameAlarmProperty().bind(mSameAlarmCheckbox.selectedProperty());
         mFilter.maxAgeProperty().bind(mMeasMaxAgeScb.getSelectionModel().selectedItemProperty());
         mFilter.polygonFilterProperty().bind(getPolygonFilterCheckBox().selectedProperty());
-        mFilter.setCheckModelDimension(mDimensionSccb.getCheckModel());
-        mFilter.setCheckModelStatus(mStatusSccb.getCheckModel());
-        mFilter.setCheckModelMeasOperators(mMeasOperatorSccb.getCheckModel());
-        mFilter.setCheckModelGroup(mGroupSccb.getCheckModel());
-        mFilter.setCheckModelCategory(mCategorySccb.getCheckModel());
-        mFilter.setCheckModelAlarmName(mAlarmNameSccb.getCheckModel());
-        mFilter.setCheckModelOperator(mOperatorSccb.getCheckModel());
-        mFilter.setCheckModelNextMeas(mMeasNextSccb.getCheckModel());
-        mFilter.setCheckModelAlarm(mAlarmSccb.getCheckModel());
-        mFilter.setCheckModelMeasCode(mMeasCodeSccb.getCheckModel());
-        mFilter.setCheckModelDateFromTo(mHasDateFromToSccb.getCheckModel());
-        mFilter.setCheckModelFrequency(mFrequencySccb.getCheckModel());
 
-        mNumOfMeasSpinner.disableProperty().bind(mNumOfMeasCheckbox.selectedProperty().not());
+        mFilter.mDimensionCheckModel = mDimensionSccb.getCheckModel();
+        mFilter.mStatusCheckModel = mStatusSccb.getCheckModel();
+        mFilter.mMeasOperatorsCheckModel = mMeasOperatorSccb.getCheckModel();
+        mFilter.mGroupCheckModel = mGroupSccb.getCheckModel();
+        mFilter.mCategoryCheckModel = mCategorySccb.getCheckModel();
+        mFilter.mAlarmNameCheckModel = mAlarmNameSccb.getCheckModel();
+        mFilter.mOperatorCheckModel = mOperatorSccb.getCheckModel();
+        mFilter.mMeasNextCheckModel = mMeasNextSccb.getCheckModel();
+        mFilter.mAlarmNameCheckModel = mAlarmNameSccb.getCheckModel();
+        mFilter.mAlarmCheckModel = mAlarmSccb.getCheckModel();
+        mFilter.mMeasCodeCheckModel = mMeasCodeSccb.getCheckModel();
+        mFilter.mDateFromToCheckModel = mHasDateFromToSccb.getCheckModel();
+        mFilter.mFrequencyCheckModel = mFrequencySccb.getCheckModel();
+
+        mMeasNumOfSpinner.disableProperty().bind(mNumOfMeasCheckbox.selectedProperty().not());
         mDiffMeasAllSpinner.disableProperty().bind(mDiffMeasAllCheckbox.selectedProperty().not());
-        mDiffMeasLatestSpinner.disableProperty().bind(mDiffMeasLatestCheckbox.selectedProperty().not());
+        mMeasDiffLatestSpinner.disableProperty().bind(mDiffMeasLatestCheckbox.selectedProperty().not());
+
+        mFilter.initCheckModelListeners();
     }
 
     private void initSession() {
         var sessionManager = getSessionManager();
         sessionManager.register("filter.freeText", mFilter.freeTextProperty());
-        sessionManager.register("filter.checkedDimensions", mDimensionSccb.checkedStringProperty());
-        sessionManager.register("filter.checkedStatus", mStatusSccb.checkedStringProperty());
-        sessionManager.register("filter.checkedMeasOperators", mMeasOperatorSccb.checkedStringProperty());
-        sessionManager.register("filter.checkedGroup", mGroupSccb.checkedStringProperty());
-        sessionManager.register("filter.checkedCategory", mCategorySccb.checkedStringProperty());
-        sessionManager.register("filter.checkedAlarmName", mAlarmNameSccb.checkedStringProperty());
-        sessionManager.register("filter.checkedPerformers", mOperatorSccb.checkedStringProperty());
-        sessionManager.register("filter.checkedNextAlarm", mAlarmSccb.checkedStringProperty());
-        sessionManager.register("filter.checkedNextMeas", mMeasNextSccb.checkedStringProperty());
-        sessionManager.register("filter.checkedMeasCode", mMeasCodeSccb.checkedStringProperty());
-        sessionManager.register("filter.checkedDateFromTo", mHasDateFromToSccb.checkedStringProperty());
-        sessionManager.register("filter.checkedFrequency", mFrequencySccb.checkedStringProperty());
-        sessionManager.register("filter.maxAge", mMeasMaxAgeScb.selectedIndexProperty());
-        sessionManager.register("filter.diffMeasLatestValue", mDiffMeasLatestSpinnerSession.valueProperty());
-        sessionManager.register("filter.diffMeasAllValue", mDiffMeasLatestSpinnerSession.valueProperty());
-        sessionManager.register("filter.numOfMeasValue", mNumOfMeasSession.valueProperty());
 
-        sessionManager.register("filter.measLatestOperator", mMeasLatestOperatorCheckbox.selectedProperty());
+        sessionManager.register("filter.checkedAlarmName", mAlarmNameSccb.checkedStringProperty());
+        sessionManager.register("filter.checkedCategory", mCategorySccb.checkedStringProperty());
+        sessionManager.register("filter.checkedDateFromTo", mHasDateFromToSccb.checkedStringProperty());
+        sessionManager.register("filter.checkedDimensions", mDimensionSccb.checkedStringProperty());
+        sessionManager.register("filter.checkedFrequency", mFrequencySccb.checkedStringProperty());
+        sessionManager.register("filter.checkedGroup", mGroupSccb.checkedStringProperty());
+        sessionManager.register("filter.checkedNextAlarm", mAlarmSccb.checkedStringProperty());
+        sessionManager.register("filter.checkedPerformers", mOperatorSccb.checkedStringProperty());
+        sessionManager.register("filter.checkedStatus", mStatusSccb.checkedStringProperty());
+
+        sessionManager.register("filter.measCheckedMeasCode", mMeasCodeSccb.checkedStringProperty());
+        sessionManager.register("filter.measCheckedNextMeas", mMeasNextSccb.checkedStringProperty());
+        sessionManager.register("filter.measCheckedOperators", mMeasOperatorSccb.checkedStringProperty());
+        sessionManager.register("filter.measDiffAll", mDiffMeasAllCheckbox.selectedProperty());
+        sessionManager.register("filter.measDiffAllValue", mMeasDiffLatestSpinnerSession.valueProperty());
+        sessionManager.register("filter.measDiffLatest", mDiffMeasLatestCheckbox.selectedProperty());
+        sessionManager.register("filter.measDiffLatestValue", mMeasDiffLatestSpinnerSession.valueProperty());
         sessionManager.register("filter.measIncludeWithout", mMeasIncludeWithoutCheckbox.selectedProperty());
-        sessionManager.register("filter.diffMeasLatest", mDiffMeasLatestCheckbox.selectedProperty());
-        sessionManager.register("filter.diffMeasAll", mDiffMeasAllCheckbox.selectedProperty());
+        sessionManager.register("filter.measLatestOperator", mMeasLatestOperatorCheckbox.selectedProperty());
+        sessionManager.register("filter.measMaxAge", mMeasMaxAgeScb.selectedIndexProperty());
+        sessionManager.register("filter.measNumOfMeas", mNumOfMeasCheckbox.selectedProperty());
+        sessionManager.register("filter.measNumOfValue", mMeasNumOfSession.valueProperty());
+
         sessionManager.register("filter.invert", mInvertCheckbox.selectedProperty());
-        sessionManager.register("filter.numOfMeas", mNumOfMeasCheckbox.selectedProperty());
         sessionManager.register("filter.sameAlarm", mSameAlarmCheckbox.selectedProperty());
         sessionManager.register("filter.alarmLevelChange", mAlarmLevelChangeCheckbox.selectedProperty());
     }

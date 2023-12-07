@@ -51,31 +51,31 @@ import se.trixon.almond.util.StringHelper;
  */
 public class TopoFilter extends FormFilter<TopoManager> {
 
-    private IndexedCheckModel<AlarmFilter> mAlarmCheckModel;
+    IndexedCheckModel mAlarmNameCheckModel;
+    IndexedCheckModel mCategoryCheckModel;
+    IndexedCheckModel mDateFromToCheckModel;
+    IndexedCheckModel mDimensionCheckModel;
+    IndexedCheckModel<Integer> mFrequencyCheckModel;
+    IndexedCheckModel mGroupCheckModel;
+    IndexedCheckModel<String> mMeasCodeCheckModel;
+    IndexedCheckModel<String> mMeasNextCheckModel;
+    IndexedCheckModel mMeasOperatorsCheckModel;
+    IndexedCheckModel mOperatorCheckModel;
+    IndexedCheckModel mStatusCheckModel;
+    IndexedCheckModel<AlarmFilter> mAlarmCheckModel;
     private final SimpleBooleanProperty mAlarmLevelChangeProperty = new SimpleBooleanProperty();
-    private IndexedCheckModel mAlarmNameCheckModel;
-    private IndexedCheckModel mCategoryCheckModel;
-    private IndexedCheckModel mDateFromToCheckModel;
-    private final SimpleBooleanProperty mDiffMeasAllProperty = new SimpleBooleanProperty();
-    private final SimpleDoubleProperty mDiffMeasAllValueProperty = new SimpleDoubleProperty();
-    private final SimpleBooleanProperty mDiffMeasLatestProperty = new SimpleBooleanProperty();
-    private final SimpleDoubleProperty mDiffMeasLatestValueProperty = new SimpleDoubleProperty();
-    private IndexedCheckModel mDimensionCheckModel;
-    private IndexedCheckModel<Integer> mFrequencyCheckModel;
-    private IndexedCheckModel mGroupCheckModel;
     private final SimpleBooleanProperty mInvertProperty = new SimpleBooleanProperty();
     private final TopoManager mManager = TopoManager.getInstance();
     private final SimpleStringProperty mMaxAgeProperty = new SimpleStringProperty();
-    private IndexedCheckModel<String> mMeasCodeCheckModel;
+    private final SimpleBooleanProperty mMeasDiffAllProperty = new SimpleBooleanProperty();
+    private final SimpleDoubleProperty mMeasDiffAllValueProperty = new SimpleDoubleProperty();
+    private final SimpleBooleanProperty mMeasDiffLatestProperty = new SimpleBooleanProperty();
+    private final SimpleDoubleProperty mMeasDiffLatestValueProperty = new SimpleDoubleProperty();
     private final SimpleBooleanProperty mMeasIncludeWithout = new SimpleBooleanProperty();
     private final SimpleBooleanProperty mMeasLatestOperator = new SimpleBooleanProperty();
-    private IndexedCheckModel mMeasOperatorsCheckModel;
-    private IndexedCheckModel<String> mNextMeasCheckModel;
-    private final SimpleBooleanProperty mNumOfMeasProperty = new SimpleBooleanProperty();
-    private final SimpleIntegerProperty mNumOfMeasValueProperty = new SimpleIntegerProperty();
-    private IndexedCheckModel mOperatorCheckModel;
+    private final SimpleBooleanProperty mMeasNumOfProperty = new SimpleBooleanProperty();
+    private final SimpleIntegerProperty mMeasNumOfValueProperty = new SimpleIntegerProperty();
     private final SimpleBooleanProperty mSameAlarmProperty = new SimpleBooleanProperty();
-    private IndexedCheckModel mStatusCheckModel;
 
     public TopoFilter() {
         super(TopoManager.getInstance());
@@ -87,28 +87,28 @@ public class TopoFilter extends FormFilter<TopoManager> {
         return mAlarmLevelChangeProperty;
     }
 
-    public SimpleBooleanProperty diffMeasAllProperty() {
-        return mDiffMeasAllProperty;
-    }
-
-    public SimpleDoubleProperty diffMeasAllValueProperty() {
-        return mDiffMeasAllValueProperty;
-    }
-
-    public SimpleBooleanProperty diffMeasLatestProperty() {
-        return mDiffMeasLatestProperty;
-    }
-
-    public SimpleDoubleProperty diffMeasLatestValueProperty() {
-        return mDiffMeasLatestValueProperty;
-    }
-
     public SimpleBooleanProperty invertProperty() {
         return mInvertProperty;
     }
 
     public SimpleStringProperty maxAgeProperty() {
         return mMaxAgeProperty;
+    }
+
+    public SimpleBooleanProperty measDiffAllProperty() {
+        return mMeasDiffAllProperty;
+    }
+
+    public SimpleDoubleProperty measDiffAllValueProperty() {
+        return mMeasDiffAllValueProperty;
+    }
+
+    public SimpleBooleanProperty measDiffLatestProperty() {
+        return mMeasDiffLatestProperty;
+    }
+
+    public SimpleDoubleProperty measDiffLatestValueProperty() {
+        return mMeasDiffLatestValueProperty;
     }
 
     public SimpleBooleanProperty measIncludeWithoutProperty() {
@@ -119,76 +119,16 @@ public class TopoFilter extends FormFilter<TopoManager> {
         return mMeasLatestOperator;
     }
 
-    public SimpleBooleanProperty numOfMeasProperty() {
-        return mNumOfMeasProperty;
+    public SimpleBooleanProperty measNumOfProperty() {
+        return mMeasNumOfProperty;
     }
 
-    public SimpleIntegerProperty numOfMeasValueProperty() {
-        return mNumOfMeasValueProperty;
+    public SimpleIntegerProperty measNumOfValueProperty() {
+        return mMeasNumOfValueProperty;
     }
 
     public SimpleBooleanProperty sameAlarmProperty() {
         return mSameAlarmProperty;
-    }
-
-    public void setCheckModelAlarm(IndexedCheckModel<AlarmFilter> checkModel) {
-        mAlarmCheckModel = checkModel;
-        checkModel.getCheckedItems().addListener(mListChangeListener);
-    }
-
-    public void setCheckModelAlarmName(IndexedCheckModel checkModel) {
-        mAlarmNameCheckModel = checkModel;
-        checkModel.getCheckedItems().addListener(mListChangeListener);
-    }
-
-    public void setCheckModelCategory(IndexedCheckModel checkModel) {
-        mCategoryCheckModel = checkModel;
-        checkModel.getCheckedItems().addListener(mListChangeListener);
-    }
-
-    public void setCheckModelDateFromTo(IndexedCheckModel<String> checkModel) {
-        mDateFromToCheckModel = checkModel;
-        checkModel.getCheckedItems().addListener(mListChangeListener);
-    }
-
-    public void setCheckModelDimension(IndexedCheckModel checkModel) {
-        mDimensionCheckModel = checkModel;
-        checkModel.getCheckedItems().addListener(mListChangeListener);
-    }
-
-    public void setCheckModelFrequency(IndexedCheckModel checkModel) {
-        mFrequencyCheckModel = checkModel;
-        checkModel.getCheckedItems().addListener(mListChangeListener);
-    }
-
-    public void setCheckModelGroup(IndexedCheckModel checkModel) {
-        mGroupCheckModel = checkModel;
-        checkModel.getCheckedItems().addListener(mListChangeListener);
-    }
-
-    public void setCheckModelMeasCode(IndexedCheckModel<String> checkModel) {
-        mMeasCodeCheckModel = checkModel;
-        checkModel.getCheckedItems().addListener(mListChangeListener);
-    }
-
-    public void setCheckModelMeasOperators(IndexedCheckModel checkModel) {
-        mMeasOperatorsCheckModel = checkModel;
-        checkModel.getCheckedItems().addListener(mListChangeListener);
-    }
-
-    public void setCheckModelNextMeas(IndexedCheckModel checkModel) {
-        mNextMeasCheckModel = checkModel;
-        checkModel.getCheckedItems().addListener(mListChangeListener);
-    }
-
-    public void setCheckModelOperator(IndexedCheckModel checkModel) {
-        mOperatorCheckModel = checkModel;
-        checkModel.getCheckedItems().addListener(mListChangeListener);
-    }
-
-    public void setCheckModelStatus(IndexedCheckModel checkModel) {
-        mStatusCheckModel = checkModel;
-        checkModel.getCheckedItems().addListener(mListChangeListener);
     }
 
     @Override
@@ -196,16 +136,16 @@ public class TopoFilter extends FormFilter<TopoManager> {
         var filteredItems = mManager.getAllItems().stream()
                 .filter(p -> StringUtils.isBlank(getFreeText()) || validateFreeText(p))
                 .filter(p -> validateDimension(p.getDimension()))
-                .filter(p -> validateStatus(p.getStatus()))
-                .filter(p -> validateGroup(p.getGroup()))
-                .filter(p -> validateCategory(p.getCategory()))
+                .filter(p -> validateCheck(mStatusCheckModel, p.getStatus()))
+                .filter(p -> validateCheck(mGroupCheckModel, p.getGroup()))
+                .filter(p -> validateCheck(mCategoryCheckModel, p.getCategory()))
                 .filter(p -> validateAlarmName(p))
                 .filter(p -> validateAlarm(p))
                 .filter(p -> validateAlarmLevelchange(p))
                 .filter(p -> validateMeasDisplacementAll(p))
                 .filter(p -> validateMeasDisplacementLatest(p))
                 .filter(p -> validateMeasCount(p))
-                .filter(p -> validateOperator(p.getOperator()))
+                .filter(p -> validateCheck(mOperatorCheckModel, p.getOperator()))
                 .filter(p -> validateFrequency(p.getFrequency()))
                 .filter(p -> validateMaxAge(p.getDateLatest()))
                 .filter(p -> validateNextMeas(p))
@@ -248,6 +188,22 @@ public class TopoFilter extends FormFilter<TopoManager> {
         getInfoPopOver().loadContent(createInfoContent().renderFormatted());
     }
 
+    void initCheckModelListeners() {
+        mStatusCheckModel.getCheckedItems().addListener(mListChangeListener);
+        mAlarmCheckModel.getCheckedItems().addListener(mListChangeListener);
+        mAlarmNameCheckModel.getCheckedItems().addListener(mListChangeListener);
+        mCategoryCheckModel.getCheckedItems().addListener(mListChangeListener);
+        mDateFromToCheckModel.getCheckedItems().addListener(mListChangeListener);
+        mDimensionCheckModel.getCheckedItems().addListener(mListChangeListener);
+        mFrequencyCheckModel.getCheckedItems().addListener(mListChangeListener);
+        mGroupCheckModel.getCheckedItems().addListener(mListChangeListener);
+        mMeasCodeCheckModel.getCheckedItems().addListener(mListChangeListener);
+        mMeasOperatorsCheckModel.getCheckedItems().addListener(mListChangeListener);
+        mMeasNextCheckModel.getCheckedItems().addListener(mListChangeListener);
+        mOperatorCheckModel.getCheckedItems().addListener(mListChangeListener);
+        mStatusCheckModel.getCheckedItems().addListener(mListChangeListener);
+    }
+
     private ContainerTag createInfoContent() {
         //TODO Add measOperator+latest
         var map = new LinkedHashMap<String, String>();
@@ -261,21 +217,21 @@ public class TopoFilter extends FormFilter<TopoManager> {
         map.put(SDict.OPERATOR.toString(), makeInfo(mOperatorCheckModel.getCheckedItems()));
         map.put(SDict.FREQUENCY.toString(), makeInfoInteger(mFrequencyCheckModel.getCheckedItems()));
         map.put(SDict.VALID_FROM_TO.toString(), makeInfo(mDateFromToCheckModel.getCheckedItems()));
-        map.put(getBundle().getString("nextMeasCheckComboBoxTitle"), makeInfo(mNextMeasCheckModel.getCheckedItems()));
+        map.put(getBundle().getString("nextMeasCheckComboBoxTitle"), makeInfo(mMeasNextCheckModel.getCheckedItems()));
         map.put(getBundle().getString("measCodeCheckComboBoxTitle"), makeInfo(mMeasCodeCheckModel.getCheckedItems()));
         map.put(Dict.Time.MAX_AGE.toString(), makeInfo(mMaxAgeProperty.get(), "*"));
 
-        if (mNumOfMeasProperty.get()) {
-            var value = mNumOfMeasValueProperty.get();
+        if (mMeasNumOfProperty.get()) {
+            var value = mMeasNumOfValueProperty.get();
             map.put(getBundle().getString("numOfMeasCheckBoxText"), FormHelper.negPosToLtGt(value));
         }
 
-        if (mDiffMeasAllProperty.get()) {
-            map.put(getBundle().getString("diffMeasAllCheckBoxText"), FormHelper.negPosToLtGt(mDiffMeasAllValueProperty.get()));
+        if (mMeasDiffAllProperty.get()) {
+            map.put(getBundle().getString("diffMeasAllCheckBoxText"), FormHelper.negPosToLtGt(mMeasDiffAllValueProperty.get()));
         }
 
-        if (mDiffMeasLatestProperty.get()) {
-            map.put(getBundle().getString("diffMeasLatestCheckBoxText"), FormHelper.negPosToLtGt(mDiffMeasLatestValueProperty.get()));
+        if (mMeasDiffLatestProperty.get()) {
+            map.put(getBundle().getString("diffMeasLatestCheckBoxText"), FormHelper.negPosToLtGt(mMeasDiffLatestValueProperty.get()));
         }
 
         if (mSameAlarmProperty.get()) {
@@ -286,18 +242,18 @@ public class TopoFilter extends FormFilter<TopoManager> {
     }
 
     private void initListeners() {
+        mAlarmLevelChangeProperty.addListener(mChangeListenerObject);
+        mInvertProperty.addListener(mChangeListenerObject);
+        mMaxAgeProperty.addListener(mChangeListenerObject);
+        mMeasDiffAllProperty.addListener(mChangeListenerObject);
+        mMeasDiffAllValueProperty.addListener(mChangeListenerObject);
+        mMeasDiffLatestProperty.addListener(mChangeListenerObject);
+        mMeasDiffLatestValueProperty.addListener(mChangeListenerObject);
         mMeasIncludeWithout.addListener(mChangeListenerObject);
         mMeasLatestOperator.addListener(mChangeListenerObject);
-        mDiffMeasLatestProperty.addListener(mChangeListenerObject);
-        mDiffMeasLatestValueProperty.addListener(mChangeListenerObject);
-        mDiffMeasAllProperty.addListener(mChangeListenerObject);
-        mInvertProperty.addListener(mChangeListenerObject);
-        mDiffMeasAllValueProperty.addListener(mChangeListenerObject);
-        mNumOfMeasValueProperty.addListener(mChangeListenerObject);
-        mNumOfMeasProperty.addListener(mChangeListenerObject);
+        mMeasNumOfProperty.addListener(mChangeListenerObject);
+        mMeasNumOfValueProperty.addListener(mChangeListenerObject);
         mSameAlarmProperty.addListener(mChangeListenerObject);
-        mAlarmLevelChangeProperty.addListener(mChangeListenerObject);
-        mMaxAgeProperty.addListener(mChangeListenerObject);
     }
 
     private String makeInfoDimension(ObservableList<BDimension> checkedItems) {
@@ -359,26 +315,12 @@ public class TopoFilter extends FormFilter<TopoManager> {
         return true;
     }
 
-    private boolean validateCategory(String s) {
-        return validateCheck(mCategoryCheckModel, s);
-    }
-
     private boolean validateDateFromToHas(LocalDate fromDate, LocalDate toDate) {
         var validFromChecked = mDateFromToCheckModel.isChecked(SDict.HAS_VALID_FROM.toString());
         var validToChecked = mDateFromToCheckModel.isChecked(SDict.HAS_VALID_TO.toString());
         var valid = (!validFromChecked && !validToChecked)
                 || (fromDate != null && validFromChecked)
                 || (toDate != null && validToChecked);
-
-        return valid;
-    }
-
-    private boolean validateDateFromToWithout(LocalDate fromDate, LocalDate toDate) {
-        var validFromChecked = mDateFromToCheckModel.isChecked(SDict.WITHOUT_VALID_FROM.toString());
-        var validToChecked = mDateFromToCheckModel.isChecked(SDict.WITHOUT_VALID_TO.toString());
-        var valid = (!validFromChecked && !validToChecked)
-                || (fromDate == null && validFromChecked)
-                || (toDate == null && validToChecked);
 
         return valid;
     }
@@ -405,6 +347,16 @@ public class TopoFilter extends FormFilter<TopoManager> {
         }
     }
 
+    private boolean validateDateFromToWithout(LocalDate fromDate, LocalDate toDate) {
+        var validFromChecked = mDateFromToCheckModel.isChecked(SDict.WITHOUT_VALID_FROM.toString());
+        var validToChecked = mDateFromToCheckModel.isChecked(SDict.WITHOUT_VALID_TO.toString());
+        var valid = (!validFromChecked && !validToChecked)
+                || (fromDate == null && validFromChecked)
+                || (toDate == null && validToChecked);
+
+        return valid;
+    }
+
     private boolean validateDimension(BDimension dimension) {
         return validateCheck(mDimensionCheckModel, dimension);
     }
@@ -421,10 +373,6 @@ public class TopoFilter extends FormFilter<TopoManager> {
 
     private boolean validateFrequency(Integer frequency) {
         return validateCheck(mFrequencyCheckModel, frequency);
-    }
-
-    private boolean validateGroup(String s) {
-        return validateCheck(mGroupCheckModel, s);
     }
 
     private boolean validateMaxAge(LocalDateTime dateTime) {
@@ -459,11 +407,11 @@ public class TopoFilter extends FormFilter<TopoManager> {
     }
 
     private boolean validateMeasCount(BTopoControlPoint p) {
-        if (!mNumOfMeasProperty.get()) {
+        if (!mMeasNumOfProperty.get()) {
             return true;
         }
 
-        var lim = mNumOfMeasValueProperty.get();
+        var lim = mMeasNumOfValueProperty.get();
         var value = p.ext().getObservationsAllRaw().size();
 
         if (lim == 0) {
@@ -478,8 +426,8 @@ public class TopoFilter extends FormFilter<TopoManager> {
     }
 
     private boolean validateMeasDisplacementAll(BTopoControlPoint p) {
-        if (mDiffMeasAllProperty.get() && p.ext().deltaZero().getDelta() != null) {
-            double lim = mDiffMeasAllValueProperty.get();
+        if (mMeasDiffAllProperty.get() && p.ext().deltaZero().getDelta() != null) {
+            double lim = mMeasDiffAllValueProperty.get();
             double value = Math.abs(p.ext().deltaZero().getDelta());
 
             if (lim == 0) {
@@ -495,7 +443,7 @@ public class TopoFilter extends FormFilter<TopoManager> {
     }
 
     private boolean validateMeasDisplacementLatest(BTopoControlPoint p) {
-        if (!mDiffMeasLatestProperty.get()) {
+        if (!mMeasDiffLatestProperty.get()) {
             return true;
         }
 
@@ -503,7 +451,7 @@ public class TopoFilter extends FormFilter<TopoManager> {
         if (observations.size() > 1) {
             var first = observations.get(observations.size() - 2);
             var last = observations.get(observations.size() - 1);
-            double lim = mDiffMeasLatestValueProperty.get();
+            double lim = mMeasDiffLatestValueProperty.get();
             Double lastDelta = last.ext().getDelta();
             Double firstDelta = first.ext().getDelta();
             if (ObjectUtils.anyNull(firstDelta, lastDelta)) {
@@ -559,14 +507,14 @@ public class TopoFilter extends FormFilter<TopoManager> {
         var nextMeas = latest.plusDays(frequency);
         var remainingDays = p.ext().getMeasurementUntilNext(ChronoUnit.DAYS);
 
-        if (mNextMeasCheckModel.isEmpty()) {
+        if (mMeasNextCheckModel.isEmpty()) {
             return true;
-        } else if (mNextMeasCheckModel.isChecked("∞") && frequency == 0) {
+        } else if (mMeasNextCheckModel.isChecked("∞") && frequency == 0) {
             return true;
-        } else if (frequency > 0 && mNextMeasCheckModel.isChecked("<0") && nextMeas.isBefore(today)) {
+        } else if (frequency > 0 && mMeasNextCheckModel.isChecked("<0") && nextMeas.isBefore(today)) {
             return true;
         } else {
-            return mNextMeasCheckModel.getCheckedItems().stream()
+            return mMeasNextCheckModel.getCheckedItems().stream()
                     .filter(s -> StringUtils.countMatches(s, "-") == 1)
                     .anyMatch(s -> {
                         int start = Integer.parseInt(StringUtils.substringBefore(s, "-"));
@@ -575,13 +523,4 @@ public class TopoFilter extends FormFilter<TopoManager> {
                     });
         }
     }
-
-    private boolean validateOperator(String s) {
-        return validateCheck(mOperatorCheckModel, s);
-    }
-
-    private boolean validateStatus(String s) {
-        return validateCheck(mStatusCheckModel, s);
-    }
-
 }
