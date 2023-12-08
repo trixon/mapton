@@ -51,6 +51,8 @@ import se.trixon.almond.util.StringHelper;
  */
 public class TopoFilter extends FormFilter<TopoManager> {
 
+    IndexedCheckModel<AlarmFilter> mAlarmCheckModel;
+
     IndexedCheckModel mAlarmNameCheckModel;
     IndexedCheckModel mCategoryCheckModel;
     IndexedCheckModel mDateFromToCheckModel;
@@ -62,7 +64,6 @@ public class TopoFilter extends FormFilter<TopoManager> {
     IndexedCheckModel mMeasOperatorsCheckModel;
     IndexedCheckModel mOperatorCheckModel;
     IndexedCheckModel mStatusCheckModel;
-    IndexedCheckModel<AlarmFilter> mAlarmCheckModel;
     private final SimpleBooleanProperty mAlarmLevelChangeProperty = new SimpleBooleanProperty();
     private final SimpleBooleanProperty mInvertProperty = new SimpleBooleanProperty();
     private final TopoManager mManager = TopoManager.getInstance();
@@ -75,6 +76,9 @@ public class TopoFilter extends FormFilter<TopoManager> {
     private final SimpleBooleanProperty mMeasLatestOperator = new SimpleBooleanProperty();
     private final SimpleBooleanProperty mMeasNumOfProperty = new SimpleBooleanProperty();
     private final SimpleIntegerProperty mMeasNumOfValueProperty = new SimpleIntegerProperty();
+    private final SimpleDoubleProperty mMeasYoyoCountValueProperty = new SimpleDoubleProperty();
+    private final SimpleBooleanProperty mMeasYoyoProperty = new SimpleBooleanProperty();
+    private final SimpleDoubleProperty mMeasYoyoSizeValueProperty = new SimpleDoubleProperty();
     private final SimpleBooleanProperty mSameAlarmProperty = new SimpleBooleanProperty();
 
     public TopoFilter() {
@@ -127,6 +131,18 @@ public class TopoFilter extends FormFilter<TopoManager> {
         return mMeasNumOfValueProperty;
     }
 
+    public SimpleDoubleProperty measYoyoCountValueProperty() {
+        return mMeasYoyoCountValueProperty;
+    }
+
+    public SimpleBooleanProperty measYoyoProperty() {
+        return mMeasYoyoProperty;
+    }
+
+    public SimpleDoubleProperty measYoyoSizeValueProperty() {
+        return mMeasYoyoSizeValueProperty;
+    }
+
     public SimpleBooleanProperty sameAlarmProperty() {
         return mSameAlarmProperty;
     }
@@ -155,6 +171,7 @@ public class TopoFilter extends FormFilter<TopoManager> {
                 .filter(p -> validateDateFromToHas(p.getDateValidFrom(), p.getDateValidTo()))
                 .filter(p -> validateDateFromToWithout(p.getDateValidFrom(), p.getDateValidTo()))
                 .filter(p -> validateDateFromToIs(p.getDateValidFrom(), p.getDateValidTo()))
+                .filter(p -> validateMeasYoyo(p))
                 .filter(p -> validateCoordinateArea(p.getLat(), p.getLon()))
                 .filter(p -> validateCoordinateRuler(p.getLat(), p.getLon()))
                 .toList();
@@ -254,6 +271,9 @@ public class TopoFilter extends FormFilter<TopoManager> {
         mMeasNumOfProperty.addListener(mChangeListenerObject);
         mMeasNumOfValueProperty.addListener(mChangeListenerObject);
         mSameAlarmProperty.addListener(mChangeListenerObject);
+        mMeasYoyoCountValueProperty.addListener(mChangeListenerObject);
+        mMeasYoyoSizeValueProperty.addListener(mChangeListenerObject);
+        mMeasYoyoProperty.addListener(mChangeListenerObject);
     }
 
     private String makeInfoDimension(ObservableList<BDimension> checkedItems) {
@@ -496,6 +516,38 @@ public class TopoFilter extends FormFilter<TopoManager> {
                 || p.ext().getNumOfObservations() > 0;
 
         return valid;
+    }
+
+    private boolean validateMeasYoyo(BTopoControlPoint p) {
+        if (!mMeasYoyoProperty.get()) {
+            return true;
+        } else if (p.getDimension() != BDimension._1d || p.ext().getObservationsTimeFiltered().size() < 2) {
+            return false;
+        }
+
+        int matches = 0;
+        double prevSignum = 0.0;
+
+        for (int i = 1; i < p.ext().getObservationsTimeFiltered().size(); i++) {
+            var prevMeas = p.ext().getObservationsTimeFiltered().get(i - 1);
+            var currenMeas = p.ext().getObservationsTimeFiltered().get(i);
+            var currentDeltaZ = currenMeas.ext().getDeltaZ();
+            var prevDeltaZ = prevMeas.ext().getDeltaZ();
+
+            if (ObjectUtils.anyNull(currentDeltaZ, prevDeltaZ)) {
+                continue;
+            }
+
+            var signum = Math.signum(currentDeltaZ - prevDeltaZ);
+            boolean directionChange = prevSignum != 0 && prevSignum != signum;
+            prevSignum = signum;
+
+            if (directionChange && Math.abs(currentDeltaZ - prevDeltaZ) >= mMeasYoyoSizeValueProperty.get()) {
+                matches++;
+            }
+        }
+
+        return matches >= mMeasYoyoCountValueProperty.get();
     }
 
     private boolean validateNextMeas(BTopoControlPoint p) {
