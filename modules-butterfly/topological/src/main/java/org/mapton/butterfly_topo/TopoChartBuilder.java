@@ -44,6 +44,7 @@ import org.jfree.chart.ui.RectangleEdge;
 import org.jfree.chart.ui.RectangleInsets;
 import org.jfree.chart.ui.TextAnchor;
 import org.jfree.chart.ui.VerticalAlignment;
+import org.jfree.data.time.MovingAverage;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.mapton.api.MTemporalManager;
@@ -72,9 +73,7 @@ public class TopoChartBuilder extends ChartBuilder<BTopoControlPoint> {
     private final MTemporalManager mTemporalManager = MTemporalManager.getInstance();
     private final TimeSeries mTimeSeries2d = new TimeSeries(Dict.Geometry.PLANE);
     private final TimeSeries mTimeSeries3d = new TimeSeries("3d");
-    private final TimeSeries mTimeSeriesE = new TimeSeries("E");
     private final TimeSeries mTimeSeriesH = new TimeSeries(Dict.Geometry.HEIGHT);
-    private final TimeSeries mTimeSeriesN = new TimeSeries("N");
 
     public TopoChartBuilder() {
         initChart();
@@ -265,8 +264,6 @@ public class TopoChartBuilder extends ChartBuilder<BTopoControlPoint> {
     @Override
     public void updateDataset(BTopoControlPoint p) {
         mDataset.removeAllSeries();
-        mTimeSeriesN.clear();
-        mTimeSeriesE.clear();
         mTimeSeriesH.clear();
         mTimeSeries2d.clear();
         mTimeSeries3d.clear();
@@ -295,28 +292,56 @@ public class TopoChartBuilder extends ChartBuilder<BTopoControlPoint> {
             if (p.getDimension() == BDimension._1d || p.getDimension() == BDimension._3d) {
                 mTimeSeriesH.add(minute, o.ext().getDeltaZ());
             }
+
             if (p.getDimension() == BDimension._2d || p.getDimension() == BDimension._3d) {
-                mTimeSeriesN.add(minute, o.ext().getDeltaY());
-                mTimeSeriesE.add(minute, o.ext().getDeltaX());
                 mTimeSeries2d.add(minute, o.ext().getDelta2d());
             }
+
             if (p.getDimension() == BDimension._3d) {
                 mTimeSeries3d.add(minute, o.ext().getDelta3d());
             }
         });
 
+        var renderer = plot.getRenderer();
+        var avgStroke = new BasicStroke(5.0f);
+        int avdDays = 90 * 60 * 24;
+        int avgSkipMeasurements = 0;
+        boolean plotAvg = true;
+
         if (p.getDimension() == BDimension._1d || p.getDimension() == BDimension._3d) {
             mDataset.addSeries(mTimeSeriesH);
+            renderer.setSeriesPaint(mDataset.getSeriesIndex(mTimeSeriesH.getKey()), Color.RED);
+            if (plotAvg) {
+                var mavg = MovingAverage.createMovingAverage(mTimeSeriesH, "%s (avg)".formatted(mTimeSeriesH.getKey()), avdDays, avgSkipMeasurements);
+                mDataset.addSeries(mavg);
+                int index = mDataset.getSeriesIndex(mavg.getKey());
+                renderer.setSeriesPaint(index, Color.RED);
+                renderer.setSeriesStroke(index, avgStroke);
+            }
         }
 
         if (p.getDimension() == BDimension._2d || p.getDimension() == BDimension._3d) {
-            //mDataset.addSeries(mTimeSeriesN);
-            //mDataset.addSeries(mTimeSeriesE);
             mDataset.addSeries(mTimeSeries2d);
+            renderer.setSeriesPaint(mDataset.getSeriesIndex(mTimeSeries2d.getKey()), Color.GREEN);
+            if (plotAvg) {
+                var mavg = MovingAverage.createMovingAverage(mTimeSeries2d, "%s (avg)".formatted(mTimeSeries2d.getKey()), avdDays, avgSkipMeasurements);
+                mDataset.addSeries(mavg);
+                int index = mDataset.getSeriesIndex(mavg.getKey());
+                renderer.setSeriesPaint(index, Color.GREEN);
+                renderer.setSeriesStroke(index, avgStroke);
+            }
         }
 
         if (p.getDimension() == BDimension._3d) {
             mDataset.addSeries(mTimeSeries3d);
+            renderer.setSeriesPaint(mDataset.getSeriesIndex(mTimeSeries3d.getKey()), Color.BLUE);
+            if (plotAvg) {
+                var mavg = MovingAverage.createMovingAverage(mTimeSeries3d, "%s (avg)".formatted(mTimeSeries3d.getKey()), avdDays, avgSkipMeasurements);
+                mDataset.addSeries(mavg);
+                int index = mDataset.getSeriesIndex(mavg.getKey());
+                renderer.setSeriesPaint(index, Color.BLUE);
+                renderer.setSeriesStroke(index, avgStroke);
+            }
         }
     }
 }
