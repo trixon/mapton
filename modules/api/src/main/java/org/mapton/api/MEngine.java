@@ -255,6 +255,8 @@ public abstract class MEngine {
         }
     }
 
+    public abstract void initEngine();
+
     public final void initialized() {
         mInitialized = true;
         panTo(options().getMapCenter(), options().getMapZoom());

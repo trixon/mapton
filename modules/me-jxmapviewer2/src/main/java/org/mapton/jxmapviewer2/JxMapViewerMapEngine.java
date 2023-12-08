@@ -128,6 +128,13 @@ public class JxMapViewerMapEngine extends MEngine {
     }
 
     @Override
+    public void initEngine() {
+        if (isInitialized()) {
+            return;
+        }
+    }
+
+    @Override
     public void onWhatsHere(String s) {
         //aaaNbMessage.information("WHATS HERE?", s);
     }

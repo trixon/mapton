@@ -106,6 +106,11 @@ public class Mapton {
             public Node getStyleView() {
                 throw new UnsupportedOperationException("No engine found");
             }
+
+            @Override
+            public void initEngine() {
+                throw new UnsupportedOperationException("No engine found");
+            }
         };
     }
 
@@ -203,6 +208,8 @@ public class Mapton {
         for (var mapEngine : Lookup.getDefault().lookupAll(MEngine.class)) {
             try {
                 if (StringUtils.equalsIgnoreCase(mapEngine.getName(), options().getEngine())) {
+                    mapEngine.initEngine();
+
                     return mapEngine;
                 }
             } catch (Exception e) {

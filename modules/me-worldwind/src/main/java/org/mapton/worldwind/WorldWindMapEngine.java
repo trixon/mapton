@@ -72,7 +72,6 @@ public class WorldWindMapEngine extends MEngine {
     public static final String LOG_TAG = "WorldWind";
     private BasicDragger mBasicDragger;
     private boolean mInProgress;
-    private boolean mInitialized;
     private LayerBackgroundView mLayerBackgroundView;
     private LayerObjectView mLayerObjectView;
     private LayerOptionsView mLayerOptionsView;
@@ -81,47 +80,12 @@ public class WorldWindMapEngine extends MEngine {
     private WorldWindowPanel mMap;
     private double mOldAltitude;
     private double mOldGlobalZoom;
-    private final ModuleOptions mOptions = ModuleOptions.getInstance();
-    private final RulerTabPane mRulerTabPane;
+    private ModuleOptions mOptions;
+    private RulerTabPane mRulerTabPane;
     private long mZoomEpoch = System.currentTimeMillis();
-    private final double[] mZoomLevels;
+    private double[] mZoomLevels;
 
     public WorldWindMapEngine() {
-        System.setProperty("mapton.cache", Places.getCacheDirectory().getAbsolutePath());
-        Configuration.setValue(
-                AVKey.DATA_FILE_STORE_CONFIGURATION_FILE_NAME,
-                "org/mapton/worldwind/CacheLocationConfiguration.xml"
-        );
-
-        mLayerObjectView = LayerObjectView.getInstance();
-//        mLayerOverlayView = LayerOverlayView.getInstance();
-        mLayerBackgroundView = LayerBackgroundView.getInstance();
-        mLayerOptionsView = new LayerOptionsView();
-        mRulerTabPane = RulerTabPane.getInstance();
-
-        mZoomLevels = new double[]{
-            48374812,//1 -- Flat
-            35820953,//2
-            24091408,//3
-            13221640,//4
-            8019342,//5
-            3992765,//6
-            1089305,//7 --Globe
-            444742,//8
-            244785,//9
-            121500,//10
-            56042,//11
-            27946,//12
-            17106,//13 15000?
-            7692,//14
-            3845,//15
-            2340,//16
-            959,//17
-            482,//18
-            294,//19
-            148,//20
-            84//21
-        };
     }
 
     @Override
@@ -149,7 +113,7 @@ public class WorldWindMapEngine extends MEngine {
 
     @Override
     public void fitToBounds(ArrayList<Coordinate> coordinates) {
-        if (!mInitialized || coordinates.isEmpty()) {
+        if (!isInitialized() || coordinates.isEmpty()) {
             return;
         }
 
@@ -162,7 +126,7 @@ public class WorldWindMapEngine extends MEngine {
 
     @Override
     public void fitToBounds(Geometry geometry) {
-        if (!mInitialized || geometry.getArea() == 0) {
+        if (!isInitialized() || geometry.getArea() == 0) {
             return;
         }
 
@@ -175,7 +139,7 @@ public class WorldWindMapEngine extends MEngine {
 
     @Override
     public void fitToBounds(MLatLonBox latLonBox) {
-        if (!mInitialized || (latLonBox.getLatitudeSpan() == 0 && latLonBox.getLongitudeSpan() == 0)) {
+        if (!isInitialized() || (latLonBox.getLatitudeSpan() == 0 && latLonBox.getLongitudeSpan() == 0)) {
             return;
         }
 
@@ -251,6 +215,51 @@ public class WorldWindMapEngine extends MEngine {
     }
 
     @Override
+    public void initEngine() {
+        if (isInitialized()) {
+            return;
+        }
+
+        mOptions = ModuleOptions.getInstance();
+
+        System.setProperty("mapton.cache", Places.getCacheDirectory().getAbsolutePath());
+        Configuration.setValue(
+                AVKey.DATA_FILE_STORE_CONFIGURATION_FILE_NAME,
+                "org/mapton/worldwind/CacheLocationConfiguration.xml"
+        );
+
+        mLayerObjectView = LayerObjectView.getInstance();
+//        mLayerOverlayView = LayerOverlayView.getInstance();
+        mLayerBackgroundView = LayerBackgroundView.getInstance();
+        mLayerOptionsView = new LayerOptionsView();
+        mRulerTabPane = RulerTabPane.getInstance();
+
+        mZoomLevels = new double[]{
+            48374812,//1 -- Flat
+            35820953,//2
+            24091408,//3
+            13221640,//4
+            8019342,//5
+            3992765,//6
+            1089305,//7 --Globe
+            444742,//8
+            244785,//9
+            121500,//10
+            56042,//11
+            27946,//12
+            17106,//13 15000?
+            7692,//14
+            3845,//15
+            2340,//16
+            959,//17
+            482,//18
+            294,//19
+            148,//20
+            84//21
+        };
+    }
+
+    @Override
     public void onActivate() {
         var view = mMap.getView();
         view.setHeading(Angle.fromDegrees(mOptions.getDouble(KEY_VIEW_HEADING)));
@@ -288,14 +297,14 @@ public class WorldWindMapEngine extends MEngine {
 
     @Override
     public void panTo(MLatLon latLon, double zoom) {
-        if (mInitialized && SystemHelper.age(mZoomEpoch) > 1000) {
+        if (isInitialized() && SystemHelper.age(mZoomEpoch) > 1000) {
             mMap.getView().goTo(WWHelper.positionFromLatLon(latLon), toLocalZoom(zoom));
         }
     }
 
     @Override
     public void panTo(MLatLon latLon) {
-        if (!mInitialized) {
+        if (!isInitialized()) {
             return;
         }
 
@@ -403,7 +412,6 @@ public class WorldWindMapEngine extends MEngine {
 
             @Override
             public void display(GLAutoDrawable drawable) {
-                mInitialized = true;
                 if (runOnce) {
                     initialized();
                     runOnce = false;

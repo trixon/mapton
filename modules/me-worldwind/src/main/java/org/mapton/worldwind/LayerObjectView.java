@@ -122,6 +122,9 @@ public class LayerObjectView extends BorderPane implements MActivatable {
 
     synchronized void refresh(WorldWindowPanel map) {
         if (ObjectUtils.anyNull(mMap)) {
+            if (map == null) {
+                return;
+            }
             mMap = map;
             var delayedResetRunner = new DelayedResetRunner(100, () -> {
                 refresh(map);

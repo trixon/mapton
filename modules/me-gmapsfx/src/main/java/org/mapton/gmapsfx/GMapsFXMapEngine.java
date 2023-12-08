@@ -64,11 +64,10 @@ public class GMapsFXMapEngine extends MEngine {
     private GoogleMap mMap;
     private MapOptions mMapOptions;
     private GoogleMapView mMapView;
-    private final ModuleOptions mOptions = ModuleOptions.getInstance();
+    private ModuleOptions mOptions;
     private StyleView mStyleView;
 
     public GMapsFXMapEngine() {
-        mStyleView = new StyleView();
     }
 
     @Override
@@ -127,6 +126,16 @@ public class GMapsFXMapEngine extends MEngine {
     @Override
     public double getZoom() {
         return toGlobalZoom();
+    }
+
+    @Override
+    public void initEngine() {
+        if (isInitialized()) {
+            return;
+        }
+
+        mOptions = ModuleOptions.getInstance();
+        mStyleView = new StyleView();
     }
 
     @Override
