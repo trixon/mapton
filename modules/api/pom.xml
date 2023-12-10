@@ -288,7 +288,7 @@
         <dependency>
             <groupId>eu.hansolo.fx</groupId>
             <artifactId>heatmap</artifactId>
-            <version>21.0.0</version>
+            <version>21.0.1</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.openjfx</groupId>
@@ -310,7 +310,7 @@
         <dependency>
             <groupId>eu.hansolo</groupId>
             <artifactId>toolbox</artifactId>
-            <version>21.0.0</version>
+            <version>21.0.3</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.openjfx</groupId>
@@ -321,7 +321,7 @@
         <dependency>
             <groupId>eu.hansolo</groupId>
             <artifactId>toolboxfx</artifactId>
-            <version>21.0.0</version>
+            <version>21.0.1</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.openjfx</groupId>
