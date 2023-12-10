@@ -336,22 +336,24 @@ public class MapToolBar extends BaseToolBar {
         });
     }
 
-    private synchronized void populateCommands() {
-//        new Thread(() -> {
-        mCommandMenuItems.clear();
-        Lookup.getDefault().lookupAll(MToolMapCommand.class).forEach(command -> {
-            var menuItem = new MenuItem(command.getAction().getText());
-            menuItem.setAccelerator(command.getKeyCodeCombination());
-            menuItem.setOnAction(actionEvent -> {
-                command.getAction().handle(null);
-            });
-            mCommandMenuItems.add(menuItem);
-        });
+    private void populateCommands() {
+        new Thread(() -> {
+            synchronized (this) {
+                mCommandMenuItems.clear();
+                Lookup.getDefault().lookupAll(MToolMapCommand.class).forEach(command -> {
+                    var menuItem = new MenuItem(command.getAction().getText());
+                    menuItem.setAccelerator(command.getKeyCodeCombination());
+                    menuItem.setOnAction(actionEvent -> {
+                        command.getAction().handle(null);
+                    });
+                    mCommandMenuItems.add(menuItem);
+                });
 
-        if (!mCommandMenuItems.isEmpty()) {
-            mCommandMenuItems.sort((o1, o2) -> o1.getText().compareTo(o2.getText()));
-        }
-//        }, getClass().getCanonicalName()).start();
+                if (!mCommandMenuItems.isEmpty()) {
+                    mCommandMenuItems.sort((o1, o2) -> o1.getText().compareTo(o2.getText()));
+                }
+            }
+        }, getClass().getCanonicalName()).start();
     }
 
     private void refreshEngine() {
