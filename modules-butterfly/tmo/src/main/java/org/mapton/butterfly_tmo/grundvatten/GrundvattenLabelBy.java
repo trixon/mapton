@@ -75,10 +75,6 @@ public enum GrundvattenLabelBy {
         var z = p.getMarknivå();
 
         return z == null ? "-" : MathHelper.convertDoubleToStringWithSign(z, 2);
-    }),
-    MISC_Z(LabelByCategories.MISC, "Z", p -> {
-        return "?";
-//        return MathHelper.convertDoubleToString(p.getZ(), 1);
     });
     private final String mCategory;
     private final Function<BGrundvatten, String> mFunction;

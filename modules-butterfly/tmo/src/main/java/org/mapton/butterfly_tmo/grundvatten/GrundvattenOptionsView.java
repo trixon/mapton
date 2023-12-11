@@ -106,8 +106,11 @@ public class GrundvattenOptionsView extends MOptionsView<GrundvattenLayerBundle>
         sessionManager.register("options.grundvatten.pointBy", mPointSelectionModelSession.selectedIndexProperty());
         sessionManager.register("options.grundvatten.labelBy", mLabelByIdProperty);
         sessionManager.register("options.grundvatten.timeSeries", timeSeriesProperty());
-
-        mLabelByProperty.set(GrundvattenLabelBy.valueOf(mLabelByIdProperty.get()));
+        try {
+            mLabelByProperty.set(GrundvattenLabelBy.valueOf(mLabelByIdProperty.get()));
+        } catch (IllegalArgumentException e) {
+            mLabelByProperty.set(GrundvattenLabelBy.NAME);
+        }
     }
 
     private void populateLabelMenuButton() {
