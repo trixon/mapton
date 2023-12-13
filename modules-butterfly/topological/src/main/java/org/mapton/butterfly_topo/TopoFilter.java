@@ -23,9 +23,11 @@ import static java.time.temporal.ChronoUnit.DAYS;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
 import org.apache.commons.lang3.ObjectUtils;
@@ -37,8 +39,11 @@ import org.mapton.api.ui.forms.FormHelper;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
+import org.mapton.butterfly_format.types.topo.BTopoControlPointObservation;
 import org.mapton.butterfly_topo.api.TopoManager;
 import org.mapton.butterfly_topo.shared.AlarmFilter;
+import org.mapton.butterfly_topo.shared.AlarmLevelChangeMode;
+import org.mapton.butterfly_topo.shared.AlarmLevelChangeUnit;
 import se.trixon.almond.util.BooleanHelper;
 import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
@@ -52,7 +57,6 @@ import se.trixon.almond.util.StringHelper;
 public class TopoFilter extends FormFilter<TopoManager> {
 
     IndexedCheckModel<AlarmFilter> mAlarmCheckModel;
-
     IndexedCheckModel mAlarmNameCheckModel;
     IndexedCheckModel mCategoryCheckModel;
     IndexedCheckModel mDateFromToCheckModel;
@@ -64,10 +68,14 @@ public class TopoFilter extends FormFilter<TopoManager> {
     IndexedCheckModel mMeasOperatorsCheckModel;
     IndexedCheckModel mOperatorCheckModel;
     IndexedCheckModel mStatusCheckModel;
-    private final SimpleBooleanProperty mAlarmLevelChangeProperty = new SimpleBooleanProperty();
     private final SimpleBooleanProperty mInvertProperty = new SimpleBooleanProperty();
     private final TopoManager mManager = TopoManager.getInstance();
     private final SimpleStringProperty mMaxAgeProperty = new SimpleStringProperty();
+    private final SimpleIntegerProperty mMeasAlarmLevelChangeLimitProperty = new SimpleIntegerProperty();
+    private final SimpleObjectProperty mMeasAlarmLevelChangeModeProperty = new SimpleObjectProperty();
+    private final SimpleBooleanProperty mMeasAlarmLevelChangeProperty = new SimpleBooleanProperty();
+    private final SimpleObjectProperty mMeasAlarmLevelChangeUnitProperty = new SimpleObjectProperty();
+    private final SimpleIntegerProperty mMeasAlarmLevelChangeValueProperty = new SimpleIntegerProperty();
     private final SimpleBooleanProperty mMeasDiffAllProperty = new SimpleBooleanProperty();
     private final SimpleDoubleProperty mMeasDiffAllValueProperty = new SimpleDoubleProperty();
     private final SimpleBooleanProperty mMeasDiffLatestProperty = new SimpleBooleanProperty();
@@ -87,16 +95,32 @@ public class TopoFilter extends FormFilter<TopoManager> {
         initListeners();
     }
 
-    public SimpleBooleanProperty alarmLevelChangeProperty() {
-        return mAlarmLevelChangeProperty;
-    }
-
     public SimpleBooleanProperty invertProperty() {
         return mInvertProperty;
     }
 
     public SimpleStringProperty maxAgeProperty() {
         return mMaxAgeProperty;
+    }
+
+    public SimpleIntegerProperty measAlarmLevelChangeLimitProperty() {
+        return mMeasAlarmLevelChangeLimitProperty;
+    }
+
+    public SimpleObjectProperty measAlarmLevelChangeModeProperty() {
+        return mMeasAlarmLevelChangeModeProperty;
+    }
+
+    public SimpleBooleanProperty measAlarmLevelChangeProperty() {
+        return mMeasAlarmLevelChangeProperty;
+    }
+
+    public SimpleObjectProperty measAlarmLevelChangeUnitProperty() {
+        return mMeasAlarmLevelChangeUnitProperty;
+    }
+
+    public SimpleIntegerProperty measAlarmLevelChangeValueProperty() {
+        return mMeasAlarmLevelChangeValueProperty;
     }
 
     public SimpleBooleanProperty measDiffAllProperty() {
@@ -157,7 +181,7 @@ public class TopoFilter extends FormFilter<TopoManager> {
                 .filter(p -> validateCheck(mCategoryCheckModel, p.getCategory()))
                 .filter(p -> validateAlarmName(p))
                 .filter(p -> validateAlarm(p))
-                .filter(p -> validateAlarmLevelchange(p))
+                .filter(p -> validateMeasAlarmLevelChange(p))
                 .filter(p -> validateMeasDisplacementAll(p))
                 .filter(p -> validateMeasDisplacementLatest(p))
                 .filter(p -> validateMeasCount(p))
@@ -259,9 +283,15 @@ public class TopoFilter extends FormFilter<TopoManager> {
     }
 
     private void initListeners() {
-        mAlarmLevelChangeProperty.addListener(mChangeListenerObject);
         mInvertProperty.addListener(mChangeListenerObject);
         mMaxAgeProperty.addListener(mChangeListenerObject);
+
+        mMeasAlarmLevelChangeProperty.addListener(mChangeListenerObject);
+        mMeasAlarmLevelChangeLimitProperty.addListener(mChangeListenerObject);
+        mMeasAlarmLevelChangeModeProperty.addListener(mChangeListenerObject);
+        mMeasAlarmLevelChangeUnitProperty.addListener(mChangeListenerObject);
+        mMeasAlarmLevelChangeValueProperty.addListener(mChangeListenerObject);
+
         mMeasDiffAllProperty.addListener(mChangeListenerObject);
         mMeasDiffAllValueProperty.addListener(mChangeListenerObject);
         mMeasDiffLatestProperty.addListener(mChangeListenerObject);
@@ -296,24 +326,6 @@ public class TopoFilter extends FormFilter<TopoManager> {
         }
 
         return false;
-    }
-
-    private boolean validateAlarmLevelchange(BTopoControlPoint p) {
-        if (!mAlarmLevelChangeProperty.get()) {
-            return true;
-        }
-
-        var hLevels = new HashSet<Integer>();
-        var pLevels = new HashSet<Integer>();
-
-        p.ext().getObservationsAllCalculated().stream()
-                .filter(o -> MTemporalManager.getInstance().isValid(o.getDate()))
-                .forEachOrdered(o -> {
-                    hLevels.add(p.ext().getAlarmLevelHeight(o));
-                    pLevels.add(p.ext().getAlarmLevelPlane(o));
-                });
-
-        return hLevels.size() > 1 || pLevels.size() > 1;
     }
 
     private boolean validateAlarmName(BTopoControlPoint p) {
@@ -414,6 +426,71 @@ public class TopoFilter extends FormFilter<TopoManager> {
             long daysBetween = DAYS.between(dateTime, LocalDateTime.now());
             boolean valid = daysBetween < Integer.parseInt(ageFilter);
             return valid;
+        }
+    }
+
+    private boolean validateMeasAlarmLevelChange(BTopoControlPoint p) {
+        if (!mMeasAlarmLevelChangeProperty.get()) {
+            return true;
+        }
+
+        var observations = p.ext().getObservationsTimeFiltered();
+        if (observations.size() < 2) {
+            return false;
+        }
+
+        var mode = measAlarmLevelChangeModeProperty().get();
+        var unit = measAlarmLevelChangeUnitProperty().get();
+        int value = mMeasAlarmLevelChangeValueProperty.get();
+        int limit = mMeasAlarmLevelChangeLimitProperty.get();
+
+        Stream<BTopoControlPointObservation> source;
+        if (unit == AlarmLevelChangeUnit.DAYS) {
+            source = observations.stream()
+                    .filter(o -> MTemporalManager.getInstance().isValid(o.getDate()))
+                    .filter(o -> DateHelper.isAfterOrEqual(o.getDate().toLocalDate(), LocalDate.now().minusDays(value)));
+        } else {
+            source = observations.stream()
+                    .filter(o -> MTemporalManager.getInstance().isValid(o.getDate()))
+                    .skip(Math.max(0, observations.size() - value));
+        }
+
+        var filteredObservations = source.toList();
+
+        if (filteredObservations.isEmpty()) {
+            return false;
+        }
+
+        int countBetter = 0;
+        int countWorse = 0;
+
+        for (int i = 1; i < filteredObservations.size(); i++) {
+            var prev = filteredObservations.get(i - 1);
+            var current = filteredObservations.get(i);
+            int prevLevel = p.ext().getAlarmLevel(prev);
+            int currentLevel = p.ext().getAlarmLevel(current);
+
+            if (prevLevel > currentLevel) {
+                countBetter++;
+            }
+
+            if (prevLevel < currentLevel) {
+                countWorse++;
+            }
+        }
+
+        switch (mode) {
+            case AlarmLevelChangeMode.BETTER -> {
+                return countBetter >= limit;
+            }
+            case AlarmLevelChangeMode.WORSE -> {
+                return countWorse >= limit;
+            }
+            case AlarmLevelChangeMode.EITHER -> {
+                return countBetter + countWorse >= limit;
+            }
+            default ->
+                throw new AssertionError();
         }
     }
 

@@ -37,11 +37,14 @@ import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_topo.api.TopoManager;
 import org.mapton.butterfly_topo.shared.AlarmFilter;
+import org.mapton.butterfly_topo.shared.AlarmLevelChangeMode;
+import org.mapton.butterfly_topo.shared.AlarmLevelChangeUnit;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SDict;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.session.SessionCheckComboBox;
 import se.trixon.almond.util.fx.session.SessionComboBox;
+import se.trixon.almond.util.fx.session.SessionIntegerSpinner;
 import se.trixon.almond.util.fx.session.SpinnerDoubleSession;
 import se.trixon.almond.util.fx.session.SpinnerIntegerSession;
 import se.trixon.almond.util.swing.SwingHelper;
@@ -50,13 +53,14 @@ import se.trixon.almond.util.swing.SwingHelper;
  *
  * @author Patrik Karlström
  */
-public class TopoFilterPopOver extends BaseFilterPopOver {
+public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
 
-    private final CheckBox mAlarmLevelChangeCheckbox = new CheckBox();
     private final SessionCheckComboBox<String> mAlarmNameSccb = new SessionCheckComboBox<>();
     private final SessionCheckComboBox<AlarmFilter> mAlarmSccb = new SessionCheckComboBox<>();
     private final SessionCheckComboBox<String> mCategorySccb = new SessionCheckComboBox<>();
     private final double mDefaultDiffValue = 0.020;
+    private final int mDefaultMeasAlarmLevelChangeLimit = 1;
+    private final int mDefaultMeasAlarmLevelChangeValue = 10;
     private final double mDefaultMeasYoyoCount = 5.0;
     private final double mDefaultMeasYoyoSize = 0.003;
     private final int mDefaultNumOfMeasfValue = 1;
@@ -71,6 +75,11 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
     private final SessionCheckComboBox<String> mHasDateFromToSccb = new SessionCheckComboBox<>();
     private final CheckBox mInvertCheckbox = new CheckBox();
     private final TopoManager mManager = TopoManager.getInstance();
+    private final CheckBox mMeasAlarmLevelChangeCheckbox = new CheckBox();
+    private final SessionIntegerSpinner mMeasAlarmLevelChangeLimitSis = new SessionIntegerSpinner(1, 100, mDefaultMeasAlarmLevelChangeLimit);
+    private final SessionComboBox<AlarmLevelChangeMode> mMeasAlarmLevelChangeModeScb = new SessionComboBox<>();
+    private final SessionComboBox<AlarmLevelChangeUnit> mMeasAlarmLevelChangeUnitScb = new SessionComboBox<>();
+    private final SessionIntegerSpinner mMeasAlarmLevelChangeValueSis = new SessionIntegerSpinner(2, 10000, mDefaultMeasAlarmLevelChangeValue);
     private final SessionCheckComboBox<String> mMeasCodeSccb = new SessionCheckComboBox<>();
     private final Spinner<Double> mMeasDiffLatestSpinner = new Spinner<>(-1.0, 1.0, mDefaultDiffValue, 0.001);
     private final SpinnerDoubleSession mMeasDiffLatestSpinnerSession = new SpinnerDoubleSession(mMeasDiffLatestSpinner);
@@ -101,12 +110,17 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
     }
 
     @Override
+    public void applyFilterFavorite(TopoFilterFavorite filterFavorite) {
+        //TODO
+    }
+
+    @Override
     public void clear() {
         getPolygonFilterCheckBox().setSelected(false);
         mFilter.freeTextProperty().set("");
 
         mSameAlarmCheckbox.setSelected(false);
-        mAlarmLevelChangeCheckbox.setSelected(false);
+        mMeasAlarmLevelChangeCheckbox.setSelected(false);
         mDiffMeasLatestCheckbox.setSelected(false);
         mDiffMeasAllCheckbox.setSelected(false);
         mMeasYoyoCheckbox.setSelected(false);
@@ -120,6 +134,8 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
         mMeasYoyoCountSpinner.getValueFactory().setValue(mDefaultMeasYoyoCount);
         mMeasYoyoSizeSpinner.getValueFactory().setValue(mDefaultMeasYoyoSize);
         mMeasNumOfSpinner.getValueFactory().setValue(mDefaultNumOfMeasfValue);
+        mMeasAlarmLevelChangeValueSis.getValueFactory().setValue(mDefaultMeasAlarmLevelChangeValue);
+        mMeasAlarmLevelChangeLimitSis.getValueFactory().setValue(mDefaultMeasAlarmLevelChangeLimit);
 
         mDimensionSccb.clearChecks();
         mStatusSccb.clearChecks();
@@ -158,6 +174,10 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
         mAlarmSccb.loadAndRestoreCheckItems();
 
         mMeasMaxAgeScb.load();
+        mMeasAlarmLevelChangeModeScb.load();
+        mMeasAlarmLevelChangeUnitScb.load();
+        mMeasAlarmLevelChangeValueSis.load();
+        mMeasAlarmLevelChangeLimitSis.load();
         mMeasDiffLatestSpinnerSession.load();
         mDiffMeasAllSpinnerSession.load();
         mMeasYoyoCountSession.load();
@@ -238,6 +258,9 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
                 SDict.IS_INVALID.toString()
         ));
 
+        mMeasAlarmLevelChangeModeScb.getItems().setAll(AlarmLevelChangeMode.values());
+        mMeasAlarmLevelChangeUnitScb.getItems().setAll(AlarmLevelChangeUnit.values());
+
         mMeasNextSccb.getItems().setAll(List.of(
                 "<0",
                 "0",
@@ -286,7 +309,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
 
         mMeasNumOfSpinner.getValueFactory().setConverter(new NegPosStringConverterInteger());
         mSameAlarmCheckbox.setText(getBundle().getString("sameAlarmCheckBoxText"));
-        mAlarmLevelChangeCheckbox.setText(getBundle().getString("alarmLevelChangeCheckBoxText"));
+        mMeasAlarmLevelChangeCheckbox.setText(getBundle().getString("measAlarmLevelChangeCheckBoxText"));
         mDiffMeasLatestCheckbox.setText(getBundle().getString("diffMeasLatestCheckBoxText"));
         mDiffMeasAllCheckbox.setText(getBundle().getString("diffMeasAllCheckBoxText"));
         mMeasYoyoCheckbox.setText(getBundle().getString("YoyoCheckBoxText"));
@@ -337,6 +360,11 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
                         mMeasYoyoCheckbox,
                         mMeasYoyoCountSpinner,
                         mMeasYoyoSizeSpinner
+                ),
+                new VBox(titleGap,
+                        mMeasAlarmLevelChangeCheckbox,
+                        new HBox(8, mMeasAlarmLevelChangeLimitSis, mMeasAlarmLevelChangeModeScb),
+                        new HBox(8, mMeasAlarmLevelChangeValueSis, mMeasAlarmLevelChangeUnitScb)
                 )
         );
 
@@ -352,15 +380,14 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
                 new Separator(),
                 hBox,
                 new Separator(),
-                mAlarmLevelChangeCheckbox,
                 mMeasIncludeWithoutCheckbox,
                 mSameAlarmCheckbox,
                 new Separator(),
                 mInvertCheckbox
         );
 
-        FxHelper.setEditable(true, mDiffMeasAllSpinner, mMeasDiffLatestSpinner, mMeasNumOfSpinner, mMeasYoyoCountSpinner, mMeasYoyoSizeSpinner);
-        FxHelper.autoCommitSpinners(mDiffMeasAllSpinner, mMeasDiffLatestSpinner, mMeasNumOfSpinner, mMeasYoyoCountSpinner, mMeasYoyoSizeSpinner);
+        FxHelper.setEditable(true, mDiffMeasAllSpinner, mMeasDiffLatestSpinner, mMeasNumOfSpinner, mMeasYoyoCountSpinner, mMeasYoyoSizeSpinner, mMeasAlarmLevelChangeValueSis, mMeasAlarmLevelChangeLimitSis);
+        FxHelper.autoCommitSpinners(mDiffMeasAllSpinner, mMeasDiffLatestSpinner, mMeasNumOfSpinner, mMeasYoyoCountSpinner, mMeasYoyoSizeSpinner, mMeasAlarmLevelChangeValueSis, mMeasAlarmLevelChangeLimitSis);
 
         leftBox.getChildren().stream()
                 .filter(node -> node instanceof Region)
@@ -383,6 +410,11 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
         mMeasNumOfSpinner.prefWidthProperty().bind(rightBox.widthProperty());
         mMeasOperatorSccb.prefWidthProperty().bind(rightBox.widthProperty());
 
+        mMeasAlarmLevelChangeValueSis.setMinWidth(FxHelper.getUIScaled(90));
+        mMeasAlarmLevelChangeLimitSis.setMinWidth(FxHelper.getUIScaled(90));
+        mMeasAlarmLevelChangeModeScb.setPrefWidth(400);
+        mMeasAlarmLevelChangeUnitScb.setPrefWidth(400);
+
         mMeasYoyoSizeSpinner.getValueFactory().setConverter(new StringConverter<Double>() {
             @Override
             public Double fromString(String string) {
@@ -399,8 +431,9 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
             }
         });
 
-        leftBox.setPrefWidth(FxHelper.getUIScaled(200));
-        rightBox.setPrefWidth(FxHelper.getUIScaled(200));
+        int prefWidth = FxHelper.getUIScaled(250);
+        leftBox.setPrefWidth(prefWidth);
+        rightBox.setPrefWidth(prefWidth);
 
         buttonBox.getChildren().stream()
                 .filter(n -> n instanceof Region)
@@ -436,7 +469,12 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
         mFilter.measYoyoSizeValueProperty().bind(mMeasYoyoSizeSession.valueProperty());
         mFilter.measDiffLatestValueProperty().bind(mMeasDiffLatestSpinnerSession.valueProperty());
 
-        mFilter.alarmLevelChangeProperty().bind(mAlarmLevelChangeCheckbox.selectedProperty());
+        mFilter.measAlarmLevelChangeProperty().bind(mMeasAlarmLevelChangeCheckbox.selectedProperty());
+        mFilter.measAlarmLevelChangeModeProperty().bind(mMeasAlarmLevelChangeModeScb.getSelectionModel().selectedItemProperty());
+        mFilter.measAlarmLevelChangeUnitProperty().bind(mMeasAlarmLevelChangeUnitScb.getSelectionModel().selectedItemProperty());
+        mFilter.measAlarmLevelChangeValueProperty().bind(mMeasAlarmLevelChangeValueSis.sessionValueProperty());
+        mFilter.measAlarmLevelChangeLimitProperty().bind(mMeasAlarmLevelChangeLimitSis.sessionValueProperty());
+
         mFilter.sameAlarmProperty().bind(mSameAlarmCheckbox.selectedProperty());
         mFilter.maxAgeProperty().bind(mMeasMaxAgeScb.getSelectionModel().selectedItemProperty());
         mFilter.polygonFilterProperty().bind(getPolygonFilterCheckBox().selectedProperty());
@@ -459,7 +497,11 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
         mDiffMeasAllSpinner.disableProperty().bind(mDiffMeasAllCheckbox.selectedProperty().not());
         mMeasYoyoCountSpinner.disableProperty().bind(mMeasYoyoCheckbox.selectedProperty().not());
         mMeasYoyoSizeSpinner.disableProperty().bind(mMeasYoyoCheckbox.selectedProperty().not());
-        mMeasDiffLatestSpinner.disableProperty().bind(mDiffMeasLatestCheckbox.selectedProperty().not());
+
+        mMeasAlarmLevelChangeLimitSis.disableProperty().bind(mMeasAlarmLevelChangeCheckbox.selectedProperty().not());
+        mMeasAlarmLevelChangeModeScb.disableProperty().bind(mMeasAlarmLevelChangeCheckbox.selectedProperty().not());
+        mMeasAlarmLevelChangeUnitScb.disableProperty().bind(mMeasAlarmLevelChangeCheckbox.selectedProperty().not());
+        mMeasAlarmLevelChangeValueSis.disableProperty().bind(mMeasAlarmLevelChangeCheckbox.selectedProperty().not());
 
         mFilter.initCheckModelListeners();
     }
@@ -493,10 +535,14 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
         sessionManager.register("filter.measMaxAge", mMeasMaxAgeScb.selectedIndexProperty());
         sessionManager.register("filter.measNumOfMeas", mNumOfMeasCheckbox.selectedProperty());
         sessionManager.register("filter.measNumOfValue", mMeasNumOfSession.valueProperty());
+        sessionManager.register("filter.measAlarmLevelChange", mMeasAlarmLevelChangeCheckbox.selectedProperty());
+        sessionManager.register("filter.measAlarmLevelChangeMode", mMeasAlarmLevelChangeModeScb.selectedIndexProperty());
+        sessionManager.register("filter.measAlarmLevelChangeUnit", mMeasAlarmLevelChangeUnitScb.selectedIndexProperty());
+        sessionManager.register("filter.measAlarmLevelChangeValue", mMeasAlarmLevelChangeValueSis.sessionValueProperty());
+        sessionManager.register("filter.measAlarmLevelChangeLimit", mMeasAlarmLevelChangeLimitSis.sessionValueProperty());
 
         sessionManager.register("filter.invert", mInvertCheckbox.selectedProperty());
         sessionManager.register("filter.sameAlarm", mSameAlarmCheckbox.selectedProperty());
-        sessionManager.register("filter.alarmLevelChange", mAlarmLevelChangeCheckbox.selectedProperty());
     }
 
 }
