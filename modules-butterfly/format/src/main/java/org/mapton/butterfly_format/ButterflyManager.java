@@ -16,6 +16,7 @@
 package org.mapton.butterfly_format;
 
 import java.io.File;
+import java.util.Date;
 
 /**
  *
@@ -39,6 +40,12 @@ public class ButterflyManager {
 
     public Butterfly getButterfly() {
         return butterfly;
+    }
+
+    public Date getDate(File sourceDir) {
+        var f = new File(sourceDir, "butterfly.properties");
+
+        return new Date(f.lastModified());
     }
 
     public void load(File sourceDir) {

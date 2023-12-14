@@ -17,6 +17,7 @@ package org.mapton.butterfly_core.api;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import org.apache.commons.io.FileUtils;
@@ -40,6 +41,7 @@ public class ButterflyManager {
 
     private final MAreaFilterManager mAreaFilterManager = MAreaFilterManager.getInstance();
     private final ObjectProperty<Butterfly> mButterflyProperty = new SimpleObjectProperty<>();
+    private Date mFileDate;
     private final WKTReader mWktReader = new WKTReader();
 
     public static ButterflyManager getInstance() {
@@ -57,10 +59,15 @@ public class ButterflyManager {
         return mButterflyProperty.get();
     }
 
+    public Date getFileDate() {
+        return mFileDate;
+    }
+
     public void load() {
         var wrappedManager = org.mapton.butterfly_format.ButterflyManager.getInstance();
-
-        wrappedManager.load(new File(FileUtils.getTempDirectory(), "butterfly"));
+        var sourceDir = new File(FileUtils.getTempDirectory(), "butterfly");
+        wrappedManager.load(sourceDir);
+        mFileDate = wrappedManager.getDate(sourceDir);
         var butterfly = wrappedManager.getButterfly();
         calculateLatLons(butterfly.hydro().getGroundwaterPoints());
         calculateLatLons(butterfly.topo().getControlPoints());
@@ -95,6 +102,7 @@ public class ButterflyManager {
         }
 
         setButterfly(butterfly);
+        ButterflyHelper.refreshTitle();
     }
 
     public void setButterfly(Butterfly butterfly) {
