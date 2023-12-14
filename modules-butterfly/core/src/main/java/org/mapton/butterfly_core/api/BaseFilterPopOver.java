@@ -23,8 +23,9 @@ import org.mapton.butterfly_format.Butterfly;
 /**
  *
  * @author Patrik Karlström
+ * @param <T>
  */
-public abstract class BaseFilterPopOver extends MFilterPopOver {
+public abstract class BaseFilterPopOver<T extends BaseFilterFavorite> extends MFilterPopOver {
 
     private Butterfly mButterfly;
     private final ButterflyManager mButterflyManager = ButterflyManager.getInstance();
@@ -46,6 +47,14 @@ public abstract class BaseFilterPopOver extends MFilterPopOver {
     }
 
     public void onShownFirstTime() {
+    }
+
+    public void applyFilterFavorite(T t) {
+
+    }
+
+    public T populateFilterFavorite() {
+        return null;
     }
 
     public Butterfly getButterfly() {

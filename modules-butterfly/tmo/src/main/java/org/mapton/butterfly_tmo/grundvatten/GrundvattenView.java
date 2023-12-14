@@ -31,6 +31,7 @@ public class GrundvattenView {
 
     private final GrundvattenFilter mFilter = new GrundvattenFilter();
     private final GrundvattenFilterPopOver mFilterPopOver = new GrundvattenFilterPopOver(mFilter);
+    private final GrundvattenFilterFavoritePopOver mFilterFavoritePopOver = new GrundvattenFilterFavoritePopOver(mFilterPopOver);
     private final SingleListForm<GrundvattenManager, BGrundvatten> mListForm;
     private final GrundvattenManager mManager = GrundvattenManager.getInstance();
 
@@ -38,6 +39,7 @@ public class GrundvattenView {
         var actions = Arrays.asList(
                 ActionUtils.ACTION_SPAN,
                 mFilter.getInfoPopOver().getAction(),
+                mFilterFavoritePopOver.getAction(),
                 mFilterPopOver.getAction()
         );
 

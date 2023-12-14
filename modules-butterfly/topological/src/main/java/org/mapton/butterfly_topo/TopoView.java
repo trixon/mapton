@@ -36,6 +36,7 @@ public class TopoView {
 
     private final TopoFilter mFilter = new TopoFilter();
     private final TopoFilterPopOver mFilterPopOver = new TopoFilterPopOver(mFilter);
+    private final TopoFilterFavoritePopOver mFilterFavoritePopOver = new TopoFilterFavoritePopOver(mFilterPopOver);
     private final ListForm mListForm;
     private final TopoManager mManager = TopoManager.getInstance();
 
@@ -43,6 +44,7 @@ public class TopoView {
         var actions = Arrays.asList(
                 ActionUtils.ACTION_SPAN,
                 mFilter.getInfoPopOver().getAction(),
+                mFilterFavoritePopOver.getAction(),
                 mFilterPopOver.getAction()
         );
 

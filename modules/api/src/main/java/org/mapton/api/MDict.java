@@ -32,6 +32,7 @@ public enum MDict {
     COPY_LOCATION,
     DISPLAY_PLACEMARK,
     ELEVATION,
+    FILTER_FAVORITES,
     FLAT,
     GLOBE,
     GRID,
