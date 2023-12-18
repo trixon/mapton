@@ -330,6 +330,11 @@
                     <artifactId>butterfly-tmo</artifactId>
                     <version>${project.version}</version>
                 </dependency>
+                <dependency>
+                    <groupId>se.trixon.netbeans</groupId>
+                    <artifactId>guideruler</artifactId>
+                    <version>0.1-SNAPSHOT</version>
+                </dependency>
             </dependencies>
         </profile>
 
