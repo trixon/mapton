@@ -16,7 +16,6 @@
 package org.mapton.butterfly_projektnav.editor.topo;
 
 import java.util.List;
-import java.util.ResourceBundle;
 import java.util.TreeSet;
 import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
@@ -34,7 +33,6 @@ import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.mapton.api.report.MEditor;
 import org.mapton.api.report.MSplitNavSettings;
-import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
@@ -50,7 +48,6 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
 public class ParameterEditor extends BaseTopoEditor {
 
     private BorderPane mBorderPane;
-    private final ResourceBundle mBundle = NbBundle.getBundle(ParameterEditor.class);
     private final CheckBox mDagCheckBox = new CheckBox("Dag");
     private final Spinner mDagSpinner = new Spinner<Integer>(0, 999, 1);
     private final CheckBox mDatFromCheckBox = new CheckBox("Från");
