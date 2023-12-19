@@ -1,6 +1,17 @@
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ * Copyright 2023 Patrik Karlström.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.mapton.butterfly_format.types;
 
@@ -11,6 +22,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Properties;
+import org.apache.commons.lang3.StringUtils;
 import org.mapton.butterfly_format.Butterfly;
 
 /**
@@ -21,10 +34,15 @@ public abstract class BBase {
 
     @JsonIgnore
     private transient Butterfly butterfly;
+    private String meta;
     private String name;
 
     public Butterfly getButterfly() {
         return butterfly;
+    }
+
+    public String getMeta() {
+        return meta;
     }
 
     public String getName() {
@@ -33,6 +51,10 @@ public abstract class BBase {
 
     public void setButterfly(Butterfly butterfly) {
         this.butterfly = butterfly;
+    }
+
+    public void setMeta(String meta) {
+        this.meta = meta;
     }
 
     public void setName(String name) {
@@ -75,6 +97,32 @@ public abstract class BBase {
 
         public LinkedHashMap<String, Integer> getMeasurementCountStats() {
             return measuremenCountStats;
+        }
+
+        public HashMap<String, String> getMetaAsMap() {
+            var map = new HashMap<String, String>();
+
+            for (var s : StringUtils.split(getMeta(), "\\n")) {
+                var item = StringUtils.split(s, "=", 2);
+                try {
+                    map.put(item[0], item[1]);
+                } catch (ArrayIndexOutOfBoundsException e) {
+                }
+
+            }
+
+            return map;
+        }
+
+        public Properties getMetaAsProperties() {
+            var properties = new Properties();
+            properties.putAll(getMetaAsMap());
+
+            return properties;
+        }
+
+        public String getMetaAsString() {
+            return getMeta();
         }
 
         public int getNumOfObservations() {

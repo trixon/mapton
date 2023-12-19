@@ -31,7 +31,6 @@ public abstract class BBaseControlPoint extends BBasePoint {
     private LocalDate dateValidTo;
     private LocalDate dateZero;
     private Integer frequency;
-    private String meta;
     private Integer numOfDecXY;
     private Integer numOfDecZ;
     private String operator;
@@ -74,10 +73,6 @@ public abstract class BBaseControlPoint extends BBasePoint {
 
     public Integer getFrequency() {
         return frequency;
-    }
-
-    public String getMeta() {
-        return meta;
     }
 
     public Integer getNumOfDecXY() {
@@ -154,10 +149,6 @@ public abstract class BBaseControlPoint extends BBasePoint {
 
     public void setFrequency(Integer frequency) {
         this.frequency = frequency;
-    }
-
-    public void setMeta(String meta) {
-        this.meta = meta;
     }
 
     public void setNumOfDecXY(Integer numOfDecXY) {

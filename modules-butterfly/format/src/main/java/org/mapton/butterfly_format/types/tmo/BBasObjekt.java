@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_format.types.tmo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDate;
 import org.mapton.butterfly_format.types.BBasePoint;
 
@@ -93,6 +94,12 @@ public abstract class BBasObjekt extends BBasePoint {
 
     public String getLägesbeskrivning() {
         return mLägesbeskrivning;
+    }
+
+    @JsonIgnore
+    @Override
+    public String getMeta() {
+        return super.getMeta();
     }
 
     public String getMätningstyper() {
