@@ -44,10 +44,14 @@ import se.trixon.almond.util.fx.session.SessionComboBox;
  */
 public class TopoOptionsView extends MOptionsView<TopoLayerBundle> {
 
+    private static final ColorBy DEFAULT_COLOR_BY = ColorBy.ALARM;
+    private static final TopoLabelBy DEFAULT_LABEL_BY = TopoLabelBy.NAME;
+    private static final PointBy DEFAULT_POINT_BY = PointBy.AUTO;
+
     private final SessionComboBox<ColorBy> mColorScb = new SessionComboBox<>();
     private final SessionCheckComboBox<GraphicRendererItem> mGraphicSccb = new SessionCheckComboBox<>();
     private final SessionCheckComboBox<Direction> mIndicatorSccb = new SessionCheckComboBox<>();
-    private final SimpleStringProperty mLabelByIdProperty = new SimpleStringProperty("NAME");
+    private final SimpleStringProperty mLabelByIdProperty = new SimpleStringProperty(DEFAULT_LABEL_BY.name());
     private final SimpleObjectProperty<TopoLabelBy> mLabelByProperty = new SimpleObjectProperty<>();
     private final MenuButton mLabelMenuButton = new MenuButton();
     private final SessionComboBox<PointBy> mPointScb = new SessionComboBox<>();
@@ -89,9 +93,9 @@ public class TopoOptionsView extends MOptionsView<TopoLayerBundle> {
 
     private void createUI() {
         mPointScb.getItems().setAll(PointBy.values());
-        mPointScb.setValue(PointBy.AUTO);
+        mPointScb.setValue(DEFAULT_POINT_BY);
         mColorScb.getItems().setAll(ColorBy.values());
-        mColorScb.setValue(ColorBy.STYLE);
+        mColorScb.setValue(DEFAULT_COLOR_BY);
 
         mGraphicSccb.setTitle(Dict.GRAPHICS.toString());
         mGraphicSccb.setShowCheckedCount(true);

@@ -79,7 +79,7 @@ public class InfiltrationAttributeManager {
 
     public PointPlacemarkAttributes getLabelPlacemarkAttributes() {
         if (mLabelPlacemarkAttributes == null) {
-            mLabelPlacemarkAttributes = new PointPlacemarkAttributes();
+            mLabelPlacemarkAttributes = new PointPlacemarkAttributes(new PointPlacemark(Position.ZERO).getDefaultAttributes());
             mLabelPlacemarkAttributes.setLabelScale(1.6);
             mLabelPlacemarkAttributes.setImageColor(GraphicsHelper.colorAddAlpha(Color.RED, 0));
             mLabelPlacemarkAttributes.setScale(0.75);

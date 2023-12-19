@@ -19,7 +19,6 @@ import java.util.LinkedHashMap;
 import java.util.stream.Stream;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuButton;
@@ -31,8 +30,8 @@ import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.worldwind.api.MOptionsView;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
-import se.trixon.almond.util.fx.session.SelectionModelSession;
 import se.trixon.almond.util.fx.session.SessionCheckComboBox;
+import se.trixon.almond.util.fx.session.SessionComboBox;
 
 /**
  *
@@ -40,12 +39,14 @@ import se.trixon.almond.util.fx.session.SessionCheckComboBox;
  */
 public class BlastOptionsView extends MOptionsView<BlastLayerBundle> {
 
+    private static final BlastLabelBy DEFAULT_LABEL_BY = BlastLabelBy.NONE;
+    private static final PointBy DEFAULT_POINT_BY = PointBy.PIN;
+
     private final SessionCheckComboBox<GraphicRendererItem> mGraphicSccb = new SessionCheckComboBox<>();
-    private final SimpleStringProperty mLabelByIdProperty = new SimpleStringProperty("NONE");
+    private final SimpleStringProperty mLabelByIdProperty = new SimpleStringProperty(DEFAULT_LABEL_BY.name());
     private final SimpleObjectProperty<BlastLabelBy> mLabelByProperty = new SimpleObjectProperty<>();
     private final MenuButton mLabelMenuButton = new MenuButton();
-    private final ComboBox<PointBy> mPointComboBox = new ComboBox<>();
-    private final SelectionModelSession mPointSelectionModelSession = new SelectionModelSession(mPointComboBox.getSelectionModel());
+    private final SessionComboBox<PointBy> mPointScb = new SessionComboBox<>();
 
     public BlastOptionsView(BlastLayerBundle layerBundle) {
         super(layerBundle);
@@ -63,7 +64,7 @@ public class BlastOptionsView extends MOptionsView<BlastLayerBundle> {
     }
 
     public PointBy getPointBy() {
-        return mPointComboBox.valueProperty().get();
+        return mPointScb.valueProperty().get();
     }
 
     public SimpleObjectProperty<BlastLabelBy> labelByProperty() {
@@ -71,8 +72,8 @@ public class BlastOptionsView extends MOptionsView<BlastLayerBundle> {
     }
 
     private void createUI() {
-        mPointComboBox.getItems().setAll(PointBy.values());
-        mPointComboBox.setValue(PointBy.NONE);
+        mPointScb.getItems().setAll(PointBy.values());
+        mPointScb.setValue(DEFAULT_POINT_BY);
 
         mGraphicSccb.setTitle(Dict.GRAPHICS.toString());
         mGraphicSccb.setShowCheckedCount(true);
@@ -85,7 +86,7 @@ public class BlastOptionsView extends MOptionsView<BlastLayerBundle> {
 
         var box = new VBox(
                 pointLabel,
-                mPointComboBox,
+                mPointScb,
                 labelLabel,
                 mLabelMenuButton,
                 mGraphicSccb
@@ -102,7 +103,7 @@ public class BlastOptionsView extends MOptionsView<BlastLayerBundle> {
             mLabelByIdProperty.set(n.name());
         });
 
-        mPointComboBox.valueProperty().addListener(getChangeListener());
+        mPointScb.valueProperty().addListener(getChangeListener());
 
         Stream.of(
                 mGraphicSccb)
@@ -112,7 +113,7 @@ public class BlastOptionsView extends MOptionsView<BlastLayerBundle> {
 
     private void initSession() {
         var sessionManager = getSessionManager();
-        sessionManager.register("options.pointBy", mPointSelectionModelSession.selectedIndexProperty());
+        sessionManager.register("options.pointBy", mPointScb.selectedIndexProperty());
         sessionManager.register("options.labelBy", mLabelByIdProperty);
         sessionManager.register("options.checkedGraphics", mGraphicSccb.checkedStringProperty());
 

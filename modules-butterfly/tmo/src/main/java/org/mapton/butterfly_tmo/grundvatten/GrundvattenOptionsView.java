@@ -20,7 +20,6 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuButton;
@@ -31,7 +30,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.mapton.worldwind.api.MOptionsView;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
-import se.trixon.almond.util.fx.session.SelectionModelSession;
+import se.trixon.almond.util.fx.session.SessionComboBox;
 
 /**
  *
@@ -39,12 +38,14 @@ import se.trixon.almond.util.fx.session.SelectionModelSession;
  */
 public class GrundvattenOptionsView extends MOptionsView<GrundvattenLayerBundle> {
 
-    private final SimpleStringProperty mLabelByIdProperty = new SimpleStringProperty("NONE");
+    private static final GrundvattenLabelBy DEFAULT_LABEL_BY = GrundvattenLabelBy.NAME;
+    private static final PointBy DEFAULT_POINT_BY = PointBy.PIN;
+
+    private final SimpleStringProperty mLabelByIdProperty = new SimpleStringProperty(DEFAULT_LABEL_BY.name());
     private final SimpleObjectProperty<GrundvattenLabelBy> mLabelByProperty = new SimpleObjectProperty<>();
     private final MenuButton mLabelMenuButton = new MenuButton();
-    private final ComboBox<PointBy> mPointComboBox = new ComboBox<>();
-    private final SelectionModelSession mPointSelectionModelSession = new SelectionModelSession(mPointComboBox.getSelectionModel());
     private final CheckBox mTimeSeriesCheckBox = new CheckBox("Tidsserie");
+    private final SessionComboBox<PointBy> mPointScb = new SessionComboBox<>();
 
     public GrundvattenOptionsView(GrundvattenLayerBundle layerBundle) {
         super(layerBundle);
@@ -58,7 +59,7 @@ public class GrundvattenOptionsView extends MOptionsView<GrundvattenLayerBundle>
     }
 
     public PointBy getPointBy() {
-        return mPointComboBox.valueProperty().get();
+        return mPointScb.valueProperty().get();
     }
 
     public BooleanProperty timeSeriesProperty() {
@@ -70,8 +71,8 @@ public class GrundvattenOptionsView extends MOptionsView<GrundvattenLayerBundle>
     }
 
     private void createUI() {
-        mPointComboBox.getItems().setAll(PointBy.values());
-        mPointComboBox.setValue(PointBy.NONE);
+        mPointScb.getItems().setAll(PointBy.values());
+        mPointScb.setValue(DEFAULT_POINT_BY);
 
         populateLabelMenuButton();
 
@@ -80,7 +81,7 @@ public class GrundvattenOptionsView extends MOptionsView<GrundvattenLayerBundle>
 
         var box = new VBox(
                 pointLabel,
-                mPointComboBox,
+                mPointScb,
                 labelLabel,
                 mLabelMenuButton,
                 mTimeSeriesCheckBox
@@ -97,13 +98,13 @@ public class GrundvattenOptionsView extends MOptionsView<GrundvattenLayerBundle>
             mLabelByIdProperty.set(n.name());
         });
 
-        mPointComboBox.valueProperty().addListener(getChangeListener());
+        mPointScb.valueProperty().addListener(getChangeListener());
 
     }
 
     private void initSession() {
         var sessionManager = getSessionManager();
-        sessionManager.register("options.grundvatten.pointBy", mPointSelectionModelSession.selectedIndexProperty());
+        sessionManager.register("options.grundvatten.pointBy", mPointScb.selectedIndexProperty());
         sessionManager.register("options.grundvatten.labelBy", mLabelByIdProperty);
         sessionManager.register("options.grundvatten.timeSeries", timeSeriesProperty());
         try {

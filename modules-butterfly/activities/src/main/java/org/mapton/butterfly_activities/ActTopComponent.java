@@ -47,7 +47,7 @@ import org.openide.windows.TopComponent;
         preferredID = "ActTopComponent"
 )
 @Messages({
-    "CTL_ActAction=Act"
+    "CTL_ActAction=Activities"
 })
 public final class ActTopComponent extends MTopComponent {
 
