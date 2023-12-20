@@ -54,7 +54,7 @@ import se.trixon.almond.util.swing.SwingHelper;
 public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
 
     private final SessionCheckComboBox<String> mAlarmNameSccb = new SessionCheckComboBox<>();
-    private final SessionCheckComboBox<AlarmFilter> mAlarmSccb = new SessionCheckComboBox<>();
+    private final SessionCheckComboBox<AlarmFilter> mAlarmSccb = new SessionCheckComboBox<>(true);
     private final SessionCheckComboBox<String> mCategorySccb = new SessionCheckComboBox<>();
     private final double mDefaultDiffValue = 0.020;
     private final int mDefaultMeasAlarmLevelChangeLimit = 1;
@@ -69,7 +69,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
     private final TopoFilter mFilter;
     private final SessionCheckComboBox<Integer> mFrequencySccb = new SessionCheckComboBox<>();
     private final SessionCheckComboBox<String> mGroupSccb = new SessionCheckComboBox<>();
-    private final SessionCheckComboBox<String> mHasDateFromToSccb = new SessionCheckComboBox<>();
+    private final SessionCheckComboBox<String> mHasDateFromToSccb = new SessionCheckComboBox<>(true);
     private final CheckBox mInvertCheckbox = new CheckBox();
     private final TopoManager mManager = TopoManager.getInstance();
     private final CheckBox mMeasAlarmLevelChangeCheckbox = new CheckBox();
@@ -77,12 +77,12 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
     private final SessionComboBox<AlarmLevelChangeMode> mMeasAlarmLevelChangeModeScb = new SessionComboBox<>();
     private final SessionComboBox<AlarmLevelChangeUnit> mMeasAlarmLevelChangeUnitScb = new SessionComboBox<>();
     private final SessionIntegerSpinner mMeasAlarmLevelChangeValueSis = new SessionIntegerSpinner(2, 10000, mDefaultMeasAlarmLevelChangeValue);
-    private final SessionCheckComboBox<String> mMeasCodeSccb = new SessionCheckComboBox<>();
+    private final SessionCheckComboBox<String> mMeasCodeSccb = new SessionCheckComboBox<>(true);
     private final SessionDoubleSpinner mMeasDiffLatestSds = new SessionDoubleSpinner(-1.0, 1.0, mDefaultDiffValue, 0.001);
     private final CheckBox mMeasIncludeWithoutCheckbox = new CheckBox();
     private final CheckBox mMeasLatestOperatorCheckbox = new CheckBox();
     private final SessionComboBox<String> mMeasMaxAgeScb = new SessionComboBox<>();
-    private final SessionCheckComboBox<String> mMeasNextSccb = new SessionCheckComboBox<>();
+    private final SessionCheckComboBox<String> mMeasNextSccb = new SessionCheckComboBox<>(true);
     private final SessionIntegerSpinner mMeasNumOfSis = new SessionIntegerSpinner(Integer.MIN_VALUE, Integer.MAX_VALUE, mDefaultNumOfMeasfValue);
     private final SessionCheckComboBox<String> mMeasOperatorSccb = new SessionCheckComboBox<>();
     private final CheckBox mMeasYoyoCheckbox = new CheckBox();
