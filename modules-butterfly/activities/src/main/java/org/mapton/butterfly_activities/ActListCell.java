@@ -36,19 +36,19 @@ class ActListCell extends ListCell<BAreaActivity> {
     }
 
     @Override
-    protected void updateItem(BAreaActivity hcp, boolean empty) {
-        super.updateItem(hcp, empty);
-        if (hcp == null || empty) {
+    protected void updateItem(BAreaActivity aa, boolean empty) {
+        super.updateItem(aa, empty);
+        if (aa == null || empty) {
             clearContent();
         } else {
-            addContent(hcp);
+            addContent(aa);
         }
     }
 
-    private void addContent(BAreaActivity hcp) {
+    private void addContent(BAreaActivity aa) {
         setText(null);
-        mNameLabel.setText(hcp.getName());
-//        mDesc1Label.setText("%s: %s".formatted(hcp.getGroup(), hcp.getCategory()));
+        mNameLabel.setText(aa.getName());
+        mDesc1Label.setText(aa.getDescription());
         setGraphic(mVBox);
     }
 

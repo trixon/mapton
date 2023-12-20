@@ -16,8 +16,10 @@
 package org.mapton.butterfly_activities;
 
 import java.util.LinkedHashMap;
+import java.util.Objects;
 import org.mapton.api.ui.forms.PropertiesBuilder;
 import org.mapton.butterfly_format.types.BAreaActivity;
+import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
 
 /**
@@ -34,7 +36,14 @@ public class ActPropertiesBuilder extends PropertiesBuilder<BAreaActivity> {
 
         var propertyMap = new LinkedHashMap<String, Object>();
         var cat1 = Dict.BASIC.toString();
+
         propertyMap.put(getCatKey(cat1, Dict.NAME.toString()), a.getName());
+        propertyMap.put(getCatKey(cat1, Dict.DESCRIPTION.toString()), a.getDescription());
+        var datFrom = Objects.toString(DateHelper.toDateString(a.getDatFrom()), "-");
+        propertyMap.put(getCatKey(cat1, Dict.FROM.toString()), datFrom);
+        var datTo = Objects.toString(DateHelper.toDateString(a.getDatTo()), "-");
+        propertyMap.put(getCatKey(cat1, Dict.TO.toString()), datTo);
+        propertyMap.put(getCatKey(cat1, Dict.STATUS.toString()), ActHelper.getStatusAsString(a.getStatus()));
 
         return propertyMap;
     }
