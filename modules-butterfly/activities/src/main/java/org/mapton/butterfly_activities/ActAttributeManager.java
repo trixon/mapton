@@ -21,6 +21,9 @@ import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
 import java.awt.Color;
+import java.util.HashMap;
+import org.mapton.butterfly_format.types.BAreaActivity;
+import org.mapton.butterfly_format.types.BAreaActivity.BAreaStatus;
 import se.trixon.almond.util.GraphicsHelper;
 
 /**
@@ -29,52 +32,16 @@ import se.trixon.almond.util.GraphicsHelper;
  */
 public class ActAttributeManager {
 
-    private BasicShapeAttributes mComponentEllipsoidAttributes;
-    private BasicShapeAttributes mComponentGroundPathAttributes;
-    private BasicShapeAttributes mSurfaceAttributes;
     private PointPlacemarkAttributes mLabelPlacemarkAttributes;
-    private PointPlacemarkAttributes mPinAttributes;
+    private final HashMap<BAreaStatus, PointPlacemarkAttributes> mStatusToPointPlacemarkAttributes = new HashMap<>();
+    private final HashMap<BAreaStatus, BasicShapeAttributes> mStatusToShapeAttributes = new HashMap<>();
+    private final HashMap<BAreaStatus, BasicShapeAttributes> mStatusToShapeHighlightAttributes = new HashMap<>();
 
     public static ActAttributeManager getInstance() {
         return Holder.INSTANCE;
     }
 
     private ActAttributeManager() {
-    }
-
-    public BasicShapeAttributes getComponentEllipsoidAttributes() {
-        if (mComponentEllipsoidAttributes == null) {
-            mComponentEllipsoidAttributes = new BasicShapeAttributes();
-            mComponentEllipsoidAttributes.setDrawOutline(false);
-            mComponentEllipsoidAttributes.setInteriorMaterial(Material.ORANGE);
-            mComponentEllipsoidAttributes.setEnableLighting(true);
-        }
-
-        return mComponentEllipsoidAttributes;
-    }
-
-    public BasicShapeAttributes getComponentGroundPathAttributes() {
-        if (mComponentGroundPathAttributes == null) {
-            mComponentGroundPathAttributes = new BasicShapeAttributes();
-            mComponentGroundPathAttributes.setDrawOutline(true);
-            mComponentGroundPathAttributes.setOutlineMaterial(Material.YELLOW);
-            mComponentGroundPathAttributes.setEnableLighting(false);
-            mComponentGroundPathAttributes.setOutlineWidth(1);
-        }
-
-        return mComponentGroundPathAttributes;
-    }
-
-    public BasicShapeAttributes getSurfaceAttributes() {
-        if (mSurfaceAttributes == null) {
-            mSurfaceAttributes = new BasicShapeAttributes();
-            mSurfaceAttributes.setDrawOutline(false);
-            mSurfaceAttributes.setDrawInterior(true);
-            mSurfaceAttributes.setInteriorMaterial(Material.RED);
-            mSurfaceAttributes.setEnableLighting(false);
-        }
-
-        return mSurfaceAttributes;
     }
 
     public PointPlacemarkAttributes getLabelPlacemarkAttributes() {
@@ -89,15 +56,62 @@ public class ActAttributeManager {
         return mLabelPlacemarkAttributes;
     }
 
-    public PointPlacemarkAttributes getPinAttributes() {
-        if (mPinAttributes == null) {
-            mPinAttributes = new PointPlacemarkAttributes(new PointPlacemark(Position.ZERO).getDefaultAttributes());
-            mPinAttributes.setScale(0.75);
-            mPinAttributes.setImageAddress("images/pushpins/plain-white.png");
-            mPinAttributes.setImageColor(Color.ORANGE);
-        }
+    public PointPlacemarkAttributes getPinAttributes(BAreaActivity a) {
+        return mStatusToPointPlacemarkAttributes.computeIfAbsent(a.getStatus(), k -> {
+            var attrs = new PointPlacemarkAttributes(new PointPlacemark(Position.ZERO).getDefaultAttributes());
+            attrs.setScale(0.75);
+            attrs.setImageAddress("images/pushpins/plain-white.png");
+            switch (a.getStatus()) {
+                case OTHER ->
+                    attrs.setImageColor(Color.GRAY);
+                case INFORMATION ->
+                    attrs.setImageColor(Color.GREEN);
+                case TRIGGER ->
+                    attrs.setImageColor(Color.RED);
+                default ->
+                    attrs.setImageColor(Color.DARK_GRAY);
+            }
 
-        return mPinAttributes;
+            return attrs;
+        });
+    }
+
+    public BasicShapeAttributes getSurfaceAttributes(BAreaActivity a) {
+        return mStatusToShapeAttributes.computeIfAbsent(a.getStatus(), k -> {
+            var attrs = new BasicShapeAttributes();
+            attrs.setOutlineWidth(3.0);
+            attrs.setDrawInterior(true);
+            attrs.setDrawOutline(true);
+            attrs.setInteriorOpacity(0.1);
+
+            Material material;
+            switch (a.getStatus()) {
+                case OTHER ->
+                    material = Material.GRAY;
+                case INFORMATION ->
+                    material = Material.GREEN;
+                case TRIGGER ->
+                    material = Material.RED;
+                default ->
+                    material = Material.DARK_GRAY;
+            }
+
+            attrs.setInteriorMaterial(material);
+            attrs.setOutlineMaterial(material);
+
+            return attrs;
+        });
+    }
+
+    public BasicShapeAttributes getSurfaceHighlightAttributes(BAreaActivity a) {
+        return mStatusToShapeHighlightAttributes.computeIfAbsent(a.getStatus(), k -> {
+            var attrs = new BasicShapeAttributes(getSurfaceAttributes(a));
+            attrs.setInteriorOpacity(0.20);
+            attrs.setOutlineOpacity(0.20);
+
+            return attrs;
+        });
+
     }
 
     private static class Holder {

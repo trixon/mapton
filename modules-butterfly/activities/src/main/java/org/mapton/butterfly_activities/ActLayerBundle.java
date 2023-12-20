@@ -19,8 +19,6 @@ import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
-import gov.nasa.worldwind.render.BasicShapeAttributes;
-import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwind.render.Renderable;
 import gov.nasa.worldwind.render.SurfacePolygon;
@@ -134,7 +132,7 @@ public class ActLayerBundle extends BfLayerBundle {
                     var labelPlacemark = plotLabel(area, mOptionsView.getLabelBy(), position);
 
                     mapObjects.add(labelPlacemark);
-                    mapObjects.add(plotPin(position, labelPlacemark));
+                    mapObjects.add(plotPin(area, position, labelPlacemark));
                 }
 
                 mapObjects.add(plotArea(area));
@@ -158,22 +156,20 @@ public class ActLayerBundle extends BfLayerBundle {
     }
 
     private AVListImpl plotArea(BAreaActivity area) {
-        var attrs = new BasicShapeAttributes();
-        attrs.setInteriorMaterial(Material.RED);
-        attrs.setOutlineMaterial(Material.RED);
-        attrs.setOutlineWidth(3.0);
-        attrs.setDrawInterior(true);
-        attrs.setDrawOutline(true);
-        attrs.setInteriorOpacity(0.1);
-
+        var attrs = mAttributeManager.getSurfaceAttributes(area);
+        var attrsHighlight = mAttributeManager.getSurfaceHighlightAttributes(area);
         Renderable renderable = null;
         try {
             var geometry = area.getGeometry();
             if (geometry instanceof LineString lineString) {
-                renderable = new SurfacePolyline(attrs, WWHelper.positionsFromGeometry(lineString, 0));
+                var surfaceObject = new SurfacePolyline(attrs, WWHelper.positionsFromGeometry(lineString, 0));
+                surfaceObject.setHighlightAttributes(attrsHighlight);
+                renderable = surfaceObject;
                 mLayer.addRenderable(renderable);
             } else if (geometry instanceof Polygon polygon) {
-                renderable = new SurfacePolygon(attrs, WWHelper.positionsFromGeometry(polygon, 0));
+                var surfaceObject = new SurfacePolygon(attrs, WWHelper.positionsFromGeometry(polygon, 0));
+                surfaceObject.setHighlightAttributes(attrsHighlight);
+                renderable = surfaceObject;
                 mLayer.addRenderable(renderable);
             }
         } catch (Exception ex) {
@@ -198,8 +194,8 @@ public class ActLayerBundle extends BfLayerBundle {
         return placemark;
     }
 
-    private PointPlacemark plotPin(Position position, PointPlacemark labelPlacemark) {
-        var attrs = mAttributeManager.getPinAttributes();
+    private PointPlacemark plotPin(BAreaActivity area, Position position, PointPlacemark labelPlacemark) {
+        var attrs = mAttributeManager.getPinAttributes(area);
 
         var placemark = new PointPlacemark(position);
         placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);

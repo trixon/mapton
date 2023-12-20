@@ -27,6 +27,7 @@ import java.time.LocalDateTime;
     "id",
     "name",
     "description",
+    "status",
     "datFrom",
     "datTo",
     "lat",
@@ -38,8 +39,7 @@ public class BAreaActivity extends BAreaBase {
 
     private LocalDateTime datFrom;
     private LocalDateTime datTo;
-    private Double lat;
-    private Double lon;
+    private BAreaStatus status;
 
     public BAreaActivity() {
     }
@@ -52,14 +52,8 @@ public class BAreaActivity extends BAreaBase {
         return datTo;
     }
 
-    @Override
-    public Double getLat() {
-        return lat;
-    }
-
-    @Override
-    public Double getLon() {
-        return lon;
+    public BAreaStatus getStatus() {
+        return status;
     }
 
     public void setDatFrom(LocalDateTime datFrom) {
@@ -70,14 +64,13 @@ public class BAreaActivity extends BAreaBase {
         this.datTo = datTo;
     }
 
-    @Override
-    public void setLat(Double lat) {
-        this.lat = lat;
+    public void setStatus(BAreaStatus status) {
+        this.status = status;
     }
 
-    @Override
-    public void setLon(Double lon) {
-        this.lon = lon;
+    public enum BAreaStatus {
+        TRIGGER,
+        INFORMATION,
+        OTHER;
     }
-
 }
