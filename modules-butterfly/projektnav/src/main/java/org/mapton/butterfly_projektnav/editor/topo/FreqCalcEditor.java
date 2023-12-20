@@ -23,6 +23,8 @@ import java.util.TreeMap;
 import javafx.scene.Node;
 import javafx.scene.layout.BorderPane;
 import org.apache.commons.lang3.StringUtils;
+import org.mapton.api.MPoi;
+import org.mapton.api.MTemporaryPoiManager;
 import org.mapton.api.report.MEditor;
 import org.mapton.api.report.MSplitNavSettings;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
@@ -37,10 +39,11 @@ import se.trixon.almond.util.fx.control.LogPanel;
 @ServiceProvider(service = MEditor.class)
 public class FreqCalcEditor extends BaseTopoEditor {
 
-    private final String mName = "Auto-frekvens";
     private BorderPane mBorderPane;
-    private final LogPanel mLogPanel = new LogPanel();
     private final RuleFreqFormulaConfig mConfig = RuleFreqFormulaConfig.getInstance();
+    private final LogPanel mLogPanel = new LogPanel();
+    private final String mName = "Auto-frekvens";
+    private final MTemporaryPoiManager mTempPoiManager = MTemporaryPoiManager.getInstance();
 
     public FreqCalcEditor() {
         setName(mName);
@@ -73,6 +76,8 @@ public class FreqCalcEditor extends BaseTopoEditor {
     }
 
     private void update() {
+        mTempPoiManager.getItems().clear();
+
         var pointToFormulaMap = new HashMap<BTopoControlPoint, String>();
         var pointsWithActiveFormula = mManager.getAllItems().stream()
                 .filter(p -> {
@@ -129,6 +134,12 @@ public class FreqCalcEditor extends BaseTopoEditor {
             }
 
             if (!Objects.equals(frequency, p.getFrequency())) {
+                var poi = new MPoi();
+                poi.setName("%s, %d (%d)".formatted(p.getName(), frequency, p.getFrequency()));
+                poi.setLatitude(p.getLat());
+                poi.setLongitude(p.getLon());
+                poi.setColor("00FFFF");
+                mTempPoiManager.getItems().add(poi);
                 //TODO que this for commit
                 /*
         Spärr för uppdatering?
