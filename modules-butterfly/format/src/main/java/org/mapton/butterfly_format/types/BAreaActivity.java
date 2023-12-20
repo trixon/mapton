@@ -52,10 +52,12 @@ public class BAreaActivity extends BAreaBase {
         return datTo;
     }
 
+    @Override
     public Double getLat() {
         return lat;
     }
 
+    @Override
     public Double getLon() {
         return lon;
     }
@@ -68,10 +70,12 @@ public class BAreaActivity extends BAreaBase {
         this.datTo = datTo;
     }
 
+    @Override
     public void setLat(Double lat) {
         this.lat = lat;
     }
 
+    @Override
     public void setLon(Double lon) {
         this.lon = lon;
     }

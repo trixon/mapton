@@ -13,47 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_acoustic.blast;
+package org.mapton.butterfly_activities;
 
-import java.time.temporal.ChronoUnit;
-import java.util.Objects;
 import java.util.function.Function;
 import org.apache.commons.lang3.StringUtils;
-import org.mapton.butterfly_format.types.acoustic.BBlast;
-import se.trixon.almond.util.DateHelper;
+import org.mapton.butterfly_format.types.BAreaActivity;
 import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.MathHelper;
 
 /**
  *
  * @author Patrik Karlström
  */
-public enum BlastLabelBy {
+public enum ActLabelBy {
     NAME(Strings.CAT_ROOT, Dict.NAME.toString(), p -> {
         return p.getName();
     }),
     NONE(Strings.CAT_ROOT, Dict.NONE.toString(), p -> {
         return "";
-    }),
-    MISC_DATE(Strings.CAT_MISC, Dict.DATE.toString(), p -> {
-        var date = Objects.toString(DateHelper.toDateString(p.getDateTime()), "-");
-
-        return date;
-    }),
-    MISC_AGE(Strings.CAT_MISC, Dict.AGE.toString(), p -> {
-        return String.valueOf(p.ext().getAge(ChronoUnit.DAYS));
-    }),
-    MISC_GROUP(Strings.CAT_MISC, Dict.GROUP.toString(), p -> {
-        return Objects.toString(p.getGroup(), "NODATA");
-    }),
-    MISC_Z(Strings.CAT_MISC, "Z", p -> {
-        return MathHelper.convertDoubleToString(p.getZ(), 1);
     });
     private final String mCategory;
-    private final Function<BBlast, String> mFunction;
+    private final Function<BAreaActivity, String> mFunction;
     private final String mName;
 
-    private BlastLabelBy(String category, String name, Function<BBlast, String> function) {
+    private ActLabelBy(String category, String name, Function<BAreaActivity, String> function) {
         mCategory = category;
         mName = name;
         mFunction = function;
@@ -71,7 +53,7 @@ public enum BlastLabelBy {
         }
     }
 
-    public String getLabel(BBlast o) {
+    public String getLabel(BAreaActivity o) {
         try {
             return mFunction.apply(o);
         } catch (Exception e) {

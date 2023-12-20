@@ -29,7 +29,7 @@ import org.locationtech.jts.geom.Geometry;
     "description",
     "wkt"
 })
-public class BAreaBase extends BBase {
+public class BAreaBase extends BBasePoint {
 
     private String description;
     private String id;

@@ -133,7 +133,6 @@ public class BlastLayerBundle extends BfLayerBundle {
             for (var p : new ArrayList<>(mManager.getTimeFilteredItems())) {
                 if (ObjectUtils.allNotNull(p.getLat(), p.getLon())) {
                     var position = Position.fromDegrees(p.getLat(), p.getLon());
-
                     var labelPlacemark = plotLabel(p, mOptionsView.getLabelBy(), position);
                     var mapObjects = new ArrayList<AVListImpl>();
 
@@ -166,18 +165,11 @@ public class BlastLayerBundle extends BfLayerBundle {
             return null;
         }
 
-        String label;
-        try {
-            label = mOptionsView.getLabelBy().getLabel(p);
-        } catch (Exception e) {
-            label = "ERROR %s <<<<<<<<".formatted(p.getName());
-        }
-
         var placemark = new PointPlacemark(position);
         placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
         placemark.setAttributes(mAttributeManager.getLabelPlacemarkAttributes());
         placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(mAttributeManager.getLabelPlacemarkAttributes(), 1.5));
-        placemark.setLabelText(label);
+        placemark.setLabelText(labelBy.getLabel(p));
         mLabelLayer.addRenderable(placemark);
 
         return placemark;
