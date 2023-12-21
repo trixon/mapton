@@ -17,12 +17,9 @@ package org.mapton.butterfly_tmo.grundvatten;
 
 import j2html.tags.ContainerTag;
 import java.util.LinkedHashMap;
-import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.ui.forms.FormFilter;
-import org.mapton.butterfly_format.types.tmo.BGrundvatten;
 import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.StringHelper;
 
 /**
  *
@@ -48,7 +45,7 @@ public class GrundvattenFilter extends FormFilter<GrundvattenManager> {
     @Override
     public void update() {
         var filteredItems = mManager.getAllItems().stream()
-                .filter(g -> StringUtils.isBlank(getFreeText()) || validateFreeText(g))
+                .filter(g -> validateFreeText(g.getBenämning(), g.getName(), g.getGroup(), g.getComment()))
                 .filter(g -> validateCheck(mGrundvattenmagasinCheckModel, g.getGrundvattenmagasin()))
                 .filter(g -> validateCheck(mFiltertypCheckModel, g.getFiltertyp()))
                 .filter(g -> validateCheck(mInformationskällaCheckModel, g.getInformationskällor()))
@@ -91,14 +88,5 @@ public class GrundvattenFilter extends FormFilter<GrundvattenManager> {
     }
 
     private void initListeners() {
-    }
-
-    private boolean validateFreeText(BGrundvatten b) {
-        return StringHelper.matchesSimpleGlobByWord(getFreeText(), true, false,
-                b.getBenämning(),
-                b.getName(),
-                b.getGroup(),
-                b.getComment()
-        );
     }
 }

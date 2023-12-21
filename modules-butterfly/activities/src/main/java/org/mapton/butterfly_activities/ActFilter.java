@@ -17,11 +17,8 @@ package org.mapton.butterfly_activities;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.ui.forms.FormFilter;
-import org.mapton.butterfly_format.types.BAreaActivity;
-import se.trixon.almond.util.StringHelper;
 
 /**
  *
@@ -46,7 +43,7 @@ public class ActFilter extends FormFilter<ActManager> {
     @Override
     public void update() {
         var filteredItems = mManager.getAllItems().stream()
-                .filter(aa -> StringUtils.isBlank(getFreeText()) || validateFreeText(aa))
+                .filter(aa -> validateFreeText(aa.getName()))
                 .filter(aa -> validateCheck(mStatusCheckModel, ActHelper.getStatusAsString(aa.getStatus())))
                 .filter(aa -> validateCoordinateArea(aa.getLat(), aa.getLon()))
                 .filter(aa -> validateCoordinateRuler(aa.getLat(), aa.getLon()))
@@ -61,11 +58,5 @@ public class ActFilter extends FormFilter<ActManager> {
 
     private void initListeners() {
         mProperty.addListener(mChangeListenerObject);
-    }
-
-    private boolean validateFreeText(BAreaActivity o) {
-        return StringHelper.matchesSimpleGlobByWord(getFreeText(), true, false,
-                o.getName()
-        );
     }
 }

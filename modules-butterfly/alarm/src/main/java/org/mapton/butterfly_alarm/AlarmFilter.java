@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,10 +17,7 @@ package org.mapton.butterfly_alarm;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import org.apache.commons.lang3.StringUtils;
 import org.mapton.api.ui.forms.FormFilter;
-import org.mapton.butterfly_format.types.BAlarm;
-import se.trixon.almond.util.StringHelper;
 
 /**
  *
@@ -44,8 +41,7 @@ public class AlarmFilter extends FormFilter<AlarmManager> {
     @Override
     public void update() {
         var filteredItems = mManager.getAllItems().stream()
-                .filter(o -> StringUtils.isBlank(getFreeText()) || validateFreeText(o))
-                //                .filter(o -> validateDimension(o))
+                .filter(o -> validateFreeText(o.getName(), o.getDescription(), o.getId()))
                 .toList();
 
         mManager.getFilteredItems().setAll(filteredItems);
@@ -54,13 +50,4 @@ public class AlarmFilter extends FormFilter<AlarmManager> {
     private void initListeners() {
         mProperty.addListener(mChangeListenerObject);
     }
-
-    private boolean validateFreeText(BAlarm o) {
-        return StringHelper.matchesSimpleGlobByWord(getFreeText(), true, false,
-                o.getName(),
-                o.getDescription(),
-                o.getId()
-        );
-    }
-
 }

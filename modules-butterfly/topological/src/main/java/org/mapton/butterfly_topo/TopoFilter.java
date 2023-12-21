@@ -48,7 +48,6 @@ import se.trixon.almond.util.BooleanHelper;
 import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SDict;
-import se.trixon.almond.util.StringHelper;
 
 /**
  *
@@ -174,7 +173,7 @@ public class TopoFilter extends FormFilter<TopoManager> {
     @Override
     public void update() {
         var filteredItems = mManager.getAllItems().stream()
-                .filter(p -> StringUtils.isBlank(getFreeText()) || validateFreeText(p))
+                .filter(p -> validateFreeText(p.getName(), p.getCategory(), p.getGroup(), p.getNameOfAlarmHeight(), p.getNameOfAlarmPlane()))
                 .filter(p -> validateDimension(p.getDimension()))
                 .filter(p -> validateCheck(mStatusCheckModel, p.getStatus()))
                 .filter(p -> validateCheck(mGroupCheckModel, p.getGroup()))
@@ -391,16 +390,6 @@ public class TopoFilter extends FormFilter<TopoManager> {
 
     private boolean validateDimension(BDimension dimension) {
         return validateCheck(mDimensionCheckModel, dimension);
-    }
-
-    private boolean validateFreeText(BTopoControlPoint o) {
-        return StringHelper.matchesSimpleGlobByWord(getFreeText(), true, false,
-                o.getName(),
-                o.getCategory(),
-                o.getGroup(),
-                o.getNameOfAlarmHeight(),
-                o.getNameOfAlarmPlane()
-        );
     }
 
     private boolean validateFrequency(Integer frequency) {

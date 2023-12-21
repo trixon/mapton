@@ -50,9 +50,7 @@ public class ActView {
         mListForm.getListView().setCellFactory(listView -> new ActListCell());
 
         mListForm.setFreeTextTooltip(
-                Dict.NAME.toString(),
-                Dict.CATEGORY.toString(),
-                Dict.GROUP.toString()
+                Dict.NAME.toString()
         );
     }
 

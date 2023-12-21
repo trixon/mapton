@@ -48,6 +48,7 @@ import org.mapton.api.MPolygonFilterManager;
 import org.mapton.api.ui.MInfoPopOver;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.StringHelper;
 import se.trixon.almond.util.fx.DelayedResetRunner;
 
 /**
@@ -155,6 +156,10 @@ public abstract class FormFilter<ManagerType extends MBaseDataManager> {
                 || polygonFilterProperty().get() && mPolygonFilterManager.contains(lat, lon);
 
         return valid;
+    }
+
+    public boolean validateFreeText(String... strings) {
+        return StringUtils.isBlank(getFreeText()) || StringHelper.matchesSimpleGlobByWord(getFreeText(), true, false, strings);
     }
 
     private void initListeners() {

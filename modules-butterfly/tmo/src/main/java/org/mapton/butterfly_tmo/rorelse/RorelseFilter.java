@@ -17,12 +17,9 @@ package org.mapton.butterfly_tmo.rorelse;
 
 import j2html.tags.ContainerTag;
 import java.util.LinkedHashMap;
-import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.ui.forms.FormFilter;
-import org.mapton.butterfly_format.types.tmo.BRorelse;
 import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.StringHelper;
 
 /**
  *
@@ -47,8 +44,7 @@ public class RorelseFilter extends FormFilter<RorelseManager> {
     @Override
     public void update() {
         var filteredItems = mManager.getAllItems().stream()
-                .filter(b -> StringUtils.isBlank(getFreeText()) || validateFreeText(b))
-                //                .filter(b -> validateGroup(b.getGroup()))
+                .filter(b -> validateFreeText(b.getBenämning(), b.getName(), b.getGroup(), b.getComment()))
                 .filter(b -> validateCoordinateArea(b.getLat(), b.getLon()))
                 .filter(b -> validateCoordinateRuler(b.getLat(), b.getLon()))
                 .toList();
@@ -71,18 +67,4 @@ public class RorelseFilter extends FormFilter<RorelseManager> {
 
     private void initListeners() {
     }
-
-    private boolean validateFreeText(BRorelse b) {
-        return StringHelper.matchesSimpleGlobByWord(getFreeText(), true, false,
-                b.getBenämning(),
-                b.getName(),
-                b.getGroup(),
-                b.getComment()
-        );
-    }
-
-    private boolean validateGroup(String s) {
-        return validateCheck(mGroupCheckModel, s);
-    }
-
 }

@@ -17,10 +17,7 @@ package org.mapton.butterfly_hydro.groundwater;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import org.apache.commons.lang3.StringUtils;
 import org.mapton.api.ui.forms.FormFilter;
-import org.mapton.butterfly_format.types.hydro.BGroundwaterPoint;
-import se.trixon.almond.util.StringHelper;
 
 /**
  *
@@ -44,10 +41,9 @@ public class GroundwaterFilter extends FormFilter<GroundwaterManager> {
     @Override
     public void update() {
         var filteredItems = mManager.getAllItems().stream()
-                .filter(o -> StringUtils.isBlank(getFreeText()) || validateFreeText(o))
-                //                .filter(o -> validateDimension(o))
-                .filter(o -> validateCoordinateArea(o.getLat(), o.getLon()))
-                .filter(o -> validateCoordinateRuler(o.getLat(), o.getLon()))
+                .filter(gw -> validateFreeText(gw.getName(), gw.getCategory(), gw.getGroup()))
+                .filter(gw -> validateCoordinateArea(gw.getLat(), gw.getLon()))
+                .filter(gw -> validateCoordinateRuler(gw.getLat(), gw.getLon()))
                 .toList();
 
         mManager.getFilteredItems().setAll(filteredItems);
@@ -56,21 +52,4 @@ public class GroundwaterFilter extends FormFilter<GroundwaterManager> {
     private void initListeners() {
         mProperty.addListener(mChangeListenerObject);
     }
-
-    private boolean validateDimension(BGroundwaterPoint o) {
-        if (mProperty.get()) {
-            return o.getFrequency() == 1;
-        } else {
-            return true;
-        }
-    }
-
-    private boolean validateFreeText(BGroundwaterPoint gw) {
-        return StringHelper.matchesSimpleGlobByWord(getFreeText(), true, false,
-                gw.getName(),
-                gw.getCategory(),
-                gw.getGroup()
-        );
-    }
-
 }

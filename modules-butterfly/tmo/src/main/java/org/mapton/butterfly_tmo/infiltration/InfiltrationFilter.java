@@ -17,12 +17,9 @@ package org.mapton.butterfly_tmo.infiltration;
 
 import j2html.tags.ContainerTag;
 import java.util.LinkedHashMap;
-import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.ui.forms.FormFilter;
-import org.mapton.butterfly_format.types.tmo.BInfiltration;
 import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.StringHelper;
 
 /**
  *
@@ -47,8 +44,7 @@ public class InfiltrationFilter extends FormFilter<InfiltrationManager> {
     @Override
     public void update() {
         var filteredItems = mManager.getAllItems().stream()
-                .filter(b -> StringUtils.isBlank(getFreeText()) || validateFreeText(b))
-                //                .filter(b -> validateGroup(b.getGroup()))
+                .filter(b -> validateFreeText(b.getName(), b.getGroup(), b.getComment()))
                 .filter(b -> validateCoordinateArea(b.getLat(), b.getLon()))
                 .filter(b -> validateCoordinateRuler(b.getLat(), b.getLon()))
                 .toList();
@@ -71,17 +67,4 @@ public class InfiltrationFilter extends FormFilter<InfiltrationManager> {
 
     private void initListeners() {
     }
-
-    private boolean validateFreeText(BInfiltration b) {
-        return StringHelper.matchesSimpleGlobByWord(getFreeText(), true, false,
-                b.getName(),
-                b.getGroup(),
-                b.getComment()
-        );
-    }
-
-    private boolean validateGroup(String s) {
-        return validateCheck(mGroupCheckModel, s);
-    }
-
 }
