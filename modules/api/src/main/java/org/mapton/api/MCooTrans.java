@@ -16,6 +16,9 @@
 package org.mapton.api;
 
 import javafx.geometry.Point2D;
+import org.geotools.api.geometry.MismatchedDimensionException;
+import org.geotools.api.referencing.operation.TransformException;
+import org.locationtech.jts.geom.Geometry;
 
 /**
  *
@@ -64,5 +67,9 @@ public interface MCooTrans {
     boolean isWithinWgs84Bounds(double latitude, double longitude);
 
     Point2D toWgs84(double latitude, double longitude);
+
+    default Geometry transform(Geometry geometry) throws MismatchedDimensionException, TransformException {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 
 }

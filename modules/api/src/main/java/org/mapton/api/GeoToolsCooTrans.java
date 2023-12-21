@@ -28,6 +28,7 @@ import org.geotools.geometry.Position2D;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.locationtech.jts.geom.Geometry;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.Dict;
 
@@ -144,6 +145,11 @@ public class GeoToolsCooTrans implements MCooTrans {
         var position = getPosition(mInverseMathTransform, longitude, latitude);
 
         return new Point2D(position.getCoordinate()[0], position.getCoordinate()[1]);
+    }
+
+    @Override
+    public Geometry transform(Geometry geometry) throws MismatchedDimensionException, TransformException {
+        return JTS.transform(geometry, mMathTransform);
     }
 
     private Position getPosition(MathTransform mathTransform, double latitude, double longitude) {
