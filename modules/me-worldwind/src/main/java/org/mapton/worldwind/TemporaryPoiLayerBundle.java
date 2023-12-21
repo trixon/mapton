@@ -20,17 +20,19 @@ import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
+import java.time.Duration;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import javafx.collections.ListChangeListener;
 import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.api.MBookmark;
 import org.mapton.api.MKey;
-import org.mapton.api.MPoi;
 import org.mapton.api.MTemporaryPoiManager;
 import org.mapton.api.Mapton;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
+import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
@@ -75,8 +77,12 @@ public class TemporaryPoiLayerBundle extends LayerBundle {
     private void initRepaint() {
         setPainter(() -> {
             removeAllRenderables();
-
-            for (MPoi poi : mManager.getItems()) {
+            try {
+                Thread.sleep(Duration.ofSeconds(1));
+            } catch (InterruptedException ex) {
+                Exceptions.printStackTrace(ex);
+            }
+            for (var poi : new ArrayList<>(mManager.getItems())) {
                 if (poi.isDisplayMarker() && ObjectUtils.allNotNull(poi.getLatitude(), poi.getLongitude())) {
                     PointPlacemark placemark = new PointPlacemark(Position.fromDegrees(poi.getLatitude(), poi.getLongitude()));
                     placemark.setLabelText(poi.getName());

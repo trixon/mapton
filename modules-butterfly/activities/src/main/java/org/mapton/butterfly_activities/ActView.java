@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_activities;
 
+import org.mapton.butterfly_activities.api.ActManager;
 import java.util.Arrays;
 import javafx.scene.layout.Pane;
 import org.controlsfx.control.action.ActionUtils;

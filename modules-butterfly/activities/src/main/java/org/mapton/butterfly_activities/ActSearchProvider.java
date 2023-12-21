@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_activities;
 
+import org.mapton.butterfly_activities.api.ActManager;
 import org.mapton.api.MLatLon;
 import org.mapton.api.Mapton;
 import org.netbeans.spi.quicksearch.SearchProvider;

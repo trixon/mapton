@@ -16,6 +16,7 @@
 package org.mapton.butterfly_projektnav.editor.topo;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -23,10 +24,14 @@ import java.util.TreeMap;
 import javafx.scene.Node;
 import javafx.scene.layout.BorderPane;
 import org.apache.commons.lang3.StringUtils;
+import org.geotools.geometry.jts.JTSFactoryFinder;
+import org.locationtech.jts.geom.Coordinate;
 import org.mapton.api.MPoi;
 import org.mapton.api.MTemporaryPoiManager;
 import org.mapton.api.report.MEditor;
 import org.mapton.api.report.MSplitNavSettings;
+import org.mapton.butterfly_activities.api.ActManager;
+import org.mapton.butterfly_format.types.BAreaActivity;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_projektnav.RuleFreqFormulaConfig;
 import org.openide.util.lookup.ServiceProvider;
@@ -39,6 +44,7 @@ import se.trixon.almond.util.fx.control.LogPanel;
 @ServiceProvider(service = MEditor.class)
 public class FreqCalcEditor extends BaseTopoEditor {
 
+    private final ActManager mActManager = ActManager.getInstance();
     private BorderPane mBorderPane;
     private final RuleFreqFormulaConfig mConfig = RuleFreqFormulaConfig.getInstance();
     private final LogPanel mLogPanel = new LogPanel();
@@ -76,8 +82,6 @@ public class FreqCalcEditor extends BaseTopoEditor {
     }
 
     private void update() {
-        mTempPoiManager.getItems().clear();
-
         var pointToFormulaMap = new HashMap<BTopoControlPoint, String>();
         var pointsWithActiveFormula = mManager.getAllItems().stream()
                 .filter(p -> {
@@ -100,7 +104,13 @@ public class FreqCalcEditor extends BaseTopoEditor {
                     return true;
                 })
                 .toList();
-
+        //--< CUT
+        //Use all filtered during simulation
+        pointsWithActiveFormula = mManager.getTimeFilteredItems();
+        for (var p : pointsWithActiveFormula) {
+            pointToFormulaMap.put(p, "-1:365,50:1,100:7,150:14,200:28");
+        }
+        //--< CUT
         mLogPanel.clear();
         mLogPanel.println(LocalDateTime.now().toString());
 
@@ -115,19 +125,35 @@ public class FreqCalcEditor extends BaseTopoEditor {
             }
         });
 
+        var triggerAreas = mActManager.getAllItems().stream()
+                .filter(aa -> aa.getStatus() == BAreaActivity.BAreaStatus.TRIGGER)
+                .filter(aa -> aa.getTargetGeometry() != null)
+                .toList();
+
+        var geometryFactory = JTSFactoryFinder.getGeometryFactory();
+        var tempPois = new ArrayList<MPoi>();
+
         pointsWithActiveFormula.forEach(p -> {
-            //TODO calculate distance to closest active area
-            var distanceToClosestActiveArea = 127.89;
+            var distanceToClosestTriggerArea = Double.MAX_VALUE;
+            var coordinate = new Coordinate(p.getZeroY(), p.getZeroX());
+            var point = geometryFactory.createPoint(coordinate);
+
+            for (var ta : triggerAreas) {
+                distanceToClosestTriggerArea = Math.min(distanceToClosestTriggerArea, ta.getTargetGeometry().distance(point));
+            }
+
             var formula = pointToFormulaMap.get(p);
             var map = new TreeMap<Integer, Integer>();
+
             for (var string : StringUtils.split(formula, ",")) {
                 var item = StringUtils.split(string, ":");
                 map.put(Integer.valueOf(item[0]), Integer.valueOf(item[1]));
             }
 
-            var frequency = map.getOrDefault(0, 365);
+            var frequency = map.getOrDefault(-1, 365);
+
             for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
-                if (distanceToClosestActiveArea <= entry.getKey()) {
+                if (distanceToClosestTriggerArea <= entry.getKey()) {
                     frequency = entry.getValue();
                     break;
                 }
@@ -136,16 +162,20 @@ public class FreqCalcEditor extends BaseTopoEditor {
             if (!Objects.equals(frequency, p.getFrequency())) {
                 var poi = new MPoi();
                 poi.setName("%s, %d (%d)".formatted(p.getName(), frequency, p.getFrequency()));
+                poi.setName("%d".formatted(frequency));
                 poi.setLatitude(p.getLat());
                 poi.setLongitude(p.getLon());
                 poi.setColor("00FFFF");
-                mTempPoiManager.getItems().add(poi);
+
+                tempPois.add(poi);
                 //TODO que this for commit
                 /*
         Spärr för uppdatering?
         om ålder >frekvens och ny frekvens är ett större tal
                  */
             }
+
         });
+        mTempPoiManager.getItems().setAll(tempPois);
     }
 }

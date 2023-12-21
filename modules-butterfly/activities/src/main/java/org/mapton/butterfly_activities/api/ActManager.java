@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_activities;
+package org.mapton.butterfly_activities.api;
 
 import java.util.ArrayList;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import org.mapton.api.MTemporalRange;
+import org.mapton.butterfly_activities.ActPropertiesBuilder;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BAreaActivity;

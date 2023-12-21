@@ -55,5 +55,9 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>butterfly-topo</artifactId>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>butterfly-activities</artifactId>
+        </dependency>
     </dependencies>
 </project>

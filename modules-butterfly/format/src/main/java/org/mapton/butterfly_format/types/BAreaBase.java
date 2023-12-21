@@ -35,6 +35,8 @@ public class BAreaBase extends BBasePoint {
     private String id;
     @JsonIgnore
     private Geometry geometry;
+    @JsonIgnore
+    private Geometry targetGeometry;
     private String wkt;
 
     public BAreaBase() {
@@ -52,6 +54,10 @@ public class BAreaBase extends BBasePoint {
         return id;
     }
 
+    public Geometry getTargetGeometry() {
+        return targetGeometry;
+    }
+
     public String getWkt() {
         return wkt;
     }
@@ -66,6 +72,10 @@ public class BAreaBase extends BBasePoint {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public void setTargetGeometry(Geometry targetGeometry) {
+        this.targetGeometry = targetGeometry;
     }
 
     public void setWkt(String wkt) {

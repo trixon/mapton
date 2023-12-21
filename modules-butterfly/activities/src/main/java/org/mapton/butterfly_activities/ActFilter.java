@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_activities;
 
+import org.mapton.butterfly_activities.api.ActManager;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import org.controlsfx.control.IndexedCheckModel;

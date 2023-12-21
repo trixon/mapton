@@ -22,6 +22,8 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.geotools.api.geometry.MismatchedDimensionException;
+import org.geotools.api.referencing.operation.TransformException;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 import org.mapton.api.MArea;
@@ -95,10 +97,16 @@ public class ButterflyManager {
             try {
                 var geometry = mWktReader.read(area.getWkt());
                 area.setGeometry(geometry);
+
+                try {
+                    var targetGeometry = MOptions.getInstance().getMapCooTrans().transform(geometry);
+                    area.setTargetGeometry(targetGeometry);
+                } catch (MismatchedDimensionException | TransformException ex) {
+                    Exceptions.printStackTrace(ex);
+                }
             } catch (ParseException ex) {
                 Exceptions.printStackTrace(ex);
             }
-
         }
 
         setButterfly(butterfly);
