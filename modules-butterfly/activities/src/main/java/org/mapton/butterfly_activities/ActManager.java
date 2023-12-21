@@ -53,15 +53,18 @@ public class ActManager extends BaseManager<BAreaActivity> {
     public void load(Butterfly butterfly) {
         try {
             initAllItems(butterfly.getAreaActivities());
+            initObjectToItemMap();
 
             var dates = new TreeSet<>(getAllItems().stream()
-                    .map(o -> o.getDatFrom())
+                    .map(aa -> aa.getDatFrom())
                     .filter(d -> d != null)
                     .collect(Collectors.toSet()));
+
             dates.addAll(getAllItems().stream()
-                    .map(o -> o.getDatTo())
+                    .map(aa -> aa.getDatTo())
                     .filter(d -> d != null)
                     .collect(Collectors.toSet()));
+
             if (!dates.isEmpty()) {
                 setTemporalRange(new MTemporalRange(dates.first(), dates.last()));
             }
@@ -72,7 +75,17 @@ public class ActManager extends BaseManager<BAreaActivity> {
 
     @Override
     protected void applyTemporalFilter() {
-        getTimeFilteredItems().setAll(getFilteredItems());
+        var timeFilteredItems = new ArrayList<BAreaActivity>();
+        for (var aa : getFilteredItems()) {
+            var validFrom = aa.getDatFrom() == null || getTemporalManager().isValid(aa.getDatFrom());
+            var validTo = aa.getDatTo() == null || getTemporalManager().isValid(aa.getDatTo());
+
+            if (validFrom || validTo) {
+                timeFilteredItems.add(aa);
+            }
+        }
+
+        getTimeFilteredItems().setAll(timeFilteredItems);
     }
 
     @Override

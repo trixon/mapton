@@ -18,6 +18,7 @@ package org.mapton.butterfly_activities;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import org.apache.commons.lang3.StringUtils;
+import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.ui.forms.FormFilter;
 import org.mapton.butterfly_format.types.BAreaActivity;
 import se.trixon.almond.util.StringHelper;
@@ -28,6 +29,7 @@ import se.trixon.almond.util.StringHelper;
  */
 public class ActFilter extends FormFilter<ActManager> {
 
+    IndexedCheckModel<String> mStatusCheckModel;
     private final ActManager mManager = ActManager.getInstance();
     private final BooleanProperty mProperty = new SimpleBooleanProperty();
 
@@ -44,12 +46,17 @@ public class ActFilter extends FormFilter<ActManager> {
     @Override
     public void update() {
         var filteredItems = mManager.getAllItems().stream()
-                .filter(o -> StringUtils.isBlank(getFreeText()) || validateFreeText(o))
-                //                .filter(o -> validateCoordinateArea(o.getLat(), o.getLon()))
-                //                .filter(o -> validateCoordinateRuler(o.getLat(), o.getLon()))
+                .filter(aa -> StringUtils.isBlank(getFreeText()) || validateFreeText(aa))
+                .filter(aa -> validateCheck(mStatusCheckModel, ActHelper.getStatusAsString(aa.getStatus())))
+                .filter(aa -> validateCoordinateArea(aa.getLat(), aa.getLon()))
+                .filter(aa -> validateCoordinateRuler(aa.getLat(), aa.getLon()))
                 .toList();
 
         mManager.getFilteredItems().setAll(filteredItems);
+    }
+
+    void initCheckModelListeners() {
+        mStatusCheckModel.getCheckedItems().addListener(mListChangeListener);
     }
 
     private void initListeners() {
@@ -59,9 +66,6 @@ public class ActFilter extends FormFilter<ActManager> {
     private boolean validateFreeText(BAreaActivity o) {
         return StringHelper.matchesSimpleGlobByWord(getFreeText(), true, false,
                 o.getName()
-        //                o.getCategory(),
-        //                o.getGroup()
         );
     }
-
 }
