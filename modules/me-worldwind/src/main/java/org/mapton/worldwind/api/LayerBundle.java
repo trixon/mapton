@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.prefs.Preferences;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -40,7 +41,9 @@ import org.mapton.api.MKey;
 import org.mapton.api.MTemporalManager;
 import org.mapton.api.MTemporalRange;
 import org.mapton.api.Mapton;
+import org.mapton.worldwind.LayerObjectView;
 import org.openide.util.Exceptions;
+import org.openide.util.NbPreferences;
 import se.trixon.almond.util.Dict;
 
 /**
@@ -62,6 +65,7 @@ public abstract class LayerBundle {
     private final MTemporalManager mTemporalManager = MTemporalManager.getInstance();
     private ConcurrentHashMap<String, MTemporalRange> mTemporalRanges;
     private MTemporalRange mTemporalRange;
+    private Preferences mVisibilityPreferences = NbPreferences.forModule(LayerObjectView.class).node("layer_visibility");
 
     public LayerBundle() {
     }

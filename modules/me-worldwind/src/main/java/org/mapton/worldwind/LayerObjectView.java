@@ -156,7 +156,7 @@ public class LayerObjectView extends BorderPane implements MActivatable {
 
             final String filter = mFilterTextField.getText();
             final boolean validFilter
-                    = StringHelper.matchesSimpleGlob(getCategory(layer), filter, true, true)
+                    = StringHelper.matchesSimpleGlob(WWHelper.getCategory(layer), filter, true, true)
                     || StringHelper.matchesSimpleGlob(layer.getName(), filter, true, true);
 
             if (!hidden && validFilter) {
@@ -166,7 +166,7 @@ public class LayerObjectView extends BorderPane implements MActivatable {
 
         for (var layer : filteredLayers) {
             var layerTreeItem = new CheckBoxTreeItem<Layer>(layer);
-            String category = getCategory(layer);
+            String category = WWHelper.getCategory(layer);
             var parent = layerParents.computeIfAbsent(category, k -> getParent(mRootItem, category));
             parent.getChildren().add(layerTreeItem);
         }
@@ -261,14 +261,6 @@ public class LayerObjectView extends BorderPane implements MActivatable {
         mContextMenu = new ContextMenu(optionsItem);
     }
 
-    private String getCategory(Layer layer) {
-        return StringUtils.defaultString((String) layer.getValue(WWHelper.KEY_LAYER_CATEGORY));
-    }
-
-    private String getLayerPath(Layer layer) {
-        return "%s/%s".formatted(getCategory(layer), layer.getName());
-    }
-
     private ButtonBase getOptionsToolBarButton() {
         return FxHelper.getButtonForAction(mOptionsAction, mToolBar.getItems());
     }
@@ -327,14 +319,14 @@ public class LayerObjectView extends BorderPane implements MActivatable {
                         c.getAddedSubList().forEach(treeItem -> {
                             if (!isCategoryTreeItem(treeItem) && !treeItem.getValue().isEnabled()) {
                                 treeItem.getValue().setEnabled(true);
-                                mVisibilityPreferences.putBoolean(getLayerPath(treeItem.getValue()), true);
+                                mVisibilityPreferences.putBoolean(WWHelper.getLayerPath(treeItem.getValue()), true);
                             }
                         });
                     } else if (c.wasRemoved()) {
                         c.getRemoved().forEach(treeItem -> {
                             if (!isCategoryTreeItem(treeItem) && treeItem.getValue().isEnabled()) {
                                 treeItem.getValue().setEnabled(false);
-                                mVisibilityPreferences.putBoolean(getLayerPath(treeItem.getValue()), false);
+                                mVisibilityPreferences.putBoolean(WWHelper.getLayerPath(treeItem.getValue()), false);
                             }
                         });
                     }
@@ -357,7 +349,7 @@ public class LayerObjectView extends BorderPane implements MActivatable {
         var layer = treeItem.getValue();
 
         if (isCategoryTreeItem(treeItem)) {
-            final String path = getCategory(layer);
+            final String path = WWHelper.getCategory(layer);
 
             if (mExpandedPreferences.getBoolean(path, false)) {
                 mTreeItemExpanderSet.add(treeItem);
@@ -394,7 +386,7 @@ public class LayerObjectView extends BorderPane implements MActivatable {
                         }
                     }
 
-                    mVisibilityPreferences.putBoolean(getLayerPath(treeItem.getValue()), newValue);
+                    mVisibilityPreferences.putBoolean(WWHelper.getLayerPath(treeItem.getValue()), newValue);
                 });
             }
         }
@@ -408,7 +400,7 @@ public class LayerObjectView extends BorderPane implements MActivatable {
         } else {
             var layer = treeItem.getValue();
 
-            if (mVisibilityPreferences.getBoolean(getLayerPath(layer), layer.isEnabled())) {
+            if (mVisibilityPreferences.getBoolean(WWHelper.getLayerPath(layer), layer.isEnabled())) {
                 mCheckModel.check(treeItem);
                 if (!layer.isEnabled()) {
                     layer.setEnabled(true);

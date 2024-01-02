@@ -48,6 +48,7 @@ public abstract class MBaseDataManager<T> {
     private final DelayedResetRunner mDelayedResetRunner;
     private final ObjectProperty<ObservableList<T>> mFilteredItemsProperty = new SimpleObjectProperty<>();
     private final HashSet<T> mFilteredItemsSet = new HashSet<>();
+    private Boolean mInitialTemporalState = null;
     private T mOldSelectedValue;
     private final ObjectProperty<T> mSelectedItemProperty = new SimpleObjectProperty<>();
     private MTemporalRange mStoredTemporalRange;
@@ -214,6 +215,11 @@ public abstract class MBaseDataManager<T> {
         mUnlockDelayedResetRunner.reset();
     }
 
+    public void setInitialTemporalState(boolean initialTemporalState) {
+        mInitialTemporalState = initialTemporalState;
+        updateTemporal(initialTemporalState);
+    }
+
     public void setSelectedItem(T item) {
         FxHelper.runLater(() -> {
             mSelectedItemProperty.set(item);
@@ -237,6 +243,11 @@ public abstract class MBaseDataManager<T> {
         mStoredTemporalRange = temporalRange;
         mTemporalManager.put(TEMPORAL_PREFIX, temporalRange);
         mTemporalRangeProperty.set(temporalRange);
+
+        if (mInitialTemporalState != null) {
+            updateTemporal(mInitialTemporalState);
+            mInitialTemporalState = null;
+        }
     }
 
     public void setTemporalVisibility(boolean visible) {

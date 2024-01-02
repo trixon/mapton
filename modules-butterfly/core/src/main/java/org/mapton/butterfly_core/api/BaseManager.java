@@ -25,6 +25,7 @@ import org.mapton.worldwind.api.WWHelper;
 /**
  *
  * @author Patrik Karlström
+ * @param <T>
  */
 public abstract class BaseManager<T extends BBase> extends MBaseDataManager<T> {
 
@@ -53,7 +54,6 @@ public abstract class BaseManager<T extends BBase> extends MBaseDataManager<T> {
             } catch (NullPointerException e) {
                 //
             }
-
         }
 
         return null;

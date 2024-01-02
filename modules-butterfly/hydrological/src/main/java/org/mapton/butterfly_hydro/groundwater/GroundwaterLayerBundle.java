@@ -31,7 +31,6 @@ import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.SDict;
-import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
@@ -48,7 +47,7 @@ public class GroundwaterLayerBundle extends BfLayerBundle {
         initRepaint();
         initListeners();
 
-        FxHelper.runLaterDelayed(1000, () -> mManager.updateTemporal(mLayer.isEnabled()));
+        mManager.setInitialTemporalState(WWHelper.isStoredAsVisible(mLayer, mLayer.isEnabled()));
     }
 
     @Override
@@ -63,8 +62,9 @@ public class GroundwaterLayerBundle extends BfLayerBundle {
         setName(Bundle.CTL_GroundwaterAction());
         attachTopComponentToLayer("GroundwaterTopComponent", mLayer);
         setParentLayer(mLayer);
-//        mLayer.setEnabled(true);
         mLayer.setPickEnabled(true);
+
+        mLayer.setEnabled(false);
     }
 
     private void initListeners() {

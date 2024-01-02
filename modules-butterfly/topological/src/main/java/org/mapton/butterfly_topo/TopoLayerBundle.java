@@ -40,7 +40,6 @@ import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.Direction;
 import se.trixon.almond.util.SDict;
-import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
@@ -73,7 +72,7 @@ public class TopoLayerBundle extends BfLayerBundle {
         initListeners();
         mAttributeManager.setColorBy(mOptionsView.getColorBy());
 
-        FxHelper.runLaterDelayed(1000, () -> mManager.updateTemporal(mLayer.isEnabled()));
+        mManager.setInitialTemporalState(WWHelper.isStoredAsVisible(mLayer, mLayer.isEnabled()));
     }
 
     @Override
@@ -92,12 +91,13 @@ public class TopoLayerBundle extends BfLayerBundle {
         setCategory(mLayer, SDict.TOPOGRAPHY.toString());
         setName(Bundle.CTL_ControlPointAction());
         attachTopComponentToLayer("TopoTopComponent", mLayer);
-        mLabelLayer.setEnabled(true);
         mLabelLayer.setMaxActiveAltitude(2000);
         setParentLayer(mLayer);
         setAllChildLayers(mLabelLayer, mSymbolLayer, mPinLayer);
 
         mLayer.setPickEnabled(true);
+
+        mLayer.setEnabled(false);
     }
 
     private void initListeners() {

@@ -30,7 +30,6 @@ import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.Almond;
-import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
@@ -57,7 +56,7 @@ public class GrundvattenLayerBundle extends BfLayerBundle {
         mComponentRenderer = new ComponentRenderer(mLayer);
         initListeners();
 
-        FxHelper.runLaterDelayed(1000, () -> mManager.updateTemporal(mLayer.isEnabled()));
+        mManager.setInitialTemporalState(WWHelper.isStoredAsVisible(mLayer, mLayer.isEnabled()));
     }
 
     @Override
@@ -76,7 +75,6 @@ public class GrundvattenLayerBundle extends BfLayerBundle {
         setCategory(mLayer, "TMO");
         setName(Bundle.CTL_GrundvattenAction());
         attachTopComponentToLayer("GrundvattenTopComponent", mLayer);
-        mLabelLayer.setEnabled(true);
 //        mLayer.setMaxActiveAltitude(6000);
 //        mSurfaceLayer.setMaxActiveAltitude(6000);
 //        mPinLayer.setMaxActiveAltitude(300);
@@ -87,6 +85,8 @@ public class GrundvattenLayerBundle extends BfLayerBundle {
 
         mLayer.setPickEnabled(true);
         mSurfaceLayer.setPickEnabled(false);
+
+        mLayer.setEnabled(false);
     }
 
     private void initListeners() {

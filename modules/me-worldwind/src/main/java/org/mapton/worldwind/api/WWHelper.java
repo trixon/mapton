@@ -18,6 +18,7 @@ package org.mapton.worldwind.api;
 import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.geom.Sector;
+import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.Offset;
@@ -26,12 +27,15 @@ import gov.nasa.worldwind.render.Renderable;
 import gov.nasa.worldwind.render.SurfaceCircle;
 import java.util.ArrayList;
 import java.util.Arrays;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.math3.util.FastMath;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.mapton.api.MLatLon;
 import org.mapton.api.MLatLonBox;
 import org.mapton.api.MPoiStyle.ImageLocation;
+import org.mapton.worldwind.LayerObjectView;
+import org.openide.util.NbPreferences;
 
 /**
  *
@@ -74,6 +78,14 @@ public class WWHelper {
         var circle = new SurfaceCircle(sa, positionFromLatLon(latLon), radius);
 
         return circle;
+    }
+
+    public static String getCategory(Layer layer) {
+        return StringUtils.defaultString((String) layer.getValue(WWHelper.KEY_LAYER_CATEGORY));
+    }
+
+    public static String getLayerPath(Layer layer) {
+        return "%s/%s".formatted(getCategory(layer), layer.getName());
     }
 
     public static MLatLon latLonFromPosition(Position position) {
@@ -170,6 +182,12 @@ public class WWHelper {
                 Angle.fromDegreesLongitude(latLonBox.getSouthWest().getLongitude()),
                 Angle.fromDegreesLongitude(latLonBox.getNorthEast().getLongitude())
         );
+    }
+
+    public static boolean isStoredAsVisible(Layer layer, boolean defaultEnablement) {
+        var visibilityPreferences = NbPreferences.forModule(LayerObjectView.class).node("layer_visibility");
+
+        return visibilityPreferences.getBoolean(WWHelper.getLayerPath(layer), layer.isEnabled());
     }
 
 }

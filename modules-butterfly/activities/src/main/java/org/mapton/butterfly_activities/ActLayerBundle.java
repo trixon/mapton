@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_activities;
 
-import org.mapton.butterfly_activities.api.ActManager;
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
@@ -30,6 +29,7 @@ import javafx.scene.Node;
 import org.apache.commons.lang3.ObjectUtils;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Polygon;
+import org.mapton.butterfly_activities.api.ActManager;
 import org.mapton.butterfly_core.api.BfLayerBundle;
 import org.mapton.butterfly_format.types.BAreaActivity;
 import org.mapton.worldwind.api.LayerBundle;
@@ -37,7 +37,6 @@ import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.Almond;
-import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
@@ -59,8 +58,7 @@ public class ActLayerBundle extends BfLayerBundle {
         mOptionsView = new ActOptionsView(this);
 
         initListeners();
-
-        FxHelper.runLaterDelayed(1000, () -> mManager.updateTemporal(mLayer.isEnabled()));
+        mManager.setInitialTemporalState(WWHelper.isStoredAsVisible(mLayer, mLayer.isEnabled()));
     }
 
     @Override
@@ -86,6 +84,8 @@ public class ActLayerBundle extends BfLayerBundle {
         setParentLayer(mLayer);
         setAllChildLayers(mLabelLayer, mPinLayer);
         mLayer.setPickEnabled(true);
+
+        mLayer.setEnabled(false);
     }
 
     private void initListeners() {

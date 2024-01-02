@@ -31,7 +31,6 @@ import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.SDict;
-import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
@@ -58,7 +57,7 @@ public class BlastLayerBundle extends BfLayerBundle {
         mGraphicRenderer = new GraphicRenderer(mLayer, mGroundConnectorLayer, mSurfaceLayer, mOptionsView.getGraphicCheckModel());
         initListeners();
 
-        FxHelper.runLaterDelayed(1000, () -> mManager.updateTemporal(mLayer.isEnabled()));
+        mManager.setInitialTemporalState(WWHelper.isStoredAsVisible(mLayer, mLayer.isEnabled()));
     }
 
     @Override
@@ -77,7 +76,6 @@ public class BlastLayerBundle extends BfLayerBundle {
         setCategory(mLayer, SDict.ACOUSTIC.toString());
         setName(Bundle.CTL_BlastAction());
         attachTopComponentToLayer("BlastTopComponent", mLayer);
-        mLabelLayer.setEnabled(true);
         mLayer.setMaxActiveAltitude(6000);
         mSurfaceLayer.setMaxActiveAltitude(6000);
         mPinLayer.setMaxActiveAltitude(10000);
@@ -88,6 +86,8 @@ public class BlastLayerBundle extends BfLayerBundle {
 
         mLayer.setPickEnabled(true);
         mSurfaceLayer.setPickEnabled(false);
+
+        mLayer.setEnabled(false);
     }
 
     private void initListeners() {
