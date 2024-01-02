@@ -95,7 +95,7 @@ public class BTopoControlPointObservation extends BBaseControlPointObservation {
             if (ObjectUtils.anyNull(getDeltaX(), getDeltaY())) {
                 return null;
             } else {
-                return MathHelper.bearingCWInDegrees(getDeltaX(), getDeltaY());
+                return MathHelper.azimuthToDegrees(getDeltaY(), getDeltaX());
             }
         }
 
