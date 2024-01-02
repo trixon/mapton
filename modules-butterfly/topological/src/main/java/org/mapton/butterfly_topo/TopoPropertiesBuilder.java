@@ -94,6 +94,15 @@ public class TopoPropertiesBuilder extends PropertiesBuilder<BTopoControlPoint> 
         propertyMap.put(getCatKey(cat1, "E"), StringHelper.round(p.getZeroX(), 3));
         propertyMap.put(getCatKey(cat1, "H"), StringHelper.round(p.getZeroZ(), 3));
 
+        Double bearing = null;
+        try {
+            var o = p.ext().getObservationsTimeFiltered().getLast();
+            bearing = o.ext().getBearing();
+        } catch (Exception e) {
+        }
+
+        propertyMap.put(getCatKey(cat1, Dict.BEARING.toString()), StringHelper.round(bearing, 0));
+
         return propertyMap;
     }
 

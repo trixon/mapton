@@ -60,6 +60,30 @@ public class GraphicRenderer extends GraphicRendererBase {
         sPlotLimiter.addToAllowList(name);
     }
 
+    private void plotBearingXX(BTopoControlPoint p, Position position) {
+        if (!sCheckModel.isChecked(GraphicRendererItem.BEARING)
+                || p.getDimension() == BDimension._1d
+                || p.ext().getNumOfObservationsFiltered() == 0) {
+            return;
+        }
+
+        var o = p.ext().getObservationsTimeFiltered().getLast();
+        var bearing = o.ext().getBearing();
+        if (bearing == null || bearing.isNaN()) {
+            return;
+        }
+        var length = 10.0;
+        var p2 = WWHelper.movePolar(position, bearing, length);
+        var z = 0.2;
+        position = WWHelper.positionFromPosition(position, z);
+        p2 = WWHelper.positionFromPosition(p2, z);
+        var path = new Path(position, p2);
+        path.setAttributes(mAttributeManager.getBearingAttribute(true));
+
+        addRenderable(path, true);
+
+    }
+
     private void plotBearing(BTopoControlPoint p, Position position) {
         int size = p.ext().getObservationsTimeFiltered().size();
         if (!sCheckModel.isChecked(GraphicRendererItem.BEARING)

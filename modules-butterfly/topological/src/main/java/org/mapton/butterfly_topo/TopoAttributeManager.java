@@ -73,7 +73,7 @@ public class TopoAttributeManager {
                 attrs.setOutlineWidth(4);
                 attrs.setOutlineMaterial(Material.MAGENTA);
                 attrs.setOutlineWidth(i == 0 ? 2.0 : 4.0);
-                attrs.setOutlineOpacity(i == 0 ? 1.0 : 0.05);
+                attrs.setOutlineOpacity(i == 0 ? 1.0 : 0.1);
                 mBearingAttributes[i] = attrs;
             }
         }
