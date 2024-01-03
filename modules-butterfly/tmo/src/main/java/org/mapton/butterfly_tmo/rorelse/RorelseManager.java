@@ -55,7 +55,7 @@ public class RorelseManager extends BaseManager<BRorelse> {
             initAllItems(butterfly.tmo().getRörelse());
 
             var dates = new TreeSet<>(getAllItems().stream()
-                    .map(o -> o.getInstallationsdatum()) //TODO use latest observation date
+                    .map(o -> o.getInventeringsdatum()) //TODO use latest observation date
                     .filter(d -> d != null)
                     .collect(Collectors.toSet()));
 

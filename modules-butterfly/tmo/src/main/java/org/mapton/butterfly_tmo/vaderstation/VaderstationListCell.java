@@ -39,21 +39,21 @@ class VaderstationListCell extends ListCell<BVaderstation> {
     }
 
     @Override
-    protected void updateItem(BVaderstation grundvatten, boolean empty) {
-        super.updateItem(grundvatten, empty);
-        if (grundvatten == null || empty) {
+    protected void updateItem(BVaderstation vaderstation, boolean empty) {
+        super.updateItem(vaderstation, empty);
+        if (vaderstation == null || empty) {
             clearContent();
         } else {
-            addContent(grundvatten);
+            addContent(vaderstation);
         }
     }
 
-    private void addContent(BVaderstation grundvatten) {
+    private void addContent(BVaderstation vaderstation) {
         setText(null);
-        var date = Objects.toString(DateHelper.toDateString(grundvatten.getInstallationsdatum()), "-");
-        mNameLabel.setText(grundvatten.getName());
-        mDateLabel.setText("%s %s".formatted(date, grundvatten.getComment()));
-        mGroupLabel.setText(grundvatten.getGroup());
+        var date = Objects.toString(DateHelper.toDateString(vaderstation.getInstallationsdatum()), "-");
+        mNameLabel.setText(vaderstation.getName());
+        mDateLabel.setText("%s %s".formatted(date, vaderstation.getComment()));
+        mGroupLabel.setText(vaderstation.getGroup());
         setGraphic(mVBox);
     }
 

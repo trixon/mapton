@@ -39,21 +39,21 @@ class VattenkemiListCell extends ListCell<BVattenkemi> {
     }
 
     @Override
-    protected void updateItem(BVattenkemi grundvatten, boolean empty) {
-        super.updateItem(grundvatten, empty);
-        if (grundvatten == null || empty) {
+    protected void updateItem(BVattenkemi vattenkemi, boolean empty) {
+        super.updateItem(vattenkemi, empty);
+        if (vattenkemi == null || empty) {
             clearContent();
         } else {
-            addContent(grundvatten);
+            addContent(vattenkemi);
         }
     }
 
-    private void addContent(BVattenkemi grundvatten) {
+    private void addContent(BVattenkemi vattenkemi) {
         setText(null);
-        var date = Objects.toString(DateHelper.toDateString(grundvatten.getInstallationsdatum()), "-");
-        mNameLabel.setText(grundvatten.getName());
-        mDateLabel.setText("%s %s".formatted(date, grundvatten.getComment()));
-        mGroupLabel.setText(grundvatten.getGroup());
+        var date = Objects.toString(DateHelper.toDateString(vattenkemi.getInstallationsdatum()), "-");
+        mNameLabel.setText(vattenkemi.getName());
+        mDateLabel.setText("%s %s".formatted(date, vattenkemi.getComment()));
+        mGroupLabel.setText(vattenkemi.getGroup());
         setGraphic(mVBox);
     }
 

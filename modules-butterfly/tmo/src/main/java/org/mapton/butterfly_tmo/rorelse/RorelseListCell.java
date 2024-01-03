@@ -15,12 +15,10 @@
  */
 package org.mapton.butterfly_tmo.rorelse;
 
-import java.util.Objects;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.layout.VBox;
 import org.mapton.butterfly_format.types.tmo.BRorelse;
-import se.trixon.almond.util.DateHelper;
 
 /**
  *
@@ -39,21 +37,20 @@ class RorelseListCell extends ListCell<BRorelse> {
     }
 
     @Override
-    protected void updateItem(BRorelse grundvatten, boolean empty) {
-        super.updateItem(grundvatten, empty);
-        if (grundvatten == null || empty) {
+    protected void updateItem(BRorelse rorelse, boolean empty) {
+        super.updateItem(rorelse, empty);
+        if (rorelse == null || empty) {
             clearContent();
         } else {
-            addContent(grundvatten);
+            addContent(rorelse);
         }
     }
 
-    private void addContent(BRorelse grundvatten) {
+    private void addContent(BRorelse rorelse) {
         setText(null);
-        var date = Objects.toString(DateHelper.toDateString(grundvatten.getInstallationsdatum()), "-");
-        mNameLabel.setText(grundvatten.getName());
-        mDateLabel.setText("%s %s".formatted(date, grundvatten.getComment()));
-        mGroupLabel.setText(grundvatten.getGroup());
+        mNameLabel.setText("%s [%s]".formatted(rorelse.getName(), rorelse.getStatus()));
+        mDateLabel.setText(rorelse.getPlacering());
+        mGroupLabel.setText(rorelse.getLägesbeskrivning());
         setGraphic(mVBox);
     }
 

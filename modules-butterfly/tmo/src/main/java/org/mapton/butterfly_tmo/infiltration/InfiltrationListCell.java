@@ -39,21 +39,21 @@ class InfiltrationListCell extends ListCell<BInfiltration> {
     }
 
     @Override
-    protected void updateItem(BInfiltration grundvatten, boolean empty) {
-        super.updateItem(grundvatten, empty);
-        if (grundvatten == null || empty) {
+    protected void updateItem(BInfiltration infiltration, boolean empty) {
+        super.updateItem(infiltration, empty);
+        if (infiltration == null || empty) {
             clearContent();
         } else {
-            addContent(grundvatten);
+            addContent(infiltration);
         }
     }
 
-    private void addContent(BInfiltration grundvatten) {
+    private void addContent(BInfiltration infiltration) {
         setText(null);
-        var date = Objects.toString(DateHelper.toDateString(grundvatten.getInstallationsdatum()), "-");
-        mNameLabel.setText(grundvatten.getName());
-        mDateLabel.setText("%s %s".formatted(date, grundvatten.getComment()));
-        mGroupLabel.setText(grundvatten.getGroup());
+        var date = Objects.toString(DateHelper.toDateString(infiltration.getInstallationsdatum()), "-");
+        mNameLabel.setText(infiltration.getName());
+        mDateLabel.setText("%s %s".formatted(date, infiltration.getComment()));
+        mGroupLabel.setText(infiltration.getGroup());
         setGraphic(mVBox);
     }
 

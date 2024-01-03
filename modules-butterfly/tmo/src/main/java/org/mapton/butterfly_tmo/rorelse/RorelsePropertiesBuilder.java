@@ -16,10 +16,9 @@
 package org.mapton.butterfly_tmo.rorelse;
 
 import java.util.LinkedHashMap;
-import java.util.Objects;
+import org.apache.commons.lang3.StringUtils;
 import org.mapton.api.ui.forms.PropertiesBuilder;
 import org.mapton.butterfly_format.types.tmo.BRorelse;
-import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
 
 /**
@@ -29,21 +28,41 @@ import se.trixon.almond.util.Dict;
 public class RorelsePropertiesBuilder extends PropertiesBuilder<BRorelse> {
 
     @Override
-    public Object build(BRorelse p) {
-        if (p == null) {
-            return p;
+    public Object build(BRorelse r) {
+        if (r == null) {
+            return r;
         }
 
         var propertyMap = new LinkedHashMap<String, Object>();
         var cat1 = Dict.BASIC.toString();
-        var date = Objects.toString(DateHelper.toDateString(p.getInstallationsdatum()), "-");
 
-        propertyMap.put(getCatKey(cat1, Dict.NAME.toString()), p.getName());
-        propertyMap.put(getCatKey(cat1, Dict.GROUP.toString()), p.getGroup());
-        propertyMap.put(getCatKey(cat1, Dict.COMMENT.toString()), p.getComment());
-        propertyMap.put(getCatKey(cat1, Dict.DATE.toString()), date);
-//        propertyMap.put(getCatKey(cat1, Dict.AGE.toString()), p.ext().getAge(ChronoUnit.DAYS));
-//        propertyMap.put(getCatKey(cat1, "Z"), MathHelper.convertDoubleToString(p.getZ(), 1));
+        propertyMap.put(getCatKey(cat1, "Dubbnamn"), r.getDubbnamn());
+        String placering;
+        if (StringUtils.isNotBlank(r.getPlacering_kommentar())) {
+            placering = "%s (%s)".formatted(r.getPlacering(), r.getPlacering_kommentar());
+        } else {
+            placering = r.getPlacering();
+        }
+        propertyMap.put(getCatKey(cat1, "Placering"), placering);
+        propertyMap.put(getCatKey(cat1, "Lägesbeskrivning"), r.getLägesbeskrivning());
+        propertyMap.put(getCatKey(cat1, "Status"), r.getStatus());
+        propertyMap.put(getCatKey(cat1, "Anmärkning"), r.getAnmärkning());
+        propertyMap.put(getCatKey(cat1, "Fixpunkt"), r.getFixpunkt());
+//
+        propertyMap.put(getCatKey(cat1, "Installationsdatum"), r.getInstallationsdatum());
+        propertyMap.put(getCatKey(cat1, "Inventeringsdatum"), r.getInventeringsdatum());
+        propertyMap.put(getCatKey(cat1, "Versionsdatum"), r.getVersionsdatum());
+
+        propertyMap.put(getCatKey(cat1, "Koordinatkvalitet"), r.getKoordinatkvalitet());
+        propertyMap.put(getCatKey(cat1, "Höjd"), r.getHöjd());
+        propertyMap.put(getCatKey(cat1, "Plan"), r.getPlan());
+        propertyMap.put(getCatKey(cat1, "N"), r.getY());
+        propertyMap.put(getCatKey(cat1, "E"), r.getX());
+        propertyMap.put(getCatKey(cat1, "Lat"), r.getLat());
+        propertyMap.put(getCatKey(cat1, "Lon"), r.getLon());
+        propertyMap.put(getCatKey(cat1, "Gammalt id"), r.getGammalt_id());
+        propertyMap.put(getCatKey(cat1, "Informationskällor"), r.getInformationskällor());
+        propertyMap.put(getCatKey(cat1, "Kontrollprogram"), r.getKontrollprogram());
 
         return propertyMap;
     }
