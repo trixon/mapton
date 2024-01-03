@@ -27,7 +27,11 @@ import se.trixon.almond.util.Dict;
  */
 public class RorelseFilter extends FormFilter<RorelseManager> {
 
-    private IndexedCheckModel mGroupCheckModel;
+    IndexedCheckModel<String> mFixpunktCheckModel;
+    IndexedCheckModel<String> mInformationskallorCheckModel;
+    IndexedCheckModel<String> mPlaceringCheckModel;
+    IndexedCheckModel<String> mStatusCheckModel;
+
     private final RorelseManager mManager = RorelseManager.getInstance();
 
     public RorelseFilter() {
@@ -36,17 +40,16 @@ public class RorelseFilter extends FormFilter<RorelseManager> {
         initListeners();
     }
 
-    public void setCheckModelGroup(IndexedCheckModel checkModel) {
-        mGroupCheckModel = checkModel;
-        checkModel.getCheckedItems().addListener(mListChangeListener);
-    }
-
     @Override
     public void update() {
         var filteredItems = mManager.getAllItems().stream()
-                .filter(b -> validateFreeText(b.getBenämning(), b.getName(), b.getGroup(), b.getComment()))
-                .filter(b -> validateCoordinateArea(b.getLat(), b.getLon()))
-                .filter(b -> validateCoordinateRuler(b.getLat(), b.getLon()))
+                .filter(r -> validateFreeText(r.getBenämning(), r.getLägesbeskrivning(), r.getPlacering(), r.getPlacering_kommentar(), r.getGroup(), r.getComment()))
+                .filter(r -> validateCheck(mPlaceringCheckModel, r.getPlacering()))
+                .filter(r -> validateCheck(mFixpunktCheckModel, r.getFixpunkt()))
+                .filter(r -> validateCheck(mStatusCheckModel, r.getStatus()))
+                .filter(r -> validateCheck(mInformationskallorCheckModel, r.getInformationskällor()))
+                .filter(r -> validateCoordinateArea(r.getLat(), r.getLon()))
+                .filter(r -> validateCoordinateRuler(r.getLat(), r.getLon()))
                 .toList();
 
         mManager.getFilteredItems().setAll(filteredItems);
@@ -54,12 +57,21 @@ public class RorelseFilter extends FormFilter<RorelseManager> {
         getInfoPopOver().loadContent(createInfoContent().renderFormatted());
     }
 
+    void initCheckModelListeners() {
+        mFixpunktCheckModel.getCheckedItems().addListener(mListChangeListener);
+        mPlaceringCheckModel.getCheckedItems().addListener(mListChangeListener);
+        mStatusCheckModel.getCheckedItems().addListener(mListChangeListener);
+        mInformationskallorCheckModel.getCheckedItems().addListener(mListChangeListener);
+    }
+
     private ContainerTag createInfoContent() {
         //TODO Add measOperator+latest
         var map = new LinkedHashMap<String, String>();
 
         map.put(Dict.TEXT.toString(), getFreeText());
-        map.put(Dict.GROUP.toString(), makeInfo(mGroupCheckModel.getCheckedItems()));
+        map.put("Placering", makeInfo(mPlaceringCheckModel.getCheckedItems()));
+        map.put("Status", makeInfo(mStatusCheckModel.getCheckedItems()));
+        map.put("Fixpunkt", makeInfo(mFixpunktCheckModel.getCheckedItems()));
 
         return createHtmlFilterInfo(map);
 

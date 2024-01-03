@@ -34,6 +34,7 @@ import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BBaseControlPoint;
 import org.mapton.butterfly_format.types.tmo.BBasObjekt;
 import org.openide.util.Exceptions;
+import se.trixon.almond.util.MathHelper;
 
 /**
  *
@@ -124,8 +125,8 @@ public class ButterflyManager {
 
             if (ObjectUtils.allNotNull(x, y)) {
                 var wgs84 = getCooTrans().toWgs84(y, x);
-                cp.setLat(wgs84.getY());
-                cp.setLon(wgs84.getX());
+                cp.setLat(MathHelper.round(wgs84.getY(), 6));
+                cp.setLon(MathHelper.round(wgs84.getX(), 6));
             }
         }
     }
@@ -137,8 +138,8 @@ public class ButterflyManager {
 
             if (ObjectUtils.allNotNull(x, y)) {
                 var wgs84 = getCooTrans().toWgs84(y, x);
-                cp.setLat(wgs84.getY());
-                cp.setLon(wgs84.getX());
+                cp.setLat(MathHelper.round(wgs84.getY(), 6));
+                cp.setLon(MathHelper.round(wgs84.getX(), 6));
             }
         }
     }

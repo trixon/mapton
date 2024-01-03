@@ -15,18 +15,14 @@
  */
 package org.mapton.butterfly_tmo.rorelse;
 
-import java.util.TreeSet;
-import java.util.stream.Collectors;
 import javafx.scene.control.Separator;
 import javafx.scene.layout.VBox;
-import org.controlsfx.control.CheckComboBox;
 import static org.mapton.api.ui.MPopOver.GAP;
 import static org.mapton.api.ui.MPopOver.autoSize;
 import org.mapton.butterfly_core.api.BaseFilterPopOver;
 import org.mapton.butterfly_format.Butterfly;
-import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
-import se.trixon.almond.util.fx.session.CheckModelSession;
+import se.trixon.almond.util.fx.session.SessionCheckComboBox;
 
 /**
  *
@@ -35,8 +31,10 @@ import se.trixon.almond.util.fx.session.CheckModelSession;
 public class RorelseFilterPopOver extends BaseFilterPopOver {
 
     private final RorelseFilter mFilter;
-    private final CheckComboBox<String> mGroupCheckComboBox = new CheckComboBox<>();
-    private final CheckModelSession mGroupCheckModelSession = new CheckModelSession(mGroupCheckComboBox);
+    private final SessionCheckComboBox<String> mFixpunktSCCB = new SessionCheckComboBox<>();
+    private final SessionCheckComboBox<String> mInformationskallorSCCB = new SessionCheckComboBox<>();
+    private final SessionCheckComboBox<String> mPlaceringSCCB = new SessionCheckComboBox<>();
+    private final SessionCheckComboBox<String> mStatusSCCB = new SessionCheckComboBox<>();
 
     public RorelseFilterPopOver(RorelseFilter filter) {
         mFilter = filter;
@@ -49,22 +47,19 @@ public class RorelseFilterPopOver extends BaseFilterPopOver {
     public void clear() {
         getPolygonFilterCheckBox().setSelected(false);
         mFilter.freeTextProperty().set("");
-        mGroupCheckComboBox.getCheckModel().clearChecks();
-
+        mFixpunktSCCB.clearChecks();
+        mPlaceringSCCB.clearChecks();
+        mInformationskallorSCCB.clearChecks();
+        mStatusSCCB.clearChecks();
     }
 
     @Override
     public void load(Butterfly butterfly) {
-        var grundvatten = butterfly.tmo().getRörelse();
-
-        var groupCheckModel = mGroupCheckComboBox.getCheckModel();
-        var checkedGroup = groupCheckModel.getCheckedItems();
-        var allGroupss = new TreeSet<>(grundvatten.stream().map(o -> o.getGroup()).collect(Collectors.toSet()));
-
-        mGroupCheckComboBox.getItems().setAll(allGroupss);
-        checkedGroup.stream().forEach(d -> groupCheckModel.check(d));
-
-        mGroupCheckModelSession.load();
+        var rorelse = butterfly.tmo().getRörelse();
+        mFixpunktSCCB.loadAndRestoreCheckItems(rorelse.stream().map(o -> o.getFixpunkt()));
+        mStatusSCCB.loadAndRestoreCheckItems(rorelse.stream().map(o -> o.getStatus()));
+        mPlaceringSCCB.loadAndRestoreCheckItems(rorelse.stream().map(o -> o.getPlacering()));
+        mInformationskallorSCCB.loadAndRestoreCheckItems(rorelse.stream().map(o -> o.getInformationskällor()));
     }
 
     @Override
@@ -74,8 +69,12 @@ public class RorelseFilterPopOver extends BaseFilterPopOver {
 
     @Override
     public void onShownFirstTime() {
-        var dropDownCount = 25;
-        FxHelper.getComboBox(mGroupCheckComboBox).setVisibleRowCount(dropDownCount);
+        FxHelper.setVisibleRowCount(25,
+                mPlaceringSCCB,
+                mFixpunktSCCB,
+                mInformationskallorSCCB,
+                mStatusSCCB
+        );
     }
 
     @Override
@@ -85,13 +84,25 @@ public class RorelseFilterPopOver extends BaseFilterPopOver {
     }
 
     private void createUI() {
-        mGroupCheckComboBox.setShowCheckedCount(true);
-        mGroupCheckComboBox.setTitle(Dict.GROUP.toString());
+        FxHelper.setShowCheckedCount(true,
+                mPlaceringSCCB,
+                mFixpunktSCCB,
+                mInformationskallorSCCB,
+                mStatusSCCB
+        );
+
+        mPlaceringSCCB.setTitle("Placering");
+        mFixpunktSCCB.setTitle("Fixpunkt");
+        mStatusSCCB.setTitle("Status");
+        mInformationskallorSCCB.setTitle("Informationskallor");
 
         var vBox = new VBox(GAP,
                 getButtonBox(),
                 new Separator(),
-                mGroupCheckComboBox
+                mPlaceringSCCB,
+                mFixpunktSCCB,
+                mInformationskallorSCCB,
+                mStatusSCCB
         );
 
         autoSize(vBox);
@@ -101,15 +112,21 @@ public class RorelseFilterPopOver extends BaseFilterPopOver {
     private void initListeners() {
         mFilter.polygonFilterProperty().bind(getPolygonFilterCheckBox().selectedProperty());
 
-        mFilter.setCheckModelGroup(mGroupCheckComboBox.getCheckModel());
+        mFilter.mPlaceringCheckModel = mPlaceringSCCB.getCheckModel();
+        mFilter.mFixpunktCheckModel = mFixpunktSCCB.getCheckModel();
+        mFilter.mStatusCheckModel = mStatusSCCB.getCheckModel();
+        mFilter.mInformationskallorCheckModel = mInformationskallorSCCB.getCheckModel();
 
+        mFilter.initCheckModelListeners();
     }
 
     private void initSession() {
         var sessionManager = getSessionManager();
         sessionManager.register("filter.rorelse.freeText", mFilter.freeTextProperty());
-        sessionManager.register("filter.rorelse.checkedGroup", mGroupCheckModelSession.checkedStringProperty());
-
+        sessionManager.register("filter.rorelse.checkedPlacering", mPlaceringSCCB.checkedStringProperty());
+        sessionManager.register("filter.rorelse.checkedFixpunkt", mFixpunktSCCB.checkedStringProperty());
+        sessionManager.register("filter.rorelse.checkedStatus", mStatusSCCB.checkedStringProperty());
+        sessionManager.register("filter.rorelse.checkedInformationskallor", mInformationskallorSCCB.checkedStringProperty());
     }
 
 }

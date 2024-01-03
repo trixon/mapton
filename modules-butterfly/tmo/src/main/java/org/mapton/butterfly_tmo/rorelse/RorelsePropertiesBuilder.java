@@ -58,8 +58,6 @@ public class RorelsePropertiesBuilder extends PropertiesBuilder<BRorelse> {
         propertyMap.put(getCatKey(cat1, "Plan"), r.getPlan());
         propertyMap.put(getCatKey(cat1, "N"), r.getY());
         propertyMap.put(getCatKey(cat1, "E"), r.getX());
-        propertyMap.put(getCatKey(cat1, "Lat"), r.getLat());
-        propertyMap.put(getCatKey(cat1, "Lon"), r.getLon());
         propertyMap.put(getCatKey(cat1, "Gammalt id"), r.getGammalt_id());
         propertyMap.put(getCatKey(cat1, "Informationskällor"), r.getInformationskällor());
         propertyMap.put(getCatKey(cat1, "Kontrollprogram"), r.getKontrollprogram());
