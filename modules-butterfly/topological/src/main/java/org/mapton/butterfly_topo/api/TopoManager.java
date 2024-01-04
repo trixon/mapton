@@ -106,7 +106,7 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
 //        }
         p:
         for (var p : getFilteredItems()) {
-            if (p.getDateLatest() == null) {
+            if (p.getDateLatest() == null || p.ext().getObservationsAllCalculated().isEmpty()) {
                 timeFilteredItems.add(p);
             } else {
                 for (var o : p.ext().getObservationsAllCalculated()) {

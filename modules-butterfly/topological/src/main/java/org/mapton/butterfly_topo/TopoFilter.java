@@ -484,6 +484,9 @@ public class TopoFilter extends FormFilter<TopoManager> {
     }
 
     private boolean validateMeasCode(BTopoControlPoint p) {
+        if (p.ext().getObservationsAllRaw().isEmpty()) {
+            return true;
+        }
         var firstNotZero = !p.ext().getObservationRawFirstDate().equals(p.getDateZero());
         var valid = mMeasCodeCheckModel.isEmpty()
                 || mMeasCodeCheckModel.isChecked(getBundle().getString("measCodeZero")) && firstNotZero
