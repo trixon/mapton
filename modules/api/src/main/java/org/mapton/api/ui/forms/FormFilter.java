@@ -159,7 +159,7 @@ public abstract class FormFilter<ManagerType extends MBaseDataManager> {
     }
 
     public boolean validateFreeText(String... strings) {
-        return StringUtils.isBlank(getFreeText()) || StringHelper.matchesSimpleGlobByWord(getFreeText(), true, false, strings);
+        return StringUtils.isBlank(getFreeText()) || StringHelper.matchesSimpleGlobByWordNegatable(getFreeText(), true, false, strings);
     }
 
     private void initListeners() {
