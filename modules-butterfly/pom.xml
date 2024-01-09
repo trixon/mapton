@@ -39,5 +39,6 @@ limitations under the License.
         <module>alarm</module>
         <module>projektnav</module>
         <module>tmo</module>
+        <module>monmon</module>
     </modules>
 </project>

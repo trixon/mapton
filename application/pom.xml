@@ -331,6 +331,11 @@
                     <version>${project.version}</version>
                 </dependency>
                 <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>butterfly-monmon</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
                     <groupId>se.trixon.netbeans</groupId>
                     <artifactId>guideruler</artifactId>
                     <version>0.1-SNAPSHOT</version>
