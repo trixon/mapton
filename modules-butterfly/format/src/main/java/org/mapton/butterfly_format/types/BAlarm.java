@@ -20,6 +20,7 @@ import java.util.Arrays;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.Range;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.numbers.core.Precision;
 
 /**
  *
@@ -72,6 +73,7 @@ public class BAlarm extends BBase {
         return limit3;
     }
 
+    @Override
     public String getName() {
         return name;
     }
@@ -112,6 +114,7 @@ public class BAlarm extends BBase {
         this.limit3 = limit3;
     }
 
+    @Override
     public void setName(String name) {
         this.name = name;
     }
@@ -144,7 +147,7 @@ public class BAlarm extends BBase {
         public int getLevel(Double value) {
             if (ObjectUtils.anyNull(value, mRange0, mRange1)) {
                 return -1;
-            } else if (mRange0.contains(value)) {
+            } else if (value == 0 || mRange0.contains(value)) {
                 return 0;
             } else if (mRange1.contains(value)) {
                 return 1;
@@ -173,13 +176,13 @@ public class BAlarm extends BBase {
             switch (getType()) {
                 case "+" -> {
                     if (StringUtils.isNotBlank(l1s)) {
-                        mRange0 = Range.of(Double.MIN_VALUE, Double.valueOf(l1s));
+                        mRange0 = Range.of(0.0, Double.parseDouble(l1s) - Precision.EPSILON);
 
                         if (StringUtils.isNotBlank(l2s)) {
-                            mRange1 = Range.of(Double.MIN_VALUE, Double.valueOf(l2s));
+                            mRange1 = Range.of(0.0, Double.parseDouble(l2s) - Precision.EPSILON);
 
                             if (StringUtils.isNotBlank(l3s)) {
-                                mRange2 = Range.of(Double.MIN_VALUE, Double.valueOf(l3s));
+                                mRange2 = Range.of(0.0, Double.parseDouble(l3s) - Precision.EPSILON);
                             }
                         }
                     }
@@ -190,10 +193,10 @@ public class BAlarm extends BBase {
                         mRange0 = Range.of(Double.valueOf(l1s), Double.MAX_VALUE);
 
                         if (StringUtils.isNotBlank(l2s)) {
-                            mRange1 = Range.of(Double.valueOf(l2s), Double.MAX_VALUE);
+                            mRange1 = Range.of(Precision.EPSILON + Double.parseDouble(l2s), Double.MAX_VALUE);
 
                             if (StringUtils.isNotBlank(l3s)) {
-                                mRange2 = Range.of(Double.valueOf(l3s), Double.MAX_VALUE);
+                                mRange2 = Range.of(Precision.EPSILON + Double.parseDouble(l3s), Double.MAX_VALUE);
                             }
                         }
                     }
@@ -202,15 +205,15 @@ public class BAlarm extends BBase {
                 case ":" -> {
                     if (StringUtils.isNotBlank(l1s)) {
                         var values1 = Arrays.stream(StringUtils.split(l1s, "..")).map(k -> Double.valueOf(k)).toArray(Double[]::new);
-                        mRange0 = Range.of(values1[0], values1[1]);
+                        mRange0 = Range.of(Precision.EPSILON + values1[0], values1[1] - Precision.EPSILON);
 
                         if (StringUtils.isNotBlank(l2s)) {
                             var values2 = Arrays.stream(StringUtils.split(l2s, "..")).map(k -> Double.valueOf(k)).toArray(Double[]::new);
-                            mRange1 = Range.of(values2[0], values2[1]);
+                            mRange1 = Range.of(Precision.EPSILON + values2[0], values2[1] - Precision.EPSILON);
 
                             if (StringUtils.isNotBlank(l3s)) {
                                 var values3 = Arrays.stream(StringUtils.split(l3s, "..")).map(k -> Double.valueOf(k)).toArray(Double[]::new);
-                                mRange2 = Range.of(values3[0], values3[1]);
+                                mRange2 = Range.of(Precision.EPSILON + values3[0], values3[1] - Precision.EPSILON);
                             }
                         }
                     }
@@ -219,19 +222,20 @@ public class BAlarm extends BBase {
                 case "±" -> {
                     if (StringUtils.isNotBlank(l1s)) {
                         var lim1 = Double.parseDouble(StringUtils.substringAfter(l1s, "±"));
-                        mRange0 = Range.of(-lim1, lim1);
+                        mRange0 = Range.of(Precision.EPSILON - lim1, lim1 - Precision.EPSILON);
 
                         if (StringUtils.isNotBlank(l2s)) {
                             var lim2 = Double.parseDouble(StringUtils.substringAfter(l2s, "±"));
-                            mRange1 = Range.of(-lim2, lim2);
+                            mRange1 = Range.of(Precision.EPSILON - lim2, lim2 - Precision.EPSILON);
 
                             if (StringUtils.isNotBlank(l3s)) {
                                 var lim3 = Double.parseDouble(StringUtils.substringAfter(l3s, "±"));
-                                mRange2 = Range.of(-lim3, lim3);
+                                mRange2 = Range.of(Precision.EPSILON - lim3, lim3 - Precision.EPSILON);
                             }
                         }
                     }
                 }
+
                 default -> {
                     throw new AssertionError();
                 }
