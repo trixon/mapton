@@ -72,12 +72,13 @@ public class ButterflyManager {
         wrappedManager.load(sourceDir);
         mFileDate = wrappedManager.getDate(sourceDir);
         var butterfly = wrappedManager.getButterfly();
+
         calculateLatLons(butterfly.hydro().getGroundwaterPoints());
         calculateLatLons(butterfly.topo().getControlPoints());
 
         calculateLatLonsTmo(butterfly.tmo().getGrundvatten());
         calculateLatLonsTmo(butterfly.tmo().getInfiltration());
-        calculateLatLonsTmo(butterfly.tmo().getRörelse());
+        calculateLatLonsTmo(butterfly.tmo().getRorelse());
         calculateLatLonsTmo(butterfly.tmo().getTunnelvatten());
         calculateLatLonsTmo(butterfly.tmo().getVaderstation());
         calculateLatLonsTmo(butterfly.tmo().getVattenkemi());
@@ -118,7 +119,7 @@ public class ButterflyManager {
         mButterflyProperty.set(butterfly);
     }
 
-    private void calculateLatLons(ArrayList<? extends BBaseControlPoint> baseControlPoints) {
+    public void calculateLatLons(ArrayList<? extends BBaseControlPoint> baseControlPoints) {
         for (var cp : baseControlPoints) {
             var x = cp.getZeroX();
             var y = cp.getZeroY();

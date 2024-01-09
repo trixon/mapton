@@ -78,8 +78,15 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
                     .filter(d -> d != null)
                     .collect(Collectors.toSet()));
 
+//            getAllItems().stream()
+//                    .map(p -> p.ext().getDateFirst())
+//                    .filter(d -> d != null)
+//                    .forEach(d -> dates.add(d));
             if (!dates.isEmpty()) {
                 setTemporalRange(new MTemporalRange(dates.first(), dates.last()));
+                boolean layerBundleEnabled = isLayerBundleEnabled();
+                updateTemporal(!layerBundleEnabled);
+                updateTemporal(layerBundleEnabled);
             }
 
             getAllItems().stream().forEach(p -> {
@@ -87,10 +94,10 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
                 p.ext().setObservationsAllCalculated(calculatedObservations);
                 p.ext().calculateObservations(calculatedObservations);
             });
-
         } catch (Exception e) {
             Exceptions.printStackTrace(e);
         }
+
     }
 
     @Override

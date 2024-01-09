@@ -28,6 +28,7 @@ import org.mapton.butterfly_format.types.tmo.BGrundvatten;
 import org.mapton.butterfly_format.types.tmo.BGrundvattenObservation;
 import org.mapton.butterfly_format.types.tmo.BInfiltration;
 import org.mapton.butterfly_format.types.tmo.BRorelse;
+import org.mapton.butterfly_format.types.tmo.BRorelseObservation;
 import org.mapton.butterfly_format.types.tmo.BTunnelvatten;
 import org.mapton.butterfly_format.types.tmo.BVaderstation;
 import org.mapton.butterfly_format.types.tmo.BVattenkemi;
@@ -110,7 +111,7 @@ public class Butterfly {
         }.load(new File(sourceDir, "tmoInfiltration.csv"), mTmo.getInfiltration());
 
         new ImportFromCsv<BRorelse>(BRorelse.class) {
-        }.load(new File(sourceDir, "tmoRorelse.csv"), mTmo.getRörelse());
+        }.load(new File(sourceDir, "tmoRorelse.csv"), mTmo.getRorelse());
 
         new ImportFromCsv<BTunnelvatten>(BTunnelvatten.class) {
         }.load(new File(sourceDir, "tmoTunnelvatten.csv"), mTmo.getTunnelvatten());
@@ -125,6 +126,9 @@ public class Butterfly {
     public void loadTmoObservations(File sourceDir) {
         new ImportFromCsv<BGrundvattenObservation>(BGrundvattenObservation.class) {
         }.load(new File(sourceDir, "tmoGrundvattenObservations.csv"), mTmo.getGrundvattenObservations());
+
+        new ImportFromCsv<BRorelseObservation>(BRorelseObservation.class) {
+        }.load(new File(sourceDir, "tmoRorelseObservations.csv"), mTmo.getRorelseObservations());
     }
 
     public void postLoad() {
@@ -179,7 +183,8 @@ public class Butterfly {
         private final ArrayList<BGrundvatten> mGrundvatten = new ArrayList<>();
         private final ArrayList<BGrundvattenObservation> mGrundvattenObservations = new ArrayList<>();
         private final ArrayList<BInfiltration> mInfiltration = new ArrayList<>();
-        private final ArrayList<BRorelse> mRörelse = new ArrayList<>();
+        private final ArrayList<BRorelse> mRorelse = new ArrayList<>();
+        private final ArrayList<BRorelseObservation> mRorelseObservations = new ArrayList<>();
         private final ArrayList<BTunnelvatten> mTunnelvatten = new ArrayList<>();
         private final ArrayList<BVaderstation> mVaderstation = new ArrayList<>();
         private final ArrayList<BVattenkemi> mVattenkemi = new ArrayList<>();
@@ -196,8 +201,12 @@ public class Butterfly {
             return mInfiltration;
         }
 
-        public ArrayList<BRorelse> getRörelse() {
-            return mRörelse;
+        public ArrayList<BRorelse> getRorelse() {
+            return mRorelse;
+        }
+
+        public ArrayList<BRorelseObservation> getRorelseObservations() {
+            return mRorelseObservations;
         }
 
         public ArrayList<BTunnelvatten> getTunnelvatten() {

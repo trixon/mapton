@@ -49,6 +49,7 @@ public abstract class MBaseDataManager<T> {
     private final ObjectProperty<ObservableList<T>> mFilteredItemsProperty = new SimpleObjectProperty<>();
     private final HashSet<T> mFilteredItemsSet = new HashSet<>();
     private Boolean mInitialTemporalState = null;
+    private boolean mLayerBundleEnabled;
     private T mOldSelectedValue;
     private final ObjectProperty<T> mSelectedItemProperty = new SimpleObjectProperty<>();
     private MTemporalRange mStoredTemporalRange;
@@ -167,6 +168,10 @@ public abstract class MBaseDataManager<T> {
         getTimeFilteredItems().setAll(items);
     }
 
+    public boolean isLayerBundleEnabled() {
+        return mLayerBundleEnabled;
+    }
+
     public boolean isSelectionLocked() {
         return mSelectionLockManager.isLocked();
     }
@@ -278,7 +283,7 @@ public abstract class MBaseDataManager<T> {
         } else {
             mTemporalManager.remove(TEMPORAL_PREFIX);
         }
-
+        mLayerBundleEnabled = layerBundleEnabled;
         mTemporalManager.refresh();
     }
 

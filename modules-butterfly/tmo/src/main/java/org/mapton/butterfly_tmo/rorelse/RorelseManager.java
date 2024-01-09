@@ -16,12 +16,14 @@
 package org.mapton.butterfly_tmo.rorelse;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import org.mapton.api.MTemporalRange;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.tmo.BRorelse;
+import org.mapton.butterfly_format.types.tmo.BRorelseObservation;
 import org.openide.util.Exceptions;
 
 /**
@@ -52,10 +54,16 @@ public class RorelseManager extends BaseManager<BRorelse> {
     @Override
     public void load(Butterfly butterfly) {
         try {
-            initAllItems(butterfly.tmo().getRörelse());
+            initAllItems(butterfly.tmo().getRorelse());
+            initObjectToItemMap();
+
+            var nameToObservations = new LinkedHashMap<String, ArrayList<BRorelseObservation>>();
+            for (var o : butterfly.tmo().getRorelseObservations()) {
+                nameToObservations.computeIfAbsent(o.getName(), k -> new ArrayList<>()).add(o);
+            }
 
             var dates = new TreeSet<>(getAllItems().stream()
-                    .map(o -> o.getInventeringsdatum()) //TODO use latest observation date
+                    .map(p -> p.getInstallationsdatum())
                     .filter(d -> d != null)
                     .collect(Collectors.toSet()));
 

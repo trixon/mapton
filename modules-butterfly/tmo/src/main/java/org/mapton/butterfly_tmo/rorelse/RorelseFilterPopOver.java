@@ -55,7 +55,7 @@ public class RorelseFilterPopOver extends BaseFilterPopOver {
 
     @Override
     public void load(Butterfly butterfly) {
-        var rorelse = butterfly.tmo().getRörelse();
+        var rorelse = butterfly.tmo().getRorelse();
         mFixpunktSCCB.loadAndRestoreCheckItems(rorelse.stream().map(o -> o.getFixpunkt()));
         mStatusSCCB.loadAndRestoreCheckItems(rorelse.stream().map(o -> o.getStatus()));
         mPlaceringSCCB.loadAndRestoreCheckItems(rorelse.stream().map(o -> o.getPlacering()));

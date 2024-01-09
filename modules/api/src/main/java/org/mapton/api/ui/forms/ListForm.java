@@ -64,6 +64,10 @@ public class ListForm {
         return mFilterTextArea.textProperty();
     }
 
+    public ToolBar getToolBar() {
+        return mToolBar;
+    }
+
     public Pane getView() {
         return mRoot;
     }

@@ -382,7 +382,8 @@ public class LayerObjectView extends BorderPane implements MActivatable {
                         try {
                             mCheckModel.clearCheck(treeItem);
                         } catch (UnsupportedOperationException e) {
-                            System.err.println("Error detected in LayerView");
+                            System.err.println("Error detected in WWLayerObjectView");
+                            System.err.println(e.toString());
                         }
                     }
 
