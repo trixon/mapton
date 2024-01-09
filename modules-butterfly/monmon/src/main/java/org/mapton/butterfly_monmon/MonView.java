@@ -20,21 +20,21 @@ import javafx.scene.layout.Pane;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.SingleListForm;
-import org.mapton.butterfly_format.types.BAreaActivity;
+import org.mapton.butterfly_format.types.monmon.BMonmon;
 import se.trixon.almond.util.Dict;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class ActView {
+public class MonView {
 
-    private final ActFilter mFilter = new ActFilter();
-    private final ActFilterPopOver mFilterPopOver = new ActFilterPopOver(mFilter);
-    private final SingleListForm<ActManager, BAreaActivity> mListForm;
-    private final ActManager mManager = ActManager.getInstance();
+    private final MonFilter mFilter = new MonFilter();
+    private final MonFilterPopOver mFilterPopOver = new MonFilterPopOver(mFilter);
+    private final SingleListForm<MonManager, BMonmon> mListForm;
+    private final MonManager mManager = MonManager.getInstance();
 
-    public ActView() {
+    public MonView() {
         var actions = Arrays.asList(
                 ActionUtils.ACTION_SPAN,
                 mFilterPopOver.getAction()
@@ -47,7 +47,7 @@ public class ActView {
 
         mFilter.bindFreeTextProperty(mListForm.freeTextProperty());
         mListForm.applyConfiguration(listFormConfiguration);
-        mListForm.getListView().setCellFactory(listView -> new ActListCell());
+        mListForm.getListView().setCellFactory(listView -> new MonListCell());
 
         mListForm.setFreeTextTooltip(
                 Dict.NAME.toString()

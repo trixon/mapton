@@ -24,14 +24,14 @@ import org.mapton.api.ui.forms.FormFilter;
  *
  * @author Patrik Karlström
  */
-public class ActFilter extends FormFilter<ActManager> {
+public class MonFilter extends FormFilter<MonManager> {
 
     IndexedCheckModel<String> mStatusCheckModel;
-    private final ActManager mManager = ActManager.getInstance();
+    private final MonManager mManager = MonManager.getInstance();
     private final BooleanProperty mProperty = new SimpleBooleanProperty();
 
-    public ActFilter() {
-        super(ActManager.getInstance());
+    public MonFilter() {
+        super(MonManager.getInstance());
 
         initListeners();
     }
@@ -44,7 +44,7 @@ public class ActFilter extends FormFilter<ActManager> {
     public void update() {
         var filteredItems = mManager.getAllItems().stream()
                 .filter(aa -> validateFreeText(aa.getName()))
-                .filter(aa -> validateCheck(mStatusCheckModel, ActHelper.getStatusAsString(aa.getStatus())))
+                //                .filter(aa -> validateCheck(mStatusCheckModel, ActHelper.getStatusAsString(aa.getStatus())))
                 .filter(aa -> validateCoordinateArea(aa.getLat(), aa.getLon()))
                 .filter(aa -> validateCoordinateRuler(aa.getLat(), aa.getLon()))
                 .toList();

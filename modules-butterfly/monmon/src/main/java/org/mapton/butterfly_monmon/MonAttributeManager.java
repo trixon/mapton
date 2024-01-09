@@ -15,20 +15,21 @@
  */
 package org.mapton.butterfly_monmon;
 
-import org.openide.windows.OnShowing;
-import se.trixon.almond.nbp.Almond;
-
 /**
  *
  * @author Patrik Karlström
  */
-@OnShowing
-public class DoOnShowing implements Runnable {
+public class MonAttributeManager {
 
-    @Override
-    public void run() {
-        //Pre-load but don't display
-        Almond.getTopComponent("MonmonTopComponent");
+    public static MonAttributeManager getInstance() {
+        return Holder.INSTANCE;
     }
 
+    private MonAttributeManager() {
+    }
+
+    private static class Holder {
+
+        private static final MonAttributeManager INSTANCE = new MonAttributeManager();
+    }
 }

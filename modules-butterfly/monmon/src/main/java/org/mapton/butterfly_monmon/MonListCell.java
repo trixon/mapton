@@ -18,25 +18,25 @@ package org.mapton.butterfly_monmon;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.layout.VBox;
-import org.mapton.butterfly_format.types.BAreaActivity;
+import org.mapton.butterfly_format.types.monmon.BMonmon;
 
 /**
  *
  * @author Patrik Karlström
  */
-class ActListCell extends ListCell<BAreaActivity> {
+class MonListCell extends ListCell<BMonmon> {
 
     private final Label mDesc1Label = new Label();
     private final Label mNameLabel = new Label();
     private final String mStyleBold = "-fx-font-weight: bold;";
     private VBox mVBox;
 
-    public ActListCell() {
+    public MonListCell() {
         createUI();
     }
 
     @Override
-    protected void updateItem(BAreaActivity aa, boolean empty) {
+    protected void updateItem(BMonmon aa, boolean empty) {
         super.updateItem(aa, empty);
         if (aa == null || empty) {
             clearContent();
@@ -45,10 +45,10 @@ class ActListCell extends ListCell<BAreaActivity> {
         }
     }
 
-    private void addContent(BAreaActivity aa) {
+    private void addContent(BMonmon aa) {
         setText(null);
         mNameLabel.setText(aa.getName());
-        mDesc1Label.setText(aa.getDescription());
+        mDesc1Label.setText(aa.getStationName());
         setGraphic(mVBox);
     }
 

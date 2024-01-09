@@ -22,11 +22,11 @@ import org.netbeans.spi.quicksearch.SearchRequest;
 import org.netbeans.spi.quicksearch.SearchResponse;
 import se.trixon.almond.util.StringHelper;
 
-public class ActSearchProvider implements SearchProvider {
+public class MonSearchProvider implements SearchProvider {
 
     @Override
     public void evaluate(SearchRequest request, SearchResponse response) {
-        for (var o : ActManager.getInstance().getAllItems()) {
+        for (var o : MonManager.getInstance().getAllItems()) {
             if (StringHelper.matchesSimpleGlob(o.getName(), request.getText(), true, true)) {
                 if (!response.addResult(() -> {
                     Mapton.getEngine().panTo(new MLatLon(o.getLat(), o.getLon()), .95);

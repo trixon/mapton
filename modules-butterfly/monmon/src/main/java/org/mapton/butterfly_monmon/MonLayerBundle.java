@@ -20,20 +20,14 @@ import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.PointPlacemark;
-import gov.nasa.worldwind.render.Renderable;
-import gov.nasa.worldwind.render.SurfacePolygon;
-import gov.nasa.worldwind.render.SurfacePolyline;
 import java.util.ArrayList;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import org.apache.commons.lang3.ObjectUtils;
-import org.locationtech.jts.geom.LineString;
-import org.locationtech.jts.geom.Polygon;
 import org.mapton.butterfly_core.api.BfLayerBundle;
-import org.mapton.butterfly_format.types.BAreaActivity;
+import org.mapton.butterfly_format.types.monmon.BMonmon;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
-import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.nbp.Almond;
 
@@ -42,19 +36,19 @@ import se.trixon.almond.nbp.Almond;
  * @author Patrik Karlström
  */
 @ServiceProvider(service = LayerBundle.class)
-public class MonmonLayerBundle extends BfLayerBundle {
+public class MonLayerBundle extends BfLayerBundle {
 
-    private final ActAttributeManager mAttributeManager = ActAttributeManager.getInstance();
+    private final MonAttributeManager mAttributeManager = MonAttributeManager.getInstance();
     private final RenderableLayer mLabelLayer = new RenderableLayer();
     private final RenderableLayer mLayer = new RenderableLayer();
-    private final ActManager mManager = ActManager.getInstance();
-    private final ActOptionsView mOptionsView;
+    private final MonManager mManager = MonManager.getInstance();
+    private final MonOptionsView mOptionsView;
     private final RenderableLayer mPinLayer = new RenderableLayer();
 
-    public MonmonLayerBundle() {
+    public MonLayerBundle() {
         init();
         initRepaint();
-        mOptionsView = new ActOptionsView(this);
+        mOptionsView = new MonOptionsView(this);
 
         initListeners();
         mManager.setInitialTemporalState(WWHelper.isStoredAsVisible(mLayer, mLayer.isEnabled()));
@@ -88,7 +82,7 @@ public class MonmonLayerBundle extends BfLayerBundle {
     }
 
     private void initListeners() {
-        mManager.getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BAreaActivity> c) -> {
+        mManager.getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BMonmon> c) -> {
             repaint();
         });
 
@@ -135,8 +129,7 @@ public class MonmonLayerBundle extends BfLayerBundle {
                     mapObjects.add(plotPin(area, position, labelPlacemark));
                 }
 
-                mapObjects.add(plotArea(area));
-
+//                mapObjects.add(plotArea(area));
                 var leftClickRunnable = (Runnable) () -> {
                     mManager.setSelectedItemAfterReset(area);
                 };
@@ -155,52 +148,28 @@ public class MonmonLayerBundle extends BfLayerBundle {
         });
     }
 
-    private AVListImpl plotArea(BAreaActivity area) {
-        var attrs = mAttributeManager.getSurfaceAttributes(area);
-        var attrsHighlight = mAttributeManager.getSurfaceHighlightAttributes(area);
-        Renderable renderable = null;
-        try {
-            var geometry = area.getGeometry();
-            if (geometry instanceof LineString lineString) {
-                var surfaceObject = new SurfacePolyline(attrs, WWHelper.positionsFromGeometry(lineString, 0));
-                surfaceObject.setHighlightAttributes(attrsHighlight);
-                renderable = surfaceObject;
-                mLayer.addRenderable(renderable);
-            } else if (geometry instanceof Polygon polygon) {
-                var surfaceObject = new SurfacePolygon(attrs, WWHelper.positionsFromGeometry(polygon, 0));
-                surfaceObject.setHighlightAttributes(attrsHighlight);
-                renderable = surfaceObject;
-                mLayer.addRenderable(renderable);
-            }
-        } catch (Exception ex) {
-            Exceptions.printStackTrace(ex);
-        }
-
-        return (AVListImpl) renderable;
-    }
-
-    private PointPlacemark plotLabel(BAreaActivity p, ActLabelBy labelBy, Position position) {
-        if (labelBy == ActLabelBy.NONE) {
+    private PointPlacemark plotLabel(BMonmon p, MonLabelBy labelBy, Position position) {
+        if (labelBy == MonLabelBy.NONE) {
             return null;
         }
 
         var placemark = new PointPlacemark(position);
         placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
-        placemark.setAttributes(mAttributeManager.getLabelPlacemarkAttributes());
-        placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(mAttributeManager.getLabelPlacemarkAttributes(), 1.5));
+//        placemark.setAttributes(mAttributeManager.getLabelPlacemarkAttributes());
+//        placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(mAttributeManager.getLabelPlacemarkAttributes(), 1.5));
         placemark.setLabelText(labelBy.getLabel(p));
         mLabelLayer.addRenderable(placemark);
 
         return placemark;
     }
 
-    private PointPlacemark plotPin(BAreaActivity area, Position position, PointPlacemark labelPlacemark) {
-        var attrs = mAttributeManager.getPinAttributes(area);
+    private PointPlacemark plotPin(BMonmon area, Position position, PointPlacemark labelPlacemark) {
+//        var attrs = mAttributeManager.getPinAttributes(area);
 
         var placemark = new PointPlacemark(position);
         placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
-        placemark.setAttributes(attrs);
-        placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(attrs, 1.5));
+//        placemark.setAttributes(attrs);
+//        placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(attrs, 1.5));
 
         mPinLayer.addRenderable(placemark);
         if (labelPlacemark != null) {

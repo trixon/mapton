@@ -17,14 +17,14 @@ package org.mapton.butterfly_monmon;
 
 import java.util.function.Function;
 import org.apache.commons.lang3.StringUtils;
-import org.mapton.butterfly_format.types.BAreaActivity;
+import org.mapton.butterfly_format.types.monmon.BMonmon;
 import se.trixon.almond.util.Dict;
 
 /**
  *
  * @author Patrik Karlström
  */
-public enum ActLabelBy {
+public enum MonLabelBy {
     NAME(Strings.CAT_ROOT, Dict.NAME.toString(), p -> {
         return p.getName();
     }),
@@ -32,10 +32,10 @@ public enum ActLabelBy {
         return "";
     });
     private final String mCategory;
-    private final Function<BAreaActivity, String> mFunction;
+    private final Function<BMonmon, String> mFunction;
     private final String mName;
 
-    private ActLabelBy(String category, String name, Function<BAreaActivity, String> function) {
+    private MonLabelBy(String category, String name, Function<BMonmon, String> function) {
         mCategory = category;
         mName = name;
         mFunction = function;
@@ -53,7 +53,7 @@ public enum ActLabelBy {
         }
     }
 
-    public String getLabel(BAreaActivity o) {
+    public String getLabel(BMonmon o) {
         try {
             return mFunction.apply(o);
         } catch (Exception e) {

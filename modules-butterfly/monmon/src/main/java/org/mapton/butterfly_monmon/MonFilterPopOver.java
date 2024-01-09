@@ -28,12 +28,12 @@ import se.trixon.almond.util.fx.session.SessionCheckComboBox;
  *
  * @author Patrik Karlström
  */
-public class ActFilterPopOver extends BaseFilterPopOver {
+public class MonFilterPopOver extends BaseFilterPopOver {
 
-    private final ActFilter mFilter;
+    private final MonFilter mFilter;
     private final SessionCheckComboBox<String> mStatusSCCB = new SessionCheckComboBox<>();
 
-    public ActFilterPopOver(ActFilter filter) {
+    public MonFilterPopOver(MonFilter filter) {
         mFilter = filter;
         createUI();
         initListeners();
@@ -50,7 +50,7 @@ public class ActFilterPopOver extends BaseFilterPopOver {
     @Override
     public void load(Butterfly butterfly) {
         var statuses = butterfly.getAreaActivities().stream()
-                .map(aa -> ActHelper.getStatusAsString(aa.getStatus()));
+                .map(aa -> MonHelper.getStatusAsString(aa.getStatus()));
 
         mStatusSCCB.loadAndRestoreCheckItems(statuses);
     }

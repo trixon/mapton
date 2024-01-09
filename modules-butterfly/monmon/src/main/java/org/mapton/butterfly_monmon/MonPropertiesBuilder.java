@@ -16,20 +16,18 @@
 package org.mapton.butterfly_monmon;
 
 import java.util.LinkedHashMap;
-import java.util.Objects;
 import org.mapton.api.ui.forms.PropertiesBuilder;
-import org.mapton.butterfly_format.types.BAreaActivity;
-import se.trixon.almond.util.DateHelper;
+import org.mapton.butterfly_format.types.monmon.BMonmon;
 import se.trixon.almond.util.Dict;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class ActPropertiesBuilder extends PropertiesBuilder<BAreaActivity> {
+public class MonPropertiesBuilder extends PropertiesBuilder<BMonmon> {
 
     @Override
-    public Object build(BAreaActivity a) {
+    public Object build(BMonmon a) {
         if (a == null) {
             return a;
         }
@@ -38,12 +36,6 @@ public class ActPropertiesBuilder extends PropertiesBuilder<BAreaActivity> {
         var cat1 = Dict.BASIC.toString();
 
         propertyMap.put(getCatKey(cat1, Dict.NAME.toString()), a.getName());
-        propertyMap.put(getCatKey(cat1, Dict.DESCRIPTION.toString()), a.getDescription());
-        var datFrom = Objects.toString(DateHelper.toDateString(a.getDatFrom()), "-");
-        propertyMap.put(getCatKey(cat1, Dict.FROM.toString()), datFrom);
-        var datTo = Objects.toString(DateHelper.toDateString(a.getDatTo()), "-");
-        propertyMap.put(getCatKey(cat1, Dict.TO.toString()), datTo);
-        propertyMap.put(getCatKey(cat1, Dict.STATUS.toString()), ActHelper.getStatusAsString(a.getStatus()));
 
         return propertyMap;
     }

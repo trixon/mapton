@@ -49,9 +49,9 @@ import org.openide.windows.TopComponent;
 @Messages({
     "CTL_MonmonAction=Monmon"
 })
-public final class MonmonTopComponent extends MTopComponent {
+public final class MonTopComponent extends MTopComponent {
 
-    public MonmonTopComponent() {
+    public MonTopComponent() {
         setName(Bundle.CTL_MonmonAction());
     }
 
@@ -61,7 +61,7 @@ public final class MonmonTopComponent extends MTopComponent {
     }
 
     private Scene createScene() {
-        var hydroView = new ActView();
+        var hydroView = new MonView();
 
         return new Scene(hydroView.getView());
     }

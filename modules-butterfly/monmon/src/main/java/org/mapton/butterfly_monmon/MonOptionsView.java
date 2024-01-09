@@ -34,24 +34,24 @@ import se.trixon.almond.util.fx.session.SessionComboBox;
  *
  * @author Patrik Karlström
  */
-public class ActOptionsView extends MOptionsView<MonmonLayerBundle> {
+public class MonOptionsView extends MOptionsView<MonLayerBundle> {
 
-    private static final ActLabelBy DEFAULT_LABEL_BY = ActLabelBy.NONE;
+    private static final MonLabelBy DEFAULT_LABEL_BY = MonLabelBy.NONE;
     private static final PointBy DEFAULT_POINT_BY = PointBy.PIN;
 
     private final SimpleStringProperty mLabelByIdProperty = new SimpleStringProperty(DEFAULT_LABEL_BY.name());
-    private final SimpleObjectProperty<ActLabelBy> mLabelByProperty = new SimpleObjectProperty<>();
+    private final SimpleObjectProperty<MonLabelBy> mLabelByProperty = new SimpleObjectProperty<>();
     private final MenuButton mLabelMenuButton = new MenuButton();
     private final SessionComboBox<PointBy> mPointScb = new SessionComboBox<>();
 
-    public ActOptionsView(MonmonLayerBundle layerBundle) {
+    public MonOptionsView(MonLayerBundle layerBundle) {
         super(layerBundle);
         createUI();
         initListeners();
         initSession();
     }
 
-    public ActLabelBy getLabelBy() {
+    public MonLabelBy getLabelBy() {
         return mLabelByProperty.get();
     }
 
@@ -59,7 +59,7 @@ public class ActOptionsView extends MOptionsView<MonmonLayerBundle> {
         return mPointScb.valueProperty().get();
     }
 
-    public SimpleObjectProperty<ActLabelBy> labelByProperty() {
+    public SimpleObjectProperty<MonLabelBy> labelByProperty() {
         return mLabelByProperty;
     }
 
@@ -98,13 +98,13 @@ public class ActOptionsView extends MOptionsView<MonmonLayerBundle> {
         sessionManager.register("options.pointBy", mPointScb.selectedIndexProperty());
         sessionManager.register("options.labelBy", mLabelByIdProperty);
 
-        mLabelByProperty.set(ActLabelBy.valueOf(mLabelByIdProperty.get()));
+        mLabelByProperty.set(MonLabelBy.valueOf(mLabelByIdProperty.get()));
     }
 
     private void populateLabelMenuButton() {
         var categoryToMenu = new LinkedHashMap<String, Menu>();
 
-        for (var topoLabel : ActLabelBy.values()) {
+        for (var topoLabel : MonLabelBy.values()) {
             var menu = categoryToMenu.computeIfAbsent(topoLabel.getCategory(), k -> {
                 return new Menu(k);
             });

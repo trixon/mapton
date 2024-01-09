@@ -23,13 +23,13 @@ import org.openide.util.NbBundle;
  *
  * @author Patrik Karlström
  */
-public class ActHelper {
+public class MonHelper {
 
     public static String getStatusAsString(BAreaStatus status) {
         if (status == null) {
             return "";
         }
 
-        return NbBundle.getMessage(ActHelper.class, status.name().toLowerCase(Locale.ROOT));
+        return NbBundle.getMessage(MonHelper.class, status.name().toLowerCase(Locale.ROOT));
     }
 }
