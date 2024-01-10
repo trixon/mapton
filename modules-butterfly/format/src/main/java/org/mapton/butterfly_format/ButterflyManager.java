@@ -17,6 +17,7 @@ package org.mapton.butterfly_format;
 
 import java.io.File;
 import java.util.Date;
+import org.apache.commons.io.FileUtils;
 
 /**
  *
@@ -31,7 +32,8 @@ public class ButterflyManager {
     }
 
     public static void main(String[] args) {
-        ButterflyManager.getInstance().load(new File("C:/data/projektnav/out/"));
+        var sourceDir = new File(FileUtils.getTempDirectory(), "butterfly");
+        ButterflyManager.getInstance().load(sourceDir);
     }
 
     private ButterflyManager() {
@@ -52,7 +54,7 @@ public class ButterflyManager {
         butterfly.load(sourceDir);
         butterfly.loadTmoObjekt(sourceDir);
         butterfly.loadTmoObservations(sourceDir);
-        butterfly.postLoad();
+        butterfly.postLoad(sourceDir);
     }
 
     private static class Holder {

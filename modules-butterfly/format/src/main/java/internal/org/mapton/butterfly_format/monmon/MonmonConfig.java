@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_core.api;
+package internal.org.mapton.butterfly_format.monmon;
 
 import java.io.File;
 import org.apache.commons.io.FileUtils;
@@ -23,18 +23,18 @@ import org.mapton.butterfly_format.BaseConfig;
  *
  * @author Patrik Karlström
  */
-public class ButterflyConfig extends BaseConfig {
+public class MonmonConfig extends BaseConfig {
 
-    public static ButterflyConfig getInstance() {
+    public static MonmonConfig getInstance() {
         return Holder.INSTANCE;
     }
 
-    private ButterflyConfig() {
-        super(new File(new File(FileUtils.getTempDirectory(), "butterfly"), "butterfly.properties"));
+    private MonmonConfig() {
+        super(new File(new File(FileUtils.getTempDirectory(), "butterfly"), "monmon.properties"));
     }
 
     private static class Holder {
 
-        private static final ButterflyConfig INSTANCE = new ButterflyConfig();
+        private static final MonmonConfig INSTANCE = new MonmonConfig();
     }
 }

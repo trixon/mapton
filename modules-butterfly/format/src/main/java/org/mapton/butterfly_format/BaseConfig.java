@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_core.api;
+package org.mapton.butterfly_format;
 
 import java.io.File;
 import org.apache.commons.configuration2.PropertiesConfiguration;

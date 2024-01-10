@@ -19,7 +19,7 @@ import java.awt.Color;
 import java.io.File;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.mapton.butterfly_core.api.BaseConfig;
+import org.mapton.butterfly_format.BaseConfig;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import se.trixon.almond.util.StringHelper;
 

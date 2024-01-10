@@ -125,7 +125,9 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
             }
         }
 
+        getTimeFilteredItemsMap().clear();
         timeFilteredItems.stream().forEach(p -> {
+            getTimeFilteredItemsMap().put(p.getName(), p);
             var timefilteredObservations = p.ext().getObservationsAllRaw().stream()
                     .filter(o -> getTemporalManager().isValid(o.getDate()))
                     .toList();

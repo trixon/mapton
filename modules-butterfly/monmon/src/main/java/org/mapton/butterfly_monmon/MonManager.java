@@ -57,9 +57,6 @@ public class MonManager extends BaseManager<BMonmon> {
         try {
             initAllItems(butterfly.getMonmons());
             initObjectToItemMap();
-            for (var mon : butterfly.getMonmons()) {
-                System.out.println(mon.getControlPoint().ext().getNumOfObservations());
-            }
         } catch (Exception e) {
             Exceptions.printStackTrace(e);
         }

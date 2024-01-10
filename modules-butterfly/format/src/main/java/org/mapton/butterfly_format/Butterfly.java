@@ -15,8 +15,12 @@
  */
 package org.mapton.butterfly_format;
 
+import internal.org.mapton.butterfly_format.monmon.MonmonConfig;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import org.apache.commons.lang3.StringUtils;
 import org.mapton.butterfly_format.io.ImportFromCsv;
 import org.mapton.butterfly_format.types.BAlarm;
 import org.mapton.butterfly_format.types.BAreaActivity;
@@ -24,6 +28,7 @@ import org.mapton.butterfly_format.types.BAreaBase;
 import org.mapton.butterfly_format.types.acoustic.BBlast;
 import org.mapton.butterfly_format.types.hydro.BGroundwaterObservation;
 import org.mapton.butterfly_format.types.hydro.BGroundwaterPoint;
+import org.mapton.butterfly_format.types.monmon.BMonmon;
 import org.mapton.butterfly_format.types.tmo.BGrundvatten;
 import org.mapton.butterfly_format.types.tmo.BGrundvattenObservation;
 import org.mapton.butterfly_format.types.tmo.BInfiltration;
@@ -49,10 +54,15 @@ public class Butterfly {
     private final Hydro mHydro = new Hydro();
     private final ArrayList<BGroundwaterObservation> mHydroGroundwaterObservations = new ArrayList<>();
     private final ArrayList<BGroundwaterPoint> mHydroGroundwaterPoints = new ArrayList<>();
+    private final ArrayList<BMonmon> mMonmons = new ArrayList<>();
     private final Tmo mTmo = new Tmo();
     private final Topo mTopo = new Topo();
     private final ArrayList<BTopoControlPoint> mTopoControlPoints = new ArrayList<>();
     private final ArrayList<BTopoControlPointObservation> mTopoControlPointsObservations = new ArrayList<>();
+
+    public static void main(String[] args) {
+        ButterflyManager.main(args);
+    }
 
     public Butterfly() {
     }
@@ -73,11 +83,23 @@ public class Butterfly {
         return mAreaFilters;
     }
 
+    public ArrayList<BMonmon> getMonmons() {
+        return mMonmons;
+    }
+
     public Hydro hydro() {
         return mHydro;
     }
 
-    public void load(File sourceDir) {
+    public Tmo tmo() {
+        return mTmo;
+    }
+
+    public Topo topo() {
+        return mTopo;
+    }
+
+    void load(File sourceDir) {
         new ImportFromCsv<BBlast>(BBlast.class) {
         }.load(new File(sourceDir, "acousticBlasts.csv"), mBlasts);
 
@@ -103,7 +125,7 @@ public class Butterfly {
         }.load(new File(sourceDir, "hydroGroundwaterObservations.csv"), mHydroGroundwaterObservations);
     }
 
-    public void loadTmoObjekt(File sourceDir) {
+    void loadTmoObjekt(File sourceDir) {
         new ImportFromCsv<BGrundvatten>(BGrundvatten.class) {
         }.load(new File(sourceDir, "tmoGrundvatten.csv"), mTmo.getGrundvatten());
 
@@ -123,7 +145,7 @@ public class Butterfly {
         }.load(new File(sourceDir, "tmoVaderstation.csv"), mTmo.getVaderstation());
     }
 
-    public void loadTmoObservations(File sourceDir) {
+    void loadTmoObservations(File sourceDir) {
         new ImportFromCsv<BGrundvattenObservation>(BGrundvattenObservation.class) {
         }.load(new File(sourceDir, "tmoGrundvattenObservations.csv"), mTmo.getGrundvattenObservations());
 
@@ -131,7 +153,7 @@ public class Butterfly {
         }.load(new File(sourceDir, "tmoRorelseObservations.csv"), mTmo.getRorelseObservations());
     }
 
-    public void postLoad() {
+    void postLoad(File sourceDir) {
         for (var a : mAlarms) {
             a.setButterfly(this);
             a.ext().populateRanges();
@@ -145,14 +167,38 @@ public class Butterfly {
         for (var p : tmo().mGrundvatten) {
             p.setButterfly(this);
         }
+
+        populateMonmon(sourceDir);
     }
 
-    public Tmo tmo() {
-        return mTmo;
-    }
+    private void populateMonmon(File sourceDir) {
+        var map = new HashMap<String, BTopoControlPoint>();
+        topo().getControlPoints().forEach(controlPoint -> {
+            map.put(controlPoint.getName(), controlPoint);
+        });
 
-    public Topo topo() {
-        return mTopo;
+        var list = new ArrayList<BMonmon>();
+        var config = MonmonConfig.getInstance().getConfig();
+        for (Iterator<String> iterator = config.getKeys(); iterator.hasNext();) {
+            try {
+                String name = iterator.next();
+                var p = map.get(name);
+                if (p != null) {
+                    var items = StringUtils.split(config.getString(name), ",");
+                    var belongsTo = "";
+                    if (items.length > 1) {
+                        belongsTo = items[1];
+                    }
+                    var m = new BMonmon(p, Integer.parseInt(items[0]), belongsTo);
+                    list.add(m);
+                }
+            } catch (Exception e) {
+                System.err.println(e);
+            }
+        }
+
+        mMonmons.clear();
+        mMonmons.addAll(list);
     }
 
     public class Acoustic {

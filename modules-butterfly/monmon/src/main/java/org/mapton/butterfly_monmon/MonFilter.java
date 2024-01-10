@@ -47,7 +47,7 @@ public class MonFilter extends FormFilter<MonManager> {
     @Override
     public void update() {
         var filteredItems = mManager.getAllItems().stream()
-                .filter(mon -> validateFreeText(mon.getName()))
+                .filter(mon -> validateFreeText(mon.getName(), mon.getStationName()))
                 .filter(mon -> mTopoManager.getTimeFilteredItemsMap().containsKey(mon.getName()))
                 //                .filter(mon -> validateCheck(mStatusCheckModel, ActHelper.getStatusAsString(mon.getStatus())))
                 .filter(mon -> validateCoordinateArea(mon.getLat(), mon.getLon()))

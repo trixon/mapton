@@ -17,7 +17,7 @@ package org.mapton.butterfly_projektnav;
 
 import java.io.File;
 import org.apache.commons.io.FileUtils;
-import org.mapton.butterfly_core.api.BaseConfig;
+import org.mapton.butterfly_format.BaseConfig;
 
 /**
  *
