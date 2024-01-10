@@ -15,10 +15,14 @@
  */
 package org.mapton.butterfly_monmon;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import javafx.collections.ListChangeListener;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.monmon.BMonmon;
+import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
+import org.mapton.butterfly_topo.api.TopoManager;
 import org.openide.util.Exceptions;
 
 /**
@@ -28,13 +32,15 @@ import org.openide.util.Exceptions;
 public class MonManager extends BaseManager<BMonmon> {
 
     private final MonPropertiesBuilder mPropertiesBuilder = new MonPropertiesBuilder();
+    private final TopoManager mTopoManager = TopoManager.getInstance();
 
     public static MonManager getInstance() {
-        return ActManagerHolder.INSTANCE;
+        return Holder.INSTANCE;
     }
 
     private MonManager() {
         super(BMonmon.class);
+        initListeners();
     }
 
     @Override
@@ -51,20 +57,9 @@ public class MonManager extends BaseManager<BMonmon> {
         try {
             initAllItems(butterfly.getMonmons());
             initObjectToItemMap();
-
-//            var dates = new TreeSet<>(getAllItems().stream()
-//                    .map(aa -> aa.getDatFrom())
-//                    .filter(d -> d != null)
-//                    .collect(Collectors.toSet()));
-//
-//            dates.addAll(getAllItems().stream()
-//                    .map(aa -> aa.getDatTo())
-//                    .filter(d -> d != null)
-//                    .collect(Collectors.toSet()));
-//
-//            if (!dates.isEmpty()) {
-//                setTemporalRange(new MTemporalRange(dates.first(), dates.last()));
-//            }
+            for (var mon : butterfly.getMonmons()) {
+                System.out.println(mon.getControlPoint().ext().getNumOfObservations());
+            }
         } catch (Exception e) {
             Exceptions.printStackTrace(e);
         }
@@ -80,7 +75,25 @@ public class MonManager extends BaseManager<BMonmon> {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    private static class ActManagerHolder {
+    private void initListeners() {
+        mTopoManager.getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BTopoControlPoint> c) -> {
+            updateStats();
+        });
+    }
+
+    private void updateStats() {
+        var now = LocalDateTime.now();
+        for (var mon : getAllItems()) {
+            var list14 = mon.getControlPoint().ext().getObservationsAllRaw().stream()
+                    .filter(o -> o.getDate().isAfter(now.minusDays(14))).toList();
+
+            mon.getMeasCount()[14] = list14.size();
+            mon.getMeasCount()[7] = (int) list14.stream().filter(o -> o.getDate().isAfter(now.minusDays(7))).count();
+            mon.getMeasCount()[1] = (int) list14.stream().filter(o -> o.getDate().isAfter(now.minusDays(1))).count();
+        }
+    }
+
+    private static class Holder {
 
         private static final MonManager INSTANCE = new MonManager();
     }

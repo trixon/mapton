@@ -15,10 +15,12 @@
  */
 package org.mapton.butterfly_monmon;
 
+import java.util.Objects;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.layout.VBox;
 import org.mapton.butterfly_format.types.monmon.BMonmon;
+import se.trixon.almond.util.DateHelper;
 
 /**
  *
@@ -26,8 +28,9 @@ import org.mapton.butterfly_format.types.monmon.BMonmon;
  */
 class MonListCell extends ListCell<BMonmon> {
 
-    private final Label mDesc1Label = new Label();
+    private final Label mDateLabel = new Label();
     private final Label mNameLabel = new Label();
+    private final Label mStationLabel = new Label();
     private final String mStyleBold = "-fx-font-weight: bold;";
     private VBox mVBox;
 
@@ -36,19 +39,22 @@ class MonListCell extends ListCell<BMonmon> {
     }
 
     @Override
-    protected void updateItem(BMonmon aa, boolean empty) {
-        super.updateItem(aa, empty);
-        if (aa == null || empty) {
+    protected void updateItem(BMonmon mon, boolean empty) {
+        super.updateItem(mon, empty);
+        if (mon == null || empty) {
             clearContent();
         } else {
-            addContent(aa);
+            addContent(mon);
         }
     }
 
-    private void addContent(BMonmon aa) {
+    private void addContent(BMonmon mon) {
         setText(null);
-        mNameLabel.setText(aa.getName());
-        mDesc1Label.setText(aa.getStationName());
+        mNameLabel.setText(mon.getName());
+        mStationLabel.setText(mon.getStationName());
+        var firstRaw = Objects.toString(DateHelper.toDateString(mon.getControlPoint().ext().getObservationRawFirstDate()), "");
+        var lastRaw = Objects.toString(DateHelper.toDateString(mon.getControlPoint().ext().getObservationRawLastDate()), "");
+        mDateLabel.setText("%s — %s".formatted(firstRaw, lastRaw));
         setGraphic(mVBox);
     }
 
@@ -59,7 +65,7 @@ class MonListCell extends ListCell<BMonmon> {
 
     private void createUI() {
         mNameLabel.setStyle(mStyleBold);
-        mVBox = new VBox(mNameLabel, mDesc1Label);
+        mVBox = new VBox(mNameLabel, mStationLabel, mDateLabel);
     }
 
 }

@@ -17,8 +17,11 @@ package org.mapton.butterfly_monmon;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.collections.ListChangeListener;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.ui.forms.FormFilter;
+import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
+import org.mapton.butterfly_topo.api.TopoManager;
 
 /**
  *
@@ -29,6 +32,7 @@ public class MonFilter extends FormFilter<MonManager> {
     IndexedCheckModel<String> mStatusCheckModel;
     private final MonManager mManager = MonManager.getInstance();
     private final BooleanProperty mProperty = new SimpleBooleanProperty();
+    private final TopoManager mTopoManager = TopoManager.getInstance();
 
     public MonFilter() {
         super(MonManager.getInstance());
@@ -43,10 +47,11 @@ public class MonFilter extends FormFilter<MonManager> {
     @Override
     public void update() {
         var filteredItems = mManager.getAllItems().stream()
-                .filter(aa -> validateFreeText(aa.getName()))
-                //                .filter(aa -> validateCheck(mStatusCheckModel, ActHelper.getStatusAsString(aa.getStatus())))
-                .filter(aa -> validateCoordinateArea(aa.getLat(), aa.getLon()))
-                .filter(aa -> validateCoordinateRuler(aa.getLat(), aa.getLon()))
+                .filter(mon -> validateFreeText(mon.getName()))
+                .filter(mon -> mTopoManager.getTimeFilteredItemsMap().containsKey(mon.getName()))
+                //                .filter(mon -> validateCheck(mStatusCheckModel, ActHelper.getStatusAsString(mon.getStatus())))
+                .filter(mon -> validateCoordinateArea(mon.getLat(), mon.getLon()))
+                .filter(mon -> validateCoordinateRuler(mon.getLat(), mon.getLon()))
                 .toList();
 
         mManager.getFilteredItems().setAll(filteredItems);
@@ -58,5 +63,8 @@ public class MonFilter extends FormFilter<MonManager> {
 
     private void initListeners() {
         mProperty.addListener(mChangeListenerObject);
+        mTopoManager.getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BTopoControlPoint> c) -> {
+            update();
+        });
     }
 }
