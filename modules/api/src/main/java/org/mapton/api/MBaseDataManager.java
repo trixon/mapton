@@ -46,6 +46,7 @@ public abstract class MBaseDataManager<T> {
     private final ObjectProperty<ObservableList<T>> mAllItemsProperty = new SimpleObjectProperty<>();
     private final HashSet<T> mAllItemsSet = new HashSet<>();
     private final DelayedResetRunner mDelayedResetRunner;
+    private final LinkedHashMap<Object, T> mFilteredItemsMap = new LinkedHashMap<>();
     private final ObjectProperty<ObservableList<T>> mFilteredItemsProperty = new SimpleObjectProperty<>();
     private final HashSet<T> mFilteredItemsSet = new HashSet<>();
     private Boolean mInitialTemporalState = null;
@@ -55,6 +56,7 @@ public abstract class MBaseDataManager<T> {
     private MTemporalRange mStoredTemporalRange;
     private final MTemporalManager mTemporalManager = MTemporalManager.getInstance();
     private final ObjectProperty<MTemporalRange> mTemporalRangeProperty = new SimpleObjectProperty<>();
+    private final LinkedHashMap<Object, T> mTimeFilteredItemsMap = new LinkedHashMap<>();
     private final ObjectProperty<ObservableList<T>> mTimeFilteredItemsProperty = new SimpleObjectProperty<>();
     private final HashSet<T> mTimeFilteredItemsSet = new HashSet<>();
     private final Class<T> mTypeParameterClass;
@@ -106,8 +108,16 @@ public abstract class MBaseDataManager<T> {
         return mAllItemsSet;
     }
 
+    public T getFilteredItemForKey(Object key) {
+        return mFilteredItemsMap.get(key);
+    }
+
     public ObservableList<T> getFilteredItems() {
         return mFilteredItemsProperty.get();
+    }
+
+    public LinkedHashMap<Object, T> getFilteredItemsMap() {
+        return mFilteredItemsMap;
     }
 
     public HashSet<T> getFilteredItemsSet() {
@@ -150,8 +160,16 @@ public abstract class MBaseDataManager<T> {
         return mTemporalRangeProperty.get();
     }
 
+    public T getTimeFilteredItemForKey(Object key) {
+        return mTimeFilteredItemsMap.get(key);
+    }
+
     public ObservableList<T> getTimeFilteredItems() {
         return mTimeFilteredItemsProperty.get();
+    }
+
+    public LinkedHashMap<Object, T> getTimeFilteredItemsMap() {
+        return mTimeFilteredItemsMap;
     }
 
     public HashSet<T> getTimeFilteredItemsSet() {
