@@ -16,8 +16,6 @@
 package org.mapton.butterfly_topo;
 
 import java.awt.Color;
-import java.io.File;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.butterfly_format.BaseConfig;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
@@ -30,7 +28,7 @@ import se.trixon.almond.util.StringHelper;
 public class TopoConfig extends BaseConfig {
 
     public TopoConfig() {
-        super(new File(new File(FileUtils.getTempDirectory(), "butterfly"), "styles.TopoControlPoint"));
+        init("styles.TopoControlPoint");
     }
 
     public Color getColor(BTopoControlPoint point) {

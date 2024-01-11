@@ -23,21 +23,29 @@ import org.apache.commons.io.FileUtils;
  *
  * @author Patrik Karlström <patrik@trixon.se>
  */
-public class ButterflyManager {
+public class ButterflyLoader {
 
     private final Butterfly butterfly = new Butterfly();
+    private static File sourceDir;
 
-    public static ButterflyManager getInstance() {
+    public static ButterflyLoader getInstance() {
         return Holder.INSTANCE;
     }
 
-    public static void main(String[] args) {
-        var sourceDir = new File(FileUtils.getTempDirectory(), "butterfly");
-        ButterflyManager.getInstance().load(sourceDir);
+    public static File getSourceDir() {
+        return sourceDir;
     }
 
-    private ButterflyManager() {
-        System.out.println("process ButterflyManager");
+    public static void main(String[] args) {
+        ButterflyLoader.setSourceDir(new File(FileUtils.getTempDirectory(), "butterfly"));
+        ButterflyLoader.getInstance().load();
+    }
+
+    public static void setSourceDir(File ourceDir) {
+        ButterflyLoader.sourceDir = ourceDir;
+    }
+
+    private ButterflyLoader() {
     }
 
     public Butterfly getButterfly() {
@@ -50,15 +58,19 @@ public class ButterflyManager {
         return new Date(f.lastModified());
     }
 
-    public void load(File sourceDir) {
-        butterfly.load(sourceDir);
-        butterfly.loadTmoObjekt(sourceDir);
-        butterfly.loadTmoObservations(sourceDir);
-        butterfly.postLoad(sourceDir);
+    public boolean load() {
+        if (sourceDir.isDirectory()) {
+            butterfly.load(sourceDir);
+            butterfly.loadTmoObjekt(sourceDir);
+            butterfly.loadTmoObservations(sourceDir);
+            butterfly.postLoad(sourceDir);
+        }
+
+        return sourceDir.isDirectory();
     }
 
     private static class Holder {
 
-        private static final ButterflyManager INSTANCE = new ButterflyManager();
+        private static final ButterflyLoader INSTANCE = new ButterflyLoader();
     }
 }

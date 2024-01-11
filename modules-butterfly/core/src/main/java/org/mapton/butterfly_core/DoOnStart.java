@@ -15,13 +15,10 @@
  */
 package org.mapton.butterfly_core;
 
-import org.mapton.api.MCooTrans;
 import org.mapton.api.MKey;
 import org.mapton.api.Mapton;
-import org.mapton.butterfly_core.api.ButterflyConfig;
 import org.mapton.butterfly_core.api.ButterflyManager;
 import org.openide.modules.OnStart;
-import org.openide.util.NbPreferences;
 
 /**
  *
@@ -33,12 +30,6 @@ public class DoOnStart implements Runnable {
     @Override
     public void run() {
         Mapton.getGlobalState().put(MKey.MAP_LOGO_URL, getClass().getResource("scior-logo.png"));
-        var coosysPlane = ButterflyConfig.getInstance().getConfig().getString("COOSYS.PLANE");
-
-        if (coosysPlane != null) {
-            var preferences = NbPreferences.forModule(MCooTrans.class);
-            preferences.put("map.coo_trans", coosysPlane);
-        }
 
         Mapton.getExecutionFlow().executeWhenReady(MKey.EXECUTION_FLOW_MAP_WW_INITIALIZED, () -> {
             ButterflyManager.getInstance().load();

@@ -31,9 +31,11 @@ import org.mapton.api.MAreaFilterManager;
 import org.mapton.api.MCooTrans;
 import org.mapton.api.MOptions;
 import org.mapton.butterfly_format.Butterfly;
+import org.mapton.butterfly_format.ButterflyLoader;
 import org.mapton.butterfly_format.types.BBaseControlPoint;
 import org.mapton.butterfly_format.types.tmo.BBasObjekt;
 import org.openide.util.Exceptions;
+import org.openide.util.NbPreferences;
 import se.trixon.almond.util.MathHelper;
 
 /**
@@ -58,6 +60,19 @@ public class ButterflyManager {
         return mButterflyProperty;
     }
 
+    public void calculateLatLons(ArrayList<? extends BBaseControlPoint> baseControlPoints) {
+        for (var cp : baseControlPoints) {
+            var x = cp.getZeroX();
+            var y = cp.getZeroY();
+
+            if (ObjectUtils.allNotNull(x, y)) {
+                var wgs84 = getCooTrans().toWgs84(y, x);
+                cp.setLat(MathHelper.round(wgs84.getY(), 6));
+                cp.setLon(MathHelper.round(wgs84.getX(), 6));
+            }
+        }
+    }
+
     public Butterfly getButterfly() {
         return mButterflyProperty.get();
     }
@@ -67,11 +82,30 @@ public class ButterflyManager {
     }
 
     public void load() {
-        var wrappedManager = org.mapton.butterfly_format.ButterflyManager.getInstance();
+        var butterflyLoader = ButterflyLoader.getInstance();
         var sourceDir = new File(FileUtils.getTempDirectory(), "butterfly");
-        wrappedManager.load(sourceDir);
-        mFileDate = wrappedManager.getDate(sourceDir);
-        var butterfly = wrappedManager.getButterfly();
+        ButterflyLoader.setSourceDir(sourceDir);
+
+        if (!sourceDir.isDirectory()) {
+            System.err.println("Not a dir: " + sourceDir);
+            //TODO Infobox
+            return;
+        }
+
+        var coosysPlane = ButterflyConfig.getInstance().getConfig().getString("COOSYS.PLANE");
+
+        if (coosysPlane != null) {
+            var preferences = NbPreferences.forModule(MCooTrans.class);
+            preferences.put("map.coo_trans", coosysPlane);
+            //TODO request restart id changed
+        }
+
+        if (!butterflyLoader.load()) {
+            return;
+        }
+
+        mFileDate = butterflyLoader.getDate(sourceDir);
+        var butterfly = butterflyLoader.getButterfly();
 
         calculateLatLons(butterfly.hydro().getGroundwaterPoints());
         calculateLatLons(butterfly.topo().getControlPoints());
@@ -117,19 +151,6 @@ public class ButterflyManager {
 
     public void setButterfly(Butterfly butterfly) {
         mButterflyProperty.set(butterfly);
-    }
-
-    public void calculateLatLons(ArrayList<? extends BBaseControlPoint> baseControlPoints) {
-        for (var cp : baseControlPoints) {
-            var x = cp.getZeroX();
-            var y = cp.getZeroY();
-
-            if (ObjectUtils.allNotNull(x, y)) {
-                var wgs84 = getCooTrans().toWgs84(y, x);
-                cp.setLat(MathHelper.round(wgs84.getY(), 6));
-                cp.setLon(MathHelper.round(wgs84.getX(), 6));
-            }
-        }
     }
 
     private void calculateLatLonsTmo(ArrayList<? extends BBasObjekt> baseControlPoints) {

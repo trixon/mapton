@@ -19,7 +19,6 @@ import java.io.File;
 import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.apache.commons.configuration2.builder.fluent.Configurations;
 import org.apache.commons.configuration2.ex.ConfigurationException;
-import org.openide.util.Exceptions;
 
 /**
  *
@@ -29,19 +28,20 @@ public abstract class BaseConfig {
 
     private PropertiesConfiguration mConfig;
 
-    public BaseConfig(File file) {
-        var builder = new Configurations().propertiesBuilder(file);
-        try {
-            mConfig = builder.getConfiguration();
-        } catch (ConfigurationException ex) {
-            Exceptions.printStackTrace(ex);
-        }
-    }
-
-    private BaseConfig() {
+    public BaseConfig() {
     }
 
     public PropertiesConfiguration getConfig() {
         return mConfig;
+    }
+
+    public void init(String fileName) {
+        var file = new File(ButterflyLoader.getSourceDir(), fileName);
+        var builder = new Configurations().propertiesBuilder(file);
+        try {
+            mConfig = builder.getConfiguration();
+        } catch (ConfigurationException ex) {
+            //Exceptions.printStackTrace(ex);
+        }
     }
 }

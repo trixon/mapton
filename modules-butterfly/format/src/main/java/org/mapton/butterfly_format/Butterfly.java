@@ -61,7 +61,7 @@ public class Butterfly {
     private final ArrayList<BTopoControlPointObservation> mTopoControlPointsObservations = new ArrayList<>();
 
     public static void main(String[] args) {
-        ButterflyManager.main(args);
+        ButterflyLoader.main(args);
     }
 
     public Butterfly() {

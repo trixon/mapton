@@ -46,7 +46,6 @@ public class FreqCalcEditor extends BaseTopoEditor {
 
     private final ActManager mActManager = ActManager.getInstance();
     private BorderPane mBorderPane;
-    private final RuleFreqFormulaConfig mConfig = RuleFreqFormulaConfig.getInstance();
     private final LogPanel mLogPanel = new LogPanel();
     private final String mName = "Auto-frekvens";
     private HashMap<BTopoControlPoint, String> mPointToFormulaMap = new HashMap<>();
@@ -77,6 +76,8 @@ public class FreqCalcEditor extends BaseTopoEditor {
     }
 
     private List<BTopoControlPoint> getPointsWithActiveFormula() {
+        var mConfig = RuleFreqFormulaConfig.getInstance();
+
         return mManager.getAllItems().stream()
                 .filter(p -> {
                     var map = p.ext().getMetaAsMap();

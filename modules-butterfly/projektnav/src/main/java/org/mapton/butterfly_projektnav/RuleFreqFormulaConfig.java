@@ -15,8 +15,6 @@
  */
 package org.mapton.butterfly_projektnav;
 
-import java.io.File;
-import org.apache.commons.io.FileUtils;
 import org.mapton.butterfly_format.BaseConfig;
 
 /**
@@ -30,7 +28,7 @@ public class RuleFreqFormulaConfig extends BaseConfig {
     }
 
     private RuleFreqFormulaConfig() {
-        super(new File(new File(FileUtils.getTempDirectory(), "butterfly"), "rules_freq_formulas.properties"));
+        init("rules_freq_formulas.properties");
     }
 
     private static class Holder {

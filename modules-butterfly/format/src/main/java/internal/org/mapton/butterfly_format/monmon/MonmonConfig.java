@@ -15,8 +15,6 @@
  */
 package internal.org.mapton.butterfly_format.monmon;
 
-import java.io.File;
-import org.apache.commons.io.FileUtils;
 import org.mapton.butterfly_format.BaseConfig;
 
 /**
@@ -30,7 +28,7 @@ public class MonmonConfig extends BaseConfig {
     }
 
     private MonmonConfig() {
-        super(new File(new File(FileUtils.getTempDirectory(), "butterfly"), "monmon.properties"));
+        init("monmon.properties");
     }
 
     private static class Holder {
