@@ -18,7 +18,7 @@ package org.mapton.butterfly_projektnav.editor.topo;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 import java.util.Objects;
 import java.util.TreeMap;
 import javafx.scene.Node;
@@ -49,6 +49,7 @@ public class FreqCalcEditor extends BaseTopoEditor {
     private final RuleFreqFormulaConfig mConfig = RuleFreqFormulaConfig.getInstance();
     private final LogPanel mLogPanel = new LogPanel();
     private final String mName = "Auto-frekvens";
+    private HashMap<BTopoControlPoint, String> mPointToFormulaMap = new HashMap<>();
     private final MTemporaryPoiManager mTempPoiManager = MTemporaryPoiManager.getInstance();
 
     public FreqCalcEditor() {
@@ -75,15 +76,8 @@ public class FreqCalcEditor extends BaseTopoEditor {
         mNotificationPane.setContent(mBorderPane);
     }
 
-    private void initListeners() {
-    }
-
-    private void initToolBar() {
-    }
-
-    private void update() {
-        var pointToFormulaMap = new HashMap<BTopoControlPoint, String>();
-        var pointsWithActiveFormula = mManager.getAllItems().stream()
+    private List<BTopoControlPoint> getPointsWithActiveFormula() {
+        return mManager.getAllItems().stream()
                 .filter(p -> {
                     var map = p.ext().getMetaAsMap();
                     boolean hasEnabledFormula = map.containsKey("FREQ_FORMULA")
@@ -99,30 +93,48 @@ public class FreqCalcEditor extends BaseTopoEditor {
                         return false;
                     }
 
-                    pointToFormulaMap.put(p, formula);
+                    mPointToFormulaMap.put(p, formula);
 
                     return true;
-                })
-                .toList();
-        //--< CUT
-        //Use all filtered during simulation
-        pointsWithActiveFormula = mManager.getTimeFilteredItems();
-        for (var p : pointsWithActiveFormula) {
-            pointToFormulaMap.put(p, "-1:365,50:1,100:7,150:14,200:28");
-        }
-        //--< CUT
+                }).toList();
+    }
+
+    private List<BTopoControlPoint> getPointsWithActiveFormulaTest() {
+        return mManager.getAllItems().stream()
+                .filter(p -> {
+                    if (StringUtils.startsWithAny(p.getName(), "AN", "HA", "SDB", "V4", "VA")) {
+                        mPointToFormulaMap.put(p, "-1:0,50:7,100:14");
+
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }).toList();
+    }
+
+    private void initListeners() {
+    }
+
+    private void initToolBar() {
+    }
+
+    private void update() {
+        mPointToFormulaMap.clear();
+//        var pointsWithActiveFormula = getPointsWithActiveFormula();
+//        var pointsWithActiveFormula = mManager.getTimeFilteredItems();
+        var pointsWithActiveFormula = getPointsWithActiveFormulaTest();
+
         mLogPanel.clear();
         mLogPanel.println(LocalDateTime.now().toString());
 
         pointsWithActiveFormula.forEach(p -> {
-            mLogPanel.println("");
             mLogPanel.println(p.getName());
-            mLogPanel.println("formula: " + pointToFormulaMap.get(p));
-            mLogPanel.println(p.ext().getMetaAsString());
-            for (Map.Entry<String, String> entry : p.ext().getMetaAsMap().entrySet()) {
-                mLogPanel.println("key: " + entry.getKey());
-                mLogPanel.println("val: " + entry.getValue());
-            }
+//            mLogPanel.println("formula: " + pointToFormulaMap.get(p));
+//            mLogPanel.println(p.ext().getMetaAsString());
+//            for (var entry : p.ext().getMetaAsMap().entrySet()) {
+//                mLogPanel.println("key: " + entry.getKey());
+//                mLogPanel.println("val: " + entry.getValue());
+//            }
         });
 
         var triggerAreas = mActManager.getAllItems().stream()
@@ -142,7 +154,7 @@ public class FreqCalcEditor extends BaseTopoEditor {
                 distanceToClosestTriggerArea = Math.min(distanceToClosestTriggerArea, ta.getTargetGeometry().distance(point));
             }
 
-            var formula = pointToFormulaMap.get(p);
+            var formula = mPointToFormulaMap.get(p);
             var map = new TreeMap<Integer, Integer>();
 
             for (var string : StringUtils.split(formula, ",")) {
@@ -150,9 +162,9 @@ public class FreqCalcEditor extends BaseTopoEditor {
                 map.put(Integer.valueOf(item[0]), Integer.valueOf(item[1]));
             }
 
-            var frequency = map.getOrDefault(-1, 365);
+            var frequency = map.getOrDefault(-1, 999);
 
-            for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
+            for (var entry : map.entrySet()) {
                 if (distanceToClosestTriggerArea <= entry.getKey()) {
                     frequency = entry.getValue();
                     break;
@@ -168,14 +180,9 @@ public class FreqCalcEditor extends BaseTopoEditor {
                 poi.setColor("00FFFF");
 
                 tempPois.add(poi);
-                //TODO que this for commit
-                /*
-        Spärr för uppdatering?
-        om ålder >frekvens och ny frekvens är ett större tal
-                 */
             }
-
         });
+
         mTempPoiManager.getItems().setAll(tempPois);
     }
 }
