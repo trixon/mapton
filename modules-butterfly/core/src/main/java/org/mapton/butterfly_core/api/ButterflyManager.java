@@ -48,6 +48,7 @@ public class ButterflyManager {
     private final ObjectProperty<Butterfly> mButterflyProperty = new SimpleObjectProperty<>();
     private Date mFileDate;
     private final WKTReader mWktReader = new WKTReader();
+    private final ButterflyMonitor mButterflyMonitor = new ButterflyMonitor();
 
     public static ButterflyManager getInstance() {
         return Holder.INSTANCE;
@@ -82,12 +83,14 @@ public class ButterflyManager {
     }
 
     public void load() {
+        System.out.println("BUTTERFLY request load");
         var butterflyLoader = ButterflyLoader.getInstance();
         var sourceDir = new File(FileUtils.getTempDirectory(), "butterfly");
         ButterflyLoader.setSourceDir(sourceDir);
 
         if (!sourceDir.isDirectory()) {
             System.err.println("Not a dir: " + sourceDir);
+            System.out.println("BUTTERFLY cancel load");
             //TODO Infobox
             return;
         }
@@ -147,6 +150,9 @@ public class ButterflyManager {
 
         setButterfly(butterfly);
         ButterflyHelper.refreshTitle();
+        System.out.println("BUTTERFLY loaded");
+
+        mButterflyMonitor.start(sourceDir);
     }
 
     public void setButterfly(Butterfly butterfly) {
