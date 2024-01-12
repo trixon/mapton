@@ -15,10 +15,9 @@
  */
 package org.mapton.butterfly_monmon;
 
-import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.ListChangeListener;
-import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.ui.forms.FormFilter;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_topo.api.TopoManager;
@@ -29,9 +28,14 @@ import org.mapton.butterfly_topo.api.TopoManager;
  */
 public class MonFilter extends FormFilter<MonManager> {
 
-    IndexedCheckModel<String> mStatusCheckModel;
+    private final SimpleBooleanProperty mLatest14Property = new SimpleBooleanProperty();
+    private final SimpleDoubleProperty mLatest14ValueProperty = new SimpleDoubleProperty();
+
+    private final SimpleBooleanProperty mLatest1Property = new SimpleBooleanProperty();
+    private final SimpleDoubleProperty mLatest1ValueProperty = new SimpleDoubleProperty();
+    private final SimpleBooleanProperty mLatest7Property = new SimpleBooleanProperty();
+    private final SimpleDoubleProperty mLatest7ValueProperty = new SimpleDoubleProperty();
     private final MonManager mManager = MonManager.getInstance();
-    private final BooleanProperty mProperty = new SimpleBooleanProperty();
     private final TopoManager mTopoManager = TopoManager.getInstance();
 
     public MonFilter() {
@@ -40,8 +44,28 @@ public class MonFilter extends FormFilter<MonManager> {
         initListeners();
     }
 
-    public BooleanProperty property() {
-        return mProperty;
+    public SimpleBooleanProperty latest14Property() {
+        return mLatest14Property;
+    }
+
+    public SimpleDoubleProperty latest14ValueProperty() {
+        return mLatest14ValueProperty;
+    }
+
+    public SimpleBooleanProperty latest1Property() {
+        return mLatest1Property;
+    }
+
+    public SimpleDoubleProperty latest1ValueProperty() {
+        return mLatest1ValueProperty;
+    }
+
+    public SimpleBooleanProperty latest7Property() {
+        return mLatest7Property;
+    }
+
+    public SimpleDoubleProperty latest7ValueProperty() {
+        return mLatest7ValueProperty;
     }
 
     @Override
@@ -49,6 +73,9 @@ public class MonFilter extends FormFilter<MonManager> {
         var filteredItems = mManager.getAllItems().stream()
                 .filter(mon -> validateFreeText(mon.getName(), mon.getStationName()))
                 .filter(mon -> mTopoManager.getTimeFilteredItemsMap().containsKey(mon.getName()))
+                .filter(mon -> validateQuota(mLatest1Property, mLatest1ValueProperty, mon.getQuota(1)))
+                .filter(mon -> validateQuota(mLatest7Property, mLatest7ValueProperty, mon.getQuota(7)))
+                .filter(mon -> validateQuota(mLatest14Property, mLatest14ValueProperty, mon.getQuota(14)))
                 //                .filter(mon -> validateCheck(mStatusCheckModel, ActHelper.getStatusAsString(mon.getStatus())))
                 .filter(mon -> validateCoordinateArea(mon.getLat(), mon.getLon()))
                 .filter(mon -> validateCoordinateRuler(mon.getLat(), mon.getLon()))
@@ -58,13 +85,35 @@ public class MonFilter extends FormFilter<MonManager> {
     }
 
     void initCheckModelListeners() {
-        mStatusCheckModel.getCheckedItems().addListener(mListChangeListener);
     }
 
     private void initListeners() {
-        mProperty.addListener(mChangeListenerObject);
+        mLatest1Property.addListener(mChangeListenerObject);
+        mLatest1ValueProperty.addListener(mChangeListenerObject);
+        mLatest7Property.addListener(mChangeListenerObject);
+        mLatest7ValueProperty.addListener(mChangeListenerObject);
+        mLatest14Property.addListener(mChangeListenerObject);
+        mLatest14ValueProperty.addListener(mChangeListenerObject);
+
         mTopoManager.getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BTopoControlPoint> c) -> {
             update();
         });
+    }
+
+    private boolean validateQuota(SimpleBooleanProperty enabled, SimpleDoubleProperty valueProperty, double quota) {
+        if (enabled.get()) {
+            double lim = valueProperty.get();
+            double value = Math.abs(quota);
+
+            if (lim == 0) {
+                return value == 0;
+            } else if (lim < 0) {
+                return value <= Math.abs(lim);
+            } else {
+                return value >= lim;
+            }
+        } else {
+            return true;
+        }
     }
 }

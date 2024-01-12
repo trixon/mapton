@@ -120,7 +120,7 @@ public class MonLayerBundle extends BfLayerBundle {
                     throw new AssertionError();
             }
 
-            var sortedStations = mManager.getTimeFilteredItems().stream()
+            var sortedStations = mManager.getAllItems().stream()
                     .filter(m -> m.isParent())
                     .map(m -> m.getName())
                     .sorted((o1, o2) -> o1.compareTo(o2)).toList();
