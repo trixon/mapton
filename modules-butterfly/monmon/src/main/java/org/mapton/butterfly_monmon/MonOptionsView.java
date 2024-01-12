@@ -16,6 +16,7 @@
 package org.mapton.butterfly_monmon;
 
 import java.util.LinkedHashMap;
+import java.util.stream.Stream;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.Label;
@@ -25,9 +26,11 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.layout.VBox;
 import org.apache.commons.lang3.StringUtils;
+import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.worldwind.api.MOptionsView;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
+import se.trixon.almond.util.fx.session.SessionCheckComboBox;
 import se.trixon.almond.util.fx.session.SessionComboBox;
 
 /**
@@ -38,7 +41,7 @@ public class MonOptionsView extends MOptionsView<MonLayerBundle> {
 
     private static final MonLabelBy DEFAULT_LABEL_BY = MonLabelBy.NONE;
     private static final PointBy DEFAULT_POINT_BY = PointBy.PIN;
-
+    private final SessionCheckComboBox<GraphicRendererItem> mGraphicSccb = new SessionCheckComboBox<>();
     private final SimpleStringProperty mLabelByIdProperty = new SimpleStringProperty(DEFAULT_LABEL_BY.name());
     private final SimpleObjectProperty<MonLabelBy> mLabelByProperty = new SimpleObjectProperty<>();
     private final MenuButton mLabelMenuButton = new MenuButton();
@@ -49,6 +52,10 @@ public class MonOptionsView extends MOptionsView<MonLayerBundle> {
         createUI();
         initListeners();
         initSession();
+    }
+
+    public IndexedCheckModel<GraphicRendererItem> getComponentCheckModel() {
+        return mGraphicSccb.getCheckModel();
     }
 
     public MonLabelBy getLabelBy() {
@@ -67,6 +74,10 @@ public class MonOptionsView extends MOptionsView<MonLayerBundle> {
         mPointScb.getItems().setAll(PointBy.values());
         mPointScb.setValue(DEFAULT_POINT_BY);
 
+        mGraphicSccb.setTitle(Dict.GRAPHICS.toString());
+        mGraphicSccb.setShowCheckedCount(true);
+        mGraphicSccb.getItems().setAll(GraphicRendererItem.values());
+
         populateLabelMenuButton();
 
         var pointLabel = new Label(Dict.Geometry.POINT.toString());
@@ -76,7 +87,8 @@ public class MonOptionsView extends MOptionsView<MonLayerBundle> {
                 pointLabel,
                 mPointScb,
                 labelLabel,
-                mLabelMenuButton
+                mLabelMenuButton,
+                mGraphicSccb
         );
         box.setPadding(FxHelper.getUIScaledInsets(8));
 
@@ -91,12 +103,16 @@ public class MonOptionsView extends MOptionsView<MonLayerBundle> {
         });
 
         mPointScb.valueProperty().addListener(getChangeListener());
+        Stream.of(
+                mGraphicSccb
+        ).forEachOrdered(ccb -> ccb.getCheckModel().getCheckedItems().addListener(getListChangeListener()));
     }
 
     private void initSession() {
         var sessionManager = getSessionManager();
         sessionManager.register("options.pointBy", mPointScb.selectedIndexProperty());
         sessionManager.register("options.labelBy", mLabelByIdProperty);
+        sessionManager.register("options.checkedGraphics", mGraphicSccb.checkedStringProperty());
 
         mLabelByProperty.set(MonLabelBy.valueOf(mLabelByIdProperty.get()));
     }

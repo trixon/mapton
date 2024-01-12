@@ -19,17 +19,13 @@ import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
-import gov.nasa.worldwind.render.Ellipsoid;
-import gov.nasa.worldwind.render.Path;
 import gov.nasa.worldwind.render.PointPlacemark;
 import java.util.ArrayList;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import org.apache.commons.lang3.ObjectUtils;
-import org.mapton.api.MLatLon;
 import org.mapton.butterfly_core.api.BfLayerBundle;
 import org.mapton.butterfly_format.types.monmon.BMonmon;
-import org.mapton.butterfly_topo.api.TopoManager;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
@@ -43,6 +39,7 @@ import se.trixon.almond.nbp.Almond;
 public class MonLayerBundle extends BfLayerBundle {
 
     private final MonAttributeManager mAttributeManager = MonAttributeManager.getInstance();
+    private final GraphicRenderer mGraphicRenderer;
     private final RenderableLayer mLabelLayer = new RenderableLayer();
     private final RenderableLayer mLayer = new RenderableLayer();
     private final MonManager mManager = MonManager.getInstance();
@@ -53,7 +50,7 @@ public class MonLayerBundle extends BfLayerBundle {
         init();
         initRepaint();
         mOptionsView = new MonOptionsView(this);
-
+        mGraphicRenderer = new GraphicRenderer(mLayer, mOptionsView.getComponentCheckModel());
         initListeners();
         mManager.setInitialTemporalState(WWHelper.isStoredAsVisible(mLayer, mLayer.isEnabled()));
     }
@@ -122,6 +119,7 @@ public class MonLayerBundle extends BfLayerBundle {
                 default ->
                     throw new AssertionError();
             }
+
             var sortedStations = mManager.getTimeFilteredItems().stream()
                     .filter(m -> m.isParent())
                     .map(m -> m.getName())
@@ -137,12 +135,7 @@ public class MonLayerBundle extends BfLayerBundle {
 
                     mapObjects.add(labelPlacemark);
                     mapObjects.add(plotPin(mon, position, labelPlacemark, stationIndex));
-                }
-
-                mapObjects.add(plotGroundConnector(mon));
-                if (mon.isChild()) {
-                    mapObjects.add(plotStationConnector(mon, stationIndex));
-                    mapObjects.addAll(plotStatus(mon));
+                    mGraphicRenderer.plot(mon, position, stationIndex, mapObjects);
                 }
 
                 var leftClickRunnable = (Runnable) () -> {
@@ -163,16 +156,6 @@ public class MonLayerBundle extends BfLayerBundle {
         });
     }
 
-    private AVListImpl plotGroundConnector(BMonmon mon) {
-        var p0 = WWHelper.positionFromLatLon(new MLatLon(mon.getLat(), mon.getLon()));
-        var p1 = WWHelper.positionFromLatLon(new MLatLon(mon.getLat(), mon.getLon()), mon.getControlPoint().getZeroZ());
-        var path = new Path(p0, p1);
-        path.setAttributes(mAttributeManager.getGroundConnectorAttributes());
-        mLayer.addRenderable(path);
-
-        return path;
-    }
-
     private PointPlacemark plotLabel(BMonmon p, MonLabelBy labelBy, Position position) {
         if (labelBy == MonLabelBy.NONE) {
             return null;
@@ -180,8 +163,8 @@ public class MonLayerBundle extends BfLayerBundle {
 
         var placemark = new PointPlacemark(position);
         placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
-//        placemark.setAttributes(mAttributeManager.getLabelPlacemarkAttributes());
-//        placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(mAttributeManager.getLabelPlacemarkAttributes(), 1.5));
+        placemark.setAttributes(mAttributeManager.getLabelPlacemarkAttributes());
+        placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(mAttributeManager.getLabelPlacemarkAttributes(), 1.5));
         placemark.setLabelText(labelBy.getLabel(p));
         mLabelLayer.addRenderable(placemark);
 
@@ -208,51 +191,4 @@ public class MonLayerBundle extends BfLayerBundle {
 
         return placemark;
     }
-
-    private AVListImpl plotStationConnector(BMonmon mon, int stationIndex) {
-        var stationName = mon.getStationName();
-        var p = mon.getControlPoint();
-        var s = TopoManager.getInstance().getAllItemsMap().get(stationName);
-        var p0 = WWHelper.positionFromLatLon(new MLatLon(s.getLat(), s.getLon()), s.getZeroZ());
-        var p1 = WWHelper.positionFromLatLon(new MLatLon(mon.getLat(), mon.getLon()), p.getZeroZ());
-        var path = new Path(p0, p1);
-
-        path.setAttributes(mAttributeManager.getStationConnectorAttribute(stationIndex));
-        mLayer.addRenderable(path);
-
-        return path;
-    }
-
-    private ArrayList<AVListImpl> plotStatus(BMonmon mon) {
-        var mapObjects = new ArrayList<AVListImpl>();
-
-        var size = 1.0;
-        var z7 = mon.getControlPoint().getZeroZ();
-        var z1 = z7 - size * 2;
-        var z14 = z7 + size * 2;
-        var latLon = new MLatLon(mon.getLat(), mon.getLon());
-
-        var p7 = WWHelper.positionFromLatLon(latLon, z7);
-        var p1 = WWHelper.positionFromLatLon(latLon, z1);
-        var p14 = WWHelper.positionFromLatLon(latLon, z14);
-
-        var ellipsoid7 = new Ellipsoid(p7, size, size, size);
-        var ellipsoid1 = new Ellipsoid(p1, size, size, size);
-        var ellipsoid14 = new Ellipsoid(p14, size, size, size);
-
-        ellipsoid7.setAttributes(mAttributeManager.getStatusAttributes(mon.getQuota(7)));
-        ellipsoid1.setAttributes(mAttributeManager.getStatusAttributes(mon.getQuota(1)));
-        ellipsoid14.setAttributes(mAttributeManager.getStatusAttributes(mon.getQuota(14)));
-
-        mLayer.addRenderable(ellipsoid7);
-        mLayer.addRenderable(ellipsoid1);
-        mLayer.addRenderable(ellipsoid14);
-
-        mapObjects.add(ellipsoid1);
-        mapObjects.add(ellipsoid14);
-        mapObjects.add(ellipsoid7);
-
-        return mapObjects;
-    }
-
 }

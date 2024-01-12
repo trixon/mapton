@@ -22,6 +22,7 @@ import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
 import gov.nasa.worldwind.render.ShapeAttributes;
 import java.awt.Color;
+import se.trixon.almond.util.GraphicsHelper;
 
 /**
  *
@@ -30,9 +31,11 @@ import java.awt.Color;
 public class MonAttributeManager {
 
     private BasicShapeAttributes mGroundConnectorAttributes;
+    private PointPlacemarkAttributes mLabelPlacemarkAttributes;
     private PointPlacemarkAttributes[] mPinAttributes;
     private BasicShapeAttributes[] mStationConnectorAttributes;
     private final Color[] mStationConnectorColors = new Color[]{Color.CYAN, Color.MAGENTA, Color.YELLOW, Color.BLACK};
+    private BasicShapeAttributes mStationConnectorEllipsoidAttributes;
 
     public static MonAttributeManager getInstance() {
         return Holder.INSTANCE;
@@ -49,6 +52,18 @@ public class MonAttributeManager {
         }
 
         return mGroundConnectorAttributes;
+    }
+
+    public PointPlacemarkAttributes getLabelPlacemarkAttributes() {
+        if (mLabelPlacemarkAttributes == null) {
+            mLabelPlacemarkAttributes = new PointPlacemarkAttributes(new PointPlacemark(Position.ZERO).getDefaultAttributes());
+            mLabelPlacemarkAttributes.setLabelScale(1.6);
+            mLabelPlacemarkAttributes.setImageColor(GraphicsHelper.colorAddAlpha(Color.RED, 0));
+            mLabelPlacemarkAttributes.setScale(0.75);
+            mLabelPlacemarkAttributes.setImageAddress("images/pushpins/plain-white.png");
+        }
+
+        return mLabelPlacemarkAttributes;
     }
 
     public PointPlacemarkAttributes getPinAttributes(int index) {
@@ -89,6 +104,17 @@ public class MonAttributeManager {
         }
 
         return mStationConnectorAttributes[index];
+    }
+
+    public BasicShapeAttributes getStationConnectorEllipsoidAttributes() {
+        if (mStationConnectorEllipsoidAttributes == null) {
+            mStationConnectorEllipsoidAttributes = new BasicShapeAttributes();
+            mStationConnectorEllipsoidAttributes.setDrawOutline(false);
+            mStationConnectorEllipsoidAttributes.setInteriorMaterial(Material.LIGHT_GRAY);
+            mStationConnectorEllipsoidAttributes.setEnableLighting(true);
+        }
+
+        return mStationConnectorEllipsoidAttributes;
     }
 
     public BasicShapeAttributes getStatusAttributes(double quota) {

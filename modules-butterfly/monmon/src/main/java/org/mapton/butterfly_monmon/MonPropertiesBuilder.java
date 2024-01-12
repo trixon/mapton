@@ -43,7 +43,7 @@ public class MonPropertiesBuilder extends PropertiesBuilder<BMonmon> {
         var lastRaw = Objects.toString(DateHelper.toDateString(mon.getControlPoint().ext().getObservationRawLastDate()), "");
         propertyMap.put(getCatKey(cat1, Dict.DATE.toString()), "%s — %s".formatted(firstRaw, lastRaw));
         propertyMap.put(getCatKey(cat1, "Mätningar/dag"), mon.getMeasPerDay());
-        propertyMap.put(getCatKey(cat1, "Idag"), mon.getString(1));
+        propertyMap.put(getCatKey(cat1, "Senaste dygnet"), mon.getString(1));
         propertyMap.put(getCatKey(cat1, "Senaste veckan"), mon.getString(7));
         propertyMap.put(getCatKey(cat1, "Senaste två veckorna"), mon.getString(14));
 
