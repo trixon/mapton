@@ -42,6 +42,9 @@ public class LogoLayerBundle extends LayerBundle {
         setVisibleInLayerManager(mLayer, false);
         initRepaint();
         repaint(STARTUP_DELAY);
+        Mapton.getGlobalState().addListener(gsce -> {
+            repaint();
+        }, MKey.MAP_LOGO_URL);
     }
 
     @Override
