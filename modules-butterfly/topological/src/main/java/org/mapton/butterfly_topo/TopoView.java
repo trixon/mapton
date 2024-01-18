@@ -25,6 +25,7 @@ import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.ManagedList;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_topo.api.TopoManager;
+import org.mapton.core.api.ui.ExportAction;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SDict;
 
@@ -41,12 +42,15 @@ public class TopoView {
     private final TopoManager mManager = TopoManager.getInstance();
 
     public TopoView() {
-        var actions = Arrays.asList(
-                ActionUtils.ACTION_SPAN,
-                mFilter.getInfoPopOver().getAction(),
-                mFilterFavoritePopOver.getAction(),
-                mFilterPopOver.getAction()
-        );
+//öppna en dialog där man väljer format och annat, defs, vals decimaler zero rolling current all etc.
+//kmz csv geo
+//exportikon?
+//        var exportAction = new Action(Dict.EXPORT.toString(), actionEvent -> {
+//            System.out.println();
+//            for (var p : mManager.getTimeFilteredItems()) {
+//                System.out.println("%s\t%f\t%f\t%f".formatted(p.getName(), p.getZeroX(), p.getZeroY(), p.getZeroZ()));
+//            }
+//        });
 
         mListForm = new ListForm(Bundle.CTL_ControlPointAction());
         var pointManagedList = new ManagedList<TopoManager, BTopoControlPoint>(mManager);
@@ -54,6 +58,14 @@ public class TopoView {
         var tabPane = new TabPane(pointTab);
         tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
         mListForm.setContent(tabPane);
+
+        var actions = Arrays.asList(
+                new ExportAction(getClass()),
+                ActionUtils.ACTION_SPAN,
+                mFilter.getInfoPopOver().getAction(),
+                mFilterFavoritePopOver.getAction(),
+                mFilterPopOver.getAction()
+        );
 
         var listFormConfiguration = new ListFormConfiguration()
                 .setUseTextFilter(true)
