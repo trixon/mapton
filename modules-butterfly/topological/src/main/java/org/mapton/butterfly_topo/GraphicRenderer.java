@@ -33,6 +33,7 @@ public class GraphicRenderer extends GraphicRendererBase {
 
     private final GraphicRendererCircle mCircleRenderer = new GraphicRendererCircle();
     private final GraphicRendererTrace mTraceRenderer = new GraphicRendererTrace();
+    private final GraphicRendererCount mCountRenderer = new GraphicRendererCount();
     private final GraphicRendererVector mVectorRenderer = new GraphicRendererVector();
 
     public GraphicRenderer(RenderableLayer layer, IndexedCheckModel<GraphicRendererItem> checkModel) {
@@ -48,6 +49,7 @@ public class GraphicRenderer extends GraphicRendererBase {
             mCircleRenderer.plot(p, position);
             mTraceRenderer.plot(p, position);
             mVectorRenderer.plot(p, position);
+            mCountRenderer.plot(p, position);
         }
     }
 
@@ -58,30 +60,6 @@ public class GraphicRenderer extends GraphicRendererBase {
 
     public void addToAllowList(String name) {
         sPlotLimiter.addToAllowList(name);
-    }
-
-    private void plotBearingXX(BTopoControlPoint p, Position position) {
-        if (!sCheckModel.isChecked(GraphicRendererItem.BEARING)
-                || p.getDimension() == BDimension._1d
-                || p.ext().getNumOfObservationsFiltered() == 0) {
-            return;
-        }
-
-        var o = p.ext().getObservationsTimeFiltered().getLast();
-        var bearing = o.ext().getBearing();
-        if (bearing == null || bearing.isNaN()) {
-            return;
-        }
-        var length = 10.0;
-        var p2 = WWHelper.movePolar(position, bearing, length);
-        var z = 0.2;
-        position = WWHelper.positionFromPosition(position, z);
-        p2 = WWHelper.positionFromPosition(p2, z);
-        var path = new Path(position, p2);
-        path.setAttributes(mAttributeManager.getBearingAttribute(true));
-
-        addRenderable(path, true);
-
     }
 
     private void plotBearing(BTopoControlPoint p, Position position) {

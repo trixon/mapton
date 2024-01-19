@@ -180,6 +180,25 @@ public class TopoAttributeManager {
         return mComponentTrace1dAttributes[i][j];
     }
 
+    public BasicShapeAttributes getComponentMeasurementsAttributes(BTopoControlPoint p) {
+        var attrs = new BasicShapeAttributes();
+        attrs.setDrawOutline(false);
+        attrs.setEnableLighting(true);
+        Material material;
+        switch (p.getDimension()) {
+            case _1d ->
+                material = Material.CYAN;
+            case _2d ->
+                material = Material.PINK;
+            case _3d ->
+                material = Material.MAGENTA;
+            default ->
+                throw new AssertionError();
+        }
+        attrs.setInteriorMaterial(material);
+        return attrs;
+    }
+
     public BasicShapeAttributes getComponentVector1dAttributes(BTopoControlPoint p) {
         return mComponentVector12dAttributes[TopoHelper.getAlarmLevelHeight(p) + 1];
     }

@@ -32,7 +32,8 @@ public enum GraphicRendererItem {
     //    TRACE_2D(SDict.TRACE_2D.toString()),
     //    VECTOR_2D(SDict.VECTOR_2D.toString()),
     TRACE_3D(SDict.TRACE_3D.toString(), Integer.MAX_VALUE),
-    VECTOR_3D(SDict.VECTOR_3D.toString(), Integer.MAX_VALUE);
+    VECTOR_3D(SDict.VECTOR_3D.toString(), Integer.MAX_VALUE),
+    MEASUREMENTS(Dict.NUM_OF_S.toString().formatted(SDict.MEASUREMENTS.toLower()), Integer.MAX_VALUE);
     private final String mName;
     private final int mPlotLimit;
 
