@@ -16,6 +16,9 @@
 package org.mapton.core.api.ui;
 
 import java.io.File;
+import java.nio.charset.Charset;
+import org.mapton.api.MCooTrans;
+import org.netbeans.api.progress.ProgressHandle;
 
 /**
  *
@@ -23,16 +26,43 @@ import java.io.File;
  */
 public class ExportConfiguration {
 
+    private Charset mCharset;
+    private MCooTrans mCooTrans;
     private File mFile;
+    private ProgressHandle mProgressHandle;
 
     public ExportConfiguration() {
+    }
+
+    public Charset getCharset() {
+        return mCharset;
+    }
+
+    public MCooTrans getCooTrans() {
+        return mCooTrans;
     }
 
     public File getFile() {
         return mFile;
     }
 
+    public ProgressHandle getProgressHandle() {
+        return mProgressHandle;
+    }
+
+    public void setCharset(Charset charset) {
+        mCharset = charset;
+    }
+
+    public void setCooTrans(MCooTrans cooTrans) {
+        mCooTrans = cooTrans;
+    }
+
     public void setFile(File file) {
-        this.mFile = file;
+        mFile = file;
+    }
+
+    public void setProgressHandle(ProgressHandle progressHandle) {
+        mProgressHandle = progressHandle;
     }
 }

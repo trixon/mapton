@@ -15,15 +15,25 @@
  */
 package org.mapton.core.api.ui;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.ResourceBundle;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import org.mapton.api.MCooTrans;
+import org.mapton.api.MOptions;
+import org.openide.util.NbBundle;
 
 /**
  *
  * @author Patrik Karlström
  */
 public abstract class ExportProvider {
+
+    private final ResourceBundle mBundle = NbBundle.getBundle(ExportPanel.class);
+    private Charset mCharset = StandardCharsets.UTF_8;
+    private MCooTrans mCooTrans = MOptions.getInstance().getMapCooTrans();
 
     private final Object mLookupKey;
     private Label mPlaceHolderNode;
@@ -36,6 +46,14 @@ public abstract class ExportProvider {
 
     public abstract void export(ExportConfiguration exportConfiguration);
 
+    public Charset getCharset() {
+        return mCharset;
+    }
+
+    public MCooTrans getCooTrans() {
+        return mCooTrans;
+    }
+
     public abstract FileNameExtensionFilter getExtensionFilter();
 
     public Object getLookupKey() {
@@ -46,8 +64,10 @@ public abstract class ExportProvider {
 
     public Node getNode() {
         if (mPlaceHolderNode == null) {
-            mPlaceHolderNode = new Label();
+            mPlaceHolderNode = new Label(mBundle.getString("noCustomConfig"));
+            mPlaceHolderNode.setDisable(true);
         }
+
         return mPlaceHolderNode;
     }
 
@@ -57,6 +77,14 @@ public abstract class ExportProvider {
 
     public boolean isSupportsTransformation() {
         return mSupportsTransformation;
+    }
+
+    public void setCharset(Charset charset) {
+        mCharset = charset;
+    }
+
+    public void setCooTrans(MCooTrans cooTrans) {
+        mCooTrans = cooTrans;
     }
 
     public void setSupportsEncoding(boolean supportsEncoding) {

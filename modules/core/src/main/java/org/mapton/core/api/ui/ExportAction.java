@@ -49,7 +49,7 @@ public class ExportAction extends Action {
 
         var d = new DialogDescriptor(mExportPanel, getText());
         mExportPanel.setNotifyDescriptor(d);
-        mExportPanel.setPreferredSize(SwingHelper.getUIScaledDim(500, 400));
+        mExportPanel.setPreferredSize(SwingHelper.getUIScaledDim(700, 400));
 
         SwingHelper.runLaterDelayed(1, () -> {
             if (DialogDescriptor.OK_OPTION == DialogDisplayer.getDefault().notify(d)) {

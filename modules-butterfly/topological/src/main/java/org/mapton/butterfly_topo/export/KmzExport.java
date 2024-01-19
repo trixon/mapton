@@ -28,9 +28,9 @@ import se.trixon.almond.util.swing.dialogs.SimpleDialog;
  * @author Patrik Karlström
  */
 @ServiceProvider(service = ExportProvider.class)
-public class KmlExport extends ExportProvider {
+public class KmzExport extends ExportProvider {
 
-    public KmlExport() {
+    public KmzExport() {
         super(TopoView.class);
         setCooTrans(MCooTrans.getCooTrans("WGS 84"));
     }
@@ -42,12 +42,12 @@ public class KmlExport extends ExportProvider {
 
     @Override
     public FileNameExtensionFilter getExtensionFilter() {
-        return SimpleDialog.getExtensionFilters().get("kml");
+        return SimpleDialog.getExtensionFilters().get("kmz");
     }
 
     @Override
     public String getName() {
-        return "Keyhole Markup Language (*.kml)";
+        return "Keyhole Markup Language (*.kmz)";
     }
 
 }
