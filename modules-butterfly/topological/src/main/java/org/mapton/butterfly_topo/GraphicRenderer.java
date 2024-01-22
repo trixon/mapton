@@ -34,6 +34,7 @@ public class GraphicRenderer extends GraphicRendererBase {
     private final GraphicRendererCircle mCircleRenderer = new GraphicRendererCircle();
     private final GraphicRendererTrace mTraceRenderer = new GraphicRendererTrace();
     private final GraphicRendererCount mCountRenderer = new GraphicRendererCount();
+    private final GraphicRendererAlarmLevel mAlarmRenderer = new GraphicRendererAlarmLevel();
     private final GraphicRendererVector mVectorRenderer = new GraphicRendererVector();
 
     public GraphicRenderer(RenderableLayer layer, IndexedCheckModel<GraphicRendererItem> checkModel) {
@@ -50,6 +51,7 @@ public class GraphicRenderer extends GraphicRendererBase {
             mTraceRenderer.plot(p, position);
             mVectorRenderer.plot(p, position);
             mCountRenderer.plot(p, position);
+            mAlarmRenderer.plot(p, position);
         }
     }
 

@@ -45,5 +45,6 @@ public class GraphicRendererCount extends GraphicRendererBase {
         var cylinder = new Cylinder(position, count * .25, 0.5);
         cylinder.setAttributes(mAttributeManager.getComponentMeasurementsAttributes(p));
         addRenderable(cylinder, true);
+        mapObjects.add(cylinder);
     }
 }
