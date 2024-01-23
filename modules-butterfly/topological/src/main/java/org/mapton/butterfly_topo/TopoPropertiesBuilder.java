@@ -76,6 +76,7 @@ public class TopoPropertiesBuilder extends PropertiesBuilder<BTopoControlPoint> 
         var lastFiltered = Objects.toString(DateHelper.toDateString(p.ext().getObservationFilteredLastDate()), "-");
 
         propertyMap.put(getCatKey(cat1, Dict.AGE.toString()), p.ext().getMeasurementAge(ChronoUnit.DAYS));
+        propertyMap.put(getCatKey(cat1, "%s, %s".formatted(Dict.AGE.toString(), SDict.ALARM_LEVEL.toLower())), p.ext().getAlarmLevelAge());
         propertyMap.put(getCatKey(cat1, Dict.LATEST.toString()),
                 "%s (%s)".formatted(lastRaw, lastFiltered)
         );

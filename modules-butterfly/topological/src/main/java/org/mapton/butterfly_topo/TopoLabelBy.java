@@ -128,6 +128,9 @@ public enum TopoLabelBy {
 
         return "%d".formatted(daysSinceMeasurement);
     }),
+    MEAS_AGE_ALARMLEVEL(LabelByCategories.MEAS, "%s, %s".formatted(Dict.AGE.toString(), SDict.ALARM_LEVEL.toLower()), p -> {
+        return p.ext().getAlarmLevelAge();
+    }),
     MEAS_NEED(LabelByCategories.MEAS, Dict.NEED.toString(), p -> {
         return "%d".formatted(
                 p.ext().getMeasurementUntilNext(ChronoUnit.DAYS)

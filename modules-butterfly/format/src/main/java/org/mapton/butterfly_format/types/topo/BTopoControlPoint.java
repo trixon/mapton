@@ -21,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Objects;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.butterfly_format.types.BAlarm;
@@ -240,6 +241,60 @@ public class BTopoControlPoint extends BBaseControlPoint {
 
         public int getAlarmLevel(BTopoControlPointObservation o) {
             return Math.max(getAlarmLevelHeight(o), getAlarmLevelPlane(o));
+        }
+
+        public Long getAlarmLevelAge(BComponent component) {
+            var lastObservation = getObservationFilteredLast();
+            if (getObservationsTimeFiltered().isEmpty() || component == BComponent.HEIGHT && getDimension() == BDimension._2d || component == BComponent.PLANE && getDimension() == BDimension._1d) {
+                return null;
+            }
+
+            Long alarmLevelAge = null;
+
+            var currentLevel = getAlarmLevel(component, lastObservation);
+            Integer prevLevel = null;
+            LocalDate prevDate = null;
+
+            for (var o : getObservationsTimeFiltered().reversed()) {
+                int alarmLevel = getAlarmLevel(component, o);
+                if (alarmLevel != currentLevel) {
+                    prevLevel = alarmLevel;
+                    break;
+                }
+                prevDate = o.getDate().toLocalDate();
+            }
+
+            if (prevLevel != null) {
+                alarmLevelAge = ChronoUnit.DAYS.between(prevDate, LocalDate.now());
+                if (prevLevel < currentLevel) {
+                    alarmLevelAge *= -1;
+                }
+            }
+
+            return alarmLevelAge;
+        }
+
+        public String getAlarmLevelAge() {
+            switch (getDimension()) {
+                case _1d -> {
+                    return Objects.toString(getAlarmLevelAge(BComponent.HEIGHT), "-");
+                }
+                case _2d -> {
+                    return Objects.toString(getAlarmLevelAge(BComponent.PLANE), "-");
+                }
+                case _3d -> {
+                    var ageH = getAlarmLevelAge(BComponent.HEIGHT);
+                    var ageP = getAlarmLevelAge(BComponent.PLANE);
+                    if (ObjectUtils.allNull(ageH, ageP)) {
+                        return "-";
+                    } else {
+                        return "%s // %s".formatted(Objects.toString(ageH, "-"), Objects.toString(ageP, "-"));
+                    }
+                }
+
+                default ->
+                    throw new AssertionError();
+            }
         }
 
         public int getAlarmLevelHeight(BTopoControlPointObservation o) {
