@@ -1,0 +1,125 @@
+/*
+ * Copyright 2023 Patrik Karlström.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.mapton.butterfly_topo.tilt;
+
+import javafx.scene.control.Control;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.Tooltip;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.util.Duration;
+import org.mapton.butterfly_format.types.topo.BTopoTiltH;
+import se.trixon.almond.util.fx.FxHelper;
+
+/**
+ *
+ * @author Patrik Karlström
+ */
+class TiltHListCell extends ListCell<BTopoTiltH> {
+
+    private final AlarmIndicator mAlarmIndicator = new AlarmIndicator();
+    private final Label mDesc1Label = new Label();
+    private final Label mDesc2Label = new Label();
+    private final Label mDesc3Label = new Label();
+    private final Label mDesc4Label = new Label();
+    private final Label mHeaderLabel = new Label();
+    private final String mStyleBold = "-fx-font-weight: bold;";
+    private final Tooltip mTooltip = new Tooltip();
+    private VBox mVBox;
+
+    public TiltHListCell() {
+        createUI();
+    }
+
+    @Override
+    protected void updateItem(BTopoTiltH p, boolean empty) {
+        super.updateItem(p, empty);
+        if (p == null || empty) {
+            clearContent();
+        } else {
+            addContent(p);
+        }
+    }
+
+    private void addContent(BTopoTiltH p) {
+        setText(null);
+        var header = p.getName();
+//        if (StringUtils.isNotBlank(p.getStatus())) {
+//            header = "%s [%s]".formatted(header, p.getStatus());
+//        }
+
+        mAlarmIndicator.update(p);
+        mHeaderLabel.setText(header);
+        mDesc1Label.setText("%.1f mm/m TODO Larm?".formatted(p.getTilt()));
+        mDesc2Label.setText("%.1f m, %.1f m, %.1f mm".formatted(p.getDistanceHeight(), p.getDistancePlane(), p.getDelta()));
+        mDesc3Label.setText("%s - %s (%d)".formatted(p.getDateFirst(), p.getDateLast(), p.getCommonObservations().size()));
+//        mDesc4Label.setText("%.1f mm".formatted(p.getDelta()));
+
+        setGraphic(mVBox);
+    }
+
+    private void clearContent() {
+        setText(null);
+        setGraphic(null);
+    }
+
+    private void createUI() {
+        mHeaderLabel.setStyle(mStyleBold);
+        mVBox = new VBox(
+                mHeaderLabel,
+                mDesc1Label,
+                mDesc2Label,
+                mDesc3Label,
+                mDesc4Label
+        );
+
+        mHeaderLabel.setGraphic(mAlarmIndicator);
+        mHeaderLabel.setGraphicTextGap(FxHelper.getUIScaled(8));
+
+        mVBox.getChildren().stream()
+                .filter(c -> c instanceof Control)
+                .map(c -> (Control) c)
+                .forEach(o -> o.setTooltip(mTooltip));
+
+        mTooltip.setShowDelay(Duration.seconds(2));
+    }
+
+    private class AlarmIndicator extends HBox {
+
+        private static final double SIZE = FxHelper.getUIScaled(12);
+        private Circle mHeightShape;
+
+        public AlarmIndicator() {
+            super(SIZE / 4);
+            createUI();
+        }
+
+        public void update(BTopoTiltH p) {
+            mHeightShape.setFill(Color.BLUE);
+            mHeightShape.setVisible(true);
+        }
+
+        private void createUI() {
+            mHeightShape = new Circle(SIZE / 2);
+            var hPane = new StackPane(mHeightShape);
+            getChildren().setAll(hPane);
+        }
+    }
+}

@@ -90,3 +90,4 @@ $RECYCLE.BIN/
 !/branding/src/main/nbm-branding/modules/*
 /packaging/snap/squashfs-root/
 /packaging/snap/mapton*.snap
+/modules-butterfly/topological/src/main/java/org/mapton/butterfly_topo/test/
