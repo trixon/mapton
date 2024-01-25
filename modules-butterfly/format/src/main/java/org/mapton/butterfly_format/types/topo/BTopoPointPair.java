@@ -29,14 +29,13 @@ import org.mapton.butterfly_format.types.BDimension;
  *
  * @author Patrik Karlström
  */
-public abstract class BTopoTiltBase extends BBasePoint {
+public class BTopoPointPair extends BBasePoint {
 
-    protected final TreeMap<LocalDate, Pair<Point3D, Point3D>> mCommonObservations = new TreeMap<>();
-
+    private final TreeMap<LocalDate, Pair<Point3D, Point3D>> mCommonObservations = new TreeMap<>();
     private final BTopoControlPoint mP1;
     private final BTopoControlPoint mP2;
 
-    public BTopoTiltBase(BTopoControlPoint p1, BTopoControlPoint p2) {
+    public BTopoPointPair(BTopoControlPoint p1, BTopoControlPoint p2) {
         this.mP1 = p1;
         this.mP2 = p2;
 
@@ -103,6 +102,54 @@ public abstract class BTopoTiltBase extends BBasePoint {
 
     public double getPartialDiffZ() {
         return getDeltaPair3D().getZ();
+    }
+
+    public Double getRAngleDeg() {
+        return Math.toDegrees(getRAngleRad());
+    }
+
+    public Double getRAngleGon() {
+        return getRAngleDeg() * 200.0 / 180.0;
+    }
+
+    public Double getRAngleRad() {
+        return Math.tanh(getRQuota());
+    }
+
+    public Double getRPerMille() {
+        return getRQuota() * 1000;
+    }
+
+    public Double getRPercentage() {
+        return getRQuota() * 100;
+    }
+
+    public Double getRQuota() {
+        return getPartialDiffR() / getDistanceHeight();
+    }
+
+    public Double getZAngleDeg() {
+        return Math.toDegrees(getZAngleRad());
+    }
+
+    public Double getZAngleGon() {
+        return getZAngleDeg() * 200.0 / 180.0;
+    }
+
+    public Double getZAngleRad() {
+        return Math.tanh(getZQuota());
+    }
+
+    public Double getZPerMille() {
+        return getZQuota() * 1000;
+    }
+
+    public Double getZPercentage() {
+        return getZQuota() * 100;
+    }
+
+    public Double getZQuota() {
+        return getPartialDiffZ() / getDistancePlane();
     }
 
     private HashMap<LocalDate, Point3D> createObservationMap(BTopoControlPoint p) {

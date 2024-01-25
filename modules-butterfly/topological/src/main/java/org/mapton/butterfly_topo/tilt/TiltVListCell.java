@@ -22,14 +22,14 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import org.mapton.butterfly_format.types.topo.BTopoTiltV;
+import org.mapton.butterfly_format.types.topo.BTopoPointPair;
 import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
  * @author Patrik Karlström
  */
-class TiltVListCell extends ListCell<BTopoTiltV> {
+class TiltVListCell extends ListCell<BTopoPointPair> {
 
     private final AlarmIndicator mAlarmIndicator = new AlarmIndicator();
     private final Label mDesc1Label = new Label();
@@ -45,7 +45,7 @@ class TiltVListCell extends ListCell<BTopoTiltV> {
     }
 
     @Override
-    protected void updateItem(BTopoTiltV p, boolean empty) {
+    protected void updateItem(BTopoPointPair p, boolean empty) {
         super.updateItem(p, empty);
         if (p == null || empty) {
             clearContent();
@@ -54,7 +54,7 @@ class TiltVListCell extends ListCell<BTopoTiltV> {
         }
     }
 
-    private void addContent(BTopoTiltV p) {
+    private void addContent(BTopoPointPair p) {
         setText(null);
         var header = p.getName();
 //        if (StringUtils.isNotBlank(p.getStatus())) {
@@ -63,7 +63,7 @@ class TiltVListCell extends ListCell<BTopoTiltV> {
 
         mAlarmIndicator.update(p);
         mHeaderLabel.setText(header);
-        mDesc1Label.setText("%.1f mm/m TODO Larm?".formatted(p.getTilt()));
+        mDesc1Label.setText("%.1f %% TODO Larm?".formatted(p.getZPercentage()));
         mDesc2Label.setText("ΔH=%.1f m, ΔR=%.1f m, ∂H=%.1f mm".formatted(p.getDistanceHeight(), p.getDistancePlane(), p.getPartialDiffZ() * 1000));
         mDesc3Label.setText("%s - %s (%d)".formatted(p.getDateFirst(), p.getDateLast(), p.getCommonObservations().size()));
 //        mDesc4Label.setText("%.1f mm".formatted(p.getDelta()));
@@ -100,7 +100,7 @@ class TiltVListCell extends ListCell<BTopoTiltV> {
             createUI();
         }
 
-        public void update(BTopoTiltV p) {
+        public void update(BTopoPointPair p) {
             mHeightShape.setFill(Color.BLUE);
             mHeightShape.setVisible(true);
         }

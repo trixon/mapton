@@ -27,7 +27,7 @@ import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
-import org.mapton.butterfly_format.types.topo.BTopoTiltH;
+import org.mapton.butterfly_format.types.topo.BTopoPointPair;
 import org.mapton.butterfly_topo.api.TopoManager;
 import se.trixon.almond.util.fx.FxHelper;
 
@@ -35,7 +35,7 @@ import se.trixon.almond.util.fx.FxHelper;
  *
  * @author Patrik Karlström
  */
-public class TiltHManager extends BaseManager<BTopoTiltH> {
+public class TiltHManager extends BaseManager<BTopoPointPair> {
 
     private final TiltHPropertiesBuilder mPropertiesBuilder = new TiltHPropertiesBuilder();
     private final TopoManager mTopoManager = TopoManager.getInstance();
@@ -45,14 +45,14 @@ public class TiltHManager extends BaseManager<BTopoTiltH> {
     }
 
     private TiltHManager() {
-        super(BTopoTiltH.class);
+        super(BTopoPointPair.class);
         TopoManager.getInstance().getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BTopoControlPoint> c) -> {
             load();
         });
     }
 
     @Override
-    public Object getObjectProperties(BTopoTiltH selectedObject) {
+    public Object getObjectProperties(BTopoPointPair selectedObject) {
         return mPropertiesBuilder.build(selectedObject);
     }
 
@@ -67,7 +67,7 @@ public class TiltHManager extends BaseManager<BTopoTiltH> {
     }
 
     @Override
-    protected void load(ArrayList<BTopoTiltH> items) {
+    protected void load(ArrayList<BTopoPointPair> items) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
@@ -76,6 +76,7 @@ public class TiltHManager extends BaseManager<BTopoTiltH> {
             var pointToPoints = new TreeMap<String, HashSet<String>>();
             var sourcePoints = mTopoManager.getTimeFilteredItems().stream()
                     .filter(p -> p.getDimension() != BDimension._2d)
+                    .filter(p -> ObjectUtils.allNotNull(p.getZeroX(), p.getZeroY(), p.getZeroZ()))
                     .filter(p -> p.ext().getNumOfObservationsFiltered() >= 2)
                     .toList();
 
@@ -99,20 +100,20 @@ public class TiltHManager extends BaseManager<BTopoTiltH> {
                 }
             }
 
-            var tiltPairs = new ArrayList<BTopoTiltH>();
+            var tiltPairs = new ArrayList<BTopoPointPair>();
             for (var entry : pointToPoints.entrySet()) {
                 var n1 = entry.getKey();
                 var p1 = mTopoManager.getItemForKey(n1);
                 for (var n2 : entry.getValue()) {
                     var p2 = mTopoManager.getItemForKey(n2);
-                    var pair = new BTopoTiltH(p1, p2);
-                    if (pair.getCommonObservations().size() > 1 && Math.abs(pair.getQuota()) > 0.00001) {
+                    var pair = new BTopoPointPair(p1, p2);
+                    if (pair.getCommonObservations().size() > 1 && Math.abs(pair.getZQuota()) > 0.00001) {
                         tiltPairs.add(pair);
                     }
                 }
             }
 
-            Collections.sort(tiltPairs, (o1, o2) -> Double.valueOf(Math.abs(o2.getQuota())).compareTo(Math.abs(o1.getQuota())));
+            Collections.sort(tiltPairs, (o1, o2) -> Double.valueOf(Math.abs(o2.getZQuota())).compareTo(Math.abs(o1.getZQuota())));
 
             tiltPairs.forEach(t -> {
                 var first = new MLatLon(t.getP1().getLat(), t.getP1().getLon());
