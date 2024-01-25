@@ -41,8 +41,8 @@ public class Pair1PropertiesBuilder extends PropertiesBuilder<BTopoPointPair> {
         propertyMap.put(getCatKey(cat1, Dict.NUM_OF_S.toString().formatted(SDict.MEASUREMENTS.toLower())), p.getCommonObservations().size());
         propertyMap.put(getCatKey(cat1, "ΔH=Höjdavstånd"), MathHelper.convertDoubleToString(p.getDistanceHeight(), 2));
         propertyMap.put(getCatKey(cat1, "ΔR=Planavstånd"), MathHelper.convertDoubleToString(p.getDistancePlane(), 2));
-        propertyMap.put(getCatKey(cat1, "∂HT=Inbördes höjdförändring över tid"), "%.1f mm".formatted(p.getPartialDiffZ() * 1000));
-        propertyMap.put(getCatKey(cat1, "∂RT=Inbördes radiellförändring över tid"), "%.1f mm".formatted(p.getPartialDiffR() * 1000));
+        propertyMap.put(getCatKey(cat1, "∂iH=Inbördes höjdförändring"), "%.1f mm".formatted(p.getPartialDiffZ() * 1000));
+        propertyMap.put(getCatKey(cat1, "∂iR=Inbördes radiellförändring"), "%.1f mm".formatted(p.getPartialDiffR() * 1000));
         propertyMap.put(getCatKey(cat1, "H Grader"), MathHelper.convertDoubleToString(p.getZAngleDeg(), 0));
         propertyMap.put(getCatKey(cat1, "H Gon"), MathHelper.convertDoubleToString(p.getZAngleGon(), 0));
         propertyMap.put(getCatKey(cat1, "H Radianer"), MathHelper.convertDoubleToString(p.getZAngleRad(), 4));

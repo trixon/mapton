@@ -16,17 +16,15 @@
 package org.mapton.butterfly_topo.pair;
 
 import java.util.LinkedHashMap;
-import org.mapton.api.ui.forms.PropertiesBuilder;
 import org.mapton.butterfly_format.types.topo.BTopoPointPair;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.MathHelper;
-import se.trixon.almond.util.SDict;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class Pair3PropertiesBuilder extends PropertiesBuilder<BTopoPointPair> {
+public class Pair3PropertiesBuilder extends Pair1PropertiesBuilder {
 
     @Override
     public Object build(BTopoPointPair p) {
@@ -34,22 +32,8 @@ public class Pair3PropertiesBuilder extends PropertiesBuilder<BTopoPointPair> {
             return p;
         }
 
-        var propertyMap = new LinkedHashMap<String, Object>();
+        var propertyMap = (LinkedHashMap<String, Object>) super.build(p);
         var cat1 = Dict.BASIC.toString();
-        propertyMap.put(getCatKey(cat1, Dict.NAME.toString()), p.getName());
-        propertyMap.put(getCatKey(cat1, Dict.DATE.toString()), "%s - %s".formatted(p.getDateFirst(), p.getDateLast()));
-        propertyMap.put(getCatKey(cat1, Dict.NUM_OF_S.toString().formatted(SDict.MEASUREMENTS.toLower())), p.getCommonObservations().size());
-        propertyMap.put(getCatKey(cat1, "ΔH=Höjdavstånd"), MathHelper.convertDoubleToString(p.getDistanceHeight(), 2));
-        propertyMap.put(getCatKey(cat1, "ΔR=Planavstånd"), MathHelper.convertDoubleToString(p.getDistancePlane(), 2));
-        propertyMap.put(getCatKey(cat1, "∂HT=Inbördes höjdförändring över tid"), "%.1f mm".formatted(p.getPartialDiffZ() * 1000));
-        propertyMap.put(getCatKey(cat1, "∂RT=Inbördes radiellförändring över tid"), "%.1f mm".formatted(p.getPartialDiffR() * 1000));
-        propertyMap.put(getCatKey(cat1, "H"), null);
-        propertyMap.put(getCatKey(cat1, "H Grader"), MathHelper.convertDoubleToString(p.getZAngleDeg(), 0));
-        propertyMap.put(getCatKey(cat1, "H Gon"), MathHelper.convertDoubleToString(p.getZAngleGon(), 0));
-        propertyMap.put(getCatKey(cat1, "H Radianer"), MathHelper.convertDoubleToString(p.getZAngleRad(), 4));
-        propertyMap.put(getCatKey(cat1, "H Lutningskvot"), MathHelper.convertDoubleToString(p.getZQuota(), 6));
-        propertyMap.put(getCatKey(cat1, "H Procent"), MathHelper.convertDoubleToString(p.getZPercentage(), 1));
-        propertyMap.put(getCatKey(cat1, "H Promille"), MathHelper.convertDoubleToString(p.getZPerMille(), 1));
         propertyMap.put(getCatKey(cat1, "R"), null);
         propertyMap.put(getCatKey(cat1, "R Grader"), MathHelper.convertDoubleToString(p.getRAngleDeg(), 0));
         propertyMap.put(getCatKey(cat1, "R Gon"), MathHelper.convertDoubleToString(p.getRAngleGon(), 0));

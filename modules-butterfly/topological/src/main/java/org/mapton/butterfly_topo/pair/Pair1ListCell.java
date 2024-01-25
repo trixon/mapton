@@ -64,7 +64,11 @@ class Pair1ListCell extends ListCell<BTopoPointPair> {
         mAlarmIndicator.update(p);
         mHeaderLabel.setText(header);
         mDesc1Label.setText("%.1f %% TODO Larm?".formatted(p.getZPercentage()));
-        mDesc2Label.setText("ΔH=%.1f m, ΔR=%.1f m, ∂HT=%.1f mm".formatted(p.getDistanceHeight(), p.getDistancePlane(), p.getPartialDiffZ() * 1000));
+        mDesc2Label.setText("ΔH=%.1f m, ΔR=%.1f m, ∂iH=%.1f mm".formatted(
+                p.getDistanceHeight(),
+                p.getDistancePlane(),
+                p.getPartialDiffZ() * 1000
+        ));
         mDesc3Label.setText("%s - %s (%d)".formatted(p.getDateFirst(), p.getDateLast(), p.getCommonObservations().size()));
 //        mDesc4Label.setText("%.1f mm".formatted(p.getPartialDiffZ()));
 
