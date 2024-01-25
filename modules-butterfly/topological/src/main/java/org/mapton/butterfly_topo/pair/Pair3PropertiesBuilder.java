@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_topo.tilt;
+package org.mapton.butterfly_topo.pair;
 
 import java.util.LinkedHashMap;
 import org.mapton.api.ui.forms.PropertiesBuilder;
@@ -26,7 +26,7 @@ import se.trixon.almond.util.SDict;
  *
  * @author Patrik Karlström
  */
-public class TiltVPropertiesBuilder extends PropertiesBuilder<BTopoPointPair> {
+public class Pair3PropertiesBuilder extends PropertiesBuilder<BTopoPointPair> {
 
     @Override
     public Object build(BTopoPointPair p) {

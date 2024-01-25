@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_topo.tilt;
+package org.mapton.butterfly_topo.pair;
 
 import org.mapton.butterfly_core.api.BaseFilterFavoritePopOver;
 import org.mapton.butterfly_core.api.BaseFilterPopOver;
@@ -22,19 +22,19 @@ import org.mapton.butterfly_core.api.BaseFilterPopOver;
  *
  * @author Patrik Karlström
  */
-public class TiltHFavoritePopOver extends BaseFilterFavoritePopOver<TiltHFilterFavorite> {
+public class Pair3FavoritePopOver extends BaseFilterFavoritePopOver<Pair3FilterFavorite> {
 
-    public TiltHFavoritePopOver(BaseFilterPopOver filterPopOver) {
-        super(TiltHFilterFavorite.class, filterPopOver);
+    public Pair3FavoritePopOver(BaseFilterPopOver filterPopOver) {
+        super(Pair3FilterFavorite.class, filterPopOver);
 //        filterPopOver.applyFilter(this);
 //        ObjectProperty<ObservableList<TopoFilterFavorite>> xx = mManager.<TopoFilterFavorite>itemsProperty(getClass());
 //        mEditableList.getListView().setItems(mManager.itemsProperty(getClass()));
     }
 
     @Override
-    public void onEdit(String title, TiltHFilterFavorite filterFavorite) {
+    public void onEdit(String title, Pair3FilterFavorite filterFavorite) {
         if (filterFavorite == null) {
-            filterFavorite = new TiltHFilterFavorite();
+            filterFavorite = new Pair3FilterFavorite();
         }
 
         filterFavorite.setName("objekt");

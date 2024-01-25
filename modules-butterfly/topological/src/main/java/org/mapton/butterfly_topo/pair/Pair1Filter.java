@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_topo.tilt;
+package org.mapton.butterfly_topo.pair;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -23,13 +23,13 @@ import org.mapton.api.ui.forms.FormFilter;
  *
  * @author Patrik Karlström
  */
-public class TiltHFilter extends FormFilter<TiltHManager> {
+public class Pair1Filter extends FormFilter<Pair1Manager> {
 
-    private final TiltHManager mManager = TiltHManager.getInstance();
+    private final Pair1Manager mManager = Pair1Manager.getInstance();
     private final BooleanProperty mProperty = new SimpleBooleanProperty();
 
-    public TiltHFilter() {
-        super(TiltHManager.getInstance());
+    public Pair1Filter() {
+        super(Pair1Manager.getInstance());
 
         initListeners();
     }

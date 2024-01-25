@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_topo.tilt;
+package org.mapton.butterfly_topo.pair;
 
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Separator;
@@ -28,12 +28,12 @@ import org.mapton.butterfly_topo.TopoFilterFavorite;
  *
  * @author Patrik Karlström
  */
-public class TiltHFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
+public class Pair1FilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
 
     private final CheckBox mCheckbox = new CheckBox("TEST");
-    private final TiltHFilter mFilter;
+    private final Pair1Filter mFilter;
 
-    public TiltHFilterPopOver(TiltHFilter filter) {
+    public Pair1FilterPopOver(Pair1Filter filter) {
         mFilter = filter;
         createUI();
         initListeners();

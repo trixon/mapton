@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_topo.tilt;
+package org.mapton.butterfly_topo.pair;
 
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -29,7 +29,7 @@ import se.trixon.almond.util.fx.FxHelper;
  *
  * @author Patrik Karlström
  */
-class TiltHListCell extends ListCell<BTopoPointPair> {
+class Pair3ListCell extends ListCell<BTopoPointPair> {
 
     private final AlarmIndicator mAlarmIndicator = new AlarmIndicator();
     private final Label mDesc1Label = new Label();
@@ -40,7 +40,7 @@ class TiltHListCell extends ListCell<BTopoPointPair> {
     private final String mStyleBold = "-fx-font-weight: bold;";
     private VBox mVBox;
 
-    public TiltHListCell() {
+    public Pair3ListCell() {
         createUI();
     }
 
@@ -64,9 +64,9 @@ class TiltHListCell extends ListCell<BTopoPointPair> {
         mAlarmIndicator.update(p);
         mHeaderLabel.setText(header);
         mDesc1Label.setText("%.1f %% TODO Larm?".formatted(p.getZPercentage()));
-        mDesc2Label.setText("ΔH=%.1f m, ΔR=%.1f m, ∂HT=%.1f mm".formatted(p.getDistanceHeight(), p.getDistancePlane(), p.getPartialDiffZ() * 1000));
+        mDesc2Label.setText("ΔH=%.1f m, ΔR=%.1f m, ∂H=%.1f mm".formatted(p.getDistanceHeight(), p.getDistancePlane(), p.getPartialDiffZ() * 1000));
         mDesc3Label.setText("%s - %s (%d)".formatted(p.getDateFirst(), p.getDateLast(), p.getCommonObservations().size()));
-//        mDesc4Label.setText("%.1f mm".formatted(p.getPartialDiffZ()));
+//        mDesc4Label.setText("%.1f mm".formatted(p.getDelta()));
 
         setGraphic(mVBox);
     }

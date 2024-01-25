@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_topo.tilt;
+package org.mapton.butterfly_topo.pair;
 
 import org.mapton.butterfly_core.api.BaseFilterFavorite;
 
@@ -21,6 +21,6 @@ import org.mapton.butterfly_core.api.BaseFilterFavorite;
  *
  * @author Patrik Karlström
  */
-public class TiltVFilterFavorite extends BaseFilterFavorite {
+public class Pair3FilterFavorite extends BaseFilterFavorite {
 
 }

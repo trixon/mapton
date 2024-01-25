@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_topo.tilt;
+package org.mapton.butterfly_topo.pair;
 
 import java.util.Arrays;
 import java.util.ResourceBundle;
@@ -28,17 +28,17 @@ import se.trixon.almond.util.Dict;
  *
  * @author Patrik Karlström
  */
-public class TiltVView {
+public class Pair3View {
 
-    private final TiltVFilter mFilter = new TiltVFilter();
-    private final TiltVFilterPopOver mFilterPopOver = new TiltVFilterPopOver(mFilter);
-    private final TiltVFavoritePopOver mFilterFavoritePopOver = new TiltVFavoritePopOver(mFilterPopOver);
+    private final Pair3Filter mFilter = new Pair3Filter();
+    private final Pair3FilterPopOver mFilterPopOver = new Pair3FilterPopOver(mFilter);
+    private final Pair3FavoritePopOver mFilterFavoritePopOver = new Pair3FavoritePopOver(mFilterPopOver);
     private final SingleListForm mListForm;
-    private final TiltVManager mManager = TiltVManager.getInstance();
-    private final ResourceBundle mBundle = NbBundle.getBundle(TiltVManager.class);
+    private final Pair3Manager mManager = Pair3Manager.getInstance();
+    private final ResourceBundle mBundle = NbBundle.getBundle(Pair3Manager.class);
     private Tab mTab;
 
-    public TiltVView() {
+    public Pair3View() {
         var actions = Arrays.asList(
                 ActionUtils.ACTION_SPAN,
                 mFilter.getInfoPopOver().getAction(),
@@ -52,7 +52,7 @@ public class TiltVView {
 
         mFilter.bindFreeTextProperty(mListForm.freeTextProperty());
         mListForm.applyConfiguration(listFormConfiguration);
-        mListForm.getListView().setCellFactory(listView -> new TiltVListCell());
+        mListForm.getListView().setCellFactory(listView -> new Pair3ListCell());
         mListForm.setFreeTextTooltip(
                 Dict.NAME.toString()
         );
