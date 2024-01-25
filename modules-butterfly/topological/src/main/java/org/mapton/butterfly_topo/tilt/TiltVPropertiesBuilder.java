@@ -19,6 +19,7 @@ import java.util.LinkedHashMap;
 import org.mapton.api.ui.forms.PropertiesBuilder;
 import org.mapton.butterfly_format.types.topo.BTopoTiltV;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.MathHelper;
 import se.trixon.almond.util.SDict;
 
 /**
@@ -38,9 +39,10 @@ public class TiltVPropertiesBuilder extends PropertiesBuilder<BTopoTiltV> {
         propertyMap.put(getCatKey(cat1, Dict.NAME.toString()), p.getName());
         propertyMap.put(getCatKey(cat1, Dict.DATE.toString()), "%s - %s".formatted(p.getDateFirst(), p.getDateLast()));
         propertyMap.put(getCatKey(cat1, Dict.NUM_OF_S.toString().formatted(SDict.MEASUREMENTS.toLower())), p.getCommonObservations().size());
-        propertyMap.put(getCatKey(cat1, "Höjdavstånd"), p.getDistanceHeight());
-        propertyMap.put(getCatKey(cat1, "Planavstånd"), p.getDistancePlane());
-        propertyMap.put(getCatKey(cat1, "Delta"), p.getDelta());
+        propertyMap.put(getCatKey(cat1, "ΔH=Höjdavstånd"), MathHelper.convertDoubleToString(p.getDistanceHeight(), 2));
+        propertyMap.put(getCatKey(cat1, "ΔR=Planavstånd"), MathHelper.convertDoubleToString(p.getDistancePlane(), 2));
+        propertyMap.put(getCatKey(cat1, "∂HT=Inbördes höjdförändring över tid"), "%.1f mm".formatted(p.getPartialDiffZ() * 1000));
+        propertyMap.put(getCatKey(cat1, "∂RT=Inbördes radiellförändring över tid"), "%.1f mm".formatted(p.getPartialDiffR() * 1000));
         propertyMap.put(getCatKey(cat1, "Lutning"), p.getTilt());
 
         return propertyMap;

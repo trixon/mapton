@@ -25,11 +25,9 @@ import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.ManagedList;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_topo.api.TopoManager;
-import org.mapton.butterfly_topo.tilt.TiltHManager;
 import org.mapton.butterfly_topo.tilt.TiltHView;
 import org.mapton.butterfly_topo.tilt.TiltVView;
 import org.mapton.core.api.ui.ExportAction;
-import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SDict;
 
@@ -49,11 +47,14 @@ public class TopoView {
         mListForm = new ListForm(Bundle.CTL_ControlPointAction());
         var pointManagedList = new ManagedList<TopoManager, BTopoControlPoint>(mManager);
         var pointTab = new Tab(SDict.POINTS.toString(), pointManagedList.getView());
-        var tiltHTab = new Tab(NbBundle.getMessage(TiltHManager.class, "tilt_h"), new TiltHView().getView());
-        var tiltVTab = new Tab(NbBundle.getMessage(TiltHManager.class, "tilt_v"), new TiltVView().getView());
+        var tiltHTab = new TiltHView().getView();
+        var tiltVTab = new TiltVView().getView();
         var tabPane = new TabPane(pointTab, tiltHTab, tiltVTab);
         tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
         mListForm.setContent(tabPane);
+        mManager.selectedItemProperty().addListener((p, o, n) -> {
+            pointTab.getTabPane().getSelectionModel().select(pointTab);
+        });
 
         var actions = Arrays.asList(
                 new ExportAction(getClass()),

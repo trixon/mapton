@@ -106,13 +106,13 @@ public class TiltHManager extends BaseManager<BTopoTiltH> {
                 for (var n2 : entry.getValue()) {
                     var p2 = mTopoManager.getItemForKey(n2);
                     var pair = new BTopoTiltH(p1, p2);
-                    if (pair.getCommonObservations().size() > 1 && pair.getTilt() > 0.001) {
+                    if (pair.getCommonObservations().size() > 1 && Math.abs(pair.getQuota()) > 0.00001) {
                         tiltPairs.add(pair);
                     }
                 }
             }
 
-            Collections.sort(tiltPairs, (o1, o2) -> o2.getTilt().compareTo(o1.getTilt()));
+            Collections.sort(tiltPairs, (o1, o2) -> Double.valueOf(Math.abs(o2.getQuota())).compareTo(Math.abs(o1.getQuota())));
 
             tiltPairs.forEach(t -> {
                 var first = new MLatLon(t.getP1().getLat(), t.getP1().getLon());

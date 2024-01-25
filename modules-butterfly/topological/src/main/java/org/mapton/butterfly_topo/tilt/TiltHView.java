@@ -17,7 +17,7 @@ package org.mapton.butterfly_topo.tilt;
 
 import java.util.Arrays;
 import java.util.ResourceBundle;
-import javafx.scene.layout.Pane;
+import javafx.scene.control.Tab;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.SingleListForm;
@@ -36,6 +36,7 @@ public class TiltHView {
     private final SingleListForm mListForm;
     private final TiltHManager mManager = TiltHManager.getInstance();
     private final ResourceBundle mBundle = NbBundle.getBundle(TiltHManager.class);
+    private Tab mTab;
 
     public TiltHView() {
         var actions = Arrays.asList(
@@ -55,10 +56,17 @@ public class TiltHView {
         mListForm.setFreeTextTooltip(
                 Dict.NAME.toString()
         );
+
     }
 
-    public Pane getView() {
-        return mListForm.getView();
-    }
+    public Tab getView() {
+        if (mTab == null) {
+            mTab = new Tab(mBundle.getString("tilt_h"), mListForm.getView());
+            mManager.selectedItemProperty().addListener((p, o, n) -> {
+                mTab.getTabPane().getSelectionModel().select(mTab);
+            });
+        }
 
+        return mTab;
+    }
 }

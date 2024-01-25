@@ -75,7 +75,7 @@ public class TiltVManager extends BaseManager<BTopoTiltV> {
         var thread = new Thread(() -> {
             var pointToPoints = new TreeMap<String, HashSet<String>>();
             var sourcePoints = mTopoManager.getTimeFilteredItems().stream()
-                    .filter(p -> p.getDimension() != BDimension._2d)
+                    .filter(p -> p.getDimension() == BDimension._3d)
                     .filter(p -> p.ext().getNumOfObservationsFiltered() >= 2)
                     .toList();
 

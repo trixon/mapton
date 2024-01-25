@@ -17,7 +17,7 @@ package org.mapton.butterfly_topo.tilt;
 
 import java.util.Arrays;
 import java.util.ResourceBundle;
-import javafx.scene.layout.Pane;
+import javafx.scene.control.Tab;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.SingleListForm;
@@ -36,6 +36,7 @@ public class TiltVView {
     private final SingleListForm mListForm;
     private final TiltVManager mManager = TiltVManager.getInstance();
     private final ResourceBundle mBundle = NbBundle.getBundle(TiltVManager.class);
+    private Tab mTab;
 
     public TiltVView() {
         var actions = Arrays.asList(
@@ -44,7 +45,7 @@ public class TiltVView {
                 mFilterFavoritePopOver.getAction(),
                 mFilterPopOver.getAction()
         );
-        mListForm = new SingleListForm<>(mManager, mBundle.getString("tilt_h"));
+        mListForm = new SingleListForm<>(mManager, mBundle.getString("tilt_v"));
         var listFormConfiguration = new ListFormConfiguration()
                 .setUseTextFilter(true)
                 .setToolbarActions(actions);
@@ -57,8 +58,14 @@ public class TiltVView {
         );
     }
 
-    public Pane getView() {
-        return mListForm.getView();
-    }
+    public Tab getView() {
+        if (mTab == null) {
+            mTab = new Tab(mBundle.getString("tilt_v"), mListForm.getView());
+            mManager.selectedItemProperty().addListener((p, o, n) -> {
+                mTab.getTabPane().getSelectionModel().select(mTab);
+            });
+        }
 
+        return mTab;
+    }
 }

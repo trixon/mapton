@@ -15,16 +15,13 @@
  */
 package org.mapton.butterfly_topo.tilt;
 
-import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
-import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javafx.util.Duration;
 import org.mapton.butterfly_format.types.topo.BTopoTiltH;
 import se.trixon.almond.util.fx.FxHelper;
 
@@ -41,7 +38,6 @@ class TiltHListCell extends ListCell<BTopoTiltH> {
     private final Label mDesc4Label = new Label();
     private final Label mHeaderLabel = new Label();
     private final String mStyleBold = "-fx-font-weight: bold;";
-    private final Tooltip mTooltip = new Tooltip();
     private VBox mVBox;
 
     public TiltHListCell() {
@@ -67,10 +63,10 @@ class TiltHListCell extends ListCell<BTopoTiltH> {
 
         mAlarmIndicator.update(p);
         mHeaderLabel.setText(header);
-        mDesc1Label.setText("%.1f mm/m TODO Larm?".formatted(p.getTilt()));
-        mDesc2Label.setText("%.1f m, %.1f m, %.1f mm".formatted(p.getDistanceHeight(), p.getDistancePlane(), p.getDelta()));
+        mDesc1Label.setText("%.1f %% TODO Larm?".formatted(p.getPercentage()));
+        mDesc2Label.setText("ΔH=%.1f m, ΔR=%.1f m, ∂HT=%.1f mm".formatted(p.getDistanceHeight(), p.getDistancePlane(), p.getPartialDiffZ() * 1000));
         mDesc3Label.setText("%s - %s (%d)".formatted(p.getDateFirst(), p.getDateLast(), p.getCommonObservations().size()));
-//        mDesc4Label.setText("%.1f mm".formatted(p.getDelta()));
+//        mDesc4Label.setText("%.1f mm".formatted(p.getPartialDiffZ()));
 
         setGraphic(mVBox);
     }
@@ -92,13 +88,6 @@ class TiltHListCell extends ListCell<BTopoTiltH> {
 
         mHeaderLabel.setGraphic(mAlarmIndicator);
         mHeaderLabel.setGraphicTextGap(FxHelper.getUIScaled(8));
-
-        mVBox.getChildren().stream()
-                .filter(c -> c instanceof Control)
-                .map(c -> (Control) c)
-                .forEach(o -> o.setTooltip(mTooltip));
-
-        mTooltip.setShowDelay(Duration.seconds(2));
     }
 
     private class AlarmIndicator extends HBox {
