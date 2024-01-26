@@ -34,7 +34,7 @@ public class Pair1FilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
     private final Pair1Filter mFilter;
     private final ResourceBundle mBundle = NbBundle.getBundle(Pair1PropertiesBuilder.class);
     private final RangeSliderPane mDeltaHRangeSlider = new RangeSliderPane(mBundle.getString("deltaH"), 50.0);
-    private final RangeSliderPane mDeltaRRangeSlider = new RangeSliderPane(mBundle.getString("deltaR"), 100.0);
+    private final RangeSliderPane mDeltaRRangeSlider = new RangeSliderPane(mBundle.getString("deltaR"), Pair1Manager.MAX_RADIAL_DISTANCE);
     private final RangeSliderPane mDabbaHRangeSlider = new RangeSliderPane(mBundle.getString("dabbaH"), 2.0);
     private final RangeSliderPane mDabbaRRangeSlider = new RangeSliderPane(mBundle.getString("dabbaR"), 2.0);
     private final RangeSliderPane mGradeVerticalRangeSlider = new RangeSliderPane(mBundle.getString("gradeV"), 2.0);
@@ -96,8 +96,16 @@ public class Pair1FilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
     }
 
     private void initListeners() {
-//        mFilter.property().bind(mCheckbox.selectedProperty());
         mFilter.polygonFilterProperty().bind(getPolygonFilterCheckBox().selectedProperty());
+        mFilter.mDeltaHSelectedProperty.bind(mDeltaHRangeSlider.selectedProperty());
+        mFilter.mDeltaHMinProperty.bind(mDeltaHRangeSlider.minProperty());
+        mFilter.mDeltaHMaxProperty.bind(mDeltaHRangeSlider.maxProperty());
+
+        mFilter.mDeltaRSelectedProperty.bind(mDeltaRRangeSlider.selectedProperty());
+        mFilter.mDeltaRMinProperty.bind(mDeltaRRangeSlider.minProperty());
+        mFilter.mDeltaRMaxProperty.bind(mDeltaRRangeSlider.maxProperty());
+
+        mFilter.initPropertyListeners();
     }
 
     private void initSession() {

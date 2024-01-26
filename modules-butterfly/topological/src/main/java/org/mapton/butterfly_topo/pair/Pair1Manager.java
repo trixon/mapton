@@ -39,6 +39,8 @@ public class Pair1Manager extends BaseManager<BTopoPointPair> {
 
     private final Pair1PropertiesBuilder mPropertiesBuilder = new Pair1PropertiesBuilder();
     private final TopoManager mTopoManager = TopoManager.getInstance();
+    public static final Double MIN_RADIAL_DISTANCE = 0.050;
+    public static final Double MAX_RADIAL_DISTANCE = 100.0;
 
     public static Pair1Manager getInstance() {
         return Holder.INSTANCE;
@@ -92,7 +94,7 @@ public class Pair1Manager extends BaseManager<BTopoPointPair> {
                     }
                     var n2 = p2.getName();
                     double distance = point.distance(p2.getZeroX(), p2.getZeroY());
-                    if (p1 != p2 && distance > 0.05 && distance < 20.0) {
+                    if (p1 != p2 && distance >= MIN_RADIAL_DISTANCE && distance <= MAX_RADIAL_DISTANCE) {
                         if (!pointToPoints.computeIfAbsent(n2, k -> new HashSet<>()).contains(n1)) {//Skip A-B, B-A
                             pointToPoints.computeIfAbsent(n1, k -> new HashSet<>()).add(n2);
                         }

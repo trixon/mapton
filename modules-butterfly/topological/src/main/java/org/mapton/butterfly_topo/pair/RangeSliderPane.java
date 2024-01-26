@@ -33,15 +33,14 @@ import se.trixon.almond.util.fx.FxHelper;
  */
 public class RangeSliderPane extends VBox {
 
-    private final double mMaxValue;
-
-    private RangeSlider mSlider;
     private final CheckBox mCheckBox = new CheckBox();
-    private Spinner<Double> mMinSpinner;
+    private final DoubleProperty mMaxProperty = new SimpleDoubleProperty();
     private Spinner<Double> mMaxSpinner;
-    private BooleanProperty mEnabledProperty = new SimpleBooleanProperty();
-    private DoubleProperty mMinProperty = new SimpleDoubleProperty();
-    private DoubleProperty mMaxProperty = new SimpleDoubleProperty();
+    private final double mMaxValue;
+    private final DoubleProperty mMinProperty = new SimpleDoubleProperty();
+    private Spinner<Double> mMinSpinner;
+    private final BooleanProperty mSelectedProperty = new SimpleBooleanProperty();
+    private RangeSlider mSlider;
 
     public RangeSliderPane(String title, double maxValue) {
         super(FxHelper.getUIScaled(8));
@@ -51,8 +50,10 @@ public class RangeSliderPane extends VBox {
         createUI();
     }
 
-    public BooleanProperty enabledProperty() {
-        return mEnabledProperty;
+    public void clear() {
+        mCheckBox.setSelected(false);
+        mSlider.setLowValue(0);
+        mSlider.setHighValue(mMaxValue);
     }
 
     public DoubleProperty maxProperty() {
@@ -63,10 +64,8 @@ public class RangeSliderPane extends VBox {
         return mMinProperty;
     }
 
-    public void clear() {
-        mCheckBox.setSelected(false);
-        mSlider.setLowValue(0);
-        mSlider.setHighValue(mMaxValue);
+    public BooleanProperty selectedProperty() {
+        return mSelectedProperty;
     }
 
     void initSession(String prefix, SessionManager sessionManager) {
@@ -107,7 +106,7 @@ public class RangeSliderPane extends VBox {
         FxHelper.setEditable(true, mMinSpinner, mMaxSpinner);
         FxHelper.autoCommitSpinners(mMinSpinner, mMaxSpinner);
 
-        mEnabledProperty.bind(mCheckBox.selectedProperty());
+        mSelectedProperty.bind(mCheckBox.selectedProperty());
         mMinProperty.bind(mSlider.lowValueProperty());
         mMaxProperty.bind(mSlider.highValueProperty());
     }

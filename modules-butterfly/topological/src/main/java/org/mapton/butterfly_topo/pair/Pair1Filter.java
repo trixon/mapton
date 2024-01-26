@@ -15,9 +15,11 @@
  */
 package org.mapton.butterfly_topo.pair;
 
-import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import org.mapton.api.ui.forms.FormFilter;
+import org.mapton.butterfly_format.types.topo.BTopoPointPair;
 
 /**
  *
@@ -26,7 +28,12 @@ import org.mapton.api.ui.forms.FormFilter;
 public class Pair1Filter extends FormFilter<Pair1Manager> {
 
     private final Pair1Manager mManager = Pair1Manager.getInstance();
-    private final BooleanProperty mProperty = new SimpleBooleanProperty();
+    SimpleBooleanProperty mDeltaHSelectedProperty = new SimpleBooleanProperty();
+    DoubleProperty mDeltaHMinProperty = new SimpleDoubleProperty();
+    DoubleProperty mDeltaHMaxProperty = new SimpleDoubleProperty();
+    SimpleBooleanProperty mDeltaRSelectedProperty = new SimpleBooleanProperty();
+    DoubleProperty mDeltaRMinProperty = new SimpleDoubleProperty();
+    DoubleProperty mDeltaRMaxProperty = new SimpleDoubleProperty();
 
     public Pair1Filter() {
         super(Pair1Manager.getInstance());
@@ -34,20 +41,47 @@ public class Pair1Filter extends FormFilter<Pair1Manager> {
         initListeners();
     }
 
-    public BooleanProperty property() {
-        return mProperty;
-    }
-
     @Override
     public void update() {
         var filteredItems = mManager.getAllItems().stream()
-                .filter(o -> validateFreeText(o.getName()))
+                .filter(p -> validateFreeText(p.getName()))
+                .filter(p -> validateDeltaH(p))
+                .filter(p -> validateDeltaR(p))
                 .toList();
 
         mManager.getFilteredItems().setAll(filteredItems);
     }
 
+    private boolean inRange(double value, DoubleProperty minProperty, DoubleProperty maxProperty) {
+        return value >= minProperty.get() && value <= maxProperty.get();
+    }
+
     private void initListeners() {
-        mProperty.addListener(mChangeListenerObject);
+    }
+
+    public void initPropertyListeners() {
+        mDeltaHSelectedProperty.addListener(mChangeListenerObject);
+        mDeltaHMinProperty.addListener(mChangeListenerObject);
+        mDeltaHMaxProperty.addListener(mChangeListenerObject);
+
+        mDeltaRSelectedProperty.addListener(mChangeListenerObject);
+        mDeltaRMinProperty.addListener(mChangeListenerObject);
+        mDeltaRMaxProperty.addListener(mChangeListenerObject);
+    }
+
+    private boolean validateDeltaH(BTopoPointPair p) {
+        if (mDeltaHSelectedProperty.get()) {
+            return inRange(p.getDistanceHeight(), mDeltaHMinProperty, mDeltaHMaxProperty);
+        } else {
+            return true;
+        }
+    }
+
+    private boolean validateDeltaR(BTopoPointPair p) {
+        if (mDeltaRSelectedProperty.get()) {
+            return inRange(p.getDistancePlane(), mDeltaRMinProperty, mDeltaRMaxProperty);
+        } else {
+            return true;
+        }
     }
 }
