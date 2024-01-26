@@ -21,6 +21,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.Range;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.numbers.core.Precision;
+import se.trixon.almond.util.MathHelper;
 
 /**
  *
@@ -145,6 +146,8 @@ public class BAlarm extends BBase {
         }
 
         public int getLevel(Double value) {
+            value = MathHelper.round(value, 6);//Get rid of things like -0.004999999999999005
+
             if (ObjectUtils.anyNull(value, mRange0, mRange1)) {
                 return -1;
             } else if (value == 0 || mRange0.contains(value)) {
