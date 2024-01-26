@@ -16,8 +16,10 @@
 package org.mapton.butterfly_topo.pair;
 
 import java.util.LinkedHashMap;
+import java.util.ResourceBundle;
 import org.mapton.api.ui.forms.PropertiesBuilder;
 import org.mapton.butterfly_format.types.topo.BTopoPointPair;
+import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.MathHelper;
 import se.trixon.almond.util.SDict;
@@ -27,6 +29,8 @@ import se.trixon.almond.util.SDict;
  * @author Patrik Karlström
  */
 public class Pair1PropertiesBuilder extends PropertiesBuilder<BTopoPointPair> {
+
+    private final ResourceBundle mBundle = NbBundle.getBundle(Pair1PropertiesBuilder.class);
 
     @Override
     public Object build(BTopoPointPair p) {
@@ -39,10 +43,10 @@ public class Pair1PropertiesBuilder extends PropertiesBuilder<BTopoPointPair> {
         propertyMap.put(getCatKey(cat1, Dict.NAME.toString()), p.getName());
         propertyMap.put(getCatKey(cat1, Dict.DATE.toString()), "%s - %s".formatted(p.getDateFirst(), p.getDateLast()));
         propertyMap.put(getCatKey(cat1, Dict.NUM_OF_S.toString().formatted(SDict.MEASUREMENTS.toLower())), p.getCommonObservations().size());
-        propertyMap.put(getCatKey(cat1, "ΔH=Höjdavstånd"), MathHelper.convertDoubleToString(p.getDistanceHeight(), 2));
-        propertyMap.put(getCatKey(cat1, "ΔR=Planavstånd"), MathHelper.convertDoubleToString(p.getDistancePlane(), 2));
-        propertyMap.put(getCatKey(cat1, "∂iH=Inbördes höjdförändring"), "%.1f mm".formatted(p.getPartialDiffZ() * 1000));
-        propertyMap.put(getCatKey(cat1, "∂iR=Inbördes radiellförändring"), "%.1f mm".formatted(p.getPartialDiffR() * 1000));
+        propertyMap.put(getCatKey(cat1, mBundle.getString("deltaH")), MathHelper.convertDoubleToString(p.getDistanceHeight(), 2));
+        propertyMap.put(getCatKey(cat1, mBundle.getString("deltaR")), MathHelper.convertDoubleToString(p.getDistancePlane(), 2));
+        propertyMap.put(getCatKey(cat1, mBundle.getString("dabbaH")), "%.1f mm".formatted(p.getPartialDiffZ() * 1000));
+        propertyMap.put(getCatKey(cat1, mBundle.getString("dabbaR")), "%.1f mm".formatted(p.getPartialDiffR() * 1000));
         propertyMap.put(getCatKey(cat1, "H Grader"), MathHelper.convertDoubleToString(p.getZAngleDeg(), 0));
         propertyMap.put(getCatKey(cat1, "H Gon"), MathHelper.convertDoubleToString(p.getZAngleGon(), 0));
         propertyMap.put(getCatKey(cat1, "H Radianer"), MathHelper.convertDoubleToString(p.getZAngleRad(), 4));
