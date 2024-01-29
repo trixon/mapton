@@ -19,26 +19,23 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.TreeMap;
-import javafx.collections.ListChangeListener;
 import javafx.geometry.Point2D;
 import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.api.MLatLon;
-import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BDimension;
-import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.topo.BTopoPointPair;
-import org.mapton.butterfly_topo.api.TopoManager;
 import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class Pair3Manager extends BaseManager<BTopoPointPair> {
+public class Pair3Manager extends PairManagerBase {
 
+    public static final Double MIN_RADIAL_DISTANCE = 0.0;
+    public static final Double MAX_RADIAL_DISTANCE = 10.0;
     private final Pair3PropertiesBuilder mPropertiesBuilder = new Pair3PropertiesBuilder();
-    private final TopoManager mTopoManager = TopoManager.getInstance();
 
     public static Pair3Manager getInstance() {
         return Holder.INSTANCE;
@@ -46,9 +43,6 @@ public class Pair3Manager extends BaseManager<BTopoPointPair> {
 
     private Pair3Manager() {
         super(BTopoPointPair.class);
-        TopoManager.getInstance().getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BTopoControlPoint> c) -> {
-            load();
-        });
     }
 
     @Override
@@ -71,7 +65,8 @@ public class Pair3Manager extends BaseManager<BTopoPointPair> {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    private void load() {
+    @Override
+    public void load() {
         var thread = new Thread(() -> {
             var pointToPoints = new TreeMap<String, HashSet<String>>();
             var sourcePoints = mTopoManager.getTimeFilteredItems().stream()
@@ -92,7 +87,7 @@ public class Pair3Manager extends BaseManager<BTopoPointPair> {
                     }
                     var n2 = p2.getName();
                     double distance = point.distance(p2.getZeroX(), p2.getZeroY());
-                    if (p1 != p2 && distance > 0.05 && distance < 20.0) {
+                    if (p1 != p2 && distance > MIN_RADIAL_DISTANCE && distance < MAX_RADIAL_DISTANCE) {
                         if (!pointToPoints.computeIfAbsent(n2, k -> new HashSet<>()).contains(n1)) {//Skip A-B, B-A
                             pointToPoints.computeIfAbsent(n1, k -> new HashSet<>()).add(n2);
                         }

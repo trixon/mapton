@@ -15,68 +15,18 @@
  */
 package org.mapton.butterfly_topo.pair;
 
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import org.mapton.api.ui.forms.FormFilter;
-import org.mapton.butterfly_format.types.topo.BTopoPointPair;
-
 /**
  *
  * @author Patrik Karlström
  */
-public class Pair1Filter extends FormFilter<Pair1Manager> {
+public class Pair1Filter extends PairFilterBase {
 
-    DoubleProperty mDabbaHMaxProperty = new SimpleDoubleProperty();
-    DoubleProperty mDabbaHMinProperty = new SimpleDoubleProperty();
-    SimpleBooleanProperty mDabbaHSelectedProperty = new SimpleBooleanProperty();
-    DoubleProperty mDabbaRMaxProperty = new SimpleDoubleProperty();
-    DoubleProperty mDabbaRMinProperty = new SimpleDoubleProperty();
-    SimpleBooleanProperty mDabbaRSelectedProperty = new SimpleBooleanProperty();
-    DoubleProperty mDeltaHMaxProperty = new SimpleDoubleProperty();
-    DoubleProperty mDeltaHMinProperty = new SimpleDoubleProperty();
-    SimpleBooleanProperty mDeltaHSelectedProperty = new SimpleBooleanProperty();
-    DoubleProperty mDeltaRMaxProperty = new SimpleDoubleProperty();
-    DoubleProperty mDeltaRMinProperty = new SimpleDoubleProperty();
-    SimpleBooleanProperty mDeltaRSelectedProperty = new SimpleBooleanProperty();
-    DoubleProperty mGradeHorizontalMaxProperty = new SimpleDoubleProperty();
-    DoubleProperty mGradeHorizontalMinProperty = new SimpleDoubleProperty();
-    SimpleBooleanProperty mGradeHorizontalSelectedProperty = new SimpleBooleanProperty();
-    DoubleProperty mGradeVerticalMaxProperty = new SimpleDoubleProperty();
-    DoubleProperty mGradeVerticalMinProperty = new SimpleDoubleProperty();
-    SimpleBooleanProperty mGradeVerticalSelectedProperty = new SimpleBooleanProperty();
     private final Pair1Manager mManager = Pair1Manager.getInstance();
 
     public Pair1Filter() {
         super(Pair1Manager.getInstance());
 
         initListeners();
-    }
-
-    public void initPropertyListeners() {
-        mDeltaHSelectedProperty.addListener(mChangeListenerObject);
-        mDeltaHMinProperty.addListener(mChangeListenerObject);
-        mDeltaHMaxProperty.addListener(mChangeListenerObject);
-
-        mDeltaRSelectedProperty.addListener(mChangeListenerObject);
-        mDeltaRMinProperty.addListener(mChangeListenerObject);
-        mDeltaRMaxProperty.addListener(mChangeListenerObject);
-
-        mDabbaHSelectedProperty.addListener(mChangeListenerObject);
-        mDabbaHMinProperty.addListener(mChangeListenerObject);
-        mDabbaHMaxProperty.addListener(mChangeListenerObject);
-
-        mDabbaRSelectedProperty.addListener(mChangeListenerObject);
-        mDabbaRMinProperty.addListener(mChangeListenerObject);
-        mDabbaRMaxProperty.addListener(mChangeListenerObject);
-
-        mGradeHorizontalSelectedProperty.addListener(mChangeListenerObject);
-        mGradeHorizontalMinProperty.addListener(mChangeListenerObject);
-        mGradeHorizontalMaxProperty.addListener(mChangeListenerObject);
-
-        mGradeVerticalSelectedProperty.addListener(mChangeListenerObject);
-        mGradeVerticalMinProperty.addListener(mChangeListenerObject);
-        mGradeVerticalMaxProperty.addListener(mChangeListenerObject);
     }
 
     @Override
@@ -94,59 +44,6 @@ public class Pair1Filter extends FormFilter<Pair1Manager> {
         mManager.getFilteredItems().setAll(filteredItems);
     }
 
-    private boolean inRange(double value, DoubleProperty minProperty, DoubleProperty maxProperty) {
-        return value >= minProperty.get() && value <= maxProperty.get();
-    }
-
     private void initListeners() {
     }
-
-    private boolean validateDabbaH(BTopoPointPair p) {
-        if (mDabbaHSelectedProperty.get()) {
-            return inRange(p.getDistanceHeight(), mDabbaHMinProperty, mDabbaHMaxProperty);
-        } else {
-            return true;
-        }
-    }
-
-    private boolean validateDabbaR(BTopoPointPair p) {
-        if (mDabbaRSelectedProperty.get()) {
-            return inRange(p.getDistancePlane(), mDabbaRMinProperty, mDabbaRMaxProperty);
-        } else {
-            return true;
-        }
-    }
-
-    private boolean validateDeltaH(BTopoPointPair p) {
-        if (mDeltaHSelectedProperty.get()) {
-            return inRange(p.getDistanceHeight(), mDeltaHMinProperty, mDeltaHMaxProperty);
-        } else {
-            return true;
-        }
-    }
-
-    private boolean validateDeltaR(BTopoPointPair p) {
-        if (mDeltaRSelectedProperty.get()) {
-            return inRange(p.getDistancePlane(), mDeltaRMinProperty, mDeltaRMaxProperty);
-        } else {
-            return true;
-        }
-    }
-
-    private boolean validateGradeHorizontal(BTopoPointPair p) {
-        if (mGradeHorizontalSelectedProperty.get()) {
-            return inRange(p.getDistanceHeight(), mGradeHorizontalMinProperty, mGradeHorizontalMaxProperty);
-        } else {
-            return true;
-        }
-    }
-
-    private boolean validateGradeVertical(BTopoPointPair p) {
-        if (mGradeVerticalSelectedProperty.get()) {
-            return inRange(p.getDistancePlane(), mGradeVerticalMinProperty, mGradeVerticalMaxProperty);
-        } else {
-            return true;
-        }
-    }
-
 }

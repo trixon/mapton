@@ -15,18 +15,13 @@
  */
 package org.mapton.butterfly_topo.pair;
 
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import org.mapton.api.ui.forms.FormFilter;
-
 /**
  *
  * @author Patrik Karlström
  */
-public class Pair3Filter extends FormFilter<Pair3Manager> {
+public class Pair3Filter extends PairFilterBase {
 
     private final Pair3Manager mManager = Pair3Manager.getInstance();
-    private final BooleanProperty mProperty = new SimpleBooleanProperty();
 
     public Pair3Filter() {
         super(Pair3Manager.getInstance());
@@ -34,20 +29,21 @@ public class Pair3Filter extends FormFilter<Pair3Manager> {
         initListeners();
     }
 
-    public BooleanProperty property() {
-        return mProperty;
-    }
-
     @Override
     public void update() {
         var filteredItems = mManager.getAllItems().stream()
-                .filter(o -> validateFreeText(o.getName()))
+                .filter(p -> validateFreeText(p.getName()))
+                .filter(p -> validateDeltaH(p))
+                .filter(p -> validateDeltaR(p))
+                .filter(p -> validateDabbaH(p))
+                .filter(p -> validateDabbaR(p))
+                .filter(p -> validateGradeHorizontal(p))
+                .filter(p -> validateGradeVertical(p))
                 .toList();
 
         mManager.getFilteredItems().setAll(filteredItems);
     }
 
     private void initListeners() {
-        mProperty.addListener(mChangeListenerObject);
     }
 }

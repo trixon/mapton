@@ -15,126 +15,15 @@
  */
 package org.mapton.butterfly_topo.pair;
 
-import java.util.ResourceBundle;
-import javafx.scene.control.Separator;
-import javafx.scene.layout.VBox;
-import static org.mapton.api.ui.MPopOver.GAP;
-import static org.mapton.api.ui.MPopOver.autoSize;
-import org.mapton.butterfly_core.api.BaseFilterPopOver;
-import org.mapton.butterfly_format.Butterfly;
-import org.mapton.butterfly_topo.TopoFilterFavorite;
-import org.openide.util.NbBundle;
-
 /**
  *
  * @author Patrik Karlström
  */
-public class Pair1FilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
+public class Pair1FilterPopOver extends PairFilterPopOverBase {
 
-    private final ResourceBundle mBundle = NbBundle.getBundle(Pair1PropertiesBuilder.class);
-    private final RangeSliderPane mDabbaHRangeSlider = new RangeSliderPane(mBundle.getString("dabbaH"), 2.0);
-    private final RangeSliderPane mDabbaRRangeSlider = new RangeSliderPane(mBundle.getString("dabbaR"), 2.0);
-    private final RangeSliderPane mDeltaHRangeSlider = new RangeSliderPane(mBundle.getString("deltaH"), 50.0);
-    private final RangeSliderPane mDeltaRRangeSlider = new RangeSliderPane(mBundle.getString("deltaR"), Pair1Manager.MAX_RADIAL_DISTANCE);
-    private final Pair1Filter mFilter;
-    private final RangeSliderPane mGradeHorizontalRangeSlider = new RangeSliderPane(mBundle.getString("gradeH"), 2.0);
-    private final RangeSliderPane mGradeVerticalRangeSlider = new RangeSliderPane(mBundle.getString("gradeV"), 2.0);
-
-    public Pair1FilterPopOver(Pair1Filter filter) {
-        mFilter = filter;
-        createUI();
-        initListeners();
-        initSession();
-    }
-
-    @Override
-    public void clear() {
-        getPolygonFilterCheckBox().setSelected(false);
-        mFilter.freeTextProperty().set("");
-        mDeltaHRangeSlider.clear();
-        mDeltaRRangeSlider.clear();
-        mDabbaHRangeSlider.clear();
-        mDabbaRRangeSlider.clear();
-        mGradeVerticalRangeSlider.clear();
-        mGradeHorizontalRangeSlider.clear();
-    }
-
-    @Override
-    public void load(Butterfly butterfly) {
-    }
-
-    @Override
-    public void onPolygonFilterChange() {
-        mFilter.update();
-    }
-
-    @Override
-    public void reset() {
-        clear();
-        mFilter.freeTextProperty().set("*");
-    }
-
-    private void createUI() {
-        var vBox = new VBox(GAP,
-                getButtonBox(),
-                new Separator(),
-                mDeltaHRangeSlider,
-                new Separator(),
-                mDeltaRRangeSlider,
-                new Separator(),
-                mDabbaHRangeSlider,
-                new Separator(),
-                mDabbaRRangeSlider,
-                new Separator(),
-                mGradeVerticalRangeSlider,
-                new Separator(),
-                mGradeHorizontalRangeSlider
-        );
-
-        autoSize(vBox);
-        setContentNode(vBox);
-    }
-
-    private void initListeners() {
-        mFilter.polygonFilterProperty().bind(getPolygonFilterCheckBox().selectedProperty());
-
-        mFilter.mDeltaHSelectedProperty.bind(mDeltaHRangeSlider.selectedProperty());
-        mFilter.mDeltaHMinProperty.bind(mDeltaHRangeSlider.minProperty());
-        mFilter.mDeltaHMaxProperty.bind(mDeltaHRangeSlider.maxProperty());
-
-        mFilter.mDeltaRSelectedProperty.bind(mDeltaRRangeSlider.selectedProperty());
-        mFilter.mDeltaRMinProperty.bind(mDeltaRRangeSlider.minProperty());
-        mFilter.mDeltaRMaxProperty.bind(mDeltaRRangeSlider.maxProperty());
-
-        mFilter.mDabbaHSelectedProperty.bind(mDabbaHRangeSlider.selectedProperty());
-        mFilter.mDabbaHMinProperty.bind(mDabbaHRangeSlider.minProperty());
-        mFilter.mDabbaHMaxProperty.bind(mDabbaHRangeSlider.maxProperty());
-
-        mFilter.mDabbaRSelectedProperty.bind(mDabbaRRangeSlider.selectedProperty());
-        mFilter.mDabbaRMinProperty.bind(mDabbaRRangeSlider.minProperty());
-        mFilter.mDabbaRMaxProperty.bind(mDabbaRRangeSlider.maxProperty());
-
-        mFilter.mGradeHorizontalSelectedProperty.bind(mGradeHorizontalRangeSlider.selectedProperty());
-        mFilter.mGradeHorizontalMinProperty.bind(mGradeHorizontalRangeSlider.minProperty());
-        mFilter.mGradeHorizontalMaxProperty.bind(mGradeHorizontalRangeSlider.maxProperty());
-
-        mFilter.mGradeVerticalSelectedProperty.bind(mGradeVerticalRangeSlider.selectedProperty());
-        mFilter.mGradeVerticalMinProperty.bind(mGradeVerticalRangeSlider.minProperty());
-        mFilter.mGradeVerticalMaxProperty.bind(mGradeVerticalRangeSlider.maxProperty());
-
-        mFilter.initPropertyListeners();
-    }
-
-    private void initSession() {
-        var sessionManager = getSessionManager();
-        sessionManager.register("freeText", mFilter.freeTextProperty());
-
-        mDeltaHRangeSlider.initSession("DeltaH", sessionManager);
-        mDeltaRRangeSlider.initSession("DeltaR", sessionManager);
-        mDabbaHRangeSlider.initSession("DabbaH", sessionManager);
-        mDabbaRRangeSlider.initSession("DabbaR", sessionManager);
-        mGradeVerticalRangeSlider.initSession("GradeV", sessionManager);
-        mGradeHorizontalRangeSlider.initSession("GradeH", sessionManager);
+    public Pair1FilterPopOver(PairFilterBase filter, PairFilterConfig config) {
+        super(filter, config);
+        mDabbaRRangeSlider.setDisable(true);
     }
 
 }

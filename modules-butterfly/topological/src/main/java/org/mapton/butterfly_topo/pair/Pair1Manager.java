@@ -19,28 +19,23 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.TreeMap;
-import javafx.collections.ListChangeListener;
 import javafx.geometry.Point2D;
 import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.api.MLatLon;
-import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BDimension;
-import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.topo.BTopoPointPair;
-import org.mapton.butterfly_topo.api.TopoManager;
 import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class Pair1Manager extends BaseManager<BTopoPointPair> {
+public class Pair1Manager extends PairManagerBase {
 
-    private final Pair1PropertiesBuilder mPropertiesBuilder = new Pair1PropertiesBuilder();
-    private final TopoManager mTopoManager = TopoManager.getInstance();
+    public static final Double MAX_RADIAL_DISTANCE = 50.0;
     public static final Double MIN_RADIAL_DISTANCE = 0.050;
-    public static final Double MAX_RADIAL_DISTANCE = 100.0;
+    private final Pair1PropertiesBuilder mPropertiesBuilder = new Pair1PropertiesBuilder();
 
     public static Pair1Manager getInstance() {
         return Holder.INSTANCE;
@@ -48,9 +43,6 @@ public class Pair1Manager extends BaseManager<BTopoPointPair> {
 
     private Pair1Manager() {
         super(BTopoPointPair.class);
-        TopoManager.getInstance().getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BTopoControlPoint> c) -> {
-            load();
-        });
     }
 
     @Override
@@ -64,16 +56,7 @@ public class Pair1Manager extends BaseManager<BTopoPointPair> {
     }
 
     @Override
-    protected void applyTemporalFilter() {
-        getTimeFilteredItems().setAll(getFilteredItems());
-    }
-
-    @Override
-    protected void load(ArrayList<BTopoPointPair> items) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    private void load() {
+    public void load() {
         var thread = new Thread(() -> {
             var pointToPoints = new TreeMap<String, HashSet<String>>();
             var sourcePoints = mTopoManager.getTimeFilteredItems().stream()
@@ -135,6 +118,16 @@ public class Pair1Manager extends BaseManager<BTopoPointPair> {
         });
 
         thread.start();
+    }
+
+    @Override
+    protected void applyTemporalFilter() {
+        getTimeFilteredItems().setAll(getFilteredItems());
+    }
+
+    @Override
+    protected void load(ArrayList<BTopoPointPair> items) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     private static class Holder {

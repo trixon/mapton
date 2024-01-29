@@ -77,8 +77,11 @@ public class RangeSliderPane extends VBox {
 
     private void createUI() {
         mSlider = new RangeSlider(0, mMaxValue, 0, mMaxValue);
-        mMinSpinner = new Spinner<>(0, mMaxValue, 0, 1);
-        mMaxSpinner = new Spinner<>(0, mMaxValue, mMaxValue, 1);
+        mSlider.setBlockIncrement(1.0);
+        mSlider.setShowTickLabels(true);
+        mSlider.setShowTickMarks(true);
+        mMinSpinner = new Spinner<>(0, mMaxValue, 0, 0.1);
+        mMaxSpinner = new Spinner<>(0, mMaxValue, mMaxValue, 0.1);
 
         var box = new HBox(mMinSpinner, mMaxSpinner);
         mSlider.disableProperty().bind(mCheckBox.selectedProperty().not());

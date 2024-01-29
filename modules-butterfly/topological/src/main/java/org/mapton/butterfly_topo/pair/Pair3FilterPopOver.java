@@ -15,71 +15,14 @@
  */
 package org.mapton.butterfly_topo.pair;
 
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Separator;
-import javafx.scene.layout.VBox;
-import static org.mapton.api.ui.MPopOver.GAP;
-import static org.mapton.api.ui.MPopOver.autoSize;
-import org.mapton.butterfly_core.api.BaseFilterPopOver;
-import org.mapton.butterfly_format.Butterfly;
-import org.mapton.butterfly_topo.TopoFilterFavorite;
-
 /**
  *
  * @author Patrik Karlström
  */
-public class Pair3FilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
+public class Pair3FilterPopOver extends PairFilterPopOverBase {
 
-    private final CheckBox mCheckbox = new CheckBox("TEST");
-    private final Pair3Filter mFilter;
-
-    public Pair3FilterPopOver(Pair3Filter filter) {
-        mFilter = filter;
-        createUI();
-        initListeners();
-        initSession();
-    }
-
-    @Override
-    public void clear() {
-        getPolygonFilterCheckBox().setSelected(false);
-        mFilter.freeTextProperty().set("");
-        mCheckbox.setSelected(false);
-    }
-
-    @Override
-    public void load(Butterfly butterfly) {
-    }
-
-    @Override
-    public void onPolygonFilterChange() {
-        mFilter.update();
-    }
-
-    @Override
-    public void reset() {
-        clear();
-        mFilter.freeTextProperty().set("*");
-    }
-
-    private void createUI() {
-        var vBox = new VBox(GAP,
-                getButtonBox(),
-                new Separator(),
-                mCheckbox
-        );
-
-        autoSize(vBox);
-        setContentNode(vBox);
-    }
-
-    private void initListeners() {
-        mFilter.property().bind(mCheckbox.selectedProperty());
-        mFilter.polygonFilterProperty().bind(getPolygonFilterCheckBox().selectedProperty());
-    }
-
-    private void initSession() {
-        getSessionManager().register("freeText", mFilter.freeTextProperty());
+    public Pair3FilterPopOver(PairFilterBase filter, PairFilterConfig config) {
+        super(filter, config);
     }
 
 }

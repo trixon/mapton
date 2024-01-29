@@ -30,15 +30,21 @@ import se.trixon.almond.util.Dict;
  */
 public class Pair3View {
 
+    private final ResourceBundle mBundle = NbBundle.getBundle(Pair3Manager.class);
     private final Pair3Filter mFilter = new Pair3Filter();
-    private final Pair3FilterPopOver mFilterPopOver = new Pair3FilterPopOver(mFilter);
-    private final Pair3FavoritePopOver mFilterFavoritePopOver = new Pair3FavoritePopOver(mFilterPopOver);
+    private final Pair3FavoritePopOver mFilterFavoritePopOver;
+    private final Pair3FilterPopOver mFilterPopOver;
     private final SingleListForm mListForm;
     private final Pair3Manager mManager = Pair3Manager.getInstance();
-    private final ResourceBundle mBundle = NbBundle.getBundle(Pair3Manager.class);
     private Tab mTab;
 
     public Pair3View() {
+        var config = new PairFilterConfig();
+        config.setKeyPrefix("_3");
+        config.setMaxDeltaR(Pair3Manager.MAX_RADIAL_DISTANCE);
+        mFilterPopOver = new Pair3FilterPopOver(mFilter, config);
+        mFilterFavoritePopOver = new Pair3FavoritePopOver(mFilterPopOver);
+
         var actions = Arrays.asList(
                 ActionUtils.ACTION_SPAN,
                 mFilter.getInfoPopOver().getAction(),
