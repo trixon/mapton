@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_topo.pair;
+package org.mapton.butterfly_topo.pair.vertical;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,23 +25,24 @@ import org.mapton.api.MLatLon;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoPointPair;
+import org.mapton.butterfly_topo.pair.PairManagerBase;
 import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class Pair1Manager extends PairManagerBase {
+public class Pair3Manager extends PairManagerBase {
 
-    public static final Double MAX_RADIAL_DISTANCE = 50.0;
-    public static final Double MIN_RADIAL_DISTANCE = 0.050;
-    private final Pair1PropertiesBuilder mPropertiesBuilder = new Pair1PropertiesBuilder();
+    public static final Double MIN_RADIAL_DISTANCE = 0.0;
+    public static final Double MAX_RADIAL_DISTANCE = 10.0;
+    private final Pair3PropertiesBuilder mPropertiesBuilder = new Pair3PropertiesBuilder();
 
-    public static Pair1Manager getInstance() {
+    public static Pair3Manager getInstance() {
         return Holder.INSTANCE;
     }
 
-    private Pair1Manager() {
+    private Pair3Manager() {
         super(BTopoPointPair.class);
     }
 
@@ -56,11 +57,21 @@ public class Pair1Manager extends PairManagerBase {
     }
 
     @Override
+    protected void applyTemporalFilter() {
+        getTimeFilteredItems().setAll(getFilteredItems());
+    }
+
+    @Override
+    protected void load(ArrayList<BTopoPointPair> items) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
     public void load() {
         var thread = new Thread(() -> {
             var pointToPoints = new TreeMap<String, HashSet<String>>();
             var sourcePoints = mTopoManager.getTimeFilteredItems().stream()
-                    .filter(p -> p.getDimension() != BDimension._2d)
+                    .filter(p -> p.getDimension() == BDimension._3d)
                     .filter(p -> ObjectUtils.allNotNull(p.getZeroX(), p.getZeroY(), p.getZeroZ()))
                     .filter(p -> p.ext().getNumOfObservationsFiltered() >= 2)
                     .toList();
@@ -77,7 +88,7 @@ public class Pair1Manager extends PairManagerBase {
                     }
                     var n2 = p2.getName();
                     double distance = point.distance(p2.getZeroX(), p2.getZeroY());
-                    if (p1 != p2 && distance >= MIN_RADIAL_DISTANCE && distance <= MAX_RADIAL_DISTANCE) {
+                    if (p1 != p2 && distance > MIN_RADIAL_DISTANCE && distance < MAX_RADIAL_DISTANCE) {
                         if (!pointToPoints.computeIfAbsent(n2, k -> new HashSet<>()).contains(n1)) {//Skip A-B, B-A
                             pointToPoints.computeIfAbsent(n1, k -> new HashSet<>()).add(n2);
                         }
@@ -92,13 +103,15 @@ public class Pair1Manager extends PairManagerBase {
                 for (var n2 : entry.getValue()) {
                     var p2 = mTopoManager.getItemForKey(n2);
                     var pair = new BTopoPointPair(p1, p2);
-                    if (pair.getCommonObservations().size() > 1 && Math.abs(pair.getZQuota()) > 0.00001) {
+                    if (pair.getCommonObservations().size() > 1
+                            //                            && ( Math.abs(pair.getZQuota()) > 0.00001)) {
+                            && (Math.abs(pair.getRQuota()) > 0.00001 || Math.abs(pair.getZQuota()) > 0.00001)) {
                         tiltPairs.add(pair);
                     }
                 }
             }
 
-            Collections.sort(tiltPairs, (o1, o2) -> Double.valueOf(Math.abs(o2.getZQuota())).compareTo(Math.abs(o1.getZQuota())));
+            Collections.sort(tiltPairs, (o1, o2) -> Double.valueOf(Math.abs(o2.getRQuota())).compareTo(Math.abs(o1.getRQuota())));
 
             tiltPairs.forEach(t -> {
                 var first = new MLatLon(t.getP1().getLat(), t.getP1().getLon());
@@ -120,18 +133,8 @@ public class Pair1Manager extends PairManagerBase {
         thread.start();
     }
 
-    @Override
-    protected void applyTemporalFilter() {
-        getTimeFilteredItems().setAll(getFilteredItems());
-    }
-
-    @Override
-    protected void load(ArrayList<BTopoPointPair> items) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
     private static class Holder {
 
-        private static final Pair1Manager INSTANCE = new Pair1Manager();
+        private static final Pair3Manager INSTANCE = new Pair3Manager();
     }
 }

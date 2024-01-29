@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_topo.pair;
+package org.mapton.butterfly_topo.pair.vertical;
 
+import org.mapton.butterfly_topo.pair.horizontal.Pair1PropertiesBuilder;
 import java.util.LinkedHashMap;
 import org.mapton.butterfly_format.types.topo.BTopoPointPair;
 import se.trixon.almond.util.Dict;

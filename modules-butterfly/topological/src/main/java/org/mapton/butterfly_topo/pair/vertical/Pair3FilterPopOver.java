@@ -13,7 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_topo.pair;
+package org.mapton.butterfly_topo.pair.vertical;
+
+import org.mapton.butterfly_topo.pair.PairFilterBase;
+import org.mapton.butterfly_topo.pair.PairFilterConfig;
+import org.mapton.butterfly_topo.pair.PairFilterPopOverBase;
 
 /**
  *

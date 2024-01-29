@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_topo.pair;
 
+import org.mapton.butterfly_topo.pair.horizontal.Pair1PropertiesBuilder;
 import java.util.ResourceBundle;
 import javafx.scene.control.Separator;
 import javafx.scene.layout.VBox;

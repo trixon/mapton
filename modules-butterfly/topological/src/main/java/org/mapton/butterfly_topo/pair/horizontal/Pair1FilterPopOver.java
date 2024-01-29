@@ -13,14 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_topo.pair;
+package org.mapton.butterfly_topo.pair.horizontal;
 
-import org.mapton.butterfly_core.api.BaseFilterFavorite;
+import org.mapton.butterfly_topo.pair.PairFilterBase;
+import org.mapton.butterfly_topo.pair.PairFilterConfig;
+import org.mapton.butterfly_topo.pair.PairFilterPopOverBase;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class Pair3FilterFavorite extends BaseFilterFavorite {
+public class Pair1FilterPopOver extends PairFilterPopOverBase {
+
+    public Pair1FilterPopOver(PairFilterBase filter, PairFilterConfig config) {
+        super(filter, config);
+        mDabbaRRangeSlider.setDisable(true);
+    }
 
 }

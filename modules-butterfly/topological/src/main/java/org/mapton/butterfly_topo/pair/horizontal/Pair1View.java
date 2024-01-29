@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_topo.pair;
+package org.mapton.butterfly_topo.pair.horizontal;
 
 import java.util.Arrays;
 import java.util.ResourceBundle;
@@ -21,6 +21,7 @@ import javafx.scene.control.Tab;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.SingleListForm;
+import org.mapton.butterfly_topo.pair.PairFilterConfig;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
 
@@ -28,22 +29,24 @@ import se.trixon.almond.util.Dict;
  *
  * @author Patrik Karlström
  */
-public class Pair3View {
+public class Pair1View {
 
-    private final ResourceBundle mBundle = NbBundle.getBundle(Pair3Manager.class);
-    private final Pair3Filter mFilter = new Pair3Filter();
-    private final Pair3FavoritePopOver mFilterFavoritePopOver;
-    private final Pair3FilterPopOver mFilterPopOver;
+    private final ResourceBundle mBundle = NbBundle.getBundle(Pair1Manager.class);
+    private final Pair1Filter mFilter = new Pair1Filter();
+    private final Pair1FavoritePopOver mFilterFavoritePopOver;
+    private final Pair1FilterPopOver mFilterPopOver;
     private final SingleListForm mListForm;
-    private final Pair3Manager mManager = Pair3Manager.getInstance();
+    private final Pair1Manager mManager = Pair1Manager.getInstance();
     private Tab mTab;
 
-    public Pair3View() {
+    public Pair1View() {
         var config = new PairFilterConfig();
-        config.setKeyPrefix("_3");
-        config.setMaxDeltaR(Pair3Manager.MAX_RADIAL_DISTANCE);
-        mFilterPopOver = new Pair3FilterPopOver(mFilter, config);
-        mFilterFavoritePopOver = new Pair3FavoritePopOver(mFilterPopOver);
+        config.setKeyPrefix("_1");
+        config.setMaxDeltaH(10.0);
+        config.setMaxDeltaR(Pair1Manager.MAX_RADIAL_DISTANCE);
+
+        mFilterPopOver = new Pair1FilterPopOver(mFilter, config);
+        mFilterFavoritePopOver = new Pair1FavoritePopOver(mFilterPopOver);
 
         var actions = Arrays.asList(
                 ActionUtils.ACTION_SPAN,
@@ -51,22 +54,23 @@ public class Pair3View {
                 mFilterFavoritePopOver.getAction(),
                 mFilterPopOver.getAction()
         );
-        mListForm = new SingleListForm<>(mManager, mBundle.getString("tilt_v"));
+        mListForm = new SingleListForm<>(mManager, mBundle.getString("tilt_h"));
         var listFormConfiguration = new ListFormConfiguration()
                 .setUseTextFilter(true)
                 .setToolbarActions(actions);
 
         mFilter.bindFreeTextProperty(mListForm.freeTextProperty());
         mListForm.applyConfiguration(listFormConfiguration);
-        mListForm.getListView().setCellFactory(listView -> new Pair3ListCell());
+        mListForm.getListView().setCellFactory(listView -> new Pair1ListCell());
         mListForm.setFreeTextTooltip(
                 Dict.NAME.toString()
         );
+
     }
 
     public Tab getView() {
         if (mTab == null) {
-            mTab = new Tab(mBundle.getString("tilt_v"), mListForm.getView());
+            mTab = new Tab(mBundle.getString("tilt_h"), mListForm.getView());
             mManager.selectedItemProperty().addListener((p, o, n) -> {
                 mTab.getTabPane().getSelectionModel().select(mTab);
             });
