@@ -19,6 +19,7 @@ import java.util.LinkedHashMap;
 import java.util.ResourceBundle;
 import org.mapton.api.ui.forms.PropertiesBuilder;
 import org.mapton.butterfly_format.types.topo.BTopoPointPair;
+import org.mapton.butterfly_topo.pair.PairManagerBase;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.MathHelper;
@@ -30,7 +31,7 @@ import se.trixon.almond.util.SDict;
  */
 public class Pair1PropertiesBuilder extends PropertiesBuilder<BTopoPointPair> {
 
-    private final ResourceBundle mBundle = NbBundle.getBundle(Pair1PropertiesBuilder.class);
+    private final ResourceBundle mBundle = NbBundle.getBundle(PairManagerBase.class);
 
     @Override
     public Object build(BTopoPointPair p) {

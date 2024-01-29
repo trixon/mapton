@@ -22,6 +22,7 @@ import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.SingleListForm;
 import org.mapton.butterfly_topo.pair.PairFilterConfig;
+import org.mapton.butterfly_topo.pair.PairManagerBase;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
 
@@ -31,7 +32,7 @@ import se.trixon.almond.util.Dict;
  */
 public class Pair1View {
 
-    private final ResourceBundle mBundle = NbBundle.getBundle(Pair1Manager.class);
+    private final ResourceBundle mBundle = NbBundle.getBundle(PairManagerBase.class);
     private final Pair1Filter mFilter = new Pair1Filter();
     private final Pair1FavoritePopOver mFilterFavoritePopOver;
     private final Pair1FilterPopOver mFilterPopOver;

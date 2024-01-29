@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_topo.pair;
 
-import org.mapton.butterfly_topo.pair.horizontal.Pair1PropertiesBuilder;
 import java.util.ResourceBundle;
 import javafx.scene.control.Separator;
 import javafx.scene.layout.VBox;
@@ -32,7 +31,7 @@ import org.openide.util.NbBundle;
  */
 public abstract class PairFilterPopOverBase extends BaseFilterPopOver<TopoFilterFavorite> {
 
-    protected final ResourceBundle mBundle = NbBundle.getBundle(Pair1PropertiesBuilder.class);
+    private final ResourceBundle mBundle = NbBundle.getBundle(PairManagerBase.class);
     protected final PairFilterConfig mConfig;
     protected final RangeSliderPane mDabbaHRangeSlider;
     protected final RangeSliderPane mDabbaRRangeSlider;

@@ -25,15 +25,21 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
-import javafx.scene.layout.VBox;
+import javafx.scene.control.TabPane;
+import javafx.scene.layout.GridPane;
 import javafx.util.StringConverter;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.IndexedCheckModel;
+import org.mapton.butterfly_topo.pair.PairManagerBase;
+import org.mapton.butterfly_topo.pair.horizontal.Pair1OptionsView;
+import org.mapton.butterfly_topo.pair.vertical.Pair3OptionsView;
 import org.mapton.butterfly_topo.shared.ColorBy;
 import org.mapton.butterfly_topo.shared.PointBy;
 import org.mapton.worldwind.api.MOptionsView;
+import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.Direction;
+import se.trixon.almond.util.SDict;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.session.SessionCheckComboBox;
 import se.trixon.almond.util.fx.session.SessionComboBox;
@@ -49,12 +55,16 @@ public class TopoOptionsView extends MOptionsView<TopoLayerBundle> {
     private static final PointBy DEFAULT_POINT_BY = PointBy.AUTO;
 
     private final SessionComboBox<ColorBy> mColorScb = new SessionComboBox<>();
+    private CheckedTab mGradeHTab;
+    private CheckedTab mGradeVTab;
     private final SessionCheckComboBox<GraphicRendererItem> mGraphicSccb = new SessionCheckComboBox<>();
     private final SessionCheckComboBox<Direction> mIndicatorSccb = new SessionCheckComboBox<>();
     private final SimpleStringProperty mLabelByIdProperty = new SimpleStringProperty(DEFAULT_LABEL_BY.name());
     private final SimpleObjectProperty<TopoLabelBy> mLabelByProperty = new SimpleObjectProperty<>();
     private final MenuButton mLabelMenuButton = new MenuButton();
+    private CheckedTab mPointTab;
     private final SessionComboBox<PointBy> mPointScb = new SessionComboBox<>();
+    private final TabPane mTabPane = new TabPane();
 
     public TopoOptionsView(TopoLayerBundle layerBundle) {
         super(layerBundle);
@@ -140,19 +150,31 @@ public class TopoOptionsView extends MOptionsView<TopoLayerBundle> {
         var pointLabel = new Label(Dict.Geometry.POINT.toString());
         var colorLabel = new Label(Dict.COLOR.toString());
         var labelLabel = new Label(Dict.LABEL.toString());
-        var box = new VBox(
-                pointLabel,
-                mPointScb,
-                colorLabel,
-                mColorScb,
-                labelLabel,
-                mLabelMenuButton,
-                mIndicatorSccb,
-                mGraphicSccb
-        );
-        box.setPadding(FxHelper.getUIScaledInsets(8));
+        var graphicLabel = new Label(Dict.GRAPHICS.toString());
 
-        setCenter(box);
+        int row = 0;
+        var gp = new GridPane(FxHelper.getUIScaled(8), FxHelper.getUIScaled(2));
+        gp.addRow(row++, pointLabel, colorLabel);
+        gp.addRow(row++, mPointScb, mColorScb);
+        gp.addRow(row++, labelLabel);
+        gp.addRow(row++, mLabelMenuButton);
+        gp.addRow(row++, graphicLabel);
+        gp.add(mGraphicSccb, 0, row++, GridPane.REMAINING, 1);
+//                mIndicatorSccb,
+        gp.setPadding(FxHelper.getUIScaledInsets(8));
+        FxHelper.autoSizeRegionHorizontal(mPointScb, mColorScb, mLabelMenuButton, mGraphicSccb);
+
+        var pair1OptionsView = new Pair1OptionsView(getSessionManager());
+        var pair3OptionsView = new Pair3OptionsView(getSessionManager());
+
+        mTabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
+        mPointTab = new CheckedTab(SDict.POINTS.toString(), gp);
+        mGradeHTab = new CheckedTab(NbBundle.getBundle(PairManagerBase.class).getString("tilt_h"), pair1OptionsView);
+        mGradeVTab = new CheckedTab(NbBundle.getBundle(PairManagerBase.class).getString("tilt_v"), pair3OptionsView);
+
+        mTabPane.getTabs().setAll(mPointTab, mGradeHTab, mGradeVTab);
+
+        setCenter(mTabPane);
     }
 
     private void initListeners() {
@@ -172,6 +194,9 @@ public class TopoOptionsView extends MOptionsView<TopoLayerBundle> {
 
     private void initSession() {
         var sessionManager = getSessionManager();
+        sessionManager.register("options.tabPoints", mPointTab.getTabCheckBox().selectedProperty());
+        sessionManager.register("options.tabGradeH", mGradeHTab.getTabCheckBox().selectedProperty());
+        sessionManager.register("options.tabGradeV", mGradeVTab.getTabCheckBox().selectedProperty());
         sessionManager.register("options.pointBy", mPointScb.selectedIndexProperty());
         sessionManager.register("options.colorBy", mColorScb.selectedIndexProperty());
         sessionManager.register("options.labelBy", mLabelByIdProperty);
