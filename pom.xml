@@ -372,16 +372,16 @@
                 <artifactId>metadata-extractor</artifactId>
                 <version>2.19.0</version>
             </dependency>
-            <dependency> 
+            <dependency>
                 <groupId>org.apache.poi</groupId>
-                <artifactId>poi</artifactId> 
-                <version>5.2.5</version> 
-            </dependency> 
-            <dependency> 
-                <groupId>org.apache.poi</groupId> 
-                <artifactId>poi-ooxml</artifactId> 
-                <version>5.2.5</version> 
-            </dependency>     
+                <artifactId>poi</artifactId>
+                <version>5.2.5</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi-ooxml</artifactId>
+                <version>5.2.5</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -405,6 +405,6 @@
         <netbeans.compile.on.save>none</netbeans.compile.on.save>
         <brandingToken>mapton</brandingToken>
         <mapton.version>3.2.0-SNAPSHOT</mapton.version>
-        <geotools.version>30.1</geotools.version>
+        <geotools.version>30.2</geotools.version>
     </properties>
 </project>
