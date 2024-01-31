@@ -17,7 +17,9 @@ package org.mapton.butterfly_topo;
 
 import java.util.LinkedHashMap;
 import java.util.stream.Stream;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.Label;
@@ -62,8 +64,11 @@ public class TopoOptionsView extends MOptionsView<TopoLayerBundle> {
     private final SimpleStringProperty mLabelByIdProperty = new SimpleStringProperty(DEFAULT_LABEL_BY.name());
     private final SimpleObjectProperty<TopoLabelBy> mLabelByProperty = new SimpleObjectProperty<>();
     private final MenuButton mLabelMenuButton = new MenuButton();
-    private CheckedTab mPointTab;
+    private final BooleanProperty mPlotGradeHProperty = new SimpleBooleanProperty();
+    private final BooleanProperty mPlotGradeVProperty = new SimpleBooleanProperty();
+    private final BooleanProperty mPlotPointProperty = new SimpleBooleanProperty();
     private final SessionComboBox<PointBy> mPointScb = new SessionComboBox<>();
+    private CheckedTab mPointTab;
     private final TabPane mTabPane = new TabPane();
 
     public TopoOptionsView(TopoLayerBundle layerBundle) {
@@ -99,6 +104,18 @@ public class TopoOptionsView extends MOptionsView<TopoLayerBundle> {
 
     public SimpleObjectProperty<TopoLabelBy> labelByProperty() {
         return mLabelByProperty;
+    }
+
+    public BooleanProperty plotGradeHProperty() {
+        return mPlotGradeHProperty;
+    }
+
+    public BooleanProperty plotGradeVProperty() {
+        return mPlotGradeVProperty;
+    }
+
+    public BooleanProperty plotPointProperty() {
+        return mPlotPointProperty;
     }
 
     private void createUI() {
@@ -173,6 +190,9 @@ public class TopoOptionsView extends MOptionsView<TopoLayerBundle> {
         mGradeVTab = new CheckedTab(NbBundle.getBundle(PairManagerBase.class).getString("tilt_v"), pair3OptionsView);
 
         mTabPane.getTabs().setAll(mPointTab, mGradeHTab, mGradeVTab);
+        mPlotPointProperty.bind(mPointTab.disabledProperty().not());
+        mPlotGradeHProperty.bind(mGradeHTab.disabledProperty().not());
+        mPlotGradeVProperty.bind(mGradeVTab.disabledProperty().not());
 
         setCenter(mTabPane);
     }

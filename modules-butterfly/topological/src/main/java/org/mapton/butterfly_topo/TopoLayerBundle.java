@@ -18,7 +18,6 @@ package org.mapton.butterfly_topo;
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
-import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.AbstractShape;
 import gov.nasa.worldwind.render.Cylinder;
 import gov.nasa.worldwind.render.Ellipsoid;
@@ -31,9 +30,7 @@ import java.util.ArrayList;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import org.apache.commons.lang3.ObjectUtils;
-import org.mapton.butterfly_core.api.BfLayerBundle;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
-import org.mapton.butterfly_topo.api.TopoManager;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
@@ -46,7 +43,7 @@ import se.trixon.almond.util.SDict;
  * @author Patrik Karlström
  */
 @ServiceProvider(service = LayerBundle.class)
-public class TopoLayerBundle extends BfLayerBundle {
+public class TopoLayerBundle extends TopoBaseLayerBundle {
 
     public static final double SCALE_FACTOR = 500.0;
     public static final double SCALE_FACTOR_Z = 1000.0;
@@ -55,14 +52,9 @@ public class TopoLayerBundle extends BfLayerBundle {
     private final double SYMBOL_HEIGHT = 4.0;
     private final double SYMBOL_RADIUS = 1.5;
     private final TopoAttributeManager mAttributeManager = TopoAttributeManager.getInstance();
-    private final GraphicRenderer mGraphicRenderer;
     private final ArrayList<AVListImpl> mEmptyDummyList = new ArrayList<>();
-    private final RenderableLayer mLabelLayer = new RenderableLayer();
-    private final RenderableLayer mLayer = new RenderableLayer();
-    private final TopoManager mManager = TopoManager.getInstance();
+    private final GraphicRenderer mGraphicRenderer;
     private final TopoOptionsView mOptionsView;
-    private final RenderableLayer mPinLayer = new RenderableLayer();
-    private final RenderableLayer mSymbolLayer = new RenderableLayer();
 
     public TopoLayerBundle() {
         init();
@@ -122,72 +114,85 @@ public class TopoLayerBundle extends BfLayerBundle {
         mOptionsView.labelByProperty().addListener((p, o, n) -> {
             repaint();
         });
+
+        mOptionsView.plotPointProperty().addListener((p, o, n) -> {
+            repaint();
+        });
+        mOptionsView.plotGradeHProperty().addListener((p, o, n) -> {
+            repaint();
+        });
+        mOptionsView.plotGradeVProperty().addListener((p, o, n) -> {
+            repaint();
+        });
     }
 
     private void initRepaint() {
         setPainter(() -> {
             removeAllRenderables();
             mGraphicRenderer.reset();
+
             if (!mLayer.isEnabled()) {
                 return;
             }
 
-            var pointBy = mOptionsView.getPointBy();
-            switch (pointBy) {
-                case AUTO -> {
-                    mPinLayer.setEnabled(true);
-                    mSymbolLayer.setEnabled(true);
-                    var pinSymbolCutOff = 400.0;
-                    mSymbolLayer.setMaxActiveAltitude(pinSymbolCutOff);
-                    mPinLayer.setMinActiveAltitude(pinSymbolCutOff);
+            if (mOptionsView.plotPointProperty().get()) {
+                var pointBy = mOptionsView.getPointBy();
+                switch (pointBy) {
+                    case AUTO -> {
+                        mPinLayer.setEnabled(true);
+                        mSymbolLayer.setEnabled(true);
+                        var pinSymbolCutOff = 400.0;
+                        mSymbolLayer.setMaxActiveAltitude(pinSymbolCutOff);
+                        mPinLayer.setMinActiveAltitude(pinSymbolCutOff);
+                    }
+                    case NONE -> {
+                        mPinLayer.setEnabled(false);
+                        mSymbolLayer.setEnabled(false);
+                    }
+                    case PIN -> {
+                        mSymbolLayer.setEnabled(false);
+                        mPinLayer.setEnabled(true);
+                        mPinLayer.setMinActiveAltitude(Double.MIN_VALUE);
+                        mPinLayer.setMaxActiveAltitude(Double.MAX_VALUE);
+                    }
+                    case SYMBOL -> {
+                        mPinLayer.setEnabled(false);
+                        mSymbolLayer.setEnabled(true);
+                        mSymbolLayer.setMinActiveAltitude(Double.MIN_VALUE);
+                        mSymbolLayer.setMaxActiveAltitude(Double.MAX_VALUE);
+                    }
+                    default ->
+                        throw new AssertionError();
                 }
-                case NONE -> {
-                    mPinLayer.setEnabled(false);
-                    mSymbolLayer.setEnabled(false);
-                }
-                case PIN -> {
-                    mSymbolLayer.setEnabled(false);
-                    mPinLayer.setEnabled(true);
-                    mPinLayer.setMinActiveAltitude(Double.MIN_VALUE);
-                    mPinLayer.setMaxActiveAltitude(Double.MAX_VALUE);
-                }
-                case SYMBOL -> {
-                    mPinLayer.setEnabled(false);
-                    mSymbolLayer.setEnabled(true);
-                    mSymbolLayer.setMinActiveAltitude(Double.MIN_VALUE);
-                    mSymbolLayer.setMaxActiveAltitude(Double.MAX_VALUE);
-                }
-                default ->
-                    throw new AssertionError();
-            }
 
-            for (var p : new ArrayList<>(mManager.getTimeFilteredItems())) {
-                if (ObjectUtils.allNotNull(p.getLat(), p.getLon())) {
-                    var position = Position.fromDegrees(p.getLat(), p.getLon());
-                    var labelPlacemark = plotLabel(p, mOptionsView.getLabelBy(), position);
-                    var mapObjects = new ArrayList<AVListImpl>();
+                for (var p : new ArrayList<>(mManager.getTimeFilteredItems())) {
+                    if (ObjectUtils.allNotNull(p.getLat(), p.getLon())) {
+                        var position = Position.fromDegrees(p.getLat(), p.getLon());
+                        var labelPlacemark = plotLabel(p, mOptionsView.getLabelBy(), position);
+                        var mapObjects = new ArrayList<AVListImpl>();
 
-                    mapObjects.add(labelPlacemark);
-                    mapObjects.add(plotPin(p, position, labelPlacemark));
-                    mapObjects.addAll(plotSymbol(p, position, labelPlacemark));
-                    mapObjects.addAll(plotIndicators(p, position));
+                        mapObjects.add(labelPlacemark);
+                        mapObjects.add(plotPin(p, position, labelPlacemark));
+                        mapObjects.addAll(plotSymbol(p, position, labelPlacemark));
+                        mapObjects.addAll(plotIndicators(p, position));
 
-                    mGraphicRenderer.plot(p, position, mapObjects);
+                        mGraphicRenderer.plot(p, position, mapObjects);
 
-                    var leftClickRunnable = (Runnable) () -> {
-                        mManager.setSelectedItemAfterReset(p);
-                    };
+                        var leftClickRunnable = (Runnable) () -> {
+                            mManager.setSelectedItemAfterReset(p);
+                        };
 
-                    var leftDoubleClickRunnable = (Runnable) () -> {
-                        Almond.openAndActivateTopComponent((String) mLayer.getValue(WWHelper.KEY_FAST_OPEN));
-                        mGraphicRenderer.addToAllowList(p.getName());
-                        repaint();
-                    };
+                        var leftDoubleClickRunnable = (Runnable) () -> {
+                            Almond.openAndActivateTopComponent((String) mLayer.getValue(WWHelper.KEY_FAST_OPEN));
+                            mGraphicRenderer.addToAllowList(p.getName());
+                            repaint();
+                        };
 
-                    mapObjects.stream().filter(r -> r != null).forEach(r -> {
-                        r.setValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK, leftClickRunnable);
-                        r.setValue(WWHelper.KEY_RUNNABLE_LEFT_DOUBLE_CLICK, leftDoubleClickRunnable);
-                    });
+                        mapObjects.stream().filter(r -> r != null).forEach(r -> {
+                            r.setValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK, leftClickRunnable);
+                            r.setValue(WWHelper.KEY_RUNNABLE_LEFT_DOUBLE_CLICK, leftDoubleClickRunnable);
+                        });
+                    }
                 }
             }
 
