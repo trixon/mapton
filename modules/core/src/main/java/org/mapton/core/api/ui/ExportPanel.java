@@ -147,6 +147,7 @@ public class ExportPanel extends FxDialogPanel {
                         exportConfiguration.setCooTrans(mCooTransComboBox.getValue());
 
                         var progressHandle = ProgressHandleFactory.createUIHandle(exporter.getName(), null, null);
+                        exportConfiguration.setProgressHandle(progressHandle);
                         progressHandle.start();
                         exporter.export(exportConfiguration);
                         progressHandle.finish();

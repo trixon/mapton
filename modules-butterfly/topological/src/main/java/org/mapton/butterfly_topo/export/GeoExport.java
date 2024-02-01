@@ -15,11 +15,22 @@
  */
 package org.mapton.butterfly_topo.export;
 
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.LinkedHashMap;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import org.mapton.api.MCooTrans;
+import org.mapton.api.MOptions;
+import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_topo.TopoView;
 import org.mapton.core.api.ui.ExportConfiguration;
 import org.mapton.core.api.ui.ExportProvider;
+import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
+import se.trixon.almond.util.SystemHelper;
+import se.trixon.almond.util.io.Geo;
+import se.trixon.almond.util.io.GeoHeader;
+import se.trixon.almond.util.io.GeoPoint;
 import se.trixon.almond.util.swing.dialogs.SimpleDialog;
 
 /**
@@ -27,7 +38,7 @@ import se.trixon.almond.util.swing.dialogs.SimpleDialog;
  * @author Patrik Karlström
  */
 @ServiceProvider(service = ExportProvider.class)
-public class GeoExport extends ExportProvider {
+public class GeoExport extends BaseExportProvider {
 
     public GeoExport() {
         super(TopoView.class);
@@ -37,8 +48,29 @@ public class GeoExport extends ExportProvider {
 
     @Override
     public void export(ExportConfiguration exportConfiguration) {
-        System.out.println("save geo");
+        var map = new LinkedHashMap<String, String>();
+        map.put("Application", "Mapton");
+        map.put("Author", SystemHelper.getUserName());
+        map.put("Created", LocalDateTime.now().toString());
+        var geo = new Geo(new GeoHeader(map));
+        var progressHandle = exportConfiguration.getProgressHandle();
+        progressHandle.switchToDeterminate(mManager.getTimeFilteredItems().size());
+        var i = 1;
+        for (var p : mManager.getTimeFilteredItems()) {
+            var point = new GeoPoint();
+            point.setPointId(p.getName());
+            point.setRemark(p.getCategory());
+            setCoordinate(exportConfiguration.getCooTrans(), point, p);
 
+            geo.addPoint(point);
+            progressHandle.progress(i++);
+        }
+
+        try {
+            geo.write(exportConfiguration.getFile());
+        } catch (IOException ex) {
+            Exceptions.printStackTrace(ex);
+        }
     }
 
     @Override
@@ -48,7 +80,18 @@ public class GeoExport extends ExportProvider {
 
     @Override
     public String getName() {
-        return "GEO";
+        return SimpleDialog.getExtensionFilters().get("geo").getDescription();
+    }
+
+    private void setCoordinate(MCooTrans targetCT, GeoPoint point, BTopoControlPoint p) {
+        var sourceCT = MOptions.getInstance().getMapCooTrans();
+        if (sourceCT == targetCT) {
+            point.setX(p.getZeroY());
+            point.setY(p.getZeroX());
+            point.setZ(p.getZeroZ());
+        } else {
+            sourceCT.toWgs84(p.getZeroY(), p.getZeroX());
+        }
     }
 
 }
