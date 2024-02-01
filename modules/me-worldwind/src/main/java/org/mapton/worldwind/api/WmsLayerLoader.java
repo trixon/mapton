@@ -48,10 +48,13 @@ public class WmsLayerLoader {
                 capabilities.parse();
                 return capabilities;
             } catch (WWRuntimeException ex) {
+                System.err.println("Failied to load %s\t%s.".formatted(id, layerName));
                 Exceptions.printStackTrace(ex);
             } catch (URISyntaxException ex) {
+                System.err.println("Failied to load %s\t%s.".formatted(id, layerName));
                 Exceptions.printStackTrace(ex);
             } catch (Exception ex) {
+                System.err.println("Failied to load %s\t%s.".formatted(id, layerName));
                 Exceptions.printStackTrace(ex);
             }
             return null;
