@@ -37,7 +37,7 @@ import se.trixon.almond.util.fx.session.SessionComboBox;
  *
  * @author Patrik Karlström
  */
-public class MonOptionsView extends MOptionsView<MonLayerBundle> {
+public class MonOptionsView extends MOptionsView {
 
     private static final MonLabelBy DEFAULT_LABEL_BY = MonLabelBy.NONE;
     private static final PointBy DEFAULT_POINT_BY = PointBy.PIN;

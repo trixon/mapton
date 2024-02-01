@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_topo;
+package org.mapton.api.ui.forms;
 
 import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Tab;
+import org.mapton.api.Mapton;
 
 /**
  *
@@ -27,7 +28,7 @@ public class CheckedTab extends Tab {
 
     private final CheckBox mTabCheckBox;
 
-    public CheckedTab(String title, Node node) {
+    public CheckedTab(String title, Node node, String key) {
         super(title, node);
         mTabCheckBox = new CheckBox();
         setGraphic(mTabCheckBox);
@@ -43,6 +44,7 @@ public class CheckedTab extends Tab {
                     }
                 }
             }
+            Mapton.getGlobalState().put(key, n);
         });
     }
 

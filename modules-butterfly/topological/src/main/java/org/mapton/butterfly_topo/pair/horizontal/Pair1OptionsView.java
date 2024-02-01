@@ -15,19 +15,41 @@
  */
 package org.mapton.butterfly_topo.pair.horizontal;
 
-import com.dlsc.gemsfx.util.SessionManager;
-import javafx.scene.layout.VBox;
+import javafx.scene.Node;
+import org.mapton.api.ui.forms.TabOptionsViewProvider;
+import org.mapton.butterfly_topo.pair.PairManagerBase;
+import org.mapton.worldwind.api.MOptionsView;
+import org.openide.util.NbBundle;
+import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class Pair1OptionsView extends VBox {
+@ServiceProvider(service = TabOptionsViewProvider.class)
+public class Pair1OptionsView extends MOptionsView implements TabOptionsViewProvider {
 
-    private final SessionManager mSessionManager;
+    public Pair1OptionsView() {
+    }
 
-    public Pair1OptionsView(SessionManager sessionManager) {
-        mSessionManager = sessionManager;
+    @Override
+    public Node getOvNode() {
+        return this;
+    }
+
+    @Override
+    public String getOvParent() {
+        return "TopoOptionsView";
+    }
+
+    @Override
+    public int getOvPosition() {
+        return 2;
+    }
+
+    @Override
+    public String getOvTitle() {
+        return NbBundle.getMessage(PairManagerBase.class, "tilt_h");
     }
 
 }

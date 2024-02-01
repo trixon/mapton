@@ -222,6 +222,7 @@ public class ParameterEditor extends BaseTopoEditor {
         addConditionlly(sb, mLarmHCheckBox.isSelected() || mLarmPCheckBox.isSelected(), "larm");
         addConditionlly(sb, mDatFromCheckBox.isSelected(), "df");
         addConditionlly(sb, mDatToCheckBox.isSelected(), "dt");
+        addConditionlly(sb, mDatToLatestCheckBox.isSelected(), "dt");
         if (mDatToCheckBox.isSelected()) {
             addConditionlly(sb, mDatToLatestCheckBox.isSelected(), "dt");
         }

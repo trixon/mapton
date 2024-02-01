@@ -35,7 +35,7 @@ import se.trixon.almond.util.fx.session.SelectionModelSession;
  *
  * @author Patrik Karlström
  */
-public class VaderstationOptionsView extends MOptionsView<VaderstationLayerBundle> {
+public class VaderstationOptionsView extends MOptionsView {
 
     private final SimpleStringProperty mLabelByIdProperty = new SimpleStringProperty("NONE");
     private final SimpleObjectProperty<VaderstationLabelBy> mLabelByProperty = new SimpleObjectProperty<>();

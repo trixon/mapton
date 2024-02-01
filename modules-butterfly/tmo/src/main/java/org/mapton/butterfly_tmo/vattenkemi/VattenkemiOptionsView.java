@@ -35,7 +35,7 @@ import se.trixon.almond.util.fx.session.SelectionModelSession;
  *
  * @author Patrik Karlström
  */
-public class VattenkemiOptionsView extends MOptionsView<VattenkemiLayerBundle> {
+public class VattenkemiOptionsView extends MOptionsView {
 
     private final SimpleStringProperty mLabelByIdProperty = new SimpleStringProperty("NONE");
     private final SimpleObjectProperty<VattenkemiLabelBy> mLabelByProperty = new SimpleObjectProperty<>();

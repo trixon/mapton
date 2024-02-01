@@ -22,6 +22,7 @@ import static org.mapton.api.ui.MPopOver.GAP;
 import static org.mapton.api.ui.MPopOver.autoSize;
 import org.mapton.butterfly_core.api.BaseFilterPopOver;
 import org.mapton.butterfly_format.Butterfly;
+import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_topo.TopoFilterFavorite;
 import org.openide.util.NbBundle;
 
@@ -40,10 +41,12 @@ public abstract class PairFilterPopOverBase extends BaseFilterPopOver<TopoFilter
     protected final PairFilterBase mFilter;
     protected final RangeSliderPane mGradeHorizontalRangeSlider;
     protected final RangeSliderPane mGradeVerticalRangeSlider;
+    private final BDimension mDimension;
 
-    public PairFilterPopOverBase(PairFilterBase filter, PairFilterConfig config) {
+    public PairFilterPopOverBase(PairFilterBase filter, PairFilterConfig config, BDimension dimension) {
         mFilter = filter;
         mConfig = config;
+        mDimension = dimension;
 
         mDeltaHRangeSlider = new RangeSliderPane(mBundle.getString("deltaH"), mConfig.getMaxDeltaH());
         mDeltaRRangeSlider = new RangeSliderPane(mBundle.getString("deltaR"), mConfig.getMaxDeltaR());
@@ -88,18 +91,24 @@ public abstract class PairFilterPopOverBase extends BaseFilterPopOver<TopoFilter
         var vBox = new VBox(GAP,
                 getButtonBox(),
                 new Separator(),
-                mDeltaHRangeSlider,
-                new Separator(),
                 mDeltaRRangeSlider,
+                new Separator(),
+                mDeltaHRangeSlider,
                 new Separator(),
                 mDabbaHRangeSlider,
                 new Separator(),
-                mDabbaRRangeSlider,
-                new Separator(),
-                mGradeVerticalRangeSlider,
-                new Separator(),
                 mGradeHorizontalRangeSlider
         );
+
+        if (mDimension == BDimension._3d) {
+            vBox.getChildren().addAll(
+                    new Separator(),
+                    new Separator(),
+                    mDabbaRRangeSlider,
+                    new Separator(),
+                    mGradeVerticalRangeSlider
+            );
+        }
 
         autoSize(vBox);
         setContentNode(vBox);

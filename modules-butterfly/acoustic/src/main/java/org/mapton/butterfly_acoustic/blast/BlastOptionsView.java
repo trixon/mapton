@@ -37,7 +37,7 @@ import se.trixon.almond.util.fx.session.SessionComboBox;
  *
  * @author Patrik Karlström
  */
-public class BlastOptionsView extends MOptionsView<BlastLayerBundle> {
+public class BlastOptionsView extends MOptionsView {
 
     private static final BlastLabelBy DEFAULT_LABEL_BY = BlastLabelBy.NONE;
     private static final PointBy DEFAULT_POINT_BY = PointBy.PIN;

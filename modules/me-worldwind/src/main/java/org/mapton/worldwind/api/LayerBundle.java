@@ -43,6 +43,7 @@ import org.mapton.api.MTemporalRange;
 import org.mapton.api.Mapton;
 import org.mapton.worldwind.LayerObjectView;
 import org.openide.util.Exceptions;
+import org.openide.util.Lookup;
 import org.openide.util.NbPreferences;
 import se.trixon.almond.util.Dict;
 
@@ -63,8 +64,8 @@ public abstract class LayerBundle {
     private Layer mParentLayer;
     private boolean mPopulated = false;
     private final MTemporalManager mTemporalManager = MTemporalManager.getInstance();
-    private ConcurrentHashMap<String, MTemporalRange> mTemporalRanges;
     private MTemporalRange mTemporalRange;
+    private ConcurrentHashMap<String, MTemporalRange> mTemporalRanges;
     private Preferences mVisibilityPreferences = NbPreferences.forModule(LayerObjectView.class).node("layer_visibility");
 
     public LayerBundle() {
@@ -88,6 +89,17 @@ public abstract class LayerBundle {
 
     public void attachTopComponentToLayer(String topComponentID, Layer layer) {
         layer.setValue(WWHelper.KEY_FAST_OPEN, topComponentID);
+    }
+
+    public void connectToOtherBundle(Class<? extends LayerBundle> cls) {
+        var otherLayerBundle = Lookup.getDefault().lookupAll(cls).stream().findFirst().orElse(null);
+        if (otherLayerBundle != null) {
+            otherLayerBundle.mParentLayer.addPropertyChangeListener("Enabled", pce -> {
+                mParentLayer.setEnabled(otherLayerBundle.mParentLayer.isEnabled());
+            });
+        } else {
+            System.out.println("MASTER BUNDLE NOT FOUND");
+        }
     }
 
     public ObservableList<Layer> getLayers() {

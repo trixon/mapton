@@ -35,7 +35,7 @@ import se.trixon.almond.util.fx.session.SelectionModelSession;
  *
  * @author Patrik Karlström
  */
-public class TunnelvattenOptionsView extends MOptionsView<TunnelvattenLayerBundle> {
+public class TunnelvattenOptionsView extends MOptionsView {
 
     private final SimpleStringProperty mLabelByIdProperty = new SimpleStringProperty("NONE");
     private final SimpleObjectProperty<TunnelvattenLabelBy> mLabelByProperty = new SimpleObjectProperty<>();

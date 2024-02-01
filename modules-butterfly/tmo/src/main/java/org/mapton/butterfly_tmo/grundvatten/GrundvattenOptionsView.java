@@ -36,7 +36,7 @@ import se.trixon.almond.util.fx.session.SessionComboBox;
  *
  * @author Patrik Karlström
  */
-public class GrundvattenOptionsView extends MOptionsView<GrundvattenLayerBundle> {
+public class GrundvattenOptionsView extends MOptionsView {
 
     private static final GrundvattenLabelBy DEFAULT_LABEL_BY = GrundvattenLabelBy.NAME;
     private static final PointBy DEFAULT_POINT_BY = PointBy.PIN;

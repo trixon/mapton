@@ -20,6 +20,7 @@ import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.topo.BTopoPointPair;
 import org.mapton.butterfly_topo.api.TopoManager;
+import org.openide.util.Exceptions;
 
 /**
  *
@@ -32,7 +33,14 @@ public abstract class PairManagerBase extends BaseManager<BTopoPointPair> {
     public PairManagerBase(Class<BTopoPointPair> typeParameterClass) {
         super(typeParameterClass);
         TopoManager.getInstance().getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BTopoControlPoint> c) -> {
-            load();
+            new Thread(() -> {
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException ex) {
+                    Exceptions.printStackTrace(ex);
+                }
+                load();
+            }).start();
         });
 
     }

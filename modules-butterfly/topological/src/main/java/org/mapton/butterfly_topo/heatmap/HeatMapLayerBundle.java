@@ -15,10 +15,13 @@
  */
 package org.mapton.butterfly_topo.heatmap;
 
+import org.mapton.api.ui.forms.TabOptionsViewProvider;
 import java.util.ArrayList;
 import javafx.collections.ListChangeListener;
+import javafx.scene.Node;
 import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.api.MLatLon;
+import org.mapton.api.Mapton;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_topo.TopoBaseLayerBundle;
 import org.mapton.worldwind.api.LayerBundle;
@@ -36,10 +39,24 @@ import se.trixon.almond.util.SDict;
 @ServiceProvider(service = LayerBundle.class)
 public class HeatMapLayerBundle extends TopoBaseLayerBundle {
 
+    private HeatMapOptionsView mOptionsView;
+
     public HeatMapLayerBundle() {
         init();
         initRepaint();
         initListeners();
+    }
+
+    @Override
+    public Node getOptionsView() {
+        if (mOptionsView == null) {
+            mOptionsView = (HeatMapOptionsView) TabOptionsViewProvider.getInstance(HeatMapOptionsView.class);
+            if (mOptionsView != null) {
+                mOptionsView.setLayerBundle(this);
+            }
+        }
+
+        return mOptionsView;
     }
 
     @Override
@@ -60,6 +77,8 @@ public class HeatMapLayerBundle extends TopoBaseLayerBundle {
 
         mLayer.setPickEnabled(false);
         mLayer.setEnabled(false);
+
+        setVisibleInLayerManager(mLayer, false);
     }
 
     private void initListeners() {
@@ -73,6 +92,11 @@ public class HeatMapLayerBundle extends TopoBaseLayerBundle {
                 repaint();
             }
         });
+
+        Mapton.getGlobalState().addListener(gsce -> {
+            mLayer.setEnabled(gsce.getValue());
+            repaint();
+        }, HeatMapOptionsView.class.getName());
     }
 
     private void initRepaint() {

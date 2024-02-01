@@ -81,16 +81,14 @@ public class Pair3Manager extends PairManagerBase {
                     continue;
                 }
                 var point = new Point2D(p1.getZeroX(), p1.getZeroY());
-                var n1 = p1.getName();
                 for (var p2 : sourcePoints) {
                     if (ObjectUtils.anyNull(p2.getZeroX(), p2.getZeroY())) {
                         continue;
                     }
-                    var n2 = p2.getName();
                     double distance = point.distance(p2.getZeroX(), p2.getZeroY());
                     if (p1 != p2 && distance > MIN_RADIAL_DISTANCE && distance < MAX_RADIAL_DISTANCE) {
-                        if (!pointToPoints.computeIfAbsent(n2, k -> new HashSet<>()).contains(n1)) {//Skip A-B, B-A
-                            pointToPoints.computeIfAbsent(n1, k -> new HashSet<>()).add(n2);
+                        if (!pointToPoints.computeIfAbsent(p2.getName(), k -> new HashSet<>()).contains(p1.getName())) {//Skip A-B, B-A
+                            pointToPoints.computeIfAbsent(p1.getName(), k -> new HashSet<>()).add(p2.getName());
                         }
                     }
                 }
@@ -98,8 +96,7 @@ public class Pair3Manager extends PairManagerBase {
 
             var tiltPairs = new ArrayList<BTopoPointPair>();
             for (var entry : pointToPoints.entrySet()) {
-                var n1 = entry.getKey();
-                var p1 = mTopoManager.getItemForKey(n1);
+                var p1 = mTopoManager.getItemForKey(entry.getKey());
                 for (var n2 : entry.getValue()) {
                     var p2 = mTopoManager.getItemForKey(n2);
                     var pair = new BTopoPointPair(p1, p2);

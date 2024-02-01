@@ -13,23 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_topo.pair.vertical;
+package org.mapton.butterfly_topo.heatmap;
 
 import javafx.scene.Node;
 import org.mapton.api.ui.forms.TabOptionsViewProvider;
-import org.mapton.butterfly_topo.pair.PairManagerBase;
 import org.mapton.worldwind.api.MOptionsView;
-import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
+import se.trixon.almond.util.SDict;
 
 /**
  *
  * @author Patrik Karlström
  */
 @ServiceProvider(service = TabOptionsViewProvider.class)
-public class Pair3OptionsView extends MOptionsView implements TabOptionsViewProvider {
+public class HeatMapOptionsView extends MOptionsView implements TabOptionsViewProvider {
 
-    public Pair3OptionsView() {
+    public HeatMapOptionsView() {
     }
 
     @Override
@@ -44,12 +43,12 @@ public class Pair3OptionsView extends MOptionsView implements TabOptionsViewProv
 
     @Override
     public int getOvPosition() {
-        return 2;
+        return 1;
     }
 
     @Override
     public String getOvTitle() {
-        return NbBundle.getMessage(PairManagerBase.class, "tilt_v");
+        return SDict.HEAT_MAP.toString();
     }
 
 }

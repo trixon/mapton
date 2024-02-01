@@ -118,12 +118,6 @@ public class TopoLayerBundle extends TopoBaseLayerBundle {
         mOptionsView.plotPointProperty().addListener((p, o, n) -> {
             repaint();
         });
-        mOptionsView.plotGradeHProperty().addListener((p, o, n) -> {
-            repaint();
-        });
-        mOptionsView.plotGradeVProperty().addListener((p, o, n) -> {
-            repaint();
-        });
     }
 
     private void initRepaint() {

@@ -35,7 +35,7 @@ import se.trixon.almond.util.fx.session.SelectionModelSession;
  *
  * @author Patrik Karlström
  */
-public class RorelseOptionsView extends MOptionsView<RorelseLayerBundle> {
+public class RorelseOptionsView extends MOptionsView {
 
     private final SimpleStringProperty mLabelByIdProperty = new SimpleStringProperty("NONE");
     private final SimpleObjectProperty<RorelseLabelBy> mLabelByProperty = new SimpleObjectProperty<>();

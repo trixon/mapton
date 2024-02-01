@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_topo.pair.vertical;
 
+import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_topo.pair.PairFilterBase;
 import org.mapton.butterfly_topo.pair.PairFilterConfig;
 import org.mapton.butterfly_topo.pair.PairFilterPopOverBase;
@@ -26,7 +27,7 @@ import org.mapton.butterfly_topo.pair.PairFilterPopOverBase;
 public class Pair3FilterPopOver extends PairFilterPopOverBase {
 
     public Pair3FilterPopOver(PairFilterBase filter, PairFilterConfig config) {
-        super(filter, config);
+        super(filter, config, BDimension._3d);
     }
 
 }

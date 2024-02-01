@@ -34,7 +34,7 @@ import se.trixon.almond.util.fx.session.SessionComboBox;
  *
  * @author Patrik Karlström
  */
-public class ActOptionsView extends MOptionsView<ActLayerBundle> {
+public class ActOptionsView extends MOptionsView {
 
     private static final ActLabelBy DEFAULT_LABEL_BY = ActLabelBy.NONE;
     private static final PointBy DEFAULT_POINT_BY = PointBy.PIN;

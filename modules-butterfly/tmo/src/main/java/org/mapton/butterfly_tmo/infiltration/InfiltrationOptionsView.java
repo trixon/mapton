@@ -35,7 +35,7 @@ import se.trixon.almond.util.fx.session.SelectionModelSession;
  *
  * @author Patrik Karlström
  */
-public class InfiltrationOptionsView extends MOptionsView<InfiltrationLayerBundle> {
+public class InfiltrationOptionsView extends MOptionsView {
 
     private final SimpleStringProperty mLabelByIdProperty = new SimpleStringProperty("NONE");
     private final SimpleObjectProperty<InfiltrationLabelBy> mLabelByProperty = new SimpleObjectProperty<>();

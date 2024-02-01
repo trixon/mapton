@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_topo.pair.horizontal;
 
+import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_topo.pair.PairFilterBase;
 import org.mapton.butterfly_topo.pair.PairFilterConfig;
 import org.mapton.butterfly_topo.pair.PairFilterPopOverBase;
@@ -26,8 +27,7 @@ import org.mapton.butterfly_topo.pair.PairFilterPopOverBase;
 public class Pair1FilterPopOver extends PairFilterPopOverBase {
 
     public Pair1FilterPopOver(PairFilterBase filter, PairFilterConfig config) {
-        super(filter, config);
-        mDabbaRRangeSlider.setDisable(true);
+        super(filter, config, BDimension._1d);
     }
 
 }

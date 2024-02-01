@@ -21,18 +21,20 @@ import javafx.collections.ListChangeListener;
 /**
  *
  * @author Patrik Karlström
- * @param <T>
  */
-public class MOptionsView<T extends LayerBundle> extends org.mapton.api.ui.MOptionsView {
+public class MOptionsView extends org.mapton.api.ui.MOptionsView {
 
     private ChangeListener<Object> mChangeListener;
-    private final T mLayerBundle;
+    private LayerBundle mLayerBundle;
     private ListChangeListener<Object> mListChangeListener;
 
-    public MOptionsView(T layerBundle) {
-        mLayerBundle = layerBundle;
-
+    public MOptionsView() {
         initListeners();
+    }
+
+    public MOptionsView(LayerBundle layerBundle) {
+        this();
+        mLayerBundle = layerBundle;
     }
 
     public ChangeListener<Object> getChangeListener() {
@@ -41,6 +43,10 @@ public class MOptionsView<T extends LayerBundle> extends org.mapton.api.ui.MOpti
 
     public ListChangeListener<Object> getListChangeListener() {
         return mListChangeListener;
+    }
+
+    public void setLayerBundle(LayerBundle layerBundle) {
+        mLayerBundle = layerBundle;
     }
 
     private void initListeners() {
