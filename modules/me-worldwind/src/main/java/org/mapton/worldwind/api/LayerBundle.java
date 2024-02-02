@@ -91,11 +91,16 @@ public abstract class LayerBundle {
         layer.setValue(WWHelper.KEY_FAST_OPEN, topComponentID);
     }
 
-    public void connectToOtherBundle(Class<? extends LayerBundle> cls) {
+    public void connectToOtherBundle(Class<? extends LayerBundle> cls, String checkBoxKey) {
         var otherLayerBundle = Lookup.getDefault().lookupAll(cls).stream().findFirst().orElse(null);
         if (otherLayerBundle != null) {
             otherLayerBundle.mParentLayer.addPropertyChangeListener("Enabled", pce -> {
-                mParentLayer.setEnabled(otherLayerBundle.mParentLayer.isEnabled());
+                var otherLayerEnabled = otherLayerBundle.mParentLayer.isEnabled();
+                var tabChecked = true;
+                if (checkBoxKey != null) {
+                    tabChecked = Mapton.getGlobalState().<Boolean>getOrDefault(checkBoxKey, false);
+                }
+                mParentLayer.setEnabled(otherLayerEnabled && tabChecked);
             });
         } else {
             System.out.println("MASTER BUNDLE NOT FOUND");

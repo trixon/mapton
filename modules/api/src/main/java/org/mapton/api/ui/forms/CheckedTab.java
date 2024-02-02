@@ -27,25 +27,33 @@ import org.mapton.api.Mapton;
 public class CheckedTab extends Tab {
 
     private final CheckBox mTabCheckBox;
+    private final String mKey;
 
     public CheckedTab(String title, Node node, String key) {
         super(title, node);
+        mKey = key;
         mTabCheckBox = new CheckBox();
         setGraphic(mTabCheckBox);
         disableProperty().bind(mTabCheckBox.selectedProperty().not());
 
         mTabCheckBox.selectedProperty().addListener((p, o, n) -> {
-            if (n) {
-                getTabPane().getSelectionModel().select(this);
-            } else {
-                for (var tab : getTabPane().getTabs()) {
-                    if (!tab.isDisabled()) {
-                        getTabPane().getSelectionModel().select(tab);
+            if (getTabPane() != null) {
+                if (n) {
+                    getTabPane().getSelectionModel().select(this);
+                } else {
+                    for (var tab : getTabPane().getTabs()) {
+                        if (!tab.isDisabled()) {
+                            getTabPane().getSelectionModel().select(tab);
+                        }
                     }
                 }
             }
             Mapton.getGlobalState().put(key, n);
         });
+    }
+
+    public String getKey() {
+        return mKey;
     }
 
     public CheckBox getTabCheckBox() {

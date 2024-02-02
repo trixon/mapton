@@ -168,7 +168,8 @@ public class TopoOptionsView extends MOptionsView {
         FxHelper.autoSizeRegionHorizontal(mPointScb, mColorScb, mLabelMenuButton, mGraphicSccb);
 
         mTabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
-        mPointTab = new CheckedTab(SDict.POINTS.toString(), gp, "CheckedTab.Points");
+        mPointTab = new CheckedTab(SDict.POINTS.toString(), gp, "Points");
+        mPointTab.getTabCheckBox().setSelected(true);
 
         mTabPane.getTabs().setAll(mPointTab);
         for (var optionsView : TabOptionsViewProvider.getProviders("TopoOptionsView")) {
@@ -198,12 +199,18 @@ public class TopoOptionsView extends MOptionsView {
 
     private void initSession() {
         var sessionManager = getSessionManager();
-        sessionManager.register("options.tabPoints", mPointTab.getTabCheckBox().selectedProperty());
         sessionManager.register("options.pointBy", mPointScb.selectedIndexProperty());
         sessionManager.register("options.colorBy", mColorScb.selectedIndexProperty());
         sessionManager.register("options.labelBy", mLabelByIdProperty);
         sessionManager.register("options.checkedGraphics", mGraphicSccb.checkedStringProperty());
         sessionManager.register("options.checkedIndicators", mIndicatorSccb.checkedStringProperty());
+
+        mTabPane.getTabs().stream()
+                .filter(t -> t instanceof CheckedTab)
+                .map(t -> (CheckedTab) t)
+                .forEach(t -> {
+                    sessionManager.register("options.CheckedTab." + t.getKey(), t.getTabCheckBox().selectedProperty());
+                });
 
         mLabelByProperty.set(TopoLabelBy.valueOf(mLabelByIdProperty.get()));
     }

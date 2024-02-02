@@ -15,15 +15,17 @@
  */
 package org.mapton.butterfly_topo.heatmap;
 
-import org.mapton.api.ui.forms.TabOptionsViewProvider;
+import gov.nasa.worldwind.WorldWind;
 import java.util.ArrayList;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.api.MLatLon;
 import org.mapton.api.Mapton;
+import org.mapton.api.ui.forms.TabOptionsViewProvider;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_topo.TopoBaseLayerBundle;
+import org.mapton.butterfly_topo.TopoLayerBundle;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.analytic.AnalyticGrid;
 import org.mapton.worldwind.api.analytic.CellAggregate;
@@ -79,6 +81,7 @@ public class HeatMapLayerBundle extends TopoBaseLayerBundle {
         mLayer.setEnabled(false);
 
         setVisibleInLayerManager(mLayer, false);
+        connectToOtherBundle(TopoLayerBundle.class, HeatMapOptionsView.class.getName());
     }
 
     private void initListeners() {
@@ -114,12 +117,24 @@ public class HeatMapLayerBundle extends TopoBaseLayerBundle {
                     .forEach(p -> {
                         var value = Double.valueOf(p.ext().getNumOfObservationsFiltered());
                         values.add(new GridValue(new MLatLon(p.getLat(), p.getLon()), value));
-
                     });
 
-            int width = 5;
-            int height = 30;
+            if (values.isEmpty()) {
+                return;
+            }
 
+            var latLon = values.get(0).getLatLon();
+            var northLatLon = new MLatLon(latLon.getLatitude() + 0.01, latLon.getLongitude());
+            var eastLatLon = new MLatLon(latLon.getLatitude(), latLon.getLongitude() + 0.01);
+            var nortDistance = latLon.distance(northLatLon);
+            var eastDistance = latLon.distance(eastLatLon);
+//TODO
+//TODO plus optionsview checkbox restore
+            int width = 20;
+            int height = (int) (width * nortDistance / eastDistance * 2);
+            System.out.println("WH");
+            System.out.println(width);
+            System.out.println(height);
             var gridData = new GridData(width, height, values, CellAggregate.SUM);
 
             var minValue = values.stream()
@@ -136,7 +151,10 @@ public class HeatMapLayerBundle extends TopoBaseLayerBundle {
             analyticGrid.setZeroValueSearchRange(5);
             analyticGrid.setGridData(gridData);
 
-            mLayer.addRenderable(analyticGrid.getSurface());
+            var surface = analyticGrid.getSurface();
+            surface.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
+
+            mLayer.addRenderable(surface);
             setDragEnabled(false);
         });
     }

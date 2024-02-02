@@ -384,6 +384,7 @@ public class LayerObjectView extends BorderPane implements MActivatable {
                         } catch (UnsupportedOperationException e) {
                             System.err.println("Error detected in WWLayerObjectView");
                             System.err.println(e.toString());
+                            System.err.println(e.getMessage());
                         }
                     }
 

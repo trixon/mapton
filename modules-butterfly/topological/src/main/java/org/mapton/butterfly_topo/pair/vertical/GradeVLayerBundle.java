@@ -37,7 +37,6 @@ import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.SDict;
-import se.trixon.almond.util.swing.SwingHelper;
 
 /**
  *
@@ -134,9 +133,7 @@ public class GradeVLayerBundle extends TopoBaseLayerBundle {
 
         mLayer.setEnabled(false);
         setVisibleInLayerManager(mLayer, false);
-        SwingHelper.runLaterDelayed(3000, () -> {
-            connectToOtherBundle(TopoLayerBundle.class);
-        });
+        connectToOtherBundle(TopoLayerBundle.class, Pair3OptionsView.class.getName());
     }
 
     private void initListeners() {
