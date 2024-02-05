@@ -28,7 +28,6 @@ import org.mapton.api.Mapton;
 import org.mapton.api.ui.forms.TabOptionsViewProvider;
 import org.mapton.butterfly_format.types.topo.BTopoPointPair;
 import org.mapton.butterfly_topo.TopoBaseLayerBundle;
-import org.mapton.butterfly_topo.TopoLabelBy;
 import org.mapton.butterfly_topo.TopoLayerBundle;
 import org.mapton.butterfly_topo.pair.GradeAttributeManager;
 import org.mapton.butterfly_topo.pair.PairManagerBase;
@@ -36,6 +35,7 @@ import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
+import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.SDict;
 
 /**
@@ -46,7 +46,6 @@ import se.trixon.almond.util.SDict;
 public class GradeHLayerBundle extends TopoBaseLayerBundle {
 
     private final GradeAttributeManager mAttributeManager = GradeAttributeManager.getInstance();
-
     private final ResourceBundle mBundle = NbBundle.getBundle(PairManagerBase.class);
     private final Pair1Manager mManager = Pair1Manager.getInstance();
     private Pair1OptionsView mOptionsView;
@@ -74,15 +73,14 @@ public class GradeHLayerBundle extends TopoBaseLayerBundle {
         return mOptionsView;
     }
 
-    public PointPlacemark plotLabel(BTopoPointPair p, TopoLabelBy labelBy, Position position) {
-//        if (labelBy == TopoLabelBy.NONE) {
-//            return null;
-//        }
+    public PointPlacemark plotLabel(BTopoPointPair p, GradeHLabelBy labelBy, Position position) {
+        if (labelBy == GradeHLabelBy.NONE) {
+            return null;
+        }
 
         String label;
         try {
-//            label = mOptionsView.getLabelBy().getLabel(p);
-            label = p.getName();
+            label = mOptionsView.getLabelBy().getLabel(p);
         } catch (Exception e) {
             label = "ERROR %s <<<<<<<<".formatted(p.getName());
         }
@@ -157,6 +155,10 @@ public class GradeHLayerBundle extends TopoBaseLayerBundle {
             mLayer.setEnabled(gsce.getValue());
             repaint();
         }, Pair1OptionsView.class.getName());
+
+        ((Pair1OptionsView) getOptionsView()).labelByProperty().addListener((p, o, n) -> {
+            repaint();
+        });
     }
 
     private void initRepaint() {
@@ -175,37 +177,24 @@ public class GradeHLayerBundle extends TopoBaseLayerBundle {
 
                         mapObjects.add(labelPlacemark);
                         mapObjects.add(plotPin(p, position, labelPlacemark));
+//                    mapObjects.addAll(plotSymbol(p, position, labelPlacemark));
+
+                        var leftClickRunnable = (Runnable) () -> {
+                            mManager.setSelectedItemAfterReset(p);
+                        };
+
+                        var leftDoubleClickRunnable = (Runnable) () -> {
+                            Almond.openAndActivateTopComponent((String) mLayer.getValue(WWHelper.KEY_FAST_OPEN));
+//                            mGraphicRenderer.addToAllowList(p.getName());
+                            repaint();
+                        };
+
+                        mapObjects.stream().filter(r -> r != null).forEach(r -> {
+                            r.setValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK, leftClickRunnable);
+                            r.setValue(WWHelper.KEY_RUNNABLE_LEFT_DOUBLE_CLICK, leftDoubleClickRunnable);
+                        });
                     });
 
-//            for (var p : new ArrayList<>(mManager.getTimeFilteredItems())) {
-//                if (ObjectUtils.allNotNull(p.getLat(), p.getLon())) {
-//                    var position = Position.fromDegrees(p.getLat(), p.getLon());
-//                    var labelPlacemark = plotLabel(p, mOptionsView.getLabelBy(), position);
-//                    var mapObjects = new ArrayList<AVListImpl>();
-//
-//                    mapObjects.add(labelPlacemark);
-//                    mapObjects.add(plotPin(p, position, labelPlacemark));
-//                    mapObjects.addAll(plotSymbol(p, position, labelPlacemark));
-//                    mapObjects.addAll(plotIndicators(p, position));
-//
-//                    mGraphicRenderer.plot(p, position, mapObjects);
-//
-//                    var leftClickRunnable = (Runnable) () -> {
-//                        mManager.setSelectedItemAfterReset(p);
-//                    };
-//
-//                    var leftDoubleClickRunnable = (Runnable) () -> {
-//                        Almond.openAndActivateTopComponent((String) mLayer.getValue(WWHelper.KEY_FAST_OPEN));
-//                        mGraphicRenderer.addToAllowList(p.getName());
-//                        repaint();
-//                    };
-//
-//                    mapObjects.stream().filter(r -> r != null).forEach(r -> {
-//                        r.setValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK, leftClickRunnable);
-//                        r.setValue(WWHelper.KEY_RUNNABLE_LEFT_DOUBLE_CLICK, leftDoubleClickRunnable);
-//                    });
-//                }
-//            }
             setDragEnabled(false);
         });
     }

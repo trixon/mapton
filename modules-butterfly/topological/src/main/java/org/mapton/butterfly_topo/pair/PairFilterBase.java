@@ -114,7 +114,7 @@ public abstract class PairFilterBase extends FormFilter<PairManagerBase> {
 
     protected boolean validateGradeHorizontal(BTopoPointPair p) {
         if (mGradeHorizontalSelectedProperty.get()) {
-            return inRange(p.getDistanceHeight(), mGradeHorizontalMinProperty, mGradeHorizontalMaxProperty);
+            return inRange(p.getZPerMille(), mGradeHorizontalMinProperty, mGradeHorizontalMaxProperty);
         } else {
             return true;
         }
@@ -122,7 +122,7 @@ public abstract class PairFilterBase extends FormFilter<PairManagerBase> {
 
     protected boolean validateGradeVertical(BTopoPointPair p) {
         if (mGradeVerticalSelectedProperty.get()) {
-            return inRange(p.getDistancePlane(), mGradeVerticalMinProperty, mGradeVerticalMaxProperty);
+            return inRange(p.getRPerMille(), mGradeVerticalMinProperty, mGradeVerticalMaxProperty);
         } else {
             return true;
         }
