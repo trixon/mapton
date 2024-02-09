@@ -16,6 +16,8 @@
 package org.mapton.butterfly_topo.pair;
 
 import gov.nasa.worldwind.geom.Position;
+import gov.nasa.worldwind.render.BasicShapeAttributes;
+import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
 import java.awt.Color;
@@ -29,14 +31,76 @@ import se.trixon.almond.util.GraphicsHelper;
  */
 public class GradeAttributeManager {
 
+    private BasicShapeAttributes mGroundCylinderAttributes;
+
+    private BasicShapeAttributes mGroundPathAttributes;
+    private BasicShapeAttributes mGradeHAttributes;
+
     private PointPlacemarkAttributes mLabelPlacemarkAttributes;
     private PointPlacemarkAttributes[] mPinAttributes;
+
+    public static GradeAttributeManager getInstance() {
+        return GradeAttributeManagerHolder.INSTANCE;
+    }
 
     private GradeAttributeManager() {
     }
 
-    public static GradeAttributeManager getInstance() {
-        return GradeAttributeManagerHolder.INSTANCE;
+    public BasicShapeAttributes getGroundPathAttributes() {
+        if (mGroundPathAttributes == null) {
+            mGroundPathAttributes = new BasicShapeAttributes();
+            mGroundPathAttributes.setDrawOutline(true);
+            mGroundPathAttributes.setOutlineMaterial(Material.PINK);
+            mGroundPathAttributes.setEnableLighting(false);
+            mGroundPathAttributes.setOutlineWidth(1);
+        }
+
+        return mGroundPathAttributes;
+    }
+
+    public BasicShapeAttributes getGroundCylinderAttributes() {
+        if (mGroundCylinderAttributes == null) {
+            mGroundCylinderAttributes = new BasicShapeAttributes();
+            mGroundCylinderAttributes.setDrawOutline(false);
+            mGroundCylinderAttributes.setDrawInterior(true);
+            mGroundCylinderAttributes.setInteriorMaterial(Material.PINK);
+            mGroundCylinderAttributes.setEnableLighting(true);
+            mGroundCylinderAttributes.setOutlineWidth(1);
+        }
+
+        return mGroundCylinderAttributes;
+    }
+
+    public BasicShapeAttributes getGradeHAttributes(BTopoPointPair p) {
+//        if (mGradeHAttributes == null) {
+        mGradeHAttributes = new BasicShapeAttributes();
+        mGradeHAttributes.setDrawOutline(true);
+        mGradeHAttributes.setOutlineMaterial(Material.BLUE);
+        mGradeHAttributes.setEnableLighting(false);
+        mGradeHAttributes.setOutlineWidth(2);
+//        }
+        var material = Material.GREEN;
+        var grade = Math.abs(p.getZPerMille());
+        if (grade >= 1.0) {
+            material = Material.RED;
+        } else if (grade >= 0.5) {
+            material = Material.YELLOW;
+        }
+        mGradeHAttributes.setOutlineMaterial(material);
+
+        return mGradeHAttributes;
+    }
+
+    public PointPlacemarkAttributes getLabelPlacemarkAttributes() {
+        if (mLabelPlacemarkAttributes == null) {
+            mLabelPlacemarkAttributes = new PointPlacemarkAttributes(new PointPlacemark(Position.ZERO).getDefaultAttributes());
+            mLabelPlacemarkAttributes.setLabelScale(1.6);
+            mLabelPlacemarkAttributes.setImageColor(GraphicsHelper.colorAddAlpha(Color.RED, 0));
+            mLabelPlacemarkAttributes.setScale(0.0);
+            mLabelPlacemarkAttributes.setImageAddress("images/pushpins/plain-white.png");
+        }
+
+        return mLabelPlacemarkAttributes;
     }
 
     public PointPlacemarkAttributes getPinAttributes(BTopoPointPair p) {
@@ -60,18 +124,6 @@ public class GradeAttributeManager {
 //            attrs.setImageColor(getColor(mColorBy, p));
 //        }
         return attrs;
-    }
-
-    public PointPlacemarkAttributes getLabelPlacemarkAttributes() {
-        if (mLabelPlacemarkAttributes == null) {
-            mLabelPlacemarkAttributes = new PointPlacemarkAttributes(new PointPlacemark(Position.ZERO).getDefaultAttributes());
-            mLabelPlacemarkAttributes.setLabelScale(1.6);
-            mLabelPlacemarkAttributes.setImageColor(GraphicsHelper.colorAddAlpha(Color.RED, 0));
-            mLabelPlacemarkAttributes.setScale(0.75);
-            mLabelPlacemarkAttributes.setImageAddress("images/pushpins/plain-white.png");
-        }
-
-        return mLabelPlacemarkAttributes;
     }
 
     private static class GradeAttributeManagerHolder {

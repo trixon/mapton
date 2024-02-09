@@ -49,12 +49,13 @@ public class GradeHLayerBundle extends TopoBaseLayerBundle {
     private final ResourceBundle mBundle = NbBundle.getBundle(PairManagerBase.class);
     private final Pair1Manager mManager = Pair1Manager.getInstance();
     private Pair1OptionsView mOptionsView;
+    private final GradeHRenderer mGraphicRenderer;
 
     public GradeHLayerBundle() {
         init();
         initRepaint();
-//        mOptionsView = new TopoOptionsView(this);
-//        mGraphicRenderer = new GraphicRenderer(mLayer, mOptionsView.getComponentCheckModel());
+        getOptionsView();
+        mGraphicRenderer = new GradeHRenderer(mLayer, mMuteLayer, mOptionsView.getComponentCheckModel());
         initListeners();
 //        mAttributeManager.setColorBy(mOptionsView.getColorBy());
 
@@ -118,7 +119,7 @@ public class GradeHLayerBundle extends TopoBaseLayerBundle {
 
     @Override
     public void populate() throws Exception {
-        getLayers().addAll(mLayer, mLabelLayer, mSymbolLayer, mPinLayer);
+        getLayers().addAll(mLayer, mLabelLayer, mSymbolLayer, mPinLayer, mMuteLayer);
         repaint(DEFAULT_REPAINT_DELAY);
     }
 
@@ -129,8 +130,9 @@ public class GradeHLayerBundle extends TopoBaseLayerBundle {
         attachTopComponentToLayer("TopoTopComponent", mLayer);
         mLabelLayer.setMaxActiveAltitude(2000);
         setParentLayer(mLayer);
-        setAllChildLayers(mLabelLayer, mSymbolLayer, mPinLayer);
+        setAllChildLayers(mLabelLayer, mSymbolLayer, mPinLayer, mMuteLayer);
         mLayer.setPickEnabled(true);
+        mMuteLayer.setPickEnabled(false);
 
         mLayer.setEnabled(false);
         setVisibleInLayerManager(mLayer, false);
@@ -159,15 +161,38 @@ public class GradeHLayerBundle extends TopoBaseLayerBundle {
         ((Pair1OptionsView) getOptionsView()).labelByProperty().addListener((p, o, n) -> {
             repaint();
         });
+
+        mOptionsView.plotPointProperty().addListener((p, o, n) -> {
+            repaint();
+        });
+
     }
 
     private void initRepaint() {
         setPainter(() -> {
             removeAllRenderables();
+            mGraphicRenderer.reset();
 
             if (!mLayer.isEnabled()) {
                 return;
             }
+
+            var pointBy = mOptionsView.getPointBy();
+            switch (pointBy) {
+                case NONE -> {
+                    mPinLayer.setEnabled(false);
+                    mSymbolLayer.setEnabled(false);
+                }
+                case PIN -> {
+                    mSymbolLayer.setEnabled(false);
+                    mPinLayer.setEnabled(true);
+                    mPinLayer.setMinActiveAltitude(Double.MIN_VALUE);
+                    mPinLayer.setMaxActiveAltitude(Double.MAX_VALUE);
+                }
+                default ->
+                    throw new AssertionError();
+            }
+
             mManager.getTimeFilteredItems().stream()
                     .filter(p -> ObjectUtils.allNotNull(p.getLat(), p.getLon()))
                     .forEachOrdered(p -> {
@@ -178,6 +203,7 @@ public class GradeHLayerBundle extends TopoBaseLayerBundle {
                         mapObjects.add(labelPlacemark);
                         mapObjects.add(plotPin(p, position, labelPlacemark));
 //                    mapObjects.addAll(plotSymbol(p, position, labelPlacemark));
+                        mGraphicRenderer.plot(p, position, mapObjects);
 
                         var leftClickRunnable = (Runnable) () -> {
                             mManager.setSelectedItemAfterReset(p);
@@ -185,7 +211,7 @@ public class GradeHLayerBundle extends TopoBaseLayerBundle {
 
                         var leftDoubleClickRunnable = (Runnable) () -> {
                             Almond.openAndActivateTopComponent((String) mLayer.getValue(WWHelper.KEY_FAST_OPEN));
-//                            mGraphicRenderer.addToAllowList(p.getName());
+                            mGraphicRenderer.addToAllowList(p.getName());
                             repaint();
                         };
 

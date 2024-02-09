@@ -39,7 +39,7 @@ public abstract class PairFilterPopOverBase extends BaseFilterPopOver<TopoFilter
     protected final RangeSliderPane mDeltaHRangeSlider;
     protected final RangeSliderPane mDeltaRRangeSlider;
     protected final PairFilterBase mFilter;
-    protected final RangeSliderPane mGradeHorizontalRangeSlider;
+    protected final SliderPane mGradeHorizontalRangeSlider;
     protected final RangeSliderPane mGradeVerticalRangeSlider;
     private final BDimension mDimension;
 
@@ -53,7 +53,7 @@ public abstract class PairFilterPopOverBase extends BaseFilterPopOver<TopoFilter
         mDabbaHRangeSlider = new RangeSliderPane(mBundle.getString("dabbaH"), mConfig.getMaxDabbaH());
         mDabbaRRangeSlider = new RangeSliderPane(mBundle.getString("dabbaR"), mConfig.getMaxDabbaR());
         mGradeVerticalRangeSlider = new RangeSliderPane(mBundle.getString("gradeV"), mConfig.getMaxGradeVertical());
-        mGradeHorizontalRangeSlider = new RangeSliderPane(mBundle.getString("gradeH"), mConfig.getMaxGradeHorizontal());
+        mGradeHorizontalRangeSlider = new SliderPane(mBundle.getString("gradeH"), mConfig.getMinGradeHorizontal());
 
         createUI();
         initListeners();
@@ -134,8 +134,7 @@ public abstract class PairFilterPopOverBase extends BaseFilterPopOver<TopoFilter
         mFilter.mDabbaRMaxProperty.bind(mDabbaRRangeSlider.maxProperty());
 
         mFilter.mGradeHorizontalSelectedProperty.bind(mGradeHorizontalRangeSlider.selectedProperty());
-        mFilter.mGradeHorizontalMinProperty.bind(mGradeHorizontalRangeSlider.minProperty());
-        mFilter.mGradeHorizontalMaxProperty.bind(mGradeHorizontalRangeSlider.maxProperty());
+        mFilter.mGradeHorizontalValueProperty.bind(mGradeHorizontalRangeSlider.valueProperty());
 
         mFilter.mGradeVerticalSelectedProperty.bind(mGradeVerticalRangeSlider.selectedProperty());
         mFilter.mGradeVerticalMinProperty.bind(mGradeVerticalRangeSlider.minProperty());

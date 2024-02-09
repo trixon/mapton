@@ -43,6 +43,7 @@ public class Pair1View {
     public Pair1View() {
         var config = new PairFilterConfig();
         config.setKeyPrefix("_1");
+        config.setMinGradeHorizontal(10.0);
         config.setMaxDeltaH(10.0);
         config.setMaxDeltaR(Pair1Manager.MAX_RADIAL_DISTANCE);
 

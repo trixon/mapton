@@ -39,8 +39,7 @@ public abstract class PairFilterBase extends FormFilter<PairManagerBase> {
     DoubleProperty mDeltaRMaxProperty = new SimpleDoubleProperty();
     DoubleProperty mDeltaRMinProperty = new SimpleDoubleProperty();
     SimpleBooleanProperty mDeltaRSelectedProperty = new SimpleBooleanProperty();
-    DoubleProperty mGradeHorizontalMaxProperty = new SimpleDoubleProperty();
-    DoubleProperty mGradeHorizontalMinProperty = new SimpleDoubleProperty();
+    DoubleProperty mGradeHorizontalValueProperty = new SimpleDoubleProperty();
     SimpleBooleanProperty mGradeHorizontalSelectedProperty = new SimpleBooleanProperty();
     DoubleProperty mGradeVerticalMaxProperty = new SimpleDoubleProperty();
     DoubleProperty mGradeVerticalMinProperty = new SimpleDoubleProperty();
@@ -68,8 +67,7 @@ public abstract class PairFilterBase extends FormFilter<PairManagerBase> {
         mDabbaRMaxProperty.addListener(mChangeListenerObject);
 
         mGradeHorizontalSelectedProperty.addListener(mChangeListenerObject);
-        mGradeHorizontalMinProperty.addListener(mChangeListenerObject);
-        mGradeHorizontalMaxProperty.addListener(mChangeListenerObject);
+        mGradeHorizontalValueProperty.addListener(mChangeListenerObject);
 
         mGradeVerticalSelectedProperty.addListener(mChangeListenerObject);
         mGradeVerticalMinProperty.addListener(mChangeListenerObject);
@@ -114,7 +112,7 @@ public abstract class PairFilterBase extends FormFilter<PairManagerBase> {
 
     protected boolean validateGradeHorizontal(BTopoPointPair p) {
         if (mGradeHorizontalSelectedProperty.get()) {
-            return inRange(p.getZPerMille(), mGradeHorizontalMinProperty, mGradeHorizontalMaxProperty);
+            return inRange(p.getZPerMille(), mGradeHorizontalValueProperty, new SimpleDoubleProperty(Double.MAX_VALUE));
         } else {
             return true;
         }

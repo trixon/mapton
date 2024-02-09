@@ -16,6 +16,9 @@
 package org.mapton.butterfly_topo.pair.horizontal;
 
 import java.util.LinkedHashMap;
+import java.util.stream.Stream;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.Node;
@@ -26,13 +29,17 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.layout.GridPane;
 import org.apache.commons.lang3.StringUtils;
+import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.ui.forms.TabOptionsViewProvider;
+import org.mapton.butterfly_topo.pair.GradePointBy;
 import org.mapton.butterfly_topo.pair.PairManagerBase;
 import org.mapton.worldwind.api.MOptionsView;
 import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
+import se.trixon.almond.util.fx.session.SessionCheckComboBox;
+import se.trixon.almond.util.fx.session.SessionComboBox;
 
 /**
  *
@@ -42,9 +49,13 @@ import se.trixon.almond.util.fx.FxHelper;
 public class Pair1OptionsView extends MOptionsView implements TabOptionsViewProvider {
 
     private static final GradeHLabelBy DEFAULT_LABEL_BY = GradeHLabelBy.NAME;
+    private static final GradePointBy DEFAULT_POINT_BY = GradePointBy.PIN;
     private final SimpleStringProperty mLabelByIdProperty = new SimpleStringProperty(DEFAULT_LABEL_BY.name());
     private final SimpleObjectProperty<GradeHLabelBy> mLabelByProperty = new SimpleObjectProperty<>();
     private final MenuButton mLabelMenuButton = new MenuButton();
+    private final BooleanProperty mPlotPointProperty = new SimpleBooleanProperty();
+    private final SessionComboBox<GradePointBy> mPointScb = new SessionComboBox<>();
+    private final SessionCheckComboBox<GradeHRendererItem> mGraphicSccb = new SessionCheckComboBox<>();
 
     public Pair1OptionsView() {
         createUI();
@@ -52,12 +63,12 @@ public class Pair1OptionsView extends MOptionsView implements TabOptionsViewProv
         initSession();
     }
 
-    public GradeHLabelBy getLabelBy() {
-        return mLabelByProperty.get();
+    public IndexedCheckModel<GradeHRendererItem> getComponentCheckModel() {
+        return mGraphicSccb.getCheckModel();
     }
 
-    public SimpleObjectProperty<GradeHLabelBy> labelByProperty() {
-        return mLabelByProperty;
+    public GradeHLabelBy getLabelBy() {
+        return mLabelByProperty.get();
     }
 
     @Override
@@ -80,21 +91,43 @@ public class Pair1OptionsView extends MOptionsView implements TabOptionsViewProv
         return NbBundle.getMessage(PairManagerBase.class, "tilt_h");
     }
 
-    private void createUI() {
-        populateLabelMenuButton();
+    public GradePointBy getPointBy() {
+        return mPointScb.valueProperty().get();
+    }
 
+    public SimpleObjectProperty<GradeHLabelBy> labelByProperty() {
+        return mLabelByProperty;
+    }
+
+    public BooleanProperty plotPointProperty() {
+        return mPlotPointProperty;
+    }
+
+    private void createUI() {
+        mPointScb.getItems().setAll(GradePointBy.values());
+        mPointScb.setValue(DEFAULT_POINT_BY);
+
+        mGraphicSccb.setTitle(Dict.GRAPHICS.toString());
+        mGraphicSccb.setShowCheckedCount(true);
+        mGraphicSccb.getItems().setAll(GradeHRendererItem.values());
+
+        populateLabelMenuButton();
+        var pointLabel = new Label(Dict.Geometry.POINT.toString());
         var labelLabel = new Label(Dict.LABEL.toString());
+        var graphicLabel = new Label(Dict.GRAPHICS.toString());
+
         int row = 0;
         var gp = new GridPane(FxHelper.getUIScaled(8), FxHelper.getUIScaled(2));
-//        gp.addRow(row++, pointLabel, colorLabel);
-//        gp.addRow(row++, mPointScb, mColorScb);
+        gp.addRow(row++, pointLabel);
+        gp.addRow(row++, mPointScb);
         gp.addRow(row++, labelLabel);
         gp.addRow(row++, mLabelMenuButton);
-//        gp.addRow(row++, graphicLabel);
-//        gp.add(mGraphicSccb, 0, row++, GridPane.REMAINING, 1);
+        gp.addRow(row++, graphicLabel);
+        gp.add(mGraphicSccb, 0, row++, GridPane.REMAINING, 1);
         gp.setPadding(FxHelper.getUIScaledInsets(8));
-        FxHelper.autoSizeRegionHorizontal(mLabelMenuButton);
+        FxHelper.autoSizeRegionHorizontal(mPointScb, mLabelMenuButton, mGraphicSccb);
 
+//        mPlotPointProperty.bind(mPointTab.disabledProperty().not());
         setCenter(gp);
     }
 
@@ -103,11 +136,19 @@ public class Pair1OptionsView extends MOptionsView implements TabOptionsViewProv
             mLabelMenuButton.setText(n.getFullName());
             mLabelByIdProperty.set(n.name());
         });
+
+        mPointScb.valueProperty().addListener(getChangeListener());
+        Stream.of(
+                mGraphicSccb
+        ).forEachOrdered(ccb -> ccb.getCheckModel().getCheckedItems().addListener(getListChangeListener()));
+
     }
 
     private void initSession() {
         var sessionManager = getSessionManager();
         sessionManager.register("options.gradeH.labelBy", mLabelByIdProperty);
+        sessionManager.register("options.gradeH.checkedGraphics", mGraphicSccb.checkedStringProperty());
+        sessionManager.register("options.gradeH.pointBy", mPointScb.selectedIndexProperty());
 
         mLabelByProperty.set(GradeHLabelBy.valueOf(mLabelByIdProperty.get()));
     }
