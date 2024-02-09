@@ -30,12 +30,10 @@
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-netbeans-api-annotations-common</artifactId>
-            <version>${netbeans.version}</version>
         </dependency>
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-util</artifactId>
-            <version>${netbeans.version}</version>
         </dependency>
 
         <!--Mapton-->
@@ -58,6 +56,10 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>butterfly-activities</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>butterfly-alarm</artifactId>
         </dependency>
     </dependencies>
 </project>

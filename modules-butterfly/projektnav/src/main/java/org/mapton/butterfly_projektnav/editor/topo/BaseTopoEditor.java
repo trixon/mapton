@@ -17,6 +17,7 @@ package org.mapton.butterfly_projektnav.editor.topo;
 
 import java.util.ArrayList;
 import java.util.ResourceBundle;
+import org.mapton.butterfly_alarm.api.AlarmManager;
 import static org.mapton.butterfly_format.types.BDimension._1d;
 import static org.mapton.butterfly_format.types.BDimension._2d;
 import static org.mapton.butterfly_format.types.BDimension._3d;
@@ -30,6 +31,7 @@ import org.openide.util.NbBundle;
  */
 public abstract class BaseTopoEditor extends BaseEditor {
 
+    protected final AlarmManager mAlarmManager = AlarmManager.getInstance();
     protected final ResourceBundle mBundle = NbBundle.getBundle(BaseTopoEditor.class);
     protected final TopoManager mManager = TopoManager.getInstance();
 

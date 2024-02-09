@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_alarm.api;
 
-import org.mapton.butterfly_alarm.AlarmManager;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.hydro.BGroundwaterPoint;

@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_alarm;
 
+import org.mapton.butterfly_alarm.api.AlarmManager;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import org.mapton.api.ui.forms.FormFilter;
