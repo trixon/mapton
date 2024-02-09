@@ -51,7 +51,11 @@ public class MOptionsView extends org.mapton.api.ui.MOptionsView {
 
     private void initListeners() {
         Runnable r = () -> {
-            mLayerBundle.repaint();
+            if (mLayerBundle != null) {
+                mLayerBundle.repaint();
+            } else {
+                System.out.println("LayerBundle is NULL " + getClass().getName());
+            }
         };
 
         mChangeListener = (p, o, n) -> {
