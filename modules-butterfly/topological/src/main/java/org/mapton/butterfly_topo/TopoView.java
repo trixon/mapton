@@ -25,8 +25,8 @@ import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.ManagedList;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_topo.api.TopoManager;
-import org.mapton.butterfly_topo.pair.horizontal.Pair1View;
-import org.mapton.butterfly_topo.pair.vertical.Pair3View;
+import org.mapton.butterfly_topo.grade.horizontal.GradeHView;
+import org.mapton.butterfly_topo.grade.vertical.GradeVView;
 import org.mapton.core.api.ui.ExportAction;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SDict;
@@ -47,9 +47,9 @@ public class TopoView {
         mListForm = new ListForm(Bundle.CTL_ControlPointAction());
         var pointManagedList = new ManagedList<TopoManager, BTopoControlPoint>(mManager);
         var pointTab = new Tab(SDict.POINTS.toString(), pointManagedList.getView());
-        var paird1dTab = new Pair1View().getView();
-        var pair3dTab = new Pair3View().getView();
-        var tabPane = new TabPane(pointTab, paird1dTab, pair3dTab);
+        var gradeHTab = new GradeHView().getView();
+        var gradeVTab = new GradeVView().getView();
+        var tabPane = new TabPane(pointTab, gradeHTab, gradeVTab);
         tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
         mListForm.setContent(tabPane);
         mManager.selectedItemProperty().addListener((p, o, n) -> {
