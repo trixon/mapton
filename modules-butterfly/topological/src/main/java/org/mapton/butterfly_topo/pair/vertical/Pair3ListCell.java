@@ -22,14 +22,14 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import org.mapton.butterfly_format.types.topo.BTopoPointPair;
+import org.mapton.butterfly_format.types.topo.BTopoGrade;
 import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
  * @author Patrik Karlström
  */
-class Pair3ListCell extends ListCell<BTopoPointPair> {
+class Pair3ListCell extends ListCell<BTopoGrade> {
 
     private final AlarmIndicator mAlarmIndicator = new AlarmIndicator();
     private final Label mDesc1Label = new Label();
@@ -45,7 +45,7 @@ class Pair3ListCell extends ListCell<BTopoPointPair> {
     }
 
     @Override
-    protected void updateItem(BTopoPointPair p, boolean empty) {
+    protected void updateItem(BTopoGrade p, boolean empty) {
         super.updateItem(p, empty);
         if (p == null || empty) {
             clearContent();
@@ -54,7 +54,7 @@ class Pair3ListCell extends ListCell<BTopoPointPair> {
         }
     }
 
-    private void addContent(BTopoPointPair p) {
+    private void addContent(BTopoGrade p) {
         setText(null);
         var header = p.getName();
 //        if (StringUtils.isNotBlank(p.getStatus())) {
@@ -63,14 +63,14 @@ class Pair3ListCell extends ListCell<BTopoPointPair> {
 
         mAlarmIndicator.update(p);
         mHeaderLabel.setText(header);
-        mDesc1Label.setText("%.1f %% TODO Larm?".formatted(p.getZPercentage()));
+        mDesc1Label.setText("%.1f %% TODO Larm?".formatted(p.ext().getDiff().getZPercentage()));
         mDesc2Label.setText("ΔH=%.1f m, ΔR=%.1f m, ∂iH=%.1f mm, ∂iR=%.1f mm".formatted(
                 p.getDistanceHeight(),
                 p.getDistancePlane(),
-                p.getPartialDiffZ() * 1000,
-                p.getPartialDiffR() * 1000
+                p.ext().getDiff().getPartialDiffZ() * 1000,
+                p.ext().getDiff().getPartialDiffR() * 1000
         ));
-        mDesc3Label.setText("%s - %s (%d)".formatted(p.getDateFirst(), p.getDateLast(), p.getCommonObservations().size()));
+        mDesc3Label.setText("%s - %s (%d)".formatted(p.getFirstDate(), p.getLastDate(), p.getCommonObservations().size()));
 //        mDesc4Label.setText("%.1f mm".formatted(p.getDelta()));
 
         setGraphic(mVBox);
@@ -105,7 +105,7 @@ class Pair3ListCell extends ListCell<BTopoPointPair> {
             createUI();
         }
 
-        public void update(BTopoPointPair p) {
+        public void update(BTopoGrade p) {
             mHeightShape.setFill(Color.BLUE);
             mHeightShape.setVisible(true);
         }

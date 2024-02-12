@@ -22,7 +22,7 @@ import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.PointPlacemark;
 import java.util.ArrayList;
 import java.util.logging.Logger;
-import org.mapton.butterfly_format.types.topo.BTopoPointPair;
+import org.mapton.butterfly_format.types.topo.BTopoGrade;
 import org.mapton.butterfly_topo.TopoLabelBy;
 import org.mapton.worldwind.api.WWHelper;
 
@@ -56,7 +56,7 @@ public abstract class GradeBaseLayerRenderer {
 
     public abstract void plot();
 
-    public PointPlacemark plotLabel(BTopoPointPair p, TopoLabelBy labelBy, Position position) {
+    public PointPlacemark plotLabel(BTopoGrade p, TopoLabelBy labelBy, Position position) {
 //        if (labelBy == TopoLabelBy.NONE) {
 //            return null;
 //        }
@@ -79,7 +79,7 @@ public abstract class GradeBaseLayerRenderer {
         return placemark;
     }
 
-    public PointPlacemark plotPin(BTopoPointPair p, Position position, PointPlacemark labelPlacemark) {
+    public PointPlacemark plotPin(BTopoGrade p, Position position, PointPlacemark labelPlacemark) {
         var attrs = mAttributeManager.getPinAttributes(p);
 
         var placemark = new PointPlacemark(position);

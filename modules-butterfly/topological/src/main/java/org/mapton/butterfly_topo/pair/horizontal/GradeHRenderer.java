@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
-import org.mapton.butterfly_format.types.topo.BTopoPointPair;
+import org.mapton.butterfly_format.types.topo.BTopoGrade;
 import org.mapton.worldwind.api.WWHelper;
 
 /**
@@ -53,7 +53,7 @@ public class GradeHRenderer extends GradeHRendererBase {
         sPlotLimiter.addToAllowList(name);
     }
 
-    public void plot(BTopoPointPair p, Position position, ArrayList<AVListImpl> mapObjects) {
+    public void plot(BTopoGrade p, Position position, ArrayList<AVListImpl> mapObjects) {
         GradeHRendererBase.sMapObjects = mapObjects;
 //        plotBearing(p, position);
 
@@ -75,7 +75,7 @@ public class GradeHRenderer extends GradeHRendererBase {
         mPlottedNames.clear();
     }
 
-    private void plotIndicator(BTopoPointPair p, Position position, Position pos1, Position pos2, ArrayList<AVListImpl> mapObjects) {
+    private void plotIndicator(BTopoGrade p, Position position, Position pos1, Position pos2, ArrayList<AVListImpl> mapObjects) {
         if (isPlotLimitReached(p, GradeHRendererItem.INDICATOR, position)) {
             return;
         }
@@ -83,12 +83,12 @@ public class GradeHRenderer extends GradeHRendererBase {
         plotIndicatorGroundPath(pos1, p.getP1());
         plotIndicatorGroundPath(pos2, p.getP2());
 
-        var z = Math.abs(p.getZPerMille()) / MAX_PER_MILLE * SPAN;
+        var z = Math.abs(p.ext().getDiff().getZPerMille()) / MAX_PER_MILLE * SPAN;
 
         double z1;
         double z2;
 
-        if (Math.signum(p.getZPerMille()) > 0) {
+        if (Math.signum(p.ext().getDiff().getZPerMille()) > 0) {
             z1 = MID - z;
             z2 = MID + z;
         } else {
@@ -135,7 +135,7 @@ public class GradeHRenderer extends GradeHRendererBase {
         }
     }
 
-    private void plotName(BTopoPointPair p, Position position, Position pos1, Position pos2, ArrayList<AVListImpl> mapObjects) {
+    private void plotName(BTopoGrade p, Position position, Position pos1, Position pos2, ArrayList<AVListImpl> mapObjects) {
         if (isPlotLimitReached(p, GradeHRendererItem.NAME, position)) {
             return;
         }

@@ -19,7 +19,7 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import org.mapton.api.ui.forms.FormFilter;
-import org.mapton.butterfly_format.types.topo.BTopoPointPair;
+import org.mapton.butterfly_format.types.topo.BTopoGrade;
 
 /**
  *
@@ -78,7 +78,7 @@ public abstract class PairFilterBase extends FormFilter<PairManagerBase> {
         return value >= minProperty.get() && value <= maxProperty.get();
     }
 
-    protected boolean validateDabbaH(BTopoPointPair p) {
+    protected boolean validateDabbaH(BTopoGrade p) {
         if (mDabbaHSelectedProperty.get()) {
             return inRange(p.getDistanceHeight(), mDabbaHMinProperty, mDabbaHMaxProperty);
         } else {
@@ -86,7 +86,7 @@ public abstract class PairFilterBase extends FormFilter<PairManagerBase> {
         }
     }
 
-    protected boolean validateDabbaR(BTopoPointPair p) {
+    protected boolean validateDabbaR(BTopoGrade p) {
         if (mDabbaRSelectedProperty.get()) {
             return inRange(p.getDistancePlane(), mDabbaRMinProperty, mDabbaRMaxProperty);
         } else {
@@ -94,7 +94,7 @@ public abstract class PairFilterBase extends FormFilter<PairManagerBase> {
         }
     }
 
-    protected boolean validateDeltaH(BTopoPointPair p) {
+    protected boolean validateDeltaH(BTopoGrade p) {
         if (mDeltaHSelectedProperty.get()) {
             return inRange(p.getDistanceHeight(), mDeltaHMinProperty, mDeltaHMaxProperty);
         } else {
@@ -102,7 +102,7 @@ public abstract class PairFilterBase extends FormFilter<PairManagerBase> {
         }
     }
 
-    protected boolean validateDeltaR(BTopoPointPair p) {
+    protected boolean validateDeltaR(BTopoGrade p) {
         if (mDeltaRSelectedProperty.get()) {
             return inRange(p.getDistancePlane(), mDeltaRMinProperty, mDeltaRMaxProperty);
         } else {
@@ -110,17 +110,17 @@ public abstract class PairFilterBase extends FormFilter<PairManagerBase> {
         }
     }
 
-    protected boolean validateGradeHorizontal(BTopoPointPair p) {
+    protected boolean validateGradeHorizontal(BTopoGrade p) {
         if (mGradeHorizontalSelectedProperty.get()) {
-            return inRange(p.getZPerMille(), mGradeHorizontalValueProperty, new SimpleDoubleProperty(Double.MAX_VALUE));
+            return inRange(p.ext().getDiff().getZPerMille(), mGradeHorizontalValueProperty, new SimpleDoubleProperty(Double.MAX_VALUE));
         } else {
             return true;
         }
     }
 
-    protected boolean validateGradeVertical(BTopoPointPair p) {
+    protected boolean validateGradeVertical(BTopoGrade p) {
         if (mGradeVerticalSelectedProperty.get()) {
-            return inRange(p.getRPerMille(), mGradeVerticalMinProperty, mGradeVerticalMaxProperty);
+            return inRange(p.ext().getDiff().getRPerMille(), mGradeVerticalMinProperty, mGradeVerticalMaxProperty);
         } else {
             return true;
         }

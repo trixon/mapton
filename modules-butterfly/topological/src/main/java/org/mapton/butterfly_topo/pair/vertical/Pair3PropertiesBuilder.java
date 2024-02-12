@@ -15,9 +15,9 @@
  */
 package org.mapton.butterfly_topo.pair.vertical;
 
-import org.mapton.butterfly_topo.pair.horizontal.Pair1PropertiesBuilder;
 import java.util.LinkedHashMap;
-import org.mapton.butterfly_format.types.topo.BTopoPointPair;
+import org.mapton.butterfly_format.types.topo.BTopoGrade;
+import org.mapton.butterfly_topo.pair.horizontal.Pair1PropertiesBuilder;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.MathHelper;
 
@@ -28,7 +28,7 @@ import se.trixon.almond.util.MathHelper;
 public class Pair3PropertiesBuilder extends Pair1PropertiesBuilder {
 
     @Override
-    public Object build(BTopoPointPair p) {
+    public Object build(BTopoGrade p) {
         if (p == null) {
             return p;
         }
@@ -36,12 +36,12 @@ public class Pair3PropertiesBuilder extends Pair1PropertiesBuilder {
         var propertyMap = (LinkedHashMap<String, Object>) super.build(p);
         var cat1 = Dict.BASIC.toString();
         propertyMap.put(getCatKey(cat1, "R"), null);
-        propertyMap.put(getCatKey(cat1, "R Grader"), MathHelper.convertDoubleToString(p.getRAngleDeg(), 0));
-        propertyMap.put(getCatKey(cat1, "R Gon"), MathHelper.convertDoubleToString(p.getRAngleGon(), 0));
-        propertyMap.put(getCatKey(cat1, "R Radianer"), MathHelper.convertDoubleToString(p.getRAngleRad(), 4));
-        propertyMap.put(getCatKey(cat1, "R Lutningskvot"), MathHelper.convertDoubleToString(p.getRQuota(), 6));
-        propertyMap.put(getCatKey(cat1, "R Procent"), MathHelper.convertDoubleToString(p.getRPercentage(), 1));
-        propertyMap.put(getCatKey(cat1, "R Promille"), MathHelper.convertDoubleToString(p.getRPerMille(), 1));
+        propertyMap.put(getCatKey(cat1, "R Grader"), MathHelper.convertDoubleToString(p.ext().getDiff().getRAngleDeg(), 0));
+        propertyMap.put(getCatKey(cat1, "R Gon"), MathHelper.convertDoubleToString(p.ext().getDiff().getRAngleGon(), 0));
+        propertyMap.put(getCatKey(cat1, "R Radianer"), MathHelper.convertDoubleToString(p.ext().getDiff().getRAngleRad(), 4));
+        propertyMap.put(getCatKey(cat1, "R Lutningskvot"), MathHelper.convertDoubleToString(p.ext().getDiff().getRQuota(), 6));
+        propertyMap.put(getCatKey(cat1, "R Procent"), MathHelper.convertDoubleToString(p.ext().getDiff().getRPercentage(), 1));
+        propertyMap.put(getCatKey(cat1, "R Promille"), MathHelper.convertDoubleToString(p.ext().getDiff().getRPerMille(), 1));
 
         return propertyMap;
     }

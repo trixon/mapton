@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.butterfly_core.api.PlotLimiter;
-import org.mapton.butterfly_format.types.topo.BTopoPointPair;
+import org.mapton.butterfly_format.types.topo.BTopoGrade;
 import org.mapton.butterfly_topo.pair.GradeAttributeManager;
 
 /**
@@ -37,7 +37,7 @@ public abstract class GradeHRendererBase {
     protected static RenderableLayer sMuteLayer;
     protected static ArrayList<AVListImpl> sMapObjects;
     protected static PlotLimiter sPlotLimiter = new PlotLimiter();
-    protected static HashMap<BTopoPointPair, Position[]> sPointToPositionMap = new HashMap<>();
+    protected static HashMap<BTopoGrade, Position[]> sPointToPositionMap = new HashMap<>();
     protected final GradeAttributeManager mAttributeManager = GradeAttributeManager.getInstance();
 
     public GradeHRendererBase() {
@@ -58,7 +58,7 @@ public abstract class GradeHRendererBase {
     }
 
     /*
-    public boolean isValidFor3dPlot(BTopoPointPair p) {
+    public boolean isValidFor3dPlot(BTopoGrade p) {
         var o1 = p.ext().getObservationsTimeFiltered().getFirst();
         var o2 = p.ext().getObservationsTimeFiltered().getLast();
 
@@ -104,7 +104,7 @@ public abstract class GradeHRendererBase {
         });
     }
      */
-    protected boolean isPlotLimitReached(BTopoPointPair p, Object key, Position position) {
+    protected boolean isPlotLimitReached(BTopoGrade p, Object key, Position position) {
         if (sPlotLimiter.isLimitReached(key, p.getName())) {
             //TODO
 //            addRenderable(sPlotLimiter.getPlotLimitIndicator(position, p.ext().getObservationsTimeFiltered().isEmpty()), true);

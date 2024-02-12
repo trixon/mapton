@@ -24,7 +24,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.api.MLatLon;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BDimension;
-import org.mapton.butterfly_format.types.topo.BTopoPointPair;
+import org.mapton.butterfly_format.types.topo.BTopoGrade;
 import org.mapton.butterfly_topo.pair.PairManagerBase;
 import se.trixon.almond.util.fx.FxHelper;
 
@@ -43,11 +43,11 @@ public class Pair3Manager extends PairManagerBase {
     }
 
     private Pair3Manager() {
-        super(BTopoPointPair.class);
+        super(BTopoGrade.class);
     }
 
     @Override
-    public Object getObjectProperties(BTopoPointPair selectedObject) {
+    public Object getObjectProperties(BTopoGrade selectedObject) {
         return mPropertiesBuilder.build(selectedObject);
     }
 
@@ -62,7 +62,7 @@ public class Pair3Manager extends PairManagerBase {
     }
 
     @Override
-    protected void load(ArrayList<BTopoPointPair> items) {
+    protected void load(ArrayList<BTopoGrade> items) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
@@ -94,21 +94,21 @@ public class Pair3Manager extends PairManagerBase {
                 }
             }
 
-            var tiltPairs = new ArrayList<BTopoPointPair>();
+            var tiltPairs = new ArrayList<BTopoGrade>();
             for (var entry : pointToPoints.entrySet()) {
                 var p1 = mTopoManager.getItemForKey(entry.getKey());
                 for (var n2 : entry.getValue()) {
                     var p2 = mTopoManager.getItemForKey(n2);
-                    var pair = new BTopoPointPair(p1, p2);
+                    var pair = new BTopoGrade(p1, p2);
                     if (pair.getCommonObservations().size() > 1
                             //                            && ( Math.abs(pair.getZQuota()) > 0.00001)) {
-                            && (Math.abs(pair.getRQuota()) > 0.00001 || Math.abs(pair.getZQuota()) > 0.00001)) {
+                            && (Math.abs(pair.ext().getDiff().getRQuota()) > 0.00001 || Math.abs(pair.ext().getDiff().getZQuota()) > 0.00001)) {
                         tiltPairs.add(pair);
                     }
                 }
             }
 
-            Collections.sort(tiltPairs, (o1, o2) -> Double.valueOf(Math.abs(o2.getRQuota())).compareTo(Math.abs(o1.getRQuota())));
+            Collections.sort(tiltPairs, (o1, o2) -> Double.valueOf(Math.abs(o2.ext().getDiff().getRQuota())).compareTo(Math.abs(o1.ext().getDiff().getRQuota())));
 
             tiltPairs.forEach(t -> {
                 var first = new MLatLon(t.getP1().getLat(), t.getP1().getLon());

@@ -18,7 +18,7 @@ package org.mapton.butterfly_topo.pair.horizontal;
 import java.util.function.Function;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.butterfly_core.api.LabelByCategories;
-import org.mapton.butterfly_format.types.topo.BTopoPointPair;
+import org.mapton.butterfly_format.types.topo.BTopoGrade;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.MathHelper;
 import se.trixon.almond.util.SDict;
@@ -35,13 +35,13 @@ public enum GradeHLabelBy {
         return "";
     }),
     MEAS_GRADE_H(LabelByCategories.MEAS, "GRADE H per mille", p -> {
-        return MathHelper.convertDoubleToString(p.getZPerMille(), 1);
+        return MathHelper.convertDoubleToString(p.ext().getDiff().getZPerMille(), 1);
     });
     private final String mCategory;
-    private final Function<BTopoPointPair, String> mFunction;
+    private final Function<BTopoGrade, String> mFunction;
     private final String mName;
 
-    private GradeHLabelBy(String category, String name, Function<BTopoPointPair, String> function) {
+    private GradeHLabelBy(String category, String name, Function<BTopoGrade, String> function) {
         mCategory = category;
         mName = name;
         mFunction = function;
@@ -59,7 +59,7 @@ public enum GradeHLabelBy {
         }
     }
 
-    public String getLabel(BTopoPointPair o) {
+    public String getLabel(BTopoGrade o) {
         return mFunction.apply(o);
     }
 

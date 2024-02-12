@@ -24,7 +24,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.api.MLatLon;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BDimension;
-import org.mapton.butterfly_format.types.topo.BTopoPointPair;
+import org.mapton.butterfly_format.types.topo.BTopoGrade;
 import org.mapton.butterfly_topo.pair.PairManagerBase;
 import se.trixon.almond.util.fx.FxHelper;
 
@@ -44,11 +44,11 @@ public class Pair1Manager extends PairManagerBase {
     }
 
     private Pair1Manager() {
-        super(BTopoPointPair.class);
+        super(BTopoGrade.class);
     }
 
     @Override
-    public Object getObjectProperties(BTopoPointPair selectedObject) {
+    public Object getObjectProperties(BTopoGrade selectedObject) {
         return mPropertiesBuilder.build(selectedObject);
     }
 
@@ -85,19 +85,19 @@ public class Pair1Manager extends PairManagerBase {
                 }
             }
 
-            var tiltPairs = new ArrayList<BTopoPointPair>();
+            var tiltPairs = new ArrayList<BTopoGrade>();
             for (var entry : pointToPoints.entrySet()) {
                 var p1 = mTopoManager.getItemForKey(entry.getKey());
                 for (var n2 : entry.getValue()) {
                     var p2 = mTopoManager.getItemForKey(n2);
-                    var pair = new BTopoPointPair(p1, p2);
-                    if (pair.getCommonObservations().size() > 1 && Math.abs(pair.getZQuota()) >= MIN_GRADE_H) {
+                    var pair = new BTopoGrade(p1, p2);
+                    if (pair.getCommonObservations().size() > 1 && Math.abs(pair.ext().getDiff().getZQuota()) >= MIN_GRADE_H) {
                         tiltPairs.add(pair);
                     }
                 }
             }
 
-            Collections.sort(tiltPairs, (o1, o2) -> Double.valueOf(Math.abs(o2.getZQuota())).compareTo(Math.abs(o1.getZQuota())));
+            Collections.sort(tiltPairs, (o1, o2) -> Double.valueOf(Math.abs(o2.ext().getDiff().getZQuota())).compareTo(Math.abs(o1.ext().getDiff().getZQuota())));
 
             tiltPairs.forEach(t -> {
                 var first = new MLatLon(t.getP1().getLat(), t.getP1().getLon());
@@ -125,7 +125,7 @@ public class Pair1Manager extends PairManagerBase {
     }
 
     @Override
-    protected void load(ArrayList<BTopoPointPair> items) {
+    protected void load(ArrayList<BTopoGrade> items) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

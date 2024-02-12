@@ -26,7 +26,7 @@ import javafx.scene.Node;
 import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.api.Mapton;
 import org.mapton.api.ui.forms.TabOptionsViewProvider;
-import org.mapton.butterfly_format.types.topo.BTopoPointPair;
+import org.mapton.butterfly_format.types.topo.BTopoGrade;
 import org.mapton.butterfly_topo.TopoBaseLayerBundle;
 import org.mapton.butterfly_topo.TopoLayerBundle;
 import org.mapton.butterfly_topo.pair.GradeAttributeManager;
@@ -71,7 +71,7 @@ public class GradeVLayerBundle extends TopoBaseLayerBundle {
         return mOptionsView;
     }
 
-    public PointPlacemark plotLabel(BTopoPointPair p, GradeVLabelBy labelBy, Position position) {
+    public PointPlacemark plotLabel(BTopoGrade p, GradeVLabelBy labelBy, Position position) {
         if (labelBy == GradeVLabelBy.NONE) {
             return null;
         }
@@ -93,7 +93,7 @@ public class GradeVLayerBundle extends TopoBaseLayerBundle {
         return placemark;
     }
 
-    public PointPlacemark plotPin(BTopoPointPair p, Position position, PointPlacemark labelPlacemark) {
+    public PointPlacemark plotPin(BTopoGrade p, Position position, PointPlacemark labelPlacemark) {
         var attrs = mAttributeManager.getPinAttributes(p);
 
         var placemark = new PointPlacemark(position);
@@ -136,7 +136,7 @@ public class GradeVLayerBundle extends TopoBaseLayerBundle {
     }
 
     private void initListeners() {
-        mManager.getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BTopoPointPair> c) -> {
+        mManager.getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BTopoGrade> c) -> {
             repaint();
         });
 

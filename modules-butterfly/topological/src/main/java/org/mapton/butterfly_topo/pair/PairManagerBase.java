@@ -18,7 +18,7 @@ package org.mapton.butterfly_topo.pair;
 import javafx.collections.ListChangeListener;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
-import org.mapton.butterfly_format.types.topo.BTopoPointPair;
+import org.mapton.butterfly_format.types.topo.BTopoGrade;
 import org.mapton.butterfly_topo.api.TopoManager;
 import org.openide.util.Exceptions;
 
@@ -26,11 +26,12 @@ import org.openide.util.Exceptions;
  *
  * @author Patrik Karlström
  */
-public abstract class PairManagerBase extends BaseManager<BTopoPointPair> {
+public abstract class PairManagerBase extends BaseManager<BTopoGrade> {
 
     protected final TopoManager mTopoManager = TopoManager.getInstance();
+    private final GradeChartBuilder mChartBuilder = new GradeChartBuilder();
 
-    public PairManagerBase(Class<BTopoPointPair> typeParameterClass) {
+    public PairManagerBase(Class<BTopoGrade> typeParameterClass) {
         super(typeParameterClass);
         TopoManager.getInstance().getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BTopoControlPoint> c) -> {
             new Thread(() -> {
@@ -43,6 +44,11 @@ public abstract class PairManagerBase extends BaseManager<BTopoPointPair> {
             }).start();
         });
 
+    }
+
+    @Override
+    public Object getObjectChart(BTopoGrade selectedObject) {
+        return mChartBuilder.build(selectedObject);
     }
 
     public abstract void load();

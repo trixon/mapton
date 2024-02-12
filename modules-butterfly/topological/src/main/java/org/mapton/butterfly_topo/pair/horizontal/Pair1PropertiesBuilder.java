@@ -18,7 +18,7 @@ package org.mapton.butterfly_topo.pair.horizontal;
 import java.util.LinkedHashMap;
 import java.util.ResourceBundle;
 import org.mapton.api.ui.forms.PropertiesBuilder;
-import org.mapton.butterfly_format.types.topo.BTopoPointPair;
+import org.mapton.butterfly_format.types.topo.BTopoGrade;
 import org.mapton.butterfly_topo.pair.PairManagerBase;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
@@ -29,12 +29,12 @@ import se.trixon.almond.util.SDict;
  *
  * @author Patrik Karlström
  */
-public class Pair1PropertiesBuilder extends PropertiesBuilder<BTopoPointPair> {
+public class Pair1PropertiesBuilder extends PropertiesBuilder<BTopoGrade> {
 
     private final ResourceBundle mBundle = NbBundle.getBundle(PairManagerBase.class);
 
     @Override
-    public Object build(BTopoPointPair p) {
+    public Object build(BTopoGrade p) {
         if (p == null) {
             return p;
         }
@@ -42,18 +42,18 @@ public class Pair1PropertiesBuilder extends PropertiesBuilder<BTopoPointPair> {
         var propertyMap = new LinkedHashMap<String, Object>();
         var cat1 = Dict.BASIC.toString();
         propertyMap.put(getCatKey(cat1, Dict.NAME.toString()), p.getName());
-        propertyMap.put(getCatKey(cat1, Dict.DATE.toString()), "%s - %s".formatted(p.getDateFirst(), p.getDateLast()));
+        propertyMap.put(getCatKey(cat1, Dict.DATE.toString()), "%s - %s".formatted(p.getFirstDate(), p.getLastDate()));
         propertyMap.put(getCatKey(cat1, Dict.NUM_OF_S.toString().formatted(SDict.MEASUREMENTS.toLower())), p.getCommonObservations().size());
         propertyMap.put(getCatKey(cat1, mBundle.getString("deltaH")), MathHelper.convertDoubleToString(p.getDistanceHeight(), 2));
         propertyMap.put(getCatKey(cat1, mBundle.getString("deltaR")), MathHelper.convertDoubleToString(p.getDistancePlane(), 2));
-        propertyMap.put(getCatKey(cat1, mBundle.getString("dabbaH")), "%.1f".formatted(p.getPartialDiffZ() * 1000));
-        propertyMap.put(getCatKey(cat1, mBundle.getString("dabbaR")), "%.1f".formatted(p.getPartialDiffR() * 1000));
-        propertyMap.put(getCatKey(cat1, "H Grader"), MathHelper.convertDoubleToString(p.getZAngleDeg(), 0));
-        propertyMap.put(getCatKey(cat1, "H Gon"), MathHelper.convertDoubleToString(p.getZAngleGon(), 0));
-        propertyMap.put(getCatKey(cat1, "H Radianer"), MathHelper.convertDoubleToString(p.getZAngleRad(), 4));
-        propertyMap.put(getCatKey(cat1, "H Lutningskvot"), MathHelper.convertDoubleToString(p.getZQuota(), 6));
-        propertyMap.put(getCatKey(cat1, "H Procent"), MathHelper.convertDoubleToString(p.getZPercentage(), 1));
-        propertyMap.put(getCatKey(cat1, "H Promille"), MathHelper.convertDoubleToString(p.getZPerMille(), 1));
+        propertyMap.put(getCatKey(cat1, mBundle.getString("dabbaH")), "%.1f".formatted(p.ext().getDiff().getPartialDiffZ() * 1000));
+        propertyMap.put(getCatKey(cat1, mBundle.getString("dabbaR")), "%.1f".formatted(p.ext().getDiff().getPartialDiffR() * 1000));
+        propertyMap.put(getCatKey(cat1, "H Grader"), MathHelper.convertDoubleToString(p.ext().getDiff().getZAngleDeg(), 0));
+        propertyMap.put(getCatKey(cat1, "H Gon"), MathHelper.convertDoubleToString(p.ext().getDiff().getZAngleGon(), 0));
+        propertyMap.put(getCatKey(cat1, "H Radianer"), MathHelper.convertDoubleToString(p.ext().getDiff().getZAngleRad(), 4));
+        propertyMap.put(getCatKey(cat1, "H Lutningskvot"), MathHelper.convertDoubleToString(p.ext().getDiff().getZQuota(), 6));
+        propertyMap.put(getCatKey(cat1, "H Procent"), MathHelper.convertDoubleToString(p.ext().getDiff().getZPercentage(), 1));
+        propertyMap.put(getCatKey(cat1, "H Promille"), MathHelper.convertDoubleToString(p.ext().getDiff().getZPerMille(), 1));
 
         return propertyMap;
     }

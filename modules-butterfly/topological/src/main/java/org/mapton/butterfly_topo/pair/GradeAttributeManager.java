@@ -22,7 +22,7 @@ import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
 import java.awt.Color;
 import org.mapton.butterfly_core.api.ButterflyHelper;
-import org.mapton.butterfly_format.types.topo.BTopoPointPair;
+import org.mapton.butterfly_format.types.topo.BTopoGrade;
 import se.trixon.almond.util.GraphicsHelper;
 
 /**
@@ -71,7 +71,7 @@ public class GradeAttributeManager {
         return mGroundCylinderAttributes;
     }
 
-    public BasicShapeAttributes getGradeHAttributes(BTopoPointPair p) {
+    public BasicShapeAttributes getGradeHAttributes(BTopoGrade p) {
 //        if (mGradeHAttributes == null) {
         mGradeHAttributes = new BasicShapeAttributes();
         mGradeHAttributes.setDrawOutline(true);
@@ -80,7 +80,7 @@ public class GradeAttributeManager {
         mGradeHAttributes.setOutlineWidth(2);
 //        }
         var material = Material.GREEN;
-        var grade = Math.abs(p.getZPerMille());
+        var grade = Math.abs(p.ext().getDiff().getZPerMille());
         if (grade >= 1.0) {
             material = Material.RED;
         } else if (grade >= 0.5) {
@@ -103,7 +103,7 @@ public class GradeAttributeManager {
         return mLabelPlacemarkAttributes;
     }
 
-    public PointPlacemarkAttributes getPinAttributes(BTopoPointPair p) {
+    public PointPlacemarkAttributes getPinAttributes(BTopoGrade p) {
         if (mPinAttributes == null) {
             mPinAttributes = new PointPlacemarkAttributes[4];
             for (int i = 0; i < 4; i++) {

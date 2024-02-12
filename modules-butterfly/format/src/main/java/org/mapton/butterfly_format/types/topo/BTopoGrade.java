@@ -20,8 +20,8 @@ import java.util.HashMap;
 import java.util.TreeMap;
 import javafx.geometry.Point2D;
 import javafx.geometry.Point3D;
-import javafx.util.Pair;
 import org.apache.commons.lang3.ObjectUtils;
+import org.mapton.butterfly_format.types.BBase;
 import org.mapton.butterfly_format.types.BBasePoint;
 import org.mapton.butterfly_format.types.BDimension;
 
@@ -29,15 +29,16 @@ import org.mapton.butterfly_format.types.BDimension;
  *
  * @author Patrik Karlström
  */
-public class BTopoPointPair extends BBasePoint {
+public class BTopoGrade extends BBasePoint {
 
-    private final TreeMap<LocalDate, Pair<Point3D, Point3D>> mCommonObservations = new TreeMap<>();
+    private final TreeMap<LocalDate, BTopoGradeObservation> mCommonObservations = new TreeMap<>();
+    private Ext mExt;
     private final BTopoControlPoint mP1;
     private final BTopoControlPoint mP2;
 
-    public BTopoPointPair(BTopoControlPoint p1, BTopoControlPoint p2) {
-        this.mP1 = p1;
-        this.mP2 = p2;
+    public BTopoGrade(BTopoControlPoint p1, BTopoControlPoint p2) {
+        mP1 = p1;
+        mP2 = p2;
 
         setName("%s - %s".formatted(p1.getName(), p2.getName()));
 
@@ -46,35 +47,21 @@ public class BTopoPointPair extends BBasePoint {
 
         for (var entry : map1.entrySet()) {
             if (map2.containsKey(entry.getKey())) {
-                mCommonObservations.put(entry.getKey(), new Pair<>(map1.get(entry.getKey()), map2.get(entry.getKey())));
+                mCommonObservations.put(entry.getKey(), new BTopoGradeObservation(this, map1.get(entry.getKey()), map2.get(entry.getKey())));
             }
         }
     }
 
-    public TreeMap<LocalDate, Pair<Point3D, Point3D>> getCommonObservations() {
+    public Ext ext() {
+        if (mExt == null) {
+            mExt = new Ext();
+        }
+
+        return mExt;
+    }
+
+    public TreeMap<LocalDate, BTopoGradeObservation> getCommonObservations() {
         return mCommonObservations;
-    }
-
-    public LocalDate getDateFirst() {
-        return mCommonObservations.firstKey();
-    }
-
-    public LocalDate getDateLast() {
-        return mCommonObservations.lastKey();
-    }
-
-    public Point3D getDeltaPair3D() {
-        var firstPair = mCommonObservations.firstEntry().getValue();
-        var lastPair = mCommonObservations.lastEntry().getValue();
-        var firstPoint1 = firstPair.getKey();
-        var firstPoint2 = firstPair.getValue();
-        var lastPoint1 = lastPair.getKey();
-        var lastPoint2 = lastPair.getValue();
-
-        var deltaPoint1 = lastPoint1.subtract(firstPoint1);
-        var deltaPoint2 = lastPoint2.subtract(firstPoint2);
-
-        return deltaPoint2.subtract(deltaPoint1);
     }
 
     public double getDistanceHeight() {
@@ -88,6 +75,22 @@ public class BTopoPointPair extends BBasePoint {
         return x1.distance(x2);
     }
 
+    public LocalDate getFirstDate() {
+        return mCommonObservations.firstKey();
+    }
+
+    public BTopoGradeObservation getFirstObservation() {
+        return mCommonObservations.firstEntry().getValue();
+    }
+
+    public LocalDate getLastDate() {
+        return mCommonObservations.lastKey();
+    }
+
+    public BTopoGradeObservation getLastObservation() {
+        return mCommonObservations.lastEntry().getValue();
+    }
+
     public BTopoControlPoint getP1() {
         return mP1;
     }
@@ -96,64 +99,9 @@ public class BTopoPointPair extends BBasePoint {
         return mP2;
     }
 
-    public double getPartialDiffR() {
-        return Math.hypot(getDeltaPair3D().getX(), getDeltaPair3D().getY());
-    }
-
-    public double getPartialDiffZ() {
-        return getDeltaPair3D().getZ();
-    }
-
-    public Double getRAngleDeg() {
-        return Math.toDegrees(getRAngleRad());
-    }
-
-    public Double getRAngleGon() {
-        return getRAngleDeg() * 200.0 / 180.0;
-    }
-
-    public Double getRAngleRad() {
-        return Math.tanh(getRQuota());
-    }
-
-    public Double getRPerMille() {
-        return getRQuota() * 1000;
-    }
-
-    public Double getRPercentage() {
-        return getRQuota() * 100;
-    }
-
-    public Double getRQuota() {
-        return getPartialDiffR() / getDistanceHeight();
-    }
-
-    public Double getZAngleDeg() {
-        return Math.toDegrees(getZAngleRad());
-    }
-
-    public Double getZAngleGon() {
-        return getZAngleDeg() * 200.0 / 180.0;
-    }
-
-    public Double getZAngleRad() {
-        return Math.tanh(getZQuota());
-    }
-
-    public Double getZPerMille() {
-        return getZQuota() * 1000;
-    }
-
-    public Double getZPercentage() {
-        return getZQuota() * 100;
-    }
-
-    public Double getZQuota() {
-        return getPartialDiffZ() / getDistancePlane();
-    }
-
     private HashMap<LocalDate, Point3D> createObservationMap(BTopoControlPoint p) {
         var map1 = new HashMap<LocalDate, Point3D>();
+
         if (p.getDimension() == BDimension._1d) {
             for (var o : p.ext().getObservationsTimeFiltered()) {
                 var z = o.getMeasuredZ();
@@ -170,6 +118,21 @@ public class BTopoPointPair extends BBasePoint {
         }
 
         return map1;
+    }
+
+    public class Ext extends BBase.Ext<BTopoGradeObservation> {
+
+        public Ext() {
+        }
+
+        public BTopoGradeDiff getDiff() {
+            return getDiff(getFirstObservation(), getLastObservation());
+        }
+
+        public BTopoGradeDiff getDiff(BTopoGradeObservation referenceObservation, BTopoGradeObservation observation) {
+            return new BTopoGradeDiff(BTopoGrade.this, referenceObservation, observation);
+        }
+
     }
 
 }
