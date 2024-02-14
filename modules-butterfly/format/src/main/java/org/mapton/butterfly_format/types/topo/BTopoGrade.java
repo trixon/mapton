@@ -16,6 +16,7 @@
 package org.mapton.butterfly_format.types.topo;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.TreeMap;
 import javafx.geometry.Point2D;
@@ -131,6 +132,18 @@ public class BTopoGrade extends BBasePoint {
 
         public BTopoGradeDiff getDiff(BTopoGradeObservation referenceObservation, BTopoGradeObservation observation) {
             return new BTopoGradeDiff(BTopoGrade.this, referenceObservation, observation);
+        }
+
+        public long getNumOfCommonDays() {
+            return ChronoUnit.DAYS.between(getFirstDate(), getLastDate());
+        }
+
+        public int getNumOfCommonObservations() {
+            return mCommonObservations.size();
+        }
+
+        public long getNumOfDaysSinceLast() {
+            return ChronoUnit.DAYS.between(getLastDate(), LocalDate.now());
         }
 
     }
