@@ -31,7 +31,7 @@ import se.trixon.almond.util.SDict;
  */
 public class GradeHPropertiesBuilder extends PropertiesBuilder<BTopoGrade> {
 
-    private final ResourceBundle mBundle = NbBundle.getBundle(GradeManagerBase.class);
+    protected final ResourceBundle mBundle = NbBundle.getBundle(GradeManagerBase.class);
 
     @Override
     public Object build(BTopoGrade p) {
@@ -43,17 +43,18 @@ public class GradeHPropertiesBuilder extends PropertiesBuilder<BTopoGrade> {
         var cat1 = Dict.BASIC.toString();
         propertyMap.put(getCatKey(cat1, Dict.NAME.toString()), p.getName());
         propertyMap.put(getCatKey(cat1, Dict.DATE.toString()), "%s - %s".formatted(p.getFirstDate(), p.getLastDate()));
-        propertyMap.put(getCatKey(cat1, Dict.NUM_OF_S.toString().formatted(SDict.MEASUREMENTS.toLower())), p.getCommonObservations().size());
-        propertyMap.put(getCatKey(cat1, mBundle.getString("deltaH")), MathHelper.convertDoubleToString(p.getDistanceHeight(), 2));
-        propertyMap.put(getCatKey(cat1, mBundle.getString("deltaR")), MathHelper.convertDoubleToString(p.getDistancePlane(), 2));
-        propertyMap.put(getCatKey(cat1, mBundle.getString("dabbaH")), "%.1f".formatted(p.ext().getDiff().getPartialDiffZ() * 1000));
-        propertyMap.put(getCatKey(cat1, mBundle.getString("dabbaR")), "%.1f".formatted(p.ext().getDiff().getPartialDiffR() * 1000));
-        propertyMap.put(getCatKey(cat1, "H Grader"), MathHelper.convertDoubleToString(p.ext().getDiff().getZAngleDeg(), 0));
-        propertyMap.put(getCatKey(cat1, "H Gon"), MathHelper.convertDoubleToString(p.ext().getDiff().getZAngleGon(), 0));
-        propertyMap.put(getCatKey(cat1, "H Radianer"), MathHelper.convertDoubleToString(p.ext().getDiff().getZAngleRad(), 4));
-        propertyMap.put(getCatKey(cat1, "H Lutningskvot"), MathHelper.convertDoubleToString(p.ext().getDiff().getZQuota(), 6));
-        propertyMap.put(getCatKey(cat1, "H Procent"), MathHelper.convertDoubleToString(p.ext().getDiff().getZPercentage(), 1));
-        propertyMap.put(getCatKey(cat1, "H Promille"), MathHelper.convertDoubleToString(p.ext().getDiff().getZPerMille(), 1));
+        propertyMap.put(getCatKey(cat1, Dict.NUM_OF_S.toString().formatted(SDict.MEASUREMENTS.toLower())), p.ext().getNumOfCommonObservations());
+        propertyMap.put(getCatKey(cat1, Dict.NUM_OF_S.toString().formatted(Dict.Time.DAYS.toLower())), p.ext().getNumOfCommonDays());
+        propertyMap.put(getCatKey(cat1, Dict.AGE.toString()), p.ext().getNumOfDaysSinceLast());
+        propertyMap.put(getCatKey(cat1, mBundle.getString("filterDeltaH")), MathHelper.convertDoubleToString(p.getDistanceHeight(), 2));
+        propertyMap.put(getCatKey(cat1, mBundle.getString("filterDeltaR")), MathHelper.convertDoubleToString(p.getDistancePlane(), 2));
+        propertyMap.put(getCatKey(cat1, mBundle.getString("filterDabbaH")), "%.1f".formatted(p.ext().getDiff().getPartialDiffZ() * 1000));
+        propertyMap.put(getCatKey(cat1, mBundle.getString("filterDabbaR")), "%.1f".formatted(p.ext().getDiff().getPartialDiffR() * 1000));
+//        propertyMap.put(getCatKey(cat1, mBundle.getString("gradeHDeg")), MathHelper.convertDoubleToString(p.ext().getDiff().getZAngleDeg(), 0));
+//        propertyMap.put(getCatKey(cat1, mBundle.getString("gradeHGon")), MathHelper.convertDoubleToString(p.ext().getDiff().getZAngleGon(), 0));
+//        propertyMap.put(getCatKey(cat1, mBundle.getString("gradeHRad")), MathHelper.convertDoubleToString(p.ext().getDiff().getZAngleRad(), 4));
+        propertyMap.put(getCatKey(cat1, mBundle.getString("gradeHPerCent")), MathHelper.convertDoubleToString(p.ext().getDiff().getZPercentage(), 1));
+        propertyMap.put(getCatKey(cat1, mBundle.getString("gradeHPerMille")), MathHelper.convertDoubleToString(p.ext().getDiff().getZPerMille(), 1));
 
         return propertyMap;
     }

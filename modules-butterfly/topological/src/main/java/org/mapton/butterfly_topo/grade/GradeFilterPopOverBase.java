@@ -48,12 +48,12 @@ public abstract class GradeFilterPopOverBase extends BaseFilterPopOver<TopoFilte
         mConfig = config;
         mDimension = dimension;
 
-        mDeltaHRangeSlider = new RangeSliderPane(mBundle.getString("deltaH"), mConfig.getMaxDeltaH());
-        mDeltaRRangeSlider = new RangeSliderPane(mBundle.getString("deltaR"), mConfig.getMaxDeltaR());
-        mDabbaHRangeSlider = new RangeSliderPane(mBundle.getString("dabbaH"), mConfig.getMaxDabbaH());
-        mDabbaRRangeSlider = new RangeSliderPane(mBundle.getString("dabbaR"), mConfig.getMaxDabbaR());
-        mGradeVerticalRangeSlider = new RangeSliderPane(mBundle.getString("gradeV"), mConfig.getMaxGradeVertical());
-        mGradeHorizontalRangeSlider = new SliderPane(mBundle.getString("gradeH"), mConfig.getMinGradeHorizontal());
+        mDeltaHRangeSlider = new RangeSliderPane(mBundle.getString("filterDeltaH"), mConfig.getMaxDeltaH());
+        mDeltaRRangeSlider = new RangeSliderPane(mBundle.getString("filterDeltaR"), mConfig.getMaxDeltaR());
+        mDabbaHRangeSlider = new RangeSliderPane(mBundle.getString("filterDabbaH"), mConfig.getMaxDabbaH());
+        mDabbaRRangeSlider = new RangeSliderPane(mBundle.getString("filterDabbaR"), mConfig.getMaxDabbaR());
+        mGradeVerticalRangeSlider = new RangeSliderPane(mBundle.getString("filterGradeVPerMille"), mConfig.getMaxGradeVertical());
+        mGradeHorizontalRangeSlider = new SliderPane(mBundle.getString("filterGradeHPerMille"), mConfig.getMinGradeHorizontal());
 
         createUI();
         initListeners();
