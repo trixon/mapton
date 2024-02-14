@@ -15,6 +15,8 @@
  */
 package org.mapton.butterfly_topo.grade;
 
+import se.trixon.almond.util.fx.control.RangeSliderPane;
+import se.trixon.almond.util.fx.control.SliderPane;
 import java.util.ResourceBundle;
 import javafx.scene.control.Separator;
 import javafx.scene.layout.VBox;
