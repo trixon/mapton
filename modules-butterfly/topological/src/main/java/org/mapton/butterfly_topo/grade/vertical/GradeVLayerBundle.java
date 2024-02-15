@@ -167,6 +167,23 @@ public class GradeVLayerBundle extends TopoBaseLayerBundle {
             if (!mLayer.isEnabled()) {
                 return;
             }
+
+            var pointBy = mOptionsView.getPointBy();
+            switch (pointBy) {
+                case NONE -> {
+                    mPinLayer.setEnabled(false);
+                    mSymbolLayer.setEnabled(false);
+                }
+                case PIN -> {
+                    mSymbolLayer.setEnabled(false);
+                    mPinLayer.setEnabled(true);
+                    mPinLayer.setMinActiveAltitude(Double.MIN_VALUE);
+                    mPinLayer.setMaxActiveAltitude(Double.MAX_VALUE);
+                }
+                default ->
+                    throw new AssertionError();
+            }
+
             mManager.getTimeFilteredItems().stream()
                     .filter(p -> ObjectUtils.allNotNull(p.getLat(), p.getLon()))
                     .forEachOrdered(p -> {

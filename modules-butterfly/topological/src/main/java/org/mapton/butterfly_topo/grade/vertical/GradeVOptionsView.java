@@ -28,11 +28,13 @@ import javafx.scene.layout.GridPane;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.api.ui.forms.TabOptionsViewProvider;
 import org.mapton.butterfly_topo.grade.GradeManagerBase;
+import org.mapton.butterfly_topo.grade.GradePointBy;
 import org.mapton.worldwind.api.MOptionsView;
 import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
+import se.trixon.almond.util.fx.session.SessionComboBox;
 
 /**
  *
@@ -41,10 +43,16 @@ import se.trixon.almond.util.fx.FxHelper;
 @ServiceProvider(service = TabOptionsViewProvider.class)
 public class GradeVOptionsView extends MOptionsView implements TabOptionsViewProvider {
 
+    private static final GradePointBy DEFAULT_POINT_BY = GradePointBy.PIN;
+    private final SessionComboBox<GradePointBy> mPointScb = new SessionComboBox<>();
     private static final GradeVLabelBy DEFAULT_LABEL_BY = GradeVLabelBy.NAME;
     private final SimpleStringProperty mLabelByIdProperty = new SimpleStringProperty(DEFAULT_LABEL_BY.name());
     private final SimpleObjectProperty<GradeVLabelBy> mLabelByProperty = new SimpleObjectProperty<>();
     private final MenuButton mLabelMenuButton = new MenuButton();
+
+    public GradePointBy getPointBy() {
+        return mPointScb.valueProperty().get();
+    }
 
     public GradeVOptionsView() {
         createUI();
@@ -81,19 +89,23 @@ public class GradeVOptionsView extends MOptionsView implements TabOptionsViewPro
     }
 
     private void createUI() {
+        mPointScb.getItems().setAll(GradePointBy.values());
+        mPointScb.setValue(DEFAULT_POINT_BY);
+
         populateLabelMenuButton();
 
+        var pointLabel = new Label(Dict.Geometry.POINT.toString());
         var labelLabel = new Label(Dict.LABEL.toString());
         int row = 0;
         var gp = new GridPane(FxHelper.getUIScaled(8), FxHelper.getUIScaled(2));
-//        gp.addRow(row++, pointLabel, colorLabel);
-//        gp.addRow(row++, mPointScb, mColorScb);
+        gp.addRow(row++, pointLabel);
+        gp.addRow(row++, mPointScb);
         gp.addRow(row++, labelLabel);
         gp.addRow(row++, mLabelMenuButton);
 //        gp.addRow(row++, graphicLabel);
 //        gp.add(mGraphicSccb, 0, row++, GridPane.REMAINING, 1);
         gp.setPadding(FxHelper.getUIScaledInsets(8));
-        FxHelper.autoSizeRegionHorizontal(mLabelMenuButton);
+        FxHelper.autoSizeRegionHorizontal(mPointScb, mLabelMenuButton);
 
         setCenter(gp);
     }
@@ -103,11 +115,14 @@ public class GradeVOptionsView extends MOptionsView implements TabOptionsViewPro
             mLabelMenuButton.setText(n.getFullName());
             mLabelByIdProperty.set(n.name());
         });
+
+        mPointScb.valueProperty().addListener(getChangeListener());
     }
 
     private void initSession() {
         var sessionManager = getSessionManager();
         sessionManager.register("options.gradeV.labelBy", mLabelByIdProperty);
+        sessionManager.register("options.gradeV.pointBy", mPointScb.selectedIndexProperty());
 
         mLabelByProperty.set(GradeVLabelBy.valueOf(mLabelByIdProperty.get()));
     }
