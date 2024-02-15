@@ -43,7 +43,11 @@ public class GradeVView {
     public GradeVView() {
         var config = new GradeFilterConfig();
         config.setKeyPrefix("_3");
-        config.setMaxDeltaR(GradeVManager.MAX_RADIAL_DISTANCE);
+        config.setMaxDeltaR(GradeVManager.MAX_HORIZONTAL_DISTANCE);
+        config.setMinDeltaH(GradeVManager.MIN_VERTICAL_DISTANCE);
+        config.setMinGradeVertical(5.0);
+        config.setMinGradeHorizontal(10.0);
+
         mFilterPopOver = new GradeVFilterPopOver(mFilter, config);
         mFilterFavoritePopOver = new GradeVFavoritePopOver(mFilterPopOver);
 

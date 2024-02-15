@@ -32,8 +32,8 @@ public class GradeFilterConfig {
     private double mMinDabbaR;
     private double mMinDeltaH;
     private double mMinDeltaR;
-    private double mMinGradeHorizontal;
-    private double mMinGradeVertical;
+    private double mMinGradeHorizontal = 0.0;
+    private double mMinGradeVertical = 0.0;
 
     public String getKeyPrefix() {
         return mKeyPrefix;

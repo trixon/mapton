@@ -26,6 +26,7 @@ import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoGrade;
 import org.mapton.butterfly_topo.grade.GradeManagerBase;
+import se.trixon.almond.util.MathHelper;
 import se.trixon.almond.util.fx.FxHelper;
 
 /**
@@ -34,8 +35,10 @@ import se.trixon.almond.util.fx.FxHelper;
  */
 public class GradeVManager extends GradeManagerBase {
 
-    public static final Double MIN_RADIAL_DISTANCE = 0.0;
-    public static final Double MAX_RADIAL_DISTANCE = 10.0;
+    public static final Double MAX_HORIZONTAL_DISTANCE = 10.0;
+    public static final Double MIN_HORIZONTAL_DISTANCE = 0.0;
+    public static final Double MIN_VERTICAL_DISTANCE = 1.0;
+    public static final Double MAX_VERTICAL_DISTANCE = 50.0;
     private final GradeVPropertiesBuilder mPropertiesBuilder = new GradeVPropertiesBuilder();
 
     public static GradeVManager getInstance() {
@@ -57,16 +60,6 @@ public class GradeVManager extends GradeManagerBase {
     }
 
     @Override
-    protected void applyTemporalFilter() {
-        getTimeFilteredItems().setAll(getFilteredItems());
-    }
-
-    @Override
-    protected void load(ArrayList<BTopoGrade> items) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
     public void load() {
         var thread = new Thread(() -> {
             var pointToPoints = new TreeMap<String, HashSet<String>>();
@@ -85,8 +78,13 @@ public class GradeVManager extends GradeManagerBase {
                     if (ObjectUtils.anyNull(p2.getZeroX(), p2.getZeroY())) {
                         continue;
                     }
-                    double distance = point.distance(p2.getZeroX(), p2.getZeroY());
-                    if (p1 != p2 && distance > MIN_RADIAL_DISTANCE && distance < MAX_RADIAL_DISTANCE) {
+
+                    double distanceR = point.distance(p2.getZeroX(), p2.getZeroY());
+                    double distanceH = Math.abs(p2.getZeroZ() - p1.getZeroZ());
+
+                    if (p1 != p2
+                            && MathHelper.isBetween(MIN_HORIZONTAL_DISTANCE, MAX_HORIZONTAL_DISTANCE, distanceR)
+                            && MathHelper.isBetween(MIN_VERTICAL_DISTANCE, MAX_VERTICAL_DISTANCE, distanceH)) {
                         if (!pointToPoints.computeIfAbsent(p2.getName(), k -> new HashSet<>()).contains(p1.getName())) {//Skip A-B, B-A
                             pointToPoints.computeIfAbsent(p1.getName(), k -> new HashSet<>()).add(p2.getName());
                         }
@@ -128,6 +126,16 @@ public class GradeVManager extends GradeManagerBase {
         });
 
         thread.start();
+    }
+
+    @Override
+    protected void applyTemporalFilter() {
+        getTimeFilteredItems().setAll(getFilteredItems());
+    }
+
+    @Override
+    protected void load(ArrayList<BTopoGrade> items) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     private static class Holder {

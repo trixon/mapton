@@ -15,8 +15,6 @@
  */
 package org.mapton.butterfly_topo.grade;
 
-import se.trixon.almond.util.fx.control.RangeSliderPane;
-import se.trixon.almond.util.fx.control.SliderPane;
 import java.util.ResourceBundle;
 import javafx.scene.control.Separator;
 import javafx.scene.layout.VBox;
@@ -27,6 +25,8 @@ import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_topo.TopoFilterFavorite;
 import org.openide.util.NbBundle;
+import se.trixon.almond.util.fx.control.RangeSliderPane;
+import se.trixon.almond.util.fx.control.SliderPane;
 
 /**
  *
@@ -42,7 +42,7 @@ public abstract class GradeFilterPopOverBase extends BaseFilterPopOver<TopoFilte
     protected final RangeSliderPane mDeltaRRangeSlider;
     protected final GradeFilterBase mFilter;
     protected final SliderPane mGradeHorizontalRangeSlider;
-    protected final RangeSliderPane mGradeVerticalRangeSlider;
+    protected final SliderPane mGradeVerticalRangeSlider;
     private final BDimension mDimension;
 
     public GradeFilterPopOverBase(GradeFilterBase filter, GradeFilterConfig config, BDimension dimension) {
@@ -50,12 +50,12 @@ public abstract class GradeFilterPopOverBase extends BaseFilterPopOver<TopoFilte
         mConfig = config;
         mDimension = dimension;
 
-        mDeltaHRangeSlider = new RangeSliderPane(mBundle.getString("filterDeltaH"), mConfig.getMaxDeltaH());
-        mDeltaRRangeSlider = new RangeSliderPane(mBundle.getString("filterDeltaR"), mConfig.getMaxDeltaR());
-        mDabbaHRangeSlider = new RangeSliderPane(mBundle.getString("filterDabbaH"), mConfig.getMaxDabbaH());
-        mDabbaRRangeSlider = new RangeSliderPane(mBundle.getString("filterDabbaR"), mConfig.getMaxDabbaR());
-        mGradeVerticalRangeSlider = new RangeSliderPane(mBundle.getString("filterGradeVPerMille"), mConfig.getMaxGradeVertical());
+        mDeltaHRangeSlider = new RangeSliderPane(mBundle.getString("filterDeltaH"), mConfig.getMinDeltaH(), mConfig.getMaxDeltaH());
+        mDeltaRRangeSlider = new RangeSliderPane(mBundle.getString("filterDeltaR"), 0.0, mConfig.getMaxDeltaR());
+        mDabbaHRangeSlider = new RangeSliderPane(mBundle.getString("filterDabbaH"), 0.0, mConfig.getMaxDabbaH());
+        mDabbaRRangeSlider = new RangeSliderPane(mBundle.getString("filterDabbaR"), 0.0, mConfig.getMaxDabbaR());
         mGradeHorizontalRangeSlider = new SliderPane(mBundle.getString("filterGradeHPerMille"), mConfig.getMinGradeHorizontal());
+        mGradeVerticalRangeSlider = new SliderPane(mBundle.getString("filterGradeVPerMille"), mConfig.getMinGradeVertical());
 
         createUI();
         initListeners();
@@ -105,7 +105,6 @@ public abstract class GradeFilterPopOverBase extends BaseFilterPopOver<TopoFilte
         if (mDimension == BDimension._3d) {
             vBox.getChildren().addAll(
                     new Separator(),
-                    new Separator(),
                     mDabbaRRangeSlider,
                     new Separator(),
                     mGradeVerticalRangeSlider
@@ -139,8 +138,7 @@ public abstract class GradeFilterPopOverBase extends BaseFilterPopOver<TopoFilte
         mFilter.mGradeHorizontalValueProperty.bind(mGradeHorizontalRangeSlider.valueProperty());
 
         mFilter.mGradeVerticalSelectedProperty.bind(mGradeVerticalRangeSlider.selectedProperty());
-        mFilter.mGradeVerticalMinProperty.bind(mGradeVerticalRangeSlider.minProperty());
-        mFilter.mGradeVerticalMaxProperty.bind(mGradeVerticalRangeSlider.maxProperty());
+        mFilter.mGradeVerticalValueProperty.bind(mGradeVerticalRangeSlider.valueProperty());
 
         mFilter.initPropertyListeners();
     }

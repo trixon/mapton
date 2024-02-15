@@ -39,11 +39,11 @@ public abstract class GradeFilterBase extends FormFilter<GradeManagerBase> {
     DoubleProperty mDeltaRMaxProperty = new SimpleDoubleProperty();
     DoubleProperty mDeltaRMinProperty = new SimpleDoubleProperty();
     SimpleBooleanProperty mDeltaRSelectedProperty = new SimpleBooleanProperty();
-    DoubleProperty mGradeHorizontalValueProperty = new SimpleDoubleProperty();
     SimpleBooleanProperty mGradeHorizontalSelectedProperty = new SimpleBooleanProperty();
-    DoubleProperty mGradeVerticalMaxProperty = new SimpleDoubleProperty();
-    DoubleProperty mGradeVerticalMinProperty = new SimpleDoubleProperty();
+    DoubleProperty mGradeHorizontalValueProperty = new SimpleDoubleProperty();
     SimpleBooleanProperty mGradeVerticalSelectedProperty = new SimpleBooleanProperty();
+    DoubleProperty mGradeVerticalValueProperty = new SimpleDoubleProperty();
+    private final SimpleDoubleProperty mMaxDoubleProperty = new SimpleDoubleProperty(Double.MAX_VALUE);
 
     public GradeFilterBase(GradeManagerBase manager) {
         super(manager);
@@ -70,12 +70,7 @@ public abstract class GradeFilterBase extends FormFilter<GradeManagerBase> {
         mGradeHorizontalValueProperty.addListener(mChangeListenerObject);
 
         mGradeVerticalSelectedProperty.addListener(mChangeListenerObject);
-        mGradeVerticalMinProperty.addListener(mChangeListenerObject);
-        mGradeVerticalMaxProperty.addListener(mChangeListenerObject);
-    }
-
-    private boolean inRange(double value, DoubleProperty minProperty, DoubleProperty maxProperty) {
-        return value >= minProperty.get() && value <= maxProperty.get();
+        mGradeVerticalValueProperty.addListener(mChangeListenerObject);
     }
 
     protected boolean validateDabbaH(BTopoGrade p) {
@@ -112,7 +107,7 @@ public abstract class GradeFilterBase extends FormFilter<GradeManagerBase> {
 
     protected boolean validateGradeHorizontal(BTopoGrade p) {
         if (mGradeHorizontalSelectedProperty.get()) {
-            return inRange(p.ext().getDiff().getZPerMille(), mGradeHorizontalValueProperty, new SimpleDoubleProperty(Double.MAX_VALUE));
+            return inRange(p.ext().getDiff().getZPerMille(), mGradeHorizontalValueProperty, mMaxDoubleProperty);
         } else {
             return true;
         }
@@ -120,10 +115,14 @@ public abstract class GradeFilterBase extends FormFilter<GradeManagerBase> {
 
     protected boolean validateGradeVertical(BTopoGrade p) {
         if (mGradeVerticalSelectedProperty.get()) {
-            return inRange(p.ext().getDiff().getRPerMille(), mGradeVerticalMinProperty, mGradeVerticalMaxProperty);
+            return inRange(p.ext().getDiff().getRPerMille(), mGradeVerticalValueProperty, mMaxDoubleProperty);
         } else {
             return true;
         }
+    }
+
+    private boolean inRange(double value, DoubleProperty minProperty, DoubleProperty maxProperty) {
+        return value >= minProperty.get() && value <= maxProperty.get();
     }
 
 }
