@@ -23,6 +23,7 @@ import javafx.geometry.Point2D;
 import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.api.MLatLon;
 import org.mapton.butterfly_format.Butterfly;
+import org.mapton.butterfly_format.types.BAxis;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoGrade;
 import org.mapton.butterfly_topo.grade.GradeManagerBase;
@@ -90,7 +91,7 @@ public class GradeHManager extends GradeManagerBase {
                 var p1 = mTopoManager.getItemForKey(entry.getKey());
                 for (var n2 : entry.getValue()) {
                     var p2 = mTopoManager.getItemForKey(n2);
-                    var grade = new BTopoGrade(p1, p2);
+                    var grade = new BTopoGrade(BAxis.HORIZONTAL, p1, p2);
                     if (grade.getCommonObservations().size() > 1 && Math.abs(grade.ext().getDiff().getZQuota()) >= MIN_GRADE_H) {
                         grades.add(grade);
                     }

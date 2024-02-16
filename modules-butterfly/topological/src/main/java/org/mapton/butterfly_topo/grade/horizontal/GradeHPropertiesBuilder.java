@@ -42,7 +42,7 @@ public class GradeHPropertiesBuilder extends PropertiesBuilder<BTopoGrade> {
         var propertyMap = new LinkedHashMap<String, Object>();
         var cat1 = Dict.BASIC.toString();
         propertyMap.put(getCatKey(cat1, Dict.NAME.toString()), p.getName());
-        propertyMap.put(getCatKey(cat1, Dict.DATE.toString()), "%s - %s".formatted(p.getFirstDate(), p.getLastDate()));
+        propertyMap.put(getCatKey(cat1, Dict.DATE.toString()), p.getPeriod());
         propertyMap.put(getCatKey(cat1, Dict.NUM_OF_S.toString().formatted(SDict.MEASUREMENTS.toLower())), p.ext().getNumOfCommonObservations());
         propertyMap.put(getCatKey(cat1, Dict.NUM_OF_S.toString().formatted(Dict.Time.DAYS.toLower())), p.ext().getNumOfCommonDays());
         propertyMap.put(getCatKey(cat1, Dict.AGE.toString()), p.ext().getNumOfDaysSinceLast());

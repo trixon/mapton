@@ -35,13 +35,14 @@ public class GradeVPropertiesBuilder extends GradeHPropertiesBuilder {
 
         var propertyMap = (LinkedHashMap<String, Object>) super.build(p);
         var cat1 = Dict.BASIC.toString();
+        propertyMap.remove(getCatKey(cat1, mBundle.getString("gradeHPerCent")));
         propertyMap.remove(getCatKey(cat1, mBundle.getString("gradeHPerMille")));
 
 //        propertyMap.put(getCatKey(cat1, mBundle.getString("gradeVDeg")), MathHelper.convertDoubleToString(p.ext().getDiff().getRAngleDeg(), 0));
 //        propertyMap.put(getCatKey(cat1, mBundle.getString("gradeVGon")), MathHelper.convertDoubleToString(p.ext().getDiff().getRAngleGon(), 0));
 //        propertyMap.put(getCatKey(cat1, mBundle.getString("gradeVRad")), MathHelper.convertDoubleToString(p.ext().getDiff().getRAngleRad(), 4));
         propertyMap.put(getCatKey(cat1, mBundle.getString("gradeVPerCent")), MathHelper.convertDoubleToString(p.ext().getDiff().getZPercentage(), 1));
-        propertyMap.put(getCatKey(cat1, mBundle.getString("gradeHPerMille")), MathHelper.convertDoubleToString(p.ext().getDiff().getZPerMille(), 1));
+//        propertyMap.put(getCatKey(cat1, mBundle.getString("gradeHPerMille")), MathHelper.convertDoubleToString(p.ext().getDiff().getZPerMille(), 1));
         propertyMap.put(getCatKey(cat1, mBundle.getString("gradeVPerMille")), MathHelper.convertDoubleToString(p.ext().getDiff().getRPerMille(), 1));
 
         return propertyMap;

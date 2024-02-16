@@ -63,14 +63,13 @@ class GradeHListCell extends ListCell<BTopoGrade> {
 
         mAlarmIndicator.update(p);
         mHeaderLabel.setText(header);
-        mDesc1Label.setText("%.1f %% TODO Larm?".formatted(p.ext().getDiff().getZPercentage()));
+        mDesc1Label.setText("%.1f mm/m TODO Larm?".formatted(p.ext().getDiff().getZPerMille()));
         mDesc2Label.setText("ΔH=%.1f m, ΔP=%.1f m, ∂iH=%.1f mm".formatted(
                 p.getDistanceHeight(),
                 p.getDistancePlane(),
                 p.ext().getDiff().getPartialDiffZ() * 1000
         ));
-        mDesc3Label.setText("%s - %s (%d)".formatted(p.getFirstDate(), p.getLastDate(), p.getCommonObservations().size()));
-//        mDesc4Label.setText("%.1f mm".formatted(p.getPartialDiffZ()));
+        mDesc3Label.setText("%s (%d)".formatted(p.getPeriod(), p.getCommonObservations().size()));
 
         setGraphic(mVBox);
     }

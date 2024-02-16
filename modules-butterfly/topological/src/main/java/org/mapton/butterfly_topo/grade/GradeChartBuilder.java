@@ -44,9 +44,9 @@ import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.mapton.api.MTemporalManager;
 import org.mapton.api.ui.forms.ChartBuilder;
+import org.mapton.butterfly_format.types.BAxis;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.topo.BTopoGrade;
-import org.mapton.butterfly_format.types.topo.BTopoGradeDiff;
 import org.mapton.ce_jfreechart.api.ChartHelper;
 import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
@@ -65,9 +65,8 @@ public class GradeChartBuilder extends ChartBuilder<BTopoGrade> {
     private TextTitle mDateSubTextTitle;
     private TextTitle mDeltaSubTextTitle;
     private final MTemporalManager mTemporalManager = MTemporalManager.getInstance();
-    private final TimeSeries mTimeSeries2d = new TimeSeries(Dict.Geometry.PLANE);
-    private final TimeSeries mTimeSeries3d = new TimeSeries("3d");
-    private final TimeSeries mTimeSeriesH = new TimeSeries(Dict.Geometry.HEIGHT);
+    private final TimeSeries mTimeSeriesV = new TimeSeries(Dict.Geometry.VERTICAL.toString());
+    private final TimeSeries mTimeSeriesH = new TimeSeries(Dict.Geometry.HORIZONTAL.toString());
 
     public GradeChartBuilder() {
         initChart();
@@ -85,14 +84,12 @@ public class GradeChartBuilder extends ChartBuilder<BTopoGrade> {
             var plot = (XYPlot) mChart.getPlot();
             var dateAxis = (DateAxis) plot.getDomainAxis();
             dateAxis.setAutoRange(true);
-//            dateAxis.setRange(DateHelper.convertToDate(mTemporalManager.getLowDate()), DateHelper.convertToDate(mTemporalManager.getHighDate()));
 
             plot.clearRangeMarkers();
             //plotAlarmIndicators(p);
 
             var rangeAxis = (NumberAxis) plot.getRangeAxis();
             rangeAxis.setAutoRange(true);
-//            rangeAxis.setRange(-0.050, +0.050);
 
             return mChartPanel;
         };
@@ -104,7 +101,7 @@ public class GradeChartBuilder extends ChartBuilder<BTopoGrade> {
         mChart = ChartFactory.createTimeSeriesChart(
                 "",
                 Dict.DATE.toString(),
-                "‰",
+                "mm/m",
                 mDataset,
                 true,
                 true,
@@ -139,7 +136,6 @@ public class GradeChartBuilder extends ChartBuilder<BTopoGrade> {
         mChartPanel = new ChartPanel(mChart);
         mChartPanel.setMouseZoomable(true, false);
         mChartPanel.setDisplayToolTips(true);
-//        mChartPanel.setDomainZoomable(true);
         mChartPanel.setMouseWheelEnabled(false);
 
         var font = new Font("monospaced", Font.BOLD, SwingHelper.getUIScaled(12));
@@ -260,8 +256,7 @@ public class GradeChartBuilder extends ChartBuilder<BTopoGrade> {
     public void updateDataset(BTopoGrade p) {
         mDataset.removeAllSeries();
         mTimeSeriesH.clear();
-        mTimeSeries2d.clear();
-        mTimeSeries3d.clear();
+        mTimeSeriesV.clear();
 
         var plot = (XYPlot) mChart.getPlot();
         plot.clearDomainMarkers();
@@ -270,68 +265,30 @@ public class GradeChartBuilder extends ChartBuilder<BTopoGrade> {
             var p1 = entry.getValue();
             var p2 = entry.getValue();
             //TODO Handle replacement & zero measurements
-//p.getCommonObservations().values().stream().forEachOrdered(o->{
-//        p.ext().getObservationsTimeFiltered().forEach(o -> {
 
             var minute = mChartHelper.convertToMinute(date.atStartOfDay());
-            BTopoGradeDiff aa = p.ext().getDiff(p.getFirstObservation(), p2);
-            mTimeSeriesH.add(minute, aa.getZPerMille());
-//            mTimeSeriesH.add(minute, 0.01234);
+            var gradeDiff = p.ext().getDiff(p.getFirstObservation(), p2);
 
-//            if (p.getDimension() == BDimension._1d || p.getDimension() == BDimension._3d) {
-//                mTimeSeriesH.add(minute, o.ext().getDeltaZ());
-//            }
-//
-//            if (p.getDimension() == BDimension._2d || p.getDimension() == BDimension._3d) {
-//                mTimeSeries2d.add(minute, o.ext().getDelta2d());
-//            }
-//
-//            if (p.getDimension() == BDimension._3d) {
-//                mTimeSeries3d.add(minute, o.ext().getDelta3d());
-//            }
+            if (p.getAxis() == BAxis.HORIZONTAL) {
+                mTimeSeriesH.add(minute, gradeDiff.getZPerMille());
+            }
+
+            if (p.getAxis() == BAxis.VERTICAL) {
+                mTimeSeriesV.add(minute, gradeDiff.getRPerMille());
+            }
         });
-        mDataset.addSeries(mTimeSeriesH);
 
-//        var renderer = plot.getRenderer();
-//        var avgStroke = new BasicStroke(5.0f);
-//        int avdDays = 90 * 60 * 24;
-//        int avgSkipMeasurements = 0;
-//        boolean plotAvg = true;
-//
-//        if (p.getDimension() == BDimension._1d || p.getDimension() == BDimension._3d) {
-//            mDataset.addSeries(mTimeSeriesH);
-//            renderer.setSeriesPaint(mDataset.getSeriesIndex(mTimeSeriesH.getKey()), Color.RED);
-//            if (plotAvg) {
-//                var mavg = MovingAverage.createMovingAverage(mTimeSeriesH, "%s (avg)".formatted(mTimeSeriesH.getKey()), avdDays, avgSkipMeasurements);
-//                mDataset.addSeries(mavg);
-//                int index = mDataset.getSeriesIndex(mavg.getKey());
-//                renderer.setSeriesPaint(index, Color.RED);
-//                renderer.setSeriesStroke(index, avgStroke);
-//            }
-//        }
-//
-//        if (p.getDimension() == BDimension._2d || p.getDimension() == BDimension._3d) {
-//            mDataset.addSeries(mTimeSeries2d);
-//            renderer.setSeriesPaint(mDataset.getSeriesIndex(mTimeSeries2d.getKey()), Color.GREEN);
-//            if (plotAvg) {
-//                var mavg = MovingAverage.createMovingAverage(mTimeSeries2d, "%s (avg)".formatted(mTimeSeries2d.getKey()), avdDays, avgSkipMeasurements);
-//                mDataset.addSeries(mavg);
-//                int index = mDataset.getSeriesIndex(mavg.getKey());
-//                renderer.setSeriesPaint(index, Color.GREEN);
-//                renderer.setSeriesStroke(index, avgStroke);
-//            }
-//        }
-//
-//        if (p.getDimension() == BDimension._3d) {
-//            mDataset.addSeries(mTimeSeries3d);
-//            renderer.setSeriesPaint(mDataset.getSeriesIndex(mTimeSeries3d.getKey()), Color.BLUE);
-//            if (plotAvg) {
-//                var mavg = MovingAverage.createMovingAverage(mTimeSeries3d, "%s (avg)".formatted(mTimeSeries3d.getKey()), avdDays, avgSkipMeasurements);
-//                mDataset.addSeries(mavg);
-//                int index = mDataset.getSeriesIndex(mavg.getKey());
-//                renderer.setSeriesPaint(index, Color.BLUE);
-//                renderer.setSeriesStroke(index, avgStroke);
-//            }
-//        }
+        var renderer = plot.getRenderer();
+
+        if (!mTimeSeriesH.isEmpty()) {
+            mDataset.addSeries(mTimeSeriesH);
+            renderer.setSeriesPaint(mDataset.getSeriesIndex(mTimeSeriesH.getKey()), Color.RED);
+        }
+
+        if (!mTimeSeriesV.isEmpty()) {
+            mDataset.addSeries(mTimeSeriesV);
+            renderer.setSeriesPaint(mDataset.getSeriesIndex(mTimeSeriesV.getKey()), Color.BLUE);
+        }
+
     }
 }

@@ -22,6 +22,7 @@ import java.util.TreeMap;
 import javafx.geometry.Point2D;
 import javafx.geometry.Point3D;
 import org.apache.commons.lang3.ObjectUtils;
+import org.mapton.butterfly_format.types.BAxis;
 import org.mapton.butterfly_format.types.BBase;
 import org.mapton.butterfly_format.types.BBasePoint;
 import org.mapton.butterfly_format.types.BDimension;
@@ -32,16 +33,18 @@ import org.mapton.butterfly_format.types.BDimension;
  */
 public class BTopoGrade extends BBasePoint {
 
+    private final BAxis mAxis;
     private final TreeMap<LocalDate, BTopoGradeObservation> mCommonObservations = new TreeMap<>();
     private Ext mExt;
     private final BTopoControlPoint mP1;
     private final BTopoControlPoint mP2;
 
-    public BTopoGrade(BTopoControlPoint p1, BTopoControlPoint p2) {
+    public BTopoGrade(BAxis axis, BTopoControlPoint p1, BTopoControlPoint p2) {
+        mAxis = axis;
         mP1 = p1;
         mP2 = p2;
 
-        setName("%s - %s".formatted(p1.getName(), p2.getName()));
+        setName("%s → %s".formatted(p1.getName(), p2.getName()));
 
         var map1 = createObservationMap(p1);
         var map2 = createObservationMap(p2);
@@ -59,6 +62,10 @@ public class BTopoGrade extends BBasePoint {
         }
 
         return mExt;
+    }
+
+    public BAxis getAxis() {
+        return mAxis;
     }
 
     public TreeMap<LocalDate, BTopoGradeObservation> getCommonObservations() {
@@ -98,6 +105,10 @@ public class BTopoGrade extends BBasePoint {
 
     public BTopoControlPoint getP2() {
         return mP2;
+    }
+
+    public String getPeriod() {
+        return "%s → %s".formatted(getFirstDate(), getLastDate());
     }
 
     private HashMap<LocalDate, Point3D> createObservationMap(BTopoControlPoint p) {
