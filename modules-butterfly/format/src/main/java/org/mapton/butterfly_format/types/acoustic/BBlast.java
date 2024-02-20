@@ -38,10 +38,10 @@ import org.mapton.butterfly_format.types.BBasePoint;
 public class BBlast extends BBasePoint {
 
     private LocalDateTime dateTime;
-    private Long id;
+    private String id;
     @JsonIgnore
     private Ext mExt;
-
+    private String url;
     private Double z;
 
     public BBlast() {
@@ -59,8 +59,12 @@ public class BBlast extends BBasePoint {
         return dateTime;
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
+    }
+
+    public String getUrl() {
+        return url;
     }
 
     public Double getZ() {
@@ -71,8 +75,12 @@ public class BBlast extends BBasePoint {
         this.dateTime = dateTime;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     public void setZ(Double z) {
