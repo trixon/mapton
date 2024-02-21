@@ -88,6 +88,10 @@ limitations under the License.
             <artifactId>org-netbeans-spi-quicksearch</artifactId>
             <version>${netbeans.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-netbeans-api-progress</artifactId>
+        </dependency>
 
         <!--Mapton-->
         <dependency>
@@ -115,11 +119,6 @@ limitations under the License.
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>butterfly-alarm</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.netbeans.api</groupId>
-            <artifactId>org-netbeans-api-progress</artifactId>
-            <version>RELEASE200</version>
         </dependency>
     </dependencies>
 </project>
