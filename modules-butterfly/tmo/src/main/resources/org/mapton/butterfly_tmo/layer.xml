@@ -29,6 +29,11 @@ limitations under the License.
         <folder name="Groups">
             <folder name="MapGroup">
                 <file name="GrundvattenTopComponent.wstcgrp" url="GrundvattenTopComponentWstcgrp.xml"/>
+                <file name="InfiltrationTopComponent.wstcgrp" url="InfiltrationTopComponentWstcgrp.xml"/>
+                <file name="RorelseTopComponent.wstcgrp" url="RorelseTopComponentWstcgrp.xml"/>
+                <file name="TunnelvattenTopComponent.wstcgrp" url="TunnelvattenTopComponentWstcgrp.xml"/>
+                <file name="VaderstationTopComponent.wstcgrp" url="VaderstationTopComponentWstcgrp.xml"/>
+                <file name="VattenkemiTopComponent.wstcgrp" url="VattenkemiTopComponentWstcgrp.xml"/>
             </folder>
         </folder>
     </folder>
