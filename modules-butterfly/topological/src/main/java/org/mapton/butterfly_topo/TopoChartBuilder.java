@@ -96,8 +96,8 @@ public class TopoChartBuilder extends ChartBuilder<BTopoControlPoint> {
             plotAlarmIndicators(p);
 
             var rangeAxis = (NumberAxis) plot.getRangeAxis();
-            rangeAxis.setAutoRange(false);
-            rangeAxis.setRange(-0.050, +0.050);
+            rangeAxis.setAutoRange(true);
+//            rangeAxis.setRange(-0.050, +0.050);
 
             return mChartPanel;
         };
@@ -139,7 +139,7 @@ public class TopoChartBuilder extends ChartBuilder<BTopoControlPoint> {
 
         var dateAxis = (DateAxis) plot.getDomainAxis();
         dateAxis.setDateFormatOverride(new SimpleDateFormat("yyyy-MM-dd"));
-        dateAxis.setAutoRange(false);
+        dateAxis.setAutoRange(true);
 
         mChartPanel = new ChartPanel(mChart);
         mChartPanel.setMouseZoomable(true, false);

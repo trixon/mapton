@@ -193,7 +193,7 @@ public class GradeHLayerBundle extends TopoBaseLayerBundle {
                     throw new AssertionError();
             }
 
-            mManager.getTimeFilteredItems().stream()
+            new ArrayList<>(mManager.getTimeFilteredItems()).stream()
                     .filter(p -> ObjectUtils.allNotNull(p.getLat(), p.getLon()))
                     .forEachOrdered(p -> {
                         var position = Position.fromDegrees(p.getLat(), p.getLon());
