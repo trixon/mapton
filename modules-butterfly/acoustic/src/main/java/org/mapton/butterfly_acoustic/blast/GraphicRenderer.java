@@ -39,8 +39,8 @@ public class GraphicRenderer {
     private final BlastAttributeManager mAttributeManager = BlastAttributeManager.getInstance();
     private final IndexedCheckModel<GraphicRendererItem> mCheckModel;
     private final RenderableLayer mEllipsoidLayer;
-    private ArrayList<AVListImpl> mMapObjects;
     private final RenderableLayer mGroundConnectorLayer;
+    private ArrayList<AVListImpl> mMapObjects;
     private final RenderableLayer mSurfaceLayer;
 
     public GraphicRenderer(RenderableLayer ellipsoidLayer, RenderableLayer groundConnectorLayer, RenderableLayer surfaceLayer, IndexedCheckModel<GraphicRendererItem> checkModel) {
@@ -61,11 +61,11 @@ public class GraphicRenderer {
         }
     }
 
-    public void plot(BBlast p, Position position, ArrayList<AVListImpl> mapObjects) {
+    public void plot(BBlast blast, Position position, ArrayList<AVListImpl> mapObjects) {
         mMapObjects = mapObjects;
-        if (mCheckModel.isChecked(GraphicRendererItem.BALLS)) {
 
-            var timeSpan = ChronoUnit.MINUTES.between(p.getDateTime(), LocalDateTime.now());
+        if (mCheckModel.isChecked(GraphicRendererItem.BALLS)) {
+            var timeSpan = ChronoUnit.MINUTES.between(blast.getDateTime(), LocalDateTime.now());
             var altitude = timeSpan / 24000.0;
             var startPosition = WWHelper.positionFromPosition(position, 0.0);
             var endPosition = WWHelper.positionFromPosition(position, altitude);
@@ -79,8 +79,22 @@ public class GraphicRenderer {
             addRenderable(mGroundConnectorLayer, groundPath);
         }
 
+        if (mCheckModel.isChecked(GraphicRendererItem.BALLS_Z) && blast.getZ() != null) {
+            var altitude = blast.getZ();
+            var startPosition = WWHelper.positionFromPosition(position, 0.0);
+            var endPosition = WWHelper.positionFromPosition(position, altitude);
+            var radius = 1.2;
+            var endEllipsoid = new Ellipsoid(endPosition, radius, radius, radius);
+            endEllipsoid.setAttributes(mAttributeManager.getComponentEllipsoidAttributes());
+            addRenderable(mEllipsoidLayer, endEllipsoid);
+
+            var groundPath = new Path(startPosition, endPosition);
+            groundPath.setAttributes(mAttributeManager.getComponentGroundPathAttributes());
+            addRenderable(mGroundConnectorLayer, groundPath);
+        }
+
         if (mCheckModel.isChecked(GraphicRendererItem.RECENT)) {
-            var age = p.ext().getAge(ChronoUnit.DAYS);
+            var age = blast.ext().getAge(ChronoUnit.DAYS);
             var maxAge = 30.0;
 
             if (age < maxAge) {

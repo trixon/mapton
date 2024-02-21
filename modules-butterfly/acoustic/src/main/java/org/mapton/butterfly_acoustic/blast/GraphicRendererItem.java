@@ -21,6 +21,7 @@ package org.mapton.butterfly_acoustic.blast;
  */
 public enum GraphicRendererItem {
     BALLS("Klot", Integer.MAX_VALUE),
+    BALLS_Z("Klot z", Integer.MAX_VALUE),
     RECENT("Senaste cirklar", Integer.MAX_VALUE);
     private final String mName;
     private final int mPlotLimit;
