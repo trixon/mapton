@@ -25,6 +25,7 @@ import org.mapton.butterfly_format.io.ImportFromCsv;
 import org.mapton.butterfly_format.types.BAlarm;
 import org.mapton.butterfly_format.types.BAreaActivity;
 import org.mapton.butterfly_format.types.BAreaBase;
+import org.mapton.butterfly_format.types.acoustic.BAcousticMeasuringPoint;
 import org.mapton.butterfly_format.types.acoustic.BBlast;
 import org.mapton.butterfly_format.types.hydro.BGroundwaterObservation;
 import org.mapton.butterfly_format.types.hydro.BGroundwaterPoint;
@@ -50,6 +51,7 @@ public class Butterfly {
     private final ArrayList<BAlarm> mAlarms = new ArrayList<>();
     private final ArrayList<BAreaActivity> mAreaActivities = new ArrayList<>();
     private final ArrayList<BAreaBase> mAreaFilters = new ArrayList<>();
+    private final ArrayList<BAcousticMeasuringPoint> mMeasuringPoints = new ArrayList<>();
     private final ArrayList<BBlast> mBlasts = new ArrayList<>();
     private final Hydro mHydro = new Hydro();
     private final ArrayList<BGroundwaterObservation> mHydroGroundwaterObservations = new ArrayList<>();
@@ -102,6 +104,9 @@ public class Butterfly {
     void load(File sourceDir) {
         new ImportFromCsv<BBlast>(BBlast.class) {
         }.load(new File(sourceDir, "acousticBlasts.csv"), mBlasts);
+
+        new ImportFromCsv<BAcousticMeasuringPoint>(BAcousticMeasuringPoint.class) {
+        }.load(new File(sourceDir, "acousticMeasuringPoints.csv"), mMeasuringPoints);
 
         new ImportFromCsv<BAlarm>(BAlarm.class) {
         }.load(new File(sourceDir, "alarms.csv"), mAlarms);
@@ -206,6 +211,11 @@ public class Butterfly {
         public ArrayList<BBlast> getBlasts() {
             return mBlasts;
         }
+
+        public ArrayList<BAcousticMeasuringPoint> getMeasuringPoints() {
+            return mMeasuringPoints;
+        }
+
     }
 
     public class Ext {
