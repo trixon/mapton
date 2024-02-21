@@ -113,9 +113,9 @@ public class MeasPointOptionsView extends MOptionsView {
 
     private void initSession() {
         var sessionManager = getSessionManager();
-        sessionManager.register("options.pointBy", mPointScb.selectedIndexProperty());
-        sessionManager.register("options.labelBy", mLabelByIdProperty);
-        sessionManager.register("options.checkedGraphics", mGraphicSccb.checkedStringProperty());
+        sessionManager.register("options.measPoint.pointBy", mPointScb.selectedIndexProperty());
+        sessionManager.register("options.measPoint.labelBy", mLabelByIdProperty);
+        sessionManager.register("options.measPoint.checkedGraphics", mGraphicSccb.checkedStringProperty());
 
         mLabelByProperty.set(MeasPointLabelBy.valueOf(mLabelByIdProperty.get()));
     }

@@ -94,7 +94,7 @@ public class MeasPointAttributeManager {
             mPinAttributes = new PointPlacemarkAttributes(new PointPlacemark(Position.ZERO).getDefaultAttributes());
             mPinAttributes.setScale(0.75);
             mPinAttributes.setImageAddress("images/pushpins/plain-white.png");
-            mPinAttributes.setImageColor(Color.ORANGE);
+            mPinAttributes.setImageColor(Color.ORANGE.darker());
         }
 
         return mPinAttributes;

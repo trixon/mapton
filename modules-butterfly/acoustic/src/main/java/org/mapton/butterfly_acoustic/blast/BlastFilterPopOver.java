@@ -96,8 +96,8 @@ public class BlastFilterPopOver extends BaseFilterPopOver {
 
     private void initSession() {
         var sessionManager = getSessionManager();
-        sessionManager.register("filter.freeText", mFilter.freeTextProperty());
-        sessionManager.register("filter.checkedGroup", mGroupSCCB.checkedStringProperty());
+        sessionManager.register("filter.blast.freeText", mFilter.freeTextProperty());
+        sessionManager.register("filter.blast.checkedGroup", mGroupSCCB.checkedStringProperty());
 
     }
 

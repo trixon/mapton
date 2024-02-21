@@ -26,9 +26,11 @@ import org.mapton.butterfly_format.types.BBasePoint;
 @JsonPropertyOrder({
     "id",
     "name",
+    "typeOfWork",
     "lat",
     "lon",
     "z",
+    "address",
     "comment"
 })
 public class BAcousticMeasuringPoint extends BBasePoint {

@@ -113,9 +113,9 @@ public class BlastOptionsView extends MOptionsView {
 
     private void initSession() {
         var sessionManager = getSessionManager();
-        sessionManager.register("options.pointBy", mPointScb.selectedIndexProperty());
-        sessionManager.register("options.labelBy", mLabelByIdProperty);
-        sessionManager.register("options.checkedGraphics", mGraphicSccb.checkedStringProperty());
+        sessionManager.register("options.blast.pointBy", mPointScb.selectedIndexProperty());
+        sessionManager.register("options.blast.labelBy", mLabelByIdProperty);
+        sessionManager.register("options.blast.checkedGraphics", mGraphicSccb.checkedStringProperty());
 
         mLabelByProperty.set(BlastLabelBy.valueOf(mLabelByIdProperty.get()));
     }

@@ -78,8 +78,8 @@ public class MeasPointLayerBundle extends BfLayerBundle {
         attachTopComponentToLayer("AcousticMeasuringPointTopComponent", mLayer);
         mLayer.setMaxActiveAltitude(6000);
         mSurfaceLayer.setMaxActiveAltitude(6000);
-        mPinLayer.setMaxActiveAltitude(10000);
-        mLabelLayer.setMaxActiveAltitude(200);
+        mPinLayer.setMaxActiveAltitude(20000);
+        mLabelLayer.setMaxActiveAltitude(2000);
         mGroundConnectorLayer.setMaxActiveAltitude(1000);
         setParentLayer(mLayer);
         setAllChildLayers(mLabelLayer, mSymbolLayer, mPinLayer, mGroundConnectorLayer, mSurfaceLayer);

@@ -96,8 +96,8 @@ public class MeasPointFilterPopOver extends BaseFilterPopOver {
 
     private void initSession() {
         var sessionManager = getSessionManager();
-        sessionManager.register("filter.freeText", mFilter.freeTextProperty());
-        sessionManager.register("filter.checkedGroup", mGroupSCCB.checkedStringProperty());
+        sessionManager.register("filter.measPoint.freeText", mFilter.freeTextProperty());
+        sessionManager.register("filter.measPoint.checkedGroup", mGroupSCCB.checkedStringProperty());
 
     }
 

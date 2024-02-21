@@ -26,7 +26,7 @@ import org.mapton.butterfly_format.types.acoustic.BAcousticMeasuringPoint;
  */
 class MeasPointListCell extends ListCell<BAcousticMeasuringPoint> {
 
-    private final Label mDateLabel = new Label();
+    private final Label mWorkLabel = new Label();
     private final Label mNameLabel = new Label();
     private final Label mGroupLabel = new Label();
     private final String mStyleBold = "-fx-font-weight: bold;";
@@ -48,9 +48,8 @@ class MeasPointListCell extends ListCell<BAcousticMeasuringPoint> {
 
     private void addContent(BAcousticMeasuringPoint point) {
         setText(null);
-//        var date = Objects.toString(DateHelper.toDateString(blast.getDateTime()), "-");
         mNameLabel.setText(point.getName());
-//        mDateLabel.setText("%s %s".formatted(date, blast.getComment()));
+        mWorkLabel.setText("%s %s".formatted(point.getTypeOfWork(), point.getComment()));
         mGroupLabel.setText(point.getGroup());
         setGraphic(mVBox);
     }
@@ -64,7 +63,7 @@ class MeasPointListCell extends ListCell<BAcousticMeasuringPoint> {
         mNameLabel.setStyle(mStyleBold);
         mVBox = new VBox(
                 mNameLabel,
-                mDateLabel,
+                mWorkLabel,
                 mGroupLabel
         );
     }

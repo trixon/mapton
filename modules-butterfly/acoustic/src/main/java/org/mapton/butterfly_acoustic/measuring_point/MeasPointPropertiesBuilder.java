@@ -37,7 +37,8 @@ public class MeasPointPropertiesBuilder extends PropertiesBuilder<BAcousticMeasu
         var cat1 = Dict.BASIC.toString();
 
         propertyMap.put(getCatKey(cat1, Dict.NAME.toString()), p.getName());
-        propertyMap.put(getCatKey(cat1, Dict.GROUP.toString()), p.getGroup());
+        propertyMap.put(getCatKey(cat1, Dict.TYPE.toString()), p.getTypeOfWork());
+        propertyMap.put(getCatKey(cat1, "Adress"), p.getAddress());
         propertyMap.put(getCatKey(cat1, Dict.COMMENT.toString()), p.getComment());
         propertyMap.put(getCatKey(cat1, "Z"), MathHelper.convertDoubleToString(p.getZ(), 1));
 

@@ -36,6 +36,9 @@ public enum MeasPointLabelBy {
     MISC_GROUP(Strings.CAT_MISC, Dict.GROUP.toString(), p -> {
         return Objects.toString(p.getGroup(), "NODATA");
     }),
+    MISC_TYPE(Strings.CAT_MISC, Dict.TYPE.toString(), p -> {
+        return Objects.toString(p.getTypeOfWork(), "NODATA");
+    }),
     MISC_Z(Strings.CAT_MISC, "Z", p -> {
         return MathHelper.convertDoubleToString(p.getZ(), 1);
     });
