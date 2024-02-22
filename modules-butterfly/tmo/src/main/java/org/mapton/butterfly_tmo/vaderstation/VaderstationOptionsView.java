@@ -37,7 +37,9 @@ import se.trixon.almond.util.fx.session.SelectionModelSession;
  */
 public class VaderstationOptionsView extends MOptionsView {
 
-    private final SimpleStringProperty mLabelByIdProperty = new SimpleStringProperty("NONE");
+    private static final VaderstationLabelBy DEFAULT_LABEL_BY = VaderstationLabelBy.NAME;
+
+    private final SimpleStringProperty mLabelByIdProperty = new SimpleStringProperty(DEFAULT_LABEL_BY.name());
     private final SimpleObjectProperty<VaderstationLabelBy> mLabelByProperty = new SimpleObjectProperty<>();
     private final MenuButton mLabelMenuButton = new MenuButton();
     private final ComboBox<PointBy> mPointComboBox = new ComboBox<>();

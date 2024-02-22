@@ -37,7 +37,9 @@ import se.trixon.almond.util.fx.session.SelectionModelSession;
  */
 public class VattenkemiOptionsView extends MOptionsView {
 
-    private final SimpleStringProperty mLabelByIdProperty = new SimpleStringProperty("NONE");
+    private static final VattenkemiLabelBy DEFAULT_LABEL_BY = VattenkemiLabelBy.NAME;
+
+    private final SimpleStringProperty mLabelByIdProperty = new SimpleStringProperty(DEFAULT_LABEL_BY.name());
     private final SimpleObjectProperty<VattenkemiLabelBy> mLabelByProperty = new SimpleObjectProperty<>();
     private final MenuButton mLabelMenuButton = new MenuButton();
     private final ComboBox<PointBy> mPointComboBox = new ComboBox<>();

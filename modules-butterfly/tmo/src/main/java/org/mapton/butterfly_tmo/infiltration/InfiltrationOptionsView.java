@@ -37,7 +37,9 @@ import se.trixon.almond.util.fx.session.SelectionModelSession;
  */
 public class InfiltrationOptionsView extends MOptionsView {
 
-    private final SimpleStringProperty mLabelByIdProperty = new SimpleStringProperty("NONE");
+    private static final InfiltrationLabelBy DEFAULT_LABEL_BY = InfiltrationLabelBy.NAME;
+
+    private final SimpleStringProperty mLabelByIdProperty = new SimpleStringProperty(DEFAULT_LABEL_BY.name());
     private final SimpleObjectProperty<InfiltrationLabelBy> mLabelByProperty = new SimpleObjectProperty<>();
     private final MenuButton mLabelMenuButton = new MenuButton();
     private final ComboBox<PointBy> mPointComboBox = new ComboBox<>();

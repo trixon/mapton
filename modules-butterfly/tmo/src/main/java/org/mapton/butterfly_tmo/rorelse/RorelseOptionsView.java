@@ -37,7 +37,9 @@ import se.trixon.almond.util.fx.session.SelectionModelSession;
  */
 public class RorelseOptionsView extends MOptionsView {
 
-    private final SimpleStringProperty mLabelByIdProperty = new SimpleStringProperty("NONE");
+    private static final RorelseLabelBy DEFAULT_LABEL_BY = RorelseLabelBy.NAME;
+
+    private final SimpleStringProperty mLabelByIdProperty = new SimpleStringProperty(DEFAULT_LABEL_BY.name());
     private final SimpleObjectProperty<RorelseLabelBy> mLabelByProperty = new SimpleObjectProperty<>();
     private final MenuButton mLabelMenuButton = new MenuButton();
     private final ComboBox<PointBy> mPointComboBox = new ComboBox<>();

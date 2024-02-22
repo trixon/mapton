@@ -39,7 +39,7 @@ import se.trixon.almond.util.fx.session.SessionComboBox;
  */
 public class MeasPointOptionsView extends MOptionsView {
 
-    private static final MeasPointLabelBy DEFAULT_LABEL_BY = MeasPointLabelBy.NONE;
+    private static final MeasPointLabelBy DEFAULT_LABEL_BY = MeasPointLabelBy.NAME;
     private static final PointBy DEFAULT_POINT_BY = PointBy.PIN;
 
     private final SessionCheckComboBox<GraphicRendererItem> mGraphicSccb = new SessionCheckComboBox<>();
