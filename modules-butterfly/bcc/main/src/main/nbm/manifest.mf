@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+OpenIDE-Module-Install: org/mapton/butterfly/bcc/Installer.class
+OpenIDE-Module-Localizing-Bundle: org/mapton/butterfly/bcc/Bundle.properties
+

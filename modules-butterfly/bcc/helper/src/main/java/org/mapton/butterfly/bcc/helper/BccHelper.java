@@ -1,0 +1,45 @@
+/*
+ * Copyright 2024 Patrik Karlström.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.mapton.butterfly.bcc.helper;
+
+import java.io.File;
+
+/**
+ *
+ * @author Patrik Karlström
+ */
+public class BccHelper {
+
+    public static final String WORKING_DIRECTORY_PATH = "bcc.workingDirectory";
+
+    public static String get(String className) {
+        return System.getProperty(className);
+    }
+
+    public static File getWorkingDirectory() {
+        return new File(System.getProperty(WORKING_DIRECTORY_PATH));
+    }
+
+    public static void main(String[] args) {
+        System.out.println("Hello World!");
+    }
+
+    public static void put(String className, String arg) {
+        if (arg != null) {
+            System.setProperty(className, arg);
+        }
+    }
+}
