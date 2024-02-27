@@ -48,17 +48,28 @@ public class Executor {
 
         System.out.println("bcc");
         System.out.println(System.getProperty("java.home"));
-        var tempPath = Files.createTempDirectory("butterfly");
-        System.out.println(tempPath);
-        tempPath.toFile().deleteOnExit();
-        System.setProperty(BccHelper.WORKING_DIRECTORY_PATH, tempPath.toString());
+
+        File workingDir;
+        if (StringUtils.isBlank(mConfig.getWorkingDir())) {
+            workingDir = Files.createTempDirectory("butterfly").toFile();
+            workingDir.deleteOnExit();
+        } else {
+            workingDir = new File(mConfig.getWorkingDir());
+            if (workingDir.isFile()) {
+                throw new IOException("workingDir can't be a file");
+            }
+        }
+
+        System.out.println(workingDir);
+        System.setProperty(BccHelper.WORKING_DIRECTORY_PATH, workingDir.toString());
 
         executePlugins();
 
         if (StringUtils.isNotBlank(mConfig.getResourceDir())) {
-            copyResources(tempPath.toFile());
+            copyResources(workingDir);
         }
-        zip(tempPath.toFile());
+
+        zip(workingDir);
 
         System.out.println("Created " + mConfig.getDestFile());
     }

@@ -45,6 +45,10 @@ public class DoArgsProcessing implements ArgsProcessor {
     @Description(shortDescription = "#opt_resource")
     @Messages({"opt_resource=extra items to include in zip"})
     public String mResourceDir;
+    @Arg(longName = "working-dir", shortName = 'w')
+    @Description(shortDescription = "#opt_working")
+    @Messages({"opt_working=working dir to be zipped (optional)"})
+    public String mWorkingDir;
     @Arg(longName = "classes", shortName = 'c')
     @Description(shortDescription = "#opt_classes")
     @Messages({"opt_classes=classes to be launched"})
@@ -63,6 +67,7 @@ public class DoArgsProcessing implements ArgsProcessor {
         mConfig.setDestFile(mDestFile);
         mConfig.setClasses(mClasses);
         mConfig.setResourceDir(mResourceDir);
+        mConfig.setWorkingDir(mWorkingDir);
 
         new Thread(() -> {
             try {

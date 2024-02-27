@@ -30,6 +30,7 @@ public class CmdConfig {
     private String mDestFile;
     private char[] mPassword;
     private String mResourceDir;
+    private String mWorkingDir;
 
     public static CmdConfig getInstance() {
         return Holder.INSTANCE;
@@ -56,6 +57,10 @@ public class CmdConfig {
 
     public String getResourceDir() {
         return mResourceDir;
+    }
+
+    public String getWorkingDir() {
+        return mWorkingDir;
     }
 
     public boolean isValid() {
@@ -89,6 +94,10 @@ public class CmdConfig {
 
     public void setResourceDir(String resourceDir) {
         mResourceDir = resourceDir;
+    }
+
+    public void setWorkingDir(String workingDir) {
+        mWorkingDir = workingDir;
     }
 
     private static class Holder {
