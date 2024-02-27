@@ -15,11 +15,16 @@
  */
 package org.mapton.butterfly.bcc;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import net.lingala.zip4j.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
+import net.lingala.zip4j.model.ZipParameters;
+import net.lingala.zip4j.model.enums.CompressionLevel;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.mapton.butterfly.bcc.helper.BccHelper;
-import org.openide.modules.Modules;
-import org.openide.util.Exceptions;
 
 /**
  *
@@ -32,56 +37,75 @@ public class Executor {
     public Executor() {
     }
 
-    public void execute() {
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException ex) {
-            Exceptions.printStackTrace(ex);
-        }
+    public void execute() throws IOException, ClassNotFoundException, InterruptedException {
+        Thread.sleep(1000);
 
         if (!mConfig.isValid()) {
-            System.out.println("bad args");
+            System.out.println("invalid args");
             return;
         }
 
         System.out.println("bcc");
         System.out.println(System.getProperty("java.home"));
-        try {
-            var tempPath = Files.createTempDirectory("butterfly");
-            tempPath.toFile().deleteOnExit();
-            System.setProperty(BccHelper.WORKING_DIRECTORY_PATH, tempPath.toString());
-        } catch (IOException ex) {
-            Exceptions.printStackTrace(ex);
-        }
+        var tempPath = Files.createTempDirectory("butterfly");
+        System.out.println(tempPath);
+        tempPath.toFile().deleteOnExit();
+        System.setProperty(BccHelper.WORKING_DIRECTORY_PATH, tempPath.toString());
 
-        /*
-        Execution flow
-        Each class, halt on fail,
-        Copy resources
-         */
+        executePlugins();
+
+        if (StringUtils.isNotBlank(mConfig.getResourceDir())) {
+            copyResources(tempPath.toFile());
+        }
+        zip(tempPath.toFile());
+
+        System.out.println("Created " + mConfig.getDestFile());
+    }
+
+    private void copyResources(File destDir) throws IOException {
+        var source = new File(mConfig.getResourceDir());
+        for (var file : source.listFiles()) {
+            if (file.isFile()) {
+                FileUtils.copyFileToDirectory(file, destDir, true);
+            } else {
+                FileUtils.copyDirectoryToDirectory(file, destDir);
+            }
+        }
+    }
+
+    private void executePlugins() throws ClassNotFoundException {
         for (int i = 0; i < mConfig.getClasses().length; i++) {
             var className = mConfig.getClasses()[i];
             var arg = mConfig.getClassArgs()[i];
 
-            try {
-                var loader = Modules.getDefault().ownerOf(Executor.class).getClassLoader();
-                System.out.println("Load " + className);
-                System.out.println("Args= " + arg);
-                BccHelper.put(className, arg);
-                var c = Class.forName(className, true, loader);
-//                var c = Class.forName(className);
-                var result = BccHelper.get(className);
-                System.out.println(c.toString() + ": " + result);
-            } catch (ClassNotFoundException ex) {
-//                Exceptions.printStackTrace(ex);
-                System.out.println("Class not found: " + className);
+            System.out.println("Load: " + className);
+            System.out.println("Args: " + arg);
+            if (StringUtils.startsWithIgnoreCase(arg, "disabled")) {
+                System.out.println("continue");
+                continue;
             }
+            BccHelper.put(className, arg);
+            var c = Class.forName(className);
+            var result = BccHelper.get(className);
+            System.out.println("Result: " + result);
+            System.out.println();
         }
-//ZipFile zf = null;
-//        ZipInputStream x = zf.getInputStream(null);
-//        var zip = new Zip();
-//        zip.zip();
-//        zip.readStream();
+    }
 
+    private void zip(File sourceDir) throws ZipException, IOException {
+        var zipParameters = new ZipParameters();
+        zipParameters.setCompressionLevel(CompressionLevel.ULTRA);
+        zipParameters.setIncludeRootFolder(false);
+//        zipParameters.setEncryptFiles(true);
+//        zipParameters.setEncryptionMethod(EncryptionMethod.AES);
+
+        var destFile = new File(mConfig.getDestFile());
+        if (destFile.isFile()) {
+            FileUtils.deleteQuietly(destFile);
+        }
+
+        try (var zipFile = new ZipFile(destFile, mConfig.getPassword())) {
+            zipFile.addFolder(sourceDir, zipParameters);
+        }
     }
 }

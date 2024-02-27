@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly.bcc.boot;
 
+import java.io.IOException;
 import org.mapton.butterfly.bcc.CmdConfig;
 import org.mapton.butterfly.bcc.Executor;
 import org.netbeans.api.sendopts.CommandException;
@@ -23,6 +24,7 @@ import org.netbeans.spi.sendopts.ArgsProcessor;
 import org.netbeans.spi.sendopts.Description;
 import org.netbeans.spi.sendopts.Env;
 import org.openide.LifecycleManager;
+import org.openide.util.Exceptions;
 import org.openide.util.NbBundle.Messages;
 
 /**
@@ -35,10 +37,10 @@ public class DoArgsProcessing implements ArgsProcessor {
     @Description(shortDescription = "#opt_dest-file")
     @Messages({"opt_dest-file=destination of encrypted file"})
     public String mDestFile;
-    @Arg(longName = "key", shortName = 'k')
-    @Description(shortDescription = "#opt_key")
-    @Messages({"opt_key=secret for encrypted output"})
-    public String mKey;
+    @Arg(longName = "password", shortName = 'p')
+    @Description(shortDescription = "#opt_password")
+    @Messages({"opt_password=secret for encrypted output"})
+    public String mPassword;
     @Arg(longName = "resource-dir", shortName = 'r')
     @Description(shortDescription = "#opt_resource")
     @Messages({"opt_resource=extra items to include in zip"})
@@ -55,12 +57,18 @@ public class DoArgsProcessing implements ArgsProcessor {
 
     @Override
     public void process(Env env) throws CommandException {
-        mConfig.setKey(mKey);
+        mConfig.setPassword(mPassword.toCharArray());
         mConfig.setDestFile(mDestFile);
         mConfig.setClasses(mClasses);
+        mConfig.setResourceDir(mResourceDir);
 
         new Thread(() -> {
-            new Executor().execute();
+            try {
+                new Executor().execute();
+            } catch (IOException | ClassNotFoundException | InterruptedException ex) {
+                Exceptions.printStackTrace(ex);
+            }
+
             LifecycleManager.getDefault().exit();
         }).start();
     }

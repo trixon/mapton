@@ -28,7 +28,7 @@ public class CmdConfig {
     private String[] mClassArgs;
     private String[] mClasses = new String[]{};
     private String mDestFile;
-    private String mKey;
+    private char[] mPassword;
     private String mResourceDir;
 
     public static CmdConfig getInstance() {
@@ -50,8 +50,8 @@ public class CmdConfig {
         return mDestFile;
     }
 
-    public String getKey() {
-        return mKey;
+    public char[] getPassword() {
+        return mPassword;
     }
 
     public String getResourceDir() {
@@ -59,7 +59,7 @@ public class CmdConfig {
     }
 
     public boolean isValid() {
-        var valid = ObjectUtils.allNotNull(mKey, mDestFile);
+        var valid = ObjectUtils.allNotNull(mPassword, mDestFile);
 
         return valid;
     }
@@ -83,8 +83,8 @@ public class CmdConfig {
         mDestFile = destFile;
     }
 
-    public void setKey(String key) {
-        mKey = key;
+    public void setPassword(char[] password) {
+        mPassword = password;
     }
 
     public void setResourceDir(String resourceDir) {
