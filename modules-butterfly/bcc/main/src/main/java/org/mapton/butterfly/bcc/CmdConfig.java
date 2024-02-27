@@ -59,7 +59,7 @@ public class CmdConfig {
     }
 
     public boolean isValid() {
-        var valid = ObjectUtils.allNotNull(mPassword, mDestFile);
+        var valid = ObjectUtils.allNotNull(mDestFile);
 
         return valid;
     }

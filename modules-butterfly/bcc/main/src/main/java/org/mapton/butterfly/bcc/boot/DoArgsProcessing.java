@@ -57,7 +57,9 @@ public class DoArgsProcessing implements ArgsProcessor {
 
     @Override
     public void process(Env env) throws CommandException {
-        mConfig.setPassword(mPassword.toCharArray());
+        if (mPassword != null) {
+            mConfig.setPassword(mPassword.toCharArray());
+        }
         mConfig.setDestFile(mDestFile);
         mConfig.setClasses(mClasses);
         mConfig.setResourceDir(mResourceDir);
