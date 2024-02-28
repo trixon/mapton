@@ -20,8 +20,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.geotools.api.geometry.MismatchedDimensionException;
 import org.geotools.api.referencing.operation.TransformException;
 import org.locationtech.jts.io.ParseException;
@@ -39,16 +40,25 @@ import org.openide.util.NbPreferences;
 import se.trixon.almond.util.MathHelper;
 
 /**
+ * This class handles the actual loading of data file or dir content.
+ * The following steps are performed
+ * <ul>
+ * <li>Load the content</li>
+ * <li>Perform initial calculations</li>
+ * <li>Set the observed ButterflyProperty with the new data</li>
+ * </ul>
+ *
  *
  * @author Patrik Karlström
  */
 public class ButterflyManager {
 
     private final MAreaFilterManager mAreaFilterManager = MAreaFilterManager.getInstance();
+    private final ButterflyLoader mButterflyLoader = ButterflyLoader.getInstance();
+    private final ButterflyMonitor mButterflyMonitor = new ButterflyMonitor();
     private final ObjectProperty<Butterfly> mButterflyProperty = new SimpleObjectProperty<>();
     private Date mFileDate;
     private final WKTReader mWktReader = new WKTReader();
-    private final ButterflyMonitor mButterflyMonitor = new ButterflyMonitor();
 
     public static ButterflyManager getInstance() {
         return Holder.INSTANCE;
@@ -82,16 +92,20 @@ public class ButterflyManager {
         return mFileDate;
     }
 
-    public void load() {
-        System.out.println("BUTTERFLY request load");
-        var butterflyLoader = ButterflyLoader.getInstance();
-        var sourceDir = new File(FileUtils.getTempDirectory(), "butterfly");
-        ButterflyLoader.setSourceDir(sourceDir);
+    public void load(File file) {
+        var dir = file.getParentFile();
+        var ext = FilenameUtils.getExtension(file.getName());
 
-        if (!sourceDir.isDirectory()) {
-            System.err.println("Not a dir: " + sourceDir);
-            System.out.println("BUTTERFLY cancel load");
-            //TODO Infobox
+        if (StringUtils.equalsIgnoreCase(ext, "bfl")) {
+            ButterflyLoader.setSourceDir(dir);
+            mFileDate = new Date(dir.lastModified());
+            loadDir(dir);
+
+        } else if (StringUtils.equalsIgnoreCase(ext, "bfz")) {
+            mFileDate = new Date(file.lastModified());
+            loadFile(file);
+        } else {
+            System.out.println("Invalid Butterfly file. Cancelling load.");
             return;
         }
 
@@ -100,15 +114,10 @@ public class ButterflyManager {
         if (coosysPlane != null) {
             var preferences = NbPreferences.forModule(MCooTrans.class);
             preferences.put("map.coo_trans", coosysPlane);
-            //TODO request restart id changed
+            //TODO request restart id changed or better yet, force change
         }
 
-        if (!butterflyLoader.load()) {
-            return;
-        }
-
-        mFileDate = butterflyLoader.getDate(sourceDir);
-        var butterfly = butterflyLoader.getButterfly();
+        var butterfly = mButterflyLoader.getButterfly();
 
         calculateLatLons(butterfly.hydro().getGroundwaterPoints());
         calculateLatLons(butterfly.topo().getControlPoints());
@@ -152,7 +161,7 @@ public class ButterflyManager {
         ButterflyHelper.refreshTitle();
         System.out.println("BUTTERFLY loaded");
 
-        mButterflyMonitor.start(sourceDir);
+        mButterflyMonitor.start(dir);
     }
 
     public void setButterfly(Butterfly butterfly) {
@@ -175,6 +184,13 @@ public class ButterflyManager {
     private MCooTrans getCooTrans() {
         return MCooTrans.getCooTrans(MOptions.getInstance().getMapCooTransName());
 
+    }
+
+    private void loadDir(File dir) {
+        mButterflyLoader.loadDir(dir);
+    }
+
+    private void loadFile(File file) {
     }
 
     private static class Holder {

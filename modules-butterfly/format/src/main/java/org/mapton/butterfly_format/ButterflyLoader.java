@@ -16,8 +16,6 @@
 package org.mapton.butterfly_format;
 
 import java.io.File;
-import java.util.Date;
-import org.apache.commons.io.FileUtils;
 
 /**
  *
@@ -36,13 +34,8 @@ public class ButterflyLoader {
         return sourceDir;
     }
 
-    public static void main(String[] args) {
-        ButterflyLoader.setSourceDir(new File(FileUtils.getTempDirectory(), "butterfly"));
-        ButterflyLoader.getInstance().load();
-    }
-
-    public static void setSourceDir(File ourceDir) {
-        ButterflyLoader.sourceDir = ourceDir;
+    public static void setSourceDir(File sourceDir) {
+        ButterflyLoader.sourceDir = sourceDir;
     }
 
     private ButterflyLoader() {
@@ -52,21 +45,16 @@ public class ButterflyLoader {
         return butterfly;
     }
 
-    public Date getDate(File sourceDir) {
-        var f = new File(sourceDir, "butterfly.properties");
-
-        return new Date(f.lastModified());
+    public void loadDir(File dir) {
+        butterfly.loadDir(dir);
+        butterfly.loadTmoObjekt(dir);
+        butterfly.loadTmoObservations(dir);
+        butterfly.postLoad(dir);
     }
 
-    public boolean load() {
-        if (sourceDir.isDirectory()) {
-            butterfly.load(sourceDir);
-            butterfly.loadTmoObjekt(sourceDir);
-            butterfly.loadTmoObservations(sourceDir);
-            butterfly.postLoad(sourceDir);
-        }
-
-        return sourceDir.isDirectory();
+    public void loadFile(File file) {
+        butterfly.loadZip(file);
+//        butterfly.postLoad(file);
     }
 
     private static class Holder {

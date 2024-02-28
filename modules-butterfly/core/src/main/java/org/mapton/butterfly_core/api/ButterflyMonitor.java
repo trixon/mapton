@@ -21,6 +21,7 @@ import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
 import org.apache.commons.io.monitor.FileAlterationMonitor;
 import org.apache.commons.io.monitor.FileAlterationObserver;
+import org.mapton.butterfly_core.loader.ButterflyOpener;
 import org.openide.util.Exceptions;
 
 /**
@@ -55,7 +56,7 @@ public class ButterflyMonitor {
             }
 
             private void load() {
-                ButterflyManager.getInstance().load();
+                ButterflyOpener.getInstance().restore();
             }
         };
 

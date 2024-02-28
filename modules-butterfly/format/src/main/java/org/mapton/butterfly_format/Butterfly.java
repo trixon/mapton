@@ -20,6 +20,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import net.lingala.zip4j.ZipFile;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.butterfly_format.io.ImportFromCsv;
 import org.mapton.butterfly_format.types.BAlarm;
@@ -51,11 +52,11 @@ public class Butterfly {
     private final ArrayList<BAlarm> mAlarms = new ArrayList<>();
     private final ArrayList<BAreaActivity> mAreaActivities = new ArrayList<>();
     private final ArrayList<BAreaBase> mAreaFilters = new ArrayList<>();
-    private final ArrayList<BAcousticMeasuringPoint> mMeasuringPoints = new ArrayList<>();
     private final ArrayList<BBlast> mBlasts = new ArrayList<>();
     private final Hydro mHydro = new Hydro();
     private final ArrayList<BGroundwaterObservation> mHydroGroundwaterObservations = new ArrayList<>();
     private final ArrayList<BGroundwaterPoint> mHydroGroundwaterPoints = new ArrayList<>();
+    private final ArrayList<BAcousticMeasuringPoint> mMeasuringPoints = new ArrayList<>();
     private final ArrayList<BMonmon> mMonmons = new ArrayList<>();
     private final Tmo mTmo = new Tmo();
     private final Topo mTopo = new Topo();
@@ -63,7 +64,6 @@ public class Butterfly {
     private final ArrayList<BTopoControlPointObservation> mTopoControlPointsObservations = new ArrayList<>();
 
     public static void main(String[] args) {
-        ButterflyLoader.main(args);
     }
 
     public Butterfly() {
@@ -101,7 +101,7 @@ public class Butterfly {
         return mTopo;
     }
 
-    void load(File sourceDir) {
+    void loadDir(File sourceDir) {
         new ImportFromCsv<BBlast>(BBlast.class) {
         }.load(new File(sourceDir, "acousticBlasts.csv"), mBlasts);
 
@@ -156,6 +156,15 @@ public class Butterfly {
 
         new ImportFromCsv<BRorelseObservation>(BRorelseObservation.class) {
         }.load(new File(sourceDir, "tmoRorelseObservations.csv"), mTmo.getRorelseObservations());
+    }
+
+    void loadZip(File zipFileFile) {
+        var zipFile = new ZipFile(zipFileFile);
+        new ImportFromCsv<BTopoControlPoint>(BTopoControlPoint.class) {
+        }.load(zipFile, "topoControlPoints.csv", mTopoControlPoints);
+
+        new ImportFromCsv<BTopoControlPointObservation>(BTopoControlPointObservation.class) {
+        }.load(zipFile, "topoControlPointsObservations.csv", mTopoControlPointsObservations);
     }
 
     void postLoad(File sourceDir) {

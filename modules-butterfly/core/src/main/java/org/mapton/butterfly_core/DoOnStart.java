@@ -43,10 +43,6 @@ public class DoOnStart implements Runnable {
     public void run() {
         loadLogo(mDefaultUrl);
 
-        Mapton.getExecutionFlow().executeWhenReady(MKey.EXECUTION_FLOW_MAP_WW_INITIALIZED, () -> {
-            mButterflyManager.load();
-        });
-
         mButterflyManager.butterflyProperty().addListener((p, o, n) -> {
             if (mFirstRun) {
                 initSwap();

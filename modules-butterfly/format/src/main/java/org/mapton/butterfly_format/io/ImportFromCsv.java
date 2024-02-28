@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.csv.CsvGenerator;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
+import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.io.File;
 import java.io.IOException;
@@ -26,6 +27,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.lingala.zip4j.ZipFile;
 import org.mapton.butterfly_format.jackson.DimensionDeserializer;
 import org.mapton.butterfly_format.jackson.LocalDateTimeDeserializer;
 import org.mapton.butterfly_format.types.BDimension;
@@ -38,9 +40,23 @@ public abstract class ImportFromCsv<T> {
 
     private final Class<T> classOfT;
     private final ArrayList<T> items = new ArrayList<>();
+    private final CsvMapper mMapper;
+    private final CsvSchema schema;
 
     public ImportFromCsv(Class<T> clazz) {
         classOfT = clazz;
+        var simpleModule = new SimpleModule();
+        simpleModule.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer());
+        simpleModule.addDeserializer(BDimension.class, new DimensionDeserializer());
+
+        mMapper = CsvMapper.builder()
+                .enable(CsvGenerator.Feature.ALWAYS_QUOTE_STRINGS)
+                .addModule(new JavaTimeModule())
+                .addModule(simpleModule)
+                .configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true)
+                .build();
+
+        schema = mMapper.schemaFor(classOfT).withHeader().withQuoteChar('"');
     }
 
     public void load(File file, ArrayList<T> list) {
@@ -48,28 +64,36 @@ public abstract class ImportFromCsv<T> {
             System.out.println("Missing source file: " + file);
             return;
         }
+
         try {
             list.clear();
 
-            var simpleModule = new SimpleModule();
-            simpleModule.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer());
-            simpleModule.addDeserializer(BDimension.class, new DimensionDeserializer());
+            var mappingIterator = mMapper.readerFor(classOfT).with(schema).readValues(file);
+//            }
+//            @SuppressWarnings("unchecked")
+//            var listFromJson = (ArrayList<T>) mappingIterator.readAll();
+            list.addAll((ArrayList<T>) mappingIterator.readAll());
+        } catch (IOException ex) {
+            Logger.getLogger(ImportFromCsv.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 
-            var mapper = CsvMapper.builder()
-                    .enable(CsvGenerator.Feature.ALWAYS_QUOTE_STRINGS)
-                    .addModule(new JavaTimeModule())
-                    .addModule(simpleModule)
-                    .configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true)
-                    .build();
+    public void load(ZipFile zipFile, String path, ArrayList<T> list) {
+        list.clear();
+        try {
+            var fileHeader = zipFile.getFileHeader(path);
+            if (fileHeader == null) {
+                System.out.println("Missing source file: " + path);
+                return;
+            }
 
-            var schema = mapper.schemaFor(classOfT).withHeader().withQuoteChar('"');
-            var mappingIterator = mapper.readerFor(classOfT)
-                    .with(schema)
-                    .readValues(file);
+            try (var inputStream = zipFile.getInputStream(fileHeader)) {
+                var mappingIterator = mMapper.readerFor(classOfT).with(schema).readValues(inputStream);
 
-            @SuppressWarnings("unchecked")
-            var listFromJson = (ArrayList<T>) mappingIterator.readAll();
-            list.addAll(listFromJson);
+//            @SuppressWarnings("unchecked")
+//            var listFromJson = (ArrayList<T>) mappingIterator.readAll();
+                list.addAll((ArrayList<T>) mappingIterator.readAll());
+            }
         } catch (IOException ex) {
             Logger.getLogger(ImportFromCsv.class.getName()).log(Level.SEVERE, null, ex);
         }
