@@ -16,10 +16,12 @@
 package org.mapton.core.api.ui;
 
 import org.controlsfx.control.action.Action;
+import org.mapton.api.MKey;
 import org.mapton.api.Mapton;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 import se.trixon.almond.util.swing.SwingHelper;
 
@@ -29,16 +31,19 @@ import se.trixon.almond.util.swing.SwingHelper;
  */
 public class ExportAction extends Action {
 
-    private final ExportPanel mExportPanel;
+    private ExportPanel mExportPanel;
     private boolean mFirstRun = true;
 
     public ExportAction(Object lookupKey) {
         super(Dict.EXPORT.toString());
-
-        mExportPanel = new ExportPanel(lookupKey);
-        setEventHandler(actionEvent -> displayExportDialog());
-        setGraphic(MaterialIcon._Content.SAVE.getImageView(Mapton.getIconSizeToolBarInt()));
-        setDisabled(mExportPanel.getExportProviders().isEmpty());
+        Mapton.getExecutionFlow().executeWhenReady(MKey.EXECUTION_FLOW_MAP_INITIALIZED, () -> {
+            FxHelper.runLater(() -> {
+                mExportPanel = new ExportPanel(lookupKey);
+                setEventHandler(actionEvent -> displayExportDialog());
+                setGraphic(MaterialIcon._Content.SAVE.getImageView(Mapton.getIconSizeToolBarInt()));
+                setDisabled(mExportPanel.getExportProviders().isEmpty());
+            });
+        });
     }
 
     private void displayExportDialog() {
