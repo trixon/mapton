@@ -90,8 +90,8 @@ public class TopoChartBuilder extends ChartBuilder<BTopoControlPoint> {
             updateDataset(p);
             var plot = (XYPlot) mChart.getPlot();
             var dateAxis = (DateAxis) plot.getDomainAxis();
-            dateAxis.setRange(DateHelper.convertToDate(mTemporalManager.getLowDate()), DateHelper.convertToDate(mTemporalManager.getHighDate()));
-
+            //dateAxis.setRange(DateHelper.convertToDate(mTemporalManager.getLowDate()), DateHelper.convertToDate(mTemporalManager.getHighDate()));
+            dateAxis.setAutoRange(true);
             plot.clearRangeMarkers();
             plotAlarmIndicators(p);
 

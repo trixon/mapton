@@ -27,8 +27,8 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
 import org.apache.commons.io.FilenameUtils;
-import org.mapton.api.MCoordinateFileOpener;
 import org.mapton.api.MCoordinateFile;
+import org.mapton.api.MCoordinateFileOpener;
 import org.mapton.api.Mapton;
 import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
@@ -50,25 +50,24 @@ public class FileDropSwitchboardView extends BorderPane {
     }
 
     public boolean hasFiles() {
-        if (mTabPane.getTabs().stream().anyMatch(tab -> (tab instanceof ExtTab))) {
-            return true;
-        }
-
-        return false;
+        return mTabPane.getTabs().stream().anyMatch(tab -> (tab instanceof ExtTab));
     }
 
     public void openFiles() {
         var coordinateFileOpenerToCoordinateFiles = new HashMap<MCoordinateFileOpener, ArrayList<MCoordinateFile>>();
-        mTabPane.getTabs().stream().filter(tab -> (tab instanceof ExtTab)).forEachOrdered(tab -> {
-            ((ExtTab) tab).getItems().forEach(coordinateFileInput -> {
-                var coordinateFileOpener = coordinateFileInput.getCoordinateFileOpener();
-                var coordinateFile = new MCoordinateFile();
-                coordinateFile.setFile(coordinateFileInput.getFile());
-                coordinateFile.setCooTrans(coordinateFileInput.getCooTrans());
-                coordinateFile.setCoordinateFileOpenerName(coordinateFileOpener.getClass().getName());
-                coordinateFileOpenerToCoordinateFiles.computeIfAbsent(coordinateFileOpener, k -> new ArrayList<>()).add(coordinateFile);
-            });
-        });
+        mTabPane.getTabs().stream()
+                .filter(tab -> (tab instanceof ExtTab))
+                .map(tab -> (ExtTab) tab)
+                .forEachOrdered(tab -> {
+                    tab.getItems().forEach(coordinateFileInput -> {
+                        var coordinateFileOpener = coordinateFileInput.getCoordinateFileOpener();
+                        var coordinateFile = new MCoordinateFile();
+                        coordinateFile.setFile(coordinateFileInput.getFile());
+                        coordinateFile.setCooTrans(coordinateFileInput.getCooTrans());
+                        coordinateFile.setCoordinateFileOpenerName(coordinateFileOpener.getClass().getName());
+                        coordinateFileOpenerToCoordinateFiles.computeIfAbsent(coordinateFileOpener, k -> new ArrayList<>()).add(coordinateFile);
+                    });
+                });
 
         coordinateFileOpenerToCoordinateFiles.entrySet().forEach(entry -> {
             Mapton.getGlobalState().put(entry.getKey().getClass().getName(), entry.getValue());
@@ -91,7 +90,7 @@ public class FileDropSwitchboardView extends BorderPane {
 
         var extToFiles = new TreeMap<String, ArrayList<File>>();
         var listView = new ListView<File>();
-        
+
         mFiles.forEach(file -> {
             var extension = FilenameUtils.getExtension(file.getName()).toLowerCase(Locale.getDefault());
             if (extToCoordinateFileOpeners.containsKey(extension)) {

@@ -63,6 +63,7 @@ import se.trixon.almond.nbp.dialogs.NbSnapHelper;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.swing.DelayedResetRunner;
 import se.trixon.almond.util.swing.SwingHelper;
+import se.trixon.almond.util.swing.dialogs.SimpleDialog;
 
 /**
  * Top component which displays something.
@@ -117,7 +118,7 @@ public final class MapTopComponent extends MTopComponent {
         map.put("pdf", new FileNameExtensionFilter("Portable Document Format (*.pdf)", "pdf"));
 
         //TODO Remove once no longer needed
-        se.trixon.almond.util.swing.dialogs.SimpleDialog.getExtensionFilters().putAll(map);
+        SimpleDialog.getExtensionFilters().putAll(map);
     }
 
     @Override
