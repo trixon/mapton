@@ -23,17 +23,23 @@ import java.io.File;
  */
 public class ButterflyLoader {
 
-    private final Butterfly butterfly = new Butterfly();
+    @Deprecated(forRemoval = true)
     private static File sourceDir;
+    private final Butterfly butterfly = new Butterfly();
+    private BundleMode mBundleMode;
+    private File mSource;
+    private final ZipHelper mZipHelper = ZipHelper.getInstance();
 
     public static ButterflyLoader getInstance() {
         return Holder.INSTANCE;
     }
 
+    @Deprecated(forRemoval = true)
     public static File getSourceDir() {
         return sourceDir;
     }
 
+    @Deprecated(forRemoval = true)
     public static void setSourceDir(File sourceDir) {
         ButterflyLoader.sourceDir = sourceDir;
     }
@@ -41,20 +47,31 @@ public class ButterflyLoader {
     private ButterflyLoader() {
     }
 
+    public BundleMode getBundleMode() {
+        return mBundleMode;
+    }
+
     public Butterfly getButterfly() {
         return butterfly;
     }
 
-    public void loadDir(File dir) {
-        butterfly.loadDir(dir);
-        butterfly.loadTmoObjekt(dir);
-        butterfly.loadTmoObservations(dir);
-        butterfly.postLoad(dir);
+    public File getSource() {
+        return mSource;
     }
 
-    public void loadFile(File file) {
-        butterfly.loadZip(file);
-//        butterfly.postLoad(file);
+    public void load(BundleMode bundleMode, File source) {
+        mBundleMode = bundleMode;
+        mSource = source;
+        var dir = mBundleMode == BundleMode.DIR ? source.getParentFile() : null;
+
+        if (mBundleMode == BundleMode.DIR) {
+            ButterflyLoader.setSourceDir(source.getParentFile());
+        } else {
+            mZipHelper.init(source);
+        }
+
+        butterfly.load(dir);
+        butterfly.postLoad(source);
     }
 
     private static class Holder {

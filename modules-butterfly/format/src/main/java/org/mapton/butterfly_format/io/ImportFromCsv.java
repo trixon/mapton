@@ -27,7 +27,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.lingala.zip4j.ZipFile;
+import org.mapton.butterfly_format.ZipHelper;
 import org.mapton.butterfly_format.jackson.DimensionDeserializer;
 import org.mapton.butterfly_format.jackson.LocalDateTimeDeserializer;
 import org.mapton.butterfly_format.types.BDimension;
@@ -38,6 +38,7 @@ import org.mapton.butterfly_format.types.BDimension;
  */
 public abstract class ImportFromCsv<T> {
 
+    private static final ZipHelper ZIP_HELPER = ZipHelper.getInstance();
     private final Class<T> classOfT;
     private final ArrayList<T> items = new ArrayList<>();
     private final CsvMapper mMapper;
@@ -59,44 +60,28 @@ public abstract class ImportFromCsv<T> {
         schema = mMapper.schemaFor(classOfT).withHeader().withQuoteChar('"');
     }
 
-    public void load(File file, ArrayList<T> list) {
-        if (!file.isFile()) {
-            System.out.println("Missing source file: " + file);
-            return;
-        }
-
-        try {
-            list.clear();
-
-            var mappingIterator = mMapper.readerFor(classOfT).with(schema).readValues(file);
-//            }
-//            @SuppressWarnings("unchecked")
-//            var listFromJson = (ArrayList<T>) mappingIterator.readAll();
-            list.addAll((ArrayList<T>) mappingIterator.readAll());
-        } catch (IOException ex) {
-            Logger.getLogger(ImportFromCsv.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    public void load(ZipFile zipFile, String path, ArrayList<T> list) {
+    public void load(File sourceDir, String path, ArrayList<T> list) {
         list.clear();
+
         try {
-            var fileHeader = zipFile.getFileHeader(path);
-            if (fileHeader == null) {
-                System.out.println("Missing source file: " + path);
-                return;
-            }
-
-            try (var inputStream = zipFile.getInputStream(fileHeader)) {
-                var mappingIterator = mMapper.readerFor(classOfT).with(schema).readValues(inputStream);
-
-//            @SuppressWarnings("unchecked")
-//            var listFromJson = (ArrayList<T>) mappingIterator.readAll();
+            if (sourceDir == null) {
+                try (var inputStream = ZIP_HELPER.getStream(path)) {
+                    if (inputStream != null) {
+                        var mappingIterator = mMapper.readerFor(classOfT).with(schema).readValues(inputStream);
+                        list.addAll((ArrayList<T>) mappingIterator.readAll());
+                    }
+                }
+            } else {
+                var file = new File(sourceDir, path);
+                if (!file.isFile()) {
+                    System.out.println("Missing source file: " + file);
+                    return;
+                }
+                var mappingIterator = mMapper.readerFor(classOfT).with(schema).readValues(file);
                 list.addAll((ArrayList<T>) mappingIterator.readAll());
             }
         } catch (IOException ex) {
             Logger.getLogger(ImportFromCsv.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
 }

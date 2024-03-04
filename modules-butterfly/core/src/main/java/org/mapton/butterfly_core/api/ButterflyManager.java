@@ -31,6 +31,7 @@ import org.mapton.api.MArea;
 import org.mapton.api.MAreaFilterManager;
 import org.mapton.api.MCooTrans;
 import org.mapton.api.MOptions;
+import org.mapton.butterfly_format.BundleMode;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.ButterflyLoader;
 import org.mapton.butterfly_format.types.BBaseControlPoint;
@@ -57,7 +58,7 @@ public class ButterflyManager {
     private final ButterflyLoader mButterflyLoader = ButterflyLoader.getInstance();
     private final ButterflyMonitor mButterflyMonitor = new ButterflyMonitor();
     private final ObjectProperty<Butterfly> mButterflyProperty = new SimpleObjectProperty<>();
-    private Date mFileDate;
+    private File mSource;
     private final WKTReader mWktReader = new WKTReader();
 
     public static ButterflyManager getInstance() {
@@ -89,27 +90,32 @@ public class ButterflyManager {
     }
 
     public Date getFileDate() {
-        return mFileDate;
+        if (mButterflyLoader.getBundleMode() == BundleMode.DIR) {
+            return new Date(mSource.getParentFile().lastModified());
+        } else {
+            return new Date(mSource.lastModified());
+        }
     }
 
     public void load(File file) {
-        var dir = file.getParentFile();
+        mSource = file;
         var ext = FilenameUtils.getExtension(file.getName());
-
+        BundleMode bundleMode;
         if (StringUtils.equalsIgnoreCase(ext, "bfl")) {
-            ButterflyLoader.setSourceDir(dir);
-            mFileDate = new Date(dir.lastModified());
-            loadDir(dir);
-
+            bundleMode = BundleMode.DIR;
         } else if (StringUtils.equalsIgnoreCase(ext, "bfz")) {
-            mFileDate = new Date(file.lastModified());
-            loadFile(file);
+            bundleMode = BundleMode.ZIP;
         } else {
             System.out.println("Invalid Butterfly file. Cancelling load.");
             return;
         }
+        System.out.println(file);
+        mButterflyLoader.load(bundleMode, mSource);
 
-        var coosysPlane = ButterflyConfig.getInstance().getConfig().getString("COOSYS.PLANE");
+        var project = ButterflyProject.getInstance();
+        var coosysPlane = project.getCoordinateSystemPlane();
+        System.out.println("PROJECT:");
+        System.out.println(project.getName());
 
         if (coosysPlane != null) {
             var preferences = NbPreferences.forModule(MCooTrans.class);
@@ -161,7 +167,7 @@ public class ButterflyManager {
         ButterflyHelper.refreshTitle();
         System.out.println("BUTTERFLY loaded");
 
-        mButterflyMonitor.start(dir);
+        mButterflyMonitor.start();
     }
 
     public void setButterfly(Butterfly butterfly) {
@@ -184,13 +190,6 @@ public class ButterflyManager {
     private MCooTrans getCooTrans() {
         return MCooTrans.getCooTrans(MOptions.getInstance().getMapCooTransName());
 
-    }
-
-    private void loadDir(File dir) {
-        mButterflyLoader.loadDir(dir);
-    }
-
-    private void loadFile(File file) {
     }
 
     private static class Holder {

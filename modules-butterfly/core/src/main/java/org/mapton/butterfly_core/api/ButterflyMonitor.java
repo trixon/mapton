@@ -35,7 +35,10 @@ public class ButterflyMonitor {
     public ButterflyMonitor() {
     }
 
-    public void start(File file) {
+    public void start() {
+        //TODO call loader for info on what to monitor
+        //TODO Handle "Open" new project
+        File file = new File("xxxxxxxx");
         if (!file.isDirectory() || started) {
             return;
         }

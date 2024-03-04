@@ -19,8 +19,6 @@ import internal.org.mapton.butterfly_format.monmon.MonmonConfig;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import net.lingala.zip4j.ZipFile;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.butterfly_format.io.ImportFromCsv;
 import org.mapton.butterfly_format.types.BAlarm;
@@ -101,70 +99,58 @@ public class Butterfly {
         return mTopo;
     }
 
-    void loadDir(File sourceDir) {
+    void load(File sourceDir) {
         new ImportFromCsv<BBlast>(BBlast.class) {
-        }.load(new File(sourceDir, "acousticBlasts.csv"), mBlasts);
+        }.load(sourceDir, "acousticBlasts.csv", mBlasts);
 
         new ImportFromCsv<BAcousticMeasuringPoint>(BAcousticMeasuringPoint.class) {
-        }.load(new File(sourceDir, "acousticMeasuringPoints.csv"), mMeasuringPoints);
+        }.load(sourceDir, "acousticMeasuringPoints.csv", mMeasuringPoints);
 
         new ImportFromCsv<BAlarm>(BAlarm.class) {
-        }.load(new File(sourceDir, "alarms.csv"), mAlarms);
+        }.load(sourceDir, "alarms.csv", mAlarms);
 
         new ImportFromCsv<BAreaActivity>(BAreaActivity.class) {
-        }.load(new File(sourceDir, "areaActivities.csv"), mAreaActivities);
+        }.load(sourceDir, "areaActivities.csv", mAreaActivities);
 
         new ImportFromCsv<BAreaBase>(BAreaBase.class) {
-        }.load(new File(sourceDir, "areaFilters.csv"), mAreaFilters);
+        }.load(sourceDir, "areaFilters.csv", mAreaFilters);
 
         new ImportFromCsv<BTopoControlPoint>(BTopoControlPoint.class) {
-        }.load(new File(sourceDir, "topoControlPoints.csv"), mTopoControlPoints);
+        }.load(sourceDir, "topoControlPoints.csv", mTopoControlPoints);
 
         new ImportFromCsv<BTopoControlPointObservation>(BTopoControlPointObservation.class) {
-        }.load(new File(sourceDir, "topoControlPointsObservations.csv"), mTopoControlPointsObservations);
+        }.load(sourceDir, "topoControlPointsObservations.csv", mTopoControlPointsObservations);
 
         new ImportFromCsv<BGroundwaterPoint>(BGroundwaterPoint.class) {
-        }.load(new File(sourceDir, "hydroGroundwaterPoints.csv"), mHydroGroundwaterPoints);
+        }.load(sourceDir, "hydroGroundwaterPoints.csv", mHydroGroundwaterPoints);
 
         new ImportFromCsv<BGroundwaterObservation>(BGroundwaterObservation.class) {
-        }.load(new File(sourceDir, "hydroGroundwaterObservations.csv"), mHydroGroundwaterObservations);
-    }
+        }.load(sourceDir, "hydroGroundwaterObservations.csv", mHydroGroundwaterObservations);
 
-    void loadTmoObjekt(File sourceDir) {
+        //TMO
         new ImportFromCsv<BGrundvatten>(BGrundvatten.class) {
-        }.load(new File(sourceDir, "tmoGrundvatten.csv"), mTmo.getGrundvatten());
+        }.load(sourceDir, "tmoGrundvatten.csv", mTmo.getGrundvatten());
 
         new ImportFromCsv<BInfiltration>(BInfiltration.class) {
-        }.load(new File(sourceDir, "tmoInfiltration.csv"), mTmo.getInfiltration());
+        }.load(sourceDir, "tmoInfiltration.csv", mTmo.getInfiltration());
 
         new ImportFromCsv<BRorelse>(BRorelse.class) {
-        }.load(new File(sourceDir, "tmoRorelse.csv"), mTmo.getRorelse());
+        }.load(sourceDir, "tmoRorelse.csv", mTmo.getRorelse());
 
         new ImportFromCsv<BTunnelvatten>(BTunnelvatten.class) {
-        }.load(new File(sourceDir, "tmoTunnelvatten.csv"), mTmo.getTunnelvatten());
+        }.load(sourceDir, "tmoTunnelvatten.csv", mTmo.getTunnelvatten());
 
         new ImportFromCsv<BVattenkemi>(BVattenkemi.class) {
-        }.load(new File(sourceDir, "tmoVattenkemi.csv"), mTmo.getVattenkemi());
+        }.load(sourceDir, "tmoVattenkemi.csv", mTmo.getVattenkemi());
 
         new ImportFromCsv<BVaderstation>(BVaderstation.class) {
-        }.load(new File(sourceDir, "tmoVaderstation.csv"), mTmo.getVaderstation());
-    }
+        }.load(sourceDir, "tmoVaderstation.csv", mTmo.getVaderstation());
 
-    void loadTmoObservations(File sourceDir) {
         new ImportFromCsv<BGrundvattenObservation>(BGrundvattenObservation.class) {
-        }.load(new File(sourceDir, "tmoGrundvattenObservations.csv"), mTmo.getGrundvattenObservations());
+        }.load(sourceDir, "tmoGrundvattenObservations.csv", mTmo.getGrundvattenObservations());
 
         new ImportFromCsv<BRorelseObservation>(BRorelseObservation.class) {
-        }.load(new File(sourceDir, "tmoRorelseObservations.csv"), mTmo.getRorelseObservations());
-    }
-
-    void loadZip(File zipFileFile) {
-        var zipFile = new ZipFile(zipFileFile);
-        new ImportFromCsv<BTopoControlPoint>(BTopoControlPoint.class) {
-        }.load(zipFile, "topoControlPoints.csv", mTopoControlPoints);
-
-        new ImportFromCsv<BTopoControlPointObservation>(BTopoControlPointObservation.class) {
-        }.load(zipFile, "topoControlPointsObservations.csv", mTopoControlPointsObservations);
+        }.load(sourceDir, "tmoRorelseObservations.csv", mTmo.getRorelseObservations());
     }
 
     void postLoad(File sourceDir) {
@@ -182,10 +168,10 @@ public class Butterfly {
             p.setButterfly(this);
         }
 
-        populateMonmon(sourceDir);
+        //populateMonmon();
     }
 
-    private void populateMonmon(File sourceDir) {
+    private void populateMonmon() {
         var map = new HashMap<String, BTopoControlPoint>();
         topo().getControlPoints().forEach(controlPoint -> {
             map.put(controlPoint.getName(), controlPoint);
@@ -193,7 +179,7 @@ public class Butterfly {
 
         var list = new ArrayList<BMonmon>();
         var config = MonmonConfig.getInstance().getConfig();
-        for (Iterator<String> iterator = config.getKeys(); iterator.hasNext();) {
+        for (var iterator = config.getKeys(); iterator.hasNext();) {
             try {
                 String name = iterator.next();
                 var p = map.get(name);
@@ -206,7 +192,7 @@ public class Butterfly {
                     var m = new BMonmon(p, Integer.parseInt(items[0]), belongsTo);
                     list.add(m);
                 }
-            } catch (Exception e) {
+            } catch (NumberFormatException e) {
                 System.err.println(e);
             }
         }

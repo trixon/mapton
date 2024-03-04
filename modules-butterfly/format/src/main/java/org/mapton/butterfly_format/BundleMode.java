@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Patrik Karlström.
+ * Copyright 2024 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,26 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_core.api;
-
-import org.mapton.butterfly_format.BaseConfig;
+package org.mapton.butterfly_format;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class ButterflyConfig extends BaseConfig {
-
-    public static ButterflyConfig getInstance() {
-        return Holder.INSTANCE;
-    }
-
-    private ButterflyConfig() {
-        init("butterfly.properties");
-    }
-
-    private static class Holder {
-
-        private static final ButterflyConfig INSTANCE = new ButterflyConfig();
-    }
+public enum BundleMode {
+    DIR, ZIP;
 }
