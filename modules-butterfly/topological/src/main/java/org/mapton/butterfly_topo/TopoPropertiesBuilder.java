@@ -74,19 +74,21 @@ public class TopoPropertiesBuilder extends PropertiesBuilder<BTopoControlPoint> 
         var firstFiltered = Objects.toString(DateHelper.toDateString(p.ext().getObservationFilteredFirstDate()), "-");
         var lastRaw = Objects.toString(DateHelper.toDateString(p.ext().getObservationRawLastDate()), "-");
         var lastFiltered = Objects.toString(DateHelper.toDateString(p.ext().getObservationFilteredLastDate()), "-");
+        var nextRaw = Objects.toString(DateHelper.toDateString(p.ext().getObservationRawNextDate()), "-");
 
         propertyMap.put(getCatKey(cat1, Dict.AGE.toString()), p.ext().getMeasurementAge(ChronoUnit.DAYS));
         propertyMap.put(getCatKey(cat1, "%s, %s".formatted(Dict.AGE.toString(), SDict.ALARM_LEVEL.toLower())), p.ext().getAlarmLevelAge());
         propertyMap.put(getCatKey(cat1, Dict.LATEST.toString()),
                 "%s (%s)".formatted(lastRaw, lastFiltered)
         );
-        propertyMap.put(getCatKey(cat1, Dict.FIRST.toString()),
-                "%s (%s)".formatted(firstRaw, firstFiltered)
-        );
+        propertyMap.put(getCatKey(cat1, Dict.NEXT.toString()), nextRaw);
         propertyMap.put(getCatKey(cat1, Dict.REFERENCE.toString()),
                 "%s (%s)".formatted(
                         Objects.toString(DateHelper.toDateString(p.getDateZero()), "-"),
                         Objects.toString(DateHelper.toDateString(p.getDateRolling()), "-"))
+        );
+        propertyMap.put(getCatKey(cat1, Dict.FIRST.toString()),
+                "%s (%s)".formatted(firstRaw, firstFiltered)
         );
         var delta = "Δ ";
         propertyMap.put(getCatKey(cat1, delta + SDict.ROLLING.toString()), p.ext().deltaRolling().getDelta(3));

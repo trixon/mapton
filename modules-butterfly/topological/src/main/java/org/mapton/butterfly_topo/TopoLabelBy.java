@@ -53,7 +53,11 @@ public enum TopoLabelBy {
     }),
     DATE_LATEST(LabelByCategories.DATE, SDict.LATEST.toString(), p -> {
         var date = p.ext().getObservationFilteredLastDate();
-//        var date = p.getDateLatest();
+
+        return date == null ? "-" : date.toString();
+    }),
+    DATE_NEXT(LabelByCategories.DATE, Dict.NEXT.toString(), p -> {
+        var date = p.ext().getObservationRawNextDate();
 
         return date == null ? "-" : date.toString();
     }),

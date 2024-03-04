@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_topo;
 
+import java.time.LocalDate;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -72,10 +73,17 @@ class TopoListCell extends ListCell<BTopoControlPoint> {
                 StringUtils.removeEndIgnoreCase(p.getNameOfAlarmHeight(), "_h"),
                 StringUtils.removeEndIgnoreCase(p.getNameOfAlarmPlane(), "_p")
         );
-
+        var sign = "\uu26A0";
         var desc1 = "%s: %s".formatted(StringUtils.defaultIfBlank(p.getCategory(), "NOVALUE"), alarms);
+        var dateSB = new StringBuilder(StringHelper.toString(p.getDateLatest() == null ? null : p.getDateLatest().toLocalDate(), "NOVALUE"));
+        var nextDate = p.ext().getObservationRawNextDate();
+        if (nextDate != null) {
+            dateSB.append(" (").append(nextDate.toString()).append(")");
+            if (nextDate.isBefore(LocalDate.now())) {
+                dateSB.append(" ").append(sign.repeat(5));
+            }
+        }
 
-        var desc2 = StringHelper.toString(p.getDateLatest() == null ? null : p.getDateLatest().toLocalDate(), "NOVALUE");
         var dateRolling = StringHelper.toString(p.getDateRolling(), "NOVALUE");
 
         String deltaRolling = p.ext().deltaRolling().getDelta(3);
@@ -88,7 +96,7 @@ class TopoListCell extends ListCell<BTopoControlPoint> {
         mAlarmIndicator.update(p);
         mHeaderLabel.setText(header);
         mDesc1Label.setText(desc1);
-        mDesc2Label.setText(desc2);
+        mDesc2Label.setText(dateSB.toString());
         mDesc3Label.setText(desc3);
         mDesc4Label.setText(desc4);
 
