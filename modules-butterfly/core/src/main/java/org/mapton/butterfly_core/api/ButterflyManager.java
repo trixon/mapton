@@ -16,8 +16,10 @@
 package org.mapton.butterfly_core.api;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import org.apache.commons.io.FilenameUtils;
@@ -31,14 +33,23 @@ import org.mapton.api.MArea;
 import org.mapton.api.MAreaFilterManager;
 import org.mapton.api.MCooTrans;
 import org.mapton.api.MOptions;
+import org.mapton.butterfly_core.LogoLoader;
 import org.mapton.butterfly_format.BundleMode;
+import static org.mapton.butterfly_format.BundleMode.DIR;
+import static org.mapton.butterfly_format.BundleMode.ZIP;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.ButterflyLoader;
+import org.mapton.butterfly_format.ZipHelper;
 import org.mapton.butterfly_format.types.BBaseControlPoint;
 import org.mapton.butterfly_format.types.tmo.BBasObjekt;
+import org.mapton.core.api.MaptonNb;
+import org.openide.modules.Modules;
 import org.openide.util.Exceptions;
 import org.openide.util.NbPreferences;
+import org.openide.windows.WindowManager;
+import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.MathHelper;
+import se.trixon.almond.util.swing.SwingHelper;
 
 /**
  * This class handles the actual loading of data file or dir content.
@@ -58,8 +69,10 @@ public class ButterflyManager {
     private final ButterflyLoader mButterflyLoader = ButterflyLoader.getInstance();
     private final ButterflyMonitor mButterflyMonitor = new ButterflyMonitor();
     private final ObjectProperty<Butterfly> mButterflyProperty = new SimpleObjectProperty<>();
+    private LogoLoader mLogoLoader;
     private File mSource;
     private final WKTReader mWktReader = new WKTReader();
+    private final ZipHelper mZipHelper = ZipHelper.getInstance();
 
     public static ButterflyManager getInstance() {
         return Holder.INSTANCE;
@@ -89,6 +102,22 @@ public class ButterflyManager {
         return mButterflyProperty.get();
     }
 
+    public File getFile(String fileName) {
+        switch (mButterflyLoader.getBundleMode()) {
+            case DIR -> {
+                return new File(mButterflyLoader.getSource().getParentFile(), fileName);
+            }
+
+            case ZIP -> {
+                return mZipHelper.extractResourceToTempFile(fileName);
+            }
+
+            default -> {
+                return null;
+            }
+        }
+    }
+
     public Date getFileDate() {
         if (mButterflyLoader.getBundleMode() == BundleMode.DIR) {
             return new Date(mSource.getParentFile().lastModified());
@@ -98,6 +127,9 @@ public class ButterflyManager {
     }
 
     public void load(File file) {
+        var taskName = Dict.OPENING_S.toString().formatted("Butterfly");
+        MaptonNb.progressStart(taskName);
+
         mSource = file;
         var ext = FilenameUtils.getExtension(file.getName());
         BundleMode bundleMode;
@@ -111,7 +143,10 @@ public class ButterflyManager {
         }
         System.out.println(file);
         mButterflyLoader.load(bundleMode, mSource);
-
+        if (mLogoLoader == null) {
+            mLogoLoader = new LogoLoader();
+        }
+        mLogoLoader.load();
         var project = ButterflyProject.getInstance();
         var coosysPlane = project.getCoordinateSystemPlane();
         System.out.println("PROJECT:");
@@ -168,6 +203,8 @@ public class ButterflyManager {
         System.out.println("BUTTERFLY loaded");
 
         mButterflyMonitor.start();
+        refreshTitle();
+        MaptonNb.progressStop(taskName);
     }
 
     public void setButterfly(Butterfly butterfly) {
@@ -190,6 +227,36 @@ public class ButterflyManager {
     private MCooTrans getCooTrans() {
         return MCooTrans.getCooTrans(MOptions.getInstance().getMapCooTransName());
 
+    }
+
+    private void refreshTitle() {
+        var moduleInfo = Modules.getDefault().ownerOf(ButterflyHelper.class);
+        var buildVersion = moduleInfo.getBuildVersion();
+
+        var buildDate = "%s.%s.%s".formatted(
+                StringUtils.mid(buildVersion, 0, 4),
+                StringUtils.mid(buildVersion, 4, 2),
+                StringUtils.mid(buildVersion, 6, 2)
+        );
+
+        var fileName = "";
+        switch (mButterflyLoader.getBundleMode()) {
+            case DIR -> {
+                fileName = mSource.getParentFile().getName().toUpperCase(Locale.ROOT) + ".bfl";
+            }
+
+            case ZIP -> {
+                fileName = FilenameUtils.getBaseName(mSource.getName()).toUpperCase(Locale.ROOT) + ".bfz";
+            }
+        }
+
+        var fileDate = getFileDate();
+        var title = "Mapton v%s (%s %s)".formatted(
+                buildDate,
+                fileName,
+                new SimpleDateFormat("yyyy-MM-dd HH.mm.ss").format(fileDate));
+
+        SwingHelper.runLater(() -> WindowManager.getDefault().getMainWindow().setTitle(title));
     }
 
     private static class Holder {

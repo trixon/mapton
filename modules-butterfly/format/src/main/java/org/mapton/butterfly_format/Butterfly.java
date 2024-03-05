@@ -168,7 +168,7 @@ public class Butterfly {
             p.setButterfly(this);
         }
 
-        //populateMonmon();
+        populateMonmon();
     }
 
     private void populateMonmon() {

@@ -28,7 +28,7 @@ public class MonmonConfig extends BaseConfig {
     }
 
     private MonmonConfig() {
-        init("monmon.properties");
+        super("monmon.properties");
     }
 
     private static class Holder {

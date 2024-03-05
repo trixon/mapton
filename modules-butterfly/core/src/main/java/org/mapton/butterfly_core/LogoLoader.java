@@ -22,33 +22,23 @@ import javax.swing.Timer;
 import org.mapton.api.MKey;
 import org.mapton.api.Mapton;
 import org.mapton.butterfly_core.api.ButterflyManager;
-import org.mapton.butterfly_format.ButterflyLoader;
-import org.openide.modules.OnStart;
 
 /**
  *
  * @author Patrik Karlström
  */
-@OnStart
-public class DoOnStart implements Runnable {
+public class LogoLoader {
 
     private static final int SWAP_DELAY = 120 * 1000;
     private static final int SWAP_INITIAL_DELAY = 60 * 1000;
     private final ButterflyManager mButterflyManager = ButterflyManager.getInstance();
     private final URL mDefaultUrl = getClass().getResource("scior-logo.png");
-    private boolean mFirstRun = true;
+    private Timer mTimer;
     private boolean mUsingBundledLogo = true;
 
-    @Override
-    public void run() {
+    public void load() {
         loadLogo(mDefaultUrl);
-
-        mButterflyManager.butterflyProperty().addListener((p, o, n) -> {
-            if (mFirstRun) {
-                initSwap();
-                mFirstRun = false;
-            }
-        });
+        initSwap();
     }
 
     private URL fileToUrl(File file) {
@@ -60,18 +50,22 @@ public class DoOnStart implements Runnable {
     }
 
     private void initSwap() {
-        var extraLogo = new File(ButterflyLoader.getSourceDir(), "logo.png");
-        var extraLogoNoSwap = new File(ButterflyLoader.getSourceDir(), "logo_NoSwap.png");
+        var extraLogo = mButterflyManager.getFile("logo.png");
+        var extraLogoNoSwap = mButterflyManager.getFile("logo_NoSwap.png");
 
-        if (extraLogo.isFile()) {
-            var timer = new Timer(SWAP_DELAY, actionEvent -> {
+        if (mTimer != null) {
+            mTimer.stop();
+        }
+
+        if (extraLogo != null && extraLogo.isFile()) {
+            mTimer = new Timer(SWAP_DELAY, actionEvent -> {
                 loadLogo(mUsingBundledLogo ? fileToUrl(extraLogo) : mDefaultUrl);
                 mUsingBundledLogo = !mUsingBundledLogo;
             });
 
-            timer.setDelay(SWAP_INITIAL_DELAY);
-            timer.start();
-        } else if (extraLogoNoSwap.isFile()) {
+            mTimer.setDelay(SWAP_INITIAL_DELAY);
+            mTimer.start();
+        } else if (extraLogoNoSwap != null && extraLogoNoSwap.isFile()) {
             loadLogo(fileToUrl(extraLogoNoSwap));
         }
     }

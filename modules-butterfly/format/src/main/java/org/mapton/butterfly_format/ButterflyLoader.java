@@ -23,8 +23,6 @@ import java.io.File;
  */
 public class ButterflyLoader {
 
-    @Deprecated(forRemoval = true)
-    private static File sourceDir;
     private final Butterfly butterfly = new Butterfly();
     private BundleMode mBundleMode;
     private File mSource;
@@ -32,16 +30,6 @@ public class ButterflyLoader {
 
     public static ButterflyLoader getInstance() {
         return Holder.INSTANCE;
-    }
-
-    @Deprecated(forRemoval = true)
-    public static File getSourceDir() {
-        return sourceDir;
-    }
-
-    @Deprecated(forRemoval = true)
-    public static void setSourceDir(File sourceDir) {
-        ButterflyLoader.sourceDir = sourceDir;
     }
 
     private ButterflyLoader() {
@@ -65,7 +53,7 @@ public class ButterflyLoader {
         var dir = mBundleMode == BundleMode.DIR ? source.getParentFile() : null;
 
         if (mBundleMode == BundleMode.DIR) {
-            ButterflyLoader.setSourceDir(source.getParentFile());
+            //
         } else {
             mZipHelper.init(source);
         }

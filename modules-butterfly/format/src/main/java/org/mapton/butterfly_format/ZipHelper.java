@@ -21,6 +21,7 @@ import java.io.StringWriter;
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.io.inputstream.ZipInputStream;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.openide.util.Exceptions;
 
@@ -37,6 +38,24 @@ public class ZipHelper {
     }
 
     private ZipHelper() {
+    }
+
+    public File extractResourceToTempFile(String path) {
+        var is = getStream(path);
+        if (is == null) {
+            return null;
+        } else {
+            try {
+                var file = File.createTempFile("butterfly", "bfz");
+                FileUtils.copyInputStreamToFile(is, file);
+                file.deleteOnExit();
+
+                return file;
+            } catch (IOException ex) {
+                System.out.println("ZIP: Failed to extract content: " + path);
+                return null;
+            }
+        }
     }
 
     public ZipInputStream getStream(String path) {

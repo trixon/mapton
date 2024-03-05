@@ -52,7 +52,7 @@ public class TopoAttributeManager {
     private PointPlacemarkAttributes[] mPinAttributes;
     private BasicShapeAttributes mSkipPlotAttribute;
     private BasicShapeAttributes[] mSymbolAttributes;
-    private final TopoConfig mTopoConfig = new TopoConfig();
+    private TopoConfig mTopoConfig;
     private BasicShapeAttributes mTraceAttribute;
     private BasicShapeAttributes[] mVectorAlarmAttributes;
 
@@ -384,6 +384,10 @@ public class TopoAttributeManager {
     private Color getColor(ColorBy mColorBy, BTopoControlPoint p) {
         switch (mColorBy) {
             case STYLE -> {
+                if (mTopoConfig == null) {
+                    //TODO Make proper fix
+                    mTopoConfig = new TopoConfig();
+                }
                 return mTopoConfig.getColor(p);
             }
             case FREQUENCY -> {

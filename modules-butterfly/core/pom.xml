@@ -98,5 +98,10 @@ limitations under the License.
         <!--Trixon-->
 
         <!--Other-->
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-netbeans-api-progress</artifactId>
+            <version>RELEASE210</version>
+        </dependency>
     </dependencies>
 </project>

@@ -19,6 +19,8 @@ import java.io.File;
 import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.apache.commons.configuration2.builder.fluent.Configurations;
 import org.apache.commons.configuration2.ex.ConfigurationException;
+import static org.mapton.butterfly_format.BundleMode.DIR;
+import static org.mapton.butterfly_format.BundleMode.ZIP;
 
 /**
  *
@@ -26,22 +28,36 @@ import org.apache.commons.configuration2.ex.ConfigurationException;
  */
 public abstract class BaseConfig {
 
+    private final ButterflyLoader mButterflyLoader = ButterflyLoader.getInstance();
     private PropertiesConfiguration mConfig;
+    private final ZipHelper mZipHelper = ZipHelper.getInstance();
 
-    public BaseConfig() {
+    public BaseConfig(String fileName) {
+        var builder = new Configurations().propertiesBuilder(getFile(fileName));
+        try {
+            mConfig = builder.getConfiguration();
+        } catch (ConfigurationException ex) {
+            //Exceptions.printStackTrace(ex);
+        }
     }
 
     public PropertiesConfiguration getConfig() {
         return mConfig;
     }
 
-    public void init(String fileName) {
-        var file = new File(ButterflyLoader.getSourceDir(), fileName);
-        var builder = new Configurations().propertiesBuilder(file);
-        try {
-            mConfig = builder.getConfiguration();
-        } catch (ConfigurationException ex) {
-            //Exceptions.printStackTrace(ex);
+    private File getFile(String fileName) {
+        switch (mButterflyLoader.getBundleMode()) {
+            case DIR -> {
+                return new File(mButterflyLoader.getSource().getParentFile(), fileName);
+            }
+
+            case ZIP -> {
+                return mZipHelper.extractResourceToTempFile(fileName);
+            }
+
+            default -> {
+                return null;
+            }
         }
     }
 }

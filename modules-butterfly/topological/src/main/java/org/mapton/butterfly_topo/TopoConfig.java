@@ -28,7 +28,7 @@ import se.trixon.almond.util.StringHelper;
 public class TopoConfig extends BaseConfig {
 
     public TopoConfig() {
-        init("styles.TopoControlPoint");
+        super("styles.TopoControlPoint");
     }
 
     public Color getColor(BTopoControlPoint point) {
