@@ -15,16 +15,20 @@
  */
 package org.mapton.butterfly_core.api;
 
+import internal.org.mapton.butterfly_format.monmon.MonmonConfig;
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.math3.util.FastMath;
 import org.geotools.api.geometry.MismatchedDimensionException;
 import org.geotools.api.referencing.operation.TransformException;
 import org.locationtech.jts.io.ParseException;
@@ -120,13 +124,22 @@ public class ButterflyManager {
 
     public Date getFileDate() {
         if (mButterflyLoader.getBundleMode() == BundleMode.DIR) {
-            return new Date(mSource.getParentFile().lastModified());
+            var lastModified = Long.MIN_VALUE;
+
+            for (var file : FileUtils.listFiles(mSource.getParentFile(), null, true)) {
+                lastModified = FastMath.max(lastModified, file.lastModified());
+            }
+
+            return new Date(lastModified);
         } else {
             return new Date(mSource.lastModified());
         }
     }
 
-    public void load(File file) {
+    public synchronized void load(File file) {
+        System.out.println(LocalDateTime.now());
+        System.out.println("load " + file);
+        mButterflyMonitor.stop();
         var taskName = Dict.OPENING_S.toString().formatted("Butterfly");
         MaptonNb.progressStart(taskName);
 
@@ -141,13 +154,16 @@ public class ButterflyManager {
             System.out.println("Invalid Butterfly file. Cancelling load.");
             return;
         }
-        System.out.println(file);
+
         mButterflyLoader.load(bundleMode, mSource);
         if (mLogoLoader == null) {
             mLogoLoader = new LogoLoader();
         }
         mLogoLoader.load();
+
+        MonmonConfig.getInstance().init();
         var project = ButterflyProject.getInstance();
+        project.init();
         var coosysPlane = project.getCoordinateSystemPlane();
         System.out.println("PROJECT:");
         System.out.println(project.getName());
@@ -239,16 +255,8 @@ public class ButterflyManager {
                 StringUtils.mid(buildVersion, 6, 2)
         );
 
-        var fileName = "";
-        switch (mButterflyLoader.getBundleMode()) {
-            case DIR -> {
-                fileName = mSource.getParentFile().getName().toUpperCase(Locale.ROOT) + ".bfl";
-            }
-
-            case ZIP -> {
-                fileName = FilenameUtils.getBaseName(mSource.getName()).toUpperCase(Locale.ROOT) + ".bfz";
-            }
-        }
+        var ext = mButterflyLoader.getBundleMode() == DIR ? ".bfl" : ".bfz";
+        var fileName = ButterflyProject.getInstance().getName().toUpperCase(Locale.ROOT) + ext;
 
         var fileDate = getFileDate();
         var title = "Mapton v%s (%s %s)".formatted(

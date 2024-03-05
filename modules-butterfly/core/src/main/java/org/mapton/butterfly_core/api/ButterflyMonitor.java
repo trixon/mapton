@@ -17,12 +17,18 @@ package org.mapton.butterfly_core.api;
 
 import java.io.File;
 import java.util.concurrent.TimeUnit;
+import org.apache.commons.io.IOCase;
 import org.apache.commons.io.filefilter.FileFilterUtils;
+import org.apache.commons.io.filefilter.IOFileFilter;
+import org.apache.commons.io.monitor.FileAlterationListener;
 import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
 import org.apache.commons.io.monitor.FileAlterationMonitor;
 import org.apache.commons.io.monitor.FileAlterationObserver;
 import org.mapton.butterfly_core.loader.ButterflyOpener;
+import org.mapton.butterfly_format.BundleMode;
+import org.mapton.butterfly_format.ButterflyLoader;
 import org.openide.util.Exceptions;
+import se.trixon.almond.util.swing.DelayedResetRunner;
 
 /**
  *
@@ -30,47 +36,76 @@ import org.openide.util.Exceptions;
  */
 public class ButterflyMonitor {
 
-    private boolean started;
+    private final ButterflyLoader mButterflyLoader = ButterflyLoader.getInstance();
+    private final FileAlterationListener mFileAlterationListener;
+    private final FileAlterationMonitor mMonitor = new FileAlterationMonitor(TimeUnit.SECONDS.toMillis(10));
+    private FileAlterationObserver mObserver;
+    private boolean mRunning;
 
     public ButterflyMonitor() {
-    }
-
-    public void start() {
-        //TODO call loader for info on what to monitor
-        //TODO Handle "Open" new project
-        File file = new File("xxxxxxxx");
-        if (!file.isDirectory() || started) {
-            return;
-        }
-
-        var filter = FileFilterUtils.nameFileFilter("butterfly.properties");
-        var observer = new FileAlterationObserver(file, filter);
-        var monitor = new FileAlterationMonitor(TimeUnit.SECONDS.toMillis(10));
-        var listener = new FileAlterationListenerAdaptor() {
-
-            @Override
-            public void onFileCreate(File file) {
-                load();
-            }
+        mFileAlterationListener = new FileAlterationListenerAdaptor() {
+            private final DelayedResetRunner mDelayedResetRunner = new DelayedResetRunner(10 * 1000, () -> {
+//                stop();
+                if (mRunning) {
+                    ButterflyOpener.getInstance().restore();
+                }
+            });
 
             @Override
             public void onFileChange(File file) {
                 load();
             }
 
+            @Override
+            public void onFileCreate(File file) {
+                load();
+            }
+
             private void load() {
-                ButterflyOpener.getInstance().restore();
+                System.out.println("change detected");
+                mDelayedResetRunner.reset();
             }
         };
+    }
 
-        observer.addListener(listener);
-        monitor.addObserver(observer);
+    public void start() {
+        System.out.println("start monitor");
+        mRunning = true;
+        var directory = mButterflyLoader.getSource().getParentFile();
+        IOFileFilter filter;
+        if (mButterflyLoader.getBundleMode() == BundleMode.DIR) {
+            filter = FileFilterUtils.trueFileFilter();
+        } else {
+            filter = FileFilterUtils.suffixFileFilter(".bfz");
+        }
+
+        mObserver = new FileAlterationObserver(directory, filter, IOCase.INSENSITIVE);
+        mObserver.addListener(mFileAlterationListener);
+        mMonitor.addObserver(mObserver);
 
         try {
-            monitor.start();
-            started = true;
+            mMonitor.start();
         } catch (Exception ex) {
             Exceptions.printStackTrace(ex);
         }
     }
+
+    public void stop() {
+        System.out.println("stop monitor");
+        mRunning = false;
+        try {
+            mObserver.destroy();
+            mMonitor.stop();
+        } catch (Exception ex) {
+            // nvm was not running
+        }
+        mMonitor.removeObserver(mObserver);
+//
+//        StreamSupport.stream(mMonitor.getObservers().spliterator(), false)
+//                .collect(Collectors.toList())
+//                .forEach(observer -> {
+//                    mMonitor.removeObserver(observer);
+//                });
+    }
+
 }
