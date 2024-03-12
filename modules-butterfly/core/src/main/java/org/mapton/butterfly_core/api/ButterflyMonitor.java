@@ -62,14 +62,13 @@ public class ButterflyMonitor {
             }
 
             private void load() {
-                System.out.println("change detected");
+                System.out.println("ButterflyMonitor: Change detected");
                 mDelayedResetRunner.reset();
             }
         };
     }
 
     public void start() {
-        System.out.println("start monitor");
         mRunning = true;
         var directory = mButterflyLoader.getSource().getParentFile();
         IOFileFilter filter;
@@ -91,7 +90,6 @@ public class ButterflyMonitor {
     }
 
     public void stop() {
-        System.out.println("stop monitor");
         mRunning = false;
         try {
             mObserver.destroy();

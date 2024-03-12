@@ -21,6 +21,7 @@ import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BBase;
 import org.mapton.butterfly_format.types.BBasePoint;
 import org.mapton.worldwind.api.WWHelper;
+import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
@@ -37,12 +38,12 @@ public abstract class BaseManager<T extends BBase> extends MBaseDataManager<T> {
 
         mButterflyManager.butterflyProperty().addListener((p, o, n) -> {
             mButterfly = n;
-            load(n);
+            FxHelper.runLater(() -> load(n));
         });
 
         if (mButterflyManager.getButterfly() != null) {
             mButterfly = mButterflyManager.getButterfly();
-            load(mButterfly);
+            FxHelper.runLater(() -> load(mButterfly));
         }
     }
 

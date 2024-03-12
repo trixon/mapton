@@ -19,6 +19,7 @@ import javafx.event.EventType;
 import javafx.stage.WindowEvent;
 import org.mapton.api.ui.MFilterPopOver;
 import org.mapton.butterfly_format.Butterfly;
+import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
@@ -35,7 +36,7 @@ public abstract class BaseFilterPopOver<T extends BaseFilterFavorite> extends MF
         var butterflyProperty = mButterflyManager.butterflyProperty();
         butterflyProperty.addListener((p, o, n) -> {
             mButterfly = n;
-            load(n);
+            FxHelper.runLater(() -> load(n));
         });
 
         addEventHandler(EventType.ROOT, event -> {

@@ -18,7 +18,6 @@ package org.mapton.butterfly_core.api;
 import internal.org.mapton.butterfly_format.monmon.MonmonConfig;
 import java.io.File;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
@@ -137,8 +136,6 @@ public class ButterflyManager {
     }
 
     public synchronized void load(File file) {
-        System.out.println(LocalDateTime.now());
-        System.out.println("load " + file);
         mButterflyMonitor.stop();
         var taskName = Dict.OPENING_S.toString().formatted("Butterfly");
         MaptonNb.progressStart(taskName);
@@ -151,7 +148,7 @@ public class ButterflyManager {
         } else if (StringUtils.equalsIgnoreCase(ext, "bfz")) {
             bundleMode = BundleMode.ZIP;
         } else {
-            System.out.println("Invalid Butterfly file. Cancelling load.");
+            System.out.println("ButterflyManager: Invalid Butterfly file. Cancelling load.");
             return;
         }
 
@@ -165,8 +162,6 @@ public class ButterflyManager {
         var project = ButterflyProject.getInstance();
         project.init();
         var coosysPlane = project.getCoordinateSystemPlane();
-        System.out.println("PROJECT:");
-        System.out.println(project.getName());
 
         if (coosysPlane != null) {
             var preferences = NbPreferences.forModule(MCooTrans.class);
@@ -216,7 +211,6 @@ public class ButterflyManager {
 
         setButterfly(butterfly);
         ButterflyHelper.refreshTitle();
-        System.out.println("BUTTERFLY loaded");
 
         mButterflyMonitor.start();
         refreshTitle();

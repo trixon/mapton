@@ -23,8 +23,8 @@ import java.io.File;
  */
 public class ButterflyLoader {
 
-    private final Butterfly butterfly = new Butterfly();
     private BundleMode mBundleMode;
+    private Butterfly mButterfly;
     private File mSource;
     private final ZipHelper mZipHelper = ZipHelper.getInstance();
 
@@ -40,7 +40,7 @@ public class ButterflyLoader {
     }
 
     public Butterfly getButterfly() {
-        return butterfly;
+        return mButterfly;
     }
 
     public File getSource() {
@@ -58,8 +58,9 @@ public class ButterflyLoader {
             mZipHelper.init(source);
         }
 
-        butterfly.load(dir);
-        butterfly.postLoad(source);
+        mButterfly = new Butterfly();
+        mButterfly.load(dir);
+        mButterfly.postLoad(source);
     }
 
     private static class Holder {
