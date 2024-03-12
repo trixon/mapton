@@ -73,14 +73,14 @@ class TopoListCell extends ListCell<BTopoControlPoint> {
                 StringUtils.removeEndIgnoreCase(p.getNameOfAlarmHeight(), "_h"),
                 StringUtils.removeEndIgnoreCase(p.getNameOfAlarmPlane(), "_p")
         );
-        var sign = "\uu26A0";
+        var sign = "⇐";
         var desc1 = "%s: %s".formatted(StringUtils.defaultIfBlank(p.getCategory(), "NOVALUE"), alarms);
         var dateSB = new StringBuilder(StringHelper.toString(p.getDateLatest() == null ? null : p.getDateLatest().toLocalDate(), "NOVALUE"));
         var nextDate = p.ext().getObservationRawNextDate();
         if (nextDate != null) {
             dateSB.append(" (").append(nextDate.toString()).append(")");
             if (nextDate.isBefore(LocalDate.now())) {
-                dateSB.append(" ").append(sign.repeat(5));
+                dateSB.append(" ").append(sign);
             }
         }
 

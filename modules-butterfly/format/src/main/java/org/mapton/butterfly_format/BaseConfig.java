@@ -30,19 +30,25 @@ public abstract class BaseConfig {
 
     private final ButterflyLoader mButterflyLoader = ButterflyLoader.getInstance();
     private PropertiesConfiguration mConfig;
+    private final String mFileName;
     private final ZipHelper mZipHelper = ZipHelper.getInstance();
 
     public BaseConfig(String fileName) {
-        var builder = new Configurations().propertiesBuilder(getFile(fileName));
+        mFileName = fileName;
+        init();
+    }
+
+    public PropertiesConfiguration getConfig() {
+        return mConfig;
+    }
+
+    public void init() {
+        var builder = new Configurations().propertiesBuilder(getFile(mFileName));
         try {
             mConfig = builder.getConfiguration();
         } catch (ConfigurationException ex) {
             //Exceptions.printStackTrace(ex);
         }
-    }
-
-    public PropertiesConfiguration getConfig() {
-        return mConfig;
     }
 
     private File getFile(String fileName) {

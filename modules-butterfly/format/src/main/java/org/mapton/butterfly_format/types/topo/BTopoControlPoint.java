@@ -312,6 +312,14 @@ public class BTopoControlPoint extends BBaseControlPoint {
             return chronoUnit.between(LocalDate.now(), nextMeas);
         }
 
+        public LocalDate getObservationRawNextDate() {
+            if (ObjectUtils.allNotNull(getObservationRawLastDate(), getFrequency()) && getFrequency() != 0) {
+                return getObservationRawLastDate().plusDays(getFrequency());
+            } else {
+                return null;
+            }
+        }
+
         public abstract class Delta {
 
             public String getDelta(int decimals) {
