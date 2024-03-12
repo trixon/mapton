@@ -48,7 +48,7 @@
         <dependency>
             <groupId>io.fair-acc</groupId>
             <artifactId>chartfx</artifactId>
-            <version>11.3.0</version>
+            <version>11.3.1</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.commons</groupId>
