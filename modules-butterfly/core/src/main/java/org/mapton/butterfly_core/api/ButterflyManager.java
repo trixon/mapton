@@ -45,7 +45,7 @@ import org.mapton.butterfly_format.ButterflyLoader;
 import org.mapton.butterfly_format.ZipHelper;
 import org.mapton.butterfly_format.types.BBaseControlPoint;
 import org.mapton.butterfly_format.types.tmo.BBasObjekt;
-import org.mapton.core.api.MaptonNb;
+import org.netbeans.api.progress.ProgressHandle;
 import org.openide.modules.Modules;
 import org.openide.util.Exceptions;
 import org.openide.util.NbPreferences;
@@ -138,83 +138,87 @@ public class ButterflyManager {
     public synchronized void load(File file) {
         mButterflyMonitor.stop();
         var taskName = Dict.OPENING_S.toString().formatted("Butterfly");
-        MaptonNb.progressStart(taskName);
+        var mProgressHandle = ProgressHandle.createHandle(taskName, null);
+        mProgressHandle.start();
+        mProgressHandle.switchToIndeterminate();
 
-        mSource = file;
-        var ext = FilenameUtils.getExtension(file.getName());
-        BundleMode bundleMode;
-        if (StringUtils.equalsIgnoreCase(ext, "bfl")) {
-            bundleMode = BundleMode.DIR;
-        } else if (StringUtils.equalsIgnoreCase(ext, "bfz")) {
-            bundleMode = BundleMode.ZIP;
-        } else {
-            System.out.println("ButterflyManager: Invalid Butterfly file. Cancelling load.");
-            return;
-        }
+        var thread = new Thread(() -> {
+            mSource = file;
+            var ext = FilenameUtils.getExtension(file.getName());
+            BundleMode bundleMode;
+            if (StringUtils.equalsIgnoreCase(ext, "bfl")) {
+                bundleMode = BundleMode.DIR;
+            } else if (StringUtils.equalsIgnoreCase(ext, "bfz")) {
+                bundleMode = BundleMode.ZIP;
+            } else {
+                System.out.println("ButterflyManager: Invalid Butterfly file. Cancelling load.");
+                return;
+            }
 
-        mButterflyLoader.load(bundleMode, mSource);
-        if (mLogoLoader == null) {
-            mLogoLoader = new LogoLoader();
-        }
-        mLogoLoader.load();
+            mButterflyLoader.load(bundleMode, mSource);
+            if (mLogoLoader == null) {
+                mLogoLoader = new LogoLoader();
+            }
+            mLogoLoader.load();
 
-        MonmonConfig.getInstance().init();
-        var project = ButterflyProject.getInstance();
-        project.init();
-        var coosysPlane = project.getCoordinateSystemPlane();
+            MonmonConfig.getInstance().init();
+            var project = ButterflyProject.getInstance();
+            project.init();
+            var coosysPlane = project.getCoordinateSystemPlane();
 
-        if (coosysPlane != null) {
-            var preferences = NbPreferences.forModule(MCooTrans.class);
-            preferences.put("map.coo_trans", coosysPlane);
-            //TODO request restart id changed or better yet, force change
-        }
+            if (coosysPlane != null) {
+                var preferences = NbPreferences.forModule(MCooTrans.class);
+                preferences.put("map.coo_trans", coosysPlane);
+                //TODO request restart id changed or better yet, force change
+            }
 
-        var butterfly = mButterflyLoader.getButterfly();
+            var butterfly = mButterflyLoader.getButterfly();
 
-        calculateLatLons(butterfly.hydro().getGroundwaterPoints());
-        calculateLatLons(butterfly.topo().getControlPoints());
+            calculateLatLons(butterfly.hydro().getGroundwaterPoints());
+            calculateLatLons(butterfly.topo().getControlPoints());
 
-        calculateLatLonsTmo(butterfly.tmo().getGrundvatten());
-        calculateLatLonsTmo(butterfly.tmo().getInfiltration());
-        calculateLatLonsTmo(butterfly.tmo().getRorelse());
-        calculateLatLonsTmo(butterfly.tmo().getTunnelvatten());
-        calculateLatLonsTmo(butterfly.tmo().getVaderstation());
-        calculateLatLonsTmo(butterfly.tmo().getVattenkemi());
+            calculateLatLonsTmo(butterfly.tmo().getGrundvatten());
+            calculateLatLonsTmo(butterfly.tmo().getInfiltration());
+            calculateLatLonsTmo(butterfly.tmo().getRorelse());
+            calculateLatLonsTmo(butterfly.tmo().getTunnelvatten());
+            calculateLatLonsTmo(butterfly.tmo().getVaderstation());
+            calculateLatLonsTmo(butterfly.tmo().getVattenkemi());
 
-        var areas = new ArrayList<MArea>();
-        var prefix = "Haga/";
-        butterfly.getAreaFilters().stream().forEachOrdered(areaFilter -> {
-            var area = new MArea(areaFilter.getName());
-            area.setName(areaFilter.getName());
-            area.setWktGeometry(areaFilter.getWkt());
-            areas.add(area);
-        });
+            var areas = new ArrayList<MArea>();
+            var prefix = "Haga/";
+            butterfly.getAreaFilters().stream().forEachOrdered(areaFilter -> {
+                var area = new MArea(areaFilter.getName());
+                area.setName(areaFilter.getName());
+                area.setWktGeometry(areaFilter.getWkt());
+                areas.add(area);
+            });
 
-        mAreaFilterManager.clearByPrefix(prefix);
-        mAreaFilterManager.addAll(areas);
+            mAreaFilterManager.clearByPrefix(prefix);
+            mAreaFilterManager.addAll(areas);
 
-        for (var area : butterfly.getAreaActivities()) {
-            try {
-                var geometry = mWktReader.read(area.getWkt());
-                area.setGeometry(geometry);
-
+            for (var area : butterfly.getAreaActivities()) {
                 try {
-                    var targetGeometry = MOptions.getInstance().getMapCooTrans().transform(geometry);
-                    area.setTargetGeometry(targetGeometry);
-                } catch (MismatchedDimensionException | TransformException ex) {
+                    var geometry = mWktReader.read(area.getWkt());
+                    area.setGeometry(geometry);
+
+                    try {
+                        var targetGeometry = MOptions.getInstance().getMapCooTrans().transform(geometry);
+                        area.setTargetGeometry(targetGeometry);
+                    } catch (MismatchedDimensionException | TransformException ex) {
+                        Exceptions.printStackTrace(ex);
+                    }
+                } catch (ParseException ex) {
                     Exceptions.printStackTrace(ex);
                 }
-            } catch (ParseException ex) {
-                Exceptions.printStackTrace(ex);
             }
-        }
 
-        setButterfly(butterfly);
-        ButterflyHelper.refreshTitle();
+            setButterfly(butterfly);
+            mButterflyMonitor.start();
+            refreshTitle();
+            mProgressHandle.finish();
+        });
 
-        mButterflyMonitor.start();
-        refreshTitle();
-        MaptonNb.progressStop(taskName);
+        thread.start();
     }
 
     public void setButterfly(Butterfly butterfly) {
