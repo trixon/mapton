@@ -15,18 +15,25 @@
  */
 package org.mapton.butterfly_topo;
 
+import com.dlsc.gemsfx.Spacer;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
+import javafx.geometry.Pos;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.Separator;
+import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.control.SplitMenuButton;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
+import org.controlsfx.tools.Borders;
 import static org.mapton.api.ui.MPopOver.GAP;
 import static org.mapton.api.ui.MPopOver.autoSize;
 import org.mapton.api.ui.forms.NegPosStringConverterDouble;
@@ -41,6 +48,8 @@ import org.mapton.butterfly_topo.shared.AlarmLevelChangeUnit;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SDict;
 import se.trixon.almond.util.fx.FxHelper;
+import se.trixon.almond.util.fx.control.DatePane;
+import se.trixon.almond.util.fx.control.TemporalPreset;
 import se.trixon.almond.util.fx.session.SessionCheckComboBox;
 import se.trixon.almond.util.fx.session.SessionComboBox;
 import se.trixon.almond.util.fx.session.SessionDoubleSpinner;
@@ -56,6 +65,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
     private final SessionCheckComboBox<String> mAlarmNameSccb = new SessionCheckComboBox<>();
     private final SessionCheckComboBox<AlarmFilter> mAlarmSccb = new SessionCheckComboBox<>(true);
     private final SessionCheckComboBox<String> mCategorySccb = new SessionCheckComboBox<>();
+    private final DatePane mDatePane = new DatePane();
     private final double mDefaultDiffValue = 0.020;
     private final int mDefaultMeasAlarmLevelChangeLimit = 1;
     private final int mDefaultMeasAlarmLevelChangeValue = 10;
@@ -65,6 +75,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
     private final CheckBox mDiffMeasAllCheckbox = new CheckBox();
     private final SessionDoubleSpinner mDiffMeasAllSds = new SessionDoubleSpinner(-1.0, 1.0, mDefaultDiffValue, 0.001);
     private final CheckBox mDiffMeasLatestCheckbox = new CheckBox();
+    private final SessionDoubleSpinner mDiffMeasLatestSds = new SessionDoubleSpinner(-1.0, 1.0, mDefaultDiffValue, 0.001);
     private final SessionCheckComboBox<BDimension> mDimensionSccb = new SessionCheckComboBox<>();
     private final TopoFilter mFilter;
     private final SessionCheckComboBox<Integer> mFrequencySccb = new SessionCheckComboBox<>();
@@ -78,10 +89,8 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
     private final SessionComboBox<AlarmLevelChangeUnit> mMeasAlarmLevelChangeUnitScb = new SessionComboBox<>();
     private final SessionIntegerSpinner mMeasAlarmLevelChangeValueSis = new SessionIntegerSpinner(2, 10000, mDefaultMeasAlarmLevelChangeValue);
     private final SessionCheckComboBox<String> mMeasCodeSccb = new SessionCheckComboBox<>(true);
-    private final SessionDoubleSpinner mDiffMeasLatestSds = new SessionDoubleSpinner(-1.0, 1.0, mDefaultDiffValue, 0.001);
     private final CheckBox mMeasIncludeWithoutCheckbox = new CheckBox();
     private final CheckBox mMeasLatestOperatorCheckbox = new CheckBox();
-    private final SessionComboBox<String> mMeasMaxAgeScb = new SessionComboBox<>();
     private final SessionCheckComboBox<String> mMeasNextSccb = new SessionCheckComboBox<>(true);
     private final SessionIntegerSpinner mMeasNumOfSis = new SessionIntegerSpinner(Integer.MIN_VALUE, Integer.MAX_VALUE, mDefaultNumOfMeasfValue);
     private final SessionCheckComboBox<String> mMeasOperatorSccb = new SessionCheckComboBox<>();
@@ -90,6 +99,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
     private final SessionDoubleSpinner mMeasYoyoSizeSds = new SessionDoubleSpinner(0, 1.0, mDefaultMeasYoyoSize, 0.001);
     private final CheckBox mNumOfMeasCheckbox = new CheckBox();
     private final SessionCheckComboBox<String> mOperatorSccb = new SessionCheckComboBox<>();
+    private final SplitMenuButton mPresetSplitMenuButton = new SplitMenuButton();
     private final CheckBox mSameAlarmCheckbox = new CheckBox();
     private final SessionCheckComboBox<String> mStatusSccb = new SessionCheckComboBox<>();
 
@@ -143,7 +153,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
         mHasDateFromToSccb.clearChecks();
         mFrequencySccb.clearChecks();
 
-        mMeasMaxAgeScb.getSelectionModel().select(0);
+        mDatePane.reset();
     }
 
     @Override
@@ -166,7 +176,6 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
         mMeasNextSccb.loadAndRestoreCheckItems();
         mAlarmSccb.loadAndRestoreCheckItems();
 
-        mMeasMaxAgeScb.load();
         mMeasAlarmLevelChangeModeScb.load();
         mMeasAlarmLevelChangeUnitScb.load();
         mMeasAlarmLevelChangeValueSis.load();
@@ -176,6 +185,14 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
         mMeasYoyoCountSds.load();
         mMeasYoyoSizeSds.load();
         mMeasNumOfSis.load();
+
+        var temporalRange = mManager.getTemporalRange();
+        mDatePane.setMinMaxDate(temporalRange.getFromLocalDate(), temporalRange.getToLocalDate());
+
+        var sessionManager = getSessionManager();
+        var dateRangeSlider = mDatePane.getDateRangeSlider();
+        sessionManager.register("filter.DateLow", dateRangeSlider.lowStringProperty());
+        sessionManager.register("filter.DateHigh", dateRangeSlider.highStringProperty());
     }
 
     @Override
@@ -198,6 +215,15 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
         clear();
 
         mFilter.freeTextProperty().set("*");
+    }
+
+    private MenuItem createPresetMenuItem(String name, LocalDate lowDate, LocalDate highDate) {
+        var preset = new TemporalPreset(name, lowDate, highDate);
+        var menuItem = new MenuItem(preset.name());
+        menuItem.setOnAction(actionEvent -> {
+            mDatePane.getDateRangeSlider().setLowHighDate(preset.lowDate(), preset.highDate());
+        });
+        return menuItem;
     }
 
     private void createUI() {
@@ -269,37 +295,6 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
                 getBundle().getString("measCodeReplacement")
         ));
 
-        mMeasMaxAgeScb.getItems().setAll(List.of(
-                "*",
-                "1",
-                "7",
-                "14",
-                "28",
-                "84",
-                "182",
-                "365",
-                "∞",
-                "NODATA"
-        ));
-
-        mMeasMaxAgeScb.setConverter(new StringConverter<String>() {
-            @Override
-            public String fromString(String s) {
-                return s;
-            }
-
-            @Override
-            public String toString(String s) {
-                var timeUnit = StringUtils.equalsIgnoreCase(s, "1") ? Dict.Time.DAY.toString() : Dict.Time.DAYS.toString();
-
-                return "%s: %s %s".formatted(
-                        Dict.Time.MAX_AGE.toString(),
-                        s,
-                        NumberUtils.isDigits(s) ? timeUnit.toLowerCase() : ""
-                );
-            }
-        });
-
         mMeasNumOfSis.getValueFactory().setConverter(new NegPosStringConverterInteger());
         mSameAlarmCheckbox.setText(getBundle().getString("sameAlarmCheckBoxText"));
         mMeasAlarmLevelChangeCheckbox.setText(getBundle().getString("measAlarmLevelChangeCheckBoxText"));
@@ -314,29 +309,56 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
         mDiffMeasAllSds.getValueFactory().setConverter(new NegPosStringConverterDouble());
 
         int columnGap = SwingHelper.getUIScaled(16);
-        int rowGap = SwingHelper.getUIScaled(8);
-        int titleGap = SwingHelper.getUIScaled(2);
+        int rowGap = SwingHelper.getUIScaled(12);
+        int titleGap = SwingHelper.getUIScaled(3);
 
-        var leftBox = new VBox(rowGap,
+        mPresetSplitMenuButton.setText(Dict.RESET.toString());
+        var latestMeasBox = new VBox(mDatePane, mPresetSplitMenuButton);
+        latestMeasBox.setAlignment(Pos.TOP_RIGHT);
+
+        var basicBox = new VBox(rowGap,
                 mDimensionSccb,
                 mStatusSccb,
                 mGroupSccb,
                 mCategorySccb,
-                mAlarmNameSccb,
                 mOperatorSccb,
+                mAlarmNameSccb,
+                mHasDateFromToSccb,
                 mFrequencySccb,
-                mHasDateFromToSccb
+                mMeasNextSccb
+        );
+        double borderInnerPadding = FxHelper.getUIScaled(8.0);
+        double topBorderInnerPadding = FxHelper.getUIScaled(16.0);
+
+        var wrappedBasicBox = Borders.wrap(basicBox)
+                .etchedBorder()
+                .title("Grunddata")
+                .innerPadding(topBorderInnerPadding, borderInnerPadding, borderInnerPadding, borderInnerPadding)
+                .outerPadding(0)
+                .raised()
+                .build()
+                .build();
+
+        var wrappedMeasBox = Borders.wrap(latestMeasBox)
+                .etchedBorder()
+                .title("Period för senaste mätning")
+                .innerPadding(topBorderInnerPadding, borderInnerPadding, borderInnerPadding, borderInnerPadding)
+                .outerPadding(0)
+                .raised()
+                .build()
+                .build();
+
+        Spacer spacer = new Spacer();
+        spacer.setActive(true);
+
+        var leftBox = new VBox(rowGap,
+                wrappedBasicBox,
+                spacer,
+                wrappedMeasBox
         );
 
         var rightBox = new VBox(rowGap,
                 mAlarmSccb,
-                mMeasNextSccb,
-                mMeasMaxAgeScb,
-                mMeasCodeSccb,
-                new VBox(titleGap,
-                        mMeasOperatorSccb,
-                        mMeasLatestOperatorCheckbox
-                ),
                 new VBox(titleGap,
                         mNumOfMeasCheckbox,
                         mMeasNumOfSis
@@ -358,20 +380,34 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
                         mMeasAlarmLevelChangeCheckbox,
                         new HBox(8, mMeasAlarmLevelChangeLimitSis, mMeasAlarmLevelChangeModeScb),
                         new HBox(8, mMeasAlarmLevelChangeValueSis, mMeasAlarmLevelChangeUnitScb)
+                ),
+                mMeasCodeSccb,
+                new VBox(titleGap,
+                        mMeasOperatorSccb,
+                        mMeasLatestOperatorCheckbox
                 )
         );
 
-        var hBox = new HBox(columnGap, leftBox, rightBox);
+        var wrappedRightBox = Borders.wrap(rightBox)
+                .etchedBorder()
+                .title("Mätdataanalys")
+                .innerPadding(topBorderInnerPadding, borderInnerPadding, borderInnerPadding, borderInnerPadding)
+                .outerPadding(0)
+                .raised()
+                .build()
+                .build();
 
+        var gp = new GridPane(columnGap, 0);
+        gp.addRow(0, leftBox, wrappedRightBox);
         var buttonBox = new GridPane(columnGap, 0);
         buttonBox.addRow(0, getCopyNamesButton(), getPasteNameButton());
         FxHelper.autoSizeColumn(buttonBox, 2);
-
+        FxHelper.autoSizeColumn(gp, 2);
         var vBox = new VBox(GAP,
                 getButtonBox(),
                 buttonBox,
                 new Separator(),
-                hBox,
+                gp,
                 new Separator(),
                 mMeasIncludeWithoutCheckbox,
                 mSameAlarmCheckbox,
@@ -381,27 +417,15 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
 
         FxHelper.setEditable(true, mDiffMeasAllSds, mDiffMeasLatestSds, mMeasNumOfSis, mMeasYoyoCountSds, mMeasYoyoSizeSds, mMeasAlarmLevelChangeValueSis, mMeasAlarmLevelChangeLimitSis);
         FxHelper.autoCommitSpinners(mDiffMeasAllSds, mDiffMeasLatestSds, mMeasNumOfSis, mMeasYoyoCountSds, mMeasYoyoSizeSds, mMeasAlarmLevelChangeValueSis, mMeasAlarmLevelChangeLimitSis);
-
-        leftBox.getChildren().stream()
-                .filter(node -> node instanceof Region)
-                .map(node -> (Region) node)
-                .forEachOrdered(region -> {
-                    region.prefWidthProperty().bind(leftBox.widthProperty());
-                });
-
-        rightBox.getChildren().stream()
-                .filter(node -> node instanceof Region)
-                .map(node -> (Region) node)
-                .forEachOrdered(region -> {
-                    region.prefWidthProperty().bind(rightBox.widthProperty());
-                });
-
-        mDiffMeasLatestSds.prefWidthProperty().bind(rightBox.widthProperty());
-        mDiffMeasAllSds.prefWidthProperty().bind(rightBox.widthProperty());
-        mMeasYoyoCountSds.prefWidthProperty().bind(rightBox.widthProperty());
-        mMeasYoyoSizeSds.prefWidthProperty().bind(rightBox.widthProperty());
-        mMeasNumOfSis.prefWidthProperty().bind(rightBox.widthProperty());
-        mMeasOperatorSccb.prefWidthProperty().bind(rightBox.widthProperty());
+        FxHelper.bindWidthForChildrens(leftBox, rightBox, basicBox);
+        FxHelper.bindWidthForRegions(rightBox,
+                mDiffMeasLatestSds,
+                mDiffMeasAllSds,
+                mMeasYoyoCountSds,
+                mMeasYoyoSizeSds,
+                mMeasNumOfSis,
+                mMeasOperatorSccb
+        );
 
         mMeasAlarmLevelChangeValueSis.setMinWidth(FxHelper.getUIScaled(90));
         mMeasAlarmLevelChangeLimitSis.setMinWidth(FxHelper.getUIScaled(90));
@@ -469,8 +493,9 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
         mFilter.measAlarmLevelChangeLimitProperty().bind(mMeasAlarmLevelChangeLimitSis.sessionValueProperty());
 
         mFilter.sameAlarmProperty().bind(mSameAlarmCheckbox.selectedProperty());
-        mFilter.maxAgeProperty().bind(mMeasMaxAgeScb.getSelectionModel().selectedItemProperty());
         mFilter.polygonFilterProperty().bind(getPolygonFilterCheckBox().selectedProperty());
+        mFilter.measDateLowProperty().bind(mDatePane.getDateRangeSlider().lowDateProperty());
+        mFilter.measDateHighProperty().bind(mDatePane.getDateRangeSlider().highDateProperty());
 
         mFilter.mDimensionCheckModel = mDimensionSccb.getCheckModel();
         mFilter.mStatusCheckModel = mStatusSccb.getCheckModel();
@@ -498,6 +523,14 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
         mMeasAlarmLevelChangeValueSis.disableProperty().bind(mMeasAlarmLevelChangeCheckbox.selectedProperty().not());
 
         mFilter.initCheckModelListeners();
+
+        mPresetSplitMenuButton.setOnShowing(event -> {
+            populatePresets();
+        });
+
+        mPresetSplitMenuButton.setOnAction(ae -> {
+            mDatePane.reset();
+        });
     }
 
     private void initSession() {
@@ -526,7 +559,6 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
         sessionManager.register("filter.measDiffLatestValue", mDiffMeasLatestSds.sessionValueProperty());
         sessionManager.register("filter.measIncludeWithout", mMeasIncludeWithoutCheckbox.selectedProperty());
         sessionManager.register("filter.measLatestOperator", mMeasLatestOperatorCheckbox.selectedProperty());
-        sessionManager.register("filter.measMaxAge", mMeasMaxAgeScb.selectedIndexProperty());
         sessionManager.register("filter.measNumOfMeas", mNumOfMeasCheckbox.selectedProperty());
         sessionManager.register("filter.measNumOfValue", mMeasNumOfSis.sessionValueProperty());
         sessionManager.register("filter.measAlarmLevelChange", mMeasAlarmLevelChangeCheckbox.selectedProperty());
@@ -539,4 +571,44 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
         sessionManager.register("filter.sameAlarm", mSameAlarmCheckbox.selectedProperty());
     }
 
+    private void populatePresets() {
+        mPresetSplitMenuButton.getItems().clear();
+        var now = LocalDate.now();
+        var latestMenu = new Menu("Senaste");
+        var presentMenu = new Menu("Innevarande");
+        var previousMenu = new Menu("Föregående");
+
+        mPresetSplitMenuButton.getItems().setAll(
+                createPresetMenuItem(Dict.Time.TODAY.toString(), now, now),
+                new SeparatorMenuItem(),
+                latestMenu,
+                presentMenu,
+                previousMenu
+        );
+
+        latestMenu.getItems().addAll(
+                createPresetMenuItem("dygnet", now.minusDays(1), now),
+                createPresetMenuItem("veckan", now.minusWeeks(1), now),
+                createPresetMenuItem("två veckorna", now.minusWeeks(2), now),
+                createPresetMenuItem("månaden", now.minusMonths(1), now),
+                createPresetMenuItem("tre månaderna", now.minusMonths(3), now),
+                createPresetMenuItem("sex månaderna", now.minusMonths(6), now),
+                createPresetMenuItem("året", now.minusYears(1), now),
+                createPresetMenuItem("två åren", now.minusYears(2), now)
+        );
+
+        presentMenu.getItems().addAll(
+                createPresetMenuItem("månad", now.withDayOfMonth(1), now),
+                createPresetMenuItem("år", now.withDayOfYear(1), now)
+        );
+
+        var prevMonthStart = now.minusMonths(1).withDayOfMonth(1);
+        var prevMonthEnd = prevMonthStart.withDayOfMonth(prevMonthStart.lengthOfMonth());
+        var prevYearStart = now.minusYears(1).withDayOfYear(1);
+        var prevYearEnd = prevYearStart.withDayOfYear(prevYearStart.lengthOfYear());
+        previousMenu.getItems().addAll(
+                createPresetMenuItem("månad", prevMonthStart, prevMonthEnd),
+                createPresetMenuItem("år", prevYearStart, prevYearEnd)
+        );
+    }
 }

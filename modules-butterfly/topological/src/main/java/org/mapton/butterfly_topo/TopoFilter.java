@@ -19,7 +19,6 @@ import j2html.tags.ContainerTag;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import static java.time.temporal.ChronoUnit.DAYS;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.stream.Collectors;
@@ -28,7 +27,6 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -69,12 +67,13 @@ public class TopoFilter extends FormFilter<TopoManager> {
     IndexedCheckModel mStatusCheckModel;
     private final SimpleBooleanProperty mInvertProperty = new SimpleBooleanProperty();
     private final TopoManager mManager = TopoManager.getInstance();
-    private final SimpleStringProperty mMaxAgeProperty = new SimpleStringProperty();
     private final SimpleIntegerProperty mMeasAlarmLevelChangeLimitProperty = new SimpleIntegerProperty();
     private final SimpleObjectProperty mMeasAlarmLevelChangeModeProperty = new SimpleObjectProperty();
     private final SimpleBooleanProperty mMeasAlarmLevelChangeProperty = new SimpleBooleanProperty();
     private final SimpleObjectProperty mMeasAlarmLevelChangeUnitProperty = new SimpleObjectProperty();
     private final SimpleIntegerProperty mMeasAlarmLevelChangeValueProperty = new SimpleIntegerProperty();
+    private final SimpleObjectProperty<LocalDate> mMeasDateHighProperty = new SimpleObjectProperty();
+    private final SimpleObjectProperty<LocalDate> mMeasDateLowProperty = new SimpleObjectProperty();
     private final SimpleBooleanProperty mMeasDiffAllProperty = new SimpleBooleanProperty();
     private final SimpleDoubleProperty mMeasDiffAllValueProperty = new SimpleDoubleProperty();
     private final SimpleBooleanProperty mMeasDiffLatestProperty = new SimpleBooleanProperty();
@@ -98,10 +97,6 @@ public class TopoFilter extends FormFilter<TopoManager> {
         return mInvertProperty;
     }
 
-    public SimpleStringProperty maxAgeProperty() {
-        return mMaxAgeProperty;
-    }
-
     public SimpleIntegerProperty measAlarmLevelChangeLimitProperty() {
         return mMeasAlarmLevelChangeLimitProperty;
     }
@@ -120,6 +115,14 @@ public class TopoFilter extends FormFilter<TopoManager> {
 
     public SimpleIntegerProperty measAlarmLevelChangeValueProperty() {
         return mMeasAlarmLevelChangeValueProperty;
+    }
+
+    public SimpleObjectProperty<LocalDate> measDateHighProperty() {
+        return mMeasDateHighProperty;
+    }
+
+    public SimpleObjectProperty<LocalDate> measDateLowProperty() {
+        return mMeasDateLowProperty;
     }
 
     public SimpleBooleanProperty measDiffAllProperty() {
@@ -259,7 +262,8 @@ public class TopoFilter extends FormFilter<TopoManager> {
         map.put(SDict.VALID_FROM_TO.toString(), makeInfo(mDateFromToCheckModel.getCheckedItems()));
         map.put(getBundle().getString("nextMeasCheckComboBoxTitle"), makeInfo(mMeasNextCheckModel.getCheckedItems()));
         map.put(getBundle().getString("measCodeCheckComboBoxTitle"), makeInfo(mMeasCodeCheckModel.getCheckedItems()));
-        map.put(Dict.Time.MAX_AGE.toString(), makeInfo(mMaxAgeProperty.get(), "*"));
+        map.put(Dict.FROM.toString(), mMeasDateLowProperty.get().toString());
+        map.put(Dict.TO.toString(), mMeasDateHighProperty.get().toString());
 
         if (mMeasNumOfProperty.get()) {
             var value = mMeasNumOfValueProperty.get();
@@ -283,7 +287,6 @@ public class TopoFilter extends FormFilter<TopoManager> {
 
     private void initListeners() {
         mInvertProperty.addListener(mChangeListenerObject);
-        mMaxAgeProperty.addListener(mChangeListenerObject);
 
         mMeasAlarmLevelChangeProperty.addListener(mChangeListenerObject);
         mMeasAlarmLevelChangeLimitProperty.addListener(mChangeListenerObject);
@@ -303,6 +306,8 @@ public class TopoFilter extends FormFilter<TopoManager> {
         mMeasYoyoCountValueProperty.addListener(mChangeListenerObject);
         mMeasYoyoSizeValueProperty.addListener(mChangeListenerObject);
         mMeasYoyoProperty.addListener(mChangeListenerObject);
+        mMeasDateLowProperty.addListener(mChangeListenerObject);
+        mMeasDateHighProperty.addListener(mChangeListenerObject);
     }
 
     private String makeInfoDimension(ObservableList<BDimension> checkedItems) {
@@ -396,26 +401,34 @@ public class TopoFilter extends FormFilter<TopoManager> {
         return validateCheck(mFrequencyCheckModel, frequency);
     }
 
-    private boolean validateMaxAge(LocalDateTime dateTime) {
-        var ageFilter = mMaxAgeProperty.get();
+    private boolean validateMaxAge(LocalDateTime lastMeasurementDateTime) {
+        if (null != lastMeasurementDateTime) {
+            var lowDate = mMeasDateLowProperty.get();
+            var highDate = mMeasDateHighProperty.get();
+            var valid = DateHelper.isBetween(lowDate, highDate, lastMeasurementDateTime.toLocalDate());
 
-        if (ageFilter == null || ageFilter.equalsIgnoreCase("*")) {
-            return true;
-        }
-
-        if (dateTime == null) {
-            return ageFilter.equalsIgnoreCase("NODATA");
-        } else {
-            if (ageFilter.equalsIgnoreCase("∞")) {
-                return true;
-            } else if (ageFilter.equalsIgnoreCase("NODATA")) {
-                return false;
-            }
-
-            long daysBetween = DAYS.between(dateTime, LocalDateTime.now());
-            boolean valid = daysBetween < Integer.parseInt(ageFilter);
             return valid;
+        } else {
+            return false;
         }
+//
+//        if (ageFilter == null || ageFilter.equalsIgnoreCase("*")) {
+//            return true;
+//        }
+//
+//        if (dateTime == null) {
+//            return ageFilter.equalsIgnoreCase("NODATA");
+//        } else {
+//            if (ageFilter.equalsIgnoreCase("∞")) {
+//                return true;
+//            } else if (ageFilter.equalsIgnoreCase("NODATA")) {
+//                return false;
+//            }
+//
+//            long daysBetween = DAYS.between(dateTime, LocalDateTime.now());
+//            boolean valid = daysBetween < Integer.parseInt(ageFilter);
+//            return valid;
+//        }
     }
 
     private boolean validateMeasAlarmLevelChange(BTopoControlPoint p) {

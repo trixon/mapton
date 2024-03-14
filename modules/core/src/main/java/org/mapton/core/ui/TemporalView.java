@@ -36,6 +36,7 @@ import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.control.DatePane;
 import se.trixon.almond.util.fx.control.DateSelectionMode;
+import se.trixon.almond.util.fx.control.TemporalPreset;
 
 /**
  *
@@ -134,10 +135,10 @@ public class TemporalView extends BorderPane {
     }
 
     private void populatePreset(TemporalPreset temporalPreset) {
-        MenuItem menuItem = new MenuItem(temporalPreset.name);
+        var menuItem = new MenuItem(temporalPreset.name());
         menuItem.setOnAction(ae -> {
-            mManager.setLowDate(getProperMin(temporalPreset.lowDate));
-            mManager.setHighDate(getProperMax(temporalPreset.highDate));
+            mManager.setLowDate(getProperMin(temporalPreset.lowDate()));
+            mManager.setHighDate(getProperMax(temporalPreset.highDate()));
         });
         mPresetSplitMenuButton.getItems().add(menuItem);
     }
@@ -156,29 +157,6 @@ public class TemporalView extends BorderPane {
         populatePreset(new TemporalPreset("%s - 1 %s".formatted(Dict.Time.TODAY.toString(), Dict.Time.WEEK.toString().toLowerCase()), now.minusWeeks(1), now));
         populatePreset(new TemporalPreset("%s - 1 %s".formatted(Dict.Time.TODAY.toString(), Dict.Time.MONTH.toString().toLowerCase()), now.minusMonths(1), now));
         populatePreset(new TemporalPreset("%s - 1 %s".formatted(Dict.Time.TODAY.toString(), Dict.Time.YEAR.toString().toLowerCase()), now.minusYears(1), now));
-//        mPresetSplitMenuButton.getItems().add(new SeparatorMenuItem());
-//        int year = now.getYear();
-//        populatePreset(new TemporalPreset(String.format("%s %s", Dict.NEXT.toString(), Dict.Time.YEAR.toString().toLowerCase()),
-//                LocalDate.of(year + 1, 1, 1),
-//                LocalDate.of(year + 1, 12, 31)
-//        ));
-//        YearMonth nextYM;
-//        populatePreset(new TemporalPreset(String.format("%s %s", Dict.NEXT.toString(), Dict.Time.MONTH.toString().toLowerCase()), now, now));
-//        populatePreset(new TemporalPreset(String.format("%s %s", Dict.NEXT.toString(), Dict.Time.WEEK.toString().toLowerCase()), now, now));
-//        mPresetSplitMenuButton.getItems().add(new SeparatorMenuItem());
-//        populatePreset(new TemporalPreset(String.format("%s %s", Dict.Time.CURRENT.toString(), Dict.Time.WEEK.toString().toLowerCase()), now, now));
-//        populatePreset(new TemporalPreset(String.format("%s %s", Dict.Time.CURRENT.toString(), Dict.Time.MONTH.toString().toLowerCase()), now, now));
-//        populatePreset(new TemporalPreset(String.format("%s %s", Dict.Time.CURRENT.toString(), Dict.Time.YEAR.toString().toLowerCase()),
-//                LocalDate.of(year, 1, 1),
-//                LocalDate.of(year, 12, 31)
-//        ));
-//        mPresetSplitMenuButton.getItems().add(new SeparatorMenuItem());
-//        populatePreset(new TemporalPreset(String.format("%s %s", Dict.PREVIOUS.toString(), Dict.Time.WEEK.toString().toLowerCase()), now, now));
-//        populatePreset(new TemporalPreset(String.format("%s %s", Dict.PREVIOUS.toString(), Dict.Time.MONTH.toString().toLowerCase()), now, now));
-//        populatePreset(new TemporalPreset(String.format("%s %s", Dict.PREVIOUS.toString(), Dict.Time.YEAR.toString().toLowerCase()),
-//                LocalDate.of(year - 1, 1, 1),
-//                LocalDate.of(year - 1, 12, 31)
-//        ));
     }
 
     private void refreshTitle() {
@@ -206,21 +184,4 @@ public class TemporalView extends BorderPane {
         });
     }
 
-    class TemporalPreset {
-
-        private final LocalDate highDate;
-        private final LocalDate lowDate;
-        private final String name;
-
-        public TemporalPreset(String name, LocalDate lowDate, LocalDate highDate) {
-            this.name = name;
-            this.lowDate = lowDate;
-            this.highDate = highDate;
-        }
-
-        @Override
-        public String toString() {
-            return this.name;
-        }
-    }
 }
