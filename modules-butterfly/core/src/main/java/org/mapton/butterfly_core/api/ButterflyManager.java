@@ -17,12 +17,19 @@ package org.mapton.butterfly_core.api;
 
 import internal.org.mapton.butterfly_format.monmon.MonmonConfig;
 import java.io.File;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
+import java.util.prefs.BackingStoreException;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javax.swing.border.EmptyBorder;
+import net.lingala.zip4j.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -46,13 +53,17 @@ import org.mapton.butterfly_format.ZipHelper;
 import org.mapton.butterfly_format.types.BBaseControlPoint;
 import org.mapton.butterfly_format.types.tmo.BBasObjekt;
 import org.netbeans.api.progress.ProgressHandle;
+import org.openide.DialogDisplayer;
+import org.openide.NotifyDescriptor;
 import org.openide.modules.Modules;
 import org.openide.util.Exceptions;
 import org.openide.util.NbPreferences;
 import org.openide.windows.WindowManager;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.MathHelper;
+import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.swing.SwingHelper;
+import se.trixon.almond.util.swing.dialogs.CredentialsPanel;
 
 /**
  * This class handles the actual loading of data file or dir content.
@@ -155,66 +166,73 @@ public class ButterflyManager {
                 return;
             }
 
-            mButterflyLoader.load(bundleMode, mSource);
-            if (mLogoLoader == null) {
-                mLogoLoader = new LogoLoader();
-            }
-            mLogoLoader.load();
+            if (bundleMode == DIR || unlock(mSource)) {
+                mButterflyLoader.load(bundleMode, mSource);
+                if (mLogoLoader == null) {
+                    mLogoLoader = new LogoLoader();
+                }
+                mLogoLoader.load();
 
-            MonmonConfig.getInstance().init();
-            var project = ButterflyProject.getInstance();
-            project.init();
-            var coosysPlane = project.getCoordinateSystemPlane();
+                MonmonConfig.getInstance().init();
+                var project = ButterflyProject.getInstance();
+                project.init();
+                var coosysPlane = project.getCoordinateSystemPlane();
 
-            if (coosysPlane != null) {
-                var preferences = NbPreferences.forModule(MCooTrans.class);
-                preferences.put("map.coo_trans", coosysPlane);
-                //TODO request restart id changed or better yet, force change
-            }
+                if (coosysPlane != null) {
+                    var preferences = NbPreferences.forModule(MCooTrans.class);
+                    preferences.put("map.coo_trans", coosysPlane);
+                    //TODO request restart id changed or better yet, force change
+                }
 
-            var butterfly = mButterflyLoader.getButterfly();
+                var butterfly = mButterflyLoader.getButterfly();
 
-            calculateLatLons(butterfly.hydro().getGroundwaterPoints());
-            calculateLatLons(butterfly.topo().getControlPoints());
+                calculateLatLons(butterfly.hydro().getGroundwaterPoints());
+                calculateLatLons(butterfly.topo().getControlPoints());
 
-            calculateLatLonsTmo(butterfly.tmo().getGrundvatten());
-            calculateLatLonsTmo(butterfly.tmo().getInfiltration());
-            calculateLatLonsTmo(butterfly.tmo().getRorelse());
-            calculateLatLonsTmo(butterfly.tmo().getTunnelvatten());
-            calculateLatLonsTmo(butterfly.tmo().getVaderstation());
-            calculateLatLonsTmo(butterfly.tmo().getVattenkemi());
+                calculateLatLonsTmo(butterfly.tmo().getGrundvatten());
+                calculateLatLonsTmo(butterfly.tmo().getInfiltration());
+                calculateLatLonsTmo(butterfly.tmo().getRorelse());
+                calculateLatLonsTmo(butterfly.tmo().getTunnelvatten());
+                calculateLatLonsTmo(butterfly.tmo().getVaderstation());
+                calculateLatLonsTmo(butterfly.tmo().getVattenkemi());
 
-            var areas = new ArrayList<MArea>();
-            var prefix = "Haga/";
-            butterfly.getAreaFilters().stream().forEachOrdered(areaFilter -> {
-                var area = new MArea(areaFilter.getName());
-                area.setName(areaFilter.getName());
-                area.setWktGeometry(areaFilter.getWkt());
-                areas.add(area);
-            });
+                var areas = new ArrayList<MArea>();
+                var prefix = "Haga/";
+                butterfly.getAreaFilters().stream().forEachOrdered(areaFilter -> {
+                    var area = new MArea(areaFilter.getName());
+                    area.setName(areaFilter.getName());
+                    area.setWktGeometry(areaFilter.getWkt());
+                    areas.add(area);
+                });
 
-            mAreaFilterManager.clearByPrefix(prefix);
-            mAreaFilterManager.addAll(areas);
+                mAreaFilterManager.clearByPrefix(prefix);
+                mAreaFilterManager.addAll(areas);
 
-            for (var area : butterfly.getAreaActivities()) {
-                try {
-                    var geometry = mWktReader.read(area.getWkt());
-                    area.setGeometry(geometry);
-
+                for (var area : butterfly.getAreaActivities()) {
                     try {
-                        var targetGeometry = MOptions.getInstance().getMapCooTrans().transform(geometry);
-                        area.setTargetGeometry(targetGeometry);
-                    } catch (MismatchedDimensionException | TransformException ex) {
+                        var geometry = mWktReader.read(area.getWkt());
+                        area.setGeometry(geometry);
+
+                        try {
+                            var targetGeometry = MOptions.getInstance().getMapCooTrans().transform(geometry);
+                            area.setTargetGeometry(targetGeometry);
+                        } catch (MismatchedDimensionException | TransformException ex) {
+                            Exceptions.printStackTrace(ex);
+                        }
+                    } catch (ParseException ex) {
                         Exceptions.printStackTrace(ex);
                     }
-                } catch (ParseException ex) {
-                    Exceptions.printStackTrace(ex);
                 }
+
+                if (bundleMode == BundleMode.ZIP) {
+                    ZipHelper.getInstance().clearPassword();
+                }
+
+                setButterfly(butterfly);
+                mButterflyMonitor.start();
+                refreshTitle();
             }
 
-            setButterfly(butterfly);
-            mButterflyMonitor.start();
-            refreshTitle();
             mProgressHandle.finish();
         });
 
@@ -263,6 +281,91 @@ public class ButterflyManager {
                 new SimpleDateFormat("yyyy-MM-dd HH.mm.ss").format(fileDate));
 
         SwingHelper.runLater(() -> WindowManager.getDefault().getMainWindow().setTitle(title));
+    }
+
+    private boolean unlock(File source) {
+        var prefs = NbPreferences.forModule(ButterflyManager.class).node("datalog");
+        char[] password = null;
+
+        try {
+            for (var key : prefs.keys()) {
+                byte[] bytes = prefs.getByteArray(key, new byte[0]);
+                if (bytes.length > 0) {
+                    var pw = new String(bytes, "utf-8").toCharArray();
+                    if (unlockValidatePassword(source, pw)) {
+                        password = pw;
+                        break;
+                    }
+                }
+            }
+        } catch (BackingStoreException | UnsupportedEncodingException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+
+        if (password == null) {
+            var panel = new CredentialsPanel();
+            panel.setUserName(SystemHelper.getUserName().toUpperCase(Locale.ROOT));
+            panel.setPreferredSize(SwingHelper.getUIScaledDim(400, 200));
+            panel.setBorder(new EmptyBorder(SwingHelper.getUIScaledInsets(16)));
+            panel.getUserPasswordLabel().setText(Dict.PASSWORD.toString());
+            panel.getUserNameField().setEditable(false);
+
+            var d = new NotifyDescriptor(
+                    panel,
+                    Dict.PASSWORD.toUpper(),
+                    NotifyDescriptor.OK_CANCEL_OPTION,
+                    NotifyDescriptor.PLAIN_MESSAGE,
+                    null,
+                    NotifyDescriptor.OK_OPTION
+            );
+
+            char[] inputPassword = null;
+            do {
+                var passwordField = panel.getUserPasswordField();
+                passwordField.setText("");
+                SwingHelper.runLaterDelayed(5, () -> passwordField.requestFocus());
+
+                var result = DialogDisplayer.getDefault().notify(d);
+                if (result == NotifyDescriptor.OK_OPTION) {
+                    inputPassword = passwordField.getPassword();
+                } else {
+                    return false;
+                }
+            } while (!unlockValidatePassword(source, inputPassword));
+
+            try {
+                prefs.putByteArray(LocalDateTime.now().toString(), new String(inputPassword).getBytes("utf-8"));
+            } catch (UnsupportedEncodingException ex) {
+                Exceptions.printStackTrace(ex);
+            }
+            password = inputPassword;
+        }
+
+        ZipHelper.getInstance().setPassword(password);
+
+        return true;
+    }
+
+    private boolean unlockValidatePassword(File source, char[] password) {
+        var zipFile = new ZipFile(source, password);
+        var path = "Project.bfl";
+
+        try {
+            var fileHeader = zipFile.getFileHeader(path);
+
+            if (fileHeader == null) {
+                System.out.println("ZIP resource not found: " + path);
+            } else {
+                var is = zipFile.getInputStream(fileHeader);
+                is.close();
+            }
+        } catch (ZipException ex) {
+            return false;
+        } catch (IOException ex) {
+            return false;
+        }
+
+        return true;
     }
 
     private static class Holder {

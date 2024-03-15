@@ -18,6 +18,7 @@ package org.mapton.butterfly_format;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.Arrays;
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.io.inputstream.ZipInputStream;
@@ -31,6 +32,7 @@ import org.openide.util.Exceptions;
  */
 public class ZipHelper {
 
+    private char[] mPassword;
     private ZipFile mZipFile;
 
     public static ZipHelper getInstance() {
@@ -38,6 +40,10 @@ public class ZipHelper {
     }
 
     private ZipHelper() {
+    }
+
+    public void clearPassword() {
+        Arrays.fill(mPassword, '*');
     }
 
     public File extractResourceToTempFile(String path) {
@@ -98,8 +104,11 @@ public class ZipHelper {
     }
 
     public void init(File file) {
-        //TODO Handle encrypted zip
-        mZipFile = new ZipFile(file);
+        mZipFile = new ZipFile(file, mPassword);
+    }
+
+    public void setPassword(char[] password) {
+        mPassword = password;
     }
 
     private static class Holder {

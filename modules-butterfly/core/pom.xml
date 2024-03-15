@@ -72,7 +72,11 @@ limitations under the License.
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-windows</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-dialogs</artifactId>
+        </dependency>
+        
         <!--Mapton-->
         <dependency>
             <groupId>org.mapton</groupId>
