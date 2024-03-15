@@ -54,7 +54,6 @@ public class TopoPropertiesBuilder extends PropertiesBuilder<BTopoControlPoint> 
         propertyMap.put(getCatKey(cat1, SDict.ALARM.toString()), StringHelper.join(SEPARATOR, "", p.getNameOfAlarmHeight(), p.getNameOfAlarmPlane()));
         propertyMap.put(getCatKey(cat1, Dict.Geometry.HEIGHT.toString()), AlarmHelper.getInstance().getLimitsAsString(BComponent.HEIGHT, p));
         propertyMap.put(getCatKey(cat1, Dict.Geometry.PLANE.toString()), AlarmHelper.getInstance().getLimitsAsString(BComponent.PLANE, p));
-        propertyMap.put(getCatKey(cat1, SDict.FREQUENCY.toString()), p.getFrequency());
         var measurements = "%d / %d    (%d - %d)".formatted(
                 p.ext().getNumOfObservationsFiltered(),
                 p.ext().getNumOfObservations(),
@@ -76,6 +75,8 @@ public class TopoPropertiesBuilder extends PropertiesBuilder<BTopoControlPoint> 
         var lastFiltered = Objects.toString(DateHelper.toDateString(p.ext().getObservationFilteredLastDate()), "-");
         var nextRaw = Objects.toString(DateHelper.toDateString(p.ext().getObservationRawNextDate()), "-");
 
+        propertyMap.put(getCatKey(cat1, SDict.FREQUENCY.toString()), p.getFrequency());
+        propertyMap.put(getCatKey(cat1, Dict.NEED.toString()), p.ext().getMeasurementUntilNext(ChronoUnit.DAYS));
         propertyMap.put(getCatKey(cat1, Dict.AGE.toString()), p.ext().getMeasurementAge(ChronoUnit.DAYS));
         propertyMap.put(getCatKey(cat1, "%s, %s".formatted(Dict.AGE.toString(), SDict.ALARM_LEVEL.toLower())), p.ext().getAlarmLevelAge());
         propertyMap.put(getCatKey(cat1, Dict.LATEST.toString()),

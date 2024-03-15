@@ -20,19 +20,22 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
-import javafx.geometry.Pos;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Separator;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.SplitMenuButton;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
 import org.apache.commons.lang3.StringUtils;
+import org.controlsfx.control.SegmentedButton;
 import org.controlsfx.tools.Borders;
 import static org.mapton.api.ui.MPopOver.GAP;
 import static org.mapton.api.ui.MPopOver.autoSize;
@@ -312,10 +315,6 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
         int rowGap = SwingHelper.getUIScaled(12);
         int titleGap = SwingHelper.getUIScaled(3);
 
-        mPresetSplitMenuButton.setText(Dict.RESET.toString());
-        var latestMeasBox = new VBox(mDatePane, mPresetSplitMenuButton);
-        latestMeasBox.setAlignment(Pos.TOP_RIGHT);
-
         var basicBox = new VBox(rowGap,
                 mDimensionSccb,
                 mStatusSccb,
@@ -339,7 +338,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
                 .build()
                 .build();
 
-        var wrappedMeasBox = Borders.wrap(latestMeasBox)
+        var wrappedDateBox = Borders.wrap(createUIDatePane())
                 .etchedBorder()
                 .title("Period för senaste mätning")
                 .innerPadding(topBorderInnerPadding, borderInnerPadding, borderInnerPadding, borderInnerPadding)
@@ -354,7 +353,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
         var leftBox = new VBox(rowGap,
                 wrappedBasicBox,
                 spacer,
-                wrappedMeasBox
+                wrappedDateBox
         );
 
         var rightBox = new VBox(rowGap,
@@ -459,6 +458,52 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
 
         autoSize(vBox);
         setContentNode(vBox);
+    }
+
+    private Pane createUIDatePane() {
+        var beforeToggleButton = new ToggleButton("⇷");
+        var afterToggleButton = new ToggleButton("⇸");
+        var startToggleButton = new ToggleButton("⇤");
+        var endToggleButton = new ToggleButton("⇥");
+        startToggleButton.setTooltip(new Tooltip("Från början"));
+        beforeToggleButton.setTooltip(new Tooltip("Perioden före"));
+        afterToggleButton.setTooltip(new Tooltip("Perioden efter"));
+        endToggleButton.setTooltip(new Tooltip("Till slutet"));
+
+        var dateRangeSlider = mDatePane.getDateRangeSlider();
+
+        beforeToggleButton.setOnAction(actionEvent -> {
+            dateRangeSlider.setLowHighDate(dateRangeSlider.getMinDate(), dateRangeSlider.getLowDate());
+            beforeToggleButton.setSelected(false);
+        });
+
+        afterToggleButton.setOnAction(actionEvent -> {
+            dateRangeSlider.setLowHighDate(dateRangeSlider.getHighDate(), dateRangeSlider.getMaxDate());
+            afterToggleButton.setSelected(false);
+        });
+
+        startToggleButton.setOnAction(actionEvent -> {
+            dateRangeSlider.setLowDate(dateRangeSlider.getMinDate());
+            startToggleButton.setSelected(false);
+        });
+
+        endToggleButton.setOnAction(actionEvent -> {
+            dateRangeSlider.setHighDate(dateRangeSlider.getMaxDate());
+            endToggleButton.setSelected(false);
+        });
+
+        var segmentedButton = new SegmentedButton(
+                startToggleButton,
+                beforeToggleButton,
+                afterToggleButton,
+                endToggleButton
+        );
+
+        mPresetSplitMenuButton.setText(Dict.RESET.toString());
+
+        var box = new VBox(mDatePane, new HBox(segmentedButton, new Spacer(), mPresetSplitMenuButton));
+
+        return box;
     }
 
     private void initListeners() {
@@ -594,7 +639,10 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
                 createPresetMenuItem("tre månaderna", now.minusMonths(3), now),
                 createPresetMenuItem("sex månaderna", now.minusMonths(6), now),
                 createPresetMenuItem("året", now.minusYears(1), now),
-                createPresetMenuItem("två åren", now.minusYears(2), now)
+                createPresetMenuItem("två åren", now.minusYears(2), now),
+                createPresetMenuItem("tre åren", now.minusYears(3), now),
+                createPresetMenuItem("fyra åren", now.minusYears(4), now),
+                createPresetMenuItem("fem åren", now.minusYears(5), now)
         );
 
         presentMenu.getItems().addAll(
