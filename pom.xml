@@ -254,7 +254,7 @@
             <dependency>
                 <groupId>com.dlsc</groupId>
                 <artifactId>GMapsFX</artifactId>
-                <version>11.0.7</version>
+                <version>11.0.8</version>
             </dependency>
             <dependency>
                 <groupId>org.controlsfx</groupId>
@@ -406,6 +406,6 @@
         <netbeans.compile.on.save>none</netbeans.compile.on.save>
         <brandingToken>mapton</brandingToken>
         <mapton.version>3.2.0-SNAPSHOT</mapton.version>
-        <geotools.version>30.2</geotools.version>
+        <geotools.version>31.0</geotools.version>
     </properties>
 </project>
