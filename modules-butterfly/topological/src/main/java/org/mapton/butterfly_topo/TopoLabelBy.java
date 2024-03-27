@@ -136,9 +136,8 @@ public enum TopoLabelBy {
         return p.ext().getAlarmLevelAge();
     }),
     MEAS_NEED(LabelByCategories.MEAS, Dict.NEED.toString(), p -> {
-        return "%d".formatted(
-                p.ext().getMeasurementUntilNext(ChronoUnit.DAYS)
-        );
+        var need = p.getFrequency() == 0 ? "-" : Long.toString(p.ext().getMeasurementUntilNext(ChronoUnit.DAYS));
+        return need;
     }),
     VALUE_Z(LabelByCategories.VALUE, "Z", p -> {
         var z = p.getZeroZ();

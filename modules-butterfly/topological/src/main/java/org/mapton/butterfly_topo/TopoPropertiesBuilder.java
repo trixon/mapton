@@ -76,7 +76,8 @@ public class TopoPropertiesBuilder extends PropertiesBuilder<BTopoControlPoint> 
         var nextRaw = Objects.toString(DateHelper.toDateString(p.ext().getObservationRawNextDate()), "-");
 
         propertyMap.put(getCatKey(cat1, SDict.FREQUENCY.toString()), p.getFrequency());
-        propertyMap.put(getCatKey(cat1, Dict.NEED.toString()), p.ext().getMeasurementUntilNext(ChronoUnit.DAYS));
+        var need = p.getFrequency() == 0 ? "-" : Long.toString(p.ext().getMeasurementUntilNext(ChronoUnit.DAYS));
+        propertyMap.put(getCatKey(cat1, Dict.NEED.toString()), need);
         propertyMap.put(getCatKey(cat1, Dict.AGE.toString()), p.ext().getMeasurementAge(ChronoUnit.DAYS));
         propertyMap.put(getCatKey(cat1, "%s, %s".formatted(Dict.AGE.toString(), SDict.ALARM_LEVEL.toLower())), p.ext().getAlarmLevelAge());
         propertyMap.put(getCatKey(cat1, Dict.LATEST.toString()),
