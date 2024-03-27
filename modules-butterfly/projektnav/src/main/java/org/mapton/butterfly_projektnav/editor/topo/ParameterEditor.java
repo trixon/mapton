@@ -268,7 +268,7 @@ public class ParameterEditor extends BaseTopoEditor {
 
         var result = StringUtils.removeEnd(sb.toString(), "\n");
         result = StringUtils.removeEnd(result, "\n");
-        result = StringUtils.replace(result, "/", "_");
+        result = StringUtils.replace(result, "/", ".");
 
         mPreviewLogPanel.println(result);
     }
