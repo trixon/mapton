@@ -327,7 +327,7 @@ public class TopoAttributeManager {
 
         if (mColorBy != null && mColorBy != ColorBy.ALARM) {
             attrs = new PointPlacemarkAttributes(attrs);
-            attrs.setImageColor(getColor(mColorBy, p));
+            attrs.setImageColor(getColor(p));
         }
 
         return attrs;
@@ -359,7 +359,7 @@ public class TopoAttributeManager {
         var attrs = mSymbolAttributes[TopoHelper.getAlarmLevel(p) + 1];
         if (mColorBy != null && mColorBy != ColorBy.ALARM) {
             attrs = new BasicShapeAttributes(attrs);
-            attrs.setInteriorMaterial(new Material(getColor(mColorBy, p)));
+            attrs.setInteriorMaterial(new Material(getColor(p)));
         }
 
         return attrs;
@@ -381,7 +381,7 @@ public class TopoAttributeManager {
         mColorBy = colorBy;
     }
 
-    private Color getColor(ColorBy mColorBy, BTopoControlPoint p) {
+    private Color getColor(BTopoControlPoint p) {
         switch (mColorBy) {
             case STYLE -> {
                 if (mTopoConfig == null) {
