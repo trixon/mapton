@@ -71,6 +71,12 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
             for (var p : butterfly.topo().getControlPoints()) {
                 p.ext().setObservationsAllRaw(nameToObservations.get(p.getName()));
                 p.ext().getObservationsAllRaw().forEach(o -> o.ext().setParent(p));
+                for (var o : p.ext().getObservationsAllRaw()) {
+                    if (o.isZeroMeasurement()) {
+                        p.ext().setStoredZeroDateTime(o.getDate());
+                        break;
+                    }
+                }
             }
 
             var dates = new TreeSet<>(getAllItems().stream()
@@ -78,26 +84,15 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
                     .filter(d -> d != null)
                     .collect(Collectors.toSet()));
 
-//            getAllItems().stream()
-//                    .map(p -> p.ext().getDateFirst())
-//                    .filter(d -> d != null)
-//                    .forEach(d -> dates.add(d));
             if (!dates.isEmpty()) {
                 setTemporalRange(new MTemporalRange(dates.first(), dates.last()));
                 boolean layerBundleEnabled = isLayerBundleEnabled();
                 updateTemporal(!layerBundleEnabled);
                 updateTemporal(layerBundleEnabled);
             }
-
-            getAllItems().stream().forEach(p -> {
-                var calculatedObservations = new ArrayList<>(p.ext().getObservationsAllRaw());
-                p.ext().setObservationsAllCalculated(calculatedObservations);
-                p.ext().calculateObservations(calculatedObservations);
-            });
         } catch (Exception e) {
             Exceptions.printStackTrace(e);
         }
-
     }
 
     @Override
@@ -105,18 +100,12 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
         var measCountStatsDateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM");
         var timeFilteredItems = new ArrayList<BTopoControlPoint>();
 
-//        for (var p : getFilteredItems()) {
-//            for (var o : p.ext().getObservationsAllCalculated()) {
-//                //o.setZeroMeasurement(false);
-//                //TODO Reset zero meas but dont destroy original info
-//            }
-//        }
         p:
         for (var p : getFilteredItems()) {
-            if (p.getDateLatest() == null || p.ext().getObservationsAllCalculated().isEmpty()) {
+            if (p.getDateLatest() == null || p.ext().getObservationsAllRaw().isEmpty()) {
                 timeFilteredItems.add(p);
             } else {
-                for (var o : p.ext().getObservationsAllCalculated()) {
+                for (var o : p.ext().getObservationsAllRaw()) {
                     if (getTemporalManager().isValid(o.getDate())) {
                         timeFilteredItems.add(p);
                         continue p;
@@ -128,15 +117,16 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
         getTimeFilteredItemsMap().clear();
         timeFilteredItems.stream().forEach(p -> {
             getTimeFilteredItemsMap().put(p.getName(), p);
-            var timefilteredObservations = p.ext().getObservationsAllRaw().stream()
+            var timeFilteredObservations = p.ext().getObservationsAllRaw().stream()
                     .filter(o -> getTemporalManager().isValid(o.getDate()))
-                    .toList();
-            p.ext().setObservationsTimeFiltered(new ArrayList<>(timefilteredObservations));
+                    .collect(Collectors.toCollection(ArrayList::new));
+
+            p.ext().setObservationsTimeFiltered(timeFilteredObservations);
+            p.ext().calculateObservations(timeFilteredObservations);
 
             var measCountStats = new LinkedHashMap<String, Integer>();
             p.ext().setMeasurementCountStats(measCountStats);
-            p.ext().calculateObservations(timefilteredObservations);
-            timefilteredObservations.forEach(o -> {
+            timeFilteredObservations.forEach(o -> {
                 CollectionHelper.incInteger(measCountStats, o.getDate().format(measCountStatsDateTimeFormatter));
             });
         });

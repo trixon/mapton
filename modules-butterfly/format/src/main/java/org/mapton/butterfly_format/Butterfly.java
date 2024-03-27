@@ -153,7 +153,7 @@ public class Butterfly {
         }.load(sourceDir, "tmoRorelseObservations.csv", mTmo.getRorelseObservations());
     }
 
-    void postLoad(File sourceDir) {
+    void postLoad() {
         for (var a : mAlarms) {
             a.setButterfly(this);
             a.ext().populateRanges();

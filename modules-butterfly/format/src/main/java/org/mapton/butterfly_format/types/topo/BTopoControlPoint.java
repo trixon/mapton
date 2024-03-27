@@ -19,6 +19,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Objects;
@@ -141,6 +142,8 @@ public class BTopoControlPoint extends BBaseControlPoint {
 
         private transient final DeltaRolling deltaRolling = new DeltaRolling();
         private transient final DeltaZero deltaZero = new DeltaZero();
+        private transient LocalDateTime storedZeroDateTime;
+        private transient boolean zeroUnset = true;
 
         public Ext() {
             Ext.this.getObservationFilteredFirst();
@@ -151,7 +154,20 @@ public class BTopoControlPoint extends BBaseControlPoint {
                 return;
             }
 
-            observations.getFirst().setZeroMeasurement(true);
+            var p = BTopoControlPoint.this;
+
+            observations.forEach(o -> {
+                var dateMatch = p.ext().getStoredZeroDateTime() == o.getDate();
+                if (dateMatch) {
+                    zeroUnset = false;
+                }
+                o.setZeroMeasurement(dateMatch);
+            });
+
+            if (zeroUnset) {
+                observations.getFirst().setZeroMeasurement(true);
+            }
+
             var latestZero = observations.reversed().stream()
                     .filter(o -> o.isZeroMeasurement())
                     .findFirst().orElse(observations.getFirst());
@@ -318,6 +334,14 @@ public class BTopoControlPoint extends BBaseControlPoint {
             } else {
                 return null;
             }
+        }
+
+        public LocalDateTime getStoredZeroDateTime() {
+            return storedZeroDateTime;
+        }
+
+        public void setStoredZeroDateTime(LocalDateTime storedZeroDateTime) {
+            this.storedZeroDateTime = storedZeroDateTime;
         }
 
         public abstract class Delta {

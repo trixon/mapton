@@ -60,7 +60,7 @@ public class ButterflyLoader {
 
         mButterfly = new Butterfly();
         mButterfly.load(dir);
-        mButterfly.postLoad(source);
+        mButterfly.postLoad();
     }
 
     private static class Holder {
