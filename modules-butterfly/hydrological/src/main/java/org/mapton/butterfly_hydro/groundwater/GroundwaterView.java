@@ -37,6 +37,7 @@ public class GroundwaterView {
     public GroundwaterView() {
         var actions = Arrays.asList(
                 ActionUtils.ACTION_SPAN,
+                mManager.geZoomExtentstAction(),
                 mFilterPopOver.getAction()
         );
 

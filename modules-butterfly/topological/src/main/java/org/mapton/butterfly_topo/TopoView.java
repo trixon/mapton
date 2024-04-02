@@ -59,6 +59,7 @@ public class TopoView {
         var actions = Arrays.asList(
                 new ExportAction(getClass()),
                 ActionUtils.ACTION_SPAN,
+                mManager.geZoomExtentstAction(),
                 mFilter.getInfoPopOver().getAction(),
                 mFilterFavoritePopOver.getAction(),
                 mFilterPopOver.getAction()

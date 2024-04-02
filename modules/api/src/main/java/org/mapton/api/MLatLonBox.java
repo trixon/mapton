@@ -16,7 +16,7 @@
 package org.mapton.api;
 
 import com.google.gson.annotations.SerializedName;
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -37,13 +37,13 @@ public class MLatLonBox {
         mNorthEast = northEast;
     }
 
-    public MLatLonBox(ArrayList<MLatLon> latLons) {
+    public MLatLonBox(List<MLatLon> latLons) {
         double north = Double.MIN_VALUE;
         double east = Double.MIN_VALUE;
         double south = Double.MAX_VALUE;
         double west = Double.MAX_VALUE;
 
-        for (MLatLon latLon : latLons) {
+        for (var latLon : latLons) {
             north = Math.max(latLon.getLatitude() + 90, north);
             east = Math.max(latLon.getLongitude() + 180, east);
             south = Math.min(latLon.getLatitude(), south);

@@ -37,6 +37,7 @@ public class MeasPointView {
     public MeasPointView() {
         var actions = Arrays.asList(
                 ActionUtils.ACTION_SPAN,
+                mManager.geZoomExtentstAction(),
                 mFilter.getInfoPopOver().getAction(),
                 mFilterPopOver.getAction()
         );

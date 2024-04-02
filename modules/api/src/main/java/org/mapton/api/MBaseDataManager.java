@@ -28,8 +28,12 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import org.controlsfx.control.action.Action;
+import static org.mapton.api.Mapton.getIconSizeToolBarInt;
+import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.DelayedResetRunner;
 import se.trixon.almond.util.fx.FxHelper;
+import se.trixon.almond.util.icons.material.MaterialIcon;
 
 /**
  *
@@ -61,6 +65,7 @@ public abstract class MBaseDataManager<T> {
     private final HashSet<T> mTimeFilteredItemsSet = new HashSet<>();
     private final Class<T> mTypeParameterClass;
     private final DelayedResetRunner mUnlockDelayedResetRunner;
+    private final Action mZoomExtentsAction;
 
     public MBaseDataManager(Class<T> typeParameterClass) {
         mTypeParameterClass = typeParameterClass;
@@ -86,6 +91,14 @@ public abstract class MBaseDataManager<T> {
 
         init();
         initListeners();
+
+        mZoomExtentsAction = new Action(Dict.ZOOM_EXTENTS.toString(), actionEvent -> {
+            var extents = getTimeFilteredExtents();
+            if (extents != null) {
+                Mapton.getEngine().fitToBounds(extents);
+            }
+        });
+        mZoomExtentsAction.setGraphic(MaterialIcon._Action.ALL_OUT.getImageView(getIconSizeToolBarInt()));
     }
 
     public ObjectProperty<ObservableList<T>> allItemsProperty() {
@@ -94,6 +107,10 @@ public abstract class MBaseDataManager<T> {
 
     public ObjectProperty<ObservableList<T>> filteredItemsProperty() {
         return mFilteredItemsProperty;
+    }
+
+    public Action geZoomExtentstAction() {
+        return mZoomExtentsAction;
     }
 
     public final ObservableList<T> getAllItems() {
@@ -306,6 +323,10 @@ public abstract class MBaseDataManager<T> {
     }
 
     protected abstract void applyTemporalFilter();
+
+    protected MLatLonBox getTimeFilteredExtents() {
+        return null;
+    }
 
     protected abstract void load(ArrayList<T> items);
 

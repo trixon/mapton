@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -37,6 +37,7 @@ public class BlastView {
     public BlastView() {
         var actions = Arrays.asList(
                 ActionUtils.ACTION_SPAN,
+                mManager.geZoomExtentstAction(),
                 mFilter.getInfoPopOver().getAction(),
                 mFilterPopOver.getAction()
         );

@@ -46,6 +46,7 @@ public class RorelseView {
         var actions = Arrays.asList(
                 exportAction,
                 ActionUtils.ACTION_SPAN,
+                mManager.geZoomExtentstAction(),
                 mFilter.getInfoPopOver().getAction(),
                 mFilterPopOver.getAction()
         );

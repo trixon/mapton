@@ -15,8 +15,10 @@
  */
 package org.mapton.butterfly_core.api;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.api.MBaseDataManager;
 import org.mapton.api.MLatLon;
+import org.mapton.api.MLatLonBox;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BBase;
 import org.mapton.butterfly_format.types.BBasePoint;
@@ -80,4 +82,16 @@ public abstract class BaseManager<T extends BBase> extends MBaseDataManager<T> {
     }
 
     public abstract void load(Butterfly butterfly);
+
+    @Override
+    protected MLatLonBox getTimeFilteredExtents() {
+        var latLons = getTimeFilteredItems().stream()
+                .filter(p -> p instanceof BBasePoint)
+                .map(p -> (BBasePoint) p)
+                .filter(p -> ObjectUtils.allNotNull(p.getLat(), p.getLon()))
+                .map(p -> new MLatLon(p.getLat(), p.getLon()))
+                .toList();
+
+        return new MLatLonBox(latLons);
+    }
 }

@@ -38,6 +38,7 @@ public class GrundvattenView {
     public GrundvattenView() {
         var actions = Arrays.asList(
                 ActionUtils.ACTION_SPAN,
+                mManager.geZoomExtentstAction(),
                 mFilter.getInfoPopOver().getAction(),
                 mFilterFavoritePopOver.getAction(),
                 mFilterPopOver.getAction()

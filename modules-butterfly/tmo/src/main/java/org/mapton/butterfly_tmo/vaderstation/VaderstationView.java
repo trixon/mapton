@@ -37,6 +37,7 @@ public class VaderstationView {
     public VaderstationView() {
         var actions = Arrays.asList(
                 ActionUtils.ACTION_SPAN,
+                mManager.geZoomExtentstAction(),
                 mFilter.getInfoPopOver().getAction(),
                 mFilterPopOver.getAction()
         );

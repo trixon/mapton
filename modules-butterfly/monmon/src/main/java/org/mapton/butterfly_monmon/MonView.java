@@ -37,6 +37,7 @@ public class MonView {
     public MonView() {
         var actions = Arrays.asList(
                 ActionUtils.ACTION_SPAN,
+                mManager.geZoomExtentstAction(),
                 mFilterPopOver.getAction()
         );
 
