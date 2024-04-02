@@ -202,14 +202,14 @@ public class BTopoControlPoint extends BBaseControlPoint {
                 if (o.isReplacementMeasurement() && prev != null) {
                     var mX = o.getMeasuredX();
                     var pX = prev.getMeasuredX();
-                    if (ObjectUtils.allNotNull(mX, pX)) {
+                    if (ObjectUtils.allNotNull(mX, pX, o.ext().getDeltaX())) {
                         rX = rX + mX - pX;
                         o.ext().setDeltaX(o.ext().getDeltaX() + rX);
                     }
 
                     var mY = o.getMeasuredY();
                     var pY = prev.getMeasuredY();
-                    if (ObjectUtils.allNotNull(mY, pY)) {
+                    if (ObjectUtils.allNotNull(mY, pY, o.ext().getDeltaY())) {
                         rY = rY + mY - pY;
                         o.ext().setDeltaY(o.ext().getDeltaY() + rY);
                     }
