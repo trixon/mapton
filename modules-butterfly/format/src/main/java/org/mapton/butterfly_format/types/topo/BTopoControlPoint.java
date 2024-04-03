@@ -340,6 +340,14 @@ public class BTopoControlPoint extends BBaseControlPoint {
             return storedZeroDateTime;
         }
 
+        public long getZeroMeasurementAge(ChronoUnit chronoUnit) {
+            if (getDateZero() != null) {
+                return chronoUnit.between(getDateZero(), LocalDate.now());
+            } else {
+                return -1L;
+            }
+        }
+
         public void setStoredZeroDateTime(LocalDateTime storedZeroDateTime) {
             this.storedZeroDateTime = storedZeroDateTime;
         }
