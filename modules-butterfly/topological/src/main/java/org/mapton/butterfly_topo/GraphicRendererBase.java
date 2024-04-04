@@ -28,6 +28,7 @@ import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.MOptions;
 import org.mapton.butterfly_core.api.PlotLimiter;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
+import org.mapton.butterfly_topo.api.TopoManager;
 import org.mapton.worldwind.api.WWHelper;
 import se.trixon.almond.util.MathHelper;
 
@@ -43,6 +44,7 @@ public abstract class GraphicRendererBase {
     protected static PlotLimiter sPlotLimiter = new PlotLimiter();
     protected static HashMap<BTopoControlPoint, Position[]> sPointToPositionMap = new HashMap<>();
     protected final TopoAttributeManager mAttributeManager = TopoAttributeManager.getInstance();
+    protected final TopoManager mManager = TopoManager.getInstance();
 
     public GraphicRendererBase() {
         for (var renderItem : GraphicRendererItem.values()) {
@@ -74,7 +76,7 @@ public abstract class GraphicRendererBase {
             var CURRENT_SIZE = 1.0;
             var zeroZ = p.getZeroZ();
 
-            var startPosition = WWHelper.positionFromPosition(position, zeroZ + TopoLayerBundle.Z_OFFSET);
+            var startPosition = WWHelper.positionFromPosition(position, zeroZ + TopoLayerBundle.getZOffset());
             var startEllipsoid = new Ellipsoid(startPosition, ZERO_SIZE, ZERO_SIZE, ZERO_SIZE);
             startEllipsoid.setAttributes(mAttributeManager.getComponentZeroAttributes());
 
@@ -92,7 +94,7 @@ public abstract class GraphicRendererBase {
                 var x = p.getZeroX() + MathHelper.convertDoubleToDouble(o2.ext().getDeltaX()) * TopoLayerBundle.SCALE_FACTOR;
                 var y = p.getZeroY() + MathHelper.convertDoubleToDouble(o2.ext().getDeltaY()) * TopoLayerBundle.SCALE_FACTOR;
                 var z = +o2.getMeasuredZ()
-                        + TopoLayerBundle.Z_OFFSET
+                        + TopoLayerBundle.getZOffset()
                         + MathHelper.convertDoubleToDouble(o2.ext().getDeltaZ()) * TopoLayerBundle.SCALE_FACTOR;
 
                 var wgs84 = MOptions.getInstance().getMapCooTrans().toWgs84(y, x);

@@ -20,12 +20,14 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
+import org.apache.commons.math3.util.FastMath;
 import org.mapton.api.MTemporalRange;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.topo.BTopoControlPointObservation;
 import org.mapton.butterfly_topo.TopoChartBuilder;
+import org.mapton.butterfly_topo.TopoLayerBundle;
 import org.mapton.butterfly_topo.TopoPropertiesBuilder;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.CollectionHelper;
@@ -37,6 +39,7 @@ import se.trixon.almond.util.CollectionHelper;
 public class TopoManager extends BaseManager<BTopoControlPoint> {
 
     private final TopoChartBuilder mChartBuilder = new TopoChartBuilder();
+    private double mMinimumZscaled = 0.0;
     private final TopoPropertiesBuilder mPropertiesBuilder = new TopoPropertiesBuilder();
 
     public static TopoManager getInstance() {
@@ -45,6 +48,10 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
 
     private TopoManager() {
         super(BTopoControlPoint.class);
+    }
+
+    public double getMinimumZscaled() {
+        return mMinimumZscaled;
     }
 
     @Override
@@ -130,6 +137,25 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
                 CollectionHelper.incInteger(measCountStats, o.getDate().format(measCountStatsDateTimeFormatter));
             });
         });
+
+        mMinimumZscaled = Double.MAX_VALUE;
+        for (var p : timeFilteredItems) {
+            try {
+                mMinimumZscaled = FastMath.min(mMinimumZscaled, p.getZeroZ());
+                mMinimumZscaled = FastMath.min(mMinimumZscaled, p.getZeroZ() + TopoLayerBundle.SCALE_FACTOR_Z * p.ext().deltaZero().getDeltaZ());
+            } catch (Exception e) {
+            }
+//            var minimumZscaled = Double.MAX_VALUE;
+//            for (var o : p.ext().getObservationsAllRaw()) {
+//                if (ObjectUtils.allNotNull(p.getZeroZ(), o.ext().getDeltaZ())) {
+//                    minimumZscaled = FastMath.min(minimumZscaled, p.getZeroZ() + TopoLayerBundle.SCALE_FACTOR_Z * o.ext().getDeltaZ());
+//                }
+//            }
+//            if (FastMath.abs(minimumZscaled) > 50) {
+//                System.out.println(p.getName());
+//            }
+//            mMinimumZscaled = FastMath.min(mMinimumZscaled, minimumZscaled);
+        }
 
         getTimeFilteredItems().setAll(timeFilteredItems);
     }

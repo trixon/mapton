@@ -118,7 +118,7 @@ public class GraphicRendererTrace extends GraphicRendererBase {
                     var y = o1.getMeasuredY() + MathHelper.convertDoubleToDouble(o.ext().getDeltaY()) * TopoLayerBundle.SCALE_FACTOR;
                     var z = o1.getMeasuredZ()
                             + MathHelper.convertDoubleToDouble(o.ext().getDeltaZ()) * TopoLayerBundle.SCALE_FACTOR
-                            + TopoLayerBundle.Z_OFFSET;
+                            + TopoLayerBundle.getZOffset();
 
                     var wgs84 = MOptions.getInstance().getMapCooTrans().toWgs84(y, x);
                     var p0 = Position.fromDegrees(wgs84.getY(), wgs84.getX(), z);

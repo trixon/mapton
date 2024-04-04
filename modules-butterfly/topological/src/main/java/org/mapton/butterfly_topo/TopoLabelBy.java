@@ -160,9 +160,6 @@ public enum TopoLabelBy {
     }),
     VALUE_DELTA_ROLLING_Z(LabelByCategories.VALUE, "ΔZᵣ", p -> {
         return p.ext().deltaRolling().getDelta1(3);
-    }),
-    ZZZ("Z", "z", p -> {
-        return "Z";
     });
     private final String mCategory;
     private final Function<BTopoControlPoint, String> mFunction;

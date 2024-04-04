@@ -31,6 +31,7 @@ import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
+import org.mapton.butterfly_topo.api.TopoManager;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
@@ -46,8 +47,8 @@ import se.trixon.almond.util.SDict;
 public class TopoLayerBundle extends TopoBaseLayerBundle {
 
     public static final double SCALE_FACTOR = 500.0;
-    public static final double SCALE_FACTOR_Z = 1000.0;
-    public static final double Z_OFFSET = 10.0;
+    public static final double SCALE_FACTOR_Z = SCALE_FACTOR;
+    private static final double Z_BASE_OFFSET = 5.0;
 
     private final double SYMBOL_HEIGHT = 4.0;
     private final double SYMBOL_RADIUS = 1.5;
@@ -55,6 +56,10 @@ public class TopoLayerBundle extends TopoBaseLayerBundle {
     private final ArrayList<AVListImpl> mEmptyDummyList = new ArrayList<>();
     private final GraphicRenderer mGraphicRenderer;
     private final TopoOptionsView mOptionsView;
+
+    public static double getZOffset() {
+        return Z_BASE_OFFSET - TopoManager.getInstance().getMinimumZscaled();
+    }
 
     public TopoLayerBundle() {
         init();

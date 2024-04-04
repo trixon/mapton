@@ -57,13 +57,13 @@ public class GraphicRendererVector extends GraphicRendererBase {
     }
 
     private void plot1dVector(BTopoControlPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
-        var ZERO_SIZE = 0.4;
-        var CURRENT_SIZE = 1.0;
         var zeroZ = p.getZeroZ();
         if (zeroZ == null) {
             return;
         }
-        var zeroPosition = WWHelper.positionFromPosition(position, zeroZ + TopoLayerBundle.Z_OFFSET);
+        var ZERO_SIZE = 0.4;
+        var CURRENT_SIZE = 1.0;
+        var zeroPosition = WWHelper.positionFromPosition(position, zeroZ + TopoLayerBundle.getZOffset());
         var zeroEllipsoid = new Ellipsoid(zeroPosition, ZERO_SIZE, ZERO_SIZE, ZERO_SIZE);
         zeroEllipsoid.setAttributes(mAttributeManager.getComponentZeroAttributes());
         addRenderable(zeroEllipsoid, true);
@@ -74,7 +74,7 @@ public class GraphicRendererVector extends GraphicRendererBase {
 
         if (o.ext().getDeltaZ() != null) {
             var z = zeroZ
-                    + TopoLayerBundle.Z_OFFSET
+                    + TopoLayerBundle.getZOffset()
                     + MathHelper.convertDoubleToDouble(o.ext().getDeltaZ()) * TopoLayerBundle.SCALE_FACTOR_Z;
 
             currentPosition = WWHelper.positionFromPosition(currentPosition, z);
@@ -109,7 +109,7 @@ public class GraphicRendererVector extends GraphicRendererBase {
         var scaledSpan0 = span0 * TopoLayerBundle.SCALE_FACTOR_Z;
         var nonSymmetricAdjustment = span0 / 2 + min0;
 
-        var z0 = zeroZ + TopoLayerBundle.Z_OFFSET + nonSymmetricAdjustment * TopoLayerBundle.SCALE_FACTOR_Z;
+        var z0 = zeroZ + TopoLayerBundle.getZOffset() + nonSymmetricAdjustment * TopoLayerBundle.SCALE_FACTOR_Z;
         var zeroPosition = WWHelper.positionFromPosition(position, z0);
         var radius = 0.5;
         var cylinder0 = new Cylinder(zeroPosition, radius, scaledSpan0 * 0.5, radius);
@@ -125,7 +125,7 @@ public class GraphicRendererVector extends GraphicRendererBase {
             var spanBottom = bottomUpper - bottomLower;
             var scaledSpanBottom = spanBottom * TopoLayerBundle.SCALE_FACTOR_Z;
             var nonSymmetricAdjustmentBottom = spanBottom / 2 + bottomLower;
-            var zBottom = zeroZ + TopoLayerBundle.Z_OFFSET + nonSymmetricAdjustmentBottom * TopoLayerBundle.SCALE_FACTOR_Z;
+            var zBottom = zeroZ + TopoLayerBundle.getZOffset() + nonSymmetricAdjustmentBottom * TopoLayerBundle.SCALE_FACTOR_Z;
             var bottomPosition = WWHelper.positionFromPosition(position, zBottom);
             var cylinderBottom = new Cylinder(bottomPosition, radius, scaledSpanBottom * 0.5, radius);
             cylinderBottom.setAttributes(attrs);
@@ -137,7 +137,7 @@ public class GraphicRendererVector extends GraphicRendererBase {
             var spanTop = topUpper - topLower;
             var scaledSpanTop = spanTop * TopoLayerBundle.SCALE_FACTOR_Z;
             var nonSymmetricAdjustmentTop = spanTop / 2 + topLower;
-            var zTop = zeroZ + TopoLayerBundle.Z_OFFSET + nonSymmetricAdjustmentTop * TopoLayerBundle.SCALE_FACTOR_Z;
+            var zTop = zeroZ + TopoLayerBundle.getZOffset() + nonSymmetricAdjustmentTop * TopoLayerBundle.SCALE_FACTOR_Z;
             var topPosition = WWHelper.positionFromPosition(position, zTop);
             var cylinderTop = new Cylinder(topPosition, radius, scaledSpanTop * 0.5, radius);
             cylinderTop.setAttributes(attrs);
