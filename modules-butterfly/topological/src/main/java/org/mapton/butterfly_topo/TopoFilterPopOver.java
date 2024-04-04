@@ -218,6 +218,12 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
         clear();
 
         mFilter.freeTextProperty().set("*");
+
+        var filterConfig = TopoFilterDefaultsConfig.getInstance().getConfig();
+        splitAndCheck(filterConfig.getString("STATUS"), mStatusSccb.getCheckModel());
+        splitAndCheck(filterConfig.getString("GROUP"), mGroupSccb.getCheckModel());
+        splitAndCheck(filterConfig.getString("CATEGORY"), mCategorySccb.getCheckModel());
+        splitAndCheck(filterConfig.getString("OPERATOR"), mOperatorSccb.getCheckModel());
     }
 
     private MenuItem createPresetMenuItem(String name, LocalDate lowDate, LocalDate highDate) {
