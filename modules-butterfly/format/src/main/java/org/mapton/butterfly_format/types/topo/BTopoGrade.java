@@ -15,9 +15,15 @@
  */
 package org.mapton.butterfly_format.types.topo;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.TreeMap;
 import javafx.geometry.Point2D;
 import javafx.geometry.Point3D;
@@ -33,11 +39,17 @@ import org.mapton.butterfly_format.types.BDimension;
  */
 public class BTopoGrade extends BBasePoint {
 
+    private static final String DATE_PATTERN = "YYYY-'W'ww";
     private final BAxis mAxis;
     private final TreeMap<LocalDate, BTopoGradeObservation> mCommonObservations = new TreeMap<>();
     private Ext mExt;
     private final BTopoControlPoint mP1;
     private final BTopoControlPoint mP2;
+    private final DateTimeFormatter mWeeklyAvgFormatterFrom = new DateTimeFormatterBuilder()
+            .appendPattern(DATE_PATTERN)
+            .parseDefaulting(ChronoField.DAY_OF_WEEK, DayOfWeek.MONDAY.getValue())
+            .toFormatter(Locale.getDefault());
+    private final DateTimeFormatter mWeeklyAvgFormatterTo = DateTimeFormatter.ofPattern(DATE_PATTERN, Locale.getDefault());
 
     public BTopoGrade(BAxis axis, BTopoControlPoint p1, BTopoControlPoint p2) {
         mAxis = axis;
@@ -114,19 +126,37 @@ public class BTopoGrade extends BBasePoint {
     private HashMap<LocalDate, Point3D> createObservationMap(BTopoControlPoint p) {
         var map1 = new HashMap<LocalDate, Point3D>();
 
+        var weekToObservations = new HashMap<String, ArrayList<Point3D>>();
+
         if (p.getDimension() == BDimension._1d) {
             for (var o : p.ext().getObservationsTimeFiltered()) {
-                var z = o.getMeasuredZ();
-                if (z != null) {
-                    map1.put(o.getDate().toLocalDate(), new Point3D(0, 0, z));
+                if (ObjectUtils.anyNull(o.getMeasuredZ())) {
+                    continue;
                 }
+                var yyyyww = o.getDate().toLocalDate().format(mWeeklyAvgFormatterTo);
+                var point3D = new Point3D(0, 0, o.getMeasuredZ());
+                weekToObservations.computeIfAbsent(yyyyww, k -> new ArrayList<>()).add(point3D);
             }
         } else if (p.getDimension() == BDimension._3d) {
             for (var o : p.ext().getObservationsTimeFiltered()) {
-                if (ObjectUtils.allNotNull(o.getMeasuredX(), o.getMeasuredY(), o.getMeasuredZ())) {
-                    map1.put(o.getDate().toLocalDate(), new Point3D(o.getMeasuredX(), o.getMeasuredY(), o.getMeasuredZ()));
+                if (ObjectUtils.anyNull(o.getMeasuredX(), o.getMeasuredY(), o.getMeasuredZ())) {
+                    continue;
                 }
+                var key = o.getDate().toLocalDate().format(mWeeklyAvgFormatterTo);
+                var point3D = new Point3D(o.getMeasuredX(), o.getMeasuredY(), o.getMeasuredZ());
+                weekToObservations.computeIfAbsent(key, k -> new ArrayList<>()).add(point3D);
             }
+        }
+
+        for (var entry : weekToObservations.entrySet()) {
+            var yyyyww = entry.getKey();
+            var observations = entry.getValue();
+            var x = observations.stream().mapToDouble(o -> o.getX()).average().getAsDouble();
+            var y = observations.stream().mapToDouble(o -> o.getY()).average().getAsDouble();
+            var z = observations.stream().mapToDouble(o -> o.getZ()).average().getAsDouble();
+            var point3D = new Point3D(x, y, z);
+
+            map1.put(LocalDate.parse(yyyyww, mWeeklyAvgFormatterFrom), point3D);
         }
 
         return map1;
