@@ -18,14 +18,18 @@ package org.mapton.api.ui;
 import com.dlsc.gemsfx.util.SessionManager;
 import java.util.List;
 import java.util.ResourceBundle;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ToolBar;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import org.controlsfx.control.action.Action;
+import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.MDict;
 import org.mapton.api.MPolygonFilterManager;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
@@ -34,6 +38,7 @@ import org.openide.util.NbPreferences;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.DelayedResetRunner;
+import se.trixon.almond.util.fx.FxActionCheck;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 
@@ -47,12 +52,16 @@ public abstract class MFilterPopOver extends MPopOver {
     private final VBox mBox;
     private final HBox mButtonBox;
     private final Button mClearButton = new Button(Dict.CLEAR.toString());
+    private Action mCopyNamesAction;
     private final Button mCopyNamesButton = new Button(Dict.COPY_NAMES.toString());
     private final DelayedResetRunner mDelayedResetRunner;
     private final Button mPasteNameButton = new Button("%s %s".formatted(Dict.PASTE.toString(), Dict.NAME.toLower()));
+    private FxActionCheck mPolygonFilterAction;
     private final CheckBox mPolygonFilterCheckBox = new CheckBox(MDict.USE_GEO_FILTER.toString());
     private final MPolygonFilterManager mPolygonFilterManager = MPolygonFilterManager.getInstance();
     private SessionManager mSessionManager;
+    private ToolBar mToolBar;
+    private final SimpleBooleanProperty mUsePolygonFilterProperty = new SimpleBooleanProperty();
 
     public MFilterPopOver() {
         String title = Dict.FILTER.toString();
@@ -85,9 +94,13 @@ public abstract class MFilterPopOver extends MPopOver {
             mDelayedResetRunner.reset();
         });
 
-        mPolygonFilterCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
+        mPolygonFilterCheckBox.selectedProperty().addListener((p, o, n) -> {
+            mUsePolygonFilterProperty.set(mPolygonFilterCheckBox.isSelected());
+
             mDelayedResetRunner.reset();
         });
+
+        initToolbar();
     }
 
     public void activateCopyNames(EventHandler<ActionEvent> eventHandler) {
@@ -120,6 +133,7 @@ public abstract class MFilterPopOver extends MPopOver {
         return mPasteNameButton;
     }
 
+    @Deprecated(forRemoval = true)
     public CheckBox getPolygonFilterCheckBox() {
         return mPolygonFilterCheckBox;
     }
@@ -132,12 +146,70 @@ public abstract class MFilterPopOver extends MPopOver {
         return mSessionManager;
     }
 
+    public ToolBar getToolBar() {
+        return mToolBar;
+    }
+
+    @Deprecated(forRemoval = true)
     public boolean isPolygonFilters() {
-        return mPolygonFilterCheckBox.isSelected();
+        return mUsePolygonFilterProperty.get();
     }
 
     public abstract void onPolygonFilterChange();
 
     public abstract void reset();
 
+    public void setUsePolygonFilter(boolean selected) {
+        mPolygonFilterAction.setSelected(selected);
+        mPolygonFilterCheckBox.setSelected(selected);
+        mUsePolygonFilterProperty.set(selected);
+    }
+
+    public SimpleBooleanProperty usePolygonFilterProperty() {
+        return mUsePolygonFilterProperty;
+    }
+
+    private void initToolbar() {
+        var allAction = new Action(Dict.DEFAULT.toString(), actionEvent -> {
+            reset();
+        });
+        allAction.setGraphic(MaterialIcon._Content.SELECT_ALL.getImageView(getIconSizeToolBarInt()));
+
+        var clearAction = new Action(Dict.CLEAR.toString(), actionEvent -> {
+            clear();
+        });
+        clearAction.setGraphic(MaterialIcon._Content.CLEAR.getImageView(getIconSizeToolBarInt()));
+
+        mPolygonFilterAction = new FxActionCheck(MDict.USE_GEO_FILTER.toString(), actionEvent -> {
+            mUsePolygonFilterProperty.set(mPolygonFilterAction.isSelected());
+            mDelayedResetRunner.reset();
+        });
+        mPolygonFilterAction.setGraphic(MaterialIcon._Editor.FORMAT_SHAPES.getImageView(getIconSizeToolBarInt()));
+
+        mCopyNamesAction = new Action(Dict.COPY_NAMES.toString(), actionEvent -> {
+            mCopyNamesButton.fire();
+        });
+        mCopyNamesAction.setGraphic(MaterialIcon._Content.CONTENT_COPY.getImageView(getIconSizeToolBarInt()));
+
+        var s = "%s %s".formatted(Dict.PASTE.toString(), Dict.NAME.toLower());
+        var pasteNameAction = new Action(s, actionEvent -> {
+            mPasteNameButton.fire();
+        });
+        pasteNameAction.setGraphic(MaterialIcon._Content.CONTENT_PASTE.getImageView(getIconSizeToolBarInt()));
+
+        var actions = List.of(
+                allAction,
+                clearAction,
+                ActionUtils.ACTION_SEPARATOR,
+                mCopyNamesAction,
+                pasteNameAction,
+                ActionUtils.ACTION_SEPARATOR,
+                mPolygonFilterAction
+        );
+
+        mToolBar = ActionUtils.createToolBar(actions, ActionUtils.ActionTextBehavior.HIDE);
+        FxHelper.adjustButtonWidth(mToolBar.getItems().stream(), getIconSizeToolBarInt());
+//        FxHelper.undecorateButtons(mToolBar.getItems().stream());
+        FxHelper.slimToolBar(mToolBar);
+    }
 }

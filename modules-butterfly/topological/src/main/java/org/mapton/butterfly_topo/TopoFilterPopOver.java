@@ -20,25 +20,23 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
+import javafx.geometry.Pos;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.Separator;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.SplitMenuButton;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.Tooltip;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.SegmentedButton;
 import org.controlsfx.tools.Borders;
-import static org.mapton.api.ui.MPopOver.GAP;
-import static org.mapton.api.ui.MPopOver.autoSize;
 import org.mapton.api.ui.forms.NegPosStringConverterDouble;
 import org.mapton.api.ui.forms.NegPosStringConverterInteger;
 import org.mapton.butterfly_core.api.BaseFilterPopOver;
@@ -122,7 +120,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
 
     @Override
     public void clear() {
-        getPolygonFilterCheckBox().setSelected(false);
+        setUsePolygonFilter(false);
         mFilter.freeTextProperty().set("");
 
         mSameAlarmCheckbox.setSelected(false);
@@ -353,7 +351,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
                 .build()
                 .build();
 
-        Spacer spacer = new Spacer();
+        var spacer = new Spacer();
         spacer.setActive(true);
 
         var leftBox = new VBox(rowGap,
@@ -402,24 +400,21 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
                 .build()
                 .build();
 
-        var gp = new GridPane(columnGap, 0);
-        gp.addRow(0, leftBox, wrappedRightBox);
-        var buttonBox = new GridPane(columnGap, 0);
-        buttonBox.addRow(0, getCopyNamesButton(), getPasteNameButton());
-        FxHelper.autoSizeColumn(buttonBox, 2);
-        FxHelper.autoSizeColumn(gp, 2);
-        var vBox = new VBox(GAP,
-                getButtonBox(),
-                buttonBox,
-                new Separator(),
-                gp,
-                new Separator(),
-                mMeasIncludeWithoutCheckbox,
-                mSameAlarmCheckbox,
-                new Separator(),
-                mInvertCheckbox
-        );
+        var row = 0;
+        var gridPane = new GridPane(columnGap, GAP);
+        gridPane.setPadding(FxHelper.getUIScaledInsets(GAP));
 
+        gridPane.addRow(row++, leftBox, wrappedRightBox);
+        gridPane.add(mMeasIncludeWithoutCheckbox, 0, row++, GridPane.REMAINING, 1);
+        gridPane.add(mSameAlarmCheckbox, 0, row++, GridPane.REMAINING, 1);
+        FxHelper.autoSizeColumn(gridPane, 2);
+
+        var internalBox = new HBox(FxHelper.getUIScaled(8.0), mInvertCheckbox);
+        internalBox.setPadding(FxHelper.getUIScaledInsets(0, 0, 0, 8.0));
+        internalBox.setAlignment(Pos.CENTER_LEFT);
+        getToolBar().getItems().add(internalBox);
+        var root = new BorderPane(gridPane);
+        root.setTop(getToolBar());
         FxHelper.setEditable(true, mDiffMeasAllSds, mDiffMeasLatestSds, mMeasNumOfSis, mMeasYoyoCountSds, mMeasYoyoSizeSds, mMeasAlarmLevelChangeValueSis, mMeasAlarmLevelChangeLimitSis);
         FxHelper.autoCommitSpinners(mDiffMeasAllSds, mDiffMeasLatestSds, mMeasNumOfSis, mMeasYoyoCountSds, mMeasYoyoSizeSds, mMeasAlarmLevelChangeValueSis, mMeasAlarmLevelChangeLimitSis);
         FxHelper.bindWidthForChildrens(leftBox, rightBox, basicBox);
@@ -457,13 +452,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
         leftBox.setPrefWidth(prefWidth);
         rightBox.setPrefWidth(prefWidth);
 
-        buttonBox.getChildren().stream()
-                .filter(n -> n instanceof Region)
-                .map(n -> (Region) n)
-                .forEach(r -> FxHelper.autoSizeRegionHorizontal(r));
-
-        autoSize(vBox);
-        setContentNode(vBox);
+        setContentNode(root);
     }
 
     private Pane createUIDatePane() {
@@ -544,7 +533,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
         mFilter.measAlarmLevelChangeLimitProperty().bind(mMeasAlarmLevelChangeLimitSis.sessionValueProperty());
 
         mFilter.sameAlarmProperty().bind(mSameAlarmCheckbox.selectedProperty());
-        mFilter.polygonFilterProperty().bind(getPolygonFilterCheckBox().selectedProperty());
+        mFilter.polygonFilterProperty().bind(usePolygonFilterProperty());
         mFilter.measDateLowProperty().bind(mDatePane.getDateRangeSlider().lowDateProperty());
         mFilter.measDateHighProperty().bind(mDatePane.getDateRangeSlider().highDateProperty());
 
