@@ -26,11 +26,11 @@ import org.mapton.butterfly_format.types.acoustic.BAcousticMeasuringPoint;
  */
 class MeasPointListCell extends ListCell<BAcousticMeasuringPoint> {
 
-    private final Label mWorkLabel = new Label();
     private final Label mNameLabel = new Label();
-    private final Label mGroupLabel = new Label();
+    private final Label mSoilLabel = new Label();
     private final String mStyleBold = "-fx-font-weight: bold;";
     private VBox mVBox;
+    private final Label mWorkLabel = new Label();
 
     public MeasPointListCell() {
         createUI();
@@ -49,8 +49,8 @@ class MeasPointListCell extends ListCell<BAcousticMeasuringPoint> {
     private void addContent(BAcousticMeasuringPoint point) {
         setText(null);
         mNameLabel.setText(point.getName());
-        mWorkLabel.setText("%s %s".formatted(point.getTypeOfWork(), point.getComment()));
-        mGroupLabel.setText(point.getGroup());
+        mWorkLabel.setText(point.getTypeOfWork());
+        mSoilLabel.setText(point.getSoilMaterial());
         setGraphic(mVBox);
     }
 
@@ -64,7 +64,7 @@ class MeasPointListCell extends ListCell<BAcousticMeasuringPoint> {
         mVBox = new VBox(
                 mNameLabel,
                 mWorkLabel,
-                mGroupLabel
+                mSoilLabel
         );
     }
 

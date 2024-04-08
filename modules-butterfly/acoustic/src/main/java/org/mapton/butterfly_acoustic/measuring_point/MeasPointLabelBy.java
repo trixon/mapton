@@ -19,6 +19,7 @@ import java.util.Objects;
 import java.util.function.Function;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.butterfly_format.types.acoustic.BAcousticMeasuringPoint;
+import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.MathHelper;
 
@@ -37,6 +38,9 @@ public enum MeasPointLabelBy {
         return Objects.toString(p.getGroup(), "NODATA");
     }),
     MISC_TYPE(Strings.CAT_MISC, Dict.TYPE.toString(), p -> {
+        return Objects.toString(p.getTypeOfWork(), "NODATA");
+    }),
+    MISC_SOILD(Strings.CAT_MISC, NbBundle.getMessage(MeasPointLabelBy.class, "soilMaterial"), p -> {
         return Objects.toString(p.getTypeOfWork(), "NODATA");
     }),
     MISC_Z(Strings.CAT_MISC, "Z", p -> {

@@ -16,8 +16,10 @@
 package org.mapton.butterfly_acoustic.measuring_point;
 
 import java.util.LinkedHashMap;
+import java.util.ResourceBundle;
 import org.mapton.api.ui.forms.PropertiesBuilder;
 import org.mapton.butterfly_format.types.acoustic.BAcousticMeasuringPoint;
+import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.MathHelper;
 
@@ -26,6 +28,8 @@ import se.trixon.almond.util.MathHelper;
  * @author Patrik Karlström
  */
 public class MeasPointPropertiesBuilder extends PropertiesBuilder<BAcousticMeasuringPoint> {
+
+    private final ResourceBundle mBundle = NbBundle.getBundle(MeasPointPropertiesBuilder.class);
 
     @Override
     public Object build(BAcousticMeasuringPoint p) {
@@ -38,6 +42,7 @@ public class MeasPointPropertiesBuilder extends PropertiesBuilder<BAcousticMeasu
 
         propertyMap.put(getCatKey(cat1, Dict.NAME.toString()), p.getName());
         propertyMap.put(getCatKey(cat1, Dict.TYPE.toString()), p.getTypeOfWork());
+        propertyMap.put(getCatKey(cat1, mBundle.getString("soilMaterial")), p.getSoilMaterial());
         propertyMap.put(getCatKey(cat1, "Adress"), p.getAddress());
         propertyMap.put(getCatKey(cat1, Dict.COMMENT.toString()), p.getComment());
         propertyMap.put(getCatKey(cat1, "Z"), MathHelper.convertDoubleToString(p.getZ(), 1));

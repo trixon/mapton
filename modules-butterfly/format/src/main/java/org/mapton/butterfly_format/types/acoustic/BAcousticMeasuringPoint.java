@@ -27,6 +27,7 @@ import org.mapton.butterfly_format.types.BBasePoint;
     "id",
     "name",
     "typeOfWork",
+    "soilMaterial",
     "lat",
     "lon",
     "z",
@@ -39,6 +40,7 @@ public class BAcousticMeasuringPoint extends BBasePoint {
     private String id;
     @JsonIgnore
     private Ext mExt;
+    private String soilMaterial;
     private String typeOfWork;
     private String url;
     private Double z;
@@ -62,6 +64,10 @@ public class BAcousticMeasuringPoint extends BBasePoint {
         return id;
     }
 
+    public String getSoilMaterial() {
+        return soilMaterial;
+    }
+
     public String getTypeOfWork() {
         return typeOfWork;
     }
@@ -80,6 +86,10 @@ public class BAcousticMeasuringPoint extends BBasePoint {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public void setSoilMaterial(String soilMaterial) {
+        this.soilMaterial = soilMaterial;
     }
 
     public void setTypeOfWork(String typeOfWork) {
