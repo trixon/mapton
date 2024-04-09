@@ -45,7 +45,7 @@ public class RorelseFilterPopOver extends BaseFilterPopOver {
 
     @Override
     public void clear() {
-        getPolygonFilterCheckBox().setSelected(false);
+        setUsePolygonFilter(false);
         mFilter.freeTextProperty().set("");
         mFixpunktSCCB.clearChecks();
         mPlaceringSCCB.clearChecks();
@@ -110,7 +110,7 @@ public class RorelseFilterPopOver extends BaseFilterPopOver {
     }
 
     private void initListeners() {
-        mFilter.polygonFilterProperty().bind(getPolygonFilterCheckBox().selectedProperty());
+        mFilter.polygonFilterProperty().bind(usePolygonFilterProperty());
 
         mFilter.mPlaceringCheckModel = mPlaceringSCCB.getCheckModel();
         mFilter.mFixpunktCheckModel = mFixpunktSCCB.getCheckModel();

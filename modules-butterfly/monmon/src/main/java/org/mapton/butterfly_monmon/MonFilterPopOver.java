@@ -53,7 +53,7 @@ public class MonFilterPopOver extends BaseFilterPopOver {
 
     @Override
     public void clear() {
-        getPolygonFilterCheckBox().setSelected(false);
+        setUsePolygonFilter(false);
         mFilter.freeTextProperty().set("");
         mLatest1Checkbox.setSelected(false);
         mLatest1Sds.getValueFactory().setValue(mDefault1);
@@ -117,7 +117,7 @@ public class MonFilterPopOver extends BaseFilterPopOver {
     }
 
     private void initListeners() {
-        mFilter.polygonFilterProperty().bind(getPolygonFilterCheckBox().selectedProperty());
+        mFilter.polygonFilterProperty().bind(usePolygonFilterProperty());
 
         mFilter.latest1Property().bind(mLatest1Checkbox.selectedProperty());
         mFilter.latest1ValueProperty().bind(mLatest1Sds.sessionValueProperty());

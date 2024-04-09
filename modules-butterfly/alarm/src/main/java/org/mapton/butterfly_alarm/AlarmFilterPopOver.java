@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -40,7 +40,7 @@ public class AlarmFilterPopOver extends MFilterPopOver {
 
     @Override
     public void clear() {
-        getPolygonFilterCheckBox().setSelected(false);
+        setUsePolygonFilter(false);
         mFilter.freeTextProperty().set("");
         mCheckbox.setSelected(false);
     }
@@ -69,7 +69,7 @@ public class AlarmFilterPopOver extends MFilterPopOver {
 
     private void initListeners() {
         mFilter.property().bind(mCheckbox.selectedProperty());
-        mFilter.polygonFilterProperty().bind(getPolygonFilterCheckBox().selectedProperty());
+        mFilter.polygonFilterProperty().bind(usePolygonFilterProperty());
     }
 
     private void initSession() {

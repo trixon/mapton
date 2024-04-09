@@ -47,7 +47,7 @@ public class VattenkemiFilterPopOver extends BaseFilterPopOver {
 
     @Override
     public void clear() {
-        getPolygonFilterCheckBox().setSelected(false);
+        setUsePolygonFilter(false);
         mFilter.freeTextProperty().set("");
         mGroupCheckComboBox.getCheckModel().clearChecks();
 
@@ -99,7 +99,7 @@ public class VattenkemiFilterPopOver extends BaseFilterPopOver {
     }
 
     private void initListeners() {
-        mFilter.polygonFilterProperty().bind(getPolygonFilterCheckBox().selectedProperty());
+        mFilter.polygonFilterProperty().bind(usePolygonFilterProperty());
 
         mFilter.setCheckModelGroup(mGroupCheckComboBox.getCheckModel());
 

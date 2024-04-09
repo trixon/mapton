@@ -49,7 +49,7 @@ public class GrundvattenFilterPopOver extends BaseFilterPopOver {
 
     @Override
     public void clear() {
-        getPolygonFilterCheckBox().setSelected(false);
+        setUsePolygonFilter(false);
         mFilter.freeTextProperty().set("");
         mFiltertypSCCB.clearChecks();
         mGrundvattenmagasinSCCB.clearChecks();
@@ -133,7 +133,7 @@ public class GrundvattenFilterPopOver extends BaseFilterPopOver {
     }
 
     private void initListeners() {
-        mFilter.polygonFilterProperty().bind(getPolygonFilterCheckBox().selectedProperty());
+        mFilter.polygonFilterProperty().bind(usePolygonFilterProperty());
 
         mFilter.mFiltertypCheckModel = mFiltertypSCCB.getCheckModel();
         mFilter.mGrundvattenmagasinCheckModel = mGrundvattenmagasinSCCB.getCheckModel();

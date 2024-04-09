@@ -237,7 +237,7 @@ public class PoisView extends BorderPane {
         @Override
         public void clear() {
             mCategoryCheckTreeView.getCheckModel().clearChecks();
-            getPolygonFilterCheckBox().setSelected(false);
+            setUsePolygonFilter(false);
         }
 
         @Override
@@ -248,7 +248,7 @@ public class PoisView extends BorderPane {
         @Override
         public void reset() {
             mCategoryCheckTreeView.getCheckModel().checkAll();
-            getPolygonFilterCheckBox().setSelected(false);
+            setUsePolygonFilter(false);
         }
 
         private void createUI() {
@@ -262,7 +262,7 @@ public class PoisView extends BorderPane {
             autoSize(vBox);
             setContentNode(vBox);
 
-            mManager.polygonFilterProperty().bind(getPolygonFilterCheckBox().selectedProperty());
+            mManager.polygonFilterProperty().bind(usePolygonFilterProperty());
         }
     }
 

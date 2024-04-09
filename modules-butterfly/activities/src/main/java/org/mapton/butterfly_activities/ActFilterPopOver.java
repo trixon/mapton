@@ -42,7 +42,7 @@ public class ActFilterPopOver extends BaseFilterPopOver {
 
     @Override
     public void clear() {
-        getPolygonFilterCheckBox().setSelected(false);
+        setUsePolygonFilter(false);
         mFilter.freeTextProperty().set("");
         mStatusSCCB.getCheckModel().clearChecks();
     }
@@ -82,7 +82,7 @@ public class ActFilterPopOver extends BaseFilterPopOver {
     }
 
     private void initListeners() {
-        mFilter.polygonFilterProperty().bind(getPolygonFilterCheckBox().selectedProperty());
+        mFilter.polygonFilterProperty().bind(usePolygonFilterProperty());
 
         mFilter.mStatusCheckModel = mStatusSCCB.getCheckModel();
 
