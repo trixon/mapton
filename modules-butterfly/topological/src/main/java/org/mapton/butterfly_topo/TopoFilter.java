@@ -27,7 +27,6 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.collections.ObservableList;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.IndexedCheckModel;
@@ -57,7 +56,6 @@ public class TopoFilter extends FormFilter<TopoManager> {
     IndexedCheckModel mAlarmNameCheckModel;
     IndexedCheckModel mCategoryCheckModel;
     IndexedCheckModel mDateFromToCheckModel;
-    IndexedCheckModel mDimensionCheckModel;
     IndexedCheckModel<Integer> mFrequencyCheckModel;
     IndexedCheckModel mGroupCheckModel;
     IndexedCheckModel<String> mMeasCodeCheckModel;
@@ -65,6 +63,9 @@ public class TopoFilter extends FormFilter<TopoManager> {
     IndexedCheckModel mMeasOperatorsCheckModel;
     IndexedCheckModel mOperatorCheckModel;
     IndexedCheckModel mStatusCheckModel;
+    private final SimpleBooleanProperty mDimens1Property = new SimpleBooleanProperty();
+    private final SimpleBooleanProperty mDimens2Property = new SimpleBooleanProperty();
+    private final SimpleBooleanProperty mDimens3Property = new SimpleBooleanProperty();
     private final SimpleBooleanProperty mInvertProperty = new SimpleBooleanProperty();
     private final TopoManager mManager = TopoManager.getInstance();
     private final SimpleIntegerProperty mMeasAlarmLevelChangeLimitProperty = new SimpleIntegerProperty();
@@ -91,6 +92,18 @@ public class TopoFilter extends FormFilter<TopoManager> {
         super(TopoManager.getInstance());
 
         initListeners();
+    }
+
+    public SimpleBooleanProperty dimens1Property() {
+        return mDimens1Property;
+    }
+
+    public SimpleBooleanProperty dimens2Property() {
+        return mDimens2Property;
+    }
+
+    public SimpleBooleanProperty dimens3Property() {
+        return mDimens3Property;
     }
 
     public SimpleBooleanProperty invertProperty() {
@@ -237,7 +250,6 @@ public class TopoFilter extends FormFilter<TopoManager> {
         mAlarmNameCheckModel.getCheckedItems().addListener(mListChangeListener);
         mCategoryCheckModel.getCheckedItems().addListener(mListChangeListener);
         mDateFromToCheckModel.getCheckedItems().addListener(mListChangeListener);
-        mDimensionCheckModel.getCheckedItems().addListener(mListChangeListener);
         mFrequencyCheckModel.getCheckedItems().addListener(mListChangeListener);
         mGroupCheckModel.getCheckedItems().addListener(mListChangeListener);
         mMeasCodeCheckModel.getCheckedItems().addListener(mListChangeListener);
@@ -248,11 +260,10 @@ public class TopoFilter extends FormFilter<TopoManager> {
     }
 
     private ContainerTag createInfoContent() {
-        //TODO Add measOperator+latest
         var map = new LinkedHashMap<String, String>();
 
         map.put(Dict.TEXT.toString(), getFreeText());
-        map.put(SDict.DIMENSION.toString(), makeInfoDimension(mDimensionCheckModel.getCheckedItems()));
+        map.put(SDict.DIMENSION.toString(), makeInfoDimension());
         map.put(Dict.STATUS.toString(), makeInfo(mStatusCheckModel.getCheckedItems()));
         map.put(Dict.GROUP.toString(), makeInfo(mGroupCheckModel.getCheckedItems()));
         map.put(Dict.CATEGORY.toString(), makeInfo(mCategoryCheckModel.getCheckedItems()));
@@ -288,6 +299,10 @@ public class TopoFilter extends FormFilter<TopoManager> {
     private void initListeners() {
         mInvertProperty.addListener(mChangeListenerObject);
 
+        mDimens1Property.addListener(mChangeListenerObject);
+        mDimens2Property.addListener(mChangeListenerObject);
+        mDimens3Property.addListener(mChangeListenerObject);
+
         mMeasAlarmLevelChangeProperty.addListener(mChangeListenerObject);
         mMeasAlarmLevelChangeLimitProperty.addListener(mChangeListenerObject);
         mMeasAlarmLevelChangeModeProperty.addListener(mChangeListenerObject);
@@ -310,8 +325,18 @@ public class TopoFilter extends FormFilter<TopoManager> {
         mMeasDateHighProperty.addListener(mChangeListenerObject);
     }
 
-    private String makeInfoDimension(ObservableList<BDimension> checkedItems) {
-        return String.join(", ", checkedItems.stream().map(d -> d.getName()).toList());
+    private String makeInfoDimension() {
+        var d1 = mDimens1Property.get();
+        var d2 = mDimens2Property.get();
+        var d3 = mDimens3Property.get();
+
+        var sb = new StringBuilder();
+
+        sb.append(BooleanHelper.asCheckBox(d1, "1")).append(", ")
+                .append(BooleanHelper.asCheckBox(d2, "2")).append(", ")
+                .append(BooleanHelper.asCheckBox(d3, "3"));
+
+        return sb.toString();
     }
 
     private boolean validateAlarm(BTopoControlPoint p) {
@@ -394,7 +419,29 @@ public class TopoFilter extends FormFilter<TopoManager> {
     }
 
     private boolean validateDimension(BDimension dimension) {
-        return validateCheck(mDimensionCheckModel, dimension);
+        var d1 = mDimens1Property.get();
+        var d2 = mDimens2Property.get();
+        var d3 = mDimens3Property.get();
+
+        if ((d1 || d2 || d3) == false) {
+            return true;
+        }
+
+        switch (dimension) {
+            case _1d -> {
+                return d1;
+            }
+
+            case _2d -> {
+                return d2;
+            }
+
+            case _3d -> {
+                return d3;
+            }
+        }
+
+        return false;
     }
 
     private boolean validateFrequency(Integer frequency) {
