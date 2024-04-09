@@ -8,6 +8,13 @@
                 "providerUrl": "https://goteborg.se",
                 "rawHtml": "<p>Bilddatum: Senaste</p>"
             },
+            "se.goteborg.orto_2023": {
+                "licenseName": "CC0 1.0",
+                "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.sv",
+                "providerName": "Göteborg",
+                "providerUrl": "https://goteborg.se",
+                "rawHtml": "<p>Bilddatum: 2021</p>"
+            },
             "se.goteborg.orto_2021": {
                 "licenseName": "CC0 1.0",
                 "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.sv",
@@ -75,6 +82,7 @@
         "enabled": true,
         "layers": {
             "orto": "se.goteborg.orto",
+            "orto_2023": "se.goteborg.orto_2023",
             "orto_2021": "se.goteborg.orto_2021",
             "orto_2019": "se.goteborg.orto_2019",
             "orto_2017": "se.goteborg.orto_2017",

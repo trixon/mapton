@@ -29,6 +29,26 @@
             "sv": "Ortofoto"
         },
         "enabled": true,
+        "id": "se.goteborg.orto_2023",
+        "layers": [
+            "se.goteborg.orto_2023",
+            "com.microsoft.ve-a"
+        ],
+        "name": {
+            "": "Göteborg 2023"
+        },
+        "supplier": "Göteborgs stad SBK"
+    },
+    {
+        "category": {
+            "": "Sweden",
+            "sv": "Sverige"
+        },
+        "description": {
+            "": "Orthophoto",
+            "sv": "Ortofoto"
+        },
+        "enabled": true,
         "id": "se.goteborg.orto_2021",
         "layers": [
             "se.goteborg.orto_2021",
