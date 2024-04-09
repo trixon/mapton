@@ -36,6 +36,7 @@ public class LayerMapStyleManager extends MBaseDataManager<MapStyle> {
 
     private DelayedResetRunner mDelayedResetRunner;
     private String mFilter = "";
+    private final LayerMapStylePropertiesBuilder mPropertiesBuilder = new LayerMapStylePropertiesBuilder();
 
     public static LayerMapStyleManager getInstance() {
         return Holder.INSTANCE;
@@ -50,6 +51,11 @@ public class LayerMapStyleManager extends MBaseDataManager<MapStyle> {
 
     public MapStyle getById(String id) {
         return getAllItems().stream().filter(s -> StringUtils.equalsIgnoreCase(id, s.getId())).findAny().orElse(null);
+    }
+
+    @Override
+    public Object getObjectProperties(MapStyle selectedObject) {
+        return mPropertiesBuilder.build(selectedObject);
     }
 
     public void refresh() {
@@ -96,10 +102,6 @@ public class LayerMapStyleManager extends MBaseDataManager<MapStyle> {
         Mapton.getGlobalState().addListener(gsce -> {
             load();
         }, MKey.DATA_SOURCES_WMS_STYLES);
-
-        selectedItemProperty().addListener((p, o, n) -> {
-            sendObjectProperties(n);
-        });
     }
 
     private void load() {
@@ -117,11 +119,6 @@ public class LayerMapStyleManager extends MBaseDataManager<MapStyle> {
         Collections.sort(mapStyles, c1.thenComparing(c2));
 
         getAllItems().setAll(mapStyles);
-    }
-
-    @SuppressWarnings("unchecked")
-    private void sendObjectProperties(MapStyle mapStyle) {
-        Mapton.getGlobalState().put(MKey.OBJECT_PROPERTIES, mapStyle);
     }
 
     private boolean valid(MapStyle mapStyle, String filter) {
