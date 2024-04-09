@@ -64,7 +64,7 @@ public abstract class GradeFilterPopOverBase extends BaseFilterPopOver<TopoFilte
 
     @Override
     public void clear() {
-        getPolygonFilterCheckBox().setSelected(false);
+        setUsePolygonFilter(false);
         mFilter.freeTextProperty().set("");
         mDeltaHRangeSlider.clear();
         mDeltaRRangeSlider.clear();
@@ -116,7 +116,7 @@ public abstract class GradeFilterPopOverBase extends BaseFilterPopOver<TopoFilte
     }
 
     private void initListeners() {
-        mFilter.polygonFilterProperty().bind(getPolygonFilterCheckBox().selectedProperty());
+        mFilter.polygonFilterProperty().bind(usePolygonFilterProperty());
 
         mFilter.mDeltaHSelectedProperty.bind(mDeltaHRangeSlider.selectedProperty());
         mFilter.mDeltaHMinProperty.bind(mDeltaHRangeSlider.minProperty());

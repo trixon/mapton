@@ -16,27 +16,20 @@
 package org.mapton.butterfly_topo;
 
 import com.dlsc.gemsfx.Spacer;
-import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 import javafx.geometry.Pos;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.SeparatorMenuItem;
-import javafx.scene.control.SplitMenuButton;
-import javafx.scene.control.ToggleButton;
-import javafx.scene.control.Tooltip;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
 import org.apache.commons.lang3.StringUtils;
-import org.controlsfx.control.SegmentedButton;
+import org.controlsfx.control.action.ActionUtils.ActionTextBehavior;
 import org.controlsfx.tools.Borders;
+import org.mapton.api.ui.forms.DateRangePane;
 import org.mapton.api.ui.forms.NegPosStringConverterDouble;
 import org.mapton.api.ui.forms.NegPosStringConverterInteger;
 import org.mapton.butterfly_core.api.BaseFilterPopOver;
@@ -49,13 +42,10 @@ import org.mapton.butterfly_topo.shared.AlarmLevelChangeUnit;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SDict;
 import se.trixon.almond.util.fx.FxHelper;
-import se.trixon.almond.util.fx.control.DatePane;
-import se.trixon.almond.util.fx.control.TemporalPreset;
 import se.trixon.almond.util.fx.session.SessionCheckComboBox;
 import se.trixon.almond.util.fx.session.SessionComboBox;
 import se.trixon.almond.util.fx.session.SessionDoubleSpinner;
 import se.trixon.almond.util.fx.session.SessionIntegerSpinner;
-import se.trixon.almond.util.swing.SwingHelper;
 
 /**
  *
@@ -66,7 +56,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
     private final SessionCheckComboBox<String> mAlarmNameSccb = new SessionCheckComboBox<>();
     private final SessionCheckComboBox<AlarmFilter> mAlarmSccb = new SessionCheckComboBox<>(true);
     private final SessionCheckComboBox<String> mCategorySccb = new SessionCheckComboBox<>();
-    private final DatePane mDatePane = new DatePane();
+    private final DateRangePane mDateRangePane = new DateRangePane();
     private final double mDefaultDiffValue = 0.020;
     private final int mDefaultMeasAlarmLevelChangeLimit = 1;
     private final int mDefaultMeasAlarmLevelChangeValue = 10;
@@ -100,7 +90,6 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
     private final SessionDoubleSpinner mMeasYoyoSizeSds = new SessionDoubleSpinner(0, 1.0, mDefaultMeasYoyoSize, 0.001);
     private final CheckBox mNumOfMeasCheckbox = new CheckBox();
     private final SessionCheckComboBox<String> mOperatorSccb = new SessionCheckComboBox<>();
-    private final SplitMenuButton mPresetSplitMenuButton = new SplitMenuButton();
     private final CheckBox mSameAlarmCheckbox = new CheckBox();
     private final SessionCheckComboBox<String> mStatusSccb = new SessionCheckComboBox<>();
 
@@ -154,7 +143,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
         mHasDateFromToSccb.clearChecks();
         mFrequencySccb.clearChecks();
 
-        mDatePane.reset();
+        mDateRangePane.reset();
     }
 
     @Override
@@ -188,12 +177,11 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
         mMeasNumOfSis.load();
 
         var temporalRange = mManager.getTemporalRange();
-        mDatePane.setMinMaxDate(temporalRange.getFromLocalDate(), temporalRange.getToLocalDate());
+        mDateRangePane.setMinMaxDate(temporalRange.getFromLocalDate(), temporalRange.getToLocalDate());
 
         var sessionManager = getSessionManager();
-        var dateRangeSlider = mDatePane.getDateRangeSlider();
-        sessionManager.register("filter.DateLow", dateRangeSlider.lowStringProperty());
-        sessionManager.register("filter.DateHigh", dateRangeSlider.highStringProperty());
+        sessionManager.register("filter.DateLow", mDateRangePane.lowStringProperty());
+        sessionManager.register("filter.DateHigh", mDateRangePane.highStringProperty());
     }
 
     @Override
@@ -222,15 +210,6 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
         splitAndCheck(filterConfig.getString("GROUP"), mGroupSccb.getCheckModel());
         splitAndCheck(filterConfig.getString("CATEGORY"), mCategorySccb.getCheckModel());
         splitAndCheck(filterConfig.getString("OPERATOR"), mOperatorSccb.getCheckModel());
-    }
-
-    private MenuItem createPresetMenuItem(String name, LocalDate lowDate, LocalDate highDate) {
-        var preset = new TemporalPreset(name, lowDate, highDate);
-        var menuItem = new MenuItem(preset.name());
-        menuItem.setOnAction(actionEvent -> {
-            mDatePane.getDateRangeSlider().setLowHighDate(preset.lowDate(), preset.highDate());
-        });
-        return menuItem;
     }
 
     private void createUI() {
@@ -315,9 +294,9 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
         mDiffMeasLatestSds.getValueFactory().setConverter(new NegPosStringConverterDouble());
         mDiffMeasAllSds.getValueFactory().setConverter(new NegPosStringConverterDouble());
 
-        int columnGap = SwingHelper.getUIScaled(16);
-        int rowGap = SwingHelper.getUIScaled(12);
-        int titleGap = SwingHelper.getUIScaled(3);
+        int columnGap = FxHelper.getUIScaled(16);
+        int rowGap = FxHelper.getUIScaled(12);
+        int titleGap = FxHelper.getUIScaled(3);
 
         var basicBox = new VBox(rowGap,
                 mDimensionSccb,
@@ -342,7 +321,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
                 .build()
                 .build();
 
-        var wrappedDateBox = Borders.wrap(createUIDatePane())
+        var wrappedDateBox = Borders.wrap(mDateRangePane.getRoot())
                 .etchedBorder()
                 .title("Period för senaste mätning")
                 .innerPadding(topBorderInnerPadding, borderInnerPadding, borderInnerPadding, borderInnerPadding)
@@ -351,12 +330,9 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
                 .build()
                 .build();
 
-        var spacer = new Spacer();
-        spacer.setActive(true);
-
         var leftBox = new VBox(rowGap,
                 wrappedBasicBox,
-                spacer,
+                new Spacer(),
                 wrappedDateBox
         );
 
@@ -409,12 +385,16 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
         gridPane.add(mSameAlarmCheckbox, 0, row++, GridPane.REMAINING, 1);
         FxHelper.autoSizeColumn(gridPane, 2);
 
+        var root = new BorderPane(gridPane);
+        root.setTop(getToolBar());
+        var actionTextBehavior = ActionTextBehavior.HIDE;
+        addToToolBar("copyNames", actionTextBehavior);
+        addToToolBar("paste", actionTextBehavior);
         var internalBox = new HBox(FxHelper.getUIScaled(8.0), mInvertCheckbox);
         internalBox.setPadding(FxHelper.getUIScaledInsets(0, 0, 0, 8.0));
         internalBox.setAlignment(Pos.CENTER_LEFT);
         getToolBar().getItems().add(internalBox);
-        var root = new BorderPane(gridPane);
-        root.setTop(getToolBar());
+
         FxHelper.setEditable(true, mDiffMeasAllSds, mDiffMeasLatestSds, mMeasNumOfSis, mMeasYoyoCountSds, mMeasYoyoSizeSds, mMeasAlarmLevelChangeValueSis, mMeasAlarmLevelChangeLimitSis);
         FxHelper.autoCommitSpinners(mDiffMeasAllSds, mDiffMeasLatestSds, mMeasNumOfSis, mMeasYoyoCountSds, mMeasYoyoSizeSds, mMeasAlarmLevelChangeValueSis, mMeasAlarmLevelChangeLimitSis);
         FxHelper.bindWidthForChildrens(leftBox, rightBox, basicBox);
@@ -455,52 +435,6 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
         setContentNode(root);
     }
 
-    private Pane createUIDatePane() {
-        var beforeToggleButton = new ToggleButton("⇷");
-        var afterToggleButton = new ToggleButton("⇸");
-        var startToggleButton = new ToggleButton("⇤");
-        var endToggleButton = new ToggleButton("⇥");
-        startToggleButton.setTooltip(new Tooltip("Från början"));
-        beforeToggleButton.setTooltip(new Tooltip("Perioden före"));
-        afterToggleButton.setTooltip(new Tooltip("Perioden efter"));
-        endToggleButton.setTooltip(new Tooltip("Till slutet"));
-
-        var dateRangeSlider = mDatePane.getDateRangeSlider();
-
-        beforeToggleButton.setOnAction(actionEvent -> {
-            dateRangeSlider.setLowHighDate(dateRangeSlider.getMinDate(), dateRangeSlider.getLowDate());
-            beforeToggleButton.setSelected(false);
-        });
-
-        afterToggleButton.setOnAction(actionEvent -> {
-            dateRangeSlider.setLowHighDate(dateRangeSlider.getHighDate(), dateRangeSlider.getMaxDate());
-            afterToggleButton.setSelected(false);
-        });
-
-        startToggleButton.setOnAction(actionEvent -> {
-            dateRangeSlider.setLowDate(dateRangeSlider.getMinDate());
-            startToggleButton.setSelected(false);
-        });
-
-        endToggleButton.setOnAction(actionEvent -> {
-            dateRangeSlider.setHighDate(dateRangeSlider.getMaxDate());
-            endToggleButton.setSelected(false);
-        });
-
-        var segmentedButton = new SegmentedButton(
-                startToggleButton,
-                beforeToggleButton,
-                afterToggleButton,
-                endToggleButton
-        );
-
-        mPresetSplitMenuButton.setText(Dict.RESET.toString());
-
-        var box = new VBox(mDatePane, new HBox(segmentedButton, new Spacer(), mPresetSplitMenuButton));
-
-        return box;
-    }
-
     private void initListeners() {
         activateCopyNames(actionEvent -> {
             var names = TopoManager.getInstance().getTimeFilteredItems().stream().map(o -> o.getName()).toList();
@@ -534,8 +468,8 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
 
         mFilter.sameAlarmProperty().bind(mSameAlarmCheckbox.selectedProperty());
         mFilter.polygonFilterProperty().bind(usePolygonFilterProperty());
-        mFilter.measDateLowProperty().bind(mDatePane.getDateRangeSlider().lowDateProperty());
-        mFilter.measDateHighProperty().bind(mDatePane.getDateRangeSlider().highDateProperty());
+        mFilter.measDateLowProperty().bind(mDateRangePane.lowDateProperty());
+        mFilter.measDateHighProperty().bind(mDateRangePane.highDateProperty());
 
         mFilter.mDimensionCheckModel = mDimensionSccb.getCheckModel();
         mFilter.mStatusCheckModel = mStatusSccb.getCheckModel();
@@ -563,14 +497,6 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
         mMeasAlarmLevelChangeValueSis.disableProperty().bind(mMeasAlarmLevelChangeCheckbox.selectedProperty().not());
 
         mFilter.initCheckModelListeners();
-
-        mPresetSplitMenuButton.setOnShowing(event -> {
-            populatePresets();
-        });
-
-        mPresetSplitMenuButton.setOnAction(ae -> {
-            mDatePane.reset();
-        });
     }
 
     private void initSession() {
@@ -609,49 +535,5 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
 
         sessionManager.register("filter.invert", mInvertCheckbox.selectedProperty());
         sessionManager.register("filter.sameAlarm", mSameAlarmCheckbox.selectedProperty());
-    }
-
-    private void populatePresets() {
-        mPresetSplitMenuButton.getItems().clear();
-        var now = LocalDate.now();
-        var latestMenu = new Menu("Senaste");
-        var presentMenu = new Menu("Innevarande");
-        var previousMenu = new Menu("Föregående");
-
-        mPresetSplitMenuButton.getItems().setAll(
-                createPresetMenuItem(Dict.Time.TODAY.toString(), now, now),
-                new SeparatorMenuItem(),
-                latestMenu,
-                presentMenu,
-                previousMenu
-        );
-
-        latestMenu.getItems().addAll(
-                createPresetMenuItem("dygnet", now.minusDays(1), now),
-                createPresetMenuItem("veckan", now.minusWeeks(1), now),
-                createPresetMenuItem("två veckorna", now.minusWeeks(2), now),
-                createPresetMenuItem("månaden", now.minusMonths(1), now),
-                createPresetMenuItem("tre månaderna", now.minusMonths(3), now),
-                createPresetMenuItem("sex månaderna", now.minusMonths(6), now),
-                createPresetMenuItem("året", now.minusYears(1), now),
-                createPresetMenuItem("två åren", now.minusYears(2), now),
-                createPresetMenuItem("tre åren", now.minusYears(3), now),
-                createPresetMenuItem("fyra åren", now.minusYears(4), now),
-                createPresetMenuItem("fem åren", now.minusYears(5), now)
-        );
-
-        presentMenu.getItems().addAll(
-                createPresetMenuItem("månad", now.withDayOfMonth(1), now),
-                createPresetMenuItem("år", now.withDayOfYear(1), now)
-        );
-
-        var prevMonthStart = now.minusMonths(1).withDayOfMonth(1);
-        var prevMonthEnd = prevMonthStart.withDayOfMonth(prevMonthStart.lengthOfMonth());
-        var prevYearStart = now.minusYears(1).withDayOfYear(1);
-        var prevYearEnd = prevYearStart.withDayOfYear(prevYearStart.lengthOfYear());
-        previousMenu.getItems().addAll(
-                createPresetMenuItem("månad", prevMonthStart, prevMonthEnd),
-                createPresetMenuItem("år", prevYearStart, prevYearEnd)
-        );
     }
 }

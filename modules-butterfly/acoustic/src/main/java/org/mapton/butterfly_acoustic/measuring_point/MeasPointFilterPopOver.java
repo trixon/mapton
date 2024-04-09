@@ -43,7 +43,7 @@ public class MeasPointFilterPopOver extends BaseFilterPopOver {
 
     @Override
     public void clear() {
-        getPolygonFilterCheckBox().setSelected(false);
+        setUsePolygonFilter(false);
         mFilter.freeTextProperty().set("");
         mGroupSCCB.getCheckModel().clearChecks();
 
@@ -88,7 +88,7 @@ public class MeasPointFilterPopOver extends BaseFilterPopOver {
     }
 
     private void initListeners() {
-        mFilter.polygonFilterProperty().bind(getPolygonFilterCheckBox().selectedProperty());
+        mFilter.polygonFilterProperty().bind(usePolygonFilterProperty());
 
         mFilter.setCheckModelGroup(mGroupSCCB.getCheckModel());
 

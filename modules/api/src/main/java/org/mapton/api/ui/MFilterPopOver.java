@@ -16,7 +16,9 @@
 package org.mapton.api.ui;
 
 import com.dlsc.gemsfx.util.SessionManager;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
@@ -30,6 +32,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
+import org.controlsfx.control.action.ActionUtils.ActionTextBehavior;
 import org.mapton.api.MDict;
 import org.mapton.api.MPolygonFilterManager;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
@@ -52,7 +55,6 @@ public abstract class MFilterPopOver extends MPopOver {
     private final VBox mBox;
     private final HBox mButtonBox;
     private final Button mClearButton = new Button(Dict.CLEAR.toString());
-    private Action mCopyNamesAction;
     private final Button mCopyNamesButton = new Button(Dict.COPY_NAMES.toString());
     private final DelayedResetRunner mDelayedResetRunner;
     private final Button mPasteNameButton = new Button("%s %s".formatted(Dict.PASTE.toString(), Dict.NAME.toLower()));
@@ -62,6 +64,7 @@ public abstract class MFilterPopOver extends MPopOver {
     private SessionManager mSessionManager;
     private ToolBar mToolBar;
     private final SimpleBooleanProperty mUsePolygonFilterProperty = new SimpleBooleanProperty();
+    private final Map<String, Action> mAvailableActions = new HashMap<>();
 
     public MFilterPopOver() {
         String title = Dict.FILTER.toString();
@@ -186,10 +189,10 @@ public abstract class MFilterPopOver extends MPopOver {
         });
         mPolygonFilterAction.setGraphic(MaterialIcon._Editor.FORMAT_SHAPES.getImageView(getIconSizeToolBarInt()));
 
-        mCopyNamesAction = new Action(Dict.COPY_NAMES.toString(), actionEvent -> {
+        var copyNamesAction = new Action(Dict.COPY_NAMES.toString(), actionEvent -> {
             mCopyNamesButton.fire();
         });
-        mCopyNamesAction.setGraphic(MaterialIcon._Content.CONTENT_COPY.getImageView(getIconSizeToolBarInt()));
+        copyNamesAction.setGraphic(MaterialIcon._Content.CONTENT_COPY.getImageView(getIconSizeToolBarInt()));
 
         var s = "%s %s".formatted(Dict.PASTE.toString(), Dict.NAME.toLower());
         var pasteNameAction = new Action(s, actionEvent -> {
@@ -201,15 +204,23 @@ public abstract class MFilterPopOver extends MPopOver {
                 allAction,
                 clearAction,
                 ActionUtils.ACTION_SEPARATOR,
-                mCopyNamesAction,
-                pasteNameAction,
-                ActionUtils.ACTION_SEPARATOR,
-                mPolygonFilterAction
+                mPolygonFilterAction,
+                ActionUtils.ACTION_SEPARATOR
         );
+
+        mAvailableActions.put("copyNames", copyNamesAction);
+        mAvailableActions.put("paste", pasteNameAction);
 
         mToolBar = ActionUtils.createToolBar(actions, ActionUtils.ActionTextBehavior.HIDE);
         FxHelper.adjustButtonWidth(mToolBar.getItems().stream(), getIconSizeToolBarInt());
 //        FxHelper.undecorateButtons(mToolBar.getItems().stream());
         FxHelper.slimToolBar(mToolBar);
+    }
+
+    public void addToToolBar(String key, ActionTextBehavior actionTextBehavior) {
+        var action = mAvailableActions.get(key);
+        if (action != null) {
+            mToolBar.getItems().add(ActionUtils.createButton(action, actionTextBehavior));
+        }
     }
 }
