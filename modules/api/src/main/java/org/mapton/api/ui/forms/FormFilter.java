@@ -33,6 +33,7 @@ import java.util.LinkedHashMap;
 import java.util.ResourceBundle;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
@@ -44,6 +45,7 @@ import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.MArea;
 import org.mapton.api.MAreaFilterManager;
 import org.mapton.api.MBaseDataManager;
+import org.mapton.api.MDisruptorManager;
 import org.mapton.api.MPolygonFilterManager;
 import org.mapton.api.ui.MInfoPopOver;
 import org.openide.util.NbBundle;
@@ -58,10 +60,15 @@ import se.trixon.almond.util.fx.DelayedResetRunner;
  */
 public abstract class FormFilter<ManagerType extends MBaseDataManager> {
 
+    public IndexedCheckModel mDisruptorCheckModel;
+
     protected ChangeListener<Object> mChangeListenerObject;
+    protected final MDisruptorManager mDisruptorManager = MDisruptorManager.getInstance();
     protected ListChangeListener<Object> mListChangeListener;
     private final MAreaFilterManager mAreaFilterManager = MAreaFilterManager.getInstance();
     private final DelayedResetRunner mDelayedResetRunner;
+//    private final SimpleBooleanProperty mDisruptorProperty = new SimpleBooleanProperty();
+    private final SimpleDoubleProperty mDisruptorDistanceProperty = new SimpleDoubleProperty();
     private final StringProperty mFreeTextProperty = new SimpleStringProperty();
     private final MInfoPopOver mInfoPopOver = new MInfoPopOver() {
     };
@@ -104,6 +111,10 @@ public abstract class FormFilter<ManagerType extends MBaseDataManager> {
                 ));
 
         return html;
+    }
+
+    public SimpleDoubleProperty disruptorDistanceProperty() {
+        return mDisruptorDistanceProperty;
     }
 
     public StringProperty freeTextProperty() {
@@ -156,6 +167,14 @@ public abstract class FormFilter<ManagerType extends MBaseDataManager> {
                 || polygonFilterProperty().get() && mPolygonFilterManager.contains(lat, lon);
 
         return valid;
+    }
+
+    public boolean validateDisruptor(Double x, Double y) {
+        if (mDisruptorCheckModel.isEmpty()) {
+            return true;
+        } else {
+            return mDisruptorManager.isValidCoordinate(mDisruptorCheckModel, mDisruptorDistanceProperty.getValue(), x, y);
+        }
     }
 
     public boolean validateFreeText(String... strings) {

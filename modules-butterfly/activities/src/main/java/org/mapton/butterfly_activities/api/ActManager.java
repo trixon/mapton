@@ -18,12 +18,16 @@ package org.mapton.butterfly_activities.api;
 import java.util.ArrayList;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
+import org.mapton.api.MDisruptorProvider;
 import org.mapton.api.MTemporalRange;
 import org.mapton.butterfly_activities.ActPropertiesBuilder;
+import org.mapton.butterfly_activities.ActView;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BAreaActivity;
 import org.openide.util.Exceptions;
+import org.openide.util.NbBundle;
+import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
@@ -31,6 +35,7 @@ import org.openide.util.Exceptions;
  */
 public class ActManager extends BaseManager<BAreaActivity> {
 
+    private final static String DISRUPTOR_NAME = NbBundle.getMessage(ActView.class, "CTL_ActAction");
     private final ActPropertiesBuilder mPropertiesBuilder = new ActPropertiesBuilder();
 
     public static ActManager getInstance() {
@@ -86,12 +91,26 @@ public class ActManager extends BaseManager<BAreaActivity> {
             }
         }
 
+        var geometries = timeFilteredItems.stream()
+                .filter(aa -> aa.getStatus() == BAreaActivity.BAreaStatus.TRIGGER)
+                .map(aa -> aa.getTargetGeometry()).toList();
+
+        mDisruptorManager.put(DISRUPTOR_NAME, geometries);
         getTimeFilteredItems().setAll(timeFilteredItems);
     }
 
     @Override
     protected void load(ArrayList<BAreaActivity> items) {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @ServiceProvider(service = MDisruptorProvider.class)
+    public static class ActDisruptorProvider implements MDisruptorProvider {
+
+        @Override
+        public String getName() {
+            return DISRUPTOR_NAME;
+        }
     }
 
     private static class ActManagerHolder {

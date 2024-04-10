@@ -20,6 +20,7 @@ import javafx.event.EventType;
 import javafx.stage.WindowEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.IndexedCheckModel;
+import org.mapton.api.MDisruptorManager;
 import org.mapton.api.ui.MFilterPopOver;
 import org.mapton.butterfly_format.Butterfly;
 import se.trixon.almond.util.fx.FxHelper;
@@ -34,6 +35,7 @@ public abstract class BaseFilterPopOver<T extends BaseFilterFavorite> extends MF
     private Butterfly mButterfly;
     private final ButterflyManager mButterflyManager = ButterflyManager.getInstance();
     private boolean mFirstRun = true;
+    protected final MDisruptorManager mDisruptorManager = MDisruptorManager.getInstance();
 
     public BaseFilterPopOver() {
         var butterflyProperty = mButterflyManager.butterflyProperty();

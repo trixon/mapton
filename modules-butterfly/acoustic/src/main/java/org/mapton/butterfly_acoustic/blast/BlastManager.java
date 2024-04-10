@@ -18,11 +18,15 @@ package org.mapton.butterfly_acoustic.blast;
 import java.util.ArrayList;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
+import org.locationtech.jts.geom.Coordinate;
+import org.mapton.api.MDisruptorProvider;
+import org.mapton.api.MOptions;
 import org.mapton.api.MTemporalRange;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.acoustic.BBlast;
 import org.openide.util.Exceptions;
+import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
@@ -30,6 +34,7 @@ import org.openide.util.Exceptions;
  */
 public class BlastManager extends BaseManager<BBlast> {
 
+    private final static String DISRUPTOR_NAME = Bundle.CTL_BlastAction();
     private final BlastPropertiesBuilder mPropertiesBuilder = new BlastPropertiesBuilder();
 
     public static BlastManager getInstance() {
@@ -69,17 +74,35 @@ public class BlastManager extends BaseManager<BBlast> {
 
     @Override
     protected void applyTemporalFilter() {
-        //TODO Is never measure valid or invalid?
         var timeFilteredItems = getFilteredItems().stream()
                 .filter(o -> o.getDateTime() == null ? true : getTemporalManager().isValid(o.getDateTime()))
                 .toList();
 
+        var cooTrans = MOptions.getInstance().getMapCooTrans();
+
+        var geometries = timeFilteredItems.stream().map(b -> {
+            var p = cooTrans.fromWgs84(b.getLat(), b.getLon());
+            var coordinate = new Coordinate(p.getY(), p.getX());
+
+            return mGeometryFactory.createPoint(coordinate);
+        }).toList();
+
+        mDisruptorManager.put(DISRUPTOR_NAME, geometries);
         getTimeFilteredItems().setAll(timeFilteredItems);
     }
 
     @Override
     protected void load(ArrayList<BBlast> items) {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @ServiceProvider(service = MDisruptorProvider.class)
+    public static class BlastDisruptorProvider implements MDisruptorProvider {
+
+        @Override
+        public String getName() {
+            return DISRUPTOR_NAME;
+        }
     }
 
     private static class Holder {

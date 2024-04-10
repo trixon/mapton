@@ -31,6 +31,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.action.ActionUtils.ActionTextBehavior;
 import org.controlsfx.tools.Borders;
 import org.mapton.api.ui.forms.DateRangePane;
+import org.mapton.api.ui.forms.DisruptorPane;
 import org.mapton.api.ui.forms.NegPosStringConverterDouble;
 import org.mapton.api.ui.forms.NegPosStringConverterInteger;
 import org.mapton.butterfly_core.api.BaseFilterPopOver;
@@ -70,6 +71,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
     private final CheckBox mDimens1Checkbox = new CheckBox("1");
     private final CheckBox mDimens2Checkbox = new CheckBox("2");
     private final CheckBox mDimens3Checkbox = new CheckBox("3");
+    private final DisruptorPane mDisruptorPane = new DisruptorPane();
     private final TopoFilter mFilter;
     private final SessionCheckComboBox<Integer> mFrequencySccb = new SessionCheckComboBox<>();
     private final SessionCheckComboBox<String> mGroupSccb = new SessionCheckComboBox<>();
@@ -149,6 +151,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
         mFrequencySccb.clearChecks();
 
         mDateRangePane.reset();
+        mDisruptorPane.reset();
     }
 
     @Override
@@ -179,6 +182,8 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
         mMeasYoyoCountSds.load();
         mMeasYoyoSizeSds.load();
         mMeasNumOfSis.load();
+
+        mDisruptorPane.load();
 
         var temporalRange = mManager.getTemporalRange();
         mDateRangePane.setMinMaxDate(temporalRange.getFromLocalDate(), temporalRange.getToLocalDate());
@@ -303,7 +308,8 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
                 mAlarmNameSccb,
                 mHasDateFromToSccb,
                 mFrequencySccb,
-                mMeasNextSccb
+                mMeasNextSccb,
+                mDisruptorPane.getRoot()
         );
         double borderInnerPadding = FxHelper.getUIScaled(8.0);
         double topBorderInnerPadding = FxHelper.getUIScaled(16.0);
@@ -394,6 +400,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
         FxHelper.setEditable(true, mDiffMeasAllSds, mDiffMeasLatestSds, mMeasNumOfSis, mMeasYoyoCountSds, mMeasYoyoSizeSds, mMeasAlarmLevelChangeValueSis, mMeasAlarmLevelChangeLimitSis);
         FxHelper.autoCommitSpinners(mDiffMeasAllSds, mDiffMeasLatestSds, mMeasNumOfSis, mMeasYoyoCountSds, mMeasYoyoSizeSds, mMeasAlarmLevelChangeValueSis, mMeasAlarmLevelChangeLimitSis);
         FxHelper.bindWidthForChildrens(leftBox, rightBox, basicBox);
+        FxHelper.bindWidthForRegions(leftBox, mDisruptorPane.getRoot());
         FxHelper.bindWidthForRegions(rightBox,
                 mDiffMeasLatestSds,
                 mDiffMeasAllSds,
@@ -452,6 +459,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
         mFilter.dimens1Property().bind(mDimens1Checkbox.selectedProperty());
         mFilter.dimens2Property().bind(mDimens2Checkbox.selectedProperty());
         mFilter.dimens3Property().bind(mDimens3Checkbox.selectedProperty());
+        mFilter.disruptorDistanceProperty().bind(mDisruptorPane.distanceProperty());
 
         mFilter.measNumOfValueProperty().bind(mMeasNumOfSis.sessionValueProperty());
         mFilter.measDiffAllValueProperty().bind(mDiffMeasAllSds.sessionValueProperty());
@@ -473,6 +481,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
         mFilter.mStatusCheckModel = mStatusSccb.getCheckModel();
         mFilter.mMeasOperatorsCheckModel = mMeasOperatorSccb.getCheckModel();
         mFilter.mGroupCheckModel = mGroupSccb.getCheckModel();
+        mFilter.mDisruptorCheckModel = mDisruptorPane.getCheckModel();
         mFilter.mCategoryCheckModel = mCategorySccb.getCheckModel();
         mFilter.mAlarmNameCheckModel = mAlarmNameSccb.getCheckModel();
         mFilter.mOperatorCheckModel = mOperatorSccb.getCheckModel();
@@ -506,6 +515,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
         sessionManager.register("filter.checkedDateFromTo", mHasDateFromToSccb.checkedStringProperty());
         sessionManager.register("filter.checkedFrequency", mFrequencySccb.checkedStringProperty());
         sessionManager.register("filter.checkedGroup", mGroupSccb.checkedStringProperty());
+        sessionManager.register("filter.checkedDisruptors", mDisruptorPane.checkedStringProperty());
         sessionManager.register("filter.checkedNextAlarm", mAlarmSccb.checkedStringProperty());
         sessionManager.register("filter.checkedPerformers", mOperatorSccb.checkedStringProperty());
         sessionManager.register("filter.checkedStatus", mStatusSccb.checkedStringProperty());
@@ -513,6 +523,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
         sessionManager.register("filter.checkedDimension1", mDimens1Checkbox.selectedProperty());
         sessionManager.register("filter.checkedDimension2", mDimens2Checkbox.selectedProperty());
         sessionManager.register("filter.checkedDimension3", mDimens3Checkbox.selectedProperty());
+        sessionManager.register("filter.disruptorDistance", mDisruptorPane.distanceProperty());
         sessionManager.register("filter.measCheckedMeasCode", mMeasCodeSccb.checkedStringProperty());
         sessionManager.register("filter.measCheckedNextMeas", mMeasNextSccb.checkedStringProperty());
         sessionManager.register("filter.measCheckedOperators", mMeasOperatorSccb.checkedStringProperty());

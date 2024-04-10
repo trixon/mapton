@@ -211,6 +211,7 @@ public class TopoFilter extends FormFilter<TopoManager> {
                 .filter(p -> validateDateFromToWithout(p.getDateValidFrom(), p.getDateValidTo()))
                 .filter(p -> validateDateFromToIs(p.getDateValidFrom(), p.getDateValidTo()))
                 .filter(p -> validateMeasYoyo(p))
+                .filter(p -> validateDisruptor(p.getZeroX(), p.getZeroY()))
                 .filter(p -> validateCoordinateArea(p.getLat(), p.getLon()))
                 .filter(p -> validateCoordinateRuler(p.getLat(), p.getLon()))
                 .toList();
@@ -257,6 +258,7 @@ public class TopoFilter extends FormFilter<TopoManager> {
         mMeasNextCheckModel.getCheckedItems().addListener(mListChangeListener);
         mOperatorCheckModel.getCheckedItems().addListener(mListChangeListener);
         mStatusCheckModel.getCheckedItems().addListener(mListChangeListener);
+        mDisruptorCheckModel.getCheckedItems().addListener(mListChangeListener);
     }
 
     private ContainerTag createInfoContent() {
@@ -323,6 +325,8 @@ public class TopoFilter extends FormFilter<TopoManager> {
         mMeasYoyoProperty.addListener(mChangeListenerObject);
         mMeasDateLowProperty.addListener(mChangeListenerObject);
         mMeasDateHighProperty.addListener(mChangeListenerObject);
+        disruptorDistanceProperty().addListener(mChangeListenerObject);
+        mDisruptorManager.lastChangedProperty().addListener(mChangeListenerObject);
     }
 
     private String makeInfoDimension() {

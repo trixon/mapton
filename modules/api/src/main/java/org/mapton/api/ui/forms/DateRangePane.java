@@ -40,7 +40,6 @@ public class DateRangePane {
 
     private final DatePane mDatePane = new DatePane();
     private final SplitMenuButton mPresetSplitMenuButton = new SplitMenuButton();
-
     private VBox mRoot;
 
     public DateRangePane() {
