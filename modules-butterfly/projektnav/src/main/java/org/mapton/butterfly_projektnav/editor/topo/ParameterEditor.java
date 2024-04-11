@@ -218,8 +218,8 @@ public class ParameterEditor extends BaseTopoEditor {
         addConditionlly(sb, mStatusCheckBox.isSelected(), "status");
         addConditionlly(sb, mGruppCheckBox.isSelected(), "grupp");
         addConditionlly(sb, mKategoriCheckBox.isSelected(), "kategori");
-        addConditionlly(sb, mUtforareCheckBox.isSelected(), "utf");
         addConditionlly(sb, mLarmHCheckBox.isSelected() || mLarmPCheckBox.isSelected(), "larm");
+        addConditionlly(sb, mUtforareCheckBox.isSelected(), "utf");
         addConditionlly(sb, mDatFromCheckBox.isSelected(), "df");
         addConditionlly(sb, mDatToCheckBox.isSelected(), "dt");
         addConditionlly(sb, mDatToLatestCheckBox.isSelected(), "dt");
