@@ -16,6 +16,7 @@
 package org.mapton.butterfly_topo;
 
 import java.util.Arrays;
+import javafx.collections.ListChangeListener;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.Pane;
@@ -79,6 +80,10 @@ public class TopoView {
                 Dict.GROUP.toString(),
                 SDict.ALARM.toString()
         );
+
+        mManager.getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BTopoControlPoint> c) -> {
+            mFilterPopOver.setNames(mManager.getTimeFilteredItems().stream().map(p -> p.getName()).toList());
+        });
     }
 
     public Pane getView() {

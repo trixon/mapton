@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.Separator;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -99,6 +100,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
 
     public TopoFilterPopOver(TopoFilter filter) {
         mFilter = filter;
+        setFilter(filter);
         createUI();
         initListeners();
         initSession();
@@ -193,6 +195,10 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
         sessionManager.register("filter.DateHigh", mDateRangePane.highStringProperty());
     }
 
+//    @Override
+//    public void onMemoryRecall(String names) {
+////        mFilter.freeTextProperty().set(names);
+//    }
     @Override
     public void onPolygonFilterChange() {
         mFilter.update();
@@ -389,9 +395,14 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
 
         var root = new BorderPane(gridPane);
         root.setTop(getToolBar());
-        var actionTextBehavior = ActionTextBehavior.HIDE;
-        addToToolBar("copyNames", actionTextBehavior);
-        addToToolBar("paste", actionTextBehavior);
+        getToolBar().getItems().add(new Separator());
+        addToToolBar("mc", ActionTextBehavior.SHOW);
+        addToToolBar("mr", ActionTextBehavior.SHOW);
+        addToToolBar("mm", ActionTextBehavior.SHOW);
+        addToToolBar("mp", ActionTextBehavior.SHOW);
+        getToolBar().getItems().add(new Separator());
+        addToToolBar("copyNames", ActionTextBehavior.HIDE);
+        addToToolBar("paste", ActionTextBehavior.HIDE);
         var internalBox = new HBox(FxHelper.getUIScaled(8.0), mInvertCheckbox);
         internalBox.setPadding(FxHelper.getUIScaledInsets(0, 0, 0, 8.0));
         internalBox.setAlignment(Pos.CENTER_LEFT);
