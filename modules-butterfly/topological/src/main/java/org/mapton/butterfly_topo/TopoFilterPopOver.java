@@ -195,10 +195,6 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
         sessionManager.register("filter.DateHigh", mDateRangePane.highStringProperty());
     }
 
-//    @Override
-//    public void onMemoryRecall(String names) {
-////        mFilter.freeTextProperty().set(names);
-//    }
     @Override
     public void onPolygonFilterChange() {
         mFilter.update();
@@ -345,7 +341,6 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
         );
 
         var rightBox = new VBox(rowGap,
-                mAlarmSccb,
                 new VBox(titleGap,
                         mNumOfMeasCheckbox,
                         mMeasNumOfSis
@@ -363,6 +358,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
                         mMeasYoyoCountSds,
                         mMeasYoyoSizeSds
                 ),
+                mAlarmSccb,
                 new VBox(titleGap,
                         mMeasAlarmLevelChangeCheckbox,
                         new HBox(8, mMeasAlarmLevelChangeLimitSis, mMeasAlarmLevelChangeModeScb),
