@@ -58,11 +58,13 @@ public class BlastFilterPopOver extends BaseFilterPopOver {
         mGroupSCCB.loadAndRestoreCheckItems(groups);
 
         var temporalRange = mManager.getTemporalRange();
-        mDateRangePane.setMinMaxDate(temporalRange.getFromLocalDate(), temporalRange.getToLocalDate());
+        if (temporalRange != null) {
+            mDateRangePane.setMinMaxDate(temporalRange.getFromLocalDate(), temporalRange.getToLocalDate());
 
-        var sessionManager = getSessionManager();
-        sessionManager.register("filter.DateLow", mDateRangePane.lowStringProperty());
-        sessionManager.register("filter.DateHigh", mDateRangePane.highStringProperty());
+            var sessionManager = getSessionManager();
+            sessionManager.register("filter.DateLow", mDateRangePane.lowStringProperty());
+            sessionManager.register("filter.DateHigh", mDateRangePane.highStringProperty());
+        }
     }
 
     @Override

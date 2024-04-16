@@ -28,7 +28,7 @@ public class RuleFreqFormulaConfig extends BaseConfig {
     }
 
     private RuleFreqFormulaConfig() {
-        super("rules_freq_formulas.properties");
+        super("config/rules_freq_formulas.properties");
     }
 
     private static class Holder {

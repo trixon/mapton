@@ -16,9 +16,12 @@
 package org.mapton.butterfly_format;
 
 import java.io.File;
+import java.io.IOException;
 import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.apache.commons.configuration2.builder.fluent.Configurations;
+import org.apache.commons.configuration2.builder.fluent.Parameters;
 import org.apache.commons.configuration2.ex.ConfigurationException;
+import org.apache.commons.io.FileUtils;
 import static org.mapton.butterfly_format.BundleMode.DIR;
 import static org.mapton.butterfly_format.BundleMode.ZIP;
 
@@ -43,10 +46,21 @@ public abstract class BaseConfig {
     }
 
     public void init() {
-        var builder = new Configurations().propertiesBuilder(getFile(mFileName));
+        var propertiesBuilderParameters = new Parameters().properties().setEncoding("UTF-8").setFile(getFile(mFileName));
+        var builder = new Configurations().propertiesBuilder(propertiesBuilderParameters);
+
         try {
             mConfig = builder.getConfiguration();
         } catch (ConfigurationException ex) {
+            try {
+                var file = File.createTempFile("butterfly", "config");
+                FileUtils.forceDeleteOnExit(file);
+                builder = new Configurations().propertiesBuilder(file);
+                mConfig = builder.getConfiguration();
+            } catch (IOException | ConfigurationException ex1) {
+                //Exceptions.printStackTrace(ex1);
+            }
+
             //Exceptions.printStackTrace(ex);
         }
     }
