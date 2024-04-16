@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_topo.api;
 
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -86,10 +87,10 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
                 }
             }
 
-            var dates = new TreeSet<>(getAllItems().stream()
-                    .map(p -> p.getDateLatest())
-                    .filter(d -> d != null)
-                    .collect(Collectors.toSet()));
+            var dates = new TreeSet<LocalDateTime>();
+            getAllItems().stream().forEachOrdered(p -> {
+                dates.addAll(p.ext().getObservationsAllRaw().stream().map(o -> o.getDate()).toList());
+            });
 
             if (!dates.isEmpty()) {
                 setTemporalRange(new MTemporalRange(dates.first(), dates.last()));
