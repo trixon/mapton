@@ -161,7 +161,6 @@ public class Butterfly {
 
         for (var p : mTopoControlPoints) {
             p.setButterfly(this);
-            p.ext().setDateLatest(p.getDateLatest());
         }
 
         for (var p : tmo().mGrundvatten) {

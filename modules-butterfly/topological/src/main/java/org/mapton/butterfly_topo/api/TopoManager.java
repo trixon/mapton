@@ -77,7 +77,13 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
             }
 
             for (var p : butterfly.topo().getControlPoints()) {
-                p.ext().setObservationsAllRaw(nameToObservations.get(p.getName()));
+                var observations = nameToObservations.getOrDefault(p.getName(), new ArrayList<>());
+                if (!observations.isEmpty()) {
+                    p.setDateLatest(observations.getLast().getDate());
+                }
+
+                p.ext().setDateLatest(p.getDateLatest());
+                p.ext().setObservationsAllRaw(observations);
                 p.ext().getObservationsAllRaw().forEach(o -> o.ext().setParent(p));
                 for (var o : p.ext().getObservationsAllRaw()) {
                     if (o.isZeroMeasurement()) {
