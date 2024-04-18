@@ -39,12 +39,13 @@ public class GraphicRendererTrace extends GraphicRendererBase {
 
     public ArrayList<AVListImpl> plot(BTopoControlPoint p, Position position) {
         var mapObjects = new ArrayList<AVListImpl>();
+        var dimension = p.getDimension();
 
-        if (sCheckModel.isChecked(GraphicRendererItem.TRACE_1D) && p.getDimension() == BDimension._1d) {
+        if (sCheckModel.isChecked(GraphicRendererItem.TRACE_1D) && (dimension == BDimension._1d || dimension == BDimension._3d)) {
             plot1d(p, position, mapObjects);
 //        } else if (sCheckModel.isChecked(GraphicRendererItem.TRACE_2D) && p.getDimension() == BDimension._2d) {
 //            plot2d(p, position, mapObjects);
-        } else if (sCheckModel.isChecked(GraphicRendererItem.TRACE_3D) && p.getDimension() == BDimension._3d) {
+        } else if (sCheckModel.isChecked(GraphicRendererItem.TRACE_3D) && dimension == BDimension._3d) {
             plot3d(p, position, mapObjects);
         }
 

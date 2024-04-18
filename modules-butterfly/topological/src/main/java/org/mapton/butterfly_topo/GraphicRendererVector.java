@@ -36,16 +36,17 @@ public class GraphicRendererVector extends GraphicRendererBase {
 
     public ArrayList<AVListImpl> plot(BTopoControlPoint p, Position position) {
         var mapObjects = new ArrayList<AVListImpl>();
+        var dimension = p.getDimension();
 
-        if (sCheckModel.isChecked(GraphicRendererItem.VECTOR_1D) && p.getDimension() == BDimension._1d) {
+        if (sCheckModel.isChecked(GraphicRendererItem.VECTOR_1D) && (dimension == BDimension._1d || dimension == BDimension._3d)) {
             plot1d(p, position, mapObjects);
         }
 
-        if (sCheckModel.isChecked(GraphicRendererItem.VECTOR_1D_ALARM) && p.getDimension() == BDimension._1d) {
+        if (sCheckModel.isChecked(GraphicRendererItem.VECTOR_1D_ALARM) && (dimension == BDimension._1d || dimension == BDimension._3d)) {
             plot1dVectorAlarm(p, position, mapObjects);
         }
 
-        if (sCheckModel.isChecked(GraphicRendererItem.VECTOR_3D) && p.getDimension() == BDimension._3d) {
+        if (sCheckModel.isChecked(GraphicRendererItem.VECTOR_3D) && dimension == BDimension._3d) {
             plot3d(p, position, mapObjects);
         }
 
