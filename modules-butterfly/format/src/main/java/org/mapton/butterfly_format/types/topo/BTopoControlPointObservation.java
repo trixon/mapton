@@ -130,7 +130,7 @@ public class BTopoControlPointObservation extends BBaseControlPointObservation {
             Double deltaZ = getDeltaZ();
 
             if (ObjectUtils.allNotNull(delta2d, deltaZ)) {
-                return Math.hypot(delta2d, deltaZ);
+                return Math.hypot(delta2d, deltaZ) * MathHelper.sign(deltaZ);
             } else {
                 return null;
             }

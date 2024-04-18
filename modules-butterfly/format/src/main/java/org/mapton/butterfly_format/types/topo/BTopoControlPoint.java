@@ -33,6 +33,7 @@ import org.mapton.butterfly_format.types.BDimension;
 import static org.mapton.butterfly_format.types.BDimension._1d;
 import static org.mapton.butterfly_format.types.BDimension._2d;
 import static org.mapton.butterfly_format.types.BDimension._3d;
+import se.trixon.almond.util.MathHelper;
 import se.trixon.almond.util.StringHelper;
 
 /**
@@ -55,7 +56,6 @@ import se.trixon.almond.util.StringHelper;
     "offsetX",
     "offsetY",
     "offsetZ",
-    "dateLatest",
     "dateRolling",
     "dateZero",
     "zeroX",
@@ -67,7 +67,7 @@ import se.trixon.almond.util.StringHelper;
     "comment",
     "meta"
 })
-@JsonIgnoreProperties(value = {"values"})
+@JsonIgnoreProperties(value = {"values", "dateLatest"})
 public class BTopoControlPoint extends BBaseControlPoint {
 
     private BDimension dimension;
@@ -407,7 +407,7 @@ public class BTopoControlPoint extends BBaseControlPoint {
 
             public Double getDelta3() {
                 if (ObjectUtils.allNotNull(getDelta1(), getDelta2())) {
-                    return Math.hypot(getDelta1(), getDelta2());
+                    return Math.hypot(getDelta1(), getDelta2()) * MathHelper.sign(getDelta1());
                 } else {
                     return null;
                 }
