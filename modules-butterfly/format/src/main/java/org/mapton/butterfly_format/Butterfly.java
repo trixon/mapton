@@ -39,6 +39,7 @@ import org.mapton.butterfly_format.types.tmo.BVaderstation;
 import org.mapton.butterfly_format.types.tmo.BVattenkemi;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.topo.BTopoControlPointObservation;
+import org.mapton.butterfly_format.types.topo.BTopoConvergencePoint;
 
 /**
  *
@@ -60,6 +61,7 @@ public class Butterfly {
     private final Topo mTopo = new Topo();
     private final ArrayList<BTopoControlPoint> mTopoControlPoints = new ArrayList<>();
     private final ArrayList<BTopoControlPointObservation> mTopoControlPointsObservations = new ArrayList<>();
+    private final ArrayList<BTopoConvergencePoint> mTopoConvergencePoints = new ArrayList<>();
 
     public static void main(String[] args) {
     }
@@ -120,6 +122,9 @@ public class Butterfly {
 
         new ImportFromCsv<BTopoControlPointObservation>(BTopoControlPointObservation.class) {
         }.load(sourceDir, "topoControlPointsObservations.csv", mTopoControlPointsObservations);
+
+        new ImportFromCsv<BTopoConvergencePoint>(BTopoConvergencePoint.class) {
+        }.load(sourceDir, "topoControlPointsConvergence.csv", mTopoConvergencePoints);
 
         new ImportFromCsv<BGroundwaterPoint>(BGroundwaterPoint.class) {
         }.load(sourceDir, "hydroGroundwaterPoints.csv", mHydroGroundwaterPoints);
@@ -283,5 +288,8 @@ public class Butterfly {
             return mTopoControlPointsObservations;
         }
 
+        public ArrayList<BTopoConvergencePoint> getConvergencePoints() {
+            return mTopoConvergencePoints;
+        }
     }
 }
