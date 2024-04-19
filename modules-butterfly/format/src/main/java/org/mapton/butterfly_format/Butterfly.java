@@ -172,21 +172,17 @@ public class Butterfly {
             p.setButterfly(this);
         }
 
+        topo().postLoad();
         populateMonmon();
     }
 
     private void populateMonmon() {
-        var map = new HashMap<String, BTopoControlPoint>();
-        topo().getControlPoints().forEach(controlPoint -> {
-            map.put(controlPoint.getName(), controlPoint);
-        });
-
         var list = new ArrayList<BMonmon>();
         var config = MonmonConfig.getInstance().getConfig();
         for (var iterator = config.getKeys(); iterator.hasNext();) {
             try {
                 String name = iterator.next();
-                var p = map.get(name);
+                var p = topo().getControlPointByName(name);
                 if (p != null) {
                     var items = StringUtils.split(config.getString(name), ",");
                     var belongsTo = "";
@@ -279,6 +275,19 @@ public class Butterfly {
     }
 
     public class Topo {
+
+        private final HashMap<String, BTopoControlPoint> mNameToControlPoint = new HashMap<>();
+
+        private void postLoad() {
+            mNameToControlPoint.clear();
+            getControlPoints().forEach(controlPoint -> {
+                mNameToControlPoint.put(controlPoint.getName(), controlPoint);
+            });
+        }
+
+        public BTopoControlPoint getControlPointByName(String name) {
+            return mNameToControlPoint.get(name);
+        }
 
         public ArrayList<BTopoControlPoint> getControlPoints() {
             return mTopoControlPoints;

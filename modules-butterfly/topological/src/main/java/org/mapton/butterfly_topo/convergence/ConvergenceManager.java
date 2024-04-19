@@ -16,6 +16,9 @@
 package org.mapton.butterfly_topo.convergence;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.stream.Collectors;
+import org.apache.commons.lang3.StringUtils;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.topo.BTopoConvergencePoint;
@@ -50,6 +53,14 @@ public class ConvergenceManager extends BaseManager<BTopoConvergencePoint> {
     public void load(Butterfly butterfly) {
         try {
             initAllItems(butterfly.topo().getConvergencePoints());
+            for (var convergencePoint : butterfly.topo().getConvergencePoints()) {
+                var controlPoints = Arrays.stream(StringUtils.split(convergencePoint.getRef(), ","))
+                        .map(s -> butterfly.topo().getControlPointByName(s))
+                        .filter(p -> p != null)
+                        .collect(Collectors.toCollection(ArrayList::new));
+
+                convergencePoint.ext2().setControlPoints(controlPoints);
+            }
         } catch (Exception e) {
             Exceptions.printStackTrace(e);
         }

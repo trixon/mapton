@@ -18,13 +18,12 @@ package org.mapton.butterfly_topo.convergence;
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
-import gov.nasa.worldwind.render.Ellipsoid;
 import gov.nasa.worldwind.render.Path;
+import gov.nasa.worldwind.render.Pyramid;
 import gov.nasa.worldwind.render.Renderable;
 import java.util.ArrayList;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.butterfly_format.types.topo.BTopoConvergencePoint;
-import org.mapton.worldwind.api.WWHelper;
 
 /**
  *
@@ -57,25 +56,46 @@ public class GraphicRenderer {
         }
     }
 
-    public void plot(BTopoConvergencePoint point, Position position, ArrayList<AVListImpl> mapObjects) {
+    public void plot(BTopoConvergencePoint convergencePoint, Position position, ArrayList<AVListImpl> mapObjects) {
         mMapObjects = mapObjects;
 
-        if (mCheckModel.isChecked(GraphicRendererItem.BALLS_Z) && point.getZeroZ() != null) {
-            var altitude = point.getZeroZ();
-            var startPosition = WWHelper.positionFromPosition(position, 0.0);
-            var endPosition = WWHelper.positionFromPosition(position, altitude);
-            var radius = 1.2;
-            var endEllipsoid = new Ellipsoid(endPosition, radius, radius, radius);
-            endEllipsoid.setAttributes(mAttributeManager.getComponentEllipsoidAttributes());
-            addRenderable(mEllipsoidLayer, endEllipsoid);
-
-            var groundPath = new Path(startPosition, endPosition);
-            groundPath.setAttributes(mAttributeManager.getComponentGroundPathAttributes());
-            addRenderable(mGroundConnectorLayer, groundPath);
+        if (mCheckModel.isChecked(GraphicRendererItem.BALLS)) {
+            plotPoints(convergencePoint, position, mapObjects);
         }
     }
 
     public void reset() {
+    }
+
+    private void plotPoints(BTopoConvergencePoint convergencePoint, Position position, ArrayList<AVListImpl> mapObjects) {
+        var offset = convergencePoint.ext2().getControlPoints().stream()
+                .map(p -> p.getZeroZ())
+                .mapToDouble(Double::doubleValue).min().orElse(0);
+        if (offset < 0) {
+            offset = offset * -1.0;
+        }
+        offset += 2;
+
+        for (var controlPoint : convergencePoint.ext2().getControlPoints()) {
+            var altitude = controlPoint.getZeroZ() + offset;
+            var p = Position.fromDegrees(controlPoint.getLat(), controlPoint.getLon(), altitude);
+            var radius = 0.6;
+            var pyramid = new Pyramid(p, radius * 1.0, radius * 1.0);
+
+            pyramid.setAttributes(mAttributeManager.getComponentEllipsoidAttributes());
+            addRenderable(mEllipsoidLayer, pyramid);
+
+            for (var cp2 : convergencePoint.ext2().getControlPoints()) {
+                if (cp2 == controlPoint) {
+                    continue;
+                }
+                var altitude2 = cp2.getZeroZ() + offset;
+                var p2 = Position.fromDegrees(cp2.getLat(), cp2.getLon(), altitude2);
+                var groundPath = new Path(p, p2);
+                groundPath.setAttributes(mAttributeManager.getComponentGroundPathAttributes());
+                addRenderable(mGroundConnectorLayer, groundPath);
+            }
+        }
     }
 
 }

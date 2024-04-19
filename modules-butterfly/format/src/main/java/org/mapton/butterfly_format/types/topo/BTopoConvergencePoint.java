@@ -15,13 +15,27 @@
  */
 package org.mapton.butterfly_format.types.topo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.ArrayList;
+
 /**
  *
  * @author Patrik Karlström
  */
 public class BTopoConvergencePoint extends BTopoControlPoint {
 
+    @JsonIgnore
+    private Ext mExt;
+
     private String mRef;
+
+    public Ext ext2() {
+        if (mExt == null) {
+            mExt = new Ext();
+        }
+
+        return mExt;
+    }
 
     public String getRef() {
         return mRef;
@@ -30,4 +44,19 @@ public class BTopoConvergencePoint extends BTopoControlPoint {
     public void setRef(String ref) {
         this.mRef = ref;
     }
+
+    public class Ext {
+
+        private ArrayList<BTopoControlPoint> mControlPoints = new ArrayList<>();
+
+        public ArrayList<BTopoControlPoint> getControlPoints() {
+            return mControlPoints;
+        }
+
+        public void setControlPoints(ArrayList<BTopoControlPoint> controlPoints) {
+            this.mControlPoints = controlPoints;
+        }
+
+    }
+
 }
