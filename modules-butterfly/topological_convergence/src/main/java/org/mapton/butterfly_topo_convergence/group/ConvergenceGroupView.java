@@ -20,7 +20,7 @@ import javafx.scene.layout.Pane;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.SingleListForm;
-import org.mapton.butterfly_format.types.topo.BTopoConvergencePoint;
+import org.mapton.butterfly_format.types.topo.BTopoConvergenceGroup;
 import se.trixon.almond.util.Dict;
 
 /**
@@ -31,7 +31,7 @@ public class ConvergenceGroupView {
 
     private final ConvergenceGroupFilter mFilter = new ConvergenceGroupFilter();
     private final ConvergenceGroupFilterPopOver mFilterPopOver = new ConvergenceGroupFilterPopOver(mFilter);
-    private final SingleListForm<ConvergenceGroupManager, BTopoConvergencePoint> mListForm;
+    private final SingleListForm<ConvergenceGroupManager, BTopoConvergenceGroup> mListForm;
     private final ConvergenceGroupManager mManager = ConvergenceGroupManager.getInstance();
 
     public ConvergenceGroupView() {

@@ -18,26 +18,26 @@ package org.mapton.butterfly_topo_convergence.pair;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.layout.VBox;
-import org.mapton.butterfly_format.types.topo.BTopoConvergencePoint;
+import org.mapton.butterfly_format.types.topo.BTopoConvergencePair;
 
 /**
  *
  * @author Patrik Karlström
  */
-class ConvergencePairListCell extends ListCell<BTopoConvergencePoint> {
+class ConvergencePairListCell extends ListCell<BTopoConvergencePair> {
 
-    private final Label mNameLabel = new Label();
-    private final Label mSoilLabel = new Label();
+    private final Label mGroupLabel = new Label();
+    private final Label mDeltaLabel = new Label();
     private final String mStyleBold = "-fx-font-weight: bold;";
     private VBox mVBox;
-    private final Label mWorkLabel = new Label();
+    private final Label mPointNamesLabel = new Label();
 
     public ConvergencePairListCell() {
         createUI();
     }
 
     @Override
-    protected void updateItem(BTopoConvergencePoint point, boolean empty) {
+    protected void updateItem(BTopoConvergencePair point, boolean empty) {
         super.updateItem(point, empty);
         if (point == null || empty) {
             clearContent();
@@ -46,9 +46,18 @@ class ConvergencePairListCell extends ListCell<BTopoConvergencePoint> {
         }
     }
 
-    private void addContent(BTopoConvergencePoint point) {
+    private void addContent(BTopoConvergencePair pair) {
         setText(null);
-        mNameLabel.setText(point.getName());
+        mPointNamesLabel.setText(pair.getName());
+        mGroupLabel.setText(pair.getConvergenceGroup().getName());
+
+        var deltas = "ΔL=%.3f  ΔR=%.3f  ΔH=%.3f  ".formatted(
+                pair.getDistance(),
+                pair.getDeltaR(),
+                pair.getDeltaZ()
+        );
+        mDeltaLabel.setText(deltas);
+
         setGraphic(mVBox);
     }
 
@@ -58,11 +67,11 @@ class ConvergencePairListCell extends ListCell<BTopoConvergencePoint> {
     }
 
     private void createUI() {
-        mNameLabel.setStyle(mStyleBold);
+        mPointNamesLabel.setStyle(mStyleBold);
         mVBox = new VBox(
-                mNameLabel,
-                mWorkLabel,
-                mSoilLabel
+                mPointNamesLabel,
+                mGroupLabel,
+                mDeltaLabel
         );
     }
 

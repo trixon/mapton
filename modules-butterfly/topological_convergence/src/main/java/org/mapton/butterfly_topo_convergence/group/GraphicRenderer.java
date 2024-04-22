@@ -26,7 +26,7 @@ import gov.nasa.worldwind.render.Renderable;
 import java.util.ArrayList;
 import java.util.Random;
 import org.controlsfx.control.IndexedCheckModel;
-import org.mapton.butterfly_format.types.topo.BTopoConvergencePoint;
+import org.mapton.butterfly_format.types.topo.BTopoConvergenceGroup;
 import org.mapton.butterfly_topo_convergence.ConvergenceAttributeManager;
 
 /**
@@ -60,7 +60,7 @@ public class GraphicRenderer {
         }
     }
 
-    public void plot(BTopoConvergencePoint convergencePoint, Position position, ArrayList<AVListImpl> mapObjects) {
+    public void plot(BTopoConvergenceGroup convergencePoint, Position position, ArrayList<AVListImpl> mapObjects) {
         mMapObjects = mapObjects;
 
         if (mCheckModel.isChecked(GraphicRendererItem.BALLS)) {
@@ -71,7 +71,7 @@ public class GraphicRenderer {
     public void reset() {
     }
 
-    private void plotPoints(BTopoConvergencePoint convergencePoint, Position position, ArrayList<AVListImpl> mapObjects) {
+    private void plotPoints(BTopoConvergenceGroup convergencePoint, Position position, ArrayList<AVListImpl> mapObjects) {
         var offset = convergencePoint.ext2().getControlPoints().stream()
                 .map(p -> p.getZeroZ())
                 .mapToDouble(Double::doubleValue).min().orElse(0);

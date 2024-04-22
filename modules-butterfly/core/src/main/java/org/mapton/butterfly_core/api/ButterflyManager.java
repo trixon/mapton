@@ -188,7 +188,7 @@ public class ButterflyManager {
 
                 calculateLatLons(butterfly.hydro().getGroundwaterPoints());
                 calculateLatLons(butterfly.topo().getControlPoints());
-                calculateLatLons(butterfly.topo().getConvergencePoints());
+                calculateLatLons(butterfly.topo().getConvergenceGroups());
 
                 calculateLatLonsTmo(butterfly.tmo().getGrundvatten());
                 calculateLatLonsTmo(butterfly.tmo().getInfiltration());

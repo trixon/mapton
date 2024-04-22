@@ -22,7 +22,7 @@ import java.util.ArrayList;
  *
  * @author Patrik Karlström
  */
-public class BTopoConvergencePoint extends BTopoControlPoint {
+public class BTopoConvergenceGroup extends BTopoControlPoint {
 
     @JsonIgnore
     private Ext mExt;

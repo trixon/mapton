@@ -18,37 +18,45 @@ package org.mapton.butterfly_topo_convergence.group;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.layout.VBox;
-import org.mapton.butterfly_format.types.topo.BTopoConvergencePoint;
+import org.apache.commons.lang3.StringUtils;
+import org.mapton.butterfly_format.types.topo.BTopoConvergenceGroup;
 
 /**
  *
  * @author Patrik Karlström
  */
-class ConvergenceGroupListCell extends ListCell<BTopoConvergencePoint> {
+class ConvergenceGroupListCell extends ListCell<BTopoConvergenceGroup> {
 
     private final Label mNameLabel = new Label();
-    private final Label mSoilLabel = new Label();
+    private final Label mDesc3Label = new Label();
     private final String mStyleBold = "-fx-font-weight: bold;";
     private VBox mVBox;
-    private final Label mWorkLabel = new Label();
+    private final Label mDesc2Label = new Label();
 
     public ConvergenceGroupListCell() {
         createUI();
     }
 
     @Override
-    protected void updateItem(BTopoConvergencePoint point, boolean empty) {
-        super.updateItem(point, empty);
-        if (point == null || empty) {
+    protected void updateItem(BTopoConvergenceGroup group, boolean empty) {
+        super.updateItem(group, empty);
+        if (group == null || empty) {
             clearContent();
         } else {
-            addContent(point);
+            addContent(group);
         }
     }
 
-    private void addContent(BTopoConvergencePoint point) {
+    private void addContent(BTopoConvergenceGroup group) {
         setText(null);
-        mNameLabel.setText(point.getName());
+        var header = group.getName();
+        if (StringUtils.isNotBlank(group.getStatus())) {
+            header = "%s [%s]".formatted(header, group.getStatus());
+        }
+
+        mNameLabel.setText(header);
+        mDesc2Label.setText("TODO: Alarm level, dates?");
+        mDesc3Label.setText(String.valueOf(group.ext2().getControlPoints().size()));
         setGraphic(mVBox);
     }
 
@@ -61,8 +69,8 @@ class ConvergenceGroupListCell extends ListCell<BTopoConvergencePoint> {
         mNameLabel.setStyle(mStyleBold);
         mVBox = new VBox(
                 mNameLabel,
-                mWorkLabel,
-                mSoilLabel
+                mDesc2Label,
+                mDesc3Label
         );
     }
 

@@ -18,7 +18,7 @@ package org.mapton.butterfly_topo_convergence.group;
 import java.util.Objects;
 import java.util.function.Function;
 import org.apache.commons.lang3.StringUtils;
-import org.mapton.butterfly_format.types.topo.BTopoConvergencePoint;
+import org.mapton.butterfly_format.types.topo.BTopoConvergenceGroup;
 import se.trixon.almond.util.Dict;
 
 /**
@@ -36,10 +36,10 @@ public enum ConvergenceGroupLabelBy {
         return Objects.toString(p.getGroup(), "NODATA");
     });
     private final String mCategory;
-    private final Function<BTopoConvergencePoint, String> mFunction;
+    private final Function<BTopoConvergenceGroup, String> mFunction;
     private final String mName;
 
-    private ConvergenceGroupLabelBy(String category, String name, Function<BTopoConvergencePoint, String> function) {
+    private ConvergenceGroupLabelBy(String category, String name, Function<BTopoConvergenceGroup, String> function) {
         mCategory = category;
         mName = name;
         mFunction = function;
@@ -57,7 +57,7 @@ public enum ConvergenceGroupLabelBy {
         }
     }
 
-    public String getLabel(BTopoConvergencePoint o) {
+    public String getLabel(BTopoConvergenceGroup o) {
         try {
             return mFunction.apply(o);
         } catch (Exception e) {

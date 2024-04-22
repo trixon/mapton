@@ -21,14 +21,14 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
-import org.mapton.butterfly_format.types.topo.BTopoConvergencePoint;
+import org.mapton.butterfly_format.types.topo.BTopoConvergenceGroup;
 import org.openide.util.Exceptions;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class ConvergenceGroupManager extends BaseManager<BTopoConvergencePoint> {
+public class ConvergenceGroupManager extends BaseManager<BTopoConvergenceGroup> {
 
 //    private final ConvergencePropertiesBuilder mPropertiesBuilder = new ConvergencePropertiesBuilder();
     public static ConvergenceGroupManager getInstance() {
@@ -36,11 +36,11 @@ public class ConvergenceGroupManager extends BaseManager<BTopoConvergencePoint> 
     }
 
     private ConvergenceGroupManager() {
-        super(BTopoConvergencePoint.class);
+        super(BTopoConvergenceGroup.class);
     }
 
     @Override
-    public Object getObjectProperties(BTopoConvergencePoint selectedObject) {
+    public Object getObjectProperties(BTopoConvergenceGroup selectedObject) {
 //        return mPropertiesBuilder.build(selectedObject);
         return selectedObject;
     }
@@ -52,8 +52,8 @@ public class ConvergenceGroupManager extends BaseManager<BTopoConvergencePoint> 
     @Override
     public void load(Butterfly butterfly) {
         try {
-            initAllItems(butterfly.topo().getConvergencePoints());
-            for (var convergencePoint : butterfly.topo().getConvergencePoints()) {
+            initAllItems(butterfly.topo().getConvergenceGroups());
+            for (var convergencePoint : butterfly.topo().getConvergenceGroups()) {
                 var controlPoints = Arrays.stream(StringUtils.split(convergencePoint.getRef(), ","))
                         .map(s -> butterfly.topo().getControlPointByName(s))
                         .filter(p -> p != null)
@@ -72,7 +72,7 @@ public class ConvergenceGroupManager extends BaseManager<BTopoConvergencePoint> 
     }
 
     @Override
-    protected void load(ArrayList<BTopoConvergencePoint> items) {
+    protected void load(ArrayList<BTopoConvergenceGroup> items) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

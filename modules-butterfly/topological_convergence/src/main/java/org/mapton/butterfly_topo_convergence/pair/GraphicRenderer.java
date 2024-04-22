@@ -18,15 +18,10 @@ package org.mapton.butterfly_topo_convergence.pair;
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
-import gov.nasa.worldwind.render.BasicShapeAttributes;
-import gov.nasa.worldwind.render.Material;
-import gov.nasa.worldwind.render.Path;
-import gov.nasa.worldwind.render.Pyramid;
 import gov.nasa.worldwind.render.Renderable;
 import java.util.ArrayList;
-import java.util.Random;
 import org.controlsfx.control.IndexedCheckModel;
-import org.mapton.butterfly_format.types.topo.BTopoConvergencePoint;
+import org.mapton.butterfly_format.types.topo.BTopoConvergencePair;
 import org.mapton.butterfly_topo_convergence.ConvergenceAttributeManager;
 
 /**
@@ -60,7 +55,7 @@ public class GraphicRenderer {
         }
     }
 
-    public void plot(BTopoConvergencePoint convergencePoint, Position position, ArrayList<AVListImpl> mapObjects) {
+    public void plot(BTopoConvergencePair convergencePoint, Position position, ArrayList<AVListImpl> mapObjects) {
         mMapObjects = mapObjects;
 
         if (mCheckModel.isChecked(GraphicRendererItem.BALLS)) {
@@ -71,54 +66,7 @@ public class GraphicRenderer {
     public void reset() {
     }
 
-    private void plotPoints(BTopoConvergencePoint convergencePoint, Position position, ArrayList<AVListImpl> mapObjects) {
-        var offset = convergencePoint.ext2().getControlPoints().stream()
-                .map(p -> p.getZeroZ())
-                .mapToDouble(Double::doubleValue).min().orElse(0);
-        if (offset < 0) {
-            offset = offset * -1.0;
-        }
-        offset += 2;
-        var random = new Random();
-        for (var controlPoint : convergencePoint.ext2().getControlPoints()) {
-            var altitude = controlPoint.getZeroZ() + offset;
-            var p = Position.fromDegrees(controlPoint.getLat(), controlPoint.getLon(), altitude);
-            var radius = 0.6;
-            var pyramid = new Pyramid(p, radius * 1.0, radius * 1.0);
-
-            pyramid.setAttributes(mAttributeManager.getComponentEllipsoidAttributes());
-            addRenderable(mEllipsoidLayer, pyramid);
-
-            for (var cp2 : convergencePoint.ext2().getControlPoints()) {
-                if (cp2 == controlPoint) {
-                    continue;
-                }
-                var altitude2 = cp2.getZeroZ() + offset;
-                var p2 = Position.fromDegrees(cp2.getLat(), cp2.getLon(), altitude2);
-                var groundPath = new Path(p, p2);
-                var attrs = new BasicShapeAttributes(mAttributeManager.getComponentGroundPathAttributes());
-                int colorIndex = random.nextInt(0, 3);
-                switch (colorIndex) {
-                    case 0 ->
-                        attrs.setOutlineMaterial(Material.YELLOW);
-                    case 1 ->
-                        attrs.setOutlineMaterial(Material.RED);
-                    case 2 ->
-                        attrs.setOutlineMaterial(Material.GREEN);
-                    case 3 ->
-                        attrs.setOutlineMaterial(Material.BLUE);
-                    default ->
-                        attrs.setOutlineMaterial(Material.MAGENTA);
-                }
-
-                if (random.nextBoolean()) {
-                    attrs.setOutlineStippleFactor(3);
-                }
-
-                groundPath.setAttributes(attrs);
-                addRenderable(mGroundConnectorLayer, groundPath);
-            }
-        }
+    private void plotPoints(BTopoConvergencePair convergencePoint, Position position, ArrayList<AVListImpl> mapObjects) {
     }
 
 }
