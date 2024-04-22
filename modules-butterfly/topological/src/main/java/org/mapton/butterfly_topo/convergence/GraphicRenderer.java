@@ -18,10 +18,13 @@ package org.mapton.butterfly_topo.convergence;
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
+import gov.nasa.worldwind.render.BasicShapeAttributes;
+import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.Path;
 import gov.nasa.worldwind.render.Pyramid;
 import gov.nasa.worldwind.render.Renderable;
 import java.util.ArrayList;
+import java.util.Random;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.butterfly_format.types.topo.BTopoConvergencePoint;
 
@@ -75,7 +78,7 @@ public class GraphicRenderer {
             offset = offset * -1.0;
         }
         offset += 2;
-
+        var random = new Random();
         for (var controlPoint : convergencePoint.ext2().getControlPoints()) {
             var altitude = controlPoint.getZeroZ() + offset;
             var p = Position.fromDegrees(controlPoint.getLat(), controlPoint.getLon(), altitude);
@@ -92,7 +95,26 @@ public class GraphicRenderer {
                 var altitude2 = cp2.getZeroZ() + offset;
                 var p2 = Position.fromDegrees(cp2.getLat(), cp2.getLon(), altitude2);
                 var groundPath = new Path(p, p2);
-                groundPath.setAttributes(mAttributeManager.getComponentGroundPathAttributes());
+                var attrs = new BasicShapeAttributes(mAttributeManager.getComponentGroundPathAttributes());
+                int colorIndex = random.nextInt(0, 3);
+                switch (colorIndex) {
+                    case 0 ->
+                        attrs.setOutlineMaterial(Material.YELLOW);
+                    case 1 ->
+                        attrs.setOutlineMaterial(Material.RED);
+                    case 2 ->
+                        attrs.setOutlineMaterial(Material.GREEN);
+                    case 3 ->
+                        attrs.setOutlineMaterial(Material.BLUE);
+                    default ->
+                        attrs.setOutlineMaterial(Material.MAGENTA);
+                }
+
+                if (random.nextBoolean()) {
+                    attrs.setOutlineStippleFactor(3);
+                }
+
+                groundPath.setAttributes(attrs);
                 addRenderable(mGroundConnectorLayer, groundPath);
             }
         }
