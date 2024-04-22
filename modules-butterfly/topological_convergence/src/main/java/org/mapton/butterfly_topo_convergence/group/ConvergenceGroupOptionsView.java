@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_topo.convergence;
+package org.mapton.butterfly_topo_convergence.group;
 
 import java.util.LinkedHashMap;
 import java.util.stream.Stream;
@@ -37,18 +37,18 @@ import se.trixon.almond.util.fx.session.SessionComboBox;
  *
  * @author Patrik Karlström
  */
-public class ConvergenceOptionsView extends MOptionsView {
+public class ConvergenceGroupOptionsView extends MOptionsView {
 
-    private static final ConvergenceLabelBy DEFAULT_LABEL_BY = ConvergenceLabelBy.NAME;
+    private static final ConvergenceGroupLabelBy DEFAULT_LABEL_BY = ConvergenceGroupLabelBy.NAME;
     private static final PointBy DEFAULT_POINT_BY = PointBy.PIN;
 
     private final SessionCheckComboBox<GraphicRendererItem> mGraphicSccb = new SessionCheckComboBox<>();
     private final SimpleStringProperty mLabelByIdProperty = new SimpleStringProperty(DEFAULT_LABEL_BY.name());
-    private final SimpleObjectProperty<ConvergenceLabelBy> mLabelByProperty = new SimpleObjectProperty<>();
+    private final SimpleObjectProperty<ConvergenceGroupLabelBy> mLabelByProperty = new SimpleObjectProperty<>();
     private final MenuButton mLabelMenuButton = new MenuButton();
     private final SessionComboBox<PointBy> mPointScb = new SessionComboBox<>();
 
-    public ConvergenceOptionsView(ConvergenceLayerBundle layerBundle) {
+    public ConvergenceGroupOptionsView(ConvergenceGroupLayerBundle layerBundle) {
         super(layerBundle);
         createUI();
         initListeners();
@@ -59,7 +59,7 @@ public class ConvergenceOptionsView extends MOptionsView {
         return mGraphicSccb.getCheckModel();
     }
 
-    public ConvergenceLabelBy getLabelBy() {
+    public ConvergenceGroupLabelBy getLabelBy() {
         return mLabelByProperty.get();
     }
 
@@ -67,7 +67,7 @@ public class ConvergenceOptionsView extends MOptionsView {
         return mPointScb.valueProperty().get();
     }
 
-    public SimpleObjectProperty<ConvergenceLabelBy> labelByProperty() {
+    public SimpleObjectProperty<ConvergenceGroupLabelBy> labelByProperty() {
         return mLabelByProperty;
     }
 
@@ -117,13 +117,13 @@ public class ConvergenceOptionsView extends MOptionsView {
         sessionManager.register("options.measPoint.labelBy", mLabelByIdProperty);
         sessionManager.register("options.measPoint.checkedGraphics", mGraphicSccb.checkedStringProperty());
 
-        mLabelByProperty.set(ConvergenceLabelBy.valueOf(mLabelByIdProperty.get()));
+        mLabelByProperty.set(ConvergenceGroupLabelBy.valueOf(mLabelByIdProperty.get()));
     }
 
     private void populateLabelMenuButton() {
         var categoryToMenu = new LinkedHashMap<String, Menu>();
 
-        for (var topoLabel : ConvergenceLabelBy.values()) {
+        for (var topoLabel : ConvergenceGroupLabelBy.values()) {
             var menu = categoryToMenu.computeIfAbsent(topoLabel.getCategory(), k -> {
                 return new Menu(k);
             });

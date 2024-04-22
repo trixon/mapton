@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_topo.convergence;
+package org.mapton.butterfly_topo_convergence.group;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,14 +28,14 @@ import org.openide.util.Exceptions;
  *
  * @author Patrik Karlström
  */
-public class ConvergenceManager extends BaseManager<BTopoConvergencePoint> {
+public class ConvergenceGroupManager extends BaseManager<BTopoConvergencePoint> {
 
 //    private final ConvergencePropertiesBuilder mPropertiesBuilder = new ConvergencePropertiesBuilder();
-    public static ConvergenceManager getInstance() {
+    public static ConvergenceGroupManager getInstance() {
         return Holder.INSTANCE;
     }
 
-    private ConvergenceManager() {
+    private ConvergenceGroupManager() {
         super(BTopoConvergencePoint.class);
     }
 
@@ -78,6 +78,6 @@ public class ConvergenceManager extends BaseManager<BTopoConvergencePoint> {
 
     private static class Holder {
 
-        private static final ConvergenceManager INSTANCE = new ConvergenceManager();
+        private static final ConvergenceGroupManager INSTANCE = new ConvergenceGroupManager();
     }
 }

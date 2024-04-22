@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_topo.convergence;
+package org.mapton.butterfly_topo_convergence.group;
 
 import j2html.tags.ContainerTag;
 import java.util.LinkedHashMap;
@@ -25,13 +25,13 @@ import se.trixon.almond.util.Dict;
  *
  * @author Patrik Karlström
  */
-public class ConvergenceFilter extends FormFilter<ConvergenceManager> {
+public class ConvergenceGroupFilter extends FormFilter<ConvergenceGroupManager> {
 
     private IndexedCheckModel mGroupCheckModel;
-    private final ConvergenceManager mManager = ConvergenceManager.getInstance();
+    private final ConvergenceGroupManager mManager = ConvergenceGroupManager.getInstance();
 
-    public ConvergenceFilter() {
-        super(ConvergenceManager.getInstance());
+    public ConvergenceGroupFilter() {
+        super(ConvergenceGroupManager.getInstance());
 
         initListeners();
     }

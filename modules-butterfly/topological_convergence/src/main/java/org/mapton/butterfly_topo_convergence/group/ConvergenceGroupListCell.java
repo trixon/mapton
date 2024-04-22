@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_topo.convergence;
+package org.mapton.butterfly_topo_convergence.group;
 
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -24,7 +24,7 @@ import org.mapton.butterfly_format.types.topo.BTopoConvergencePoint;
  *
  * @author Patrik Karlström
  */
-class ConvergenceListCell extends ListCell<BTopoConvergencePoint> {
+class ConvergenceGroupListCell extends ListCell<BTopoConvergencePoint> {
 
     private final Label mNameLabel = new Label();
     private final Label mSoilLabel = new Label();
@@ -32,7 +32,7 @@ class ConvergenceListCell extends ListCell<BTopoConvergencePoint> {
     private VBox mVBox;
     private final Label mWorkLabel = new Label();
 
-    public ConvergenceListCell() {
+    public ConvergenceGroupListCell() {
         createUI();
     }
 

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_topo.convergence;
+package org.mapton.butterfly_topo_convergence.pair;
 
 import javafx.scene.Scene;
 import org.mapton.core.api.MTopComponent;
@@ -28,31 +28,31 @@ import org.openide.windows.TopComponent;
  * Top component which displays something.
  */
 @ConvertAsProperties(
-        dtd = "-//org.mapton.butterfly-topo//Convergence//EN",
+        dtd = "-//org.mapton.butterfly-topo-convergence//ConvergencePair//EN",
         autostore = false
 )
 @TopComponent.Description(
-        preferredID = "ConvergenceTopComponent",
+        preferredID = "ConvergencePairTopComponent",
         //iconBase="SET/PATH/TO/ICON/HERE",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(mode = "mapTools", openAtStartup = false)
-@ActionID(category = "Butterfly", id = "org.mapton.butterfly-topo.ConvergenceTopComponent")
+@ActionID(category = "Butterfly", id = "org.mapton.butterfly-topo-convergence.ConvergencePairTopComponent")
 @ActionReferences({
-    @ActionReference(path = "Shortcuts", name = "DO-E"),
+    //    @ActionReference(path = "Shortcuts", name = "DO-E"),
     @ActionReference(path = "Menu/MapTools/Butterfly", position = 1)
 })
 @TopComponent.OpenActionRegistration(
-        displayName = "#CTL_ConvergencePointAction",
-        preferredID = "ConvergenceTopComponent"
+        displayName = "#CTL_ConvergencePairAction",
+        preferredID = "ConvergencePairTopComponent"
 )
 @Messages({
-    "CTL_ConvergencePointAction=Convergence analysis"
+    "CTL_ConvergencePairAction=Convergence pairs"
 })
-public final class ConvergenceTopComponent extends MTopComponent {
+public final class ConvergencePairTopComponent extends MTopComponent {
 
-    public ConvergenceTopComponent() {
-        setName(Bundle.CTL_ConvergencePointAction());
+    public ConvergencePairTopComponent() {
+        setName(Bundle.CTL_ConvergencePairAction());
     }
 
     @Override
@@ -61,7 +61,7 @@ public final class ConvergenceTopComponent extends MTopComponent {
     }
 
     private Scene createScene() {
-        var convergenceView = new ConvergenceView();
+        var convergenceView = new ConvergencePairView();
 
         return new Scene(convergenceView.getView());
     }

@@ -36,6 +36,7 @@ limitations under the License.
         <module>acoustic</module>
         <module>hydrological</module>
         <module>topological</module>
+        <module>topological_convergence</module>
         <module>alarm</module>
         <module>projektnav</module>
         <module>tmo</module>

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_topo.convergence;
+package org.mapton.butterfly_topo_convergence.group;
 
 import javafx.scene.control.Separator;
 import javafx.scene.layout.VBox;
@@ -29,12 +29,12 @@ import se.trixon.almond.util.fx.session.SessionCheckComboBox;
  *
  * @author Patrik Karlström
  */
-public class ConvergenceFilterPopOver extends BaseFilterPopOver {
+public class ConvergenceGroupFilterPopOver extends BaseFilterPopOver {
 
-    private final ConvergenceFilter mFilter;
+    private final ConvergenceGroupFilter mFilter;
     private final SessionCheckComboBox<String> mGroupSCCB = new SessionCheckComboBox<>();
 
-    public ConvergenceFilterPopOver(ConvergenceFilter filter) {
+    public ConvergenceGroupFilterPopOver(ConvergenceGroupFilter filter) {
         mFilter = filter;
         createUI();
         initListeners();

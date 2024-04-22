@@ -18,17 +18,11 @@ limitations under the License.
 <!DOCTYPE filesystem PUBLIC "-//NetBeans//DTD Filesystem 1.2//EN" "http://www.netbeans.org/dtds/filesystem-1_2.dtd">
 <filesystem>
     <folder name="QuickSearch">
-        <folder name="Topo">
-            <attr name="displayName" bundlevalue="org.mapton.butterfly_topo.Bundle#CTL_ControlPointAction"/>
-            <attr name="command" stringvalue="t"/>
-            <attr name="position" intvalue="0"/>
-            <file name="org-mapton-butterfly_topo-TopoSearchProvider.instance"/>
-        </folder>
     </folder>
     <folder name="Windows2">
         <folder name="Groups">
             <folder name="MapGroup">
-                <file name="TopoTopComponent.wstcgrp" url="TopoTopComponentWstcgrp.xml"/>
+                <file name="ConvergenceTopComponent.wstcgrp" url="ConvergenceTopComponentWstcgrp.xml"/>
             </folder>
         </folder>
     </folder>

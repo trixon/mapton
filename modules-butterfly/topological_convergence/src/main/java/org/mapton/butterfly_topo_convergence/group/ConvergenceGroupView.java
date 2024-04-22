@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_topo.convergence;
+package org.mapton.butterfly_topo_convergence.group;
 
 import java.util.Arrays;
 import javafx.scene.layout.Pane;
@@ -27,14 +27,14 @@ import se.trixon.almond.util.Dict;
  *
  * @author Patrik Karlström
  */
-public class ConvergenceView {
+public class ConvergenceGroupView {
 
-    private final ConvergenceFilter mFilter = new ConvergenceFilter();
-    private final ConvergenceFilterPopOver mFilterPopOver = new ConvergenceFilterPopOver(mFilter);
-    private final SingleListForm<ConvergenceManager, BTopoConvergencePoint> mListForm;
-    private final ConvergenceManager mManager = ConvergenceManager.getInstance();
+    private final ConvergenceGroupFilter mFilter = new ConvergenceGroupFilter();
+    private final ConvergenceGroupFilterPopOver mFilterPopOver = new ConvergenceGroupFilterPopOver(mFilter);
+    private final SingleListForm<ConvergenceGroupManager, BTopoConvergencePoint> mListForm;
+    private final ConvergenceGroupManager mManager = ConvergenceGroupManager.getInstance();
 
-    public ConvergenceView() {
+    public ConvergenceGroupView() {
         var actions = Arrays.asList(
                 ActionUtils.ACTION_SPAN,
                 mManager.geZoomExtentstAction(),
@@ -42,14 +42,14 @@ public class ConvergenceView {
                 mFilterPopOver.getAction()
         );
 
-        mListForm = new SingleListForm<>(mManager, Bundle.CTL_ConvergencePointAction());
+        mListForm = new SingleListForm<>(mManager, Bundle.CTL_ConvergenceGroupAction());
         var listFormConfiguration = new ListFormConfiguration()
                 .setUseTextFilter(true)
                 .setToolbarActions(actions);
 
         mFilter.bindFreeTextProperty(mListForm.freeTextProperty());
         mListForm.applyConfiguration(listFormConfiguration);
-        mListForm.getListView().setCellFactory(listView -> new ConvergenceListCell());
+        mListForm.getListView().setCellFactory(listView -> new ConvergenceGroupListCell());
 
         mListForm.setFreeTextTooltip(
                 Dict.NAME.toString(),

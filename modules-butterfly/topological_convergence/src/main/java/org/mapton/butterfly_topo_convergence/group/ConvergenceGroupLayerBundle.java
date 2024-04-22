@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_topo.convergence;
+package org.mapton.butterfly_topo_convergence.group;
 
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVListImpl;
@@ -26,6 +26,7 @@ import javafx.scene.Node;
 import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.butterfly_core.api.BfLayerBundle;
 import org.mapton.butterfly_format.types.topo.BTopoConvergencePoint;
+import org.mapton.butterfly_topo_convergence.ConvergenceAttributeManager;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
@@ -37,23 +38,23 @@ import se.trixon.almond.util.SDict;
  * @author Patrik Karlström
  */
 @ServiceProvider(service = LayerBundle.class)
-public class ConvergenceLayerBundle extends BfLayerBundle {
+public class ConvergenceGroupLayerBundle extends BfLayerBundle {
 
     private final ConvergenceAttributeManager mAttributeManager = ConvergenceAttributeManager.getInstance();
     private final GraphicRenderer mGraphicRenderer;
     private final RenderableLayer mGroundConnectorLayer = new RenderableLayer();
     private final RenderableLayer mLabelLayer = new RenderableLayer();
     private final RenderableLayer mLayer = new RenderableLayer();
-    private final ConvergenceManager mManager = ConvergenceManager.getInstance();
-    private final ConvergenceOptionsView mOptionsView;
+    private final ConvergenceGroupManager mManager = ConvergenceGroupManager.getInstance();
+    private final ConvergenceGroupOptionsView mOptionsView;
     private final RenderableLayer mPinLayer = new RenderableLayer();
     private final RenderableLayer mSurfaceLayer = new RenderableLayer();
     private final RenderableLayer mSymbolLayer = new RenderableLayer();
 
-    public ConvergenceLayerBundle() {
+    public ConvergenceGroupLayerBundle() {
         init();
         initRepaint();
-        mOptionsView = new ConvergenceOptionsView(this);
+        mOptionsView = new ConvergenceGroupOptionsView(this);
         mGraphicRenderer = new GraphicRenderer(mLayer, mGroundConnectorLayer, mSurfaceLayer, mOptionsView.getGraphicCheckModel());
         initListeners();
 
@@ -72,10 +73,10 @@ public class ConvergenceLayerBundle extends BfLayerBundle {
     }
 
     private void init() {
-        mLayer.setName(Bundle.CTL_ConvergencePointAction());
+        mLayer.setName(Bundle.CTL_ConvergenceGroupAction());
         setCategory(mLayer, SDict.TOPOGRAPHY.toString());
-        setName(Bundle.CTL_ConvergencePointAction());
-        attachTopComponentToLayer("ConvergenceTopComponent", mLayer);
+        setName(Bundle.CTL_ConvergenceGroupAction());
+        attachTopComponentToLayer("ConvergenceGroupTopComponent", mLayer);
         mLayer.setMaxActiveAltitude(6000);
         mSurfaceLayer.setMaxActiveAltitude(6000);
         mPinLayer.setMaxActiveAltitude(20000);
@@ -159,8 +160,8 @@ public class ConvergenceLayerBundle extends BfLayerBundle {
         });
     }
 
-    private PointPlacemark plotLabel(BTopoConvergencePoint p, ConvergenceLabelBy labelBy, Position position) {
-        if (labelBy == ConvergenceLabelBy.NONE) {
+    private PointPlacemark plotLabel(BTopoConvergencePoint p, ConvergenceGroupLabelBy labelBy, Position position) {
+        if (labelBy == ConvergenceGroupLabelBy.NONE) {
             return null;
         }
 

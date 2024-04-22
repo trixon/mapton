@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_topo.convergence;
+package org.mapton.butterfly_topo_convergence.group;
 
 import java.util.Objects;
 import java.util.function.Function;
@@ -25,7 +25,7 @@ import se.trixon.almond.util.Dict;
  *
  * @author Patrik Karlström
  */
-public enum ConvergenceLabelBy {
+public enum ConvergenceGroupLabelBy {
     NAME(Strings.CAT_ROOT, Dict.NAME.toString(), p -> {
         return p.getName();
     }),
@@ -39,7 +39,7 @@ public enum ConvergenceLabelBy {
     private final Function<BTopoConvergencePoint, String> mFunction;
     private final String mName;
 
-    private ConvergenceLabelBy(String category, String name, Function<BTopoConvergencePoint, String> function) {
+    private ConvergenceGroupLabelBy(String category, String name, Function<BTopoConvergencePoint, String> function) {
         mCategory = category;
         mName = name;
         mFunction = function;
