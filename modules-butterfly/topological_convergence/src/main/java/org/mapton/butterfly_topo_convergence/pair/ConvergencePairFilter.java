@@ -44,7 +44,14 @@ public class ConvergencePairFilter extends FormFilter<ConvergencePairManager> {
     @Override
     public void update() {
         var filteredItems = mManager.getAllItems().stream()
-                .filter(b -> validateFreeText(b.getName(), b.getGroup(), b.getComment()))
+                .filter(b -> validateFreeText(
+                b.getName(),
+                b.getP1().getName(),
+                b.getP2().getName(),
+                b.getConvergenceGroup().getName(),
+                b.getGroup(),
+                b.getComment())
+                )
                 .filter(b -> validateCheck(mGroupCheckModel, b.getGroup()))
                 .filter(b -> validateCoordinateArea(b.getLat(), b.getLon()))
                 .filter(b -> validateCoordinateRuler(b.getLat(), b.getLon()))
@@ -56,7 +63,6 @@ public class ConvergencePairFilter extends FormFilter<ConvergencePairManager> {
     }
 
     private ContainerTag createInfoContent() {
-        //TODO Add measOperator+latest
         var map = new LinkedHashMap<String, String>();
 
         map.put(Dict.TEXT.toString(), getFreeText());

@@ -96,8 +96,8 @@ public class ConvergenceGroupFilterPopOver extends BaseFilterPopOver {
 
     private void initSession() {
         var sessionManager = getSessionManager();
-        sessionManager.register("filter.convergence.pair.freeText", mFilter.freeTextProperty());
-        sessionManager.register("filter.convergence.pair.checkedGroup", mGroupSCCB.checkedStringProperty());
+        sessionManager.register("filter.convergence.group.freeText", mFilter.freeTextProperty());
+        sessionManager.register("filter.convergence.group.checkedGroup", mGroupSCCB.checkedStringProperty());
     }
 
 }

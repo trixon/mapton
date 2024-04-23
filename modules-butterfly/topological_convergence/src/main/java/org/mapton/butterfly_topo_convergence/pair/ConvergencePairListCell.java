@@ -26,11 +26,11 @@ import org.mapton.butterfly_format.types.topo.BTopoConvergencePair;
  */
 class ConvergencePairListCell extends ListCell<BTopoConvergencePair> {
 
-    private final Label mGroupLabel = new Label();
-    private final Label mDeltaLabel = new Label();
+    private final Label mDesc2Label = new Label();
+    private final Label mDesc3Label = new Label();
+    private final Label mPointNamesLabel = new Label();
     private final String mStyleBold = "-fx-font-weight: bold;";
     private VBox mVBox;
-    private final Label mPointNamesLabel = new Label();
 
     public ConvergencePairListCell() {
         createUI();
@@ -48,15 +48,26 @@ class ConvergencePairListCell extends ListCell<BTopoConvergencePair> {
 
     private void addContent(BTopoConvergencePair pair) {
         setText(null);
-        mPointNamesLabel.setText(pair.getName());
-        mGroupLabel.setText(pair.getConvergenceGroup().getName());
+        var desc1 = "%s (%s)".formatted(pair.getName(), pair.getConvergenceGroup().getName());
+        mPointNamesLabel.setText(desc1);
+        var ddd = 0.0;
+        if (!pair.getObservations().isEmpty()) {
+            ddd = pair.getObservations().getLast().getDeltaDeltaDistanceComparedToFirst();
+        }
+        var desc2 = "ΔΔL=%.1f mm  ΔΔR=%.1f mm  ΔΔH=%.1f mm".formatted(
+                ddd * 1000,
+                pair.getDeltaROverTime() * 1000,
+                pair.getDeltaZOverTime() * 1000
+        );
 
-        var deltas = "ΔL=%.3f  ΔR=%.3f  ΔH=%.3f  ".formatted(
+        var desc3 = "ΔL=%.3f  ΔR=%.3f  ΔH=%.3f  ".formatted(
                 pair.getDistance(),
                 pair.getDeltaR(),
                 pair.getDeltaZ()
         );
-        mDeltaLabel.setText(deltas);
+
+        mDesc2Label.setText(desc2);
+        mDesc3Label.setText(desc3);
 
         setGraphic(mVBox);
     }
@@ -70,8 +81,8 @@ class ConvergencePairListCell extends ListCell<BTopoConvergencePair> {
         mPointNamesLabel.setStyle(mStyleBold);
         mVBox = new VBox(
                 mPointNamesLabel,
-                mGroupLabel,
-                mDeltaLabel
+                mDesc2Label,
+                mDesc3Label
         );
     }
 

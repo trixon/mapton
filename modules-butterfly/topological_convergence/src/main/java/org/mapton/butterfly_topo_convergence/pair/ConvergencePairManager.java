@@ -28,6 +28,7 @@ import org.mapton.butterfly_format.types.topo.BTopoControlPointObservation;
 import org.mapton.butterfly_format.types.topo.BTopoConvergenceGroup;
 import org.mapton.butterfly_format.types.topo.BTopoConvergencePair;
 import org.mapton.butterfly_format.types.topo.BTopoConvergencePairObservation;
+import org.mapton.butterfly_topo.api.TopoManager;
 import org.mapton.butterfly_topo_convergence.group.ConvergenceGroupManager;
 
 /**
@@ -36,8 +37,10 @@ import org.mapton.butterfly_topo_convergence.group.ConvergenceGroupManager;
  */
 public class ConvergencePairManager extends BaseManager<BTopoConvergencePair> {
 
+    private final ConvergencePairChartBuilder mChartBuilder = new ConvergencePairChartBuilder();
     private final ConvergenceGroupManager mGroupManager = ConvergenceGroupManager.getInstance();
-//    private final ConvergencePropertiesBuilder mPropertiesBuilder = new ConvergencePropertiesBuilder();
+    private final ConvergencePairPropertiesBuilder mPropertiesBuilder = new ConvergencePairPropertiesBuilder();
+    private final TopoManager mTopoManager = TopoManager.getInstance();
 
     public static ConvergencePairManager getInstance() {
         return Holder.INSTANCE;
@@ -50,9 +53,13 @@ public class ConvergencePairManager extends BaseManager<BTopoConvergencePair> {
     }
 
     @Override
+    public Object getObjectChart(BTopoConvergencePair selectedObject) {
+        return mChartBuilder.build(selectedObject);
+    }
+
+    @Override
     public Object getObjectProperties(BTopoConvergencePair selectedObject) {
-//        return mPropertiesBuilder.build(selectedObject);
-        return selectedObject;
+        return mPropertiesBuilder.build(selectedObject);
     }
 
     @Override
@@ -99,18 +106,22 @@ public class ConvergencePairManager extends BaseManager<BTopoConvergencePair> {
                     var mid = first.getDestinationPoint(b, d * .5);
                     pair.setLat(mid.getLatitude());
                     pair.setLon(mid.getLongitude());
+
                     pairs.add(pair);
                 }
             }
         }
 
         for (var pair : pairs) {
-            //TODO Calculate delta time series
-
+            var observations = new ArrayList<BTopoConvergencePairObservation>();
             var dateToObservation1 = new HashMap<LocalDateTime, BTopoControlPointObservation>();
             var dateToObservation2 = new HashMap<LocalDateTime, BTopoControlPointObservation>();
-            pair.getP1().ext().getObservationsAllCalculated().forEach(o -> dateToObservation1.put(o.getDate(), o));
-            pair.getP2().ext().getObservationsAllCalculated().forEach(o -> dateToObservation2.put(o.getDate(), o));
+
+            var pp1 = mTopoManager.getAllItemsMap().get(pair.getP1().getName());
+            var pp2 = mTopoManager.getAllItemsMap().get(pair.getP2().getName());
+
+            pp1.ext().getObservationsTimeFiltered().forEach(o -> dateToObservation1.put(o.getDate(), o));
+            pp2.ext().getObservationsTimeFiltered().forEach(o -> dateToObservation2.put(o.getDate(), o));
 
             for (var entry : dateToObservation1.entrySet()) {
                 var date = entry.getKey();
@@ -120,9 +131,13 @@ public class ConvergencePairManager extends BaseManager<BTopoConvergencePair> {
                     var p1 = new Point3D(o1.getMeasuredX(), o1.getMeasuredY(), o1.getMeasuredZ());
                     var p2 = new Point3D(o2.getMeasuredX(), o2.getMeasuredY(), o2.getMeasuredZ());
 
-                    var pairObservation = new BTopoConvergencePairObservation(date, p1, p2);
+                    var pairObservation = new BTopoConvergencePairObservation(pair, date, p1, p2);
+                    observations.add(pairObservation);
                 }
             }
+
+            observations.sort((o1, o2) -> o1.getDate().compareTo(o2.getDate()));
+            pair.setObservations(observations);
         }
 
         initAllItems(pairs);
