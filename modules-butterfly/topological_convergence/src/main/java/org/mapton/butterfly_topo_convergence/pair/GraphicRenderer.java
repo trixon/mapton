@@ -27,9 +27,11 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashSet;
 import org.controlsfx.control.IndexedCheckModel;
+import org.mapton.api.Mapton;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.topo.BTopoConvergencePair;
 import org.mapton.butterfly_topo_convergence.ConvergenceAttributeManager;
+import org.mapton.worldwind.api.WWHelper;
 
 /**
  *
@@ -39,17 +41,16 @@ public class GraphicRenderer {
 
     private final ConvergenceAttributeManager mAttributeManager = ConvergenceAttributeManager.getInstance();
     private final IndexedCheckModel<GraphicRendererItem> mCheckModel;
-    private final RenderableLayer mGroundConnectorLayer;
+    private final RenderableLayer mLineLayer;
     private ArrayList<AVListImpl> mMapObjects;
     private final Material[] mMaterials;
     private final RenderableLayer mNodeLayer;
-    private double mOffset;
     private final HashSet<String> mPlottedNodes = new HashSet<>();
     private final RenderableLayer mSurfaceLayer;
 
     public GraphicRenderer(RenderableLayer nodeLayer, RenderableLayer groundConnectorLayer, RenderableLayer surfaceLayer, IndexedCheckModel<GraphicRendererItem> checkModel) {
         mNodeLayer = nodeLayer;
-        mGroundConnectorLayer = groundConnectorLayer;
+        mLineLayer = groundConnectorLayer;
         mSurfaceLayer = surfaceLayer;
         mCheckModel = checkModel;
         mMaterials = new Material[]{
@@ -75,7 +76,7 @@ public class GraphicRenderer {
 
     public void addRenderable(RenderableLayer layer, Renderable renderable) {
         layer.addRenderable(renderable);
-        if (layer == mNodeLayer) {
+        if (layer == mLineLayer) {
             if (renderable instanceof AVListImpl avlist) {
                 mMapObjects.add(avlist);
             }
@@ -86,14 +87,6 @@ public class GraphicRenderer {
 
     public void plot(BTopoConvergencePair pair, Position position, ArrayList<AVListImpl> mapObjects) {
         mMapObjects = mapObjects;
-
-        mOffset = pair.getConvergenceGroup().ext2().getControlPoints().stream()
-                .map(p -> p.getZeroZ())
-                .mapToDouble(Double::doubleValue).min().orElse(0);
-        if (mOffset < 0) {
-            mOffset = mOffset * -1.0;
-        }
-        mOffset += 2;
 
         if (mCheckModel.isChecked(GraphicRendererItem.LINES)) {
             plotLines(pair, position, mapObjects);
@@ -108,19 +101,18 @@ public class GraphicRenderer {
         mPlottedNodes.clear();
     }
 
-    private Position getPosition(BTopoControlPoint controlPoint) {
-        var altitude = controlPoint.getZeroZ() + mOffset;
-        return Position.fromDegrees(controlPoint.getLat(), controlPoint.getLon(), altitude);
-    }
-
     private void plotLines(BTopoConvergencePair pair, Position position, ArrayList<AVListImpl> mapObjects) {
-        var pos1 = getPosition(pair.getP1());
-        var pos2 = getPosition(pair.getP2());
+        if (pair.getObservations().isEmpty()) {
+            return;
+        }
+
+        var pos1 = PairHelper.getPosition(pair.getP1(), pair.getOffset());
+        var pos2 = PairHelper.getPosition(pair.getP2(), pair.getOffset());
 
         var path = new Path(pos1, pos2);
-        var attrs = new BasicShapeAttributes(mAttributeManager.getComponentGroundPathAttributes());
+        var attrs = new BasicShapeAttributes(mAttributeManager.getPairPathAttributes());
         var delta = pair.getObservations().getLast().getDeltaDeltaDistanceComparedToFirst();
-        var max = 0.010;
+        var max = 0.008;
         var level = Math.min(mMaterials.length - 1, (Math.abs(delta) / max) * (mMaterials.length - 1));
         attrs.setOutlineMaterial(mMaterials[(int) level]);
 
@@ -129,25 +121,34 @@ public class GraphicRenderer {
         }
 
         path.setAttributes(attrs);
-        addRenderable(mGroundConnectorLayer, path);
-        mapObjects.add(path);
+        addRenderable(mLineLayer, path);
     }
 
-    private void plotNode(BTopoControlPoint controlPoint) {
+    private void plotNode(BTopoControlPoint controlPoint, double offset) {
         var name = controlPoint.getName();
         if (!mPlottedNodes.contains(name)) {
-            var radius = 0.6;
-            var pyramid = new Pyramid(getPosition(controlPoint), radius, radius);
-            pyramid.setAttributes(mAttributeManager.getComponentEllipsoidAttributes());
+            var radius = PairHelper.NODE_SIZE;
+            var position = PairHelper.getPosition(controlPoint, offset);
+            var pyramid = new Pyramid(position, radius, radius);
+            pyramid.setAttributes(mAttributeManager.getNodeAttributes());
             addRenderable(mNodeLayer, pyramid);
 
+            var groundPath = new Path(position, WWHelper.positionFromPosition(position, 0.0));
+            groundPath.setAttributes(mAttributeManager.getGroundPathAttributes());
+            addRenderable(mNodeLayer, groundPath);
+
             mPlottedNodes.add(name);
+
+            var leftClickRunnable = (Runnable) () -> {
+                Mapton.getGlobalState().put(ConvergencePairChartBuilder.class.getName() + "node", name);
+            };
+            pyramid.setValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK, leftClickRunnable);
         }
     }
 
     private void plotNodes(BTopoConvergencePair pair, ArrayList<AVListImpl> mapObjects) {
-        plotNode(pair.getP1());
-        plotNode(pair.getP2());
+        plotNode(pair.getP1(), pair.getOffset());
+        plotNode(pair.getP2(), pair.getOffset());
     }
 
 }

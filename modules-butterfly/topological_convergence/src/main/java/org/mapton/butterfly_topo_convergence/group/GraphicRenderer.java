@@ -86,7 +86,7 @@ public class GraphicRenderer {
             var radius = 0.6;
             var pyramid = new Pyramid(p, radius * 1.0, radius * 1.0);
 
-            pyramid.setAttributes(mAttributeManager.getComponentEllipsoidAttributes());
+            pyramid.setAttributes(mAttributeManager.getNodeAttributes());
             addRenderable(mEllipsoidLayer, pyramid);
 
             for (var cp2 : convergencePoint.ext2().getControlPoints()) {
@@ -96,7 +96,7 @@ public class GraphicRenderer {
                 var altitude2 = cp2.getZeroZ() + offset;
                 var p2 = Position.fromDegrees(cp2.getLat(), cp2.getLon(), altitude2);
                 var groundPath = new Path(p, p2);
-                var attrs = new BasicShapeAttributes(mAttributeManager.getComponentGroundPathAttributes());
+                var attrs = new BasicShapeAttributes(mAttributeManager.getPairPathAttributes());
                 int colorIndex = random.nextInt(0, 3);
                 switch (colorIndex) {
                     case 0 ->

@@ -18,10 +18,10 @@ package org.mapton.butterfly_topo_convergence;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Material;
+import gov.nasa.worldwind.render.Offset;
 import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
 import java.awt.Color;
-import se.trixon.almond.util.GraphicsHelper;
 
 /**
  *
@@ -29,11 +29,13 @@ import se.trixon.almond.util.GraphicsHelper;
  */
 public class ConvergenceAttributeManager {
 
-    private BasicShapeAttributes mComponentEllipsoidAttributes;
-    private BasicShapeAttributes mComponentGroundPathAttributes;
-    private BasicShapeAttributes mSurfaceAttributes;
+    private BasicShapeAttributes mGroundPathAttributes;
+    private BasicShapeAttributes mIndicatorAttributes;
     private PointPlacemarkAttributes mLabelPlacemarkAttributes;
+    private BasicShapeAttributes mNodeAttributes;
+    private BasicShapeAttributes mPairPathAttributes;
     private PointPlacemarkAttributes mPinAttributes;
+    private BasicShapeAttributes mSurfaceAttributes;
 
     public static ConvergenceAttributeManager getInstance() {
         return Holder.INSTANCE;
@@ -42,27 +44,74 @@ public class ConvergenceAttributeManager {
     private ConvergenceAttributeManager() {
     }
 
-    public BasicShapeAttributes getComponentEllipsoidAttributes() {
-        if (mComponentEllipsoidAttributes == null) {
-            mComponentEllipsoidAttributes = new BasicShapeAttributes();
-            mComponentEllipsoidAttributes.setDrawOutline(false);
-            mComponentEllipsoidAttributes.setInteriorMaterial(Material.ORANGE);
-            mComponentEllipsoidAttributes.setEnableLighting(true);
+    public BasicShapeAttributes getGroundPathAttributes() {
+        if (mGroundPathAttributes == null) {
+            mGroundPathAttributes = new BasicShapeAttributes();
+            mGroundPathAttributes.setDrawOutline(true);
+            mGroundPathAttributes.setOutlineMaterial(Material.LIGHT_GRAY);
+            mGroundPathAttributes.setEnableLighting(false);
+            mGroundPathAttributes.setOutlineWidth(1);
         }
 
-        return mComponentEllipsoidAttributes;
+        return mGroundPathAttributes;
     }
 
-    public BasicShapeAttributes getComponentGroundPathAttributes() {
-        if (mComponentGroundPathAttributes == null) {
-            mComponentGroundPathAttributes = new BasicShapeAttributes();
-            mComponentGroundPathAttributes.setDrawOutline(true);
-            mComponentGroundPathAttributes.setOutlineMaterial(Material.YELLOW);
-            mComponentGroundPathAttributes.setEnableLighting(false);
-            mComponentGroundPathAttributes.setOutlineWidth(1);
+    public BasicShapeAttributes getIndicatorAttributes() {
+        if (mIndicatorAttributes == null) {
+            mIndicatorAttributes = new BasicShapeAttributes();
+            mIndicatorAttributes.setDrawOutline(false);
+            mIndicatorAttributes.setInteriorMaterial(Material.RED);
+            mIndicatorAttributes.setEnableLighting(true);
+            mIndicatorAttributes.setInteriorOpacity(0.4);
         }
 
-        return mComponentGroundPathAttributes;
+        return mIndicatorAttributes;
+    }
+
+    public PointPlacemarkAttributes getLabelPlacemarkAttributes() {
+        if (mLabelPlacemarkAttributes == null) {
+            mLabelPlacemarkAttributes = new PointPlacemarkAttributes(new PointPlacemark(Position.ZERO).getDefaultAttributes());
+            mLabelPlacemarkAttributes.setLabelScale(1.6);
+            mLabelPlacemarkAttributes.setScale(0.0);
+            mLabelPlacemarkAttributes.setDrawImage(false);
+            mLabelPlacemarkAttributes.setLabelOffset(Offset.TOP_CENTER);
+        }
+
+        return mLabelPlacemarkAttributes;
+    }
+
+    public BasicShapeAttributes getNodeAttributes() {
+        if (mNodeAttributes == null) {
+            mNodeAttributes = new BasicShapeAttributes();
+            mNodeAttributes.setDrawOutline(false);
+            mNodeAttributes.setInteriorMaterial(Material.ORANGE);
+            mNodeAttributes.setEnableLighting(true);
+        }
+
+        return mNodeAttributes;
+    }
+
+    public BasicShapeAttributes getPairPathAttributes() {
+        if (mPairPathAttributes == null) {
+            mPairPathAttributes = new BasicShapeAttributes();
+            mPairPathAttributes.setDrawOutline(true);
+            mPairPathAttributes.setOutlineMaterial(Material.YELLOW);
+            mPairPathAttributes.setEnableLighting(false);
+            mPairPathAttributes.setOutlineWidth(2);
+        }
+
+        return mPairPathAttributes;
+    }
+
+    public PointPlacemarkAttributes getPinAttributes() {
+        if (mPinAttributes == null) {
+            mPinAttributes = new PointPlacemarkAttributes(new PointPlacemark(Position.ZERO).getDefaultAttributes());
+            mPinAttributes.setScale(0.75);
+            mPinAttributes.setImageAddress("images/pushpins/plain-white.png");
+            mPinAttributes.setImageColor(Color.ORANGE.darker());
+        }
+
+        return mPinAttributes;
     }
 
     public BasicShapeAttributes getSurfaceAttributes() {
@@ -75,29 +124,6 @@ public class ConvergenceAttributeManager {
         }
 
         return mSurfaceAttributes;
-    }
-
-    public PointPlacemarkAttributes getLabelPlacemarkAttributes() {
-        if (mLabelPlacemarkAttributes == null) {
-            mLabelPlacemarkAttributes = new PointPlacemarkAttributes(new PointPlacemark(Position.ZERO).getDefaultAttributes());
-            mLabelPlacemarkAttributes.setLabelScale(1.6);
-            mLabelPlacemarkAttributes.setImageColor(GraphicsHelper.colorAddAlpha(Color.RED, 0));
-            mLabelPlacemarkAttributes.setScale(0.75);
-            mLabelPlacemarkAttributes.setImageAddress("images/pushpins/plain-white.png");
-        }
-
-        return mLabelPlacemarkAttributes;
-    }
-
-    public PointPlacemarkAttributes getPinAttributes() {
-        if (mPinAttributes == null) {
-            mPinAttributes = new PointPlacemarkAttributes(new PointPlacemark(Position.ZERO).getDefaultAttributes());
-            mPinAttributes.setScale(0.75);
-            mPinAttributes.setImageAddress("images/pushpins/plain-white.png");
-            mPinAttributes.setImageColor(Color.ORANGE.darker());
-        }
-
-        return mPinAttributes;
     }
 
     private static class Holder {

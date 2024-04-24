@@ -80,7 +80,7 @@ public class ConvergencePairLayerBundle extends BfLayerBundle {
         mLayer.setMaxActiveAltitude(6000);
         mSurfaceLayer.setMaxActiveAltitude(6000);
         mPinLayer.setMaxActiveAltitude(20000);
-        mLabelLayer.setMaxActiveAltitude(2000);
+        mLabelLayer.setMaxActiveAltitude(100);
         mGroundConnectorLayer.setMaxActiveAltitude(1000);
         setParentLayer(mLayer);
         setAllChildLayers(mLabelLayer, mSymbolLayer, mPinLayer, mGroundConnectorLayer, mSurfaceLayer);
@@ -164,11 +164,11 @@ public class ConvergencePairLayerBundle extends BfLayerBundle {
         if (labelBy == ConvergencePairLabelBy.NONE) {
             return null;
         }
-
-        var placemark = new PointPlacemark(position);
-        placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
+        var pos = WWHelper.positionFromPosition(position, p.getZeroZ());
+        var placemark = new PointPlacemark(pos);
+        placemark.setAltitudeMode(WorldWind.ABSOLUTE);
         placemark.setAttributes(mAttributeManager.getLabelPlacemarkAttributes());
-        placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(mAttributeManager.getLabelPlacemarkAttributes(), 1.5));
+//        placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(mAttributeManager.getLabelPlacemarkAttributes(), 1.5));
         placemark.setLabelText(labelBy.getLabel(p));
         mLabelLayer.addRenderable(placemark);
 

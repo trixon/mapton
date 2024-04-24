@@ -20,6 +20,7 @@ import java.awt.Font;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.concurrent.Callable;
+import org.apache.commons.lang3.StringUtils;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -38,11 +39,14 @@ import org.jfree.chart.ui.RectangleInsets;
 import org.jfree.chart.ui.VerticalAlignment;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
+import org.mapton.api.MKey;
 import org.mapton.api.MTemporalManager;
+import org.mapton.api.Mapton;
 import org.mapton.api.ui.forms.ChartBuilder;
 import org.mapton.butterfly_format.types.topo.BTopoConvergencePair;
 import org.mapton.ce_jfreechart.api.ChartHelper;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.StringHelper;
 import se.trixon.almond.util.swing.SwingHelper;
 
 /**
@@ -62,6 +66,10 @@ public class ConvergencePairChartBuilder extends ChartBuilder<BTopoConvergencePa
 
     public ConvergencePairChartBuilder() {
         initChart();
+
+        Mapton.getGlobalState().addListener(gsce -> {
+            plotChartForNode(gsce.getValue());
+        }, ConvergencePairChartBuilder.class.getName() + "node");
     }
 
     @Override
@@ -104,8 +112,8 @@ public class ConvergencePairChartBuilder extends ChartBuilder<BTopoConvergencePa
         p.getObservations().forEach(o -> {
             var minute = mChartHelper.convertToMinute(o.getDate());
             mTimeSeriesH.add(minute, o.getDeltaDeltaDistanceComparedToFirst() * 1000);
-
         });
+
         mDataset.addSeries(mTimeSeriesH);
     }
 
@@ -163,5 +171,42 @@ public class ConvergencePairChartBuilder extends ChartBuilder<BTopoConvergencePa
         var compositeTitle = new CompositeTitle(blockContainer);
         compositeTitle.setPadding(new RectangleInsets(0, 20, 0, 20));
         mChart.addSubtitle(compositeTitle);
+    }
+
+    private void plotChartForNode(String node) {
+        var callable = (Callable<ChartPanel>) () -> {
+            mChart.setTitle(node);
+            updateDataset(node);
+            var plot = (XYPlot) mChart.getPlot();
+            var dateAxis = (DateAxis) plot.getDomainAxis();
+            dateAxis.setAutoRange(true);
+
+            plot.clearRangeMarkers();
+
+            var rangeAxis = (NumberAxis) plot.getRangeAxis();
+            rangeAxis.setAutoRange(true);
+
+            return mChartPanel;
+        };
+
+        Mapton.getGlobalState().put(MKey.CHART, callable);
+    }
+
+    private void updateDataset(String node) {
+        mDataset.removeAllSeries();
+
+        var plot = (XYPlot) mChart.getPlot();
+        plot.clearDomainMarkers();
+        mTimeSeriesH.clear();
+        var pairs = ConvergencePairManager.getInstance().getFilteredItems().filtered(p -> StringUtils.equalsAnyIgnoreCase(node, p.getP1().getName(), p.getP2().getName()));
+        for (var pair : pairs) {
+            var series = new TimeSeries(StringHelper.getTheOtherOne(node, pair.getP1().getName(), pair.getP2().getName()));
+            pair.getObservations().forEach(o -> {
+                var minute = mChartHelper.convertToMinute(o.getDate());
+                series.add(minute, o.getDeltaDeltaDistanceComparedToFirst() * 1000);
+            });
+
+            mDataset.addSeries(series);
+        }
     }
 }

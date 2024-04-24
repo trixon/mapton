@@ -15,13 +15,16 @@
  */
 package org.mapton.butterfly_topo_convergence.pair;
 
+import gov.nasa.worldwind.render.Ellipsoid;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Point3D;
-import org.mapton.api.MLatLon;
+import org.mapton.api.MOptions;
+import org.mapton.api.Mapton;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.topo.BTopoControlPointObservation;
@@ -29,7 +32,9 @@ import org.mapton.butterfly_format.types.topo.BTopoConvergenceGroup;
 import org.mapton.butterfly_format.types.topo.BTopoConvergencePair;
 import org.mapton.butterfly_format.types.topo.BTopoConvergencePairObservation;
 import org.mapton.butterfly_topo.api.TopoManager;
+import org.mapton.butterfly_topo_convergence.ConvergenceAttributeManager;
 import org.mapton.butterfly_topo_convergence.group.ConvergenceGroupManager;
+import org.mapton.worldwind.api.WWHelper;
 
 /**
  *
@@ -50,6 +55,31 @@ public class ConvergencePairManager extends BaseManager<BTopoConvergencePair> {
         super(BTopoConvergencePair.class);
 
         initListeners();
+    }
+
+    @Override
+    public Object getMapIndicator(BTopoConvergencePair pair) {
+        var pos1 = PairHelper.getPosition(pair.getP1(), pair.getOffset());
+        var pos2 = PairHelper.getPosition(pair.getP2(), pair.getOffset());
+        var radius = PairHelper.NODE_SIZE * 1.5;
+        var e1 = new Ellipsoid(pos1, radius, radius, radius);
+        var e2 = new Ellipsoid(pos2, radius, radius, radius);
+        var attrs = ConvergenceAttributeManager.getInstance().getIndicatorAttributes();
+
+        final String nameKey = "nodeName";
+
+        e1.setValue(nameKey, pair.getP1().getName());
+        e2.setValue(nameKey, pair.getP2().getName());
+
+        List.of(e1, e2).forEach(e -> {
+            var leftClickRunnable = (Runnable) () -> {
+                Mapton.getGlobalState().put(ConvergencePairChartBuilder.class.getName() + "node", e.getValue(nameKey));
+            };
+            e.setValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK, leftClickRunnable);
+            e.setAttributes(attrs);
+        });
+
+        return new Ellipsoid[]{e1, e2};
     }
 
     @Override
@@ -87,7 +117,9 @@ public class ConvergencePairManager extends BaseManager<BTopoConvergencePair> {
     }
 
     private void load() {
+        var cooTrans = MOptions.getInstance().getMapCooTrans();
         var pairs = new ArrayList<BTopoConvergencePair>();
+
         for (var group : mGroupManager.getTimeFilteredItems()) {
             var existingPairs = new HashSet<String>();
             for (var p1 : group.ext2().getControlPoints()) {
@@ -99,13 +131,9 @@ public class ConvergencePairManager extends BaseManager<BTopoConvergencePair> {
                     existingPairs.add("%s-%s".formatted(p1.getName(), p2.getName()));
 
                     var pair = new BTopoConvergencePair(group, p1, p2);
-                    var first = new MLatLon(p1.getLat(), p1.getLon());
-                    var second = new MLatLon(p2.getLat(), p2.getLon());
-                    var d = first.distance(second);
-                    var b = first.getBearing(second);
-                    var mid = first.getDestinationPoint(b, d * .5);
-                    pair.setLat(mid.getLatitude());
-                    pair.setLon(mid.getLongitude());
+                    var point = cooTrans.toWgs84(pair.getZeroY(), pair.getZeroX());
+                    pair.setLat(point.getY());
+                    pair.setLon(point.getX());
 
                     pairs.add(pair);
                 }

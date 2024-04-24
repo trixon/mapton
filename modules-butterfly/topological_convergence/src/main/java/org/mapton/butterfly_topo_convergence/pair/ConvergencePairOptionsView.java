@@ -113,9 +113,9 @@ public class ConvergencePairOptionsView extends MOptionsView {
 
     private void initSession() {
         var sessionManager = getSessionManager();
-        sessionManager.register("options.measPoint.pointBy", mPointScb.selectedIndexProperty());
-        sessionManager.register("options.measPoint.labelBy", mLabelByIdProperty);
-        sessionManager.register("options.measPoint.checkedGraphics", mGraphicSccb.checkedStringProperty());
+        sessionManager.register("options.convergence.pair.pointBy", mPointScb.selectedIndexProperty());
+        sessionManager.register("options.convergence.pair.labelBy", mLabelByIdProperty);
+        sessionManager.register("options.convergence.pair.checkedGraphics", mGraphicSccb.checkedStringProperty());
 
         mLabelByProperty.set(ConvergencePairLabelBy.valueOf(mLabelByIdProperty.get()));
     }

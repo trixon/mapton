@@ -32,6 +32,18 @@ public enum ConvergencePairLabelBy {
     NONE(Strings.CAT_ROOT, Dict.NONE.toString(), p -> {
         return "";
     }),
+    MISC_DELTA(Strings.CAT_MISC, "Delta", p -> {
+        return "%.1f".formatted(p.getDeltaDistanceOverTime() * 1000);
+    }),
+    MISC_DISTANCE(Strings.CAT_MISC, "Avstånd", p -> {
+        return "%.3f".formatted(p.getDistance());
+    }),
+    MISC_DISTANCE_PLANE(Strings.CAT_MISC, "Avstånd, plan", p -> {
+        return "%.3f".formatted(p.getDeltaR());
+    }),
+    MISC_DISTANCE_HEIGHT(Strings.CAT_MISC, "Avstånd, höjd", p -> {
+        return "%.3f".formatted(p.getDeltaZ());
+    }),
     MISC_GROUP(Strings.CAT_MISC, Dict.GROUP.toString(), p -> {
         return Objects.toString(p.getGroup(), "NODATA");
     });

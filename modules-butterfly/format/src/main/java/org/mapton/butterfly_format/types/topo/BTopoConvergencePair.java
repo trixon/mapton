@@ -42,10 +42,15 @@ public class BTopoConvergencePair extends BBaseControlPoint {
         mP2 = p2;
         setName("%s → %s".formatted(p1.getName(), p2.getName()));
 
-        var pp1 = new Point3D(p1.getZeroX(), p1.getZeroY(), p1.getZeroZ());
-        var pp2 = new Point3D(p2.getZeroX(), p2.getZeroY(), p2.getZeroZ());
-        mDelta = pp2.subtract(pp1);
-        mDistance = pp1.distance(pp2);
+        var p3d1 = new Point3D(p1.getZeroX(), p1.getZeroY(), p1.getZeroZ());
+        var p3d2 = new Point3D(p2.getZeroX(), p2.getZeroY(), p2.getZeroZ());
+        mDelta = p3d2.subtract(p3d1);
+        mDistance = p3d1.distance(p3d2);
+
+        var midPoint = p3d1.midpoint(p3d2);
+        setZeroX(midPoint.getX());
+        setZeroY(midPoint.getY());
+        setZeroZ(midPoint.getZ() + getOffset());
     }
 
     public Ext ext() {
@@ -107,6 +112,19 @@ public class BTopoConvergencePair extends BBaseControlPoint {
 
     public ArrayList<BTopoConvergencePairObservation> getObservations() {
         return mObservations;
+    }
+
+    public double getOffset() {
+        var offset = getConvergenceGroup().ext2().getControlPoints().stream()
+                .map(p -> p.getZeroZ())
+                .mapToDouble(Double::doubleValue).min().orElse(0);
+        if (offset < 0) {
+            offset = offset * -1.0;
+        }
+
+        offset += 2;
+
+        return offset;
     }
 
     public BTopoControlPoint getP1() {
