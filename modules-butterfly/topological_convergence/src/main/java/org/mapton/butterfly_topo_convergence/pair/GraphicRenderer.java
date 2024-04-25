@@ -89,7 +89,7 @@ public class GraphicRenderer {
         mMapObjects = mapObjects;
 
         if (mCheckModel.isChecked(GraphicRendererItem.LINES)) {
-            plotLines(pair, position, mapObjects);
+            plotLine(pair, position, mapObjects);
         }
 
         if (mCheckModel.isChecked(GraphicRendererItem.NODE)) {
@@ -101,7 +101,7 @@ public class GraphicRenderer {
         mPlottedNodes.clear();
     }
 
-    private void plotLines(BTopoConvergencePair pair, Position position, ArrayList<AVListImpl> mapObjects) {
+    private void plotLine(BTopoConvergencePair pair, Position position, ArrayList<AVListImpl> mapObjects) {
         if (pair.getObservations().isEmpty()) {
             return;
         }
@@ -112,10 +112,8 @@ public class GraphicRenderer {
         var path = new Path(pos1, pos2);
         var attrs = new BasicShapeAttributes(mAttributeManager.getPairPathAttributes());
         var delta = pair.getObservations().getLast().getDeltaDeltaDistanceComparedToFirst();
-        var max = 0.008;
-        var level = Math.min(mMaterials.length - 1, (Math.abs(delta) / max) * (mMaterials.length - 1));
-        attrs.setOutlineMaterial(mMaterials[(int) level]);
-
+        int level = pair.getLevel(mMaterials.length);
+        attrs.setOutlineMaterial(mMaterials[level]);
         if (delta >= 0) {
             attrs.setOutlineStippleFactor(3);
         }

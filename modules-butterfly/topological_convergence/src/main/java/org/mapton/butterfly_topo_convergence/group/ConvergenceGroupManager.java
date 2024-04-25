@@ -53,13 +53,13 @@ public class ConvergenceGroupManager extends BaseManager<BTopoConvergenceGroup> 
     public void load(Butterfly butterfly) {
         try {
             initAllItems(butterfly.topo().getConvergenceGroups());
-            for (var convergencePoint : butterfly.topo().getConvergenceGroups()) {
-                var controlPoints = Arrays.stream(StringUtils.split(convergencePoint.getRef(), ","))
+            for (var convergenceGroup : butterfly.topo().getConvergenceGroups()) {
+                var controlPoints = Arrays.stream(StringUtils.split(convergenceGroup.getRef(), ","))
                         .map(s -> butterfly.topo().getControlPointByName(s))
                         .filter(p -> p != null)
                         .collect(Collectors.toCollection(ArrayList::new));
 
-                convergencePoint.ext2().setControlPoints(controlPoints);
+                convergenceGroup.ext2().setControlPoints(controlPoints);
             }
         } catch (Exception e) {
             Exceptions.printStackTrace(e);

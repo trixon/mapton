@@ -59,6 +59,10 @@ public class ConvergencePairManager extends BaseManager<BTopoConvergencePair> {
 
     @Override
     public Object getMapIndicator(BTopoConvergencePair pair) {
+        if (pair == null) {
+            return null;
+        }
+
         var pos1 = PairHelper.getPosition(pair.getP1(), pair.getOffset());
         var pos2 = PairHelper.getPosition(pair.getP2(), pair.getOffset());
         var radius = PairHelper.NODE_SIZE * 1.5;

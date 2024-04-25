@@ -60,19 +60,19 @@ public class GraphicRenderer {
         }
     }
 
-    public void plot(BTopoConvergenceGroup convergencePoint, Position position, ArrayList<AVListImpl> mapObjects) {
+    public void plot(BTopoConvergenceGroup convergenceGroup, Position position, ArrayList<AVListImpl> mapObjects) {
         mMapObjects = mapObjects;
 
         if (mCheckModel.isChecked(GraphicRendererItem.BALLS)) {
-            plotPoints(convergencePoint, position, mapObjects);
+            plotPoints(convergenceGroup, position, mapObjects);
         }
     }
 
     public void reset() {
     }
 
-    private void plotPoints(BTopoConvergenceGroup convergencePoint, Position position, ArrayList<AVListImpl> mapObjects) {
-        var offset = convergencePoint.ext2().getControlPoints().stream()
+    private void plotPoints(BTopoConvergenceGroup convergenceGroup, Position position, ArrayList<AVListImpl> mapObjects) {
+        var offset = convergenceGroup.ext2().getControlPoints().stream()
                 .map(p -> p.getZeroZ())
                 .mapToDouble(Double::doubleValue).min().orElse(0);
         if (offset < 0) {
@@ -80,7 +80,7 @@ public class GraphicRenderer {
         }
         offset += 2;
         var random = new Random();
-        for (var controlPoint : convergencePoint.ext2().getControlPoints()) {
+        for (var controlPoint : convergenceGroup.ext2().getControlPoints()) {
             var altitude = controlPoint.getZeroZ() + offset;
             var p = Position.fromDegrees(controlPoint.getLat(), controlPoint.getLon(), altitude);
             var radius = 0.6;
@@ -89,7 +89,7 @@ public class GraphicRenderer {
             pyramid.setAttributes(mAttributeManager.getNodeAttributes());
             addRenderable(mEllipsoidLayer, pyramid);
 
-            for (var cp2 : convergencePoint.ext2().getControlPoints()) {
+            for (var cp2 : convergenceGroup.ext2().getControlPoints()) {
                 if (cp2 == controlPoint) {
                     continue;
                 }

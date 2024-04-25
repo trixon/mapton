@@ -18,7 +18,10 @@ package org.mapton.butterfly_topo_convergence.pair;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Polygon;
 import org.mapton.butterfly_format.types.topo.BTopoConvergencePair;
+import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
@@ -26,13 +29,36 @@ import org.mapton.butterfly_format.types.topo.BTopoConvergencePair;
  */
 class ConvergencePairListCell extends ListCell<BTopoConvergencePair> {
 
+    private final Color[] mColors;
+
     private final Label mDesc2Label = new Label();
     private final Label mDesc3Label = new Label();
+    private final Label mDesc4Label = new Label();
+    private Polygon mPlaneShape;
     private final Label mPointNamesLabel = new Label();
     private final String mStyleBold = "-fx-font-weight: bold;";
     private VBox mVBox;
 
     public ConvergencePairListCell() {
+        mColors = new Color[]{
+            //https://colordesigner.io/gradient-generator/?mode=hsl#00FF00-FF0000
+            Color.web("#00ff00"),
+            Color.web("#22ff00"),
+            Color.web("#44ff00"),
+            Color.web("#66ff00"),
+            Color.web("#88ff00"),
+            Color.web("#aaff00"),
+            Color.web("#ccff00"),
+            Color.web("#eeff00"),
+            Color.web("#ffee00"),
+            Color.web("#ffcc00"),
+            Color.web("#ffaa00"),
+            Color.web("#ff8800"),
+            Color.web("#ff6600"),
+            Color.web("#ff4400"),
+            Color.web("#ff2200"),
+            Color.web("#ff0000")
+        };
         createUI();
     }
 
@@ -54,20 +80,32 @@ class ConvergencePairListCell extends ListCell<BTopoConvergencePair> {
         if (!pair.getObservations().isEmpty()) {
             ddd = pair.getObservations().getLast().getDeltaDeltaDistanceComparedToFirst();
         }
-        var desc2 = "ΔΔL=%.1f mm  ΔΔR=%.1f mm  ΔΔH=%.1f mm".formatted(
+        var desc2 = "ΔL=%.1f mm  ΔP=%.1f mm  ΔH=%.1f mm".formatted(
                 ddd * 1000,
                 pair.getDeltaROverTime() * 1000,
                 pair.getDeltaZOverTime() * 1000
         );
 
-        var desc3 = "ΔL=%.3f  ΔR=%.3f  ΔH=%.3f  ".formatted(
+        var desc3 = "L=%.3f m  P=%.3f m  H=%.3f m".formatted(
                 pair.getDistance(),
                 pair.getDeltaR(),
                 pair.getDeltaZ()
         );
 
+        var desc4 = "";
+        if (!pair.getObservations().isEmpty()) {
+            desc4 = "%s - %s (%d)".formatted(
+                    pair.getObservations().getFirst().getDate().toLocalDate().toString(),
+                    pair.getObservations().getLast().getDate().toLocalDate().toString(),
+                    pair.getObservations().size()
+            );
+        }
+
         mDesc2Label.setText(desc2);
         mDesc3Label.setText(desc3);
+        mDesc4Label.setText(desc4);
+
+        mPlaneShape.setFill(mColors[pair.getLevel(mColors.length)]);
 
         setGraphic(mVBox);
     }
@@ -78,11 +116,22 @@ class ConvergencePairListCell extends ListCell<BTopoConvergencePair> {
     }
 
     private void createUI() {
+        final double SIZE = FxHelper.getUIScaled(12);
+        mPlaneShape = new Polygon();
+        mPlaneShape.getPoints().addAll(new Double[]{
+            SIZE / 2, 0.0,
+            SIZE, SIZE,
+            0.0, SIZE
+        });
+
+        mPointNamesLabel.setGraphic(mPlaneShape);
+        mPointNamesLabel.setGraphicTextGap(FxHelper.getUIScaled(8));
         mPointNamesLabel.setStyle(mStyleBold);
         mVBox = new VBox(
                 mPointNamesLabel,
                 mDesc2Label,
-                mDesc3Label
+                mDesc3Label,
+                mDesc4Label
         );
     }
 

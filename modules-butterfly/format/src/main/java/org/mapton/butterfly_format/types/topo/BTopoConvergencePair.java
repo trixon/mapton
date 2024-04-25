@@ -110,6 +110,15 @@ public class BTopoConvergencePair extends BBaseControlPoint {
         return mDistance;
     }
 
+    public int getLevel(int length) {
+        if (getObservations().isEmpty()) {
+            return 0;
+        }
+        var delta = getObservations().getLast().getDeltaDeltaDistanceComparedToFirst();
+        int level = (int) Math.min(length - 1, (Math.abs(delta) / getConvergenceGroup().getLimit()) * (length - 1));
+        return level;
+    }
+
     public ArrayList<BTopoConvergencePairObservation> getObservations() {
         return mObservations;
     }

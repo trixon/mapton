@@ -26,7 +26,7 @@ public class BTopoConvergenceGroup extends BTopoControlPoint {
 
     @JsonIgnore
     private Ext mExt;
-
+    private double mLimit;
     private String mRef;
 
     public Ext ext2() {
@@ -37,12 +37,20 @@ public class BTopoConvergenceGroup extends BTopoControlPoint {
         return mExt;
     }
 
+    public double getLimit() {
+        return mLimit;
+    }
+
     public String getRef() {
         return mRef;
     }
 
+    public void setLimit(double limit) {
+        mLimit = limit;
+    }
+
     public void setRef(String ref) {
-        this.mRef = ref;
+        mRef = ref;
     }
 
     public class Ext {
@@ -54,9 +62,8 @@ public class BTopoConvergenceGroup extends BTopoControlPoint {
         }
 
         public void setControlPoints(ArrayList<BTopoControlPoint> controlPoints) {
-            this.mControlPoints = controlPoints;
+            mControlPoints = controlPoints;
         }
 
     }
-
 }

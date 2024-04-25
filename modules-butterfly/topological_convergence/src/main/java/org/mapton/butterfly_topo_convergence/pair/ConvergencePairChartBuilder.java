@@ -19,6 +19,8 @@ import java.awt.Color;
 import java.awt.Font;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.time.temporal.ChronoUnit;
+import java.util.LinkedHashMap;
 import java.util.concurrent.Callable;
 import org.apache.commons.lang3.StringUtils;
 import org.jfree.chart.ChartFactory;
@@ -37,14 +39,19 @@ import org.jfree.chart.ui.HorizontalAlignment;
 import org.jfree.chart.ui.RectangleEdge;
 import org.jfree.chart.ui.RectangleInsets;
 import org.jfree.chart.ui.VerticalAlignment;
+import org.jfree.data.general.SeriesException;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.mapton.api.MKey;
+import org.mapton.api.MLatLon;
 import org.mapton.api.MTemporalManager;
 import org.mapton.api.Mapton;
 import org.mapton.api.ui.forms.ChartBuilder;
+import org.mapton.butterfly_core.api.ButterflyManager;
 import org.mapton.butterfly_format.types.topo.BTopoConvergencePair;
+import org.mapton.butterfly_format.types.topo.BTopoConvergencePairObservation;
 import org.mapton.ce_jfreechart.api.ChartHelper;
+import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.StringHelper;
 import se.trixon.almond.util.swing.SwingHelper;
@@ -62,7 +69,9 @@ public class ConvergencePairChartBuilder extends ChartBuilder<BTopoConvergencePa
     private TextTitle mDateSubTextTitle;
     private TextTitle mDeltaSubTextTitle;
     private final MTemporalManager mTemporalManager = MTemporalManager.getInstance();
-    private final TimeSeries mTimeSeriesH = new TimeSeries("Nivå");
+    private final TimeSeries mTimeSeriesBlast = new TimeSeries("Salvor inom 100 m");
+    private final TimeSeries mTimeSeriesDeltaL = new TimeSeries("Längdförändring");
+    private final TimeSeries mTimeSeriesDeltaV = new TimeSeries("Hastighet");
 
     public ConvergencePairChartBuilder() {
         initChart();
@@ -104,17 +113,37 @@ public class ConvergencePairChartBuilder extends ChartBuilder<BTopoConvergencePa
     @Override
     public void updateDataset(BTopoConvergencePair p) {
         mDataset.removeAllSeries();
-        mTimeSeriesH.clear();
+        mTimeSeriesDeltaL.clear();
+        mTimeSeriesDeltaV.clear();
+        mTimeSeriesBlast.clear();
 
         var plot = (XYPlot) mChart.getPlot();
         plot.clearDomainMarkers();
 
-        p.getObservations().forEach(o -> {
+        BTopoConvergencePairObservation prevO = null;
+        for (var o : p.getObservations()) {
             var minute = mChartHelper.convertToMinute(o.getDate());
-            mTimeSeriesH.add(minute, o.getDeltaDeltaDistanceComparedToFirst() * 1000);
-        });
+            mTimeSeriesDeltaL.add(minute, o.getDeltaDeltaDistanceComparedToFirst() * 1000);
 
-        mDataset.addSeries(mTimeSeriesH);
+            var velocity = 0.0;
+            if (prevO != null) {
+                var delta = o.getDeltaDistanceInPairForSameDate() - prevO.getDeltaDistanceInPairForSameDate();
+                var timeSpan = prevO.getDate().until(o.getDate(), ChronoUnit.HOURS);
+                velocity = delta / (timeSpan / 168.0) * 1000;
+            }
+
+            mTimeSeriesDeltaV.add(minute, Math.abs(velocity));
+
+            prevO = o;
+        }
+        if (!p.getObservations().isEmpty()) {
+            plotBlasts(p);
+        }
+        mDataset.addSeries(mTimeSeriesDeltaL);
+        mDataset.addSeries(mTimeSeriesDeltaV);
+        if (!mTimeSeriesBlast.isEmpty()) {
+            mDataset.addSeries(mTimeSeriesBlast);
+        }
     }
 
     private void initChart() {
@@ -173,6 +202,24 @@ public class ConvergencePairChartBuilder extends ChartBuilder<BTopoConvergencePa
         mChart.addSubtitle(compositeTitle);
     }
 
+    private void plotBlasts(BTopoConvergencePair p) {
+        ButterflyManager.getInstance().getButterfly().acoustic().getBlasts().forEach(b -> {
+            var ll1 = new MLatLon(b.getLat(), b.getLon());
+            var ll2 = new MLatLon(p.getP1().getLat(), p.getP1().getLon());
+
+            if (ll1.distance(ll2) <= 100 && DateHelper.isBetween(p.getObservations().getFirst().getDate().toLocalDate(),
+                    p.getObservations().getLast().getDate().toLocalDate(),
+                    b.getDateTime().toLocalDate())) {
+                try {
+                    var minute = mChartHelper.convertToMinute(b.getDateTime());
+                    mTimeSeriesBlast.add(minute, -20.0);
+                } catch (SeriesException e) {
+                    //
+                }
+            }
+        });
+    }
+
     private void plotChartForNode(String node) {
         var callable = (Callable<ChartPanel>) () -> {
             mChart.setTitle(node);
@@ -197,15 +244,23 @@ public class ConvergencePairChartBuilder extends ChartBuilder<BTopoConvergencePa
 
         var plot = (XYPlot) mChart.getPlot();
         plot.clearDomainMarkers();
-        mTimeSeriesH.clear();
+        var propertyMap = new LinkedHashMap<String, Object>();
+        var cat1 = Dict.BASIC.toString();
+
+        propertyMap.put(cat1 + "#Origin", node);
+
         var pairs = ConvergencePairManager.getInstance().getFilteredItems().filtered(p -> StringUtils.equalsAnyIgnoreCase(node, p.getP1().getName(), p.getP2().getName()));
+        int i = 1;
         for (var pair : pairs) {
-            var series = new TimeSeries(StringHelper.getTheOtherOne(node, pair.getP1().getName(), pair.getP2().getName()));
+            var theOtherOne = StringHelper.getTheOtherOne(node, pair.getP1().getName(), pair.getP2().getName());
+            var series = new TimeSeries(theOtherOne);
             pair.getObservations().forEach(o -> {
                 var minute = mChartHelper.convertToMinute(o.getDate());
                 series.add(minute, o.getDeltaDeltaDistanceComparedToFirst() * 1000);
             });
 
+            propertyMap.put(cat1 + "#" + theOtherOne, "%.1f mm".formatted(pair.getDeltaDistanceOverTime() * 1000));
+            Mapton.getGlobalState().put(MKey.OBJECT_PROPERTIES, propertyMap);
             mDataset.addSeries(series);
         }
     }

@@ -42,6 +42,7 @@ public class ConvergencePairPropertiesBuilder extends PropertiesBuilder<BTopoCon
 
         propertyMap.put(getCatKey(cat1, Dict.NAME.toString()), p.getName());
         propertyMap.put(getCatKey(cat1, Dict.GROUP.toString()), p.getConvergenceGroup().getName());
+        propertyMap.put(getCatKey(cat1, "Gränsvärde (grupp)"), p.getConvergenceGroup().getLimit());
         propertyMap.put(getCatKey(cat1, "P1"), p.getP1().getName());
         propertyMap.put(getCatKey(cat1, "P2"), p.getP2().getName());
         propertyMap.put(getCatKey(cat1, Dict.FIRST.toString()), firstDate);
@@ -49,13 +50,13 @@ public class ConvergencePairPropertiesBuilder extends PropertiesBuilder<BTopoCon
         propertyMap.put(getCatKey(cat1, Dict.AGE.toString()), p.ext().getAge(ChronoUnit.DAYS));
         propertyMap.put(getCatKey(cat1, "Count"), p.getObservations().size());
 
-        var desc2 = "ΔΔL=%.1fmm  ΔΔR=%.1fmm  ΔΔH=%.1fmm".formatted(
+        var desc2 = "ΔL=%.1f mm  ΔP=%.1f mm  ΔH=%.1f mm".formatted(
                 p.getDeltaDistanceOverTime() * 1000,
                 p.getDeltaROverTime() * 1000,
                 p.getDeltaZOverTime() * 1000
         );
 
-        var desc3 = "ΔL=%.3f  ΔR=%.3f  ΔH=%.3f  ".formatted(
+        var desc3 = "L=%.3f m  P=%.3f m  H=%.3f m".formatted(
                 p.getDistance(),
                 p.getDeltaR(),
                 p.getDeltaZ()
