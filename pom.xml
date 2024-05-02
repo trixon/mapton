@@ -227,6 +227,16 @@
                 <artifactId>butterfly-acoustic</artifactId>
                 <version>${mapton.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.mapton</groupId>
+                <artifactId>butterfly-geo</artifactId>
+                <version>${mapton.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mapton</groupId>
+                <artifactId>butterfly-geo-extensometer</artifactId>
+                <version>${mapton.version}</version>
+            </dependency>
 
             <!-- Trixon -->
             <dependency>
@@ -305,7 +315,7 @@
             <dependency>
                 <groupId>commons-codec</groupId>
                 <artifactId>commons-codec</artifactId>
-                <version>1.16.1</version>
+                <version>1.17.0</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>

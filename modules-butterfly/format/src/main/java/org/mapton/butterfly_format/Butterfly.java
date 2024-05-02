@@ -26,6 +26,9 @@ import org.mapton.butterfly_format.types.BAreaActivity;
 import org.mapton.butterfly_format.types.BAreaBase;
 import org.mapton.butterfly_format.types.acoustic.BAcousticMeasuringPoint;
 import org.mapton.butterfly_format.types.acoustic.BBlast;
+import org.mapton.butterfly_format.types.geo.BGeoExtensometer;
+import org.mapton.butterfly_format.types.geo.BGeoExtensometerPoint;
+import org.mapton.butterfly_format.types.geo.BGeoExtensometerPointObservation;
 import org.mapton.butterfly_format.types.hydro.BGroundwaterObservation;
 import org.mapton.butterfly_format.types.hydro.BGroundwaterPoint;
 import org.mapton.butterfly_format.types.monmon.BMonmon;
@@ -52,6 +55,10 @@ public class Butterfly {
     private final ArrayList<BAreaActivity> mAreaActivities = new ArrayList<>();
     private final ArrayList<BAreaBase> mAreaFilters = new ArrayList<>();
     private final ArrayList<BBlast> mBlasts = new ArrayList<>();
+    private final ArrayList<BGeoExtensometer> mGeoExtensometers = new ArrayList<>();
+    private final ArrayList<BGeoExtensometerPoint> mGeoExtensometersPoints = new ArrayList<>();
+    private final ArrayList<BGeoExtensometerPointObservation> mGeoExtensometersPointsObservations = new ArrayList<>();
+    private final Geotechnical mGeotechnical = new Geotechnical();
     private final Hydro mHydro = new Hydro();
     private final ArrayList<BGroundwaterObservation> mHydroGroundwaterObservations = new ArrayList<>();
     private final ArrayList<BGroundwaterPoint> mHydroGroundwaterPoints = new ArrayList<>();
@@ -71,6 +78,10 @@ public class Butterfly {
 
     public Acoustic acoustic() {
         return mAcoustic;
+    }
+
+    public Geotechnical geotechnical() {
+        return mGeotechnical;
     }
 
     public ArrayList<BAlarm> getAlarms() {
@@ -156,6 +167,16 @@ public class Butterfly {
 
         new ImportFromCsv<BRorelseObservation>(BRorelseObservation.class) {
         }.load(sourceDir, "tmoRorelseObservations.csv", mTmo.getRorelseObservations());
+
+        //Geotechnical
+        new ImportFromCsv<BGeoExtensometer>(BGeoExtensometer.class) {
+        }.load(sourceDir, "geoExtensometers.csv", mGeoExtensometers);
+
+        new ImportFromCsv<BGeoExtensometerPoint>(BGeoExtensometerPoint.class) {
+        }.load(sourceDir, "geoExtensometersPoints.csv", mGeoExtensometersPoints);
+
+        new ImportFromCsv<BGeoExtensometerPointObservation>(BGeoExtensometerPointObservation.class) {
+        }.load(sourceDir, "geoExtensometersPointsObservations.csv", mGeoExtensometersPointsObservations);
     }
 
     void postLoad() {
@@ -169,6 +190,10 @@ public class Butterfly {
         }
 
         for (var p : tmo().mGrundvatten) {
+            p.setButterfly(this);
+        }
+
+        for (var p : mGeoExtensometers) {
             p.setButterfly(this);
         }
 
@@ -214,6 +239,14 @@ public class Butterfly {
     }
 
     public class Ext {
+
+    }
+
+    public class Geotechnical {
+
+        public ArrayList<BGeoExtensometer> getExtensometers() {
+            return mGeoExtensometers;
+        }
 
     }
 
@@ -278,13 +311,6 @@ public class Butterfly {
 
         private final HashMap<String, BTopoControlPoint> mNameToControlPoint = new HashMap<>();
 
-        private void postLoad() {
-            mNameToControlPoint.clear();
-            getControlPoints().forEach(controlPoint -> {
-                mNameToControlPoint.put(controlPoint.getName(), controlPoint);
-            });
-        }
-
         public BTopoControlPoint getControlPointByName(String name) {
             return mNameToControlPoint.get(name);
         }
@@ -299,6 +325,13 @@ public class Butterfly {
 
         public ArrayList<BTopoConvergenceGroup> getConvergenceGroups() {
             return mTopoConvergenceGroups;
+        }
+
+        private void postLoad() {
+            mNameToControlPoint.clear();
+            getControlPoints().forEach(controlPoint -> {
+                mNameToControlPoint.put(controlPoint.getName(), controlPoint);
+            });
         }
     }
 }

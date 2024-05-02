@@ -128,8 +128,9 @@ public class ConvergencePairChartBuilder extends ChartBuilder<BTopoConvergencePa
             var velocity = 0.0;
             if (prevO != null) {
                 var delta = o.getDeltaDistanceInPairForSameDate() - prevO.getDeltaDistanceInPairForSameDate();
-                var timeSpan = prevO.getDate().until(o.getDate(), ChronoUnit.HOURS);
-                velocity = delta / (timeSpan / 168.0) * 1000;
+                var timeSpanMinutes = prevO.getDate().until(o.getDate(), ChronoUnit.MINUTES);
+                double minutesInAWeek = 168.0 * 60;
+                velocity = delta / (timeSpanMinutes / minutesInAWeek) * 1000;
             }
 
             mTimeSeriesDeltaV.add(minute, Math.abs(velocity));

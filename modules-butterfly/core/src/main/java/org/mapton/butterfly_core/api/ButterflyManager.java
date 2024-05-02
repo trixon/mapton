@@ -197,6 +197,8 @@ public class ButterflyManager {
                 calculateLatLonsTmo(butterfly.tmo().getVaderstation());
                 calculateLatLonsTmo(butterfly.tmo().getVattenkemi());
 
+                calculateLatLons(butterfly.geotechnical().getExtensometers());
+
                 var areas = new ArrayList<MArea>();
                 var prefix = "Haga/";
                 butterfly.getAreaFilters().stream().forEachOrdered(areaFilter -> {

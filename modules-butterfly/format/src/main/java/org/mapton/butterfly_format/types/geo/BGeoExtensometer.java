@@ -15,8 +15,10 @@
  */
 package org.mapton.butterfly_format.types.geo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import java.util.ArrayList;
 import org.mapton.butterfly_format.types.BBaseControlPoint;
 
 /**
@@ -58,11 +60,20 @@ import org.mapton.butterfly_format.types.BBaseControlPoint;
     "dateValidFrom", "dateValidTo", "lat", "lon", "origin",
     "dateLatest"
 })
-public class BGeoExtensometerGroup extends BBaseControlPoint {
+public class BGeoExtensometer extends BBaseControlPoint {
 
+    @JsonIgnore
+    private Ext mExt;
     private String points;
 
-    public BGeoExtensometerGroup() {
+    public BGeoExtensometer() {
+    }
+
+    public Ext ext() {
+        if (mExt == null) {
+            mExt = new Ext();
+        }
+        return mExt;
     }
 
     public String getPoints() {
@@ -73,4 +84,20 @@ public class BGeoExtensometerGroup extends BBaseControlPoint {
         this.points = points;
     }
 
+    public class Ext {
+
+        private ArrayList<BGeoExtensometerPoint> mPoints;
+
+        public Ext() {
+        }
+
+        public ArrayList<BGeoExtensometerPoint> getExtPoints() {
+            return mPoints;
+        }
+
+        public void setExtPoints(ArrayList<BGeoExtensometerPoint> extPoints) {
+            this.mPoints = extPoints;
+        }
+
+    }
 }

@@ -41,5 +41,7 @@ limitations under the License.
         <module>projektnav</module>
         <module>tmo</module>
         <module>monmon</module>
+        <module>geo</module>
+        <module>geo_extensometer</module>
     </modules>
 </project>

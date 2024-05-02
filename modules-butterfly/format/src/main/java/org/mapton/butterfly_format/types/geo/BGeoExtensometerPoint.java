@@ -15,8 +15,10 @@
  */
 package org.mapton.butterfly_format.types.geo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import org.mapton.butterfly_format.types.BBase;
 import org.mapton.butterfly_format.types.BBaseControlPoint;
 
 /**
@@ -25,11 +27,8 @@ import org.mapton.butterfly_format.types.BBaseControlPoint;
  */
 @JsonPropertyOrder({
     "name",
-    "group",
-    "category",
     "status",
     "frequency",
-    "operator",
     "tag",
     "numOfDecXY",
     "numOfDecZ",
@@ -44,13 +43,16 @@ import org.mapton.butterfly_format.types.BBaseControlPoint;
     "zeroX",
     "zeroY",
     "zeroZ",
-    "rollingX",
-    "rollingY",
-    "rollingZ",
     "comment",
     "meta"
 })
 @JsonIgnoreProperties(value = {
+    "rollingX",
+    "rollingY",
+    "rollingZ",
+    "group",
+    "category",
+    "operator",
     "values",
     "dimension",
     "nameOfAlarmHeight",
@@ -59,11 +61,26 @@ import org.mapton.butterfly_format.types.BBaseControlPoint;
 })
 public class BGeoExtensometerPoint extends BBaseControlPoint {
 
+    @JsonIgnore
+    private transient String category;
+    @JsonIgnore
+    private transient String group;
     private double limit1;
     private double limit2;
     private double limit3;
+    @JsonIgnore
+    private Ext mExt;
+    @JsonIgnore
+    private transient String operator;
 
     public BGeoExtensometerPoint() {
+    }
+
+    public Ext ext() {
+        if (mExt == null) {
+            mExt = new Ext();
+        }
+        return mExt;
     }
 
     public double getLimit1() {
@@ -88,6 +105,13 @@ public class BGeoExtensometerPoint extends BBaseControlPoint {
 
     public void setLimit3(double limit3) {
         this.limit3 = limit3;
+    }
+
+    public class Ext extends BBase.Ext<BGeoExtensometerPointObservation> {
+
+        public Ext() {
+        }
+
     }
 
 }

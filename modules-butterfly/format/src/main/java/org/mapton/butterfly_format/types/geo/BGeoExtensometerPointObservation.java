@@ -30,14 +30,14 @@ import se.trixon.almond.util.MathHelper;
     "name",
     "date",
     "measuredZ",
-    "operator",
-    "instrument",
-    "comment",
     "status",
     "replacementMeasurement",
     "zeroMeasurement"
 })
 @JsonIgnoreProperties(ignoreUnknown = true, value = {
+    "comment",
+    "operator",
+    "instrument",
     "measuredX",
     "measuredY",
     "values",
@@ -58,10 +58,18 @@ import se.trixon.almond.util.MathHelper;
 public class BGeoExtensometerPointObservation extends BBaseControlPointObservation {
 
     @JsonIgnore
+    private transient String comment;
+    @JsonIgnore
+    private transient String instrument;
+
+    @JsonIgnore
     private BGeoExtensometerPointObservation.Ext mExt;
-    private Double measuredX;
-    private Double measuredY;
+//    private Double measuredX;
+//    private Double measuredY;
     private Double measuredZ;
+    @JsonIgnore
+    private transient String operator;
+//private transient double
 
     public BGeoExtensometerPointObservation() {
     }
@@ -74,26 +82,24 @@ public class BGeoExtensometerPointObservation extends BBaseControlPointObservati
         return mExt;
     }
 
-    public Double getMeasuredX() {
-        return measuredX;
-    }
-
-    public Double getMeasuredY() {
-        return measuredY;
-    }
-
+//    public Double getMeasuredX() {
+//        return measuredX;
+//    }
+//
+//    public Double getMeasuredY() {
+//        return measuredY;
+//    }
     public Double getMeasuredZ() {
         return measuredZ;
     }
 
-    public void setMeasuredX(Double measuredX) {
-        this.measuredX = measuredX;
-    }
-
-    public void setMeasuredY(Double measuredY) {
-        this.measuredY = measuredY;
-    }
-
+//    public void setMeasuredX(Double measuredX) {
+//        this.measuredX = measuredX;
+//    }
+//
+//    public void setMeasuredY(Double measuredY) {
+//        this.measuredY = measuredY;
+//    }
     public void setMeasuredZ(Double measuredZ) {
         this.measuredZ = measuredZ;
     }
