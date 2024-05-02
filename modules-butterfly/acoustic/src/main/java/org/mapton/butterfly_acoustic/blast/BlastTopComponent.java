@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -40,7 +40,7 @@ import org.openide.windows.TopComponent;
 @ActionID(category = "Butterfly", id = "org.mapton.butterfly-acoustic.blast.BlastTopComponent")
 @ActionReferences({
     @ActionReference(path = "Shortcuts", name = "DO-B"),
-    @ActionReference(path = "Menu/MapTools/Butterfly", position = 1)
+    @ActionReference(path = "Menu/MapTools/Butterfly/Acoustic", position = 1)
 })
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_BlastAction",
