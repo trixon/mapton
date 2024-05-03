@@ -27,16 +27,21 @@ import se.trixon.almond.util.Dict;
 public class ExtensoPropertiesBuilder extends PropertiesBuilder<BGeoExtensometer> {
 
     @Override
-    public Object build(BGeoExtensometer extensometer) {
-        if (extensometer == null) {
-            return extensometer;
+    public Object build(BGeoExtensometer extenso) {
+        if (extenso == null) {
+            return extenso;
         }
 
         var propertyMap = new LinkedHashMap<String, Object>();
         var cat1 = Dict.BASIC.toString();
 
-        propertyMap.put(getCatKey(cat1, Dict.NAME.toString()), extensometer.getName());
-        propertyMap.put(getCatKey(cat1, "POINTS"), extensometer.getPoints());
+        propertyMap.put(getCatKey(cat1, Dict.NAME.toString()), extenso.getName());
+        propertyMap.put(getCatKey(cat1, "LATEST"), extenso.getDateLatest());
+        propertyMap.put(getCatKey(cat1, "POINTS"), extenso.getSensors());
+
+        for (var point : extenso.getPoints()) {
+            propertyMap.put(getCatKey(cat1, point.getName()), point.ext().getObservationsAllCalculated().size());
+        }
 
         return propertyMap;
     }

@@ -248,6 +248,14 @@ public class Butterfly {
             return mGeoExtensometers;
         }
 
+        public ArrayList<BGeoExtensometerPoint> getExtensometersPoints() {
+            return mGeoExtensometersPoints;
+        }
+
+        public ArrayList<BGeoExtensometerPointObservation> getExtensometersPointsObservations() {
+            return mGeoExtensometersPointsObservations;
+        }
+
     }
 
     public class Hydro {

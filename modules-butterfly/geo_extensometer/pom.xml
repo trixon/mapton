@@ -90,6 +90,10 @@ limitations under the License.
             <groupId>org.mapton</groupId>
             <artifactId>me-worldwind</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.mapton</groupId>
+            <artifactId>ce-jfreechart</artifactId>
+        </dependency>
 
         <!--Butterfly-->
         <dependency>

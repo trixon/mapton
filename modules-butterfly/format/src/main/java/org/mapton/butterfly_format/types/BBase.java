@@ -70,6 +70,8 @@ public abstract class BBase {
         private transient ArrayList<T> observationsAllRaw;
         private transient ArrayList<T> observationsTimeFiltered;
         private transient final HashMap<Object, Object> values = new HashMap<>();
+        private transient LocalDateTime storedZeroDateTime;
+        private transient boolean zeroUnset = true;
 
         public LocalDateTime getDateFirst() {
             return mDateFirst;
@@ -221,6 +223,10 @@ public abstract class BBase {
             return observationsTimeFiltered;
         }
 
+        public LocalDateTime getStoredZeroDateTime() {
+            return storedZeroDateTime;
+        }
+
         public Object getValue(Object key) {
             return getValues().get(key);
         }
@@ -231,6 +237,10 @@ public abstract class BBase {
 
         public HashMap<Object, Object> getValues() {
             return values;
+        }
+
+        public boolean isZeroUnset() {
+            return zeroUnset;
         }
 
         public void setDateFirst(LocalDateTime dateFirst) {
@@ -257,8 +267,16 @@ public abstract class BBase {
             this.observationsTimeFiltered = observationsTimeFiltered;
         }
 
+        public void setStoredZeroDateTime(LocalDateTime storedZeroDateTime) {
+            this.storedZeroDateTime = storedZeroDateTime;
+        }
+
         public Object setValue(Object key, Object value) {
             return values.put(key, value);
+        }
+
+        public void setZeroUnset(boolean zeroUnset) {
+            this.zeroUnset = zeroUnset;
         }
 
     }

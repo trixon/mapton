@@ -53,6 +53,7 @@ public class ExtensoLayerBundle extends BfLayerBundle {
         mOptionsView = new ExtensoOptionsView(this);
         mGraphicRenderer = new GraphicRenderer(mLayer, mOptionsView.getComponentCheckModel());
         initListeners();
+
         mManager.setInitialTemporalState(WWHelper.isStoredAsVisible(mLayer, mLayer.isEnabled()));
     }
 

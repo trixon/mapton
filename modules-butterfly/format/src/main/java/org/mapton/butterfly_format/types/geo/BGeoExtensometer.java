@@ -38,6 +38,7 @@ import org.mapton.butterfly_format.types.BBaseControlPoint;
     "limit2",
     "limit3",
     "dateZero",
+    //    "sensors",
     "zeroX",
     "zeroY",
     "zeroZ",
@@ -64,7 +65,9 @@ public class BGeoExtensometer extends BBaseControlPoint {
 
     @JsonIgnore
     private Ext mExt;
-    private String points;
+    @JsonIgnore
+    private ArrayList<BGeoExtensometerPoint> mPoints = new ArrayList<>();
+    private String sensors;
 
     public BGeoExtensometer() {
     }
@@ -73,30 +76,34 @@ public class BGeoExtensometer extends BBaseControlPoint {
         if (mExt == null) {
             mExt = new Ext();
         }
+
         return mExt;
     }
 
-    public String getPoints() {
-        return points;
+    public ArrayList<BGeoExtensometerPoint> getPoints() {
+        return mPoints;
+    }
+
+    public String getSensors() {
+        return sensors;
+    }
+
+    public void setPoints(ArrayList<BGeoExtensometerPoint> points) {
+        this.mPoints = points;
     }
 
     public void setPoints(String points) {
-        this.points = points;
+        this.sensors = points;
     }
 
     public class Ext {
 
-        private ArrayList<BGeoExtensometerPoint> mPoints;
-
         public Ext() {
         }
 
-        public ArrayList<BGeoExtensometerPoint> getExtPoints() {
-            return mPoints;
-        }
-
-        public void setExtPoints(ArrayList<BGeoExtensometerPoint> extPoints) {
-            this.mPoints = extPoints;
+        public boolean hasNoObservations() {
+            return mPoints.stream()
+                    .noneMatch(point -> !point.ext().getObservationsAllRaw().isEmpty());
         }
 
     }

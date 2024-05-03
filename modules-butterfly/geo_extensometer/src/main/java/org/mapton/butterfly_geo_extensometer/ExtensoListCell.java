@@ -37,19 +37,19 @@ class ExtensoListCell extends ListCell<BGeoExtensometer> {
     }
 
     @Override
-    protected void updateItem(BGeoExtensometer mon, boolean empty) {
-        super.updateItem(mon, empty);
-        if (mon == null || empty) {
+    protected void updateItem(BGeoExtensometer extenso, boolean empty) {
+        super.updateItem(extenso, empty);
+        if (extenso == null || empty) {
             clearContent();
         } else {
-            addContent(mon);
+            addContent(extenso);
         }
     }
 
-    private void addContent(BGeoExtensometer mon) {
+    private void addContent(BGeoExtensometer extenso) {
         setText(null);
-        mNameLabel.setText(mon.getName());
-        mStationLabel.setText(mon.getPoints());
+        mNameLabel.setText(extenso.getName());
+        mStationLabel.setText(extenso.getSensors());
 //        var firstRaw = Objects.toString(DateHelper.toDateString(mon.getControlPoint().ext().getObservationRawFirstDate()), "");
 //        var lastRaw = Objects.toString(DateHelper.toDateString(mon.getControlPoint().ext().getObservationRawLastDate()), "");
 //        mDateLabel.setText("%s — %s".formatted(firstRaw, lastRaw));
