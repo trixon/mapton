@@ -17,19 +17,22 @@ package org.mapton.butterfly_geo_extensometer;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.concurrent.Callable;
 import org.apache.commons.lang3.StringUtils;
-import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.AxisLocation;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.block.BlockContainer;
 import org.jfree.chart.block.BorderArrangement;
 import org.jfree.chart.block.EmptyBlock;
+import org.jfree.chart.plot.CombinedDomainXYPlot;
+import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.StandardXYItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.chart.title.CompositeTitle;
 import org.jfree.chart.title.TextTitle;
@@ -39,11 +42,10 @@ import org.jfree.chart.ui.RectangleInsets;
 import org.jfree.chart.ui.VerticalAlignment;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
-import org.mapton.api.MTemporalManager;
 import org.mapton.api.ui.forms.ChartBuilder;
 import org.mapton.butterfly_format.types.geo.BGeoExtensometer;
+import org.mapton.butterfly_format.types.geo.BGeoExtensometerPointObservation;
 import org.mapton.ce_jfreechart.api.ChartHelper;
-import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.swing.SwingHelper;
 
 /**
@@ -55,10 +57,8 @@ public class ExtensoChartBuilder extends ChartBuilder<BGeoExtensometer> {
     private JFreeChart mChart;
     private final ChartHelper mChartHelper = new ChartHelper();
     private ChartPanel mChartPanel;
-    private final TimeSeriesCollection mDataset = new TimeSeriesCollection();
     private TextTitle mDateSubTextTitle;
     private TextTitle mDeltaSubTextTitle;
-    private final MTemporalManager mTemporalManager = MTemporalManager.getInstance();
 
     public ExtensoChartBuilder() {
         initChart();
@@ -73,14 +73,12 @@ public class ExtensoChartBuilder extends ChartBuilder<BGeoExtensometer> {
         var callable = (Callable<ChartPanel>) () -> {
             setTitle(p);
             updateDataset(p);
-            var plot = (XYPlot) mChart.getPlot();
+            var plot = (CombinedDomainXYPlot) mChart.getPlot();
+
             var dateAxis = (DateAxis) plot.getDomainAxis();
             dateAxis.setAutoRange(true);
 
             plot.clearRangeMarkers();
-
-            var rangeAxis = (NumberAxis) plot.getRangeAxis();
-            rangeAxis.setAutoRange(true);
 
             return mChartPanel;
         };
@@ -95,10 +93,19 @@ public class ExtensoChartBuilder extends ChartBuilder<BGeoExtensometer> {
 
     @Override
     public void updateDataset(BGeoExtensometer extenso) {
-        mDataset.removeAllSeries();
-
-        var plot = (XYPlot) mChart.getPlot();
+        var plot = (CombinedDomainXYPlot) mChart.getPlot();
         plot.clearDomainMarkers();
+        new ArrayList<>(plot.getSubplots()).stream().forEach(p -> plot.remove(p));
+
+        var rangeMin = Double.MAX_VALUE;
+        var rangeMax = Double.MIN_VALUE;
+        for (var p : extenso.getPoints()) {
+            double pMin = p.ext().getObservationsTimeFiltered().stream().mapToDouble(BGeoExtensometerPointObservation::getMeasuredZ).min().getAsDouble();
+            double pMax = p.ext().getObservationsTimeFiltered().stream().mapToDouble(BGeoExtensometerPointObservation::getMeasuredZ).max().getAsDouble();
+            rangeMin = Math.min(rangeMin, pMin);
+            rangeMax = Math.max(rangeMax, pMax);
+        }
+
         for (var p : extenso.getPoints()) {
             var name = p.getName();
             name = StringUtils.removeStartIgnoreCase(name, extenso.getName());
@@ -109,35 +116,42 @@ public class ExtensoChartBuilder extends ChartBuilder<BGeoExtensometer> {
                 series.add(minute, o.getMeasuredZ());
             }
 
-            mDataset.addSeries(series);
+            var timeSeriesCollection = new TimeSeriesCollection(series);
+            var renderer = new StandardXYItemRenderer();
+            var rangeAxis = new NumberAxis(name);
+            var subplot = new XYPlot(timeSeriesCollection, null, rangeAxis, renderer);
+            subplot.setRangeAxisLocation(AxisLocation.BOTTOM_OR_LEFT);
+            subplot.setBackgroundPaint(Color.lightGray);
+            subplot.setDomainGridlinePaint(Color.white);
+            subplot.setRangeGridlinePaint(Color.white);
+//            subplot.setAxisOffset(new RectangleInsets(5.0, 5.0, 5.0, 5.0));
+            subplot.setDomainCrosshairVisible(true);
+            subplot.setRangeCrosshairVisible(true);
+            rangeAxis.setRange(rangeMin, rangeMax);
+            subplot.getRangeAxis().setLabelFont(new Font(Font.SANS_SERIF, Font.BOLD, SwingHelper.getUIScaled(12)));
+            renderer.setSeriesPaint(timeSeriesCollection.getSeriesIndex(series.getKey()), Color.RED);
+
+            plot.add(subplot, 1);
         }
     }
 
     private void initChart() {
-        mChart = ChartFactory.createTimeSeriesChart(
-                "",
-                Dict.DATE.toString(),
-                "mm",
-                mDataset,
-                true,
-                true,
-                false
-        );
+        var plot = new CombinedDomainXYPlot(new DateAxis());
+        plot.setGap(10.0);
+        plot.setOrientation(PlotOrientation.VERTICAL);
 
+        mChart = new JFreeChart("", plot);
         mChart.setBackgroundPaint(Color.white);
         mChart.getTitle().setBackgroundPaint(Color.LIGHT_GRAY);
         mChart.getTitle().setExpandToFitSpace(true);
+        mChart.removeLegend();
 
-        var plot = (XYPlot) mChart.getPlot();
         plot.setBackgroundPaint(Color.lightGray);
         plot.setDomainGridlinePaint(Color.white);
         plot.setRangeGridlinePaint(Color.white);
         plot.setAxisOffset(new RectangleInsets(5.0, 5.0, 5.0, 5.0));
         plot.setDomainCrosshairVisible(true);
         plot.setRangeCrosshairVisible(true);
-
-        var yAxis = (NumberAxis) plot.getRangeAxis();
-        yAxis.setNumberFormatOverride(new DecimalFormat("0.00"));
 
         var itemRenderer = plot.getRenderer();
         if (itemRenderer instanceof XYLineAndShapeRenderer renderer) {
