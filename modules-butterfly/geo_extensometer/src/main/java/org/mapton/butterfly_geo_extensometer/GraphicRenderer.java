@@ -16,11 +16,17 @@
 package org.mapton.butterfly_geo_extensometer;
 
 import gov.nasa.worldwind.avlist.AVListImpl;
+import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
+import gov.nasa.worldwind.render.Path;
+import gov.nasa.worldwind.render.Pyramid;
+import gov.nasa.worldwind.render.airspaces.PartialCappedCylinder;
 import java.util.ArrayList;
+import java.util.Random;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.butterfly_format.types.geo.BGeoExtensometer;
+import org.mapton.worldwind.api.WWHelper;
 
 /**
  *
@@ -31,73 +37,65 @@ public class GraphicRenderer {
     private final ExtensoAttributeManager mAttributeManager = ExtensoAttributeManager.getInstance();
     private final IndexedCheckModel<GraphicRendererItem> mCheckModel;
     private final RenderableLayer mLayer;
+    private final Random mRandom = new Random();
 
     public GraphicRenderer(RenderableLayer layer, IndexedCheckModel<GraphicRendererItem> checkModel) {
         mLayer = layer;
         mCheckModel = checkModel;
     }
 
-    public void plot(BGeoExtensometer extenso, Position position, int stationIndex, ArrayList<AVListImpl> mapObjects) {
-//        mapObjects.add(plotGroundConnector(mon, 0.0));
-//        if (mon.isChild()) {
-////            mapObjects.add(plotStationConnector(mon, stationIndex));
-//
-//            boolean checked1 = mCheckModel.isChecked(GraphicRendererItem.LATEST_1);
-//            boolean checked7 = mCheckModel.isChecked(GraphicRendererItem.LATEST_7);
-//            boolean checked14 = mCheckModel.isChecked(GraphicRendererItem.LATEST_14);
-//
-//            if (checked1) {
-//                mapObjects.add(plotStatus(mon, 1, -1));
-//            }
-//            if (checked7) {
-//                mapObjects.add(plotStatus(mon, 7, 0));
-//            }
-//            if (checked14) {
-//                mapObjects.add(plotStatus(mon, 14, 1));
-//            }
-//        }
+    public void plot(BGeoExtensometer extenso, Position position, ArrayList<AVListImpl> mapObjects) {
+        if (mCheckModel.isChecked(GraphicRendererItem.POLE)) {
+            mapObjects.add(plotPole(extenso, position));
+        }
+
+        if (mCheckModel.isChecked(GraphicRendererItem.SLICE)) {
+            plotSlice(extenso, position);
+        }
     }
 
-//    private AVListImpl plotGroundConnector(BMonmon mon, double groundZ) {
-//        var p0 = WWHelper.positionFromLatLon(new MLatLon(mon.getLat(), mon.getLon()), groundZ);
-//        var p1 = WWHelper.positionFromLatLon(new MLatLon(mon.getLat(), mon.getLon()), mon.getControlPoint().getZeroZ());
-//        var path = new Path(p0, p1);
-//        path.setAttributes(mAttributeManager.getGroundConnectorAttributes());
-//        mLayer.addRenderable(path);
-//
-//        return path;
-//    }
-//
-//    private AVListImpl plotStationConnector(BMonmon mon, int stationIndex) {
-//        var stationName = mon.getStationName();
-//        var p = mon.getControlPoint();
-//        var p0 = WWHelper.positionFromLatLon(new MLatLon(s.getLat(), s.getLon()), s.getZeroZ());
-//        var p1 = WWHelper.positionFromLatLon(new MLatLon(mon.getLat(), mon.getLon()), p.getZeroZ());
-//        var path = new Path(p0, p1);
-//        path.setAttributes(mAttributeManager.getStationConnectorAttribute(stationIndex));
-//        mLayer.addRenderable(path);
-//
-//        double size = 0.2;
-//        var ellipsoid = new Ellipsoid(p1, size, size, size);
-//        ellipsoid.setAttributes(mAttributeManager.getStationConnectorEllipsoidAttributes());
-//
-//        mLayer.addRenderable(ellipsoid);
-//
-//        return path;
-//    }
-//    private AVListImpl plotStatus(BMonmon mon, int index, int order) {
-//        var size = 1.0;
-//        var z = mon.getControlPoint().getZeroZ() + size * 2 * order;
-//        var latLon = new MLatLon(mon.getLat(), mon.getLon());
-//        var p = WWHelper.positionFromLatLon(latLon, z);
-//        var ellipsoid = new Ellipsoid(p, size, size, size);
-//        ellipsoid.setAttributes(mAttributeManager.getStatusAttributes(mon.getQuota(index)));
-//        mLayer.addRenderable(ellipsoid);
-//
-//        if (order == 1) {
-//            plotGroundConnector(mon, z);
-//        }
-//
-//        return ellipsoid;
-//    }
+    private AVListImpl plotPole(BGeoExtensometer extenso, Position position) {
+        var p0 = WWHelper.positionFromPosition(position, 0.0);
+        var p1 = WWHelper.positionFromPosition(position, 8.0 * (extenso.getPoints().size() + 1));
+        var path = new Path(p0, p1);
+        path.setAttributes(mAttributeManager.getGroundConnectorAttributes());
+        mLayer.addRenderable(path);
+
+        for (int i = 0; i < extenso.getPoints().size(); i++) {
+            var point = extenso.getPoints().get(i);
+            var p = WWHelper.positionFromPosition(position, 8.0 * (i + 1));
+            var size = 2.0;//TODO bas on delta
+            size = mRandom.nextDouble(2, 4);
+            var pyramid = new Pyramid(p, size * 1.5, size);
+            pyramid.setAttributes(mAttributeManager.getStatusAttributes(mRandom.nextDouble()));
+            if (mRandom.nextBoolean()) {
+                pyramid.setRoll(Angle.POS180);
+            }
+            mLayer.addRenderable(pyramid);
+        }
+
+        return path;
+    }
+
+    private void plotSlice(BGeoExtensometer extenso, Position position) {
+        int numOfSlices = extenso.getPoints().size();
+
+        for (int i = 0; i < extenso.getPoints().size(); i++) {
+            var point = extenso.getPoints().get(i);
+            var angle = 360.0 / numOfSlices;
+
+            for (int j = 0; j < point.ext().getObservationsTimeFiltered().size(); j++) {
+                var o = point.ext().getObservationsTimeFiltered().get(j);
+                var radius = mRandom.nextDouble(2, 5);
+                var cappedCylinder = new PartialCappedCylinder(position, radius,
+                        Angle.fromDegrees(i * angle),
+                        Angle.fromDegrees(angle * (i + 1))
+                );
+                cappedCylinder.setAttributes(mAttributeManager.getSliceAttributes(mRandom.nextDouble()));
+                cappedCylinder.setAltitudes(j, j + 1);
+
+                mLayer.addRenderable(cappedCylinder);
+            }
+        }
+    }
 }

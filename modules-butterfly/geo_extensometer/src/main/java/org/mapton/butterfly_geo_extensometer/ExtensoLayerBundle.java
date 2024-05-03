@@ -122,12 +122,7 @@ public class ExtensoLayerBundle extends BfLayerBundle {
                     throw new AssertionError();
             }
 
-//            var sortedStations = mManager.getAllItems().stream()
-//                    .filter(m -> m.isParent())
-//                    .map(m -> m.getName())
-//                    .sorted((o1, o2) -> o1.compareTo(o2)).toList();
             for (var extenso : new ArrayList<>(mManager.getTimeFilteredItems())) {
-//                var stationIndex = sortedStations.indexOf(mon.getStationName());
                 var mapObjects = new ArrayList<AVListImpl>();
 
                 if (ObjectUtils.allNotNull(extenso.getLat(), extenso.getLon())) {
@@ -136,7 +131,7 @@ public class ExtensoLayerBundle extends BfLayerBundle {
 
                     mapObjects.add(labelPlacemark);
                     mapObjects.add(plotPin(extenso, position, labelPlacemark));
-//                    mGraphicRenderer.plot(mon, position, stationIndex, mapObjects);
+                    mGraphicRenderer.plot(extenso, position, mapObjects);
                 }
 
                 var leftClickRunnable = (Runnable) () -> {

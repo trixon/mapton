@@ -244,7 +244,7 @@
                     <installerLicenseFile>../LICENSE</installerLicenseFile>
                     <etcConfFile>src/main/resources/mapton.conf</etcConfFile>
                     <finalName>mapton-${mapton.version}</finalName>
-                    <!--<additionalArguments>-J-Xmx2048m</additionalArguments>-->
+                    <additionalArguments>-J-Xmx4g</additionalArguments>
                     <!--<additionalArguments>&#045;&#045;locale en</additionalArguments>-->
                     <!--<additionalArguments>&#045;&#045;nosplash</additionalArguments>-->
                     <!--<additionalArguments>&#045;&#045;fontsize 32</additionalArguments>-->
@@ -322,6 +322,11 @@
                 </dependency>
                 <dependency>
                     <groupId>${project.groupId}</groupId>
+                    <artifactId>butterfly-topo-convergence</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
                     <artifactId>butterfly-projektnav</artifactId>
                     <version>${project.version}</version>
                 </dependency>
@@ -334,6 +339,14 @@
                     <groupId>${project.groupId}</groupId>
                     <artifactId>butterfly-monmon</artifactId>
                     <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>butterfly-geo</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>butterfly-geo-extensometer</artifactId>
                 </dependency>
                 <dependency>
                     <groupId>se.trixon.netbeans</groupId>

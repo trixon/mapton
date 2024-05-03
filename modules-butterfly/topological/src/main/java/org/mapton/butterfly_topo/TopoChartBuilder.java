@@ -47,7 +47,6 @@ import org.jfree.chart.ui.VerticalAlignment;
 import org.jfree.data.time.MovingAverage;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
-import org.mapton.api.MTemporalManager;
 import org.mapton.api.ui.forms.ChartBuilder;
 import org.mapton.butterfly_alarm.api.AlarmHelper;
 import org.mapton.butterfly_format.types.BComponent;
@@ -70,7 +69,6 @@ public class TopoChartBuilder extends ChartBuilder<BTopoControlPoint> {
     private final TimeSeriesCollection mDataset = new TimeSeriesCollection();
     private TextTitle mDateSubTextTitle;
     private TextTitle mDeltaSubTextTitle;
-    private final MTemporalManager mTemporalManager = MTemporalManager.getInstance();
     private final TimeSeries mTimeSeries2d = new TimeSeries(Dict.Geometry.PLANE);
     private final TimeSeries mTimeSeries3d = new TimeSeries("3d");
     private final TimeSeries mTimeSeriesH = new TimeSeries(Dict.Geometry.HEIGHT);

@@ -31,14 +31,17 @@ import org.jfree.chart.block.BorderArrangement;
 import org.jfree.chart.block.EmptyBlock;
 import org.jfree.chart.plot.CombinedDomainXYPlot;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.StandardXYItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.chart.title.CompositeTitle;
 import org.jfree.chart.title.TextTitle;
 import org.jfree.chart.ui.HorizontalAlignment;
+import org.jfree.chart.ui.RectangleAnchor;
 import org.jfree.chart.ui.RectangleEdge;
 import org.jfree.chart.ui.RectangleInsets;
+import org.jfree.chart.ui.TextAnchor;
 import org.jfree.chart.ui.VerticalAlignment;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
@@ -130,6 +133,25 @@ public class ExtensoChartBuilder extends ChartBuilder<BGeoExtensometer> {
             rangeAxis.setRange(rangeMin, rangeMax);
             subplot.getRangeAxis().setLabelFont(new Font(Font.SANS_SERIF, Font.BOLD, SwingHelper.getUIScaled(12)));
             renderer.setSeriesPaint(timeSeriesCollection.getSeriesIndex(series.getKey()), Color.RED);
+
+            for (var o : p.ext().getObservationsTimeFiltered()) {
+                var minute = mChartHelper.convertToMinute(o.getDate());
+                if (o.isReplacementMeasurement()) {
+                    var marker = new ValueMarker(minute.getFirstMillisecond());
+                    marker.setPaint(Color.RED);
+                    marker.setLabel("E");
+                    marker.setLabelAnchor(RectangleAnchor.TOP_RIGHT);
+                    marker.setLabelTextAnchor(TextAnchor.TOP_LEFT);
+                    subplot.addDomainMarker(marker);
+                } else if (o.isZeroMeasurement()) {
+                    var marker = new ValueMarker(minute.getFirstMillisecond());
+                    marker.setPaint(Color.BLUE);
+                    marker.setLabel("N");
+                    marker.setLabelAnchor(RectangleAnchor.TOP_RIGHT);
+                    marker.setLabelTextAnchor(TextAnchor.TOP_LEFT);
+                    subplot.addDomainMarker(marker);
+                }
+            }
 
             plot.add(subplot, 1);
         }
