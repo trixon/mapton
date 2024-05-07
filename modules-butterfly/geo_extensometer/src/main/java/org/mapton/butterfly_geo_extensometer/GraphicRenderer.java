@@ -20,6 +20,7 @@ import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
+import gov.nasa.worldwind.render.Cylinder;
 import gov.nasa.worldwind.render.Path;
 import gov.nasa.worldwind.render.Pyramid;
 import gov.nasa.worldwind.render.Renderable;
@@ -28,6 +29,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import org.controlsfx.control.IndexedCheckModel;
+import org.mapton.api.MLatLon;
 import org.mapton.butterfly_format.types.geo.BGeoExtensometer;
 import org.mapton.worldwind.api.WWHelper;
 import se.trixon.almond.util.MathHelper;
@@ -51,13 +53,17 @@ public class GraphicRenderer {
     public void plot(BGeoExtensometer extenso, Position position, ArrayList<AVListImpl> mapObjects) {
         mMapObjects = mapObjects;
 
-        if (mCheckModel.isChecked(GraphicRendererItem.POLE)) {
-            plotPole(extenso, position);
+        if (mCheckModel.isChecked(GraphicRendererItem.INDICATORS)) {
+            plotIndicators(extenso, position);
         }
 
-        if (mCheckModel.isChecked(GraphicRendererItem.SLICE)) {
-            plotSlice(extenso, position);
+        if (mCheckModel.isChecked(GraphicRendererItem.TRACE)) {
+            plotTrace(extenso, position);
         }
+
+//        if (mCheckModel.isChecked(GraphicRendererItem.SLICE)) {
+//            plotSlice(extenso, position);
+//        }
     }
 
     private void addRenderable(Renderable renderable, boolean interactiveLayer) {
@@ -71,7 +77,7 @@ public class GraphicRenderer {
         }
     }
 
-    private void plotPole(BGeoExtensometer extenso, Position position) {
+    private void plotIndicators(BGeoExtensometer extenso, Position position) {
         var p0 = WWHelper.positionFromPosition(position, 0.0);
         var p1 = WWHelper.positionFromPosition(position, 8.0 * (extenso.getPoints().size() + 1));
         var path = new Path(p0, p1);
@@ -149,6 +155,56 @@ public class GraphicRenderer {
 
                 cappedCylinder.setAttributes(attrs);
                 addRenderable(cappedCylinder, true);
+            }
+        }
+    }
+
+    private void plotTrace(BGeoExtensometer extenso, Position position) {
+        int numOfSlices = extenso.getPoints().size();
+
+        for (int i = 0; i < extenso.getPoints().size(); i++) {
+            var point = extenso.getPoints().get(i);
+            var angle = 360.0 / numOfSlices;
+
+            var reversedList = point.ext().getObservationsTimeFiltered().reversed();
+            var prevDate = LocalDateTime.now();
+            var altitude = 0.0;
+            var prevHeight = 0.0;
+
+            var latLon = new MLatLon(extenso.getLat(), extenso.getLon());
+
+            for (int j = 0; j < reversedList.size(); j++) {
+                var o = reversedList.get(j);
+
+                var timeSpan = ChronoUnit.MINUTES.between(o.getDate(), prevDate);
+                var height = timeSpan / 24000.0;
+                altitude = altitude + height * 0.5 + prevHeight * 0.5;
+                prevDate = o.getDate();
+                prevHeight = height;
+
+                var delta = o.ext().getDelta();
+                if (delta == null) {
+                    continue;
+                }
+
+                var maxRadius = 50.0;
+                var radius = Math.min(maxRadius, Math.abs(delta) / 10 + 0.05);
+                var maximus = radius == maxRadius;
+
+                var pos = WWHelper.positionFromLatLon(latLon.getDestinationPoint(angle * i, 6), altitude);
+                var cylinder = new Cylinder(pos, height, radius);
+                var alarmLevel = point.ext().getAlarmLevel(o);
+                var rise = Math.signum(delta) > 0;
+                var attrs = mAttributeManager.getComponentTraceAttributes(alarmLevel, rise, maximus);
+
+                if (j == 0 && ChronoUnit.DAYS.between(o.getDate(), LocalDateTime.now()) > 180) {
+                    attrs = new BasicShapeAttributes(attrs);
+                    attrs.setInteriorOpacity(0.25);
+                    attrs.setOutlineOpacity(0.20);
+                }
+
+                cylinder.setAttributes(attrs);
+                addRenderable(cylinder, true);
             }
         }
     }
