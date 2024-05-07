@@ -36,11 +36,20 @@ public class ExtensoPropertiesBuilder extends PropertiesBuilder<BGeoExtensometer
         var cat1 = Dict.BASIC.toString();
 
         propertyMap.put(getCatKey(cat1, Dict.NAME.toString()), extenso.getName());
-        propertyMap.put(getCatKey(cat1, "LATEST"), extenso.getDateLatest());
-        propertyMap.put(getCatKey(cat1, "POINTS"), extenso.getSensors());
+        propertyMap.put(getCatKey(cat1, Dict.LATEST.toString()), extenso.getDateLatest());
 
         for (var point : extenso.getPoints()) {
-            propertyMap.put(getCatKey(cat1, point.getName()), point.ext().getObservationsAllCalculated().size());
+            var d = point.ext().getDelta();
+//            var delta = d == null ? null : "%.2f".formatted(d);
+//            String key = "%s_%s".formatted(point.getName(), "delta");
+//            propertyMap.put(getCatKey(cat1, key), delta);
+//            key = "%s_%s".formatted(point.getName(), "alarms");
+//            propertyMap.put(getCatKey(cat1, key), "%.4f, %.4f, %.4f".formatted(
+//                    point.getLimit1(), point.getLimit2(), point.getLimit3()));
+
+            var s = "%.2f (%.4f, %.4f, %.4f)".formatted(d,
+                    point.getLimit1(), point.getLimit2(), point.getLimit3());
+            propertyMap.put(getCatKey(cat1, point.getName()), s);
         }
 
         return propertyMap;

@@ -18,9 +18,7 @@ package org.mapton.butterfly_format.types.geo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.butterfly_format.types.BBaseControlPointObservation;
-import se.trixon.almond.util.MathHelper;
 
 /**
  *
@@ -29,7 +27,7 @@ import se.trixon.almond.util.MathHelper;
 @JsonPropertyOrder({
     "name",
     "date",
-    "measuredZ",
+    "value",
     "status",
     "replacementMeasurement",
     "zeroMeasurement"
@@ -61,15 +59,11 @@ public class BGeoExtensometerPointObservation extends BBaseControlPointObservati
     private transient String comment;
     @JsonIgnore
     private transient String instrument;
-
     @JsonIgnore
     private BGeoExtensometerPointObservation.Ext mExt;
-//    private Double measuredX;
-//    private Double measuredY;
-    private Double measuredZ;
     @JsonIgnore
     private transient String operator;
-//private transient double
+    private Double value;
 
     public BGeoExtensometerPointObservation() {
     }
@@ -82,109 +76,32 @@ public class BGeoExtensometerPointObservation extends BBaseControlPointObservati
         return mExt;
     }
 
-//    public Double getMeasuredX() {
-//        return measuredX;
-//    }
-//
-//    public Double getMeasuredY() {
-//        return measuredY;
-//    }
-    public Double getMeasuredZ() {
-        return measuredZ;
+    public Double getValue() {
+        return value;
     }
 
-//    public void setMeasuredX(Double measuredX) {
-//        this.measuredX = measuredX;
-//    }
-//
-//    public void setMeasuredY(Double measuredY) {
-//        this.measuredY = measuredY;
-//    }
-    public void setMeasuredZ(Double measuredZ) {
-        this.measuredZ = measuredZ;
+    public void setValue(Double measuredZ) {
+        this.value = measuredZ;
     }
 
     public class Ext {
 
-        private Double mDeltaX;
-        private Double mDeltaY;
-        private Double mDeltaZ;
+        private Double mDelta;
         private BGeoExtensometerPoint mParent;
 
         public Ext() {
         }
 
-        public Double getBearing() {
-            if (ObjectUtils.anyNull(getDeltaX(), getDeltaY())) {
-                return null;
-            } else {
-                return MathHelper.azimuthToDegrees(getDeltaY(), getDeltaX());
-            }
-        }
-
         public Double getDelta() {
-            Double d2;
-            if (ObjectUtils.allNotNull(getDeltaX(), getDeltaY())) {
-                d2 = Math.hypot(getDeltaX(), getDeltaY());
-            } else {
-                return getDeltaZ();
-            }
-
-            if (getDeltaZ() == null) {
-                return d2;
-            } else {
-                return Math.hypot(getDeltaZ(), d2);
-            }
-        }
-
-        public Double getDelta2d() {
-            Double deltaX = getDeltaX();
-            Double deltaY = getDeltaY();
-
-            if (ObjectUtils.allNotNull(deltaX, deltaY)) {
-                return Math.hypot(deltaX, deltaY);
-            } else {
-                return null;
-            }
-        }
-
-        public Double getDelta3d() {
-            Double delta2d = getDelta2d();
-            Double deltaZ = getDeltaZ();
-
-            if (ObjectUtils.allNotNull(delta2d, deltaZ)) {
-                return Math.hypot(delta2d, deltaZ) * MathHelper.sign(deltaZ);
-            } else {
-                return null;
-            }
-        }
-
-        public Double getDeltaX() {
-            return mDeltaX;
-        }
-
-        public Double getDeltaY() {
-            return mDeltaY;
-        }
-
-        public Double getDeltaZ() {
-            return mDeltaZ;
+            return mDelta;
         }
 
         public BGeoExtensometerPoint getParent() {
             return mParent;
         }
 
-        public void setDeltaX(Double deltaX) {
-            this.mDeltaX = deltaX;
-        }
-
-        public void setDeltaY(Double deltaY) {
-            this.mDeltaY = deltaY;
-        }
-
-        public void setDeltaZ(Double deltaZ) {
-            this.mDeltaZ = deltaZ;
+        public void setDelta(Double delta) {
+            this.mDelta = delta;
         }
 
         public void setParent(BGeoExtensometerPoint point) {

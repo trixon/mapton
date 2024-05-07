@@ -33,7 +33,6 @@ import org.mapton.butterfly_format.types.BBaseControlPoint;
     "status",
     "frequency",
     "tag",
-    "numOfDecXY",
     "numOfDecZ",
     "limit1",
     "limit2",
@@ -50,6 +49,7 @@ import org.mapton.butterfly_format.types.BBaseControlPoint;
     "meta"
 })
 @JsonIgnoreProperties(value = {
+    "numOfDecXY",
     "rollingX",
     "rollingY",
     "rollingZ",
@@ -147,12 +147,8 @@ public class BGeoExtensometerPoint extends BBaseControlPoint {
                     .filter(o -> o.isZeroMeasurement())
                     .findFirst().orElse(observations.getFirst());
 
-//            Double zX = latestZero.getMeasuredX();
-//            Double zY = latestZero.getMeasuredY();
-            Double zZ = latestZero.getMeasuredZ();
-//            var rX = 0.0;
-//            var rY = 0.0;
-            var rZ = 0.0;
+            Double zeroValue = latestZero.getValue();
+            var replacementValue = 0.0;
 
             for (int i = 0; i < observations.size(); i++) {
                 var o = observations.get(i);
@@ -160,41 +156,53 @@ public class BGeoExtensometerPoint extends BBaseControlPoint {
                 if (i > 0) {
                     prev = observations.get(i - 1);
                 }
-//                Double x = o.getMeasuredX();
-//                Double y = o.getMeasuredY();
-                Double z = o.getMeasuredZ();
+                Double z = o.getValue();
 
-//                if (ObjectUtils.allNotNull(x, zX)) {
-//                    o.ext().setDeltaX(x - zX);
-//                }
-//                if (ObjectUtils.allNotNull(y, zY)) {
-//                    o.ext().setDeltaY(y - zY);
-//                }
-                if (ObjectUtils.allNotNull(z, zZ)) {
-                    o.ext().setDeltaZ(z - zZ);
+                if (ObjectUtils.allNotNull(z, zeroValue)) {
+                    o.ext().setDelta(z - zeroValue);
                 }
 
                 if (o.isReplacementMeasurement() && prev != null) {
-//                    var mX = o.getMeasuredX();
-//                    var pX = prev.getMeasuredX();
-//                    if (ObjectUtils.allNotNull(mX, pX, o.ext().getDeltaX())) {
-//                        rX = rX + mX - pX;
-//                        o.ext().setDeltaX(o.ext().getDeltaX() + rX);
-//                    }
-
-//                    var mY = o.getMeasuredY();
-//                    var pY = prev.getMeasuredY();
-//                    if (ObjectUtils.allNotNull(mY, pY, o.ext().getDeltaY())) {
-//                        rY = rY + mY - pY;
-//                        o.ext().setDeltaY(o.ext().getDeltaY() + rY);
-//                    }
-                    var mZ = o.getMeasuredZ();
-                    var pZ = prev.getMeasuredZ();
-                    if (ObjectUtils.allNotNull(mZ, pZ, o.ext().getDeltaZ())) {
-                        rZ = rZ + mZ - pZ;
-                        o.ext().setDeltaZ(o.ext().getDeltaZ() + rZ);
+                    var mZ = o.getValue();
+                    var pZ = prev.getValue();
+                    if (ObjectUtils.allNotNull(mZ, pZ, o.ext().getDelta())) {
+                        replacementValue = replacementValue + mZ - pZ;
+                        o.ext().setDelta(o.ext().getDelta() + replacementValue);
                     }
                 }
+            }
+        }
+
+        public int getAlarmLevel() {
+            return getAlarmLevel(getObservationFilteredLast());
+        }
+
+        public int getAlarmLevel(BGeoExtensometerPointObservation o) {
+            var p = BGeoExtensometerPoint.this;
+
+            if (o != null && o.ext().getDelta() != null) {
+                var delta = Math.abs(o.ext().getDelta() / 1000);
+
+                if (delta >= p.getLimit3()) {
+                    return 3;
+                } else if (delta >= p.getLimit2()) {
+                    return 2;
+                } else if (delta >= p.getLimit1()) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            }
+
+            return -1;
+        }
+
+        public Double getDelta() {
+            var lastObservation = getObservationFilteredLast();
+            if (lastObservation != null) {
+                return lastObservation.ext().getDelta();
+            } else {
+                return null;
             }
         }
 

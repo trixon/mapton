@@ -84,7 +84,7 @@ public class GraphicRendererTrace extends GraphicRendererBase {
             var cylinder = new Cylinder(pos, height, radius);
             var alarmLevel = p.ext().getAlarmLevelHeight(o);
             var rise = Math.signum(dZ) > 0;
-            var attrs = mAttributeManager.getComponentTrace1dAttributes(p, alarmLevel, rise, maximus);
+            var attrs = mAttributeManager.getComponentTrace1dAttributes(alarmLevel, rise, maximus);
 
             if (i == 0 && ChronoUnit.DAYS.between(o.getDate(), LocalDateTime.now()) > 180) {
                 attrs = new BasicShapeAttributes(attrs);

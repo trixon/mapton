@@ -163,7 +163,7 @@ public class ExtensoManager extends BaseManager<BGeoExtensometer> {
         for (var p : timeFilteredItems) {
             try {
                 mMinimumZscaled = FastMath.min(mMinimumZscaled, p.getZeroZ());
-                //mMinimumZscaled = FastMath.min(mMinimumZscaled, p.getZeroZ() + TopoLayerBundle.SCALE_FACTOR_Z * p.ext().deltaZero().getDeltaZ());
+                //mMinimumZscaled = FastMath.min(mMinimumZscaled, p.getZeroZ() + TopoLayerBundle.SCALE_FACTOR_Z * p.ext().deltaZero().getDelta());
             } catch (Exception e) {
             }
         }

@@ -47,7 +47,6 @@ import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.mapton.api.ui.forms.ChartBuilder;
 import org.mapton.butterfly_format.types.geo.BGeoExtensometer;
-import org.mapton.butterfly_format.types.geo.BGeoExtensometerPointObservation;
 import org.mapton.ce_jfreechart.api.ChartHelper;
 import se.trixon.almond.util.swing.SwingHelper;
 
@@ -103,8 +102,8 @@ public class ExtensoChartBuilder extends ChartBuilder<BGeoExtensometer> {
         var rangeMin = Double.MAX_VALUE;
         var rangeMax = Double.MIN_VALUE;
         for (var p : extenso.getPoints()) {
-            double pMin = p.ext().getObservationsTimeFiltered().stream().mapToDouble(BGeoExtensometerPointObservation::getMeasuredZ).min().getAsDouble();
-            double pMax = p.ext().getObservationsTimeFiltered().stream().mapToDouble(BGeoExtensometerPointObservation::getMeasuredZ).max().getAsDouble();
+            double pMin = p.ext().getObservationsTimeFiltered().stream().mapToDouble(o -> o.ext().getDelta()).min().getAsDouble();
+            double pMax = p.ext().getObservationsTimeFiltered().stream().mapToDouble(o -> o.ext().getDelta()).max().getAsDouble();
             rangeMin = Math.min(rangeMin, pMin);
             rangeMax = Math.max(rangeMax, pMax);
         }
@@ -116,7 +115,7 @@ public class ExtensoChartBuilder extends ChartBuilder<BGeoExtensometer> {
             var series = new TimeSeries(name);
             for (var o : p.ext().getObservationsTimeFiltered()) {
                 var minute = mChartHelper.convertToMinute(o.getDate());
-                series.add(minute, o.getMeasuredZ());
+                series.add(minute, o.ext().getDelta());
             }
 
             var timeSeriesCollection = new TimeSeriesCollection(series);

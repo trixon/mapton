@@ -139,7 +139,7 @@ public class TopoAttributeManager {
         return mComponentGroundPathAttributes;
     }
 
-    public BasicShapeAttributes getComponentTrace1dAttributes(BTopoControlPoint p, int alarmLevel, boolean rise, boolean maximus) {
+    public BasicShapeAttributes getComponentTrace1dAttributes(int alarmLevel, boolean rise, boolean maximus) {
         if (mComponentTrace1dAttributes == null) {
             mComponentTrace1dAttributes = new BasicShapeAttributes[5][2];
 

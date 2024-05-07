@@ -417,7 +417,7 @@
     </profiles>
 
     <properties>
-        <jackson.version>2.16.2</jackson.version>
+        <jackson.version>2.17.1</jackson.version>
         <netbeans.compile.on.save>none</netbeans.compile.on.save>
         <brandingToken>mapton</brandingToken>
         <mapton.version>3.2.0-SNAPSHOT</mapton.version>

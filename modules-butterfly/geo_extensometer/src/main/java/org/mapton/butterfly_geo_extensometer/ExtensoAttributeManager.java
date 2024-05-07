@@ -31,18 +31,89 @@ import se.trixon.almond.util.GraphicsHelper;
  */
 public class ExtensoAttributeManager {
 
+    private static final Material[] mAlarmMaterials = new Material[]{
+        Material.GREEN,
+        Material.YELLOW,
+        Material.ORANGE,
+        Material.RED,
+        new Material(Color.decode("#800080")),
+        Material.BLUE
+    };
+    private BasicShapeAttributes[][] mComponentTrace1dAttributes;
+
     private BasicShapeAttributes mGroundConnectorAttributes;
     private PointPlacemarkAttributes mLabelPlacemarkAttributes;
     private PointPlacemarkAttributes[] mPinAttributes;
     private BasicShapeAttributes[] mStationConnectorAttributes;
     private final Color[] mStationConnectorColors = new Color[]{Color.CYAN, Color.MAGENTA, Color.YELLOW, Color.BLACK};
     private BasicShapeAttributes mStationConnectorEllipsoidAttributes;
+    private BasicShapeAttributes[] mVectorAlarmAttributes;
 
     public static ExtensoAttributeManager getInstance() {
         return Holder.INSTANCE;
     }
 
     private ExtensoAttributeManager() {
+    }
+
+    public BasicShapeAttributes getComponentAlarmAttributes(int level) {
+        if (mVectorAlarmAttributes == null) {
+            mVectorAlarmAttributes = new BasicShapeAttributes[mAlarmMaterials.length];
+
+            for (int i = 0; i < mAlarmMaterials.length; i++) {
+                var attrs = new BasicShapeAttributes();
+                attrs.setDrawOutline(false);
+                attrs.setInteriorMaterial(mAlarmMaterials[i]);
+                attrs.setEnableLighting(true);
+//                attrs.setInteriorOpacity(0.5);
+                mVectorAlarmAttributes[i] = attrs;
+            }
+        }
+
+        if (level == -1) {
+            level = 5;
+        }
+
+        return mVectorAlarmAttributes[level];
+    }
+
+    public BasicShapeAttributes getComponentTraceAttributes(int level, boolean rise, boolean maximus) {
+        if (mComponentTrace1dAttributes == null) {
+            mComponentTrace1dAttributes = new BasicShapeAttributes[mAlarmMaterials.length][2];
+
+            for (int i = 0; i < mAlarmMaterials.length; i++) {
+                for (int j = 0; j < 2; j++) {
+                    var attrs = new BasicShapeAttributes();
+                    attrs.setDrawOutline(false);
+                    attrs.setInteriorMaterial(mAlarmMaterials[i]);
+                    attrs.setEnableLighting(true);
+
+                    if (j == 1) {
+                        attrs.setDrawOutline(true);
+                        if (i == 4) {
+                            attrs.setOutlineMaterial(Material.YELLOW);
+                        } else {
+                            attrs.setOutlineMaterial(Material.LIGHT_GRAY);
+                        }
+                    }
+
+                    mComponentTrace1dAttributes[i][j] = attrs;
+                }
+            }
+        }
+
+        if (level == -1) {
+            level = 5;
+        }
+
+        if (maximus) {
+            level = 4;
+        }
+
+        var i = level;
+        var j = rise ? 1 : 0;
+
+        return mComponentTrace1dAttributes[i][j];
     }
 
     public BasicShapeAttributes getGroundConnectorAttributes() {
