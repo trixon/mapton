@@ -27,11 +27,13 @@ import org.mapton.butterfly_format.types.topo.BTopoConvergenceGroup;
  */
 class ConvergenceGroupListCell extends ListCell<BTopoConvergenceGroup> {
 
-    private final Label mNameLabel = new Label();
-    private final Label mDesc3Label = new Label();
-    private final String mStyleBold = "-fx-font-weight: bold;";
-    private VBox mVBox;
     private final Label mDesc2Label = new Label();
+    private final Label mDesc3Label = new Label();
+    private final Label mDesc4Label = new Label();
+    private final Label mNameLabel = new Label();
+    private final String mStyleBold = "-fx-font-weight: bold;";
+    private final String mStyleMono = "-fx-font-family: monospace;";
+    private VBox mVBox;
 
     public ConvergenceGroupListCell() {
         createUI();
@@ -55,8 +57,17 @@ class ConvergenceGroupListCell extends ListCell<BTopoConvergenceGroup> {
         }
 
         mNameLabel.setText(header);
-        mDesc2Label.setText("TODO: Alarm level, dates?");
-        mDesc3Label.setText(String.valueOf(group.ext2().getControlPoints().size()));
+        try {
+            var maxD = group.ext2().getMaxDeltaDistanceOverTime();
+            var maxL = group.ext2().getMaxDeltaROverTime();
+            var maxH = group.ext2().getMaxDeltaZOverTime();
+
+            mDesc2Label.setText("ΔL=%.3f (%s)".formatted(maxD.getDeltaDistanceOverTime(), maxD.ext().getShortName()));
+            mDesc3Label.setText("ΔP=%.3f (%s)".formatted(maxL.getDeltaROverTime(), maxL.ext().getShortName()));
+            mDesc4Label.setText("ΔH=%.3f (%s)".formatted(maxH.getDeltaZOverTime(), maxH.ext().getShortName()));
+
+        } catch (Exception e) {
+        }
         setGraphic(mVBox);
     }
 
@@ -67,10 +78,15 @@ class ConvergenceGroupListCell extends ListCell<BTopoConvergenceGroup> {
 
     private void createUI() {
         mNameLabel.setStyle(mStyleBold);
+        mDesc2Label.setStyle(mStyleMono);
+        mDesc3Label.setStyle(mStyleMono);
+        mDesc4Label.setStyle(mStyleMono);
+
         mVBox = new VBox(
                 mNameLabel,
                 mDesc2Label,
-                mDesc3Label
+                mDesc3Label,
+                mDesc4Label
         );
     }
 

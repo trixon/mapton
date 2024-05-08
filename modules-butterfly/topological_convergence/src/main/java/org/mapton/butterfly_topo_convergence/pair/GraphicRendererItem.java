@@ -23,7 +23,8 @@ import se.trixon.almond.util.Dict;
  */
 public enum GraphicRendererItem {
     LINES(Dict.Geometry.LINE.toString(), Integer.MAX_VALUE),
-    NODE("Nod", Integer.MAX_VALUE);
+    NODE("Nod", Integer.MAX_VALUE),
+    LABELS("Punktnamn", Integer.MAX_VALUE);
     private final String mName;
     private final int mPlotLimit;
 

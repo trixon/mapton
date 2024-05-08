@@ -15,17 +15,20 @@
  */
 package org.mapton.butterfly_topo_convergence.pair;
 
+import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.Path;
+import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwind.render.Pyramid;
 import gov.nasa.worldwind.render.Renderable;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashSet;
+import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.Mapton;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
@@ -45,6 +48,7 @@ public class GraphicRenderer {
     private ArrayList<AVListImpl> mMapObjects;
     private final Material[] mMaterials;
     private final RenderableLayer mNodeLayer;
+    private final HashSet<String> mPlottedLabels = new HashSet<>();
     private final HashSet<String> mPlottedNodes = new HashSet<>();
     private final RenderableLayer mSurfaceLayer;
 
@@ -89,19 +93,44 @@ public class GraphicRenderer {
         mMapObjects = mapObjects;
 
         if (mCheckModel.isChecked(GraphicRendererItem.LINES)) {
-            plotLine(pair, position, mapObjects);
+            plotLine(pair);
         }
 
         if (mCheckModel.isChecked(GraphicRendererItem.NODE)) {
-            plotNodes(pair, mapObjects);
+            plotNodes(pair);
+        }
+
+        if (mCheckModel.isChecked(GraphicRendererItem.LABELS)) {
+            plotLabels(pair);
         }
     }
 
     public void reset() {
         mPlottedNodes.clear();
+        mPlottedLabels.clear();
     }
 
-    private void plotLine(BTopoConvergencePair pair, Position position, ArrayList<AVListImpl> mapObjects) {
+    private void plotLabel(BTopoConvergencePair pair, BTopoControlPoint controlPoint) {
+        var name = controlPoint.getName();
+
+        if (!mPlottedLabels.contains(name)) {
+            var position = PairHelper.getPosition(controlPoint, pair.getOffset());
+            var placemark = new PointPlacemark(position);
+            placemark.setAltitudeMode(WorldWind.ABSOLUTE);
+            placemark.setAttributes(mAttributeManager.getLabelPlacemarkAttributes());
+            placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(mAttributeManager.getLabelPlacemarkAttributes(), 1.5));
+            placemark.setLabelText(StringUtils.remove(controlPoint.getName(), pair.getConvergenceGroup().getName()));
+            addRenderable(mNodeLayer, placemark);
+            mPlottedLabels.add(name);
+        }
+    }
+
+    private void plotLabels(BTopoConvergencePair pair) {
+        plotLabel(pair, pair.getP1());
+        plotLabel(pair, pair.getP2());
+    }
+
+    private void plotLine(BTopoConvergencePair pair) {
         if (pair.getObservations().isEmpty()) {
             return;
         }
@@ -144,7 +173,7 @@ public class GraphicRenderer {
         }
     }
 
-    private void plotNodes(BTopoConvergencePair pair, ArrayList<AVListImpl> mapObjects) {
+    private void plotNodes(BTopoConvergencePair pair) {
         plotNode(pair.getP1(), pair.getOffset());
         plotNode(pair.getP2(), pair.getOffset());
     }
