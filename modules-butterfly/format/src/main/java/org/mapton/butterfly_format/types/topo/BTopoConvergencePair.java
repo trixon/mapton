@@ -20,6 +20,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import javafx.geometry.Point3D;
+import org.apache.commons.lang3.StringUtils;
 import org.mapton.butterfly_format.types.BBaseControlPoint;
 
 /**
@@ -41,6 +42,7 @@ public class BTopoConvergencePair extends BBaseControlPoint {
         mP1 = p1;
         mP2 = p2;
         setName("%s → %s".formatted(p1.getName(), p2.getName()));
+        mConvergenceGroup.ext2().getPairs().add(this);
 
         var p3d1 = new Point3D(p1.getZeroX(), p1.getZeroY(), p1.getZeroZ());
         var p3d2 = new Point3D(p2.getZeroX(), p2.getZeroY(), p2.getZeroZ());
@@ -184,6 +186,10 @@ public class BTopoConvergencePair extends BBaseControlPoint {
             } else {
                 return null;
             }
+        }
+
+        public String getShortName() {
+            return StringUtils.remove(getName(), getConvergenceGroup().getName());
         }
 
     }

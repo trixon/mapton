@@ -56,9 +56,47 @@ public class BTopoConvergenceGroup extends BTopoControlPoint {
     public class Ext {
 
         private ArrayList<BTopoControlPoint> mControlPoints = new ArrayList<>();
+        private ArrayList<BTopoConvergencePair> mPairs = new ArrayList<>();
 
         public ArrayList<BTopoControlPoint> getControlPoints() {
             return mControlPoints;
+        }
+
+        public BTopoConvergencePair getMaxDeltaDistanceOverTime() {
+            BTopoConvergencePair storedPair = null;
+            for (var pair : getPairs()) {
+                if (storedPair == null || Math.abs(pair.getDeltaDistanceOverTime()) > Math.abs(storedPair.getDeltaDistanceOverTime())) {
+                    storedPair = pair;
+                }
+            }
+
+            return storedPair;
+        }
+
+        public BTopoConvergencePair getMaxDeltaROverTime() {
+            BTopoConvergencePair storedPair = null;
+            for (var pair : getPairs()) {
+                if (storedPair == null || Math.abs(pair.getDeltaROverTime()) > Math.abs(storedPair.getDeltaROverTime())) {
+                    storedPair = pair;
+                }
+            }
+
+            return storedPair;
+        }
+
+        public BTopoConvergencePair getMaxDeltaZOverTime() {
+            BTopoConvergencePair storedPair = null;
+            for (var pair : getPairs()) {
+                if (storedPair == null || Math.abs(pair.getDeltaZOverTime()) > Math.abs(storedPair.getDeltaZOverTime())) {
+                    storedPair = pair;
+                }
+            }
+
+            return storedPair;
+        }
+
+        public ArrayList<BTopoConvergencePair> getPairs() {
+            return mPairs;
         }
 
         public void setControlPoints(ArrayList<BTopoControlPoint> controlPoints) {
