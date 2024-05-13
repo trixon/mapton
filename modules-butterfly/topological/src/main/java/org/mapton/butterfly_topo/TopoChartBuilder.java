@@ -296,7 +296,7 @@ public class TopoChartBuilder extends ChartBuilder<BTopoControlPoint> {
             }
 
             if (p.getDimension() == BDimension._3d) {
-                mTimeSeries3d.add(minute, o.ext().getDelta3d());
+                mTimeSeries3d.add(minute, Math.abs(o.ext().getDelta3d()));
             }
         });
 
