@@ -21,7 +21,8 @@ package org.mapton.butterfly_geo_extensometer;
  */
 public enum GraphicRendererItem {
     INDICATORS("Indikatorer", Integer.MAX_VALUE),
-    TRACE("Radiellt spår", Integer.MAX_VALUE);
+    TRACE("Radiellt spår", Integer.MAX_VALUE),
+    TRACE_LABEL("Radiellt spår (etikett)", Integer.MAX_VALUE);
 //    SLICE("Tårtbitar", Integer.MAX_VALUE);
     private final String mName;
     private final int mPlotLimit;

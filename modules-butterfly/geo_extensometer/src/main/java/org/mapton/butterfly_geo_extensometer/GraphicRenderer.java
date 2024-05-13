@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_geo_extensometer;
 
+import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.Position;
@@ -22,12 +23,15 @@ import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Cylinder;
 import gov.nasa.worldwind.render.Path;
+import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwind.render.Pyramid;
 import gov.nasa.worldwind.render.Renderable;
 import gov.nasa.worldwind.render.airspaces.PartialCappedCylinder;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.MLatLon;
 import org.mapton.butterfly_format.types.geo.BGeoExtensometer;
@@ -58,7 +62,7 @@ public class GraphicRenderer {
         }
 
         if (mCheckModel.isChecked(GraphicRendererItem.TRACE)) {
-            plotTrace(extenso, position);
+            plotTrace(extenso);
         }
 
 //        if (mCheckModel.isChecked(GraphicRendererItem.SLICE)) {
@@ -94,8 +98,16 @@ public class GraphicRenderer {
             var p = WWHelper.positionFromPosition(position, 8.0 * (i + 1));
             var size = 3.0 + lastObservation.ext().getDelta() / 100;
             size = MathHelper.limit(size, 2, 4);
+            var attrs = mAttributeManager.getComponentAlarmAttributes(point.ext().getAlarmLevel());
+
+            var age = ChronoUnit.DAYS.between(lastObservation.getDate().toLocalDate(), LocalDate.now());
+            if (age > 1) {
+                attrs = new BasicShapeAttributes(attrs);
+                attrs.setInteriorOpacity(0.2);
+            }
+
             var pyramid = new Pyramid(p, size * 1.5, size);
-            pyramid.setAttributes(mAttributeManager.getComponentAlarmAttributes(point.ext().getAlarmLevel()));
+            pyramid.setAttributes(attrs);
 
             if (lastObservation.ext().getDelta() < 0) {
                 pyramid.setRoll(Angle.POS180);
@@ -159,7 +171,7 @@ public class GraphicRenderer {
         }
     }
 
-    private void plotTrace(BGeoExtensometer extenso, Position position) {
+    private void plotTrace(BGeoExtensometer extenso) {
         int numOfSlices = extenso.getPoints().size();
 
         for (int i = 0; i < extenso.getPoints().size(); i++) {
@@ -172,6 +184,18 @@ public class GraphicRenderer {
             var prevHeight = 0.0;
 
             var latLon = new MLatLon(extenso.getLat(), extenso.getLon());
+
+            if (mCheckModel.isChecked(GraphicRendererItem.TRACE_LABEL)) {
+                var labelPosition = WWHelper.positionFromLatLon(latLon.getDestinationPoint(angle * i, 8));
+                var placemark = new PointPlacemark(labelPosition);
+                placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
+                placemark.setAttributes(mAttributeManager.getLabelPlacemarkAttributes());
+                placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(mAttributeManager.getLabelPlacemarkAttributes(), 1.5));
+                var label = StringUtils.remove(point.getName(), extenso.getName());
+                label = StringUtils.removeStart(label, "-");
+                placemark.setLabelText(label);
+                addRenderable(placemark, true);
+            }
 
             for (int j = 0; j < reversedList.size(); j++) {
                 var o = reversedList.get(j);
