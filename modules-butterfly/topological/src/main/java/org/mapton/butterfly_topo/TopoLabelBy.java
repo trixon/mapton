@@ -108,6 +108,9 @@ public enum TopoLabelBy {
     MISC_FREQUENCY(LabelByCategories.MISC, SDict.FREQUENCY.toString(), p -> {
         return p.getFrequency() != null ? p.getFrequency().toString() : "--";
     }),
+    MISC_DIMENS(LabelByCategories.MISC, SDict.DIMENSION.toString(), p -> {
+        return p.getDimension() != null ? p.getDimension().getName() : "--";
+    }),
     MEAS_LATEST_OPERATOR(LabelByCategories.MEAS, SDict.LATEST_S.toString().formatted(SDict.OPERATOR.toLower()), p -> {
         return p.ext().getObservationsAllRaw().getLast().getOperator();
     }),

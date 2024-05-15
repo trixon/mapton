@@ -296,7 +296,11 @@ public class TopoChartBuilder extends ChartBuilder<BTopoControlPoint> {
             }
 
             if (p.getDimension() == BDimension._3d) {
-                mTimeSeries3d.add(minute, Math.abs(o.ext().getDelta3d()));
+                try {
+                    mTimeSeries3d.add(minute, Math.abs(o.ext().getDelta3d()));
+                } catch (NullPointerException e) {
+                    System.err.println("Failed to add observation to chart %s %s".formatted(p.getName(), o.getDate()));
+                }
             }
         });
 
