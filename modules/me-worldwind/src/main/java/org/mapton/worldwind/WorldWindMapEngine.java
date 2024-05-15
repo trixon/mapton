@@ -229,7 +229,7 @@ public class WorldWindMapEngine extends MEngine {
         );
 
         mLayerObjectView = LayerObjectView.getInstance();
-//        mLayerOverlayView = LayerOverlayView.getInstance();
+        mLayerOverlayView = LayerOverlayView.getInstance();
         mLayerBackgroundView = LayerBackgroundView.getInstance();
         mLayerOptionsView = new LayerOptionsView();
         mRulerTabPane = RulerTabPane.getInstance();
