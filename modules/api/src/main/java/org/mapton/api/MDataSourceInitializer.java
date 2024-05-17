@@ -25,7 +25,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.TreeMap;
-import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.Preferences;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -53,8 +52,8 @@ public class MDataSourceInitializer implements Runnable {
     private final Preferences mPreferences = NbPreferences.forModule(MDataSourceInitializer.class);
 
     public MDataSourceInitializer() {
-        mPreferences.addPreferenceChangeListener((PreferenceChangeEvent evt) -> {
-            switch (evt.getKey()) {
+        mPreferences.addPreferenceChangeListener(pce -> {
+            switch (pce.getKey()) {
                 case DATA_SOURCES_FILES ->
                     applyFile();
 
@@ -103,11 +102,10 @@ public class MDataSourceInitializer implements Runnable {
 
         for (var json : getJsons(mPreferences.get(DATA_SOURCES_WMS_SOURCES, MDataSource.getDefaultSources()))) {
             try {
-                deserializeSource(json).stream()
+                var enabledSources = deserializeSource(json).stream()
                         .filter(wmsSource -> (wmsSource.isEnabled()))
-                        .forEachOrdered(wmsSource -> {
-                            allSources.add(wmsSource);
-                        });
+                        .toList();
+                allSources.addAll(enabledSources);
             } catch (NullPointerException ex) {
                 //nvm
             } catch (JsonSyntaxException ex) {
@@ -117,11 +115,10 @@ public class MDataSourceInitializer implements Runnable {
 
         for (var wmsSourceProvider : Lookup.getDefault().lookupAll(MWmsSourceProvider.class)) {
             try {
-                deserializeSource(wmsSourceProvider.getJson()).stream()
+                var enabledSources = deserializeSource(wmsSourceProvider.getJson()).stream()
                         .filter(wmsSource -> (wmsSource.isEnabled()))
-                        .forEachOrdered(wmsSource -> {
-                            allSources.add(wmsSource);
-                        });
+                        .toList();
+                allSources.addAll(enabledSources);
             } catch (NullPointerException ex) {
                 //nvm
             } catch (JsonSyntaxException ex) {
