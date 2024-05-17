@@ -28,7 +28,7 @@ import se.trixon.almond.util.StringHelper;
 public class TopoConfig extends BaseConfig {
 
     public TopoConfig() {
-        super("styles.TopoControlPoint");
+        super("config/styles.TopoControlPoint");
     }
 
     public Color getColor(BTopoControlPoint point) {
@@ -41,6 +41,7 @@ public class TopoConfig extends BaseConfig {
             if (StringUtils.startsWith(key, "color.cat") && macthes(pattern, point.getCategory())
                     || StringUtils.startsWith(key, "color.name") && macthes(pattern, point.getName())
                     || StringUtils.startsWith(key, "color.alarm") && macthes(pattern, point.getNameOfAlarmHeight(), point.getNameOfAlarmPlane())
+                    || StringUtils.startsWith(key, "color.operator") && macthes(pattern, point.getOperator())
                     || StringUtils.startsWith(key, "color.group") && macthes(pattern, point.getGroup())) {
                 colorCode = getConfig().getString(key);
             }
