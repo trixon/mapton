@@ -15,16 +15,21 @@
  */
 package org.mapton.worldwind;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.TreeSet;
 import javafx.application.Platform;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
+import javafx.geometry.Orientation;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.BorderPane;
+import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.ListActionView;
-import org.controlsfx.control.ListSelectionView;
-import org.mapton.worldwind.api.MapStyle;
+import org.mapton.api.MDict;
+import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
+import se.trixon.almond.util.fx.SwappedListSelectionView;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 
 /**
@@ -33,8 +38,10 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
  */
 public class LayerOverlayView extends BorderPane {
 
-    private final ListSelectionView<String> mListSelectionView = new ListSelectionView<>();
-    private final LayerMapStyleManager mManager = LayerMapStyleManager.getInstance();
+    private final SwappedListSelectionView<String> mListSelectionView = new SwappedListSelectionView<>();
+    private final ModuleOptions mOptions = ModuleOptions.getInstance();
+    private final OverlayManager mOverlayManager = OverlayManager.getInstance();
+    private boolean mPopulated;
 
     public static LayerOverlayView getInstance() {
         return Holder.INSTANCE;
@@ -48,41 +55,47 @@ public class LayerOverlayView extends BorderPane {
         });
     }
 
-    private ListActionView.ListAction[] createTaskTargetActions() {
+    private ListActionView.ListAction[] createTargetActions() {
         int imageSize = FxHelper.getUIScaled(16);
 
         return new ListActionView.ListAction[]{
             new ListActionView.ListAction<String>(MaterialIcon._Navigation.EXPAND_LESS.getImageView(imageSize)) {
                 @Override
                 public void initialize(ListView<String> listView) {
-                    setEventHandler(event -> moveSelectedTasksUp(listView));
+                    setEventHandler(event -> moveSelectedUp(listView));
                 }
             },
             new ListActionView.ListAction<String>(MaterialIcon._Navigation.EXPAND_MORE.getImageView(imageSize)) {
                 @Override
                 public void initialize(ListView<String> listView) {
-                    setEventHandler(event -> moveSelectedTasksDown(listView));
+                    setEventHandler(event -> moveSelectedDown(listView));
                 }
             }
         };
     }
 
     private void createUI() {
-        mListSelectionView.getTargetActions().addAll(createTaskTargetActions());
-//        mListSelectionView.setOrientation(Orientation.VERTICAL);
+        mListSelectionView.setSwappedSourceHeader(new Label("%s %s".formatted(Dict.AVAILABLE.toString(), MDict.OVERLAYS.toLower())));
+        mListSelectionView.setSwappedTargetHeader(new Label("%s %s".formatted(Dict.SELECTED.toString(), MDict.OVERLAYS.toLower())));
+        mListSelectionView.getSwappedTargetActions().addAll(createTargetActions());
+        mListSelectionView.setOrientation(Orientation.VERTICAL);
         setCenter(mListSelectionView);
     }
 
     private void initListeners() {
-        mManager.allItemsProperty().addListener((ObservableValue<? extends ObservableList<MapStyle>> observable, ObservableList<MapStyle> oldValue, ObservableList<MapStyle> newValue) -> {
+        mOverlayManager.getAvailableOverlays().addListener((ListChangeListener.Change<? extends String> c) -> {
+            populate();
         });
 
-        mListSelectionView.getTargetItems().addListener((ListChangeListener.Change<? extends String> c) -> {
-            save();
+        mListSelectionView.getSwappedTargetItems().addListener((ListChangeListener.Change<? extends String> c) -> {
+            if (mPopulated) {
+                var overlays = mListSelectionView.getSwappedTargetItems().stream().map(s -> s).toList();
+                mOptions.put(ModuleOptions.KEY_MAP_OVERLAYS, String.join(",", overlays));
+            }
         });
     }
 
-    private void moveSelectedTasksDown(ListView<String> listView) {
+    private void moveSelectedDown(ListView<String> listView) {
         var items = listView.getItems();
         var selectionModel = listView.getSelectionModel();
         var selectedIndices = selectionModel.getSelectedIndices();
@@ -104,7 +117,7 @@ public class LayerOverlayView extends BorderPane {
         }
     }
 
-    private void moveSelectedTasksUp(ListView<String> listView) {
+    private void moveSelectedUp(ListView<String> listView) {
         var items = listView.getItems();
         var selectionModel = listView.getSelectionModel();
         var selectedIndices = selectionModel.getSelectedIndices();
@@ -125,16 +138,22 @@ public class LayerOverlayView extends BorderPane {
     }
 
     private void populate() {
-        mListSelectionView.getSourceItems().clear();
-        mListSelectionView.getTargetItems().clear();
+        var availableOverlays = new TreeSet<>(mOverlayManager.getAvailableOverlays());
+        mListSelectionView.getSwappedSourceItems().setAll(availableOverlays);
+        var storedOverlaysItems = StringUtils.split(mOptions.get(ModuleOptions.KEY_MAP_OVERLAYS, ""), ",");
+        var storedOverlays = new ArrayList<>(Arrays.asList(storedOverlaysItems));
+        var selectedButNotAvailableOverlays = new ArrayList<String>();
 
-        mListSelectionView.getSourceItems().addAll("A", "B", "C");
-        mListSelectionView.getTargetItems().addAll("D");
-    }
+        for (var storedOverlay : storedOverlays) {
+            if (!availableOverlays.contains(storedOverlay)) {
+                selectedButNotAvailableOverlays.add(storedOverlay);
+            }
+        }
 
-    private void save() {
-        var orderedItems = mListSelectionView.getTargetItems().stream().map(s -> s).toList();
-        System.out.println(String.join(", ", orderedItems));
+        storedOverlays.removeAll(selectedButNotAvailableOverlays);
+        mListSelectionView.getSwappedTargetItems().setAll(storedOverlays);
+        mListSelectionView.getSwappedSourceItems().removeAll(storedOverlays);
+        mPopulated = true;
     }
 
     private static class Holder {

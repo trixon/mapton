@@ -36,6 +36,7 @@ public class ModuleOptions extends OptionsBase {
     public static final String KEY_MAP_ELEVATION = "map_elevation";
     public static final String KEY_MAP_GLOBE = "map_mode";
     public static final String KEY_MAP_OPACITY = "map_opacity";
+    public static final String KEY_MAP_OVERLAYS = "map_overlays";
     public static final String KEY_MAP_PROJECTION = "map_projection";
     public static final String KEY_MAP_STYLE = "map_style";
     public static final String KEY_MAP_STYLE_PREV = "map_style_prev";

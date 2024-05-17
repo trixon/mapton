@@ -17,6 +17,7 @@ package org.mapton.api;
 
 import com.google.gson.annotations.SerializedName;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -33,6 +34,8 @@ public class MWmsSource {
     private TreeMap<String, String> mLayers = new TreeMap<>();
     @SerializedName("name")
     private String mName;
+    @SerializedName("overlays")
+    private TreeSet<String> mOverlays = new TreeSet<>();
     @SerializedName("url")
     private String mUrl;
 
@@ -53,6 +56,10 @@ public class MWmsSource {
 
     public String getName() {
         return mName;
+    }
+
+    public TreeSet<String> getOverlays() {
+        return mOverlays;
     }
 
     public String getUrl() {
@@ -77,6 +84,10 @@ public class MWmsSource {
 
     public void setName(String name) {
         mName = name;
+    }
+
+    public void setOverlays(TreeSet<String> overlays) {
+        mOverlays = overlays;
     }
 
     public void setUrl(String url) {

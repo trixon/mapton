@@ -38,7 +38,7 @@ public abstract class WmsService {
     private boolean mPopulated = false;
 
     public static WmsService createFromWmsSource(MWmsSource wmsSource) {
-        WmsService wmsService = new WmsService() {
+        var wmsService = new WmsService() {
             @Override
             public String getName() {
                 return wmsSource.getName();
@@ -50,10 +50,14 @@ public abstract class WmsService {
                 addService(new URI(url));
 
                 for (var layerInfo : getLayerInfos()) {
-                    if (wmsSource.getLayers().keySet().contains(layerInfo.getName()) || wmsSource.getLayers().values().contains(layerInfo.getName())) {
+                    var layerInfoName = layerInfo.getName();
+                    if (wmsSource.getLayers().keySet().contains(layerInfoName) || wmsSource.getLayers().values().contains(layerInfoName)) {
                         var component = createComponent(layerInfo.getWmsCapabilities(), layerInfo.getParams());
                         if (component instanceof Layer layer) {
-                            layer.setName(wmsSource.getLayerName(layerInfo.getName()));
+                            layer.setName(wmsSource.getLayerName(layerInfoName));
+                            if (wmsSource.getOverlays().contains(layerInfoName)) {
+                                layer.setValue("MaptonOverlay", layerInfoName);
+                            }
                             getLayers().add(layer);
                         }
                     }

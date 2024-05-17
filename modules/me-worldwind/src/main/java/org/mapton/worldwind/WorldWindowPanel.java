@@ -65,6 +65,8 @@ import java.util.stream.Stream;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.mapton.api.MDict;
 import org.mapton.api.MKey;
 import static org.mapton.api.MKey.*;
@@ -97,6 +99,7 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
     private String mLastHighlightText;
     private CompoundElevationModel mNormalElevationModel;
     private final ModuleOptions mOptions = ModuleOptions.getInstance();
+    private final OverlayManager mOverlayManager = OverlayManager.getInstance();
     private Globe mRoundGlobe;
     private final WmsLayerLoader mWmsLayerLoader = new WmsLayerLoader();
     private final HashSet<String> mWmsLoadedLayers = new HashSet<>();
@@ -248,7 +251,7 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         MaptonNb.progressStop(MDict.MAP_ENGINE.toString());
         Mapton.getExecutionFlow().setReady(MKey.EXECUTION_FLOW_MAP_WW_INITIALIZED);
         updateStyle();
-
+        updateOverlays();
         initLayerBundles();
 
         customElevationModelRefresh();
@@ -298,6 +301,8 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
                     updateMode();
                 case KEY_MAP_PROJECTION ->
                     updateProjection();
+                case KEY_MAP_OVERLAYS ->
+                    updateOverlays();
                 case KEY_DISPLAY_ATMOSPHERE, KEY_DISPLAY_COMPASS, KEY_DISPLAY_CONTROLS, KEY_DISPLAY_PLACE_NAMES, KEY_DISPLAY_SCALE_BAR, KEY_DISPLAY_STARS, KEY_DISPLAY_WORLD_MAP ->
                     updateScreenLayers();
                 default -> {
@@ -472,6 +477,21 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         redraw();
     }
 
+    private void updateOverlays() {
+        getLayers().removeAll(mOverlayManager.getIdToLayerMap().values());
+        var storedOverlays = StringUtils.split(mOptions.get(ModuleOptions.KEY_MAP_OVERLAYS, ""), ",");
+        ArrayUtils.reverse(storedOverlays);
+
+        for (var id : storedOverlays) {
+            var layer = mOverlayManager.getIdToLayerMap().get(id);
+            if (layer != null) {
+                layer.setOpacity(mOptions.getDouble(KEY_MAP_OPACITY, DEFAULT_MAP_OPACITY));
+                getLayers().add(layer);
+                layer.setEnabled(true);
+            }
+        }
+    }
+
     private void updateProjection() {
         if (!isFlatGlobe()) {
             return;
@@ -515,12 +535,11 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         } catch (NullPointerException e) {
         }
 
-        ((Stream<String>) Arrays.stream(mapStyle.getLayers()))
-                .filter(id -> !mWmsLoadedLayers.contains(id))
-                .forEachOrdered(id -> {
-                    ArrayList<MWmsSource> wmsSources = Mapton.getGlobalState().get(DATA_SOURCES_WMS_SOURCES);
-
-                    if (wmsSources != null) {
+        var wmsSources = Mapton.getGlobalState().<ArrayList<MWmsSource>>get(DATA_SOURCES_WMS_SOURCES);
+        if (wmsSources != null) {
+            ((Stream<String>) Arrays.stream(mapStyle.getLayers()))
+                    .filter(id -> !mWmsLoadedLayers.contains(id))
+                    .forEachOrdered(id -> {
                         Layer layer = null;
 
                         for (var wmsSource : wmsSources) {
@@ -540,8 +559,8 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
                             getLayers().addIfAbsent(layer);
                             mWmsLoadedLayers.add(id);
                         }
-                    }
-                });
+                    });
+        }
 
         getLayers().forEach(layer -> {
             try {
@@ -555,7 +574,7 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
         });
 
         orderLayers(mapStyle.getLayers());
-
+        updateOverlays();
         redraw();
     }
 }
