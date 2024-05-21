@@ -23,6 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.mapton.butterfly_alarm.api.AlarmHelper;
 import org.mapton.butterfly_core.api.LabelByCategories;
 import org.mapton.butterfly_format.types.BComponent;
+import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.MathHelper;
@@ -110,6 +111,22 @@ public enum TopoLabelBy {
     }),
     MISC_DIMENS(LabelByCategories.MISC, SDict.DIMENSION.toString(), p -> {
         return p.getDimension() != null ? p.getDimension().getName() : "--";
+    }),
+    MEAS_SPEED(LabelByCategories.MEAS, "%s (mm/%s)".formatted(Dict.SPEED.toString(), Dict.Time.YEAR.toLower()), p -> {
+        if (p.getDimension() == BDimension._2d || p.ext().getObservationsTimeFiltered().size() < 2 || p.ext().deltaZero().getDelta1() == null) {
+            return "-";
+        } else {
+            try {
+                var speed = p.ext().getSpeed();
+                var ageIndicator = p.ext().getMeasurementAge(ChronoUnit.DAYS) > 365 ? "*" : "";
+
+                return "%.1f  (%.1f)%s".formatted(speed[0] * 1000.0, speed[1], ageIndicator);
+//                return "%.1f mm/%s (%.1f)%s".formatted(speed[0] * 1000.0, Dict.Time.YEAR.toLower(), speed[1], ageIndicator);
+//                return "%.1f (%.1f)%s".formatted(speed[0], Dict.Time.YEAR.toLower(), speed[1], ageIndicator);
+            } catch (Exception e) {
+                return "-";
+            }
+        }
     }),
     MEAS_LATEST_OPERATOR(LabelByCategories.MEAS, SDict.LATEST_S.toString().formatted(SDict.OPERATOR.toLower()), p -> {
         return p.ext().getObservationsAllRaw().getLast().getOperator();

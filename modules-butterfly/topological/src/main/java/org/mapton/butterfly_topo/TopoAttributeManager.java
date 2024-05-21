@@ -396,6 +396,9 @@ public class TopoAttributeManager {
             case MEAS_NEED -> {
                 return getColorForMeasNeed(p);
             }
+            case SPEED -> {
+                return getColorForSpeed(p);
+            }
             default ->
                 throw new AssertionError();
         }
@@ -446,6 +449,10 @@ public class TopoAttributeManager {
         }
 
         return color;
+    }
+
+    private Color getColorForSpeed(BTopoControlPoint p) {
+        return TopoHelper.getSpeedColor(p);
     }
 
     private void initAttributes() {

@@ -95,6 +95,11 @@ public class TopoPropertiesBuilder extends PropertiesBuilder<BTopoControlPoint> 
         var delta = "Δ ";
         propertyMap.put(getCatKey(cat1, delta + SDict.ROLLING.toString()), p.ext().deltaRolling().getDelta(3));
         propertyMap.put(getCatKey(cat1, delta + Dict.REFERENCE.toString()), p.ext().deltaZero().getDelta(3));
+        var speed = p.ext().getSpeed();
+        var ageIndicator = p.ext().getMeasurementAge(ChronoUnit.DAYS) > 365 ? "*" : "";
+        var speedString = "%.1f mm/%s (%.1f)%s".formatted(speed[0] * 1000.0, Dict.Time.YEAR.toLower(), speed[1], ageIndicator);
+
+        propertyMap.put(getCatKey(cat1, Dict.SPEED.toString()), speedString);
         propertyMap.put(getCatKey(cat1, "N"), StringHelper.round(p.getZeroY(), 3));
         propertyMap.put(getCatKey(cat1, "E"), StringHelper.round(p.getZeroX(), 3));
         propertyMap.put(getCatKey(cat1, "H"), StringHelper.round(p.getZeroZ(), 3));

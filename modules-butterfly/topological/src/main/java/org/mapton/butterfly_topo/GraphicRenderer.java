@@ -31,15 +31,21 @@ import org.mapton.worldwind.api.WWHelper;
  */
 public class GraphicRenderer extends GraphicRendererBase {
 
-    private final GraphicRendererCircle mCircleRenderer = new GraphicRendererCircle();
-    private final GraphicRendererTrace mTraceRenderer = new GraphicRendererTrace();
-    private final GraphicRendererCount mCountRenderer = new GraphicRendererCount();
     private final GraphicRendererAlarmLevel mAlarmRenderer = new GraphicRendererAlarmLevel();
+
+    private final GraphicRendererCircle mCircleRenderer = new GraphicRendererCircle();
+    private final GraphicRendererCount mCountRenderer = new GraphicRendererCount();
+    private final GraphicRendererSpeed mSpeedRenderer = new GraphicRendererSpeed();
+    private final GraphicRendererTrace mTraceRenderer = new GraphicRendererTrace();
     private final GraphicRendererVector mVectorRenderer = new GraphicRendererVector();
 
     public GraphicRenderer(RenderableLayer layer, IndexedCheckModel<GraphicRendererItem> checkModel) {
         sInteractiveLayer = layer;
         sCheckModel = checkModel;
+    }
+
+    public void addToAllowList(String name) {
+        sPlotLimiter.addToAllowList(name);
     }
 
     public void plot(BTopoControlPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
@@ -52,16 +58,13 @@ public class GraphicRenderer extends GraphicRendererBase {
             mVectorRenderer.plot(p, position);
             mCountRenderer.plot(p, position);
             mAlarmRenderer.plot(p, position);
+            mSpeedRenderer.plot(p, position);
         }
     }
 
     public void reset() {
         sPointToPositionMap.clear();
         sPlotLimiter.reset();
-    }
-
-    public void addToAllowList(String name) {
-        sPlotLimiter.addToAllowList(name);
     }
 
     private void plotBearing(BTopoControlPoint p, Position position) {

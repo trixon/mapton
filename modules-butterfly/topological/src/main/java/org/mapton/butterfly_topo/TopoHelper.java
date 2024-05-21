@@ -26,6 +26,31 @@ import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
  */
 public class TopoHelper {
 
+    private static final Color[] sSpeedColors;
+    private static final Material[] sSpeedMaterials;
+
+    static {
+        sSpeedColors = new Color[]{
+            //https://colordesigner.io/gradient-generator/?mode=lch#ACF0F2-2C1DFF
+            Color.decode("#acf0f2"),
+            Color.decode("#77e2f2"),
+            Color.decode("#22d2f8"),
+            Color.decode("#00c0fa"),
+            Color.decode("#00adee"),
+            Color.decode("#009be1"),
+            Color.decode("#008ad2"),
+            Color.decode("#007ac8"),
+            Color.decode("#0066cd"),
+            Color.decode("#2c1dff"),
+            Color.decode("#FF00FF")
+        };
+
+        sSpeedMaterials = new Material[sSpeedColors.length];
+        for (int i = 0; i < sSpeedMaterials.length; i++) {
+            sSpeedMaterials[i] = new Material(sSpeedColors[i]);
+        }
+    }
+
     public static Color getAlarmColorAwt(BTopoControlPoint p) {
         return ButterflyHelper.getAlarmColorAwt(getAlarmLevel(p));
     }
@@ -72,6 +97,22 @@ public class TopoHelper {
 
     public static Material getAlarmMaterialPlane(BTopoControlPoint p) {
         return ButterflyHelper.getAlarmMaterial(getAlarmLevelPlane(p));
+    }
+
+    public static Color getSpeedColor(BTopoControlPoint p) {
+        return sSpeedColors[getSpeedLevel(p)];
+    }
+
+    public static Material getSpeedMaterial(BTopoControlPoint p) {
+        return sSpeedMaterials[getSpeedLevel(p)];
+    }
+
+    private static int getSpeedLevel(BTopoControlPoint p) {
+        var dZ = p.ext().getSpeed()[0];
+        var length = sSpeedMaterials.length;
+        var limit = 0.025;
+        int level = (int) Math.min(length - 1, (Math.abs(dZ) / limit) * (length - 1));
+        return level;
     }
 
 }
