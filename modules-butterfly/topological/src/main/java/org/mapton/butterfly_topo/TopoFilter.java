@@ -275,8 +275,8 @@ public class TopoFilter extends FormFilter<TopoManager> {
         map.put(SDict.VALID_FROM_TO.toString(), makeInfo(mDateFromToCheckModel.getCheckedItems()));
         map.put(getBundle().getString("nextMeasCheckComboBoxTitle"), makeInfo(mMeasNextCheckModel.getCheckedItems()));
         map.put(getBundle().getString("measCodeCheckComboBoxTitle"), makeInfo(mMeasCodeCheckModel.getCheckedItems()));
-        map.put(Dict.FROM.toString(), mMeasDateLowProperty.get().toString());
-        map.put(Dict.TO.toString(), mMeasDateHighProperty.get().toString());
+        map.put(Dict.FROM.toString(), mMeasDateLowProperty.get() != null ? mMeasDateLowProperty.get().toString() : "");
+        map.put(Dict.TO.toString(), mMeasDateHighProperty.get() != null ? mMeasDateHighProperty.get().toString() : "");
 
         if (mMeasNumOfProperty.get()) {
             var value = mMeasNumOfValueProperty.get();
@@ -351,9 +351,38 @@ public class TopoFilter extends FormFilter<TopoManager> {
         var levelP = TopoHelper.getAlarmLevelPlane(p);
 
         for (var alarmFilter : AlarmFilter.values()) {
-            var validH = mAlarmCheckModel.isChecked(alarmFilter) && alarmFilter.getComponent() == BComponent.HEIGHT && alarmFilter.getLevel() == levelH;
-            var validP = mAlarmCheckModel.isChecked(alarmFilter) && alarmFilter.getComponent() == BComponent.PLANE && alarmFilter.getLevel() == levelP;
-            if (validH || validP) {
+            var itemChecked = mAlarmCheckModel.isChecked(alarmFilter);
+            var validH = itemChecked && alarmFilter.getComponent() == BComponent.HEIGHT && alarmFilter.getLevel() == levelH;
+            var validP = itemChecked && alarmFilter.getComponent() == BComponent.PLANE && alarmFilter.getLevel() == levelP;
+            var valid = false;
+            switch (p.getDimension()) {
+                case _1d ->
+                    valid = validH;
+                case _2d ->
+                    valid = validP;
+                case _3d -> {
+                    var hSelected = mAlarmNameCheckModel.isChecked(AlarmFilter.HEIGHT_0)
+                            || mAlarmNameCheckModel.isChecked(AlarmFilter.HEIGHT_1)
+                            || mAlarmNameCheckModel.isChecked(AlarmFilter.HEIGHT_2)
+                            || mAlarmNameCheckModel.isChecked(AlarmFilter.HEIGHT_E);
+
+                    var pSelected = mAlarmNameCheckModel.isChecked(AlarmFilter.PLANE_0)
+                            || mAlarmNameCheckModel.isChecked(AlarmFilter.PLANE_1)
+                            || mAlarmNameCheckModel.isChecked(AlarmFilter.PLANE_2)
+                            || mAlarmNameCheckModel.isChecked(AlarmFilter.PLANE_E);
+                    if (hSelected && pSelected) {
+                        valid = validH && validP;
+                    } else if (hSelected) {
+                        valid = validH;
+                    } else if (pSelected) {
+                        valid = validP;
+                    }
+                }
+                default ->
+                    throw new AssertionError();
+            }
+
+            if (valid) {
                 return true;
             }
         }
@@ -645,8 +674,7 @@ public class TopoFilter extends FormFilter<TopoManager> {
     }
 
     private boolean validateMeasWithout(BTopoControlPoint p) {
-        var valid = mMeasIncludeWithout.get()
-                || p.ext().getNumOfObservations() > 0;
+        var valid = mMeasIncludeWithout.get() || p.ext().getNumOfObservations() > 0;
 
         return valid;
     }
