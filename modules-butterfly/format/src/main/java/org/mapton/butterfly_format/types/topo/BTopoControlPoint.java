@@ -333,6 +333,17 @@ public class BTopoControlPoint extends BBaseControlPoint {
             }
         }
 
+        public double[] getSpeed() {
+            try {
+                var periodLength = ChronoUnit.DAYS.between(getObservationFilteredFirstDate(), getObservationFilteredLastDate()) / 365.0;
+                var dZ = deltaZero().getDelta1() / periodLength;
+
+                return new double[]{dZ, periodLength};
+            } catch (Exception e) {
+                return new double[]{-1, -1};
+            }
+        }
+
         public long getZeroMeasurementAge(ChronoUnit chronoUnit) {
             if (getDateZero() != null) {
                 return chronoUnit.between(getDateZero(), LocalDate.now());

@@ -83,6 +83,8 @@ public class TopoFilter extends FormFilter<TopoManager> {
     private final SimpleBooleanProperty mMeasLatestOperator = new SimpleBooleanProperty();
     private final SimpleBooleanProperty mMeasNumOfProperty = new SimpleBooleanProperty();
     private final SimpleIntegerProperty mMeasNumOfValueProperty = new SimpleIntegerProperty();
+    private final SimpleBooleanProperty mMeasSpeedProperty = new SimpleBooleanProperty();
+    private final SimpleDoubleProperty mMeasSpeedValueProperty = new SimpleDoubleProperty();
     private final SimpleDoubleProperty mMeasYoyoCountValueProperty = new SimpleDoubleProperty();
     private final SimpleBooleanProperty mMeasYoyoProperty = new SimpleBooleanProperty();
     private final SimpleDoubleProperty mMeasYoyoSizeValueProperty = new SimpleDoubleProperty();
@@ -170,6 +172,14 @@ public class TopoFilter extends FormFilter<TopoManager> {
         return mMeasNumOfValueProperty;
     }
 
+    public SimpleBooleanProperty measSpeedProperty() {
+        return mMeasSpeedProperty;
+    }
+
+    public SimpleDoubleProperty measSpeedValueProperty() {
+        return mMeasSpeedValueProperty;
+    }
+
     public SimpleDoubleProperty measYoyoCountValueProperty() {
         return mMeasYoyoCountValueProperty;
     }
@@ -199,6 +209,7 @@ public class TopoFilter extends FormFilter<TopoManager> {
                 .filter(p -> validateMeasAlarmLevelChange(p))
                 .filter(p -> validateMeasDisplacementAll(p))
                 .filter(p -> validateMeasDisplacementLatest(p))
+                .filter(p -> validateMeasSpeed(p))
                 .filter(p -> validateMeasCount(p))
                 .filter(p -> validateCheck(mOperatorCheckModel, p.getOperator()))
                 .filter(p -> validateFrequency(p.getFrequency()))
@@ -315,6 +326,8 @@ public class TopoFilter extends FormFilter<TopoManager> {
         mMeasDiffAllValueProperty.addListener(mChangeListenerObject);
         mMeasDiffLatestProperty.addListener(mChangeListenerObject);
         mMeasDiffLatestValueProperty.addListener(mChangeListenerObject);
+        mMeasSpeedProperty.addListener(mChangeListenerObject);
+        mMeasSpeedValueProperty.addListener(mChangeListenerObject);
         mMeasIncludeWithout.addListener(mChangeListenerObject);
         mMeasLatestOperator.addListener(mChangeListenerObject);
         mMeasNumOfProperty.addListener(mChangeListenerObject);
@@ -670,6 +683,24 @@ public class TopoFilter extends FormFilter<TopoManager> {
             }
 
             return false;
+        }
+    }
+
+    private boolean validateMeasSpeed(BTopoControlPoint p) {
+        if (mMeasSpeedProperty.get()) {
+//        if (mMeasSpeedProperty.get() && p.ext().deltaZero().getDelta() != null && p.ext().deltaZero().getDelta1() != null) {
+            double lim = mMeasSpeedValueProperty.get();
+            double value = Math.abs(p.ext().getSpeed()[0]);
+
+            if (lim == 0) {
+                return value == 0;
+            } else if (lim < 0) {
+                return value <= Math.abs(lim);
+            } else {
+                return value >= lim;
+            }
+        } else {
+            return true;
         }
     }
 
