@@ -35,6 +35,7 @@ public enum GraphicRendererItem {
     VECTOR_3D(SDict.VECTOR_3D.toString(), Integer.MAX_VALUE),
     MEASUREMENTS(Dict.NUM_OF_S.toString().formatted(SDict.MEASUREMENTS.toLower()), Integer.MAX_VALUE),
     SPEED_1D("1d %s".formatted(Dict.SPEED.toLower()), Integer.MAX_VALUE),
+    SPEED_1D_TRACE("1d %s (%s)".formatted(Dict.SPEED.toLower(), SDict.TRACE.toLower()), Integer.MAX_VALUE),
     ALARM_LEVEL(SDict.ALARM_LEVEL.toString(), Integer.MAX_VALUE),
     TRACE_ALARM_LEVEL("%s (%s)".formatted(SDict.ALARM_LEVEL.toString(), SDict.TRACE.toLower()), Integer.MAX_VALUE);
     private final String mName;
