@@ -336,9 +336,20 @@ public class BTopoControlPoint extends BBaseControlPoint {
         public double[] getSpeed() {
             try {
                 var periodLength = ChronoUnit.DAYS.between(getObservationFilteredFirstDate(), getObservationFilteredLastDate()) / 365.0;
-                var dZ = deltaZero().getDelta1() / periodLength;
+                var speed = deltaZero().getDelta1() / periodLength;
 
-                return new double[]{dZ, periodLength};
+                return new double[]{speed, periodLength};
+            } catch (Exception e) {
+                return new double[]{-1, -1};
+            }
+        }
+
+        public double[] getSpeed(BTopoControlPointObservation o1, BTopoControlPointObservation o2) {
+            try {
+                var periodLength = ChronoUnit.DAYS.between(o1.getDate(), o2.getDate()) / 365.0;
+                var speed = (o2.ext().getDeltaZ() - o1.ext().getDeltaZ()) / periodLength;
+
+                return new double[]{speed, periodLength};
             } catch (Exception e) {
                 return new double[]{-1, -1};
             }

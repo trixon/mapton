@@ -18,8 +18,14 @@ package org.mapton.butterfly_topo;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Cylinder;
+import gov.nasa.worldwind.render.Path;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
+import org.mapton.butterfly_format.types.topo.BTopoControlPointObservation;
+import static org.mapton.butterfly_topo.GraphicRendererBase.sPlotLimiter;
 import org.mapton.worldwind.api.WWHelper;
 
 /**
@@ -75,8 +81,63 @@ public class GraphicRendererSpeed extends GraphicRendererBase {
     }
 
     private void plotSpeedTrace(BTopoControlPoint p, Position position) {
-        var pos = position;
-        var cylinder = new Cylinder(pos, 10, 1);
-        addRenderable(cylinder, true);
+        var reversedList = p.ext().getObservationsTimeFiltered().reversed();
+        var sparsedList = new ArrayList<BTopoControlPointObservation>();
+        sparsedList.add(reversedList.getFirst());
+
+        for (var o : reversedList) {
+            if (ChronoUnit.DAYS.between(o.getDate(), sparsedList.getLast().getDate()) >= 182) {
+                sparsedList.add(o);
+            }
+        }
+
+        if (sparsedList.getLast() != reversedList.getLast()) {
+            sparsedList.add(reversedList.getLast());
+        }
+
+        var timeSpan = ChronoUnit.MINUTES.between(sparsedList.getFirst().getDate(), LocalDateTime.now());
+        var height = timeSpan / 24000.0;
+        var startPosition = WWHelper.positionFromPosition(position, height);
+        var groundPath = new Path(position, startPosition);
+        groundPath.setAttributes(mAttributeManager.getComponentGroundPathAttributes());
+        addRenderable(groundPath, true);
+
+        var altitude = 0.5 * height;
+        var prevHeight = height;
+        for (int i = 1; i < sparsedList.size(); i++) {
+            var o = sparsedList.get(i);
+            var prevO = sparsedList.get(i - 1);
+
+            timeSpan = ChronoUnit.MINUTES.between(o.getDate(), prevO.getDate());
+            height = timeSpan / 24000.0;
+            altitude = altitude + height * 0.5 + prevHeight * 0.5;
+            prevHeight = height;
+
+            if (o.ext().getDeltaZ() == null) {
+                continue;
+            }
+
+            var pos = WWHelper.positionFromPosition(position, altitude);
+            var maxRadius = 10.0;
+
+            var speed = p.ext().getSpeed(prevO, o)[0];
+            var radius = Math.min(maxRadius, Math.abs(speed) * 250 + 0.05);
+            radius = Math.max(0.05, radius);
+            var maximus = radius == maxRadius;
+
+            var cylinder = new Cylinder(pos, height, radius);
+            var alarmLevel = p.ext().getAlarmLevelHeight(o);
+            var rise = Math.signum(speed) > 0;
+            var attrs = new BasicShapeAttributes(mAttributeManager.getComponentCircle1dAttributes(p, alarmLevel, rise, maximus));
+            attrs.setInteriorMaterial(TopoHelper.getSpeedMaterial(p));
+
+            cylinder.setAttributes(attrs);
+
+            if (height > 0) {
+                addRenderable(cylinder, true);
+            }
+
+            sPlotLimiter.incPlotCounter(GraphicRendererItem.TRACE_1D);
+        }
     }
 }
