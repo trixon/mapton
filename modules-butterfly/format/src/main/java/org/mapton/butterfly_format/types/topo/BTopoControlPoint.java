@@ -19,6 +19,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Objects;
@@ -141,6 +142,7 @@ public class BTopoControlPoint extends BBaseControlPoint {
 
         private transient final DeltaRolling deltaRolling = new DeltaRolling();
         private transient final DeltaZero deltaZero = new DeltaZero();
+        private transient final LimitValuePredictor limitValuePredictor = new LimitValuePredictor();
 
         public Ext() {
             Ext.this.getObservationFilteredFirst();
@@ -336,7 +338,8 @@ public class BTopoControlPoint extends BBaseControlPoint {
         public double[] getSpeed() {
             try {
                 var periodLength = ChronoUnit.DAYS.between(getObservationFilteredFirstDate(), getObservationFilteredLastDate()) / 365.0;
-                var speed = deltaZero().getDelta1() / periodLength;
+                var distance = deltaZero().getDelta1() - getObservationsTimeFiltered().getFirst().ext().getDeltaZ();
+                var speed = distance / periodLength;
 
                 return new double[]{speed, periodLength};
             } catch (Exception e) {
@@ -361,6 +364,10 @@ public class BTopoControlPoint extends BBaseControlPoint {
             } else {
                 return -1L;
             }
+        }
+
+        public LimitValuePredictor limitValuePredictor() {
+            return limitValuePredictor;
         }
 
         public abstract class Delta {
@@ -509,5 +516,77 @@ public class BTopoControlPoint extends BBaseControlPoint {
             }
         }
 
+        public class LimitValuePredictor {
+            //TODO Make from trend, not only last two measurements
+
+            public Double getRemainingUntilLimit() {
+                if (getObservationsTimeFiltered().size() < 2) {
+                    return null;
+                }
+
+                var alarm = getAlarm(BComponent.HEIGHT);
+                var targetValue = isRisingByTrend() ? alarm.ext().getRange1().getMaximum() : alarm.ext().getRange1().getMinimum();
+                var remaining = targetValue - deltaZero.getDelta1();
+
+                return Math.abs(remaining);
+            }
+
+            public Boolean isRisingByTrend() {
+                if (getObservationsTimeFiltered().size() < 2) {
+                    return null;
+                }
+
+                var lastObservation = getObservationFilteredLast();
+                var secondLastObservation = getObservationsTimeFiltered().get(getObservationsTimeFiltered().size() - 2);
+                var rising = lastObservation.ext().getDeltaZ() - secondLastObservation.ext().getDeltaZ() >= 0;
+
+                return rising;
+            }
+
+            public String getExtrapolatedLimitDate() {
+                var remainingDays = getExtrapolatedLimitDays();
+                if (remainingDays == null) {
+                    return "-";
+                } else if (remainingDays == Long.MAX_VALUE) {
+                    return "E";
+                } else if (remainingDays >= 5 * 365) {
+                    return ">=5 år";
+                } else {
+                    var lastObservation = getObservationFilteredLast();
+                    var targetDate = lastObservation.getDate().plusDays(Math.round(remainingDays));
+                    var tooLateIndicator = targetDate.isBefore(LocalDateTime.now()) ? "*" : "";
+
+                    return "%s%s".formatted(targetDate.toLocalDate().toString(), tooLateIndicator);
+                }
+            }
+
+            public Long getExtrapolatedLimitDaysFromNow() {
+                try {
+                    return getExtrapolatedLimitDays() - getMeasurementAge(ChronoUnit.DAYS);
+                } catch (Exception e) {
+                    return null;
+                }
+            }
+
+            public Long getExtrapolatedLimitDays() {
+                var lastObservation = getObservationFilteredLast();
+                if (lastObservation == null || getAlarmLevel(BComponent.HEIGHT, lastObservation) == 2) {
+                    return null;
+                }
+
+                try {
+                    var measurementAge = getMeasurementAge(ChronoUnit.DAYS);
+                    var speed = getSpeed()[0];
+                    var remaining = getRemainingUntilLimit();
+                    var remainingDays = Math.abs(remaining / speed) * 365;
+                    remainingDays = (remainingDays - measurementAge);
+
+                    return Math.round(remainingDays);
+                } catch (Exception e) {
+                    System.out.println(e);
+                    return Long.MAX_VALUE;
+                }
+            }
+        }
     }
 }

@@ -19,6 +19,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
 import java.util.Objects;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.mapton.api.ui.forms.PropertiesBuilder;
 import org.mapton.butterfly_alarm.api.AlarmHelper;
 import org.mapton.butterfly_format.types.BComponent;
@@ -100,6 +101,16 @@ public class TopoPropertiesBuilder extends PropertiesBuilder<BTopoControlPoint> 
         var speedString = "%.1f mm/%s (%.1f)%s".formatted(speed[0] * 1000.0, Dict.Time.YEAR.toLower(), speed[1], ageIndicator);
 
         propertyMap.put(getCatKey(cat1, Dict.SPEED.toString()), speedString);
+
+        var limitValuePredictor = p.ext().limitValuePredictor();
+        propertyMap.put(getCatKey(cat1, Dict.REMAINING.toString()), StringHelper.round(limitValuePredictor.getRemainingUntilLimit() * 1000, 1, "", " mm", false));
+        var limitDate = limitValuePredictor.getExtrapolatedLimitDate();
+        if (!StringUtils.equalsAny(limitDate, "-", "E")) {
+            limitDate = "%s (%d)".formatted(limitDate, limitValuePredictor.getExtrapolatedLimitDaysFromNow());
+        }
+        propertyMap.put(getCatKey(cat1, Dict.Time.END_DATE.toString()), limitDate);
+        var direction = limitValuePredictor.isRisingByTrend() ? Dict.INCREASEING.toString() : Dict.DECREASING.toString();
+        propertyMap.put(getCatKey(cat1, Dict.Geometry.DIRECTION.toString()), direction);
         propertyMap.put(getCatKey(cat1, "N"), StringHelper.round(p.getZeroY(), 3));
         propertyMap.put(getCatKey(cat1, "E"), StringHelper.round(p.getZeroX(), 3));
         propertyMap.put(getCatKey(cat1, "H"), StringHelper.round(p.getZeroZ(), 3));

@@ -212,7 +212,11 @@ public class TopoOptionsView extends MOptionsView {
                     sessionManager.register("options.CheckedTab." + t.getKey(), t.getTabCheckBox().selectedProperty());
                 });
 
-        mLabelByProperty.set(TopoLabelBy.valueOf(mLabelByIdProperty.get()));
+        try {
+            mLabelByProperty.set(TopoLabelBy.valueOf(mLabelByIdProperty.get()));
+        } catch (IllegalArgumentException e) {
+            mLabelByProperty.set(DEFAULT_LABEL_BY);
+        }
     }
 
     private void populateLabelMenuButton() {
