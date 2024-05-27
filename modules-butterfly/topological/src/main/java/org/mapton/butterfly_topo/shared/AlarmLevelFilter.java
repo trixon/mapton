@@ -23,7 +23,7 @@ import org.openide.util.NbBundle;
  *
  * @author Patrik Karlström
  */
-public enum AlarmFilter {
+public enum AlarmLevelFilter {
     HEIGHT_0(BComponent.HEIGHT, 0),
     HEIGHT_1(BComponent.HEIGHT, 1),
     HEIGHT_2(BComponent.HEIGHT, 2),
@@ -34,9 +34,9 @@ public enum AlarmFilter {
     PLANE_E(BComponent.PLANE, -1);
     private final BComponent mComponent;
     private final int mLevel;
-    private final ResourceBundle mBundle = NbBundle.getBundle(AlarmFilter.class);
+    private final ResourceBundle mBundle = NbBundle.getBundle(AlarmLevelFilter.class);
 
-    private AlarmFilter(BComponent component, int level) {
+    private AlarmLevelFilter(BComponent component, int level) {
         mComponent = component;
         mLevel = level;
     }

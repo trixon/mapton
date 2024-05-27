@@ -38,7 +38,7 @@ import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.topo.BTopoControlPointObservation;
 import org.mapton.butterfly_topo.api.TopoManager;
-import org.mapton.butterfly_topo.shared.AlarmFilter;
+import org.mapton.butterfly_topo.shared.AlarmLevelFilter;
 import org.mapton.butterfly_topo.shared.AlarmLevelChangeMode;
 import org.mapton.butterfly_topo.shared.AlarmLevelChangeUnit;
 import se.trixon.almond.util.BooleanHelper;
@@ -52,7 +52,7 @@ import se.trixon.almond.util.SDict;
  */
 public class TopoFilter extends FormFilter<TopoManager> {
 
-    IndexedCheckModel<AlarmFilter> mAlarmCheckModel;
+    IndexedCheckModel<AlarmLevelFilter> mAlarmLevelCheckModel;
     IndexedCheckModel mAlarmNameCheckModel;
     IndexedCheckModel mCategoryCheckModel;
     IndexedCheckModel mDateFromToCheckModel;
@@ -258,7 +258,7 @@ public class TopoFilter extends FormFilter<TopoManager> {
 
     void initCheckModelListeners() {
         mStatusCheckModel.getCheckedItems().addListener(mListChangeListener);
-        mAlarmCheckModel.getCheckedItems().addListener(mListChangeListener);
+        mAlarmLevelCheckModel.getCheckedItems().addListener(mListChangeListener);
         mAlarmNameCheckModel.getCheckedItems().addListener(mListChangeListener);
         mCategoryCheckModel.getCheckedItems().addListener(mListChangeListener);
         mDateFromToCheckModel.getCheckedItems().addListener(mListChangeListener);
@@ -357,14 +357,14 @@ public class TopoFilter extends FormFilter<TopoManager> {
     }
 
     private boolean validateAlarm(BTopoControlPoint p) {
-        if (mAlarmCheckModel.isEmpty()) {
+        if (mAlarmLevelCheckModel.isEmpty()) {
             return true;
         }
         var levelH = TopoHelper.getAlarmLevelHeight(p);
         var levelP = TopoHelper.getAlarmLevelPlane(p);
 
-        for (var alarmFilter : AlarmFilter.values()) {
-            var itemChecked = mAlarmCheckModel.isChecked(alarmFilter);
+        for (var alarmFilter : AlarmLevelFilter.values()) {
+            var itemChecked = mAlarmLevelCheckModel.isChecked(alarmFilter);
             var validH = itemChecked && alarmFilter.getComponent() == BComponent.HEIGHT && alarmFilter.getLevel() == levelH;
             var validP = itemChecked && alarmFilter.getComponent() == BComponent.PLANE && alarmFilter.getLevel() == levelP;
             var valid = false;
@@ -374,15 +374,15 @@ public class TopoFilter extends FormFilter<TopoManager> {
                 case _2d ->
                     valid = validP;
                 case _3d -> {
-                    var hSelected = mAlarmNameCheckModel.isChecked(AlarmFilter.HEIGHT_0)
-                            || mAlarmNameCheckModel.isChecked(AlarmFilter.HEIGHT_1)
-                            || mAlarmNameCheckModel.isChecked(AlarmFilter.HEIGHT_2)
-                            || mAlarmNameCheckModel.isChecked(AlarmFilter.HEIGHT_E);
+                    var hSelected = mAlarmLevelCheckModel.isChecked(AlarmLevelFilter.HEIGHT_0)
+                            || mAlarmLevelCheckModel.isChecked(AlarmLevelFilter.HEIGHT_1)
+                            || mAlarmLevelCheckModel.isChecked(AlarmLevelFilter.HEIGHT_2)
+                            || mAlarmLevelCheckModel.isChecked(AlarmLevelFilter.HEIGHT_E);
 
-                    var pSelected = mAlarmNameCheckModel.isChecked(AlarmFilter.PLANE_0)
-                            || mAlarmNameCheckModel.isChecked(AlarmFilter.PLANE_1)
-                            || mAlarmNameCheckModel.isChecked(AlarmFilter.PLANE_2)
-                            || mAlarmNameCheckModel.isChecked(AlarmFilter.PLANE_E);
+                    var pSelected = mAlarmLevelCheckModel.isChecked(AlarmLevelFilter.PLANE_0)
+                            || mAlarmLevelCheckModel.isChecked(AlarmLevelFilter.PLANE_1)
+                            || mAlarmLevelCheckModel.isChecked(AlarmLevelFilter.PLANE_2)
+                            || mAlarmLevelCheckModel.isChecked(AlarmLevelFilter.PLANE_E);
                     if (hSelected && pSelected) {
                         valid = validH && validP;
                     } else if (hSelected) {

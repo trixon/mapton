@@ -38,7 +38,7 @@ import org.mapton.api.ui.forms.NegPosStringConverterInteger;
 import org.mapton.butterfly_core.api.BaseFilterPopOver;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_topo.api.TopoManager;
-import org.mapton.butterfly_topo.shared.AlarmFilter;
+import org.mapton.butterfly_topo.shared.AlarmLevelFilter;
 import org.mapton.butterfly_topo.shared.AlarmLevelChangeMode;
 import org.mapton.butterfly_topo.shared.AlarmLevelChangeUnit;
 import se.trixon.almond.util.Dict;
@@ -56,7 +56,7 @@ import se.trixon.almond.util.fx.session.SessionIntegerSpinner;
 public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
 
     private final SessionCheckComboBox<String> mAlarmNameSccb = new SessionCheckComboBox<>();
-    private final SessionCheckComboBox<AlarmFilter> mAlarmSccb = new SessionCheckComboBox<>(true);
+    private final SessionCheckComboBox<AlarmLevelFilter> mAlarmSccb = new SessionCheckComboBox<>(true);
     private final SessionCheckComboBox<String> mCategorySccb = new SessionCheckComboBox<>();
     private final DateRangePane mDateRangePane = new DateRangePane();
     private final double mDefaultDiffValue = 0.020;
@@ -249,7 +249,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
         mHasDateFromToSccb.setTitle(SDict.VALID_FROM_TO.toString());
         mMeasNextSccb.setTitle(getBundle().getString("nextMeasCheckComboBoxTitle"));
         mAlarmSccb.setTitle(SDict.ALARM_LEVEL.toString());
-        mAlarmSccb.getItems().setAll(AlarmFilter.values());
+        mAlarmSccb.getItems().setAll(AlarmLevelFilter.values());
         mMeasCodeSccb.setTitle(getBundle().getString("measCodeCheckComboBoxTitle"));
         mMeasOperatorSccb.setTitle(SDict.SURVEYORS.toString());
         mStatusSccb.setTitle(Dict.STATUS.toString());
@@ -507,11 +507,10 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
         mFilter.mGroupCheckModel = mGroupSccb.getCheckModel();
         mFilter.mDisruptorCheckModel = mDisruptorPane.getCheckModel();
         mFilter.mCategoryCheckModel = mCategorySccb.getCheckModel();
-        mFilter.mAlarmNameCheckModel = mAlarmNameSccb.getCheckModel();
         mFilter.mOperatorCheckModel = mOperatorSccb.getCheckModel();
         mFilter.mMeasNextCheckModel = mMeasNextSccb.getCheckModel();
         mFilter.mAlarmNameCheckModel = mAlarmNameSccb.getCheckModel();
-        mFilter.mAlarmCheckModel = mAlarmSccb.getCheckModel();
+        mFilter.mAlarmLevelCheckModel = mAlarmSccb.getCheckModel();
         mFilter.mMeasCodeCheckModel = mMeasCodeSccb.getCheckModel();
         mFilter.mDateFromToCheckModel = mHasDateFromToSccb.getCheckModel();
         mFilter.mFrequencyCheckModel = mFrequencySccb.getCheckModel();
