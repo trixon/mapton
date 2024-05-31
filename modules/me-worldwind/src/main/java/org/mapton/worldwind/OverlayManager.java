@@ -61,9 +61,10 @@ public class OverlayManager {
                     .filter(wms -> !wms.getOverlays().isEmpty())
                     .forEachOrdered(wmsSource -> {
                         wmsSource.getLayers().forEach((String key, String id) -> {
-                            if (wmsSource.getOverlays().contains(id) && !mIdToLayerMap.containsKey(id)) {
+                            if (wmsSource.getOverlays().contains(id)) {
                                 var layer = mWmsLayerLoader.load("fix_this_id", wmsSource.getUrl(), key);
                                 if (layer != null) {
+                                    layer.setValue(ModuleOptions.KEY_MAP_OVERLAYS, "1");
                                     mIdToLayerMap.put(id, layer);
                                     availableOverlays.add(id);
                                 }

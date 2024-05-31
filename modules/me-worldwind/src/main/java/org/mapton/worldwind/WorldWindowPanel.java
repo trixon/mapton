@@ -59,6 +59,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.stream.Stream;
@@ -478,7 +479,11 @@ public class WorldWindowPanel extends WorldWindowGLJPanel {
     }
 
     private void updateOverlays() {
-        getLayers().removeAll(mOverlayManager.getIdToLayerMap().values());
+        getLayers().removeAll(getLayers().stream().filter(layer -> {
+            var s = Objects.toString(layer.getValue(ModuleOptions.KEY_MAP_OVERLAYS), "");
+            return StringUtils.equalsIgnoreCase(s, "1");
+        }).toList());
+
         var storedOverlays = StringUtils.split(mOptions.get(ModuleOptions.KEY_MAP_OVERLAYS, ""), ",");
         ArrayUtils.reverse(storedOverlays);
 
