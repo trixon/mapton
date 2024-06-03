@@ -69,7 +69,7 @@ public class ConvergencePairChartBuilder extends ChartBuilder<BTopoConvergencePa
     private TextTitle mDateSubTextTitle;
     private TextTitle mDeltaSubTextTitle;
     private final MTemporalManager mTemporalManager = MTemporalManager.getInstance();
-    private final TimeSeries mTimeSeriesBlast = new TimeSeries("Salvor inom 100 m");
+    private final TimeSeries mTimeSeriesBlast = new TimeSeries("Salvor inom 40 m");
     private final TimeSeries mTimeSeriesDeltaL = new TimeSeries("Längdförändring");
     private final TimeSeries mTimeSeriesDeltaV = new TimeSeries("Hastighet");
 
@@ -208,7 +208,7 @@ public class ConvergencePairChartBuilder extends ChartBuilder<BTopoConvergencePa
             var ll1 = new MLatLon(b.getLat(), b.getLon());
             var ll2 = new MLatLon(p.getP1().getLat(), p.getP1().getLon());
 
-            if (ll1.distance(ll2) <= 100 && DateHelper.isBetween(p.getObservations().getFirst().getDate().toLocalDate(),
+            if (ll1.distance(ll2) <= 40 && DateHelper.isBetween(p.getObservations().getFirst().getDate().toLocalDate(),
                     p.getObservations().getLast().getDate().toLocalDate(),
                     b.getDateTime().toLocalDate())) {
                 try {

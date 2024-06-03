@@ -523,12 +523,15 @@ public class BTopoControlPoint extends BBaseControlPoint {
                 if (getObservationsTimeFiltered().size() < 2) {
                     return null;
                 }
+                try {
+                    var alarm = getAlarm(BComponent.HEIGHT);
+                    var targetValue = isRisingByTrend() ? alarm.ext().getRange1().getMaximum() : alarm.ext().getRange1().getMinimum();
+                    var remaining = targetValue - deltaZero.getDelta1();
 
-                var alarm = getAlarm(BComponent.HEIGHT);
-                var targetValue = isRisingByTrend() ? alarm.ext().getRange1().getMaximum() : alarm.ext().getRange1().getMinimum();
-                var remaining = targetValue - deltaZero.getDelta1();
-
-                return Math.abs(remaining);
+                    return Math.abs(remaining);
+                } catch (Exception e) {
+                    return null;
+                }
             }
 
             public Boolean isRisingByTrend() {

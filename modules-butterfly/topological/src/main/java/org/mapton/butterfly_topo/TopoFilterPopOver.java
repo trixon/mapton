@@ -38,9 +38,9 @@ import org.mapton.api.ui.forms.NegPosStringConverterInteger;
 import org.mapton.butterfly_core.api.BaseFilterPopOver;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_topo.api.TopoManager;
-import org.mapton.butterfly_topo.shared.AlarmLevelFilter;
 import org.mapton.butterfly_topo.shared.AlarmLevelChangeMode;
 import org.mapton.butterfly_topo.shared.AlarmLevelChangeUnit;
+import org.mapton.butterfly_topo.shared.AlarmLevelFilter;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SDict;
 import se.trixon.almond.util.fx.FxHelper;
@@ -59,6 +59,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
     private final SessionCheckComboBox<AlarmLevelFilter> mAlarmSccb = new SessionCheckComboBox<>(true);
     private final SessionCheckComboBox<String> mCategorySccb = new SessionCheckComboBox<>();
     private final DateRangePane mDateRangePane = new DateRangePane();
+    private final int mDefaultAlarmLevelAgeValue = -7;
     private final double mDefaultDiffValue = 0.020;
     private final int mDefaultMeasAlarmLevelChangeLimit = 1;
     private final int mDefaultMeasAlarmLevelChangeValue = 10;
@@ -80,6 +81,8 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
     private final SessionCheckComboBox<String> mHasDateFromToSccb = new SessionCheckComboBox<>(true);
     private final CheckBox mInvertCheckbox = new CheckBox();
     private final TopoManager mManager = TopoManager.getInstance();
+    private final CheckBox mMeasAlarmLevelAgeCheckbox = new CheckBox();
+    private final SessionIntegerSpinner mMeasAlarmLevelAgeSis = new SessionIntegerSpinner(Integer.MIN_VALUE, Integer.MAX_VALUE, mDefaultAlarmLevelAgeValue);
     private final CheckBox mMeasAlarmLevelChangeCheckbox = new CheckBox();
     private final SessionIntegerSpinner mMeasAlarmLevelChangeLimitSis = new SessionIntegerSpinner(1, 100, mDefaultMeasAlarmLevelChangeLimit);
     private final SessionComboBox<AlarmLevelChangeMode> mMeasAlarmLevelChangeModeScb = new SessionComboBox<>();
@@ -121,20 +124,22 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
         setUsePolygonFilter(false);
         mFilter.freeTextProperty().set("");
 
-        mDimens1Checkbox.setSelected(false);
-        mDimens2Checkbox.setSelected(false);
-        mDimens3Checkbox.setSelected(false);
-
-        mSameAlarmCheckbox.setSelected(false);
-        mMeasAlarmLevelChangeCheckbox.setSelected(false);
-        mMeasSpeedCheckbox.setSelected(false);
-        mDiffMeasLatestCheckbox.setSelected(false);
-        mDiffMeasAllCheckbox.setSelected(false);
-        mMeasYoyoCheckbox.setSelected(false);
-        mInvertCheckbox.setSelected(false);
-        mMeasLatestOperatorCheckbox.setSelected(false);
-        mMeasIncludeWithoutCheckbox.setSelected(false);
-        mNumOfMeasCheckbox.setSelected(false);
+        FxHelper.setSelected(false,
+                mDimens1Checkbox,
+                mDimens2Checkbox,
+                mDimens3Checkbox,
+                mSameAlarmCheckbox,
+                mMeasAlarmLevelChangeCheckbox,
+                mMeasSpeedCheckbox,
+                mDiffMeasLatestCheckbox,
+                mDiffMeasAllCheckbox,
+                mMeasYoyoCheckbox,
+                mInvertCheckbox,
+                mMeasLatestOperatorCheckbox,
+                mMeasIncludeWithoutCheckbox,
+                mNumOfMeasCheckbox,
+                mMeasAlarmLevelAgeCheckbox
+        );
 
         mMeasSpeedSds.getValueFactory().setValue(mDefaultSpeedValue);
         mDiffMeasLatestSds.getValueFactory().setValue(mDefaultDiffValue);
@@ -142,20 +147,23 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
         mMeasYoyoCountSds.getValueFactory().setValue(mDefaultMeasYoyoCount);
         mMeasYoyoSizeSds.getValueFactory().setValue(mDefaultMeasYoyoSize);
         mMeasNumOfSis.getValueFactory().setValue(mDefaultNumOfMeasfValue);
+        mMeasAlarmLevelAgeSis.getValueFactory().setValue(mDefaultAlarmLevelAgeValue);
         mMeasAlarmLevelChangeValueSis.getValueFactory().setValue(mDefaultMeasAlarmLevelChangeValue);
         mMeasAlarmLevelChangeLimitSis.getValueFactory().setValue(mDefaultMeasAlarmLevelChangeLimit);
 
-        mStatusSccb.clearChecks();
-        mMeasOperatorSccb.clearChecks();
-        mGroupSccb.clearChecks();
-        mCategorySccb.clearChecks();
-        mAlarmNameSccb.clearChecks();
-        mOperatorSccb.clearChecks();
-        mAlarmSccb.clearChecks();
-        mMeasNextSccb.clearChecks();
-        mMeasCodeSccb.clearChecks();
-        mHasDateFromToSccb.clearChecks();
-        mFrequencySccb.clearChecks();
+        SessionCheckComboBox.clearChecks(
+                mStatusSccb,
+                mMeasOperatorSccb,
+                mGroupSccb,
+                mCategorySccb,
+                mAlarmNameSccb,
+                mOperatorSccb,
+                mAlarmSccb,
+                mMeasNextSccb,
+                mMeasCodeSccb,
+                mHasDateFromToSccb,
+                mFrequencySccb
+        );
 
         mDateRangePane.reset();
         mDisruptorPane.reset();
@@ -190,6 +198,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
         mMeasYoyoCountSds.load();
         mMeasYoyoSizeSds.load();
         mMeasNumOfSis.load();
+        mMeasAlarmLevelAgeSis.load();
 
         mDisruptorPane.load();
 
@@ -287,6 +296,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
         ));
 
         mMeasNumOfSis.getValueFactory().setConverter(new NegPosStringConverterInteger());
+        mMeasAlarmLevelAgeSis.getValueFactory().setConverter(new NegPosStringConverterInteger());
         mSameAlarmCheckbox.setText(getBundle().getString("sameAlarmCheckBoxText"));
         mMeasAlarmLevelChangeCheckbox.setText(getBundle().getString("measAlarmLevelChangeCheckBoxText"));
         mMeasSpeedCheckbox.setText(Dict.SPEED.toString());
@@ -297,6 +307,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
         mMeasLatestOperatorCheckbox.setText(getBundle().getString("measLatesOperatorCheckBoxText"));
         mMeasIncludeWithoutCheckbox.setText(getBundle().getString("measIncludeWithoutCheckboxText"));
         mNumOfMeasCheckbox.setText(getBundle().getString("numOfMeasCheckBoxText"));
+        mMeasAlarmLevelAgeCheckbox.setText("Ålder på larmnivå");
         mMeasSpeedSds.getValueFactory().setConverter(new NegPosStringConverterDouble());
         mDiffMeasLatestSds.getValueFactory().setConverter(new NegPosStringConverterDouble());
         mDiffMeasAllSds.getValueFactory().setConverter(new NegPosStringConverterDouble());
@@ -372,6 +383,10 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
                         mMeasYoyoCountSds,
                         mMeasYoyoSizeSds
                 ),
+                new VBox(titleGap,
+                        mMeasAlarmLevelAgeCheckbox,
+                        mMeasAlarmLevelAgeSis
+                ),
                 mAlarmSccb,
                 new VBox(titleGap,
                         mMeasAlarmLevelChangeCheckbox,
@@ -418,8 +433,8 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
         internalBox.setAlignment(Pos.CENTER_LEFT);
         getToolBar().getItems().add(internalBox);
 
-        FxHelper.setEditable(true, mDiffMeasAllSds, mDiffMeasLatestSds, mMeasSpeedSds, mMeasNumOfSis, mMeasYoyoCountSds, mMeasYoyoSizeSds, mMeasAlarmLevelChangeValueSis, mMeasAlarmLevelChangeLimitSis);
-        FxHelper.autoCommitSpinners(mDiffMeasAllSds, mDiffMeasLatestSds, mMeasSpeedSds, mMeasNumOfSis, mMeasYoyoCountSds, mMeasYoyoSizeSds, mMeasAlarmLevelChangeValueSis, mMeasAlarmLevelChangeLimitSis);
+        FxHelper.setEditable(true, mDiffMeasAllSds, mDiffMeasLatestSds, mMeasSpeedSds, mMeasNumOfSis, mMeasYoyoCountSds, mMeasYoyoSizeSds, mMeasAlarmLevelChangeValueSis, mMeasAlarmLevelChangeLimitSis, mMeasAlarmLevelAgeSis);
+        FxHelper.autoCommitSpinners(mDiffMeasAllSds, mDiffMeasLatestSds, mMeasSpeedSds, mMeasNumOfSis, mMeasYoyoCountSds, mMeasYoyoSizeSds, mMeasAlarmLevelChangeValueSis, mMeasAlarmLevelChangeLimitSis, mMeasAlarmLevelAgeSis);
         FxHelper.bindWidthForChildrens(leftBox, rightBox, basicBox);
         FxHelper.bindWidthForRegions(leftBox, mDisruptorPane.getRoot());
         FxHelper.bindWidthForRegions(rightBox,
@@ -429,6 +444,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
                 mMeasYoyoCountSds,
                 mMeasYoyoSizeSds,
                 mMeasNumOfSis,
+                mMeasAlarmLevelAgeSis,
                 mMeasOperatorSccb
         );
 
@@ -472,6 +488,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
         });
 
         mFilter.measNumOfProperty().bind(mNumOfMeasCheckbox.selectedProperty());
+        mFilter.measAlarmLevelAgeProperty().bind(mMeasAlarmLevelAgeCheckbox.selectedProperty());
         mFilter.measDiffAllProperty().bind(mDiffMeasAllCheckbox.selectedProperty());
         mFilter.measYoyoProperty().bind(mMeasYoyoCheckbox.selectedProperty());
         mFilter.invertProperty().bind(mInvertCheckbox.selectedProperty());
@@ -485,6 +502,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
         mFilter.disruptorDistanceProperty().bind(mDisruptorPane.distanceProperty());
 
         mFilter.measNumOfValueProperty().bind(mMeasNumOfSis.sessionValueProperty());
+        mFilter.measAlarmLevelAgeValueProperty().bind(mMeasAlarmLevelAgeSis.sessionValueProperty());
         mFilter.measDiffAllValueProperty().bind(mDiffMeasAllSds.sessionValueProperty());
         mFilter.measYoyoCountValueProperty().bind(mMeasYoyoCountSds.sessionValueProperty());
         mFilter.measYoyoSizeValueProperty().bind(mMeasYoyoSizeSds.sessionValueProperty());
@@ -516,6 +534,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
         mFilter.mFrequencyCheckModel = mFrequencySccb.getCheckModel();
 
         mMeasNumOfSis.disableProperty().bind(mNumOfMeasCheckbox.selectedProperty().not());
+        mMeasAlarmLevelAgeSis.disableProperty().bind(mMeasAlarmLevelAgeCheckbox.selectedProperty().not());
         mDiffMeasAllSds.disableProperty().bind(mDiffMeasAllCheckbox.selectedProperty().not());
         mDiffMeasLatestSds.disableProperty().bind(mDiffMeasLatestCheckbox.selectedProperty().not());
         mMeasSpeedSds.disableProperty().bind(mMeasSpeedCheckbox.selectedProperty().not());
@@ -564,6 +583,8 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
         sessionManager.register("filter.measLatestOperator", mMeasLatestOperatorCheckbox.selectedProperty());
         sessionManager.register("filter.measNumOfMeas", mNumOfMeasCheckbox.selectedProperty());
         sessionManager.register("filter.measNumOfValue", mMeasNumOfSis.sessionValueProperty());
+        sessionManager.register("filter.measAlarmLevelAge", mMeasAlarmLevelAgeCheckbox.selectedProperty());
+        sessionManager.register("filter.measAlarmLevelAgeValue", mMeasAlarmLevelAgeSis.sessionValueProperty());
         sessionManager.register("filter.measAlarmLevelChange", mMeasAlarmLevelChangeCheckbox.selectedProperty());
         sessionManager.register("filter.measAlarmLevelChangeMode", mMeasAlarmLevelChangeModeScb.selectedIndexProperty());
         sessionManager.register("filter.measAlarmLevelChangeUnit", mMeasAlarmLevelChangeUnitScb.selectedIndexProperty());

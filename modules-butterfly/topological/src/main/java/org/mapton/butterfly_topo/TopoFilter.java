@@ -38,9 +38,9 @@ import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.topo.BTopoControlPointObservation;
 import org.mapton.butterfly_topo.api.TopoManager;
-import org.mapton.butterfly_topo.shared.AlarmLevelFilter;
 import org.mapton.butterfly_topo.shared.AlarmLevelChangeMode;
 import org.mapton.butterfly_topo.shared.AlarmLevelChangeUnit;
+import org.mapton.butterfly_topo.shared.AlarmLevelFilter;
 import se.trixon.almond.util.BooleanHelper;
 import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
@@ -68,6 +68,8 @@ public class TopoFilter extends FormFilter<TopoManager> {
     private final SimpleBooleanProperty mDimens3Property = new SimpleBooleanProperty();
     private final SimpleBooleanProperty mInvertProperty = new SimpleBooleanProperty();
     private final TopoManager mManager = TopoManager.getInstance();
+    private final SimpleBooleanProperty mMeasAlarmLevelAgeProperty = new SimpleBooleanProperty();
+    private final SimpleIntegerProperty mMeasAlarmLevelAgeValueProperty = new SimpleIntegerProperty();
     private final SimpleIntegerProperty mMeasAlarmLevelChangeLimitProperty = new SimpleIntegerProperty();
     private final SimpleObjectProperty mMeasAlarmLevelChangeModeProperty = new SimpleObjectProperty();
     private final SimpleBooleanProperty mMeasAlarmLevelChangeProperty = new SimpleBooleanProperty();
@@ -110,6 +112,14 @@ public class TopoFilter extends FormFilter<TopoManager> {
 
     public SimpleBooleanProperty invertProperty() {
         return mInvertProperty;
+    }
+
+    public SimpleBooleanProperty measAlarmLevelAgeProperty() {
+        return mMeasAlarmLevelAgeProperty;
+    }
+
+    public SimpleIntegerProperty measAlarmLevelAgeValueProperty() {
+        return mMeasAlarmLevelAgeValueProperty;
     }
 
     public SimpleIntegerProperty measAlarmLevelChangeLimitProperty() {
@@ -206,6 +216,7 @@ public class TopoFilter extends FormFilter<TopoManager> {
                 .filter(p -> validateCheck(mCategoryCheckModel, p.getCategory()))
                 .filter(p -> validateAlarmName(p))
                 .filter(p -> validateAlarm(p))
+                .filter(p -> validateMeasAlarmLevelAge(p))
                 .filter(p -> validateMeasAlarmLevelChange(p))
                 .filter(p -> validateMeasDisplacementAll(p))
                 .filter(p -> validateMeasDisplacementLatest(p))
@@ -322,6 +333,8 @@ public class TopoFilter extends FormFilter<TopoManager> {
         mMeasAlarmLevelChangeUnitProperty.addListener(mChangeListenerObject);
         mMeasAlarmLevelChangeValueProperty.addListener(mChangeListenerObject);
 
+        mMeasAlarmLevelAgeProperty.addListener(mChangeListenerObject);
+        mMeasAlarmLevelAgeValueProperty.addListener(mChangeListenerObject);
         mMeasDiffAllProperty.addListener(mChangeListenerObject);
         mMeasDiffAllValueProperty.addListener(mChangeListenerObject);
         mMeasDiffLatestProperty.addListener(mChangeListenerObject);
@@ -522,6 +535,67 @@ public class TopoFilter extends FormFilter<TopoManager> {
 //            boolean valid = daysBetween < Integer.parseInt(ageFilter);
 //            return valid;
 //        }
+    }
+
+    private boolean validateMeasAlarmLevelAge(BTopoControlPoint p) {
+        if (!mMeasAlarmLevelAgeProperty.get()) {
+            return true;
+        }
+
+        var lim = mMeasAlarmLevelAgeValueProperty.get();
+        Long value = null;
+
+        var ageH = p.ext().getAlarmLevelAge(BComponent.HEIGHT);
+        var ageP = p.ext().getAlarmLevelAge(BComponent.PLANE);
+
+        if (ObjectUtils.allNull(ageH, ageP)) {
+            return true;
+        }
+
+        switch (p.getDimension()) {
+            case BDimension._1d -> {
+                value = p.ext().getAlarmLevelAge(BComponent.HEIGHT);
+            }
+            case BDimension._2d -> {
+                value = p.ext().getAlarmLevelAge(BComponent.PLANE);
+            }
+            case BDimension._3d -> {
+                var valueH = p.ext().getAlarmLevelAge(BComponent.HEIGHT);
+                var valueP = p.ext().getAlarmLevelAge(BComponent.PLANE);
+
+                if (ObjectUtils.allNotNull(valueH, valueP)) {
+                    if (lim < 0) {
+                        value = Math.max(valueH, valueP);
+                    } else {
+
+                        value = Math.min(valueH, valueP);
+                    }
+                } else if (valueH == null) {
+                    value = valueP;
+                } else if (valueP == null) {
+                    value = valueH;
+                }
+            }
+
+            default ->
+                throw new AssertionError();
+        }
+
+        if (ObjectUtils.allNull(value)) {
+            return true;
+        }
+
+        value = Math.abs(value);
+
+        if (lim == 0) {
+            return value == 0;
+        } else if (lim < 0) {
+            return value <= Math.abs(lim) && value != 0;
+        } else if (lim > 0) {
+            return value >= lim;
+        }
+
+        return true;
     }
 
     private boolean validateMeasAlarmLevelChange(BTopoControlPoint p) {
