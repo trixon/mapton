@@ -817,8 +817,6 @@ public class TopoFilter extends FormFilter<TopoManager> {
     }
 
     private boolean validateNextMeas(BTopoControlPoint p) {
-        //TODO Verify exact days...
-
         var frequency = p.getFrequency();
         var latest = p.getDateLatest() != null ? p.getDateLatest().toLocalDate() : LocalDate.MIN;
         var today = LocalDate.now();
@@ -830,6 +828,8 @@ public class TopoFilter extends FormFilter<TopoManager> {
         } else if (mMeasNextCheckModel.isChecked("∞") && frequency == 0) {
             return true;
         } else if (frequency > 0 && mMeasNextCheckModel.isChecked("<0") && nextMeas.isBefore(today)) {
+            return true;
+        } else if (frequency > 0 && mMeasNextCheckModel.isChecked("0") && remainingDays == 0) {
             return true;
         } else {
             return mMeasNextCheckModel.getCheckedItems().stream()
