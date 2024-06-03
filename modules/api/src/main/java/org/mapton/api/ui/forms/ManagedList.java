@@ -67,17 +67,14 @@ public class ManagedList<ManagerType extends MBaseDataManager, ItemType> {
     private void initListeners() {
         mManager.getTimeFilteredItems().addListener((ListChangeListener.Change c) -> {
             Platform.runLater(() -> {
-                mItemCountLabel.setText("%d/%d".formatted(
-                        mManager.getTimeFilteredItems().size(),
-                        mManager.getAllItems().size()
-                ));
-
                 mManager.restoreSelection();
+                updateLabel();
             });
         });
 
         mListView.getSelectionModel().selectedItemProperty().addListener((p, o, n) -> {
             mManager.setSelectedItem(n);
+            updateLabel();
         });
 
         mListView.setOnMouseClicked(mouseEvent -> {
@@ -99,6 +96,20 @@ public class ManagedList<ManagerType extends MBaseDataManager, ItemType> {
                 FxHelper.scrollToItemIfNotVisible(mListView, n);
             }
         });
+    }
+
+    private void updateLabel() {
+        var index = mListView.getSelectionModel().getSelectedIndex();
+        var pos = "";
+        if (index != -1) {
+            pos = "@%d/".formatted(index + 1);
+        }
+
+        mItemCountLabel.setText("%s%d/%d".formatted(
+                pos,
+                mManager.getTimeFilteredItems().size(),
+                mManager.getAllItems().size()
+        ));
     }
 
 }
