@@ -15,12 +15,14 @@
  */
 package org.mapton.butterfly_acoustic.measuring_point;
 
+import java.util.ResourceBundle;
 import javafx.scene.control.Separator;
 import javafx.scene.layout.VBox;
 import static org.mapton.api.ui.MPopOver.GAP;
 import static org.mapton.api.ui.MPopOver.autoSize;
 import org.mapton.butterfly_core.api.BaseFilterPopOver;
 import org.mapton.butterfly_format.Butterfly;
+import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.session.SessionCheckComboBox;
@@ -32,27 +34,37 @@ import se.trixon.almond.util.fx.session.SessionCheckComboBox;
 public class MeasPointFilterPopOver extends BaseFilterPopOver {
 
     private final MeasPointFilter mFilter;
-    private final SessionCheckComboBox<String> mGroupSCCB = new SessionCheckComboBox<>();
+    private final SessionCheckComboBox<String> mGroupSccb = new SessionCheckComboBox<>();
+    private final SessionCheckComboBox<String> mTypeSccb = new SessionCheckComboBox<>();
+    private final SessionCheckComboBox<String> mSoilSccb = new SessionCheckComboBox<>();
+    private final ResourceBundle mBundle = NbBundle.getBundle(MeasPointFilterPopOver.class);
 
     public MeasPointFilterPopOver(MeasPointFilter filter) {
         mFilter = filter;
         createUI();
         initListeners();
         initSession();
+
+        populate();
     }
 
     @Override
     public void clear() {
         setUsePolygonFilter(false);
         mFilter.freeTextProperty().set("");
-        mGroupSCCB.getCheckModel().clearChecks();
-
+        SessionCheckComboBox.clearChecks(
+                mGroupSccb,
+                mTypeSccb,
+                mSoilSccb
+        );
     }
 
     @Override
     public void load(Butterfly butterfly) {
-        var groups = butterfly.acoustic().getMeasuringPoints().stream().map(b -> b.getGroup());
-        mGroupSCCB.loadAndRestoreCheckItems(groups);
+        var items = butterfly.acoustic().getMeasuringPoints();
+        mGroupSccb.loadAndRestoreCheckItems(items.stream().map(b -> b.getGroup()));
+        mTypeSccb.loadAndRestoreCheckItems(items.stream().map(b -> b.getTypeOfWork()));
+        mSoilSccb.loadAndRestoreCheckItems(items.stream().map(b -> b.getSoilMaterial()));
     }
 
     @Override
@@ -62,25 +74,41 @@ public class MeasPointFilterPopOver extends BaseFilterPopOver {
 
     @Override
     public void onShownFirstTime() {
-        var dropDownCount = 25;
-        FxHelper.getComboBox(mGroupSCCB).setVisibleRowCount(dropDownCount);
+        FxHelper.setVisibleRowCount(25,
+                mGroupSccb,
+                mTypeSccb,
+                mSoilSccb
+        );
     }
 
     @Override
     public void reset() {
         clear();
         mFilter.freeTextProperty().set("*");
-        mGroupSCCB.getCheckModel().clearChecks();
+        SessionCheckComboBox.clearChecks(
+                mGroupSccb,
+                mTypeSccb,
+                mSoilSccb
+        );
     }
 
     private void createUI() {
-        mGroupSCCB.setShowCheckedCount(true);
-        mGroupSCCB.setTitle(Dict.GROUP.toString());
+        FxHelper.setShowCheckedCount(true,
+                mGroupSccb,
+                mTypeSccb,
+                mSoilSccb
+        );
+
+        mGroupSccb.setTitle(Dict.GROUP.toString());
+        mTypeSccb.setTitle(Dict.TYPE.toString());
+        mSoilSccb.setTitle(mBundle.getString("soilMaterial"));
 
         var vBox = new VBox(GAP,
                 getButtonBox(),
                 new Separator(),
-                mGroupSCCB
+                mGroupSccb,
+                mTypeSccb,
+                mSoilSccb
         );
 
         autoSize(vBox);
@@ -90,15 +118,19 @@ public class MeasPointFilterPopOver extends BaseFilterPopOver {
     private void initListeners() {
         mFilter.polygonFilterProperty().bind(usePolygonFilterProperty());
 
-        mFilter.setCheckModelGroup(mGroupSCCB.getCheckModel());
+        mFilter.mGroupCheckModel = mGroupSccb.getCheckModel();
+        mFilter.mTypeCheckModel = mTypeSccb.getCheckModel();
+        mFilter.mSoilCheckModel = mSoilSccb.getCheckModel();
 
+        mFilter.initCheckModelListeners();
     }
 
     private void initSession() {
         var sessionManager = getSessionManager();
         sessionManager.register("filter.measPoint.freeText", mFilter.freeTextProperty());
-        sessionManager.register("filter.measPoint.checkedGroup", mGroupSCCB.checkedStringProperty());
-
+        sessionManager.register("filter.measPoint.checkedGroup", mGroupSccb.checkedStringProperty());
+        sessionManager.register("filter.measPoint.checkedType", mTypeSccb.checkedStringProperty());
+        sessionManager.register("filter.measPoint.checkedSoil", mSoilSccb.checkedStringProperty());
     }
 
 }

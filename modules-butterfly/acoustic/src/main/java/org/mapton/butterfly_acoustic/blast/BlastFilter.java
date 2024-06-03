@@ -33,7 +33,7 @@ public class BlastFilter extends FormFilter<BlastManager> {
 
     private final SimpleObjectProperty<LocalDate> mDateHighProperty = new SimpleObjectProperty();
     private final SimpleObjectProperty<LocalDate> mDateLowProperty = new SimpleObjectProperty();
-    private IndexedCheckModel mGroupCheckModel;
+    IndexedCheckModel mGroupCheckModel;
     private final BlastManager mManager = BlastManager.getInstance();
 
     public BlastFilter() {
@@ -50,9 +50,8 @@ public class BlastFilter extends FormFilter<BlastManager> {
         return mDateLowProperty;
     }
 
-    public void setCheckModelGroup(IndexedCheckModel checkModel) {
-        mGroupCheckModel = checkModel;
-        checkModel.getCheckedItems().addListener(mListChangeListener);
+    public void initCheckModelListeners() {
+        mGroupCheckModel.getCheckedItems().addListener(mListChangeListener);
     }
 
     @Override

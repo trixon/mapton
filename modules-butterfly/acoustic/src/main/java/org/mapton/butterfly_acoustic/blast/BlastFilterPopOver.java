@@ -34,7 +34,7 @@ public class BlastFilterPopOver extends BaseFilterPopOver {
 
     private final DateRangePane mDateRangePane = new DateRangePane();
     private final BlastFilter mFilter;
-    private final SessionCheckComboBox<String> mGroupSCCB = new SessionCheckComboBox<>();
+    private final SessionCheckComboBox<String> mGroupSccb = new SessionCheckComboBox<>();
     private final BlastManager mManager = BlastManager.getInstance();
 
     public BlastFilterPopOver(BlastFilter filter) {
@@ -42,20 +42,24 @@ public class BlastFilterPopOver extends BaseFilterPopOver {
         createUI();
         initListeners();
         initSession();
+
+        populate();
     }
 
     @Override
     public void clear() {
         setUsePolygonFilter(false);
         mFilter.freeTextProperty().set("");
-        mGroupSCCB.getCheckModel().clearChecks();
+        SessionCheckComboBox.clearChecks(
+                mGroupSccb
+        );
         mDateRangePane.reset();
     }
 
     @Override
     public void load(Butterfly butterfly) {
         var groups = butterfly.acoustic().getBlasts().stream().map(b -> b.getGroup());
-        mGroupSCCB.loadAndRestoreCheckItems(groups);
+        mGroupSccb.loadAndRestoreCheckItems(groups);
 
         var temporalRange = mManager.getTemporalRange();
         if (temporalRange != null) {
@@ -75,19 +79,21 @@ public class BlastFilterPopOver extends BaseFilterPopOver {
     @Override
     public void onShownFirstTime() {
         var dropDownCount = 25;
-        FxHelper.getComboBox(mGroupSCCB).setVisibleRowCount(dropDownCount);
+        FxHelper.getComboBox(mGroupSccb).setVisibleRowCount(dropDownCount);
     }
 
     @Override
     public void reset() {
         clear();
         mFilter.freeTextProperty().set("*");
-        mGroupSCCB.getCheckModel().clearChecks();
+        SessionCheckComboBox.clearChecks(
+                mGroupSccb
+        );
     }
 
     private void createUI() {
-        mGroupSCCB.setShowCheckedCount(true);
-        mGroupSCCB.setTitle(Dict.GROUP.toString());
+        mGroupSccb.setShowCheckedCount(true);
+        mGroupSccb.setTitle(Dict.GROUP.toString());
 
         double borderInnerPadding = FxHelper.getUIScaled(8.0);
         double topBorderInnerPadding = FxHelper.getUIScaled(16.0);
@@ -101,7 +107,7 @@ public class BlastFilterPopOver extends BaseFilterPopOver {
                 .build();
 
         var vBox = new VBox(GAP,
-                mGroupSCCB,
+                mGroupSccb,
                 wrappedDateBox
         );
 
@@ -117,15 +123,17 @@ public class BlastFilterPopOver extends BaseFilterPopOver {
     private void initListeners() {
         mFilter.polygonFilterProperty().bind(usePolygonFilterProperty());
 
-        mFilter.setCheckModelGroup(mGroupSCCB.getCheckModel());
+        mFilter.mGroupCheckModel = mGroupSccb.getCheckModel();
         mFilter.dateLowProperty().bind(mDateRangePane.lowDateProperty());
         mFilter.dateHighProperty().bind(mDateRangePane.highDateProperty());
+
+        mFilter.initCheckModelListeners();
     }
 
     private void initSession() {
         var sessionManager = getSessionManager();
         sessionManager.register("filter.blast.freeText", mFilter.freeTextProperty());
-        sessionManager.register("filter.blast.checkedGroup", mGroupSCCB.checkedStringProperty());
+        sessionManager.register("filter.blast.checkedGroup", mGroupSccb.checkedStringProperty());
     }
 
 }

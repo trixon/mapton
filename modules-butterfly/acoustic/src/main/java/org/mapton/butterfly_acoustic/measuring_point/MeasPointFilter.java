@@ -17,8 +17,10 @@ package org.mapton.butterfly_acoustic.measuring_point;
 
 import j2html.tags.ContainerTag;
 import java.util.LinkedHashMap;
+import java.util.ResourceBundle;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.ui.forms.FormFilter;
+import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
 
 /**
@@ -27,8 +29,11 @@ import se.trixon.almond.util.Dict;
  */
 public class MeasPointFilter extends FormFilter<MeasPointManager> {
 
-    private IndexedCheckModel mGroupCheckModel;
+    IndexedCheckModel mGroupCheckModel;
+    IndexedCheckModel mTypeCheckModel;
+    IndexedCheckModel mSoilCheckModel;
     private final MeasPointManager mManager = MeasPointManager.getInstance();
+    private final ResourceBundle mBundle = NbBundle.getBundle(MeasPointFilter.class);
 
     public MeasPointFilter() {
         super(MeasPointManager.getInstance());
@@ -36,9 +41,10 @@ public class MeasPointFilter extends FormFilter<MeasPointManager> {
         initListeners();
     }
 
-    public void setCheckModelGroup(IndexedCheckModel checkModel) {
-        mGroupCheckModel = checkModel;
-        checkModel.getCheckedItems().addListener(mListChangeListener);
+    public void initCheckModelListeners() {
+        mGroupCheckModel.getCheckedItems().addListener(mListChangeListener);
+        mTypeCheckModel.getCheckedItems().addListener(mListChangeListener);
+        mSoilCheckModel.getCheckedItems().addListener(mListChangeListener);
     }
 
     @Override
@@ -46,6 +52,8 @@ public class MeasPointFilter extends FormFilter<MeasPointManager> {
         var filteredItems = mManager.getAllItems().stream()
                 .filter(b -> validateFreeText(b.getName(), b.getGroup(), b.getComment()))
                 .filter(b -> validateCheck(mGroupCheckModel, b.getGroup()))
+                .filter(b -> validateCheck(mTypeCheckModel, b.getTypeOfWork()))
+                .filter(b -> validateCheck(mSoilCheckModel, b.getSoilMaterial()))
                 .filter(b -> validateCoordinateArea(b.getLat(), b.getLon()))
                 .filter(b -> validateCoordinateRuler(b.getLat(), b.getLon()))
                 .toList();
@@ -61,6 +69,8 @@ public class MeasPointFilter extends FormFilter<MeasPointManager> {
 
         map.put(Dict.TEXT.toString(), getFreeText());
         map.put(Dict.GROUP.toString(), makeInfo(mGroupCheckModel.getCheckedItems()));
+        map.put(Dict.TYPE.toString(), makeInfo(mTypeCheckModel.getCheckedItems()));
+        map.put(mBundle.getString("soilMaterial"), makeInfo(mSoilCheckModel.getCheckedItems()));
 
         return createHtmlFilterInfo(map);
 
