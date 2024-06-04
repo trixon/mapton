@@ -209,7 +209,15 @@ public class TopoFilter extends FormFilter<TopoManager> {
     @Override
     public void update() {
         var filteredItems = mManager.getAllItems().stream()
-                .filter(p -> validateFreeText(p.getName(), p.getCategory(), p.getGroup(), p.getNameOfAlarmHeight(), p.getNameOfAlarmPlane()))
+                .filter(p -> {
+                    var alarmH = p.ext().getAlarm(BComponent.HEIGHT);
+                    var alarmP = p.ext().getAlarm(BComponent.PLANE);
+
+                    var nameH = alarmH == null ? "" : alarmH.getName();
+                    var nameP = alarmP == null ? "" : alarmP.getName();
+
+                    return validateFreeText(p.getName(), p.getCategory(), p.getGroup(), p.getNameOfAlarmHeight(), p.getNameOfAlarmPlane(), nameH, nameP);
+                })
                 .filter(p -> validateDimension(p.getDimension()))
                 .filter(p -> validateCheck(mStatusCheckModel, p.getStatus()))
                 .filter(p -> validateCheck(mGroupCheckModel, p.getGroup()))
