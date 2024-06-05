@@ -44,6 +44,7 @@ public class ActPropertiesBuilder extends PropertiesBuilder<BAreaActivity> {
         var datTo = Objects.toString(DateHelper.toDateString(a.getDatTo()), "-");
         propertyMap.put(getCatKey(cat1, Dict.TO.toString()), datTo);
         propertyMap.put(getCatKey(cat1, Dict.STATUS.toString()), ActHelper.getStatusAsString(a.getStatus()));
+        propertyMap.put(getCatKey(cat1, Dict.ORIGIN.toString()), a.getOrigin());
 
         return propertyMap;
     }

@@ -15,11 +15,12 @@
  */
 package org.mapton.butterfly_activities;
 
-import org.mapton.butterfly_activities.api.ActManager;
+import java.util.List;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.ui.forms.FormFilter;
+import org.mapton.butterfly_activities.api.ActManager;
 
 /**
  *
@@ -30,6 +31,7 @@ public class ActFilter extends FormFilter<ActManager> {
     IndexedCheckModel<String> mStatusCheckModel;
     private final ActManager mManager = ActManager.getInstance();
     private final BooleanProperty mProperty = new SimpleBooleanProperty();
+    IndexedCheckModel mOriginCheckModel;
 
     public ActFilter() {
         super(ActManager.getInstance());
@@ -46,6 +48,7 @@ public class ActFilter extends FormFilter<ActManager> {
         var filteredItems = mManager.getAllItems().stream()
                 .filter(aa -> validateFreeText(aa.getName()))
                 .filter(aa -> validateCheck(mStatusCheckModel, ActHelper.getStatusAsString(aa.getStatus())))
+                .filter(aa -> validateCheck(mOriginCheckModel, aa.getOrigin()))
                 .filter(aa -> validateCoordinateArea(aa.getLat(), aa.getLon()))
                 .filter(aa -> validateCoordinateRuler(aa.getLat(), aa.getLon()))
                 .toList();
@@ -55,6 +58,10 @@ public class ActFilter extends FormFilter<ActManager> {
 
     void initCheckModelListeners() {
         mStatusCheckModel.getCheckedItems().addListener(mListChangeListener);
+        List.of(
+                mOriginCheckModel,
+                mStatusCheckModel
+        ).forEach(cm -> cm.getCheckedItems().addListener(mListChangeListener));
     }
 
     private void initListeners() {

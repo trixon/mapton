@@ -21,6 +21,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -62,6 +63,7 @@ public class TopoFilter extends FormFilter<TopoManager> {
     IndexedCheckModel<String> mMeasNextCheckModel;
     IndexedCheckModel mMeasOperatorsCheckModel;
     IndexedCheckModel mOperatorCheckModel;
+    IndexedCheckModel mOriginCheckModel;
     IndexedCheckModel mStatusCheckModel;
     private final SimpleBooleanProperty mDimens1Property = new SimpleBooleanProperty();
     private final SimpleBooleanProperty mDimens2Property = new SimpleBooleanProperty();
@@ -231,6 +233,7 @@ public class TopoFilter extends FormFilter<TopoManager> {
                 .filter(p -> validateMeasSpeed(p))
                 .filter(p -> validateMeasCount(p))
                 .filter(p -> validateCheck(mOperatorCheckModel, p.getOperator()))
+                .filter(p -> validateCheck(mOriginCheckModel, p.getOrigin()))
                 .filter(p -> validateFrequency(p.getFrequency()))
                 .filter(p -> validateMaxAge(p.getDateLatest()))
                 .filter(p -> validateNextMeas(p))
@@ -276,19 +279,21 @@ public class TopoFilter extends FormFilter<TopoManager> {
     }
 
     void initCheckModelListeners() {
-        mStatusCheckModel.getCheckedItems().addListener(mListChangeListener);
-        mAlarmLevelCheckModel.getCheckedItems().addListener(mListChangeListener);
-        mAlarmNameCheckModel.getCheckedItems().addListener(mListChangeListener);
-        mCategoryCheckModel.getCheckedItems().addListener(mListChangeListener);
-        mDateFromToCheckModel.getCheckedItems().addListener(mListChangeListener);
-        mFrequencyCheckModel.getCheckedItems().addListener(mListChangeListener);
-        mGroupCheckModel.getCheckedItems().addListener(mListChangeListener);
-        mMeasCodeCheckModel.getCheckedItems().addListener(mListChangeListener);
-        mMeasOperatorsCheckModel.getCheckedItems().addListener(mListChangeListener);
-        mMeasNextCheckModel.getCheckedItems().addListener(mListChangeListener);
-        mOperatorCheckModel.getCheckedItems().addListener(mListChangeListener);
-        mStatusCheckModel.getCheckedItems().addListener(mListChangeListener);
-        mDisruptorCheckModel.getCheckedItems().addListener(mListChangeListener);
+        List.of(
+                mAlarmLevelCheckModel,
+                mAlarmNameCheckModel,
+                mCategoryCheckModel,
+                mDateFromToCheckModel,
+                mFrequencyCheckModel,
+                mGroupCheckModel,
+                mMeasCodeCheckModel,
+                mMeasOperatorsCheckModel,
+                mMeasNextCheckModel,
+                mOperatorCheckModel,
+                mOriginCheckModel,
+                mStatusCheckModel,
+                mDisruptorCheckModel
+        ).forEach(cm -> cm.getCheckedItems().addListener(mListChangeListener));
     }
 
     private ContainerTag createInfoContent() {
@@ -301,6 +306,7 @@ public class TopoFilter extends FormFilter<TopoManager> {
         map.put(Dict.CATEGORY.toString(), makeInfo(mCategoryCheckModel.getCheckedItems()));
         map.put(SDict.ALARMS.toString(), makeInfo(mAlarmNameCheckModel.getCheckedItems()));
         map.put(SDict.OPERATOR.toString(), makeInfo(mOperatorCheckModel.getCheckedItems()));
+        map.put(Dict.ORIGIN.toString(), makeInfo(mOriginCheckModel.getCheckedItems()));
         map.put(SDict.FREQUENCY.toString(), makeInfoInteger(mFrequencyCheckModel.getCheckedItems()));
         map.put(SDict.VALID_FROM_TO.toString(), makeInfo(mDateFromToCheckModel.getCheckedItems()));
         map.put(getBundle().getString("nextMeasCheckComboBoxTitle"), makeInfo(mMeasNextCheckModel.getCheckedItems()));

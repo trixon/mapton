@@ -23,6 +23,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import org.mapton.butterfly_format.types.topo.BTopoGrade;
+import org.mapton.butterfly_format.types.topo.BTopoGradeDiff;
 import se.trixon.almond.util.fx.FxHelper;
 
 /**
@@ -35,7 +36,6 @@ class GradeHListCell extends ListCell<BTopoGrade> {
     private final Label mDesc1Label = new Label();
     private final Label mDesc2Label = new Label();
     private final Label mDesc3Label = new Label();
-    private final Label mDesc4Label = new Label();
     private final Label mHeaderLabel = new Label();
     private final String mStyleBold = "-fx-font-weight: bold;";
     private VBox mVBox;
@@ -63,11 +63,11 @@ class GradeHListCell extends ListCell<BTopoGrade> {
 
         mAlarmIndicator.update(p);
         mHeaderLabel.setText(header);
-        mDesc1Label.setText("%.1f mm/m TODO Larm?".formatted(p.ext().getDiff().getZPerMille()));
-        mDesc2Label.setText("ΔH=%.1f m, ΔP=%.1f m, ∂iH=%.1f mm".formatted(
-                p.getDistanceHeight(),
+        BTopoGradeDiff gradeDiff = p.ext().getDiff();
+        mDesc1Label.setText("%.1f%%   %.1f mm/m".formatted(gradeDiff.getZPercentage(), gradeDiff.getZPerMille()));
+        mDesc2Label.setText("ΔH=%.1f m, ΔP=%.1f m, ∂iH=%.1f mm".formatted(p.getDistanceHeight(),
                 p.getDistancePlane(),
-                p.ext().getDiff().getPartialDiffZ() * 1000
+                gradeDiff.getPartialDiffZ() * 1000
         ));
         mDesc3Label.setText("%s (%d)".formatted(p.getPeriod(), p.getCommonObservations().size()));
 
@@ -85,8 +85,7 @@ class GradeHListCell extends ListCell<BTopoGrade> {
                 mHeaderLabel,
                 mDesc1Label,
                 mDesc2Label,
-                mDesc3Label,
-                mDesc4Label
+                mDesc3Label
         );
 
         mHeaderLabel.setGraphic(mAlarmIndicator);

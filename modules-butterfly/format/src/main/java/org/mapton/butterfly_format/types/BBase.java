@@ -36,6 +36,7 @@ public abstract class BBase {
     private transient Butterfly butterfly;
     private String meta;
     private String name;
+    private String origin;
 
     public Butterfly getButterfly() {
         return butterfly;
@@ -49,6 +50,10 @@ public abstract class BBase {
         return name;
     }
 
+    public String getOrigin() {
+        return origin;
+    }
+
     public void setButterfly(Butterfly butterfly) {
         this.butterfly = butterfly;
     }
@@ -59,6 +64,10 @@ public abstract class BBase {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setOrigin(String origin) {
+        this.origin = origin;
     }
 
     public abstract class Ext<T extends BBasePointObservation> {

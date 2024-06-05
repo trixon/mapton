@@ -101,6 +101,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
     private final SessionDoubleSpinner mMeasYoyoSizeSds = new SessionDoubleSpinner(0, 1.0, mDefaultMeasYoyoSize, 0.001);
     private final CheckBox mNumOfMeasCheckbox = new CheckBox();
     private final SessionCheckComboBox<String> mOperatorSccb = new SessionCheckComboBox<>();
+    private final SessionCheckComboBox<String> mOriginSccb = new SessionCheckComboBox<>();
     private final CheckBox mSameAlarmCheckbox = new CheckBox();
     private final SessionCheckComboBox<String> mStatusSccb = new SessionCheckComboBox<>();
 
@@ -158,6 +159,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
                 mCategorySccb,
                 mAlarmNameSccb,
                 mOperatorSccb,
+                mOriginSccb,
                 mAlarmSccb,
                 mMeasNextSccb,
                 mMeasCodeSccb,
@@ -180,6 +182,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
         mGroupSccb.loadAndRestoreCheckItems(items.stream().map(o -> o.getGroup()));
         mCategorySccb.loadAndRestoreCheckItems(items.stream().map(o -> o.getCategory()));
         mOperatorSccb.loadAndRestoreCheckItems(items.stream().map(o -> o.getOperator()));
+        mOriginSccb.loadAndRestoreCheckItems(items.stream().map(o -> o.getOrigin()));
         mStatusSccb.loadAndRestoreCheckItems(items.stream().map(o -> o.getStatus()));
         mFrequencySccb.loadAndRestoreCheckItems(items.stream()
                 .filter(o -> o.getFrequency() != null)
@@ -252,6 +255,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
                 mCategorySccb,
                 mAlarmNameSccb,
                 mOperatorSccb,
+                mOriginSccb,
                 mFrequencySccb
         );
 
@@ -266,6 +270,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
         mCategorySccb.setTitle(Dict.CATEGORY.toString());
         mAlarmNameSccb.setTitle(SDict.ALARMS.toString());
         mOperatorSccb.setTitle(SDict.OPERATOR.toString());
+        mOriginSccb.setTitle(Dict.ORIGIN.toString());
         mFrequencySccb.setTitle(SDict.FREQUENCY.toString());
 
         mHasDateFromToSccb.getItems().setAll(List.of(
@@ -328,6 +333,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
                 mGroupSccb,
                 mCategorySccb,
                 mOperatorSccb,
+                mOriginSccb,
                 mAlarmNameSccb,
                 mHasDateFromToSccb,
                 mFrequencySccb,
@@ -526,6 +532,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
         mFilter.mDisruptorCheckModel = mDisruptorPane.getCheckModel();
         mFilter.mCategoryCheckModel = mCategorySccb.getCheckModel();
         mFilter.mOperatorCheckModel = mOperatorSccb.getCheckModel();
+        mFilter.mOriginCheckModel = mOriginSccb.getCheckModel();
         mFilter.mMeasNextCheckModel = mMeasNextSccb.getCheckModel();
         mFilter.mAlarmNameCheckModel = mAlarmNameSccb.getCheckModel();
         mFilter.mAlarmLevelCheckModel = mAlarmSccb.getCheckModel();
@@ -560,7 +567,8 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
         sessionManager.register("filter.checkedGroup", mGroupSccb.checkedStringProperty());
         sessionManager.register("filter.checkedDisruptors", mDisruptorPane.checkedStringProperty());
         sessionManager.register("filter.checkedNextAlarm", mAlarmSccb.checkedStringProperty());
-        sessionManager.register("filter.checkedPerformers", mOperatorSccb.checkedStringProperty());
+        sessionManager.register("filter.checkedOperators", mOperatorSccb.checkedStringProperty());
+        sessionManager.register("filter.checkedOrigin", mOriginSccb.checkedStringProperty());
         sessionManager.register("filter.checkedStatus", mStatusSccb.checkedStringProperty());
 
         sessionManager.register("filter.checkedDimension1", mDimens1Checkbox.selectedProperty());

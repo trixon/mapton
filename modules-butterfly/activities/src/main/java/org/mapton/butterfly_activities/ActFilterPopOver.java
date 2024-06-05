@@ -22,6 +22,7 @@ import static org.mapton.api.ui.MPopOver.autoSize;
 import org.mapton.butterfly_core.api.BaseFilterPopOver;
 import org.mapton.butterfly_format.Butterfly;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.session.SessionCheckComboBox;
 
 /**
@@ -31,7 +32,8 @@ import se.trixon.almond.util.fx.session.SessionCheckComboBox;
 public class ActFilterPopOver extends BaseFilterPopOver {
 
     private final ActFilter mFilter;
-    private final SessionCheckComboBox<String> mStatusSCCB = new SessionCheckComboBox<>();
+    private final SessionCheckComboBox<String> mStatusSccb = new SessionCheckComboBox<>();
+    private final SessionCheckComboBox<String> mOriginSccb = new SessionCheckComboBox<>();
 
     public ActFilterPopOver(ActFilter filter) {
         mFilter = filter;
@@ -44,15 +46,18 @@ public class ActFilterPopOver extends BaseFilterPopOver {
     public void clear() {
         setUsePolygonFilter(false);
         mFilter.freeTextProperty().set("");
-        mStatusSCCB.getCheckModel().clearChecks();
+        mStatusSccb.getCheckModel().clearChecks();
+        SessionCheckComboBox.clearChecks(
+                mOriginSccb,
+                mStatusSccb
+        );
     }
 
     @Override
     public void load(Butterfly butterfly) {
-        var statuses = butterfly.getAreaActivities().stream()
-                .map(aa -> ActHelper.getStatusAsString(aa.getStatus()));
-
-        mStatusSCCB.loadAndRestoreCheckItems(statuses);
+        var items = butterfly.getAreaActivities();
+        mOriginSccb.loadAndRestoreCheckItems(items.stream().map(o -> o.getOrigin()));
+        mStatusSccb.loadAndRestoreCheckItems(items.stream().map(a -> ActHelper.getStatusAsString(a.getStatus())));
     }
 
     @Override
@@ -64,17 +69,23 @@ public class ActFilterPopOver extends BaseFilterPopOver {
     public void reset() {
         clear();
         mFilter.freeTextProperty().set("*");
-        mStatusSCCB.getCheckModel().clearChecks();
+        mStatusSccb.getCheckModel().clearChecks();
     }
 
     private void createUI() {
-        mStatusSCCB.setShowCheckedCount(true);
-        mStatusSCCB.setTitle(Dict.STATUS.toString());
+        FxHelper.setShowCheckedCount(true,
+                mStatusSccb,
+                mOriginSccb
+        );
+
+        mStatusSccb.setTitle(Dict.STATUS.toString());
+        mOriginSccb.setTitle(Dict.ORIGIN.toString());
 
         var vBox = new VBox(GAP,
                 getButtonBox(),
                 new Separator(),
-                mStatusSCCB
+                mStatusSccb,
+                mOriginSccb
         );
 
         autoSize(vBox);
@@ -84,7 +95,8 @@ public class ActFilterPopOver extends BaseFilterPopOver {
     private void initListeners() {
         mFilter.polygonFilterProperty().bind(usePolygonFilterProperty());
 
-        mFilter.mStatusCheckModel = mStatusSCCB.getCheckModel();
+        mFilter.mStatusCheckModel = mStatusSccb.getCheckModel();
+        mFilter.mOriginCheckModel = mOriginSccb.getCheckModel();
 
         mFilter.initCheckModelListeners();
     }
@@ -92,7 +104,8 @@ public class ActFilterPopOver extends BaseFilterPopOver {
     private void initSession() {
         var sessionManager = getSessionManager();
         getSessionManager().register("freeText", mFilter.freeTextProperty());
-        sessionManager.register("filter.checkedGroup", mStatusSCCB.checkedStringProperty());
+        sessionManager.register("filter.checkedStatus", mStatusSccb.checkedStringProperty());
+        sessionManager.register("filter.checkedOrigin", mOriginSccb.checkedStringProperty());
 
     }
 

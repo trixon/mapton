@@ -109,6 +109,9 @@ public enum TopoLabelBy {
     MISC_OPERATOR(LabelByCategories.MISC, SDict.OPERATOR.toString(), p -> {
         return Objects.toString(p.getOperator(), "NODATA");
     }),
+    MISC_ORIGIN(LabelByCategories.MISC, Dict.ORIGIN.toString(), p -> {
+        return Objects.toString(p.getOrigin(), "NODATA");
+    }),
     MISC_FREQUENCY(LabelByCategories.MISC, SDict.FREQUENCY.toString(), p -> {
         return p.getFrequency() != null ? p.getFrequency().toString() : "--";
     }),

@@ -51,6 +51,7 @@ public class TopoPropertiesBuilder extends PropertiesBuilder<BTopoControlPoint> 
                 StringHelper.join(SEPARATOR, "", Dict.GROUP.toString(), Dict.CATEGORY.toString())),
                 StringHelper.join(SEPARATOR, "", p.getGroup(), p.getCategory()));
         propertyMap.put(getCatKey(cat1, SDict.OPERATOR.toString()), p.getOperator());
+        propertyMap.put(getCatKey(cat1, Dict.ORIGIN.toString()), p.getOrigin());
         propertyMap.put(getCatKey(cat1, Dict.COMMENT.toString()), p.getComment());
         propertyMap.put(getCatKey(cat1, SDict.ALARM.toString()), StringHelper.join(SEPARATOR, "", p.getNameOfAlarmHeight(), p.getNameOfAlarmPlane()));
         propertyMap.put(getCatKey(cat1, Dict.Geometry.HEIGHT.toString()), AlarmHelper.getInstance().getLimitsAsString(BComponent.HEIGHT, p));
