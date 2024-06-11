@@ -43,6 +43,7 @@ import org.mapton.api.MArea;
 import org.mapton.api.MAreaFilterManager;
 import org.mapton.api.MCooTrans;
 import org.mapton.api.MOptions;
+import org.mapton.api.Mapton;
 import org.mapton.butterfly_core.LogoLoader;
 import org.mapton.butterfly_format.BundleMode;
 import static org.mapton.butterfly_format.BundleMode.DIR;
@@ -173,6 +174,9 @@ public class ButterflyManager {
                 }
                 mLogoLoader.load();
 
+                if (bundleMode == BundleMode.ZIP) {
+                    extractXfiles();
+                }
                 MonmonConfig.getInstance().init();
                 var project = ButterflyProject.getInstance();
                 project.init();
@@ -181,7 +185,7 @@ public class ButterflyManager {
                 if (coosysPlane != null) {
                     var preferences = NbPreferences.forModule(MCooTrans.class);
                     preferences.put("map.coo_trans", coosysPlane);
-                    //TODO request restart id changed or better yet, force change
+                    //TODO request restart if changed or better yet, force change
                 }
 
                 var butterfly = mButterflyLoader.getButterfly();
@@ -256,6 +260,18 @@ public class ButterflyManager {
                 cp.setLat(MathHelper.round(wgs84.getY(), 6));
                 cp.setLon(MathHelper.round(wgs84.getX(), 6));
             }
+        }
+    }
+
+    private void extractXfiles() {
+        var xDir = new File(Mapton.getConfigDir(), "butterfly");
+        try {
+            if (xDir.isDirectory()) {
+                FileUtils.forceDelete(xDir);
+            }
+            mZipHelper.extract("xfiles/", xDir.getAbsolutePath());
+        } catch (IOException ex) {
+            Exceptions.printStackTrace(ex);
         }
     }
 

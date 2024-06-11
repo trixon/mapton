@@ -42,6 +42,14 @@ public class ZipHelper {
     private ZipHelper() {
     }
 
+    public void extract(String internalPath, String destination) {
+        try {
+            mZipFile.extractFile(internalPath, destination);
+        } catch (ZipException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+    }
+
     public void clearPassword() {
         Arrays.fill(mPassword, '*');
     }
