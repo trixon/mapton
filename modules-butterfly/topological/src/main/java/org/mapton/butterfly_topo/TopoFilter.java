@@ -556,6 +556,40 @@ public class TopoFilter extends FormFilter<TopoManager> {
             return true;
         }
 
+        var hset = new HashSet<Integer>();
+        var pset = new HashSet<Integer>();
+
+        for (var o : p.ext().getObservationsTimeFiltered()) {
+            hset.add(p.ext().getAlarmLevel(BComponent.HEIGHT, o));
+            pset.add(p.ext().getAlarmLevel(BComponent.PLANE, o));
+            if (hset.size() > 1 || pset.size() > 1) {
+                break;
+            }
+        }
+
+        var noChangeH = hset.size() < 2;
+        var noChangeP = pset.size() < 2;
+
+        switch (p.getDimension()) {
+            case _1d -> {
+                if (noChangeH) {
+                    return false;
+                }
+            }
+            case _2d -> {
+                if (noChangeP) {
+                    return false;
+                }
+            }
+            case _3d -> {
+                if (noChangeH || noChangeP) {
+                    return false;
+                }
+            }
+            default ->
+                throw new AssertionError();
+        }
+
         var lim = mMeasAlarmLevelAgeValueProperty.get();
         Long value = null;
 
