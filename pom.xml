@@ -421,6 +421,6 @@
         <netbeans.compile.on.save>none</netbeans.compile.on.save>
         <brandingToken>mapton</brandingToken>
         <mapton.version>3.2.0-SNAPSHOT</mapton.version>
-        <geotools.version>31.1</geotools.version>
+        <geotools.version>31.2</geotools.version>
     </properties>
 </project>
