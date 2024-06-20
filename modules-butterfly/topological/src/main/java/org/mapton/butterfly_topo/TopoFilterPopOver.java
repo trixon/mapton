@@ -226,7 +226,8 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
                 mGroupSccb,
                 mCategorySccb,
                 mAlarmNameSccb,
-                mMeasOperatorSccb
+                mMeasOperatorSccb,
+                mAlarmSccb
         );
     }
 
@@ -288,8 +289,8 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
         mMeasNextSccb.getItems().setAll(List.of(
                 "<0",
                 "0",
-                "1-7",
-                "8-14",
+                "1-6",
+                "7-14",
                 "15-28",
                 "29-182",
                 "∞"

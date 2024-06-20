@@ -179,7 +179,9 @@ public enum TopoLabelBy {
         return p.ext().deltaZero().getDelta(3);
     }),
     VALUE_DELTA_ZERO_Z(LabelByCategories.VALUE, "ΔZ₀", p -> {
-        return p.ext().deltaZero().getDelta1(3);
+        var daysSinceMeasurement = p.ext().getZeroMeasurementAge(ChronoUnit.DAYS);
+
+        return "%s (%d)".formatted(p.ext().deltaZero().getDelta1(3), daysSinceMeasurement);
     }),
     VALUE_DELTA_ROLLING(LabelByCategories.VALUE, "Δᵣ", p -> {
         return p.ext().deltaRolling().getDelta(3);

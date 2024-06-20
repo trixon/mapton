@@ -24,6 +24,10 @@ import org.openide.util.NbBundle;
  * @author Patrik Karlström
  */
 public enum AlarmLevelFilter {
+    ANY_0(null, 0),
+    ANY_1(null, 1),
+    ANY_2(null, 2),
+    ANY_E(null, -1),
     HEIGHT_0(BComponent.HEIGHT, 0),
     HEIGHT_1(BComponent.HEIGHT, 1),
     HEIGHT_2(BComponent.HEIGHT, 2),

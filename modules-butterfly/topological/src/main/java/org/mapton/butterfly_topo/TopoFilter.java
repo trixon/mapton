@@ -19,6 +19,7 @@ import j2html.tags.ContainerTag;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -387,11 +388,26 @@ public class TopoFilter extends FormFilter<TopoManager> {
         if (mAlarmLevelCheckModel.isEmpty()) {
             return true;
         }
+
+        var level = TopoHelper.getAlarmLevel(p);
         var levelH = TopoHelper.getAlarmLevelHeight(p);
         var levelP = TopoHelper.getAlarmLevelPlane(p);
 
+        var anyAlarmLevelFilterValues = EnumSet.of(AlarmLevelFilter.ANY_0, AlarmLevelFilter.ANY_1, AlarmLevelFilter.ANY_2, AlarmLevelFilter.ANY_E);
+
         for (var alarmFilter : AlarmLevelFilter.values()) {
             var itemChecked = mAlarmLevelCheckModel.isChecked(alarmFilter);
+            if (anyAlarmLevelFilterValues.contains(alarmFilter) && itemChecked) {
+                if (alarmFilter == AlarmLevelFilter.ANY_0 && level == 0) {
+                    return true;
+                } else if (alarmFilter == AlarmLevelFilter.ANY_1 && level == 1) {
+                    return true;
+                } else if (alarmFilter == AlarmLevelFilter.ANY_2 && level == 2) {
+                    return true;
+                } else if (alarmFilter == AlarmLevelFilter.ANY_E && level == -1) {
+                    return true;
+                }
+            }
             var validH = itemChecked && alarmFilter.getComponent() == BComponent.HEIGHT && alarmFilter.getLevel() == levelH;
             var validP = itemChecked && alarmFilter.getComponent() == BComponent.PLANE && alarmFilter.getLevel() == levelP;
             var valid = false;
