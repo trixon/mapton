@@ -46,8 +46,6 @@ import se.trixon.almond.util.SDict;
 @ServiceProvider(service = LayerBundle.class)
 public class TopoLayerBundle extends TopoBaseLayerBundle {
 
-    public static final double SCALE_FACTOR = 500.0;
-    public static final double SCALE_FACTOR_Z = SCALE_FACTOR;
     private static final double Z_BASE_OFFSET = 5.0;
 
     private final double SYMBOL_HEIGHT = 4.0;

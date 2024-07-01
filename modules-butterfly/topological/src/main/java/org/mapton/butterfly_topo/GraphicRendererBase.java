@@ -26,9 +26,12 @@ import java.util.HashMap;
 import org.apache.commons.lang3.ObjectUtils;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.MOptions;
+import org.mapton.api.MSimpleObjectStorageManager;
 import org.mapton.butterfly_core.api.PlotLimiter;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_topo.api.TopoManager;
+import org.mapton.butterfly_topo.sos.ScalePlot3dHSosd;
+import org.mapton.butterfly_topo.sos.ScalePlot3dPSosd;
 import org.mapton.worldwind.api.WWHelper;
 import se.trixon.almond.util.MathHelper;
 
@@ -71,6 +74,9 @@ public abstract class GraphicRendererBase {
     }
 
     public Position[] plot3dOffsetPole(BTopoControlPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
+        var scale3dH = MSimpleObjectStorageManager.getInstance().getInteger(ScalePlot3dHSosd.class, 500);
+        var scale3dP = MSimpleObjectStorageManager.getInstance().getInteger(ScalePlot3dPSosd.class, 500);
+
         return sPointToPositionMap.computeIfAbsent(p, k -> {
             var ZERO_SIZE = 1.2;
             var CURRENT_SIZE = 1.0;
@@ -91,11 +97,11 @@ public abstract class GraphicRendererBase {
             var o2 = p.ext().getObservationsTimeFiltered().getLast();
 
             if (o2.ext().getDeltaZ() != null) {
-                var x = p.getZeroX() + MathHelper.convertDoubleToDouble(o2.ext().getDeltaX()) * TopoLayerBundle.SCALE_FACTOR;
-                var y = p.getZeroY() + MathHelper.convertDoubleToDouble(o2.ext().getDeltaY()) * TopoLayerBundle.SCALE_FACTOR;
+                var x = p.getZeroX() + MathHelper.convertDoubleToDouble(o2.ext().getDeltaX()) * scale3dP;
+                var y = p.getZeroY() + MathHelper.convertDoubleToDouble(o2.ext().getDeltaY()) * scale3dP;
                 var z = +o2.getMeasuredZ()
                         + TopoLayerBundle.getZOffset()
-                        + MathHelper.convertDoubleToDouble(o2.ext().getDeltaZ()) * TopoLayerBundle.SCALE_FACTOR;
+                        + MathHelper.convertDoubleToDouble(o2.ext().getDeltaZ()) * scale3dH;
 
                 var wgs84 = MOptions.getInstance().getMapCooTrans().toWgs84(y, x);
                 currentPosition = Position.fromDegrees(wgs84.getY(), wgs84.getX(), z);

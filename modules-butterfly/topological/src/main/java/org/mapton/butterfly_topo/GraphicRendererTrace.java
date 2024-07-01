@@ -26,8 +26,12 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.api.MOptions;
+import org.mapton.api.MSimpleObjectStorageManager;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
+import org.mapton.butterfly_topo.sos.ScalePlot1dHSosd;
+import org.mapton.butterfly_topo.sos.ScalePlot3dHSosd;
+import org.mapton.butterfly_topo.sos.ScalePlot3dPSosd;
 import org.mapton.worldwind.api.WWHelper;
 import se.trixon.almond.util.MathHelper;
 
@@ -37,7 +41,15 @@ import se.trixon.almond.util.MathHelper;
  */
 public class GraphicRendererTrace extends GraphicRendererBase {
 
+    private int mScale1dH;
+    private int mScale3dH;
+    private int mScale3dP;
+
     public ArrayList<AVListImpl> plot(BTopoControlPoint p, Position position) {
+        mScale1dH = MSimpleObjectStorageManager.getInstance().getInteger(ScalePlot1dHSosd.class, 500);
+        mScale3dH = MSimpleObjectStorageManager.getInstance().getInteger(ScalePlot3dHSosd.class, 500);
+        mScale3dP = MSimpleObjectStorageManager.getInstance().getInteger(ScalePlot3dPSosd.class, 500);
+
         var mapObjects = new ArrayList<AVListImpl>();
         var dimension = p.getDimension();
 
@@ -78,7 +90,7 @@ public class GraphicRendererTrace extends GraphicRendererBase {
             var maxRadius = 10.0;
 
             var dZ = o.ext().getDeltaZ();
-            var radius = Math.min(maxRadius, Math.abs(dZ) * 250 + 0.05);
+            var radius = Math.min(maxRadius, Math.abs(dZ) * mScale1dH + 0.05);
             var maximus = radius == maxRadius;
 
             var cylinder = new Cylinder(pos, height, radius);
@@ -115,10 +127,10 @@ public class GraphicRendererTrace extends GraphicRendererBase {
         var collectedNodes = p.ext().getObservationsTimeFiltered().stream()
                 .filter(o -> ObjectUtils.allNotNull(o.ext().getDeltaX(), o.ext().getDeltaY(), o.ext().getDeltaZ(), o1.getMeasuredX(), o1.getMeasuredY(), o1.getMeasuredZ()))
                 .map(o -> {
-                    var x = o1.getMeasuredX() + MathHelper.convertDoubleToDouble(o.ext().getDeltaX()) * TopoLayerBundle.SCALE_FACTOR;
-                    var y = o1.getMeasuredY() + MathHelper.convertDoubleToDouble(o.ext().getDeltaY()) * TopoLayerBundle.SCALE_FACTOR;
+                    var x = o1.getMeasuredX() + MathHelper.convertDoubleToDouble(o.ext().getDeltaX()) * mScale3dP;
+                    var y = o1.getMeasuredY() + MathHelper.convertDoubleToDouble(o.ext().getDeltaY()) * mScale3dP;
                     var z = o1.getMeasuredZ()
-                            + MathHelper.convertDoubleToDouble(o.ext().getDeltaZ()) * TopoLayerBundle.SCALE_FACTOR
+                            + MathHelper.convertDoubleToDouble(o.ext().getDeltaZ()) * mScale3dH
                             + TopoLayerBundle.getZOffset();
 
                     var wgs84 = MOptions.getInstance().getMapCooTrans().toWgs84(y, x);

@@ -22,9 +22,12 @@ import gov.nasa.worldwind.render.Ellipsoid;
 import gov.nasa.worldwind.render.Path;
 import java.util.ArrayList;
 import org.apache.commons.lang3.ObjectUtils;
+import org.mapton.api.MSimpleObjectStorageManager;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
+import org.mapton.butterfly_topo.sos.ScalePlot3dHSosd;
+import org.mapton.butterfly_topo.sos.ScalePlot3dPSosd;
 import org.mapton.worldwind.api.WWHelper;
 import se.trixon.almond.util.MathHelper;
 
@@ -34,7 +37,13 @@ import se.trixon.almond.util.MathHelper;
  */
 public class GraphicRendererVector extends GraphicRendererBase {
 
+    private Integer mScale3dH;
+    private Integer mScale3dP;
+
     public ArrayList<AVListImpl> plot(BTopoControlPoint p, Position position) {
+        mScale3dH = MSimpleObjectStorageManager.getInstance().getInteger(ScalePlot3dHSosd.class, 500);
+        mScale3dP = MSimpleObjectStorageManager.getInstance().getInteger(ScalePlot3dPSosd.class, 500);
+
         var mapObjects = new ArrayList<AVListImpl>();
         var dimension = p.getDimension();
 
@@ -76,7 +85,7 @@ public class GraphicRendererVector extends GraphicRendererBase {
         if (o.ext().getDeltaZ() != null) {
             var z = zeroZ
                     + TopoLayerBundle.getZOffset()
-                    + MathHelper.convertDoubleToDouble(o.ext().getDeltaZ()) * TopoLayerBundle.SCALE_FACTOR_Z;
+                    + MathHelper.convertDoubleToDouble(o.ext().getDeltaZ()) * mScale3dH;
 
             currentPosition = WWHelper.positionFromPosition(currentPosition, z);
         }
@@ -107,10 +116,10 @@ public class GraphicRendererVector extends GraphicRendererBase {
         var min0 = alarm.ext().getRange0().getMinimum();
         var max0 = alarm.ext().getRange0().getMaximum();
         var span0 = max0 - min0;
-        var scaledSpan0 = span0 * TopoLayerBundle.SCALE_FACTOR_Z;
+        var scaledSpan0 = span0 * mScale3dH;
         var nonSymmetricAdjustment = span0 / 2 + min0;
 
-        var z0 = zeroZ + TopoLayerBundle.getZOffset() + nonSymmetricAdjustment * TopoLayerBundle.SCALE_FACTOR_Z;
+        var z0 = zeroZ + TopoLayerBundle.getZOffset() + nonSymmetricAdjustment * mScale3dH;
         var zeroPosition = WWHelper.positionFromPosition(position, z0);
         var radius = 0.5;
         var cylinder0 = new Cylinder(zeroPosition, radius, scaledSpan0 * 0.5, radius);
@@ -124,9 +133,9 @@ public class GraphicRendererVector extends GraphicRendererBase {
             var bottomLower = alarm.ext().getRange1().getMinimum();
             var bottomUpper = min0;
             var spanBottom = bottomUpper - bottomLower;
-            var scaledSpanBottom = spanBottom * TopoLayerBundle.SCALE_FACTOR_Z;
+            var scaledSpanBottom = spanBottom * mScale3dH;
             var nonSymmetricAdjustmentBottom = spanBottom / 2 + bottomLower;
-            var zBottom = zeroZ + TopoLayerBundle.getZOffset() + nonSymmetricAdjustmentBottom * TopoLayerBundle.SCALE_FACTOR_Z;
+            var zBottom = zeroZ + TopoLayerBundle.getZOffset() + nonSymmetricAdjustmentBottom * mScale3dH;
             var bottomPosition = WWHelper.positionFromPosition(position, zBottom);
             var cylinderBottom = new Cylinder(bottomPosition, radius, scaledSpanBottom * 0.5, radius);
             cylinderBottom.setAttributes(attrs);
@@ -136,9 +145,9 @@ public class GraphicRendererVector extends GraphicRendererBase {
             var topLower = max0;
             var topUpper = alarm.ext().getRange1().getMaximum();
             var spanTop = topUpper - topLower;
-            var scaledSpanTop = spanTop * TopoLayerBundle.SCALE_FACTOR_Z;
+            var scaledSpanTop = spanTop * mScale3dH;
             var nonSymmetricAdjustmentTop = spanTop / 2 + topLower;
-            var zTop = zeroZ + TopoLayerBundle.getZOffset() + nonSymmetricAdjustmentTop * TopoLayerBundle.SCALE_FACTOR_Z;
+            var zTop = zeroZ + TopoLayerBundle.getZOffset() + nonSymmetricAdjustmentTop * mScale3dH;
             var topPosition = WWHelper.positionFromPosition(position, zTop);
             var cylinderTop = new Cylinder(topPosition, radius, scaledSpanTop * 0.5, radius);
             cylinderTop.setAttributes(attrs);
