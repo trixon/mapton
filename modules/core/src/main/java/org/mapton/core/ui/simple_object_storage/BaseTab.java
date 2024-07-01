@@ -17,10 +17,10 @@ package org.mapton.core.ui.simple_object_storage;
 
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
-import javafx.scene.text.Font;
 import org.mapton.api.MGenericLoader;
 import org.mapton.api.MGenericSaver;
 import org.mapton.api.MSimpleObjectStorageManager;
+import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
@@ -36,8 +36,11 @@ public abstract class BaseTab extends Tab implements MGenericLoader<Object>, MGe
     }
 
     public Label getGroupLabel(String group) {
-        Label label = new Label(group);
-        label.setFont(Font.font(Font.getDefault().getSize() * 1.2));
+        var label = new Label(group);
+        var fontSize = FxHelper.getScaledFontSize();
+        var fontStyle = "-fx-font-size: %.0fpx; -fx-font-weight: %s;";
+
+        label.setStyle(fontStyle.formatted(fontSize * 1.2, "bold"));
 
         return label;
     }

@@ -60,8 +60,16 @@ public class MSimpleObjectStorageManager {
         return getNode("boolean", c).getBoolean(c.getName(), defaultValue);
     }
 
+    public Double getDouble(Class c, Double defaultValue) {
+        return getNode("double", c).getDouble(c.getName(), defaultValue);
+    }
+
     public File getFile(Class c, File defaultValue) {
         return new File(getString(c, defaultValue.getAbsolutePath()));
+    }
+
+    public Integer getInteger(Class c, Integer defaultValue) {
+        return getNode("integer", c).getInt(c.getName(), defaultValue);
     }
 
     public String getString(Class c, String defaultValue) {
@@ -70,6 +78,14 @@ public class MSimpleObjectStorageManager {
 
     public void putBoolean(Class<? extends MSimpleObjectStorageBoolean> c, Boolean value) {
         getNode("boolean", c).putBoolean(c.getName(), value);
+    }
+
+    public void putDouble(Class<? extends MSimpleObjectStorageDouble> c, Double value) {
+        getNode("double", c).putDouble(c.getName(), value);
+    }
+
+    public void putInteger(Class<? extends MSimpleObjectStorageInteger> c, Integer value) {
+        getNode("integer", c).putInt(c.getName(), value);
     }
 
     public void putString(Class<? extends MSimpleObjectStorageString> c, String value) {
@@ -91,6 +107,10 @@ public class MSimpleObjectStorageManager {
             return mClassToPreferenceNode.computeIfAbsent(MSimpleObjectStorageBoolean.AutoOpen.class, k -> parentNode.node("autoOpen"));
         } else if (MSimpleObjectStorageBoolean.UpdaterAutoUpdate.class.isAssignableFrom(c)) {
             return mClassToPreferenceNode.computeIfAbsent(MSimpleObjectStorageBoolean.UpdaterAutoUpdate.class, k -> parentNode.node("updaterAutoUpdate"));
+        } else if (MSimpleObjectStorageDouble.Misc.class.isAssignableFrom(c)) {
+            return mClassToPreferenceNode.computeIfAbsent(MSimpleObjectStorageDouble.Misc.class, k -> parentNode.node("misc"));
+        } else if (MSimpleObjectStorageInteger.Misc.class.isAssignableFrom(c)) {
+            return mClassToPreferenceNode.computeIfAbsent(MSimpleObjectStorageInteger.Misc.class, k -> parentNode.node("misc"));
         } else {
             return parentNode.node("unknown");
         }

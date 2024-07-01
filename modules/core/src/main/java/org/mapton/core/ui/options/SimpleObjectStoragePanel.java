@@ -25,6 +25,8 @@ import javafx.scene.control.TabPane;
 import org.mapton.api.MGenericLoader;
 import org.mapton.api.MGenericSaver;
 import org.mapton.core.ui.simple_object_storage.BooleanStorageTabPane;
+import org.mapton.core.ui.simple_object_storage.DoubleStorageTabPane;
+import org.mapton.core.ui.simple_object_storage.IntegerStorageTabPane;
 import org.mapton.core.ui.simple_object_storage.StringStorageTabPane;
 import org.openide.util.NbBundle;
 import se.trixon.almond.nbp.fx.FxPanel;
@@ -51,7 +53,9 @@ final class SimpleObjectStoragePanel extends javax.swing.JPanel {
                 mTabPane.setSide(Side.TOP);
                 mTabPane.getTabs().setAll(
                         new Tab(mBundle.getString("string"), new StringStorageTabPane()),
-                        new Tab(mBundle.getString("boolean"), new BooleanStorageTabPane())
+                        new Tab(mBundle.getString("boolean"), new BooleanStorageTabPane()),
+                        new Tab(mBundle.getString("integer"), new IntegerStorageTabPane()),
+                        new Tab(mBundle.getString("double"), new DoubleStorageTabPane())
                 );
 
                 mTabPane.getTabs().forEach(tab -> {
