@@ -102,12 +102,12 @@ public class DateRangePane {
         var dateRangeSlider = mDatePane.getDateRangeSlider();
 
         beforeToggleButton.setOnAction(actionEvent -> {
-            dateRangeSlider.setLowHighDate(dateRangeSlider.getMinDate(), dateRangeSlider.getLowDate());
+            dateRangeSlider.setLowHighDate(dateRangeSlider.getMinDate(), dateRangeSlider.getLowDate().minusDays(1));
             beforeToggleButton.setSelected(false);
         });
 
         afterToggleButton.setOnAction(actionEvent -> {
-            dateRangeSlider.setLowHighDate(dateRangeSlider.getHighDate(), dateRangeSlider.getMaxDate());
+            dateRangeSlider.setLowHighDate(dateRangeSlider.getHighDate().plusDays(1), dateRangeSlider.getMaxDate());
             afterToggleButton.setSelected(false);
         });
 
