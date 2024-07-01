@@ -133,13 +133,16 @@ public class ConvergencePairManager extends BaseManager<BTopoConvergencePair> {
                     }
 
                     existingPairs.add("%s-%s".formatted(p1.getName(), p2.getName()));
+                    try {
+                        var pair = new BTopoConvergencePair(group, p1, p2);
+                        var point = cooTrans.toWgs84(pair.getZeroY(), pair.getZeroX());
+                        pair.setLat(point.getY());
+                        pair.setLon(point.getX());
 
-                    var pair = new BTopoConvergencePair(group, p1, p2);
-                    var point = cooTrans.toWgs84(pair.getZeroY(), pair.getZeroX());
-                    pair.setLat(point.getY());
-                    pair.setLon(point.getX());
-
-                    pairs.add(pair);
+                        pairs.add(pair);
+                    } catch (NullPointerException e) {
+                        System.err.println("NPE  ConvergencePairManager 1" + p1.getName() + " " + p2.getName());
+                    }
                 }
             }
         }
@@ -156,15 +159,19 @@ public class ConvergencePairManager extends BaseManager<BTopoConvergencePair> {
             pp2.ext().getObservationsTimeFiltered().forEach(o -> dateToObservation2.put(o.getDate(), o));
 
             for (var entry : dateToObservation1.entrySet()) {
-                var date = entry.getKey();
-                var o1 = entry.getValue();
-                var o2 = dateToObservation2.get(date);
-                if (o2 != null) {
-                    var p1 = new Point3D(o1.getMeasuredX(), o1.getMeasuredY(), o1.getMeasuredZ());
-                    var p2 = new Point3D(o2.getMeasuredX(), o2.getMeasuredY(), o2.getMeasuredZ());
+                try {
+                    var date = entry.getKey();
+                    var o1 = entry.getValue();
+                    var o2 = dateToObservation2.get(date);
+                    if (o2 != null) {
+                        var p1 = new Point3D(o1.getMeasuredX(), o1.getMeasuredY(), o1.getMeasuredZ());
+                        var p2 = new Point3D(o2.getMeasuredX(), o2.getMeasuredY(), o2.getMeasuredZ());
 
-                    var pairObservation = new BTopoConvergencePairObservation(pair, date, p1, p2);
-                    observations.add(pairObservation);
+                        var pairObservation = new BTopoConvergencePairObservation(pair, date, p1, p2);
+                        observations.add(pairObservation);
+                    }
+                } catch (NullPointerException e) {
+                    System.err.println("NPE  ConvergencePairManager 2" + entry.getKey());
                 }
             }
 

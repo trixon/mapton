@@ -84,7 +84,7 @@ public class LayerOverlayView extends BorderPane {
 
     private void initListeners() {
         mOverlayManager.getAvailableOverlays().addListener((ListChangeListener.Change<? extends String> c) -> {
-            populate();
+            FxHelper.runLater(() -> populate());
         });
 
         mListSelectionView.getSwappedTargetItems().addListener((ListChangeListener.Change<? extends String> c) -> {
