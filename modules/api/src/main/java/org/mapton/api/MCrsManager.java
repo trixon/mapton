@@ -28,9 +28,9 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.apache.commons.lang3.StringUtils;
-import org.geotools.referencing.CRS;
 import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.referencing.CRS;
 import org.openide.util.Lookup;
 import org.openide.util.NbPreferences;
 import se.trixon.almond.util.SystemHelper;
@@ -44,7 +44,7 @@ public class MCrsManager {
     private static final Logger LOGGER = Logger.getLogger(MCrsManager.class.getName());
 
     private final String KEY_SELECTED = "crs.selected";
-    private final ArrayList<CoordinateReferenceSystem> mAllSystems = new ArrayList<>();
+    private final ObservableList<CoordinateReferenceSystem> mAllSystems = FXCollections.observableArrayList();
     private final ObjectProperty<ObservableList<MCooTrans>> mItemsProperty = new SimpleObjectProperty<>();
     private final Preferences mPreferences = NbPreferences.forModule(MCrsManager.class);
     private final ObjectProperty<CoordinateReferenceSystem> mSelectedSystemProperty = new SimpleObjectProperty<>();
@@ -64,7 +64,7 @@ public class MCrsManager {
         }).start();
     }
 
-    public ArrayList<CoordinateReferenceSystem> getAllSystems() {
+    public ObservableList<CoordinateReferenceSystem> getAllSystems() {
         return mAllSystems;
     }
 
