@@ -19,6 +19,7 @@ import j2html.tags.ContainerTag;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -29,6 +30,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javax.swing.SortOrder;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.IndexedCheckModel;
@@ -44,6 +46,7 @@ import org.mapton.butterfly_topo.shared.AlarmLevelChangeMode;
 import org.mapton.butterfly_topo.shared.AlarmLevelChangeUnit;
 import org.mapton.butterfly_topo.shared.AlarmLevelFilter;
 import se.trixon.almond.util.BooleanHelper;
+import se.trixon.almond.util.CollectionHelper;
 import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SDict;
@@ -90,6 +93,10 @@ public class TopoFilter extends FormFilter<TopoManager> {
     private final SimpleIntegerProperty mMeasNumOfValueProperty = new SimpleIntegerProperty();
     private final SimpleBooleanProperty mMeasSpeedProperty = new SimpleBooleanProperty();
     private final SimpleDoubleProperty mMeasSpeedValueProperty = new SimpleDoubleProperty();
+    private final SimpleIntegerProperty mMeasTopListLimitProperty = new SimpleIntegerProperty();
+    private final SimpleBooleanProperty mMeasTopListProperty = new SimpleBooleanProperty();
+    private final SimpleIntegerProperty mMeasTopListSizeValueProperty = new SimpleIntegerProperty();
+    private final SimpleObjectProperty<AlarmLevelChangeUnit> mMeasTopListUnitProperty = new SimpleObjectProperty();
     private final SimpleDoubleProperty mMeasYoyoCountValueProperty = new SimpleDoubleProperty();
     private final SimpleBooleanProperty mMeasYoyoProperty = new SimpleBooleanProperty();
     private final SimpleDoubleProperty mMeasYoyoSizeValueProperty = new SimpleDoubleProperty();
@@ -193,6 +200,22 @@ public class TopoFilter extends FormFilter<TopoManager> {
         return mMeasSpeedValueProperty;
     }
 
+    public SimpleIntegerProperty measTopListLimitProperty() {
+        return mMeasTopListLimitProperty;
+    }
+
+    public SimpleBooleanProperty measTopListProperty() {
+        return mMeasTopListProperty;
+    }
+
+    public SimpleIntegerProperty measTopListSizeValueProperty() {
+        return mMeasTopListSizeValueProperty;
+    }
+
+    public SimpleObjectProperty measTopListUnitProperty() {
+        return mMeasTopListUnitProperty;
+    }
+
     public SimpleDoubleProperty measYoyoCountValueProperty() {
         return mMeasYoyoCountValueProperty;
     }
@@ -212,6 +235,14 @@ public class TopoFilter extends FormFilter<TopoManager> {
     @Override
     public void update() {
         var filteredItems = mManager.getAllItems().stream()
+                .filter(p -> validateDimension(p.getDimension()))
+                .filter(p -> validateCheck(mStatusCheckModel, p.getStatus()))
+                .filter(p -> validateCheck(mGroupCheckModel, p.getGroup()))
+                .filter(p -> validateCheck(mCategoryCheckModel, p.getCategory()))
+                .filter(p -> validateAlarmName(p))
+                .filter(p -> validateFrequency(p.getFrequency()))
+                .filter(p -> validateCheck(mOperatorCheckModel, p.getOperator()))
+                .filter(p -> validateCheck(mOriginCheckModel, p.getOrigin()))
                 .filter(p -> {
                     var alarmH = p.ext().getAlarm(BComponent.HEIGHT);
                     var alarmP = p.ext().getAlarm(BComponent.PLANE);
@@ -221,11 +252,8 @@ public class TopoFilter extends FormFilter<TopoManager> {
 
                     return validateFreeText(p.getName(), p.getCategory(), p.getGroup(), p.getNameOfAlarmHeight(), p.getNameOfAlarmPlane(), nameH, nameP);
                 })
-                .filter(p -> validateDimension(p.getDimension()))
-                .filter(p -> validateCheck(mStatusCheckModel, p.getStatus()))
-                .filter(p -> validateCheck(mGroupCheckModel, p.getGroup()))
-                .filter(p -> validateCheck(mCategoryCheckModel, p.getCategory()))
-                .filter(p -> validateAlarmName(p))
+                .filter(p -> validateCoordinateArea(p.getLat(), p.getLon()))
+                .filter(p -> validateCoordinateRuler(p.getLat(), p.getLon()))
                 .filter(p -> validateAlarm(p))
                 .filter(p -> validateMeasAlarmLevelAge(p))
                 .filter(p -> validateMeasAlarmLevelChange(p))
@@ -233,9 +261,6 @@ public class TopoFilter extends FormFilter<TopoManager> {
                 .filter(p -> validateMeasDisplacementLatest(p))
                 .filter(p -> validateMeasSpeed(p))
                 .filter(p -> validateMeasCount(p))
-                .filter(p -> validateCheck(mOperatorCheckModel, p.getOperator()))
-                .filter(p -> validateCheck(mOriginCheckModel, p.getOrigin()))
-                .filter(p -> validateFrequency(p.getFrequency()))
                 .filter(p -> validateMaxAge(p.getDateLatest()))
                 .filter(p -> validateNextMeas(p))
                 .filter(p -> validateMeasWithout(p))
@@ -246,8 +271,6 @@ public class TopoFilter extends FormFilter<TopoManager> {
                 .filter(p -> validateDateFromToIs(p.getDateValidFrom(), p.getDateValidTo()))
                 .filter(p -> validateMeasYoyo(p))
                 .filter(p -> validateDisruptor(p.getZeroX(), p.getZeroY()))
-                .filter(p -> validateCoordinateArea(p.getLat(), p.getLon()))
-                .filter(p -> validateCoordinateRuler(p.getLat(), p.getLon()))
                 .toList();
 
         if (mSameAlarmProperty.get()) {
@@ -272,6 +295,10 @@ public class TopoFilter extends FormFilter<TopoManager> {
             filteredItems = mManager.getAllItems().stream()
                     .filter(p -> !toBeExluded.contains(p))
                     .toList();
+        }
+
+        if (mMeasTopListProperty.get()) {
+            filteredItems = createTopList(filteredItems);
         }
 
         mManager.getFilteredItems().setAll(filteredItems);
@@ -335,6 +362,47 @@ public class TopoFilter extends FormFilter<TopoManager> {
         return createHtmlFilterInfo(map);
     }
 
+    private List<BTopoControlPoint> createTopList(List<BTopoControlPoint> filteredItems) {
+        var topListMaxSize = mMeasTopListSizeValueProperty.get();
+        var limit = mMeasTopListLimitProperty.get();
+        var unit = mMeasTopListUnitProperty.get();
+        var pointToDiffMap = new LinkedHashMap<BTopoControlPoint, Double>();
+
+        filteredItems.forEach(p -> {
+            var reversedObservations = p.ext().getObservationsTimeFiltered().reversed();
+            List<BTopoControlPointObservation> limitedObservations;
+            if (limit == 0) {
+                limitedObservations = reversedObservations;
+            } else {
+                if (unit == AlarmLevelChangeUnit.DAYS) {
+                    var arrayList = new ArrayList<BTopoControlPointObservation>();
+                    for (var o : reversedObservations) {
+                        if (o.getDate().isAfter(LocalDateTime.now().minusDays(limit))) {
+                            arrayList.add(o);
+                        } else {
+                            break;
+                        }
+                    }
+                    limitedObservations = arrayList;
+                } else {
+                    limitedObservations = reversedObservations.subList(0, Math.min(limit, reversedObservations.size()));
+                }
+            }
+
+            if (limitedObservations.size() >= 2) {
+                var delta = limitedObservations.getFirst().ext().getDelta() - limitedObservations.getLast().ext().getDelta();
+                pointToDiffMap.put(p, Math.abs(delta));
+            }
+        });
+
+        return CollectionHelper.sortByValue(pointToDiffMap, SortOrder.DESCENDING)
+                .entrySet()
+                .stream()
+                .limit(topListMaxSize)
+                .map(entry -> entry.getKey())
+                .toList();
+    }
+
     private void initListeners() {
         mInvertProperty.addListener(mChangeListenerObject);
 
@@ -347,6 +415,11 @@ public class TopoFilter extends FormFilter<TopoManager> {
         mMeasAlarmLevelChangeModeProperty.addListener(mChangeListenerObject);
         mMeasAlarmLevelChangeUnitProperty.addListener(mChangeListenerObject);
         mMeasAlarmLevelChangeValueProperty.addListener(mChangeListenerObject);
+
+        mMeasTopListProperty.addListener(mChangeListenerObject);
+        mMeasTopListLimitProperty.addListener(mChangeListenerObject);
+        mMeasTopListUnitProperty.addListener(mChangeListenerObject);
+        mMeasTopListSizeValueProperty.addListener(mChangeListenerObject);
 
         mMeasAlarmLevelAgeProperty.addListener(mChangeListenerObject);
         mMeasAlarmLevelAgeValueProperty.addListener(mChangeListenerObject);
