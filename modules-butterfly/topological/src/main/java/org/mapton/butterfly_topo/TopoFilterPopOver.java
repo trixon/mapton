@@ -22,10 +22,12 @@ import java.util.stream.Collectors;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 import javafx.scene.control.Spinner;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import static javafx.scene.layout.GridPane.REMAINING;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
@@ -155,7 +157,6 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
 
         mMeasAlarmLevelAgeSis.getValueFactory().setValue(mDefaultAlarmLevelAgeValue);
         mMeasAlarmLevelChangeLimitSis.getValueFactory().setValue(mDefaultMeasAlarmLevelChangeLimit);
-        mMeasAlarmLevelChangeUnitScb.getSelectionModel().select(0);
         mMeasAlarmLevelChangeValueSis.getValueFactory().setValue(mDefaultMeasAlarmLevelChangeValue);
 
         mMeasNumOfSis.getValueFactory().setValue(mDefaultNumOfMeasfValue);
@@ -163,7 +164,6 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
 
         mMeasTopListLimitSis.getValueFactory().setValue(mDefaultMeasTopListLimit);
         mMeasTopListSizeSds.getValueFactory().setValue(mDefaultMeasTopListSize);
-        mMeasTopListUnitScb.getSelectionModel().select(0);
 
         mMeasYoyoCountSds.getValueFactory().setValue(mDefaultMeasYoyoCount);
         mMeasYoyoSizeSds.getValueFactory().setValue(mDefaultMeasYoyoSize);
@@ -305,6 +305,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
         mMeasAlarmLevelChangeModeScb.getItems().setAll(AlarmLevelChangeMode.values());
         mMeasAlarmLevelChangeUnitScb.getItems().setAll(AlarmLevelChangeUnit.values());
         mMeasTopListUnitScb.getItems().setAll(AlarmLevelChangeUnit.values());
+        mMeasTopListUnitScb.getSelectionModel().selectFirst();
 
         mMeasNextSccb.getItems().setAll(List.of(
                 "<0",
@@ -389,43 +390,57 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
                 wrappedDateBox
         );
 
-        var rightBox = new VBox(rowGap,
-                new VBox(titleGap,
-                        mNumOfMeasCheckbox,
-                        mMeasNumOfSis
-                ),
-                new VBox(titleGap,
-                        mDiffMeasAllCheckbox,
-                        mDiffMeasAllSds
-                ),
-                new VBox(titleGap,
-                        mDiffMeasLatestCheckbox,
-                        mDiffMeasLatestSds
-                ),
-                new VBox(titleGap,
-                        mMeasTopListCheckbox,
-                        mMeasTopListSizeSds,
-                        new HBox(8, mMeasTopListLimitSis, mMeasTopListUnitScb)
-                ),
+        var hGap = FxHelper.getUIScaled(9.0);
+        var vGap = FxHelper.getUIScaled(4.0);
+        var spinnerWidth = FxHelper.getUIScaled(70.0);
+
+        var diffGridPane = new GridPane(hGap, vGap);
+        diffGridPane.addColumn(0, mDiffMeasAllCheckbox, mDiffMeasAllSds);
+        diffGridPane.addColumn(1, mDiffMeasLatestCheckbox, mDiffMeasLatestSds);
+        FxHelper.autoSizeColumn(diffGridPane, 2);
+
+        var yoyoGridPane = new GridPane(hGap, vGap);
+        yoyoGridPane.add(mMeasYoyoCheckbox, 0, 0, REMAINING, 1);
+        yoyoGridPane.addRow(1, mMeasYoyoCountSds, mMeasYoyoSizeSds);
+        FxHelper.autoSizeColumn(yoyoGridPane, 2);
+
+        var displacementGridPane = new GridPane(hGap, vGap);
+        displacementGridPane.add(mMeasTopListCheckbox, 0, 0, REMAINING, 1);
+        displacementGridPane.addRow(1, mMeasTopListSizeSds, new Label(SDict.POINTS.toLower()));
+        displacementGridPane.addRow(2, mMeasTopListLimitSis, mMeasTopListUnitScb);
+        mMeasTopListSizeSds.setPrefWidth(spinnerWidth);
+        mMeasTopListLimitSis.setPrefWidth(spinnerWidth);
+
+        var alcGridPane = new GridPane(hGap, vGap);
+        alcGridPane.add(mMeasAlarmLevelChangeCheckbox, 0, 0, REMAINING, 1);
+        alcGridPane.addRow(1, mMeasAlarmLevelChangeLimitSis, mMeasAlarmLevelChangeModeScb);
+        alcGridPane.addRow(2, mMeasAlarmLevelChangeValueSis, mMeasAlarmLevelChangeUnitScb);
+        mMeasAlarmLevelChangeLimitSis.setPrefWidth(spinnerWidth);
+        mMeasAlarmLevelChangeValueSis.setPrefWidth(spinnerWidth);
+
+        FxHelper.autoSizeRegionHorizontal(mMeasTopListUnitScb, mMeasAlarmLevelChangeModeScb, mMeasAlarmLevelChangeUnitScb);
+
+        var measBox = new VBox(rowGap,
+                diffGridPane,
+                displacementGridPane,
                 new VBox(titleGap,
                         mMeasSpeedCheckbox,
                         mMeasSpeedSds
                 ),
-                new VBox(titleGap,
-                        mMeasYoyoCheckbox,
-                        mMeasYoyoCountSds,
-                        mMeasYoyoSizeSds
-                ),
+                yoyoGridPane,
+                new Separator(),
+                mAlarmSccb,
                 new VBox(titleGap,
                         mMeasAlarmLevelAgeCheckbox,
                         mMeasAlarmLevelAgeSis
                 ),
-                mAlarmSccb,
+                alcGridPane,
+                new Separator(),
                 new VBox(titleGap,
-                        mMeasAlarmLevelChangeCheckbox,
-                        new HBox(8, mMeasAlarmLevelChangeLimitSis, mMeasAlarmLevelChangeModeScb),
-                        new HBox(8, mMeasAlarmLevelChangeValueSis, mMeasAlarmLevelChangeUnitScb)
+                        mNumOfMeasCheckbox,
+                        mMeasNumOfSis
                 ),
+                new Separator(),
                 mMeasCodeSccb,
                 new VBox(titleGap,
                         mMeasOperatorSccb,
@@ -433,7 +448,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
                 )
         );
 
-        var wrappedRightBox = Borders.wrap(rightBox)
+        var wrappedRightBox = Borders.wrap(measBox)
                 .etchedBorder()
                 .title("Mätdataanalys")
                 .innerPadding(topBorderInnerPadding, borderInnerPadding, borderInnerPadding, borderInnerPadding)
@@ -480,26 +495,18 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
         };
         FxHelper.setEditable(true, spinners);
         FxHelper.autoCommitSpinners(spinners);
-        FxHelper.bindWidthForChildrens(leftBox, rightBox, basicBox);
+        FxHelper.bindWidthForChildrens(leftBox, measBox, basicBox);
         FxHelper.bindWidthForRegions(leftBox, mDisruptorPane.getRoot());
-        FxHelper.bindWidthForRegions(rightBox,
+        FxHelper.bindWidthForRegions(measBox,
                 mMeasSpeedSds,
                 mDiffMeasLatestSds,
                 mDiffMeasAllSds,
-                mMeasTopListSizeSds,
                 mMeasYoyoCountSds,
                 mMeasYoyoSizeSds,
                 mMeasNumOfSis,
                 mMeasAlarmLevelAgeSis,
                 mMeasOperatorSccb
         );
-
-        mMeasAlarmLevelChangeValueSis.setMinWidth(FxHelper.getUIScaled(90));
-        mMeasAlarmLevelChangeLimitSis.setMinWidth(FxHelper.getUIScaled(90));
-        mMeasTopListLimitSis.setMinWidth(FxHelper.getUIScaled(90));
-        mMeasAlarmLevelChangeModeScb.setPrefWidth(400);
-        mMeasAlarmLevelChangeUnitScb.setPrefWidth(400);
-        mMeasTopListUnitScb.setPrefWidth(400);
 
         mMeasYoyoSizeSds.getValueFactory().setConverter(new StringConverter<Double>() {
             @Override
@@ -519,7 +526,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
 
         int prefWidth = FxHelper.getUIScaled(250);
         leftBox.setPrefWidth(prefWidth);
-        rightBox.setPrefWidth(prefWidth);
+        measBox.setPrefWidth(prefWidth);
 
         setContentNode(root);
     }
