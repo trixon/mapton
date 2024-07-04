@@ -145,6 +145,9 @@ public enum TopoLabelBy {
     MISC_DIMENS(LabelByCategories.MISC, SDict.DIMENSION.toString(), p -> {
         return p.getDimension() != null ? p.getDimension().getName() : "--";
     }),
+    MISC_DIMENS_FREQUENCY(LabelByCategories.MISC, Strings.DIMENS_FREQ, p -> {
+        return "%sD %s".formatted(MISC_DIMENS.getLabel(p), MISC_FREQUENCY.getLabel(p));
+    }),
     MEAS_SPEED(LabelByCategories.MEAS, "%s (mm/%s)".formatted(Dict.SPEED.toString(), Dict.Time.YEAR.toLower()), p -> {
         if (p.getDimension() == BDimension._2d || p.ext().getObservationsTimeFiltered().size() < 2 || p.ext().deltaZero().getDelta1() == null) {
             return "-";
@@ -257,6 +260,7 @@ public enum TopoLabelBy {
         public static final String PLANE_NAME = "%s, %s".formatted(Dict.Geometry.PLANE, Dict.NAME.toLower());
         public static final String PLANE_PERCENT = "%s, %%".formatted(Dict.Geometry.PLANE);
         public static final String PLANE_VALUE = "%s, %s".formatted(Dict.Geometry.PLANE, Dict.VALUE.toLower());
+        public static final String DIMENS_FREQ = "%s & %s".formatted(SDict.DIMENSION.toString(), SDict.FREQUENCY.toString());
 
     }
 }

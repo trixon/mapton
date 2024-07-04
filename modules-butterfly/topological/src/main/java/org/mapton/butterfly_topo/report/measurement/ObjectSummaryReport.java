@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_topo.report.measurement;
 
+import static j2html.TagCreator.body;
 import static j2html.TagCreator.h1;
 import static j2html.TagCreator.hr;
 import static j2html.TagCreator.html;
@@ -25,10 +26,14 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.TreeSet;
+import java.util.function.Consumer;
+import javax.swing.SortOrder;
 import org.mapton.api.report.MReport;
 import org.mapton.butterfly_format.types.BDimension;
+import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_topo.api.TopoManager;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.CollectionHelper;
@@ -77,8 +82,17 @@ public class ObjectSummaryReport extends BaseTopoMeasurementReport {
         var pFreqMap = new HashMap<String, Integer>();
         var hAgeMap = new HashMap<String, Integer>();
         var pAgeMap = new HashMap<String, Integer>();
-
+        var hDeltaMap = new LinkedHashMap<BTopoControlPoint, Double>();
+        var pDeltaMap = new LinkedHashMap<BTopoControlPoint, Double>();
+        var dates = new TreeSet<LocalDate>();
         mManager.getTimeFilteredItems().stream().forEachOrdered(p -> {
+            try {
+                dates.add(p.ext().getObservationFilteredFirstDate());
+                dates.add(p.ext().getObservationFilteredLastDate());
+            } catch (Exception e) {
+                //nvm
+            }
+            var delta = p.ext().deltaZero().getDelta();
             var daysSinceMeasurement = p.ext().getMeasurementAge(ChronoUnit.DAYS);
             Integer age = null;
             if (daysSinceMeasurement <= 7) {
@@ -90,6 +104,7 @@ public class ObjectSummaryReport extends BaseTopoMeasurementReport {
             } else if (daysSinceMeasurement <= 364) {
                 age = 52;
             }
+
             var alarmLevel = p.ext().getAlarmLevel(p.ext().getObservationFilteredLast());
             if (p.getDimension() == BDimension._1d) {
                 CollectionHelper.incInteger(map, "antalDubbar");
@@ -98,6 +113,9 @@ public class ObjectSummaryReport extends BaseTopoMeasurementReport {
                     CollectionHelper.incInteger(hAgeMap, String.valueOf(age));
                 }
                 CollectionHelper.incInteger(map, "alarmLevelH%d".formatted(alarmLevel));
+                if (delta != null) {
+                    hDeltaMap.put(p, Math.abs(delta));
+                }
             } else {
                 CollectionHelper.incInteger(map, "antalPrismor");
                 CollectionHelper.incInteger(pFreqMap, "%d".formatted(p.getFrequency()));
@@ -105,11 +123,31 @@ public class ObjectSummaryReport extends BaseTopoMeasurementReport {
                     CollectionHelper.incInteger(pAgeMap, String.valueOf(age));
                 }
                 CollectionHelper.incInteger(map, "alarmLevelP%d".formatted(alarmLevel));
+                if (delta != null) {
+                    pDeltaMap.put(p, Math.abs(delta));
+                }
             }
         });
 
-        addRow(rows, "Datum", LocalDate.now().toString());
+        Consumer<BTopoControlPoint> topListConsumer = p -> {
+            var delta = p.getDimension() == BDimension._1d
+                    ? p.ext().deltaZero().getDelta1(3)
+                    : p.ext().deltaZero().getDelta(3);
+            addRow(rows,
+                    "",
+                    p.getName(),
+                    p.ext().getAlarmLevel(p.ext().getObservationFilteredLast()),
+                    delta
+            );
+        };
+
         addRow(rows, "Grupp/objekt");
+        addRow(rows, "Rapportdatum", LocalDate.now().toString());
+        if (!dates.isEmpty()) {
+            addRow(rows, "Senaste mätning", dates.getLast().toString());
+            addRow(rows, "Första mätning", dates.getFirst().toString());
+        }
+
         addBlankRow(rows);
         addRow(rows, "", "Dubbar", "Prismor", "Totalt");
         addRow(rows, "Antal punkter",
@@ -118,18 +156,17 @@ public class ObjectSummaryReport extends BaseTopoMeasurementReport {
                 map.getOrDefault("antalDubbar", 0) + map.getOrDefault("antalPrismor", 0)
         );
         addBlankRow(rows);
-
-        addRow(rows, "Dagar mellan inmätningar");
-        var freqSet = new TreeSet<String>(Comparator.comparingInt(s -> Integer.valueOf(s)));
-        freqSet.addAll(hFreqMap.keySet());
-        freqSet.addAll(pFreqMap.keySet());
-        freqSet.forEach(s -> {
+        addRow(rows, "På larmnivå");
+        for (var val : List.of(0, 1, 2)) {
+            var s = String.valueOf(val);
+            var hKey = "alarmLevelH%d".formatted(val);
+            var pKey = "alarmLevelP%d".formatted(val);
             addRow(rows, "    " + s,
-                    hFreqMap.get(s),
-                    pFreqMap.get(s),
-                    hFreqMap.getOrDefault(s, 0) + pFreqMap.getOrDefault(s, 0)
+                    map.get(hKey),
+                    map.get(pKey),
+                    map.getOrDefault(hKey, 0) + map.getOrDefault(pKey, 0)
             );
-        });
+        }
         addBlankRow(rows);
 
         addRow(rows, "Ålder upp till");
@@ -143,25 +180,29 @@ public class ObjectSummaryReport extends BaseTopoMeasurementReport {
         }
         addBlankRow(rows);
 
-        addRow(rows, "På larmnivå");
-        for (var val : List.of(0, 1, 2)) {
-            var s = String.valueOf(val);
-            var hKey = "alarmLevelH%d".formatted(val);
-            var pKey = "alarmLevelP%d".formatted(val);
+        addRow(rows, "Dagar mellan inmätningar");
+        var freqSet = new TreeSet<String>(Comparator.comparingInt(s -> Integer.valueOf(s)));
+        freqSet.addAll(hFreqMap.keySet());
+        freqSet.addAll(pFreqMap.keySet());
+        freqSet.forEach(s -> {
             addRow(rows, "    " + s,
-                    map.get(hKey),
-                    map.get(pKey),
-                    map.getOrDefault(hKey, 0) + map.getOrDefault(pKey, 0)
+                    hFreqMap.get(s),
+                    pFreqMap.get(s),
+                    hFreqMap.getOrDefault(s, 0) + pFreqMap.getOrDefault(s, 0)
             );
-        }
+        });
+
         addBlankRow(rows);
         addBlankRow(rows);
         addBlankRow(rows);
 
-        addRow(rows, "Största rörelser", "Punkt", "Rörelse", "Larmnivå");
+        var topListSize = 15;
+        addRow(rows, "Största rörelser", "Punkt", "Larmnivå", "Rörelse");
         addRow(rows, "Dubbar");
+        getTopList(hDeltaMap, topListSize).forEach(topListConsumer);
         addBlankRow(rows);
         addRow(rows, "Prismor");
+        getTopList(pDeltaMap, topListSize).forEach(topListConsumer);
 
         for (var columns : rows) {
             sb.append(String.join("\t", columns)).append("\n");
@@ -176,5 +217,14 @@ public class ObjectSummaryReport extends BaseTopoMeasurementReport {
         );
 
         return html;
+    }
+
+    private List<BTopoControlPoint> getTopList(LinkedHashMap<BTopoControlPoint, Double> map, int maxSize) {
+        return CollectionHelper.sortByValue(map, SortOrder.DESCENDING)
+                .entrySet()
+                .stream()
+                .limit(maxSize)
+                .map(entry -> entry.getKey())
+                .toList();
     }
 }
