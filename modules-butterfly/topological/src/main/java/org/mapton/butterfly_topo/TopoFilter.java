@@ -84,7 +84,11 @@ public class TopoFilter extends FormFilter<TopoManager> {
     private final SimpleObjectProperty<LocalDate> mMeasDateHighProperty = new SimpleObjectProperty();
     private final SimpleObjectProperty<LocalDate> mMeasDateLowProperty = new SimpleObjectProperty();
     private final SimpleBooleanProperty mMeasDiffAllProperty = new SimpleBooleanProperty();
+    private final SimpleBooleanProperty mMeasDiffPercentageHProperty = new SimpleBooleanProperty();
+    private final SimpleBooleanProperty mMeasDiffPercentagePProperty = new SimpleBooleanProperty();
     private final SimpleDoubleProperty mMeasDiffAllValueProperty = new SimpleDoubleProperty();
+    private final SimpleIntegerProperty mMeasDiffPercentageHValueProperty = new SimpleIntegerProperty();
+    private final SimpleIntegerProperty mMeasDiffPercentagePValueProperty = new SimpleIntegerProperty();
     private final SimpleBooleanProperty mMeasDiffLatestProperty = new SimpleBooleanProperty();
     private final SimpleDoubleProperty mMeasDiffLatestValueProperty = new SimpleDoubleProperty();
     private final SimpleBooleanProperty mMeasIncludeWithout = new SimpleBooleanProperty();
@@ -164,8 +168,24 @@ public class TopoFilter extends FormFilter<TopoManager> {
         return mMeasDiffAllProperty;
     }
 
+    public SimpleBooleanProperty measDiffPercentageHProperty() {
+        return mMeasDiffPercentageHProperty;
+    }
+
+    public SimpleBooleanProperty measDiffPercentagePProperty() {
+        return mMeasDiffPercentagePProperty;
+    }
+
     public SimpleDoubleProperty measDiffAllValueProperty() {
         return mMeasDiffAllValueProperty;
+    }
+
+    public SimpleIntegerProperty measDiffPercentageHValueProperty() {
+        return mMeasDiffPercentageHValueProperty;
+    }
+
+    public SimpleIntegerProperty measDiffPercentagePValueProperty() {
+        return mMeasDiffPercentagePValueProperty;
     }
 
     public SimpleBooleanProperty measDiffLatestProperty() {
@@ -259,6 +279,8 @@ public class TopoFilter extends FormFilter<TopoManager> {
                 .filter(p -> validateMeasAlarmLevelChange(p))
                 .filter(p -> validateMeasDisplacementAll(p))
                 .filter(p -> validateMeasDisplacementLatest(p))
+                .filter(p -> validateMeasDisplacementPercentH(p))
+                .filter(p -> validateMeasDisplacementPercentP(p))
                 .filter(p -> validateMeasSpeed(p))
                 .filter(p -> validateMeasCount(p))
                 .filter(p -> validateMaxAge(p.getDateLatest()))
@@ -425,6 +447,10 @@ public class TopoFilter extends FormFilter<TopoManager> {
         mMeasAlarmLevelAgeValueProperty.addListener(mChangeListenerObject);
         mMeasDiffAllProperty.addListener(mChangeListenerObject);
         mMeasDiffAllValueProperty.addListener(mChangeListenerObject);
+        mMeasDiffPercentageHProperty.addListener(mChangeListenerObject);
+        mMeasDiffPercentageHValueProperty.addListener(mChangeListenerObject);
+        mMeasDiffPercentagePProperty.addListener(mChangeListenerObject);
+        mMeasDiffPercentagePValueProperty.addListener(mChangeListenerObject);
         mMeasDiffLatestProperty.addListener(mChangeListenerObject);
         mMeasDiffLatestValueProperty.addListener(mChangeListenerObject);
         mMeasSpeedProperty.addListener(mChangeListenerObject);
@@ -874,6 +900,40 @@ public class TopoFilter extends FormFilter<TopoManager> {
             }
         } else {
             return false;
+        }
+    }
+
+    private boolean validateMeasDisplacementPercentH(BTopoControlPoint p) {
+        if (!mMeasDiffPercentageHProperty.get() || p.getDimension() == BDimension._2d || p.ext().getAlarmPercent(BComponent.HEIGHT) == null) {
+            return true;
+        }
+
+        double lim = mMeasDiffPercentageHValueProperty.get();
+        double value = p.ext().getAlarmPercent(BComponent.HEIGHT);
+
+        if (lim == 0) {
+            return value == 0;
+        } else if (lim < 0) {
+            return value <= Math.abs(lim);
+        } else {
+            return value >= lim;
+        }
+    }
+
+    private boolean validateMeasDisplacementPercentP(BTopoControlPoint p) {
+        if (!mMeasDiffPercentagePProperty.get() || p.getDimension() == BDimension._1d || p.ext().getAlarmPercent(BComponent.HEIGHT) == null) {
+            return true;
+        }
+
+        double lim = mMeasDiffPercentagePValueProperty.get();
+        double value = Math.abs(p.ext().deltaZero().getDelta2());
+
+        if (lim == 0) {
+            return value == 0;
+        } else if (lim < 0) {
+            return value <= Math.abs(lim);
+        } else {
+            return value >= lim;
         }
     }
 

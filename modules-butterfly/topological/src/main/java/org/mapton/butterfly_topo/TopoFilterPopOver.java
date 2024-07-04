@@ -63,6 +63,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
     private final SessionCheckComboBox<String> mCategorySccb = new SessionCheckComboBox<>();
     private final DateRangePane mDateRangePane = new DateRangePane();
     private final int mDefaultAlarmLevelAgeValue = -7;
+    private final int mDefaultDiffPercentageValue = 80;
     private final double mDefaultDiffValue = 0.020;
     private final int mDefaultMeasAlarmLevelChangeLimit = 1;
     private final int mDefaultMeasAlarmLevelChangeValue = 10;
@@ -76,6 +77,10 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
     private final SessionDoubleSpinner mDiffMeasAllSds = new SessionDoubleSpinner(-1.0, 1.0, mDefaultDiffValue, 0.001);
     private final CheckBox mDiffMeasLatestCheckbox = new CheckBox();
     private final SessionDoubleSpinner mDiffMeasLatestSds = new SessionDoubleSpinner(-1.0, 1.0, mDefaultDiffValue, 0.001);
+    private final CheckBox mDiffMeasPercentageHCheckbox = new CheckBox();
+    private final SessionIntegerSpinner mDiffMeasPercentageHSis = new SessionIntegerSpinner(-1000, 1000, mDefaultDiffPercentageValue, 10);
+    private final CheckBox mDiffMeasPercentagePCheckbox = new CheckBox();
+    private final SessionIntegerSpinner mDiffMeasPercentagePSis = new SessionIntegerSpinner(-1000, 1000, mDefaultDiffPercentageValue, 10);
     private final CheckBox mDimens1Checkbox = new CheckBox("1");
     private final CheckBox mDimens2Checkbox = new CheckBox("2");
     private final CheckBox mDimens3Checkbox = new CheckBox("3");
@@ -149,11 +154,15 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
                 mMeasLatestOperatorCheckbox,
                 mMeasIncludeWithoutCheckbox,
                 mNumOfMeasCheckbox,
-                mMeasAlarmLevelAgeCheckbox
+                mMeasAlarmLevelAgeCheckbox,
+                mDiffMeasPercentageHCheckbox,
+                mDiffMeasPercentagePCheckbox
         );
 
         mDiffMeasAllSds.getValueFactory().setValue(mDefaultDiffValue);
         mDiffMeasLatestSds.getValueFactory().setValue(mDefaultDiffValue);
+        mDiffMeasPercentageHSis.getValueFactory().setValue(mDefaultDiffPercentageValue);
+        mDiffMeasPercentagePSis.getValueFactory().setValue(mDefaultDiffPercentageValue);
 
         mMeasAlarmLevelAgeSis.getValueFactory().setValue(mDefaultAlarmLevelAgeValue);
         mMeasAlarmLevelChangeLimitSis.getValueFactory().setValue(mDefaultMeasAlarmLevelChangeLimit);
@@ -216,6 +225,8 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
         mMeasSpeedSds.load();
         mDiffMeasLatestSds.load();
         mDiffMeasAllSds.load();
+        mDiffMeasPercentageHSis.load();
+        mDiffMeasPercentagePSis.load();
         mMeasYoyoCountSds.load();
         mMeasYoyoSizeSds.load();
         mMeasTopListSizeSds.load();
@@ -329,6 +340,8 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
         mMeasSpeedCheckbox.setText(Dict.SPEED.toString());
         mDiffMeasLatestCheckbox.setText(getBundle().getString("diffMeasLatestCheckBoxText"));
         mDiffMeasAllCheckbox.setText(getBundle().getString("diffMeasAllCheckBoxText"));
+        mDiffMeasPercentageHCheckbox.setText(getBundle().getString("diffMeasPercentageHCheckboxText"));
+        mDiffMeasPercentagePCheckbox.setText(getBundle().getString("diffMeasPercentagePCheckboxText"));
         mMeasYoyoCheckbox.setText(getBundle().getString("YoyoCheckBoxText"));
         mMeasTopListCheckbox.setText(getBundle().getString("TopListCheckBoxText"));
         mInvertCheckbox.setText(getBundle().getString("invertCheckBoxText"));
@@ -339,6 +352,8 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
         mMeasSpeedSds.getValueFactory().setConverter(new NegPosStringConverterDouble());
         mDiffMeasLatestSds.getValueFactory().setConverter(new NegPosStringConverterDouble());
         mDiffMeasAllSds.getValueFactory().setConverter(new NegPosStringConverterDouble());
+        mDiffMeasPercentageHSis.getValueFactory().setConverter(new NegPosStringConverterInteger());
+        mDiffMeasPercentagePSis.getValueFactory().setConverter(new NegPosStringConverterInteger());
 
         int columnGap = FxHelper.getUIScaled(16);
         int rowGap = FxHelper.getUIScaled(12);
@@ -399,6 +414,11 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
         diffGridPane.addColumn(1, mDiffMeasLatestCheckbox, mDiffMeasLatestSds);
         FxHelper.autoSizeColumn(diffGridPane, 2);
 
+        var diffPercentGridPane = new GridPane(hGap, vGap);
+        diffPercentGridPane.addColumn(0, mDiffMeasPercentageHCheckbox, mDiffMeasPercentageHSis);
+        diffPercentGridPane.addColumn(1, mDiffMeasPercentagePCheckbox, mDiffMeasPercentagePSis);
+        FxHelper.autoSizeColumn(diffPercentGridPane, 2);
+
         var yoyoGridPane = new GridPane(hGap, vGap);
         yoyoGridPane.add(mMeasYoyoCheckbox, 0, 0, REMAINING, 1);
         yoyoGridPane.addRow(1, mMeasYoyoCountSds, mMeasYoyoSizeSds);
@@ -422,6 +442,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
 
         var measBox = new VBox(rowGap,
                 diffGridPane,
+                diffPercentGridPane,
                 displacementGridPane,
                 new VBox(titleGap,
                         mMeasSpeedCheckbox,
@@ -483,6 +504,8 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
         var spinners = new Spinner[]{
             mDiffMeasAllSds,
             mDiffMeasLatestSds,
+            mDiffMeasPercentageHSis,
+            mDiffMeasPercentagePSis,
             mMeasSpeedSds,
             mMeasNumOfSis,
             mMeasYoyoCountSds,
@@ -499,8 +522,6 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
         FxHelper.bindWidthForRegions(leftBox, mDisruptorPane.getRoot());
         FxHelper.bindWidthForRegions(measBox,
                 mMeasSpeedSds,
-                mDiffMeasLatestSds,
-                mDiffMeasAllSds,
                 mMeasYoyoCountSds,
                 mMeasYoyoSizeSds,
                 mMeasNumOfSis,
@@ -545,6 +566,8 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
         mFilter.measNumOfProperty().bind(mNumOfMeasCheckbox.selectedProperty());
         mFilter.measAlarmLevelAgeProperty().bind(mMeasAlarmLevelAgeCheckbox.selectedProperty());
         mFilter.measDiffAllProperty().bind(mDiffMeasAllCheckbox.selectedProperty());
+        mFilter.measDiffPercentageHProperty().bind(mDiffMeasPercentageHCheckbox.selectedProperty());
+        mFilter.measDiffPercentagePProperty().bind(mDiffMeasPercentagePCheckbox.selectedProperty());
         mFilter.measYoyoProperty().bind(mMeasYoyoCheckbox.selectedProperty());
         mFilter.measTopListProperty().bind(mMeasTopListCheckbox.selectedProperty());
         mFilter.invertProperty().bind(mInvertCheckbox.selectedProperty());
@@ -560,10 +583,12 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
         mFilter.measNumOfValueProperty().bind(mMeasNumOfSis.sessionValueProperty());
         mFilter.measAlarmLevelAgeValueProperty().bind(mMeasAlarmLevelAgeSis.sessionValueProperty());
         mFilter.measDiffAllValueProperty().bind(mDiffMeasAllSds.sessionValueProperty());
+        mFilter.measDiffPercentageHValueProperty().bind(mDiffMeasPercentageHSis.sessionValueProperty());
         mFilter.measYoyoCountValueProperty().bind(mMeasYoyoCountSds.sessionValueProperty());
         mFilter.measTopListSizeValueProperty().bind(mMeasTopListSizeSds.sessionValueProperty());
         mFilter.measYoyoSizeValueProperty().bind(mMeasYoyoSizeSds.sessionValueProperty());
         mFilter.measDiffLatestValueProperty().bind(mDiffMeasLatestSds.sessionValueProperty());
+        mFilter.measDiffPercentagePValueProperty().bind(mDiffMeasPercentagePSis.sessionValueProperty());
         mFilter.measSpeedValueProperty().bind(mMeasSpeedSds.sessionValueProperty());
 
         mFilter.measAlarmLevelChangeProperty().bind(mMeasAlarmLevelChangeCheckbox.selectedProperty());
@@ -597,6 +622,8 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
         mMeasAlarmLevelAgeSis.disableProperty().bind(mMeasAlarmLevelAgeCheckbox.selectedProperty().not());
         mDiffMeasAllSds.disableProperty().bind(mDiffMeasAllCheckbox.selectedProperty().not());
         mDiffMeasLatestSds.disableProperty().bind(mDiffMeasLatestCheckbox.selectedProperty().not());
+        mDiffMeasPercentageHSis.disableProperty().bind(mDiffMeasPercentageHCheckbox.selectedProperty().not());
+        mDiffMeasPercentagePSis.disableProperty().bind(mDiffMeasPercentagePCheckbox.selectedProperty().not());
         mMeasSpeedSds.disableProperty().bind(mMeasSpeedCheckbox.selectedProperty().not());
         mMeasTopListSizeSds.disableProperty().bind(mMeasTopListCheckbox.selectedProperty().not());
         mMeasYoyoCountSds.disableProperty().bind(mMeasYoyoCheckbox.selectedProperty().not());
@@ -635,12 +662,16 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
         sessionManager.register("filter.measCheckedNextMeas", mMeasNextSccb.checkedStringProperty());
         sessionManager.register("filter.measCheckedOperators", mMeasOperatorSccb.checkedStringProperty());
         sessionManager.register("filter.measDiffAll", mDiffMeasAllCheckbox.selectedProperty());
+        sessionManager.register("filter.measDiffPercentageH", mDiffMeasPercentageHCheckbox.selectedProperty());
+        sessionManager.register("filter.measDiffPercentageP", mDiffMeasPercentagePCheckbox.selectedProperty());
         sessionManager.register("filter.measTopList", mMeasTopListCheckbox.selectedProperty());
         sessionManager.register("filter.measTopListSizeValue", mMeasTopListSizeSds.sessionValueProperty());
         sessionManager.register("filter.measTopListUnit", mMeasTopListUnitScb.selectedIndexProperty());
         sessionManager.register("filter.measTopListLimit", mMeasTopListLimitSis.sessionValueProperty());
         sessionManager.register("filter.measYoyo", mMeasYoyoCheckbox.selectedProperty());
         sessionManager.register("filter.measDiffAllValue", mDiffMeasAllSds.sessionValueProperty());
+        sessionManager.register("filter.measDiffPercentageHValue", mDiffMeasPercentageHSis.sessionValueProperty());
+        sessionManager.register("filter.measDiffPercentagePValue", mDiffMeasPercentagePSis.sessionValueProperty());
         sessionManager.register("filter.measYoyoCountValue", mMeasYoyoCountSds.sessionValueProperty());
         sessionManager.register("filter.measYoyoSizeValue", mMeasYoyoSizeSds.sessionValueProperty());
         sessionManager.register("filter.measDiffLatest", mDiffMeasLatestCheckbox.selectedProperty());

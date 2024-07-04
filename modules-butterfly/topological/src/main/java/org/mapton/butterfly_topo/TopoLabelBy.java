@@ -46,11 +46,38 @@ public enum TopoLabelBy {
     ALARM_H_VALUE(LabelByCategories.ALARM, Strings.HEIGHT_VALUE, p -> {
         return AlarmHelper.getInstance().getLimitsAsString(BComponent.HEIGHT, p);
     }),
+    ALARM_H_PERCENT(LabelByCategories.ALARM, Strings.HEIGHT_PERCENT, p -> {
+        var percent = p.ext().getAlarmPercent(BComponent.HEIGHT);
+        if (percent == null) {
+            return "";
+        } else {
+            var delta = p.ext().deltaZero().getDelta1();
+            var direction = "";
+            if (delta > 0) {
+                direction = "↑";
+            } else if (delta < 0) {
+                direction = "↓";
+            }
+
+            return "%d%% %s".formatted(percent, direction);
+        }
+    }),
     ALARM_P_NAME(LabelByCategories.ALARM, Strings.PLANE_NAME, p -> {
         return p.getNameOfAlarmPlane();
     }),
     ALARM_P_VALUE(LabelByCategories.ALARM, Strings.PLANE_VALUE, p -> {
         return AlarmHelper.getInstance().getLimitsAsString(BComponent.PLANE, p);
+    }),
+    ALARM_P_PERCENT(LabelByCategories.ALARM, Strings.PLANE_PERCENT, p -> {
+        var percent = p.ext().getAlarmPercent(BComponent.PLANE);
+        if (percent == null) {
+            return "";
+        } else {
+            return "%d%%".formatted(percent);
+        }
+    }),
+    ALARM_PERCENT(LabelByCategories.ALARM, "%", p -> {
+        return "%s // %s".formatted(StringUtils.defaultIfBlank(ALARM_H_PERCENT.getLabel(p), "-"), StringUtils.defaultIfBlank(ALARM_P_PERCENT.getLabel(p), "-"));
     }),
     DATE_LATEST(LabelByCategories.DATE, SDict.LATEST.toString(), p -> {
         var date = p.ext().getObservationFilteredLastDate();
@@ -222,11 +249,13 @@ public enum TopoLabelBy {
     private class Strings {
 
         public static final String HEIGHT_NAME = "%s, %s".formatted(Dict.Geometry.HEIGHT, Dict.NAME.toLower());
+        public static final String HEIGHT_PERCENT = "%s, %%".formatted(Dict.Geometry.HEIGHT);
         public static final String HEIGHT_VALUE = "%s, %s".formatted(Dict.Geometry.HEIGHT, Dict.VALUE.toLower());
         public static final String MEAS_COUNT = Dict.NUM_OF_S.toString().formatted(SDict.MEASUREMENTS.toLower());
         public static final String MEAS_COUNT_ALL = "%s (%s)".formatted(MEAS_COUNT, Dict.ALL.toLower());
         public static final String MEAS_COUNT_SELECTION = "%s (%s)".formatted(MEAS_COUNT, Dict.SELECTION.toLower());
         public static final String PLANE_NAME = "%s, %s".formatted(Dict.Geometry.PLANE, Dict.NAME.toLower());
+        public static final String PLANE_PERCENT = "%s, %%".formatted(Dict.Geometry.PLANE);
         public static final String PLANE_VALUE = "%s, %s".formatted(Dict.Geometry.PLANE, Dict.VALUE.toLower());
 
     }

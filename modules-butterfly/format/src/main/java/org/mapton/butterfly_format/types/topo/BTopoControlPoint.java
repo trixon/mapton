@@ -24,6 +24,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Objects;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.Range;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.butterfly_format.types.BAlarm;
 import org.mapton.butterfly_format.types.BBase;
@@ -318,6 +319,39 @@ public class BTopoControlPoint extends BBaseControlPoint {
 
         public int getAlarmLevelPlane(BTopoControlPointObservation o) {
             return getAlarmLevel(BComponent.PLANE, o);
+        }
+
+        public Integer getAlarmPercent(BComponent component) {
+            var alarm = getAlarm(component);
+            if (alarm == null
+                    || (component == BComponent.HEIGHT && getDimension() == _2d)
+                    || (component == BComponent.PLANE && getDimension() == _1d)) {
+                return null;
+            }
+
+            try {
+                var delta = component == BComponent.HEIGHT ? deltaZero.getDelta1() : deltaZero.getDelta2();
+                double limit;
+                Range<Double> range;
+                if (alarm.ext().getRange2() != null) {
+                    range = alarm.ext().getRange2();
+                } else if (alarm.ext().getRange1() != null) {
+                    range = alarm.ext().getRange1();
+                } else {
+                    range = alarm.ext().getRange0();
+                }
+
+                if (delta < 0 && component == BComponent.HEIGHT) {
+                    limit = range.getMinimum();
+                } else {
+                    limit = range.getMaximum();
+                }
+                return (int) Math.round((delta / limit) * 100);
+            } catch (Exception e) {
+                //Exceptions.printStackTrace(e);
+//                System.err.println(e);
+                return null;
+            }
         }
 
         public long getMeasurementUntilNext(ChronoUnit chronoUnit) {
