@@ -35,6 +35,7 @@ import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
 import org.controlsfx.control.action.ActionUtils.ActionTextBehavior;
 import org.mapton.api.MDict;
+import org.mapton.api.MOptions;
 import org.mapton.api.MPolygonFilterManager;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.mapton.api.ui.forms.FormFilter;
@@ -122,7 +123,17 @@ public abstract class MFilterPopOver extends MPopOver {
     public void addToToolBar(String key, ActionTextBehavior actionTextBehavior) {
         var action = mAvailableActions.get(key);
         if (action != null) {
-            mToolBar.getItems().add(ActionUtils.createButton(action, actionTextBehavior));
+            var button = ActionUtils.createButton(action, actionTextBehavior);
+            mToolBar.getItems().add(button);
+
+            if (actionTextBehavior == ActionTextBehavior.SHOW) {
+                var color = MOptions.getInstance().getIconColor();
+                var fontSize = FxHelper.getScaledFontSize();
+                var fontStyle = "-fx-font-size: %.0fpx; -fx-font-weight: %s;-fx-text-fill: %s;";
+
+                button.setStyle(fontStyle.formatted(fontSize * 1.21, "normal", FxHelper.colorToString(color)));
+            }
+
         }
     }
 
