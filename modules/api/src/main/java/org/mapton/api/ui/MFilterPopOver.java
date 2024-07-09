@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.TreeSet;
+import java.util.prefs.Preferences;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -135,6 +136,14 @@ public abstract class MFilterPopOver extends MPopOver {
             }
 
         }
+    }
+
+    public void filterPresetRestore(Preferences preferences) {
+
+    }
+
+    public void filterPresetStore(Preferences preferences) {
+
     }
 
     public abstract void clear();
