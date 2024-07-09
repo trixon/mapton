@@ -23,7 +23,6 @@ import static org.mapton.api.ui.MPopOver.autoSize;
 import org.mapton.butterfly_core.api.BaseFilterPopOver;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BDimension;
-import org.mapton.butterfly_topo.TopoFilterFavorite;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.fx.control.RangeSliderPane;
 import se.trixon.almond.util.fx.control.SliderPane;
@@ -32,7 +31,7 @@ import se.trixon.almond.util.fx.control.SliderPane;
  *
  * @author Patrik Karlström
  */
-public abstract class GradeFilterPopOverBase extends BaseFilterPopOver<TopoFilterFavorite> {
+public abstract class GradeFilterPopOverBase extends BaseFilterPopOver {
 
     private final ResourceBundle mBundle = NbBundle.getBundle(GradeManagerBase.class);
     protected final GradeFilterConfig mConfig;

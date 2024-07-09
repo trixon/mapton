@@ -106,5 +106,10 @@ limitations under the License.
         <!--Trixon-->
 
         <!--Other-->
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-awt</artifactId>
+            <version>RELEASE220</version>
+        </dependency>
     </dependencies>
 </project>

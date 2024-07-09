@@ -29,6 +29,7 @@ import org.mapton.butterfly_topo.api.TopoManager;
 import org.mapton.butterfly_topo.grade.horizontal.GradeHView;
 import org.mapton.butterfly_topo.grade.vertical.GradeVView;
 import org.mapton.core.api.ui.ExportAction;
+import org.mapton.core.api.ui.MFilterPresetPopOver;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SDict;
 
@@ -40,7 +41,7 @@ public class TopoView {
 
     private final TopoFilter mFilter = new TopoFilter();
     private final TopoFilterPopOver mFilterPopOver = new TopoFilterPopOver(mFilter);
-    private final TopoFilterFavoritePopOver mFilterFavoritePopOver = new TopoFilterFavoritePopOver(mFilterPopOver);
+    private final MFilterPresetPopOver mFilterPresetPopOver = new MFilterPresetPopOver(mFilterPopOver);
     private final ListForm mListForm;
     private final TopoManager mManager = TopoManager.getInstance();
 
@@ -62,7 +63,7 @@ public class TopoView {
                 ActionUtils.ACTION_SPAN,
                 mManager.geZoomExtentstAction(),
                 mFilter.getInfoPopOver().getAction(),
-                mFilterFavoritePopOver.getAction(),
+                mFilterPresetPopOver.getAction(),
                 mFilterPopOver.getAction()
         );
 

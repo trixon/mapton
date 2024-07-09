@@ -28,9 +28,8 @@ import se.trixon.almond.util.fx.FxHelper;
 /**
  *
  * @author Patrik Karlström
- * @param <T>
  */
-public abstract class BaseFilterPopOver<T extends BaseFilterFavorite> extends MFilterPopOver {
+public abstract class BaseFilterPopOver extends MFilterPopOver {
 
     private Butterfly mButterfly;
     private final ButterflyManager mButterflyManager = ButterflyManager.getInstance();
@@ -52,10 +51,6 @@ public abstract class BaseFilterPopOver<T extends BaseFilterFavorite> extends MF
         });
     }
 
-    public void applyFilterFavorite(T t) {
-
-    }
-
     public Butterfly getButterfly() {
         return mButterfly;
     }
@@ -71,10 +66,6 @@ public abstract class BaseFilterPopOver<T extends BaseFilterFavorite> extends MF
 
             load(mButterfly);
         }
-    }
-
-    public T populateFilterFavorite() {
-        return null;
     }
 
     public void splitAndCheck(String string, IndexedCheckModel<String> checkModel) {

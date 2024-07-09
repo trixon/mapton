@@ -16,8 +16,10 @@
 package org.mapton.butterfly_topo;
 
 import com.dlsc.gemsfx.Spacer;
+import com.dlsc.gemsfx.util.SessionManager2;
 import java.util.HashSet;
 import java.util.List;
+import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -44,6 +46,7 @@ import org.mapton.butterfly_topo.api.TopoManager;
 import org.mapton.butterfly_topo.shared.AlarmLevelChangeMode;
 import org.mapton.butterfly_topo.shared.AlarmLevelChangeUnit;
 import org.mapton.butterfly_topo.shared.AlarmLevelFilter;
+import org.openide.util.NbPreferences;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SDict;
 import se.trixon.almond.util.fx.FxHelper;
@@ -56,7 +59,7 @@ import se.trixon.almond.util.fx.session.SessionIntegerSpinner;
  *
  * @author Patrik Karlström
  */
-public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
+public class TopoFilterPopOver extends BaseFilterPopOver {
 
     private final SessionCheckComboBox<String> mAlarmNameSccb = new SessionCheckComboBox<>();
     private final SessionCheckComboBox<AlarmLevelFilter> mAlarmSccb = new SessionCheckComboBox<>(true);
@@ -124,14 +127,22 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
         setFilter(filter);
         createUI();
         initListeners();
-        initSession();
+        initSession(NbPreferences.forModule(getClass()));
 
         populate();
     }
 
     @Override
-    public void applyFilterFavorite(TopoFilterFavorite filterFavorite) {
-        //TODO
+    public void filterPresetRestore(Preferences preferences) {
+        clear();
+        filterPresetStore(preferences);
+        //mDateRangePane.reset();
+    }
+
+    @Override
+    public void filterPresetStore(Preferences preferences) {
+        var sessionManager = initSession(preferences);
+        sessionManager.unregisterAll();
     }
 
     @Override
@@ -639,8 +650,8 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
         mFilter.initCheckModelListeners();
     }
 
-    private void initSession() {
-        var sessionManager = getSessionManager();
+    private SessionManager2 initSession(Preferences preferences) {
+        var sessionManager = new SessionManager2(preferences);
         sessionManager.register("filter.freeText", mFilter.freeTextProperty());
 
         sessionManager.register("filter.checkedAlarmName", mAlarmNameSccb.checkedStringProperty());
@@ -692,5 +703,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver<TopoFilterFavorite> {
 
         sessionManager.register("filter.invert", mInvertCheckbox.selectedProperty());
         sessionManager.register("filter.sameAlarm", mSameAlarmCheckbox.selectedProperty());
+
+        return sessionManager;
     }
 }

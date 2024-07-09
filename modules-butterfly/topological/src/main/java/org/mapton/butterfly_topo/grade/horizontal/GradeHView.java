@@ -23,6 +23,7 @@ import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.SingleListForm;
 import org.mapton.butterfly_topo.grade.GradeFilterConfig;
 import org.mapton.butterfly_topo.grade.GradeManagerBase;
+import org.mapton.core.api.ui.MFilterPresetPopOver;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
 
@@ -34,8 +35,8 @@ public class GradeHView {
 
     private final ResourceBundle mBundle = NbBundle.getBundle(GradeManagerBase.class);
     private final GradeHFilter mFilter = new GradeHFilter();
-    private final GradeHFavoritePopOver mFilterFavoritePopOver;
     private final GradeHFilterPopOver mFilterPopOver;
+    private final MFilterPresetPopOver mFilterPresetPopOver;
     private final SingleListForm mListForm;
     private final GradeHManager mManager = GradeHManager.getInstance();
     private Tab mTab;
@@ -48,12 +49,12 @@ public class GradeHView {
         config.setMaxDeltaR(GradeHManager.MAX_RADIAL_DISTANCE);
 
         mFilterPopOver = new GradeHFilterPopOver(mFilter, config);
-        mFilterFavoritePopOver = new GradeHFavoritePopOver(mFilterPopOver);
+        mFilterPresetPopOver = new MFilterPresetPopOver(mFilterPopOver);
 
         var actions = Arrays.asList(
                 ActionUtils.ACTION_SPAN,
                 mFilter.getInfoPopOver().getAction(),
-                mFilterFavoritePopOver.getAction(),
+                mFilterPresetPopOver.getAction(),
                 mFilterPopOver.getAction()
         );
         mListForm = new SingleListForm<>(mManager, mBundle.getString("grade_h"));

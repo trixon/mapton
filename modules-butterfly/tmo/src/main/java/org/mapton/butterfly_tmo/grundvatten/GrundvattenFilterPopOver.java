@@ -15,12 +15,15 @@
  */
 package org.mapton.butterfly_tmo.grundvatten;
 
+import com.dlsc.gemsfx.util.SessionManager2;
+import java.util.prefs.Preferences;
 import javafx.scene.control.Separator;
 import javafx.scene.layout.VBox;
 import static org.mapton.api.ui.MPopOver.GAP;
 import static org.mapton.api.ui.MPopOver.autoSize;
 import org.mapton.butterfly_core.api.BaseFilterPopOver;
 import org.mapton.butterfly_format.Butterfly;
+import org.openide.util.NbPreferences;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.session.SessionCheckComboBox;
@@ -44,7 +47,21 @@ public class GrundvattenFilterPopOver extends BaseFilterPopOver {
         mFilter = filter;
         createUI();
         initListeners();
-        initSession();
+        initSession(NbPreferences.forModule(getClass()));
+    }
+
+    @Override
+    public void filterPresetRestore(Preferences preferences) {
+        clear();
+        filterPresetStore(preferences);
+        //mDateRangePane.reset();
+    }
+
+    @Override
+    public void filterPresetStore(Preferences preferences) {
+        //clear(); //TODO To clear or not to clear
+        var sessionManager = initSession(preferences);
+        sessionManager.unregisterAll();
     }
 
     @Override
@@ -146,8 +163,8 @@ public class GrundvattenFilterPopOver extends BaseFilterPopOver {
         mFilter.initCheckModelListeners();
     }
 
-    private void initSession() {
-        var sessionManager = getSessionManager();
+    private SessionManager2 initSession(Preferences preferences) {
+        var sessionManager = new SessionManager2(preferences);
         sessionManager.register("filter.grundvatten.freeText", mFilter.freeTextProperty());
         sessionManager.register("filter.grundvatten.checkedFiltertyp", mFiltertypSCCB.checkedStringProperty());
         sessionManager.register("filter.grundvatten.checkedGrundvattenmagasin", mGrundvattenmagasinSCCB.checkedStringProperty());
@@ -156,6 +173,8 @@ public class GrundvattenFilterPopOver extends BaseFilterPopOver {
         sessionManager.register("filter.grundvatten.checkedRörrtyp", mRörtypSCCB.checkedStringProperty());
         sessionManager.register("filter.grundvatten.checkedSpetstyp", mSpetstypSCCB.checkedStringProperty());
         sessionManager.register("filter.grundvatten.checkedStatus", mStatusSCCB.checkedStringProperty());
+
+        return sessionManager;
     }
 
 }
