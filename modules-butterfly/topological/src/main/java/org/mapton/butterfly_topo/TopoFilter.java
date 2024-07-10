@@ -65,7 +65,7 @@ public class TopoFilter extends FormFilter<TopoManager> {
     IndexedCheckModel mGroupCheckModel;
     IndexedCheckModel<String> mMeasCodeCheckModel;
     IndexedCheckModel<String> mMeasNextCheckModel;
-    IndexedCheckModel mMeasOperatorsCheckModel;
+    IndexedCheckModel<String> mMeasOperatorsCheckModel;
     IndexedCheckModel mOperatorCheckModel;
     IndexedCheckModel mOriginCheckModel;
     IndexedCheckModel mStatusCheckModel;
@@ -921,12 +921,15 @@ public class TopoFilter extends FormFilter<TopoManager> {
     }
 
     private boolean validateMeasDisplacementPercentP(BTopoControlPoint p) {
-        if (!mMeasDiffPercentagePProperty.get() || p.getDimension() == BDimension._1d || p.ext().getAlarmPercent(BComponent.HEIGHT) == null) {
+        if (!mMeasDiffPercentagePProperty.get()
+                || p.getDimension() == BDimension._1d
+                || p.ext().getAlarmPercent(BComponent.PLANE) == null
+                || p.ext().deltaZero().getDelta2() == null) {
             return true;
         }
 
         double lim = mMeasDiffPercentagePValueProperty.get();
-        double value = Math.abs(p.ext().deltaZero().getDelta2());
+        double value = p.ext().getAlarmPercent(BComponent.PLANE);
 
         if (lim == 0) {
             return value == 0;
