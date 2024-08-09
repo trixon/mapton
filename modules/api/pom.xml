@@ -288,7 +288,7 @@
         <dependency>
             <groupId>eu.hansolo.fx</groupId>
             <artifactId>heatmap</artifactId>
-            <version>21.0.3</version>
+            <version>21.0.9</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.openjfx</groupId>
@@ -299,7 +299,7 @@
         <dependency>
             <groupId>eu.hansolo</groupId>
             <artifactId>jdktools</artifactId>
-            <version>21.0.3</version>
+            <version>21.0.9</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.openjfx</groupId>
@@ -310,7 +310,7 @@
         <dependency>
             <groupId>eu.hansolo</groupId>
             <artifactId>toolbox</artifactId>
-            <version>21.0.5</version>
+            <version>21.0.9</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.openjfx</groupId>
@@ -321,7 +321,7 @@
         <dependency>
             <groupId>eu.hansolo</groupId>
             <artifactId>toolboxfx</artifactId>
-            <version>21.0.3</version>
+            <version>21.0.5</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.openjfx</groupId>
@@ -339,7 +339,7 @@
         <dependency>
             <groupId>org.apache.pdfbox</groupId>
             <artifactId>pdfbox</artifactId>
-            <version>3.0.2</version>
+            <version>3.0.3</version>
         </dependency>
 
         <dependency>

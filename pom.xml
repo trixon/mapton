@@ -269,7 +269,7 @@
             <dependency>
                 <groupId>com.dlsc</groupId>
                 <artifactId>GMapsFX</artifactId>
-                <version>11.0.7</version>
+                <version>11.0.8</version>
             </dependency>
             <dependency>
                 <groupId>org.controlsfx</groupId>
@@ -279,7 +279,7 @@
             <dependency>
                 <groupId>eu.hansolo</groupId>
                 <artifactId>tilesfx</artifactId>
-                <version>21.0.3</version>
+                <version>21.0.7</version>
                 <exclusions>
                     <exclusion>
                         <groupId>org.openjfx</groupId>
@@ -290,7 +290,7 @@
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
-                <version>3.14.0</version>
+                <version>3.16.0</version>
             </dependency>
             <dependency>
                 <groupId>commons-io</groupId>
@@ -315,7 +315,7 @@
             <dependency>
                 <groupId>commons-codec</groupId>
                 <artifactId>commons-codec</artifactId>
-                <version>1.17.0</version>
+                <version>1.17.1</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
@@ -345,7 +345,7 @@
             <dependency>
                 <groupId>com.h2database</groupId>
                 <artifactId>h2</artifactId>
-                <version>2.2.224</version>
+                <version>2.3.230</version>
             </dependency>
             <dependency>
                 <groupId>com.google.code.gson</groupId>
@@ -380,7 +380,7 @@
             <dependency>
                 <groupId>org.jsoup</groupId>
                 <artifactId>jsoup</artifactId>
-                <version>1.17.2</version>
+                <version>1.18.1</version>
             </dependency>
             <dependency>
                 <groupId>com.drewnoakes</groupId>
@@ -421,6 +421,6 @@
         <netbeans.compile.on.save>none</netbeans.compile.on.save>
         <brandingToken>mapton</brandingToken>
         <mapton.version>3.2.0-SNAPSHOT</mapton.version>
-        <geotools.version>31.2</geotools.version>
+        <geotools.version>31.3</geotools.version>
     </properties>
 </project>
