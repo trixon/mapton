@@ -15,7 +15,7 @@
  */
 package org.mapton.butterfly_tmo.grundvatten;
 
-import com.dlsc.gemsfx.util.SessionManager2;
+import com.dlsc.gemsfx.util.SessionManager;
 import java.util.prefs.Preferences;
 import javafx.scene.control.Separator;
 import javafx.scene.layout.VBox;
@@ -163,8 +163,8 @@ public class GrundvattenFilterPopOver extends BaseFilterPopOver {
         mFilter.initCheckModelListeners();
     }
 
-    private SessionManager2 initSession(Preferences preferences) {
-        var sessionManager = new SessionManager2(preferences);
+    private SessionManager initSession(Preferences preferences) {
+        var sessionManager = new SessionManager(preferences);
         sessionManager.register("filter.grundvatten.freeText", mFilter.freeTextProperty());
         sessionManager.register("filter.grundvatten.checkedFiltertyp", mFiltertypSCCB.checkedStringProperty());
         sessionManager.register("filter.grundvatten.checkedGrundvattenmagasin", mGrundvattenmagasinSCCB.checkedStringProperty());

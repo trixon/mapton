@@ -269,7 +269,7 @@
             <dependency>
                 <groupId>com.dlsc</groupId>
                 <artifactId>GMapsFX</artifactId>
-                <version>11.0.8</version>
+                <version>11.0.7</version>
             </dependency>
             <dependency>
                 <groupId>org.controlsfx</groupId>
@@ -345,7 +345,7 @@
             <dependency>
                 <groupId>com.h2database</groupId>
                 <artifactId>h2</artifactId>
-                <version>2.3.230</version>
+                <version>2.3.232</version>
             </dependency>
             <dependency>
                 <groupId>com.google.code.gson</groupId>

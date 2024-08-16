@@ -16,7 +16,7 @@
 package org.mapton.butterfly_topo;
 
 import com.dlsc.gemsfx.Spacer;
-import com.dlsc.gemsfx.util.SessionManager2;
+import com.dlsc.gemsfx.util.SessionManager;
 import java.util.HashSet;
 import java.util.List;
 import java.util.prefs.Preferences;
@@ -650,8 +650,8 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
         mFilter.initCheckModelListeners();
     }
 
-    private SessionManager2 initSession(Preferences preferences) {
-        var sessionManager = new SessionManager2(preferences);
+    private SessionManager initSession(Preferences preferences) {
+        var sessionManager = new SessionManager(preferences);
         sessionManager.register("filter.freeText", mFilter.freeTextProperty());
 
         sessionManager.register("filter.checkedAlarmName", mAlarmNameSccb.checkedStringProperty());
