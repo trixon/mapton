@@ -19,6 +19,7 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.logging.Logger;
@@ -46,8 +47,8 @@ public abstract class MBaseDataManager<T> {
 
     private static final Logger LOGGER = Logger.getLogger(MBaseDataManager.class.getName());
     protected final MDisruptorManager mDisruptorManager = MDisruptorManager.getInstance();
-    protected final MSelectionLockManager mSelectionLockManager = MSelectionLockManager.getInstance();
     protected final GeometryFactory mGeometryFactory = JTSFactoryFinder.getGeometryFactory();
+    protected final MSelectionLockManager mSelectionLockManager = MSelectionLockManager.getInstance();
 
     private final String TEMPORAL_PREFIX;
     private final LinkedHashMap<Object, T> mAllItemsMap = new LinkedHashMap<>();
@@ -69,6 +70,8 @@ public abstract class MBaseDataManager<T> {
     private final HashSet<T> mTimeFilteredItemsSet = new HashSet<>();
     private final Class<T> mTypeParameterClass;
     private final DelayedResetRunner mUnlockDelayedResetRunner;
+    private transient final HashMap<Object, Object> mValues = new HashMap<>();
+
     private final Action mZoomExtentsAction;
 
     public MBaseDataManager(Class<T> typeParameterClass) {
@@ -117,15 +120,15 @@ public abstract class MBaseDataManager<T> {
         return mZoomExtentsAction;
     }
 
-    public final ObservableList<T> getAllItems() {
+    public synchronized final ObservableList<T> getAllItems() {
         return mAllItemsProperty.get();
     }
 
-    public LinkedHashMap<Object, T> getAllItemsMap() {
+    public synchronized LinkedHashMap<Object, T> getAllItemsMap() {
         return mAllItemsMap;
     }
 
-    public HashSet<T> getAllItemsSet() {
+    public synchronized HashSet<T> getAllItemsSet() {
         return mAllItemsSet;
     }
 
@@ -133,15 +136,15 @@ public abstract class MBaseDataManager<T> {
         return mFilteredItemsMap.get(key);
     }
 
-    public ObservableList<T> getFilteredItems() {
+    public synchronized ObservableList<T> getFilteredItems() {
         return mFilteredItemsProperty.get();
     }
 
-    public LinkedHashMap<Object, T> getFilteredItemsMap() {
+    public synchronized LinkedHashMap<Object, T> getFilteredItemsMap() {
         return mFilteredItemsMap;
     }
 
-    public HashSet<T> getFilteredItemsSet() {
+    public synchronized HashSet<T> getFilteredItemsSet() {
         return mFilteredItemsSet;
     }
 
@@ -185,20 +188,40 @@ public abstract class MBaseDataManager<T> {
         return mTimeFilteredItemsMap.get(key);
     }
 
-    public ObservableList<T> getTimeFilteredItems() {
+    public synchronized ObservableList<T> getTimeFilteredItems() {
         return mTimeFilteredItemsProperty.get();
     }
 
-    public LinkedHashMap<Object, T> getTimeFilteredItemsMap() {
+    public synchronized LinkedHashMap<Object, T> getTimeFilteredItemsMap() {
         return mTimeFilteredItemsMap;
     }
 
-    public HashSet<T> getTimeFilteredItemsSet() {
+    public synchronized HashSet<T> getTimeFilteredItemsSet() {
         return mTimeFilteredItemsSet;
     }
 
     public Class<T> getTypeParameterClass() {
         return mTypeParameterClass;
+    }
+
+    public Object getValue(Object key) {
+        return getValues().get(key);
+    }
+
+    public Object getValue(Object key, Object defaultValue) {
+        return getValues().getOrDefault(key, defaultValue);
+    }
+
+    public <T> T getValue(String key, Class<T> type) {
+        return type.cast(mValues.get(key));
+    }
+
+    public <T> T getValue(String key) {
+        return (T) (mValues.get(key));
+    }
+
+    public HashMap<Object, Object> getValues() {
+        return mValues;
     }
 
     public void initAllItems(ArrayList<T> items) {
@@ -304,6 +327,10 @@ public abstract class MBaseDataManager<T> {
                 mTemporalManager.refresh();
             }
         }
+    }
+
+    public Object setValue(Object key, Object value) {
+        return mValues.put(key, value);
     }
 
     public ObjectProperty<MTemporalRange> temporalRangeProperty() {
