@@ -94,6 +94,13 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
                 }
             }
 
+            var origins = getAllItems()
+                    .stream().map(p -> p.getOrigin())
+                    .collect(Collectors.toCollection(TreeSet::new))
+                    .stream()
+                    .collect(Collectors.toCollection(ArrayList<String>::new));
+            setValue("origins", origins);
+
             var dates = new TreeSet<LocalDateTime>();
             getAllItems().stream().forEachOrdered(p -> {
                 dates.addAll(p.ext().getObservationsAllRaw().stream().map(o -> o.getDate()).toList());

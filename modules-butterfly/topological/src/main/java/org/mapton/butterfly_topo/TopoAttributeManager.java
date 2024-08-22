@@ -23,8 +23,10 @@ import gov.nasa.worldwind.render.PointPlacemarkAttributes;
 import java.awt.Color;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import org.mapton.butterfly_core.api.ButterflyHelper;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
+import org.mapton.butterfly_topo.api.TopoManager;
 import org.mapton.butterfly_topo.shared.ColorBy;
 import static org.mapton.butterfly_topo.shared.ColorBy.FREQUENCY;
 import static org.mapton.butterfly_topo.shared.ColorBy.MEAS_NEED;
@@ -396,6 +398,9 @@ public class TopoAttributeManager {
             case MEAS_NEED -> {
                 return getColorForMeasNeed(p);
             }
+            case ORIGIN -> {
+                return getColorForOrigin(p);
+            }
             case SPEED -> {
                 return getColorForSpeed(p);
             }
@@ -449,6 +454,30 @@ public class TopoAttributeManager {
         }
 
         return color;
+    }
+
+    private Color getColorForOrigin(BTopoControlPoint p) {
+        var colors = new Color[]{
+            Color.WHITE,
+            Color.CYAN,
+            Color.GREEN,
+            Color.YELLOW,
+            Color.MAGENTA,
+            Color.PINK,
+            Color.ORANGE,
+            Color.RED,
+            Color.DARK_GRAY,
+            Color.GRAY,
+            Color.LIGHT_GRAY,
+            Color.BLACK,
+            Color.BLUE
+        };
+
+        ArrayList<String> origins = TopoManager.getInstance().getValue("origins");
+        var index = Math.max(0, origins.indexOf(p.getOrigin()));
+        index = Math.min(colors.length - 1, index);
+
+        return colors[index];
     }
 
     private Color getColorForSpeed(BTopoControlPoint p) {

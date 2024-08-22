@@ -26,6 +26,7 @@ public enum ColorBy {
     ALARM(SDict.ALARM.toString()),
     FREQUENCY(SDict.FREQUENCY.toString()),
     MEAS_NEED(SDict.MEASUREMENT_NEED.toString()),
+    ORIGIN(Dict.ORIGIN.toString()),
     SPEED(Dict.SPEED.toString()),
     STYLE(Dict.STYLE.toString());
     private final String mName;
