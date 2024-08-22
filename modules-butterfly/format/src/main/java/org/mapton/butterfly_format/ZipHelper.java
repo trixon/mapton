@@ -18,7 +18,6 @@ package org.mapton.butterfly_format;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.Arrays;
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.io.inputstream.ZipInputStream;
@@ -48,10 +47,6 @@ public class ZipHelper {
         } catch (ZipException ex) {
             Exceptions.printStackTrace(ex);
         }
-    }
-
-    public void clearPassword() {
-        Arrays.fill(mPassword, '*');
     }
 
     public File extractResourceToTempFile(String path) {

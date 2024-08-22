@@ -231,10 +231,6 @@ public class ButterflyManager {
                     }
                 }
 
-                if (bundleMode == BundleMode.ZIP) {
-                    ZipHelper.getInstance().clearPassword();
-                }
-
                 setButterfly(butterfly);
                 mButterflyMonitor.start();
                 refreshTitle();
