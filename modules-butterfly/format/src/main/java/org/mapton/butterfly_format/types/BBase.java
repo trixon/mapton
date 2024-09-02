@@ -34,12 +34,22 @@ public abstract class BBase {
 
     @JsonIgnore
     private transient Butterfly butterfly;
+    private LocalDateTime dateChanged;
+    private LocalDateTime dateCreated;
     private String meta;
     private String name;
     private String origin;
 
     public Butterfly getButterfly() {
         return butterfly;
+    }
+
+    public LocalDateTime getDateChanged() {
+        return dateChanged;
+    }
+
+    public LocalDateTime getDateCreated() {
+        return dateCreated;
     }
 
     public String getMeta() {
@@ -56,6 +66,14 @@ public abstract class BBase {
 
     public void setButterfly(Butterfly butterfly) {
         this.butterfly = butterfly;
+    }
+
+    public void setDateChanged(LocalDateTime dateChanged) {
+        this.dateChanged = dateChanged;
+    }
+
+    public void setDateCreated(LocalDateTime dateCreated) {
+        this.dateCreated = dateCreated;
     }
 
     public void setMeta(String meta) {
