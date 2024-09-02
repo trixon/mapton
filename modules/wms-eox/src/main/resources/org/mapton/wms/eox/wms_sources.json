@@ -87,6 +87,6 @@
             "terrain-light": "at.eox.terrain-light"
         },
         "name": "EOX",
-        "url": "http://tiles.maps.eox.at/wms?service=wms&request=getcapabilities"
+        "url": "https://tiles.maps.eox.at/wms?service=wms&request=getcapabilities"
     }
 ]
