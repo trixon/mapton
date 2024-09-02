@@ -53,6 +53,7 @@ import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.ce_jfreechart.api.ChartHelper;
+import org.openide.util.Exceptions;
 import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.swing.SwingHelper;
@@ -339,10 +340,14 @@ public class TopoChartBuilder extends ChartBuilder<BTopoControlPoint> {
             renderer.setSeriesPaint(mDataset.getSeriesIndex(mTimeSeries3d.getKey()), Color.BLUE);
             if (plotAvg) {
                 var mavg = MovingAverage.createMovingAverage(mTimeSeries3d, "%s (avg)".formatted(mTimeSeries3d.getKey()), avdDays, avgSkipMeasurements);
-                mDataset.addSeries(mavg);
-                int index = mDataset.getSeriesIndex(mavg.getKey());
-                renderer.setSeriesPaint(index, Color.BLUE);
-                renderer.setSeriesStroke(index, avgStroke);
+                try {
+                    mDataset.addSeries(mavg);
+                    int index = mDataset.getSeriesIndex(mavg.getKey());
+                    renderer.setSeriesPaint(index, Color.BLUE);
+                    renderer.setSeriesStroke(index, avgStroke);
+                } catch (Exception e) {
+                    Exceptions.printStackTrace(e);
+                }
             }
         }
     }
