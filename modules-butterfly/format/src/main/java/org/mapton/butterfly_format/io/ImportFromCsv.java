@@ -16,6 +16,7 @@
 package org.mapton.butterfly_format.io;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.csv.CsvGenerator;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
@@ -55,9 +56,13 @@ public abstract class ImportFromCsv<T> {
                 .addModule(new JavaTimeModule())
                 .addModule(simpleModule)
                 .configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true)
+                .disable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY)
                 .build();
 
-        schema = mMapper.schemaFor(classOfT).withHeader().withQuoteChar('"');
+        schema = mMapper.schemaFor(classOfT)
+                .withHeader()
+                .withQuoteChar('"')
+                .withColumnReordering(true);
     }
 
     public void load(File sourceDir, String path, ArrayList<T> list) {
