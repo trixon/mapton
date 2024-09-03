@@ -32,7 +32,7 @@ public class GrundvattenView {
 
     private final GrundvattenFilter mFilter = new GrundvattenFilter();
     private final GrundvattenFilterPopOver mFilterPopOver = new GrundvattenFilterPopOver(mFilter);
-    private final MFilterPresetPopOver mFilterPresetPopOver = new MFilterPresetPopOver(mFilterPopOver);
+    private final MFilterPresetPopOver mFilterPresetPopOver = new MFilterPresetPopOver(mFilterPopOver, "grundvatten");
     private final SingleListForm<GrundvattenManager, BGrundvatten> mListForm;
     private final GrundvattenManager mManager = GrundvattenManager.getInstance();
 

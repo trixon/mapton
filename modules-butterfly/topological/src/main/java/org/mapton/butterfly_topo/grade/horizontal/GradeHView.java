@@ -49,7 +49,7 @@ public class GradeHView {
         config.setMaxDeltaR(GradeHManager.MAX_RADIAL_DISTANCE);
 
         mFilterPopOver = new GradeHFilterPopOver(mFilter, config);
-        mFilterPresetPopOver = new MFilterPresetPopOver(mFilterPopOver);
+        mFilterPresetPopOver = new MFilterPresetPopOver(mFilterPopOver, "gradeH");
 
         var actions = Arrays.asList(
                 ActionUtils.ACTION_SPAN,

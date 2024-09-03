@@ -127,7 +127,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
         setFilter(filter);
         createUI();
         initListeners();
-        initSession(NbPreferences.forModule(getClass()));
+        initSession(NbPreferences.forModule(getClass()).node(getClass().getSimpleName()));
 
         populate();
     }

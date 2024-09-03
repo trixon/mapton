@@ -41,7 +41,7 @@ public class TopoView {
 
     private final TopoFilter mFilter = new TopoFilter();
     private final TopoFilterPopOver mFilterPopOver = new TopoFilterPopOver(mFilter);
-    private final MFilterPresetPopOver mFilterPresetPopOver = new MFilterPresetPopOver(mFilterPopOver);
+    private final MFilterPresetPopOver mFilterPresetPopOver = new MFilterPresetPopOver(mFilterPopOver, "topo");
     private final ListForm mListForm;
     private final TopoManager mManager = TopoManager.getInstance();
 

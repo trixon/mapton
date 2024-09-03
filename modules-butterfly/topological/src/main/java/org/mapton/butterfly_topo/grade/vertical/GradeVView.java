@@ -50,7 +50,7 @@ public class GradeVView {
         config.setMinGradeHorizontal(10.0);
 
         mFilterPopOver = new GradeVFilterPopOver(mFilter, config);
-        mFilterPresetPopOver = new MFilterPresetPopOver(mFilterPopOver);
+        mFilterPresetPopOver = new MFilterPresetPopOver(mFilterPopOver, "gradeV");
 
         var actions = Arrays.asList(
                 ActionUtils.ACTION_SPAN,

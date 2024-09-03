@@ -15,7 +15,9 @@
  */
 package org.mapton.butterfly_topo.grade;
 
+import com.dlsc.gemsfx.util.SessionManager;
 import java.util.ResourceBundle;
+import java.util.prefs.Preferences;
 import javafx.scene.control.Separator;
 import javafx.scene.layout.VBox;
 import static org.mapton.api.ui.MPopOver.GAP;
@@ -24,6 +26,7 @@ import org.mapton.butterfly_core.api.BaseFilterPopOver;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BDimension;
 import org.openide.util.NbBundle;
+import org.openide.util.NbPreferences;
 import se.trixon.almond.util.fx.control.RangeSliderPane;
 import se.trixon.almond.util.fx.control.SliderPane;
 
@@ -58,7 +61,7 @@ public abstract class GradeFilterPopOverBase extends BaseFilterPopOver {
 
         createUI();
         initListeners();
-        initSession();
+        initSession(NbPreferences.forModule(getClass()).node(getClass().getSimpleName()));
     }
 
     @Override
@@ -75,6 +78,33 @@ public abstract class GradeFilterPopOverBase extends BaseFilterPopOver {
 
     @Override
     public void load(Butterfly butterfly) {
+    }
+
+    @Override
+    public void filterPresetRestore(Preferences preferences) {
+        clear();
+        filterPresetStore(preferences);
+        //mDateRangePane.reset();
+    }
+
+    @Override
+    public void filterPresetStore(Preferences preferences) {
+        var sessionManager = initSession(preferences);
+        sessionManager.unregisterAll();
+    }
+
+    private SessionManager initSession(Preferences preferences) {
+        var sessionManager = new SessionManager(preferences);
+        sessionManager.register("freeText", mFilter.freeTextProperty());
+
+        mDeltaHRangeSlider.initSession("DeltaH" + mConfig.getKeyPrefix(), sessionManager);
+        mDeltaRRangeSlider.initSession("DeltaR" + mConfig.getKeyPrefix(), sessionManager);
+        mDabbaHRangeSlider.initSession("DabbaH" + mConfig.getKeyPrefix(), sessionManager);
+        mDabbaRRangeSlider.initSession("DabbaR" + mConfig.getKeyPrefix(), sessionManager);
+        mGradeVerticalRangeSlider.initSession("GradeV" + mConfig.getKeyPrefix(), sessionManager);
+        mGradeHorizontalRangeSlider.initSession("GradeH" + mConfig.getKeyPrefix(), sessionManager);
+
+        return sessionManager;
     }
 
     @Override
@@ -141,17 +171,4 @@ public abstract class GradeFilterPopOverBase extends BaseFilterPopOver {
 
         mFilter.initPropertyListeners();
     }
-
-    private void initSession() {
-        var sessionManager = getSessionManager();
-        sessionManager.register("freeText", mFilter.freeTextProperty());
-
-        mDeltaHRangeSlider.initSession("DeltaH" + mConfig.getKeyPrefix(), sessionManager);
-        mDeltaRRangeSlider.initSession("DeltaR" + mConfig.getKeyPrefix(), sessionManager);
-        mDabbaHRangeSlider.initSession("DabbaH" + mConfig.getKeyPrefix(), sessionManager);
-        mDabbaRRangeSlider.initSession("DabbaR" + mConfig.getKeyPrefix(), sessionManager);
-        mGradeVerticalRangeSlider.initSession("GradeV" + mConfig.getKeyPrefix(), sessionManager);
-        mGradeHorizontalRangeSlider.initSession("GradeH" + mConfig.getKeyPrefix(), sessionManager);
-    }
-
 }

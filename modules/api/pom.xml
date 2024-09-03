@@ -257,7 +257,7 @@
         <dependency>
             <groupId>org.locationtech.jts</groupId>
             <artifactId>jts-core</artifactId>
-            <version>1.19.0</version>
+            <version>1.20.0</version>
         </dependency>
         <dependency>
             <groupId>jakarta.xml.bind</groupId>
@@ -277,7 +277,7 @@
         <dependency>
             <groupId>com.dlsc.gemsfx</groupId>
             <artifactId>gemsfx</artifactId>
-            <version>2.46.0</version>
+            <version>2.47.0</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.openjfx</groupId>

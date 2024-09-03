@@ -51,8 +51,8 @@ public class MFilterPresetPopOver extends MPopOver {
     private final ObjectProperty<ObservableList<DefaultEditableListItem>> mItemsProperty = new SimpleObjectProperty<>();
     private final Preferences mPreferences;
 
-    public MFilterPresetPopOver(MFilterPopOver filterPopOver) {
-        mPreferences = NbPreferences.forModule(filterPopOver.getClass()).node("filterPresets");
+    public MFilterPresetPopOver(MFilterPopOver filterPopOver, String path) {
+        mPreferences = NbPreferences.forModule(filterPopOver.getClass()).node("filterPresets").node(path);
         mFilterPopOver = filterPopOver;
         mItemsProperty.set(FXCollections.observableArrayList());
         createUI();

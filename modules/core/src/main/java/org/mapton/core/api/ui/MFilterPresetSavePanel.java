@@ -32,7 +32,6 @@ public class MFilterPresetSavePanel extends javax.swing.JPanel {
      */
     public MFilterPresetSavePanel() {
         initComponents();
-
     }
 
     public String getPresetName() {
