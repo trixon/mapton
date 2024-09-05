@@ -33,6 +33,7 @@ limitations under the License.
                 <configuration>
                     <publicPackages>
                         <publicPackage>org.mapton.butterfly_topo.api</publicPackage>
+                        <publicPackage>org.mapton.butterfly_topo</publicPackage>
                     </publicPackages>
                 </configuration>
             </plugin>

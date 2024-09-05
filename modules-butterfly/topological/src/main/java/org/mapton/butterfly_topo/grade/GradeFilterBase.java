@@ -122,6 +122,7 @@ public abstract class GradeFilterBase extends FormFilter<GradeManagerBase> {
     }
 
     private boolean inRange(double value, DoubleProperty minProperty, DoubleProperty maxProperty) {
+        value = Math.abs(value);
         return value >= minProperty.get() && value <= maxProperty.get();
     }
 
