@@ -32,6 +32,8 @@ import org.mapton.butterfly_format.types.geo.BGeoExtensometerPointObservation;
 import org.mapton.butterfly_format.types.hydro.BGroundwaterObservation;
 import org.mapton.butterfly_format.types.hydro.BGroundwaterPoint;
 import org.mapton.butterfly_format.types.monmon.BMonmon;
+import org.mapton.butterfly_format.types.structural.BStructuralTiltPoint;
+import org.mapton.butterfly_format.types.structural.BStructuralTiltPointObservation;
 import org.mapton.butterfly_format.types.tmo.BGrundvatten;
 import org.mapton.butterfly_format.types.tmo.BGrundvattenObservation;
 import org.mapton.butterfly_format.types.tmo.BInfiltration;
@@ -64,6 +66,9 @@ public class Butterfly {
     private final ArrayList<BGroundwaterPoint> mHydroGroundwaterPoints = new ArrayList<>();
     private final ArrayList<BAcousticMeasuringPoint> mMeasuringPoints = new ArrayList<>();
     private final ArrayList<BMonmon> mMonmons = new ArrayList<>();
+    private final Structural mStructural = new Structural();
+    private final ArrayList<BStructuralTiltPoint> mStructuralTiltPoints = new ArrayList<>();
+    private final ArrayList<BStructuralTiltPointObservation> mStructuralTiltPointsObservations = new ArrayList<>();
     private final Tmo mTmo = new Tmo();
     private final Topo mTopo = new Topo();
     private final ArrayList<BTopoControlPoint> mTopoControlPoints = new ArrayList<>();
@@ -104,6 +109,10 @@ public class Butterfly {
         return mHydro;
     }
 
+    public Structural structural() {
+        return mStructural;
+    }
+
     public Tmo tmo() {
         return mTmo;
     }
@@ -134,9 +143,17 @@ public class Butterfly {
         new ImportFromCsv<BTopoControlPointObservation>(BTopoControlPointObservation.class) {
         }.load(sourceDir, "topoControlPointsObservations.csv", mTopoControlPointsObservations);
 
+        //Structural
+        new ImportFromCsv<BStructuralTiltPoint>(BStructuralTiltPoint.class) {
+        }.load(sourceDir, "structuralTiltPoints.csv", mStructuralTiltPoints);
+
+        new ImportFromCsv<BStructuralTiltPointObservation>(BStructuralTiltPointObservation.class) {
+        }.load(sourceDir, "structuralTiltPointsObservations.csv", mStructuralTiltPointsObservations);
+
         new ImportFromCsv<BTopoConvergenceGroup>(BTopoConvergenceGroup.class) {
         }.load(sourceDir, "topoControlPointsConvergence.csv", mTopoConvergenceGroups);
 
+        //Hydro
         new ImportFromCsv<BGroundwaterPoint>(BGroundwaterPoint.class) {
         }.load(sourceDir, "hydroGroundwaterPoints.csv", mHydroGroundwaterPoints);
 
@@ -185,6 +202,10 @@ public class Butterfly {
             a.ext().populateRanges();
         }
 
+        for (var p : mStructuralTiltPoints) {
+            p.setButterfly(this);
+        }
+
         for (var p : mTopoControlPoints) {
             p.setButterfly(this);
         }
@@ -197,6 +218,7 @@ public class Butterfly {
             p.setButterfly(this);
         }
 
+        structural().postLoad();
         topo().postLoad();
         populateMonmon();
     }
@@ -266,6 +288,31 @@ public class Butterfly {
 
         public ArrayList<BGroundwaterObservation> getGroundwaterObservations() {
             return mHydroGroundwaterObservations;
+        }
+
+    }
+
+    public class Structural {
+
+        private final HashMap<String, BStructuralTiltPoint> mNameToTiltPoint = new HashMap<>();
+
+        public BStructuralTiltPoint getTiltPointByName(String name) {
+            return mNameToTiltPoint.get(name);
+        }
+
+        public ArrayList<BStructuralTiltPoint> getTiltPoints() {
+            return mStructuralTiltPoints;
+        }
+
+        public ArrayList<BStructuralTiltPointObservation> getTiltPointsObservations() {
+            return mStructuralTiltPointsObservations;
+        }
+
+        private void postLoad() {
+            mNameToTiltPoint.clear();
+            getTiltPoints().forEach(tiltPoint -> {
+                mNameToTiltPoint.put(tiltPoint.getName(), tiltPoint);
+            });
         }
 
     }
