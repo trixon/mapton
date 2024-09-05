@@ -237,6 +237,16 @@
                 <artifactId>butterfly-geo-extensometer</artifactId>
                 <version>${mapton.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.mapton</groupId>
+                <artifactId>butterfly-structural</artifactId>
+                <version>${mapton.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mapton</groupId>
+                <artifactId>butterfly-structural-tilt</artifactId>
+                <version>${mapton.version}</version>
+            </dependency>
 
             <!-- Trixon -->
             <dependency>

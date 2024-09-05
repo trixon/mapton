@@ -191,6 +191,7 @@ public class ButterflyManager {
                 var butterfly = mButterflyLoader.getButterfly();
 
                 calculateLatLons(butterfly.hydro().getGroundwaterPoints());
+                calculateLatLons(butterfly.structural().getTiltPoints());
                 calculateLatLons(butterfly.topo().getControlPoints());
                 calculateLatLons(butterfly.topo().getConvergenceGroups());
 

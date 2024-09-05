@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+OpenIDE-Module-Layer: org/mapton/butterfly_structural/tilt/layer.xml
+OpenIDE-Module-Localizing-Bundle: org/mapton/butterfly_structural/tilt/Bundle.properties
+OpenIDE-Module-Requires: org.openide.windows.WindowManager
+AutoUpdate-Show-In-Client: true
+

@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+OpenIDE-Module-Localizing-Bundle: org/mapton/butterfly_structural/Bundle.properties
+OpenIDE-Module-Requires: org.openide.windows.WindowManager
+AutoUpdate-Show-In-Client: false
+

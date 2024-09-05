@@ -349,6 +349,14 @@
                     <artifactId>butterfly-geo-extensometer</artifactId>
                 </dependency>
                 <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>butterfly-structural</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>butterfly-structural-tilt</artifactId>
+                </dependency>
+                <dependency>
                     <groupId>se.trixon.netbeans</groupId>
                     <artifactId>guideruler</artifactId>
                     <version>0.1-SNAPSHOT</version>
