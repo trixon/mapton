@@ -31,10 +31,25 @@ import se.trixon.almond.util.fx.FxHelper;
  */
 public abstract class BaseFilterPopOver extends MFilterPopOver {
 
+    protected final MDisruptorManager mDisruptorManager = MDisruptorManager.getInstance();
+
     private Butterfly mButterfly;
     private final ButterflyManager mButterflyManager = ButterflyManager.getInstance();
     private boolean mFirstRun = true;
-    protected final MDisruptorManager mDisruptorManager = MDisruptorManager.getInstance();
+
+    public static void splitAndCheck(String string, IndexedCheckModel<String> checkModel) {
+        splitAndCheck(string, "|", checkModel);
+    }
+
+    public static void splitAndCheck(String string, String separator, IndexedCheckModel<String> checkModel) {
+        var split = StringUtils.splitPreserveAllTokens(string, separator);
+
+        if (split != null) {
+            for (var value : split) {
+                Platform.runLater(() -> checkModel.check(value));
+            }
+        }
+    }
 
     public BaseFilterPopOver() {
         var butterflyProperty = mButterflyManager.butterflyProperty();
@@ -68,17 +83,4 @@ public abstract class BaseFilterPopOver extends MFilterPopOver {
         }
     }
 
-    public void splitAndCheck(String string, IndexedCheckModel<String> checkModel) {
-        splitAndCheck(string, "|", checkModel);
-    }
-
-    public void splitAndCheck(String string, String separator, IndexedCheckModel<String> checkModel) {
-        var split = StringUtils.splitPreserveAllTokens(string, separator);
-
-        if (split != null) {
-            for (var value : split) {
-                Platform.runLater(() -> checkModel.check(value));
-            }
-        }
-    }
 }

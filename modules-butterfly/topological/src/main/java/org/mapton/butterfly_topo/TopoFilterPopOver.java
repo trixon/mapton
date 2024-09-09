@@ -36,11 +36,11 @@ import javafx.util.StringConverter;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.action.ActionUtils.ActionTextBehavior;
 import org.controlsfx.tools.Borders;
-import org.mapton.api.ui.forms.DateRangePane;
 import org.mapton.api.ui.forms.DisruptorPane;
 import org.mapton.api.ui.forms.NegPosStringConverterDouble;
 import org.mapton.api.ui.forms.NegPosStringConverterInteger;
 import org.mapton.butterfly_core.api.BaseFilterPopOver;
+import org.mapton.butterfly_core.api.BaseFilters;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_topo.api.TopoManager;
 import org.mapton.butterfly_topo.shared.AlarmLevelChangeMode;
@@ -61,10 +61,8 @@ import se.trixon.almond.util.fx.session.SessionIntegerSpinner;
  */
 public class TopoFilterPopOver extends BaseFilterPopOver {
 
-    private final SessionCheckComboBox<String> mAlarmNameSccb = new SessionCheckComboBox<>();
     private final SessionCheckComboBox<AlarmLevelFilter> mAlarmSccb = new SessionCheckComboBox<>(true);
-    private final SessionCheckComboBox<String> mCategorySccb = new SessionCheckComboBox<>();
-    private final DateRangePane mDateRangePane = new DateRangePane();
+    private final BaseFilters mBaseFilters = new BaseFilters();
     private final int mDefaultAlarmLevelAgeValue = -7;
     private final int mDefaultDiffPercentageValue = 80;
     private final double mDefaultDiffValue = 0.020;
@@ -89,9 +87,6 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
     private final CheckBox mDimens3Checkbox = new CheckBox("3");
     private final DisruptorPane mDisruptorPane = new DisruptorPane();
     private final TopoFilter mFilter;
-    private final SessionCheckComboBox<Integer> mFrequencySccb = new SessionCheckComboBox<>();
-    private final SessionCheckComboBox<String> mGroupSccb = new SessionCheckComboBox<>();
-    private final SessionCheckComboBox<String> mHasDateFromToSccb = new SessionCheckComboBox<>(true);
     private final CheckBox mInvertCheckbox = new CheckBox();
     private final TopoManager mManager = TopoManager.getInstance();
     private final CheckBox mMeasAlarmLevelAgeCheckbox = new CheckBox();
@@ -104,7 +99,6 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
     private final SessionCheckComboBox<String> mMeasCodeSccb = new SessionCheckComboBox<>(true);
     private final CheckBox mMeasIncludeWithoutCheckbox = new CheckBox();
     private final CheckBox mMeasLatestOperatorCheckbox = new CheckBox();
-    private final SessionCheckComboBox<String> mMeasNextSccb = new SessionCheckComboBox<>(true);
     private final SessionIntegerSpinner mMeasNumOfSis = new SessionIntegerSpinner(Integer.MIN_VALUE, Integer.MAX_VALUE, mDefaultNumOfMeasfValue);
     private final SessionCheckComboBox<String> mMeasOperatorSccb = new SessionCheckComboBox<>();
     private final CheckBox mMeasSpeedCheckbox = new CheckBox();
@@ -117,10 +111,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
     private final SessionDoubleSpinner mMeasYoyoCountSds = new SessionDoubleSpinner(0, 100.0, mDefaultMeasYoyoCount, 1.0);
     private final SessionDoubleSpinner mMeasYoyoSizeSds = new SessionDoubleSpinner(0, 1.0, mDefaultMeasYoyoSize, 0.001);
     private final CheckBox mNumOfMeasCheckbox = new CheckBox();
-    private final SessionCheckComboBox<String> mOperatorSccb = new SessionCheckComboBox<>();
-    private final SessionCheckComboBox<String> mOriginSccb = new SessionCheckComboBox<>();
     private final CheckBox mSameAlarmCheckbox = new CheckBox();
-    private final SessionCheckComboBox<String> mStatusSccb = new SessionCheckComboBox<>();
 
     public TopoFilterPopOver(TopoFilter filter) {
         mFilter = filter;
@@ -130,19 +121,6 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
         initSession(NbPreferences.forModule(getClass()).node(getClass().getSimpleName()));
 
         populate();
-    }
-
-    @Override
-    public void filterPresetRestore(Preferences preferences) {
-        clear();
-        filterPresetStore(preferences);
-        //mDateRangePane.reset();
-    }
-
-    @Override
-    public void filterPresetStore(Preferences preferences) {
-        var sessionManager = initSession(preferences);
-        sessionManager.unregisterAll();
     }
 
     @Override
@@ -189,22 +167,25 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
         mMeasYoyoSizeSds.getValueFactory().setValue(mDefaultMeasYoyoSize);
 
         SessionCheckComboBox.clearChecks(
-                mStatusSccb,
                 mMeasOperatorSccb,
-                mGroupSccb,
-                mCategorySccb,
-                mAlarmNameSccb,
-                mOperatorSccb,
-                mOriginSccb,
                 mAlarmSccb,
-                mMeasNextSccb,
-                mMeasCodeSccb,
-                mHasDateFromToSccb,
-                mFrequencySccb
+                mMeasCodeSccb
         );
-
-        mDateRangePane.reset();
+        mBaseFilters.clear();
         mDisruptorPane.reset();
+    }
+
+    @Override
+    public void filterPresetRestore(Preferences preferences) {
+        clear();
+        filterPresetStore(preferences);
+        //mDateRangePane.reset();
+    }
+
+    @Override
+    public void filterPresetStore(Preferences preferences) {
+        var sessionManager = initSession(preferences);
+        sessionManager.unregisterAll();
     }
 
     @Override
@@ -213,18 +194,18 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
 
         var allAlarmNames = items.stream().map(o -> o.getNameOfAlarmHeight()).collect(Collectors.toCollection(HashSet::new));
         allAlarmNames.addAll(items.stream().map(o -> o.getNameOfAlarmPlane()).collect(Collectors.toSet()));
-        mAlarmNameSccb.loadAndRestoreCheckItems(allAlarmNames.stream());
-        mMeasOperatorSccb.loadAndRestoreCheckItems(items.stream().flatMap(p -> p.ext().getObservationsAllRaw().stream().map(o -> o.getOperator())));
-        mGroupSccb.loadAndRestoreCheckItems(items.stream().map(o -> o.getGroup()));
-        mCategorySccb.loadAndRestoreCheckItems(items.stream().map(o -> o.getCategory()));
-        mOperatorSccb.loadAndRestoreCheckItems(items.stream().map(o -> o.getOperator()));
-        mOriginSccb.loadAndRestoreCheckItems(items.stream().map(o -> o.getOrigin()));
-        mStatusSccb.loadAndRestoreCheckItems(items.stream().map(o -> o.getStatus()));
-        mFrequencySccb.loadAndRestoreCheckItems(items.stream()
+        mBaseFilters.getAlarmNameSccb().loadAndRestoreCheckItems(allAlarmNames.stream());
+        mBaseFilters.getGroupSccb().loadAndRestoreCheckItems(items.stream().map(o -> o.getGroup()));
+        mBaseFilters.getCategorySccb().loadAndRestoreCheckItems(items.stream().map(o -> o.getCategory()));
+        mBaseFilters.getOperatorSccb().loadAndRestoreCheckItems(items.stream().map(o -> o.getOperator()));
+        mBaseFilters.getOriginSccb().loadAndRestoreCheckItems(items.stream().map(o -> o.getOrigin()));
+        mBaseFilters.getStatusSccb().loadAndRestoreCheckItems(items.stream().map(o -> o.getStatus()));
+        mBaseFilters.getFrequencySccb().loadAndRestoreCheckItems(items.stream()
                 .filter(o -> o.getFrequency() != null)
                 .map(o -> o.getFrequency()));
+        mBaseFilters.getMeasNextSccb().loadAndRestoreCheckItems();
+        mMeasOperatorSccb.loadAndRestoreCheckItems(items.stream().flatMap(p -> p.ext().getObservationsAllRaw().stream().map(o -> o.getOperator())));
         mMeasCodeSccb.loadAndRestoreCheckItems();
-        mMeasNextSccb.loadAndRestoreCheckItems();
         mAlarmSccb.loadAndRestoreCheckItems();
 
         mMeasAlarmLevelChangeModeScb.load();
@@ -248,12 +229,12 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
 
         var temporalRange = mManager.getTemporalRange();
         if (temporalRange != null) {
-            mDateRangePane.setMinMaxDate(temporalRange.getFromLocalDate(), temporalRange.getToLocalDate());
+            mBaseFilters.getDateRangePane().setMinMaxDate(temporalRange.getFromLocalDate(), temporalRange.getToLocalDate());
         }
 
         var sessionManager = getSessionManager();
-        sessionManager.register("filter.DateLow", mDateRangePane.lowStringProperty());
-        sessionManager.register("filter.DateHigh", mDateRangePane.highStringProperty());
+        sessionManager.register("filter.DateLow", mBaseFilters.getDateRangePane().lowStringProperty());
+        sessionManager.register("filter.DateHigh", mBaseFilters.getDateRangePane().highStringProperty());
     }
 
     @Override
@@ -264,12 +245,10 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
     @Override
     public void onShownFirstTime() {
         FxHelper.setVisibleRowCount(25,
-                mGroupSccb,
-                mCategorySccb,
-                mAlarmNameSccb,
                 mMeasOperatorSccb,
                 mAlarmSccb
         );
+        mBaseFilters.onShownFirstTime();
     }
 
     @Override
@@ -277,67 +256,25 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
         clear();
 
         mFilter.freeTextProperty().set("*");
-
-        var filterConfig = TopoFilterDefaultsConfig.getInstance().getConfig();
-        splitAndCheck(filterConfig.getString("STATUS"), mStatusSccb.getCheckModel());
-        splitAndCheck(filterConfig.getString("GROUP"), mGroupSccb.getCheckModel());
-        splitAndCheck(filterConfig.getString("CATEGORY"), mCategorySccb.getCheckModel());
-        splitAndCheck(filterConfig.getString("OPERATOR"), mOperatorSccb.getCheckModel());
+        mBaseFilters.reset(TopoFilterDefaultsConfig.getInstance().getConfig());
     }
 
     private void createUI() {
         FxHelper.setShowCheckedCount(true,
-                mHasDateFromToSccb,
-                mMeasNextSccb,
                 mAlarmSccb,
                 mMeasCodeSccb,
-                mMeasOperatorSccb,
-                mStatusSccb,
-                mGroupSccb,
-                mCategorySccb,
-                mAlarmNameSccb,
-                mOperatorSccb,
-                mOriginSccb,
-                mFrequencySccb
+                mMeasOperatorSccb
         );
 
-        mHasDateFromToSccb.setTitle(SDict.VALID_FROM_TO.toString());
-        mMeasNextSccb.setTitle(getBundle().getString("nextMeasCheckComboBoxTitle"));
         mAlarmSccb.setTitle(SDict.ALARM_LEVEL.toString());
         mAlarmSccb.getItems().setAll(AlarmLevelFilter.values());
         mMeasCodeSccb.setTitle(getBundle().getString("measCodeCheckComboBoxTitle"));
         mMeasOperatorSccb.setTitle(SDict.SURVEYORS.toString());
-        mStatusSccb.setTitle(Dict.STATUS.toString());
-        mGroupSccb.setTitle(Dict.GROUP.toString());
-        mCategorySccb.setTitle(Dict.CATEGORY.toString());
-        mAlarmNameSccb.setTitle(SDict.ALARMS.toString());
-        mOperatorSccb.setTitle(SDict.OPERATOR.toString());
-        mOriginSccb.setTitle(Dict.ORIGIN.toString());
-        mFrequencySccb.setTitle(SDict.FREQUENCY.toString());
-
-        mHasDateFromToSccb.getItems().setAll(List.of(
-                SDict.HAS_VALID_FROM.toString(),
-                SDict.HAS_VALID_TO.toString(),
-                SDict.WITHOUT_VALID_FROM.toString(),
-                SDict.WITHOUT_VALID_TO.toString(),
-                SDict.IS_VALID.toString(),
-                SDict.IS_INVALID.toString()
-        ));
 
         mMeasAlarmLevelChangeModeScb.getItems().setAll(AlarmLevelChangeMode.values());
         mMeasAlarmLevelChangeUnitScb.getItems().setAll(AlarmLevelChangeUnit.values());
         mMeasTopListUnitScb.getItems().setAll(AlarmLevelChangeUnit.values());
         mMeasTopListUnitScb.getSelectionModel().selectFirst();
-
-        mMeasNextSccb.getItems().setAll(List.of(
-                "<0",
-                "0",
-                "1-6",
-                "7-14",
-                "15-28",
-                "29-182",
-                "∞"
-        ));
 
         mMeasCodeSccb.getItems().setAll(List.of(
                 getBundle().getString("measCodeZero"),
@@ -376,44 +313,13 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
         var dimensBox = new HBox(FxHelper.getUIScaled(8), mDimens1Checkbox, mDimens2Checkbox, mDimens3Checkbox, new Spacer(), dimensButton);
         dimensBox.setAlignment(Pos.CENTER_LEFT);
 
-        var basicBox = new VBox(rowGap,
-                dimensBox,
-                mStatusSccb,
-                mGroupSccb,
-                mCategorySccb,
-                mOperatorSccb,
-                mOriginSccb,
-                mAlarmNameSccb,
-                mHasDateFromToSccb,
-                mFrequencySccb,
-                mMeasNextSccb,
-                mDisruptorPane.getRoot()
-        );
-        double borderInnerPadding = FxHelper.getUIScaled(8.0);
-        double topBorderInnerPadding = FxHelper.getUIScaled(16.0);
-
-        var wrappedBasicBox = Borders.wrap(basicBox)
-                .etchedBorder()
-                .title("Grunddata")
-                .innerPadding(topBorderInnerPadding, borderInnerPadding, borderInnerPadding, borderInnerPadding)
-                .outerPadding(0)
-                .raised()
-                .build()
-                .build();
-
-        var wrappedDateBox = Borders.wrap(mDateRangePane.getRoot())
-                .etchedBorder()
-                .title("Period för senaste mätning")
-                .innerPadding(topBorderInnerPadding, borderInnerPadding, borderInnerPadding, borderInnerPadding)
-                .outerPadding(0)
-                .raised()
-                .build()
-                .build();
+        mBaseFilters.getBaseBox().getChildren().add(0, dimensBox);
+        mBaseFilters.getBaseBox().getChildren().add(mDisruptorPane.getRoot());
 
         var leftBox = new VBox(rowGap,
-                wrappedBasicBox,
+                mBaseFilters.getBaseBorderBox(),
                 new Spacer(),
-                wrappedDateBox
+                mBaseFilters.getDateBorderBox()
         );
 
         var hGap = FxHelper.getUIScaled(9.0);
@@ -480,6 +386,9 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
                 )
         );
 
+        double borderInnerPadding = FxHelper.getUIScaled(8.0);
+        double topBorderInnerPadding = FxHelper.getUIScaled(16.0);
+
         var wrappedRightBox = Borders.wrap(measBox)
                 .etchedBorder()
                 .title("Mätdataanalys")
@@ -529,7 +438,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
         };
         FxHelper.setEditable(true, spinners);
         FxHelper.autoCommitSpinners(spinners);
-        FxHelper.bindWidthForChildrens(leftBox, measBox, basicBox);
+        FxHelper.bindWidthForChildrens(leftBox, measBox, mBaseFilters.getBaseBox());
         FxHelper.bindWidthForRegions(leftBox, mDisruptorPane.getRoot());
         FxHelper.bindWidthForRegions(measBox,
                 mMeasSpeedSds,
@@ -612,22 +521,22 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
 
         mFilter.sameAlarmProperty().bind(mSameAlarmCheckbox.selectedProperty());
         mFilter.polygonFilterProperty().bind(usePolygonFilterProperty());
-        mFilter.measDateLowProperty().bind(mDateRangePane.lowDateProperty());
-        mFilter.measDateHighProperty().bind(mDateRangePane.highDateProperty());
+        mFilter.measDateLowProperty().bind(mBaseFilters.getDateRangePane().lowDateProperty());
+        mFilter.measDateHighProperty().bind(mBaseFilters.getDateRangePane().highDateProperty());
 
-        mFilter.mStatusCheckModel = mStatusSccb.getCheckModel();
+        mFilter.mStatusCheckModel = mBaseFilters.getStatusSccb().getCheckModel();
+        mFilter.mGroupCheckModel = mBaseFilters.getGroupSccb().getCheckModel();
+        mFilter.mCategoryCheckModel = mBaseFilters.getCategorySccb().getCheckModel();
+        mFilter.mOperatorCheckModel = mBaseFilters.getOperatorSccb().getCheckModel();
+        mFilter.mOriginCheckModel = mBaseFilters.getOriginSccb().getCheckModel();
+        mFilter.mMeasNextCheckModel = mBaseFilters.getMeasNextSccb().getCheckModel();
+        mFilter.mAlarmNameCheckModel = mBaseFilters.getAlarmNameSccb().getCheckModel();
+        mFilter.mDateFromToCheckModel = mBaseFilters.getHasDateFromToSccb().getCheckModel();
+        mFilter.mFrequencyCheckModel = mBaseFilters.getFrequencySccb().getCheckModel();
         mFilter.mMeasOperatorsCheckModel = mMeasOperatorSccb.getCheckModel();
-        mFilter.mGroupCheckModel = mGroupSccb.getCheckModel();
         mFilter.mDisruptorCheckModel = mDisruptorPane.getCheckModel();
-        mFilter.mCategoryCheckModel = mCategorySccb.getCheckModel();
-        mFilter.mOperatorCheckModel = mOperatorSccb.getCheckModel();
-        mFilter.mOriginCheckModel = mOriginSccb.getCheckModel();
-        mFilter.mMeasNextCheckModel = mMeasNextSccb.getCheckModel();
-        mFilter.mAlarmNameCheckModel = mAlarmNameSccb.getCheckModel();
         mFilter.mAlarmLevelCheckModel = mAlarmSccb.getCheckModel();
         mFilter.mMeasCodeCheckModel = mMeasCodeSccb.getCheckModel();
-        mFilter.mDateFromToCheckModel = mHasDateFromToSccb.getCheckModel();
-        mFilter.mFrequencyCheckModel = mFrequencySccb.getCheckModel();
 
         mMeasNumOfSis.disableProperty().bind(mNumOfMeasCheckbox.selectedProperty().not());
         mMeasAlarmLevelAgeSis.disableProperty().bind(mMeasAlarmLevelAgeCheckbox.selectedProperty().not());
@@ -654,23 +563,14 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
         var sessionManager = new SessionManager(preferences);
         sessionManager.register("filter.freeText", mFilter.freeTextProperty());
 
-        sessionManager.register("filter.checkedAlarmName", mAlarmNameSccb.checkedStringProperty());
-        sessionManager.register("filter.checkedCategory", mCategorySccb.checkedStringProperty());
-        sessionManager.register("filter.checkedDateFromTo", mHasDateFromToSccb.checkedStringProperty());
-        sessionManager.register("filter.checkedFrequency", mFrequencySccb.checkedStringProperty());
-        sessionManager.register("filter.checkedGroup", mGroupSccb.checkedStringProperty());
         sessionManager.register("filter.checkedDisruptors", mDisruptorPane.checkedStringProperty());
         sessionManager.register("filter.checkedNextAlarm", mAlarmSccb.checkedStringProperty());
-        sessionManager.register("filter.checkedOperators", mOperatorSccb.checkedStringProperty());
-        sessionManager.register("filter.checkedOrigin", mOriginSccb.checkedStringProperty());
-        sessionManager.register("filter.checkedStatus", mStatusSccb.checkedStringProperty());
 
         sessionManager.register("filter.checkedDimension1", mDimens1Checkbox.selectedProperty());
         sessionManager.register("filter.checkedDimension2", mDimens2Checkbox.selectedProperty());
         sessionManager.register("filter.checkedDimension3", mDimens3Checkbox.selectedProperty());
         sessionManager.register("filter.disruptorDistance", mDisruptorPane.distanceProperty());
         sessionManager.register("filter.measCheckedMeasCode", mMeasCodeSccb.checkedStringProperty());
-        sessionManager.register("filter.measCheckedNextMeas", mMeasNextSccb.checkedStringProperty());
         sessionManager.register("filter.measCheckedOperators", mMeasOperatorSccb.checkedStringProperty());
         sessionManager.register("filter.measDiffAll", mDiffMeasAllCheckbox.selectedProperty());
         sessionManager.register("filter.measDiffPercentageH", mDiffMeasPercentageHCheckbox.selectedProperty());
@@ -703,6 +603,8 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
 
         sessionManager.register("filter.invert", mInvertCheckbox.selectedProperty());
         sessionManager.register("filter.sameAlarm", mSameAlarmCheckbox.selectedProperty());
+
+        mBaseFilters.initSession(sessionManager);
 
         return sessionManager;
     }
