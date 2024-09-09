@@ -40,7 +40,7 @@ import se.trixon.almond.util.SDict;
 @ServiceProvider(service = LayerBundle.class)
 public class TiltLayerBundle extends BfLayerBundle {
 
-    private final double SYMBOL_HEIGHT = 16.0;
+    private final double SYMBOL_HEIGHT = 8.0;
     private final double SYMBOL_RADIUS = 0.5;
 
     private final TiltAttributeManager mAttributeManager = TiltAttributeManager.getInstance();

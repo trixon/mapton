@@ -31,6 +31,8 @@ import se.trixon.almond.util.CollectionHelper;
  */
 public class TiltManager extends BaseManager<BStructuralTiltPoint> {
 
+    private final TiltPropertiesBuilder mPropertiesBuilder = new TiltPropertiesBuilder();
+
     public static TiltManager getInstance() {
         return Holder.INSTANCE;
     }
@@ -47,8 +49,7 @@ public class TiltManager extends BaseManager<BStructuralTiltPoint> {
 
     @Override
     public Object getObjectProperties(BStructuralTiltPoint selectedObject) {
-//        return mPropertiesBuilder.build(selectedObject);
-        return selectedObject;
+        return mPropertiesBuilder.build(selectedObject);
     }
 
     @Override

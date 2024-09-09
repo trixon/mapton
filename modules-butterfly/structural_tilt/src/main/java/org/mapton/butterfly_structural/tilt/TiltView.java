@@ -20,7 +20,7 @@ import javafx.scene.layout.Pane;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.SingleListForm;
-import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
+import org.mapton.butterfly_format.types.structural.BStructuralTiltPoint;
 import org.mapton.butterfly_topo.TopoFilter;
 import org.mapton.butterfly_topo.TopoFilterPopOver;
 import se.trixon.almond.util.Dict;
@@ -33,7 +33,7 @@ public class TiltView {
 
     private final TopoFilter mFilter = new TopoFilter();
     private final TopoFilterPopOver mFilterPopOver = new TopoFilterPopOver(mFilter);
-    private final SingleListForm<TiltManager, BTopoControlPoint> mListForm;
+    private final SingleListForm<TiltManager, BStructuralTiltPoint> mListForm;
     private final TiltManager mManager = TiltManager.getInstance();
 
     public TiltView() {
@@ -50,7 +50,7 @@ public class TiltView {
 
         mFilter.bindFreeTextProperty(mListForm.freeTextProperty());
         mListForm.applyConfiguration(listFormConfiguration);
-//        mListForm.getListView().setCellFactory(listView -> new ExtensoListCell());
+        mListForm.getListView().setCellFactory(listView -> new TiltListCell());
 
         mListForm.setFreeTextTooltip(
                 Dict.NAME.toString()
