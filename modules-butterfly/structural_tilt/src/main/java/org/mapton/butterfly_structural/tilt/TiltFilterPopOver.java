@@ -15,17 +15,17 @@
  */
 package org.mapton.butterfly_structural.tilt;
 
+import com.dlsc.gemsfx.Spacer;
 import java.util.ResourceBundle;
-import javafx.scene.control.Separator;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import static org.mapton.api.ui.MPopOver.GAP;
-import static org.mapton.api.ui.MPopOver.autoSize;
 import org.mapton.butterfly_core.api.BaseFilterPopOver;
+import org.mapton.butterfly_core.api.BaseFilters;
 import org.mapton.butterfly_format.Butterfly;
 import org.openide.util.NbBundle;
-import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
-import se.trixon.almond.util.fx.session.SessionCheckComboBox;
 
 /**
  *
@@ -33,11 +33,10 @@ import se.trixon.almond.util.fx.session.SessionCheckComboBox;
  */
 public class TiltFilterPopOver extends BaseFilterPopOver {
 
-    private final TiltFilter mFilter;
-    private final SessionCheckComboBox<String> mGroupSccb = new SessionCheckComboBox<>();
-    private final SessionCheckComboBox<String> mTypeSccb = new SessionCheckComboBox<>();
-    private final SessionCheckComboBox<String> mSoilSccb = new SessionCheckComboBox<>();
+    private final BaseFilters mBaseFilters = new BaseFilters();
     private final ResourceBundle mBundle = NbBundle.getBundle(TiltFilterPopOver.class);
+    private final TiltFilter mFilter;
+    private TiltManager mManager = TiltManager.getInstance();
 
     public TiltFilterPopOver(TiltFilter filter) {
         mFilter = filter;
@@ -52,19 +51,26 @@ public class TiltFilterPopOver extends BaseFilterPopOver {
     public void clear() {
         setUsePolygonFilter(false);
         mFilter.freeTextProperty().set("");
-        SessionCheckComboBox.clearChecks(
-                mGroupSccb,
-                mTypeSccb,
-                mSoilSccb
-        );
+
+        mBaseFilters.clear();
     }
 
     @Override
     public void load(Butterfly butterfly) {
         var items = butterfly.structural().getTiltPoints();
-        mGroupSccb.loadAndRestoreCheckItems(items.stream().map(b -> b.getGroup()));
-//        mTypeSccb.loadAndRestoreCheckItems(items.stream().map(b -> b.getTypeOfWork()));
-//        mSoilSccb.loadAndRestoreCheckItems(items.stream().map(b -> b.getSoilMaterial()));
+        mBaseFilters.getGroupSccb().loadAndRestoreCheckItems(items.stream().map(p -> p.getGroup()));
+        mBaseFilters.getStatusSccb().loadAndRestoreCheckItems(items.stream().map(p -> p.getStatus()));
+        mBaseFilters.getOperatorSccb().loadAndRestoreCheckItems(items.stream().map(o -> o.getOperator()));
+        mBaseFilters.getOriginSccb().loadAndRestoreCheckItems(items.stream().map(o -> o.getOrigin()));
+
+        var temporalRange = mManager.getTemporalRange();
+        if (temporalRange != null) {
+            mBaseFilters.getDateRangePane().setMinMaxDate(temporalRange.getFromLocalDate(), temporalRange.getToLocalDate());
+        }
+
+        var sessionManager = getSessionManager();
+        sessionManager.register("filter.DateLow", mBaseFilters.getDateRangePane().lowStringProperty());
+        sessionManager.register("filter.DateHigh", mBaseFilters.getDateRangePane().highStringProperty());
     }
 
     @Override
@@ -74,53 +80,55 @@ public class TiltFilterPopOver extends BaseFilterPopOver {
 
     @Override
     public void onShownFirstTime() {
-        FxHelper.setVisibleRowCount(25,
-                mGroupSccb,
-                mTypeSccb,
-                mSoilSccb
-        );
+        mBaseFilters.onShownFirstTime();
     }
 
     @Override
     public void reset() {
         clear();
         mFilter.freeTextProperty().set("*");
-        SessionCheckComboBox.clearChecks(
-                mGroupSccb,
-                mTypeSccb,
-                mSoilSccb
-        );
+
+//        mBaseFilters.reset(TopoFilterDefaultsConfig.getInstance().getConfig());
     }
 
     private void createUI() {
-        FxHelper.setShowCheckedCount(true,
-                mGroupSccb,
-                mTypeSccb,
-                mSoilSccb
+        var leftBox = new VBox(GAP,
+                mBaseFilters.getBaseBorderBox(),
+                new Spacer(),
+                mBaseFilters.getDateBorderBox()
         );
 
-        mGroupSccb.setTitle(Dict.GROUP.toString());
-        mTypeSccb.setTitle(Dict.TYPE.toString());
-//        mSoilSccb.setTitle(mBundle.getString("soilMaterial"));
+        var rightBox = new BorderPane();
+        var row = 0;
+        var gridPane = new GridPane(GAP, GAP);
+        gridPane.setPadding(FxHelper.getUIScaledInsets(GAP));
 
-        var vBox = new VBox(GAP,
-                getButtonBox(),
-                new Separator(),
-                mGroupSccb,
-                mTypeSccb,
-                mSoilSccb
-        );
+        gridPane.addRow(row++, leftBox, rightBox);
+//        gridPane.add(mMeasIncludeWithoutCheckbox, 0, row++, GridPane.REMAINING, 1);
+//        gridPane.add(mSameAlarmCheckbox, 0, row++, GridPane.REMAINING, 1);
+        FxHelper.autoSizeColumn(gridPane, 2);
 
-        autoSize(vBox);
-        setContentNode(vBox);
+        var root = new BorderPane(gridPane);
+        root.setTop(getToolBar());
+
+        FxHelper.bindWidthForChildrens(leftBox, mBaseFilters.getBaseBox());
+        FxHelper.bindWidthForRegions(leftBox);
+
+        int prefWidth = FxHelper.getUIScaled(250);
+        leftBox.setPrefWidth(prefWidth);
+        rightBox.setPrefWidth(prefWidth);
+
+        setContentNode(root);
     }
 
     private void initListeners() {
         mFilter.polygonFilterProperty().bind(usePolygonFilterProperty());
 
-        mFilter.mGroupCheckModel = mGroupSccb.getCheckModel();
-        mFilter.mTypeCheckModel = mTypeSccb.getCheckModel();
-        mFilter.mSoilCheckModel = mSoilSccb.getCheckModel();
+        mFilter.mStatusCheckModel = mBaseFilters.getStatusSccb().getCheckModel();
+        mFilter.mGroupCheckModel = mBaseFilters.getGroupSccb().getCheckModel();
+        mFilter.mCategoryCheckModel = mBaseFilters.getCategorySccb().getCheckModel();
+        mFilter.mOperatorCheckModel = mBaseFilters.getOperatorSccb().getCheckModel();
+        mFilter.mOriginCheckModel = mBaseFilters.getOriginSccb().getCheckModel();
 
         mFilter.initCheckModelListeners();
     }
@@ -128,9 +136,8 @@ public class TiltFilterPopOver extends BaseFilterPopOver {
     private void initSession() {
         var sessionManager = getSessionManager();
         sessionManager.register("filter.measPoint.freeText", mFilter.freeTextProperty());
-        sessionManager.register("filter.measPoint.checkedGroup", mGroupSccb.checkedStringProperty());
-        sessionManager.register("filter.measPoint.checkedType", mTypeSccb.checkedStringProperty());
-        sessionManager.register("filter.measPoint.checkedSoil", mSoilSccb.checkedStringProperty());
+
+        mBaseFilters.initSession(sessionManager);
     }
 
 }

@@ -17,6 +17,7 @@ package org.mapton.butterfly_structural.tilt;
 
 import j2html.tags.ContainerTag;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.ResourceBundle;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.ui.forms.FormFilter;
@@ -29,11 +30,13 @@ import se.trixon.almond.util.Dict;
  */
 public class TiltFilter extends FormFilter<TiltManager> {
 
+    IndexedCheckModel mCategoryCheckModel;
     IndexedCheckModel mGroupCheckModel;
-    IndexedCheckModel mTypeCheckModel;
-    IndexedCheckModel mSoilCheckModel;
-    private final TiltManager mManager = TiltManager.getInstance();
+    IndexedCheckModel mOperatorCheckModel;
+    IndexedCheckModel mOriginCheckModel;
+    IndexedCheckModel mStatusCheckModel;
     private final ResourceBundle mBundle = NbBundle.getBundle(TiltFilter.class);
+    private final TiltManager mManager = TiltManager.getInstance();
 
     public TiltFilter() {
         super(TiltManager.getInstance());
@@ -43,19 +46,34 @@ public class TiltFilter extends FormFilter<TiltManager> {
 
     public void initCheckModelListeners() {
         mGroupCheckModel.getCheckedItems().addListener(mListChangeListener);
-        mTypeCheckModel.getCheckedItems().addListener(mListChangeListener);
-        mSoilCheckModel.getCheckedItems().addListener(mListChangeListener);
+        List.of(
+                //                mAlarmLevelCheckModel,
+                //                mAlarmNameCheckModel,
+                mCategoryCheckModel,
+                //                mDateFromToCheckModel,
+                //                mFrequencyCheckModel,
+                mGroupCheckModel,
+                //                mMeasCodeCheckModel,
+                //                mMeasOperatorsCheckModel,
+                //                mMeasNextCheckModel,
+                mOperatorCheckModel,
+                mOriginCheckModel,
+                mStatusCheckModel
+        //                mDisruptorCheckModel
+        ).forEach(cm -> cm.getCheckedItems().addListener(mListChangeListener));
     }
 
     @Override
     public void update() {
         var filteredItems = mManager.getAllItems().stream()
-                .filter(b -> validateFreeText(b.getName(), b.getGroup(), b.getComment()))
-                .filter(b -> validateCheck(mGroupCheckModel, b.getGroup()))
-                //                .filter(b -> validateCheck(mTypeCheckModel, b.getTypeOfWork()))
-                //                .filter(b -> validateCheck(mSoilCheckModel, b.getSoilMaterial()))
-                .filter(b -> validateCoordinateArea(b.getLat(), b.getLon()))
-                .filter(b -> validateCoordinateRuler(b.getLat(), b.getLon()))
+                .filter(p -> validateFreeText(p.getName(), p.getGroup(), p.getComment()))
+                .filter(p -> validateCheck(mStatusCheckModel, p.getStatus()))
+                .filter(p -> validateCheck(mGroupCheckModel, p.getGroup()))
+                .filter(p -> validateCheck(mCategoryCheckModel, p.getCategory()))
+                .filter(p -> validateCheck(mOperatorCheckModel, p.getOperator()))
+                .filter(p -> validateCheck(mOriginCheckModel, p.getOrigin()))
+                .filter(p -> validateCoordinateArea(p.getLat(), p.getLon()))
+                .filter(p -> validateCoordinateRuler(p.getLat(), p.getLon()))
                 .toList();
 
         mManager.getFilteredItems().setAll(filteredItems);
@@ -69,7 +87,7 @@ public class TiltFilter extends FormFilter<TiltManager> {
 
         map.put(Dict.TEXT.toString(), getFreeText());
         map.put(Dict.GROUP.toString(), makeInfo(mGroupCheckModel.getCheckedItems()));
-        map.put(Dict.TYPE.toString(), makeInfo(mTypeCheckModel.getCheckedItems()));
+//        map.put(Dict.TYPE.toString(), makeInfo(mTypeCheckModel.getCheckedItems()));
 //        map.put(mBundle.getString("soilMaterial"), makeInfo(mSoilCheckModel.getCheckedItems()));
 
         return createHtmlFilterInfo(map);
@@ -77,5 +95,6 @@ public class TiltFilter extends FormFilter<TiltManager> {
     }
 
     private void initListeners() {
+
     }
 }
