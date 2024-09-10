@@ -60,8 +60,6 @@ public class TopoFilter extends FormFilter<TopoManager> {
     IndexedCheckModel<AlarmLevelFilter> mAlarmLevelCheckModel;
     IndexedCheckModel mAlarmNameCheckModel;
     IndexedCheckModel mCategoryCheckModel;
-    IndexedCheckModel mDateFromToCheckModel;
-    IndexedCheckModel<Integer> mFrequencyCheckModel;
     IndexedCheckModel mGroupCheckModel;
     IndexedCheckModel<String> mMeasCodeCheckModel;
     IndexedCheckModel<String> mMeasNextCheckModel;
@@ -84,13 +82,13 @@ public class TopoFilter extends FormFilter<TopoManager> {
     private final SimpleObjectProperty<LocalDate> mMeasDateHighProperty = new SimpleObjectProperty();
     private final SimpleObjectProperty<LocalDate> mMeasDateLowProperty = new SimpleObjectProperty();
     private final SimpleBooleanProperty mMeasDiffAllProperty = new SimpleBooleanProperty();
-    private final SimpleBooleanProperty mMeasDiffPercentageHProperty = new SimpleBooleanProperty();
-    private final SimpleBooleanProperty mMeasDiffPercentagePProperty = new SimpleBooleanProperty();
     private final SimpleDoubleProperty mMeasDiffAllValueProperty = new SimpleDoubleProperty();
-    private final SimpleIntegerProperty mMeasDiffPercentageHValueProperty = new SimpleIntegerProperty();
-    private final SimpleIntegerProperty mMeasDiffPercentagePValueProperty = new SimpleIntegerProperty();
     private final SimpleBooleanProperty mMeasDiffLatestProperty = new SimpleBooleanProperty();
     private final SimpleDoubleProperty mMeasDiffLatestValueProperty = new SimpleDoubleProperty();
+    private final SimpleBooleanProperty mMeasDiffPercentageHProperty = new SimpleBooleanProperty();
+    private final SimpleIntegerProperty mMeasDiffPercentageHValueProperty = new SimpleIntegerProperty();
+    private final SimpleBooleanProperty mMeasDiffPercentagePProperty = new SimpleBooleanProperty();
+    private final SimpleIntegerProperty mMeasDiffPercentagePValueProperty = new SimpleIntegerProperty();
     private final SimpleBooleanProperty mMeasIncludeWithout = new SimpleBooleanProperty();
     private final SimpleBooleanProperty mMeasLatestOperator = new SimpleBooleanProperty();
     private final SimpleBooleanProperty mMeasNumOfProperty = new SimpleBooleanProperty();
@@ -168,24 +166,8 @@ public class TopoFilter extends FormFilter<TopoManager> {
         return mMeasDiffAllProperty;
     }
 
-    public SimpleBooleanProperty measDiffPercentageHProperty() {
-        return mMeasDiffPercentageHProperty;
-    }
-
-    public SimpleBooleanProperty measDiffPercentagePProperty() {
-        return mMeasDiffPercentagePProperty;
-    }
-
     public SimpleDoubleProperty measDiffAllValueProperty() {
         return mMeasDiffAllValueProperty;
-    }
-
-    public SimpleIntegerProperty measDiffPercentageHValueProperty() {
-        return mMeasDiffPercentageHValueProperty;
-    }
-
-    public SimpleIntegerProperty measDiffPercentagePValueProperty() {
-        return mMeasDiffPercentagePValueProperty;
     }
 
     public SimpleBooleanProperty measDiffLatestProperty() {
@@ -194,6 +176,22 @@ public class TopoFilter extends FormFilter<TopoManager> {
 
     public SimpleDoubleProperty measDiffLatestValueProperty() {
         return mMeasDiffLatestValueProperty;
+    }
+
+    public SimpleBooleanProperty measDiffPercentageHProperty() {
+        return mMeasDiffPercentageHProperty;
+    }
+
+    public SimpleIntegerProperty measDiffPercentageHValueProperty() {
+        return mMeasDiffPercentageHValueProperty;
+    }
+
+    public SimpleBooleanProperty measDiffPercentagePProperty() {
+        return mMeasDiffPercentagePProperty;
+    }
+
+    public SimpleIntegerProperty measDiffPercentagePValueProperty() {
+        return mMeasDiffPercentagePValueProperty;
     }
 
     public SimpleBooleanProperty measIncludeWithoutProperty() {
@@ -564,48 +562,6 @@ public class TopoFilter extends FormFilter<TopoManager> {
         return true;
     }
 
-    private boolean validateDateFromToHas(LocalDate fromDate, LocalDate toDate) {
-        var validFromChecked = mDateFromToCheckModel.isChecked(SDict.HAS_VALID_FROM.toString());
-        var validToChecked = mDateFromToCheckModel.isChecked(SDict.HAS_VALID_TO.toString());
-        var valid = (!validFromChecked && !validToChecked)
-                || (fromDate != null && validFromChecked)
-                || (toDate != null && validToChecked);
-
-        return valid;
-    }
-
-    private boolean validateDateFromToIs(LocalDate fromDate, LocalDate toDate) {
-        var now = LocalDate.now();
-        var validChecked = mDateFromToCheckModel.isChecked(SDict.IS_VALID.toString());
-        var invalidChecked = mDateFromToCheckModel.isChecked(SDict.IS_INVALID.toString());
-
-        if (validChecked && invalidChecked) {
-            return false;
-        } else if (!validChecked && !invalidChecked) {
-            return true;
-        }
-
-        if (validChecked) {
-            var validFromDate = fromDate == null ? false : DateHelper.isAfterOrEqual(now, fromDate);
-            var validToDate = toDate == null ? false : DateHelper.isBeforeOrEqual(now, toDate);
-            return validFromDate || validToDate;
-        } else {//invalidChecked
-            var invalidFromDate = fromDate == null ? true : DateHelper.isAfterOrEqual(now, fromDate);
-            var invalidToDate = toDate == null ? true : DateHelper.isBeforeOrEqual(now, toDate);
-            return !invalidFromDate || !invalidToDate;
-        }
-    }
-
-    private boolean validateDateFromToWithout(LocalDate fromDate, LocalDate toDate) {
-        var validFromChecked = mDateFromToCheckModel.isChecked(SDict.WITHOUT_VALID_FROM.toString());
-        var validToChecked = mDateFromToCheckModel.isChecked(SDict.WITHOUT_VALID_TO.toString());
-        var valid = (!validFromChecked && !validToChecked)
-                || (fromDate == null && validFromChecked)
-                || (toDate == null && validToChecked);
-
-        return valid;
-    }
-
     private boolean validateDimension(BDimension dimension) {
         var d1 = mDimens1Property.get();
         var d2 = mDimens2Property.get();
@@ -630,10 +586,6 @@ public class TopoFilter extends FormFilter<TopoManager> {
         }
 
         return false;
-    }
-
-    private boolean validateFrequency(Integer frequency) {
-        return validateCheck(mFrequencyCheckModel, frequency);
     }
 
     private boolean validateMaxAge(LocalDateTime lastMeasurementDateTime) {

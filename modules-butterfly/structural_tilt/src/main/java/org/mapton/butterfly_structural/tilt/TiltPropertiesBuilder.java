@@ -55,7 +55,7 @@ public class TiltPropertiesBuilder extends PropertiesBuilder<BStructuralTiltPoin
         propertyMap.put(getCatKey(cat1, SDict.OPERATOR.toString()), p.getOperator());
         propertyMap.put(getCatKey(cat1, Dict.ORIGIN.toString()), p.getOrigin());
         propertyMap.put(getCatKey(cat1, Dict.COMMENT.toString()), p.getComment());
-        propertyMap.put(getCatKey(cat1, SDict.ALARM.toString()), StringHelper.join(SEPARATOR, "TODO"));
+        propertyMap.put(getCatKey(cat1, SDict.ALARM.toString()), p.getNameOfAlarm());
         var measurements = "%d / %d    (%d - %d)".formatted(
                 p.ext().getNumOfObservationsFiltered(),
                 p.ext().getNumOfObservations(),

@@ -29,6 +29,7 @@ import static j2html.TagCreator.td;
 import static j2html.TagCreator.title;
 import static j2html.TagCreator.tr;
 import j2html.tags.ContainerTag;
+import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import java.util.ResourceBundle;
 import javafx.beans.property.BooleanProperty;
@@ -49,7 +50,9 @@ import org.mapton.api.MDisruptorManager;
 import org.mapton.api.MPolygonFilterManager;
 import org.mapton.api.ui.MInfoPopOver;
 import org.openide.util.NbBundle;
+import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.SDict;
 import se.trixon.almond.util.StringHelper;
 import se.trixon.almond.util.fx.DelayedResetRunner;
 
@@ -60,7 +63,9 @@ import se.trixon.almond.util.fx.DelayedResetRunner;
  */
 public abstract class FormFilter<ManagerType extends MBaseDataManager> {
 
+    public IndexedCheckModel mDateFromToCheckModel;
     public IndexedCheckModel mDisruptorCheckModel;
+    public IndexedCheckModel<Integer> mFrequencyCheckModel;
 
     protected ChangeListener<Object> mChangeListenerObject;
     protected final MDisruptorManager mDisruptorManager = MDisruptorManager.getInstance();
@@ -169,6 +174,48 @@ public abstract class FormFilter<ManagerType extends MBaseDataManager> {
         return valid;
     }
 
+    public boolean validateDateFromToHas(LocalDate fromDate, LocalDate toDate) {
+        var validFromChecked = mDateFromToCheckModel.isChecked(SDict.HAS_VALID_FROM.toString());
+        var validToChecked = mDateFromToCheckModel.isChecked(SDict.HAS_VALID_TO.toString());
+        var valid = (!validFromChecked && !validToChecked)
+                || (fromDate != null && validFromChecked)
+                || (toDate != null && validToChecked);
+
+        return valid;
+    }
+
+    public boolean validateDateFromToIs(LocalDate fromDate, LocalDate toDate) {
+        var now = LocalDate.now();
+        var validChecked = mDateFromToCheckModel.isChecked(SDict.IS_VALID.toString());
+        var invalidChecked = mDateFromToCheckModel.isChecked(SDict.IS_INVALID.toString());
+
+        if (validChecked && invalidChecked) {
+            return false;
+        } else if (!validChecked && !invalidChecked) {
+            return true;
+        }
+
+        if (validChecked) {
+            var validFromDate = fromDate == null ? false : DateHelper.isAfterOrEqual(now, fromDate);
+            var validToDate = toDate == null ? false : DateHelper.isBeforeOrEqual(now, toDate);
+            return validFromDate || validToDate;
+        } else {//invalidChecked
+            var invalidFromDate = fromDate == null ? true : DateHelper.isAfterOrEqual(now, fromDate);
+            var invalidToDate = toDate == null ? true : DateHelper.isBeforeOrEqual(now, toDate);
+            return !invalidFromDate || !invalidToDate;
+        }
+    }
+
+    public boolean validateDateFromToWithout(LocalDate fromDate, LocalDate toDate) {
+        var validFromChecked = mDateFromToCheckModel.isChecked(SDict.WITHOUT_VALID_FROM.toString());
+        var validToChecked = mDateFromToCheckModel.isChecked(SDict.WITHOUT_VALID_TO.toString());
+        var valid = (!validFromChecked && !validToChecked)
+                || (fromDate == null && validFromChecked)
+                || (toDate == null && validToChecked);
+
+        return valid;
+    }
+
     public boolean validateDisruptor(Double x, Double y) {
         if (mDisruptorCheckModel.isEmpty()) {
             return true;
@@ -179,6 +226,10 @@ public abstract class FormFilter<ManagerType extends MBaseDataManager> {
 
     public boolean validateFreeText(String... strings) {
         return StringUtils.isBlank(getFreeText()) || StringHelper.matchesSimpleGlobByWordNegatable(getFreeText(), true, false, strings);
+    }
+
+    public boolean validateFrequency(Integer frequency) {
+        return validateCheck(mFrequencyCheckModel, frequency);
     }
 
     private void initListeners() {

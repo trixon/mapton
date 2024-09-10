@@ -26,12 +26,12 @@ import org.mapton.butterfly_format.types.BBaseControlPointObservation;
  */
 public class BStructuralTiltPoint extends BBaseControlPoint {
 
+    @JsonIgnore
+    private Ext mExt;
+    private String nameOfAlarm;
     private Double zeroX2;
     private Double zeroY2;
     private Double zeroZ2;
-
-    @JsonIgnore
-    private Ext mExt;
 
     public Ext ext() {
         if (mExt == null) {
@@ -39,6 +39,10 @@ public class BStructuralTiltPoint extends BBaseControlPoint {
         }
 
         return mExt;
+    }
+
+    public String getNameOfAlarm() {
+        return nameOfAlarm;
     }
 
     public Double getZeroX2() {
@@ -51,6 +55,10 @@ public class BStructuralTiltPoint extends BBaseControlPoint {
 
     public Double getZeroZ2() {
         return zeroZ2;
+    }
+
+    public void setNameOfAlarm(String nameOfAlarm) {
+        this.nameOfAlarm = nameOfAlarm;
     }
 
     public void setZeroX2(Double zeroX2) {

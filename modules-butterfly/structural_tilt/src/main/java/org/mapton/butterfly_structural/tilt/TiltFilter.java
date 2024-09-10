@@ -30,6 +30,7 @@ import se.trixon.almond.util.Dict;
  */
 public class TiltFilter extends FormFilter<TiltManager> {
 
+    IndexedCheckModel mAlarmNameCheckModel;
     IndexedCheckModel mCategoryCheckModel;
     IndexedCheckModel mGroupCheckModel;
     IndexedCheckModel mOperatorCheckModel;
@@ -48,10 +49,10 @@ public class TiltFilter extends FormFilter<TiltManager> {
         mGroupCheckModel.getCheckedItems().addListener(mListChangeListener);
         List.of(
                 //                mAlarmLevelCheckModel,
-                //                mAlarmNameCheckModel,
+                mAlarmNameCheckModel,
                 mCategoryCheckModel,
-                //                mDateFromToCheckModel,
-                //                mFrequencyCheckModel,
+                mDateFromToCheckModel,
+                mFrequencyCheckModel,
                 mGroupCheckModel,
                 //                mMeasCodeCheckModel,
                 //                mMeasOperatorsCheckModel,
@@ -72,6 +73,11 @@ public class TiltFilter extends FormFilter<TiltManager> {
                 .filter(p -> validateCheck(mCategoryCheckModel, p.getCategory()))
                 .filter(p -> validateCheck(mOperatorCheckModel, p.getOperator()))
                 .filter(p -> validateCheck(mOriginCheckModel, p.getOrigin()))
+                .filter(p -> validateCheck(mAlarmNameCheckModel, p.getNameOfAlarm()))
+                .filter(p -> validateFrequency(p.getFrequency()))
+                .filter(p -> validateDateFromToHas(p.getDateValidFrom(), p.getDateValidTo()))
+                .filter(p -> validateDateFromToWithout(p.getDateValidFrom(), p.getDateValidTo()))
+                .filter(p -> validateDateFromToIs(p.getDateValidFrom(), p.getDateValidTo()))
                 .filter(p -> validateCoordinateArea(p.getLat(), p.getLon()))
                 .filter(p -> validateCoordinateRuler(p.getLat(), p.getLon()))
                 .toList();

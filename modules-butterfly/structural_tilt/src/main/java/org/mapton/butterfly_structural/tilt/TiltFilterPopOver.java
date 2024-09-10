@@ -60,8 +60,12 @@ public class TiltFilterPopOver extends BaseFilterPopOver {
         var items = butterfly.structural().getTiltPoints();
         mBaseFilters.getGroupSccb().loadAndRestoreCheckItems(items.stream().map(p -> p.getGroup()));
         mBaseFilters.getStatusSccb().loadAndRestoreCheckItems(items.stream().map(p -> p.getStatus()));
-        mBaseFilters.getOperatorSccb().loadAndRestoreCheckItems(items.stream().map(o -> o.getOperator()));
-        mBaseFilters.getOriginSccb().loadAndRestoreCheckItems(items.stream().map(o -> o.getOrigin()));
+        mBaseFilters.getOperatorSccb().loadAndRestoreCheckItems(items.stream().map(p -> p.getOperator()));
+        mBaseFilters.getOriginSccb().loadAndRestoreCheckItems(items.stream().map(p -> p.getOrigin()));
+        mBaseFilters.getAlarmNameSccb().loadAndRestoreCheckItems(items.stream().map(p -> p.getNameOfAlarm()));
+        mBaseFilters.getFrequencySccb().loadAndRestoreCheckItems(items.stream()
+                .filter(p -> p.getFrequency() != null)
+                .map(p -> p.getFrequency()));
 
         var temporalRange = mManager.getTemporalRange();
         if (temporalRange != null) {
@@ -129,6 +133,9 @@ public class TiltFilterPopOver extends BaseFilterPopOver {
         mFilter.mCategoryCheckModel = mBaseFilters.getCategorySccb().getCheckModel();
         mFilter.mOperatorCheckModel = mBaseFilters.getOperatorSccb().getCheckModel();
         mFilter.mOriginCheckModel = mBaseFilters.getOriginSccb().getCheckModel();
+        mFilter.mAlarmNameCheckModel = mBaseFilters.getAlarmNameSccb().getCheckModel();
+        mFilter.mDateFromToCheckModel = mBaseFilters.getHasDateFromToSccb().getCheckModel();
+        mFilter.mFrequencyCheckModel = mBaseFilters.getFrequencySccb().getCheckModel();
 
         mFilter.initCheckModelListeners();
     }
