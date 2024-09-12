@@ -17,9 +17,7 @@ package org.mapton.butterfly_format.types.topo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import org.apache.commons.lang3.ObjectUtils;
-import org.mapton.butterfly_format.types.BBaseControlPointObservation;
-import se.trixon.almond.util.MathHelper;
+import org.mapton.butterfly_format.types.BXyzPointObservation;
 
 /**
  *
@@ -38,17 +36,15 @@ import se.trixon.almond.util.MathHelper;
     "replacementMeasurement",
     "zeroMeasurement"
 })
-public class BTopoControlPointObservation extends BBaseControlPointObservation {
+public class BTopoControlPointObservation extends BXyzPointObservation {
 
     @JsonIgnore
-    private BTopoControlPointObservation.Ext mExt;
-    private Double measuredX;
-    private Double measuredY;
-    private Double measuredZ;
+    private Ext mExt;
 
     public BTopoControlPointObservation() {
     }
 
+    @Override
     public Ext ext() {
         if (mExt == null) {
             mExt = new Ext();
@@ -57,115 +53,10 @@ public class BTopoControlPointObservation extends BBaseControlPointObservation {
         return mExt;
     }
 
-    public Double getMeasuredX() {
-        return measuredX;
-    }
-
-    public Double getMeasuredY() {
-        return measuredY;
-    }
-
-    public Double getMeasuredZ() {
-        return measuredZ;
-    }
-
-    public void setMeasuredX(Double measuredX) {
-        this.measuredX = measuredX;
-    }
-
-    public void setMeasuredY(Double measuredY) {
-        this.measuredY = measuredY;
-    }
-
-    public void setMeasuredZ(Double measuredZ) {
-        this.measuredZ = measuredZ;
-    }
-
-    public class Ext {
-
-        private Double mDeltaX;
-        private Double mDeltaY;
-        private Double mDeltaZ;
-        private BTopoControlPoint mParent;
+    public class Ext extends BXyzPointObservation.Ext<BTopoControlPoint> {
 
         public Ext() {
         }
 
-        public Double getBearing() {
-            if (ObjectUtils.anyNull(getDeltaX(), getDeltaY())) {
-                return null;
-            } else {
-                return MathHelper.azimuthToDegrees(getDeltaY(), getDeltaX());
-            }
-        }
-
-        public Double getDelta() {
-            Double d2;
-            if (ObjectUtils.allNotNull(getDeltaX(), getDeltaY())) {
-                d2 = Math.hypot(getDeltaX(), getDeltaY());
-            } else {
-                return getDeltaZ();
-            }
-
-            if (getDeltaZ() == null) {
-                return d2;
-            } else {
-                return Math.hypot(getDeltaZ(), d2);
-            }
-        }
-
-        public Double getDelta2d() {
-            Double deltaX = getDeltaX();
-            Double deltaY = getDeltaY();
-
-            if (ObjectUtils.allNotNull(deltaX, deltaY)) {
-                return Math.hypot(deltaX, deltaY);
-            } else {
-                return null;
-            }
-        }
-
-        public Double getDelta3d() {
-            Double delta2d = getDelta2d();
-            Double deltaZ = getDeltaZ();
-
-            if (ObjectUtils.allNotNull(delta2d, deltaZ)) {
-                return Math.hypot(delta2d, deltaZ) * MathHelper.sign(deltaZ);
-            } else {
-                return null;
-            }
-        }
-
-        public Double getDeltaX() {
-            return mDeltaX;
-        }
-
-        public Double getDeltaY() {
-            return mDeltaY;
-        }
-
-        public Double getDeltaZ() {
-            return mDeltaZ;
-        }
-
-        public BTopoControlPoint getParent() {
-            return mParent;
-        }
-
-        public void setDeltaX(Double deltaX) {
-            this.mDeltaX = deltaX;
-        }
-
-        public void setDeltaY(Double deltaY) {
-            this.mDeltaY = deltaY;
-        }
-
-        public void setDeltaZ(Double deltaZ) {
-            this.mDeltaZ = deltaZ;
-        }
-
-        public void setParent(BTopoControlPoint controlPoint) {
-            this.mParent = controlPoint;
-        }
     }
 }

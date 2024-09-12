@@ -20,8 +20,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.util.ArrayList;
 import org.apache.commons.lang3.ObjectUtils;
-import org.mapton.butterfly_format.types.BBase;
 import org.mapton.butterfly_format.types.BBaseControlPoint;
+import org.mapton.butterfly_format.types.BBasePoint;
 
 /**
  *
@@ -119,7 +119,7 @@ public class BGeoExtensometerPoint extends BBaseControlPoint {
         this.limit3 = limit3;
     }
 
-    public class Ext extends BBase.Ext<BGeoExtensometerPointObservation> {
+    public class Ext extends BBasePoint.Ext<BGeoExtensometerPointObservation> {
 
         public Ext() {
         }

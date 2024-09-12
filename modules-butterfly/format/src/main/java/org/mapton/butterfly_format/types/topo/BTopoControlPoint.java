@@ -21,21 +21,18 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
 import java.util.Objects;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.Range;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.butterfly_format.types.BAlarm;
-import org.mapton.butterfly_format.types.BBase;
-import org.mapton.butterfly_format.types.BBaseControlPoint;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
 import static org.mapton.butterfly_format.types.BDimension._1d;
 import static org.mapton.butterfly_format.types.BDimension._2d;
 import static org.mapton.butterfly_format.types.BDimension._3d;
-import se.trixon.almond.util.MathHelper;
-import se.trixon.almond.util.StringHelper;
+import org.mapton.butterfly_format.types.BXyzPoint;
+import org.mapton.butterfly_format.types.BXyzPointObservation;
 
 /**
  *
@@ -69,9 +66,8 @@ import se.trixon.almond.util.StringHelper;
     "meta"
 })
 @JsonIgnoreProperties(value = {"values", "dateLatest"})
-public class BTopoControlPoint extends BBaseControlPoint {
+public class BTopoControlPoint extends BXyzPoint {
 
-    private BDimension dimension;
     @JsonIgnore
     private Ext mExt;
     private String nameOfAlarmHeight;
@@ -89,10 +85,6 @@ public class BTopoControlPoint extends BBaseControlPoint {
         }
 
         return mExt;
-    }
-
-    public BDimension getDimension() {
-        return dimension;
     }
 
     public String getNameOfAlarmHeight() {
@@ -115,10 +107,6 @@ public class BTopoControlPoint extends BBaseControlPoint {
         return offsetZ;
     }
 
-    public void setDimension(BDimension dimension) {
-        this.dimension = dimension;
-    }
-
     public void setNameOfAlarmHeight(String nameOfAlarmHeight) {
         this.nameOfAlarmHeight = nameOfAlarmHeight;
     }
@@ -139,97 +127,12 @@ public class BTopoControlPoint extends BBaseControlPoint {
         this.offsetZ = offsetZ;
     }
 
-    public class Ext extends BBase.Ext<BTopoControlPointObservation> {
+    public class Ext extends BXyzPoint.Ext<BTopoControlPointObservation> {
 
-        private transient final DeltaRolling deltaRolling = new DeltaRolling();
-        private transient final DeltaZero deltaZero = new DeltaZero();
         private transient final LimitValuePredictor limitValuePredictor = new LimitValuePredictor();
 
         public Ext() {
             Ext.this.getObservationFilteredFirst();
-        }
-
-        public void calculateObservations(List<BTopoControlPointObservation> observations) {
-            if (observations.isEmpty()) {
-                return;
-            }
-
-            var p = BTopoControlPoint.this;
-
-            observations.forEach(o -> {
-                var dateMatch = p.ext().getStoredZeroDateTime() == o.getDate();
-                if (dateMatch) {
-                    setZeroUnset(false);
-                }
-                o.setZeroMeasurement(dateMatch);
-            });
-
-            if (isZeroUnset()) {
-                observations.getFirst().setZeroMeasurement(true);
-            }
-
-            var latestZero = observations.reversed().stream()
-                    .filter(o -> o.isZeroMeasurement())
-                    .findFirst().orElse(observations.getFirst());
-
-            Double zX = latestZero.getMeasuredX();
-            Double zY = latestZero.getMeasuredY();
-            Double zZ = latestZero.getMeasuredZ();
-            var rX = 0.0;
-            var rY = 0.0;
-            var rZ = 0.0;
-
-            for (int i = 0; i < observations.size(); i++) {
-                var o = observations.get(i);
-                BTopoControlPointObservation prev = null;
-                if (i > 0) {
-                    prev = observations.get(i - 1);
-                }
-                Double x = o.getMeasuredX();
-                Double y = o.getMeasuredY();
-                Double z = o.getMeasuredZ();
-
-                if (ObjectUtils.allNotNull(x, zX)) {
-                    o.ext().setDeltaX(x - zX);
-                }
-                if (ObjectUtils.allNotNull(y, zY)) {
-                    o.ext().setDeltaY(y - zY);
-                }
-                if (ObjectUtils.allNotNull(z, zZ)) {
-                    o.ext().setDeltaZ(z - zZ);
-                }
-
-                if (o.isReplacementMeasurement() && prev != null) {
-                    var mX = o.getMeasuredX();
-                    var pX = prev.getMeasuredX();
-                    if (ObjectUtils.allNotNull(mX, pX, o.ext().getDeltaX())) {
-                        rX = rX + mX - pX;
-                        o.ext().setDeltaX(o.ext().getDeltaX() + rX);
-                    }
-
-                    var mY = o.getMeasuredY();
-                    var pY = prev.getMeasuredY();
-                    if (ObjectUtils.allNotNull(mY, pY, o.ext().getDeltaY())) {
-                        rY = rY + mY - pY;
-                        o.ext().setDeltaY(o.ext().getDeltaY() + rY);
-                    }
-
-                    var mZ = o.getMeasuredZ();
-                    var pZ = prev.getMeasuredZ();
-                    if (ObjectUtils.allNotNull(mZ, pZ, o.ext().getDeltaZ())) {
-                        rZ = rZ + mZ - pZ;
-                        o.ext().setDeltaZ(o.ext().getDeltaZ() + rZ);
-                    }
-                }
-            }
-        }
-
-        public DeltaRolling deltaRolling() {
-            return deltaRolling;
-        }
-
-        public DeltaZero deltaZero() {
-            return deltaZero;
         }
 
         public BAlarm getAlarm(BComponent component) {
@@ -245,7 +148,7 @@ public class BTopoControlPoint extends BBaseControlPoint {
             return alarm;
         }
 
-        public int getAlarmLevel(BComponent component, BTopoControlPointObservation o) {
+        public int getAlarmLevel(BComponent component, BXyzPointObservation o) {
             var alarm = getAlarm(component);
 
             if (ObjectUtils.anyNull(alarm, o)) {
@@ -255,7 +158,7 @@ public class BTopoControlPoint extends BBaseControlPoint {
             }
         }
 
-        public int getAlarmLevel(BTopoControlPointObservation o) {
+        public int getAlarmLevel(BXyzPointObservation o) {
             return Math.max(getAlarmLevelHeight(o), getAlarmLevelPlane(o));
         }
 
@@ -313,11 +216,11 @@ public class BTopoControlPoint extends BBaseControlPoint {
             }
         }
 
-        public int getAlarmLevelHeight(BTopoControlPointObservation o) {
+        public int getAlarmLevelHeight(BXyzPointObservation o) {
             return getAlarmLevel(BComponent.HEIGHT, o);
         }
 
-        public int getAlarmLevelPlane(BTopoControlPointObservation o) {
+        public int getAlarmLevelPlane(BXyzPointObservation o) {
             return getAlarmLevel(BComponent.PLANE, o);
         }
 
@@ -330,7 +233,7 @@ public class BTopoControlPoint extends BBaseControlPoint {
             }
 
             try {
-                var delta = component == BComponent.HEIGHT ? deltaZero.getDelta1() : deltaZero.getDelta2();
+                var delta = component == BComponent.HEIGHT ? deltaZero().getDelta1() : deltaZero().getDelta2();
                 double limit;
                 Range<Double> range;
                 if (alarm.ext().getRange2() != null) {
@@ -381,7 +284,7 @@ public class BTopoControlPoint extends BBaseControlPoint {
             }
         }
 
-        public double[] getSpeed(BTopoControlPointObservation o1, BTopoControlPointObservation o2) {
+        public double[] getSpeed(BXyzPointObservation o1, BXyzPointObservation o2) {
             try {
                 var periodLength = ChronoUnit.DAYS.between(o1.getDate(), o2.getDate()) / 365.0;
                 var speed = (o2.ext().getDeltaZ() - o1.ext().getDeltaZ()) / periodLength;
@@ -404,152 +307,6 @@ public class BTopoControlPoint extends BBaseControlPoint {
             return limitValuePredictor;
         }
 
-        public abstract class Delta {
-
-            public String getDelta(int decimals) {
-                return StringHelper.joinNonNulls(", ",
-                        getDelta1(decimals),
-                        getDelta2(decimals),
-                        getDelta3(decimals)
-                );
-            }
-
-            public Double getDelta() {
-                switch (getDimension()) {
-                    case _1d -> {
-                        return getDelta1();
-                    }
-                    case _2d -> {
-                        return getDelta2();
-                    }
-                    case _3d -> {
-                        return getDelta3();
-                    }
-                }
-
-                return null;
-            }
-
-            public Double getDelta1() {
-                return getDeltaZ();
-            }
-
-            public String getDelta1(int decimals) {
-                var delta = getDelta1();
-                return delta == null ? null : StringHelper.round(delta, decimals, "Δ1d=", "", true);
-            }
-
-            public String getDelta2(int decimals) {
-                var delta = getDelta2();
-                return delta == null ? null : StringHelper.round(delta, decimals, "Δ2d=", "", false);
-            }
-
-            public Double getDelta2() {
-                if (ObjectUtils.allNotNull(getDeltaX(), getDeltaY())) {
-                    return Math.hypot(getDeltaX(), getDeltaY());
-                } else {
-                    return null;
-                }
-            }
-
-            public String getDelta3(int decimals) {
-                var delta = getDelta3();
-                return delta == null ? null : StringHelper.round(delta, decimals, "Δ3d=", "", false);
-            }
-
-            public Double getDelta3() {
-                if (ObjectUtils.allNotNull(getDelta1(), getDelta2())) {
-                    return Math.hypot(getDelta1(), getDelta2()) * MathHelper.sign(getDelta1());
-                } else {
-                    return null;
-                }
-            }
-
-            public abstract Double getDeltaX();
-
-            public String getDeltaX(int decimals) {
-                var delta = getDeltaX();
-                return delta == null ? null : StringHelper.round(delta, decimals, "ΔX=", "", false);
-            }
-
-            public abstract Double getDeltaY();
-
-            public String getDeltaY(int decimals) {
-                var delta = getDeltaY();
-                return delta == null ? null : StringHelper.round(delta, decimals, "ΔY=", "", false);
-            }
-
-            public abstract Double getDeltaZ();
-
-            public String getDeltaZ(int decimals) {
-                var delta = getDeltaZ();
-                return delta == null ? null : StringHelper.round(delta, decimals, "ΔZ=", "", true);
-            }
-        }
-
-        public class DeltaRolling extends Delta {
-
-            @Override
-            public Double getDeltaX() {
-                var observations = ext().getObservationsTimeFiltered();
-                if (observations == null || observations.isEmpty()) {
-                    return null;
-                }
-
-                if (ObjectUtils.allNotNull(getRollingX(), observations.getLast().getMeasuredX())) {
-                    return observations.getLast().getMeasuredX() - getRollingX();
-                } else {
-                    return null;
-                }
-            }
-
-            @Override
-            public Double getDeltaY() {
-                var observations = ext().getObservationsTimeFiltered();
-                if (observations == null || observations.isEmpty()) {
-                    return null;
-                }
-
-                if (ObjectUtils.allNotNull(getRollingY(), observations.getLast().getMeasuredY())) {
-                    return observations.getLast().getMeasuredY() - getRollingY();
-                } else {
-                    return null;
-                }
-            }
-
-            @Override
-            public Double getDeltaZ() {
-                var observations = ext().getObservationsTimeFiltered();
-                if (observations == null || observations.isEmpty()) {
-                    return null;
-                }
-
-                if (ObjectUtils.allNotNull(getRollingZ(), observations.getLast().getMeasuredZ())) {
-                    return observations.getLast().getMeasuredZ() - getRollingZ();
-                } else {
-                    return null;
-                }
-            }
-        }
-
-        public class DeltaZero extends Delta {
-
-            @Override
-            public Double getDeltaX() {
-                return getObservationsTimeFiltered().isEmpty() ? null : getObservationsTimeFiltered().getLast().ext().getDeltaX();
-            }
-
-            @Override
-            public Double getDeltaY() {
-                return getObservationsTimeFiltered().isEmpty() ? null : getObservationsTimeFiltered().getLast().ext().getDeltaY();
-            }
-
-            @Override
-            public Double getDeltaZ() {
-                return getObservationsTimeFiltered().isEmpty() ? null : getObservationsTimeFiltered().getLast().ext().getDeltaZ();
-            }
-        }
-
         public class LimitValuePredictor {
             //TODO Make from trend, not only last two measurements
 
@@ -560,7 +317,7 @@ public class BTopoControlPoint extends BBaseControlPoint {
                 try {
                     var alarm = getAlarm(BComponent.HEIGHT);
                     var targetValue = isRisingByTrend() ? alarm.ext().getRange1().getMaximum() : alarm.ext().getRange1().getMinimum();
-                    var remaining = targetValue - deltaZero.getDelta1();
+                    var remaining = targetValue - deltaZero().getDelta1();
 
                     return Math.abs(remaining);
                 } catch (Exception e) {

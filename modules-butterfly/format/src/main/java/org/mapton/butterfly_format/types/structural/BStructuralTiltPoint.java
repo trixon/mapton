@@ -16,15 +16,13 @@
 package org.mapton.butterfly_format.types.structural;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.mapton.butterfly_format.types.BBase;
-import org.mapton.butterfly_format.types.BBaseControlPoint;
-import org.mapton.butterfly_format.types.BBaseControlPointObservation;
+import org.mapton.butterfly_format.types.BXyzPoint;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class BStructuralTiltPoint extends BBaseControlPoint {
+public class BStructuralTiltPoint extends BXyzPoint {
 
     @JsonIgnore
     private Ext mExt;
@@ -73,7 +71,7 @@ public class BStructuralTiltPoint extends BBaseControlPoint {
         this.zeroZ2 = zeroZ2;
     }
 
-    public class Ext extends BBase.Ext<BBaseControlPointObservation> {
+    public class Ext extends BXyzPoint.Ext<BStructuralTiltPointObservation> {
 
     }
 

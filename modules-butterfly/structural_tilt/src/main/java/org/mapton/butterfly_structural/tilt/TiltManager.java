@@ -15,9 +15,13 @@
  */
 package org.mapton.butterfly_structural.tilt;
 
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
+import org.mapton.api.MTemporalRange;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.structural.BStructuralTiltPoint;
@@ -63,31 +67,41 @@ public class TiltManager extends BaseManager<BStructuralTiltPoint> {
                 nameToObservations.computeIfAbsent(o.getName(), k -> new ArrayList<>()).add(o);
             }
 
-//            for (var p : butterfly.structural().getTiltPoints()) {
-//                p.ext().setObservationsAllRaw(nameToObservations.get(p.getName()));
-//                p.ext().getObservationsAllRaw().forEach(o -> o.ext().setParent(p));
-//
-//                var grundvattenObservations = p.ext().getObservationsAllRaw();
-//                if (!grundvattenObservations.isEmpty()) {
-//                    p.ext().setDateFirst(grundvattenObservations.getFirst().getDate());
-//                    p.ext().setDateLatest(grundvattenObservations.getLast().getDate());
-//                }
-//            }
-//
-//            var dates = new TreeSet<>(getAllItems().stream()
-//                    .map(p -> p.ext().getDateLatest())
-//                    .filter(d -> d != null)
-//                    .collect(Collectors.toSet()));
-//
-//            if (!dates.isEmpty()) {
-//                setTemporalRange(new MTemporalRange(dates.first(), dates.last()));
-//            }
-//
-//            getAllItems().stream().forEach(p -> {
-//                var calculatedObservations = new ArrayList<>(p.ext().getObservationsAllRaw());
-//                p.ext().setObservationsAllCalculated(calculatedObservations);
-//                //TODO or not TODO? p.ext().calculateObservations(calculatedObservations);
-//            });
+            for (var p : butterfly.structural().getTiltPoints()) {
+                var observations = nameToObservations.getOrDefault(p.getName(), new ArrayList<>());
+                if (!observations.isEmpty()) {
+                    p.setDateLatest(observations.getLast().getDate());
+                }
+
+                p.ext().setDateLatest(p.getDateLatest());
+                p.ext().setObservationsAllRaw(observations);
+                p.ext().getObservationsAllRaw().forEach(o -> o.ext().setParent(p));
+                for (var o : p.ext().getObservationsAllRaw()) {
+                    if (o.isZeroMeasurement()) {
+                        p.ext().setStoredZeroDateTime(o.getDate());
+                        break;
+                    }
+                }
+            }
+
+            var origins = getAllItems()
+                    .stream().map(p -> p.getOrigin())
+                    .collect(Collectors.toCollection(TreeSet::new))
+                    .stream()
+                    .collect(Collectors.toCollection(ArrayList<String>::new));
+            setValue("origins", origins);
+
+            var dates = new TreeSet<LocalDateTime>();
+            getAllItems().stream().forEachOrdered(p -> {
+                dates.addAll(p.ext().getObservationsAllRaw().stream().map(o -> o.getDate()).toList());
+            });
+
+            if (!dates.isEmpty()) {
+                setTemporalRange(new MTemporalRange(dates.first(), dates.last()));
+                boolean layerBundleEnabled = isLayerBundleEnabled();
+                updateTemporal(!layerBundleEnabled);
+                updateTemporal(layerBundleEnabled);
+            }
         } catch (Exception e) {
             Exceptions.printStackTrace(e);
         }
@@ -112,20 +126,33 @@ public class TiltManager extends BaseManager<BStructuralTiltPoint> {
             }
         }
 
+        getTimeFilteredItemsMap().clear();
         timeFilteredItems.stream().forEach(p -> {
-            var timefilteredObservations = p.ext().getObservationsAllRaw().stream()
+            getTimeFilteredItemsMap().put(p.getName(), p);
+            var timeFilteredObservations = p.ext().getObservationsAllRaw().stream()
                     .filter(o -> getTemporalManager().isValid(o.getDate()))
-                    .toList();
-            p.ext().setObservationsTimeFiltered(new ArrayList<>(timefilteredObservations));
+                    .collect(Collectors.toCollection(ArrayList::new));
+
+            p.ext().setObservationsTimeFiltered(timeFilteredObservations);
+            p.ext().calculateObservations(timeFilteredObservations);
 
             var measCountStats = new LinkedHashMap<String, Integer>();
             p.ext().setMeasurementCountStats(measCountStats);
-            //p.ext().calculateObservations(timefilteredObservations);
-            timefilteredObservations.forEach(o -> {
+            timeFilteredObservations.forEach(o -> {
                 CollectionHelper.incInteger(measCountStats, o.getDate().format(measCountStatsDateTimeFormatter));
             });
         });
 
+//        var mScale3dH = MSimpleObjectStorageManager.getInstance().getInteger(ScalePlot3dHSosd.class, 500);
+//
+//        mMinimumZscaled = Double.MAX_VALUE;
+//        for (var p : timeFilteredItems) {
+//            try {
+//                mMinimumZscaled = FastMath.min(mMinimumZscaled, p.getZeroZ() + mScale3dH * p.ext().deltaZero().getDeltaZ());
+//            } catch (Exception e) {
+//                //nvm
+//            }
+//        }
         getTimeFilteredItems().setAll(timeFilteredItems);
     }
 

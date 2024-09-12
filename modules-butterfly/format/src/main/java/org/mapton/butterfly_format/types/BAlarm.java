@@ -41,7 +41,6 @@ public class BAlarm extends BBase {
     private String limit2;
     private String limit3;
     private final transient Ext mExt = new Ext();
-    private String name;
     private String ratio1;
     private String ratio2;
     private String ratio3;
@@ -72,11 +71,6 @@ public class BAlarm extends BBase {
 
     public String getLimit3() {
         return limit3;
-    }
-
-    @Override
-    public String getName() {
-        return name;
     }
 
     public String getRatio1() {
@@ -113,11 +107,6 @@ public class BAlarm extends BBase {
 
     public void setLimit3(String limit3) {
         this.limit3 = limit3;
-    }
-
-    @Override
-    public void setName(String name) {
-        this.name = name;
     }
 
     public void setRatio1(String ratio1) {

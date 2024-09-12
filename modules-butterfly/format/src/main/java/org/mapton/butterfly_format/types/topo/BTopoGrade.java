@@ -162,7 +162,7 @@ public class BTopoGrade extends BBasePoint {
         return map1;
     }
 
-    public class Ext extends BBase.Ext<BTopoGradeObservation> {
+    public class Ext extends BBasePoint.Ext<BTopoGradeObservation> {
 
         public Ext() {
         }

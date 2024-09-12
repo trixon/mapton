@@ -34,7 +34,6 @@ public abstract class BBaseControlPoint extends BBasePoint {
     private Integer numOfDecXY;
     private Integer numOfDecZ;
     private String operator;
-    private String origin;
     private Double rollingX;
     private Double rollingY;
     private Double rollingZ;
@@ -85,10 +84,6 @@ public abstract class BBaseControlPoint extends BBasePoint {
 
     public String getOperator() {
         return operator;
-    }
-
-    public String getOrigin() {
-        return origin;
     }
 
     public Double getRollingX() {
@@ -163,10 +158,6 @@ public abstract class BBaseControlPoint extends BBasePoint {
         this.operator = operator;
     }
 
-    public void setOrigin(String origin) {
-        this.origin = origin;
-    }
-
     public void setRollingX(Double rollingX) {
         this.rollingX = rollingX;
     }
@@ -199,12 +190,4 @@ public abstract class BBaseControlPoint extends BBasePoint {
         this.zeroZ = zeroZ;
     }
 
-    @Override
-    public String toString() {
-        return getName();
-    }
-
-//    public abstract class Ext<T> extends BBase.Ext {
-//
-//    }
 }

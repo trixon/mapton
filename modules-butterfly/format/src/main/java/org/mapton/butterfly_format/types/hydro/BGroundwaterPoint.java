@@ -17,8 +17,8 @@ package org.mapton.butterfly_format.types.hydro;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import org.mapton.butterfly_format.types.BBase;
 import org.mapton.butterfly_format.types.BBaseControlPoint;
+import org.mapton.butterfly_format.types.BBasePoint;
 
 /**
  *
@@ -98,7 +98,7 @@ public class BGroundwaterPoint extends BBaseControlPoint {
         this.offsetZ = offsetZ;
     }
 
-    public class Ext extends BBase.Ext<BGroundwaterObservation> {
+    public class Ext extends BBasePoint.Ext<BGroundwaterObservation> {
 
     }
 

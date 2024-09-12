@@ -17,7 +17,7 @@ package org.mapton.butterfly_format.types.tmo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Comparator;
-import org.mapton.butterfly_format.types.BBase;
+import org.mapton.butterfly_format.types.BBasePoint;
 
 /**
  *
@@ -75,7 +75,7 @@ public class BGrundvatten extends BBasVatten {
         this.mSpetstyp = spetstyp;
     }
 
-    public class Ext extends BBase.Ext<BGrundvattenObservation> {
+    public class Ext extends BBasePoint.Ext<BGrundvattenObservation> {
 
         public BGrundvattenObservation getMaxObservation() {
             return getObservationsAllRaw().stream().max(Comparator.comparing(BGrundvattenObservation::getNivå)).orElse(null);

@@ -27,7 +27,7 @@ import org.mapton.api.MOptions;
 import org.mapton.api.Mapton;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
-import org.mapton.butterfly_format.types.topo.BTopoControlPointObservation;
+import org.mapton.butterfly_format.types.BXyzPointObservation;
 import org.mapton.butterfly_format.types.topo.BTopoConvergenceGroup;
 import org.mapton.butterfly_format.types.topo.BTopoConvergencePair;
 import org.mapton.butterfly_format.types.topo.BTopoConvergencePairObservation;
@@ -149,8 +149,8 @@ public class ConvergencePairManager extends BaseManager<BTopoConvergencePair> {
 
         for (var pair : pairs) {
             var observations = new ArrayList<BTopoConvergencePairObservation>();
-            var dateToObservation1 = new HashMap<LocalDateTime, BTopoControlPointObservation>();
-            var dateToObservation2 = new HashMap<LocalDateTime, BTopoControlPointObservation>();
+            var dateToObservation1 = new HashMap<LocalDateTime, BXyzPointObservation>();
+            var dateToObservation2 = new HashMap<LocalDateTime, BXyzPointObservation>();
 
             var pp1 = mTopoManager.getAllItemsMap().get(pair.getP1().getName());
             var pp2 = mTopoManager.getAllItemsMap().get(pair.getP2().getName());

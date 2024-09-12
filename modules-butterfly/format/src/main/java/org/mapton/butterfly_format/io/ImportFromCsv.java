@@ -78,8 +78,8 @@ public abstract class ImportFromCsv<T> {
                 }
             } else {
                 var file = new File(sourceDir, path);
-                if (!file.isFile()) {
-                    System.out.println("Missing source file: " + file);
+                if (!file.isFile() || file.length() == 0) {
+                    System.out.println("Missing source file, or file is empty: " + file);
                     return;
                 }
                 var mappingIterator = mMapper.readerFor(classOfT).with(schema).readValues(file);
