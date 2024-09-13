@@ -20,8 +20,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.util.ArrayList;
 import org.apache.commons.lang3.ObjectUtils;
-import org.mapton.butterfly_format.types.BBaseControlPoint;
 import org.mapton.butterfly_format.types.BBasePoint;
+import org.mapton.butterfly_format.types.BXyzPoint;
 
 /**
  *
@@ -62,7 +62,7 @@ import org.mapton.butterfly_format.types.BBasePoint;
     "nameOfAlarmPlane",
     "dateLatest"
 })
-public class BGeoExtensometerPoint extends BBaseControlPoint {
+public class BGeoExtensometerPoint extends BXyzPoint {
 
     @JsonIgnore
     private transient String category;

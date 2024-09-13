@@ -51,7 +51,7 @@ import static org.mapton.butterfly_format.BundleMode.ZIP;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.ButterflyLoader;
 import org.mapton.butterfly_format.ZipHelper;
-import org.mapton.butterfly_format.types.BBaseControlPoint;
+import org.mapton.butterfly_format.types.BXyzPoint;
 import org.mapton.butterfly_format.types.tmo.BBasObjekt;
 import org.netbeans.api.progress.ProgressHandle;
 import org.openide.DialogDisplayer;
@@ -100,7 +100,7 @@ public class ButterflyManager {
         return mButterflyProperty;
     }
 
-    public void calculateLatLons(ArrayList<? extends BBaseControlPoint> baseControlPoints) {
+    public void calculateLatLons(ArrayList<? extends BXyzPoint> baseControlPoints) {
         for (var cp : baseControlPoints) {
             var x = cp.getZeroX();
             var y = cp.getZeroY();

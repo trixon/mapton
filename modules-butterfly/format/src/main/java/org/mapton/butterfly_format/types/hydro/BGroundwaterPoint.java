@@ -17,8 +17,9 @@ package org.mapton.butterfly_format.types.hydro;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import org.mapton.butterfly_format.types.BBaseControlPoint;
 import org.mapton.butterfly_format.types.BBasePoint;
+import org.mapton.butterfly_format.types.BDimension;
+import org.mapton.butterfly_format.types.BXyzPoint;
 
 /**
  *
@@ -46,8 +47,10 @@ import org.mapton.butterfly_format.types.BBasePoint;
     "comment",
     "meta"
 })
-public class BGroundwaterPoint extends BBaseControlPoint {
+public class BGroundwaterPoint extends BXyzPoint {
 
+    @JsonIgnore
+    private BDimension dimension;
     @JsonIgnore
     private Ext mExt;
     private String nameOfAlarm;

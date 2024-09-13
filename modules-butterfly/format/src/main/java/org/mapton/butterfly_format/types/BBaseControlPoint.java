@@ -31,17 +31,9 @@ public abstract class BBaseControlPoint extends BBasePoint {
     private LocalDate dateValidTo;
     private LocalDate dateZero;
     private Integer frequency;
-    private Integer numOfDecXY;
-    private Integer numOfDecZ;
     private String operator;
-    private Double rollingX;
-    private Double rollingY;
-    private Double rollingZ;
     private String status;
     private String tag;
-    private Double zeroX;
-    private Double zeroY;
-    private Double zeroZ;
 
     public BBaseControlPoint() {
     }
@@ -74,28 +66,8 @@ public abstract class BBaseControlPoint extends BBasePoint {
         return frequency;
     }
 
-    public Integer getNumOfDecXY() {
-        return numOfDecXY;
-    }
-
-    public Integer getNumOfDecZ() {
-        return numOfDecZ;
-    }
-
     public String getOperator() {
         return operator;
-    }
-
-    public Double getRollingX() {
-        return rollingX;
-    }
-
-    public Double getRollingY() {
-        return rollingY;
-    }
-
-    public Double getRollingZ() {
-        return rollingZ;
     }
 
     public String getStatus() {
@@ -104,18 +76,6 @@ public abstract class BBaseControlPoint extends BBasePoint {
 
     public String getTag() {
         return tag;
-    }
-
-    public Double getZeroX() {
-        return zeroX;
-    }
-
-    public Double getZeroY() {
-        return zeroY;
-    }
-
-    public Double getZeroZ() {
-        return zeroZ;
     }
 
     public void setCategory(String category) {
@@ -146,28 +106,8 @@ public abstract class BBaseControlPoint extends BBasePoint {
         this.frequency = frequency;
     }
 
-    public void setNumOfDecXY(Integer numOfDecXY) {
-        this.numOfDecXY = numOfDecXY;
-    }
-
-    public void setNumOfDecZ(Integer numOfDecZ) {
-        this.numOfDecZ = numOfDecZ;
-    }
-
     public void setOperator(String operator) {
         this.operator = operator;
-    }
-
-    public void setRollingX(Double rollingX) {
-        this.rollingX = rollingX;
-    }
-
-    public void setRollingY(Double rollingY) {
-        this.rollingY = rollingY;
-    }
-
-    public void setRollingZ(Double rollingZ) {
-        this.rollingZ = rollingZ;
     }
 
     public void setStatus(String status) {
@@ -176,18 +116,6 @@ public abstract class BBaseControlPoint extends BBasePoint {
 
     public void setTag(String tag) {
         this.tag = tag;
-    }
-
-    public void setZeroX(Double zeroX) {
-        this.zeroX = zeroX;
-    }
-
-    public void setZeroY(Double zeroY) {
-        this.zeroY = zeroY;
-    }
-
-    public void setZeroZ(Double zeroZ) {
-        this.zeroZ = zeroZ;
     }
 
 }

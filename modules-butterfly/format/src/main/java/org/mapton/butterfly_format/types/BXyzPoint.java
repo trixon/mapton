@@ -30,13 +30,85 @@ import se.trixon.almond.util.StringHelper;
 public abstract class BXyzPoint extends BBaseControlPoint {
 
     private BDimension dimension;
+    private Integer numOfDecXY;
+    private Integer numOfDecZ;
+    private Double rollingX;
+    private Double rollingY;
+    private Double rollingZ;
+    private Double zeroX;
+    private Double zeroY;
+    private Double zeroZ;
 
     public BDimension getDimension() {
         return dimension;
     }
 
+    public Integer getNumOfDecXY() {
+        return numOfDecXY;
+    }
+
+    public Integer getNumOfDecZ() {
+        return numOfDecZ;
+    }
+
+    public Double getRollingX() {
+        return rollingX;
+    }
+
+    public Double getRollingY() {
+        return rollingY;
+    }
+
+    public Double getRollingZ() {
+        return rollingZ;
+    }
+
+    public Double getZeroX() {
+        return zeroX;
+    }
+
+    public Double getZeroY() {
+        return zeroY;
+    }
+
+    public Double getZeroZ() {
+        return zeroZ;
+    }
+
     public void setDimension(BDimension dimension) {
         this.dimension = dimension;
+    }
+
+    public void setNumOfDecXY(Integer numOfDecXY) {
+        this.numOfDecXY = numOfDecXY;
+    }
+
+    public void setNumOfDecZ(Integer numOfDecZ) {
+        this.numOfDecZ = numOfDecZ;
+    }
+
+    public void setRollingX(Double rollingX) {
+        this.rollingX = rollingX;
+    }
+
+    public void setRollingY(Double rollingY) {
+        this.rollingY = rollingY;
+    }
+
+    public void setRollingZ(Double rollingZ) {
+        this.rollingZ = rollingZ;
+    }
+
+    public void setZeroX(Double zeroX) {
+        this.zeroX = zeroX;
+    }
+
+    public void setZeroY(Double zeroY) {
+        this.zeroY = zeroY;
+    }
+
+    public void setZeroZ(Double zeroZ) {
+        this.zeroZ = zeroZ;
     }
 
     public abstract class Ext<T extends BXyzPointObservation> extends BBasePoint.Ext<T> {

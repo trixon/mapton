@@ -19,7 +19,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.util.ArrayList;
-import org.mapton.butterfly_format.types.BBaseControlPoint;
+import org.mapton.butterfly_format.types.BXyzPoint;
 
 /**
  *
@@ -61,7 +61,7 @@ import org.mapton.butterfly_format.types.BBaseControlPoint;
     "dateValidFrom", "dateValidTo", "lat", "lon", "origin",
     "dateLatest"
 })
-public class BGeoExtensometer extends BBaseControlPoint {
+public class BGeoExtensometer extends BXyzPoint {
 
     @JsonIgnore
     private Ext mExt;

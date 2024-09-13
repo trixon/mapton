@@ -21,13 +21,13 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import javafx.geometry.Point3D;
 import org.apache.commons.lang3.StringUtils;
-import org.mapton.butterfly_format.types.BBaseControlPoint;
+import org.mapton.butterfly_format.types.BXyzPoint;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class BTopoConvergencePair extends BBaseControlPoint {
+public class BTopoConvergencePair extends BXyzPoint {
 
     private BTopoConvergenceGroup mConvergenceGroup;
     private final Point3D mDelta;
