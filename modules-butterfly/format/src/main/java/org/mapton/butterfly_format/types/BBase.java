@@ -17,6 +17,7 @@ package org.mapton.butterfly_format.types;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import org.mapton.butterfly_format.Butterfly;
 
 /**
@@ -32,6 +33,8 @@ public abstract class BBase {
     private String meta;
     private String name;
     private String origin;
+    @JsonIgnore
+    private transient final HashMap<Object, Object> values = new HashMap<>();
 
     public Butterfly getButterfly() {
         return butterfly;
@@ -57,6 +60,23 @@ public abstract class BBase {
         return origin;
     }
 
+    public <T> T getValue(String key, Class<T> type) {
+        return type.cast(getValues().get(key));
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> T getValue(Object key) {
+        return (T) (getValues().get(key));
+    }
+
+    public Object getValue(Object key, Object defaultValue) {
+        return getValues().getOrDefault(key, defaultValue);
+    }
+
+    public HashMap<Object, Object> getValues() {
+        return values;
+    }
+
     public void setButterfly(Butterfly butterfly) {
         this.butterfly = butterfly;
     }
@@ -79,6 +99,10 @@ public abstract class BBase {
 
     public void setOrigin(String origin) {
         this.origin = origin;
+    }
+
+    public Object setValue(Object key, Object value) {
+        return values.put(key, value);
     }
 
     @Override

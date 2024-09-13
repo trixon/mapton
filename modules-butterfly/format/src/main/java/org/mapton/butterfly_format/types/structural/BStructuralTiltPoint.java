@@ -73,6 +73,18 @@ public class BStructuralTiltPoint extends BXyzPoint {
 
     public class Ext extends BXyzPoint.Ext<BStructuralTiltPointObservation> {
 
+        public String getDeltaRolling() {
+            return getDelta(deltaRolling());
+        }
+
+        public String getDeltaZero() {
+            return getDelta(deltaZero());
+        }
+
+        private String getDelta(Delta delta) {
+            var s = "X°=%.4f, Y°=%.4f, Z°=%.4f".formatted(delta.getDeltaX(), delta.getDeltaY(), delta.getDeltaZ());
+            return s;
+        }
     }
 
 }

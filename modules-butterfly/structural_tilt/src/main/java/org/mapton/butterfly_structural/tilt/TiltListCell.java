@@ -81,19 +81,16 @@ class TiltListCell extends ListCell<BStructuralTiltPoint> {
         }
 
         var dateRolling = StringHelper.toString(p.getDateRolling(), "NOVALUE");
+        var desc3 = "%s: %s".formatted(dateRolling, p.ext().getDeltaRolling());
 
-//        String deltaRolling = p.ext().deltaRolling().getDelta(3);
-//        var desc3 = "%s: %s".formatted(dateRolling, deltaRolling);
-//
-//        var dateZero = StringHelper.toString(p.getDateZero(), "NOVALUE");
-//        String deltaZero = p.ext().deltaZero().getDelta(3);
-//        var desc4 = "%s: %s".formatted(dateZero, deltaZero);
+        var dateZero = StringHelper.toString(p.getDateZero(), "NOVALUE");
+        var desc4 = "%s: %s".formatted(dateZero, p.ext().getDeltaZero());
         mAlarmIndicator.update(p);
         mHeaderLabel.setText(header);
         mDesc1Label.setText(desc1);
         mDesc2Label.setText(dateSB.toString());
-//        mDesc3Label.setText(desc3);
-//        mDesc4Label.setText(desc4);
+        mDesc3Label.setText(desc3);
+        mDesc4Label.setText(desc4);
 
         mHeaderLabel.setTooltip(new Tooltip("Add custom tooltip: " + p.getName()));
         mTooltip.setText("TODO");

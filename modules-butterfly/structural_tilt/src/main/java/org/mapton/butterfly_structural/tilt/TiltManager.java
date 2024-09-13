@@ -48,11 +48,6 @@ public class TiltManager extends BaseManager<BStructuralTiltPoint> {
 
     @Override
     public Object getObjectChart(BStructuralTiltPoint selectedObject) {
-        System.out.println(selectedObject.getName());
-        System.out.println(selectedObject.ext().getObservationsAllCalculated().size());
-        System.out.println(selectedObject.ext().getObservationsAllRaw().size());
-        System.out.println(selectedObject.ext().getObservationsTimeFiltered().size());
-
         return mChartBuilder.build(selectedObject);
     }
 
