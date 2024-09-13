@@ -79,7 +79,7 @@ public class TiltLayerBundle extends BfLayerBundle {
         mLayer.setName(Bundle.CTL_TiltAction());
         setCategory(mLayer, SDict.STRUCTURAL.toString());
         setName(Bundle.CTL_TiltAction());
-        attachTopComponentToLayer("StructuralTiltTopComponent", mLayer);
+        attachTopComponentToLayer("TiltTopComponent", mLayer);
         mLayer.setMaxActiveAltitude(6000);
         mSurfaceLayer.setMaxActiveAltitude(6000);
         mPinLayer.setMaxActiveAltitude(20000);

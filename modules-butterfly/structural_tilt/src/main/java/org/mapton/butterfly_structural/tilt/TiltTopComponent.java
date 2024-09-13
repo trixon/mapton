@@ -43,7 +43,7 @@ import org.openide.windows.TopComponent;
 })
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_TiltAction",
-        preferredID = "StructuralTiltTopComponent"
+        preferredID = "TiltTopComponent"
 )
 @Messages({
     "CTL_TiltAction=Tilt sensor"

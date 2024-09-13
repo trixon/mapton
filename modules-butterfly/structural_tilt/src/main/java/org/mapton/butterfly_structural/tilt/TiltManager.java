@@ -35,6 +35,7 @@ import se.trixon.almond.util.CollectionHelper;
  */
 public class TiltManager extends BaseManager<BStructuralTiltPoint> {
 
+    private final TiltChartBuilder mChartBuilder = new TiltChartBuilder();
     private final TiltPropertiesBuilder mPropertiesBuilder = new TiltPropertiesBuilder();
 
     public static TiltManager getInstance() {
@@ -47,8 +48,12 @@ public class TiltManager extends BaseManager<BStructuralTiltPoint> {
 
     @Override
     public Object getObjectChart(BStructuralTiltPoint selectedObject) {
-//        return mChartBuilder.build(selectedObject);
-        return null;
+        System.out.println(selectedObject.getName());
+        System.out.println(selectedObject.ext().getObservationsAllCalculated().size());
+        System.out.println(selectedObject.ext().getObservationsAllRaw().size());
+        System.out.println(selectedObject.ext().getObservationsTimeFiltered().size());
+
+        return mChartBuilder.build(selectedObject);
     }
 
     @Override
@@ -114,10 +119,10 @@ public class TiltManager extends BaseManager<BStructuralTiltPoint> {
 
         p:
         for (var p : getFilteredItems()) {
-            if (p.ext().getDateLatest() == null) {
+            if (p.getDateLatest() == null || p.ext().getObservationsAllRaw().isEmpty()) {
                 timeFilteredItems.add(p);
             } else {
-                for (var o : p.ext().getObservationsAllCalculated()) {
+                for (var o : p.ext().getObservationsAllRaw()) {
                     if (getTemporalManager().isValid(o.getDate())) {
                         timeFilteredItems.add(p);
                         continue p;
