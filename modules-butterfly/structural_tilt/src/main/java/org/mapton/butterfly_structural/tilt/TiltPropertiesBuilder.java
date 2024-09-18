@@ -79,8 +79,7 @@ public class TiltPropertiesBuilder extends PropertiesBuilder<BStructuralTiltPoin
         var nextRaw = Objects.toString(DateHelper.toDateString((LocalDate) null), "-");
 
         propertyMap.put(getCatKey(cat1, SDict.FREQUENCY.toString()), p.getFrequency());
-//        var need = p.getFrequency() == 0 ? "-" : Long.toString(p.ext().getMeasurementUntilNext(ChronoUnit.DAYS));
-        var need = 666;
+        var need = p.getFrequency() == 0 ? "-" : Long.toString(p.ext().getMeasurementUntilNext(ChronoUnit.DAYS));
         propertyMap.put(getCatKey(cat1, Dict.NEED.toString()), need);
         propertyMap.put(getCatKey(cat1, Dict.AGE.toString()), p.ext().getMeasurementAge(ChronoUnit.DAYS));
 //+++        propertyMap.put(getCatKey(cat1, "%s, %s".formatted(Dict.AGE.toString(), SDict.ALARM_LEVEL.toLower())), p.ext().getAlarmLevelAge());
@@ -97,20 +96,14 @@ public class TiltPropertiesBuilder extends PropertiesBuilder<BStructuralTiltPoin
                 "%s (%s)".formatted(firstRaw, firstFiltered)
         );
         var delta = "Δ ";
-//        propertyMap.put(getCatKey(cat1, delta + SDict.ROLLING.toString()), p.ext().deltaRolling().getDelta(3));
-//        propertyMap.put(getCatKey(cat1, delta + Dict.REFERENCE.toString()), p.ext().deltaZero().getDelta(3));
+        propertyMap.put(getCatKey(cat1, delta + SDict.ROLLING.toString()), p.ext().getDeltaRolling());
+        propertyMap.put(getCatKey(cat1, delta + Dict.REFERENCE.toString()), p.ext().getDeltaZero());
 
         propertyMap.put(getCatKey(cat1, "N"), StringHelper.round(p.getZeroY(), 3));
         propertyMap.put(getCatKey(cat1, "E"), StringHelper.round(p.getZeroX(), 3));
         propertyMap.put(getCatKey(cat1, "H"), StringHelper.round(p.getZeroZ(), 3));
         propertyMap.put(getCatKey(cat1, Dict.CREATED.toString()), DateHelper.toDateString(p.getDateCreated()));
         propertyMap.put(getCatKey(cat1, Dict.CHANGED.toString()), DateHelper.toDateString(p.getDateChanged()));
-        propertyMap.put(getCatKey(cat1, "r x"), p.getRollingX());
-        propertyMap.put(getCatKey(cat1, "r y"), p.getRollingY());
-        propertyMap.put(getCatKey(cat1, "r z"), p.getRollingZ());
-        propertyMap.put(getCatKey(cat1, "zero x2"), p.getZeroX2());
-        propertyMap.put(getCatKey(cat1, "zero y2"), p.getZeroY2());
-        propertyMap.put(getCatKey(cat1, "zero z2"), p.getZeroZ2());
 
         return propertyMap;
     }

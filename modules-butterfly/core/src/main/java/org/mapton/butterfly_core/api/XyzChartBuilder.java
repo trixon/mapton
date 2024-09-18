@@ -19,6 +19,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.Objects;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -74,11 +75,11 @@ public abstract class XyzChartBuilder<T extends BXyzPoint> extends ChartBuilder<
         mChart.setTitle(p.getName());
     }
 
-    protected void initChart() {
+    protected void initChart(String valueAxisLabel, String decimalPattern) {
         mChart = ChartFactory.createTimeSeriesChart(
                 "",
                 Dict.DATE.toString(),
-                "m",
+                Objects.toString(valueAxisLabel, "m"),
                 mDataset,
                 true,
                 true,
@@ -98,7 +99,7 @@ public abstract class XyzChartBuilder<T extends BXyzPoint> extends ChartBuilder<
         plot.setRangeCrosshairVisible(true);
 
         var yAxis = (NumberAxis) plot.getRangeAxis();
-        yAxis.setNumberFormatOverride(new DecimalFormat("0.000"));
+        yAxis.setNumberFormatOverride(new DecimalFormat(Objects.toString(decimalPattern, "0.000")));
 
         var itemRenderer = plot.getRenderer();
         if (itemRenderer instanceof XYLineAndShapeRenderer renderer) {

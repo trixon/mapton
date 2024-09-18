@@ -50,7 +50,7 @@ public class TiltChartBuilder extends XyzChartBuilder<BStructuralTiltPoint> {
     private final TimeSeries mTimeSeriesZ = new TimeSeries("R");
 
     public TiltChartBuilder() {
-        initChart();
+        initChart("mm/m", "0.0");
     }
 
     @Override

@@ -53,7 +53,7 @@ public class TopoChartBuilder extends XyzChartBuilder<BTopoControlPoint> {
     private final TimeSeries mTimeSeriesH = new TimeSeries(Dict.Geometry.HEIGHT);
 
     public TopoChartBuilder() {
-        initChart();
+        initChart(null, null);
     }
 
     @Override

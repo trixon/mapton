@@ -37,7 +37,7 @@ public enum TiltLabelBy {
         return Objects.toString(p.getGroup(), "NODATA");
     }),
     MISC_Z(Strings.CAT_MISC, "Z", p -> {
-        return MathHelper.convertDoubleToString(p.getZeroZ2(), 1);
+        return MathHelper.convertDoubleToString(p.getZeroTiltZ(), 1);
     });
     private final String mCategory;
     private final Function<BStructuralTiltPoint, String> mFunction;
