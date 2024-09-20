@@ -23,8 +23,8 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javafx.scene.shape.Polygon;
 import javafx.util.Duration;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.butterfly_format.types.structural.BStructuralTiltPoint;
@@ -126,8 +126,7 @@ class TiltListCell extends ListCell<BStructuralTiltPoint> {
     private class AlarmIndicator extends HBox {
 
         private static final double SIZE = FxHelper.getUIScaled(12);
-        private Circle mHeightShape;
-        private Polygon mPlaneShape;
+        private Circle mResultantShape;
 
         public AlarmIndicator() {
             super(SIZE / 4);
@@ -135,25 +134,15 @@ class TiltListCell extends ListCell<BStructuralTiltPoint> {
         }
 
         public void update(BStructuralTiltPoint p) {
-//            mHeightShape.setFill(TopoHelper.getAlarmColorHeightFx(p));
-//            mHeightShape.setVisible(p.getDimension() != BDimension._2d);
-//            mPlaneShape.setFill(TopoHelper.getAlarmColorPlaneFx(p));
-//            mPlaneShape.setVisible(p.getDimension() != BDimension._1d);
+//            mResultantShape.setFill(TopoHelper.getAlarmColorHeightFx(p));
+            mResultantShape.setFill(Color.BLUE);
         }
 
         private void createUI() {
-            mHeightShape = new Circle(SIZE / 2);
-            var hPane = new StackPane(mHeightShape);
+            mResultantShape = new Circle(SIZE / 2);
+            var hPane = new StackPane(mResultantShape);
 
-            mPlaneShape = new Polygon();
-            mPlaneShape.getPoints().addAll(new Double[]{
-                SIZE / 2, 0.0,
-                SIZE, SIZE,
-                0.0, SIZE
-            });
-            var pPane = new StackPane(mPlaneShape);
-
-            getChildren().setAll(hPane, pPane);
+            getChildren().setAll(hPane);
         }
     }
 }

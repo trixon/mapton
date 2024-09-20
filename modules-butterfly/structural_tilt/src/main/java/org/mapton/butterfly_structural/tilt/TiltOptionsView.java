@@ -116,8 +116,11 @@ public class TiltOptionsView extends MOptionsView {
         sessionManager.register("options.measPoint.pointBy", mPointScb.selectedIndexProperty());
         sessionManager.register("options.measPoint.labelBy", mLabelByIdProperty);
         sessionManager.register("options.measPoint.checkedGraphics", mGraphicSccb.checkedStringProperty());
-
-        mLabelByProperty.set(TiltLabelBy.valueOf(mLabelByIdProperty.get()));
+        try {
+            mLabelByProperty.set(TiltLabelBy.valueOf(mLabelByIdProperty.get()));
+        } catch (IllegalArgumentException e) {
+            mLabelByProperty.set(TiltLabelBy.NAME);
+        }
     }
 
     private void populateLabelMenuButton() {
