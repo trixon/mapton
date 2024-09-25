@@ -31,12 +31,15 @@ import se.trixon.almond.util.GraphicsHelper;
  */
 public class TiltAttributeManager {
 
+    private BasicShapeAttributes mBearingAttribute;
+
     private BasicShapeAttributes mComponentEllipsoidAttributes;
     private BasicShapeAttributes mComponentGroundPathAttributes;
-    private BasicShapeAttributes mSurfaceAttributes;
     private PointPlacemarkAttributes mLabelPlacemarkAttributes;
     private PointPlacemarkAttributes mPinAttributes;
+    private BasicShapeAttributes mSurfaceAttributes;
     private BasicShapeAttributes[] mSymbolAttributes;
+    private BasicShapeAttributes mTiltAttribute;
 
     public static TiltAttributeManager getInstance() {
         return Holder.INSTANCE;
@@ -45,26 +48,16 @@ public class TiltAttributeManager {
     private TiltAttributeManager() {
     }
 
-    public BasicShapeAttributes getSymbolAttributes(BStructuralTiltPoint p) {
-        if (mSymbolAttributes == null) {
-            mSymbolAttributes = new BasicShapeAttributes[4];
-            for (int i = 0; i < 4; i++) {
-                var attrs = new BasicShapeAttributes();
-                attrs.setInteriorMaterial(ButterflyHelper.getAlarmMaterial(i - 1));
-                attrs.setEnableLighting(true);
-                attrs.setDrawOutline(false);
-                mSymbolAttributes[i] = attrs;
-            }
+    public BasicShapeAttributes getBearingAttribute() {
+        if (mBearingAttribute == null) {
+            mBearingAttribute = new BasicShapeAttributes();
+            mBearingAttribute.setDrawOutline(true);
+            mBearingAttribute.setOutlineMaterial(Material.CYAN);
+            mBearingAttribute.setOutlineWidth(4.0);
+            mBearingAttribute.setOutlineOpacity(1.0);
         }
 
-        var attrs = mSymbolAttributes[1];
-//        var attrs = mSymbolAttributes[TopoHelper.getAlarmLevel(p) + 1];
-//        if (mColorBy != null && mColorBy != ColorBy.ALARM) {
-//            attrs = new BasicShapeAttributes(attrs);
-//            attrs.setInteriorMaterial(new Material(getColor(p)));
-//        }
-
-        return attrs;
+        return mBearingAttribute;
     }
 
     public BasicShapeAttributes getComponentEllipsoidAttributes() {
@@ -90,18 +83,6 @@ public class TiltAttributeManager {
         return mComponentGroundPathAttributes;
     }
 
-    public BasicShapeAttributes getSurfaceAttributes() {
-        if (mSurfaceAttributes == null) {
-            mSurfaceAttributes = new BasicShapeAttributes();
-            mSurfaceAttributes.setDrawOutline(false);
-            mSurfaceAttributes.setDrawInterior(true);
-            mSurfaceAttributes.setInteriorMaterial(Material.RED);
-            mSurfaceAttributes.setEnableLighting(false);
-        }
-
-        return mSurfaceAttributes;
-    }
-
     public PointPlacemarkAttributes getLabelPlacemarkAttributes() {
         if (mLabelPlacemarkAttributes == null) {
             mLabelPlacemarkAttributes = new PointPlacemarkAttributes(new PointPlacemark(Position.ZERO).getDefaultAttributes());
@@ -123,6 +104,52 @@ public class TiltAttributeManager {
         }
 
         return mPinAttributes;
+    }
+
+    public BasicShapeAttributes getSurfaceAttributes() {
+        if (mSurfaceAttributes == null) {
+            mSurfaceAttributes = new BasicShapeAttributes();
+            mSurfaceAttributes.setDrawOutline(false);
+            mSurfaceAttributes.setDrawInterior(true);
+            mSurfaceAttributes.setInteriorMaterial(Material.RED);
+            mSurfaceAttributes.setEnableLighting(false);
+        }
+
+        return mSurfaceAttributes;
+    }
+
+    public BasicShapeAttributes getSymbolAttributes(BStructuralTiltPoint p) {
+        if (mSymbolAttributes == null) {
+            mSymbolAttributes = new BasicShapeAttributes[4];
+            for (int i = 0; i < 4; i++) {
+                var attrs = new BasicShapeAttributes();
+                attrs.setInteriorMaterial(ButterflyHelper.getAlarmMaterial(i - 1));
+                attrs.setEnableLighting(true);
+                attrs.setDrawOutline(false);
+                mSymbolAttributes[i] = attrs;
+            }
+        }
+
+        var attrs = mSymbolAttributes[1];
+//        var attrs = mSymbolAttributes[TopoHelper.getAlarmLevel(p) + 1];
+//        if (mColorBy != null && mColorBy != ColorBy.ALARM) {
+//            attrs = new BasicShapeAttributes(attrs);
+//            attrs.setInteriorMaterial(new Material(getColor(p)));
+//        }
+
+        return attrs;
+    }
+
+    public BasicShapeAttributes getTiltAttribute() {
+        if (mTiltAttribute == null) {
+            mTiltAttribute = new BasicShapeAttributes();
+            mTiltAttribute.setDrawOutline(true);
+            mTiltAttribute.setOutlineMaterial(Material.RED);
+            mTiltAttribute.setOutlineWidth(4.0);
+            mTiltAttribute.setOutlineOpacity(1.0);
+        }
+
+        return mTiltAttribute;
     }
 
     private static class Holder {

@@ -58,7 +58,7 @@ public class TiltLayerBundle extends BfLayerBundle {
         init();
         initRepaint();
         mOptionsView = new TiltOptionsView(this);
-        mGraphicRenderer = new GraphicRenderer(mLayer, mGroundConnectorLayer, mSurfaceLayer, mOptionsView.getGraphicCheckModel());
+        mGraphicRenderer = new GraphicRenderer(mLayer, mOptionsView.getGraphicCheckModel());
         initListeners();
 
         mManager.setInitialTemporalState(WWHelper.isStoredAsVisible(mLayer, mLayer.isEnabled()));
@@ -117,9 +117,11 @@ public class TiltLayerBundle extends BfLayerBundle {
         setPainter(() -> {
             removeAllRenderables();
             mGraphicRenderer.reset();
+
             if (!mLayer.isEnabled()) {
                 return;
             }
+
             var pointBy = mOptionsView.getPointBy();
             switch (pointBy) {
                 case NONE -> {
@@ -147,7 +149,9 @@ public class TiltLayerBundle extends BfLayerBundle {
                     mapObjects.add(labelPlacemark);
                     mapObjects.add(plotPin(position, labelPlacemark));
                     mapObjects.addAll(plotSymbol(p, position, labelPlacemark));
+
                     mGraphicRenderer.plot(p, position, mapObjects);
+
                     var leftClickRunnable = (Runnable) () -> {
                         mManager.setSelectedItemAfterReset(p);
                     };
