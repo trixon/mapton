@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_tmo.rorelse;
+package org.mapton.butterfly_tmo.api;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -24,6 +24,7 @@ import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.tmo.BRorelse;
 import org.mapton.butterfly_format.types.tmo.BRorelseObservation;
+import org.mapton.butterfly_tmo.rorelse.RorelsePropertiesBuilder;
 import org.openide.util.Exceptions;
 
 /**

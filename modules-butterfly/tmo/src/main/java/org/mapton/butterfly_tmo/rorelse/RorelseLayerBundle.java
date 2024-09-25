@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_tmo.rorelse;
 
+import org.mapton.butterfly_tmo.api.RorelseManager;
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;

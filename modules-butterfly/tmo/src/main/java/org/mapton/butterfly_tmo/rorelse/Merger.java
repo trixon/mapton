@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_tmo.rorelse;
 
+import org.mapton.butterfly_tmo.api.RorelseManager;
 import java.util.ArrayList;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.butterfly_core.api.ButterflyManager;

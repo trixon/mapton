@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_tmo.rorelse;
 
+import org.mapton.butterfly_tmo.api.RorelseManager;
 import java.util.Arrays;
 import javafx.scene.layout.Pane;
 import org.controlsfx.control.action.Action;
@@ -23,6 +24,7 @@ import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.SingleListForm;
 import org.mapton.butterfly_format.types.tmo.BRorelse;
+import org.mapton.core.api.ui.ExportAction;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 
@@ -38,13 +40,14 @@ public class RorelseView {
     private final RorelseManager mManager = RorelseManager.getInstance();
 
     public RorelseView() {
-        var exportAction = new Action("Sammanfoga med kontrollpunkter", actionEvent -> {
+        var mergeAction = new Action("Sammanfoga med kontrollpunkter", actionEvent -> {
             new Merger().merge();
         });
-        exportAction.setGraphic(MaterialIcon._Editor.MERGE_TYPE.getImageView(getIconSizeToolBarInt()));
+        mergeAction.setGraphic(MaterialIcon._Editor.MERGE_TYPE.getImageView(getIconSizeToolBarInt()));
 
         var actions = Arrays.asList(
-                exportAction,
+                new ExportAction("TMO-Rorelse"),
+                mergeAction,
                 ActionUtils.ACTION_SPAN,
                 mManager.geZoomExtentstAction(),
                 mFilter.getInfoPopOver().getAction(),
