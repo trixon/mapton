@@ -274,6 +274,11 @@ public abstract class BXyzPoint extends BBaseControlPoint {
 
             public abstract Double getDeltaZ();
 
+            public String getDeltaZAbsolute(int decimals) {
+                var delta = getDeltaZ();
+                return delta == null ? null : StringHelper.round(Math.abs(delta), decimals, "ΔZ=", "", false);
+            }
+
             public String getDeltaZ(int decimals) {
                 var delta = getDeltaZ();
                 return delta == null ? null : StringHelper.round(delta, decimals, "ΔZ=", "", true);

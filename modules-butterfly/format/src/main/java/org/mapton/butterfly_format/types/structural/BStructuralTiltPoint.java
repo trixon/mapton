@@ -32,6 +32,7 @@ public class BStructuralTiltPoint extends BXyzPoint {
     private Double zeroTiltX;
     private Double zeroTiltY;
     private Double zeroTiltZ;
+    private Double directionX;
 
     public Ext ext() {
         if (mExt == null) {
@@ -43,6 +44,10 @@ public class BStructuralTiltPoint extends BXyzPoint {
 
     public String getNameOfAlarm() {
         return nameOfAlarm;
+    }
+
+    public Double getDirectionX() {
+        return directionX;
     }
 
     public Double getZeroTiltX() {
@@ -59,6 +64,10 @@ public class BStructuralTiltPoint extends BXyzPoint {
 
     public void setNameOfAlarm(String nameOfAlarm) {
         this.nameOfAlarm = nameOfAlarm;
+    }
+
+    public void setDirectionX(Double directionX) {
+        this.directionX = directionX;
     }
 
     public void setZeroTiltX(Double zeroTiltX) {
@@ -91,7 +100,13 @@ public class BStructuralTiltPoint extends BXyzPoint {
         }
 
         private String getDelta(Delta delta) {
-            var s = "X=%.1f, Y=%.1f, Z=%.1f".formatted(delta.getDeltaX(), delta.getDeltaY(), delta.getDeltaZ());
+            var dR = "";
+            if (delta.getDeltaZ() != null) {
+                dR = ", R=%.1f".formatted(Math.abs(delta.getDeltaZ()));
+            }
+
+            var s = "X=%.1f, Y=%.1f%s".formatted(delta.getDeltaX(), delta.getDeltaY(), dR);
+
             return s;
         }
     }
