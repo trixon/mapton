@@ -64,7 +64,7 @@ class GradeHListCell extends ListCell<BTopoGrade> {
         mAlarmIndicator.update(p);
         mHeaderLabel.setText(header);
         BTopoGradeDiff gradeDiff = p.ext().getDiff();
-        mDesc1Label.setText("%.1f%%   %.1f mm/m".formatted(gradeDiff.getZPercentage(), gradeDiff.getZPerMille()));
+        mDesc1Label.setText("%.1f mm/m".formatted(gradeDiff.getZPerMille()));
         mDesc2Label.setText("ΔH=%.1f m, ΔP=%.1f m, ∂iH=%.1f mm".formatted(p.getDistanceHeight(),
                 p.getDistancePlane(),
                 gradeDiff.getPartialDiffZ() * 1000

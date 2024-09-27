@@ -76,7 +76,7 @@ public class GradeHRenderer extends GradeHRendererBase {
     }
 
     private void plotIndicator(BTopoGrade p, Position position, Position pos1, Position pos2, ArrayList<AVListImpl> mapObjects) {
-        if (isPlotLimitReached(p, GradeHRendererItem.INDICATOR, position)) {
+        if (sPlotLimiter.isLimitReached(GradeHRendererItem.INDICATOR, p.getName())) {
             return;
         }
 
@@ -101,6 +101,7 @@ public class GradeHRenderer extends GradeHRendererBase {
         addRenderable(path, true);
 
         mapObjects.add(path);
+        sPlotLimiter.incPlotCounter(GradeHRendererItem.INDICATOR);
     }
 
     private void plotIndicatorGroundCylinder(Position position, double z, double r) {
@@ -136,12 +137,13 @@ public class GradeHRenderer extends GradeHRendererBase {
     }
 
     private void plotName(BTopoGrade p, Position position, Position pos1, Position pos2, ArrayList<AVListImpl> mapObjects) {
-        if (isPlotLimitReached(p, GradeHRendererItem.NAME, position)) {
+        if (sPlotLimiter.isLimitReached(GradeHRendererItem.NAME, p.getName())) {
             return;
         }
 
         plotName(pos1, p.getP1());
         plotName(pos2, p.getP2());
+        sPlotLimiter.incPlotCounter(GradeHRendererItem.NAME);
     }
 
 }

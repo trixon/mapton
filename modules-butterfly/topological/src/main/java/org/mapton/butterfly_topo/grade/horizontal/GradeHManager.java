@@ -36,7 +36,7 @@ import se.trixon.almond.util.fx.FxHelper;
 public class GradeHManager extends GradeManagerBase {
 
     public static final Double MAX_RADIAL_DISTANCE = 50.0;
-    public static final Double MIN_GRADE_H = 0.0002;
+    public static final Double MIN_GRADE_H = 0.000005;
     public static final Double MIN_RADIAL_DISTANCE = 0.050;
     private final GradeHPropertiesBuilder mPropertiesBuilder = new GradeHPropertiesBuilder();
 

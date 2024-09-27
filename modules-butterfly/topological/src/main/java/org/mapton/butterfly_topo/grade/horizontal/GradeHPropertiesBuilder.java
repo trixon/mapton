@@ -53,7 +53,6 @@ public class GradeHPropertiesBuilder extends PropertiesBuilder<BTopoGrade> {
 //        propertyMap.put(getCatKey(cat1, mBundle.getString("gradeHDeg")), MathHelper.convertDoubleToString(p.ext().getDiff().getZAngleDeg(), 0));
 //        propertyMap.put(getCatKey(cat1, mBundle.getString("gradeHGon")), MathHelper.convertDoubleToString(p.ext().getDiff().getZAngleGon(), 0));
 //        propertyMap.put(getCatKey(cat1, mBundle.getString("gradeHRad")), MathHelper.convertDoubleToString(p.ext().getDiff().getZAngleRad(), 4));
-        propertyMap.put(getCatKey(cat1, mBundle.getString("gradeHPerCent")), MathHelper.convertDoubleToString(p.ext().getDiff().getZPercentage(), 1));
         propertyMap.put(getCatKey(cat1, mBundle.getString("gradeHPerMille")), MathHelper.convertDoubleToString(p.ext().getDiff().getZPerMille(), 1));
 
         return propertyMap;

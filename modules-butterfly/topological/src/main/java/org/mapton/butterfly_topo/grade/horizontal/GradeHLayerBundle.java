@@ -45,6 +45,7 @@ import se.trixon.almond.util.SDict;
 @ServiceProvider(service = LayerBundle.class)
 public class GradeHLayerBundle extends TopoBaseLayerBundle {
 
+    private static final int PLOT_LIMIT = 10000;
     private final GradeAttributeManager mAttributeManager = GradeAttributeManager.getInstance();
     private final ResourceBundle mBundle = NbBundle.getBundle(GradeManagerBase.class);
     private final GradeHManager mManager = GradeHManager.getInstance();
@@ -195,6 +196,7 @@ public class GradeHLayerBundle extends TopoBaseLayerBundle {
 
             new ArrayList<>(mManager.getTimeFilteredItems()).stream()
                     .filter(p -> ObjectUtils.allNotNull(p.getLat(), p.getLon()))
+                    .limit(PLOT_LIMIT)
                     .forEachOrdered(p -> {
                         var position = Position.fromDegrees(p.getLat(), p.getLon());
                         var labelPlacemark = plotLabel(p, null, position);
