@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,17 +15,29 @@
  */
 package org.mapton.butterfly_format.types.tmo;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+
 /**
  *
  * @author Patrik Karlström
  */
 public class BRorelse extends BBasObjekt {
 
+    private Ext mExt;
     private String mFixpunkt;
     private String mPlacering;
     private String mPlacering_kommentar;
 
     public BRorelse() {
+    }
+
+    public Ext ext() {
+        if (mExt == null) {
+            mExt = new Ext();
+        }
+
+        return mExt;
     }
 
     public String getFixpunkt() {
@@ -50,5 +62,28 @@ public class BRorelse extends BBasObjekt {
 
     public void setPlacering_kommentar(String placering_kommentar) {
         this.mPlacering_kommentar = placering_kommentar;
+    }
+
+    public class Ext {
+
+        private LocalDateTime mDateLatest;
+        private transient ArrayList<BRorelseObservation> observationsAllRaw;
+
+        public LocalDateTime getDateLatest() {
+            return mDateLatest;
+        }
+
+        public ArrayList<BRorelseObservation> getObservationsAllRaw() {
+            return observationsAllRaw;
+        }
+
+        public void setDateLatest(LocalDateTime dateLatest) {
+            this.mDateLatest = dateLatest;
+        }
+
+        public void setObservationsAllRaw(ArrayList<BRorelseObservation> observationsAllRaw) {
+            this.observationsAllRaw = observationsAllRaw;
+        }
+
     }
 }

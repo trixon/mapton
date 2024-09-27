@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_tmo.api;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.TreeSet;
@@ -62,15 +63,54 @@ public class RorelseManager extends BaseManager<BRorelse> {
             for (var o : butterfly.tmo().getRorelseObservations()) {
                 nameToObservations.computeIfAbsent(o.getName(), k -> new ArrayList<>()).add(o);
             }
+            for (var p : butterfly.tmo().getRorelse()) {
+                var observations = nameToObservations.getOrDefault(p.getName(), new ArrayList<>());
+                if (!observations.isEmpty()) {
+                    p.ext().setDateLatest(observations.getLast().getDate());
+                }
 
-            var dates = new TreeSet<>(getAllItems().stream()
-                    .map(p -> p.getInstallationsdatum())
-                    .filter(d -> d != null)
-                    .collect(Collectors.toSet()));
+//                p.ext().setDateLatest(p.getDateLatest());
+                p.ext().setObservationsAllRaw(observations);
+                p.ext().getObservationsAllRaw().forEach(o -> o.ext().setParent(p));
+                for (var o : p.ext().getObservationsAllRaw()) {
+//                    if (o.isZeroMeasurement()) {
+//                        p.ext().setStoredZeroDateTime(o.getDate());
+//                        break;
+//                    }
+                }
+            }
+
+            var origins = getAllItems()
+                    .stream().map(p -> p.getOrigin())
+                    .collect(Collectors.toCollection(TreeSet::new))
+                    .stream()
+                    .collect(Collectors.toCollection(ArrayList<String>::new));
+            setValue("origins", origins);
+
+            var dates = new TreeSet<LocalDateTime>();
+            getAllItems().stream().forEachOrdered(p -> {
+                dates.addAll(p.ext().getObservationsAllRaw().stream().map(o -> o.getDate()).toList());
+            });
 
             if (!dates.isEmpty()) {
                 setTemporalRange(new MTemporalRange(dates.first(), dates.last()));
+                boolean layerBundleEnabled = isLayerBundleEnabled();
+                updateTemporal(!layerBundleEnabled);
+                updateTemporal(layerBundleEnabled);
             }
+
+////            var dates = new TreeSet<>(getAllItems().stream()
+////                    .map(p -> p.getInstallationsdatum())
+////                    .filter(d -> d != null)
+////                    .collect(Collectors.toSet()));
+//            var dates = new TreeSet<LocalDateTime>();
+//            getAllItems().stream().forEachOrdered(p -> {
+//                dates.addAll(p.ext().getObservationsAllRaw().stream().map(o -> o.getDate()).toList());
+//            });
+//
+//            if (!dates.isEmpty()) {
+//                setTemporalRange(new MTemporalRange(dates.first(), dates.last()));
+//            }
         } catch (Exception e) {
             Exceptions.printStackTrace(e);
         }
