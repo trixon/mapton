@@ -18,6 +18,8 @@ package org.mapton.butterfly_activities.api;
 import java.util.ArrayList;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.ObjectUtils;
+import org.locationtech.jts.geom.Coordinate;
 import org.mapton.api.MDisruptorProvider;
 import org.mapton.api.MTemporalRange;
 import org.mapton.butterfly_activities.ActPropertiesBuilder;
@@ -44,6 +46,21 @@ public class ActManager extends BaseManager<BAreaActivity> {
 
     private ActManager() {
         super(BAreaActivity.class);
+    }
+
+    public Double distanceToClosest(Double x, Double y) {
+        if (ObjectUtils.anyNull(x, y)) {
+            return null;
+        }
+
+        var point = mGeometryFactory.createPoint(new Coordinate(y, x));
+
+        return getTimeFilteredItems().stream()
+                .filter(aa -> aa.getStatus() == BAreaActivity.BAreaStatus.TRIGGER)
+                .filter(aa -> aa.getTargetGeometry() != null)
+                .mapToDouble(aa -> aa.getTargetGeometry().distance(point))
+                .min()
+                .orElse(-1);
     }
 
     @Override
