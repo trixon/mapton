@@ -80,6 +80,11 @@ limitations under the License.
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-netbeans-api-progress</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-awt</artifactId>
+            <version>${netbeans.version}</version>
+        </dependency>
 
         <!--Mapton-->
         <dependency>
@@ -106,10 +111,5 @@ limitations under the License.
         <!--Trixon-->
 
         <!--Other-->
-        <dependency>
-            <groupId>org.netbeans.api</groupId>
-            <artifactId>org-openide-awt</artifactId>
-            <version>RELEASE220</version>
-        </dependency>
     </dependencies>
 </project>

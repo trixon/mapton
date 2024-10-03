@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_core.api;
 
+import java.util.ArrayList;
 import org.mapton.api.Mapton;
 import org.mapton.api.report.MReport;
 
@@ -26,6 +27,27 @@ public abstract class BaseReport extends MReport {
 
     public BaseReport() {
         mSplitNavSetting.setTitleColor(Mapton.getThemeBackgroundColor());
+    }
+
+    public void addBlankRow(ArrayList<ArrayList<String>> rows) {
+        rows.add(new ArrayList<>());
+    }
+
+    public void addRow(ArrayList<ArrayList<String>> rows, Object... objects) {
+        var columns = new ArrayList<String>();
+        for (var object : objects) {
+            if (object == null) {
+                columns.add("");
+                continue;
+            }
+
+            if (object instanceof Integer value) {
+                columns.add(Integer.toString(value));
+            } else {
+                columns.add(object.toString());
+            }
+        }
+        rows.add(columns);
     }
 
 }
