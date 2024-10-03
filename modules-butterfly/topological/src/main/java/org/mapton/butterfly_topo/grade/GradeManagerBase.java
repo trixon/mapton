@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_topo.grade;
 
+import java.util.concurrent.TimeUnit;
 import javafx.collections.ListChangeListener;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
@@ -36,7 +37,7 @@ public abstract class GradeManagerBase extends BaseManager<BTopoGrade> {
         TopoManager.getInstance().getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BTopoControlPoint> c) -> {
             new Thread(() -> {
                 try {
-                    Thread.sleep(500);
+                    TimeUnit.MILLISECONDS.sleep(1000);
                 } catch (InterruptedException ex) {
                     Exceptions.printStackTrace(ex);
                 }

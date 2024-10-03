@@ -60,64 +60,60 @@ public class GradeHManager extends GradeManagerBase {
 
     @Override
     public void load() {
-        var thread = new Thread(() -> {
-            var pointToPoints = new TreeMap<String, HashSet<String>>();
-            var sourcePoints = mTopoManager.getTimeFilteredItems().stream()
-                    .filter(p -> p.getDimension() != BDimension._2d)
-                    .filter(p -> ObjectUtils.allNotNull(p.getZeroX(), p.getZeroY(), p.getZeroZ()))
-                    .filter(p -> p.ext().getNumOfObservationsFiltered() >= 2)
-                    .toList();
+        var pointToPoints = new TreeMap<String, HashSet<String>>();
+        var sourcePoints = mTopoManager.getTimeFilteredItems().stream()
+                .filter(p -> p.getDimension() != BDimension._2d)
+                .filter(p -> ObjectUtils.allNotNull(p.getZeroX(), p.getZeroY(), p.getZeroZ()))
+                .filter(p -> p.ext().getNumOfObservationsFiltered() >= 2)
+                .toList();
 
-            for (var p1 : sourcePoints) {
-                if (ObjectUtils.anyNull(p1.getZeroX(), p1.getZeroY())) {
+        for (var p1 : sourcePoints) {
+            if (ObjectUtils.anyNull(p1.getZeroX(), p1.getZeroY())) {
+                continue;
+            }
+            var point = new Point2D(p1.getZeroX(), p1.getZeroY());
+            for (var p2 : sourcePoints) {
+                if (ObjectUtils.anyNull(p2.getZeroX(), p2.getZeroY())) {
                     continue;
                 }
-                var point = new Point2D(p1.getZeroX(), p1.getZeroY());
-                for (var p2 : sourcePoints) {
-                    if (ObjectUtils.anyNull(p2.getZeroX(), p2.getZeroY())) {
-                        continue;
-                    }
-                    double distance = point.distance(p2.getZeroX(), p2.getZeroY());
-                    if (p1 != p2 && distance >= MIN_RADIAL_DISTANCE && distance <= MAX_RADIAL_DISTANCE) {
-                        if (!pointToPoints.computeIfAbsent(p2.getName(), k -> new HashSet<>()).contains(p1.getName())) {//Skip A-B, B-A
-                            pointToPoints.computeIfAbsent(p1.getName(), k -> new HashSet<>()).add(p2.getName());
-                        }
+                double distance = point.distance(p2.getZeroX(), p2.getZeroY());
+                if (p1 != p2 && distance >= MIN_RADIAL_DISTANCE && distance <= MAX_RADIAL_DISTANCE) {
+                    if (!pointToPoints.computeIfAbsent(p2.getName(), k -> new HashSet<>()).contains(p1.getName())) {//Skip A-B, B-A
+                        pointToPoints.computeIfAbsent(p1.getName(), k -> new HashSet<>()).add(p2.getName());
                     }
                 }
             }
+        }
 
-            var grades = new ArrayList<BTopoGrade>();
-            for (var entry : pointToPoints.entrySet()) {
-                var p1 = mTopoManager.getItemForKey(entry.getKey());
-                for (var n2 : entry.getValue()) {
-                    var p2 = mTopoManager.getItemForKey(n2);
-                    var grade = new BTopoGrade(BAxis.HORIZONTAL, p1, p2);
-                    if (grade.getCommonObservations().size() > 1 && Math.abs(grade.ext().getDiff().getZQuota()) >= MIN_GRADE_H) {
-                        grades.add(grade);
-                    }
+        var grades = new ArrayList<BTopoGrade>();
+        for (var entry : pointToPoints.entrySet()) {
+            var p1 = mTopoManager.getItemForKey(entry.getKey());
+            for (var n2 : entry.getValue()) {
+                var p2 = mTopoManager.getItemForKey(n2);
+                var grade = new BTopoGrade(BAxis.HORIZONTAL, p1, p2);
+                if (grade.getCommonObservations().size() > 1 && Math.abs(grade.ext().getDiff().getZQuota()) >= MIN_GRADE_H) {
+                    grades.add(grade);
                 }
             }
+        }
 
-            Collections.sort(grades, (o1, o2) -> Double.valueOf(Math.abs(o2.ext().getDiff().getZQuota())).compareTo(Math.abs(o1.ext().getDiff().getZQuota())));
+        Collections.sort(grades, (o1, o2) -> Double.valueOf(Math.abs(o2.ext().getDiff().getZQuota())).compareTo(Math.abs(o1.ext().getDiff().getZQuota())));
 
-            grades.forEach(t -> {
-                var first = new MLatLon(t.getP1().getLat(), t.getP1().getLon());
-                var second = new MLatLon(t.getP2().getLat(), t.getP2().getLon());
-                var d = first.distance(second);
-                var b = first.getBearing(second);
-                var mid = first.getDestinationPoint(b, d * .5);
-                t.setLat(mid.getLatitude());
-                t.setLon(mid.getLongitude());
-            });
-
-            FxHelper.runLater(() -> {
-                getAllItems().setAll(grades);
-                getFilteredItems().setAll(grades);
-                getTimeFilteredItems().setAll(grades);
-            });
+        grades.forEach(t -> {
+            var first = new MLatLon(t.getP1().getLat(), t.getP1().getLon());
+            var second = new MLatLon(t.getP2().getLat(), t.getP2().getLon());
+            var d = first.distance(second);
+            var b = first.getBearing(second);
+            var mid = first.getDestinationPoint(b, d * .5);
+            t.setLat(mid.getLatitude());
+            t.setLon(mid.getLongitude());
         });
 
-        thread.start();
+        FxHelper.runLater(() -> {
+            getAllItems().setAll(grades);
+            getFilteredItems().setAll(grades);
+            getTimeFilteredItems().setAll(grades);
+        });
     }
 
     @Override
