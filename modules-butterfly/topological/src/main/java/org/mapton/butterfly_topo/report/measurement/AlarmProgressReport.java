@@ -24,11 +24,13 @@ import j2html.tags.ContainerTag;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.TreeSet;
 import java.util.function.Consumer;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.math3.util.FastMath;
 import org.mapton.api.report.MReport;
 import org.mapton.butterfly_activities.api.ActManager;
 import org.mapton.butterfly_format.types.BComponent;
@@ -46,6 +48,7 @@ import se.trixon.almond.util.CollectionHelper;
 @ServiceProvider(service = MReport.class)
 public class AlarmProgressReport extends BaseTopoMeasurementReport {
 
+    private final ActManager mActivityManager = ActManager.getInstance();
     private final TopoManager mManager = TopoManager.getInstance();
     private final String mName = "Larmförbrukning";
 
@@ -58,8 +61,6 @@ public class AlarmProgressReport extends BaseTopoMeasurementReport {
         var sb = new StringBuilder();
         var rows = new ArrayList<ArrayList<String>>();
         var map = new HashMap<String, Integer>();
-        var hDeltaMap = new LinkedHashMap<BTopoControlPoint, Double>();
-        var pDeltaMap = new LinkedHashMap<BTopoControlPoint, Double>();
         var dates = new TreeSet<LocalDate>();
         mManager.getTimeFilteredItems().stream().forEachOrdered(p -> {
             try {
@@ -68,83 +69,82 @@ public class AlarmProgressReport extends BaseTopoMeasurementReport {
             } catch (Exception e) {
                 //nvm
             }
-            var delta = p.ext().deltaZero().getDelta();
-            var daysSinceMeasurement = p.ext().getMeasurementAge(ChronoUnit.DAYS);
 
             var alarmLevel = p.ext().getAlarmLevel(p.ext().getObservationFilteredLast());
             if (p.getDimension() == BDimension._1d) {
                 CollectionHelper.incInteger(map, "antalDubbar");
                 CollectionHelper.incInteger(map, "alarmLevelH%d".formatted(alarmLevel));
-                if (delta != null) {
-                    hDeltaMap.put(p, Math.abs(delta));
-                }
             } else {
                 CollectionHelper.incInteger(map, "antalPrismor");
                 CollectionHelper.incInteger(map, "alarmLevelP%d".formatted(alarmLevel));
-                if (delta != null) {
-                    pDeltaMap.put(p, Math.abs(delta));
-                }
             }
         });
 
         Consumer<BTopoControlPoint> listConsumer = p -> {
-            var am = ActManager.getInstance();
+            var distance = "%.0f".formatted(mActivityManager.distanceToClosest(p.getZeroX(), p.getZeroY()));
 
-            var distance = "%.0f".formatted(am.distanceToClosest(p.getZeroX(), p.getZeroY()));
-            var hpercent = p.ext().getAlarmPercent(BComponent.HEIGHT);
-            var hps = "";
-            if (hpercent != null && hpercent != -1) {
-                hps = "%d%%".formatted(hpercent);
-            }
+            var percentH = p.ext().getAlarmPercent(BComponent.HEIGHT);
+            var percentStringH = getPercentString(percentH);
+            var percentClassH = getPercentClass(percentH);
+            var levelH = TopoHelper.getAlarmLevelHeight(p);
 
-            var ppercent = p.ext().getAlarmPercent(BComponent.PLANE);
-            var pps = "";
-            if (ppercent != null && ppercent != -1) {
-                pps = "%d%%".formatted(ppercent);
-            }
-            var catH = "";
-            var catP = "";
+            var percentP = p.ext().getAlarmPercent(BComponent.PLANE);
+            var percentStringP = getPercentString(percentP);
+            var percentClassP = getPercentClass(percentP);
+            var levelP = TopoHelper.getAlarmLevelPlane(p);
 
-            if (p.getDimension() != BDimension._2d) {
-                if (hpercent != null) {
-                    if (hpercent < 40) {
-                        catH = "A";
-                    } else if (hpercent < 80) {
-                        catH = "B";
+            if (p.getDimension() == BDimension._1d) {
+                addRow(rows,
+                        p.getName(),
+                        percentStringH,
+                        percentClassH,
+                        getAlarmLevel(levelH),
+                        p.getDateZero().toString(),
+                        p.ext().getObservationFilteredLastDate().toString(),
+                        p.getDateZero().until(p.ext().getObservationFilteredLastDate(), ChronoUnit.DAYS),
+                        distance
+                );
+            } else {
+                var percentString = "";
+                var percentClass = "";
+                var level = -1;
+                if (percentP != null && percentH != null) {
+                    if (percentP > percentH) {
+                        percentString = percentStringP;
+                        percentClass = percentClassP;
+                        level = levelP;
                     } else {
-                        catH = "C";
+                        percentString = percentStringH;
+                        percentClass = percentClassH;
+                        level = levelH;
                     }
+                } else if (percentH != null) {
+                    percentString = percentStringH;
+                    percentClass = percentClassH;
+                    level = levelH;
+                } else if (percentP != null) {
+                    percentString = percentStringP;
+                    percentClass = percentClassP;
+                    level = levelP;
                 }
-            }
 
-            if (p.getDimension() != BDimension._1d) {
-                if (ppercent != null) {
-                    if (ppercent < 40) {
-                        catP = "A";
-                    } else if (ppercent < 80) {
-                        catP = "B";
-                    } else {
-                        catP = "C";
-                    }
-                }
+                addRow(rows,
+                        p.getName(),
+                        percentString,
+                        percentClass,
+                        getAlarmLevel(level),
+                        p.getDateZero().toString(),
+                        p.ext().getObservationFilteredLastDate().toString(),
+                        p.getDateZero().until(p.ext().getObservationFilteredLastDate(), ChronoUnit.DAYS),
+                        distance,
+                        percentStringH,
+                        percentClassH,
+                        getAlarmLevel(levelH),
+                        percentStringP,
+                        percentClassP,
+                        getAlarmLevel(levelP)
+                );
             }
-            var levelH = TopoHelper.getAlarmLevelHeight(p) > -1 ? TopoHelper.getAlarmLevelHeight(p) : "";
-            var levelP = TopoHelper.getAlarmLevelPlane(p) > -1 ? TopoHelper.getAlarmLevelPlane(p) : "";
-
-            addRow(rows,
-                    p.getName(),
-                    p.getDateZero().toString(),
-                    p.ext().getObservationFilteredLastDate().toString(),
-                    p.getDateZero().until(p.ext().getObservationFilteredLastDate(), ChronoUnit.DAYS),
-                    distance,
-                    //                    -1,
-                    hps,
-                    catH,
-                    levelH,
-                    pps,
-                    catP,
-                    levelP
-            );
         };
 
         addRow(rows, "Grupp/objekt");
@@ -164,7 +164,7 @@ public class AlarmProgressReport extends BaseTopoMeasurementReport {
         addBlankRow(rows);
         addRow(rows, "På larmnivå");
         for (var val : List.of(0, 1, 2)) {
-            var s = String.valueOf(val);
+            var s = getAlarmLevel(val);
             var hKey = "alarmLevelH%d".formatted(val);
             var pKey = "alarmLevelP%d".formatted(val);
             addRow(rows, "    " + s,
@@ -173,37 +173,69 @@ public class AlarmProgressReport extends BaseTopoMeasurementReport {
                     map.getOrDefault(hKey, 0) + map.getOrDefault(pKey, 0)
             );
         }
-        addBlankRow(rows);
 
         addBlankRow(rows);
         addBlankRow(rows);
         addBlankRow(rows);
 
-        var header = new Object[]{
-            "Punkt",
-            "Noll",
-            "Senaste",
-            "Dagar",
-            "Avstånd",
-            "H%",
-            "H Klass",
-            "H Larm",
-            "P%",
-            "P Klass",
-            "P Larm"
-        };
         addRow(rows, "1D");
-        addRow(rows, header);
+        addRow(rows,
+                "Punkt",
+                "Förbrukning",
+                "Klass",
+                "Larm",
+                "Noll",
+                "Senaste",
+                "Dagar",
+                "Avstånd"
+        );
 
-        mManager.getTimeFilteredItems()
-                .stream().filter(p -> p.getDimension() == BDimension._1d).forEachOrdered(listConsumer);
+        Comparator<BTopoControlPoint> comparator = new Comparator<BTopoControlPoint>() {
+            @Override
+            public int compare(BTopoControlPoint p1, BTopoControlPoint p2) {
+                var pp1 = getPercent(p1);
+                var pp2 = getPercent(p2);
+                if (pp1 == null && pp2 == null) {
+                    return -1;
+                }
+                if (pp1 == null) {
+                    return +1;
+                } else if (pp2 == null) {
+                    return -1;
+                } else {
+                    return pp2.compareTo(pp1);
+                }
+            }
+        }.thenComparing(Comparator.comparing(BTopoControlPoint::getName));
+
+        mManager.getTimeFilteredItems().stream()
+                .filter(p -> p.getDimension() == BDimension._1d)
+                .sorted(comparator)
+                .forEachOrdered(listConsumer);
         addBlankRow(rows);
 
         addRow(rows, "3D");
-        addRow(rows, header);
+        addRow(rows,
+                "Punkt",
+                "Förbrukning",
+                "Klass",
+                "Larm",
+                "Noll",
+                "Senaste",
+                "Dagar",
+                "Avstånd",
+                "H Förbrukning",
+                "H Klass",
+                "H Larm",
+                "P Förbrukning",
+                "P Klass",
+                "P Larm"
+        );
 
-        mManager.getTimeFilteredItems()
-                .stream().filter(p -> p.getDimension() == BDimension._3d).forEachOrdered(listConsumer);
+        mManager.getTimeFilteredItems().stream()
+                .filter(p -> p.getDimension() == BDimension._3d)
+                .sorted(comparator)
+                .forEachOrdered(listConsumer);
 
         for (var columns : rows) {
             sb.append(String.join("\t", columns)).append("\n");
@@ -219,4 +251,56 @@ public class AlarmProgressReport extends BaseTopoMeasurementReport {
 
         return html;
     }
+
+    private String getAlarmLevel(int level) {
+        return switch (level) {
+            case 0 ->
+                "Grön";
+            case 1 ->
+                "Gul";
+            case 2 ->
+                "Röd";
+            default ->
+                "";
+        };
+    }
+
+    private Integer getMax(Integer n1, Integer n2) {
+        if (ObjectUtils.allNotNull(n1, n2)) {
+            return FastMath.max(n1, n2);
+        } else if (n1 != null) {
+            return n1;
+        } else {
+            return n2;
+        }
+    }
+
+    private Integer getPercent(BTopoControlPoint p) {
+        var percentP = p.ext().getAlarmPercent(BComponent.PLANE);
+        var percentH = p.ext().getAlarmPercent(BComponent.HEIGHT);
+        return getMax(percentH, percentP);
+    }
+
+    private String getPercentClass(Integer percent) {
+        var classing = "";
+        if (percent != null) {
+            if (percent < 40) {
+                classing = "A";
+            } else if (percent < 80) {
+                classing = "B";
+            } else {
+                classing = "C";
+            }
+        }
+        return classing;
+    }
+
+    private String getPercentString(Integer percent) {
+        if (percent != null && percent != -1) {
+            return "%d%%".formatted(percent);
+        } else {
+            return "";
+        }
+    }
+
 }

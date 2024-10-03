@@ -52,27 +52,6 @@ public class ObjectSummaryReport extends BaseTopoMeasurementReport {
         setName(mName);
     }
 
-    private void addBlankRow(ArrayList<ArrayList<String>> rows) {
-        rows.add(new ArrayList<>());
-    }
-
-    private void addRow(ArrayList<ArrayList<String>> rows, Object... objects) {
-        var columns = new ArrayList<String>();
-        for (var object : objects) {
-            if (object == null) {
-                columns.add("");
-                continue;
-            }
-
-            if (object instanceof Integer value) {
-                columns.add(Integer.toString(value));
-            } else {
-                columns.add(object.toString());
-            }
-        }
-        rows.add(columns);
-    }
-
     @Override
     public ContainerTag getContent() {
         var sb = new StringBuilder();
@@ -196,7 +175,7 @@ public class ObjectSummaryReport extends BaseTopoMeasurementReport {
         addBlankRow(rows);
         addBlankRow(rows);
 
-        var topListSize = 15;
+        var topListSize = 10;
         addRow(rows, "Största rörelser", "Punkt", "Larmnivå", "Rörelse");
         addRow(rows, "Dubbar");
         getTopList(hDeltaMap, topListSize).forEach(topListConsumer);
