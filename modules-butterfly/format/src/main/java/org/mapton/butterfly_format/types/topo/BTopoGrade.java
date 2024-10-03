@@ -29,7 +29,6 @@ import javafx.geometry.Point2D;
 import javafx.geometry.Point3D;
 import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.butterfly_format.types.BAxis;
-import org.mapton.butterfly_format.types.BBase;
 import org.mapton.butterfly_format.types.BBasePoint;
 import org.mapton.butterfly_format.types.BDimension;
 
@@ -92,7 +91,7 @@ public class BTopoGrade extends BBasePoint {
         var x1 = new Point2D(mP1.getZeroX(), mP1.getZeroY());
         var x2 = new Point2D(mP2.getZeroX(), mP2.getZeroY());
 
-        return x1.distance(x2);
+        return Math.abs(x1.distance(x2));
     }
 
     public LocalDate getFirstDate() {
