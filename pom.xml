@@ -428,7 +428,6 @@
 
     <properties>
         <jackson.version>2.18.0</jackson.version>
-        <netbeans.compile.on.save>none</netbeans.compile.on.save>
         <brandingToken>mapton</brandingToken>
         <mapton.version>3.2.0-SNAPSHOT</mapton.version>
         <geotools.version>32.0</geotools.version>

@@ -121,5 +121,9 @@ limitations under the License.
             <groupId>${project.groupId}</groupId>
             <artifactId>butterfly-alarm</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.mapton</groupId>
+            <artifactId>butterfly-activities</artifactId>
+        </dependency>
     </dependencies>
 </project>
