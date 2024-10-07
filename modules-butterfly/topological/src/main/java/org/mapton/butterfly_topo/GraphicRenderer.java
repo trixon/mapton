@@ -32,7 +32,6 @@ import org.mapton.worldwind.api.WWHelper;
 public class GraphicRenderer extends GraphicRendererBase {
 
     private final GraphicRendererAlarmLevel mAlarmRenderer = new GraphicRendererAlarmLevel();
-
     private final GraphicRendererCircle mCircleRenderer = new GraphicRendererCircle();
     private final GraphicRendererCount mCountRenderer = new GraphicRendererCount();
     private final GraphicRendererSpeed mSpeedRenderer = new GraphicRendererSpeed();

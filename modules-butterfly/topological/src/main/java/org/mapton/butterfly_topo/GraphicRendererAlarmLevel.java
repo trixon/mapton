@@ -20,6 +20,9 @@ import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.render.AbstractShape;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Cylinder;
+import gov.nasa.worldwind.render.Ellipsoid;
+import gov.nasa.worldwind.render.Path;
+import gov.nasa.worldwind.render.Pyramid;
 import gov.nasa.worldwind.render.airspaces.AbstractAirspace;
 import gov.nasa.worldwind.render.airspaces.BasicAirspaceAttributes;
 import gov.nasa.worldwind.render.airspaces.PartialCappedCylinder;
@@ -46,9 +49,55 @@ public class GraphicRendererAlarmLevel extends GraphicRendererBase {
             plotAlarmLevel(p, position);
         }
 
+        if (sCheckModel.isChecked(GraphicRendererItem.ALARM_CONSUMPTION)) {
+            plotAlarmConsumption(p, position);
+        }
+
         if (sCheckModel.isChecked(GraphicRendererItem.TRACE_ALARM_LEVEL)) {
             plotAlarmLevelTrace(p, position, BComponent.HEIGHT);
             plotAlarmLevelTrace(p, position, BComponent.PLANE);
+        }
+    }
+
+    private void plotAlarmConsumption(BTopoControlPoint p, Position position) {
+        if (isPlotLimitReached(p, GraphicRendererItem.ALARM_CONSUMPTION, position)) {
+            return;
+        }
+
+        var height = 50.0;
+        var radius = 1.5;
+        var o = p.ext().getObservationFilteredLast();
+
+        Integer percentP = p.ext().getAlarmPercent(BComponent.PLANE);
+        if (p.getDimension() != BDimension._1d && percentP != null) {
+            var material = ButterflyHelper.getAlarmMaterial(p.ext().getAlarmLevelPlane(o));
+            var attrs = new BasicAirspaceAttributes();
+            attrs.setInteriorMaterial(material);
+
+            var pos = WWHelper.positionFromPosition(position, height * percentP / 100.0);
+            var pyramid = new Pyramid(pos, radius, radius);
+            pyramid.setAttributes(attrs);
+            addRenderable(pyramid, true);
+        }
+
+        Integer percentH = p.ext().getAlarmPercent(BComponent.HEIGHT);
+        if (p.getDimension() != BDimension._2d && percentH != null) {
+            var material = ButterflyHelper.getAlarmMaterial(p.ext().getAlarmLevelHeight(o));
+            var attrs = new BasicAirspaceAttributes();
+            attrs.setInteriorMaterial(material);
+            radius = radius * 0.6;
+            var pos = WWHelper.positionFromPosition(position, height * percentH / 100.0);
+            var ellipsoid = new Ellipsoid(pos, radius, radius, radius);
+            ellipsoid.setAttributes(attrs);
+            addRenderable(ellipsoid, true);
+        }
+
+        Integer percent = p.ext().getAlarmPercent();
+        if (percent != null) {
+            var pos = WWHelper.positionFromPosition(position, height * Math.max(percent, 100) / 100.0);
+            var groundPath = new Path(WWHelper.positionFromPosition(position, 0.0), pos);
+            groundPath.setAttributes(mAttributeManager.getComponentGroundPathAttributes());
+            addRenderable(groundPath, true);
         }
     }
 

@@ -37,6 +37,7 @@ public enum GraphicRendererItem {
     SPEED_1D("1d %s".formatted(Dict.SPEED.toLower()), Integer.MAX_VALUE),
     SPEED_1D_TRACE("1d %s (%s)".formatted(Dict.SPEED.toLower(), SDict.TRACE.toLower()), Integer.MAX_VALUE),
     ALARM_LEVEL(SDict.ALARM_LEVEL.toString(), Integer.MAX_VALUE),
+    ALARM_CONSUMPTION("Larmförbrukning", Integer.MAX_VALUE),
     TRACE_ALARM_LEVEL("%s (%s)".formatted(SDict.ALARM_LEVEL.toString(), SDict.TRACE.toLower()), Integer.MAX_VALUE);
     private final String mName;
     private final int mPlotLimit;
