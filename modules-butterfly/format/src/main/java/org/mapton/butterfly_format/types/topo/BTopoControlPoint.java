@@ -224,6 +224,40 @@ public class BTopoControlPoint extends BXyzPoint {
             return getAlarmLevel(BComponent.PLANE, o);
         }
 
+        public Integer getAlarmPercent() {
+            if (null == getDimension()) {
+                return 0;
+            } else {
+                switch (getDimension()) {
+                    case _1d -> {
+                        if (StringUtils.isNotBlank(getNameOfAlarmHeight())) {
+                            return getAlarmPercent(BComponent.HEIGHT);
+                        } else {
+                            return 0;
+                        }
+                    }
+                    case _2d -> {
+                        if (StringUtils.isNotBlank(getNameOfAlarmPlane())) {
+                            return getAlarmPercent(BComponent.PLANE);
+                        } else {
+                            return 0;
+                        }
+                    }
+                    default -> {
+                        if (StringUtils.isNoneBlank(getNameOfAlarmPlane(), getNameOfAlarmHeight())) {
+                            try {
+                                return Math.max(getAlarmPercent(BComponent.HEIGHT), getAlarmPercent(BComponent.PLANE));
+                            } catch (Exception e) {
+                                return 0;
+                            }
+                        } else {
+                            return 0;
+                        }
+                    }
+                }
+            }
+        }
+
         public Integer getAlarmPercent(BComponent component) {
             var alarm = getAlarm(component);
             if (alarm == null
