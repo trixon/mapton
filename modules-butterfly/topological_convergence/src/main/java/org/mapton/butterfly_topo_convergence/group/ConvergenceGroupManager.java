@@ -30,13 +30,21 @@ import org.openide.util.Exceptions;
  */
 public class ConvergenceGroupManager extends BaseManager<BTopoConvergenceGroup> {
 
+    private final ArrayList<BTopoConvergenceGroup> mDynamicItems = new ArrayList<>();
 //    private final ConvergencePropertiesBuilder mPropertiesBuilder = new ConvergencePropertiesBuilder();
+
     public static ConvergenceGroupManager getInstance() {
         return Holder.INSTANCE;
     }
 
     private ConvergenceGroupManager() {
         super(BTopoConvergenceGroup.class);
+    }
+
+    public void add(BTopoConvergenceGroup group) {
+        var butterfly = group.getButterfly();
+        butterfly.topo().getConvergenceGroups().add(group);
+        load(butterfly);
     }
 
     @Override
