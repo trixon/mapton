@@ -82,7 +82,10 @@ public abstract class ImportFromCsv<T> {
                     System.out.println("Missing source file, or file is empty: " + file);
                     return;
                 }
-                var mappingIterator = mMapper.readerFor(classOfT).with(schema).readValues(file);
+                var mappingIterator = mMapper
+                        .readerFor(classOfT)
+                        .with(schema)
+                        .readValues(file);
                 list.addAll((ArrayList<T>) mappingIterator.readAll());
             }
         } catch (IOException ex) {
