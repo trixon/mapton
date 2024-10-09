@@ -21,10 +21,12 @@ import java.util.Objects;
 import java.util.concurrent.Callable;
 import org.apache.commons.numbers.core.Precision;
 import org.jfree.chart.ChartPanel;
+import org.jfree.chart.axis.AxisLocation;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.chart.ui.LengthAdjustmentType;
 import org.jfree.chart.ui.RectangleAnchor;
 import org.jfree.chart.ui.TextAnchor;
@@ -51,15 +53,18 @@ public class TiltChartBuilder extends XyzChartBuilder<BStructuralTiltPoint> {
     private final TimeSeries mTimeSeriesX = new TimeSeries("X");
     private final TimeSeries mTimeSeriesY = new TimeSeries("Y");
     private final TimeSeries mTimeSeriesZ = new TimeSeries("R");
-    private final NumberAxis mTmperatureAxis = new NumberAxis("°C");
+    private final NumberAxis mTemperatureAxis = new NumberAxis("°C");
+    private final XYLineAndShapeRenderer mSecondaryRenderer = new XYLineAndShapeRenderer();
 
     public TiltChartBuilder() {
         initChart("mm/m", "0.0");
 
         var plot = (XYPlot) mChart.getPlot();
-        plot.setRangeAxis(2, mTmperatureAxis);
+        plot.setRangeAxis(2, mTemperatureAxis);
         plot.setDataset(2, mTemperatureDataset);
         plot.mapDatasetToRangeAxis(2, 2);
+        plot.setRangeAxisLocation(2, AxisLocation.BOTTOM_OR_RIGHT);
+        plot.setRenderer(2, mSecondaryRenderer);
     }
 
     @Override
@@ -107,7 +112,7 @@ public class TiltChartBuilder extends XyzChartBuilder<BStructuralTiltPoint> {
     }
 
     @Override
-    public void updateDataset(BStructuralTiltPoint p) {
+    public synchronized void updateDataset(BStructuralTiltPoint p) {
         getDataset().removeAllSeries();
         mTimeSeriesX.clear();
         mTimeSeriesY.clear();
@@ -184,7 +189,7 @@ public class TiltChartBuilder extends XyzChartBuilder<BStructuralTiltPoint> {
         }
 
         mTemperatureDataset.addSeries(mTimeSeriesTemperature);
-        renderer.setSeriesPaint(mTemperatureDataset.getSeriesIndex(mTimeSeriesTemperature.getKey()), Color.GRAY);
+        mSecondaryRenderer.setSeriesPaint(mTemperatureDataset.getSeriesIndex(mTimeSeriesTemperature.getKey()), Color.GRAY);
     }
 
     private void plotAlarmIndicator(BComponent component, double value, Color color) {

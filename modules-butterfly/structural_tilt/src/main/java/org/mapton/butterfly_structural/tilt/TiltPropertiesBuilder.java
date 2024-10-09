@@ -114,8 +114,9 @@ public class TiltPropertiesBuilder extends PropertiesBuilder<BStructuralTiltPoin
     }
 
     private double calcBearing(BStructuralTiltPoint p) {
-        System.out.println("");
-        System.out.println(p.getName());
+        if (p.getDirectionX() == null) {
+            return -1;
+        }
         var bearing = MathHelper.convert(p.getDirectionX());
         var o0 = p.ext().getObservationFilteredFirst();
         var o1 = p.ext().getObservationFilteredLast();
@@ -134,9 +135,6 @@ public class TiltPropertiesBuilder extends PropertiesBuilder<BStructuralTiltPoin
         } else if (r < 0) {
 //            r += 360;
         }
-        System.out.println("bearing =%.3f".formatted(bearing));
-        System.out.println("delta   =%.3f".formatted(delta));
-        System.out.println("sum     =%.3f".formatted(r));
 
         return r;
     }
