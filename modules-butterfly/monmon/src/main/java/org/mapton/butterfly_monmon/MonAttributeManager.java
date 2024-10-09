@@ -34,7 +34,7 @@ public class MonAttributeManager {
     private PointPlacemarkAttributes mLabelPlacemarkAttributes;
     private PointPlacemarkAttributes[] mPinAttributes;
     private BasicShapeAttributes[] mStationConnectorAttributes;
-    private final Color[] mStationConnectorColors = new Color[]{Color.CYAN, Color.MAGENTA, Color.YELLOW, Color.BLACK};
+    private final Color[] mStationConnectorColors;
     private BasicShapeAttributes mStationConnectorEllipsoidAttributes;
 
     public static MonAttributeManager getInstance() {
@@ -42,6 +42,13 @@ public class MonAttributeManager {
     }
 
     private MonAttributeManager() {
+        mStationConnectorColors = new Color[]{
+            Color.CYAN,
+            Color.MAGENTA,
+            Color.YELLOW,
+            Color.ORANGE,
+            Color.BLACK
+        };
     }
 
     public BasicShapeAttributes getGroundConnectorAttributes() {

@@ -45,7 +45,9 @@ public class GraphicRenderer {
     public void plot(BMonmon mon, Position position, int stationIndex, ArrayList<AVListImpl> mapObjects) {
         mapObjects.add(plotGroundConnector(mon, 0.0));
         if (mon.isChild()) {
-            mapObjects.add(plotStationConnector(mon, stationIndex));
+            if (null != TopoManager.getInstance().getAllItemsMap().get(mon.getStationName())) {
+                mapObjects.add(plotStationConnector(mon, stationIndex));
+            }
 
             boolean checked1 = mCheckModel.isChecked(GraphicRendererItem.LATEST_1);
             boolean checked7 = mCheckModel.isChecked(GraphicRendererItem.LATEST_7);
