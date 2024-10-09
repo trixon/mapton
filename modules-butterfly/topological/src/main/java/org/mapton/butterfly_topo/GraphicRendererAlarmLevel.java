@@ -68,8 +68,11 @@ public class GraphicRendererAlarmLevel extends GraphicRendererBase {
         var radius = 1.5;
         var o = p.ext().getObservationFilteredLast();
 
-        Integer percentP = p.ext().getAlarmPercent(BComponent.PLANE);
-        if (p.getDimension() != BDimension._1d && percentP != null) {
+        if (p.getDimension() != BDimension._1d) {
+            Integer percentP = p.ext().getAlarmPercent(BComponent.PLANE);
+            if (percentP == null) {
+                percentP = 0;
+            }
             var material = ButterflyHelper.getAlarmMaterial(p.ext().getAlarmLevelPlane(o));
             var attrs = new BasicAirspaceAttributes();
             attrs.setInteriorMaterial(material);
@@ -80,11 +83,19 @@ public class GraphicRendererAlarmLevel extends GraphicRendererBase {
             addRenderable(pyramid, true);
         }
 
-        Integer percentH = p.ext().getAlarmPercent(BComponent.HEIGHT);
-        if (p.getDimension() != BDimension._2d && percentH != null) {
-            var material = ButterflyHelper.getAlarmMaterial(p.ext().getAlarmLevelHeight(o));
-            var attrs = new BasicAirspaceAttributes();
-            attrs.setInteriorMaterial(material);
+        if (p.getDimension() != BDimension._2d) {
+            Integer percentH = p.ext().getAlarmPercent(BComponent.HEIGHT);
+            if (percentH == null) {
+                percentH = 0;
+            }
+
+            int alarmLevel = p.ext().getAlarmLevelHeight(o);
+            var dZ = o.ext().getDeltaZ();
+            var rise = false;
+            if (dZ != null) {
+                rise = Math.signum(o.ext().getDeltaZ()) > 0;
+            }
+            var attrs = mAttributeManager.getComponentTrace1dAttributes(alarmLevel, rise, false);
             radius = radius * 0.6;
             var pos = WWHelper.positionFromPosition(position, height * percentH / 100.0);
             var ellipsoid = new Ellipsoid(pos, radius, radius, radius);
@@ -93,12 +104,18 @@ public class GraphicRendererAlarmLevel extends GraphicRendererBase {
         }
 
         Integer percent = p.ext().getAlarmPercent();
-        if (percent != null) {
-            var pos = WWHelper.positionFromPosition(position, height * Math.max(percent, 100) / 100.0);
-            var groundPath = new Path(WWHelper.positionFromPosition(position, 0.0), pos);
-            groundPath.setAttributes(mAttributeManager.getComponentGroundPathAttributes());
-            addRenderable(groundPath, true);
+        if (percent == null) {
+            percent = 0;
         }
+        var pos = WWHelper.positionFromPosition(position, height * Math.max(percent, 100) / 100.0);
+        var groundPath = new Path(WWHelper.positionFromPosition(position, 0.0), pos);
+        groundPath.setAttributes(mAttributeManager.getComponentGroundPathAttributes());
+        addRenderable(groundPath, true);
+
+        var pos100 = WWHelper.positionFromPosition(position, height);
+        var cylinder = new Cylinder(pos100, 0.25, radius * 2);
+        cylinder.setAttributes(mAttributeManager.getComponentZeroAttributes());
+        addRenderable(cylinder, true);
     }
 
     private void plotAlarmLevel(BTopoControlPoint p, Position position) {

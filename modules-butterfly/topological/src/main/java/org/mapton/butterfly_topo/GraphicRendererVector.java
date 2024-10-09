@@ -137,9 +137,14 @@ public class GraphicRendererVector extends GraphicRendererBase {
             var nonSymmetricAdjustmentBottom = spanBottom / 2 + bottomLower;
             var zBottom = zeroZ + TopoLayerBundle.getZOffset() + nonSymmetricAdjustmentBottom * mScale3dH;
             var bottomPosition = WWHelper.positionFromPosition(position, zBottom);
-            var cylinderBottom = new Cylinder(bottomPosition, radius, scaledSpanBottom * 0.5, radius);
-            cylinderBottom.setAttributes(attrs);
-            addRenderable(cylinderBottom, true);
+            try {
+                var cylinderBottom = new Cylinder(bottomPosition, radius, scaledSpanBottom * 0.5, radius);
+                cylinderBottom.setAttributes(attrs);
+                addRenderable(cylinderBottom, true);
+            } catch (IllegalArgumentException e) {
+                System.out.println(p.getName());
+                System.out.println(e);
+            }
 
             //Plot top cylinder
             var topLower = max0;
@@ -149,9 +154,14 @@ public class GraphicRendererVector extends GraphicRendererBase {
             var nonSymmetricAdjustmentTop = spanTop / 2 + topLower;
             var zTop = zeroZ + TopoLayerBundle.getZOffset() + nonSymmetricAdjustmentTop * mScale3dH;
             var topPosition = WWHelper.positionFromPosition(position, zTop);
-            var cylinderTop = new Cylinder(topPosition, radius, scaledSpanTop * 0.5, radius);
-            cylinderTop.setAttributes(attrs);
-            addRenderable(cylinderTop, true);
+            try {
+                var cylinderTop = new Cylinder(topPosition, radius, scaledSpanTop * 0.5, radius);
+                cylinderTop.setAttributes(attrs);
+                addRenderable(cylinderTop, true);
+            } catch (IllegalArgumentException e) {
+                System.out.println(p.getName());
+                System.out.println(e);
+            }
         }
     }
 
