@@ -79,8 +79,10 @@ public class TopoFilter extends FormFilter<TopoManager> {
     private final SimpleBooleanProperty mMeasAlarmLevelChangeProperty = new SimpleBooleanProperty();
     private final SimpleObjectProperty mMeasAlarmLevelChangeUnitProperty = new SimpleObjectProperty();
     private final SimpleIntegerProperty mMeasAlarmLevelChangeValueProperty = new SimpleIntegerProperty();
-    private final SimpleObjectProperty<LocalDate> mMeasDateHighProperty = new SimpleObjectProperty();
-    private final SimpleObjectProperty<LocalDate> mMeasDateLowProperty = new SimpleObjectProperty();
+    private final SimpleObjectProperty<LocalDate> mMeasDateFirstHighProperty = new SimpleObjectProperty();
+    private final SimpleObjectProperty<LocalDate> mMeasDateFirstLowProperty = new SimpleObjectProperty();
+    private final SimpleObjectProperty<LocalDate> mMeasDateLastHighProperty = new SimpleObjectProperty();
+    private final SimpleObjectProperty<LocalDate> mMeasDateLastLowProperty = new SimpleObjectProperty();
     private final SimpleBooleanProperty mMeasDiffAllProperty = new SimpleBooleanProperty();
     private final SimpleDoubleProperty mMeasDiffAllValueProperty = new SimpleDoubleProperty();
     private final SimpleBooleanProperty mMeasDiffLatestProperty = new SimpleBooleanProperty();
@@ -154,12 +156,20 @@ public class TopoFilter extends FormFilter<TopoManager> {
         return mMeasAlarmLevelChangeValueProperty;
     }
 
-    public SimpleObjectProperty<LocalDate> measDateHighProperty() {
-        return mMeasDateHighProperty;
+    public SimpleObjectProperty<LocalDate> measDateFirstHighProperty() {
+        return mMeasDateFirstHighProperty;
     }
 
-    public SimpleObjectProperty<LocalDate> measDateLowProperty() {
-        return mMeasDateLowProperty;
+    public SimpleObjectProperty<LocalDate> measDateFirstLowProperty() {
+        return mMeasDateFirstLowProperty;
+    }
+
+    public SimpleObjectProperty<LocalDate> measDateLastHighProperty() {
+        return mMeasDateLastHighProperty;
+    }
+
+    public SimpleObjectProperty<LocalDate> measDateLastLowProperty() {
+        return mMeasDateLastLowProperty;
     }
 
     public SimpleBooleanProperty measDiffAllProperty() {
@@ -281,7 +291,8 @@ public class TopoFilter extends FormFilter<TopoManager> {
                 .filter(p -> validateMeasDisplacementPercentP(p))
                 .filter(p -> validateMeasSpeed(p))
                 .filter(p -> validateMeasCount(p))
-                .filter(p -> validateMaxAge(p.getDateLatest()))
+                .filter(p -> validateAge(p.ext().getDateFirst(), mMeasDateFirstLowProperty, mMeasDateFirstHighProperty))
+                .filter(p -> validateAge(p.getDateLatest(), mMeasDateLastLowProperty, mMeasDateLastHighProperty))
                 .filter(p -> validateNextMeas(p))
                 .filter(p -> validateMeasWithout(p))
                 .filter(p -> validateMeasCode(p))
@@ -359,8 +370,10 @@ public class TopoFilter extends FormFilter<TopoManager> {
         map.put(SDict.VALID_FROM_TO.toString(), makeInfo(mDateFromToCheckModel.getCheckedItems()));
         map.put(getBundle().getString("nextMeasCheckComboBoxTitle"), makeInfo(mMeasNextCheckModel.getCheckedItems()));
         map.put(getBundle().getString("measCodeCheckComboBoxTitle"), makeInfo(mMeasCodeCheckModel.getCheckedItems()));
-        map.put(Dict.FROM.toString(), mMeasDateLowProperty.get() != null ? mMeasDateLowProperty.get().toString() : "");
-        map.put(Dict.TO.toString(), mMeasDateHighProperty.get() != null ? mMeasDateHighProperty.get().toString() : "");
+        map.put("Första " + Dict.FROM.toString(), mMeasDateFirstLowProperty.get() != null ? mMeasDateFirstLowProperty.get().toString() : "");
+        map.put("Första " + Dict.TO.toString(), mMeasDateFirstHighProperty.get() != null ? mMeasDateFirstHighProperty.get().toString() : "");
+        map.put("Senaste " + Dict.FROM.toString(), mMeasDateLastLowProperty.get() != null ? mMeasDateLastLowProperty.get().toString() : "");
+        map.put("Senaste " + Dict.TO.toString(), mMeasDateLastHighProperty.get() != null ? mMeasDateLastHighProperty.get().toString() : "");
 
         if (mMeasNumOfProperty.get()) {
             var value = mMeasNumOfValueProperty.get();
@@ -424,47 +437,48 @@ public class TopoFilter extends FormFilter<TopoManager> {
     }
 
     private void initListeners() {
-        mInvertProperty.addListener(mChangeListenerObject);
-
-        mDimens1Property.addListener(mChangeListenerObject);
-        mDimens2Property.addListener(mChangeListenerObject);
-        mDimens3Property.addListener(mChangeListenerObject);
-
-        mMeasAlarmLevelChangeProperty.addListener(mChangeListenerObject);
-        mMeasAlarmLevelChangeLimitProperty.addListener(mChangeListenerObject);
-        mMeasAlarmLevelChangeModeProperty.addListener(mChangeListenerObject);
-        mMeasAlarmLevelChangeUnitProperty.addListener(mChangeListenerObject);
-        mMeasAlarmLevelChangeValueProperty.addListener(mChangeListenerObject);
-
-        mMeasTopListProperty.addListener(mChangeListenerObject);
-        mMeasTopListLimitProperty.addListener(mChangeListenerObject);
-        mMeasTopListUnitProperty.addListener(mChangeListenerObject);
-        mMeasTopListSizeValueProperty.addListener(mChangeListenerObject);
-
-        mMeasAlarmLevelAgeProperty.addListener(mChangeListenerObject);
-        mMeasAlarmLevelAgeValueProperty.addListener(mChangeListenerObject);
-        mMeasDiffAllProperty.addListener(mChangeListenerObject);
-        mMeasDiffAllValueProperty.addListener(mChangeListenerObject);
-        mMeasDiffPercentageHProperty.addListener(mChangeListenerObject);
-        mMeasDiffPercentageHValueProperty.addListener(mChangeListenerObject);
-        mMeasDiffPercentagePProperty.addListener(mChangeListenerObject);
-        mMeasDiffPercentagePValueProperty.addListener(mChangeListenerObject);
-        mMeasDiffLatestProperty.addListener(mChangeListenerObject);
-        mMeasDiffLatestValueProperty.addListener(mChangeListenerObject);
-        mMeasSpeedProperty.addListener(mChangeListenerObject);
-        mMeasSpeedValueProperty.addListener(mChangeListenerObject);
-        mMeasIncludeWithout.addListener(mChangeListenerObject);
-        mMeasLatestOperator.addListener(mChangeListenerObject);
-        mMeasNumOfProperty.addListener(mChangeListenerObject);
-        mMeasNumOfValueProperty.addListener(mChangeListenerObject);
-        mSameAlarmProperty.addListener(mChangeListenerObject);
-        mMeasYoyoCountValueProperty.addListener(mChangeListenerObject);
-        mMeasYoyoSizeValueProperty.addListener(mChangeListenerObject);
-        mMeasYoyoProperty.addListener(mChangeListenerObject);
-        mMeasDateLowProperty.addListener(mChangeListenerObject);
-        mMeasDateHighProperty.addListener(mChangeListenerObject);
-        disruptorDistanceProperty().addListener(mChangeListenerObject);
-        mDisruptorManager.lastChangedProperty().addListener(mChangeListenerObject);
+        List.of(
+                mInvertProperty,
+                mDimens1Property,
+                mDimens2Property,
+                mDimens3Property,
+                mMeasAlarmLevelChangeProperty,
+                mMeasAlarmLevelChangeLimitProperty,
+                mMeasAlarmLevelChangeModeProperty,
+                mMeasAlarmLevelChangeUnitProperty,
+                mMeasAlarmLevelChangeValueProperty,
+                mMeasTopListProperty,
+                mMeasTopListLimitProperty,
+                mMeasTopListUnitProperty,
+                mMeasTopListSizeValueProperty,
+                mMeasAlarmLevelAgeProperty,
+                mMeasAlarmLevelAgeValueProperty,
+                mMeasDiffAllProperty,
+                mMeasDiffAllValueProperty,
+                mMeasDiffPercentageHProperty,
+                mMeasDiffPercentageHValueProperty,
+                mMeasDiffPercentagePProperty,
+                mMeasDiffPercentagePValueProperty,
+                mMeasDiffLatestProperty,
+                mMeasDiffLatestValueProperty,
+                mMeasSpeedProperty,
+                mMeasSpeedValueProperty,
+                mMeasIncludeWithout,
+                mMeasLatestOperator,
+                mMeasNumOfProperty,
+                mMeasNumOfValueProperty,
+                mSameAlarmProperty,
+                mMeasYoyoCountValueProperty,
+                mMeasYoyoSizeValueProperty,
+                mMeasYoyoProperty,
+                mMeasDateFirstLowProperty,
+                mMeasDateFirstHighProperty,
+                mMeasDateLastLowProperty,
+                mMeasDateLastHighProperty,
+                //
+                disruptorDistanceProperty(),
+                mDisruptorManager.lastChangedProperty()
+        ).forEach(propertyBase -> propertyBase.addListener(mChangeListenerObject));
     }
 
     private String makeInfoDimension() {
@@ -479,6 +493,18 @@ public class TopoFilter extends FormFilter<TopoManager> {
                 .append(BooleanHelper.asCheckBox(d3, "3"));
 
         return sb.toString();
+    }
+
+    private boolean validateAge(LocalDateTime lastMeasurementDateTime, SimpleObjectProperty<LocalDate> low, SimpleObjectProperty<LocalDate> high) {
+        if (null != lastMeasurementDateTime) {
+            var lowDate = low.get();
+            var highDate = high.get();
+            var valid = DateHelper.isBetween(lowDate, highDate, lastMeasurementDateTime.toLocalDate());
+
+            return valid;
+        } else {
+            return false;
+        }
     }
 
     private boolean validateAlarm(BTopoControlPoint p) {
@@ -586,36 +612,6 @@ public class TopoFilter extends FormFilter<TopoManager> {
         }
 
         return false;
-    }
-
-    private boolean validateMaxAge(LocalDateTime lastMeasurementDateTime) {
-        if (null != lastMeasurementDateTime) {
-            var lowDate = mMeasDateLowProperty.get();
-            var highDate = mMeasDateHighProperty.get();
-            var valid = DateHelper.isBetween(lowDate, highDate, lastMeasurementDateTime.toLocalDate());
-
-            return valid;
-        } else {
-            return false;
-        }
-//
-//        if (ageFilter == null || ageFilter.equalsIgnoreCase("*")) {
-//            return true;
-//        }
-//
-//        if (dateTime == null) {
-//            return ageFilter.equalsIgnoreCase("NODATA");
-//        } else {
-//            if (ageFilter.equalsIgnoreCase("∞")) {
-//                return true;
-//            } else if (ageFilter.equalsIgnoreCase("NODATA")) {
-//                return false;
-//            }
-//
-//            long daysBetween = DAYS.between(dateTime, LocalDateTime.now());
-//            boolean valid = daysBetween < Integer.parseInt(ageFilter);
-//            return valid;
-//        }
     }
 
     private boolean validateMeasAlarmLevelAge(BTopoControlPoint p) {

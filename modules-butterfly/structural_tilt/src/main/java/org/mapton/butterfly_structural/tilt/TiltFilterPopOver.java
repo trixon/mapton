@@ -69,12 +69,12 @@ public class TiltFilterPopOver extends BaseFilterPopOver {
 
         var temporalRange = mManager.getTemporalRange();
         if (temporalRange != null) {
-            mBaseFilters.getDateRangePane().setMinMaxDate(temporalRange.getFromLocalDate(), temporalRange.getToLocalDate());
+            mBaseFilters.getDateRangeLastPane().setMinMaxDate(temporalRange.getFromLocalDate(), temporalRange.getToLocalDate());
         }
 
         var sessionManager = getSessionManager();
-        sessionManager.register("filter.DateLow", mBaseFilters.getDateRangePane().lowStringProperty());
-        sessionManager.register("filter.DateHigh", mBaseFilters.getDateRangePane().highStringProperty());
+        sessionManager.register("filter.DateLow", mBaseFilters.getDateRangeLastPane().lowStringProperty());
+        sessionManager.register("filter.DateHigh", mBaseFilters.getDateRangeLastPane().highStringProperty());
     }
 
     @Override
@@ -99,7 +99,7 @@ public class TiltFilterPopOver extends BaseFilterPopOver {
         var leftBox = new VBox(GAP,
                 mBaseFilters.getBaseBorderBox(),
                 new Spacer(),
-                mBaseFilters.getDateBorderBox()
+                mBaseFilters.getDateLastBorderBox()
         );
 
         var rightBox = new BorderPane();

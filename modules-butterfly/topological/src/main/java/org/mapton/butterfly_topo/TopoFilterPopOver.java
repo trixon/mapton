@@ -229,12 +229,15 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
 
         var temporalRange = mManager.getTemporalRange();
         if (temporalRange != null) {
-            mBaseFilters.getDateRangePane().setMinMaxDate(temporalRange.getFromLocalDate(), temporalRange.getToLocalDate());
+            mBaseFilters.getDateRangeFirstPane().setMinMaxDate(temporalRange.getFromLocalDate(), temporalRange.getToLocalDate());
+            mBaseFilters.getDateRangeLastPane().setMinMaxDate(temporalRange.getFromLocalDate(), temporalRange.getToLocalDate());
         }
 
         var sessionManager = getSessionManager();
-        sessionManager.register("filter.DateLow", mBaseFilters.getDateRangePane().lowStringProperty());
-        sessionManager.register("filter.DateHigh", mBaseFilters.getDateRangePane().highStringProperty());
+        sessionManager.register("filter.DateFirstLow", mBaseFilters.getDateRangeFirstPane().lowStringProperty());
+        sessionManager.register("filter.DateFirstHigh", mBaseFilters.getDateRangeFirstPane().highStringProperty());
+        sessionManager.register("filter.DateLastLow", mBaseFilters.getDateRangeLastPane().lowStringProperty());
+        sessionManager.register("filter.DateLastHigh", mBaseFilters.getDateRangeLastPane().highStringProperty());
     }
 
     @Override
@@ -319,7 +322,8 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
         var leftBox = new VBox(rowGap,
                 mBaseFilters.getBaseBorderBox(),
                 new Spacer(),
-                mBaseFilters.getDateBorderBox()
+                mBaseFilters.getDateFirstBorderBox(),
+                mBaseFilters.getDateLastBorderBox()
         );
 
         var hGap = FxHelper.getUIScaled(9.0);
@@ -521,8 +525,10 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
 
         mFilter.sameAlarmProperty().bind(mSameAlarmCheckbox.selectedProperty());
         mFilter.polygonFilterProperty().bind(usePolygonFilterProperty());
-        mFilter.measDateLowProperty().bind(mBaseFilters.getDateRangePane().lowDateProperty());
-        mFilter.measDateHighProperty().bind(mBaseFilters.getDateRangePane().highDateProperty());
+        mFilter.measDateFirstLowProperty().bind(mBaseFilters.getDateRangeFirstPane().lowDateProperty());
+        mFilter.measDateFirstHighProperty().bind(mBaseFilters.getDateRangeFirstPane().highDateProperty());
+        mFilter.measDateLastLowProperty().bind(mBaseFilters.getDateRangeLastPane().lowDateProperty());
+        mFilter.measDateLastHighProperty().bind(mBaseFilters.getDateRangeLastPane().highDateProperty());
 
         mFilter.mStatusCheckModel = mBaseFilters.getStatusSccb().getCheckModel();
         mFilter.mGroupCheckModel = mBaseFilters.getGroupSccb().getCheckModel();

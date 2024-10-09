@@ -41,8 +41,10 @@ public class BaseFilters {
     private final double mBorderInnerPadding = FxHelper.getUIScaled(8.0);
     private final ResourceBundle mBundle = NbBundle.getBundle(getClass());
     private final SessionCheckComboBox<String> mCategorySccb = new SessionCheckComboBox<>();
-    private Node mDateBorderBox;
-    private final DateRangePane mDateRangePane = new DateRangePane();
+    private Node mDateFirstBorderBox;
+    private Node mDateLastBorderBox;
+    private final DateRangePane mDateRangeFirstPane = new DateRangePane();
+    private final DateRangePane mDateRangeLastPane = new DateRangePane();
     private final SessionCheckComboBox<Integer> mFrequencySccb = new SessionCheckComboBox<>();
     private final SessionCheckComboBox<String> mGroupSccb = new SessionCheckComboBox<>();
     private final SessionCheckComboBox<String> mHasDateFromToSccb = new SessionCheckComboBox<>(true);
@@ -69,7 +71,8 @@ public class BaseFilters {
                 mFrequencySccb
         );
 
-        mDateRangePane.reset();
+        mDateRangeFirstPane.reset();
+        mDateRangeLastPane.reset();
     }
 
     public SessionCheckComboBox<String> getAlarmNameSccb() {
@@ -98,9 +101,24 @@ public class BaseFilters {
         return mCategorySccb;
     }
 
-    public Node getDateBorderBox() {
-        if (mDateBorderBox == null) {
-            mDateBorderBox = Borders.wrap(mDateRangePane.getRoot())
+    public Node getDateFirstBorderBox() {
+        if (mDateFirstBorderBox == null) {
+            mDateFirstBorderBox = Borders.wrap(mDateRangeFirstPane.getRoot())
+                    .etchedBorder()
+                    .title("Period för första mätning")
+                    .innerPadding(mTopBorderInnerPadding, mBorderInnerPadding, mBorderInnerPadding, mBorderInnerPadding)
+                    .outerPadding(0)
+                    .raised()
+                    .build()
+                    .build();
+        }
+
+        return mDateFirstBorderBox;
+    }
+
+    public Node getDateLastBorderBox() {
+        if (mDateLastBorderBox == null) {
+            mDateLastBorderBox = Borders.wrap(mDateRangeLastPane.getRoot())
                     .etchedBorder()
                     .title("Period för senaste mätning")
                     .innerPadding(mTopBorderInnerPadding, mBorderInnerPadding, mBorderInnerPadding, mBorderInnerPadding)
@@ -110,11 +128,15 @@ public class BaseFilters {
                     .build();
         }
 
-        return mDateBorderBox;
+        return mDateLastBorderBox;
     }
 
-    public DateRangePane getDateRangePane() {
-        return mDateRangePane;
+    public DateRangePane getDateRangeFirstPane() {
+        return mDateRangeFirstPane;
+    }
+
+    public DateRangePane getDateRangeLastPane() {
+        return mDateRangeLastPane;
     }
 
     public SessionCheckComboBox<Integer> getFrequencySccb() {
