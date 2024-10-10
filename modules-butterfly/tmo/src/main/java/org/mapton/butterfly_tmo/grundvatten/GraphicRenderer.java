@@ -20,11 +20,10 @@ import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Cylinder;
-import gov.nasa.worldwind.render.Renderable;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import org.mapton.butterfly_core.api.PlotLimiter;
+import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.butterfly_format.types.tmo.BGrundvatten;
 import org.mapton.worldwind.api.WWHelper;
 
@@ -32,33 +31,66 @@ import org.mapton.worldwind.api.WWHelper;
  *
  * @author Patrik Karlström
  */
-public class ComponentRenderer {
+public class GraphicRenderer extends GraphicRendererBase {
 
     private static final int DAYS_TO_DIM_FIRST_OBSERVATION = 30;
     private static final int DAYS_TO_SKIP = 30;
     private static final int KEEP_END = 10;
     private static final int KEEP_START = 10;
-    private static final String KEY_TIME_SERIES = "timeSeries";
-    private static final int PLOT_LIMIT = 1000;
 
     private final GrundvattenAttributeManager mAttributeManager = GrundvattenAttributeManager.getInstance();
-    private final RenderableLayer mLevelLayer;
-    private ArrayList<AVListImpl> mMapObjects;
-    private final PlotLimiter mPlotLimiter = new PlotLimiter();
 
-    public ComponentRenderer(RenderableLayer levelLayer) {
-        mLevelLayer = levelLayer;
-        mPlotLimiter.setLimit(KEY_TIME_SERIES, PLOT_LIMIT);
+    public GraphicRenderer(RenderableLayer layer, IndexedCheckModel<GraphicRendererItem> checkModel) {
+        sInteractiveLayer = layer;
+        sCheckModel = checkModel;
     }
 
-    public PlotLimiter getPlotLimiter() {
-        return mPlotLimiter;
+    public void addToAllowList(String name) {
+        sPlotLimiter.addToAllowList(name);
     }
 
     public void plot(BGrundvatten p, Position position, ArrayList<AVListImpl> mapObjects) {
-        mMapObjects = mapObjects;
+        GraphicRendererBase.sMapObjects = mapObjects;
 
-        if (isPlotLimitReached(p, KEY_TIME_SERIES, position)) {
+        plotTrace(p, position);
+
+    }
+
+    public void reset() {
+//        sPointToPositionMap.clear();
+        sPlotLimiter.reset();
+    }
+
+//    public void reset() {
+//        mPlotLimiter.reset();
+//    }
+//
+//    private void addRenderable(RenderableLayer layer, Renderable renderable) {
+//        layer.addRenderable(renderable);
+//        if (layer == mLevelLayer) {
+//            if (renderable instanceof AVListImpl avlist) {
+//                mMapObjects.add(avlist);
+//            }
+//        } else {
+//            //mLayerXYZ.addRenderable(renderable); //TODO Add to a non responsive layer
+//        }
+//    }
+//
+//    private boolean isPlotLimitReached(BGrundvatten p, Object key, Position position) {
+//        if (mPlotLimiter.isLimitReached(key, p.getName())) {
+//            addRenderable(mLevelLayer, mPlotLimiter.getPlotLimitIndicator(position, p.ext().getObservationsTimeFiltered().isEmpty()));
+//            return true;
+//        } else {
+//            if (p.ext().getObservationsTimeFiltered().isEmpty()) {
+//                addRenderable(mLevelLayer, mPlotLimiter.getPlotLimitIndicator(position, true));
+//            }
+//
+//            return false;
+//        }
+//    }
+    private void plotTrace(BGrundvatten p, Position position) {
+        if (!sCheckModel.isChecked(GraphicRendererItem.LEVEL)
+                || isPlotLimitReached(p, GraphicRendererItem.LEVEL, position)) {
             return;
         }
 
@@ -66,7 +98,7 @@ public class ComponentRenderer {
         var altitude = 0.0;
         var prevHeight = 0.0;
 
-        var explicitlyAllowed = mPlotLimiter.isAllowed(p.getName());
+//        var explicitlyAllowed = mPlotLimiter.isAllowed(p.getName());
         var reversedList = p.ext().getObservationsTimeFiltered().reversed();
 
         for (int i = 0; i < reversedList.size(); i++) {
@@ -79,9 +111,9 @@ public class ComponentRenderer {
             var keepEnd = i > reversedList.size() - KEEP_END;
 
             var daysSinceMeasurement = ChronoUnit.DAYS.between(o.getDate(), prevDate);
-            if (!keepStart && !keepEnd && !explicitlyAllowed && daysSinceMeasurement < DAYS_TO_SKIP) {
-                continue;
-            }
+//            if (!keepStart && !keepEnd && !explicitlyAllowed && daysSinceMeasurement < DAYS_TO_SKIP) {
+//                continue;
+//            }
 
             var timeSpan = ChronoUnit.MINUTES.between(o.getDate(), prevDate);
             var height = timeSpan / 24000.0;
@@ -104,37 +136,12 @@ public class ComponentRenderer {
             }
 
             cylinder.setAttributes(attrs);
-            addRenderable(mLevelLayer, cylinder);
-            mPlotLimiter.incPlotCounter(KEY_TIME_SERIES);
+//            addRenderable(mLevelLayer, cylinder);
+//            mPlotLimiter.incPlotCounter(KEY_TIME_SERIES);
+            addRenderable(cylinder, true);
+            sPlotLimiter.incPlotCounter(GraphicRendererItem.LEVEL);
         }
-    }
 
-    public void reset() {
-        mPlotLimiter.reset();
-    }
-
-    private void addRenderable(RenderableLayer layer, Renderable renderable) {
-        layer.addRenderable(renderable);
-        if (layer == mLevelLayer) {
-            if (renderable instanceof AVListImpl avlist) {
-                mMapObjects.add(avlist);
-            }
-        } else {
-            //mLayerXYZ.addRenderable(renderable); //TODO Add to a non responsive layer
-        }
-    }
-
-    private boolean isPlotLimitReached(BGrundvatten p, Object key, Position position) {
-        if (mPlotLimiter.isLimitReached(key, p.getName())) {
-            addRenderable(mLevelLayer, mPlotLimiter.getPlotLimitIndicator(position, p.ext().getObservationsTimeFiltered().isEmpty()));
-            return true;
-        } else {
-            if (p.ext().getObservationsTimeFiltered().isEmpty()) {
-                addRenderable(mLevelLayer, mPlotLimiter.getPlotLimitIndicator(position, true));
-            }
-
-            return false;
-        }
     }
 
 }

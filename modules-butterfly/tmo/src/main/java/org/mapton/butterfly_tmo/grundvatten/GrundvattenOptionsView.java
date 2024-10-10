@@ -16,10 +16,9 @@
 package org.mapton.butterfly_tmo.grundvatten;
 
 import java.util.LinkedHashMap;
-import javafx.beans.property.BooleanProperty;
+import java.util.stream.Stream;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuButton;
@@ -27,9 +26,11 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.layout.VBox;
 import org.apache.commons.lang3.StringUtils;
+import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.worldwind.api.MOptionsView;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
+import se.trixon.almond.util.fx.session.SessionCheckComboBox;
 import se.trixon.almond.util.fx.session.SessionComboBox;
 
 /**
@@ -40,11 +41,10 @@ public class GrundvattenOptionsView extends MOptionsView {
 
     private static final GrundvattenLabelBy DEFAULT_LABEL_BY = GrundvattenLabelBy.NAME;
     private static final PointBy DEFAULT_POINT_BY = PointBy.PIN;
-
+    private final SessionCheckComboBox<GraphicRendererItem> mGraphicSccb = new SessionCheckComboBox<>();
     private final SimpleStringProperty mLabelByIdProperty = new SimpleStringProperty(DEFAULT_LABEL_BY.name());
     private final SimpleObjectProperty<GrundvattenLabelBy> mLabelByProperty = new SimpleObjectProperty<>();
     private final MenuButton mLabelMenuButton = new MenuButton();
-    private final CheckBox mTimeSeriesCheckBox = new CheckBox("Tidsserie");
     private final SessionComboBox<PointBy> mPointScb = new SessionComboBox<>();
 
     public GrundvattenOptionsView(GrundvattenLayerBundle layerBundle) {
@@ -52,6 +52,10 @@ public class GrundvattenOptionsView extends MOptionsView {
         createUI();
         initListeners();
         initSession();
+    }
+
+    public IndexedCheckModel<GraphicRendererItem> getGraphicCheckModel() {
+        return mGraphicSccb.getCheckModel();
     }
 
     public GrundvattenLabelBy getLabelBy() {
@@ -62,10 +66,6 @@ public class GrundvattenOptionsView extends MOptionsView {
         return mPointScb.valueProperty().get();
     }
 
-    public BooleanProperty timeSeriesProperty() {
-        return mTimeSeriesCheckBox.selectedProperty();
-    }
-
     public SimpleObjectProperty<GrundvattenLabelBy> labelByProperty() {
         return mLabelByProperty;
     }
@@ -73,6 +73,9 @@ public class GrundvattenOptionsView extends MOptionsView {
     private void createUI() {
         mPointScb.getItems().setAll(PointBy.values());
         mPointScb.setValue(DEFAULT_POINT_BY);
+        mGraphicSccb.setTitle(Dict.GRAPHICS.toString());
+        mGraphicSccb.setShowCheckedCount(true);
+        mGraphicSccb.getItems().setAll(GraphicRendererItem.values());
 
         populateLabelMenuButton();
 
@@ -84,7 +87,7 @@ public class GrundvattenOptionsView extends MOptionsView {
                 mPointScb,
                 labelLabel,
                 mLabelMenuButton,
-                mTimeSeriesCheckBox
+                mGraphicSccb
         );
         box.setPadding(FxHelper.getUIScaledInsets(8));
 
@@ -99,6 +102,9 @@ public class GrundvattenOptionsView extends MOptionsView {
         });
 
         mPointScb.valueProperty().addListener(getChangeListener());
+        Stream.of(
+                mGraphicSccb)
+                .forEachOrdered(ccb -> ccb.getCheckModel().getCheckedItems().addListener(getListChangeListener()));
 
     }
 
@@ -106,7 +112,8 @@ public class GrundvattenOptionsView extends MOptionsView {
         var sessionManager = getSessionManager();
         sessionManager.register("options.grundvatten.pointBy", mPointScb.selectedIndexProperty());
         sessionManager.register("options.grundvatten.labelBy", mLabelByIdProperty);
-        sessionManager.register("options.grundvatten.timeSeries", timeSeriesProperty());
+        sessionManager.register("options.grundvatten.checkedGraphics", mGraphicSccb.checkedStringProperty());
+
         try {
             mLabelByProperty.set(GrundvattenLabelBy.valueOf(mLabelByIdProperty.get()));
         } catch (IllegalArgumentException e) {

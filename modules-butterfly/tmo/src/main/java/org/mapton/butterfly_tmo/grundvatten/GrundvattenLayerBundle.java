@@ -39,7 +39,7 @@ import se.trixon.almond.nbp.Almond;
 public class GrundvattenLayerBundle extends BfLayerBundle {
 
     private final GrundvattenAttributeManager mAttributeManager = GrundvattenAttributeManager.getInstance();
-    private final ComponentRenderer mComponentRenderer;
+    private final GraphicRenderer mGraphicRenderer;
     private final RenderableLayer mGroundConnectorLayer = new RenderableLayer();
     private final RenderableLayer mLabelLayer = new RenderableLayer();
     private final RenderableLayer mLayer = new RenderableLayer();
@@ -53,7 +53,7 @@ public class GrundvattenLayerBundle extends BfLayerBundle {
         init();
         initRepaint();
         mOptionsView = new GrundvattenOptionsView(this);
-        mComponentRenderer = new ComponentRenderer(mLayer);
+        mGraphicRenderer = new GraphicRenderer(mLayer, mOptionsView.getGraphicCheckModel());
         initListeners();
 
         mManager.setInitialTemporalState(WWHelper.isStoredAsVisible(mLayer, mLayer.isEnabled()));
@@ -107,15 +107,15 @@ public class GrundvattenLayerBundle extends BfLayerBundle {
             repaint();
         });
 
-        mOptionsView.timeSeriesProperty().addListener((p, o, n) -> {
-            repaint();
-        });
+//        mOptionsView..addListener((p, o, n) -> {
+//            repaint();
+//        });
     }
 
     private void initRepaint() {
         setPainter(() -> {
             removeAllRenderables();
-            mComponentRenderer.reset();
+            mGraphicRenderer.reset();
             if (!mLayer.isEnabled()) {
                 return;
             }
@@ -145,9 +145,7 @@ public class GrundvattenLayerBundle extends BfLayerBundle {
                     mapObjects.add(labelPlacemark);
                     mapObjects.add(plotPin(p, position, labelPlacemark));
 
-                    if (mOptionsView.timeSeriesProperty().get()) {
-                        mComponentRenderer.plot(p, position, mapObjects);
-                    }
+                    mGraphicRenderer.plot(p, position, mapObjects);
 
                     var leftClickRunnable = (Runnable) () -> {
                         mManager.setSelectedItemAfterReset(p);
@@ -156,7 +154,7 @@ public class GrundvattenLayerBundle extends BfLayerBundle {
                     var leftDoubleClickRunnable = (Runnable) () -> {
                         Almond.openAndActivateTopComponent((String) mLayer.getValue(WWHelper.KEY_FAST_OPEN));
                         if (!p.ext().getObservationsTimeFiltered().isEmpty()) {
-                            mComponentRenderer.getPlotLimiter().addToAllowList(p.getName());
+                            mGraphicRenderer.addToAllowList(p.getName());
                             repaint();
                         }
                     };
