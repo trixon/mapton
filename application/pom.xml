@@ -354,6 +354,10 @@
                 </dependency>
                 <dependency>
                     <groupId>${project.groupId}</groupId>
+                    <artifactId>butterfly-structural-strain</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
                     <artifactId>butterfly-structural-tilt</artifactId>
                 </dependency>
                 <dependency>

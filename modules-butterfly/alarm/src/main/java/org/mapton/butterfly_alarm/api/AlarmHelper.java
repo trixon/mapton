@@ -18,6 +18,7 @@ package org.mapton.butterfly_alarm.api;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.hydro.BGroundwaterPoint;
+import org.mapton.butterfly_format.types.structural.BStructuralStrainGaugePoint;
 import org.mapton.butterfly_format.types.structural.BStructuralTiltPoint;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import se.trixon.almond.util.StringHelper;
@@ -60,6 +61,18 @@ public class AlarmHelper {
     }
 
     public String getLimitsAsString(BStructuralTiltPoint p) {
+        var result = "";
+        var alarm = mManager.getAllItemsMap().get(p.getNameOfAlarm());
+        if (alarm != null) {
+            result = StringHelper.join(" // ", "-", alarm.getLimit1(), alarm.getLimit2());
+        } else {
+            System.out.println("Alarm not found: %s, %s".formatted(p.getName(), p.getNameOfAlarm()));
+        }
+
+        return result;
+    }
+
+    public String getLimitsAsString(BStructuralStrainGaugePoint p) {
         var result = "";
         var alarm = mManager.getAllItemsMap().get(p.getNameOfAlarm());
         if (alarm != null) {

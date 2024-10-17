@@ -32,6 +32,8 @@ import org.mapton.butterfly_format.types.geo.BGeoExtensometerPointObservation;
 import org.mapton.butterfly_format.types.hydro.BGroundwaterObservation;
 import org.mapton.butterfly_format.types.hydro.BGroundwaterPoint;
 import org.mapton.butterfly_format.types.monmon.BMonmon;
+import org.mapton.butterfly_format.types.structural.BStructuralStrainGaugePoint;
+import org.mapton.butterfly_format.types.structural.BStructuralStrainGaugePointObservation;
 import org.mapton.butterfly_format.types.structural.BStructuralTiltPoint;
 import org.mapton.butterfly_format.types.structural.BStructuralTiltPointObservation;
 import org.mapton.butterfly_format.types.tmo.BGrundvatten;
@@ -67,6 +69,8 @@ public class Butterfly {
     private final ArrayList<BAcousticMeasuringPoint> mMeasuringPoints = new ArrayList<>();
     private final ArrayList<BMonmon> mMonmons = new ArrayList<>();
     private final Structural mStructural = new Structural();
+    private final ArrayList<BStructuralStrainGaugePoint> mStructuralStrainPoints = new ArrayList<>();
+    private final ArrayList<BStructuralStrainGaugePointObservation> mStructuralStrainPointsObservations = new ArrayList<>();
     private final ArrayList<BStructuralTiltPoint> mStructuralTiltPoints = new ArrayList<>();
     private final ArrayList<BStructuralTiltPointObservation> mStructuralTiltPointsObservations = new ArrayList<>();
     private final Tmo mTmo = new Tmo();
@@ -144,6 +148,12 @@ public class Butterfly {
         }.load(sourceDir, "topoControlPointsObservations.csv", mTopoControlPointsObservations);
 
         //Structural
+        new ImportFromCsv<BStructuralStrainGaugePoint>(BStructuralStrainGaugePoint.class) {
+        }.load(sourceDir, "structuralStrainGaugePoints.csv", mStructuralStrainPoints);
+
+        new ImportFromCsv<BStructuralStrainGaugePointObservation>(BStructuralStrainGaugePointObservation.class) {
+        }.load(sourceDir, "structuralStrainGaugePointsObservations.csv", mStructuralStrainPointsObservations);
+
         new ImportFromCsv<BStructuralTiltPoint>(BStructuralTiltPoint.class) {
         }.load(sourceDir, "structuralTiltPoints.csv", mStructuralTiltPoints);
 
@@ -200,6 +210,10 @@ public class Butterfly {
         for (var a : mAlarms) {
             a.setButterfly(this);
             a.ext().populateRanges();
+        }
+
+        for (var p : mStructuralStrainPoints) {
+            p.setButterfly(this);
         }
 
         for (var p : mStructuralTiltPoints) {
@@ -294,7 +308,20 @@ public class Butterfly {
 
     public class Structural {
 
+        private final HashMap<String, BStructuralStrainGaugePoint> mNameToStrainPoint = new HashMap<>();
         private final HashMap<String, BStructuralTiltPoint> mNameToTiltPoint = new HashMap<>();
+
+        public BStructuralStrainGaugePoint getStrainPointByName(String name) {
+            return mNameToStrainPoint.get(name);
+        }
+
+        public ArrayList<BStructuralStrainGaugePoint> getStrainPoints() {
+            return mStructuralStrainPoints;
+        }
+
+        public ArrayList<BStructuralStrainGaugePointObservation> getStrainPointsObservations() {
+            return mStructuralStrainPointsObservations;
+        }
 
         public BStructuralTiltPoint getTiltPointByName(String name) {
             return mNameToTiltPoint.get(name);
@@ -309,6 +336,11 @@ public class Butterfly {
         }
 
         private void postLoad() {
+            mNameToStrainPoint.clear();
+            getStrainPoints().forEach(strainPoint -> {
+                mNameToStrainPoint.put(strainPoint.getName(), strainPoint);
+            });
+
             mNameToTiltPoint.clear();
             getTiltPoints().forEach(tiltPoint -> {
                 mNameToTiltPoint.put(tiltPoint.getName(), tiltPoint);

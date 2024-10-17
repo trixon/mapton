@@ -1,0 +1,87 @@
+/*
+ * Copyright 2024 Patrik Karlström.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.mapton.butterfly_format.types.structural;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import org.mapton.butterfly_format.types.BXyzPoint;
+
+/**
+ *
+ * @author Patrik Karlström
+ */
+public class BStructuralStrainGaugePoint extends BXyzPoint {
+
+    @JsonIgnore
+    private Ext mExt;
+    private String nameOfAlarm;
+    private Double directionX;
+
+    public Ext ext() {
+        if (mExt == null) {
+            mExt = new Ext();
+        }
+
+        return mExt;
+    }
+
+    public String getNameOfAlarm() {
+        return nameOfAlarm;
+    }
+
+    public Double getDirectionX() {
+        return directionX;
+    }
+
+    public void setNameOfAlarm(String nameOfAlarm) {
+        this.nameOfAlarm = nameOfAlarm;
+    }
+
+    public void setDirectionX(Double directionX) {
+        this.directionX = directionX;
+    }
+
+    public class Ext extends BXyzPoint.Ext<BStructuralStrainGaugePointObservation> {
+
+        public String getDeltaRolling() {
+            return getDelta(deltaRolling());
+        }
+
+        public String getDeltaZero() {
+            return getDelta(deltaZero());
+        }
+
+        public long getMeasurementUntilNext(ChronoUnit chronoUnit) {
+            var latest = getDateLatest() != null ? getDateLatest().toLocalDate() : LocalDate.MIN;
+            var nextMeas = latest.plusDays(getFrequency());
+
+            return chronoUnit.between(LocalDate.now(), nextMeas);
+        }
+
+        private String getDelta(Delta delta) {
+            var dR = "";
+            if (delta.getDeltaZ() != null) {
+                dR = ", R=%.1f".formatted(Math.abs(delta.getDeltaZ()));
+            }
+
+            var s = "X=%.1f, Y=%.1f%s".formatted(delta.getDeltaX(), delta.getDeltaY(), dR);
+
+            return s;
+        }
+    }
+
+}
