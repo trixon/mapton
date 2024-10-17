@@ -30,7 +30,6 @@ import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.chart.ui.LengthAdjustmentType;
 import org.jfree.chart.ui.RectangleAnchor;
 import org.jfree.chart.ui.TextAnchor;
-import org.jfree.data.time.MovingAverage;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
@@ -38,6 +37,7 @@ import org.mapton.butterfly_format.types.BAlarm;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.structural.BStructuralStrainGaugePoint;
 import org.mapton.ce_jfreechart.api.ChartHelper;
+import se.trixon.almond.util.CircularInt;
 import se.trixon.almond.util.DateHelper;
 
 /**
@@ -47,11 +47,12 @@ import se.trixon.almond.util.DateHelper;
 public class StrainChartBuilder extends XyzChartBuilder<BStructuralStrainGaugePoint> {
 
     private final ChartHelper mChartHelper = new ChartHelper();
-    private final TimeSeriesCollection mTemperatureDataset = new TimeSeriesCollection();
-    private final TimeSeries mTimeSeriesTemperature = new TimeSeries("°C");
-    private final TimeSeries mTimeSeriesZ = new TimeSeries("Δ µε");
-    private final NumberAxis mTemperatureAxis = new NumberAxis("°C");
+    private final CircularInt mColorCircularInt = new CircularInt(0, 5);
     private final XYLineAndShapeRenderer mSecondaryRenderer = new XYLineAndShapeRenderer();
+    private final NumberAxis mTemperatureAxis = new NumberAxis("NTC 3k");
+    private final TimeSeriesCollection mTemperatureDataset = new TimeSeriesCollection();
+    private final TimeSeries mTimeSeriesTemperature = new TimeSeries("NTC 3k");
+    private final TimeSeries mTimeSeriesZ = new TimeSeries("Δ µε");
 
     public StrainChartBuilder() {
         initChart("Δ µε", "0");
@@ -119,47 +120,35 @@ public class StrainChartBuilder extends XyzChartBuilder<BStructuralStrainGaugePo
         var plot = (XYPlot) mChart.getPlot();
         plot.clearDomainMarkers();
 
-        p.ext().getObservationsTimeFiltered().forEach(o -> {
-            var minute = mChartHelper.convertToMinute(o.getDate());
-            if (o.isReplacementMeasurement()) {
-                var marker = new ValueMarker(minute.getFirstMillisecond());
-                marker.setPaint(Color.RED);
-                marker.setLabel("E");
-                marker.setLabelAnchor(RectangleAnchor.TOP_RIGHT);
-                marker.setLabelTextAnchor(TextAnchor.TOP_LEFT);
-                plot.addDomainMarker(marker);
-            } else if (o.isZeroMeasurement()) {
-                var marker = new ValueMarker(minute.getFirstMillisecond());
-                marker.setPaint(Color.BLUE);
-                marker.setLabel("N");
-                marker.setLabelAnchor(RectangleAnchor.TOP_RIGHT);
-                marker.setLabelTextAnchor(TextAnchor.TOP_LEFT);
-                plot.addDomainMarker(marker);
-            }
+        updateDatasetTemperature(p);
 
-            mTimeSeriesZ.add(minute, o.ext().getDeltaZ());
-
-            mTimeSeriesTemperature.add(minute, o.getTemperature());
-        });
-
-        var renderer = plot.getRenderer();
-        var avgStroke = new BasicStroke(5.0f);
-        int avdDays = 90 * 60 * 24;
-        int avgSkipMeasurements = 0;
-        boolean plotAvg = false;
-
-        getDataset().addSeries(mTimeSeriesZ);
-        renderer.setSeriesPaint(getDataset().getSeriesIndex(mTimeSeriesZ.getKey()), Color.RED);
-        if (plotAvg) {
-            var mavg = MovingAverage.createMovingAverage(mTimeSeriesZ, "%s (avg)".formatted(mTimeSeriesZ.getKey()), avdDays, avgSkipMeasurements);
-            getDataset().addSeries(mavg);
-            int index = getDataset().getSeriesIndex(mavg.getKey());
-            renderer.setSeriesPaint(index, Color.RED);
-            renderer.setSeriesStroke(index, avgStroke);
+        var single = false;
+        if (single) {
+            updateDataset(p, Color.RED);
+        } else {
+            updateDataset(p, Color.RED);
+            mColorCircularInt.set(0);
+            StrainManager.getInstance().getTimeFilteredItems().stream()
+                    .filter(pp -> {
+                        return Math.hypot(pp.getZeroX() - p.getZeroX(), pp.getZeroY() - p.getZeroY()) < 1.0;
+                    })
+                    .filter(pp -> pp != p)
+                    .forEach(pp -> {
+                        updateDataset(pp, getColor());
+                    });
         }
+    }
 
-        mTemperatureDataset.addSeries(mTimeSeriesTemperature);
-        mSecondaryRenderer.setSeriesPaint(mTemperatureDataset.getSeriesIndex(mTimeSeriesTemperature.getKey()), Color.GRAY);
+    private Color getColor() {
+        var colors = new Color[]{
+            Color.BLUE,
+            Color.CYAN,
+            Color.MAGENTA,
+            Color.YELLOW,
+            Color.GREEN,
+            Color.ORANGE};
+
+        return colors[mColorCircularInt.inc()];
     }
 
     private void plotAlarmIndicator(BComponent component, double value, Color color) {
@@ -216,5 +205,46 @@ public class StrainChartBuilder extends XyzChartBuilder<BStructuralStrainGaugePo
                 plotAlarmIndicator(BComponent.PLANE, range1.getMaximum(), Color.RED);
             }
         }
+    }
+
+    private void updateDataset(BStructuralStrainGaugePoint p, Color color) {
+        var plot = (XYPlot) mChart.getPlot();
+        var timeSeries = new TimeSeries(p.getName());
+
+        p.ext().getObservationsTimeFiltered().forEach(o -> {
+            var minute = mChartHelper.convertToMinute(o.getDate());
+            if (o.isReplacementMeasurement()) {
+                var marker = new ValueMarker(minute.getFirstMillisecond());
+                marker.setPaint(Color.RED);
+                marker.setLabel("E");
+                marker.setLabelAnchor(RectangleAnchor.TOP_RIGHT);
+                marker.setLabelTextAnchor(TextAnchor.TOP_LEFT);
+                plot.addDomainMarker(marker);
+            } else if (o.isZeroMeasurement()) {
+                var marker = new ValueMarker(minute.getFirstMillisecond());
+                marker.setPaint(Color.BLUE);
+                marker.setLabel("N");
+                marker.setLabelAnchor(RectangleAnchor.TOP_RIGHT);
+                marker.setLabelTextAnchor(TextAnchor.TOP_LEFT);
+                plot.addDomainMarker(marker);
+            }
+
+            timeSeries.add(minute, o.ext().getDeltaZ());
+        });
+
+        var renderer = plot.getRenderer();
+
+        getDataset().addSeries(timeSeries);
+        renderer.setSeriesPaint(getDataset().getSeriesIndex(timeSeries.getKey()), color);
+    }
+
+    private void updateDatasetTemperature(BStructuralStrainGaugePoint p) {
+        p.ext().getObservationsTimeFiltered().forEach(o -> {
+            var minute = mChartHelper.convertToMinute(o.getDate());
+            mTimeSeriesTemperature.add(minute, o.getTemperature());
+        });
+
+        mTemperatureDataset.addSeries(mTimeSeriesTemperature);
+        mSecondaryRenderer.setSeriesPaint(mTemperatureDataset.getSeriesIndex(mTimeSeriesTemperature.getKey()), Color.GRAY);
     }
 }
