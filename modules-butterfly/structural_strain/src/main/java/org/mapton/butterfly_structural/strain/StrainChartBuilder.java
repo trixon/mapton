@@ -38,7 +38,6 @@ import org.mapton.butterfly_format.types.BAlarm;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.structural.BStructuralStrainGaugePoint;
 import org.mapton.ce_jfreechart.api.ChartHelper;
-import org.openide.util.Exceptions;
 import se.trixon.almond.util.DateHelper;
 
 /**
@@ -50,14 +49,12 @@ public class StrainChartBuilder extends XyzChartBuilder<BStructuralStrainGaugePo
     private final ChartHelper mChartHelper = new ChartHelper();
     private final TimeSeriesCollection mTemperatureDataset = new TimeSeriesCollection();
     private final TimeSeries mTimeSeriesTemperature = new TimeSeries("°C");
-    private final TimeSeries mTimeSeriesX = new TimeSeries("X");
-    private final TimeSeries mTimeSeriesY = new TimeSeries("Y");
-    private final TimeSeries mTimeSeriesZ = new TimeSeries("R");
+    private final TimeSeries mTimeSeriesZ = new TimeSeries("Δ µε");
     private final NumberAxis mTemperatureAxis = new NumberAxis("°C");
     private final XYLineAndShapeRenderer mSecondaryRenderer = new XYLineAndShapeRenderer();
 
     public StrainChartBuilder() {
-        initChart("mm/m", "0.0");
+        initChart("Δ µε", "0");
 
         var plot = (XYPlot) mChart.getPlot();
         plot.setRangeAxis(2, mTemperatureAxis);
@@ -114,8 +111,6 @@ public class StrainChartBuilder extends XyzChartBuilder<BStructuralStrainGaugePo
     @Override
     public synchronized void updateDataset(BStructuralStrainGaugePoint p) {
         getDataset().removeAllSeries();
-        mTimeSeriesX.clear();
-        mTimeSeriesY.clear();
         mTimeSeriesZ.clear();
 
         mTemperatureDataset.removeAllSeries();
@@ -142,9 +137,8 @@ public class StrainChartBuilder extends XyzChartBuilder<BStructuralStrainGaugePo
                 plot.addDomainMarker(marker);
             }
 
-            mTimeSeriesX.add(minute, o.ext().getDeltaX());
-            mTimeSeriesY.add(minute, o.ext().getDeltaY());
             mTimeSeriesZ.add(minute, o.ext().getDeltaZ());
+
             mTimeSeriesTemperature.add(minute, o.getTemperature());
         });
 
@@ -152,39 +146,15 @@ public class StrainChartBuilder extends XyzChartBuilder<BStructuralStrainGaugePo
         var avgStroke = new BasicStroke(5.0f);
         int avdDays = 90 * 60 * 24;
         int avgSkipMeasurements = 0;
-        boolean plotAvg = true;
-
-        getDataset().addSeries(mTimeSeriesX);
-        renderer.setSeriesPaint(getDataset().getSeriesIndex(mTimeSeriesX.getKey()), Color.RED);
-        if (plotAvg) {
-            var mavg = MovingAverage.createMovingAverage(mTimeSeriesX, "%s (avg)".formatted(mTimeSeriesX.getKey()), avdDays, avgSkipMeasurements);
-            getDataset().addSeries(mavg);
-            int index = getDataset().getSeriesIndex(mavg.getKey());
-            renderer.setSeriesPaint(index, Color.RED);
-            renderer.setSeriesStroke(index, avgStroke);
-        }
-
-        getDataset().addSeries(mTimeSeriesY);
-        renderer.setSeriesPaint(getDataset().getSeriesIndex(mTimeSeriesY.getKey()), Color.GREEN);
-        if (plotAvg) {
-            var mavg = MovingAverage.createMovingAverage(mTimeSeriesY, "%s (avg)".formatted(mTimeSeriesY.getKey()), avdDays, avgSkipMeasurements);
-            try {
-                getDataset().addSeries(mavg);
-                int index = getDataset().getSeriesIndex(mavg.getKey());
-                renderer.setSeriesPaint(index, Color.GREEN);
-                renderer.setSeriesStroke(index, avgStroke);
-            } catch (Exception e) {
-                Exceptions.printStackTrace(e);
-            }
-        }
+        boolean plotAvg = false;
 
         getDataset().addSeries(mTimeSeriesZ);
-        renderer.setSeriesPaint(getDataset().getSeriesIndex(mTimeSeriesZ.getKey()), Color.BLUE);
+        renderer.setSeriesPaint(getDataset().getSeriesIndex(mTimeSeriesZ.getKey()), Color.RED);
         if (plotAvg) {
             var mavg = MovingAverage.createMovingAverage(mTimeSeriesZ, "%s (avg)".formatted(mTimeSeriesZ.getKey()), avdDays, avgSkipMeasurements);
             getDataset().addSeries(mavg);
             int index = getDataset().getSeriesIndex(mavg.getKey());
-            renderer.setSeriesPaint(index, Color.BLUE);
+            renderer.setSeriesPaint(index, Color.RED);
             renderer.setSeriesStroke(index, avgStroke);
         }
 

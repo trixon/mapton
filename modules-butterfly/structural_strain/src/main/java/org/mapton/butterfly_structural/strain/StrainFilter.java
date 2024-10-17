@@ -78,8 +78,8 @@ public class StrainFilter extends FormFilter<StrainManager> {
                 .filter(p -> validateDateFromToHas(p.getDateValidFrom(), p.getDateValidTo()))
                 .filter(p -> validateDateFromToWithout(p.getDateValidFrom(), p.getDateValidTo()))
                 .filter(p -> validateDateFromToIs(p.getDateValidFrom(), p.getDateValidTo()))
-                //                .filter(p -> validateCoordinateArea(p.getLat(), p.getLon()))
-                //                .filter(p -> validateCoordinateRuler(p.getLat(), p.getLon()))
+                .filter(p -> validateCoordinateArea(p.getLat(), p.getLon()))
+                .filter(p -> validateCoordinateRuler(p.getLat(), p.getLon()))
                 .toList();
 
         mManager.getFilteredItems().setAll(filteredItems);

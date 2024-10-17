@@ -105,7 +105,7 @@ public class StrainPropertiesBuilder extends PropertiesBuilder<BStructuralStrain
         propertyMap.put(getCatKey(cat1, Dict.Geometry.DIRECTION_X.toString()), StringHelper.round(p.getDirectionX(), 0));
         propertyMap.put(getCatKey(cat1, "N"), StringHelper.round(p.getZeroY(), 3));
         propertyMap.put(getCatKey(cat1, "E"), StringHelper.round(p.getZeroX(), 3));
-        propertyMap.put(getCatKey(cat1, "H"), StringHelper.round(p.getZeroZ(), 3));
+        propertyMap.put(getCatKey(cat1, "µε"), StringHelper.round(p.getZeroZ(), 4));
         propertyMap.put(getCatKey(cat1, Dict.CREATED.toString()), DateHelper.toDateString(p.getDateCreated()));
         propertyMap.put(getCatKey(cat1, Dict.CHANGED.toString()), DateHelper.toDateString(p.getDateChanged()));
 
