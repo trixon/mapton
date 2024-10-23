@@ -25,6 +25,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.butterfly_format.types.tmo.BGrundvatten;
+import org.mapton.butterfly_format.types.tmo.BGrundvattenObservation;
 import org.mapton.worldwind.api.WWHelper;
 
 /**
@@ -57,37 +58,22 @@ public class GraphicRenderer extends GraphicRendererBase {
     }
 
     public void reset() {
-//        sPointToPositionMap.clear();
         sPlotLimiter.reset();
     }
 
-//    public void reset() {
-//        mPlotLimiter.reset();
-//    }
-//
-//    private void addRenderable(RenderableLayer layer, Renderable renderable) {
-//        layer.addRenderable(renderable);
-//        if (layer == mLevelLayer) {
-//            if (renderable instanceof AVListImpl avlist) {
-//                mMapObjects.add(avlist);
-//            }
-//        } else {
-//            //mLayerXYZ.addRenderable(renderable); //TODO Add to a non responsive layer
-//        }
-//    }
-//
-//    private boolean isPlotLimitReached(BGrundvatten p, Object key, Position position) {
-//        if (mPlotLimiter.isLimitReached(key, p.getName())) {
-//            addRenderable(mLevelLayer, mPlotLimiter.getPlotLimitIndicator(position, p.ext().getObservationsTimeFiltered().isEmpty()));
-//            return true;
-//        } else {
-//            if (p.ext().getObservationsTimeFiltered().isEmpty()) {
-//                addRenderable(mLevelLayer, mPlotLimiter.getPlotLimitIndicator(position, true));
-//            }
-//
-//            return false;
-//        }
-//    }
+    private Double getMedian(BGrundvatten p) {
+        if (p.ext().getObservationsTimeFiltered().isEmpty()) {
+            return 0.0;
+        }
+        var list = p.ext().getObservationsTimeFiltered();
+        var nivåer = list.stream().mapToDouble(BGrundvattenObservation::getNivå).sorted();
+        var median = list.size() % 2 == 0
+                ? nivåer.skip(list.size() / 2 - 1).limit(2).average().getAsDouble()
+                : nivåer.skip(list.size() / 2).findFirst().getAsDouble();
+
+        return median;
+    }
+
     private void plotTrace(BGrundvatten p, Position position) {
         if (!sCheckModel.isChecked(GraphicRendererItem.LEVEL)
                 || isPlotLimitReached(p, GraphicRendererItem.LEVEL, position)) {
@@ -98,8 +84,8 @@ public class GraphicRenderer extends GraphicRendererBase {
         var altitude = 0.0;
         var prevHeight = 0.0;
 
-//        var explicitlyAllowed = mPlotLimiter.isAllowed(p.getName());
         var reversedList = p.ext().getObservationsTimeFiltered().reversed();
+        var median = getMedian(p);
 
         for (int i = 0; i < reversedList.size(); i++) {
             var o = reversedList.get(i);
@@ -124,9 +110,11 @@ public class GraphicRenderer extends GraphicRendererBase {
             var pos = WWHelper.positionFromPosition(position, altitude);
             var maxRadius = 100.0;
 
-            var dZ = o.getNivå() - p.ext().getMinObservation().getNivå();
-            var radius = Math.min(maxRadius, Math.abs(dZ) * 1 + 0.01);
-
+//            var dZ = o.getNivå() - p.ext().getMaxObservation().getNivå();
+            var dZ = o.getNivå() - median;
+//            dZ = dZ * dZ;
+            var scale = 1.0;
+            var radius = Math.min(maxRadius, Math.abs(dZ) * scale + 0.1);
             var cylinder = new Cylinder(pos, height, radius);
             var attrs = mAttributeManager.getTimeSeriesAttributes(p);
 
@@ -134,10 +122,12 @@ public class GraphicRenderer extends GraphicRendererBase {
                 attrs = new BasicShapeAttributes(attrs);
                 attrs.setInteriorOpacity(0.25);
             }
+            if (dZ < 0) {
+                var lightColor = attrs.getInteriorMaterial().getSpecular().brighter();
+//                attrs.setInteriorMaterial(new Material(lightColor));
+            }
 
             cylinder.setAttributes(attrs);
-//            addRenderable(mLevelLayer, cylinder);
-//            mPlotLimiter.incPlotCounter(KEY_TIME_SERIES);
             addRenderable(cylinder, true);
             sPlotLimiter.incPlotCounter(GraphicRendererItem.LEVEL);
         }
