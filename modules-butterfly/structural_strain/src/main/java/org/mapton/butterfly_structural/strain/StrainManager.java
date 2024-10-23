@@ -143,16 +143,6 @@ public class StrainManager extends BaseManager<BStructuralStrainGaugePoint> {
             });
         });
 
-//        var mScale3dH = MSimpleObjectStorageManager.getInstance().getInteger(ScalePlot3dHSosd.class, 500);
-//
-//        mMinimumZscaled = Double.MAX_VALUE;
-//        for (var p : timeFilteredItems) {
-//            try {
-//                mMinimumZscaled = FastMath.min(mMinimumZscaled, p.getZeroZ() + mScale3dH * p.ext().deltaZero().getDeltaZ());
-//            } catch (Exception e) {
-//                //nvm
-//            }
-//        }
         getTimeFilteredItems().setAll(timeFilteredItems);
     }
 

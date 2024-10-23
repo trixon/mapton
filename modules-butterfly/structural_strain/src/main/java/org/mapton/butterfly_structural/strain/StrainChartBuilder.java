@@ -49,9 +49,9 @@ public class StrainChartBuilder extends XyzChartBuilder<BStructuralStrainGaugePo
     private final ChartHelper mChartHelper = new ChartHelper();
     private final CircularInt mColorCircularInt = new CircularInt(0, 5);
     private final XYLineAndShapeRenderer mSecondaryRenderer = new XYLineAndShapeRenderer();
-    private final NumberAxis mTemperatureAxis = new NumberAxis("NTC 3k");
+    private final NumberAxis mTemperatureAxis = new NumberAxis("°C");
     private final TimeSeriesCollection mTemperatureDataset = new TimeSeriesCollection();
-    private final TimeSeries mTimeSeriesTemperature = new TimeSeries("NTC 3k");
+    private final TimeSeries mTimeSeriesTemperature = new TimeSeries("°C");
     private final TimeSeries mTimeSeriesZ = new TimeSeries("Δ µε");
 
     public StrainChartBuilder() {
