@@ -95,7 +95,7 @@ public class GroundwaterLayerBundle extends BfLayerBundle {
 
                     placemark.setLabelText(cp.getName());
                     attrs.setImageAddress("images/pushpins/plain-white.png");
-                    attrs.setImageColor(Color.RED);
+                    attrs.setImageColor(Color.YELLOW);
 
                     placemark.setAttributes(attrs);
                     placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(attrs, 1.5));
