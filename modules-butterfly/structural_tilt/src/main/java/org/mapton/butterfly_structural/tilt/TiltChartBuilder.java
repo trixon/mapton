@@ -28,8 +28,6 @@ import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.chart.ui.LengthAdjustmentType;
-import org.jfree.chart.ui.RectangleAnchor;
-import org.jfree.chart.ui.TextAnchor;
 import org.jfree.data.time.MovingAverage;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
@@ -127,19 +125,9 @@ public class TiltChartBuilder extends XyzChartBuilder<BStructuralTiltPoint> {
         p.ext().getObservationsTimeFiltered().forEach(o -> {
             var minute = mChartHelper.convertToMinute(o.getDate());
             if (o.isReplacementMeasurement()) {
-                var marker = new ValueMarker(minute.getFirstMillisecond());
-                marker.setPaint(Color.RED);
-                marker.setLabel("E");
-                marker.setLabelAnchor(RectangleAnchor.TOP_RIGHT);
-                marker.setLabelTextAnchor(TextAnchor.TOP_LEFT);
-                plot.addDomainMarker(marker);
+                addMarker(plot, minute, "E", Color.RED);
             } else if (o.isZeroMeasurement()) {
-                var marker = new ValueMarker(minute.getFirstMillisecond());
-                marker.setPaint(Color.BLUE);
-                marker.setLabel("N");
-                marker.setLabelAnchor(RectangleAnchor.TOP_RIGHT);
-                marker.setLabelTextAnchor(TextAnchor.TOP_LEFT);
-                plot.addDomainMarker(marker);
+                addMarker(plot, minute, "N", Color.BLUE);
             }
 
             mTimeSeriesX.add(minute, o.ext().getDeltaX());

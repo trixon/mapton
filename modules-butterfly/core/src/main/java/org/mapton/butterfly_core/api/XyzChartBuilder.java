@@ -28,14 +28,18 @@ import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.block.BlockContainer;
 import org.jfree.chart.block.BorderArrangement;
 import org.jfree.chart.block.EmptyBlock;
+import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.chart.title.CompositeTitle;
 import org.jfree.chart.title.TextTitle;
 import org.jfree.chart.ui.HorizontalAlignment;
+import org.jfree.chart.ui.RectangleAnchor;
 import org.jfree.chart.ui.RectangleEdge;
 import org.jfree.chart.ui.RectangleInsets;
+import org.jfree.chart.ui.TextAnchor;
 import org.jfree.chart.ui.VerticalAlignment;
+import org.jfree.data.time.Minute;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.mapton.api.ui.forms.ChartBuilder;
 import org.mapton.butterfly_format.types.BXyzPoint;
@@ -53,6 +57,15 @@ public abstract class XyzChartBuilder<T extends BXyzPoint> extends ChartBuilder<
     private final TimeSeriesCollection mDataset = new TimeSeriesCollection();
     private TextTitle mLeftSubTextTitle;
     private TextTitle mRightSubTextTitle;
+
+    public void addMarker(XYPlot plot, Minute minute, String string, Color color) {
+        var marker = new ValueMarker(minute.getFirstMillisecond());
+        marker.setPaint(color);
+        marker.setLabel(string);
+        marker.setLabelAnchor(RectangleAnchor.TOP_RIGHT);
+        marker.setLabelTextAnchor(TextAnchor.TOP_LEFT);
+        plot.addDomainMarker(marker);
+    }
 
     public ChartPanel getChartPanel() {
         return mChartPanel;

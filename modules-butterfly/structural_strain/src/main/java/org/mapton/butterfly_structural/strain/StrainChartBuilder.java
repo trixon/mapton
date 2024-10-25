@@ -28,8 +28,6 @@ import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.chart.ui.LengthAdjustmentType;
-import org.jfree.chart.ui.RectangleAnchor;
-import org.jfree.chart.ui.TextAnchor;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
@@ -39,6 +37,7 @@ import org.mapton.butterfly_format.types.structural.BStructuralStrainGaugePoint;
 import org.mapton.ce_jfreechart.api.ChartHelper;
 import se.trixon.almond.util.CircularInt;
 import se.trixon.almond.util.DateHelper;
+import se.trixon.almond.util.MathHelper;
 
 /**
  *
@@ -124,9 +123,9 @@ public class StrainChartBuilder extends XyzChartBuilder<BStructuralStrainGaugePo
 
         var single = false;
         if (single) {
-            updateDataset(p, Color.RED);
+            updateDataset(p, Color.RED, true);
         } else {
-            updateDataset(p, Color.RED);
+            updateDataset(p, Color.RED, true);
             mColorCircularInt.set(0);
             StrainManager.getInstance().getTimeFilteredItems().stream()
                     .filter(pp -> {
@@ -134,7 +133,7 @@ public class StrainChartBuilder extends XyzChartBuilder<BStructuralStrainGaugePo
                     })
                     .filter(pp -> pp != p)
                     .forEach(pp -> {
-                        updateDataset(pp, getColor());
+                        updateDataset(pp, getColor(), false);
                     });
         }
     }
@@ -207,29 +206,23 @@ public class StrainChartBuilder extends XyzChartBuilder<BStructuralStrainGaugePo
         }
     }
 
-    private void updateDataset(BStructuralStrainGaugePoint p, Color color) {
+    private void updateDataset(BStructuralStrainGaugePoint p, Color color, boolean plotZeroAndReplacement) {
         var plot = (XYPlot) mChart.getPlot();
         var timeSeries = new TimeSeries(p.getName());
 
         p.ext().getObservationsTimeFiltered().forEach(o -> {
             var minute = mChartHelper.convertToMinute(o.getDate());
-            if (o.isReplacementMeasurement()) {
-                var marker = new ValueMarker(minute.getFirstMillisecond());
-                marker.setPaint(Color.RED);
-                marker.setLabel("E");
-                marker.setLabelAnchor(RectangleAnchor.TOP_RIGHT);
-                marker.setLabelTextAnchor(TextAnchor.TOP_LEFT);
-                plot.addDomainMarker(marker);
-            } else if (o.isZeroMeasurement()) {
-                var marker = new ValueMarker(minute.getFirstMillisecond());
-                marker.setPaint(Color.BLUE);
-                marker.setLabel("N");
-                marker.setLabelAnchor(RectangleAnchor.TOP_RIGHT);
-                marker.setLabelTextAnchor(TextAnchor.TOP_LEFT);
-                plot.addDomainMarker(marker);
+            if (plotZeroAndReplacement) {
+                if (o.isReplacementMeasurement()) {
+                    addMarker(plot, minute, "E", Color.RED);
+                } else if (o.isZeroMeasurement()) {
+                    addMarker(plot, minute, "N", Color.BLUE);
+                }
             }
 
-            timeSeries.add(minute, o.ext().getDeltaZ());
+            if (o.ext().getDeltaZ() != null) {
+                timeSeries.add(minute, o.ext().getDeltaZ());
+            }
         });
 
         var renderer = plot.getRenderer();
@@ -241,7 +234,9 @@ public class StrainChartBuilder extends XyzChartBuilder<BStructuralStrainGaugePo
     private void updateDatasetTemperature(BStructuralStrainGaugePoint p) {
         p.ext().getObservationsTimeFiltered().forEach(o -> {
             var minute = mChartHelper.convertToMinute(o.getDate());
-            mTimeSeriesTemperature.add(minute, o.getTemperature());
+            if (MathHelper.isBetween(-40d, +40d, o.getTemperature())) {
+                mTimeSeriesTemperature.add(minute, o.getTemperature());
+            }
         });
 
         mTemperatureDataset.addSeries(mTimeSeriesTemperature);
