@@ -116,14 +116,6 @@ public abstract class BXyzPoint extends BBaseControlPoint {
         private transient final DeltaRolling deltaRolling = new DeltaRolling();
         private transient final DeltaZero deltaZero = new DeltaZero();
 
-        public DeltaRolling deltaRolling() {
-            return deltaRolling;
-        }
-
-        public DeltaZero deltaZero() {
-            return deltaZero;
-        }
-
         public void calculateObservations(List<T> observations) {
             if (observations.isEmpty()) {
                 return;
@@ -145,56 +137,62 @@ public abstract class BXyzPoint extends BBaseControlPoint {
                     .filter(o -> o.isZeroMeasurement())
                     .findFirst().orElse(observations.getFirst());
 
-            Double zX = latestZero.getMeasuredX();
-            Double zY = latestZero.getMeasuredY();
-            Double zZ = latestZero.getMeasuredZ();
-            var rX = 0.0;
-            var rY = 0.0;
-            var rZ = 0.0;
+            var zeroX = latestZero.getMeasuredX();
+            var zeroY = latestZero.getMeasuredY();
+            var zeroZ = latestZero.getMeasuredZ();
+            var accumulatedReplacementsX = 0.0;
+            var accumulatedReplacementsY = 0.0;
+            var accumulatedReplacementsZ = 0.0;
 
             for (int i = 0; i < observations.size(); i++) {
                 var o = observations.get(i);
-                BXyzPointObservation prev = null;
-                if (i > 0) {
-                    prev = observations.get(i - 1);
-                }
-                Double x = o.getMeasuredX();
-                Double y = o.getMeasuredY();
-                Double z = o.getMeasuredZ();
+                var measuredX = o.getMeasuredX();
+                var measuredY = o.getMeasuredY();
+                var measuredZ = o.getMeasuredZ();
 
-                if (ObjectUtils.allNotNull(x, zX)) {
-                    o.ext().setDeltaX(x - zX);
+                if (ObjectUtils.allNotNull(measuredX, zeroX)) {
+                    o.ext().setDeltaX(measuredX - zeroX);
                 }
-                if (ObjectUtils.allNotNull(y, zY)) {
-                    o.ext().setDeltaY(y - zY);
+                if (ObjectUtils.allNotNull(measuredY, zeroY)) {
+                    o.ext().setDeltaY(measuredY - zeroY);
                 }
-                if (ObjectUtils.allNotNull(z, zZ)) {
-                    o.ext().setDeltaZ(z - zZ);
+                if (ObjectUtils.allNotNull(measuredZ, zeroZ)) {
+                    o.ext().setDeltaZ(measuredZ - zeroZ - accumulatedReplacementsZ);
                 }
 
-                if (o.isReplacementMeasurement() && prev != null) {
-                    var mX = o.getMeasuredX();
-                    var pX = prev.getMeasuredX();
-                    if (ObjectUtils.allNotNull(mX, pX, o.ext().getDeltaX())) {
-                        rX = rX + mX - pX;
-                        o.ext().setDeltaX(o.ext().getDeltaX() + rX);
+                if (o.isReplacementMeasurement() && i > 0) {
+                    var prev = observations.get(i - 1);
+                    var prevX = prev.getMeasuredX();
+                    var prevY = prev.getMeasuredY();
+                    var prevZ = prev.getMeasuredZ();
+
+                    if (ObjectUtils.allNotNull(measuredX, prevX, o.ext().getDeltaX())) {
+                        var replacementX = measuredX - prevX;
+                        o.ext().setDeltaX(o.ext().getDeltaX() - replacementX);
+                        accumulatedReplacementsX = accumulatedReplacementsX + measuredX - prevX;
                     }
 
-                    var mY = o.getMeasuredY();
-                    var pY = prev.getMeasuredY();
-                    if (ObjectUtils.allNotNull(mY, pY, o.ext().getDeltaY())) {
-                        rY = rY + mY - pY;
-                        o.ext().setDeltaY(o.ext().getDeltaY() + rY);
+                    if (ObjectUtils.allNotNull(measuredY, prevY, o.ext().getDeltaY())) {
+                        var replacementY = measuredY - prevY;
+                        o.ext().setDeltaY(o.ext().getDeltaY() - replacementY);
+                        accumulatedReplacementsY = accumulatedReplacementsY + replacementY;
                     }
 
-                    var mZ = o.getMeasuredZ();
-                    var pZ = prev.getMeasuredZ();
-                    if (ObjectUtils.allNotNull(mZ, pZ, o.ext().getDeltaZ())) {
-                        rZ = rZ + mZ - pZ;
-                        o.ext().setDeltaZ(o.ext().getDeltaZ() + rZ);
+                    if (ObjectUtils.allNotNull(measuredZ, prevZ, o.ext().getDeltaZ())) {
+                        var replacementZ = measuredZ - prevZ;
+                        o.ext().setDeltaZ(o.ext().getDeltaZ() - replacementZ);
+                        accumulatedReplacementsZ = accumulatedReplacementsZ + replacementZ;
                     }
                 }
             }
+        }
+
+        public DeltaRolling deltaRolling() {
+            return deltaRolling;
+        }
+
+        public DeltaZero deltaZero() {
+            return deltaZero;
         }
 
         public abstract class Delta {

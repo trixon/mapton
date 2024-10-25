@@ -26,10 +26,10 @@ import org.mapton.butterfly_format.types.BXyzPoint;
  */
 public class BStructuralStrainGaugePoint extends BXyzPoint {
 
+    private Double directionX;
     @JsonIgnore
     private Ext mExt;
     private String nameOfAlarm;
-    private Double directionX;
 
     public Ext ext() {
         if (mExt == null) {
@@ -39,20 +39,20 @@ public class BStructuralStrainGaugePoint extends BXyzPoint {
         return mExt;
     }
 
-    public String getNameOfAlarm() {
-        return nameOfAlarm;
-    }
-
     public Double getDirectionX() {
         return directionX;
     }
 
-    public void setNameOfAlarm(String nameOfAlarm) {
-        this.nameOfAlarm = nameOfAlarm;
+    public String getNameOfAlarm() {
+        return nameOfAlarm;
     }
 
     public void setDirectionX(Double directionX) {
         this.directionX = directionX;
+    }
+
+    public void setNameOfAlarm(String nameOfAlarm) {
+        this.nameOfAlarm = nameOfAlarm;
     }
 
     public class Ext extends BXyzPoint.Ext<BStructuralStrainGaugePointObservation> {
@@ -73,12 +73,7 @@ public class BStructuralStrainGaugePoint extends BXyzPoint {
         }
 
         private String getDelta(Delta delta) {
-            var dR = "";
-            if (delta.getDeltaZ() != null) {
-                dR = ", R=%.1f".formatted(Math.abs(delta.getDeltaZ()));
-            }
-
-            var s = "X=%.1f, Y=%.1f%s".formatted(delta.getDeltaX(), delta.getDeltaY(), dR);
+            var s = "Δ µε=%.2f".formatted(delta.getDeltaZ());
 
             return s;
         }
