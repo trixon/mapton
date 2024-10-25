@@ -70,8 +70,8 @@ class TopoListCell extends ListCell<BTopoControlPoint> {
         }
 
         var alarms = StringHelper.getJoinedUnique(", ",
-                StringUtils.removeEndIgnoreCase(p.getNameOfAlarmHeight(), "_h"),
-                StringUtils.removeEndIgnoreCase(p.getNameOfAlarmPlane(), "_p")
+                StringUtils.removeEndIgnoreCase(p.getAlarm1Id(), "_h"),
+                StringUtils.removeEndIgnoreCase(p.getAlarm2Id(), "_p")
         );
         var sign = "⇐";
         var desc1 = "%s: %s".formatted(StringUtils.defaultIfBlank(p.getCategory(), "NOVALUE"), alarms);

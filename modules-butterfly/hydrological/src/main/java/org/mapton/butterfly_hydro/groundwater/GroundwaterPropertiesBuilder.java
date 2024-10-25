@@ -47,7 +47,7 @@ public class GroundwaterPropertiesBuilder extends PropertiesBuilder<BGroundwater
                 StringHelper.join(SEPARATOR, "", p.getGroup(), p.getCategory()));
         propertyMap.put(getCatKey(cat1, SDict.OPERATOR.toString()), p.getOperator());
         propertyMap.put(getCatKey(cat1, Dict.COMMENT.toString()), p.getComment());
-        propertyMap.put(getCatKey(cat1, SDict.ALARM.toString()), p.getNameOfAlarm());
+        propertyMap.put(getCatKey(cat1, SDict.ALARM.toString()), p.getAlarm1Id());
         propertyMap.put(getCatKey(cat1, Dict.Geometry.HEIGHT.toString()), AlarmHelper.getInstance().getLimitsAsString(p));
         propertyMap.put(getCatKey(cat1, SDict.FREQUENCY.toString()), p.getFrequency());
         var measurements = "%d / %d    (%d - %d)".formatted(

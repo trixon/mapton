@@ -38,7 +38,7 @@ public enum StrainLabelBy {
         return "";
     }),
     ALARM_NAME(LabelByCategories.ALARM, Dict.NAME.toString(), p -> {
-        return p.getNameOfAlarm();
+        return p.getAlarm1Id();
     }),
     ALARM_VALUE(LabelByCategories.ALARM, Dict.VALUE.toString(), p -> {
         return AlarmHelper.getInstance().getLimitsAsString(p);

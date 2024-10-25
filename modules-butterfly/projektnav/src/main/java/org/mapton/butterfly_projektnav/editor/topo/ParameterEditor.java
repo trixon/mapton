@@ -114,11 +114,11 @@ public class ParameterEditor extends BaseTopoEditor {
         mStatusComboBox.getSelectionModel().select("S1");
 
         var larmH = new TreeSet<>(mManager.getAllItems().stream()
-                .map(p -> p.getNameOfAlarmHeight())
+                .map(p -> p.getAlarm1Id())
                 .toList());
         mLarmHComboBox.getItems().setAll(larmH);
         var larmP = new TreeSet<>(mManager.getAllItems().stream()
-                .map(p -> p.getNameOfAlarmPlane())
+                .map(p -> p.getAlarm2Id())
                 .toList());
         mLarmPComboBox.getItems().setAll(larmP);
         var grupper = new TreeSet<>(mManager.getAllItems().stream().map(p -> p.getGroup()).toList());

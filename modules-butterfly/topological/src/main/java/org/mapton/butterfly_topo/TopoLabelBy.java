@@ -41,7 +41,7 @@ public enum TopoLabelBy {
         return "";
     }),
     ALARM_H_NAME(LabelByCategories.ALARM, Strings.HEIGHT_NAME, p -> {
-        return p.getNameOfAlarmHeight();
+        return p.getAlarm1Id();
     }),
     ALARM_H_VALUE(LabelByCategories.ALARM, Strings.HEIGHT_VALUE, p -> {
         return AlarmHelper.getInstance().getLimitsAsString(BComponent.HEIGHT, p);
@@ -63,7 +63,7 @@ public enum TopoLabelBy {
         }
     }),
     ALARM_P_NAME(LabelByCategories.ALARM, Strings.PLANE_NAME, p -> {
-        return p.getNameOfAlarmPlane();
+        return p.getAlarm2Id();
     }),
     ALARM_P_VALUE(LabelByCategories.ALARM, Strings.PLANE_VALUE, p -> {
         return AlarmHelper.getInstance().getLimitsAsString(BComponent.PLANE, p);

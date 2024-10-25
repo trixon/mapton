@@ -192,8 +192,8 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
     public void load(Butterfly butterfly) {
         var items = butterfly.topo().getControlPoints();
 
-        var allAlarmNames = items.stream().map(o -> o.getNameOfAlarmHeight()).collect(Collectors.toCollection(HashSet::new));
-        allAlarmNames.addAll(items.stream().map(o -> o.getNameOfAlarmPlane()).collect(Collectors.toSet()));
+        var allAlarmNames = items.stream().map(o -> o.getAlarm1Id()).collect(Collectors.toCollection(HashSet::new));
+        allAlarmNames.addAll(items.stream().map(o -> o.getAlarm2Id()).collect(Collectors.toSet()));
         mBaseFilters.getAlarmNameSccb().loadAndRestoreCheckItems(allAlarmNames.stream());
         mBaseFilters.getGroupSccb().loadAndRestoreCheckItems(items.stream().map(o -> o.getGroup()));
         mBaseFilters.getCategorySccb().loadAndRestoreCheckItems(items.stream().map(o -> o.getCategory()));

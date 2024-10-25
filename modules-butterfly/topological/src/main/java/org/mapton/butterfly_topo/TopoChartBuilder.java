@@ -148,15 +148,15 @@ public class TopoChartBuilder extends XyzChartBuilder<BTopoControlPoint> {
         getLeftSubTextTitle().setText(date);
 
         var sb = new StringBuilder();
-        if (!StringUtils.isBlank(p.getNameOfAlarmHeight())) {
-            sb.append("H ").append(p.getNameOfAlarmHeight());
-            if (!StringUtils.isBlank(p.getNameOfAlarmPlane())) {
+        if (!StringUtils.isBlank(p.getAlarm1Id())) {
+            sb.append("H ").append(p.getAlarm1Id());
+            if (!StringUtils.isBlank(p.getAlarm2Id())) {
                 sb.append(", ");
             }
         }
 
-        if (!StringUtils.isBlank(p.getNameOfAlarmPlane())) {
-            sb.append("P ").append(p.getNameOfAlarmPlane());
+        if (!StringUtils.isBlank(p.getAlarm2Id())) {
+            sb.append("P ").append(p.getAlarm2Id());
         }
 
         var alarmNames = sb.toString();

@@ -69,7 +69,7 @@ class TiltListCell extends ListCell<BStructuralTiltPoint> {
         }
 
         var sign = "⇐";
-        var desc1 = "%s: %s".formatted(StringUtils.defaultIfBlank(p.getCategory(), "NOVALUE"), p.getNameOfAlarm());
+        var desc1 = "%s: %s".formatted(StringUtils.defaultIfBlank(p.getCategory(), "NOVALUE"), p.getAlarm1Id());
         var dateSB = new StringBuilder(StringHelper.toString(p.getDateLatest() == null ? null : p.getDateLatest().toLocalDate(), "NOVALUE"));
 //        var nextDate = p.ext().getObservationRawNextDate();
         LocalDate nextDate = null;

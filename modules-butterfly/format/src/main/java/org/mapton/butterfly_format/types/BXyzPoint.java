@@ -15,8 +15,13 @@
  */
 package org.mapton.butterfly_format.types;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Objects;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.Range;
+import org.apache.commons.lang3.StringUtils;
 import static org.mapton.butterfly_format.types.BDimension._1d;
 import static org.mapton.butterfly_format.types.BDimension._2d;
 import static org.mapton.butterfly_format.types.BDimension._3d;
@@ -29,6 +34,8 @@ import se.trixon.almond.util.StringHelper;
  */
 public abstract class BXyzPoint extends BBaseControlPoint {
 
+    private String alarm1Id;
+    private String alarm2Id;
     private BDimension dimension;
     private Integer numOfDecXY;
     private Integer numOfDecZ;
@@ -38,6 +45,14 @@ public abstract class BXyzPoint extends BBaseControlPoint {
     private Double zeroX;
     private Double zeroY;
     private Double zeroZ;
+
+    public String getAlarm1Id() {
+        return alarm1Id;
+    }
+
+    public String getAlarm2Id() {
+        return alarm2Id;
+    }
 
     public BDimension getDimension() {
         return dimension;
@@ -73,6 +88,14 @@ public abstract class BXyzPoint extends BBaseControlPoint {
 
     public Double getZeroZ() {
         return zeroZ;
+    }
+
+    public void setAlarm1Id(String alarm1Id) {
+        this.alarm1Id = alarm1Id;
+    }
+
+    public void setAlarm2Id(String alarm2Id) {
+        this.alarm2Id = alarm2Id;
     }
 
     public void setDimension(BDimension dimension) {
@@ -193,6 +216,208 @@ public abstract class BXyzPoint extends BBaseControlPoint {
 
         public DeltaZero deltaZero() {
             return deltaZero;
+        }
+
+        public BAlarm getAlarm(BComponent component) {
+            var alarm = getButterfly().getAlarms().stream()
+                    .filter(a -> {
+                        if (component == BComponent.HEIGHT) {
+                            return StringUtils.equals(a.getId(), alarm1Id);
+                        } else {
+                            return StringUtils.equals(a.getId(), alarm2Id);
+                        }
+                    }).findAny().orElse(null);
+
+            return alarm;
+        }
+
+        public int getAlarmLevel(BComponent component, BXyzPointObservation o) {
+            var alarm = getAlarm(component);
+
+            if (ObjectUtils.anyNull(alarm, o)) {
+                return -1;
+            } else {
+                return alarm.ext().getLevel(component == BComponent.HEIGHT ? o.ext().getDeltaZ() : o.ext().getDelta2d());
+            }
+        }
+
+        public int getAlarmLevel(BXyzPointObservation o) {
+            return Math.max(getAlarmLevelHeight(o), getAlarmLevelPlane(o));
+        }
+
+        public Long getAlarmLevelAge(BComponent component) {
+            var lastObservation = getObservationFilteredLast();
+            if (getObservationsTimeFiltered().isEmpty() || component == BComponent.HEIGHT && getDimension() == BDimension._2d || component == BComponent.PLANE && getDimension() == BDimension._1d) {
+                return null;
+            }
+
+            Long alarmLevelAge = null;
+
+            var currentLevel = getAlarmLevel(component, lastObservation);
+            Integer prevLevel = null;
+            LocalDate prevDate = null;
+
+            for (var o : getObservationsTimeFiltered().reversed()) {
+                int alarmLevel = getAlarmLevel(component, o);
+                if (alarmLevel != currentLevel) {
+                    prevLevel = alarmLevel;
+                    break;
+                }
+                prevDate = o.getDate().toLocalDate();
+            }
+
+            if (prevLevel != null) {
+                alarmLevelAge = ChronoUnit.DAYS.between(prevDate, LocalDate.now());
+                if (prevLevel < currentLevel) {
+                    alarmLevelAge *= -1;
+                }
+            }
+
+            return alarmLevelAge;
+        }
+
+        public String getAlarmLevelAge() {
+            switch (getDimension()) {
+                case _1d -> {
+                    return Objects.toString(getAlarmLevelAge(BComponent.HEIGHT), "-");
+                }
+                case _2d -> {
+                    return Objects.toString(getAlarmLevelAge(BComponent.PLANE), "-");
+                }
+                case _3d -> {
+                    var ageH = getAlarmLevelAge(BComponent.HEIGHT);
+                    var ageP = getAlarmLevelAge(BComponent.PLANE);
+                    if (ObjectUtils.allNull(ageH, ageP)) {
+                        return "-";
+                    } else {
+                        return "%s // %s".formatted(Objects.toString(ageH, "-"), Objects.toString(ageP, "-"));
+                    }
+                }
+
+                default ->
+                    throw new AssertionError();
+            }
+        }
+
+        public int getAlarmLevelHeight(BXyzPointObservation o) {
+            return getAlarmLevel(BComponent.HEIGHT, o);
+        }
+
+        public int getAlarmLevelPlane(BXyzPointObservation o) {
+            return getAlarmLevel(BComponent.PLANE, o);
+        }
+
+        public Integer getAlarmPercent() {
+            if (null == getDimension()) {
+                return 0;
+            } else {
+                switch (getDimension()) {
+                    case _1d -> {
+                        if (StringUtils.isNotBlank(getAlarm1Id())) {
+                            return getAlarmPercent(BComponent.HEIGHT);
+                        } else {
+                            return 0;
+                        }
+                    }
+                    case _2d -> {
+                        if (StringUtils.isNotBlank(getAlarm2Id())) {
+                            return getAlarmPercent(BComponent.PLANE);
+                        } else {
+                            return 0;
+                        }
+                    }
+                    default -> {
+                        if (StringUtils.isNoneBlank(getAlarm2Id(), getAlarm1Id())) {
+                            try {
+                                return Math.max(getAlarmPercent(BComponent.HEIGHT), getAlarmPercent(BComponent.PLANE));
+                            } catch (Exception e) {
+                                return 0;
+                            }
+                        } else {
+                            return 0;
+                        }
+                    }
+                }
+            }
+        }
+
+        public Integer getAlarmPercent(BComponent component) {
+            var alarm = getAlarm(component);
+            if (alarm == null
+                    || (component == BComponent.HEIGHT && getDimension() == _2d)
+                    || (component == BComponent.PLANE && getDimension() == _1d)) {
+                return null;
+            }
+
+            try {
+                var delta = component == BComponent.HEIGHT ? deltaZero().getDelta1() : deltaZero().getDelta2();
+                double limit;
+                Range<Double> range;
+                if (alarm.ext().getRange2() != null) {
+                    range = alarm.ext().getRange2();
+                } else if (alarm.ext().getRange1() != null) {
+                    range = alarm.ext().getRange1();
+                } else {
+                    range = alarm.ext().getRange0();
+                }
+
+                if (delta < 0 && component == BComponent.HEIGHT) {
+                    limit = range.getMinimum();
+                } else {
+                    limit = range.getMaximum();
+                }
+                return (int) Math.round((delta / limit) * 100);
+            } catch (Exception e) {
+                //Exceptions.printStackTrace(e);
+//                System.err.println(e);
+                return null;
+            }
+        }
+
+        public long getMeasurementUntilNext(ChronoUnit chronoUnit) {
+            var latest = getDateLatest() != null ? getDateLatest().toLocalDate() : LocalDate.MIN;
+            var nextMeas = latest.plusDays(getFrequency());
+
+            return chronoUnit.between(LocalDate.now(), nextMeas);
+        }
+
+        public LocalDate getObservationRawNextDate() {
+            if (ObjectUtils.allNotNull(getObservationRawLastDate(), getFrequency()) && getFrequency() != 0) {
+                return getObservationRawLastDate().plusDays(getFrequency());
+            } else {
+                return null;
+            }
+        }
+
+        public double[] getSpeed() {
+            try {
+                var periodLength = ChronoUnit.DAYS.between(getObservationFilteredFirstDate(), getObservationFilteredLastDate()) / 365.0;
+                var distance = deltaZero().getDelta1() - getObservationsTimeFiltered().getFirst().ext().getDeltaZ();
+                var speed = distance / periodLength;
+
+                return new double[]{speed, periodLength};
+            } catch (Exception e) {
+                return new double[]{-1, -1};
+            }
+        }
+
+        public double[] getSpeed(BXyzPointObservation o1, BXyzPointObservation o2) {
+            try {
+                var periodLength = ChronoUnit.DAYS.between(o1.getDate(), o2.getDate()) / 365.0;
+                var speed = (o2.ext().getDeltaZ() - o1.ext().getDeltaZ()) / periodLength;
+
+                return new double[]{speed, periodLength};
+            } catch (Exception e) {
+                return new double[]{-1, -1};
+            }
+        }
+
+        public long getZeroMeasurementAge(ChronoUnit chronoUnit) {
+            if (getDateZero() != null) {
+                return chronoUnit.between(getDateZero(), LocalDate.now());
+            } else {
+                return -1L;
+            }
         }
 
         public abstract class Delta {

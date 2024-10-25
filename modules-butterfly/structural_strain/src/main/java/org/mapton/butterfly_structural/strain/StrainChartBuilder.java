@@ -104,7 +104,7 @@ public class StrainChartBuilder extends XyzChartBuilder<BStructuralStrainGaugePo
         var date = "(%s) → %s".formatted(dateFirst, dateLast);
         getLeftSubTextTitle().setText(date);
 
-        var rightTitle = "%s: %s".formatted(p.getNameOfAlarm(), p.ext().getDeltaZero());
+        var rightTitle = "%s: %s".formatted(p.getAlarm1Id(), p.ext().getDeltaZero());
         getRightSubTextTitle().setText(rightTitle);
     }
 

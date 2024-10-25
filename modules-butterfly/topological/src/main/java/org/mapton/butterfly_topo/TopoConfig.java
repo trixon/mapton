@@ -40,7 +40,7 @@ public class TopoConfig extends BaseConfig {
 
             if (StringUtils.startsWith(key, "color.cat") && macthes(pattern, point.getCategory())
                     || StringUtils.startsWith(key, "color.name") && macthes(pattern, point.getName())
-                    || StringUtils.startsWith(key, "color.alarm") && macthes(pattern, point.getNameOfAlarmHeight(), point.getNameOfAlarmPlane())
+                    || StringUtils.startsWith(key, "color.alarm") && macthes(pattern, point.getAlarm1Id(), point.getAlarm2Id())
                     || StringUtils.startsWith(key, "color.operator") && macthes(pattern, point.getOperator())
                     || StringUtils.startsWith(key, "color.group") && macthes(pattern, point.getGroup())) {
                 colorCode = getConfig().getString(key);

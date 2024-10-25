@@ -73,7 +73,7 @@ public class TiltFilter extends FormFilter<TiltManager> {
                 .filter(p -> validateCheck(mCategoryCheckModel, p.getCategory()))
                 .filter(p -> validateCheck(mOperatorCheckModel, p.getOperator()))
                 .filter(p -> validateCheck(mOriginCheckModel, p.getOrigin()))
-                .filter(p -> validateCheck(mAlarmNameCheckModel, p.getNameOfAlarm()))
+                .filter(p -> validateCheck(mAlarmNameCheckModel, p.getAlarm1Id()))
                 .filter(p -> validateFrequency(p.getFrequency()))
                 .filter(p -> validateDateFromToHas(p.getDateValidFrom(), p.getDateValidTo()))
                 .filter(p -> validateDateFromToWithout(p.getDateValidFrom(), p.getDateValidTo()))

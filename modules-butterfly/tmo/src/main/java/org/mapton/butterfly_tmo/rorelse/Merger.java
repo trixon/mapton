@@ -85,8 +85,8 @@ public class Merger {
             p.setOperator(tempTmoOperator);
             p.setComment(r.getAnmärkning());
             p.setMeta("");
-            p.setNameOfAlarmHeight("");
-            p.setNameOfAlarmPlane("");
+            p.setAlarm1Id("");
+            p.setAlarm2Id("");
             p.setNumOfDecXY(3);
             p.setNumOfDecZ(3);
             p.setOrigin(prefix + "TMO");

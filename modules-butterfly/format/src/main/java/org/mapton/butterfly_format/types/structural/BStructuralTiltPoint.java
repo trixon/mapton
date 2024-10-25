@@ -28,7 +28,6 @@ public class BStructuralTiltPoint extends BXyzPoint {
 
     @JsonIgnore
     private Ext mExt;
-    private String nameOfAlarm;
     private Double zeroTiltX;
     private Double zeroTiltY;
     private Double zeroTiltZ;
@@ -40,10 +39,6 @@ public class BStructuralTiltPoint extends BXyzPoint {
         }
 
         return mExt;
-    }
-
-    public String getNameOfAlarm() {
-        return nameOfAlarm;
     }
 
     public Double getDirectionX() {
@@ -60,10 +55,6 @@ public class BStructuralTiltPoint extends BXyzPoint {
 
     public Double getZeroTiltZ() {
         return zeroTiltZ;
-    }
-
-    public void setNameOfAlarm(String nameOfAlarm) {
-        this.nameOfAlarm = nameOfAlarm;
     }
 
     public void setDirectionX(Double directionX) {

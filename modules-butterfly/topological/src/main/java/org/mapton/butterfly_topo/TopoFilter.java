@@ -278,7 +278,7 @@ public class TopoFilter extends FormFilter<TopoManager> {
                     var nameH = alarmH == null ? "" : alarmH.getName();
                     var nameP = alarmP == null ? "" : alarmP.getName();
 
-                    return validateFreeText(p.getName(), p.getCategory(), p.getGroup(), p.getNameOfAlarmHeight(), p.getNameOfAlarmPlane(), nameH, nameP);
+                    return validateFreeText(p.getName(), p.getCategory(), p.getGroup(), p.getAlarm1Id(), p.getAlarm2Id(), nameH, nameP);
                 })
                 .filter(p -> validateCoordinateArea(p.getLat(), p.getLon()))
                 .filter(p -> validateCoordinateRuler(p.getLat(), p.getLon()))
@@ -305,13 +305,13 @@ public class TopoFilter extends FormFilter<TopoManager> {
                 .toList();
 
         if (mSameAlarmProperty.get()) {
-            var hAlarms = filteredItems.stream().map(o -> o.getNameOfAlarmHeight()).collect(Collectors.toSet());
-            var pAlarms = filteredItems.stream().map(o -> o.getNameOfAlarmPlane()).collect(Collectors.toSet());
+            var hAlarms = filteredItems.stream().map(o -> o.getAlarm1Id()).collect(Collectors.toSet());
+            var pAlarms = filteredItems.stream().map(o -> o.getAlarm2Id()).collect(Collectors.toSet());
 
             filteredItems = mManager.getAllItems().stream()
                     .filter(o -> {
-                        String hAlarm = o.getNameOfAlarmHeight();
-                        String pAlarm = o.getNameOfAlarmPlane();
+                        String hAlarm = o.getAlarm1Id();
+                        String pAlarm = o.getAlarm2Id();
 
                         var validH = StringUtils.isNotBlank(hAlarm) && hAlarms.contains(hAlarm);
                         var validP = StringUtils.isNotBlank(pAlarm) && pAlarms.contains(pAlarm);
@@ -570,8 +570,8 @@ public class TopoFilter extends FormFilter<TopoManager> {
     }
 
     private boolean validateAlarmName(BTopoControlPoint p) {
-        var ah = p.getNameOfAlarmHeight();
-        var ap = p.getNameOfAlarmPlane();
+        var ah = p.getAlarm1Id();
+        var ap = p.getAlarm2Id();
 
         switch (p.getDimension()) {
             case _1d -> {

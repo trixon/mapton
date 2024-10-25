@@ -23,7 +23,6 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.util.Duration;
 import org.apache.commons.lang3.StringUtils;
@@ -69,7 +68,7 @@ class StrainListCell extends ListCell<BStructuralStrainGaugePoint> {
         }
 
         var sign = "⇐";
-        var desc1 = "%s: %s".formatted(StringUtils.defaultIfBlank(p.getCategory(), "NOVALUE"), p.getNameOfAlarm());
+        var desc1 = "%s: %s".formatted(StringUtils.defaultIfBlank(p.getCategory(), "NOVALUE"), p.getAlarm1Id());
         var dateSB = new StringBuilder(StringHelper.toString(p.getDateLatest() == null ? null : p.getDateLatest().toLocalDate(), "NOVALUE"));
 //        var nextDate = p.ext().getObservationRawNextDate();
         LocalDate nextDate = null;
@@ -134,8 +133,7 @@ class StrainListCell extends ListCell<BStructuralStrainGaugePoint> {
         }
 
         public void update(BStructuralStrainGaugePoint p) {
-//            mResultantShape.setFill(TopoHelper.getAlarmColorHeightFx(p));
-            mResultantShape.setFill(Color.BLUE);
+            mResultantShape.setFill(StrainHelper.getAlarmColorHeightFx(p));
         }
 
         private void createUI() {

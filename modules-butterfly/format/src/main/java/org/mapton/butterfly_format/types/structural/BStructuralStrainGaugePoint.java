@@ -29,7 +29,6 @@ public class BStructuralStrainGaugePoint extends BXyzPoint {
     private Double directionX;
     @JsonIgnore
     private Ext mExt;
-    private String nameOfAlarm;
 
     public Ext ext() {
         if (mExt == null) {
@@ -43,16 +42,8 @@ public class BStructuralStrainGaugePoint extends BXyzPoint {
         return directionX;
     }
 
-    public String getNameOfAlarm() {
-        return nameOfAlarm;
-    }
-
     public void setDirectionX(Double directionX) {
         this.directionX = directionX;
-    }
-
-    public void setNameOfAlarm(String nameOfAlarm) {
-        this.nameOfAlarm = nameOfAlarm;
     }
 
     public class Ext extends BXyzPoint.Ext<BStructuralStrainGaugePointObservation> {

@@ -48,8 +48,8 @@ public class WithoutAlarmReport extends BaseTopoMaintenanceReport {
 
         var list = mManager.getAllItems().stream()
                 .filter(p -> {
-                    var missingH = p.getDimension() != BDimension._2d && StringUtils.isBlank(p.getNameOfAlarmHeight());
-                    var missingP = p.getDimension() != BDimension._1d && StringUtils.isBlank(p.getNameOfAlarmHeight());
+                    var missingH = p.getDimension() != BDimension._2d && StringUtils.isBlank(p.getAlarm1Id());
+                    var missingP = p.getDimension() != BDimension._1d && StringUtils.isBlank(p.getAlarm2Id());
                     return missingH || missingP;
                 })
                 .toList();

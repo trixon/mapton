@@ -70,8 +70,8 @@ public class ActualFrequencyReport extends BaseTopoMeasurementReport {
                     sb.append(p.getName()).append("\t")
                             .append(p.getCategory()).append("\t")
                             .append(p.getGroup()).append("\t")
-                            .append(p.getNameOfAlarmHeight()).append("\t")
-                            .append(p.getNameOfAlarmPlane()).append("\t")
+                            .append(p.getAlarm1Id()).append("\t")
+                            .append(p.getAlarm2Id()).append("\t")
                             .append(p.getFrequency()).append("\t")
                             .append(Math.round((double) span / sumOfMeasurements)).append("\t")
                             .append(sumOfMeasurements).append("\t");

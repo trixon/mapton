@@ -73,9 +73,9 @@ public class BasicReport extends BaseTopoReport {
                                                 td(p.getName()),
                                                 td(p.getCategory()),
                                                 td(p.getGroup()),
-                                                td(p.getNameOfAlarmHeight()),
+                                                td(p.getAlarm1Id()),
                                                 td(AlarmHelper.getInstance().getLimitsAsString(BComponent.HEIGHT, p)),
-                                                td(p.getNameOfAlarmPlane()),
+                                                td(p.getAlarm2Id()),
                                                 td(AlarmHelper.getInstance().getLimitsAsString(BComponent.PLANE, p)),
                                                 td(Objects.toString(p.getFrequency(), "")),
                                                 td(Objects.toString(p.getDimension().getName(), ""))

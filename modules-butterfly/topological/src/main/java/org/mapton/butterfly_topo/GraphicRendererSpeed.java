@@ -86,7 +86,7 @@ public class GraphicRendererSpeed extends GraphicRendererBase {
         sparsedList.add(reversedList.getFirst());
 
         for (var o : reversedList) {
-            if (ChronoUnit.DAYS.between(o.getDate(), sparsedList.getLast().getDate()) >= 182) {
+            if (ChronoUnit.DAYS.between(o.getDate(), sparsedList.getLast().getDate()) >= 84) {
                 sparsedList.add(o);
             }
         }

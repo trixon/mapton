@@ -62,7 +62,7 @@ public class StrainFilterPopOver extends BaseFilterPopOver {
         mBaseFilters.getStatusSccb().loadAndRestoreCheckItems(items.stream().map(p -> p.getStatus()));
         mBaseFilters.getOperatorSccb().loadAndRestoreCheckItems(items.stream().map(p -> p.getOperator()));
         mBaseFilters.getOriginSccb().loadAndRestoreCheckItems(items.stream().map(p -> p.getOrigin()));
-        mBaseFilters.getAlarmNameSccb().loadAndRestoreCheckItems(items.stream().map(p -> p.getNameOfAlarm()));
+        mBaseFilters.getAlarmNameSccb().loadAndRestoreCheckItems(items.stream().map(p -> p.getAlarm1Id()));
         mBaseFilters.getFrequencySccb().loadAndRestoreCheckItems(items.stream()
                 .filter(p -> p.getFrequency() != null)
                 .map(p -> p.getFrequency()));

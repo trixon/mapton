@@ -40,20 +40,20 @@ public class AlarmHelper {
 
     public String getLimitsAsString(BComponent component, BTopoControlPoint p) {
         var result = "";
-        var alarmH = mManager.getAllItemsMap().get(p.getNameOfAlarmHeight());
-        var alarmP = mManager.getAllItemsMap().get(p.getNameOfAlarmPlane());
+        var alarmH = mManager.getAllItemsMap().get(p.getAlarm1Id());
+        var alarmP = mManager.getAllItemsMap().get(p.getAlarm2Id());
 
         if (component == BComponent.HEIGHT) {
             if (alarmH != null) {
                 result = StringHelper.join(" // ", "-", alarmH.getLimit1(), alarmH.getLimit2());
             } else {
-                System.out.println("Alarm H not found: %s, %s".formatted(p.getName(), p.getNameOfAlarmHeight()));
+                System.out.println("Alarm H not found: %s, %s".formatted(p.getName(), p.getAlarm1Id()));
             }
         } else if (p.getDimension() != BDimension._1d) {
             if (alarmP != null) {
                 result = StringHelper.join(" // ", "-", alarmP.getLimit1(), alarmP.getLimit2());
             } else {
-                System.out.println("Alarm P not found: %s, %s".formatted(p.getName(), p.getNameOfAlarmPlane()));
+                System.out.println("Alarm P not found: %s, %s".formatted(p.getName(), p.getAlarm2Id()));
             }
         }
 
@@ -62,11 +62,11 @@ public class AlarmHelper {
 
     public String getLimitsAsString(BStructuralTiltPoint p) {
         var result = "";
-        var alarm = mManager.getAllItemsMap().get(p.getNameOfAlarm());
+        var alarm = mManager.getAllItemsMap().get(p.getAlarm1Id());
         if (alarm != null) {
             result = StringHelper.join(" // ", "-", alarm.getLimit1(), alarm.getLimit2());
         } else {
-            System.out.println("Alarm not found: %s, %s".formatted(p.getName(), p.getNameOfAlarm()));
+            System.out.println("Alarm not found: %s, %s".formatted(p.getName(), p.getAlarm1Id()));
         }
 
         return result;
@@ -74,11 +74,11 @@ public class AlarmHelper {
 
     public String getLimitsAsString(BStructuralStrainGaugePoint p) {
         var result = "";
-        var alarm = mManager.getAllItemsMap().get(p.getNameOfAlarm());
+        var alarm = mManager.getAllItemsMap().get(p.getAlarm1Id());
         if (alarm != null) {
             result = StringHelper.join(" // ", "-", alarm.getLimit1(), alarm.getLimit2());
         } else {
-            System.out.println("Alarm not found: %s, %s".formatted(p.getName(), p.getNameOfAlarm()));
+            System.out.println("Alarm not found: %s, %s".formatted(p.getName(), p.getAlarm1Id()));
         }
 
         return result;
@@ -86,12 +86,12 @@ public class AlarmHelper {
 
     public String getLimitsAsString(BGroundwaterPoint p) {
         var result = "";
-        var alarm = mManager.getAllItemsMap().get(p.getNameOfAlarm());
+        var alarm = mManager.getAllItemsMap().get(p.getAlarm1Id());
 
         if (alarm != null) {
             result = StringHelper.join(" // ", "-", alarm.getLimit1(), alarm.getLimit2());
         } else {
-            System.out.println("Alarm H not found: %s, %s".formatted(p.getName(), p.getNameOfAlarm()));
+            System.out.println("Alarm H not found: %s, %s".formatted(p.getName(), p.getAlarm1Id()));
         }
 
         return result;

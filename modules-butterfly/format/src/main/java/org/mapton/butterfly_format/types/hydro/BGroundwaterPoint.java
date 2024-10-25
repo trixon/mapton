@@ -53,7 +53,6 @@ public class BGroundwaterPoint extends BXyzPoint {
     private BDimension dimension;
     @JsonIgnore
     private Ext mExt;
-    private String nameOfAlarm;
     private Double offsetX;
     private Double offsetY;
     private Double offsetZ;
@@ -69,10 +68,6 @@ public class BGroundwaterPoint extends BXyzPoint {
         return mExt;
     }
 
-    public String getNameOfAlarm() {
-        return nameOfAlarm;
-    }
-
     public Double getOffsetX() {
         return offsetX;
     }
@@ -83,10 +78,6 @@ public class BGroundwaterPoint extends BXyzPoint {
 
     public Double getOffsetZ() {
         return offsetZ;
-    }
-
-    public void setNameOfAlarm(String nameOfAlarm) {
-        this.nameOfAlarm = nameOfAlarm;
     }
 
     public void setOffsetX(Double offsetX) {
