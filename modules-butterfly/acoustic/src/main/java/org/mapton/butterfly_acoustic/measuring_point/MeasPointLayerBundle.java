@@ -74,7 +74,7 @@ public class MeasPointLayerBundle extends BfLayerBundle {
 
     private void init() {
         mLayer.setName(Bundle.CTL_MeasPointAction());
-        setCategory(mLayer, SDict.ACOUSTIC.toString());
+        setCategory(mLayer, SDict.NOISE.toString());
         setName(Bundle.CTL_MeasPointAction());
         attachTopComponentToLayer("AcousticMeasuringPointTopComponent", mLayer);
         mLayer.setMaxActiveAltitude(6000);

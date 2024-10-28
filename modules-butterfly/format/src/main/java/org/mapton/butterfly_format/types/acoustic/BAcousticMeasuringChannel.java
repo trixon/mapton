@@ -15,7 +15,9 @@
  */
 package org.mapton.butterfly_format.types.acoustic;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 /**
  *
@@ -23,13 +25,23 @@ import java.time.LocalDate;
  */
 public class BAcousticMeasuringChannel {
 
+    private LocalDate from;
     private String id;
+    @JsonIgnore
+    private Ext mExt;
     private String pointId;
     private String type;
-    private LocalDate from;
     private LocalDate until;
 
     public BAcousticMeasuringChannel() {
+    }
+
+    public Ext ext() {
+        if (mExt == null) {
+            mExt = new Ext();
+        }
+
+        return mExt;
     }
 
     public LocalDate getFrom() {
@@ -70,6 +82,19 @@ public class BAcousticMeasuringChannel {
 
     public void setUntil(LocalDate until) {
         this.until = until;
+    }
+
+    public class Ext {
+
+        private ArrayList<BAcousticMeasuringObservation> mObservations = new ArrayList<>();
+
+        public ArrayList<BAcousticMeasuringObservation> getObservations() {
+            return mObservations;
+        }
+
+        public void setObservations(ArrayList<BAcousticMeasuringObservation> observations) {
+            this.mObservations = observations;
+        }
     }
 
 }

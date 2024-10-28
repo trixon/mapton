@@ -204,7 +204,7 @@ public class ConvergencePairChartBuilder extends ChartBuilder<BTopoConvergencePa
     }
 
     private void plotBlasts(BTopoConvergencePair p) {
-        ButterflyManager.getInstance().getButterfly().acoustic().getBlasts().forEach(b -> {
+        ButterflyManager.getInstance().getButterfly().noise().getBlasts().forEach(b -> {
             var ll1 = new MLatLon(b.getLat(), b.getLon());
             var ll2 = new MLatLon(p.getP1().getLat(), p.getP1().getLon());
 

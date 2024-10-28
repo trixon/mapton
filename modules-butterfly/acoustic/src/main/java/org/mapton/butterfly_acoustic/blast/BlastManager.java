@@ -57,7 +57,7 @@ public class BlastManager extends BaseManager<BBlast> {
     @Override
     public void load(Butterfly butterfly) {
         try {
-            initAllItems(butterfly.acoustic().getBlasts());
+            initAllItems(butterfly.noise().getBlasts());
 
             var dates = new TreeSet<>(getAllItems().stream()
                     .map(o -> o.getDateTime())

@@ -47,7 +47,7 @@ import org.openide.windows.TopComponent;
         preferredID = "AcousticMeasuringPointTopComponent"
 )
 @Messages({
-    "CTL_MeasPointAction=Measuring points"
+    "CTL_MeasPointAction=Vibrations"
 })
 public final class MeasPointTopComponent extends MTopComponent {
 

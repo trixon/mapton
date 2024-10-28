@@ -61,7 +61,7 @@ public class MeasPointFilterPopOver extends BaseFilterPopOver {
 
     @Override
     public void load(Butterfly butterfly) {
-        var items = butterfly.acoustic().getMeasuringPoints();
+        var items = butterfly.noise().getMeasuringPoints();
         mGroupSccb.loadAndRestoreCheckItems(items.stream().map(b -> b.getGroup()));
         mTypeSccb.loadAndRestoreCheckItems(items.stream().map(b -> b.getTypeOfWork()));
         mSoilSccb.loadAndRestoreCheckItems(items.stream().map(b -> b.getSoilMaterial()));

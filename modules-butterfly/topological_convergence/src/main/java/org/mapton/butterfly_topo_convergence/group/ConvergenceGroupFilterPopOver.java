@@ -51,7 +51,7 @@ public class ConvergenceGroupFilterPopOver extends BaseFilterPopOver {
 
     @Override
     public void load(Butterfly butterfly) {
-        var groups = butterfly.acoustic().getMeasuringPoints().stream().map(b -> b.getGroup());
+        var groups = butterfly.noise().getMeasuringPoints().stream().map(b -> b.getGroup());
         mGroupSCCB.loadAndRestoreCheckItems(groups);
     }
 

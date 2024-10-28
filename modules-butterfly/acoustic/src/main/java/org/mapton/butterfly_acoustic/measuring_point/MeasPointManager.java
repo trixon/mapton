@@ -27,6 +27,7 @@ import org.openide.util.Exceptions;
  */
 public class MeasPointManager extends BaseManager<BAcousticMeasuringPoint> {
 
+    private final MeasPointChartBuilder mChartBuilder = new MeasPointChartBuilder();
     private final MeasPointPropertiesBuilder mPropertiesBuilder = new MeasPointPropertiesBuilder();
 
     public static MeasPointManager getInstance() {
@@ -35,6 +36,11 @@ public class MeasPointManager extends BaseManager<BAcousticMeasuringPoint> {
 
     private MeasPointManager() {
         super(BAcousticMeasuringPoint.class);
+    }
+
+    @Override
+    public Object getObjectChart(BAcousticMeasuringPoint selectedObject) {
+        return mChartBuilder.build(selectedObject);
     }
 
     @Override
@@ -49,7 +55,25 @@ public class MeasPointManager extends BaseManager<BAcousticMeasuringPoint> {
     @Override
     public void load(Butterfly butterfly) {
         try {
-            initAllItems(butterfly.acoustic().getMeasuringPoints());
+            butterfly.noise().getMeasuringPoints().forEach(p -> {
+                var channels = butterfly.noise().getMeasuringChannels().stream().filter(c -> c.getPointId().equalsIgnoreCase(p.getId())).toList();
+                p.ext().setChannels(new ArrayList<>(channels));
+                var limits = butterfly.noise().getMeasuringLimits().stream().filter(c -> c.getPointId().equalsIgnoreCase(p.getId())).toList();
+                p.ext().setLimits(new ArrayList<>(limits));
+            });
+
+            butterfly.noise().getMeasuringPoints().forEach(p -> {
+                p.ext().getChannels().forEach(c -> {
+                    var observations = butterfly.noise().getMeasuringObservations().stream()
+                            .filter(o -> o.getChannelId().equalsIgnoreCase(c.getId()))
+                            .filter(o -> o.getPointId().equalsIgnoreCase(p.getId()))
+                            .toList();
+                    c.ext().setObservations(new ArrayList<>(observations));
+                });
+            });
+
+            initAllItems(butterfly.noise().getMeasuringPoints());
+
         } catch (Exception e) {
             Exceptions.printStackTrace(e);
         }

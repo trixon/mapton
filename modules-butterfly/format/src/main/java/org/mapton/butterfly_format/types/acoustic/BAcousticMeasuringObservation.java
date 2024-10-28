@@ -17,7 +17,7 @@ package org.mapton.butterfly_format.types.acoustic;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import java.time.LocalDateTime;
+import org.mapton.butterfly_format.types.BXyzPointObservation;
 
 @JsonPropertyOrder({
     "pointId",
@@ -34,7 +34,7 @@ import java.time.LocalDateTime;
  *
  * @author Patrik Karlström
  */
-public class BAcousticMeasuringObservation {
+public class BAcousticMeasuringObservation extends BXyzPointObservation {
 
     private transient String blastId;
     private String channelId;
@@ -43,11 +43,19 @@ public class BAcousticMeasuringObservation {
     private transient String id;
     private Double limit;
     private String pointId;
-    private LocalDateTime date;
     private String unit;
-    private Double value;
+    private Ext mExt;
 
     public BAcousticMeasuringObservation() {
+    }
+
+    @Override
+    public Ext ext() {
+        if (mExt == null) {
+            mExt = new Ext();
+        }
+
+        return mExt;
     }
 
     public String getBlastId() {
@@ -78,16 +86,8 @@ public class BAcousticMeasuringObservation {
         return limit;
     }
 
-    public LocalDateTime getDate() {
-        return date;
-    }
-
     public String getUnit() {
         return unit;
-    }
-
-    public Double getValue() {
-        return value;
     }
 
     public void setBlastId(String blastId) {
@@ -118,16 +118,15 @@ public class BAcousticMeasuringObservation {
         this.limit = limit;
     }
 
-    public void setDate(LocalDateTime date) {
-        this.date = date;
-    }
-
     public void setUnit(String unit) {
         this.unit = unit;
     }
 
-    public void setValue(Double value) {
-        this.value = value;
+    public class Ext extends BXyzPointObservation.Ext<BAcousticMeasuringChannel> {
+
+        public Ext() {
+        }
+
     }
 
 }

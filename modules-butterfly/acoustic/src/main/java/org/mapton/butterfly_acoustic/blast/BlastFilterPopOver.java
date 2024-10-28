@@ -58,7 +58,7 @@ public class BlastFilterPopOver extends BaseFilterPopOver {
 
     @Override
     public void load(Butterfly butterfly) {
-        var groups = butterfly.acoustic().getBlasts().stream().map(b -> b.getGroup());
+        var groups = butterfly.noise().getBlasts().stream().map(b -> b.getGroup());
         mGroupSccb.loadAndRestoreCheckItems(groups);
 
         var temporalRange = mManager.getTemporalRange();

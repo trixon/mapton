@@ -17,7 +17,8 @@ package org.mapton.butterfly_format.types.acoustic;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import org.mapton.butterfly_format.types.BBasePoint;
+import java.util.ArrayList;
+import org.mapton.butterfly_format.types.BXyzPoint;
 
 /**
  *
@@ -34,7 +35,7 @@ import org.mapton.butterfly_format.types.BBasePoint;
     "address",
     "comment"
 })
-public class BAcousticMeasuringPoint extends BBasePoint {
+public class BAcousticMeasuringPoint extends BXyzPoint {
 
     private String address;
     private String id;
@@ -105,6 +106,25 @@ public class BAcousticMeasuringPoint extends BBasePoint {
     }
 
     public class Ext {
+
+        private ArrayList<BAcousticMeasuringLimit> mLimits = new ArrayList<>();
+        private ArrayList<BAcousticMeasuringChannel> mChannels = new ArrayList<>();
+
+        public ArrayList<BAcousticMeasuringChannel> getChannels() {
+            return mChannels;
+        }
+
+        public ArrayList<BAcousticMeasuringLimit> getLimits() {
+            return mLimits;
+        }
+
+        public void setChannels(ArrayList<BAcousticMeasuringChannel> channels) {
+            this.mChannels = channels;
+        }
+
+        public void setLimits(ArrayList<BAcousticMeasuringLimit> limits) {
+            this.mLimits = limits;
+        }
 
     }
 
