@@ -147,7 +147,7 @@ public class StrainLayerBundle extends BfLayerBundle {
                     var mapObjects = new ArrayList<AVListImpl>();
 
                     mapObjects.add(labelPlacemark);
-                    mapObjects.add(plotPin(position, labelPlacemark));
+                    mapObjects.add(plotPin(p, position, labelPlacemark));
                     mapObjects.addAll(plotSymbol(p, position, labelPlacemark));
 
                     mGraphicRenderer.plot(p, position, mapObjects);
@@ -186,8 +186,8 @@ public class StrainLayerBundle extends BfLayerBundle {
         return placemark;
     }
 
-    private PointPlacemark plotPin(Position position, PointPlacemark labelPlacemark) {
-        var attrs = mAttributeManager.getPinAttributes();
+    private PointPlacemark plotPin(BStructuralStrainGaugePoint p, Position position, PointPlacemark labelPlacemark) {
+        var attrs = mAttributeManager.getPinAttributes(p);
 
         var placemark = new PointPlacemark(position);
         placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);

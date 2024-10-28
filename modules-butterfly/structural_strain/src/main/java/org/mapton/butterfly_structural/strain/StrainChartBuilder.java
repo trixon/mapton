@@ -19,7 +19,6 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.util.Objects;
 import java.util.concurrent.Callable;
-import org.apache.commons.numbers.core.Precision;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.axis.AxisLocation;
 import org.jfree.chart.axis.DateAxis;
@@ -31,7 +30,6 @@ import org.jfree.chart.ui.LengthAdjustmentType;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
-import org.mapton.butterfly_format.types.BAlarm;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.structural.BStructuralStrainGaugePoint;
 import org.mapton.ce_jfreechart.api.ChartHelper;
@@ -92,13 +90,8 @@ public class StrainChartBuilder extends XyzChartBuilder<BStructuralStrainGaugePo
 
     @Override
     public void setTitle(BStructuralStrainGaugePoint p) {
-        super.setTitle(p);
-//        Color color = TopoHelper.getAlarmColorAwt(p);
-        Color color = Color.BLUE;
-        if (color == Color.RED || color == Color.GREEN) {
-            color = color.darker();
-        }
-        mChart.getTitle().setPaint(color);
+        setTitle(p, StrainHelper.getAlarmColorAwt(p));
+
         var dateFirst = Objects.toString(DateHelper.toDateString(p.getDateZero()), "");
         var dateLast = Objects.toString(DateHelper.toDateString(p.ext().getObservationRawLastDate()), "");
         var date = "(%s) → %s".formatted(dateFirst, dateLast);
@@ -169,8 +162,7 @@ public class StrainChartBuilder extends XyzChartBuilder<BStructuralStrainGaugePo
     }
 
     private void plotAlarmIndicators(BStructuralStrainGaugePoint p) {
-//        var ha = p.ext().getAlarm(BComponent.HEIGHT);
-        BAlarm ha = null;
+        var ha = p.ext().getAlarm(BComponent.HEIGHT);
         if (ha != null) {
             var range0 = ha.ext().getRange0();
             if (range0 != null) {
@@ -182,26 +174,6 @@ public class StrainChartBuilder extends XyzChartBuilder<BStructuralStrainGaugePo
             if (range1 != null) {
                 plotAlarmIndicator(BComponent.HEIGHT, range1.getMinimum(), Color.RED);
                 plotAlarmIndicator(BComponent.HEIGHT, range1.getMaximum(), Color.RED);
-            }
-        }
-
-//        var pa = p.ext().getAlarm(BComponent.PLANE);
-        BAlarm pa = null;
-        if (pa != null) {
-            var range0 = pa.ext().getRange0();
-            if (range0 != null) {
-                if (!Precision.equals(range0.getMinimum(), 0.0)) {
-                    plotAlarmIndicator(BComponent.PLANE, range0.getMinimum(), Color.YELLOW);
-                }
-                plotAlarmIndicator(BComponent.PLANE, range0.getMaximum(), Color.YELLOW);
-            }
-
-            var range1 = pa.ext().getRange1();
-            if (range1 != null) {
-                if (!Precision.equals(range1.getMinimum(), 0.0)) {
-                    plotAlarmIndicator(BComponent.PLANE, range1.getMinimum(), Color.RED);
-                }
-                plotAlarmIndicator(BComponent.PLANE, range1.getMaximum(), Color.RED);
             }
         }
     }

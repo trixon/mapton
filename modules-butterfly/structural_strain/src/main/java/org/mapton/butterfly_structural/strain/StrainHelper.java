@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_structural.strain;
 
+import java.awt.Color;
 import org.mapton.butterfly_core.api.ButterflyHelper;
 import org.mapton.butterfly_format.types.structural.BStructuralStrainGaugePoint;
 
@@ -24,8 +25,16 @@ import org.mapton.butterfly_format.types.structural.BStructuralStrainGaugePoint;
  */
 public class StrainHelper {
 
+    public static Color getAlarmColorAwt(BStructuralStrainGaugePoint p) {
+        return ButterflyHelper.getAlarmColorAwt(getAlarmLevel(p));
+    }
+
     public static javafx.scene.paint.Color getAlarmColorHeightFx(BStructuralStrainGaugePoint p) {
         return ButterflyHelper.getAlarmColorFx(getAlarmLevelHeight(p));
+    }
+
+    public static int getAlarmLevel(BStructuralStrainGaugePoint p) {
+        return p.ext().getAlarmLevel(p.ext().getObservationFilteredLast());
     }
 
     public static int getAlarmLevelHeight(BStructuralStrainGaugePoint p) {

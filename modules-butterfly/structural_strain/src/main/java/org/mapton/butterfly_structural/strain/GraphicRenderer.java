@@ -41,7 +41,6 @@ public class GraphicRenderer extends GraphicRendererBase {
 
     public void plot(BStructuralStrainGaugePoint p, Position position, ArrayList<AVListImpl> mapObjects) {
         GraphicRendererBase.sMapObjects = mapObjects;
-        plotDirectionX(p, position);
         plotDirection(p, position);
     }
 
@@ -106,29 +105,6 @@ public class GraphicRenderer extends GraphicRendererBase {
             System.err.println(e);
         }
 
-    }
-
-    private void plotDirectionX(BStructuralStrainGaugePoint p, Position position) {
-        if (!sCheckModel.isChecked(GraphicRendererItem.DIRECTION_X)
-                || p.getDirectionX() == null) {
-            return;
-        }
-
-        try {
-            var bearing = MathHelper.convert(p.getDirectionX());
-
-            var length = 10.0;
-            var p2 = WWHelper.movePolar(position, bearing, length);
-            var z = 0.1;
-            position = WWHelper.positionFromPosition(position, z);
-            p2 = WWHelper.positionFromPosition(p2, z);
-            var path = new Path(position, p2);
-            path.setAttributes(mAttributeManager.getBearingAttribute());
-
-            addRenderable(path, true);
-        } catch (Exception e) {
-            System.err.println(e);
-        }
     }
 
 }

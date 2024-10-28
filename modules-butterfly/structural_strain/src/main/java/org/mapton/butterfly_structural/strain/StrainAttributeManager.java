@@ -15,49 +15,28 @@
  */
 package org.mapton.butterfly_structural.strain;
 
-import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Material;
-import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
-import java.awt.Color;
-import org.mapton.butterfly_core.api.ButterflyHelper;
+import org.mapton.butterfly_core.api.BaseAttributeManager;
 import org.mapton.butterfly_format.types.structural.BStructuralStrainGaugePoint;
-import se.trixon.almond.util.GraphicsHelper;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class StrainAttributeManager {
-
-    private BasicShapeAttributes mBearingAttribute;
+public class StrainAttributeManager extends BaseAttributeManager {
 
     private BasicShapeAttributes mComponentEllipsoidAttributes;
     private BasicShapeAttributes mComponentGroundPathAttributes;
-    private PointPlacemarkAttributes mLabelPlacemarkAttributes;
-    private PointPlacemarkAttributes mPinAttributes;
-    private BasicShapeAttributes mSurfaceAttributes;
-    private BasicShapeAttributes[] mSymbolAttributes;
     private BasicShapeAttributes mStrainAttribute;
+    private BasicShapeAttributes mSurfaceAttributes;
 
     public static StrainAttributeManager getInstance() {
         return Holder.INSTANCE;
     }
 
     private StrainAttributeManager() {
-    }
-
-    public BasicShapeAttributes getBearingAttribute() {
-        if (mBearingAttribute == null) {
-            mBearingAttribute = new BasicShapeAttributes();
-            mBearingAttribute.setDrawOutline(true);
-            mBearingAttribute.setOutlineMaterial(Material.CYAN);
-            mBearingAttribute.setOutlineWidth(4.0);
-            mBearingAttribute.setOutlineOpacity(1.0);
-        }
-
-        return mBearingAttribute;
     }
 
     public BasicShapeAttributes getComponentEllipsoidAttributes() {
@@ -83,27 +62,26 @@ public class StrainAttributeManager {
         return mComponentGroundPathAttributes;
     }
 
-    public PointPlacemarkAttributes getLabelPlacemarkAttributes() {
-        if (mLabelPlacemarkAttributes == null) {
-            mLabelPlacemarkAttributes = new PointPlacemarkAttributes(new PointPlacemark(Position.ZERO).getDefaultAttributes());
-            mLabelPlacemarkAttributes.setLabelScale(1.6);
-            mLabelPlacemarkAttributes.setImageColor(GraphicsHelper.colorAddAlpha(Color.RED, 0));
-            mLabelPlacemarkAttributes.setScale(0.75);
-            mLabelPlacemarkAttributes.setImageAddress("images/pushpins/plain-white.png");
-        }
+    public PointPlacemarkAttributes getPinAttributes(BStructuralStrainGaugePoint p) {
+        var attrs = getPinAttributes(p, StrainHelper.getAlarmLevel(p));
 
-        return mLabelPlacemarkAttributes;
+//        if (mColorBy != null && mColorBy != ColorBy.ALARM) {
+//            attrs = new PointPlacemarkAttributes(attrs);
+//            attrs.setImageColor(getColor(p));
+//        }
+        return attrs;
     }
 
-    public PointPlacemarkAttributes getPinAttributes() {
-        if (mPinAttributes == null) {
-            mPinAttributes = new PointPlacemarkAttributes(new PointPlacemark(Position.ZERO).getDefaultAttributes());
-            mPinAttributes.setScale(0.75);
-            mPinAttributes.setImageAddress("images/pushpins/plain-white.png");
-            mPinAttributes.setImageColor(Color.ORANGE.darker());
+    public BasicShapeAttributes getStrainAttribute() {
+        if (mStrainAttribute == null) {
+            mStrainAttribute = new BasicShapeAttributes();
+            mStrainAttribute.setDrawOutline(true);
+            mStrainAttribute.setOutlineMaterial(Material.RED);
+            mStrainAttribute.setOutlineWidth(4.0);
+            mStrainAttribute.setOutlineOpacity(1.0);
         }
 
-        return mPinAttributes;
+        return mStrainAttribute;
     }
 
     public BasicShapeAttributes getSurfaceAttributes() {
@@ -119,37 +97,13 @@ public class StrainAttributeManager {
     }
 
     public BasicShapeAttributes getSymbolAttributes(BStructuralStrainGaugePoint p) {
-        if (mSymbolAttributes == null) {
-            mSymbolAttributes = new BasicShapeAttributes[4];
-            for (int i = 0; i < 4; i++) {
-                var attrs = new BasicShapeAttributes();
-                attrs.setInteriorMaterial(ButterflyHelper.getAlarmMaterial(i - 1));
-                attrs.setEnableLighting(true);
-                attrs.setDrawOutline(false);
-                mSymbolAttributes[i] = attrs;
-            }
-        }
-
-        var attrs = mSymbolAttributes[1];
-//        var attrs = mSymbolAttributes[TopoHelper.getAlarmLevel(p) + 1];
+        var attrs = getSymbolAttributes(p, StrainHelper.getAlarmLevel(p));
 //        if (mColorBy != null && mColorBy != ColorBy.ALARM) {
 //            attrs = new BasicShapeAttributes(attrs);
 //            attrs.setInteriorMaterial(new Material(getColor(p)));
 //        }
 
         return attrs;
-    }
-
-    public BasicShapeAttributes getStrainAttribute() {
-        if (mStrainAttribute == null) {
-            mStrainAttribute = new BasicShapeAttributes();
-            mStrainAttribute.setDrawOutline(true);
-            mStrainAttribute.setOutlineMaterial(Material.RED);
-            mStrainAttribute.setOutlineWidth(4.0);
-            mStrainAttribute.setOutlineOpacity(1.0);
-        }
-
-        return mStrainAttribute;
     }
 
     private static class Holder {
