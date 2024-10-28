@@ -15,28 +15,22 @@
  */
 package org.mapton.butterfly_structural.tilt;
 
-import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Material;
-import gov.nasa.worldwind.render.PointPlacemark;
-import gov.nasa.worldwind.render.PointPlacemarkAttributes;
-import java.awt.Color;
+import org.mapton.butterfly_core.api.BaseAttributeManager;
 import org.mapton.butterfly_core.api.ButterflyHelper;
 import org.mapton.butterfly_format.types.structural.BStructuralTiltPoint;
-import se.trixon.almond.util.GraphicsHelper;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class TiltAttributeManager {
+public class TiltAttributeManager extends BaseAttributeManager {
 
     private BasicShapeAttributes mBearingAttribute;
 
     private BasicShapeAttributes mComponentEllipsoidAttributes;
     private BasicShapeAttributes mComponentGroundPathAttributes;
-    private PointPlacemarkAttributes mLabelPlacemarkAttributes;
-    private PointPlacemarkAttributes mPinAttributes;
     private BasicShapeAttributes mSurfaceAttributes;
     private BasicShapeAttributes[] mSymbolAttributes;
     private BasicShapeAttributes mTiltAttribute;
@@ -81,29 +75,6 @@ public class TiltAttributeManager {
         }
 
         return mComponentGroundPathAttributes;
-    }
-
-    public PointPlacemarkAttributes getLabelPlacemarkAttributes() {
-        if (mLabelPlacemarkAttributes == null) {
-            mLabelPlacemarkAttributes = new PointPlacemarkAttributes(new PointPlacemark(Position.ZERO).getDefaultAttributes());
-            mLabelPlacemarkAttributes.setLabelScale(1.6);
-            mLabelPlacemarkAttributes.setImageColor(GraphicsHelper.colorAddAlpha(Color.RED, 0));
-            mLabelPlacemarkAttributes.setScale(0.75);
-            mLabelPlacemarkAttributes.setImageAddress("images/pushpins/plain-white.png");
-        }
-
-        return mLabelPlacemarkAttributes;
-    }
-
-    public PointPlacemarkAttributes getPinAttributes() {
-        if (mPinAttributes == null) {
-            mPinAttributes = new PointPlacemarkAttributes(new PointPlacemark(Position.ZERO).getDefaultAttributes());
-            mPinAttributes.setScale(0.75);
-            mPinAttributes.setImageAddress("images/pushpins/plain-white.png");
-            mPinAttributes.setImageColor(Color.ORANGE.darker());
-        }
-
-        return mPinAttributes;
     }
 
     public BasicShapeAttributes getSurfaceAttributes() {

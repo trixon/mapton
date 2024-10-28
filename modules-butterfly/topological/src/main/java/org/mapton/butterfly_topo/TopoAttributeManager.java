@@ -15,15 +15,14 @@
  */
 package org.mapton.butterfly_topo;
 
-import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Material;
-import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
 import java.awt.Color;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import org.mapton.butterfly_core.api.BaseAttributeManager;
 import org.mapton.butterfly_core.api.ButterflyHelper;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_topo.api.TopoManager;
@@ -31,13 +30,12 @@ import org.mapton.butterfly_topo.shared.ColorBy;
 import static org.mapton.butterfly_topo.shared.ColorBy.FREQUENCY;
 import static org.mapton.butterfly_topo.shared.ColorBy.MEAS_NEED;
 import static org.mapton.butterfly_topo.shared.ColorBy.STYLE;
-import se.trixon.almond.util.GraphicsHelper;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class TopoAttributeManager {
+public class TopoAttributeManager extends BaseAttributeManager {
 
     private BasicShapeAttributes[] mBearingAttributes;
     private ColorBy mColorBy;
@@ -50,10 +48,7 @@ public class TopoAttributeManager {
     private BasicShapeAttributes mComponentZeroAttributes;
     private BasicShapeAttributes mIndicatorConnectorAttributes;
     private BasicShapeAttributes[] mIndicatorNeedAttributes;
-    private PointPlacemarkAttributes mLabelPlacemarkAttributes;
-    private PointPlacemarkAttributes[] mPinAttributes;
     private BasicShapeAttributes mSkipPlotAttribute;
-    private BasicShapeAttributes[] mSymbolAttributes;
     private TopoConfig mTopoConfig;
     private BasicShapeAttributes mTraceAttribute;
     private BasicShapeAttributes[] mVectorAlarmAttributes;
@@ -300,32 +295,8 @@ public class TopoAttributeManager {
         return mIndicatorNeedAttributes;
     }
 
-    public PointPlacemarkAttributes getLabelPlacemarkAttributes() {
-        if (mLabelPlacemarkAttributes == null) {
-            mLabelPlacemarkAttributes = new PointPlacemarkAttributes(new PointPlacemark(Position.ZERO).getDefaultAttributes());
-            mLabelPlacemarkAttributes.setLabelScale(1.6);
-            mLabelPlacemarkAttributes.setImageColor(GraphicsHelper.colorAddAlpha(Color.RED, 0));
-            mLabelPlacemarkAttributes.setScale(0.75);
-            mLabelPlacemarkAttributes.setImageAddress("images/pushpins/plain-white.png");
-        }
-
-        return mLabelPlacemarkAttributes;
-    }
-
     public PointPlacemarkAttributes getPinAttributes(BTopoControlPoint p) {
-        if (mPinAttributes == null) {
-            mPinAttributes = new PointPlacemarkAttributes[4];
-            for (int i = 0; i < 4; i++) {
-                var attrs = new PointPlacemarkAttributes(new PointPlacemark(Position.ZERO).getDefaultAttributes());
-                attrs.setScale(0.75);
-                attrs.setImageAddress("images/pushpins/plain-white.png");
-                attrs.setImageColor(ButterflyHelper.getAlarmColorAwt(i - 1));
-
-                mPinAttributes[i] = attrs;
-            }
-        }
-
-        var attrs = mPinAttributes[TopoHelper.getAlarmLevel(p) + 1];
+        var attrs = getPinAttributes(p, TopoHelper.getAlarmLevel(p));
 
         if (mColorBy != null && mColorBy != ColorBy.ALARM) {
             attrs = new PointPlacemarkAttributes(attrs);
@@ -347,18 +318,7 @@ public class TopoAttributeManager {
     }
 
     public BasicShapeAttributes getSymbolAttributes(BTopoControlPoint p) {
-        if (mSymbolAttributes == null) {
-            mSymbolAttributes = new BasicShapeAttributes[4];
-            for (int i = 0; i < 4; i++) {
-                var attrs = new BasicShapeAttributes();
-                attrs.setInteriorMaterial(ButterflyHelper.getAlarmMaterial(i - 1));
-                attrs.setEnableLighting(true);
-                attrs.setDrawOutline(false);
-                mSymbolAttributes[i] = attrs;
-            }
-        }
-
-        var attrs = mSymbolAttributes[TopoHelper.getAlarmLevel(p) + 1];
+        var attrs = getSymbolAttributes(p, TopoHelper.getAlarmLevel(p));
         if (mColorBy != null && mColorBy != ColorBy.ALARM) {
             attrs = new BasicShapeAttributes(attrs);
             attrs.setInteriorMaterial(new Material(getColor(p)));

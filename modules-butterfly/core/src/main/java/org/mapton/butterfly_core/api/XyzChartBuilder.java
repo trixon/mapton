@@ -88,6 +88,14 @@ public abstract class XyzChartBuilder<T extends BXyzPoint> extends ChartBuilder<
         mChart.setTitle(p.getName());
     }
 
+    public void setTitle(T p, Color color) {
+        mChart.setTitle(p.getName());
+        if (color == Color.RED || color == Color.GREEN) {
+            color = color.darker();
+        }
+        mChart.getTitle().setPaint(color);
+    }
+
     protected void initChart(String valueAxisLabel, String decimalPattern) {
         mChart = ChartFactory.createTimeSeriesChart(
                 "",

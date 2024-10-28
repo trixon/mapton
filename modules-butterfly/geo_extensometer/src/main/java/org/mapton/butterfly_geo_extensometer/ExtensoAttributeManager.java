@@ -23,13 +23,13 @@ import gov.nasa.worldwind.render.PointPlacemarkAttributes;
 import gov.nasa.worldwind.render.ShapeAttributes;
 import gov.nasa.worldwind.render.airspaces.BasicAirspaceAttributes;
 import java.awt.Color;
-import se.trixon.almond.util.GraphicsHelper;
+import org.mapton.butterfly_core.api.BaseAttributeManager;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class ExtensoAttributeManager {
+public class ExtensoAttributeManager extends BaseAttributeManager {
 
     private static final Material[] mAlarmMaterials = new Material[]{
         Material.GREEN,
@@ -42,7 +42,6 @@ public class ExtensoAttributeManager {
     private BasicShapeAttributes[][] mComponentTrace1dAttributes;
 
     private BasicShapeAttributes mGroundConnectorAttributes;
-    private PointPlacemarkAttributes mLabelPlacemarkAttributes;
     private PointPlacemarkAttributes[] mPinAttributes;
     private BasicShapeAttributes[] mStationConnectorAttributes;
     private final Color[] mStationConnectorColors = new Color[]{Color.CYAN, Color.MAGENTA, Color.YELLOW, Color.BLACK};
@@ -124,18 +123,6 @@ public class ExtensoAttributeManager {
         }
 
         return mGroundConnectorAttributes;
-    }
-
-    public PointPlacemarkAttributes getLabelPlacemarkAttributes() {
-        if (mLabelPlacemarkAttributes == null) {
-            mLabelPlacemarkAttributes = new PointPlacemarkAttributes(new PointPlacemark(Position.ZERO).getDefaultAttributes());
-            mLabelPlacemarkAttributes.setLabelScale(1.6);
-            mLabelPlacemarkAttributes.setImageColor(GraphicsHelper.colorAddAlpha(Color.RED, 0));
-            mLabelPlacemarkAttributes.setScale(0.75);
-            mLabelPlacemarkAttributes.setImageAddress("images/pushpins/plain-white.png");
-        }
-
-        return mLabelPlacemarkAttributes;
     }
 
     public PointPlacemarkAttributes getPinAttributes(int index) {

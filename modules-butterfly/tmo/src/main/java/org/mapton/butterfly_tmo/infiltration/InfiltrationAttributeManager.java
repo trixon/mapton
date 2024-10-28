@@ -15,25 +15,19 @@
  */
 package org.mapton.butterfly_tmo.infiltration;
 
-import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Material;
-import gov.nasa.worldwind.render.PointPlacemark;
-import gov.nasa.worldwind.render.PointPlacemarkAttributes;
-import java.awt.Color;
-import se.trixon.almond.util.GraphicsHelper;
+import org.mapton.butterfly_core.api.BaseAttributeManager;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class InfiltrationAttributeManager {
+public class InfiltrationAttributeManager extends BaseAttributeManager {
 
     private BasicShapeAttributes mComponentEllipsoidAttributes;
     private BasicShapeAttributes mComponentGroundPathAttributes;
     private BasicShapeAttributes mSurfaceAttributes;
-    private PointPlacemarkAttributes mLabelPlacemarkAttributes;
-    private PointPlacemarkAttributes mPinAttributes;
 
     public static InfiltrationAttributeManager getInstance() {
         return Holder.INSTANCE;
@@ -75,29 +69,6 @@ public class InfiltrationAttributeManager {
         }
 
         return mSurfaceAttributes;
-    }
-
-    public PointPlacemarkAttributes getLabelPlacemarkAttributes() {
-        if (mLabelPlacemarkAttributes == null) {
-            mLabelPlacemarkAttributes = new PointPlacemarkAttributes(new PointPlacemark(Position.ZERO).getDefaultAttributes());
-            mLabelPlacemarkAttributes.setLabelScale(1.6);
-            mLabelPlacemarkAttributes.setImageColor(GraphicsHelper.colorAddAlpha(Color.RED, 0));
-            mLabelPlacemarkAttributes.setScale(0.75);
-            mLabelPlacemarkAttributes.setImageAddress("images/pushpins/plain-white.png");
-        }
-
-        return mLabelPlacemarkAttributes;
-    }
-
-    public PointPlacemarkAttributes getPinAttributes() {
-        if (mPinAttributes == null) {
-            mPinAttributes = new PointPlacemarkAttributes(new PointPlacemark(Position.ZERO).getDefaultAttributes());
-            mPinAttributes.setScale(0.75);
-            mPinAttributes.setImageAddress("images/pushpins/plain-white.png");
-            mPinAttributes.setImageColor(Color.ORANGE);
-        }
-
-        return mPinAttributes;
     }
 
     private static class Holder {

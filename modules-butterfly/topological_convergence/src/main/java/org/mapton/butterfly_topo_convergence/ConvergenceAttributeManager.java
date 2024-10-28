@@ -15,26 +15,20 @@
  */
 package org.mapton.butterfly_topo_convergence;
 
-import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Material;
-import gov.nasa.worldwind.render.Offset;
-import gov.nasa.worldwind.render.PointPlacemark;
-import gov.nasa.worldwind.render.PointPlacemarkAttributes;
-import java.awt.Color;
+import org.mapton.butterfly_core.api.BaseAttributeManager;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class ConvergenceAttributeManager {
+public class ConvergenceAttributeManager extends BaseAttributeManager {
 
     private BasicShapeAttributes mGroundPathAttributes;
     private BasicShapeAttributes mIndicatorAttributes;
-    private PointPlacemarkAttributes mLabelPlacemarkAttributes;
     private BasicShapeAttributes mNodeAttributes;
     private BasicShapeAttributes mPairPathAttributes;
-    private PointPlacemarkAttributes mPinAttributes;
     private BasicShapeAttributes mSurfaceAttributes;
 
     public static ConvergenceAttributeManager getInstance() {
@@ -68,18 +62,6 @@ public class ConvergenceAttributeManager {
         return mIndicatorAttributes;
     }
 
-    public PointPlacemarkAttributes getLabelPlacemarkAttributes() {
-        if (mLabelPlacemarkAttributes == null) {
-            mLabelPlacemarkAttributes = new PointPlacemarkAttributes(new PointPlacemark(Position.ZERO).getDefaultAttributes());
-            mLabelPlacemarkAttributes.setLabelScale(1.6);
-            mLabelPlacemarkAttributes.setScale(0.0);
-            mLabelPlacemarkAttributes.setDrawImage(false);
-            mLabelPlacemarkAttributes.setLabelOffset(Offset.TOP_CENTER);
-        }
-
-        return mLabelPlacemarkAttributes;
-    }
-
     public BasicShapeAttributes getNodeAttributes() {
         if (mNodeAttributes == null) {
             mNodeAttributes = new BasicShapeAttributes();
@@ -101,17 +83,6 @@ public class ConvergenceAttributeManager {
         }
 
         return mPairPathAttributes;
-    }
-
-    public PointPlacemarkAttributes getPinAttributes() {
-        if (mPinAttributes == null) {
-            mPinAttributes = new PointPlacemarkAttributes(new PointPlacemark(Position.ZERO).getDefaultAttributes());
-            mPinAttributes.setScale(0.75);
-            mPinAttributes.setImageAddress("images/pushpins/plain-white.png");
-            mPinAttributes.setImageColor(Color.ORANGE.darker());
-        }
-
-        return mPinAttributes;
     }
 
     public BasicShapeAttributes getSurfaceAttributes() {

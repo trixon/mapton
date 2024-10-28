@@ -22,17 +22,16 @@ import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
 import java.awt.Color;
 import java.util.HashMap;
+import org.mapton.butterfly_core.api.BaseAttributeManager;
 import org.mapton.butterfly_format.types.tmo.BGrundvatten;
-import se.trixon.almond.util.GraphicsHelper;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class GrundvattenAttributeManager {
+public class GrundvattenAttributeManager extends BaseAttributeManager {
 
     private BasicShapeAttributes mComponentGroundPathAttributes;
-    private PointPlacemarkAttributes mLabelPlacemarkAttributes;
     private final HashMap<String, BasicShapeAttributes> mMagasinToAttributes = new HashMap<>();
     private PointPlacemarkAttributes mPinAttributes;
     private BasicShapeAttributes mSurfaceAttributes;
@@ -55,18 +54,6 @@ public class GrundvattenAttributeManager {
         }
 
         return mComponentGroundPathAttributes;
-    }
-
-    public PointPlacemarkAttributes getLabelPlacemarkAttributes() {
-        if (mLabelPlacemarkAttributes == null) {
-            mLabelPlacemarkAttributes = new PointPlacemarkAttributes(new PointPlacemark(Position.ZERO).getDefaultAttributes());
-            mLabelPlacemarkAttributes.setLabelScale(1.6);
-            mLabelPlacemarkAttributes.setImageColor(GraphicsHelper.colorAddAlpha(Color.RED, 0));
-            mLabelPlacemarkAttributes.setScale(0.75);
-            mLabelPlacemarkAttributes.setImageAddress("images/pushpins/plain-white.png");
-        }
-
-        return mLabelPlacemarkAttributes;
     }
 
     public PointPlacemarkAttributes getPinAttributes(BGrundvatten grundvatten) {

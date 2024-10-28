@@ -136,12 +136,8 @@ public class TopoChartBuilder extends XyzChartBuilder<BTopoControlPoint> {
 
     @Override
     public void setTitle(BTopoControlPoint p) {
-        mChart.setTitle(p.getName());
-        Color color = TopoHelper.getAlarmColorAwt(p);
-        if (color == Color.RED || color == Color.GREEN) {
-            color = color.darker();
-        }
-        mChart.getTitle().setPaint(color);
+        setTitle(p, TopoHelper.getAlarmColorAwt(p));
+
         var dateFirst = Objects.toString(DateHelper.toDateString(p.getDateZero()), "");
         var dateLast = Objects.toString(DateHelper.toDateString(p.ext().getObservationRawLastDate()), "");
         var date = "(%s) → %s".formatted(dateFirst, dateLast);

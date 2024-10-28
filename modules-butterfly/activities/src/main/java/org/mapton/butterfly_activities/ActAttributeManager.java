@@ -22,17 +22,16 @@ import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
 import java.awt.Color;
 import java.util.HashMap;
+import org.mapton.butterfly_core.api.BaseAttributeManager;
 import org.mapton.butterfly_format.types.BAreaActivity;
 import org.mapton.butterfly_format.types.BAreaActivity.BAreaStatus;
-import se.trixon.almond.util.GraphicsHelper;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class ActAttributeManager {
+public class ActAttributeManager extends BaseAttributeManager {
 
-    private PointPlacemarkAttributes mLabelPlacemarkAttributes;
     private final HashMap<BAreaStatus, PointPlacemarkAttributes> mStatusToPointPlacemarkAttributes = new HashMap<>();
     private final HashMap<BAreaStatus, BasicShapeAttributes> mStatusToShapeAttributes = new HashMap<>();
     private final HashMap<BAreaStatus, BasicShapeAttributes> mStatusToShapeHighlightAttributes = new HashMap<>();
@@ -42,18 +41,6 @@ public class ActAttributeManager {
     }
 
     private ActAttributeManager() {
-    }
-
-    public PointPlacemarkAttributes getLabelPlacemarkAttributes() {
-        if (mLabelPlacemarkAttributes == null) {
-            mLabelPlacemarkAttributes = new PointPlacemarkAttributes(new PointPlacemark(Position.ZERO).getDefaultAttributes());
-            mLabelPlacemarkAttributes.setLabelScale(1.6);
-            mLabelPlacemarkAttributes.setImageColor(GraphicsHelper.colorAddAlpha(Color.RED, 0));
-            mLabelPlacemarkAttributes.setScale(0.75);
-            mLabelPlacemarkAttributes.setImageAddress("images/pushpins/plain-white.png");
-        }
-
-        return mLabelPlacemarkAttributes;
     }
 
     public PointPlacemarkAttributes getPinAttributes(BAreaActivity a) {

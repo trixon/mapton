@@ -79,9 +79,6 @@ public class Butterfly {
     private final ArrayList<BTopoControlPointObservation> mTopoControlPointsObservations = new ArrayList<>();
     private final ArrayList<BTopoConvergenceGroup> mTopoConvergenceGroups = new ArrayList<>();
 
-    public static void main(String[] args) {
-    }
-
     public Butterfly() {
     }
 

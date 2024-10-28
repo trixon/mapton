@@ -15,18 +15,19 @@
  */
 package org.mapton.butterfly_tmo.rorelse;
 
-import org.mapton.butterfly_tmo.api.RorelseManager;
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.PointPlacemark;
+import java.awt.Color;
 import java.util.ArrayList;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.butterfly_core.api.BfLayerBundle;
 import org.mapton.butterfly_format.types.tmo.BRorelse;
+import org.mapton.butterfly_tmo.api.RorelseManager;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
@@ -183,7 +184,7 @@ public class RorelseLayerBundle extends BfLayerBundle {
     }
 
     private PointPlacemark plotPin(Position position, PointPlacemark labelPlacemark) {
-        var attrs = mAttributeManager.getPinAttributes();
+        var attrs = mAttributeManager.getPinAttributes(Color.ORANGE);
 
         var placemark = new PointPlacemark(position);
         placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
