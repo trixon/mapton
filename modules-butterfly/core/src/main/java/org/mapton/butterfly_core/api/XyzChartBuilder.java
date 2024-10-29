@@ -40,6 +40,7 @@ import org.jfree.chart.ui.RectangleInsets;
 import org.jfree.chart.ui.TextAnchor;
 import org.jfree.chart.ui.VerticalAlignment;
 import org.jfree.data.time.Minute;
+import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.mapton.api.ui.forms.ChartBuilder;
 import org.mapton.butterfly_format.types.BXyzPoint;
@@ -65,6 +66,12 @@ public abstract class XyzChartBuilder<T extends BXyzPoint> extends ChartBuilder<
         marker.setLabelAnchor(RectangleAnchor.TOP_RIGHT);
         marker.setLabelTextAnchor(TextAnchor.TOP_LEFT);
         plot.addDomainMarker(marker);
+    }
+
+    public void clear(TimeSeries... series) {
+        for (var timeSerie : series) {
+            timeSerie.clear();
+        }
     }
 
     public ChartPanel getChartPanel() {

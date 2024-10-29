@@ -54,6 +54,7 @@ public class MeasPointChartBuilder extends XyzChartBuilder<BAcousticMeasuringPoi
     private final TimeSeries mTimeSeriesFreqY = new TimeSeries("fY");
     private final TimeSeries mTimeSeriesFreqZ = new TimeSeries("fZ");
     private final TimeSeries mTimeSeriesH = new TimeSeries(Dict.Geometry.HEIGHT);
+    private final TimeSeries mTimeSeriesLimit = new TimeSeries("Gräns");
 
     public MeasPointChartBuilder() {
         initChart("mm/s", "0.00");
@@ -109,14 +110,16 @@ public class MeasPointChartBuilder extends XyzChartBuilder<BAcousticMeasuringPoi
     @Override
     public void updateDataset(BAcousticMeasuringPoint p) {
         getDataset().removeAllSeries();
-        mTimeSeriesH.clear();
-        mTimeSeries2d.clear();
-        mTimeSeries3d.clear();
-
         mFreqDataset.removeAllSeries();
-        mTimeSeriesFreqX.clear();
-        mTimeSeriesFreqY.clear();
-        mTimeSeriesFreqZ.clear();
+        clear(
+                mTimeSeriesH,
+                mTimeSeries2d,
+                mTimeSeries3d,
+                mTimeSeriesLimit,
+                mTimeSeriesFreqX,
+                mTimeSeriesFreqY,
+                mTimeSeriesFreqZ
+        );
 
         var plot = (XYPlot) mChart.getPlot();
         plot.clearDomainMarkers();
@@ -139,6 +142,7 @@ public class MeasPointChartBuilder extends XyzChartBuilder<BAcousticMeasuringPoi
                 }
             }
 
+            mTimeSeriesLimit.add(minute, o.getLimit());
             mTimeSeriesFreqX.add(minute, o.getFrequencyX());
             mTimeSeriesFreqY.add(minute, o.getFrequencyY());
             mTimeSeriesFreqZ.add(minute, o.getFrequencyZ());
@@ -154,6 +158,8 @@ public class MeasPointChartBuilder extends XyzChartBuilder<BAcousticMeasuringPoi
         mSecondaryRenderer.setSeriesPaint(mFreqDataset.getSeriesIndex(mTimeSeriesFreqZ.getKey()), Color.MAGENTA);
 
         var renderer = plot.getRenderer();
+        getDataset().addSeries(mTimeSeriesLimit);
+        renderer.setSeriesPaint(getDataset().getSeriesIndex(mTimeSeriesLimit.getKey()), Color.BLACK);
 
         if (p.getDimension() == BDimension._1d || p.getDimension() == BDimension._3d) {
             getDataset().addSeries(mTimeSeriesH);

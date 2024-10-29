@@ -20,6 +20,7 @@ import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Cylinder;
+import gov.nasa.worldwind.render.Material;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -98,6 +99,12 @@ public class GraphicRenderer extends GraphicRendererBase {
                 attrs = new BasicShapeAttributes(attrs);
                 attrs.setInteriorOpacity(0.25);
                 attrs.setOutlineOpacity(0.20);
+            }
+
+            var max = Math.max(o.getMeasuredX(), Math.max(o.getMeasuredY(), o.getMeasuredZ()));
+            if (o.getLimit() != null && max >= o.getLimit()) {
+                attrs = new BasicShapeAttributes(attrs);
+                attrs.setInteriorMaterial(Material.RED);
             }
 
             cylinder.setAttributes(attrs);

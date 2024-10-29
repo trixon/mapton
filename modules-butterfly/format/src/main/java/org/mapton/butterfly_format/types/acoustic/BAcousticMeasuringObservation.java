@@ -45,9 +45,7 @@ public class BAcousticMeasuringObservation extends BXyzPointObservation {
     private Double frequencyY;
     private Double frequencyZ;
     private transient String id;
-    private Double limitX;
-    private Double limitY;
-    private Double limitZ;
+    private Double limit;
     private Ext mExt;
     private String unit;
 
@@ -99,16 +97,8 @@ public class BAcousticMeasuringObservation extends BXyzPointObservation {
         return id;
     }
 
-    public Double getLimitX() {
-        return limitX;
-    }
-
-    public Double getLimitY() {
-        return limitY;
-    }
-
-    public Double getLimitZ() {
-        return limitZ;
+    public Double getLimit() {
+        return limit;
     }
 
     public String getUnit() {
@@ -151,16 +141,8 @@ public class BAcousticMeasuringObservation extends BXyzPointObservation {
         this.id = id;
     }
 
-    public void setLimitX(Double limitX) {
-        this.limitX = limitX;
-    }
-
-    public void setLimitY(Double limitY) {
-        this.limitY = limitY;
-    }
-
-    public void setLimitZ(Double limitZ) {
-        this.limitZ = limitZ;
+    public void setLimit(Double limit) {
+        this.limit = limit;
     }
 
     public void setUnit(String unit) {
