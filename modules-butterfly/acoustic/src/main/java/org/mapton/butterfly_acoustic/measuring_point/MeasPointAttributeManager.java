@@ -17,6 +17,7 @@ package org.mapton.butterfly_acoustic.measuring_point;
 
 import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Material;
+import java.awt.Color;
 import org.mapton.butterfly_core.api.BaseAttributeManager;
 
 /**
@@ -57,6 +58,16 @@ public class MeasPointAttributeManager extends BaseAttributeManager {
         }
 
         return mComponentGroundPathAttributes;
+    }
+
+    public BasicShapeAttributes getComponentTracedAttributes(int alarmLevel, boolean maximus) {
+        var attrs = new BasicShapeAttributes();
+        attrs.setDrawOutline(false);
+        var material = maximus ? new Material(Color.PINK.darker()) : Material.PINK;
+        attrs.setInteriorMaterial(material);
+        attrs.setEnableLighting(true);
+
+        return attrs;
     }
 
     public BasicShapeAttributes getSurfaceAttributes() {

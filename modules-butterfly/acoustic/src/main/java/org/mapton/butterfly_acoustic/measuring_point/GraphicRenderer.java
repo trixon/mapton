@@ -18,9 +18,10 @@ package org.mapton.butterfly_acoustic.measuring_point;
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
-import gov.nasa.worldwind.render.Ellipsoid;
-import gov.nasa.worldwind.render.Path;
-import gov.nasa.worldwind.render.Renderable;
+import gov.nasa.worldwind.render.BasicShapeAttributes;
+import gov.nasa.worldwind.render.Cylinder;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.butterfly_format.types.acoustic.BAcousticMeasuringPoint;
@@ -30,52 +31,79 @@ import org.mapton.worldwind.api.WWHelper;
  *
  * @author Patrik Karlström
  */
-public class GraphicRenderer {
+public class GraphicRenderer extends GraphicRendererBase {
 
-    private final MeasPointAttributeManager mAttributeManager = MeasPointAttributeManager.getInstance();
-    private final IndexedCheckModel<GraphicRendererItem> mCheckModel;
-    private final RenderableLayer mEllipsoidLayer;
-    private final RenderableLayer mGroundConnectorLayer;
-    private ArrayList<AVListImpl> mMapObjects;
-    private final RenderableLayer mSurfaceLayer;
-
-    public GraphicRenderer(RenderableLayer ellipsoidLayer, RenderableLayer groundConnectorLayer, RenderableLayer surfaceLayer, IndexedCheckModel<GraphicRendererItem> checkModel) {
-        mEllipsoidLayer = ellipsoidLayer;
-        mGroundConnectorLayer = groundConnectorLayer;
-        mSurfaceLayer = surfaceLayer;
-        mCheckModel = checkModel;
+//    private ArrayList<AVListImpl> mMapObjects;
+    public GraphicRenderer(RenderableLayer layer, IndexedCheckModel<GraphicRendererItem> checkModel) {
+        sInteractiveLayer = layer;
+        sCheckModel = checkModel;
     }
 
-    public void addRenderable(RenderableLayer layer, Renderable renderable) {
-        layer.addRenderable(renderable);
-        if (layer == mEllipsoidLayer) {
-            if (renderable instanceof AVListImpl avlist) {
-                mMapObjects.add(avlist);
-            }
-        } else {
-            //mLayerXYZ.addRenderable(renderable); //TODO Add to a non responsive layer
-        }
-    }
-
+//    public void addRenderable(RenderableLayer layer, Renderable renderable) {
+//        layer.addRenderable(renderable);
+//        if (layer == mEllipsoidLayer) {
+//            if (renderable instanceof AVListImpl avlist) {
+//                mMapObjects.add(avlist);
+//            }
+//        } else {
+//            //mLayerXYZ.addRenderable(renderable); //TODO Add to a non responsive layer
+//        }
+//    }
     public void plot(BAcousticMeasuringPoint point, Position position, ArrayList<AVListImpl> mapObjects) {
-        mMapObjects = mapObjects;
+        sMapObjects = mapObjects;
 
-        if (mCheckModel.isChecked(GraphicRendererItem.BALLS_Z) && point.getZ() != null) {
-            var altitude = point.getZ();
-            var startPosition = WWHelper.positionFromPosition(position, 0.0);
-            var endPosition = WWHelper.positionFromPosition(position, altitude);
-            var radius = 1.2;
-            var endEllipsoid = new Ellipsoid(endPosition, radius, radius, radius);
-            endEllipsoid.setAttributes(mAttributeManager.getComponentEllipsoidAttributes());
-            addRenderable(mEllipsoidLayer, endEllipsoid);
-
-            var groundPath = new Path(startPosition, endPosition);
-            groundPath.setAttributes(mAttributeManager.getComponentGroundPathAttributes());
-            addRenderable(mGroundConnectorLayer, groundPath);
+        if (sCheckModel.isChecked(GraphicRendererItem.TRACE)) {
+            plotTrace(point, position, sMapObjects);
         }
     }
 
     public void reset() {
+    }
+
+    private void plotTrace(BAcousticMeasuringPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
+        if (isPlotLimitReached(p, GraphicRendererItem.TRACE, position)) {
+            return;
+        }
+        var reversedList = p.ext().getObservationsTimeFiltered().reversed();
+        var prevDate = LocalDateTime.now();
+        var altitude = 0.0;
+        var prevHeight = 0.0;
+
+        for (int i = 0; i < reversedList.size(); i++) {
+            var o = reversedList.get(i);
+
+            var timeSpan = ChronoUnit.MINUTES.between(o.getDate(), prevDate);
+            var height = timeSpan / 24000.0;
+            altitude = altitude + height * 0.5 + prevHeight * 0.5;
+            prevDate = o.getDate();
+            prevHeight = height;
+
+            if (o.ext().getDeltaZ() == null) {
+                continue;
+            }
+
+            var pos = WWHelper.positionFromPosition(position, altitude);
+            var maxRadius = 10.0;
+
+            var mScale1dH = 0.2;
+            var d3d = o.ext().getDelta3d();
+            var radius = Math.min(maxRadius, Math.abs(d3d) * mScale1dH + 0.1);
+            var maximus = radius == maxRadius;
+
+            var cylinder = new Cylinder(pos, height, radius);
+            //var alarmLevel = p.ext().getAlarmLevel(o);
+            var attrs = mAttributeManager.getComponentTracedAttributes(0, maximus);
+
+            if (i == 0 && ChronoUnit.DAYS.between(o.getDate(), LocalDateTime.now()) > 180) {
+                attrs = new BasicShapeAttributes(attrs);
+                attrs.setInteriorOpacity(0.25);
+                attrs.setOutlineOpacity(0.20);
+            }
+
+            cylinder.setAttributes(attrs);
+            addRenderable(cylinder, true);
+            sPlotLimiter.incPlotCounter(GraphicRendererItem.TRACE);
+        }
     }
 
 }

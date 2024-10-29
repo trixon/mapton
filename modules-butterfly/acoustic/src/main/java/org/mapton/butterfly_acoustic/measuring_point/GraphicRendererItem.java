@@ -15,14 +15,14 @@
  */
 package org.mapton.butterfly_acoustic.measuring_point;
 
+import se.trixon.almond.util.SDict;
+
 /**
  *
  * @author Patrik Karlström
  */
 public enum GraphicRendererItem {
-    BALLS("Klot", Integer.MAX_VALUE),
-    BALLS_Z("Klot z", Integer.MAX_VALUE),
-    RECENT("Senaste cirklar", Integer.MAX_VALUE);
+    TRACE(SDict.TRACE.toString(), Integer.MAX_VALUE);
     private final String mName;
     private final int mPlotLimit;
 

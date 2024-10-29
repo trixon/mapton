@@ -55,7 +55,7 @@ public class MeasPointLayerBundle extends BfLayerBundle {
         init();
         initRepaint();
         mOptionsView = new MeasPointOptionsView(this);
-        mGraphicRenderer = new GraphicRenderer(mLayer, mGroundConnectorLayer, mSurfaceLayer, mOptionsView.getGraphicCheckModel());
+        mGraphicRenderer = new GraphicRenderer(mLayer, mOptionsView.getGraphicCheckModel());
         initListeners();
 
         mManager.setInitialTemporalState(WWHelper.isStoredAsVisible(mLayer, mLayer.isEnabled()));
@@ -177,7 +177,7 @@ public class MeasPointLayerBundle extends BfLayerBundle {
     }
 
     private PointPlacemark plotPin(Position position, PointPlacemark labelPlacemark) {
-        var attrs = mAttributeManager.getPinAttributes(Color.ORANGE.darker());
+        var attrs = mAttributeManager.getPinAttributes(Color.PINK);
 
         var placemark = new PointPlacemark(position);
         placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
