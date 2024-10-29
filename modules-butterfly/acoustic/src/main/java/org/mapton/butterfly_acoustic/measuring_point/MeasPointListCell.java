@@ -49,7 +49,7 @@ class MeasPointListCell extends ListCell<BAcousticMeasuringPoint> {
     private void addContent(BAcousticMeasuringPoint point) {
         setText(null);
         mNameLabel.setText(point.getName());
-        mWorkLabel.setText(point.getTypeOfWork());
+        mWorkLabel.setText(point.getCategory());
         mSoilLabel.setText(point.getSoilMaterial());
         setGraphic(mVBox);
     }

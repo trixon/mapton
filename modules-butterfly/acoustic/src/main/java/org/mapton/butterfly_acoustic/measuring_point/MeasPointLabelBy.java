@@ -37,14 +37,14 @@ public enum MeasPointLabelBy {
     MISC_GROUP(Strings.CAT_MISC, Dict.GROUP.toString(), p -> {
         return Objects.toString(p.getGroup(), "NODATA");
     }),
-    MISC_TYPE(Strings.CAT_MISC, Dict.TYPE.toString(), p -> {
-        return Objects.toString(p.getTypeOfWork(), "NODATA");
+    MISC_TYPE(Strings.CAT_MISC, Dict.CATEGORY.toString(), p -> {
+        return Objects.toString(p.getCategory(), "NODATA");
     }),
-    MISC_SOILD(Strings.CAT_MISC, NbBundle.getMessage(MeasPointLabelBy.class, "soilMaterial"), p -> {
-        return Objects.toString(p.getTypeOfWork(), "NODATA");
+    MISC_SOIL(Strings.CAT_MISC, NbBundle.getMessage(MeasPointLabelBy.class, "soilMaterial"), p -> {
+        return Objects.toString(p.getSoilMaterial(), "NODATA");
     }),
     MISC_Z(Strings.CAT_MISC, "Z", p -> {
-        return MathHelper.convertDoubleToString(p.getZ(), 1);
+        return MathHelper.convertDoubleToString(p.getZeroZ(), 1);
     });
     private final String mCategory;
     private final Function<BAcousticMeasuringPoint, String> mFunction;

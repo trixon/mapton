@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_acoustic.measuring_point;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.acoustic.BAcousticMeasuringPoint;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.CollectionHelper;
+import se.trixon.almond.util.DateHelper;
 
 /**
  *
@@ -70,6 +72,15 @@ public class MeasPointManager extends BaseManager<BAcousticMeasuringPoint> {
                 p.ext().setChannels(new ArrayList<>(channels));
                 var limits = butterfly.noise().getMeasuringLimits().stream().filter(c -> c.getPointId().equalsIgnoreCase(p.getId())).toList();
                 p.ext().setLimits(new ArrayList<>(limits));
+
+                var status = "S5";
+                for (var channel : channels) {
+                    if (DateHelper.isBetween(channel.getFrom(), channel.getUntil(), LocalDate.now())) {
+                        status = "S1";
+                        break;
+                    }
+                }
+                p.setStatus(status);
 
                 var observations = butterfly.noise().getMeasuringObservations().stream()
                         .filter(o -> o.getName().equalsIgnoreCase(p.getName()))

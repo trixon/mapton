@@ -27,11 +27,9 @@ import org.mapton.butterfly_format.types.BXyzPoint;
 @JsonPropertyOrder({
     "id",
     "name",
-    "typeOfWork",
     "soilMaterial",
     "lat",
     "lon",
-    "z",
     "address",
     "comment"
 })
@@ -42,9 +40,7 @@ public class BAcousticMeasuringPoint extends BXyzPoint {
     @JsonIgnore
     private Ext mExt;
     private String soilMaterial;
-    private String typeOfWork;
     private String url;
-    private Double z;
 
     public BAcousticMeasuringPoint() {
     }
@@ -69,16 +65,8 @@ public class BAcousticMeasuringPoint extends BXyzPoint {
         return soilMaterial;
     }
 
-    public String getTypeOfWork() {
-        return typeOfWork;
-    }
-
     public String getUrl() {
         return url;
-    }
-
-    public Double getZ() {
-        return z;
     }
 
     public void setAddress(String address) {
@@ -93,16 +81,8 @@ public class BAcousticMeasuringPoint extends BXyzPoint {
         this.soilMaterial = soilMaterial;
     }
 
-    public void setTypeOfWork(String typeOfWork) {
-        this.typeOfWork = typeOfWork;
-    }
-
     public void setUrl(String url) {
         this.url = url;
-    }
-
-    public void setZ(Double z) {
-        this.z = z;
     }
 
     public class Ext extends BXyzPoint.Ext<BAcousticMeasuringObservation> {

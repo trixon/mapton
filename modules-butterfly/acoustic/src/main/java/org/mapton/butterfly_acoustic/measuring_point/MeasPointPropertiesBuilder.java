@@ -15,13 +15,17 @@
  */
 package org.mapton.butterfly_acoustic.measuring_point;
 
+import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
+import java.util.Objects;
 import java.util.ResourceBundle;
 import org.mapton.api.ui.forms.PropertiesBuilder;
 import org.mapton.butterfly_format.types.acoustic.BAcousticMeasuringPoint;
 import org.openide.util.NbBundle;
+import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.MathHelper;
+import se.trixon.almond.util.SDict;
+import se.trixon.almond.util.StringHelper;
 
 /**
  *
@@ -41,11 +45,32 @@ public class MeasPointPropertiesBuilder extends PropertiesBuilder<BAcousticMeasu
         var cat1 = Dict.BASIC.toString();
 
         propertyMap.put(getCatKey(cat1, Dict.NAME.toString()), p.getName());
-        propertyMap.put(getCatKey(cat1, Dict.TYPE.toString()), p.getTypeOfWork());
+        propertyMap.put(getCatKey(cat1, Dict.STATUS.toString()), p.getStatus());
+        propertyMap.put(getCatKey(cat1, Dict.TYPE.toString()), p.getCategory());
         propertyMap.put(getCatKey(cat1, mBundle.getString("soilMaterial")), p.getSoilMaterial());
         propertyMap.put(getCatKey(cat1, "Adress"), p.getAddress());
         propertyMap.put(getCatKey(cat1, Dict.COMMENT.toString()), p.getComment());
-        propertyMap.put(getCatKey(cat1, "Z"), MathHelper.convertDoubleToString(p.getZ(), 1));
+        var measurements = "%d / %d    (%d - %d)".formatted(
+                p.ext().getNumOfObservationsFiltered(),
+                p.ext().getNumOfObservations(),
+                p.ext().getObservationsAllRaw().stream().filter(obs -> obs.isZeroMeasurement()).count(),
+                p.ext().getObservationsAllRaw().stream().filter(obs -> obs.isReplacementMeasurement()).count()
+        );
+        propertyMap.put(getCatKey(cat1, SDict.MEASUREMENTS.toString()), measurements);
+        propertyMap.put(getCatKey(cat1, Dict.AGE.toString()), p.ext().getMeasurementAge(ChronoUnit.DAYS));
+        var firstRaw = Objects.toString(DateHelper.toDateString(p.ext().getObservationRawFirstDate()), "-");
+        var firstFiltered = Objects.toString(DateHelper.toDateString(p.ext().getObservationFilteredFirstDate()), "-");
+        var lastRaw = Objects.toString(DateHelper.toDateString(p.ext().getObservationRawLastDate()), "-");
+        var lastFiltered = Objects.toString(DateHelper.toDateString(p.ext().getObservationFilteredLastDate()), "-");
+        propertyMap.put(getCatKey(cat1, Dict.LATEST.toString()),
+                "%s (%s)".formatted(lastRaw, lastFiltered)
+        );
+        propertyMap.put(getCatKey(cat1, Dict.FIRST.toString()),
+                "%s (%s)".formatted(firstRaw, firstFiltered)
+        );
+        propertyMap.put(getCatKey(cat1, "N"), StringHelper.round(p.getZeroY(), 3));
+        propertyMap.put(getCatKey(cat1, "E"), StringHelper.round(p.getZeroX(), 3));
+        propertyMap.put(getCatKey(cat1, "H"), StringHelper.round(p.getZeroZ(), 3));
 
         return propertyMap;
     }

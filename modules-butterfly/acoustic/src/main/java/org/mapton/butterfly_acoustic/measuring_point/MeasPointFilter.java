@@ -29,11 +29,12 @@ import se.trixon.almond.util.Dict;
  */
 public class MeasPointFilter extends FormFilter<MeasPointManager> {
 
+    IndexedCheckModel mCategoryCheckModel;
     IndexedCheckModel mGroupCheckModel;
-    IndexedCheckModel mTypeCheckModel;
     IndexedCheckModel mSoilCheckModel;
-    private final MeasPointManager mManager = MeasPointManager.getInstance();
+    IndexedCheckModel mStatusCheckModel;
     private final ResourceBundle mBundle = NbBundle.getBundle(MeasPointFilter.class);
+    private final MeasPointManager mManager = MeasPointManager.getInstance();
 
     public MeasPointFilter() {
         super(MeasPointManager.getInstance());
@@ -42,8 +43,9 @@ public class MeasPointFilter extends FormFilter<MeasPointManager> {
     }
 
     public void initCheckModelListeners() {
+        mStatusCheckModel.getCheckedItems().addListener(mListChangeListener);
         mGroupCheckModel.getCheckedItems().addListener(mListChangeListener);
-        mTypeCheckModel.getCheckedItems().addListener(mListChangeListener);
+        mCategoryCheckModel.getCheckedItems().addListener(mListChangeListener);
         mSoilCheckModel.getCheckedItems().addListener(mListChangeListener);
     }
 
@@ -51,8 +53,9 @@ public class MeasPointFilter extends FormFilter<MeasPointManager> {
     public void update() {
         var filteredItems = mManager.getAllItems().stream()
                 .filter(b -> validateFreeText(b.getName(), b.getGroup(), b.getComment()))
+                .filter(b -> validateCheck(mStatusCheckModel, b.getStatus()))
                 .filter(b -> validateCheck(mGroupCheckModel, b.getGroup()))
-                .filter(b -> validateCheck(mTypeCheckModel, b.getTypeOfWork()))
+                .filter(b -> validateCheck(mCategoryCheckModel, b.getCategory()))
                 .filter(b -> validateCheck(mSoilCheckModel, b.getSoilMaterial()))
                 .filter(b -> validateCoordinateArea(b.getLat(), b.getLon()))
                 .filter(b -> validateCoordinateRuler(b.getLat(), b.getLon()))
@@ -68,8 +71,9 @@ public class MeasPointFilter extends FormFilter<MeasPointManager> {
         var map = new LinkedHashMap<String, String>();
 
         map.put(Dict.TEXT.toString(), getFreeText());
+        map.put(Dict.STATUS.toString(), makeInfo(mStatusCheckModel.getCheckedItems()));
         map.put(Dict.GROUP.toString(), makeInfo(mGroupCheckModel.getCheckedItems()));
-        map.put(Dict.TYPE.toString(), makeInfo(mTypeCheckModel.getCheckedItems()));
+        map.put(Dict.CATEGORY.toString(), makeInfo(mCategoryCheckModel.getCheckedItems()));
         map.put(mBundle.getString("soilMaterial"), makeInfo(mSoilCheckModel.getCheckedItems()));
 
         return createHtmlFilterInfo(map);
