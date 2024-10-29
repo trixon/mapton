@@ -20,12 +20,15 @@ import java.awt.Color;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 import org.jfree.chart.ChartPanel;
+import org.jfree.chart.axis.AxisLocation;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.chart.ui.LengthAdjustmentType;
 import org.jfree.data.time.TimeSeries;
+import org.jfree.data.time.TimeSeriesCollection;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
 import org.mapton.butterfly_format.types.BAlarm;
 import org.mapton.butterfly_format.types.BComponent;
@@ -42,12 +45,25 @@ import se.trixon.almond.util.Dict;
 public class MeasPointChartBuilder extends XyzChartBuilder<BAcousticMeasuringPoint> {
 
     private final ChartHelper mChartHelper = new ChartHelper();
+    private final NumberAxis mFreqAxis = new NumberAxis("Hz");
+    private final TimeSeriesCollection mFreqDataset = new TimeSeriesCollection();
+    private final XYLineAndShapeRenderer mSecondaryRenderer = new XYLineAndShapeRenderer();
     private final TimeSeries mTimeSeries2d = new TimeSeries(Dict.Geometry.PLANE);
     private final TimeSeries mTimeSeries3d = new TimeSeries("3d");
+    private final TimeSeries mTimeSeriesFreqX = new TimeSeries("fX");
+    private final TimeSeries mTimeSeriesFreqY = new TimeSeries("fY");
+    private final TimeSeries mTimeSeriesFreqZ = new TimeSeries("fZ");
     private final TimeSeries mTimeSeriesH = new TimeSeries(Dict.Geometry.HEIGHT);
 
     public MeasPointChartBuilder() {
         initChart("mm/s", "0.00");
+
+        var plot = (XYPlot) mChart.getPlot();
+        plot.setRangeAxis(2, mFreqAxis);
+        plot.setDataset(2, mFreqDataset);
+        plot.mapDatasetToRangeAxis(2, 2);
+        plot.setRangeAxisLocation(2, AxisLocation.BOTTOM_OR_RIGHT);
+        plot.setRenderer(2, mSecondaryRenderer);
     }
 
     @Override
@@ -78,7 +94,7 @@ public class MeasPointChartBuilder extends XyzChartBuilder<BAcousticMeasuringPoi
 
     @Override
     public void setTitle(BAcousticMeasuringPoint p) {
-        super.setTitle(p);
+        setTitle(p, Color.BLUE);
 //        setTitle(p, StrainHelper.getAlarmColorAwt(p));
 
         var dateFirst = Objects.toString(DateHelper.toDateString(p.getDateZero()), "");
@@ -96,6 +112,11 @@ public class MeasPointChartBuilder extends XyzChartBuilder<BAcousticMeasuringPoi
         mTimeSeriesH.clear();
         mTimeSeries2d.clear();
         mTimeSeries3d.clear();
+
+        mFreqDataset.removeAllSeries();
+        mTimeSeriesFreqX.clear();
+        mTimeSeriesFreqY.clear();
+        mTimeSeriesFreqZ.clear();
 
         var plot = (XYPlot) mChart.getPlot();
         plot.clearDomainMarkers();
@@ -117,7 +138,20 @@ public class MeasPointChartBuilder extends XyzChartBuilder<BAcousticMeasuringPoi
                     System.err.println("Failed to add observation to chart %s %s".formatted(p.getName(), o.getDate()));
                 }
             }
+
+            mTimeSeriesFreqX.add(minute, o.getFrequencyX());
+            mTimeSeriesFreqY.add(minute, o.getFrequencyY());
+            mTimeSeriesFreqZ.add(minute, o.getFrequencyZ());
+
         });
+
+        mFreqDataset.addSeries(mTimeSeriesFreqX);
+        mFreqDataset.addSeries(mTimeSeriesFreqY);
+        mFreqDataset.addSeries(mTimeSeriesFreqZ);
+
+        mSecondaryRenderer.setSeriesPaint(mFreqDataset.getSeriesIndex(mTimeSeriesFreqX.getKey()), Color.YELLOW);
+        mSecondaryRenderer.setSeriesPaint(mFreqDataset.getSeriesIndex(mTimeSeriesFreqY.getKey()), Color.CYAN);
+        mSecondaryRenderer.setSeriesPaint(mFreqDataset.getSeriesIndex(mTimeSeriesFreqZ.getKey()), Color.MAGENTA);
 
         var renderer = plot.getRenderer();
 
