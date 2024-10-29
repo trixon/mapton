@@ -105,10 +105,10 @@ public class BAcousticMeasuringPoint extends BXyzPoint {
         this.z = z;
     }
 
-    public class Ext {
+    public class Ext extends BXyzPoint.Ext<BAcousticMeasuringObservation> {
 
-        private ArrayList<BAcousticMeasuringLimit> mLimits = new ArrayList<>();
         private ArrayList<BAcousticMeasuringChannel> mChannels = new ArrayList<>();
+        private ArrayList<BAcousticMeasuringLimit> mLimits = new ArrayList<>();
 
         public ArrayList<BAcousticMeasuringChannel> getChannels() {
             return mChannels;

@@ -20,7 +20,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import org.mapton.butterfly_format.types.BXyzPointObservation;
 
 @JsonPropertyOrder({
-    "pointId",
+    "name",
     "channelId",
     "date",
     "value",
@@ -29,7 +29,7 @@ import org.mapton.butterfly_format.types.BXyzPointObservation;
     "distance",
     "frequency"
 })
-@JsonIgnoreProperties(value = {"id", "blastId"})
+@JsonIgnoreProperties(value = {"id", "blastId", "replacementMeasurement", "zeroMeasurement", "operator"})
 /**
  *
  * @author Patrik Karlström
@@ -37,14 +37,19 @@ import org.mapton.butterfly_format.types.BXyzPointObservation;
 public class BAcousticMeasuringObservation extends BXyzPointObservation {
 
     private transient String blastId;
-    private String channelId;
+    private String channelIdX;
+    private String channelIdY;
+    private String channelIdZ;
     private Integer distance;
-    private Double frequency;
+    private Double frequencyX;
+    private Double frequencyY;
+    private Double frequencyZ;
     private transient String id;
-    private Double limit;
-    private String pointId;
-    private String unit;
+    private Double limitX;
+    private Double limitY;
+    private Double limitZ;
     private Ext mExt;
+    private String unit;
 
     public BAcousticMeasuringObservation() {
     }
@@ -62,28 +67,48 @@ public class BAcousticMeasuringObservation extends BXyzPointObservation {
         return blastId;
     }
 
-    public String getChannelId() {
-        return channelId;
+    public String getChannelIdX() {
+        return channelIdX;
+    }
+
+    public String getChannelIdY() {
+        return channelIdY;
+    }
+
+    public String getChannelIdZ() {
+        return channelIdZ;
     }
 
     public Integer getDistance() {
         return distance;
     }
 
-    public String getPointId() {
-        return pointId;
+    public Double getFrequencyX() {
+        return frequencyX;
     }
 
-    public Double getFrequency() {
-        return frequency;
+    public Double getFrequencyY() {
+        return frequencyY;
+    }
+
+    public Double getFrequencyZ() {
+        return frequencyZ;
     }
 
     public String getId() {
         return id;
     }
 
-    public Double getLimit() {
-        return limit;
+    public Double getLimitX() {
+        return limitX;
+    }
+
+    public Double getLimitY() {
+        return limitY;
+    }
+
+    public Double getLimitZ() {
+        return limitZ;
     }
 
     public String getUnit() {
@@ -94,35 +119,55 @@ public class BAcousticMeasuringObservation extends BXyzPointObservation {
         this.blastId = blastId;
     }
 
-    public void setChannelId(String channelId) {
-        this.channelId = channelId;
+    public void setChannelIdX(String channelIdX) {
+        this.channelIdX = channelIdX;
+    }
+
+    public void setChannelIdY(String channelIdY) {
+        this.channelIdY = channelIdY;
+    }
+
+    public void setChannelIdZ(String channelIdZ) {
+        this.channelIdZ = channelIdZ;
     }
 
     public void setDistance(Integer distance) {
         this.distance = distance;
     }
 
-    public void setPointId(String measuringPointId) {
-        this.pointId = measuringPointId;
+    public void setFrequencyX(Double frequencyX) {
+        this.frequencyX = frequencyX;
     }
 
-    public void setFrequency(Double frequency) {
-        this.frequency = frequency;
+    public void setFrequencyY(Double frequencyY) {
+        this.frequencyY = frequencyY;
+    }
+
+    public void setFrequencyZ(Double frequencyZ) {
+        this.frequencyZ = frequencyZ;
     }
 
     public void setId(String id) {
         this.id = id;
     }
 
-    public void setLimit(Double limit) {
-        this.limit = limit;
+    public void setLimitX(Double limitX) {
+        this.limitX = limitX;
+    }
+
+    public void setLimitY(Double limitY) {
+        this.limitY = limitY;
+    }
+
+    public void setLimitZ(Double limitZ) {
+        this.limitZ = limitZ;
     }
 
     public void setUnit(String unit) {
         this.unit = unit;
     }
 
-    public class Ext extends BXyzPointObservation.Ext<BAcousticMeasuringChannel> {
+    public class Ext extends BXyzPointObservation.Ext<BAcousticMeasuringPoint> {
 
         public Ext() {
         }

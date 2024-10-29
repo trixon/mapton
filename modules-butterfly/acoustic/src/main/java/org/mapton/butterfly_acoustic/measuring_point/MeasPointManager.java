@@ -15,11 +15,18 @@
  */
 package org.mapton.butterfly_acoustic.measuring_point;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
+import org.mapton.api.MTemporalRange;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.acoustic.BAcousticMeasuringPoint;
 import org.openide.util.Exceptions;
+import se.trixon.almond.util.CollectionHelper;
 
 /**
  *
@@ -55,25 +62,38 @@ public class MeasPointManager extends BaseManager<BAcousticMeasuringPoint> {
     @Override
     public void load(Butterfly butterfly) {
         try {
+            initAllItems(butterfly.noise().getMeasuringPoints());
+            initObjectToItemMap();
+
             butterfly.noise().getMeasuringPoints().forEach(p -> {
                 var channels = butterfly.noise().getMeasuringChannels().stream().filter(c -> c.getPointId().equalsIgnoreCase(p.getId())).toList();
                 p.ext().setChannels(new ArrayList<>(channels));
                 var limits = butterfly.noise().getMeasuringLimits().stream().filter(c -> c.getPointId().equalsIgnoreCase(p.getId())).toList();
                 p.ext().setLimits(new ArrayList<>(limits));
+
+                var observations = butterfly.noise().getMeasuringObservations().stream()
+                        .filter(o -> o.getName().equalsIgnoreCase(p.getName()))
+                        .collect(Collectors.toCollection(ArrayList::new));
+
+                if (!observations.isEmpty()) {
+                    p.setDateLatest(observations.getLast().getDate());
+                }
+                p.ext().setDateLatest(p.getDateLatest());
+                p.ext().setObservationsAllRaw(observations);
+                p.ext().getObservationsAllRaw().forEach(o -> o.ext().setParent(p));
             });
 
-            butterfly.noise().getMeasuringPoints().forEach(p -> {
-                p.ext().getChannels().forEach(c -> {
-                    var observations = butterfly.noise().getMeasuringObservations().stream()
-                            .filter(o -> o.getChannelId().equalsIgnoreCase(c.getId()))
-                            .filter(o -> o.getPointId().equalsIgnoreCase(p.getId()))
-                            .toList();
-                    c.ext().setObservations(new ArrayList<>(observations));
-                });
+            var dates = new TreeSet<LocalDateTime>();
+            getAllItems().stream().forEachOrdered(p -> {
+                dates.addAll(p.ext().getObservationsAllRaw().stream().map(o -> o.getDate()).toList());
             });
 
-            initAllItems(butterfly.noise().getMeasuringPoints());
-
+            if (!dates.isEmpty()) {
+                setTemporalRange(new MTemporalRange(dates.first(), dates.last()));
+                boolean layerBundleEnabled = isLayerBundleEnabled();
+                updateTemporal(!layerBundleEnabled);
+                updateTemporal(layerBundleEnabled);
+            }
         } catch (Exception e) {
             Exceptions.printStackTrace(e);
         }
@@ -81,7 +101,41 @@ public class MeasPointManager extends BaseManager<BAcousticMeasuringPoint> {
 
     @Override
     protected void applyTemporalFilter() {
-        getTimeFilteredItems().setAll(getFilteredItems());
+        var measCountStatsDateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM");
+        var timeFilteredItems = new ArrayList<BAcousticMeasuringPoint>();
+
+        p:
+        for (var p : getFilteredItems()) {
+            if (p.getDateLatest() == null || p.ext().getObservationsAllRaw().isEmpty()) {
+                timeFilteredItems.add(p);
+            } else {
+                for (var o : p.ext().getObservationsAllRaw()) {
+                    if (getTemporalManager().isValid(o.getDate())) {
+                        timeFilteredItems.add(p);
+                        continue p;
+                    }
+                }
+            }
+        }
+
+        getTimeFilteredItemsMap().clear();
+        timeFilteredItems.stream().forEach(p -> {
+            getTimeFilteredItemsMap().put(p.getName(), p);
+            var timeFilteredObservations = p.ext().getObservationsAllRaw().stream()
+                    .filter(o -> getTemporalManager().isValid(o.getDate()))
+                    .collect(Collectors.toCollection(ArrayList::new));
+
+            p.ext().setObservationsTimeFiltered(timeFilteredObservations);
+            p.ext().calculateObservations(timeFilteredObservations);
+
+            var measCountStats = new LinkedHashMap<String, Integer>();
+            p.ext().setMeasurementCountStats(measCountStats);
+            timeFilteredObservations.forEach(o -> {
+                CollectionHelper.incInteger(measCountStats, o.getDate().format(measCountStatsDateTimeFormatter));
+            });
+        });
+
+        getTimeFilteredItems().setAll(timeFilteredItems);
     }
 
     @Override

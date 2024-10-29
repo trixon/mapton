@@ -17,6 +17,7 @@ package org.mapton.butterfly_acoustic.measuring_point;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.util.Objects;
 import java.util.concurrent.Callable;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.axis.DateAxis;
@@ -28,9 +29,11 @@ import org.jfree.data.time.TimeSeries;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
 import org.mapton.butterfly_format.types.BAlarm;
 import org.mapton.butterfly_format.types.BComponent;
+import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.acoustic.BAcousticMeasuringPoint;
 import org.mapton.ce_jfreechart.api.ChartHelper;
-import se.trixon.almond.util.CircularInt;
+import se.trixon.almond.util.DateHelper;
+import se.trixon.almond.util.Dict;
 
 /**
  *
@@ -39,8 +42,9 @@ import se.trixon.almond.util.CircularInt;
 public class MeasPointChartBuilder extends XyzChartBuilder<BAcousticMeasuringPoint> {
 
     private final ChartHelper mChartHelper = new ChartHelper();
-    private final CircularInt mColorCircularInt = new CircularInt(0, 5);
-    private final TimeSeries mTimeSeriesZ = new TimeSeries("Δ µε");
+    private final TimeSeries mTimeSeries2d = new TimeSeries(Dict.Geometry.PLANE);
+    private final TimeSeries mTimeSeries3d = new TimeSeries("3d");
+    private final TimeSeries mTimeSeriesH = new TimeSeries(Dict.Geometry.HEIGHT);
 
     public MeasPointChartBuilder() {
         initChart("mm/s", "0.00");
@@ -77,37 +81,60 @@ public class MeasPointChartBuilder extends XyzChartBuilder<BAcousticMeasuringPoi
         super.setTitle(p);
 //        setTitle(p, StrainHelper.getAlarmColorAwt(p));
 
-//        var dateFirst = Objects.toString(DateHelper.toDateString(p.getDateZero()), "");
-//        var dateLast = Objects.toString(DateHelper.toDateString(p.ext().getObservationRawLastDate()), "");
-//        var date = "(%s) → %s".formatted(dateFirst, dateLast);
-//        getLeftSubTextTitle().setText(date);
-//
+        var dateFirst = Objects.toString(DateHelper.toDateString(p.getDateZero()), "");
+        var dateLast = Objects.toString(DateHelper.toDateString(p.ext().getObservationRawLastDate()), "");
+        var date = "(%s) → %s".formatted(dateFirst, dateLast);
+        getLeftSubTextTitle().setText(date);
+
 //        var rightTitle = "%s: %s".formatted(p.getAlarm1Id(), p.ext().getDeltaZero());
 //        getRightSubTextTitle().setText(rightTitle);
     }
 
     @Override
-    public synchronized void updateDataset(BAcousticMeasuringPoint p) {
+    public void updateDataset(BAcousticMeasuringPoint p) {
         getDataset().removeAllSeries();
-        mTimeSeriesZ.clear();
-        mColorCircularInt.set(0);
+        mTimeSeriesH.clear();
+        mTimeSeries2d.clear();
+        mTimeSeries3d.clear();
 
         var plot = (XYPlot) mChart.getPlot();
         plot.clearDomainMarkers();
+        p.ext().getObservationsTimeFiltered().forEach(o -> {
+            var minute = mChartHelper.convertToMinute(o.getDate());
 
-        updateDataset2(p);
-    }
+            if (p.getDimension() == BDimension._1d || p.getDimension() == BDimension._3d) {
+                mTimeSeriesH.add(minute, o.ext().getDeltaZ());
+            }
 
-    private Color getColor() {
-        var colors = new Color[]{
-            Color.BLUE,
-            Color.CYAN,
-            Color.MAGENTA,
-            Color.YELLOW,
-            Color.GREEN,
-            Color.ORANGE};
+            if (p.getDimension() == BDimension._2d || p.getDimension() == BDimension._3d) {
+                mTimeSeries2d.add(minute, o.ext().getDelta2d());
+            }
 
-        return colors[mColorCircularInt.inc()];
+            if (p.getDimension() == BDimension._3d) {
+                try {
+                    mTimeSeries3d.add(minute, Math.abs(o.ext().getDelta3d()));
+                } catch (NullPointerException e) {
+                    System.err.println("Failed to add observation to chart %s %s".formatted(p.getName(), o.getDate()));
+                }
+            }
+        });
+
+        var renderer = plot.getRenderer();
+
+        if (p.getDimension() == BDimension._1d || p.getDimension() == BDimension._3d) {
+            getDataset().addSeries(mTimeSeriesH);
+            renderer.setSeriesPaint(getDataset().getSeriesIndex(mTimeSeriesH.getKey()), Color.RED);
+        }
+
+        if (p.getDimension() == BDimension._2d || p.getDimension() == BDimension._3d) {
+            getDataset().addSeries(mTimeSeries2d);
+            renderer.setSeriesPaint(getDataset().getSeriesIndex(mTimeSeries2d.getKey()), Color.GREEN);
+        }
+
+        if (p.getDimension() == BDimension._3d) {
+            getDataset().addSeries(mTimeSeries3d);
+            renderer.setSeriesPaint(getDataset().getSeriesIndex(mTimeSeries3d.getKey()), Color.BLUE);
+        }
     }
 
     private void plotAlarmIndicator(BComponent component, double value, Color color) {
@@ -144,22 +171,5 @@ public class MeasPointChartBuilder extends XyzChartBuilder<BAcousticMeasuringPoi
                 plotAlarmIndicator(BComponent.HEIGHT, range1.getMaximum(), Color.RED);
             }
         }
-    }
-
-    private void updateDataset2(BAcousticMeasuringPoint p) {
-        var plot = (XYPlot) mChart.getPlot();
-        var renderer = plot.getRenderer();
-        p.ext().getChannels().forEach(c -> {
-            var timeSeries = new TimeSeries(c.getType());
-            for (var o : c.ext().getObservations()) {
-                var minute = mChartHelper.convertToMinute(o.getDate());
-                if (o.getMeasuredZ() != null) {
-                    timeSeries.add(minute, o.getMeasuredZ());
-                }
-            }
-            getDataset().addSeries(timeSeries);
-            renderer.setSeriesPaint(getDataset().getSeriesIndex(timeSeries.getKey()), getColor());
-        });
-
     }
 }
