@@ -15,16 +15,13 @@
  */
 package org.mapton.butterfly_structural.strain;
 
-import se.trixon.almond.util.Dict;
-
 /**
  *
  * @author Patrik Karlström
  */
 public enum GraphicRendererItem {
 
-    DIRECTION_X(Dict.Geometry.DIRECTION_X.toString(), Integer.MAX_VALUE),
-    DIRECTION(Dict.Geometry.DIRECTION.toString(), Integer.MAX_VALUE);
+    ALARM_CONSUMPTION("Larmförbrukning", Integer.MAX_VALUE);
     private final String mName;
     private final int mPlotLimit;
 

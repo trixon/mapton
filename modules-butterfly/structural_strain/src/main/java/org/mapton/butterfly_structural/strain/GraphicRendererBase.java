@@ -15,42 +15,29 @@
  */
 package org.mapton.butterfly_structural.strain;
 
-import gov.nasa.worldwind.avlist.AVListImpl;
+import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
-import gov.nasa.worldwind.render.Renderable;
-import java.util.ArrayList;
 import org.controlsfx.control.IndexedCheckModel;
-import org.mapton.butterfly_core.api.PlotLimiter;
+import org.mapton.butterfly_core.api.BaseGraphicRenderer;
+import org.mapton.butterfly_format.types.structural.BStructuralStrainGaugePoint;
 
 /**
  *
  * @author Patrik Karlström
  */
-public abstract class GraphicRendererBase {
+public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicRendererItem, BStructuralStrainGaugePoint> {
 
     protected static IndexedCheckModel<GraphicRendererItem> sCheckModel;
-    protected static RenderableLayer sInteractiveLayer;
-    protected static ArrayList<AVListImpl> sMapObjects;
-    protected static PlotLimiter sPlotLimiter = new PlotLimiter();
-//    protected static HashMap<BTopoControlPoint, Position[]> sPointToPositionMap = new HashMap<>();
-//    protected final TopoAttributeManager mAttributeManager = TopoAttributeManager.getInstance();
-//    protected final TopoManager mManager = TopoManager.getInstance();
 
-    public GraphicRendererBase() {
+    public GraphicRendererBase(RenderableLayer layer) {
+        super(layer, null);
         for (var renderItem : GraphicRendererItem.values()) {
             sPlotLimiter.setLimit(renderItem, renderItem.getPlotLimit());
         }
     }
 
-    public void addRenderable(Renderable renderable, boolean interactiveLayer) {
-        if (interactiveLayer) {
-            sInteractiveLayer.addRenderable(renderable);
-            if (renderable instanceof AVListImpl avlist) {
-                sMapObjects.add(avlist);
-            }
-        } else {
-            //mLayerXYZ.addRenderable(renderable); //TODO Add to a non responsive layer
-        }
+    protected boolean isPlotLimitReached(BStructuralStrainGaugePoint p, Object key, Position position) {
+        return super.isPlotLimitReached(p, key, position, p.ext().getObservationsTimeFiltered().isEmpty());
     }
 
 }

@@ -28,7 +28,6 @@ import org.mapton.butterfly_format.types.structural.BStructuralStrainGaugePoint;
 public class StrainAttributeManager extends BaseAttributeManager {
 
     private BasicShapeAttributes mComponentEllipsoidAttributes;
-    private BasicShapeAttributes mComponentGroundPathAttributes;
     private BasicShapeAttributes mStrainAttribute;
     private BasicShapeAttributes mSurfaceAttributes;
 
@@ -48,18 +47,6 @@ public class StrainAttributeManager extends BaseAttributeManager {
         }
 
         return mComponentEllipsoidAttributes;
-    }
-
-    public BasicShapeAttributes getComponentGroundPathAttributes() {
-        if (mComponentGroundPathAttributes == null) {
-            mComponentGroundPathAttributes = new BasicShapeAttributes();
-            mComponentGroundPathAttributes.setDrawOutline(true);
-            mComponentGroundPathAttributes.setOutlineMaterial(Material.YELLOW);
-            mComponentGroundPathAttributes.setEnableLighting(false);
-            mComponentGroundPathAttributes.setOutlineWidth(1);
-        }
-
-        return mComponentGroundPathAttributes;
     }
 
     public PointPlacemarkAttributes getPinAttributes(BStructuralStrainGaugePoint p) {
