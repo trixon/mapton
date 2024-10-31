@@ -17,6 +17,7 @@ package org.mapton.butterfly_core.api;
 
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
+import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
 import java.awt.Color;
@@ -29,12 +30,79 @@ import se.trixon.almond.util.GraphicsHelper;
  */
 public abstract class BaseAttributeManager {
 
+    private BasicShapeAttributes mComponentGroundPathAttributes;
+    private BasicShapeAttributes[][] mComponentTrace1dAttributes;
+    private BasicShapeAttributes mComponentZeroAttributes;
     private PointPlacemarkAttributes mLabelPlacemarkAttributes;
     private PointPlacemarkAttributes[] mPinAttributes;
     private PointPlacemarkAttributes mSinglePinAttributes;
     private BasicShapeAttributes[] mSymbolAttributes;
 
     public BaseAttributeManager() {
+    }
+
+    public BasicShapeAttributes getComponentGroundPathAttributes() {
+        if (mComponentGroundPathAttributes == null) {
+            mComponentGroundPathAttributes = new BasicShapeAttributes();
+            mComponentGroundPathAttributes.setDrawOutline(true);
+            mComponentGroundPathAttributes.setOutlineMaterial(Material.LIGHT_GRAY);
+            mComponentGroundPathAttributes.setEnableLighting(false);
+            mComponentGroundPathAttributes.setOutlineWidth(1);
+        }
+
+        return mComponentGroundPathAttributes;
+    }
+
+    public BasicShapeAttributes getComponentTrace1dAttributes(int alarmLevel, boolean rise, boolean maximus) {
+        if (mComponentTrace1dAttributes == null) {
+            mComponentTrace1dAttributes = new BasicShapeAttributes[5][2];
+
+            for (int i = 0; i < 5; i++) {
+                for (int j = 0; j < 2; j++) {
+                    var attrs = new BasicShapeAttributes();
+                    attrs.setDrawOutline(false);
+                    Material material;
+                    if (i < 4) {
+                        material = ButterflyHelper.getAlarmMaterial(i - 1);
+                    } else {
+                        material = new Material(Color.decode("#800080"));
+                    }
+                    attrs.setInteriorMaterial(material);
+                    attrs.setEnableLighting(true);
+
+                    if (j == 1) {
+                        attrs.setDrawOutline(true);
+                        if (i < 4) {
+                            attrs.setOutlineMaterial(Material.LIGHT_GRAY);
+                        } else {
+                            attrs.setOutlineMaterial(Material.YELLOW);
+                        }
+                    }
+
+                    mComponentTrace1dAttributes[i][j] = attrs;
+                }
+            }
+        }
+
+        int offset = 1;
+        if (maximus) {
+            offset++;
+        }
+        var i = alarmLevel + offset;
+        var j = rise ? 1 : 0;
+
+        return mComponentTrace1dAttributes[i][j];
+    }
+
+    public BasicShapeAttributes getComponentZeroAttributes() {
+        if (mComponentZeroAttributes == null) {
+            mComponentZeroAttributes = new BasicShapeAttributes();
+            mComponentZeroAttributes.setDrawOutline(false);
+            mComponentZeroAttributes.setInteriorMaterial(Material.LIGHT_GRAY);
+            mComponentZeroAttributes.setEnableLighting(true);
+        }
+
+        return mComponentZeroAttributes;
     }
 
     public PointPlacemarkAttributes getLabelPlacemarkAttributes() {
