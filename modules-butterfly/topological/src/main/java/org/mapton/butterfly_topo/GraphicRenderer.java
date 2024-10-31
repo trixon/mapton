@@ -31,15 +31,21 @@ import org.mapton.worldwind.api.WWHelper;
  */
 public class GraphicRenderer extends GraphicRendererBase {
 
-    private final GraphicRendererAlarmLevel mAlarmRenderer = new GraphicRendererAlarmLevel();
-    private final GraphicRendererCircle mCircleRenderer = new GraphicRendererCircle();
-    private final GraphicRendererCount mCountRenderer = new GraphicRendererCount();
-    private final GraphicRendererSpeed mSpeedRenderer = new GraphicRendererSpeed();
-    private final GraphicRendererTrace mTraceRenderer = new GraphicRendererTrace();
-    private final GraphicRendererVector mVectorRenderer = new GraphicRendererVector();
+    private final GraphicRendererAlarmLevel mAlarmRenderer;
+    private final GraphicRendererCircle mCircleRenderer;
+    private final GraphicRendererCount mCountRenderer;
+    private final GraphicRendererSpeed mSpeedRenderer;
+    private final GraphicRendererTrace mTraceRenderer;
+    private final GraphicRendererVector mVectorRenderer;
 
     public GraphicRenderer(RenderableLayer layer, IndexedCheckModel<GraphicRendererItem> checkModel) {
-        sInteractiveLayer = layer;
+        super(layer);
+        mVectorRenderer = new GraphicRendererVector(layer);
+        mTraceRenderer = new GraphicRendererTrace(layer);
+        mSpeedRenderer = new GraphicRendererSpeed(layer);
+        mCountRenderer = new GraphicRendererCount(layer);
+        mCircleRenderer = new GraphicRendererCircle(layer);
+        mAlarmRenderer = new GraphicRendererAlarmLevel(layer);
         sCheckModel = checkModel;
     }
 

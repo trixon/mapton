@@ -16,6 +16,7 @@
 package org.mapton.butterfly_topo;
 
 import gov.nasa.worldwind.geom.Position;
+import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Cylinder;
 import gov.nasa.worldwind.render.Path;
@@ -25,7 +26,6 @@ import java.util.ArrayList;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.topo.BTopoControlPointObservation;
-import static org.mapton.butterfly_topo.GraphicRendererBase.sPlotLimiter;
 import org.mapton.worldwind.api.WWHelper;
 
 /**
@@ -34,7 +34,8 @@ import org.mapton.worldwind.api.WWHelper;
  */
 public class GraphicRendererSpeed extends GraphicRendererBase {
 
-    public GraphicRendererSpeed() {
+    public GraphicRendererSpeed(RenderableLayer layer) {
+        super(layer);
     }
 
     public void plot(BTopoControlPoint p, Position position) {

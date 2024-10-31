@@ -20,14 +20,13 @@ import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.Ellipsoid;
 import gov.nasa.worldwind.render.Path;
-import gov.nasa.worldwind.render.Renderable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import org.apache.commons.lang3.ObjectUtils;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.MOptions;
 import org.mapton.api.MSimpleObjectStorageManager;
-import org.mapton.butterfly_core.api.PlotLimiter;
+import org.mapton.butterfly_core.api.BaseGraphicRenderer;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_topo.api.TopoManager;
 import org.mapton.butterfly_topo.sos.ScalePlot3dHSosd;
@@ -39,30 +38,17 @@ import se.trixon.almond.util.MathHelper;
  *
  * @author Patrik Karlström
  */
-public abstract class GraphicRendererBase {
+public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicRendererItem, BTopoControlPoint> {
 
     protected static IndexedCheckModel<GraphicRendererItem> sCheckModel;
-    protected static RenderableLayer sInteractiveLayer;
-    protected static ArrayList<AVListImpl> sMapObjects;
-    protected static PlotLimiter sPlotLimiter = new PlotLimiter();
     protected static HashMap<BTopoControlPoint, Position[]> sPointToPositionMap = new HashMap<>();
     protected final TopoAttributeManager mAttributeManager = TopoAttributeManager.getInstance();
     protected final TopoManager mManager = TopoManager.getInstance();
 
-    public GraphicRendererBase() {
+    public GraphicRendererBase(RenderableLayer layer) {
+        super(layer, null);
         for (var renderItem : GraphicRendererItem.values()) {
             sPlotLimiter.setLimit(renderItem, renderItem.getPlotLimit());
-        }
-    }
-
-    public void addRenderable(Renderable renderable, boolean interactiveLayer) {
-        if (interactiveLayer) {
-            sInteractiveLayer.addRenderable(renderable);
-            if (renderable instanceof AVListImpl avlist) {
-                sMapObjects.add(avlist);
-            }
-        } else {
-            //mLayerXYZ.addRenderable(renderable); //TODO Add to a non responsive layer
         }
     }
 
@@ -116,11 +102,7 @@ public abstract class GraphicRendererBase {
     }
 
     protected boolean isPlotLimitReached(BTopoControlPoint p, Object key, Position position) {
-        if (sPlotLimiter.isLimitReached(key, p.getName())) {
-            addRenderable(sPlotLimiter.getPlotLimitIndicator(position, p.ext().getObservationsTimeFiltered().isEmpty()), true);
-            return true;
-        } else {
-            return false;
-        }
+        return super.isPlotLimitReached(p, key, position, p.ext().getObservationsTimeFiltered().isEmpty());
     }
+
 }

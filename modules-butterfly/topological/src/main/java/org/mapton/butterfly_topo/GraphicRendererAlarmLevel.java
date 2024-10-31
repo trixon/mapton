@@ -17,11 +17,11 @@ package org.mapton.butterfly_topo;
 
 import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.Position;
+import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.AbstractShape;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Cylinder;
 import gov.nasa.worldwind.render.Ellipsoid;
-import gov.nasa.worldwind.render.Path;
 import gov.nasa.worldwind.render.Pyramid;
 import gov.nasa.worldwind.render.airspaces.AbstractAirspace;
 import gov.nasa.worldwind.render.airspaces.BasicAirspaceAttributes;
@@ -35,7 +35,6 @@ import org.mapton.butterfly_core.api.ButterflyHelper;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
-import static org.mapton.butterfly_topo.GraphicRendererBase.sPlotLimiter;
 import org.mapton.worldwind.api.WWHelper;
 
 /**
@@ -43,6 +42,10 @@ import org.mapton.worldwind.api.WWHelper;
  * @author Patrik Karlström
  */
 public class GraphicRendererAlarmLevel extends GraphicRendererBase {
+
+    public GraphicRendererAlarmLevel(RenderableLayer layer) {
+        super(layer);
+    }
 
     public void plot(BTopoControlPoint p, Position position) {
         if (sCheckModel.isChecked(GraphicRendererItem.ALARM_LEVEL)) {
@@ -64,8 +67,6 @@ public class GraphicRendererAlarmLevel extends GraphicRendererBase {
             return;
         }
 
-        var height = 50.0;
-        var radius = 1.5;
         var o = p.ext().getObservationFilteredLast();
 
         if (p.getDimension() != BDimension._1d) {
@@ -77,8 +78,8 @@ public class GraphicRendererAlarmLevel extends GraphicRendererBase {
             var attrs = new BasicAirspaceAttributes();
             attrs.setInteriorMaterial(material);
 
-            var pos = WWHelper.positionFromPosition(position, height * percentP / 100.0);
-            var pyramid = new Pyramid(pos, radius, radius);
+            var pos = WWHelper.positionFromPosition(position, PERCENTAGE_ALTITUDE * percentP / 100.0);
+            var pyramid = new Pyramid(pos, PERCENTAGE_SIZE, PERCENTAGE_SIZE);
             pyramid.setAttributes(attrs);
             addRenderable(pyramid, true);
         }
@@ -96,26 +97,14 @@ public class GraphicRendererAlarmLevel extends GraphicRendererBase {
                 rise = Math.signum(o.ext().getDeltaZ()) > 0;
             }
             var attrs = mAttributeManager.getComponentTrace1dAttributes(alarmLevel, rise, false);
-            radius = radius * 0.6;
-            var pos = WWHelper.positionFromPosition(position, height * percentH / 100.0);
-            var ellipsoid = new Ellipsoid(pos, radius, radius, radius);
+            var scale = 0.6;
+            var pos = WWHelper.positionFromPosition(position, PERCENTAGE_ALTITUDE * percentH / 100.0);
+            var ellipsoid = new Ellipsoid(pos, PERCENTAGE_SIZE * scale, PERCENTAGE_SIZE * scale, PERCENTAGE_SIZE * scale);
             ellipsoid.setAttributes(attrs);
             addRenderable(ellipsoid, true);
         }
 
-        Integer percent = p.ext().getAlarmPercent();
-        if (percent == null) {
-            percent = 0;
-        }
-        var pos = WWHelper.positionFromPosition(position, height * Math.max(percent, 100) / 100.0);
-        var groundPath = new Path(WWHelper.positionFromPosition(position, 0.0), pos);
-        groundPath.setAttributes(mAttributeManager.getComponentGroundPathAttributes());
-        addRenderable(groundPath, true);
-
-        var pos100 = WWHelper.positionFromPosition(position, height);
-        var cylinder = new Cylinder(pos100, 0.25, radius * 2);
-        cylinder.setAttributes(mAttributeManager.getComponentZeroAttributes());
-        addRenderable(cylinder, true);
+        plotPercentageRod(position, p.ext().getAlarmPercent());
     }
 
     private void plotAlarmLevel(BTopoControlPoint p, Position position) {

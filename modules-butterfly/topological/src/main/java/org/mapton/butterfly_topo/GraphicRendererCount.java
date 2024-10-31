@@ -17,6 +17,7 @@ package org.mapton.butterfly_topo;
 
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
+import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.Cylinder;
 import java.util.ArrayList;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
@@ -26,6 +27,10 @@ import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
  * @author Patrik Karlström
  */
 public class GraphicRendererCount extends GraphicRendererBase {
+
+    public GraphicRendererCount(RenderableLayer layer) {
+        super(layer);
+    }
 
     public ArrayList<AVListImpl> plot(BTopoControlPoint p, Position position) {
         var mapObjects = new ArrayList<AVListImpl>();

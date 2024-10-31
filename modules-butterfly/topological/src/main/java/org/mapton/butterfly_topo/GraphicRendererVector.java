@@ -17,6 +17,7 @@ package org.mapton.butterfly_topo;
 
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
+import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.Cylinder;
 import gov.nasa.worldwind.render.Ellipsoid;
 import gov.nasa.worldwind.render.Path;
@@ -39,6 +40,10 @@ public class GraphicRendererVector extends GraphicRendererBase {
 
     private Integer mScale3dH;
     private Integer mScale3dP;
+
+    public GraphicRendererVector(RenderableLayer layer) {
+        super(layer);
+    }
 
     public ArrayList<AVListImpl> plot(BTopoControlPoint p, Position position) {
         mScale3dH = MSimpleObjectStorageManager.getInstance().getInteger(ScalePlot3dHSosd.class, 500);
