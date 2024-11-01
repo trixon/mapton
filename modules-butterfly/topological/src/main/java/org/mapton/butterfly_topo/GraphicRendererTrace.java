@@ -59,7 +59,7 @@ public class GraphicRendererTrace extends GraphicRendererBase {
         var dimension = p.getDimension();
 
         if (sCheckModel.isChecked(GraphicRendererItem.TRACE_1D) && (dimension == BDimension._1d || dimension == BDimension._3d)) {
-            plot1d(p, position, mapObjects);
+            plot1d(p, position);
 //        } else if (sCheckModel.isChecked(GraphicRendererItem.TRACE_2D) && p.getDimension() == BDimension._2d) {
 //            plot2d(p, position, mapObjects);
         } else if (sCheckModel.isChecked(GraphicRendererItem.TRACE_3D) && dimension == BDimension._3d) {
@@ -69,7 +69,7 @@ public class GraphicRendererTrace extends GraphicRendererBase {
         return mapObjects;
     }
 
-    private void plot1d(BTopoControlPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
+    private void plot1d(BTopoControlPoint p, Position position) {
         if (isPlotLimitReached(p, GraphicRendererItem.TRACE_1D, position)) {
             return;
         }

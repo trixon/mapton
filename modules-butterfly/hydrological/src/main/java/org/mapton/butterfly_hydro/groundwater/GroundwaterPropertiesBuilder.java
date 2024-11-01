@@ -87,6 +87,10 @@ public class GroundwaterPropertiesBuilder extends PropertiesBuilder<BGroundwater
         propertyMap.put(getCatKey(cat1, "N"), StringHelper.round(p.getZeroY(), 3));
         propertyMap.put(getCatKey(cat1, "E"), StringHelper.round(p.getZeroX(), 3));
         propertyMap.put(getCatKey(cat1, "H"), StringHelper.round(p.getZeroZ(), 3));
+
+        propertyMap.put(getCatKey(cat1, Dict.CREATED.toString()), DateHelper.toDateString(p.getDateCreated()));
+        propertyMap.put(getCatKey(cat1, Dict.CHANGED.toString()), DateHelper.toDateString(p.getDateChanged()));
+
         return propertyMap;
     }
 

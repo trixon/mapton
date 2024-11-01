@@ -96,6 +96,7 @@ public class AlarmProgressReport extends BaseTopoMeasurementReport {
             if (p.getDimension() == BDimension._1d) {
                 addRow(rows,
                         p.getName(),
+                        p.getGroup(),
                         percentStringH,
                         percentClassH,
                         getAlarmLevel(levelH),
@@ -130,6 +131,7 @@ public class AlarmProgressReport extends BaseTopoMeasurementReport {
 
                 addRow(rows,
                         p.getName(),
+                        p.getGroup(),
                         percentString,
                         percentClass,
                         getAlarmLevel(level),
@@ -181,6 +183,7 @@ public class AlarmProgressReport extends BaseTopoMeasurementReport {
         addRow(rows, "1D");
         addRow(rows,
                 "Punkt",
+                "Grupp",
                 "Förbrukning",
                 "Klass",
                 "Larm",
@@ -217,6 +220,7 @@ public class AlarmProgressReport extends BaseTopoMeasurementReport {
         addRow(rows, "3D");
         addRow(rows,
                 "Punkt",
+                "Grupp",
                 "Förbrukning",
                 "Klass",
                 "Larm",
