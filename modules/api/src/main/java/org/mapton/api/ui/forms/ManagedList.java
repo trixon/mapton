@@ -90,7 +90,8 @@ public class ManagedList<ManagerType extends MBaseDataManager, ItemType> {
         });
 
         mManager.selectedItemProperty().addListener((p, o, n) -> {
-            if (mListView.getSelectionModel().getSelectedItem() != n) {
+            var selectedItem = mListView.getSelectionModel().getSelectedItem();
+            if (n != null && n != selectedItem) {
                 mListView.getSelectionModel().select((ItemType) n);
                 mListView.getFocusModel().focus(mListView.getItems().indexOf(n));
                 FxHelper.scrollToItemIfNotVisible(mListView, n);

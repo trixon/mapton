@@ -25,7 +25,6 @@ import java.util.LinkedHashMap;
 import java.util.logging.Logger;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -296,9 +295,7 @@ public abstract class MBaseDataManager<T> {
     public void setSelectedItemAfterReset(T item) {
         FxHelper.runLater(() -> {
             mSelectedItemProperty.set(null);
-            FxHelper.runLaterDelayed(10, () -> {
-                mSelectedItemProperty.set(item);
-            });
+            mSelectedItemProperty.set(item);
         });
     }
 
@@ -365,11 +362,11 @@ public abstract class MBaseDataManager<T> {
     }
 
     private void initListeners() {
-        mTemporalManager.lowDateProperty().addListener((observable, oldValue, newValue) -> {
+        mTemporalManager.lowDateProperty().addListener((p, o, n) -> {
             mDelayedResetRunner.reset();
         });
 
-        mTemporalManager.highDateProperty().addListener((observable, oldValue, newValue) -> {
+        mTemporalManager.highDateProperty().addListener((p, o, n) -> {
             mDelayedResetRunner.reset();
         });
 
@@ -377,13 +374,11 @@ public abstract class MBaseDataManager<T> {
             mDelayedResetRunner.reset();
         });
 
-        mSelectedItemProperty.addListener((ObservableValue<? extends T> observable, T oldValue, T newValue) -> {
-            if (newValue != null) {
-                mOldSelectedValue = newValue;
+        mSelectedItemProperty.addListener((p, o, n) -> {
+            if (n != null) {
+                mOldSelectedValue = n;
             }
-        });
 
-        selectedItemProperty().addListener((p, o, n) -> {
             var objectProperties = getObjectProperties(n);
             if (objectProperties != Boolean.FALSE) {
                 Mapton.getGlobalState().put(MKey.OBJECT_PROPERTIES, objectProperties);
