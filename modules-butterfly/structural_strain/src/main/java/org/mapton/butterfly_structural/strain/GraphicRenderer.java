@@ -18,7 +18,10 @@ package org.mapton.butterfly_structural.strain;
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
+import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Box;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.butterfly_format.types.BComponent;
@@ -43,6 +46,10 @@ public class GraphicRenderer extends GraphicRendererBase {
         GraphicRendererBase.sMapObjects = mapObjects;
         if (sCheckModel.isChecked(GraphicRendererItem.ALARM_CONSUMPTION)) {
             plotAlarmConsumption(p, position);
+        }
+
+        if (sCheckModel.isChecked(GraphicRendererItem.TRACE)) {
+            plotTrace(p, position);
         }
     }
 
@@ -76,5 +83,52 @@ public class GraphicRenderer extends GraphicRendererBase {
         }
 
         plotPercentageRod(position, p.ext().getAlarmPercent());
+    }
+
+    private void plotTrace(BStructuralStrainGaugePoint p, Position position) {
+        if (isPlotLimitReached(p, GraphicRendererItem.TRACE, position)) {
+            return;
+        }
+        var reversedList = p.ext().getObservationsTimeFiltered().reversed();
+        var prevDate = LocalDateTime.now();
+        var altitude = 0.0;
+        var prevHeight = 0.0;
+
+        for (int i = 0; i < reversedList.size(); i++) {
+            var o = reversedList.get(i);
+
+            var timeSpan = ChronoUnit.MINUTES.between(o.getDate(), prevDate);
+            var height = timeSpan / 24000.0;
+            altitude = altitude + height * 0.5 + prevHeight * 0.5;
+            prevDate = o.getDate();
+            prevHeight = height;
+
+            if (o.ext().getDeltaZ() == null) {
+                continue;
+            }
+
+            var pos = WWHelper.positionFromPosition(position, altitude);
+            var maxRadius = 10.0;
+
+            var mScale1dH = 0.02;
+            var dZ = o.ext().getDeltaZ();
+            var radius = Math.min(maxRadius, Math.abs(dZ) * mScale1dH + 0.05);
+            var maximus = radius == maxRadius;
+
+            var cylinder = new Box(pos, radius, height, radius);
+            var alarmLevel = p.ext().getAlarmLevelHeight(o);
+            var rise = Math.signum(dZ) > 0;
+            var attrs = mAttributeManager.getComponentTrace1dAttributes(alarmLevel, rise, maximus);
+
+            if (i == 0 && ChronoUnit.DAYS.between(o.getDate(), LocalDateTime.now()) > 180) {
+                attrs = new BasicShapeAttributes(attrs);
+                attrs.setInteriorOpacity(0.25);
+                attrs.setOutlineOpacity(0.20);
+            }
+
+            cylinder.setAttributes(attrs);
+            addRenderable(cylinder, true);
+            sPlotLimiter.incPlotCounter(GraphicRendererItem.TRACE);
+        }
     }
 }

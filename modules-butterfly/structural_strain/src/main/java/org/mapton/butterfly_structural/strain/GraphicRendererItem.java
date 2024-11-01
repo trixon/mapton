@@ -15,13 +15,17 @@
  */
 package org.mapton.butterfly_structural.strain;
 
+import se.trixon.almond.util.SDict;
+
 /**
  *
  * @author Patrik Karlström
  */
 public enum GraphicRendererItem {
 
-    ALARM_CONSUMPTION("Larmförbrukning", Integer.MAX_VALUE);
+    ALARM_CONSUMPTION("Larmförbrukning", Integer.MAX_VALUE),
+    TRACE(SDict.TRACE.toString(), 100 * 100);
+
     private final String mName;
     private final int mPlotLimit;
 
@@ -39,6 +43,7 @@ public enum GraphicRendererItem {
     }
 
     @Override
+
     public String toString() {
         return getName();
     }
