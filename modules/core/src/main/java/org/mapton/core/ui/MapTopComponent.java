@@ -74,7 +74,7 @@ import se.trixon.almond.util.swing.dialogs.SimpleDialog;
 )
 @TopComponent.Description(
         preferredID = "MapTopComponent",
-        persistenceType = TopComponent.PERSISTENCE_ALWAYS
+        persistenceType = TopComponent.PERSISTENCE_ONLY_OPENED
 )
 @TopComponent.Registration(mode = "editor", openAtStartup = true, position = Integer.MIN_VALUE)
 @TopComponent.OpenActionRegistration(

@@ -38,7 +38,7 @@ import org.openide.windows.TopComponent;
 @TopComponent.Description(
         preferredID = "WikipediaTopComponent",
         //iconBase="SET/PATH/TO/ICON/HERE",
-        persistenceType = TopComponent.PERSISTENCE_ALWAYS
+        persistenceType = TopComponent.PERSISTENCE_ONLY_OPENED
 )
 @TopComponent.Registration(mode = "mapTools", openAtStartup = false)
 @TopComponent.OpenActionRegistration(

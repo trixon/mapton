@@ -33,7 +33,7 @@ import org.openide.windows.TopComponent;
 @TopComponent.Description(
         preferredID = "PoiTopComponent",
         //iconBase="SET/PATH/TO/ICON/HERE",
-        persistenceType = TopComponent.PERSISTENCE_ALWAYS
+        persistenceType = TopComponent.PERSISTENCE_ONLY_OPENED
 )
 @TopComponent.Registration(mode = "topLeft", openAtStartup = false, position = 2)
 @TopComponent.OpenActionRegistration(

@@ -16,8 +16,6 @@
 package org.mapton.butterfly_format.types.structural;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import org.mapton.butterfly_format.types.BXyzPoint;
 
 /**
@@ -54,13 +52,6 @@ public class BStructuralStrainGaugePoint extends BXyzPoint {
 
         public String getDeltaZero() {
             return getDelta(deltaZero());
-        }
-
-        public long getMeasurementUntilNext(ChronoUnit chronoUnit) {
-            var latest = getDateLatest() != null ? getDateLatest().toLocalDate() : LocalDate.MIN;
-            var nextMeas = latest.plusDays(getFrequency());
-
-            return chronoUnit.between(LocalDate.now(), nextMeas);
         }
 
         private String getDelta(Delta delta) {

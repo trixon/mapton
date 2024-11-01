@@ -34,7 +34,7 @@ import org.openide.windows.TopComponent;
 @TopComponent.Description(
         preferredID = "BlastTopComponent",
         //iconBase="SET/PATH/TO/ICON/HERE",
-        persistenceType = TopComponent.PERSISTENCE_ALWAYS
+        persistenceType = TopComponent.PERSISTENCE_ONLY_OPENED
 )
 @TopComponent.Registration(mode = "mapTools", openAtStartup = false)
 @ActionID(category = "Butterfly", id = "org.mapton.butterfly-acoustic.blast.BlastTopComponent")

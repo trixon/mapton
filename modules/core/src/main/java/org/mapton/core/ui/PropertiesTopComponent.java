@@ -51,7 +51,7 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
 @TopComponent.Description(
         preferredID = "PropertiesTopComponent",
         //iconBase="SET/PATH/TO/ICON/HERE",
-        persistenceType = TopComponent.PERSISTENCE_ALWAYS
+        persistenceType = TopComponent.PERSISTENCE_ONLY_OPENED
 )
 @TopComponent.Registration(mode = "properties", openAtStartup = false)
 public final class PropertiesTopComponent extends MTopComponent {

@@ -35,7 +35,7 @@ import se.trixon.almond.util.fx.FxHelper;
 )
 @TopComponent.Description(
         preferredID = "LayerTopComponent",
-        persistenceType = TopComponent.PERSISTENCE_ALWAYS
+        persistenceType = TopComponent.PERSISTENCE_ONLY_OPENED
 )
 @TopComponent.Registration(mode = "navigator", openAtStartup = false, position = 1)
 @ActionID(category = "Mapton", id = "org.mapton.core.layer.LayerTopComponent")
