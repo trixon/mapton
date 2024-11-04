@@ -15,11 +15,13 @@
  */
 package org.mapton.butterfly_acoustic.blast;
 
+import org.mapton.butterfly_core.api.GraphicRenderItemLimitProvider;
+
 /**
  *
  * @author Patrik Karlström
  */
-public enum GraphicRendererItem {
+public enum GraphicRendererItem implements GraphicRenderItemLimitProvider {
     BALLS("Klot", Integer.MAX_VALUE),
     BALLS_Z("Klot z", Integer.MAX_VALUE),
     RECENT("Senaste cirklar", Integer.MAX_VALUE);
@@ -31,10 +33,12 @@ public enum GraphicRendererItem {
         mPlotLimit = plotLimit;
     }
 
+    @Override
     public String getName() {
         return mName;
     }
 
+    @Override
     public int getPlotLimit() {
         return mPlotLimit;
     }

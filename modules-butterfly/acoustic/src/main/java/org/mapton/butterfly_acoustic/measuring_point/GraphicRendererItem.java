@@ -15,13 +15,14 @@
  */
 package org.mapton.butterfly_acoustic.measuring_point;
 
+import org.mapton.butterfly_core.api.GraphicRenderItemLimitProvider;
 import se.trixon.almond.util.SDict;
 
 /**
  *
  * @author Patrik Karlström
  */
-public enum GraphicRendererItem {
+public enum GraphicRendererItem implements GraphicRenderItemLimitProvider {
     TRACE(SDict.TRACE.toString(), Integer.MAX_VALUE);
     private final String mName;
     private final int mPlotLimit;
@@ -31,10 +32,12 @@ public enum GraphicRendererItem {
         mPlotLimit = plotLimit;
     }
 
+    @Override
     public String getName() {
         return mName;
     }
 
+    @Override
     public int getPlotLimit() {
         return mPlotLimit;
     }

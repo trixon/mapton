@@ -67,7 +67,7 @@ public abstract class GraphicRendererBase {
 
     protected boolean isPlotLimitReached(BAcousticMeasuringPoint p, Object key, Position position) {
         if (sPlotLimiter.isLimitReached(key, p.getName())) {
-            addRenderable(sPlotLimiter.getPlotLimitIndicator(position, p.ext().getObservationsTimeFiltered().isEmpty()), true);
+            addRenderable(sPlotLimiter.createPlotLimitIndicator(position, p.ext().getObservationsTimeFiltered().isEmpty()), true);
             return true;
         } else {
             return false;
