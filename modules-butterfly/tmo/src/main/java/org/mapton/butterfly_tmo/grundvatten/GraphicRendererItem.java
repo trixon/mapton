@@ -15,15 +15,16 @@
  */
 package org.mapton.butterfly_tmo.grundvatten;
 
+import org.mapton.butterfly_core.api.GraphicRenderItemLimitProvider;
 import se.trixon.almond.util.SDict;
 
 /**
  *
  * @author Patrik Karlström
  */
-public enum GraphicRendererItem {
+public enum GraphicRendererItem implements GraphicRenderItemLimitProvider {
 
-    LEVEL(SDict.LEVEL.toString(), 100 * 100);
+    LEVEL(SDict.LEVEL.toString(), 10_000);
     private final String mName;
     private final int mPlotLimit;
 
@@ -32,10 +33,12 @@ public enum GraphicRendererItem {
         mPlotLimit = plotLimit;
     }
 
+    @Override
     public String getName() {
         return mName;
     }
 
+    @Override
     public int getPlotLimit() {
         return mPlotLimit;
     }
