@@ -43,11 +43,7 @@ public class PlotLimiter {
         mAllowList.add(allowListKey);
     }
 
-    public int getItemCount(Object key) {
-        return mObjectCounter.getOrDefault(key, 0);
-    }
-
-    public Box getPlotLimitIndicator(Position position, boolean noData) {
+    public Box createPlotLimitIndicator(Position position, boolean noData) {
         var radii = 1.0;
         var altitude = radii * 2;
         var p = WWHelper.positionFromPosition(position, altitude);
@@ -57,6 +53,10 @@ public class PlotLimiter {
         box.setAttributes(noData ? getSkipPlotNoDataAttributes() : getSkipPlotAttribute());
 
         return box;
+    }
+
+    public int getItemCount(Object key) {
+        return mObjectCounter.getOrDefault(key, 0);
     }
 
     public BasicShapeAttributes getSkipPlotAttribute() {
@@ -80,14 +80,19 @@ public class PlotLimiter {
     }
 
     public void incPlotCounter(Object key) {
-        mObjectCounter.put(key, mObjectCounter.getOrDefault(key, 0) + 1);
+        if (key != null) {
+            mObjectCounter.put(key, mObjectCounter.getOrDefault(key, 0) + 1);
+        }
     }
 
     public boolean isAllowed(Object allowListKey) {
         return mAllowList.contains(allowListKey);
     }
 
-    public boolean isLimitReached(Object key, String allowListKey) {
+    public boolean isLimitReached(Object key, Object allowListKey) {
+        if (key == null) {
+            return false;
+        }
         var count = getItemCount(key);
         boolean limitReached = count > mObjectLimits.getOrDefault(key, 0);
         if (limitReached && mAllowList.contains(allowListKey)) {

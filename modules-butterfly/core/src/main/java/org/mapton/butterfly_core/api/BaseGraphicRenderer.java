@@ -34,27 +34,37 @@ public abstract class BaseGraphicRenderer<T extends Enum<T>, U extends BBase> {
     public static final double PERCENTAGE_ALTITUDE = 50.0;
     public static final double PERCENTAGE_SIZE = 1.5;
 
-    protected static ArrayList<AVListImpl> sMapObjects;
-    protected static PlotLimiter sPlotLimiter = new PlotLimiter();
     private final BaseAttributeManager mAttributeManager = new BaseAttributeManager() {
     };
     private final RenderableLayer mInteractiveLayer;
     private final RenderableLayer mPassiveLayer;
+    private final PlotLimiter mPlotLimiter;
 
-    public BaseGraphicRenderer(RenderableLayer interactiveLayer, RenderableLayer passiveLayer) {
+    public BaseGraphicRenderer(RenderableLayer interactiveLayer, RenderableLayer passiveLayer, PlotLimiter plotLimiter) {
         mInteractiveLayer = interactiveLayer;
         mPassiveLayer = passiveLayer;
+        mPlotLimiter = plotLimiter;
     }
 
-    public void addRenderable(Renderable renderable, boolean interactiveLayer) {
+    public void addRenderable(Renderable renderable, boolean interactiveLayer, Object plotLimiterKey, ArrayList<AVListImpl> mapObjects) {
         if (interactiveLayer) {
             mInteractiveLayer.addRenderable(renderable);
-            if (renderable instanceof AVListImpl avlist) {
-                sMapObjects.add(avlist);
+            if (renderable instanceof AVListImpl avlist && mapObjects != null) {
+                mapObjects.add(avlist);
             }
         } else if (mPassiveLayer != null) {
             mPassiveLayer.addRenderable(renderable);
         }
+
+        mPlotLimiter.incPlotCounter(plotLimiterKey);
+    }
+
+    public void addToAllowList(Object item) {
+        mPlotLimiter.addToAllowList(item);
+    }
+
+    public PlotLimiter getPlotLimiter() {
+        return mPlotLimiter;
     }
 
     public void plotPercentageRod(Position position, Integer percent) {
@@ -65,17 +75,21 @@ public abstract class BaseGraphicRenderer<T extends Enum<T>, U extends BBase> {
         var pos = WWHelper.positionFromPosition(position, PERCENTAGE_ALTITUDE * Math.max(percent, 100) / 100.0);
         var groundPath = new Path(WWHelper.positionFromPosition(position, 0.0), pos);
         groundPath.setAttributes(mAttributeManager.getComponentGroundPathAttributes());
-        addRenderable(groundPath, true);
+        addRenderable(groundPath, true, null, null);
 
         var pos100 = WWHelper.positionFromPosition(position, PERCENTAGE_ALTITUDE);
         var cylinder = new Cylinder(pos100, 0.25, PERCENTAGE_SIZE * 2);
         cylinder.setAttributes(mAttributeManager.getComponentZeroAttributes());
-        addRenderable(cylinder, true);
+        addRenderable(cylinder, true, null, null);
     }
 
-    protected boolean isPlotLimitReached(U p, Object key, Position position, boolean emptyList) {
-        if (sPlotLimiter.isLimitReached(key, p.getName())) {
-            addRenderable(sPlotLimiter.getPlotLimitIndicator(position, emptyList), true);
+    public void resetPlotLimiter() {
+        mPlotLimiter.reset();
+    }
+
+    protected boolean isPlotLimitReached(U p, Object key, Position position, boolean emptyList, ArrayList<AVListImpl> mapObjects) {
+        if (mPlotLimiter.isLimitReached(key, p)) {
+            addRenderable(mPlotLimiter.createPlotLimitIndicator(position, emptyList), true, null, mapObjects);
             return true;
         } else {
             return false;
