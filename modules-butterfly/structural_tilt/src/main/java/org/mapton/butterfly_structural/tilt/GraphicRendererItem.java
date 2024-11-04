@@ -15,13 +15,14 @@
  */
 package org.mapton.butterfly_structural.tilt;
 
+import org.mapton.butterfly_core.api.GraphicRenderItemLimitProvider;
 import se.trixon.almond.util.Dict;
 
 /**
  *
  * @author Patrik Karlström
  */
-public enum GraphicRendererItem {
+public enum GraphicRendererItem implements GraphicRenderItemLimitProvider {
 
     DIRECTION_X(Dict.Geometry.DIRECTION_X.toString(), Integer.MAX_VALUE),
     DIRECTION(Dict.Geometry.DIRECTION.toString(), Integer.MAX_VALUE);
@@ -33,10 +34,12 @@ public enum GraphicRendererItem {
         mPlotLimit = plotLimit;
     }
 
+    @Override
     public String getName() {
         return mName;
     }
 
+    @Override
     public int getPlotLimit() {
         return mPlotLimit;
     }
