@@ -28,8 +28,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.controlsfx.control.PropertySheet;
 import org.mapton.api.MKey;
-import org.mapton.api.MPropertyItem;
-import org.mapton.api.MSelectionLockManager;
+import se.trixon.almond.nbp.core.SelectionLockManager;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBar;
 import org.mapton.core.api.MTopComponent;
@@ -38,6 +37,7 @@ import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.GlobalStateChangeEvent;
+import se.trixon.almond.util.fx.PropertyItem;
 import se.trixon.almond.util.fx.control.LogPanel;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 
@@ -120,7 +120,7 @@ public final class PropertiesTopComponent extends MTopComponent {
         private void loadMap(Map<String, Object> propertiesMap) {
             ObservableList<PropertySheet.Item> propertyItems = FXCollections.observableArrayList();
             propertiesMap.keySet().forEach((key) -> {
-                propertyItems.add(new MPropertyItem(propertiesMap, key));
+                propertyItems.add(new PropertyItem(propertiesMap, key));
             });
 
             loadList(propertyItems);
@@ -128,7 +128,7 @@ public final class PropertiesTopComponent extends MTopComponent {
 
         @SuppressWarnings("unchecked")
         private void refresh(Object o) {
-            if (MSelectionLockManager.getInstance().isLocked()) {
+            if (SelectionLockManager.getInstance().isLocked()) {
                 return;
             }
 

@@ -27,7 +27,7 @@ import javax.swing.JComponent;
 import org.mapton.api.LineChartX;
 import org.mapton.api.MChartLine;
 import org.mapton.api.MKey;
-import org.mapton.api.MSelectionLockManager;
+import se.trixon.almond.nbp.core.SelectionLockManager;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBar;
 import org.mapton.core.api.MTopComponent;
@@ -115,7 +115,7 @@ public final class ChartTopComponent extends MTopComponent {
         }
 
         private void refresh(Object o) {
-            if (MSelectionLockManager.getInstance().isLocked()) {
+            if (SelectionLockManager.getInstance().isLocked()) {
                 return;
             }
 

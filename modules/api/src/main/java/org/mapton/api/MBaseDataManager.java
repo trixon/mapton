@@ -32,6 +32,7 @@ import org.controlsfx.control.action.Action;
 import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.locationtech.jts.geom.GeometryFactory;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
+import se.trixon.almond.nbp.core.SelectionLockManager;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.DelayedResetRunner;
 import se.trixon.almond.util.fx.FxHelper;
@@ -47,7 +48,7 @@ public abstract class MBaseDataManager<T> {
     private static final Logger LOGGER = Logger.getLogger(MBaseDataManager.class.getName());
     protected final MDisruptorManager mDisruptorManager = MDisruptorManager.getInstance();
     protected final GeometryFactory mGeometryFactory = JTSFactoryFinder.getGeometryFactory();
-    protected final MSelectionLockManager mSelectionLockManager = MSelectionLockManager.getInstance();
+    protected final SelectionLockManager mSelectionLockManager = SelectionLockManager.getInstance();
 
     private final String TEMPORAL_PREFIX;
     private final LinkedHashMap<Object, T> mAllItemsMap = new LinkedHashMap<>();
