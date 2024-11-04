@@ -15,10 +15,13 @@
  */
 package org.mapton.butterfly_structural.strain;
 
+import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
+import java.util.ArrayList;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.butterfly_core.api.BaseGraphicRenderer;
+import org.mapton.butterfly_core.api.PlotLimiter;
 import org.mapton.butterfly_format.types.structural.BStructuralStrainGaugePoint;
 
 /**
@@ -28,16 +31,21 @@ import org.mapton.butterfly_format.types.structural.BStructuralStrainGaugePoint;
 public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicRendererItem, BStructuralStrainGaugePoint> {
 
     protected static IndexedCheckModel<GraphicRendererItem> sCheckModel;
+    protected static ArrayList<AVListImpl> sMapObjects;
+    protected static final PlotLimiter sPlotLimiter = new PlotLimiter();
 
-    public GraphicRendererBase(RenderableLayer layer) {
-        super(layer, null);
+    static {
         for (var renderItem : GraphicRendererItem.values()) {
             sPlotLimiter.setLimit(renderItem, renderItem.getPlotLimit());
         }
     }
 
+    public GraphicRendererBase(RenderableLayer layer, RenderableLayer passiveLayer) {
+        super(layer, passiveLayer, sPlotLimiter);
+    }
+
     protected boolean isPlotLimitReached(BStructuralStrainGaugePoint p, Object key, Position position) {
-        return super.isPlotLimitReached(p, key, position, p.ext().getObservationsTimeFiltered().isEmpty());
+        return super.isPlotLimitReached(p, key, position, p.ext().getObservationsTimeFiltered().isEmpty(), sMapObjects);
     }
 
 }

@@ -58,7 +58,7 @@ public class StrainLayerBundle extends BfLayerBundle {
         init();
         initRepaint();
         mOptionsView = new StrainOptionsView(this);
-        mGraphicRenderer = new GraphicRenderer(mLayer, mOptionsView.getGraphicCheckModel());
+        mGraphicRenderer = new GraphicRenderer(mLayer, null, mOptionsView.getGraphicCheckModel());
         initListeners();
 
         mManager.setInitialTemporalState(WWHelper.isStoredAsVisible(mLayer, mLayer.isEnabled()));
@@ -158,6 +158,10 @@ public class StrainLayerBundle extends BfLayerBundle {
 
                     var leftDoubleClickRunnable = (Runnable) () -> {
                         Almond.openAndActivateTopComponent((String) mLayer.getValue(WWHelper.KEY_FAST_OPEN));
+                        if (!p.ext().getObservationsTimeFiltered().isEmpty()) {
+                            mGraphicRenderer.addToAllowList(p);
+                            repaint();
+                        }
                     };
 
                     mapObjects.stream().filter(r -> r != null).forEach(r -> {

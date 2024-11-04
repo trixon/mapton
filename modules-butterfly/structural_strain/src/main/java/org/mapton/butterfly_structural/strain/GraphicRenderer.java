@@ -37,13 +37,14 @@ public class GraphicRenderer extends GraphicRendererBase {
 
     private final StrainAttributeManager mAttributeManager = StrainAttributeManager.getInstance();
 
-    public GraphicRenderer(RenderableLayer layer, IndexedCheckModel<GraphicRendererItem> checkModel) {
-        super(layer);
+    public GraphicRenderer(RenderableLayer layer, RenderableLayer passiveLayer, IndexedCheckModel<GraphicRendererItem> checkModel) {
+        super(layer, passiveLayer);
         sCheckModel = checkModel;
     }
 
     public void plot(BStructuralStrainGaugePoint p, Position position, ArrayList<AVListImpl> mapObjects) {
-        GraphicRendererBase.sMapObjects = mapObjects;
+        sMapObjects = mapObjects;
+
         if (sCheckModel.isChecked(GraphicRendererItem.ALARM_CONSUMPTION)) {
             plotAlarmConsumption(p, position);
         }
@@ -54,6 +55,7 @@ public class GraphicRenderer extends GraphicRendererBase {
     }
 
     public void reset() {
+        resetPlotLimiter();
     }
 
     private void plotAlarmConsumption(BStructuralStrainGaugePoint p, Position position) {
@@ -79,7 +81,7 @@ public class GraphicRenderer extends GraphicRendererBase {
             var pos = WWHelper.positionFromPosition(position, PERCENTAGE_ALTITUDE * percentH / 100.0);
             var box = new Box(pos, PERCENTAGE_SIZE, PERCENTAGE_SIZE, PERCENTAGE_SIZE);
             box.setAttributes(attrs);
-            addRenderable(box, true);
+            addRenderable(box, true, GraphicRendererItem.ALARM_CONSUMPTION, sMapObjects);
         }
 
         plotPercentageRod(position, p.ext().getAlarmPercent());
@@ -127,8 +129,7 @@ public class GraphicRenderer extends GraphicRendererBase {
             }
 
             cylinder.setAttributes(attrs);
-            addRenderable(cylinder, true);
-            sPlotLimiter.incPlotCounter(GraphicRendererItem.TRACE);
+            addRenderable(cylinder, true, GraphicRendererItem.TRACE, sMapObjects);
         }
     }
 }
