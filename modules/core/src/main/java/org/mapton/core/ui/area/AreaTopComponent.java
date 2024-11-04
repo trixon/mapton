@@ -30,7 +30,7 @@ import org.openide.windows.TopComponent;
 )
 @TopComponent.Description(
         preferredID = "AreaTopComponent",
-        persistenceType = TopComponent.PERSISTENCE_ONLY_OPENED
+        persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(mode = "navigator", openAtStartup = false, position = 2)
 public final class AreaTopComponent extends MTopComponent {

@@ -35,7 +35,7 @@ import org.openide.windows.TopComponent;
 @TopComponent.Description(
         preferredID = "TransformationTopComponent",
         //iconBase="SET/PATH/TO/ICON/HERE",
-        persistenceType = TopComponent.PERSISTENCE_ONLY_OPENED
+        persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(mode = "editor", openAtStartup = false, position = 10)
 @TopComponent.OpenActionRegistration(

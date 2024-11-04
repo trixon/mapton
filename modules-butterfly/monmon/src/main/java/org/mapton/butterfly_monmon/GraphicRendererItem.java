@@ -15,11 +15,13 @@
  */
 package org.mapton.butterfly_monmon;
 
+import org.mapton.butterfly_core.api.GraphicRenderItemLimitProvider;
+
 /**
  *
  * @author Patrik Karlström
  */
-public enum GraphicRendererItem {
+public enum GraphicRendererItem implements GraphicRenderItemLimitProvider {
     LATEST_1("Senaste dygnet", Integer.MAX_VALUE),
     LATEST_7("Senaste veckan", Integer.MAX_VALUE),
     LATEST_14("Senaste två veckorna", Integer.MAX_VALUE);
@@ -31,10 +33,12 @@ public enum GraphicRendererItem {
         mPlotLimit = plotLimit;
     }
 
+    @Override
     public String getName() {
         return mName;
     }
 
+    @Override
     public int getPlotLimit() {
         return mPlotLimit;
     }

@@ -46,7 +46,7 @@ import org.openide.windows.TopComponent;
 @TopComponent.Description(
         preferredID = "BeforeAfterTopComponent",
         //iconBase="SET/PATH/TO/ICON/HERE",
-        persistenceType = TopComponent.PERSISTENCE_ONLY_OPENED
+        persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(mode = "editor", openAtStartup = false)
 @ActionID(category = "Mapton", id = "org.mapton.core.ui.beforeafter.BeforeAfterTopComponent")

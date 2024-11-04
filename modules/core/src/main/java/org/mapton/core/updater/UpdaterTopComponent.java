@@ -35,7 +35,7 @@ import se.trixon.almond.util.Dict;
 @TopComponent.Description(
         preferredID = "UpdaterTopComponent",
         //iconBase="SET/PATH/TO/ICON/HERE",
-        persistenceType = TopComponent.PERSISTENCE_ONLY_OPENED
+        persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(mode = "editor", openAtStartup = false, position = 9)
 @TopComponent.OpenActionRegistration(

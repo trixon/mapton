@@ -61,6 +61,7 @@ import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
 import se.trixon.almond.nbp.dialogs.NbSnapHelper;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.swing.DelayedResetRunner;
 import se.trixon.almond.util.swing.SwingHelper;
 import se.trixon.almond.util.swing.dialogs.SimpleDialog;
@@ -74,7 +75,7 @@ import se.trixon.almond.util.swing.dialogs.SimpleDialog;
 )
 @TopComponent.Description(
         preferredID = "MapTopComponent",
-        persistenceType = TopComponent.PERSISTENCE_ONLY_OPENED
+        persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(mode = "editor", openAtStartup = true, position = Integer.MIN_VALUE)
 @TopComponent.OpenActionRegistration(
@@ -173,8 +174,10 @@ public final class MapTopComponent extends MTopComponent {
             label.setFont(label.getFont().deriveFont(label.getFont().getSize() * 2f));
             label.setHorizontalAlignment(SwingConstants.CENTER);
             add(label, BorderLayout.CENTER);
+            repaint();
+            revalidate();
 
-            MOptions.getInstance().engineProperty().addListener((ov, t, t1) -> {
+            MOptions.getInstance().engineProperty().addListener((p, o, n) -> {
                 SwingHelper.runLater(() -> {
                     setEngine(Mapton.getEngine());
                 });
@@ -302,8 +305,10 @@ public final class MapTopComponent extends MTopComponent {
     }
 
     private void setEngine(MEngine engine) {
-        setToolTipText("%s: %s".formatted(MDict.MAP_ENGINE.toString(), engine.getName()));
-        putClientProperty("print.printable", !engine.getName().equalsIgnoreCase("WorldWind")); // NOI18N
+        var engineName = engine.getName();
+        var worldWind = engineName.equalsIgnoreCase("WorldWind");
+        setToolTipText("%s: %s".formatted(MDict.MAP_ENGINE.toString(), engineName));
+        putClientProperty("print.printable", !worldWind); // NOI18N
 
         if (engine.isSwing()) {
             if (mProgressPanel == null) {
@@ -338,7 +343,14 @@ public final class MapTopComponent extends MTopComponent {
                 markMapAsInitialized();
             };
 
-            engine.create(postCreateRunnable);
+//            new Thread(() -> engine.create(postCreateRunnable), "Create Engine").start();
+            var delay = worldWind ? 2000 : 1;
+            Mapton.log("PREPARE TO LOAD ENGINE");
+            SystemHelper.runLaterDelayed(delay, () -> {
+                Mapton.log("LOAD ENGINE");
+                engine.create(postCreateRunnable);
+                Mapton.log("ENGINE LOADED");
+            });
         } else {
             resetFx();
             add(MapToolBarPanel.getInstance().getToolBarPanel(), BorderLayout.NORTH);
@@ -362,6 +374,6 @@ public final class MapTopComponent extends MTopComponent {
             engine.create(postCreateRunnable);
         }
 
-        Mapton.logLoading("Map Engine", engine.getName());
+        Mapton.logLoading("Map Engine", engineName);
     }
 }

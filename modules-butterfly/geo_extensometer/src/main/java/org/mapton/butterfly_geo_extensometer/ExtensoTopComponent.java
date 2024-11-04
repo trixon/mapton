@@ -34,7 +34,7 @@ import org.openide.windows.TopComponent;
 @TopComponent.Description(
         preferredID = "ExtensoTopComponent",
         //iconBase="SET/PATH/TO/ICON/HERE",
-        persistenceType = TopComponent.PERSISTENCE_ONLY_OPENED
+        persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(mode = "mapTools", openAtStartup = false)
 @ActionID(category = "Butterfly", id = "org.mapton.butterfly-geo-extensometer.ExtensoTopComponent")

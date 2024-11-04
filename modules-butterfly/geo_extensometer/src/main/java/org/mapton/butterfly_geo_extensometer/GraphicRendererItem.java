@@ -15,11 +15,13 @@
  */
 package org.mapton.butterfly_geo_extensometer;
 
+import org.mapton.butterfly_core.api.GraphicRenderItemLimitProvider;
+
 /**
  *
  * @author Patrik Karlström
  */
-public enum GraphicRendererItem {
+public enum GraphicRendererItem implements GraphicRenderItemLimitProvider {
     INDICATORS("Indikatorer", Integer.MAX_VALUE),
     TRACE("Radiellt spår", Integer.MAX_VALUE),
     TRACE_LABEL("Radiellt spår (etikett)", Integer.MAX_VALUE);
@@ -32,10 +34,12 @@ public enum GraphicRendererItem {
         mPlotLimit = plotLimit;
     }
 
+    @Override
     public String getName() {
         return mName;
     }
 
+    @Override
     public int getPlotLimit() {
         return mPlotLimit;
     }

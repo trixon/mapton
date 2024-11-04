@@ -38,7 +38,7 @@ import se.trixon.almond.util.Dict;
 @TopComponent.Description(
         preferredID = "PhotosTopComponent",
         //iconBase="SET/PATH/TO/ICON/HERE",
-        persistenceType = TopComponent.PERSISTENCE_ONLY_OPENED
+        persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(mode = "mapTools", openAtStartup = false)
 @TopComponent.OpenActionRegistration(

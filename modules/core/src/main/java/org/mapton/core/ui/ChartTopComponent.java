@@ -49,7 +49,7 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
 @TopComponent.Description(
         preferredID = "ChartTopComponent",
         //iconBase="SET/PATH/TO/ICON/HERE",
-        persistenceType = TopComponent.PERSISTENCE_ONLY_OPENED
+        persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(mode = "mapBottom", openAtStartup = false)
 public final class ChartTopComponent extends MTopComponent {
