@@ -168,13 +168,13 @@ public class BAlarm extends BBase {
             switch (getType()) {
                 case "+" -> {
                     if (StringUtils.isNotBlank(l1s)) {
-                        mRange0 = Range.of(0.0, Double.parseDouble(l1s) - Precision.EPSILON);
+                        mRange0 = Range.of(Double.NEGATIVE_INFINITY, Double.parseDouble(l1s) - Precision.EPSILON);
 
                         if (StringUtils.isNotBlank(l2s)) {
-                            mRange1 = Range.of(0.0, Double.parseDouble(l2s) - Precision.EPSILON);
+                            mRange1 = Range.of(Double.NEGATIVE_INFINITY, Double.parseDouble(l2s) - Precision.EPSILON);
 
                             if (StringUtils.isNotBlank(l3s)) {
-                                mRange2 = Range.of(0.0, Double.parseDouble(l3s) - Precision.EPSILON);
+                                mRange2 = Range.of(Double.NEGATIVE_INFINITY, Double.parseDouble(l3s) - Precision.EPSILON);
                             }
                         }
                     }
@@ -182,13 +182,13 @@ public class BAlarm extends BBase {
 
                 case "-" -> {
                     if (StringUtils.isNotBlank(l1s)) {
-                        mRange0 = Range.of(Double.valueOf(l1s), Double.MAX_VALUE);
+                        mRange0 = Range.of(Double.valueOf(l1s), Double.POSITIVE_INFINITY);
 
                         if (StringUtils.isNotBlank(l2s)) {
-                            mRange1 = Range.of(Precision.EPSILON + Double.parseDouble(l2s), Double.MAX_VALUE);
+                            mRange1 = Range.of(Precision.EPSILON + Double.parseDouble(l2s), Double.POSITIVE_INFINITY);
 
                             if (StringUtils.isNotBlank(l3s)) {
-                                mRange2 = Range.of(Precision.EPSILON + Double.parseDouble(l3s), Double.MAX_VALUE);
+                                mRange2 = Range.of(Precision.EPSILON + Double.parseDouble(l3s), Double.POSITIVE_INFINITY);
                             }
                         }
                     }
