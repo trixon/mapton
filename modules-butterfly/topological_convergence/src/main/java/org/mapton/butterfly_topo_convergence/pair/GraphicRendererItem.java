@@ -15,13 +15,14 @@
  */
 package org.mapton.butterfly_topo_convergence.pair;
 
+import org.mapton.butterfly_core.api.GraphicRenderItemLimitProvider;
 import se.trixon.almond.util.Dict;
 
 /**
  *
  * @author Patrik Karlström
  */
-public enum GraphicRendererItem {
+public enum GraphicRendererItem implements GraphicRenderItemLimitProvider {
     LINES(Dict.Geometry.LINE.toString(), Integer.MAX_VALUE),
     NODE("Nod", Integer.MAX_VALUE),
     LABELS("Punktnamn", Integer.MAX_VALUE);
@@ -33,10 +34,12 @@ public enum GraphicRendererItem {
         mPlotLimit = plotLimit;
     }
 
+    @Override
     public String getName() {
         return mName;
     }
 
+    @Override
     public int getPlotLimit() {
         return mPlotLimit;
     }
