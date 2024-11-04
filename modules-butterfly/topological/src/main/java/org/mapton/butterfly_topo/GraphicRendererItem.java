@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_topo;
 
+import org.mapton.butterfly_core.api.GraphicRenderItemLimitProvider;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SDict;
 
@@ -22,11 +23,11 @@ import se.trixon.almond.util.SDict;
  *
  * @author Patrik Karlström
  */
-public enum GraphicRendererItem {
+public enum GraphicRendererItem implements GraphicRenderItemLimitProvider {
     BEARING(Dict.BEARING.toString(), Integer.MAX_VALUE),
     CIRCLE_1D("1d Delta", Integer.MAX_VALUE),
     CIRCLE_3D("3d Delta", Integer.MAX_VALUE),
-    TRACE_1D(SDict.TRACE_1D.toString(), 100 * 100),
+    TRACE_1D(SDict.TRACE_1D.toString(), 10_000),
     VECTOR_1D(SDict.VECTOR_1D.toString(), 100),
     VECTOR_1D_ALARM("%s (%s)".formatted(SDict.VECTOR_1D.toString(), SDict.ALARM_LEVEL.toLower()), 100),
     //    TRACE_2D(SDict.TRACE_2D.toString()),
@@ -47,10 +48,12 @@ public enum GraphicRendererItem {
         mPlotLimit = plotLimit;
     }
 
+    @Override
     public String getName() {
         return mName;
     }
 
+    @Override
     public int getPlotLimit() {
         return mPlotLimit;
     }

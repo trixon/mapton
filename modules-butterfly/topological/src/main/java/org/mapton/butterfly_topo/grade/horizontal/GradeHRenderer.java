@@ -35,22 +35,17 @@ import org.mapton.worldwind.api.WWHelper;
  */
 public class GradeHRenderer extends GradeHRendererBase {
 
-    public static final double MAX_PER_MILLE = 3.0;
     public static final double MAX = 5.0;
+    public static final double MAX_PER_MILLE = 3.0;
     public static final double MIN = 2.0;
     public static final double MID = MAX - (MAX - MIN) / 2;
     public static final double SPAN = MAX - MID;
     private final HashSet<BTopoControlPoint> mPlottedConnectors = new HashSet();
     private final HashSet<BTopoControlPoint> mPlottedNames = new HashSet();
 
-    public GradeHRenderer(RenderableLayer layer, RenderableLayer muteLayer, IndexedCheckModel<GradeHRendererItem> checkModel) {
-        sInteractiveLayer = layer;
-        sMuteLayer = muteLayer;
+    public GradeHRenderer(RenderableLayer layer, RenderableLayer passiveLayer, IndexedCheckModel<GradeHRendererItem> checkModel) {
+        super(layer, passiveLayer);
         sCheckModel = checkModel;
-    }
-
-    public void addToAllowList(String name) {
-        sPlotLimiter.addToAllowList(name);
     }
 
     public void plot(BTopoGrade p, Position position, ArrayList<AVListImpl> mapObjects) {
@@ -64,19 +59,19 @@ public class GradeHRenderer extends GradeHRendererBase {
             plotIndicator(p, position, pos1, pos2, mapObjects);
         }
         if (sCheckModel.isChecked(GradeHRendererItem.NAME)) {
-            plotName(p, position, pos1, pos2, mapObjects);
+            plotName(p, position, pos1, pos2);
         }
     }
 
     public void reset() {
+        resetPlotLimiter();
         sPointToPositionMap.clear();
-        sPlotLimiter.reset();
         mPlottedConnectors.clear();
         mPlottedNames.clear();
     }
 
     private void plotIndicator(BTopoGrade p, Position position, Position pos1, Position pos2, ArrayList<AVListImpl> mapObjects) {
-        if (sPlotLimiter.isLimitReached(GradeHRendererItem.INDICATOR, p.getName())) {
+        if (getPlotLimiter().isLimitReached(GradeHRendererItem.INDICATOR, p.getName())) {
             return;
         }
 
@@ -98,23 +93,22 @@ public class GradeHRenderer extends GradeHRendererBase {
 
         var path = new Path(WWHelper.positionFromPosition(pos1, z1), WWHelper.positionFromPosition(pos2, z2));
         path.setAttributes(mAttributeManager.getGradeHAttributes(p));
-        addRenderable(path, true);
+        addRenderable(path, true, GradeHRendererItem.INDICATOR, sMapObjects);
 
         mapObjects.add(path);
-        sPlotLimiter.incPlotCounter(GradeHRendererItem.INDICATOR);
     }
 
     private void plotIndicatorGroundCylinder(Position position, double z, double r) {
         var cylinder = new Cylinder(WWHelper.positionFromPosition(position, z), 0.05, r);
         cylinder.setAttributes(mAttributeManager.getGroundCylinderAttributes());
-        addRenderable(cylinder, false);
+        addRenderable(cylinder, false, null, null);
     }
 
     private void plotIndicatorGroundPath(Position position, BTopoControlPoint point) {
         if (!mPlottedConnectors.contains(point)) {
             var groundPath = new Path(position, WWHelper.positionFromPosition(position, MAX + .3));
             groundPath.setAttributes(mAttributeManager.getGroundPathAttributes());
-            addRenderable(groundPath, false);
+            addRenderable(groundPath, false, null, null);
 
             mPlottedConnectors.add(point);
             plotIndicatorGroundCylinder(position, MAX, 0.1);
@@ -131,19 +125,18 @@ public class GradeHRenderer extends GradeHRendererBase {
             placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(mAttributeManager.getLabelPlacemarkAttributes(), 1.5));
             placemark.setLabelText(point.getName());
 
-            addRenderable(placemark, true);
+            addRenderable(placemark, true, GradeHRendererItem.NAME, sMapObjects);
             mPlottedNames.add(point);
         }
     }
 
-    private void plotName(BTopoGrade p, Position position, Position pos1, Position pos2, ArrayList<AVListImpl> mapObjects) {
-        if (sPlotLimiter.isLimitReached(GradeHRendererItem.NAME, p.getName())) {
+    private void plotName(BTopoGrade p, Position position, Position pos1, Position pos2) {
+        if (getPlotLimiter().isLimitReached(GradeHRendererItem.NAME, p.getName())) {
             return;
         }
 
         plotName(pos1, p.getP1());
         plotName(pos2, p.getP2());
-        sPlotLimiter.incPlotCounter(GradeHRendererItem.NAME);
     }
 
 }

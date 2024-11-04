@@ -198,6 +198,12 @@ public class TopoAttributeManager extends BaseAttributeManager {
         return mComponentVectorCurrentAttributes[TopoHelper.getAlarmLevel(p) + 1];
     }
 
+    public BasicShapeAttributes getComponentVectorCurrentHeightAttributes(BTopoControlPoint p) {
+        getComponentVectorCurrentAttributes(p);//Force init
+
+        return mComponentVectorCurrentAttributes[TopoHelper.getAlarmLevelHeight(p) + 1];
+    }
+
     public BasicShapeAttributes getIndicatorConnectorAttribute() {
         if (mIndicatorConnectorAttributes == null) {
             mIndicatorConnectorAttributes = new BasicShapeAttributes();

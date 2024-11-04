@@ -48,9 +48,9 @@ public class GradeHLayerBundle extends TopoBaseLayerBundle {
     private static final int PLOT_LIMIT = 10000;
     private final GradeAttributeManager mAttributeManager = GradeAttributeManager.getInstance();
     private final ResourceBundle mBundle = NbBundle.getBundle(GradeManagerBase.class);
+    private final GradeHRenderer mGraphicRenderer;
     private final GradeHManager mManager = GradeHManager.getInstance();
     private GradeHOptionsView mOptionsView;
-    private final GradeHRenderer mGraphicRenderer;
 
     public GradeHLayerBundle() {
         init();
@@ -213,7 +213,7 @@ public class GradeHLayerBundle extends TopoBaseLayerBundle {
 
                         var leftDoubleClickRunnable = (Runnable) () -> {
                             Almond.openAndActivateTopComponent((String) mLayer.getValue(WWHelper.KEY_FAST_OPEN));
-                            mGraphicRenderer.addToAllowList(p.getName());
+                            mGraphicRenderer.addToAllowList(p);
                             repaint();
                         };
 

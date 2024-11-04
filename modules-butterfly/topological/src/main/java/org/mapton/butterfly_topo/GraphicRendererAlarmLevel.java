@@ -43,8 +43,8 @@ import org.mapton.worldwind.api.WWHelper;
  */
 public class GraphicRendererAlarmLevel extends GraphicRendererBase {
 
-    public GraphicRendererAlarmLevel(RenderableLayer layer) {
-        super(layer);
+    public GraphicRendererAlarmLevel(RenderableLayer layer, RenderableLayer passiveLayer) {
+        super(layer, passiveLayer);
     }
 
     public void plot(BTopoControlPoint p, Position position) {
@@ -81,7 +81,7 @@ public class GraphicRendererAlarmLevel extends GraphicRendererBase {
             var pos = WWHelper.positionFromPosition(position, PERCENTAGE_ALTITUDE * percentP / 100.0);
             var pyramid = new Pyramid(pos, PERCENTAGE_SIZE, PERCENTAGE_SIZE);
             pyramid.setAttributes(attrs);
-            addRenderable(pyramid, true);
+            addRenderable(pyramid, true, null, sMapObjects);
         }
 
         if (p.getDimension() != BDimension._2d) {
@@ -101,7 +101,7 @@ public class GraphicRendererAlarmLevel extends GraphicRendererBase {
             var pos = WWHelper.positionFromPosition(position, PERCENTAGE_ALTITUDE * percentH / 100.0);
             var ellipsoid = new Ellipsoid(pos, PERCENTAGE_SIZE * scale, PERCENTAGE_SIZE * scale, PERCENTAGE_SIZE * scale);
             ellipsoid.setAttributes(attrs);
-            addRenderable(ellipsoid, true);
+            addRenderable(ellipsoid, true, null, sMapObjects);
         }
 
         plotPercentageRod(position, p.ext().getAlarmPercent());
@@ -137,7 +137,7 @@ public class GraphicRendererAlarmLevel extends GraphicRendererBase {
             partCyl.setAzimuths(Angle.fromDegrees(0.0), Angle.fromDegrees(180.0));
         }
 
-        addRenderable(partCyl, true);
+        addRenderable(partCyl, true, null, sMapObjects);
     }
 
     private void plotAlarmLevelP(BTopoControlPoint p, Position position) {
@@ -156,7 +156,7 @@ public class GraphicRendererAlarmLevel extends GraphicRendererBase {
             partCyl.setAzimuths(Angle.fromDegrees(180.0), Angle.fromDegrees(360.0));
         }
 
-        addRenderable(partCyl, true);
+        addRenderable(partCyl, true, null, sMapObjects);
     }
 
     private void plotAlarmLevelTrace(BTopoControlPoint p, Position position, BComponent component) {
@@ -219,15 +219,13 @@ public class GraphicRendererAlarmLevel extends GraphicRendererBase {
                 attrs.setInteriorMaterial(material);
                 attrs.setEnableLighting(true);
                 shape.setAttributes(attrs);
-                addRenderable(shape, true);
-                sPlotLimiter.incPlotCounter(GraphicRendererItem.TRACE_ALARM_LEVEL);
+                addRenderable(shape, true, GraphicRendererItem.TRACE_ALARM_LEVEL, sMapObjects);
             } else if (airspace != null) {
                 airspace.setAltitudes(altitude - height / 2, altitude + height / 2);
                 var attrs = new BasicAirspaceAttributes();
                 attrs.setInteriorMaterial(material);
                 airspace.setAttributes(attrs);
-                addRenderable(airspace, true);
-                sPlotLimiter.incPlotCounter(GraphicRendererItem.TRACE_ALARM_LEVEL);
+                addRenderable(airspace, true, GraphicRendererItem.TRACE_ALARM_LEVEL, sMapObjects);
             }
 
         }

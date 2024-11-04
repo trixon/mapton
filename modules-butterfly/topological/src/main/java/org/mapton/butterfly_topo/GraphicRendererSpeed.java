@@ -34,8 +34,8 @@ import org.mapton.worldwind.api.WWHelper;
  */
 public class GraphicRendererSpeed extends GraphicRendererBase {
 
-    public GraphicRendererSpeed(RenderableLayer layer) {
-        super(layer);
+    public GraphicRendererSpeed(RenderableLayer layer, RenderableLayer passiveLayer) {
+        super(layer, passiveLayer);
     }
 
     public void plot(BTopoControlPoint p, Position position) {
@@ -78,7 +78,7 @@ public class GraphicRendererSpeed extends GraphicRendererBase {
 //            attrs.setOutlineOpacity(0.20);
 //        }
         cylinder.setAttributes(attrs);
-        addRenderable(cylinder, true);
+        addRenderable(cylinder, true, null, sMapObjects);
     }
 
     private void plotSpeedTrace(BTopoControlPoint p, Position position) {
@@ -101,7 +101,7 @@ public class GraphicRendererSpeed extends GraphicRendererBase {
         var startPosition = WWHelper.positionFromPosition(position, height);
         var groundPath = new Path(position, startPosition);
         groundPath.setAttributes(mAttributeManager.getComponentGroundPathAttributes());
-        addRenderable(groundPath, true);
+        addRenderable(groundPath, true, null, sMapObjects);
 
         var altitude = 0.5 * height;
         var prevHeight = height;
@@ -135,10 +135,8 @@ public class GraphicRendererSpeed extends GraphicRendererBase {
             cylinder.setAttributes(attrs);
 
             if (height > 0) {
-                addRenderable(cylinder, true);
+                addRenderable(cylinder, true, GraphicRendererItem.TRACE_1D, sMapObjects);
             }
-
-            sPlotLimiter.incPlotCounter(GraphicRendererItem.TRACE_1D);
         }
     }
 }

@@ -15,11 +15,9 @@
  */
 package org.mapton.butterfly_topo;
 
-import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.Cylinder;
-import java.util.ArrayList;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 
 /**
@@ -28,28 +26,23 @@ import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
  */
 public class GraphicRendererCount extends GraphicRendererBase {
 
-    public GraphicRendererCount(RenderableLayer layer) {
-        super(layer);
+    public GraphicRendererCount(RenderableLayer layer, RenderableLayer passiveLayer) {
+        super(layer, passiveLayer);
     }
 
-    public ArrayList<AVListImpl> plot(BTopoControlPoint p, Position position) {
-        var mapObjects = new ArrayList<AVListImpl>();
-
+    public void plot(BTopoControlPoint p, Position position) {
         if (sCheckModel.isChecked(GraphicRendererItem.MEASUREMENTS)) {
-            plot(p, position, mapObjects);
+            plotCount(p, position);
         }
-
-        return mapObjects;
     }
 
-    private void plot(BTopoControlPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
+    private void plotCount(BTopoControlPoint p, Position position) {
         if (isPlotLimitReached(p, GraphicRendererItem.MEASUREMENTS, position)) {
             return;
         }
         var count = p.ext().getObservationsTimeFiltered().size();
         var cylinder = new Cylinder(position, count * .25, 0.5);
         cylinder.setAttributes(mAttributeManager.getComponentMeasurementsAttributes(p));
-        addRenderable(cylinder, true);
-        mapObjects.add(cylinder);
+        addRenderable(cylinder, true, null, sMapObjects);
     }
 }

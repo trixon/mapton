@@ -38,23 +38,21 @@ public class GraphicRenderer extends GraphicRendererBase {
     private final GraphicRendererTrace mTraceRenderer;
     private final GraphicRendererVector mVectorRenderer;
 
-    public GraphicRenderer(RenderableLayer layer, IndexedCheckModel<GraphicRendererItem> checkModel) {
-        super(layer);
-        mVectorRenderer = new GraphicRendererVector(layer);
-        mTraceRenderer = new GraphicRendererTrace(layer);
-        mSpeedRenderer = new GraphicRendererSpeed(layer);
-        mCountRenderer = new GraphicRendererCount(layer);
-        mCircleRenderer = new GraphicRendererCircle(layer);
-        mAlarmRenderer = new GraphicRendererAlarmLevel(layer);
+    public GraphicRenderer(RenderableLayer layer, RenderableLayer passiveLayer, IndexedCheckModel<GraphicRendererItem> checkModel) {
+        super(layer, passiveLayer);
+        mVectorRenderer = new GraphicRendererVector(layer, passiveLayer);
+        mTraceRenderer = new GraphicRendererTrace(layer, passiveLayer);
+        mSpeedRenderer = new GraphicRendererSpeed(layer, passiveLayer);
+        mCountRenderer = new GraphicRendererCount(layer, passiveLayer);
+        mCircleRenderer = new GraphicRendererCircle(layer, passiveLayer);
+        mAlarmRenderer = new GraphicRendererAlarmLevel(layer, passiveLayer);
+
         sCheckModel = checkModel;
     }
 
-    public void addToAllowList(String name) {
-        sPlotLimiter.addToAllowList(name);
-    }
-
     public void plot(BTopoControlPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
-        GraphicRendererBase.sMapObjects = mapObjects;
+        sMapObjects = mapObjects;
+
         plotBearing(p, position);
 
         if (p.ext().getNumOfObservationsFiltered() > 1) {
@@ -68,8 +66,8 @@ public class GraphicRenderer extends GraphicRendererBase {
     }
 
     public void reset() {
+        resetPlotLimiter();
         sPointToPositionMap.clear();
-        sPlotLimiter.reset();
     }
 
     private void plotBearing(BTopoControlPoint p, Position position) {
@@ -101,7 +99,7 @@ public class GraphicRenderer extends GraphicRendererBase {
                 path.setAttributes(mAttributeManager.getBearingAttribute(first));
                 first = false;
 
-                addRenderable(path, true);
+                addRenderable(path, true, null, null);
             } catch (Exception e) {
                 System.err.println(e);
             }

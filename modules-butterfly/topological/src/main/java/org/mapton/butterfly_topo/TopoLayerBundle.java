@@ -63,7 +63,7 @@ public class TopoLayerBundle extends TopoBaseLayerBundle {
         init();
         initRepaint();
         mOptionsView = new TopoOptionsView(this);
-        mGraphicRenderer = new GraphicRenderer(mLayer, mOptionsView.getComponentCheckModel());
+        mGraphicRenderer = new GraphicRenderer(mLayer, null, mOptionsView.getComponentCheckModel());
         initListeners();
         mAttributeManager.setColorBy(mOptionsView.getColorBy());
 
@@ -181,7 +181,7 @@ public class TopoLayerBundle extends TopoBaseLayerBundle {
 
                         var leftDoubleClickRunnable = (Runnable) () -> {
                             Almond.openAndActivateTopComponent((String) mLayer.getValue(WWHelper.KEY_FAST_OPEN));
-                            mGraphicRenderer.addToAllowList(p.getName());
+                            mGraphicRenderer.addToAllowList(p);
                             repaint();
                         };
 

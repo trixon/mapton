@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_topo;
 
-import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
@@ -46,16 +45,15 @@ public class GraphicRendererTrace extends GraphicRendererBase {
     private int mScale3dH;
     private int mScale3dP;
 
-    public GraphicRendererTrace(RenderableLayer layer) {
-        super(layer);
+    public GraphicRendererTrace(RenderableLayer layer, RenderableLayer passiveLayer) {
+        super(layer, passiveLayer);
     }
 
-    public ArrayList<AVListImpl> plot(BTopoControlPoint p, Position position) {
+    public void plot(BTopoControlPoint p, Position position) {
         mScale1dH = MSimpleObjectStorageManager.getInstance().getInteger(ScalePlot1dHSosd.class, 500);
         mScale3dH = MSimpleObjectStorageManager.getInstance().getInteger(ScalePlot3dHSosd.class, 500);
         mScale3dP = MSimpleObjectStorageManager.getInstance().getInteger(ScalePlot3dPSosd.class, 500);
 
-        var mapObjects = new ArrayList<AVListImpl>();
         var dimension = p.getDimension();
 
         if (sCheckModel.isChecked(GraphicRendererItem.TRACE_1D) && (dimension == BDimension._1d || dimension == BDimension._3d)) {
@@ -63,10 +61,8 @@ public class GraphicRendererTrace extends GraphicRendererBase {
 //        } else if (sCheckModel.isChecked(GraphicRendererItem.TRACE_2D) && p.getDimension() == BDimension._2d) {
 //            plot2d(p, position, mapObjects);
         } else if (sCheckModel.isChecked(GraphicRendererItem.TRACE_3D) && dimension == BDimension._3d) {
-            plot3d(p, position, mapObjects);
+            plot3d(p, position);
         }
-
-        return mapObjects;
     }
 
     private void plot1d(BTopoControlPoint p, Position position) {
@@ -110,20 +106,19 @@ public class GraphicRendererTrace extends GraphicRendererBase {
             }
 
             cylinder.setAttributes(attrs);
-            addRenderable(cylinder, true);
-            sPlotLimiter.incPlotCounter(GraphicRendererItem.TRACE_1D);
+            addRenderable(cylinder, true, GraphicRendererItem.TRACE_1D, sMapObjects);
         }
     }
 
-    private void plot2d(BTopoControlPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
+    private void plot2d(BTopoControlPoint p, Position position) {
     }
 
-    private void plot3d(BTopoControlPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
+    private void plot3d(BTopoControlPoint p, Position position) {
         if (!isValidFor3dPlot(p)) {
             return;
         }
 
-        var positions = plot3dOffsetPole(p, position, mapObjects);
+        var positions = plot3dOffsetPole(p, position);
         if (ObjectUtils.anyNull(p.getZeroX(), p.getZeroY(), p.getZeroZ())) {
             return;
         }
@@ -154,25 +149,24 @@ public class GraphicRendererTrace extends GraphicRendererBase {
                 path.setShowPositions(true);
                 path.setAttributes(mAttributeManager.getTraceAttribute());
                 //TODO Add alarm level attribute
-                addRenderable(path, true);
+                addRenderable(path, true, null, sMapObjects);
             }
         } else {
             var path = new Path(nodes);
             path.setShowPositions(true);
             path.setAttributes(mAttributeManager.getTraceAttribute());
-            addRenderable(path, true);
+            addRenderable(path, true, null, sMapObjects);
         }
 
         var END_SIZE = 0.25;
         if (nodes.isEmpty()) {
 //            System.out.println(p.getName());
         } else {
-
             var startEllipsoid = new Ellipsoid(nodes.getFirst(), END_SIZE, END_SIZE, END_SIZE);
-            addRenderable(startEllipsoid, true);
+            addRenderable(startEllipsoid, true, null, sMapObjects);
 
             var endEllipsoid = new Ellipsoid(nodes.getLast(), END_SIZE, END_SIZE, END_SIZE);
-            addRenderable(endEllipsoid, true);
+            addRenderable(endEllipsoid, true, null, sMapObjects);
         }
     }
 

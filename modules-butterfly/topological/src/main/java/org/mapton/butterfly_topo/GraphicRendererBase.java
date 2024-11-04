@@ -27,6 +27,7 @@ import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.MOptions;
 import org.mapton.api.MSimpleObjectStorageManager;
 import org.mapton.butterfly_core.api.BaseGraphicRenderer;
+import org.mapton.butterfly_core.api.PlotLimiter;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_topo.api.TopoManager;
 import org.mapton.butterfly_topo.sos.ScalePlot3dHSosd;
@@ -41,15 +42,20 @@ import se.trixon.almond.util.MathHelper;
 public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicRendererItem, BTopoControlPoint> {
 
     protected static IndexedCheckModel<GraphicRendererItem> sCheckModel;
+    protected static ArrayList<AVListImpl> sMapObjects;
+    protected static final PlotLimiter sPlotLimiter = new PlotLimiter();
     protected static HashMap<BTopoControlPoint, Position[]> sPointToPositionMap = new HashMap<>();
     protected final TopoAttributeManager mAttributeManager = TopoAttributeManager.getInstance();
     protected final TopoManager mManager = TopoManager.getInstance();
 
-    public GraphicRendererBase(RenderableLayer layer) {
-        super(layer, null);
+    static {
         for (var renderItem : GraphicRendererItem.values()) {
             sPlotLimiter.setLimit(renderItem, renderItem.getPlotLimit());
         }
+    }
+
+    public GraphicRendererBase(RenderableLayer layer, RenderableLayer passiveLayer) {
+        super(layer, passiveLayer, sPlotLimiter);
     }
 
     public boolean isValidFor3dPlot(BTopoControlPoint p) {
@@ -59,7 +65,7 @@ public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicRen
         return ObjectUtils.allNotNull(p.getZeroX(), p.getZeroY(), p.getZeroZ(), o1.getMeasuredZ(), o2.getMeasuredZ());
     }
 
-    public Position[] plot3dOffsetPole(BTopoControlPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
+    public Position[] plot3dOffsetPole(BTopoControlPoint p, Position position) {
         var scale3dH = MSimpleObjectStorageManager.getInstance().getInteger(ScalePlot3dHSosd.class, 500);
         var scale3dP = MSimpleObjectStorageManager.getInstance().getInteger(ScalePlot3dPSosd.class, 500);
 
@@ -72,11 +78,11 @@ public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicRen
             var startEllipsoid = new Ellipsoid(startPosition, ZERO_SIZE, ZERO_SIZE, ZERO_SIZE);
             startEllipsoid.setAttributes(mAttributeManager.getComponentZeroAttributes());
 
-            addRenderable(startEllipsoid, true);
+            addRenderable(startEllipsoid, true, null, sMapObjects);
 
             var groundPath = new Path(position, startPosition);
             groundPath.setAttributes(mAttributeManager.getComponentGroundPathAttributes());
-            addRenderable(groundPath, true);
+            addRenderable(groundPath, true, null, sMapObjects);
 
             var currentPosition = startPosition;
 //            var o1 = p.ext().getObservationsTimeFiltered().getFirst();
@@ -95,14 +101,14 @@ public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicRen
 
             var currentEllipsoid = new Ellipsoid(currentPosition, CURRENT_SIZE, CURRENT_SIZE, CURRENT_SIZE);
             currentEllipsoid.setAttributes(mAttributeManager.getComponentVectorCurrentAttributes(p));
-            addRenderable(currentEllipsoid, true);
+            addRenderable(currentEllipsoid, true, null, sMapObjects);
 
             return new Position[]{startPosition, currentPosition};
         });
     }
 
     protected boolean isPlotLimitReached(BTopoControlPoint p, Object key, Position position) {
-        return super.isPlotLimitReached(p, key, position, p.ext().getObservationsTimeFiltered().isEmpty());
+        return super.isPlotLimitReached(p, key, position, p.ext().getObservationsTimeFiltered().isEmpty(), sMapObjects);
     }
 
 }

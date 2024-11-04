@@ -15,13 +15,11 @@
  */
 package org.mapton.butterfly_topo;
 
-import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.Cylinder;
 import gov.nasa.worldwind.render.Ellipsoid;
 import gov.nasa.worldwind.render.Path;
-import java.util.ArrayList;
 import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.api.MSimpleObjectStorageManager;
 import org.mapton.butterfly_format.types.BComponent;
@@ -41,37 +39,34 @@ public class GraphicRendererVector extends GraphicRendererBase {
     private Integer mScale3dH;
     private Integer mScale3dP;
 
-    public GraphicRendererVector(RenderableLayer layer) {
-        super(layer);
+    public GraphicRendererVector(RenderableLayer layer, RenderableLayer passiveLayer) {
+        super(layer, passiveLayer);
     }
 
-    public ArrayList<AVListImpl> plot(BTopoControlPoint p, Position position) {
+    public void plot(BTopoControlPoint p, Position position) {
         mScale3dH = MSimpleObjectStorageManager.getInstance().getInteger(ScalePlot3dHSosd.class, 500);
         mScale3dP = MSimpleObjectStorageManager.getInstance().getInteger(ScalePlot3dPSosd.class, 500);
 
-        var mapObjects = new ArrayList<AVListImpl>();
         var dimension = p.getDimension();
 
         if (sCheckModel.isChecked(GraphicRendererItem.VECTOR_1D) && (dimension == BDimension._1d || dimension == BDimension._3d)) {
-            plot1d(p, position, mapObjects);
+            plot1d(p, position);
         }
 
         if (sCheckModel.isChecked(GraphicRendererItem.VECTOR_1D_ALARM) && (dimension == BDimension._1d || dimension == BDimension._3d)) {
-            plot1dVectorAlarm(p, position, mapObjects);
+            plot1dVectorAlarm(p, position);
         }
 
         if (sCheckModel.isChecked(GraphicRendererItem.VECTOR_3D) && dimension == BDimension._3d) {
-            plot3d(p, position, mapObjects);
+            plot3d(p, position);
         }
-
-        return mapObjects;
     }
 
-    private void plot1d(BTopoControlPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
-        plot1dVector(p, position, mapObjects);
+    private void plot1d(BTopoControlPoint p, Position position) {
+        plot1dVector(p, position);
     }
 
-    private void plot1dVector(BTopoControlPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
+    private void plot1dVector(BTopoControlPoint p, Position position) {
         var zeroZ = p.getZeroZ();
         if (zeroZ == null) {
             return;
@@ -81,7 +76,7 @@ public class GraphicRendererVector extends GraphicRendererBase {
         var zeroPosition = WWHelper.positionFromPosition(position, zeroZ + TopoLayerBundle.getZOffset());
         var zeroEllipsoid = new Ellipsoid(zeroPosition, ZERO_SIZE, ZERO_SIZE, ZERO_SIZE);
         zeroEllipsoid.setAttributes(mAttributeManager.getComponentZeroAttributes());
-        addRenderable(zeroEllipsoid, true);
+        addRenderable(zeroEllipsoid, true, null, sMapObjects);
 
         var currentPosition = zeroPosition;
         var o = p.ext().getObservationsTimeFiltered().getLast();
@@ -96,21 +91,21 @@ public class GraphicRendererVector extends GraphicRendererBase {
         }
 
         var currentEllipsoid = new Ellipsoid(currentPosition, CURRENT_SIZE, CURRENT_SIZE, CURRENT_SIZE);
-        currentEllipsoid.setAttributes(mAttributeManager.getComponentVectorCurrentAttributes(p));
-        addRenderable(currentEllipsoid, true);
+        currentEllipsoid.setAttributes(mAttributeManager.getComponentVectorCurrentHeightAttributes(p));
+        addRenderable(currentEllipsoid, true, null, sMapObjects);
 
         var currentPositionTop = WWHelper.positionFromPosition(currentPosition, currentPosition.getAltitude() - CURRENT_SIZE * direction);
         var deltaPath = new Path(zeroPosition, currentPositionTop);
         deltaPath.setAttributes(mAttributeManager.getComponentGroundPathAttributes());
-        addRenderable(deltaPath, true);
+        addRenderable(deltaPath, true, null, sMapObjects);
 
         var currentPositionBottom = WWHelper.positionFromPosition(currentPosition, currentPosition.getAltitude() + CURRENT_SIZE * direction);
         var groundPath = new Path(position, currentPositionBottom);
         groundPath.setAttributes(mAttributeManager.getComponentGroundPathAttributes());
-        addRenderable(groundPath, true);
+        addRenderable(groundPath, true, null, sMapObjects);
     }
 
-    private void plot1dVectorAlarm(BTopoControlPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
+    private void plot1dVectorAlarm(BTopoControlPoint p, Position position) {
         var zeroZ = p.getZeroZ();
         var alarm = p.ext().getAlarm(BComponent.HEIGHT);
 
@@ -129,7 +124,7 @@ public class GraphicRendererVector extends GraphicRendererBase {
         var radius = 0.5;
         var cylinder0 = new Cylinder(zeroPosition, radius, scaledSpan0 * 0.5, radius);
         cylinder0.setAttributes(mAttributeManager.getComponentVectorAlarmAttributes(0));
-        addRenderable(cylinder0, true);
+        addRenderable(cylinder0, true, null, sMapObjects);
 
         if (TopoHelper.getAlarmLevelHeight(p) > 0) {
             var attrs = mAttributeManager.getComponentVectorAlarmAttributes(1);
@@ -145,7 +140,7 @@ public class GraphicRendererVector extends GraphicRendererBase {
             try {
                 var cylinderBottom = new Cylinder(bottomPosition, radius, scaledSpanBottom * 0.5, radius);
                 cylinderBottom.setAttributes(attrs);
-                addRenderable(cylinderBottom, true);
+                addRenderable(cylinderBottom, true, null, sMapObjects);
             } catch (IllegalArgumentException e) {
                 System.out.println(p.getName());
                 System.out.println(e);
@@ -162,7 +157,7 @@ public class GraphicRendererVector extends GraphicRendererBase {
             try {
                 var cylinderTop = new Cylinder(topPosition, radius, scaledSpanTop * 0.5, radius);
                 cylinderTop.setAttributes(attrs);
-                addRenderable(cylinderTop, true);
+                addRenderable(cylinderTop, true, null, sMapObjects);
             } catch (IllegalArgumentException e) {
                 System.out.println(p.getName());
                 System.out.println(e);
@@ -170,32 +165,32 @@ public class GraphicRendererVector extends GraphicRendererBase {
         }
     }
 
-    private void plot2d(BTopoControlPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
+    private void plot2d(BTopoControlPoint p, Position position) {
     }
 
-    private void plot3d(BTopoControlPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
+    private void plot3d(BTopoControlPoint p, Position position) {
         if (!isValidFor3dPlot(p)) {
             return;
         }
 
-        var positions = plot3dOffsetPole(p, position, mapObjects);
+        var positions = plot3dOffsetPole(p, position);
         var startPosition = positions[0];
         var endPosition = positions[1];
 
         var path = new Path(startPosition, endPosition);
         path.setAttributes(mAttributeManager.getComponentVector3dAttributes(p));
-        addRenderable(path, true);
+        addRenderable(path, true, null, sMapObjects);
 
         //plot dZ
         var endDeltaZ = Position.fromDegrees(startPosition.latitude.degrees, startPosition.longitude.degrees, endPosition.getAltitude());
         var pathDeltaZ = new Path(startPosition, endDeltaZ);
         pathDeltaZ.setAttributes(mAttributeManager.getComponentVector1dAttributes(p));
-        addRenderable(pathDeltaZ, true);
+        addRenderable(pathDeltaZ, true, null, sMapObjects);
 
         //plot dR
         var pathDeltaR = new Path(endDeltaZ, endPosition);
         pathDeltaR.setAttributes(mAttributeManager.getComponentVector2dAttributes(p));
-        addRenderable(pathDeltaR, true);
+        addRenderable(pathDeltaR, true, null, sMapObjects);
     }
 
 }

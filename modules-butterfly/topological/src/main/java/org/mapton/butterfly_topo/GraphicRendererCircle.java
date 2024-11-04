@@ -15,11 +15,9 @@
  */
 package org.mapton.butterfly_topo;
 
-import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.Cylinder;
-import java.util.ArrayList;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.topo.BTopoControlPointObservation;
@@ -31,21 +29,21 @@ import org.mapton.worldwind.api.WWHelper;
  */
 public class GraphicRendererCircle extends GraphicRendererBase {
 
-    public GraphicRendererCircle(RenderableLayer layer) {
-        super(layer);
+    public GraphicRendererCircle(RenderableLayer layer, RenderableLayer passiveLayer) {
+        super(layer, passiveLayer);
     }
 
-    public ArrayList<AVListImpl> plot(BTopoControlPoint p, Position position) {
-        var mapObjects = new ArrayList<AVListImpl>();
-
+    public void plot(BTopoControlPoint p, Position position) {
         if (sCheckModel.isChecked(GraphicRendererItem.CIRCLE_1D) && p.getDimension() == BDimension._1d) {
-            plot1dCircle(p, position, mapObjects);
+            plot1dCircle(p, position);
         }
 
-        return mapObjects;
+        if (sCheckModel.isChecked(GraphicRendererItem.CIRCLE_3D) && p.getDimension() == BDimension._3d) {
+            plot3dCircle(p, position);
+        }
     }
 
-    private void plot1dCircle(BTopoControlPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
+    private void plot1dCircle(BTopoControlPoint p, Position position) {
         if (isPlotLimitReached(p, GraphicRendererItem.CIRCLE_1D, position)) {
             return;
         }
@@ -73,7 +71,32 @@ public class GraphicRendererCircle extends GraphicRendererBase {
 //        }
 
         cylinder.setAttributes(attrs);
-        addRenderable(cylinder, true);
-        sPlotLimiter.incPlotCounter(GraphicRendererItem.CIRCLE_1D);
+        addRenderable(cylinder, true, GraphicRendererItem.CIRCLE_1D, sMapObjects);
+    }
+
+    private void plot3dCircle(BTopoControlPoint p, Position position) {
+        if (isPlotLimitReached(p, GraphicRendererItem.CIRCLE_3D, position)) {
+            return;
+        }
+
+        var height = 0.8;
+        var pos = WWHelper.positionFromPosition(position, height * 0.5 * 2);
+        var maxRadius = 10.0;
+        BTopoControlPointObservation o = p.ext().getObservationFilteredLast();
+
+        var delta3d = o.ext().getDelta3d();
+        if (delta3d == null) {
+            return;
+        }
+        var radius = Math.min(maxRadius, Math.abs(delta3d) * 250 + 0.05);
+        var maximus = radius == maxRadius;
+        var rise = Math.signum(delta3d) > 0;
+
+        var cylinder = new Cylinder(pos, height, radius);
+        var alarmLevel = p.ext().getAlarmLevel(o);
+        var attrs = mAttributeManager.getComponentCircle1dAttributes(p, alarmLevel, rise, maximus);
+
+        cylinder.setAttributes(attrs);
+        addRenderable(cylinder, true, GraphicRendererItem.CIRCLE_3D, sMapObjects);
     }
 }
