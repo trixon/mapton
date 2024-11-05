@@ -20,6 +20,7 @@ import eu.hansolo.tilesfx.SectionBuilder;
 import eu.hansolo.tilesfx.Tile;
 import eu.hansolo.tilesfx.Tile.SkinType;
 import eu.hansolo.tilesfx.TileBuilder;
+import eu.hansolo.tilesfx.chart.ChartData;
 import eu.hansolo.tilesfx.skins.LeaderBoardItem;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -52,6 +53,10 @@ public class TopoPropertiesBuilder extends PropertiesBuilder<BTopoControlPoint> 
 
     private static final double TILE_HEIGHT = 150;
     private static final double TILE_WIDTH = 150;
+    private ChartData chartData1;
+    private ChartData chartData2;
+    private ChartData chartData3;
+    private ChartData chartData4;
 
     private Tile mAlarmHGaugeTile;
     private Tile mAlarmHLedTile;
@@ -76,7 +81,7 @@ public class TopoPropertiesBuilder extends PropertiesBuilder<BTopoControlPoint> 
         if (p == null) {
             return p;
         }
-        loadDashboard(p);
+//        loadDashboard(p);
         mDashBoardScrollPane.setFitToWidth(true);
         mSplitProperties.load(mDashBoardScrollPane, buildDetails(p));
 
@@ -96,9 +101,10 @@ public class TopoPropertiesBuilder extends PropertiesBuilder<BTopoControlPoint> 
         propertyMap.put(getCatKey(cat1, SDict.OPERATOR.toString()), p.getOperator());
         propertyMap.put(getCatKey(cat1, Dict.ORIGIN.toString()), p.getOrigin());
         propertyMap.put(getCatKey(cat1, Dict.COMMENT.toString()), p.getComment());
-        propertyMap.put(getCatKey(cat1, SDict.ALARM.toString()), StringHelper.join(SEPARATOR, "", p.getNameOfAlarmHeight(), p.getNameOfAlarmPlane()));
+        propertyMap.put(getCatKey(cat1, SDict.ALARM.toString()), StringHelper.join(SEPARATOR, "", p.getAlarm1Id(), p.getAlarm2Id()));
         propertyMap.put(getCatKey(cat1, Dict.Geometry.HEIGHT.toString()), AlarmHelper.getInstance().getLimitsAsString(BComponent.HEIGHT, p));
         propertyMap.put(getCatKey(cat1, Dict.Geometry.PLANE.toString()), AlarmHelper.getInstance().getLimitsAsString(BComponent.PLANE, p));
+        propertyMap.put(getCatKey(cat1, "Larmförbrukning"), p.ext().getAlarmPercentString(p.ext()));
         var measurements = "%d / %d    (%d - %d)".formatted(
                 p.ext().getNumOfObservationsFiltered(),
                 p.ext().getNumOfObservations(),
@@ -237,12 +243,27 @@ public class TopoPropertiesBuilder extends PropertiesBuilder<BTopoControlPoint> 
                 .build();
 
         leaderBoardTile.setInteractive(false);
+        this.chartData1 = new ChartData(Dict.NEED.toString(), 24.0, Tile.GREEN);
+        this.chartData2 = new ChartData(SDict.FREQUENCY.toString(), 10.0, Tile.BLUE);
+        this.chartData3 = new ChartData(Dict.AGE.toString(), 12.0, Tile.RED);
+        this.chartData4 = new ChartData("Ålder larmnivå", 13.0, Tile.YELLOW_ORANGE);
+
+        var cycleStepTile = TileBuilder.create()
+                .skinType(SkinType.CYCLE_STEP)
+                .prefSize(TILE_WIDTH, TILE_HEIGHT * 1.5)
+                .title("CycleStep Tile")
+                .textVisible(false)
+                .chartData(chartData1, chartData2, chartData3, chartData4)
+                .animated(false)
+                .decimals(0)
+                .build();
 
         int row = 0;
         mDashboard.add(mNameTextTile, 0, row++, 2, 1);
-        mDashboard.addRow(row++, mAlarmHLedTile, mAlarmPLedTile);
         mDashboard.addRow(row++, mAlarmHGaugeTile, mAlarmPGaugeTile);
+        mDashboard.addRow(row++, mAlarmHLedTile, mAlarmPLedTile);
         mDashboard.add(leaderBoardTile, 0, row++, 2, 1);
+        mDashboard.add(cycleStepTile, 0, row++, 2, 1);
         FxHelper.autoSizeColumn(mDashboard, 2);
         mDashboard.setPadding(FxHelper.getUIScaledInsets(mPadding));
     }
@@ -283,18 +304,25 @@ public class TopoPropertiesBuilder extends PropertiesBuilder<BTopoControlPoint> 
         populateAlarmSectionsH(p.ext().getAlarm(BComponent.HEIGHT));
         populateAlarmSectionsP(p.ext().getAlarm(BComponent.PLANE));
 
-        if (p.getDimension() != BDimension._2d && p.ext().deltaZero() != null) {
-            mAlarmHGaugeTile.setValue(p.ext().deltaRolling().getDelta1());
-            mAlarmHGaugeTile.setValue(p.ext().deltaZero().getDelta1() * 1000);
-        }
-        if (p.getDimension() != BDimension._1d && p.ext().deltaZero() != null && p.ext().deltaZero().getDelta2() != null) {
-            mAlarmPGaugeTile.setValue(p.ext().deltaZero().getDelta2() * 1000);
+        try {
+            if (p.getDimension() != BDimension._2d && p.ext().deltaZero() != null) {
+                mAlarmHGaugeTile.setValue(p.ext().deltaRolling().getDelta1());
+                mAlarmHGaugeTile.setValue(p.ext().deltaZero().getDelta1() * 1000);
+            }
+            if (p.getDimension() != BDimension._1d && p.ext().deltaZero() != null && p.ext().deltaZero().getDelta2() != null) {
+                mAlarmPGaugeTile.setValue(p.ext().deltaZero().getDelta2() * 1000);
+            }
+        } catch (NullPointerException e) {
         }
 //        mGaugeTile.setAv(p.ext().deltaZero().getDelta1());
         mDayNeedLeaderBoardItem.setValue(p.ext().getMeasurementUntilNext(ChronoUnit.DAYS));
         mDayFreqLeaderBoardItem.setValue(p.getFrequency());
         mDayAgeLeaderBoardItem.setValue(-1);
         mDayAgeAlarmLevelLeaderBoardItem.setValue(-1);
+        chartData1.setValue(p.ext().getMeasurementUntilNext(ChronoUnit.DAYS));
+        chartData2.setValue(p.getFrequency());
+        chartData3.setValue(-1);
+        chartData4.setValue(-1);
 
         return mDashboard;
     }

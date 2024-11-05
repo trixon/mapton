@@ -478,7 +478,7 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
 
     private void initListeners() {
         activateCopyNames(actionEvent -> {
-            var names = TopoManager.getInstance().getTimeFilteredItems().stream().map(o -> o.getName()).toList();
+            var names = mManager.getTimeFilteredItems().stream().map(o -> o.getName()).toList();
             copyNames(names);
         });
 

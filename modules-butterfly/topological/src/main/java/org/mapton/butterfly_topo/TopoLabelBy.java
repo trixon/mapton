@@ -47,20 +47,7 @@ public enum TopoLabelBy {
         return AlarmHelper.getInstance().getLimitsAsString(BComponent.HEIGHT, p);
     }),
     ALARM_H_PERCENT(LabelByCategories.ALARM, Strings.HEIGHT_PERCENT, p -> {
-        var percent = p.ext().getAlarmPercent(BComponent.HEIGHT);
-        if (percent == null) {
-            return "";
-        } else {
-            var delta = p.ext().deltaZero().getDelta1();
-            var direction = "";
-            if (delta > 0) {
-                direction = "↑";
-            } else if (delta < 0) {
-                direction = "↓";
-            }
-
-            return "%d%% %s".formatted(percent, direction);
-        }
+        return p.ext().getAlarmPercentHString(p.ext());
     }),
     ALARM_P_NAME(LabelByCategories.ALARM, Strings.PLANE_NAME, p -> {
         return p.getAlarm2Id();
@@ -69,15 +56,10 @@ public enum TopoLabelBy {
         return AlarmHelper.getInstance().getLimitsAsString(BComponent.PLANE, p);
     }),
     ALARM_P_PERCENT(LabelByCategories.ALARM, Strings.PLANE_PERCENT, p -> {
-        var percent = p.ext().getAlarmPercent(BComponent.PLANE);
-        if (percent == null) {
-            return "";
-        } else {
-            return "%d%%".formatted(percent);
-        }
+        return p.ext().getAlarmPercentPString(p.ext());
     }),
     ALARM_PERCENT(LabelByCategories.ALARM, "%", p -> {
-        return "%s // %s".formatted(StringUtils.defaultIfBlank(ALARM_H_PERCENT.getLabel(p), "-"), StringUtils.defaultIfBlank(ALARM_P_PERCENT.getLabel(p), "-"));
+        return p.ext().getAlarmPercentString(p.ext());
     }),
     DATE_LATEST(LabelByCategories.DATE, SDict.LATEST.toString(), p -> {
         var date = p.ext().getObservationFilteredLastDate();

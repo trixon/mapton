@@ -22,8 +22,8 @@ import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import org.controlsfx.control.PropertySheet;
-import org.mapton.api.MPropertyItem;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.fx.PropertyItem;
 
 /**
  *
@@ -48,7 +48,7 @@ public class SplitProperties extends TabPane {
         mDashboardTab.setContent(node);
         ObservableList<PropertySheet.Item> propertyItems = FXCollections.observableArrayList();
         propertiesMap.keySet().forEach((key) -> {
-            propertyItems.add(new MPropertyItem(propertiesMap, key));
+            propertyItems.add(new PropertyItem(propertiesMap, key));
         });
 
         mPropertySheet.getItems().setAll(propertyItems);
