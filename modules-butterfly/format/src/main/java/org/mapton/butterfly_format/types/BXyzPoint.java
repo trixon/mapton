@@ -174,10 +174,10 @@ public abstract class BXyzPoint extends BBaseControlPoint {
                 var measuredZ = o.getMeasuredZ();
 
                 if (ObjectUtils.allNotNull(measuredX, zeroX)) {
-                    o.ext().setDeltaX(measuredX - zeroX);
+                    o.ext().setDeltaX(measuredX - zeroX - accumulatedReplacementsX);
                 }
                 if (ObjectUtils.allNotNull(measuredY, zeroY)) {
-                    o.ext().setDeltaY(measuredY - zeroY);
+                    o.ext().setDeltaY(measuredY - zeroY - accumulatedReplacementsY);
                 }
                 if (ObjectUtils.allNotNull(measuredZ, zeroZ)) {
                     o.ext().setDeltaZ(measuredZ - zeroZ - accumulatedReplacementsZ);
@@ -192,7 +192,7 @@ public abstract class BXyzPoint extends BBaseControlPoint {
                     if (ObjectUtils.allNotNull(measuredX, prevX, o.ext().getDeltaX())) {
                         var replacementX = measuredX - prevX;
                         o.ext().setDeltaX(o.ext().getDeltaX() - replacementX);
-                        accumulatedReplacementsX = accumulatedReplacementsX + measuredX - prevX;
+                        accumulatedReplacementsX = accumulatedReplacementsX + replacementX;
                     }
 
                     if (ObjectUtils.allNotNull(measuredY, prevY, o.ext().getDeltaY())) {
