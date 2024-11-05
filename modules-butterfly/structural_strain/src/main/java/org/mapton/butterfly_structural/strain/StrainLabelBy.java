@@ -43,6 +43,9 @@ public enum StrainLabelBy {
     ALARM_VALUE(LabelByCategories.ALARM, Dict.VALUE.toString(), p -> {
         return AlarmHelper.getInstance().getLimitsAsString(p);
     }),
+    ALARM_PERCENT(LabelByCategories.ALARM, "%", p -> {
+        return p.ext().getAlarmPercentHString(p.ext());
+    }),
     DATE_LATEST(LabelByCategories.DATE, SDict.LATEST.toString(), p -> {
         var date = p.ext().getObservationFilteredLastDate();
 

@@ -59,6 +59,8 @@ public class StrainPropertiesBuilder extends PropertiesBuilder<BStructuralStrain
         propertyMap.put(getCatKey(cat1, Dict.COMMENT.toString()), p.getComment());
         propertyMap.put(getCatKey(cat1, SDict.ALARM.toString()), p.getAlarm1Id());
         propertyMap.put(getCatKey(cat1, Dict.VALUE.toString()), AlarmHelper.getInstance().getLimitsAsString(p));
+        propertyMap.put(getCatKey(cat1, "Larmförbrukning"), p.ext().getAlarmPercentHString(p.ext()));
+
         var measurements = "%d / %d    (%d - %d)".formatted(
                 p.ext().getNumOfObservationsFiltered(),
                 p.ext().getNumOfObservations(),
@@ -102,7 +104,6 @@ public class StrainPropertiesBuilder extends PropertiesBuilder<BStructuralStrain
         propertyMap.put(getCatKey(cat1, delta + SDict.ROLLING.toString()), p.ext().getDeltaRolling());
         propertyMap.put(getCatKey(cat1, delta + Dict.REFERENCE.toString()), p.ext().getDeltaZero());
 
-        propertyMap.put(getCatKey(cat1, Dict.Geometry.DIRECTION_X.toString()), StringHelper.round(p.getDirectionX(), 0));
         propertyMap.put(getCatKey(cat1, "N"), StringHelper.round(p.getZeroY(), 3));
         propertyMap.put(getCatKey(cat1, "E"), StringHelper.round(p.getZeroX(), 3));
         propertyMap.put(getCatKey(cat1, "µε"), StringHelper.round(p.getZeroZ(), 4));
