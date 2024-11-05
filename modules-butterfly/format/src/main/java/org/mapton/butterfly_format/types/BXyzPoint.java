@@ -374,6 +374,52 @@ public abstract class BXyzPoint extends BBaseControlPoint {
             }
         }
 
+        public String getAlarmPercentHString(BXyzPoint.Ext ext) {
+            var percentH = getAlarmPercentString(ext, BComponent.HEIGHT);
+            var delta = ext.deltaZero().getDelta1();
+            var direction = "";
+            if (delta != null) {
+                if (delta > 0) {
+                    direction = " ↑";
+                } else if (delta < 0) {
+                    direction = " ↓";
+                }
+            }
+
+            return percentH + direction;
+        }
+
+        public String getAlarmPercentPString(BXyzPoint.Ext ext) {
+            return getAlarmPercentString(ext, BComponent.PLANE);
+        }
+
+        public String getAlarmPercentString(BXyzPoint.Ext ext, BComponent component) {
+            var percent = ext.getAlarmPercent(component);
+            if (percent == null) {
+                return "";
+            } else {
+                return "%d%%".formatted(percent);
+            }
+        }
+
+        public String getAlarmPercentString(BXyzPoint.Ext ext) {
+            switch (getDimension()) {
+                case _1d -> {
+                    return getAlarmPercentHString(ext);
+                }
+                case _2d -> {
+                    return getAlarmPercentPString(ext);
+                }
+                case _3d -> {
+                    return "%s :: %s".formatted(StringUtils.defaultIfBlank(getAlarmPercentHString(ext), "-"), StringUtils.defaultIfBlank(getAlarmPercentPString(ext), "-"));
+                    //return "%s :: %s".formatted(getAlarmPercentHString(ext), getAlarmPercentPString(ext));
+                }
+                default ->
+                    throw new AssertionError();
+            }
+
+        }
+
         public long getMeasurementUntilNext(ChronoUnit chronoUnit) {
             var latest = getDateLatest() != null ? getDateLatest().toLocalDate() : LocalDate.MIN;
             var nextMeas = latest.plusDays(getFrequency());
