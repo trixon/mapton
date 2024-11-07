@@ -24,6 +24,7 @@ import se.trixon.almond.util.Dict;
  */
 public enum GraphicRendererItem implements GraphicRenderItemLimitProvider {
 
+    ALARM_CONSUMPTION("Larmförbrukning", Integer.MAX_VALUE),
     DIRECTION_X(Dict.Geometry.DIRECTION_X.toString(), Integer.MAX_VALUE),
     DIRECTION(Dict.Geometry.DIRECTION.toString(), Integer.MAX_VALUE);
     private final String mName;

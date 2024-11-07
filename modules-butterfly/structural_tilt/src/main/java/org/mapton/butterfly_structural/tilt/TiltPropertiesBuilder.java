@@ -23,7 +23,6 @@ import java.util.ResourceBundle;
 import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.api.ui.forms.PropertiesBuilder;
 import static org.mapton.api.ui.forms.PropertiesBuilder.SEPARATOR;
-import org.mapton.butterfly_alarm.api.AlarmHelper;
 import org.mapton.butterfly_format.types.structural.BStructuralTiltPoint;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.DateHelper;
@@ -58,7 +57,8 @@ public class TiltPropertiesBuilder extends PropertiesBuilder<BStructuralTiltPoin
         propertyMap.put(getCatKey(cat1, Dict.ORIGIN.toString()), p.getOrigin());
         propertyMap.put(getCatKey(cat1, Dict.COMMENT.toString()), p.getComment());
         propertyMap.put(getCatKey(cat1, SDict.ALARM.toString()), p.getAlarm1Id());
-        propertyMap.put(getCatKey(cat1, Dict.VALUE.toString()), AlarmHelper.getInstance().getLimitsAsString(p));
+        propertyMap.put(getCatKey(cat1, Dict.VALUE.toString()), TiltHelper.getLimitsAsString(p));
+        propertyMap.put(getCatKey(cat1, "Larmförbrukning"), p.ext().getAlarmPercentString());
         var measurements = "%d / %d    (%d - %d)".formatted(
                 p.ext().getNumOfObservationsFiltered(),
                 p.ext().getNumOfObservations(),

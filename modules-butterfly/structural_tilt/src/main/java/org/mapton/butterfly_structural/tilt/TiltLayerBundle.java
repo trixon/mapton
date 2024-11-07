@@ -21,7 +21,6 @@ import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.Cylinder;
 import gov.nasa.worldwind.render.PointPlacemark;
-import java.awt.Color;
 import java.util.ArrayList;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
@@ -51,6 +50,7 @@ public class TiltLayerBundle extends BfLayerBundle {
     private final RenderableLayer mLayer = new RenderableLayer();
     private final TiltManager mManager = TiltManager.getInstance();
     private final TiltOptionsView mOptionsView;
+    private final RenderableLayer mPassiveLayer = new RenderableLayer();
     private final RenderableLayer mPinLayer = new RenderableLayer();
     private final RenderableLayer mSurfaceLayer = new RenderableLayer();
     private final RenderableLayer mSymbolLayer = new RenderableLayer();
@@ -59,7 +59,7 @@ public class TiltLayerBundle extends BfLayerBundle {
         init();
         initRepaint();
         mOptionsView = new TiltOptionsView(this);
-        mGraphicRenderer = new GraphicRenderer(mLayer, mOptionsView.getGraphicCheckModel());
+        mGraphicRenderer = new GraphicRenderer(mLayer, mPassiveLayer, mOptionsView.getGraphicCheckModel());
         initListeners();
 
         mManager.setInitialTemporalState(WWHelper.isStoredAsVisible(mLayer, mLayer.isEnabled()));
@@ -72,7 +72,7 @@ public class TiltLayerBundle extends BfLayerBundle {
 
     @Override
     public void populate() throws Exception {
-        getLayers().addAll(mLayer, mLabelLayer, mSymbolLayer, mPinLayer, mGroundConnectorLayer, mSurfaceLayer);
+        getLayers().addAll(mLayer, mPassiveLayer, mLabelLayer, mSymbolLayer, mPinLayer, mGroundConnectorLayer, mSurfaceLayer);
         repaint(DEFAULT_REPAINT_DELAY);
     }
 
@@ -87,9 +87,10 @@ public class TiltLayerBundle extends BfLayerBundle {
         mLabelLayer.setMaxActiveAltitude(2000);
         mGroundConnectorLayer.setMaxActiveAltitude(1000);
         setParentLayer(mLayer);
-        setAllChildLayers(mLabelLayer, mSymbolLayer, mPinLayer, mGroundConnectorLayer, mSurfaceLayer);
+        setAllChildLayers(mLabelLayer, mPassiveLayer, mSymbolLayer, mPinLayer, mGroundConnectorLayer, mSurfaceLayer);
 
         mLayer.setPickEnabled(true);
+        mPassiveLayer.setPickEnabled(false);
         mSurfaceLayer.setPickEnabled(false);
 
         mLayer.setEnabled(false);
@@ -148,7 +149,7 @@ public class TiltLayerBundle extends BfLayerBundle {
                     var mapObjects = new ArrayList<AVListImpl>();
 
                     mapObjects.add(labelPlacemark);
-                    mapObjects.add(plotPin(position, labelPlacemark));
+                    mapObjects.add(plotPin(p, position, labelPlacemark));
                     mapObjects.addAll(plotSymbol(p, position, labelPlacemark));
 
                     mGraphicRenderer.plot(p, position, mapObjects);
@@ -187,8 +188,8 @@ public class TiltLayerBundle extends BfLayerBundle {
         return placemark;
     }
 
-    private PointPlacemark plotPin(Position position, PointPlacemark labelPlacemark) {
-        var attrs = mAttributeManager.getPinAttributes(Color.ORANGE.darker());
+    private PointPlacemark plotPin(BStructuralTiltPoint p, Position position, PointPlacemark labelPlacemark) {
+        var attrs = mAttributeManager.getPinAttributes(TiltHelper.getAlarmLevel(p));
 
         var placemark = new PointPlacemark(position);
         placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
@@ -211,7 +212,7 @@ public class TiltLayerBundle extends BfLayerBundle {
     private ArrayList<AVListImpl> plotSymbol(BStructuralTiltPoint p, Position position, PointPlacemark labelPlacemark) {
         var mapObjects = new ArrayList<AVListImpl>();
         var cylinder = new Cylinder(position, SYMBOL_HEIGHT, SYMBOL_RADIUS);
-        var attrs = mAttributeManager.getSymbolAttributes(p);
+        var attrs = mAttributeManager.getAlarmInteriorAttributes(TiltHelper.getAlarmLevel(p));
 
         cylinder.setAttributes(attrs);
         mapObjects.add(cylinder);

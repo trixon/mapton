@@ -17,9 +17,11 @@ package org.mapton.butterfly_structural.tilt;
 
 import com.dlsc.gemsfx.Spacer;
 import java.util.ResourceBundle;
+import javafx.scene.control.Separator;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
+import org.controlsfx.control.action.ActionUtils;
 import static org.mapton.api.ui.MPopOver.GAP;
 import org.mapton.butterfly_core.api.BaseFilterPopOver;
 import org.mapton.butterfly_core.api.BaseFilters;
@@ -36,7 +38,7 @@ public class TiltFilterPopOver extends BaseFilterPopOver {
     private final BaseFilters mBaseFilters = new BaseFilters();
     private final ResourceBundle mBundle = NbBundle.getBundle(TiltFilterPopOver.class);
     private final TiltFilter mFilter;
-    private TiltManager mManager = TiltManager.getInstance();
+    private final TiltManager mManager = TiltManager.getInstance();
 
     public TiltFilterPopOver(TiltFilter filter) {
         mFilter = filter;
@@ -114,6 +116,13 @@ public class TiltFilterPopOver extends BaseFilterPopOver {
 
         var root = new BorderPane(gridPane);
         root.setTop(getToolBar());
+        addToToolBar("mc", ActionUtils.ActionTextBehavior.SHOW);
+        addToToolBar("mr", ActionUtils.ActionTextBehavior.SHOW);
+        addToToolBar("mm", ActionUtils.ActionTextBehavior.SHOW);
+        addToToolBar("mp", ActionUtils.ActionTextBehavior.SHOW);
+        getToolBar().getItems().add(new Separator());
+        addToToolBar("copyNames", ActionUtils.ActionTextBehavior.HIDE);
+        addToToolBar("paste", ActionUtils.ActionTextBehavior.HIDE);
 
         FxHelper.bindWidthForChildrens(leftBox, mBaseFilters.getBaseBox());
         FxHelper.bindWidthForRegions(leftBox);
@@ -126,6 +135,16 @@ public class TiltFilterPopOver extends BaseFilterPopOver {
     }
 
     private void initListeners() {
+        activateCopyNames(actionEvent -> {
+            var names = mManager.getTimeFilteredItems().stream().map(o -> o.getName()).toList();
+            copyNames(names);
+        });
+
+        activatePasteName(actionEvent -> {
+            mFilter.freeTextProperty().set(mManager.getSelectedItem().getName());
+            //mSameAlarmCheckbox.setSelected(true);
+        });
+
         mFilter.polygonFilterProperty().bind(usePolygonFilterProperty());
 
         mFilter.mStatusCheckModel = mBaseFilters.getStatusSccb().getCheckModel();

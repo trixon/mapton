@@ -23,7 +23,6 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.util.Duration;
 import org.apache.commons.lang3.StringUtils;
@@ -134,8 +133,7 @@ class TiltListCell extends ListCell<BStructuralTiltPoint> {
         }
 
         public void update(BStructuralTiltPoint p) {
-//            mResultantShape.setFill(TopoHelper.getAlarmColorHeightFx(p));
-            mResultantShape.setFill(Color.BLUE);
+            mResultantShape.setFill(TiltHelper.getAlarmColorHeightFx(p));
         }
 
         private void createUI() {

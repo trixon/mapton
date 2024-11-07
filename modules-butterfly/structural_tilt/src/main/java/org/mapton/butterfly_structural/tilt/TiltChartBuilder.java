@@ -19,7 +19,6 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.util.Objects;
 import java.util.concurrent.Callable;
-import org.apache.commons.numbers.core.Precision;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.axis.AxisLocation;
 import org.jfree.chart.axis.DateAxis;
@@ -32,7 +31,6 @@ import org.jfree.data.time.MovingAverage;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
-import org.mapton.butterfly_format.types.BAlarm;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.structural.BStructuralTiltPoint;
 import org.mapton.ce_jfreechart.api.ChartHelper;
@@ -46,13 +44,13 @@ import se.trixon.almond.util.DateHelper;
 public class TiltChartBuilder extends XyzChartBuilder<BStructuralTiltPoint> {
 
     private final ChartHelper mChartHelper = new ChartHelper();
+    private final XYLineAndShapeRenderer mSecondaryRenderer = new XYLineAndShapeRenderer();
+    private final NumberAxis mTemperatureAxis = new NumberAxis("°C");
     private final TimeSeriesCollection mTemperatureDataset = new TimeSeriesCollection();
     private final TimeSeries mTimeSeriesTemperature = new TimeSeries("°C");
-    private final TimeSeries mTimeSeriesX = new TimeSeries("X");
-    private final TimeSeries mTimeSeriesY = new TimeSeries("Y");
-    private final TimeSeries mTimeSeriesZ = new TimeSeries("R");
-    private final NumberAxis mTemperatureAxis = new NumberAxis("°C");
-    private final XYLineAndShapeRenderer mSecondaryRenderer = new XYLineAndShapeRenderer();
+    private final TimeSeries mTimeSeriesX = new TimeSeries("Transversal");
+    private final TimeSeries mTimeSeriesY = new TimeSeries("Longitudinell");
+    private final TimeSeries mTimeSeriesZ = new TimeSeries("Resultant");
 
     public TiltChartBuilder() {
         initChart("mm/m", "0.0");
@@ -132,7 +130,7 @@ public class TiltChartBuilder extends XyzChartBuilder<BStructuralTiltPoint> {
 
             mTimeSeriesX.add(minute, o.ext().getDeltaX());
             mTimeSeriesY.add(minute, o.ext().getDeltaY());
-            mTimeSeriesZ.add(minute, o.ext().getDeltaZ());
+            mTimeSeriesZ.add(minute, o.ext().getDelta2d());
             mTimeSeriesTemperature.add(minute, o.getTemperature());
         });
 
@@ -199,39 +197,22 @@ public class TiltChartBuilder extends XyzChartBuilder<BStructuralTiltPoint> {
     }
 
     private void plotAlarmIndicators(BStructuralTiltPoint p) {
-//        var ha = p.ext().getAlarm(BComponent.HEIGHT);
-        BAlarm ha = null;
+        var ha = p.ext().getAlarm(BComponent.HEIGHT);
         if (ha != null) {
             var range0 = ha.ext().getRange0();
             if (range0 != null) {
-                plotAlarmIndicator(BComponent.HEIGHT, range0.getMinimum(), Color.YELLOW);
-                plotAlarmIndicator(BComponent.HEIGHT, range0.getMaximum(), Color.YELLOW);
+                var min = TiltHelper.toRadianBased(range0.getMinimum());
+                var max = TiltHelper.toRadianBased(range0.getMaximum());
+                plotAlarmIndicator(BComponent.HEIGHT, min, Color.YELLOW);
+                plotAlarmIndicator(BComponent.HEIGHT, max, Color.YELLOW);
             }
 
             var range1 = ha.ext().getRange1();
             if (range1 != null) {
-                plotAlarmIndicator(BComponent.HEIGHT, range1.getMinimum(), Color.RED);
-                plotAlarmIndicator(BComponent.HEIGHT, range1.getMaximum(), Color.RED);
-            }
-        }
-
-//        var pa = p.ext().getAlarm(BComponent.PLANE);
-        BAlarm pa = null;
-        if (pa != null) {
-            var range0 = pa.ext().getRange0();
-            if (range0 != null) {
-                if (!Precision.equals(range0.getMinimum(), 0.0)) {
-                    plotAlarmIndicator(BComponent.PLANE, range0.getMinimum(), Color.YELLOW);
-                }
-                plotAlarmIndicator(BComponent.PLANE, range0.getMaximum(), Color.YELLOW);
-            }
-
-            var range1 = pa.ext().getRange1();
-            if (range1 != null) {
-                if (!Precision.equals(range1.getMinimum(), 0.0)) {
-                    plotAlarmIndicator(BComponent.PLANE, range1.getMinimum(), Color.RED);
-                }
-                plotAlarmIndicator(BComponent.PLANE, range1.getMaximum(), Color.RED);
+                var min = TiltHelper.toRadianBased(range1.getMinimum());
+                var max = TiltHelper.toRadianBased(range1.getMaximum());
+                plotAlarmIndicator(BComponent.HEIGHT, min, Color.RED);
+                plotAlarmIndicator(BComponent.HEIGHT, max, Color.RED);
             }
         }
     }

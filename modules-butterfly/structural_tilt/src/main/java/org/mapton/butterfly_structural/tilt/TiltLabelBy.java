@@ -20,7 +20,6 @@ import java.util.Objects;
 import java.util.function.Function;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.mapton.butterfly_alarm.api.AlarmHelper;
 import org.mapton.butterfly_core.api.LabelByCategories;
 import org.mapton.butterfly_format.types.structural.BStructuralTiltPoint;
 import se.trixon.almond.util.Dict;
@@ -41,7 +40,10 @@ public enum TiltLabelBy {
         return p.getAlarm1Id();
     }),
     ALARM_VALUE(LabelByCategories.ALARM, Dict.VALUE.toString(), p -> {
-        return AlarmHelper.getInstance().getLimitsAsString(p);
+        return TiltHelper.getLimitsAsString(p);
+    }),
+    ALARM_PERCENT(LabelByCategories.ALARM, "%", p -> {
+        return p.ext().getAlarmPercentString();
     }),
     DATE_LATEST(LabelByCategories.DATE, SDict.LATEST.toString(), p -> {
         var date = p.ext().getObservationFilteredLastDate();

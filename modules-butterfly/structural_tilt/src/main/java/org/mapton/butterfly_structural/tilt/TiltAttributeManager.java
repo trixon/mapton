@@ -18,8 +18,6 @@ package org.mapton.butterfly_structural.tilt;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Material;
 import org.mapton.butterfly_core.api.BaseAttributeManager;
-import org.mapton.butterfly_core.api.ButterflyHelper;
-import org.mapton.butterfly_format.types.structural.BStructuralTiltPoint;
 
 /**
  *
@@ -27,31 +25,15 @@ import org.mapton.butterfly_format.types.structural.BStructuralTiltPoint;
  */
 public class TiltAttributeManager extends BaseAttributeManager {
 
-    private BasicShapeAttributes mBearingAttribute;
-
     private BasicShapeAttributes mComponentEllipsoidAttributes;
-    private BasicShapeAttributes mComponentGroundPathAttributes;
+    private BasicShapeAttributes mDirectionXAttributes;
     private BasicShapeAttributes mSurfaceAttributes;
-    private BasicShapeAttributes[] mSymbolAttributes;
-    private BasicShapeAttributes mTiltAttribute;
 
     public static TiltAttributeManager getInstance() {
         return Holder.INSTANCE;
     }
 
     private TiltAttributeManager() {
-    }
-
-    public BasicShapeAttributes getBearingAttribute() {
-        if (mBearingAttribute == null) {
-            mBearingAttribute = new BasicShapeAttributes();
-            mBearingAttribute.setDrawOutline(true);
-            mBearingAttribute.setOutlineMaterial(Material.CYAN);
-            mBearingAttribute.setOutlineWidth(4.0);
-            mBearingAttribute.setOutlineOpacity(1.0);
-        }
-
-        return mBearingAttribute;
     }
 
     public BasicShapeAttributes getComponentEllipsoidAttributes() {
@@ -65,16 +47,16 @@ public class TiltAttributeManager extends BaseAttributeManager {
         return mComponentEllipsoidAttributes;
     }
 
-    public BasicShapeAttributes getComponentGroundPathAttributes() {
-        if (mComponentGroundPathAttributes == null) {
-            mComponentGroundPathAttributes = new BasicShapeAttributes();
-            mComponentGroundPathAttributes.setDrawOutline(true);
-            mComponentGroundPathAttributes.setOutlineMaterial(Material.YELLOW);
-            mComponentGroundPathAttributes.setEnableLighting(false);
-            mComponentGroundPathAttributes.setOutlineWidth(1);
+    public BasicShapeAttributes getDirectionXAttributes() {
+        if (mDirectionXAttributes == null) {
+            mDirectionXAttributes = new BasicShapeAttributes();
+            mDirectionXAttributes.setDrawOutline(true);
+            mDirectionXAttributes.setOutlineMaterial(Material.CYAN);
+            mDirectionXAttributes.setOutlineWidth(3.0);
+            mDirectionXAttributes.setOutlineOpacity(1.0);
         }
 
-        return mComponentGroundPathAttributes;
+        return mDirectionXAttributes;
     }
 
     public BasicShapeAttributes getSurfaceAttributes() {
@@ -87,40 +69,6 @@ public class TiltAttributeManager extends BaseAttributeManager {
         }
 
         return mSurfaceAttributes;
-    }
-
-    public BasicShapeAttributes getSymbolAttributes(BStructuralTiltPoint p) {
-        if (mSymbolAttributes == null) {
-            mSymbolAttributes = new BasicShapeAttributes[4];
-            for (int i = 0; i < 4; i++) {
-                var attrs = new BasicShapeAttributes();
-                attrs.setInteriorMaterial(ButterflyHelper.getAlarmMaterial(i - 1));
-                attrs.setEnableLighting(true);
-                attrs.setDrawOutline(false);
-                mSymbolAttributes[i] = attrs;
-            }
-        }
-
-        var attrs = mSymbolAttributes[1];
-//        var attrs = mSymbolAttributes[TopoHelper.getAlarmLevel(p) + 1];
-//        if (mColorBy != null && mColorBy != ColorBy.ALARM) {
-//            attrs = new BasicShapeAttributes(attrs);
-//            attrs.setInteriorMaterial(new Material(getColor(p)));
-//        }
-
-        return attrs;
-    }
-
-    public BasicShapeAttributes getTiltAttribute() {
-        if (mTiltAttribute == null) {
-            mTiltAttribute = new BasicShapeAttributes();
-            mTiltAttribute.setDrawOutline(true);
-            mTiltAttribute.setOutlineMaterial(Material.RED);
-            mTiltAttribute.setOutlineWidth(4.0);
-            mTiltAttribute.setOutlineOpacity(1.0);
-        }
-
-        return mTiltAttribute;
     }
 
     private static class Holder {
