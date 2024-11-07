@@ -25,7 +25,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.butterfly_format.types.BComponent;
-import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.structural.BStructuralStrainGaugePoint;
 import org.mapton.worldwind.api.WWHelper;
 
@@ -54,10 +53,6 @@ public class GraphicRenderer extends GraphicRendererBase {
         }
     }
 
-    public void reset() {
-        resetPlotLimiter();
-    }
-
     private void plotAlarmConsumption(BStructuralStrainGaugePoint p, Position position) {
         if (isPlotLimitReached(p, GraphicRendererItem.ALARM_CONSUMPTION, position) || p.ext().getObservationFilteredLast() == null) {
             return;
@@ -65,24 +60,26 @@ public class GraphicRenderer extends GraphicRendererBase {
 
         var o = p.ext().getObservationFilteredLast();
 
-        if (p.getDimension() != BDimension._2d) {
-            Integer percentH = p.ext().getAlarmPercent(BComponent.HEIGHT);
-            if (percentH == null) {
-                percentH = 0;
-            }
-
-            int alarmLevel = p.ext().getAlarmLevelHeight(o);
-            var dZ = o.ext().getDeltaZ();
-            var rise = false;
-            if (dZ != null) {
-                rise = Math.signum(o.ext().getDeltaZ()) > 0;
-            }
-            var attrs = mAttributeManager.getComponentTrace1dAttributes(alarmLevel, rise, false);
-            var pos = WWHelper.positionFromPosition(position, PERCENTAGE_ALTITUDE * percentH / 100.0);
-            var box = new Box(pos, PERCENTAGE_SIZE, PERCENTAGE_SIZE, PERCENTAGE_SIZE);
-            box.setAttributes(attrs);
-            addRenderable(box, true, GraphicRendererItem.ALARM_CONSUMPTION, sMapObjects);
+        Integer percentH = p.ext().getAlarmPercent(BComponent.HEIGHT);
+        if (percentH == null) {
+            percentH = 0;
         }
+
+        int alarmLevel = p.ext().getAlarmLevelHeight(o);
+        var dZ = o.ext().getDeltaZ();
+        var rise = false;
+        if (dZ != null) {
+            rise = Math.signum(o.ext().getDeltaZ()) > 0;
+        }
+        var attrs = mAttributeManager.getComponentTrace1dAttributes(alarmLevel, rise, false);
+        var pos = WWHelper.positionFromPosition(position, PERCENTAGE_ALTITUDE * percentH / 100.0);
+        var box = new Box(pos, PERCENTAGE_SIZE, PERCENTAGE_SIZE, PERCENTAGE_SIZE);
+        box.setAttributes(attrs);
+        addRenderable(box, true, GraphicRendererItem.ALARM_CONSUMPTION, sMapObjects);
+
+        var alarm = p.ext().getAlarm(BComponent.HEIGHT);
+        var alarmShape = new Box(position, PERCENTAGE_SIZE_ALARM, PERCENTAGE_SIZE_ALARM_HEIGHT, PERCENTAGE_SIZE_ALARM);
+        plotPercentageAlarmIndicator(position, alarm, alarmShape, false);
 
         plotPercentageRod(position, p.ext().getAlarmPercent());
     }

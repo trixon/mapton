@@ -193,7 +193,7 @@ public class StrainChartBuilder extends XyzChartBuilder<BStructuralStrainGaugePo
             }
 
             if (o.ext().getDeltaZ() != null) {
-                timeSeries.add(minute, o.ext().getDeltaZ());
+                timeSeries.addOrUpdate(minute, o.ext().getDeltaZ());
             }
         });
 
@@ -207,7 +207,7 @@ public class StrainChartBuilder extends XyzChartBuilder<BStructuralStrainGaugePo
         p.ext().getObservationsTimeFiltered().forEach(o -> {
             var minute = mChartHelper.convertToMinute(o.getDate());
             if (MathHelper.isBetween(-40d, +40d, o.getTemperature())) {
-                mTimeSeriesTemperature.add(minute, o.getTemperature());
+                mTimeSeriesTemperature.addOrUpdate(minute, o.getTemperature());
             }
         });
 

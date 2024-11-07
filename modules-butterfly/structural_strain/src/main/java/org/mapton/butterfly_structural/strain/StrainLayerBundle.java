@@ -50,6 +50,7 @@ public class StrainLayerBundle extends BfLayerBundle {
     private final RenderableLayer mLayer = new RenderableLayer();
     private final StrainManager mManager = StrainManager.getInstance();
     private final StrainOptionsView mOptionsView;
+    private final RenderableLayer mPassiveLayer = new RenderableLayer();
     private final RenderableLayer mPinLayer = new RenderableLayer();
     private final RenderableLayer mSurfaceLayer = new RenderableLayer();
     private final RenderableLayer mSymbolLayer = new RenderableLayer();
@@ -58,7 +59,7 @@ public class StrainLayerBundle extends BfLayerBundle {
         init();
         initRepaint();
         mOptionsView = new StrainOptionsView(this);
-        mGraphicRenderer = new GraphicRenderer(mLayer, null, mOptionsView.getGraphicCheckModel());
+        mGraphicRenderer = new GraphicRenderer(mLayer, mPassiveLayer, mOptionsView.getGraphicCheckModel());
         initListeners();
 
         mManager.setInitialTemporalState(WWHelper.isStoredAsVisible(mLayer, mLayer.isEnabled()));
@@ -71,7 +72,7 @@ public class StrainLayerBundle extends BfLayerBundle {
 
     @Override
     public void populate() throws Exception {
-        getLayers().addAll(mLayer, mLabelLayer, mSymbolLayer, mPinLayer, mGroundConnectorLayer, mSurfaceLayer);
+        getLayers().addAll(mLayer, mPassiveLayer, mLabelLayer, mSymbolLayer, mPinLayer, mGroundConnectorLayer, mSurfaceLayer);
         repaint(DEFAULT_REPAINT_DELAY);
     }
 
@@ -86,10 +87,11 @@ public class StrainLayerBundle extends BfLayerBundle {
         mLabelLayer.setMaxActiveAltitude(2000);
         mGroundConnectorLayer.setMaxActiveAltitude(1000);
         setParentLayer(mLayer);
-        setAllChildLayers(mLabelLayer, mSymbolLayer, mPinLayer, mGroundConnectorLayer, mSurfaceLayer);
+        setAllChildLayers(mPassiveLayer, mLabelLayer, mSymbolLayer, mPinLayer, mGroundConnectorLayer, mSurfaceLayer);
 
         mLayer.setPickEnabled(true);
         mSurfaceLayer.setPickEnabled(false);
+        mPassiveLayer.setPickEnabled(false);
 
         mLayer.setEnabled(false);
     }
@@ -214,7 +216,7 @@ public class StrainLayerBundle extends BfLayerBundle {
     private ArrayList<AVListImpl> plotSymbol(BStructuralStrainGaugePoint p, Position position, PointPlacemark labelPlacemark) {
         var mapObjects = new ArrayList<AVListImpl>();
         var cylinder = new Cylinder(position, SYMBOL_HEIGHT, SYMBOL_RADIUS);
-        var attrs = mAttributeManager.getSymbolAttributes(p);
+        var attrs = mAttributeManager.getAlarmInteriorAttributes(StrainHelper.getAlarmLevel(p));
 
         cylinder.setAttributes(attrs);
         mapObjects.add(cylinder);

@@ -50,7 +50,7 @@ public class StrainAttributeManager extends BaseAttributeManager {
     }
 
     public PointPlacemarkAttributes getPinAttributes(BStructuralStrainGaugePoint p) {
-        var attrs = getPinAttributes(p, StrainHelper.getAlarmLevel(p));
+        var attrs = getPinAttributes(StrainHelper.getAlarmLevel(p));
 
 //        if (mColorBy != null && mColorBy != ColorBy.ALARM) {
 //            attrs = new PointPlacemarkAttributes(attrs);
@@ -81,16 +81,6 @@ public class StrainAttributeManager extends BaseAttributeManager {
         }
 
         return mSurfaceAttributes;
-    }
-
-    public BasicShapeAttributes getSymbolAttributes(BStructuralStrainGaugePoint p) {
-        var attrs = getSymbolAttributes(p, StrainHelper.getAlarmLevel(p));
-//        if (mColorBy != null && mColorBy != ColorBy.ALARM) {
-//            attrs = new BasicShapeAttributes(attrs);
-//            attrs.setInteriorMaterial(new Material(getColor(p)));
-//        }
-
-        return attrs;
     }
 
     private static class Holder {
