@@ -29,6 +29,7 @@ public abstract class TopoBaseLayerBundle extends BfLayerBundle {
     protected final RenderableLayer mLayer = new RenderableLayer();
     protected final TopoManager mManager = TopoManager.getInstance();
     protected final RenderableLayer mMuteLayer = new RenderableLayer();
+    protected final RenderableLayer mPassiveLayer = new RenderableLayer();
     protected final RenderableLayer mPinLayer = new RenderableLayer();
     protected final RenderableLayer mSymbolLayer = new RenderableLayer();
 

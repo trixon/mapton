@@ -63,7 +63,7 @@ public class TopoLayerBundle extends TopoBaseLayerBundle {
         init();
         initRepaint();
         mOptionsView = new TopoOptionsView(this);
-        mGraphicRenderer = new GraphicRenderer(mLayer, null, mOptionsView.getComponentCheckModel());
+        mGraphicRenderer = new GraphicRenderer(mLayer, mPassiveLayer, mOptionsView.getComponentCheckModel());
         initListeners();
         mAttributeManager.setColorBy(mOptionsView.getColorBy());
 
@@ -77,7 +77,7 @@ public class TopoLayerBundle extends TopoBaseLayerBundle {
 
     @Override
     public void populate() throws Exception {
-        getLayers().addAll(mLayer, mLabelLayer, mSymbolLayer, mPinLayer);
+        getLayers().addAll(mLayer, mPassiveLayer, mLabelLayer, mSymbolLayer, mPinLayer);
         repaint(DEFAULT_REPAINT_DELAY);
     }
 
@@ -88,9 +88,10 @@ public class TopoLayerBundle extends TopoBaseLayerBundle {
         attachTopComponentToLayer("TopoTopComponent", mLayer);
         mLabelLayer.setMaxActiveAltitude(2000);
         setParentLayer(mLayer);
-        setAllChildLayers(mLabelLayer, mSymbolLayer, mPinLayer);
+        setAllChildLayers(mPassiveLayer, mLabelLayer, mSymbolLayer, mPinLayer);
 
         mLayer.setPickEnabled(true);
+        mPassiveLayer.setPickEnabled(false);
 
         mLayer.setEnabled(false);
     }

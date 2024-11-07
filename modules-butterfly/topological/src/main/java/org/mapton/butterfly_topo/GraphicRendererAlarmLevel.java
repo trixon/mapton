@@ -20,6 +20,7 @@ import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.AbstractShape;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
+import gov.nasa.worldwind.render.Box;
 import gov.nasa.worldwind.render.Cylinder;
 import gov.nasa.worldwind.render.Ellipsoid;
 import gov.nasa.worldwind.render.Pyramid;
@@ -31,6 +32,8 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import static org.mapton.butterfly_core.api.BaseGraphicRenderer.PERCENTAGE_SIZE_ALARM;
+import static org.mapton.butterfly_core.api.BaseGraphicRenderer.PERCENTAGE_SIZE_ALARM_HEIGHT;
 import org.mapton.butterfly_core.api.ButterflyHelper;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
@@ -82,6 +85,10 @@ public class GraphicRendererAlarmLevel extends GraphicRendererBase {
             var pyramid = new Pyramid(pos, PERCENTAGE_SIZE, PERCENTAGE_SIZE);
             pyramid.setAttributes(attrs);
             addRenderable(pyramid, true, null, sMapObjects);
+
+            var alarm = p.ext().getAlarm(BComponent.PLANE);
+            var alarmShape = new Box(position, PERCENTAGE_SIZE_ALARM, PERCENTAGE_SIZE_ALARM_HEIGHT, PERCENTAGE_SIZE_ALARM);
+            plotPercentageAlarmIndicator(position, alarm, alarmShape, true);
         }
 
         if (p.getDimension() != BDimension._2d) {
@@ -102,6 +109,10 @@ public class GraphicRendererAlarmLevel extends GraphicRendererBase {
             var ellipsoid = new Ellipsoid(pos, PERCENTAGE_SIZE * scale, PERCENTAGE_SIZE * scale, PERCENTAGE_SIZE * scale);
             ellipsoid.setAttributes(attrs);
             addRenderable(ellipsoid, true, null, sMapObjects);
+
+            var alarm = p.ext().getAlarm(BComponent.HEIGHT);
+            var alarmShape = new Cylinder(position, PERCENTAGE_SIZE_ALARM, PERCENTAGE_SIZE_ALARM_HEIGHT, PERCENTAGE_SIZE_ALARM);
+            plotPercentageAlarmIndicator(position, alarm, alarmShape, rise);
         }
 
         plotPercentageRod(position, p.ext().getAlarmPercent());

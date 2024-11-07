@@ -235,7 +235,7 @@ public class TopoAttributeManager extends BaseAttributeManager {
     }
 
     public PointPlacemarkAttributes getPinAttributes(BTopoControlPoint p) {
-        var attrs = getPinAttributes(p, TopoHelper.getAlarmLevel(p));
+        var attrs = getPinAttributes(TopoHelper.getAlarmLevel(p));
 
         if (mColorBy != null && mColorBy != ColorBy.ALARM) {
             attrs = new PointPlacemarkAttributes(attrs);
@@ -257,7 +257,7 @@ public class TopoAttributeManager extends BaseAttributeManager {
     }
 
     public BasicShapeAttributes getSymbolAttributes(BTopoControlPoint p) {
-        var attrs = getSymbolAttributes(p, TopoHelper.getAlarmLevel(p));
+        var attrs = getAlarmInteriorAttributes(TopoHelper.getAlarmLevel(p));
         if (mColorBy != null && mColorBy != ColorBy.ALARM) {
             attrs = new BasicShapeAttributes(attrs);
             attrs.setInteriorMaterial(new Material(getColor(p)));
