@@ -18,10 +18,13 @@ package org.mapton.butterfly_core.api;
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
+import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Cylinder;
 import gov.nasa.worldwind.render.Path;
 import gov.nasa.worldwind.render.Renderable;
+import gov.nasa.worldwind.render.RigidShape;
 import java.util.ArrayList;
+import org.mapton.butterfly_format.types.BAlarm;
 import org.mapton.butterfly_format.types.BBase;
 import org.mapton.worldwind.api.WWHelper;
 
@@ -33,6 +36,8 @@ public abstract class BaseGraphicRenderer<T extends Enum<T>, U extends BBase> {
 
     public static final double PERCENTAGE_ALTITUDE = 50.0;
     public static final double PERCENTAGE_SIZE = 1.5;
+    public static final double PERCENTAGE_SIZE_ALARM = PERCENTAGE_SIZE * 1.2;
+    public static final double PERCENTAGE_SIZE_ALARM_HEIGHT = PERCENTAGE_SIZE * 0.05;
 
     private final BaseAttributeManager mAttributeManager = new BaseAttributeManager() {
     };
@@ -67,6 +72,42 @@ public abstract class BaseGraphicRenderer<T extends Enum<T>, U extends BBase> {
         return mPlotLimiter;
     }
 
+    public void plotPercentageAlarmIndicator(Position position, BAlarm alarm, RigidShape rigidShape, boolean rising) {
+        if (alarm == null
+                || alarm.ext().getRange0() == null
+                || alarm.ext().getRange1() == null
+                || alarm.ext().getRange0().getMaximum() == null
+                || alarm.ext().getRange1().getMaximum() == null) {
+            return;
+        }
+
+        try {
+            Double limit0;
+            Double limit1;
+            if (rising) {
+                limit0 = alarm.ext().getRange0().getMaximum();
+                limit1 = alarm.ext().getRange1().getMaximum();
+            } else {
+                limit0 = alarm.ext().getRange0().getMinimum();
+                limit1 = alarm.ext().getRange1().getMinimum();
+            }
+
+            var percent = limit0 / limit1;
+            if (Double.isNaN(percent) || Double.isInfinite(percent)) {
+                percent = 0.0;
+            }
+
+            var pos = WWHelper.positionFromPosition(position, PERCENTAGE_ALTITUDE * percent);
+            rigidShape.setCenterPosition(pos);
+            var attrs = new BasicShapeAttributes(mAttributeManager.getAlarmInteriorAttributes(1));
+            attrs.setInteriorOpacity(0.4);
+            rigidShape.setAttributes(attrs);
+            addRenderable(rigidShape, false, null, null);
+        } catch (Exception e) {
+            //System.err.println(e);
+        }
+    }
+
     public void plotPercentageRod(Position position, Integer percent) {
         if (percent == null) {
             percent = 0;
@@ -75,12 +116,16 @@ public abstract class BaseGraphicRenderer<T extends Enum<T>, U extends BBase> {
         var pos = WWHelper.positionFromPosition(position, PERCENTAGE_ALTITUDE * Math.max(percent, 100) / 100.0);
         var groundPath = new Path(WWHelper.positionFromPosition(position, 0.0), pos);
         groundPath.setAttributes(mAttributeManager.getComponentGroundPathAttributes());
-        addRenderable(groundPath, true, null, null);
+        addRenderable(groundPath, false, null, null);
 
         var pos100 = WWHelper.positionFromPosition(position, PERCENTAGE_ALTITUDE);
         var cylinder = new Cylinder(pos100, 0.25, PERCENTAGE_SIZE * 2);
         cylinder.setAttributes(mAttributeManager.getComponentZeroAttributes());
-        addRenderable(cylinder, true, null, null);
+        addRenderable(cylinder, false, null, null);
+    }
+
+    public void reset() {
+        resetPlotLimiter();
     }
 
     public void resetPlotLimiter() {

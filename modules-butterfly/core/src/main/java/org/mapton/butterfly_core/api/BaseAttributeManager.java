@@ -21,7 +21,6 @@ import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
 import java.awt.Color;
-import org.mapton.butterfly_format.types.BXyzPoint;
 import se.trixon.almond.util.GraphicsHelper;
 
 /**
@@ -30,15 +29,47 @@ import se.trixon.almond.util.GraphicsHelper;
  */
 public abstract class BaseAttributeManager {
 
+    private BasicShapeAttributes[] mAlarmInteriorAttributes;
+    private BasicShapeAttributes[] mAlarmOutlineAttributes;
     private BasicShapeAttributes mComponentGroundPathAttributes;
     private BasicShapeAttributes[][] mComponentTrace1dAttributes;
     private BasicShapeAttributes mComponentZeroAttributes;
     private PointPlacemarkAttributes mLabelPlacemarkAttributes;
     private PointPlacemarkAttributes[] mPinAttributes;
     private PointPlacemarkAttributes mSinglePinAttributes;
-    private BasicShapeAttributes[] mSymbolAttributes;
 
     public BaseAttributeManager() {
+    }
+
+    public BasicShapeAttributes getAlarmInteriorAttributes(int alarmLevel) {
+        if (mAlarmInteriorAttributes == null) {
+            mAlarmInteriorAttributes = new BasicShapeAttributes[4];
+            for (int i = 0; i < 4; i++) {
+                var attrs = new BasicShapeAttributes();
+                attrs.setInteriorMaterial(ButterflyHelper.getAlarmMaterial(i - 1));
+                attrs.setEnableLighting(true);
+                attrs.setDrawOutline(false);
+                mAlarmInteriorAttributes[i] = attrs;
+            }
+        }
+
+        return mAlarmInteriorAttributes[alarmLevel + 1];
+    }
+
+    public BasicShapeAttributes getAlarmOutlineAttributes(int alarmLevel) {
+        if (mAlarmOutlineAttributes == null) {
+            mAlarmOutlineAttributes = new BasicShapeAttributes[4];
+            for (int i = 0; i < 4; i++) {
+                var attrs = new BasicShapeAttributes();
+                attrs.setOutlineMaterial(ButterflyHelper.getAlarmMaterial(i - 1));
+                attrs.setDrawInterior(false);
+                attrs.setOutlineWidth(2.0);
+                attrs.setOutlineOpacity(1.0);
+                mAlarmOutlineAttributes[i] = attrs;
+            }
+        }
+
+        return mAlarmOutlineAttributes[alarmLevel + 1];
     }
 
     public BasicShapeAttributes getComponentGroundPathAttributes() {
@@ -128,7 +159,7 @@ public abstract class BaseAttributeManager {
         return mSinglePinAttributes;
     }
 
-    public PointPlacemarkAttributes getPinAttributes(BXyzPoint p, int alarmLevel) {
+    public PointPlacemarkAttributes getPinAttributes(int alarmLevel) {
         if (mPinAttributes == null) {
             mPinAttributes = new PointPlacemarkAttributes[4];
             for (int i = 0; i < 4; i++) {
@@ -142,23 +173,6 @@ public abstract class BaseAttributeManager {
         }
 
         return mPinAttributes[alarmLevel + 1];
-    }
-
-    public BasicShapeAttributes getSymbolAttributes(BXyzPoint p, int alarmLevel) {
-        if (mSymbolAttributes == null) {
-            mSymbolAttributes = new BasicShapeAttributes[4];
-            for (int i = 0; i < 4; i++) {
-                var attrs = new BasicShapeAttributes();
-                attrs.setInteriorMaterial(ButterflyHelper.getAlarmMaterial(i - 1));
-                attrs.setEnableLighting(true);
-                attrs.setDrawOutline(false);
-                mSymbolAttributes[i] = attrs;
-            }
-        }
-
-        var attrs = mSymbolAttributes[alarmLevel + 1];
-
-        return attrs;
     }
 
 }
