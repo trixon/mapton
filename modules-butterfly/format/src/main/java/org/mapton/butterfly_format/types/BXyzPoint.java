@@ -368,8 +368,6 @@ public abstract class BXyzPoint extends BBaseControlPoint {
                 }
                 return (int) Math.round((delta / limit) * 100);
             } catch (Exception e) {
-                //Exceptions.printStackTrace(e);
-//                System.err.println(e);
                 return null;
             }
         }

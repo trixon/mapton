@@ -16,6 +16,8 @@
 package org.mapton.butterfly_format.types.structural;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.apache.commons.lang3.Range;
+import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BXyzPoint;
 
 /**
@@ -73,6 +75,42 @@ public class BStructuralTiltPoint extends BXyzPoint {
 
     public class Ext extends BXyzPoint.Ext<BStructuralTiltPointObservation> {
 
+        public String getAlarmPercentString() {
+            var percent = getAlarmPercent();
+            if (percent == null) {
+                return "";
+            } else {
+                return "%d%%".formatted(percent);
+            }
+        }
+
+        @Override
+        public Integer getAlarmPercent() {
+            var alarm = getAlarm(BComponent.HEIGHT);
+            if (alarm == null) {
+                return null;
+            }
+
+            try {
+                var delta = deltaZero().getDelta2();
+                delta = Math.toDegrees(delta) / 1000.0;
+                double limit;
+                Range<Double> range;
+                if (alarm.ext().getRange2() != null) {
+                    range = alarm.ext().getRange2();
+                } else if (alarm.ext().getRange1() != null) {
+                    range = alarm.ext().getRange1();
+                } else {
+                    range = alarm.ext().getRange0();
+                }
+
+                limit = range.getMaximum();
+                return (int) Math.round((delta / limit) * 100);
+            } catch (Exception e) {
+                return null;
+            }
+        }
+
         public String getDeltaRolling() {
             return getDelta(deltaRolling());
         }
@@ -82,12 +120,7 @@ public class BStructuralTiltPoint extends BXyzPoint {
         }
 
         private String getDelta(Delta delta) {
-            var dR = "";
-            if (delta.getDeltaZ() != null) {
-                dR = ", R=%.1f".formatted(Math.abs(delta.getDeltaZ()));
-            }
-
-            var s = "X=%.1f, Y=%.1f%s".formatted(delta.getDeltaX(), delta.getDeltaY(), dR);
+            var s = "X=%.1f, Y=%.1f, R=%.1f".formatted(delta.getDeltaX(), delta.getDeltaY(), delta.getDelta2());
 
             return s;
         }
