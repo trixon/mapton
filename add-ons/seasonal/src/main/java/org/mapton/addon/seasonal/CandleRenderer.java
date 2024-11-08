@@ -40,14 +40,13 @@ public class CandleRenderer extends BaseRenderer {
     }
 
     private void initAdvent() {
-        LocalDateTime[] startTimes = {
-            //LocalDateTime.parse("2024-10-20T00:00:00"),
-            LocalDateTime.parse("2024-12-01T00:00:00"),
-            LocalDateTime.parse("2024-12-08T00:00:00"),
-            LocalDateTime.parse("2024-12-15T00:00:00"),
-            LocalDateTime.parse("2024-12-22T00:00:00")
-        };
-
+        var now = LocalDateTime.now();
+        var christmasEve = LocalDateTime.of(now.getYear(), 12, 24, 0, 0);
+        var dayOfWeek = christmasEve.getDayOfWeek().getValue();
+        var startTimes = new LocalDateTime[4];
+        for (int i = 0; i < 4; i++) {
+            startTimes[i] = christmasEve.minusDays(7 * (4 - i) + (dayOfWeek < 7 ? dayOfWeek : 0));
+        }
         double[] lats;
         double[] lons;
         double[][] ll = Mapton.getGlobalState().get("org.mapton.addon.seasonal.candle");
@@ -85,7 +84,6 @@ public class CandleRenderer extends BaseRenderer {
             }
         });
 
-        LocalDateTime now = LocalDateTime.now();
         if (now.isAfter(startTimes[0].minusDays(3)) && now.isBefore(startTimes[startTimes.length - 1].plusDays(10))) {
             timer.start();
         }
