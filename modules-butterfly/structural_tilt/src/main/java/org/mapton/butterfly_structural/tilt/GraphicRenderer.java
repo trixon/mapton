@@ -19,8 +19,11 @@ import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.Box;
+import gov.nasa.worldwind.render.Cylinder;
 import gov.nasa.worldwind.render.Path;
+import gov.nasa.worldwind.render.airspaces.Polygon;
 import java.util.ArrayList;
+import java.util.List;
 import org.apache.commons.lang3.ObjectUtils;
 import org.controlsfx.control.IndexedCheckModel;
 import static org.mapton.butterfly_core.api.BaseGraphicRenderer.PERCENTAGE_ALTITUDE;
@@ -50,33 +53,38 @@ public class GraphicRenderer extends GraphicRendererBase {
             plotAlarmConsumption(p, position);
         }
 
-        if (sCheckModel.isChecked(GraphicRendererItem.DIRECTION_X)) {
-            plotDirectionX(p, position);
+        if (sCheckModel.isChecked(GraphicRendererItem.AXIS)) {
+            plotAxis(p, position);
         }
 
-        if (sCheckModel.isChecked(GraphicRendererItem.DIRECTION)) {
-            plotDirection(p, position);
+        if (sCheckModel.isChecked(GraphicRendererItem.TILT_DIRECTION)) {
+            plotTiltDirection(p, position);
         }
     }
 
     private Double calcBearing(BStructuralTiltPoint p) {
-        if (p.getDirectionX() == null) {
-            return null;
-        }
-        var bearing = MathHelper.convert(p.getDirectionX());
-        var o0 = p.ext().getObservationFilteredFirst();
-        var o1 = p.ext().getObservationFilteredLast();
-
-        if (ObjectUtils.anyNull(o0, o1) || ObjectUtils.anyNull(o0.getMeasuredX(), o1.getMeasuredX(), o0.getMeasuredY(), o1.getMeasuredY())) {
+        var dX = p.ext().deltaZero().getDeltaX();
+        var dY = p.ext().deltaZero().getDeltaY();
+        if (ObjectUtils.anyNull(p.getDirectionX(), dX, dY)) {
             return null;
         }
 
-        var v0 = Math.atan(o0.getMeasuredY() / o0.getMeasuredX());
-        var v1 = Math.atan(o1.getMeasuredY() / o1.getMeasuredX());
-        var delta = Math.toDegrees(v1 - v0);
-        var r = bearing + delta;
+        var bearing = MathHelper.convertCcwDegreeToCw(p.getDirectionX());
+        if (dX == 0.0 && dY == 0.0) {
+            return null;
+        } else if (dX == 0.0) {
+            return bearing + (dY > 0 ? -90.0 : +90.0);
+        }
 
-        return r;
+        var v = bearing + MathHelper.convertCcwDegreeToCw(Math.toDegrees(Math.atan(dY / dX)));
+
+        if (dX > 0) {
+            v -= 90.0;
+        } else {
+            v += 90.0;
+        }
+
+        return v;
     }
 
     private void plotAlarmConsumption(BStructuralTiltPoint p, Position position) {
@@ -108,49 +116,86 @@ public class GraphicRenderer extends GraphicRendererBase {
         plotPercentageRod(position, p.ext().getAlarmPercent());
     }
 
-    private void plotDirection(BStructuralTiltPoint p, Position position) {
-        var bearing = calcBearing(p);
-        if (bearing == null) {
-            return;
-        }
-
-        try {
-            var length = Math.abs(100.0 * p.ext().deltaZero().getDelta2());
-            length = Math.max(length, 2.0);
-            var p2 = WWHelper.movePolar(position, bearing, length);
-            var z = 0.2;
-            position = WWHelper.positionFromPosition(position, z);
-            p2 = WWHelper.positionFromPosition(p2, z);
-            var path = new Path(position, p2);
-            path.setAttributes(mAttributeManager.getAlarmOutlineAttributes(TiltHelper.getAlarmLevel(p)));
-
-            addRenderable(path, true, GraphicRendererItem.DIRECTION, sMapObjects);
-        } catch (Exception e) {
-            System.err.println(e);
-        }
-
-    }
-
-    private void plotDirectionX(BStructuralTiltPoint p, Position position) {
+    private void plotAxis(BStructuralTiltPoint p, Position position) {
         if (p.getDirectionX() == null) {
             return;
         }
 
         try {
-            var bearing = MathHelper.convert(p.getDirectionX());
-
-            var length = 10.0;
+            var bearing = MathHelper.convertCcwDegreeToCw(p.getDirectionX());
+            var length = 2.0;
             var p2 = WWHelper.movePolar(position, bearing, length);
             var z = 0.1;
             position = WWHelper.positionFromPosition(position, z);
             p2 = WWHelper.positionFromPosition(p2, z);
-            var path = new Path(position, p2);
-            path.setAttributes(mAttributeManager.getDirectionXAttributes());
+            var arrowHeadSize = 0.15;
 
-            addRenderable(path, true, GraphicRendererItem.DIRECTION, sMapObjects);
+            //East
+            var pathE = new Path(position, p2);
+            pathE.setAttributes(mAttributeManager.getAxisAttributes());
+            addRenderable(pathE, false, null, sMapObjects);
+
+            var x0 = WWHelper.movePolar(p2, bearing + 0, arrowHeadSize);
+            var x1 = WWHelper.movePolar(p2, bearing + 120, arrowHeadSize);
+            var x2 = WWHelper.movePolar(p2, bearing + 240, arrowHeadSize);
+            var xPolygon = new Polygon(List.of(x0, x1, x2));
+            xPolygon.setAltitudes(0.0, 0.1);
+            xPolygon.setAttributes(mAttributeManager.getAxisAttributes());
+            addRenderable(xPolygon, false, null, null);
+
+            //West
+            p2 = WWHelper.movePolar(position, bearing - 180, length);
+            var pathW = new Path(position, p2);
+            pathW.setAttributes(mAttributeManager.getAxisAttributes());
+            addRenderable(pathW, false, null, sMapObjects);
+
+            //North
+            p2 = WWHelper.movePolar(position, bearing + 270, length);
+            var pathS = new Path(position, p2);
+            pathS.setAttributes(mAttributeManager.getAxisAttributes());
+            addRenderable(pathS, false, null, sMapObjects);
+
+            var y0 = WWHelper.movePolar(p2, bearing - 90 + 0, arrowHeadSize);
+            var y1 = WWHelper.movePolar(p2, bearing - 90 + 120, arrowHeadSize);
+            var y2 = WWHelper.movePolar(p2, bearing - 90 + 240, arrowHeadSize);
+            var yPolygon = new Polygon(List.of(y0, y1, y2));
+            yPolygon.setAltitudes(0.0, 0.1);
+            yPolygon.setAttributes(mAttributeManager.getAxisAttributes());
+            addRenderable(yPolygon, false, null, null);
+
+            //South
+            p2 = WWHelper.movePolar(position, bearing + 90, length);
+            var pathN = new Path(position, p2);
+            pathN.setAttributes(mAttributeManager.getAxisAttributes());
+            addRenderable(pathN, false, null, sMapObjects);
         } catch (Exception e) {
-            System.err.println(e);
+            //System.err.println(e);
         }
+    }
+
+    private void plotTiltDirection(BStructuralTiltPoint p, Position position) {
+        var bearing = calcBearing(p);
+
+        try {
+            var z = 0.1;
+            if (bearing == null) {
+                var cylinder = new Cylinder(position, 0.1, 0.5);
+                cylinder.setAttributes(mAttributeManager.getAlarmOutlineAttributes(TiltHelper.getAlarmLevel(p)));
+
+                addRenderable(cylinder, true, GraphicRendererItem.TILT_DIRECTION, sMapObjects);
+            } else {
+                var length = Math.max(Math.abs(100.0 * p.ext().deltaZero().getDelta2()), 2.0);
+                position = WWHelper.positionFromPosition(position, z);
+                var p2 = WWHelper.movePolar(position, bearing, length, z);
+                var path = new Path(position, p2);
+                path.setAttributes(mAttributeManager.getAlarmOutlineAttributes(TiltHelper.getAlarmLevel(p)));
+
+                addRenderable(path, true, GraphicRendererItem.TILT_DIRECTION, sMapObjects);
+            }
+        } catch (Exception e) {
+            //System.err.println(e);
+        }
+
     }
 
 }

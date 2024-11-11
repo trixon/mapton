@@ -25,8 +25,8 @@ import org.mapton.butterfly_core.api.BaseAttributeManager;
  */
 public class TiltAttributeManager extends BaseAttributeManager {
 
+    private BasicShapeAttributes mAxisAttributes;
     private BasicShapeAttributes mComponentEllipsoidAttributes;
-    private BasicShapeAttributes mDirectionXAttributes;
     private BasicShapeAttributes mSurfaceAttributes;
 
     public static TiltAttributeManager getInstance() {
@@ -34,6 +34,20 @@ public class TiltAttributeManager extends BaseAttributeManager {
     }
 
     private TiltAttributeManager() {
+    }
+
+    public BasicShapeAttributes getAxisAttributes() {
+        if (mAxisAttributes == null) {
+            mAxisAttributes = new BasicShapeAttributes();
+            mAxisAttributes.setDrawInterior(true);
+            mAxisAttributes.setInteriorMaterial(Material.CYAN);
+            mAxisAttributes.setDrawOutline(true);
+            mAxisAttributes.setOutlineMaterial(Material.CYAN);
+            mAxisAttributes.setOutlineWidth(1.0);
+//            mAxisAttributes.setOutlineOpacity(1.0);
+        }
+
+        return mAxisAttributes;
     }
 
     public BasicShapeAttributes getComponentEllipsoidAttributes() {
@@ -45,18 +59,6 @@ public class TiltAttributeManager extends BaseAttributeManager {
         }
 
         return mComponentEllipsoidAttributes;
-    }
-
-    public BasicShapeAttributes getDirectionXAttributes() {
-        if (mDirectionXAttributes == null) {
-            mDirectionXAttributes = new BasicShapeAttributes();
-            mDirectionXAttributes.setDrawOutline(true);
-            mDirectionXAttributes.setOutlineMaterial(Material.CYAN);
-            mDirectionXAttributes.setOutlineWidth(3.0);
-            mDirectionXAttributes.setOutlineOpacity(1.0);
-        }
-
-        return mDirectionXAttributes;
     }
 
     public BasicShapeAttributes getSurfaceAttributes() {
