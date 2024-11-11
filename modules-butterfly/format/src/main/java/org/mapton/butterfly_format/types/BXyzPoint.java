@@ -172,7 +172,11 @@ public abstract class BXyzPoint extends BBaseControlPoint {
                 var measuredX = o.getMeasuredX();
                 var measuredY = o.getMeasuredY();
                 var measuredZ = o.getMeasuredZ();
-
+                if (o.isZeroMeasurement()) {
+                    accumulatedReplacementsX = 0.0;
+                    accumulatedReplacementsY = 0.0;
+                    accumulatedReplacementsZ = 0.0;
+                }
                 if (ObjectUtils.allNotNull(measuredX, zeroX)) {
                     o.ext().setDeltaX(measuredX - zeroX - accumulatedReplacementsX);
                 }
