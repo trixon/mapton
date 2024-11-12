@@ -31,6 +31,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.scene.Node;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.CheckBoxTreeItem;
 import javafx.scene.control.ContextMenu;
@@ -56,6 +57,7 @@ import org.controlsfx.control.textfield.TextFields;
 import org.mapton.api.MActivatable;
 import org.mapton.api.MDict;
 import org.mapton.api.MKey;
+import org.mapton.api.MRunnable;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.mapton.api.ui.MOptionsPopOver;
@@ -200,11 +202,23 @@ public class LayerObjectView extends BorderPane implements MActivatable {
         mTreeView.setShowRoot(false);
         mTreeView.setCellFactory(param -> new LayerTreeCell());
 
+        var runOnceChecker = new HashSet<Node>();
+
         mOptionsPopOver = new MOptionsPopOver();
         mOptionsPopOver.setArrowLocation(PopOver.ArrowLocation.LEFT_CENTER);
         mOptionsPopOver.setOnShowing(windowEvent -> {
             var layerBundle = (LayerBundle) getSelectedTreeItem().getValue().getValue("layerBundle");
-            mOptionsPopOver.setContentNode(layerBundle.getOptionsView());
+            var optionsView = layerBundle.getOptionsView();
+            mOptionsPopOver.setContentNode(optionsView);
+            if (optionsView instanceof MRunnable r) {
+                FxHelper.runLaterDelayed(50, () -> {
+                    if (!runOnceChecker.contains(optionsView)) {
+                        runOnceChecker.add(optionsView);
+                        r.runOnce();
+                    }
+                    r.run();
+                });
+            }
         });
 
         mOptionsAction = mOptionsPopOver.getAction();
@@ -382,9 +396,8 @@ public class LayerObjectView extends BorderPane implements MActivatable {
                         try {
                             mCheckModel.clearCheck(treeItem);
                         } catch (UnsupportedOperationException e) {
-                            System.err.println("Error detected in WWLayerObjectView");
+                            System.err.println("Error detected in WWLayerObjectView while clearing check");
                             System.err.println(e.toString());
-                            System.err.println(e.getMessage());
                         }
                     }
 
