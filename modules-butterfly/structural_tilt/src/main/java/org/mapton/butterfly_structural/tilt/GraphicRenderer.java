@@ -40,6 +40,11 @@ import se.trixon.almond.util.MathHelper;
 public class GraphicRenderer extends GraphicRendererBase {
 
     private final TiltAttributeManager mAttributeManager = TiltAttributeManager.getInstance();
+    private Position mPosition;
+    private Position mPosition0;
+    private Position mPosition1;
+    private Position mPosition2;
+    private Position mPosition3;
 
     public GraphicRenderer(RenderableLayer layer, RenderableLayer passiveLayer, IndexedCheckModel<GraphicRendererItem> checkModel) {
         super(layer, passiveLayer);
@@ -48,6 +53,8 @@ public class GraphicRenderer extends GraphicRendererBase {
 
     public void plot(BStructuralTiltPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
         sMapObjects = mapObjects;
+        mPosition = position;
+        initPositions(p);
 
         if (sCheckModel.isChecked(GraphicRendererItem.ALARM_CONSUMPTION)) {
             plotAlarmConsumption(p, position);
@@ -57,8 +64,16 @@ public class GraphicRenderer extends GraphicRendererBase {
             plotAxis(p, position);
         }
 
-        if (sCheckModel.isChecked(GraphicRendererItem.TILT_DIRECTION)) {
-            plotTiltDirection(p, position);
+        if (sCheckModel.isChecked(GraphicRendererItem.TILT)) {
+            plotTilt(p);
+        }
+
+        if (sCheckModel.isChecked(GraphicRendererItem.TILT_LONGITUDINAL)) {
+            plotTiltLongitudinal(p);
+        }
+
+        if (sCheckModel.isChecked(GraphicRendererItem.TILT_TRANSVERSAL)) {
+            plotTiltTransversal(p);
         }
     }
 
@@ -85,6 +100,48 @@ public class GraphicRenderer extends GraphicRendererBase {
         }
 
         return v;
+    }
+
+    private void initPositions(BStructuralTiltPoint p) {
+        mPosition0 = null;
+        mPosition1 = null;
+        mPosition2 = null;
+        mPosition3 = null;
+
+        var bearing = calcBearing(p);
+
+        if (ObjectUtils.anyNull(bearing, p.ext().deltaZero().getDelta2())) {
+            return;
+        }
+
+        var minLength = 2.0;
+        var scaleLength = 100.0;
+        var z = 0.1;
+        var length = Math.max(Math.abs(scaleLength * p.ext().deltaZero().getDelta2()), minLength);
+        mPosition0 = WWHelper.positionFromPosition(mPosition, z);
+        mPosition3 = WWHelper.movePolar(mPosition0, bearing, length, z);
+
+        var transDelta = p.ext().deltaZero().getDeltaX();
+        if (transDelta != null) {
+            var transBearing = MathHelper.convertCcwDegreeToCw(p.getDirectionX());
+            if (transDelta < 0) {
+                transBearing -= 180.0;
+            }
+            var transLength = Math.max(Math.abs(scaleLength * transDelta), minLength);
+            mPosition1 = WWHelper.movePolar(mPosition0, transBearing, transLength, z);
+        }
+
+        var longDelta = p.ext().deltaZero().getDeltaY();
+        if (longDelta != null) {
+            var longBearing = MathHelper.convertCcwDegreeToCw(p.getDirectionX());
+            if (longDelta > 0) {
+                longBearing -= 90.0;
+            } else {
+                longBearing += 90.0;
+            }
+            var longLength = Math.max(Math.abs(scaleLength * longDelta), minLength);
+            mPosition2 = WWHelper.movePolar(mPosition0, longBearing, longLength, z);
+        }
     }
 
     private void plotAlarmConsumption(BStructuralTiltPoint p, Position position) {
@@ -130,7 +187,7 @@ public class GraphicRenderer extends GraphicRendererBase {
             p2 = WWHelper.positionFromPosition(p2, z);
             var arrowHeadSize = 0.15;
 
-            //East
+            //East - Positive X
             var pathE = new Path(position, p2);
             pathE.setAttributes(mAttributeManager.getAxisAttributes());
             addRenderable(pathE, false, null, sMapObjects);
@@ -150,10 +207,10 @@ public class GraphicRenderer extends GraphicRendererBase {
             addRenderable(pathW, false, null, sMapObjects);
 
             //North
-            p2 = WWHelper.movePolar(position, bearing + 270, length);
-            var pathS = new Path(position, p2);
-            pathS.setAttributes(mAttributeManager.getAxisAttributes());
-            addRenderable(pathS, false, null, sMapObjects);
+            p2 = WWHelper.movePolar(position, bearing - 90, length);
+            var pathN = new Path(position, p2);
+            pathN.setAttributes(mAttributeManager.getAxisAttributes());
+            addRenderable(pathN, false, null, sMapObjects);
 
             var y0 = WWHelper.movePolar(p2, bearing - 90 + 0, arrowHeadSize);
             var y1 = WWHelper.movePolar(p2, bearing - 90 + 120, arrowHeadSize);
@@ -165,37 +222,63 @@ public class GraphicRenderer extends GraphicRendererBase {
 
             //South
             p2 = WWHelper.movePolar(position, bearing + 90, length);
-            var pathN = new Path(position, p2);
-            pathN.setAttributes(mAttributeManager.getAxisAttributes());
-            addRenderable(pathN, false, null, sMapObjects);
+            var pathS = new Path(position, p2);
+            pathS.setAttributes(mAttributeManager.getAxisAttributes());
+            addRenderable(pathS, false, null, sMapObjects);
         } catch (Exception e) {
             //System.err.println(e);
         }
     }
 
-    private void plotTiltDirection(BStructuralTiltPoint p, Position position) {
+    private void plotTilt(BStructuralTiltPoint p) {
         var bearing = calcBearing(p);
 
         try {
-            var z = 0.1;
-            if (bearing == null) {
-                var cylinder = new Cylinder(position, 0.1, 0.5);
-                cylinder.setAttributes(mAttributeManager.getAlarmOutlineAttributes(TiltHelper.getAlarmLevel(p)));
-
-                addRenderable(cylinder, true, GraphicRendererItem.TILT_DIRECTION, sMapObjects);
+            if (bearing == null || mPosition3 == null) {
+                plotZeroCircle(mPosition0);
             } else {
-                var length = Math.max(Math.abs(100.0 * p.ext().deltaZero().getDelta2()), 2.0);
-                position = WWHelper.positionFromPosition(position, z);
-                var p2 = WWHelper.movePolar(position, bearing, length, z);
-                var path = new Path(position, p2);
+                var path = new Path(mPosition0, mPosition3);
                 path.setAttributes(mAttributeManager.getAlarmOutlineAttributes(TiltHelper.getAlarmLevel(p)));
 
-                addRenderable(path, true, GraphicRendererItem.TILT_DIRECTION, sMapObjects);
+                addRenderable(path, true, GraphicRendererItem.TILT, sMapObjects);
             }
         } catch (Exception e) {
             //System.err.println(e);
         }
 
+    }
+
+    private void plotTiltLongitudinal(BStructuralTiltPoint p) {
+        var dY = p.ext().deltaZero().getDeltaY();
+        if (ObjectUtils.anyNull(dY, mPosition0, mPosition1)
+                || dY == 0.0
+                || mPosition2 == null) {
+            return;
+        }
+
+        var path = new Path(mPosition0, mPosition2);
+        path.setAttributes(mAttributeManager.getAlarmOutlineAttributes(TiltHelper.getAlarmLevelLong(p)));
+        addRenderable(path, true, GraphicRendererItem.TILT_LONGITUDINAL, sMapObjects);
+    }
+
+    private void plotTiltTransversal(BStructuralTiltPoint p) {
+        var dX = p.ext().deltaZero().getDeltaX();
+        if (ObjectUtils.anyNull(dX, mPosition0, mPosition1)
+                || dX == 0.0
+                || mPosition1 == null) {
+            return;
+        }
+
+        var path = new Path(mPosition0, mPosition1);
+        path.setAttributes(mAttributeManager.getAlarmOutlineAttributes(TiltHelper.getAlarmLevelTrans(p)));
+        addRenderable(path, true, GraphicRendererItem.TILT_TRANSVERSAL, sMapObjects);
+    }
+
+    private void plotZeroCircle(Position position) {
+        var cylinder = new Cylinder(position, 0.1, 0.5);
+        cylinder.setAttributes(mAttributeManager.getAlarmOutlineAttributes(0));
+
+        addRenderable(cylinder, true, GraphicRendererItem.TILT, sMapObjects);
     }
 
 }

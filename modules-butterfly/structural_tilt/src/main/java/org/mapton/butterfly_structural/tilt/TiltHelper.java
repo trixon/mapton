@@ -15,9 +15,11 @@
  */
 package org.mapton.butterfly_structural.tilt;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.math3.util.FastMath;
 import org.mapton.butterfly_alarm.api.AlarmManager;
 import org.mapton.butterfly_core.api.ButterflyHelper;
+import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.structural.BStructuralTiltPoint;
 
 /**
@@ -46,12 +48,34 @@ public class TiltHelper {
         }
     }
 
-    public static Double toDegreeBased(Double value) {
-        return value == null ? null : FastMath.toDegrees(value) / 1000.0;
+    public static int getAlarmLevelLong(BStructuralTiltPoint p) {
+        var o = p.ext().getObservationFilteredLast();
+        if (o == null) {
+            return -1;
+        } else {
+            var alarm = p.ext().getAlarm(BComponent.HEIGHT);
+            if (ObjectUtils.anyNull(alarm, o)) {
+                return -1;
+            } else {
+                var deltaLong = toDegreeBased(o.ext().getDeltaY());
+                return alarm.ext().getLevel(Math.abs(deltaLong));
+            }
+        }
     }
 
-    public static Double toRadianBased(Double value) {
-        return value == null ? null : FastMath.toRadians(value) * 1000.0;
+    public static int getAlarmLevelTrans(BStructuralTiltPoint p) {
+        var o = p.ext().getObservationFilteredLast();
+        if (o == null) {
+            return -1;
+        } else {
+            var alarm = p.ext().getAlarm(BComponent.HEIGHT);
+            if (ObjectUtils.anyNull(alarm, o)) {
+                return -1;
+            } else {
+                var deltaTrans = toDegreeBased(o.ext().getDeltaX());
+                return alarm.ext().getLevel(Math.abs(deltaTrans));
+            }
+        }
     }
 
     public static String getLimitsAsString(BStructuralTiltPoint p) {
@@ -71,6 +95,14 @@ public class TiltHelper {
         }
 
         return result;
+    }
+
+    public static Double toDegreeBased(Double value) {
+        return value == null ? null : FastMath.toDegrees(value) / 1000.0;
+    }
+
+    public static Double toRadianBased(Double value) {
+        return value == null ? null : FastMath.toRadians(value) * 1000.0;
     }
 
 }
