@@ -34,34 +34,24 @@ import org.mapton.worldwind.api.WWHelper;
  */
 public class GraphicRenderer extends GraphicRendererBase {
 
-//    private ArrayList<AVListImpl> mMapObjects;
-    public GraphicRenderer(RenderableLayer layer, IndexedCheckModel<GraphicRendererItem> checkModel) {
-        sInteractiveLayer = layer;
+    public GraphicRenderer(RenderableLayer layer, RenderableLayer passiveLayer, IndexedCheckModel<GraphicRendererItem> checkModel) {
+        super(layer, passiveLayer);
         sCheckModel = checkModel;
     }
 
-//    public void addRenderable(RenderableLayer layer, Renderable renderable) {
-//        layer.addRenderable(renderable);
-//        if (layer == mEllipsoidLayer) {
-//            if (renderable instanceof AVListImpl avlist) {
-//                mMapObjects.add(avlist);
-//            }
-//        } else {
-//            //mLayerXYZ.addRenderable(renderable); //TODO Add to a non responsive layer
-//        }
-//    }
     public void plot(BAcousticMeasuringPoint point, Position position, ArrayList<AVListImpl> mapObjects) {
         sMapObjects = mapObjects;
 
         if (sCheckModel.isChecked(GraphicRendererItem.TRACE)) {
-            plotTrace(point, position, sMapObjects);
+            plotTrace(point, position);
         }
     }
 
     public void reset() {
+        resetPlotLimiter();
     }
 
-    private void plotTrace(BAcousticMeasuringPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
+    private void plotTrace(BAcousticMeasuringPoint p, Position position) {
         if (isPlotLimitReached(p, GraphicRendererItem.TRACE, position)) {
             return;
         }
@@ -86,9 +76,9 @@ public class GraphicRenderer extends GraphicRendererBase {
             var pos = WWHelper.positionFromPosition(position, altitude);
             var maxRadius = 10.0;
 
-            var mScale1dH = 0.2;
-            var d3d = o.ext().getDelta3d();
-            var radius = Math.min(maxRadius, Math.abs(d3d) * mScale1dH + 0.1);
+            var mScale1dH = 1.0;
+            var z = o.getMeasuredZ();
+            var radius = Math.min(maxRadius, Math.abs(z) * mScale1dH + 0.1);
             var maximus = radius == maxRadius;
 
             var cylinder = new Cylinder(pos, height, radius);
@@ -101,15 +91,14 @@ public class GraphicRenderer extends GraphicRendererBase {
                 attrs.setOutlineOpacity(0.20);
             }
 
-            var max = Math.max(o.getMeasuredX(), Math.max(o.getMeasuredY(), o.getMeasuredZ()));
-            if (o.getLimit() != null && max >= o.getLimit()) {
+//            var max = Math.max(o.getMeasuredX(), Math.max(o.getMeasuredY(), o.getMeasuredZ()));
+            if (o.getLimit() != null && z >= o.getLimit()) {
                 attrs = new BasicShapeAttributes(attrs);
                 attrs.setInteriorMaterial(Material.RED);
             }
 
             cylinder.setAttributes(attrs);
-            addRenderable(cylinder, true);
-            sPlotLimiter.incPlotCounter(GraphicRendererItem.TRACE);
+            addRenderable(cylinder, true, GraphicRendererItem.TRACE, sMapObjects);
         }
     }
 

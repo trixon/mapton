@@ -18,11 +18,11 @@ package org.mapton.butterfly_acoustic.measuring_point;
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
-import gov.nasa.worldwind.render.Renderable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import org.apache.commons.lang3.ObjectUtils;
 import org.controlsfx.control.IndexedCheckModel;
+import org.mapton.butterfly_core.api.BaseGraphicRenderer;
 import org.mapton.butterfly_core.api.PlotLimiter;
 import org.mapton.butterfly_format.types.acoustic.BAcousticMeasuringPoint;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
@@ -31,31 +31,23 @@ import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
  *
  * @author Patrik Karlström
  */
-public abstract class GraphicRendererBase {
+public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicRendererItem, BAcousticMeasuringPoint> {
 
     protected static IndexedCheckModel<GraphicRendererItem> sCheckModel;
-    protected static RenderableLayer sInteractiveLayer;
     protected static ArrayList<AVListImpl> sMapObjects;
-    protected static PlotLimiter sPlotLimiter = new PlotLimiter();
+    protected static final PlotLimiter sPlotLimiter = new PlotLimiter();
     protected static HashMap<BTopoControlPoint, Position[]> sPointToPositionMap = new HashMap<>();
     protected final MeasPointAttributeManager mAttributeManager = MeasPointAttributeManager.getInstance();
     protected final MeasPointManager mManager = MeasPointManager.getInstance();
 
-    public GraphicRendererBase() {
+    static {
         for (var renderItem : GraphicRendererItem.values()) {
             sPlotLimiter.setLimit(renderItem, renderItem.getPlotLimit());
         }
     }
 
-    public void addRenderable(Renderable renderable, boolean interactiveLayer) {
-        if (interactiveLayer) {
-            sInteractiveLayer.addRenderable(renderable);
-            if (renderable instanceof AVListImpl avlist) {
-                sMapObjects.add(avlist);
-            }
-        } else {
-            //mLayerXYZ.addRenderable(renderable); //TODO Add to a non responsive layer
-        }
+    public GraphicRendererBase(RenderableLayer layer, RenderableLayer passiveLayer) {
+        super(layer, passiveLayer, sPlotLimiter);
     }
 
     public boolean isValidFor3dPlot(BAcousticMeasuringPoint p) {
@@ -66,11 +58,6 @@ public abstract class GraphicRendererBase {
     }
 
     protected boolean isPlotLimitReached(BAcousticMeasuringPoint p, Object key, Position position) {
-        if (sPlotLimiter.isLimitReached(key, p.getName())) {
-            addRenderable(sPlotLimiter.createPlotLimitIndicator(position, p.ext().getObservationsTimeFiltered().isEmpty()), true);
-            return true;
-        } else {
-            return false;
-        }
+        return super.isPlotLimitReached(p, key, position, p.ext().getObservationsTimeFiltered().isEmpty(), sMapObjects);
     }
 }
