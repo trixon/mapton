@@ -118,7 +118,7 @@ public class StrainPropertiesBuilder extends PropertiesBuilder<BStructuralStrain
         if (p.getDirectionX() == null) {
             return -1;
         }
-        var bearing = MathHelper.convert(p.getDirectionX());
+        var bearing = MathHelper.convertCcwDegreeToCw(p.getDirectionX());
         var o0 = p.ext().getObservationFilteredFirst();
         var o1 = p.ext().getObservationFilteredLast();
         if (ObjectUtils.anyNull(o0, o1)) {
@@ -131,52 +131,6 @@ public class StrainPropertiesBuilder extends PropertiesBuilder<BStructuralStrain
         var delta = Math.toDegrees(v1 - v0);
         var r = bearing + delta;
 
-        if (r > 360) {
-//            r -= 360;
-        } else if (r < 0) {
-//            r += 360;
-        }
-
         return r;
     }
-
-    private double calcBearingX(BStructuralStrainGaugePoint p) {
-        var bearing = MathHelper.convert(p.getDirectionX());
-        System.out.println("");
-        System.out.println(p.getName());
-        var o0 = p.ext().getObservationFilteredFirst();
-        var o1 = p.ext().getObservationFilteredLast();
-        var dx = o1.getMeasuredX() - o0.getMeasuredX();
-        var dy = o1.getMeasuredY() - o0.getMeasuredY();
-//        var v0 = Math.atan(o0.getMeasuredY() / o0.getMeasuredX());
-//        var v1 = Math.atan(o1.getMeasuredY() / o1.getMeasuredX());
-        var ar = Math.atan(dy / dx);//vinkel i radianer
-        var ag = Math.toDegrees(ar);//vinkel i grader
-        System.out.println("x1=%.6f".formatted(o1.getMeasuredX()));
-        System.out.println("x0=%.6f".formatted(o0.getMeasuredX()));
-        System.out.println("dx=%.6f".formatted(dx));
-        System.out.println("y1=%.6f".formatted(o1.getMeasuredY()));
-        System.out.println("y0=%.6f".formatted(o0.getMeasuredY()));
-        System.out.println("dy=%.6f".formatted(dy));
-        System.out.println("aR=%.6f".formatted(ar));
-        System.out.println("aG=%.6f".formatted(ag));
-//        var delta = Math.toDegrees(v1 - v0);
-        var toBearingStyle = MathHelper.convert(ag);
-        System.out.println("dg=%.6f".formatted(toBearingStyle));
-//        ag = 10.0;
-//        if (delta < 0) {
-//            delta += 360;
-//        }
-        System.out.println("%.4f".formatted(bearing));
-        double r = bearing + toBearingStyle;
-        System.out.println("NEW BEARING=%.3f".formatted(r));
-        if (r > 360) {
-            r -= 360;
-        } else if (r < 0) {
-            r += 360;
-
-        }
-        return r;
-    }
-
 }
