@@ -32,6 +32,7 @@ import javafx.scene.layout.GridPane;
 import javafx.util.StringConverter;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.IndexedCheckModel;
+import org.mapton.api.MRunnable;
 import org.mapton.api.ui.forms.CheckedTab;
 import org.mapton.api.ui.forms.TabOptionsViewProvider;
 import org.mapton.butterfly_topo.shared.ColorBy;
@@ -48,7 +49,7 @@ import se.trixon.almond.util.fx.session.SessionComboBox;
  *
  * @author Patrik Karlström
  */
-public class TopoOptionsView extends MOptionsView {
+public class TopoOptionsView extends MOptionsView implements MRunnable {
 
     private static final ColorBy DEFAULT_COLOR_BY = ColorBy.ALARM;
     private static final TopoLabelBy DEFAULT_LABEL_BY = TopoLabelBy.NAME;
@@ -104,6 +105,15 @@ public class TopoOptionsView extends MOptionsView {
         return mPlotPointProperty;
     }
 
+    @Override
+    public void run() {
+    }
+
+    @Override
+    public void runOnce() {
+        FxHelper.setVisibleRowCount(25, mGraphicSccb);
+    }
+
     private void createUI() {
         mPointScb.getItems().setAll(PointBy.values());
         mPointScb.setValue(DEFAULT_POINT_BY);
@@ -113,7 +123,6 @@ public class TopoOptionsView extends MOptionsView {
         mGraphicSccb.setTitle(Dict.GRAPHICS.toString());
         mGraphicSccb.setShowCheckedCount(true);
         mGraphicSccb.getItems().setAll(GraphicRendererItem.values());
-
         mIndicatorSccb.setTitle(Dict.INDICATORS.toString());
         mIndicatorSccb.setShowCheckedCount(true);
         mIndicatorSccb.getItems().addAll(

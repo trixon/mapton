@@ -422,7 +422,7 @@ public class TopoFilter extends FormFilter<TopoManager> {
                 }
             }
 
-            if (limitedObservations.size() >= 2) {
+            if (limitedObservations.size() >= 2 && ObjectUtils.allNotNull(limitedObservations.getFirst().ext().getDelta(), limitedObservations.getLast().ext().getDelta())) {
                 var delta = limitedObservations.getFirst().ext().getDelta() - limitedObservations.getLast().ext().getDelta();
                 pointToDiffMap.put(p, Math.abs(delta));
             }
