@@ -20,11 +20,14 @@ import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.PointPlacemark;
+import gov.nasa.worldwind.render.PointPlacemarkAttributes;
 import java.awt.Color;
 import java.util.ArrayList;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.mapton.api.Mapton;
 import org.mapton.butterfly_core.api.BfLayerBundle;
 import org.mapton.butterfly_format.types.tmo.BRorelse;
 import org.mapton.butterfly_tmo.api.RorelseManager;
@@ -139,7 +142,7 @@ public class RorelseLayerBundle extends BfLayerBundle {
                     var mapObjects = new ArrayList<AVListImpl>();
 
                     mapObjects.add(labelPlacemark);
-                    mapObjects.add(plotPin(position, labelPlacemark));
+                    mapObjects.add(plotPin(p, position, labelPlacemark));
 
 //                    mComponentRenderer.plot(p, position, mapObjects);
                     var leftClickRunnable = (Runnable) () -> {
@@ -183,8 +186,19 @@ public class RorelseLayerBundle extends BfLayerBundle {
         return placemark;
     }
 
-    private PointPlacemark plotPin(Position position, PointPlacemark labelPlacemark) {
+    private PointPlacemark plotPin(BRorelse r, Position position, PointPlacemark labelPlacemark) {
         var attrs = mAttributeManager.getPinAttributes(Color.ORANGE);
+        if (r.ext().getObservationsAllRaw() != null && r.ext().getObservationsAllRaw().isEmpty()) {
+            attrs = new PointPlacemarkAttributes(attrs);
+            attrs.setImageColor(Color.CYAN);
+        }
+
+        if (!StringUtils.equalsIgnoreCase(r.getStatus(), "Aktiv")) {
+            attrs = new PointPlacemarkAttributes(attrs);
+            //attrs.setImageColor(Color.RED);
+        }
+        attrs.setScale(Mapton.SCALE_PIN_IMAGE);
+        attrs.setLabelScale(Mapton.SCALE_PIN_LABEL);
 
         var placemark = new PointPlacemark(position);
         placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);

@@ -22,6 +22,7 @@ import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
 import java.awt.Color;
 import java.util.HashMap;
+import org.mapton.api.Mapton;
 import org.mapton.butterfly_core.api.BaseAttributeManager;
 import org.mapton.butterfly_format.types.BAreaActivity;
 import org.mapton.butterfly_format.types.BAreaActivity.BAreaStatus;
@@ -46,7 +47,8 @@ public class ActAttributeManager extends BaseAttributeManager {
     public PointPlacemarkAttributes getPinAttributes(BAreaActivity a) {
         return mStatusToPointPlacemarkAttributes.computeIfAbsent(a.getStatus(), k -> {
             var attrs = new PointPlacemarkAttributes(new PointPlacemark(Position.ZERO).getDefaultAttributes());
-            attrs.setScale(0.75);
+            attrs.setScale(Mapton.SCALE_PIN_IMAGE);
+            attrs.setLabelScale(Mapton.SCALE_PIN_LABEL);
             attrs.setImageAddress("images/pushpins/plain-white.png");
             switch (a.getStatus()) {
                 case OTHER ->

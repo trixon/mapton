@@ -24,6 +24,7 @@ import java.awt.Color;
 import java.util.ArrayList;
 import javafx.collections.ListChangeListener;
 import org.apache.commons.lang3.ObjectUtils;
+import org.mapton.api.Mapton;
 import org.mapton.butterfly_core.api.BfLayerBundle;
 import org.mapton.butterfly_format.types.hydro.BGroundwaterPoint;
 import org.mapton.worldwind.api.LayerBundle;
@@ -96,6 +97,8 @@ public class GroundwaterLayerBundle extends BfLayerBundle {
                     placemark.setLabelText(cp.getName());
                     attrs.setImageAddress("images/pushpins/plain-white.png");
                     attrs.setImageColor(Color.YELLOW);
+                    attrs.setScale(Mapton.SCALE_PIN_IMAGE);
+                    attrs.setLabelScale(Mapton.SCALE_PIN_LABEL);
 
                     placemark.setAttributes(attrs);
                     placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(attrs, 1.5));

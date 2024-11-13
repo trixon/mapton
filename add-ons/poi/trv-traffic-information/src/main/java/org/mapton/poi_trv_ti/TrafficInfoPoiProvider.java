@@ -30,6 +30,7 @@ import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.FxHelper;
+import se.trixon.almond.util.swing.SwingHelper;
 
 /**
  *
@@ -200,7 +201,7 @@ public class TrafficInfoPoiProvider implements MPoiProvider {
                         style.setImageUrl("%s%s.png".formatted(SystemHelper.getPackageAsPath(TrafficInfoPoiProvider.class), "precipitationNoData"));
                     }
 
-                    style.setLabelScale(1.2);
+                    style.setLabelScale(SwingHelper.getUIScaled(1.2));
                     style.setImageScale(FxHelper.getUIScaled(0.1));
                     style.setLabelVisible(true);
                     style.setImageLocation(MPoiStyle.ImageLocation.MIDDLE_CENTER);

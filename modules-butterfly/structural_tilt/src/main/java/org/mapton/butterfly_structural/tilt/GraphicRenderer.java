@@ -115,7 +115,7 @@ public class GraphicRenderer extends GraphicRendererBase {
         }
 
         var minLength = 2.0;
-        var scaleLength = 100.0;
+        var scaleLength = 20.0;
         var z = 0.1;
         var length = Math.max(Math.abs(scaleLength * p.ext().deltaZero().getDelta2()), minLength);
         mPosition0 = WWHelper.positionFromPosition(mPosition, z);

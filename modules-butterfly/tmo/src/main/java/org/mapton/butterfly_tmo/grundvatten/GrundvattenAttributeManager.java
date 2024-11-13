@@ -22,6 +22,7 @@ import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
 import java.awt.Color;
 import java.util.HashMap;
+import org.mapton.api.Mapton;
 import org.mapton.butterfly_core.api.BaseAttributeManager;
 import org.mapton.butterfly_format.types.tmo.BGrundvatten;
 
@@ -44,24 +45,24 @@ public class GrundvattenAttributeManager extends BaseAttributeManager {
     private GrundvattenAttributeManager() {
     }
 
-    public BasicShapeAttributes getComponentGroundPathAttributes() {
-        if (mComponentGroundPathAttributes == null) {
-            mComponentGroundPathAttributes = new BasicShapeAttributes();
-            mComponentGroundPathAttributes.setDrawOutline(true);
-            mComponentGroundPathAttributes.setOutlineMaterial(Material.YELLOW);
-            mComponentGroundPathAttributes.setEnableLighting(false);
-            mComponentGroundPathAttributes.setOutlineWidth(1);
-        }
-
-        return mComponentGroundPathAttributes;
-    }
-
+//    public BasicShapeAttributes getComponentGroundPathAttributes() {
+//        if (mComponentGroundPathAttributes == null) {
+//            mComponentGroundPathAttributes = new BasicShapeAttributes();
+//            mComponentGroundPathAttributes.setDrawOutline(true);
+//            mComponentGroundPathAttributes.setOutlineMaterial(Material.YELLOW);
+//            mComponentGroundPathAttributes.setEnableLighting(false);
+//            mComponentGroundPathAttributes.setOutlineWidth(1);
+//        }
+//
+//        return mComponentGroundPathAttributes;
+//    }
     public PointPlacemarkAttributes getPinAttributes(BGrundvatten grundvatten) {
         if (mPinAttributes == null) {
             mPinAttributes = new PointPlacemarkAttributes(new PointPlacemark(Position.ZERO).getDefaultAttributes());
-            mPinAttributes.setScale(0.75);
             mPinAttributes.setImageAddress("images/pushpins/plain-white.png");
             mPinAttributes.setImageColor(Color.BLUE.brighter());
+            mPinAttributes.setScale(Mapton.SCALE_PIN_IMAGE);
+            mPinAttributes.setLabelScale(Mapton.SCALE_PIN_LABEL);
         }
 
         var attrs = new PointPlacemarkAttributes(mPinAttributes);

@@ -15,11 +15,11 @@
  */
 package org.mapton.butterfly_tmo.rorelse;
 
-import org.mapton.butterfly_tmo.api.RorelseManager;
 import j2html.tags.ContainerTag;
 import java.util.LinkedHashMap;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.ui.forms.FormFilter;
+import org.mapton.butterfly_tmo.api.RorelseManager;
 import se.trixon.almond.util.Dict;
 
 /**
@@ -49,6 +49,7 @@ public class RorelseFilter extends FormFilter<RorelseManager> {
                 .filter(r -> validateCheck(mFixpunktCheckModel, r.getFixpunkt()))
                 .filter(r -> validateCheck(mStatusCheckModel, r.getStatus()))
                 .filter(r -> validateCheck(mInformationskallorCheckModel, r.getInformationskällor()))
+                //                .filter(r -> !r.ext().getObservationsAllRaw().isEmpty())
                 .filter(r -> validateCoordinateArea(r.getLat(), r.getLon()))
                 .filter(r -> validateCoordinateRuler(r.getLat(), r.getLon()))
                 .toList();

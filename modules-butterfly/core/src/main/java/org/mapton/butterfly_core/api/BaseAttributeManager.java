@@ -21,6 +21,7 @@ import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
 import java.awt.Color;
+import org.mapton.api.Mapton;
 import se.trixon.almond.util.GraphicsHelper;
 
 /**
@@ -30,6 +31,7 @@ import se.trixon.almond.util.GraphicsHelper;
 public abstract class BaseAttributeManager {
 
     private BasicShapeAttributes[] mAlarmInteriorAttributes;
+    private BasicShapeAttributes mAlarmLimitAttributes;
     private BasicShapeAttributes[] mAlarmOutlineAttributes;
     private BasicShapeAttributes mComponentGroundPathAttributes;
     private BasicShapeAttributes[][] mComponentTrace1dAttributes;
@@ -54,6 +56,18 @@ public abstract class BaseAttributeManager {
         }
 
         return mAlarmInteriorAttributes[alarmLevel + 1];
+    }
+
+    public BasicShapeAttributes getAlarmLimit() {
+        if (mAlarmLimitAttributes == null) {
+            mAlarmLimitAttributes = new BasicShapeAttributes();
+            mAlarmLimitAttributes.setDrawOutline(false);
+            mAlarmLimitAttributes.setInteriorMaterial(Material.LIGHT_GRAY);
+            mAlarmLimitAttributes.setEnableLighting(true);
+            mAlarmLimitAttributes.setInteriorOpacity(0.5);
+        }
+
+        return mAlarmLimitAttributes;
     }
 
     public BasicShapeAttributes getAlarmOutlineAttributes(int alarmLevel) {
@@ -139,10 +153,10 @@ public abstract class BaseAttributeManager {
     public PointPlacemarkAttributes getLabelPlacemarkAttributes() {
         if (mLabelPlacemarkAttributes == null) {
             mLabelPlacemarkAttributes = new PointPlacemarkAttributes(new PointPlacemark(Position.ZERO).getDefaultAttributes());
-            mLabelPlacemarkAttributes.setLabelScale(1.6);
-            mLabelPlacemarkAttributes.setImageColor(GraphicsHelper.colorAddAlpha(Color.RED, 0));
-            mLabelPlacemarkAttributes.setScale(0.75);
             mLabelPlacemarkAttributes.setImageAddress("images/pushpins/plain-white.png");
+            mLabelPlacemarkAttributes.setImageColor(GraphicsHelper.colorAddAlpha(Color.RED, 0));
+            mLabelPlacemarkAttributes.setScale(Mapton.SCALE_PIN_IMAGE);
+            mLabelPlacemarkAttributes.setLabelScale(Mapton.SCALE_PIN_LABEL);
         }
 
         return mLabelPlacemarkAttributes;
@@ -151,9 +165,10 @@ public abstract class BaseAttributeManager {
     public PointPlacemarkAttributes getPinAttributes(Color color) {
         if (mSinglePinAttributes == null) {
             mSinglePinAttributes = new PointPlacemarkAttributes(new PointPlacemark(Position.ZERO).getDefaultAttributes());
-            mSinglePinAttributes.setScale(0.75);
             mSinglePinAttributes.setImageAddress("images/pushpins/plain-white.png");
             mSinglePinAttributes.setImageColor(color);
+            mSinglePinAttributes.setScale(Mapton.SCALE_PIN_IMAGE);
+            mSinglePinAttributes.setLabelScale(Mapton.SCALE_PIN_LABEL);
         }
 
         return mSinglePinAttributes;
@@ -164,9 +179,10 @@ public abstract class BaseAttributeManager {
             mPinAttributes = new PointPlacemarkAttributes[4];
             for (int i = 0; i < 4; i++) {
                 var attrs = new PointPlacemarkAttributes(new PointPlacemark(Position.ZERO).getDefaultAttributes());
-                attrs.setScale(0.75);
+                attrs.setScale(Mapton.SCALE_PIN_IMAGE);
                 attrs.setImageAddress("images/pushpins/plain-white.png");
                 attrs.setImageColor(ButterflyHelper.getAlarmColorAwt(i - 1));
+                attrs.setLabelScale(Mapton.SCALE_PIN_LABEL);
 
                 mPinAttributes[i] = attrs;
             }

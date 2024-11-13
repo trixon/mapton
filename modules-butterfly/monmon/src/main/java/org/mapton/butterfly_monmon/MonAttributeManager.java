@@ -22,6 +22,7 @@ import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
 import gov.nasa.worldwind.render.ShapeAttributes;
 import java.awt.Color;
+import org.mapton.api.Mapton;
 import org.mapton.butterfly_core.api.BaseAttributeManager;
 
 /**
@@ -60,6 +61,7 @@ public class MonAttributeManager extends BaseAttributeManager {
         return mGroundConnectorAttributes;
     }
 
+    @Override
     public PointPlacemarkAttributes getPinAttributes(int index) {
         index = Math.min(index, mStationConnectorColors.length - 1);
 
@@ -67,9 +69,10 @@ public class MonAttributeManager extends BaseAttributeManager {
             mPinAttributes = new PointPlacemarkAttributes[mStationConnectorColors.length];
             for (int i = 0; i < mPinAttributes.length; i++) {
                 var attrs = new PointPlacemarkAttributes(new PointPlacemark(Position.ZERO).getDefaultAttributes());
-                attrs.setScale(0.75);
                 attrs.setImageAddress("images/pushpins/plain-white.png");
                 attrs.setImageColor(mStationConnectorColors[i]);
+                attrs.setScale(Mapton.SCALE_PIN_IMAGE);
+                attrs.setLabelScale(Mapton.SCALE_PIN_LABEL);
 
                 mPinAttributes[i] = attrs;
             }

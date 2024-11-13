@@ -120,7 +120,7 @@ public abstract class BaseGraphicRenderer<T extends Enum<T>, U extends BBase> {
 
         var pos100 = WWHelper.positionFromPosition(position, PERCENTAGE_ALTITUDE);
         var cylinder = new Cylinder(pos100, 0.25, PERCENTAGE_SIZE * 2);
-        cylinder.setAttributes(mAttributeManager.getComponentZeroAttributes());
+        cylinder.setAttributes(mAttributeManager.getAlarmLimit());
         addRenderable(cylinder, false, null, null);
     }
 

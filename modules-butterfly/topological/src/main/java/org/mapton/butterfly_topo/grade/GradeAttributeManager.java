@@ -21,6 +21,7 @@ import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
 import java.awt.Color;
+import org.mapton.api.Mapton;
 import org.mapton.butterfly_core.api.BaseAttributeManager;
 import org.mapton.butterfly_core.api.ButterflyHelper;
 import org.mapton.butterfly_format.types.topo.BTopoGrade;
@@ -93,10 +94,11 @@ public class GradeAttributeManager extends BaseAttributeManager {
             mPinAttributes = new PointPlacemarkAttributes[4];
             for (int i = 0; i < 4; i++) {
                 var attrs = new PointPlacemarkAttributes(new PointPlacemark(Position.ZERO).getDefaultAttributes());
-                attrs.setScale(0.75);
                 attrs.setImageAddress("images/pushpins/plain-white.png");
                 attrs.setImageColor(ButterflyHelper.getAlarmColorAwt(i - 1));
                 attrs.setImageColor(Color.ORANGE);
+                attrs.setScale(Mapton.SCALE_PIN_IMAGE);
+                attrs.setLabelScale(Mapton.SCALE_PIN_LABEL);
 
                 mPinAttributes[i] = attrs;
             }

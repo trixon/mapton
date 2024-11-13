@@ -117,7 +117,7 @@ public abstract class XyzChartBuilder<T extends BXyzPoint> extends ChartBuilder<
         mChart.setBackgroundPaint(Color.white);
         mChart.getTitle().setBackgroundPaint(Color.LIGHT_GRAY);
         mChart.getTitle().setExpandToFitSpace(true);
-
+        mChart.getTitle().setFont(mChart.getTitle().getFont().deriveFont((float) SwingHelper.getUIScaled(13.0)));
         var plot = (XYPlot) mChart.getPlot();
         plot.setBackgroundPaint(Color.lightGray);
         plot.setDomainGridlinePaint(Color.white);

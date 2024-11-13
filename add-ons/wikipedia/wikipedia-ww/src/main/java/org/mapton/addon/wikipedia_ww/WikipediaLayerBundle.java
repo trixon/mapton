@@ -26,10 +26,12 @@ import java.awt.Color;
 import javafx.collections.ListChangeListener;
 import org.mapton.addon.wikipedia.api.WikipediaArticle;
 import org.mapton.addon.wikipedia.api.WikipediaArticleManager;
+import org.mapton.api.Mapton;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.SystemHelper;
+import se.trixon.almond.util.swing.SwingHelper;
 
 /**
  *
@@ -88,9 +90,9 @@ public class WikipediaLayerBundle extends LayerBundle {
 
                 attrs.setImageAddress(imageAddress);
                 attrs.setImageColor(Color.decode("#ff8888"));
-                attrs.setLabelScale(1.0);
-                attrs.setScale(0.15);
                 attrs.setImageOffset(Offset.CENTER);
+                attrs.setLabelScale(Mapton.SCALE_PIN_LABEL);
+                attrs.setScale(SwingHelper.getUIScaled(0.15));
 
                 placemark.setAttributes(attrs);
                 placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(attrs, 1.5));

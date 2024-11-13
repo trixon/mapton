@@ -83,9 +83,11 @@ public class BookmarkLayerBundle extends LayerBundle {
                     placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
                     placemark.setEnableLabelPicking(true);
 
-                    PointPlacemarkAttributes attrs = new PointPlacemarkAttributes(placemark.getDefaultAttributes());
+                    var attrs = new PointPlacemarkAttributes(placemark.getDefaultAttributes());
                     attrs.setImageAddress("images/pushpins/plain-white.png");
                     attrs.setImageColor(FxHelper.colorToColor(FxHelper.colorFromHexRGBA(bookmark.getColor())));
+                    attrs.setScale(Mapton.SCALE_PIN_IMAGE);
+                    attrs.setLabelScale(Mapton.SCALE_PIN_LABEL);
                     placemark.setAttributes(attrs);
                     placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(attrs, 1.5));
 
