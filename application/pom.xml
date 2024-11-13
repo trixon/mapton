@@ -248,7 +248,7 @@
                     <!--<additionalArguments>&#045;&#045;locale en</additionalArguments>-->
                     <!--<additionalArguments>&#045;&#045;nosplash</additionalArguments>-->
                     <!--<additionalArguments>&#045;&#045;fontsize 32</additionalArguments>-->
-                    <!--<additionalArguments>&#045;&#045;fontsize 16</additionalArguments>-->
+                    <!--<additionalArguments>&#045;&#045;fontsize 11</additionalArguments>-->
                 </configuration>
             </plugin>
             <plugin>
