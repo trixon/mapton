@@ -26,11 +26,16 @@ import org.mapton.api.Mapton;
  */
 public class CheckedTab extends Tab {
 
-    private final CheckBox mTabCheckBox;
     private final String mKey;
+    private final CheckBox mTabCheckBox;
 
     public CheckedTab(String title, Node node, String key) {
-        super(title, node);
+        this(title, key);
+        setContent(node);
+    }
+
+    public CheckedTab(String title, String key) {
+        super(title);
         mKey = key;
         mTabCheckBox = new CheckBox();
         setGraphic(mTabCheckBox);

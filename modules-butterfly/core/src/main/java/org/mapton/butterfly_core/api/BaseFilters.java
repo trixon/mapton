@@ -19,6 +19,7 @@ import com.dlsc.gemsfx.util.SessionManager;
 import java.util.List;
 import java.util.ResourceBundle;
 import javafx.scene.Node;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.controlsfx.tools.Borders;
@@ -37,7 +38,7 @@ public class BaseFilters {
 
     private final SessionCheckComboBox<String> mAlarmNameSccb = new SessionCheckComboBox<>();
     private Node mBaseBorderBox;
-    private VBox mBaseBox;
+    private GridPane mBaseBox;
     private final double mBorderInnerPadding = FxHelper.getUIScaled(8.0);
     private final ResourceBundle mBundle = NbBundle.getBundle(getClass());
     private final SessionCheckComboBox<String> mCategorySccb = new SessionCheckComboBox<>();
@@ -93,7 +94,7 @@ public class BaseFilters {
         return mBaseBorderBox;
     }
 
-    public VBox getBaseBox() {
+    public GridPane getBaseBox() {
         return mBaseBox;
     }
 
@@ -237,17 +238,26 @@ public class BaseFilters {
         ));
 
         int rowGap = FxHelper.getUIScaled(12);
-        mBaseBox = new VBox(rowGap,
+        mBaseBox = new GridPane(rowGap, rowGap);
+        var leftBox = new VBox(rowGap,
                 mStatusSccb,
-                mGroupSccb,
-                mCategorySccb,
-                mOperatorSccb,
-                mOriginSccb,
-                mAlarmNameSccb,
-                mHasDateFromToSccb,
                 mFrequencySccb,
-                mMeasNextSccb
+                mGroupSccb,
+                mOriginSccb
         );
+
+        var rightBox = new VBox(rowGap,
+                mAlarmNameSccb,
+                mMeasNextSccb,
+                mCategorySccb,
+                mOperatorSccb
+        );
+
+        int row = 1;
+        mBaseBox.addRow(row++, leftBox, rightBox);
+
+        FxHelper.autoSizeColumn(mBaseBox, 2);
+        FxHelper.bindWidthForChildrens(leftBox, rightBox);
     }
 
 }

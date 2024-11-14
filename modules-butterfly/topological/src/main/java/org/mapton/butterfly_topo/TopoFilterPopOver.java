@@ -22,11 +22,13 @@ import java.util.List;
 import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 import javafx.scene.control.Spinner;
+import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import static javafx.scene.layout.GridPane.REMAINING;
@@ -39,8 +41,8 @@ import org.controlsfx.tools.Borders;
 import org.mapton.api.ui.forms.DisruptorPane;
 import org.mapton.api.ui.forms.NegPosStringConverterDouble;
 import org.mapton.api.ui.forms.NegPosStringConverterInteger;
-import org.mapton.butterfly_core.api.BaseFilterPopOver;
 import org.mapton.butterfly_core.api.BaseFilters;
+import org.mapton.butterfly_core.api.BaseTabbedFilterPopOver;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_topo.api.TopoManager;
 import org.mapton.butterfly_topo.shared.AlarmLevelChangeMode;
@@ -59,7 +61,7 @@ import se.trixon.almond.util.fx.session.SessionIntegerSpinner;
  *
  * @author Patrik Karlström
  */
-public class TopoFilterPopOver extends BaseFilterPopOver {
+public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
 
     private final SessionCheckComboBox<AlarmLevelFilter> mAlarmSccb = new SessionCheckComboBox<>(true);
     private final BaseFilters mBaseFilters = new BaseFilters();
@@ -112,6 +114,12 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
     private final SessionDoubleSpinner mMeasYoyoSizeSds = new SessionDoubleSpinner(0, 1.0, mDefaultMeasYoyoSize, 0.001);
     private final CheckBox mNumOfMeasCheckbox = new CheckBox();
     private final CheckBox mSameAlarmCheckbox = new CheckBox();
+    double rowGap = FxHelper.getUIScaled(12);
+    double titleGap = FxHelper.getUIScaled(3);
+    double hGap = FxHelper.getUIScaled(9.0);
+    double vGap = FxHelper.getUIScaled(4.0);
+    double spinnerWidth = FxHelper.getUIScaled(70.0);
+    double columnGap = FxHelper.getUIScaled(16);
 
     public TopoFilterPopOver(TopoFilter filter) {
         mFilter = filter;
@@ -247,10 +255,10 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
 
     @Override
     public void onShownFirstTime() {
-        FxHelper.setVisibleRowCount(25,
-                mMeasOperatorSccb,
-                mAlarmSccb
-        );
+//        FxHelper.setVisibleRowCount(25,
+//                mMeasOperatorSccb,
+//                mAlarmSccb
+//        );
         mBaseFilters.onShownFirstTime();
     }
 
@@ -263,217 +271,27 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
     }
 
     private void createUI() {
-        FxHelper.setShowCheckedCount(true,
-                mAlarmSccb,
-                mMeasCodeSccb,
-                mMeasOperatorSccb
-        );
-
-        mAlarmSccb.setTitle(SDict.ALARM_LEVEL.toString());
-        mAlarmSccb.getItems().setAll(AlarmLevelFilter.values());
-        mMeasCodeSccb.setTitle(getBundle().getString("measCodeCheckComboBoxTitle"));
-        mMeasOperatorSccb.setTitle(SDict.SURVEYORS.toString());
-
-        mMeasAlarmLevelChangeModeScb.getItems().setAll(AlarmLevelChangeMode.values());
-        mMeasAlarmLevelChangeUnitScb.getItems().setAll(AlarmLevelChangeUnit.values());
-        mMeasTopListUnitScb.getItems().setAll(AlarmLevelChangeUnit.values());
-        mMeasTopListUnitScb.getSelectionModel().selectFirst();
-
-        mMeasCodeSccb.getItems().setAll(List.of(
-                getBundle().getString("measCodeZero"),
-                getBundle().getString("measCodeReplacement")
-        ));
-
-        mMeasNumOfSis.getValueFactory().setConverter(new NegPosStringConverterInteger());
-        mMeasAlarmLevelAgeSis.getValueFactory().setConverter(new NegPosStringConverterInteger());
-        mSameAlarmCheckbox.setText(getBundle().getString("sameAlarmCheckBoxText"));
-        mMeasAlarmLevelChangeCheckbox.setText(getBundle().getString("measAlarmLevelChangeCheckBoxText"));
-        mMeasSpeedCheckbox.setText(Dict.SPEED.toString());
-        mDiffMeasLatestCheckbox.setText(getBundle().getString("diffMeasLatestCheckBoxText"));
-        mDiffMeasAllCheckbox.setText(getBundle().getString("diffMeasAllCheckBoxText"));
-        mDiffMeasPercentageHCheckbox.setText(getBundle().getString("diffMeasPercentageHCheckboxText"));
-        mDiffMeasPercentagePCheckbox.setText(getBundle().getString("diffMeasPercentagePCheckboxText"));
-        mMeasYoyoCheckbox.setText(getBundle().getString("YoyoCheckBoxText"));
-        mMeasTopListCheckbox.setText(getBundle().getString("TopListCheckBoxText"));
-        mInvertCheckbox.setText(getBundle().getString("invertCheckBoxText"));
-        mMeasLatestOperatorCheckbox.setText(getBundle().getString("measLatesOperatorCheckBoxText"));
         mMeasIncludeWithoutCheckbox.setText(getBundle().getString("measIncludeWithoutCheckboxText"));
-        mNumOfMeasCheckbox.setText(getBundle().getString("numOfMeasCheckBoxText"));
-        mMeasAlarmLevelAgeCheckbox.setText("Ålder på larmnivå");
-        mMeasSpeedSds.getValueFactory().setConverter(new NegPosStringConverterDouble());
-        mDiffMeasLatestSds.getValueFactory().setConverter(new NegPosStringConverterDouble());
-        mDiffMeasAllSds.getValueFactory().setConverter(new NegPosStringConverterDouble());
-        mDiffMeasPercentageHSis.getValueFactory().setConverter(new NegPosStringConverterInteger());
-        mDiffMeasPercentagePSis.getValueFactory().setConverter(new NegPosStringConverterInteger());
+        mSameAlarmCheckbox.setText(getBundle().getString("sameAlarmCheckBoxText"));
 
-        int columnGap = FxHelper.getUIScaled(16);
-        int rowGap = FxHelper.getUIScaled(12);
-        int titleGap = FxHelper.getUIScaled(3);
-        var dimensButton = new Button("Alla dimensioner");
-        dimensButton.setOnAction(actionEvent -> {
-            List.of(mDimens1Checkbox, mDimens2Checkbox, mDimens3Checkbox).forEach(cb -> cb.setSelected(false));
-        });
-        var dimensBox = new HBox(FxHelper.getUIScaled(8), mDimens1Checkbox, mDimens2Checkbox, mDimens3Checkbox, new Spacer(), dimensButton);
-        dimensBox.setAlignment(Pos.CENTER_LEFT);
-
-        mBaseFilters.getBaseBox().getChildren().add(0, dimensBox);
-        mBaseFilters.getBaseBox().getChildren().add(mDisruptorPane.getRoot());
-
-        var leftBox = new VBox(rowGap,
-                mBaseFilters.getBaseBorderBox(),
-                new Spacer(),
-                mBaseFilters.getDateFirstBorderBox(),
-                mBaseFilters.getDateLastBorderBox()
-        );
-
-        var hGap = FxHelper.getUIScaled(9.0);
-        var vGap = FxHelper.getUIScaled(4.0);
-        var spinnerWidth = FxHelper.getUIScaled(70.0);
-
-        var diffGridPane = new GridPane(hGap, vGap);
-        diffGridPane.addColumn(0, mDiffMeasAllCheckbox, mDiffMeasAllSds);
-        diffGridPane.addColumn(1, mDiffMeasLatestCheckbox, mDiffMeasLatestSds);
-        FxHelper.autoSizeColumn(diffGridPane, 2);
-
-        var diffPercentGridPane = new GridPane(hGap, vGap);
-        diffPercentGridPane.addColumn(0, mDiffMeasPercentageHCheckbox, mDiffMeasPercentageHSis);
-        diffPercentGridPane.addColumn(1, mDiffMeasPercentagePCheckbox, mDiffMeasPercentagePSis);
-        FxHelper.autoSizeColumn(diffPercentGridPane, 2);
-
-        var yoyoGridPane = new GridPane(hGap, vGap);
-        yoyoGridPane.add(mMeasYoyoCheckbox, 0, 0, REMAINING, 1);
-        yoyoGridPane.addRow(1, mMeasYoyoCountSds, mMeasYoyoSizeSds);
-        FxHelper.autoSizeColumn(yoyoGridPane, 2);
-
-        var displacementGridPane = new GridPane(hGap, vGap);
-        displacementGridPane.add(mMeasTopListCheckbox, 0, 0, REMAINING, 1);
-        displacementGridPane.addRow(1, mMeasTopListSizeSds, new Label(SDict.POINTS.toLower()));
-        displacementGridPane.addRow(2, mMeasTopListLimitSis, mMeasTopListUnitScb);
-        mMeasTopListSizeSds.setPrefWidth(spinnerWidth);
-        mMeasTopListLimitSis.setPrefWidth(spinnerWidth);
-
-        var alcGridPane = new GridPane(hGap, vGap);
-        alcGridPane.add(mMeasAlarmLevelChangeCheckbox, 0, 0, REMAINING, 1);
-        alcGridPane.addRow(1, mMeasAlarmLevelChangeLimitSis, mMeasAlarmLevelChangeModeScb);
-        alcGridPane.addRow(2, mMeasAlarmLevelChangeValueSis, mMeasAlarmLevelChangeUnitScb);
-        mMeasAlarmLevelChangeLimitSis.setPrefWidth(spinnerWidth);
-        mMeasAlarmLevelChangeValueSis.setPrefWidth(spinnerWidth);
-
-        FxHelper.autoSizeRegionHorizontal(mMeasTopListUnitScb, mMeasAlarmLevelChangeModeScb, mMeasAlarmLevelChangeUnitScb);
-
-        var measBox = new VBox(rowGap,
-                diffGridPane,
-                diffPercentGridPane,
-                displacementGridPane,
-                new VBox(titleGap,
-                        mMeasSpeedCheckbox,
-                        mMeasSpeedSds
-                ),
-                yoyoGridPane,
-                new Separator(),
-                mAlarmSccb,
-                new VBox(titleGap,
-                        mMeasAlarmLevelAgeCheckbox,
-                        mMeasAlarmLevelAgeSis
-                ),
-                alcGridPane,
-                new Separator(),
-                new VBox(titleGap,
-                        mNumOfMeasCheckbox,
-                        mMeasNumOfSis
-                ),
-                new Separator(),
-                mMeasCodeSccb,
-                new VBox(titleGap,
-                        mMeasOperatorSccb,
-                        mMeasLatestOperatorCheckbox
-                )
-        );
-
-        double borderInnerPadding = FxHelper.getUIScaled(8.0);
-        double topBorderInnerPadding = FxHelper.getUIScaled(16.0);
-
-        var wrappedRightBox = Borders.wrap(measBox)
-                .etchedBorder()
-                .title("Mätdataanalys")
-                .innerPadding(topBorderInnerPadding, borderInnerPadding, borderInnerPadding, borderInnerPadding)
-                .outerPadding(0)
-                .raised()
-                .build()
-                .build();
-
-        var row = 0;
-        var gridPane = new GridPane(columnGap, GAP);
-        gridPane.setPadding(FxHelper.getUIScaledInsets(GAP));
-
-        gridPane.addRow(row++, leftBox, wrappedRightBox);
-        gridPane.add(mMeasIncludeWithoutCheckbox, 0, row++, GridPane.REMAINING, 1);
-        gridPane.add(mSameAlarmCheckbox, 0, row++, GridPane.REMAINING, 1);
-        FxHelper.autoSizeColumn(gridPane, 2);
-
-        var root = new BorderPane(gridPane);
+        var bottomBox = new VBox(vGap, new Separator(), mMeasIncludeWithoutCheckbox, mSameAlarmCheckbox);
+        bottomBox.setPadding(FxHelper.getUIScaledInsets(8, 16, 8, 16));
+        var root = new BorderPane(getTabPane());
         root.setTop(getToolBar());
+        root.setBottom(bottomBox);
         getToolBar().getItems().add(new Separator());
-        addToToolBar("mc", ActionTextBehavior.SHOW);
-        addToToolBar("mr", ActionTextBehavior.SHOW);
-        addToToolBar("mm", ActionTextBehavior.SHOW);
-        addToToolBar("mp", ActionTextBehavior.SHOW);
-        getToolBar().getItems().add(new Separator());
-        addToToolBar("copyNames", ActionTextBehavior.HIDE);
-        addToToolBar("paste", ActionTextBehavior.HIDE);
-        var internalBox = new HBox(FxHelper.getUIScaled(8.0), mInvertCheckbox);
-        internalBox.setPadding(FxHelper.getUIScaledInsets(0, 0, 0, 8.0));
-        internalBox.setAlignment(Pos.CENTER_LEFT);
-        getToolBar().getItems().add(internalBox);
-        var spinners = new Spinner[]{
-            mDiffMeasAllSds,
-            mDiffMeasLatestSds,
-            mDiffMeasPercentageHSis,
-            mDiffMeasPercentagePSis,
-            mMeasSpeedSds,
-            mMeasNumOfSis,
-            mMeasYoyoCountSds,
-            mMeasYoyoSizeSds,
-            mMeasAlarmLevelChangeValueSis,
-            mMeasAlarmLevelChangeLimitSis,
-            mMeasAlarmLevelAgeSis,
-            mMeasTopListSizeSds,
-            mMeasTopListLimitSis
-        };
-        FxHelper.setEditable(true, spinners);
-        FxHelper.autoCommitSpinners(spinners);
-        FxHelper.bindWidthForChildrens(leftBox, measBox, mBaseFilters.getBaseBox());
-        FxHelper.bindWidthForRegions(leftBox, mDisruptorPane.getRoot());
-        FxHelper.bindWidthForRegions(measBox,
-                mMeasSpeedSds,
-                mMeasYoyoCountSds,
-                mMeasYoyoSizeSds,
-                mMeasNumOfSis,
-                mMeasAlarmLevelAgeSis,
-                mMeasOperatorSccb
-        );
+        populateToolBar();
 
-        mMeasYoyoSizeSds.getValueFactory().setConverter(new StringConverter<Double>() {
-            @Override
-            public Double fromString(String string) {
-                return Double.valueOf(StringUtils.replace(string, ",", "."));
-            }
-
-            @Override
-            public String toString(Double value) {
-                if (value == null) {
-                    return null;
-                } else {
-                    return "%.3f".formatted(value);
-                }
-            }
-        });
-
-        int prefWidth = FxHelper.getUIScaled(250);
-        leftBox.setPrefWidth(prefWidth);
-        measBox.setPrefWidth(prefWidth);
+//        int prefWidth = FxHelper.getUIScaled(250);
+//        leftBox.setPrefWidth(prefWidth);
+//        measBox.setPrefWidth(prefWidth);
+        addBasicTab(new BasicSection().getNode());
+        addDisruptorTab(new DisruptorSection());
+        addDateTab(new DateSection().getGridPane());
+        addMeasTab(new MeasSection());
 
         setContentNode(root);
+
     }
 
     private void initListeners() {
@@ -613,5 +431,264 @@ public class TopoFilterPopOver extends BaseFilterPopOver {
         mBaseFilters.initSession(sessionManager);
 
         return sessionManager;
+    }
+
+    private void populateToolBar() {
+        final ToolBar toolBar = getToolBar();
+        addToToolBar("mc", ActionTextBehavior.SHOW);
+        addToToolBar("mr", ActionTextBehavior.SHOW);
+        addToToolBar("mm", ActionTextBehavior.SHOW);
+        addToToolBar("mp", ActionTextBehavior.SHOW);
+        toolBar.getItems().add(new Separator());
+        addToToolBar("copyNames", ActionTextBehavior.HIDE);
+        addToToolBar("paste", ActionTextBehavior.HIDE);
+
+        mInvertCheckbox.setText(getBundle().getString("invertCheckBoxText"));
+        var internalBox = new HBox(FxHelper.getUIScaled(8.0), mInvertCheckbox);
+        internalBox.setPadding(FxHelper.getUIScaledInsets(0, 0, 0, 8.0));
+        internalBox.setAlignment(Pos.CENTER_LEFT);
+        toolBar.getItems().add(internalBox);
+    }
+
+    private class BasicSection extends GridPane {
+
+        public BasicSection() {
+            init();
+        }
+
+        private void init() {
+            var dimensButton = new Button("Alla dimensioner");
+            dimensButton.setOnAction(actionEvent -> {
+                List.of(mDimens1Checkbox, mDimens2Checkbox, mDimens3Checkbox).forEach(cb -> cb.setSelected(false));
+            });
+            var dimensBox = new HBox(FxHelper.getUIScaled(8), mDimens1Checkbox, mDimens2Checkbox, mDimens3Checkbox, new Spacer(), dimensButton);
+            dimensBox.setAlignment(Pos.CENTER_LEFT);
+
+            mBaseFilters.getBaseBox().add(dimensBox, 0, 0, GridPane.REMAINING, 1);
+        }
+
+        public Node getNode() {
+            return mBaseFilters.getBaseBox();
+        }
+    }
+
+    private class DateSection {
+
+        private final GridPane mGridPane = new GridPane(columnGap, rowGap);
+
+        public DateSection() {
+            init();
+        }
+
+        public GridPane getGridPane() {
+            return mGridPane;
+        }
+
+        private void init() {
+            var maxWidth = FxHelper.getUIScaled(500);
+            mGridPane.setMaxWidth(maxWidth);
+
+            int row = 0;
+            mGridPane.addRow(row++, mBaseFilters.getDateFirstBorderBox(), mBaseFilters.getDateLastBorderBox());
+            mGridPane.addRow(row++, mBaseFilters.getHasDateFromToSccb());
+
+            FxHelper.autoSizeColumn(mGridPane, 2);
+        }
+
+    }
+
+    private class MeasSection extends GridPane {
+
+        public MeasSection() {
+            setHgap(hGap);
+            setVgap(vGap * 4);
+            init();
+        }
+
+        private void init() {
+            mMeasYoyoSizeSds.getValueFactory().setConverter(new StringConverter<Double>() {
+                @Override
+                public Double fromString(String string) {
+                    return Double.valueOf(StringUtils.replace(string, ",", "."));
+                }
+
+                @Override
+                public String toString(Double value) {
+                    if (value == null) {
+                        return null;
+                    } else {
+                        return "%.3f".formatted(value);
+                    }
+                }
+            });
+
+            FxHelper.setShowCheckedCount(true,
+                    mAlarmSccb,
+                    mMeasCodeSccb,
+                    mMeasOperatorSccb
+            );
+
+            mAlarmSccb.setTitle(SDict.ALARM_LEVEL.toString());
+            mAlarmSccb.getItems().setAll(AlarmLevelFilter.values());
+            mMeasCodeSccb.setTitle(getBundle().getString("measCodeCheckComboBoxTitle"));
+            mMeasOperatorSccb.setTitle(SDict.SURVEYORS.toString());
+
+            mMeasAlarmLevelChangeModeScb.getItems().setAll(AlarmLevelChangeMode.values());
+            mMeasAlarmLevelChangeUnitScb.getItems().setAll(AlarmLevelChangeUnit.values());
+            mMeasTopListUnitScb.getItems().setAll(AlarmLevelChangeUnit.values());
+            mMeasTopListUnitScb.getSelectionModel().selectFirst();
+
+            mMeasCodeSccb.getItems().setAll(List.of(
+                    getBundle().getString("measCodeZero"),
+                    getBundle().getString("measCodeReplacement")
+            ));
+
+            mMeasNumOfSis.getValueFactory().setConverter(new NegPosStringConverterInteger());
+            mMeasAlarmLevelAgeSis.getValueFactory().setConverter(new NegPosStringConverterInteger());
+            mMeasAlarmLevelChangeCheckbox.setText(getBundle().getString("measAlarmLevelChangeCheckBoxText"));
+            mMeasSpeedCheckbox.setText(Dict.SPEED.toString());
+            mDiffMeasLatestCheckbox.setText(getBundle().getString("diffMeasLatestCheckBoxText"));
+            mDiffMeasAllCheckbox.setText(getBundle().getString("diffMeasAllCheckBoxText"));
+            mDiffMeasPercentageHCheckbox.setText(getBundle().getString("diffMeasPercentageHCheckboxText"));
+            mDiffMeasPercentagePCheckbox.setText(getBundle().getString("diffMeasPercentagePCheckboxText"));
+            mMeasYoyoCheckbox.setText(getBundle().getString("YoyoCheckBoxText"));
+            mMeasTopListCheckbox.setText(getBundle().getString("TopListCheckBoxText"));
+            mMeasLatestOperatorCheckbox.setText(getBundle().getString("measLatesOperatorCheckBoxText"));
+            mNumOfMeasCheckbox.setText(getBundle().getString("numOfMeasCheckBoxText"));
+            mMeasAlarmLevelAgeCheckbox.setText("Ålder på larmnivå");
+            mMeasSpeedSds.getValueFactory().setConverter(new NegPosStringConverterDouble());
+            mDiffMeasLatestSds.getValueFactory().setConverter(new NegPosStringConverterDouble());
+            mDiffMeasAllSds.getValueFactory().setConverter(new NegPosStringConverterDouble());
+            mDiffMeasPercentageHSis.getValueFactory().setConverter(new NegPosStringConverterInteger());
+            mDiffMeasPercentagePSis.getValueFactory().setConverter(new NegPosStringConverterInteger());
+
+            var diffGridPane = new GridPane(hGap, vGap);
+            diffGridPane.addColumn(0, mDiffMeasAllCheckbox, mDiffMeasAllSds);
+            diffGridPane.addColumn(1, mDiffMeasLatestCheckbox, mDiffMeasLatestSds);
+            FxHelper.autoSizeColumn(diffGridPane, 2);
+
+            var diffPercentGridPane = new GridPane(hGap, vGap);
+            diffPercentGridPane.addColumn(0, mDiffMeasPercentageHCheckbox, mDiffMeasPercentageHSis);
+            diffPercentGridPane.addColumn(1, mDiffMeasPercentagePCheckbox, mDiffMeasPercentagePSis);
+            FxHelper.autoSizeColumn(diffPercentGridPane, 2);
+
+            var yoyoGridPane = new GridPane(hGap, vGap);
+            yoyoGridPane.add(mMeasYoyoCheckbox, 0, 0, REMAINING, 1);
+            yoyoGridPane.addRow(1, mMeasYoyoCountSds, mMeasYoyoSizeSds);
+            FxHelper.autoSizeColumn(yoyoGridPane, 2);
+
+            var displacementGridPane = new GridPane(hGap, vGap);
+            displacementGridPane.add(mMeasTopListCheckbox, 0, 0, REMAINING, 1);
+            displacementGridPane.addRow(1, mMeasTopListSizeSds, new Label(SDict.POINTS.toLower()));
+            displacementGridPane.addRow(2, mMeasTopListLimitSis, mMeasTopListUnitScb);
+            mMeasTopListSizeSds.setPrefWidth(spinnerWidth);
+            mMeasTopListLimitSis.setPrefWidth(spinnerWidth);
+
+            var alcGridPane = new GridPane(hGap, vGap);
+            alcGridPane.add(mMeasAlarmLevelChangeCheckbox, 0, 0, REMAINING, 1);
+            alcGridPane.addRow(1, mMeasAlarmLevelChangeLimitSis, mMeasAlarmLevelChangeModeScb);
+            alcGridPane.addRow(2, mMeasAlarmLevelChangeValueSis, mMeasAlarmLevelChangeUnitScb);
+            mMeasAlarmLevelChangeLimitSis.setPrefWidth(spinnerWidth);
+            mMeasAlarmLevelChangeValueSis.setPrefWidth(spinnerWidth);
+
+            var spinners = new Spinner[]{
+                mDiffMeasAllSds,
+                mDiffMeasLatestSds,
+                mDiffMeasPercentageHSis,
+                mDiffMeasPercentagePSis,
+                mMeasSpeedSds,
+                mMeasNumOfSis,
+                mMeasYoyoCountSds,
+                mMeasYoyoSizeSds,
+                mMeasAlarmLevelChangeValueSis,
+                mMeasAlarmLevelChangeLimitSis,
+                mMeasAlarmLevelAgeSis,
+                mMeasTopListSizeSds,
+                mMeasTopListLimitSis
+            };
+            FxHelper.setEditable(true, spinners);
+            FxHelper.autoCommitSpinners(spinners);
+
+            var movementBox = new VBox(vGap,
+                    diffGridPane,
+                    diffPercentGridPane,
+                    displacementGridPane,
+                    new VBox(titleGap,
+                            mMeasSpeedCheckbox,
+                            mMeasSpeedSds
+                    ),
+                    yoyoGridPane
+            );
+
+            var miscBox = new VBox(vGap,
+                    new VBox(titleGap,
+                            mNumOfMeasCheckbox,
+                            mMeasNumOfSis
+                    ),
+                    new Separator(),
+                    mMeasCodeSccb,
+                    new VBox(titleGap,
+                            mMeasOperatorSccb,
+                            mMeasLatestOperatorCheckbox
+                    )
+            );
+
+            var alarmBox = new VBox(vGap,
+                    mAlarmSccb,
+                    new VBox(titleGap,
+                            mMeasAlarmLevelAgeCheckbox,
+                            mMeasAlarmLevelAgeSis
+                    ),
+                    alcGridPane
+            );
+
+            int row = 0;
+            add(wrapInTitleBorder("Rörelser", movementBox), 0, row, 1, REMAINING);
+            add(wrapInTitleBorder("Larmnivå", alarmBox), 1, row++, 1, 1);
+            add(wrapInTitleBorder("Övrigt", miscBox), 1, row++, 1, 1);
+            FxHelper.autoSizeRegionHorizontal(mMeasTopListUnitScb, mMeasAlarmLevelChangeModeScb, mMeasAlarmLevelChangeUnitScb);
+            FxHelper.bindWidthForChildrens(movementBox, alarmBox, miscBox);
+            FxHelper.bindWidthForRegions(movementBox,
+                    mMeasSpeedSds,
+                    mMeasYoyoCountSds,
+                    mMeasYoyoSizeSds,
+                    mMeasNumOfSis,
+                    mMeasAlarmLevelAgeSis,
+                    mMeasOperatorSccb
+            );
+
+            FxHelper.autoSizeColumn(this, 2);
+            var maxWidth = FxHelper.getUIScaled(500);
+            setMaxWidth(maxWidth);
+
+        }
+
+    }
+    private final double mTopBorderInnerPadding = FxHelper.getUIScaled(16.0);
+    private final double mBorderInnerPadding = FxHelper.getUIScaled(8.0);
+
+    private Node wrapInTitleBorder(String title, Node node) {
+        return Borders.wrap(node)
+                .etchedBorder()
+                .title(title)
+                .innerPadding(mTopBorderInnerPadding, mBorderInnerPadding, mBorderInnerPadding, mBorderInnerPadding)
+                .outerPadding(0)
+                .raised()
+                .build()
+                .build();
+    }
+
+    private class DisruptorSection extends VBox {
+
+        public DisruptorSection() {
+            setSpacing(rowGap);
+
+            getChildren().addAll(mDisruptorPane.getRoot());
+            var maxWidth = FxHelper.getUIScaled(500);
+            setMaxWidth(maxWidth);
+//            FxHelper.bindWidthForRegions(mDisruptorPane.getRoot());
+
+        }
+
     }
 }

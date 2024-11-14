@@ -262,15 +262,31 @@ public class TopoFilter extends FormFilter<TopoManager> {
 
     @Override
     public void update() {
+        var groupActive = true;
+
         var filteredItems = mManager.getAllItems().stream()
-                .filter(p -> validateDimension(p.getDimension()))
-                .filter(p -> validateCheck(mStatusCheckModel, p.getStatus()))
-                .filter(p -> validateCheck(mGroupCheckModel, p.getGroup()))
-                .filter(p -> validateCheck(mCategoryCheckModel, p.getCategory()))
-                .filter(p -> validateAlarmName(p))
-                .filter(p -> validateFrequency(p.getFrequency()))
-                .filter(p -> validateCheck(mOperatorCheckModel, p.getOperator()))
-                .filter(p -> validateCheck(mOriginCheckModel, p.getOrigin()))
+                .filter(p -> {
+                    if (groupActive) {
+                        return validateDimension(p.getDimension())
+                                && validateCheck(mStatusCheckModel, p.getStatus())
+                                && validateCheck(mGroupCheckModel, p.getGroup())
+                                && validateCheck(mCategoryCheckModel, p.getCategory())
+                                && validateAlarmName(p)
+                                && validateFrequency(p.getFrequency())
+                                && validateCheck(mOperatorCheckModel, p.getOperator())
+                                && validateCheck(mOriginCheckModel, p.getOrigin());
+                    } else {
+                        return true;
+                    }
+                })
+                //                .filter(p -> validateDimension(p.getDimension()))
+                //                .filter(p -> validateCheck(mStatusCheckModel, p.getStatus()))
+                //                .filter(p -> validateCheck(mGroupCheckModel, p.getGroup()))
+                //                .filter(p -> validateCheck(mCategoryCheckModel, p.getCategory()))
+                //                .filter(p -> validateAlarmName(p))
+                //                .filter(p -> validateFrequency(p.getFrequency()))
+                //                .filter(p -> validateCheck(mOperatorCheckModel, p.getOperator()))
+                //                .filter(p -> validateCheck(mOriginCheckModel, p.getOrigin()))
                 .filter(p -> {
                     var alarmH = p.ext().getAlarm(BComponent.HEIGHT);
                     var alarmP = p.ext().getAlarm(BComponent.PLANE);
