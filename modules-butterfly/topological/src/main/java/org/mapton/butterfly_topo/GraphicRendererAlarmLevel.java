@@ -23,7 +23,10 @@ import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Box;
 import gov.nasa.worldwind.render.Cylinder;
 import gov.nasa.worldwind.render.Ellipsoid;
+import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.Pyramid;
+import gov.nasa.worldwind.render.RigidShape;
+import gov.nasa.worldwind.render.Wedge;
 import gov.nasa.worldwind.render.airspaces.AbstractAirspace;
 import gov.nasa.worldwind.render.airspaces.BasicAirspaceAttributes;
 import gov.nasa.worldwind.render.airspaces.PartialCappedCylinder;
@@ -82,9 +85,18 @@ public class GraphicRendererAlarmLevel extends GraphicRendererBase {
             attrs.setInteriorMaterial(material);
 
             var pos = WWHelper.positionFromPosition(position, PERCENTAGE_ALTITUDE * percentP / 100.0);
-            var pyramid = new Pyramid(pos, PERCENTAGE_SIZE, PERCENTAGE_SIZE);
-            pyramid.setAttributes(attrs);
-            addRenderable(pyramid, true, null, sMapObjects);
+            var bearing = o.ext().getBearing();
+            RigidShape planeShape;
+            if (bearing == null || Double.isNaN(bearing)) {
+                planeShape = new Pyramid(pos, PERCENTAGE_SIZE, PERCENTAGE_SIZE);
+            } else {
+                var wedgeHeight = PERCENTAGE_SIZE * 0.5;
+                var wedgeRadius = PERCENTAGE_SIZE * 3;
+                planeShape = new Wedge(pos, Angle.fromDegrees(5), wedgeHeight, wedgeRadius);
+                planeShape.setHeading(Angle.fromDegrees(bearing));
+            }
+            planeShape.setAttributes(attrs);
+            addRenderable(planeShape, true, null, sMapObjects);
 
             var alarm = p.ext().getAlarm(BComponent.PLANE);
             var alarmShape = new Box(position, PERCENTAGE_SIZE_ALARM, PERCENTAGE_SIZE_ALARM_HEIGHT, PERCENTAGE_SIZE_ALARM);
@@ -109,6 +121,16 @@ public class GraphicRendererAlarmLevel extends GraphicRendererBase {
             var ellipsoid = new Ellipsoid(pos, PERCENTAGE_SIZE * scale, PERCENTAGE_SIZE * scale, PERCENTAGE_SIZE * scale);
             ellipsoid.setAttributes(attrs);
             addRenderable(ellipsoid, true, null, sMapObjects);
+            double heightOffset = rise ? +PERCENTAGE_SIZE * scale : -PERCENTAGE_SIZE * scale;
+            pos = WWHelper.positionFromPosition(position, (PERCENTAGE_ALTITUDE * percentH / 100.0) + heightOffset);
+            var pyramid = new Pyramid(pos, PERCENTAGE_SIZE * 0.75, PERCENTAGE_SIZE * 0.75);
+            var a2 = new BasicAirspaceAttributes(attrs);
+            a2.setInteriorMaterial(Material.WHITE);
+            pyramid.setAttributes(a2);
+            if (!rise) {
+                pyramid.setTilt(Angle.POS180);
+            }
+            addRenderable(pyramid, false, null, null);
 
             var alarm = p.ext().getAlarm(BComponent.HEIGHT);
             var alarmShape = new Cylinder(position, PERCENTAGE_SIZE_ALARM, PERCENTAGE_SIZE_ALARM_HEIGHT, PERCENTAGE_SIZE_ALARM);
