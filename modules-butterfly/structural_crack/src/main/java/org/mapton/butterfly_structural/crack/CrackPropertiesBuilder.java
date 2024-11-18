@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_structural.strain;
+package org.mapton.butterfly_structural.crack;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -36,9 +36,9 @@ import se.trixon.almond.util.StringHelper;
  *
  * @author Patrik Karlström
  */
-public class StrainPropertiesBuilder extends PropertiesBuilder<BStructuralStrainGaugePoint> {
+public class CrackPropertiesBuilder extends PropertiesBuilder<BStructuralStrainGaugePoint> {
 
-    private final ResourceBundle mBundle = NbBundle.getBundle(StrainPropertiesBuilder.class);
+    private final ResourceBundle mBundle = NbBundle.getBundle(CrackPropertiesBuilder.class);
 
     @Override
     public Object build(BStructuralStrainGaugePoint p) {

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_structural.strain;
+package org.mapton.butterfly_structural.crack;
 
 import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Material;
@@ -25,17 +25,17 @@ import org.mapton.butterfly_format.types.structural.BStructuralStrainGaugePoint;
  *
  * @author Patrik Karlström
  */
-public class StrainAttributeManager extends BaseAttributeManager {
+public class CrackAttributeManager extends BaseAttributeManager {
 
     private BasicShapeAttributes mComponentEllipsoidAttributes;
     private BasicShapeAttributes mStrainAttribute;
     private BasicShapeAttributes mSurfaceAttributes;
 
-    public static StrainAttributeManager getInstance() {
+    public static CrackAttributeManager getInstance() {
         return Holder.INSTANCE;
     }
 
-    private StrainAttributeManager() {
+    private CrackAttributeManager() {
     }
 
     public BasicShapeAttributes getComponentEllipsoidAttributes() {
@@ -50,7 +50,7 @@ public class StrainAttributeManager extends BaseAttributeManager {
     }
 
     public PointPlacemarkAttributes getPinAttributes(BStructuralStrainGaugePoint p) {
-        var attrs = getPinAttributes(StrainHelper.getAlarmLevel(p));
+        var attrs = getPinAttributes(CrackHelper.getAlarmLevel(p));
 
 //        if (mColorBy != null && mColorBy != ColorBy.ALARM) {
 //            attrs = new PointPlacemarkAttributes(attrs);
@@ -85,6 +85,6 @@ public class StrainAttributeManager extends BaseAttributeManager {
 
     private static class Holder {
 
-        private static final StrainAttributeManager INSTANCE = new StrainAttributeManager();
+        private static final CrackAttributeManager INSTANCE = new CrackAttributeManager();
     }
 }

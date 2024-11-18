@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_structural.strain;
+package org.mapton.butterfly_structural.crack;
 
 import java.time.LocalDate;
 import javafx.scene.control.Control;
@@ -34,7 +34,7 @@ import se.trixon.almond.util.fx.FxHelper;
  *
  * @author Patrik Karlström
  */
-class StrainListCell extends ListCell<BStructuralStrainGaugePoint> {
+class CrackListCell extends ListCell<BStructuralStrainGaugePoint> {
 
     private final AlarmIndicator mAlarmIndicator = new AlarmIndicator();
     private final Label mDesc1Label = new Label();
@@ -46,7 +46,7 @@ class StrainListCell extends ListCell<BStructuralStrainGaugePoint> {
     private final Tooltip mTooltip = new Tooltip();
     private VBox mVBox;
 
-    public StrainListCell() {
+    public CrackListCell() {
         createUI();
     }
 
@@ -133,7 +133,7 @@ class StrainListCell extends ListCell<BStructuralStrainGaugePoint> {
         }
 
         public void update(BStructuralStrainGaugePoint p) {
-            mResultantShape.setFill(StrainHelper.getAlarmColorHeightFx(p));
+            mResultantShape.setFill(CrackHelper.getAlarmColorHeightFx(p));
         }
 
         private void createUI() {

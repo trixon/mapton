@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_structural.strain;
+package org.mapton.butterfly_structural.crack;
 
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVListImpl;
@@ -38,27 +38,27 @@ import se.trixon.almond.util.SDict;
  * @author Patrik Karlström
  */
 @ServiceProvider(service = LayerBundle.class)
-public class StrainLayerBundle extends BfLayerBundle {
+public class CrackLayerBundle extends BfLayerBundle {
 
     private final double SYMBOL_HEIGHT = 8.0;
     private final double SYMBOL_RADIUS = 0.5;
 
-    private final StrainAttributeManager mAttributeManager = StrainAttributeManager.getInstance();
+    private final CrackAttributeManager mAttributeManager = CrackAttributeManager.getInstance();
     private final GraphicRenderer mGraphicRenderer;
     private final RenderableLayer mGroundConnectorLayer = new RenderableLayer();
     private final RenderableLayer mLabelLayer = new RenderableLayer();
     private final RenderableLayer mLayer = new RenderableLayer();
-    private final StrainManager mManager = StrainManager.getInstance();
-    private final StrainOptionsView mOptionsView;
+    private final CrackManager mManager = CrackManager.getInstance();
+    private final CrackOptionsView mOptionsView;
     private final RenderableLayer mPassiveLayer = new RenderableLayer();
     private final RenderableLayer mPinLayer = new RenderableLayer();
     private final RenderableLayer mSurfaceLayer = new RenderableLayer();
     private final RenderableLayer mSymbolLayer = new RenderableLayer();
 
-    public StrainLayerBundle() {
+    public CrackLayerBundle() {
         init();
         initRepaint();
-        mOptionsView = new StrainOptionsView(this);
+        mOptionsView = new CrackOptionsView(this);
         mGraphicRenderer = new GraphicRenderer(mLayer, mPassiveLayer, mOptionsView.getGraphicCheckModel());
         initListeners();
 
@@ -77,9 +77,9 @@ public class StrainLayerBundle extends BfLayerBundle {
     }
 
     private void init() {
-        mLayer.setName(Bundle.CTL_StrainAction());
+        mLayer.setName(Bundle.CTL_CrackAction());
         setCategory(mLayer, SDict.STRUCTURAL.toString());
-        setName(Bundle.CTL_StrainAction());
+        setName(Bundle.CTL_CrackAction());
         attachTopComponentToLayer("StrainTopComponent", mLayer);
         mLayer.setMaxActiveAltitude(6000);
         mSurfaceLayer.setMaxActiveAltitude(6000);
@@ -177,8 +177,8 @@ public class StrainLayerBundle extends BfLayerBundle {
         });
     }
 
-    private PointPlacemark plotLabel(BStructuralStrainGaugePoint p, StrainLabelBy labelBy, Position position) {
-        if (labelBy == StrainLabelBy.NONE) {
+    private PointPlacemark plotLabel(BStructuralStrainGaugePoint p, CrackLabelBy labelBy, Position position) {
+        if (labelBy == CrackLabelBy.NONE) {
             return null;
         }
 
@@ -216,7 +216,7 @@ public class StrainLayerBundle extends BfLayerBundle {
     private ArrayList<AVListImpl> plotSymbol(BStructuralStrainGaugePoint p, Position position, PointPlacemark labelPlacemark) {
         var mapObjects = new ArrayList<AVListImpl>();
         var cylinder = new Cylinder(position, SYMBOL_HEIGHT, SYMBOL_RADIUS);
-        var attrs = mAttributeManager.getAlarmInteriorAttributes(StrainHelper.getAlarmLevel(p));
+        var attrs = mAttributeManager.getAlarmInteriorAttributes(CrackHelper.getAlarmLevel(p));
 
         cylinder.setAttributes(attrs);
         mapObjects.add(cylinder);

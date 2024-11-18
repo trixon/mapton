@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_structural.strain;
+package org.mapton.butterfly_structural.crack;
 
 import java.util.Arrays;
 import javafx.scene.layout.Pane;
@@ -27,28 +27,28 @@ import se.trixon.almond.util.Dict;
  *
  * @author Patrik Karlström
  */
-public class StrainView {
+public class CrackView {
 
-    private final StrainFilter mFilter = new StrainFilter();
-    private final StrainFilterPopOver mFilterPopOver = new StrainFilterPopOver(mFilter);
-    private final SingleListForm<StrainManager, BStructuralStrainGaugePoint> mListForm;
-    private final StrainManager mManager = StrainManager.getInstance();
+    private final CrackFilter mFilter = new CrackFilter();
+    private final CrackFilterPopOver mFilterPopOver = new CrackFilterPopOver(mFilter);
+    private final SingleListForm<CrackManager, BStructuralStrainGaugePoint> mListForm;
+    private final CrackManager mManager = CrackManager.getInstance();
 
-    public StrainView() {
+    public CrackView() {
         var actions = Arrays.asList(
                 ActionUtils.ACTION_SPAN,
                 mManager.geZoomExtentstAction(),
                 mFilterPopOver.getAction()
         );
 
-        mListForm = new SingleListForm<>(mManager, Bundle.CTL_StrainAction());
+        mListForm = new SingleListForm<>(mManager, Bundle.CTL_CrackAction());
         var listFormConfiguration = new ListFormConfiguration()
                 .setUseTextFilter(true)
                 .setToolbarActions(actions);
 
         mFilter.bindFreeTextProperty(mListForm.freeTextProperty());
         mListForm.applyConfiguration(listFormConfiguration);
-        mListForm.getListView().setCellFactory(listView -> new StrainListCell());
+        mListForm.getListView().setCellFactory(listView -> new CrackListCell());
 
         mListForm.setFreeTextTooltip(
                 Dict.NAME.toString()

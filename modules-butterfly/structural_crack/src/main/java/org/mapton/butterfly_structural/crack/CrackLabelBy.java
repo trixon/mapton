@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_structural.strain;
+package org.mapton.butterfly_structural.crack;
 
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
@@ -30,7 +30,7 @@ import se.trixon.almond.util.SDict;
  *
  * @author Patrik Karlström
  */
-public enum StrainLabelBy {
+public enum CrackLabelBy {
     NAME(Strings.CAT_ROOT, Dict.NAME.toString(), p -> {
         return p.getName();
     }),
@@ -189,7 +189,7 @@ public enum StrainLabelBy {
     private final Function<BStructuralStrainGaugePoint, String> mFunction;
     private final String mName;
 
-    private StrainLabelBy(String category, String name, Function<BStructuralStrainGaugePoint, String> function) {
+    private CrackLabelBy(String category, String name, Function<BStructuralStrainGaugePoint, String> function) {
         mCategory = category;
         mName = name;
         mFunction = function;

@@ -4,7 +4,7 @@
     <folder name="Windows2">
         <folder name="Groups">
             <folder name="MapGroup">
-                <file name="StrainTopComponent.wstcgrp" url="StrainTopComponentWstcgrp.xml"/>
+                <file name="CrackTopComponent.wstcgrp" url="CrackTopComponentWstcgrp.xml"/>
             </folder>
         </folder>
     </folder>

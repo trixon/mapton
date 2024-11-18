@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_structural.strain;
+package org.mapton.butterfly_structural.crack;
 
 import javafx.scene.Scene;
 import org.mapton.core.api.MTopComponent;
@@ -28,30 +28,30 @@ import org.openide.windows.TopComponent;
  * Top component which displays something.
  */
 @ConvertAsProperties(
-        dtd = "-//org.mapton.butterfly-structural//Strain//EN",
+        dtd = "-//org.mapton.butterfly-structural//Crack//EN",
         autostore = false
 )
 @TopComponent.Description(
-        preferredID = "StrainTopComponent",
+        preferredID = "CrackTopComponent",
         //iconBase="SET/PATH/TO/ICON/HERE",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(mode = "mapTools", openAtStartup = false)
-@ActionID(category = "Butterfly", id = "org.mapton.butterfly-structural.StrainTopComponent")
+@ActionID(category = "Butterfly", id = "org.mapton.butterfly-structural.CrackTopComponent")
 @ActionReferences({
     @ActionReference(path = "Menu/MapTools/Butterfly", position = 999)
 })
 @TopComponent.OpenActionRegistration(
-        displayName = "#CTL_StrainAction",
-        preferredID = "StrainTopComponent"
+        displayName = "#CTL_CrackAction",
+        preferredID = "CrackTopComponent"
 )
 @Messages({
-    "CTL_StrainAction=Strain gauge"
+    "CTL_CrackAction=Crack meter"
 })
-public final class StrainTopComponent extends MTopComponent {
+public final class CrackTopComponent extends MTopComponent {
 
-    public StrainTopComponent() {
-        setName(Bundle.CTL_StrainAction());
+    public CrackTopComponent() {
+        setName(Bundle.CTL_CrackAction());
     }
 
     @Override
@@ -60,7 +60,7 @@ public final class StrainTopComponent extends MTopComponent {
     }
 
     private Scene createScene() {
-        var strainView = new StrainView();
+        var strainView = new CrackView();
 
         return new Scene(strainView.getView());
     }

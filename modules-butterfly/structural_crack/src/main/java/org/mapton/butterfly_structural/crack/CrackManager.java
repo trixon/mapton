@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_structural.strain;
+package org.mapton.butterfly_structural.crack;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -33,16 +33,16 @@ import se.trixon.almond.util.CollectionHelper;
  *
  * @author Patrik Karlström
  */
-public class StrainManager extends BaseManager<BStructuralStrainGaugePoint> {
+public class CrackManager extends BaseManager<BStructuralStrainGaugePoint> {
 
-    private final StrainChartBuilder mChartBuilder = new StrainChartBuilder();
-    private final StrainPropertiesBuilder mPropertiesBuilder = new StrainPropertiesBuilder();
+    private final CrackChartBuilder mChartBuilder = new CrackChartBuilder();
+    private final CrackPropertiesBuilder mPropertiesBuilder = new CrackPropertiesBuilder();
 
-    public static StrainManager getInstance() {
+    public static CrackManager getInstance() {
         return Holder.INSTANCE;
     }
 
-    private StrainManager() {
+    private CrackManager() {
         super(BStructuralStrainGaugePoint.class);
     }
 
@@ -153,6 +153,6 @@ public class StrainManager extends BaseManager<BStructuralStrainGaugePoint> {
 
     private static class Holder {
 
-        private static final StrainManager INSTANCE = new StrainManager();
+        private static final CrackManager INSTANCE = new CrackManager();
     }
 }

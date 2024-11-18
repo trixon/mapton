@@ -13,27 +13,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_structural.strain;
+package org.mapton.butterfly_structural.crack;
 
-import se.trixon.almond.util.Dict;
+import org.mapton.butterfly_core.api.GraphicRenderItemLimitProvider;
+import se.trixon.almond.util.SDict;
 
 /**
  *
  * @author Patrik Karlström
  */
-public enum StrainPointBy {
-    PIN(Dict.PIN.toString()),
-    SYMBOL(Dict.SYMBOL.toString()),
-    NONE(Dict.NONE.toString());
-    private final String mName;
+public enum GraphicRendererItem implements GraphicRenderItemLimitProvider {
 
-    private StrainPointBy(String name) {
+    ALARM_CONSUMPTION("Larmförbrukning", Integer.MAX_VALUE),
+    TRACE(SDict.TRACE.toString(), 10_000);
+
+    private final String mName;
+    private final int mPlotLimit;
+
+    private GraphicRendererItem(String name, int plotLimit) {
         mName = name;
+        mPlotLimit = plotLimit;
     }
 
     @Override
-    public String toString() {
+    public String getName() {
         return mName;
     }
 
+    @Override
+    public int getPlotLimit() {
+        return mPlotLimit;
+    }
+
+    @Override
+
+    public String toString() {
+        return getName();
+    }
 }

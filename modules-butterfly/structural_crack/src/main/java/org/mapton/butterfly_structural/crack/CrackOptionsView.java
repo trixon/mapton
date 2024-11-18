@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_structural.strain;
+package org.mapton.butterfly_structural.crack;
 
 import java.util.LinkedHashMap;
 import java.util.stream.Stream;
@@ -37,18 +37,18 @@ import se.trixon.almond.util.fx.session.SessionComboBox;
  *
  * @author Patrik Karlström
  */
-public class StrainOptionsView extends MOptionsView {
+public class CrackOptionsView extends MOptionsView {
 
-    private static final StrainLabelBy DEFAULT_LABEL_BY = StrainLabelBy.NAME;
-    private static final StrainPointBy DEFAULT_POINT_BY = StrainPointBy.PIN;
+    private static final CrackLabelBy DEFAULT_LABEL_BY = CrackLabelBy.NAME;
+    private static final CrackPointBy DEFAULT_POINT_BY = CrackPointBy.PIN;
 
     private final SessionCheckComboBox<GraphicRendererItem> mGraphicSccb = new SessionCheckComboBox<>();
     private final SimpleStringProperty mLabelByIdProperty = new SimpleStringProperty(DEFAULT_LABEL_BY.name());
-    private final SimpleObjectProperty<StrainLabelBy> mLabelByProperty = new SimpleObjectProperty<>();
+    private final SimpleObjectProperty<CrackLabelBy> mLabelByProperty = new SimpleObjectProperty<>();
     private final MenuButton mLabelMenuButton = new MenuButton();
-    private final SessionComboBox<StrainPointBy> mPointScb = new SessionComboBox<>();
+    private final SessionComboBox<CrackPointBy> mPointScb = new SessionComboBox<>();
 
-    public StrainOptionsView(StrainLayerBundle layerBundle) {
+    public CrackOptionsView(CrackLayerBundle layerBundle) {
         super(layerBundle);
         createUI();
         initListeners();
@@ -59,20 +59,20 @@ public class StrainOptionsView extends MOptionsView {
         return mGraphicSccb.getCheckModel();
     }
 
-    public StrainLabelBy getLabelBy() {
+    public CrackLabelBy getLabelBy() {
         return mLabelByProperty.get();
     }
 
-    public StrainPointBy getPointBy() {
+    public CrackPointBy getPointBy() {
         return mPointScb.valueProperty().get();
     }
 
-    public SimpleObjectProperty<StrainLabelBy> labelByProperty() {
+    public SimpleObjectProperty<CrackLabelBy> labelByProperty() {
         return mLabelByProperty;
     }
 
     private void createUI() {
-        mPointScb.getItems().setAll(StrainPointBy.values());
+        mPointScb.getItems().setAll(CrackPointBy.values());
         mPointScb.setValue(DEFAULT_POINT_BY);
 
         mGraphicSccb.setTitle(Dict.GRAPHICS.toString());
@@ -117,16 +117,16 @@ public class StrainOptionsView extends MOptionsView {
         sessionManager.register("options.measPoint.labelBy", mLabelByIdProperty);
         sessionManager.register("options.measPoint.checkedGraphics", mGraphicSccb.checkedStringProperty());
         try {
-            mLabelByProperty.set(StrainLabelBy.valueOf(mLabelByIdProperty.get()));
+            mLabelByProperty.set(CrackLabelBy.valueOf(mLabelByIdProperty.get()));
         } catch (IllegalArgumentException e) {
-            mLabelByProperty.set(StrainLabelBy.NAME);
+            mLabelByProperty.set(CrackLabelBy.NAME);
         }
     }
 
     private void populateLabelMenuButton() {
         var categoryToMenu = new LinkedHashMap<String, Menu>();
 
-        for (var topoLabel : StrainLabelBy.values()) {
+        for (var topoLabel : CrackLabelBy.values()) {
             var menu = categoryToMenu.computeIfAbsent(topoLabel.getCategory(), k -> {
                 return new Menu(k);
             });

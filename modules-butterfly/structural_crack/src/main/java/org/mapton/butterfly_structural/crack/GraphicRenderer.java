@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_structural.strain;
+package org.mapton.butterfly_structural.crack;
 
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
@@ -34,7 +34,7 @@ import org.mapton.worldwind.api.WWHelper;
  */
 public class GraphicRenderer extends GraphicRendererBase {
 
-    private final StrainAttributeManager mAttributeManager = StrainAttributeManager.getInstance();
+    private final CrackAttributeManager mAttributeManager = CrackAttributeManager.getInstance();
 
     public GraphicRenderer(RenderableLayer layer, RenderableLayer passiveLayer, IndexedCheckModel<GraphicRendererItem> checkModel) {
         super(layer, passiveLayer);

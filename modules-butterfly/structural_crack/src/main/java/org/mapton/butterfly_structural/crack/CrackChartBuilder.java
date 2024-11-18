@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_structural.strain;
+package org.mapton.butterfly_structural.crack;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -41,7 +41,7 @@ import se.trixon.almond.util.MathHelper;
  *
  * @author Patrik Karlström
  */
-public class StrainChartBuilder extends XyzChartBuilder<BStructuralStrainGaugePoint> {
+public class CrackChartBuilder extends XyzChartBuilder<BStructuralStrainGaugePoint> {
 
     private final ChartHelper mChartHelper = new ChartHelper();
     private final CircularInt mColorCircularInt = new CircularInt(0, 5);
@@ -51,7 +51,7 @@ public class StrainChartBuilder extends XyzChartBuilder<BStructuralStrainGaugePo
     private final TimeSeries mTimeSeriesTemperature = new TimeSeries("°C");
     private final TimeSeries mTimeSeriesZ = new TimeSeries("Δ µε");
 
-    public StrainChartBuilder() {
+    public CrackChartBuilder() {
         initChart("Δ µε", "0");
 
         var plot = (XYPlot) mChart.getPlot();
@@ -90,7 +90,7 @@ public class StrainChartBuilder extends XyzChartBuilder<BStructuralStrainGaugePo
 
     @Override
     public void setTitle(BStructuralStrainGaugePoint p) {
-        setTitle(p, StrainHelper.getAlarmColorAwt(p));
+        setTitle(p, CrackHelper.getAlarmColorAwt(p));
 
         var dateFirst = Objects.toString(DateHelper.toDateString(p.getDateZero()), "");
         var dateLast = Objects.toString(DateHelper.toDateString(p.ext().getObservationRawLastDate()), "");
@@ -120,7 +120,7 @@ public class StrainChartBuilder extends XyzChartBuilder<BStructuralStrainGaugePo
         } else {
             updateDataset(p, Color.RED, true);
             mColorCircularInt.set(0);
-            StrainManager.getInstance().getTimeFilteredItems().stream()
+            CrackManager.getInstance().getTimeFilteredItems().stream()
                     .filter(pp -> {
                         return Math.hypot(pp.getZeroX() - p.getZeroX(), pp.getZeroY() - p.getZeroY()) < 1.0;
                     })

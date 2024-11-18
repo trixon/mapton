@@ -13,19 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_structural.strain;
+package org.mapton.butterfly_structural.crack;
 
-import org.openide.windows.OnShowing;
+import se.trixon.almond.util.Dict;
 
 /**
  *
  * @author Patrik Karlström
  */
-@OnShowing
-public class DoOnShowing implements Runnable {
+public enum CrackPointBy {
+    PIN(Dict.PIN.toString()),
+    SYMBOL(Dict.SYMBOL.toString()),
+    NONE(Dict.NONE.toString());
+    private final String mName;
+
+    private CrackPointBy(String name) {
+        mName = name;
+    }
 
     @Override
-    public void run() {
+    public String toString() {
+        return mName;
     }
 
 }

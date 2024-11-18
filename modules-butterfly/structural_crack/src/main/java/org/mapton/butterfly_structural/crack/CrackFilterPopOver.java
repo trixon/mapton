@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_structural.strain;
+package org.mapton.butterfly_structural.crack;
 
 import com.dlsc.gemsfx.Spacer;
 import java.util.ResourceBundle;
@@ -31,14 +31,14 @@ import se.trixon.almond.util.fx.FxHelper;
  *
  * @author Patrik Karlström
  */
-public class StrainFilterPopOver extends BaseFilterPopOver {
+public class CrackFilterPopOver extends BaseFilterPopOver {
 
     private final BaseFilters mBaseFilters = new BaseFilters();
-    private final ResourceBundle mBundle = NbBundle.getBundle(StrainFilterPopOver.class);
-    private final StrainFilter mFilter;
-    private StrainManager mManager = StrainManager.getInstance();
+    private final ResourceBundle mBundle = NbBundle.getBundle(CrackFilterPopOver.class);
+    private final CrackFilter mFilter;
+    private CrackManager mManager = CrackManager.getInstance();
 
-    public StrainFilterPopOver(StrainFilter filter) {
+    public CrackFilterPopOver(CrackFilter filter) {
         mFilter = filter;
         createUI();
         initListeners();

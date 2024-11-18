@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_structural.strain;
+package org.mapton.butterfly_structural.crack;
 
 import j2html.tags.ContainerTag;
 import java.util.LinkedHashMap;
@@ -28,7 +28,7 @@ import se.trixon.almond.util.Dict;
  *
  * @author Patrik Karlström
  */
-public class StrainFilter extends FormFilter<StrainManager> {
+public class CrackFilter extends FormFilter<CrackManager> {
 
     IndexedCheckModel mAlarmNameCheckModel;
     IndexedCheckModel mCategoryCheckModel;
@@ -36,11 +36,11 @@ public class StrainFilter extends FormFilter<StrainManager> {
     IndexedCheckModel mOperatorCheckModel;
     IndexedCheckModel mOriginCheckModel;
     IndexedCheckModel mStatusCheckModel;
-    private final ResourceBundle mBundle = NbBundle.getBundle(StrainFilter.class);
-    private final StrainManager mManager = StrainManager.getInstance();
+    private final ResourceBundle mBundle = NbBundle.getBundle(CrackFilter.class);
+    private final CrackManager mManager = CrackManager.getInstance();
 
-    public StrainFilter() {
-        super(StrainManager.getInstance());
+    public CrackFilter() {
+        super(CrackManager.getInstance());
 
         initListeners();
     }

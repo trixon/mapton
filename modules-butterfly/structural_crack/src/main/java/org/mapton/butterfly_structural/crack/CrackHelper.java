@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_structural.strain;
+package org.mapton.butterfly_structural.crack;
 
 import java.awt.Color;
 import org.mapton.butterfly_core.api.ButterflyHelper;
@@ -23,7 +23,7 @@ import org.mapton.butterfly_format.types.structural.BStructuralStrainGaugePoint;
  *
  * @author Patrik Karlström
  */
-public class StrainHelper {
+public class CrackHelper {
 
     public static Color getAlarmColorAwt(BStructuralStrainGaugePoint p) {
         return ButterflyHelper.getAlarmColorAwt(getAlarmLevel(p));
