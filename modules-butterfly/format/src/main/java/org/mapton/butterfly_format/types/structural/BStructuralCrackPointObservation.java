@@ -43,7 +43,7 @@ public class BStructuralCrackPointObservation extends BXyzPointObservation {
         this.temperature = temperature;
     }
 
-    public class Ext extends BXyzPointObservation.Ext<BStructuralStrainGaugePoint> {
+    public class Ext extends BXyzPointObservation.Ext<BStructuralCrackPoint> {
 
         public Ext() {
         }

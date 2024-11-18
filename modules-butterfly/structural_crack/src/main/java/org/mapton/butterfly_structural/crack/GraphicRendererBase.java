@@ -22,13 +22,13 @@ import java.util.ArrayList;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.butterfly_core.api.BaseGraphicRenderer;
 import org.mapton.butterfly_core.api.PlotLimiter;
-import org.mapton.butterfly_format.types.structural.BStructuralStrainGaugePoint;
+import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
 
 /**
  *
  * @author Patrik Karlström
  */
-public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicRendererItem, BStructuralStrainGaugePoint> {
+public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicRendererItem, BStructuralCrackPoint> {
 
     protected static IndexedCheckModel<GraphicRendererItem> sCheckModel;
     protected static ArrayList<AVListImpl> sMapObjects;
@@ -44,7 +44,7 @@ public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicRen
         super(layer, passiveLayer, sPlotLimiter);
     }
 
-    protected boolean isPlotLimitReached(BStructuralStrainGaugePoint p, Object key, Position position) {
+    protected boolean isPlotLimitReached(BStructuralCrackPoint p, Object key, Position position) {
         return super.isPlotLimitReached(p, key, position, p.ext().getObservationsTimeFiltered().isEmpty(), sMapObjects);
     }
 

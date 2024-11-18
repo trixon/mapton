@@ -26,7 +26,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 import javafx.util.Duration;
 import org.apache.commons.lang3.StringUtils;
-import org.mapton.butterfly_format.types.structural.BStructuralStrainGaugePoint;
+import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
 import se.trixon.almond.util.StringHelper;
 import se.trixon.almond.util.fx.FxHelper;
 
@@ -34,7 +34,7 @@ import se.trixon.almond.util.fx.FxHelper;
  *
  * @author Patrik Karlström
  */
-class CrackListCell extends ListCell<BStructuralStrainGaugePoint> {
+class CrackListCell extends ListCell<BStructuralCrackPoint> {
 
     private final AlarmIndicator mAlarmIndicator = new AlarmIndicator();
     private final Label mDesc1Label = new Label();
@@ -51,7 +51,7 @@ class CrackListCell extends ListCell<BStructuralStrainGaugePoint> {
     }
 
     @Override
-    protected void updateItem(BStructuralStrainGaugePoint p, boolean empty) {
+    protected void updateItem(BStructuralCrackPoint p, boolean empty) {
         super.updateItem(p, empty);
         if (p == null || empty) {
             clearContent();
@@ -60,7 +60,7 @@ class CrackListCell extends ListCell<BStructuralStrainGaugePoint> {
         }
     }
 
-    private void addContent(BStructuralStrainGaugePoint p) {
+    private void addContent(BStructuralCrackPoint p) {
         setText(null);
         var header = p.getName();
         if (StringUtils.isNotBlank(p.getStatus())) {
@@ -132,7 +132,7 @@ class CrackListCell extends ListCell<BStructuralStrainGaugePoint> {
             createUI();
         }
 
-        public void update(BStructuralStrainGaugePoint p) {
+        public void update(BStructuralCrackPoint p) {
             mResultantShape.setFill(CrackHelper.getAlarmColorHeightFx(p));
         }
 

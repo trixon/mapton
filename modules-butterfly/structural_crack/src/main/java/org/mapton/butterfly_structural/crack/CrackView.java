@@ -20,7 +20,7 @@ import javafx.scene.layout.Pane;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.SingleListForm;
-import org.mapton.butterfly_format.types.structural.BStructuralStrainGaugePoint;
+import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
 import se.trixon.almond.util.Dict;
 
 /**
@@ -31,7 +31,7 @@ public class CrackView {
 
     private final CrackFilter mFilter = new CrackFilter();
     private final CrackFilterPopOver mFilterPopOver = new CrackFilterPopOver(mFilter);
-    private final SingleListForm<CrackManager, BStructuralStrainGaugePoint> mListForm;
+    private final SingleListForm<CrackManager, BStructuralCrackPoint> mListForm;
     private final CrackManager mManager = CrackManager.getInstance();
 
     public CrackView() {

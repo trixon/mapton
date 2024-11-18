@@ -60,9 +60,9 @@ public final class CrackTopComponent extends MTopComponent {
     }
 
     private Scene createScene() {
-        var strainView = new CrackView();
+        var crackView = new CrackView();
 
-        return new Scene(strainView.getView());
+        return new Scene(crackView.getView());
     }
 
     void writeProperties(java.util.Properties p) {

@@ -23,12 +23,10 @@ import java.util.ResourceBundle;
 import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.api.ui.forms.PropertiesBuilder;
 import static org.mapton.api.ui.forms.PropertiesBuilder.SEPARATOR;
-import org.mapton.butterfly_alarm.api.AlarmHelper;
-import org.mapton.butterfly_format.types.structural.BStructuralStrainGaugePoint;
+import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.MathHelper;
 import se.trixon.almond.util.SDict;
 import se.trixon.almond.util.StringHelper;
 
@@ -36,12 +34,12 @@ import se.trixon.almond.util.StringHelper;
  *
  * @author Patrik Karlström
  */
-public class CrackPropertiesBuilder extends PropertiesBuilder<BStructuralStrainGaugePoint> {
+public class CrackPropertiesBuilder extends PropertiesBuilder<BStructuralCrackPoint> {
 
     private final ResourceBundle mBundle = NbBundle.getBundle(CrackPropertiesBuilder.class);
 
     @Override
-    public Object build(BStructuralStrainGaugePoint p) {
+    public Object build(BStructuralCrackPoint p) {
         if (p == null) {
             return p;
         }
@@ -58,7 +56,7 @@ public class CrackPropertiesBuilder extends PropertiesBuilder<BStructuralStrainG
         propertyMap.put(getCatKey(cat1, Dict.ORIGIN.toString()), p.getOrigin());
         propertyMap.put(getCatKey(cat1, Dict.COMMENT.toString()), p.getComment());
         propertyMap.put(getCatKey(cat1, SDict.ALARM.toString()), p.getAlarm1Id());
-        propertyMap.put(getCatKey(cat1, Dict.VALUE.toString()), AlarmHelper.getInstance().getLimitsAsString(p));
+        // propertyMap.put(getCatKey(cat1, Dict.VALUE.toString()), AlarmHelper.getInstance().getLimitsAsString(p));
         propertyMap.put(getCatKey(cat1, "Larmförbrukning"), p.ext().getAlarmPercentHString(p.ext()));
 
         var measurements = "%d / %d    (%d - %d)".formatted(
@@ -110,27 +108,7 @@ public class CrackPropertiesBuilder extends PropertiesBuilder<BStructuralStrainG
         propertyMap.put(getCatKey(cat1, Dict.CREATED.toString()), DateHelper.toDateString(p.getDateCreated()));
         propertyMap.put(getCatKey(cat1, Dict.CHANGED.toString()), DateHelper.toDateString(p.getDateChanged()));
 
-        calcBearing(p);
         return propertyMap;
     }
 
-    private double calcBearing(BStructuralStrainGaugePoint p) {
-        if (p.getDirectionX() == null) {
-            return -1;
-        }
-        var bearing = MathHelper.convertCcwDegreeToCw(p.getDirectionX());
-        var o0 = p.ext().getObservationFilteredFirst();
-        var o1 = p.ext().getObservationFilteredLast();
-        if (ObjectUtils.anyNull(o0, o1)) {
-            System.out.println("calc failed");
-            return 0;
-
-        }
-        var v0 = Math.atan(o0.getMeasuredY() / o0.getMeasuredX());
-        var v1 = Math.atan(o1.getMeasuredY() / o1.getMeasuredX());
-        var delta = Math.toDegrees(v1 - v0);
-        var r = bearing + delta;
-
-        return r;
-    }
 }

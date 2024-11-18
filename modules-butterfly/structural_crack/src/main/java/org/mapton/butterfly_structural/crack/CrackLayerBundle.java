@@ -26,7 +26,7 @@ import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.butterfly_core.api.BfLayerBundle;
-import org.mapton.butterfly_format.types.structural.BStructuralStrainGaugePoint;
+import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
@@ -80,7 +80,7 @@ public class CrackLayerBundle extends BfLayerBundle {
         mLayer.setName(Bundle.CTL_CrackAction());
         setCategory(mLayer, SDict.STRUCTURAL.toString());
         setName(Bundle.CTL_CrackAction());
-        attachTopComponentToLayer("StrainTopComponent", mLayer);
+        attachTopComponentToLayer("CrackTopComponent", mLayer);
         mLayer.setMaxActiveAltitude(6000);
         mSurfaceLayer.setMaxActiveAltitude(6000);
         mPinLayer.setMaxActiveAltitude(20000);
@@ -97,7 +97,7 @@ public class CrackLayerBundle extends BfLayerBundle {
     }
 
     private void initListeners() {
-        mManager.getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BStructuralStrainGaugePoint> c) -> {
+        mManager.getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BStructuralCrackPoint> c) -> {
             repaint();
         });
 
@@ -177,7 +177,7 @@ public class CrackLayerBundle extends BfLayerBundle {
         });
     }
 
-    private PointPlacemark plotLabel(BStructuralStrainGaugePoint p, CrackLabelBy labelBy, Position position) {
+    private PointPlacemark plotLabel(BStructuralCrackPoint p, CrackLabelBy labelBy, Position position) {
         if (labelBy == CrackLabelBy.NONE) {
             return null;
         }
@@ -192,7 +192,7 @@ public class CrackLayerBundle extends BfLayerBundle {
         return placemark;
     }
 
-    private PointPlacemark plotPin(BStructuralStrainGaugePoint p, Position position, PointPlacemark labelPlacemark) {
+    private PointPlacemark plotPin(BStructuralCrackPoint p, Position position, PointPlacemark labelPlacemark) {
         var attrs = mAttributeManager.getPinAttributes(p);
 
         var placemark = new PointPlacemark(position);
@@ -213,7 +213,7 @@ public class CrackLayerBundle extends BfLayerBundle {
         return placemark;
     }
 
-    private ArrayList<AVListImpl> plotSymbol(BStructuralStrainGaugePoint p, Position position, PointPlacemark labelPlacemark) {
+    private ArrayList<AVListImpl> plotSymbol(BStructuralCrackPoint p, Position position, PointPlacemark labelPlacemark) {
         var mapObjects = new ArrayList<AVListImpl>();
         var cylinder = new Cylinder(position, SYMBOL_HEIGHT, SYMBOL_RADIUS);
         var attrs = mAttributeManager.getAlarmInteriorAttributes(CrackHelper.getAlarmLevel(p));

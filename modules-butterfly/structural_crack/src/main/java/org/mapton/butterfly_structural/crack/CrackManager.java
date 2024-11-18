@@ -24,8 +24,8 @@ import java.util.stream.Collectors;
 import org.mapton.api.MTemporalRange;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
-import org.mapton.butterfly_format.types.structural.BStructuralStrainGaugePoint;
-import org.mapton.butterfly_format.types.structural.BStructuralStrainGaugePointObservation;
+import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
+import org.mapton.butterfly_format.types.structural.BStructuralCrackPointObservation;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.CollectionHelper;
 
@@ -33,7 +33,7 @@ import se.trixon.almond.util.CollectionHelper;
  *
  * @author Patrik Karlström
  */
-public class CrackManager extends BaseManager<BStructuralStrainGaugePoint> {
+public class CrackManager extends BaseManager<BStructuralCrackPoint> {
 
     private final CrackChartBuilder mChartBuilder = new CrackChartBuilder();
     private final CrackPropertiesBuilder mPropertiesBuilder = new CrackPropertiesBuilder();
@@ -43,31 +43,31 @@ public class CrackManager extends BaseManager<BStructuralStrainGaugePoint> {
     }
 
     private CrackManager() {
-        super(BStructuralStrainGaugePoint.class);
+        super(BStructuralCrackPoint.class);
     }
 
     @Override
-    public Object getObjectChart(BStructuralStrainGaugePoint selectedObject) {
+    public Object getObjectChart(BStructuralCrackPoint selectedObject) {
         return mChartBuilder.build(selectedObject);
     }
 
     @Override
-    public Object getObjectProperties(BStructuralStrainGaugePoint selectedObject) {
+    public Object getObjectProperties(BStructuralCrackPoint selectedObject) {
         return mPropertiesBuilder.build(selectedObject);
     }
 
     @Override
     public void load(Butterfly butterfly) {
         try {
-            initAllItems(butterfly.structural().getStrainPoints());
+            initAllItems(butterfly.structural().getCrackPoints());
             initObjectToItemMap();
 
-            var nameToObservations = new LinkedHashMap<String, ArrayList<BStructuralStrainGaugePointObservation>>();
-            for (var o : butterfly.structural().getStrainPointsObservations()) {
+            var nameToObservations = new LinkedHashMap<String, ArrayList<BStructuralCrackPointObservation>>();
+            for (var o : butterfly.structural().getCrackPointsObservations()) {
                 nameToObservations.computeIfAbsent(o.getName(), k -> new ArrayList<>()).add(o);
             }
 
-            for (var p : butterfly.structural().getStrainPoints()) {
+            for (var p : butterfly.structural().getCrackPoints()) {
                 var observations = nameToObservations.getOrDefault(p.getName(), new ArrayList<>());
                 if (!observations.isEmpty()) {
                     p.setDateLatest(observations.getLast().getDate());
@@ -110,7 +110,7 @@ public class CrackManager extends BaseManager<BStructuralStrainGaugePoint> {
     @Override
     protected void applyTemporalFilter() {
         var measCountStatsDateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM");
-        var timeFilteredItems = new ArrayList<BStructuralStrainGaugePoint>();
+        var timeFilteredItems = new ArrayList<BStructuralCrackPoint>();
 
         p:
         for (var p : getFilteredItems()) {
@@ -147,7 +147,7 @@ public class CrackManager extends BaseManager<BStructuralStrainGaugePoint> {
     }
 
     @Override
-    protected void load(ArrayList<BStructuralStrainGaugePoint> items) {
+    protected void load(ArrayList<BStructuralCrackPoint> items) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

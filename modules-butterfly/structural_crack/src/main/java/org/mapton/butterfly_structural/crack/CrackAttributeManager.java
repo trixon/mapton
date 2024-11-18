@@ -19,7 +19,7 @@ import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
 import org.mapton.butterfly_core.api.BaseAttributeManager;
-import org.mapton.butterfly_format.types.structural.BStructuralStrainGaugePoint;
+import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
 
 /**
  *
@@ -28,7 +28,7 @@ import org.mapton.butterfly_format.types.structural.BStructuralStrainGaugePoint;
 public class CrackAttributeManager extends BaseAttributeManager {
 
     private BasicShapeAttributes mComponentEllipsoidAttributes;
-    private BasicShapeAttributes mStrainAttribute;
+    private BasicShapeAttributes mCrackAttribute;
     private BasicShapeAttributes mSurfaceAttributes;
 
     public static CrackAttributeManager getInstance() {
@@ -49,7 +49,19 @@ public class CrackAttributeManager extends BaseAttributeManager {
         return mComponentEllipsoidAttributes;
     }
 
-    public PointPlacemarkAttributes getPinAttributes(BStructuralStrainGaugePoint p) {
+    public BasicShapeAttributes getCrackAttribute() {
+        if (mCrackAttribute == null) {
+            mCrackAttribute = new BasicShapeAttributes();
+            mCrackAttribute.setDrawOutline(true);
+            mCrackAttribute.setOutlineMaterial(Material.RED);
+            mCrackAttribute.setOutlineWidth(4.0);
+            mCrackAttribute.setOutlineOpacity(1.0);
+        }
+
+        return mCrackAttribute;
+    }
+
+    public PointPlacemarkAttributes getPinAttributes(BStructuralCrackPoint p) {
         var attrs = getPinAttributes(CrackHelper.getAlarmLevel(p));
 
 //        if (mColorBy != null && mColorBy != ColorBy.ALARM) {
@@ -57,18 +69,6 @@ public class CrackAttributeManager extends BaseAttributeManager {
 //            attrs.setImageColor(getColor(p));
 //        }
         return attrs;
-    }
-
-    public BasicShapeAttributes getStrainAttribute() {
-        if (mStrainAttribute == null) {
-            mStrainAttribute = new BasicShapeAttributes();
-            mStrainAttribute.setDrawOutline(true);
-            mStrainAttribute.setOutlineMaterial(Material.RED);
-            mStrainAttribute.setOutlineWidth(4.0);
-            mStrainAttribute.setOutlineOpacity(1.0);
-        }
-
-        return mStrainAttribute;
     }
 
     public BasicShapeAttributes getSurfaceAttributes() {

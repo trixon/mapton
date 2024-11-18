@@ -57,7 +57,7 @@ public class CrackFilterPopOver extends BaseFilterPopOver {
 
     @Override
     public void load(Butterfly butterfly) {
-        var items = butterfly.structural().getStrainPoints();
+        var items = butterfly.structural().getCrackPoints();
         mBaseFilters.getGroupSccb().loadAndRestoreCheckItems(items.stream().map(p -> p.getGroup()));
         mBaseFilters.getStatusSccb().loadAndRestoreCheckItems(items.stream().map(p -> p.getStatus()));
         mBaseFilters.getOperatorSccb().loadAndRestoreCheckItems(items.stream().map(p -> p.getOperator()));

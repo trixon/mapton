@@ -20,9 +20,8 @@ import java.util.Objects;
 import java.util.function.Function;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.mapton.butterfly_alarm.api.AlarmHelper;
 import org.mapton.butterfly_core.api.LabelByCategories;
-import org.mapton.butterfly_format.types.structural.BStructuralStrainGaugePoint;
+import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SDict;
 
@@ -40,9 +39,9 @@ public enum CrackLabelBy {
     ALARM_NAME(LabelByCategories.ALARM, Dict.NAME.toString(), p -> {
         return p.getAlarm1Id();
     }),
-    ALARM_VALUE(LabelByCategories.ALARM, Dict.VALUE.toString(), p -> {
-        return AlarmHelper.getInstance().getLimitsAsString(p);
-    }),
+    //    ALARM_VALUE(LabelByCategories.ALARM, Dict.VALUE.toString(), p -> {
+    //        return AlarmHelper.getInstance().getLimitsAsString(p);
+    //    }),
     ALARM_PERCENT(LabelByCategories.ALARM, "%", p -> {
         return p.ext().getAlarmPercentHString(p.ext());
     }),
@@ -186,10 +185,10 @@ public enum CrackLabelBy {
 //        }
     });
     private final String mCategory;
-    private final Function<BStructuralStrainGaugePoint, String> mFunction;
+    private final Function<BStructuralCrackPoint, String> mFunction;
     private final String mName;
 
-    private CrackLabelBy(String category, String name, Function<BStructuralStrainGaugePoint, String> function) {
+    private CrackLabelBy(String category, String name, Function<BStructuralCrackPoint, String> function) {
         mCategory = category;
         mName = name;
         mFunction = function;
@@ -207,7 +206,7 @@ public enum CrackLabelBy {
         }
     }
 
-    public String getLabel(BStructuralStrainGaugePoint o) {
+    public String getLabel(BStructuralCrackPoint o) {
         try {
             return mFunction.apply(o);
         } catch (Exception e) {
