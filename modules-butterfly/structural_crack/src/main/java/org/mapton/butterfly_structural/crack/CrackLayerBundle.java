@@ -26,6 +26,7 @@ import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.butterfly_core.api.BfLayerBundle;
+import org.mapton.butterfly_core.api.PinPaddle;
 import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
@@ -194,6 +195,7 @@ public class CrackLayerBundle extends BfLayerBundle {
 
     private PointPlacemark plotPin(BStructuralCrackPoint p, Position position, PointPlacemark labelPlacemark) {
         var attrs = mAttributeManager.getPinAttributes(p);
+        attrs = PinPaddle.W_CIRCLE.applyToCopy(attrs);
 
         var placemark = new PointPlacemark(position);
         placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);

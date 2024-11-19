@@ -63,7 +63,8 @@ public class CrackAttributeManager extends BaseAttributeManager {
 
     public PointPlacemarkAttributes getPinAttributes(BStructuralCrackPoint p) {
         var attrs = getPinAttributes(CrackHelper.getAlarmLevel(p));
-
+//        attrs.setImageAddress("https://maps.google.com/mapfiles/kml/paddle/wht-circle.png");
+//        PinPaddle.SQUARE.apply(attrs);
 //        if (mColorBy != null && mColorBy != ColorBy.ALARM) {
 //            attrs = new PointPlacemarkAttributes(attrs);
 //            attrs.setImageColor(getColor(p));

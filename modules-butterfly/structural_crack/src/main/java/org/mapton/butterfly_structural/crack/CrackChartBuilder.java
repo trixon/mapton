@@ -52,7 +52,7 @@ public class CrackChartBuilder extends XyzChartBuilder<BStructuralCrackPoint> {
     private final TimeSeries mTimeSeriesZ = new TimeSeries("Δ µε");
 
     public CrackChartBuilder() {
-        initChart("Δ µε", "0");
+        initChart("mm", null);
 
         var plot = (XYPlot) mChart.getPlot();
         plot.setRangeAxis(2, mTemperatureAxis);
@@ -90,7 +90,7 @@ public class CrackChartBuilder extends XyzChartBuilder<BStructuralCrackPoint> {
 
     @Override
     public void setTitle(BStructuralCrackPoint p) {
-//        setTitle(p, CrackHelper.getAlarmColorAwt(p));
+        setTitle(p, CrackHelper.getAlarmColorAwt(p));
 
         var dateFirst = Objects.toString(DateHelper.toDateString(p.getDateZero()), "");
         var dateLast = Objects.toString(DateHelper.toDateString(p.ext().getObservationRawLastDate()), "");
@@ -193,7 +193,7 @@ public class CrackChartBuilder extends XyzChartBuilder<BStructuralCrackPoint> {
             }
 
             if (o.ext().getDeltaZ() != null) {
-                timeSeries.addOrUpdate(minute, o.ext().getDeltaZ());
+                timeSeries.addOrUpdate(minute, o.ext().getDeltaZ() * 1000);
             }
         });
 
@@ -211,7 +211,9 @@ public class CrackChartBuilder extends XyzChartBuilder<BStructuralCrackPoint> {
             }
         });
 
-        mTemperatureDataset.addSeries(mTimeSeriesTemperature);
-        mSecondaryRenderer.setSeriesPaint(mTemperatureDataset.getSeriesIndex(mTimeSeriesTemperature.getKey()), Color.GRAY);
+        if (!mTimeSeriesTemperature.isEmpty()) {
+            mTemperatureDataset.addSeries(mTimeSeriesTemperature);
+            mSecondaryRenderer.setSeriesPaint(mTemperatureDataset.getSeriesIndex(mTimeSeriesTemperature.getKey()), Color.GRAY);
+        }
     }
 }

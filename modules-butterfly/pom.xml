@@ -44,6 +44,7 @@ limitations under the License.
         <module>geo</module>
         <module>geo_extensometer</module>
         <module>structural</module>
+        <module>structural_crack</module>
         <module>structural_strain</module>
         <module>structural_tilt</module>
     </modules>

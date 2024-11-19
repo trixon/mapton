@@ -25,6 +25,7 @@ import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.butterfly_core.api.BfLayerBundle;
+import org.mapton.butterfly_core.api.PinPaddle;
 import org.mapton.butterfly_format.types.geo.BGeoExtensometer;
 import org.mapton.butterfly_geo.api.GeotechnicalHelper;
 import org.mapton.worldwind.api.LayerBundle;
@@ -169,6 +170,7 @@ public class ExtensoLayerBundle extends BfLayerBundle {
 
     private PointPlacemark plotPin(BGeoExtensometer extenso, Position position, PointPlacemark labelPlacemark) {
         var attrs = mAttributeManager.getPinAttributes(0);
+        attrs = PinPaddle.E_BLANK.applyToCopy(attrs);
         var placemark = new PointPlacemark(position);
 
         placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);

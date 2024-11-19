@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import org.apache.commons.lang3.ObjectUtils;
+import org.mapton.butterfly_core.api.PinPaddle;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_topo.api.TopoManager;
 import org.mapton.worldwind.api.LayerBundle;
@@ -262,6 +263,16 @@ public class TopoLayerBundle extends TopoBaseLayerBundle {
 
     private PointPlacemark plotPin(BTopoControlPoint p, Position position, PointPlacemark labelPlacemark) {
         var attrs = mAttributeManager.getPinAttributes(p);
+        switch (p.getDimension()) {
+            case _1d ->
+                attrs = PinPaddle.N_CIRCLE.applyToCopy(attrs);
+            case _2d ->
+                attrs = PinPaddle.N_SQUARE.applyToCopy(attrs);
+            case _3d ->
+                attrs = PinPaddle.N_BLANK.applyToCopy(attrs);
+            default ->
+                throw new AssertionError();
+        }
 
         var placemark = new PointPlacemark(position);
         placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
