@@ -116,21 +116,14 @@ public class GradeVLayerBundle extends TopoBaseLayerBundle {
 
     @Override
     public void populate() throws Exception {
-        getLayers().addAll(mLayer, mLabelLayer, mSymbolLayer, mPinLayer);
+        super.populate();
         repaint(DEFAULT_REPAINT_DELAY);
     }
 
     private void init() {
-        mLayer.setName(mBundle.getString("grade_v"));
-        setCategory(mLayer, SDict.TOPOGRAPHY.toString());
-        setName(mBundle.getString("grade_v"));
-        attachTopComponentToLayer("TopoTopComponent", mLayer);
-        mLabelLayer.setMaxActiveAltitude(2000);
-        setParentLayer(mLayer);
-        setAllChildLayers(mLabelLayer, mSymbolLayer, mPinLayer);
-        mLayer.setPickEnabled(true);
+        initCommons(mBundle.getString("grade_v"), SDict.TOPOGRAPHY.toString(), "TopoTopComponent");
 
-        mLayer.setEnabled(false);
+        mLabelLayer.setMaxActiveAltitude(2000);
         setVisibleInLayerManager(mLayer, false);
         connectToOtherBundle(TopoLayerBundle.class, GradeVOptionsView.class.getName());
     }

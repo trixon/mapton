@@ -18,7 +18,6 @@ package org.mapton.butterfly_tmo.vaderstation;
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
-import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.PointPlacemark;
 import java.awt.Color;
 import java.util.ArrayList;
@@ -41,14 +40,8 @@ public class VaderstationLayerBundle extends BfLayerBundle {
 
     private final VaderstationAttributeManager mAttributeManager = VaderstationAttributeManager.getInstance();
     private final ComponentRenderer mComponentRenderer;
-    private final RenderableLayer mLabelLayer = new RenderableLayer();
-    private final RenderableLayer mLayer = new RenderableLayer();
     private final VaderstationManager mManager = VaderstationManager.getInstance();
     private final VaderstationOptionsView mOptionsView;
-    private final RenderableLayer mPinLayer = new RenderableLayer();
-    private final RenderableLayer mGroundConnectorLayer = new RenderableLayer();
-    private final RenderableLayer mSymbolLayer = new RenderableLayer();
-    private final RenderableLayer mSurfaceLayer = new RenderableLayer();
 
     public VaderstationLayerBundle() {
         init();
@@ -67,27 +60,12 @@ public class VaderstationLayerBundle extends BfLayerBundle {
 
     @Override
     public void populate() throws Exception {
-        getLayers().addAll(mLayer, mLabelLayer, mSymbolLayer, mPinLayer, mGroundConnectorLayer, mSurfaceLayer);
+        super.populate();
         repaint(DEFAULT_REPAINT_DELAY);
     }
 
     private void init() {
-        mLayer.setName(Bundle.CTL_VaderstationAction());
-        setCategory(mLayer, "TMO");
-        setName(Bundle.CTL_VaderstationAction());
-        attachTopComponentToLayer("VaderstationTopComponent", mLayer);
-//        mLayer.setMaxActiveAltitude(6000);
-//        mSurfaceLayer.setMaxActiveAltitude(6000);
-//        mPinLayer.setMaxActiveAltitude(300);
-//        mLabelLayer.setMaxActiveAltitude(200);
-//        mGroundConnectorLayer.setMaxActiveAltitude(1000);
-        setParentLayer(mLayer);
-        setAllChildLayers(mLabelLayer, mSymbolLayer, mPinLayer, mGroundConnectorLayer, mSurfaceLayer);
-
-        mLayer.setPickEnabled(true);
-        mSurfaceLayer.setPickEnabled(false);
-
-        mLayer.setEnabled(false);
+        initCommons(Bundle.CTL_VaderstationAction(), "TMO", "VaderstationTopComponent");
     }
 
     private void initListeners() {

@@ -62,23 +62,15 @@ public class HeatMapLayerBundle extends TopoBaseLayerBundle {
     }
 
     @Override
-    public void populate() {
-        getLayers().addAll(mLayer, mLabelLayer, mSymbolLayer, mPinLayer);
+    public void populate() throws Exception {
+        super.populate();
         repaint(DEFAULT_REPAINT_DELAY);
     }
 
     private void init() {
-        setCategory(mLayer, SDict.TOPOGRAPHY.toString());
-        mLayer.setName(SDict.HEAT_MAP.toString());
-        attachTopComponentToLayer("TopoTopComponent", mLayer);
+        initCommons(SDict.HEAT_MAP.toString(), SDict.TOPOGRAPHY.toString(), "TopoTopComponent");
 
-        setName(SDict.HEAT_MAP.toString());
         mLabelLayer.setMaxActiveAltitude(2000);
-        setParentLayer(mLayer);
-        setAllChildLayers(mLabelLayer, mSymbolLayer, mPinLayer);
-
-        mLayer.setPickEnabled(false);
-        mLayer.setEnabled(false);
 
         setVisibleInLayerManager(mLayer, false);
         connectToOtherBundle(TopoLayerBundle.class, HeatMapOptionsView.class.getName());

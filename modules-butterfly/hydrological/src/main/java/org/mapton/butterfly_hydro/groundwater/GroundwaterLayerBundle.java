@@ -17,12 +17,12 @@ package org.mapton.butterfly_hydro.groundwater;
 
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.geom.Position;
-import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
 import java.awt.Color;
 import java.util.ArrayList;
 import javafx.collections.ListChangeListener;
+import javafx.scene.Node;
 import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.api.Mapton;
 import org.mapton.butterfly_core.api.BfLayerBundle;
@@ -41,32 +41,33 @@ import se.trixon.almond.util.SDict;
 @ServiceProvider(service = LayerBundle.class)
 public class GroundwaterLayerBundle extends BfLayerBundle {
 
-    private final RenderableLayer mLayer = new RenderableLayer();
     private final GroundwaterManager mManager = GroundwaterManager.getInstance();
+    private final GroundwaterOptionsView mOptionsView;
+    private final GraphicRenderer mGraphicRenderer;
 
     public GroundwaterLayerBundle() {
         init();
         initRepaint();
+        mOptionsView = new GroundwaterOptionsView(this);
+        mGraphicRenderer = new GraphicRenderer(mLayer, mPassiveLayer, mOptionsView.getGraphicCheckModel());
         initListeners();
 
         mManager.setInitialTemporalState(WWHelper.isStoredAsVisible(mLayer, mLayer.isEnabled()));
     }
 
     @Override
+    public Node getOptionsView() {
+        return mOptionsView;
+    }
+
+    @Override
     public void populate() throws Exception {
-        getLayers().add(mLayer);
+        super.populate();
         repaint(DEFAULT_REPAINT_DELAY);
     }
 
     private void init() {
-        mLayer.setName(Bundle.CTL_GroundwaterAction());
-        setCategory(mLayer, SDict.HYDROGEOLOGY.toString());
-        setName(Bundle.CTL_GroundwaterAction());
-        attachTopComponentToLayer("GroundwaterTopComponent", mLayer);
-        setParentLayer(mLayer);
-        mLayer.setPickEnabled(true);
-
-        mLayer.setEnabled(false);
+        initCommons(Bundle.CTL_GroundwaterAction(), SDict.HYDROGEOLOGY.toString(), "GroundwaterTopComponent");
     }
 
     private void initListeners() {
@@ -96,7 +97,6 @@ public class GroundwaterLayerBundle extends BfLayerBundle {
                     var attrs = new PointPlacemarkAttributes(placemark.getDefaultAttributes());
 
                     placemark.setLabelText(cp.getName());
-                    attrs.setImageAddress("images/pushpins/plain-white.png");
                     attrs.setImageColor(Color.BLUE.brighter());
                     attrs.setScale(Mapton.SCALE_PIN_IMAGE);
                     attrs.setLabelScale(Mapton.SCALE_PIN_LABEL);

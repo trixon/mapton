@@ -18,7 +18,6 @@ package org.mapton.butterfly_monmon;
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
-import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.PointPlacemark;
 import java.util.ArrayList;
 import javafx.collections.ListChangeListener;
@@ -40,11 +39,8 @@ public class MonLayerBundle extends BfLayerBundle {
 
     private final MonAttributeManager mAttributeManager = MonAttributeManager.getInstance();
     private final GraphicRenderer mGraphicRenderer;
-    private final RenderableLayer mLabelLayer = new RenderableLayer();
-    private final RenderableLayer mLayer = new RenderableLayer();
     private final MonManager mManager = MonManager.getInstance();
     private final MonOptionsView mOptionsView;
-    private final RenderableLayer mPinLayer = new RenderableLayer();
 
     public MonLayerBundle() {
         init();
@@ -62,24 +58,17 @@ public class MonLayerBundle extends BfLayerBundle {
 
     @Override
     public void populate() throws Exception {
-        getLayers().addAll(mLayer, mLabelLayer, mPinLayer);
+        super.populate();
         repaint(DEFAULT_REPAINT_DELAY);
     }
 
     private void init() {
-        mLayer.setName(Bundle.CTL_MonmonAction());
-        setCategory(mLayer, "");
-        setName(Bundle.CTL_MonmonAction());
-        attachTopComponentToLayer("MonmonTopComponent", mLayer);
+        initCommons(Bundle.CTL_MonmonAction(), "", "MonmonTopComponent");
+
         mLabelLayer.setEnabled(true);
         mLayer.setMaxActiveAltitude(6000);
         mPinLayer.setMaxActiveAltitude(10000);
         mLabelLayer.setMaxActiveAltitude(10000);
-        setParentLayer(mLayer);
-        setAllChildLayers(mLabelLayer, mPinLayer);
-        mLayer.setPickEnabled(true);
-
-        mLayer.setEnabled(false);
     }
 
     private void initListeners() {

@@ -78,23 +78,14 @@ public class TopoLayerBundle extends TopoBaseLayerBundle {
 
     @Override
     public void populate() throws Exception {
-        getLayers().addAll(mLayer, mPassiveLayer, mLabelLayer, mSymbolLayer, mPinLayer);
+        super.populate();
         repaint(DEFAULT_REPAINT_DELAY);
     }
 
     private void init() {
-        mLayer.setName(Bundle.CTL_ControlPointAction());
-        setCategory(mLayer, SDict.TOPOGRAPHY.toString());
-        setName(Bundle.CTL_ControlPointAction());
-        attachTopComponentToLayer("TopoTopComponent", mLayer);
+        initCommons(Bundle.CTL_ControlPointAction(), SDict.TOPOGRAPHY.toString(), "TopoTopComponent");
+
         mLabelLayer.setMaxActiveAltitude(2000);
-        setParentLayer(mLayer);
-        setAllChildLayers(mPassiveLayer, mLabelLayer, mSymbolLayer, mPinLayer);
-
-        mLayer.setPickEnabled(true);
-        mPassiveLayer.setPickEnabled(false);
-
-        mLayer.setEnabled(false);
     }
 
     private void initListeners() {

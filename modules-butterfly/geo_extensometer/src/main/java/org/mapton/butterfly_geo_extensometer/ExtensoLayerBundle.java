@@ -18,7 +18,6 @@ package org.mapton.butterfly_geo_extensometer;
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
-import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.PointPlacemark;
 import java.util.ArrayList;
 import javafx.collections.ListChangeListener;
@@ -42,11 +41,8 @@ public class ExtensoLayerBundle extends BfLayerBundle {
 
     private final ExtensoAttributeManager mAttributeManager = ExtensoAttributeManager.getInstance();
     private final GraphicRenderer mGraphicRenderer;
-    private final RenderableLayer mLabelLayer = new RenderableLayer();
-    private final RenderableLayer mLayer = new RenderableLayer();
     private final ExtensoManager mManager = ExtensoManager.getInstance();
     private final ExtensoOptionsView mOptionsView;
-    private final RenderableLayer mPinLayer = new RenderableLayer();
 
     public ExtensoLayerBundle() {
         init();
@@ -65,24 +61,17 @@ public class ExtensoLayerBundle extends BfLayerBundle {
 
     @Override
     public void populate() throws Exception {
-        getLayers().addAll(mLayer, mLabelLayer, mPinLayer);
+        super.populate();
         repaint(DEFAULT_REPAINT_DELAY);
     }
 
     private void init() {
-        mLayer.setName(Bundle.CTL_ExtensometerAction());
-        setCategory(mLayer, GeotechnicalHelper.CAT_GEO);
-        setName(Bundle.CTL_ExtensometerAction());
-        attachTopComponentToLayer("ExtensoTopComponent", mLayer);
+        initCommons(Bundle.CTL_ExtensometerAction(), GeotechnicalHelper.CAT_GEO, "ExtensoTopComponent");
+
         mLabelLayer.setEnabled(true);
         mLayer.setMaxActiveAltitude(6000);
         mPinLayer.setMaxActiveAltitude(10000);
         mLabelLayer.setMaxActiveAltitude(10000);
-        setParentLayer(mLayer);
-        setAllChildLayers(mLabelLayer, mPinLayer);
-        mLayer.setPickEnabled(true);
-
-        mLayer.setEnabled(false);
     }
 
     private void initListeners() {

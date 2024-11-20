@@ -16,7 +16,6 @@
 package org.mapton.butterfly_core.indicators;
 
 import gov.nasa.worldwind.geom.Position;
-import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.Cylinder;
 import java.time.LocalDateTime;
 import java.util.concurrent.TimeUnit;
@@ -34,7 +33,6 @@ import org.openide.util.lookup.ServiceProvider;
 public class ScaleRulerLayerBundle extends BfLayerBundle {
 
     private final IndicatorAttributeManager mAttributeManager = IndicatorAttributeManager.getInstance();
-    private final RenderableLayer mLayer = new RenderableLayer();
     private final ScaleRulerManager mScaleRulerManager = ScaleRulerManager.getInstance();
 
     public ScaleRulerLayerBundle() {
@@ -47,10 +45,12 @@ public class ScaleRulerLayerBundle extends BfLayerBundle {
 
     @Override
     public void populate() throws Exception {
-        getLayers().addAll(mLayer);
+        super.populate();
         setPopulated(true);
         mLayer.setEnabled(true);
         mLayer.setMaxActiveAltitude(1000);
+        initCommons();
+
         repaint(DEFAULT_REPAINT_DELAY);
     }
 

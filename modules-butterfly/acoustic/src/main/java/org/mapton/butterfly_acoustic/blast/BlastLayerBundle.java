@@ -43,13 +43,8 @@ public class BlastLayerBundle extends BfLayerBundle {
     private final BlastAttributeManager mAttributeManager = BlastAttributeManager.getInstance();
     private final GraphicRenderer mGraphicRenderer;
     private final RenderableLayer mGroundConnectorLayer = new RenderableLayer();
-    private final RenderableLayer mLabelLayer = new RenderableLayer();
-    private final RenderableLayer mLayer = new RenderableLayer();
     private final BlastManager mManager = BlastManager.getInstance();
     private final BlastOptionsView mOptionsView;
-    private final RenderableLayer mPinLayer = new RenderableLayer();
-    private final RenderableLayer mSurfaceLayer = new RenderableLayer();
-    private final RenderableLayer mSymbolLayer = new RenderableLayer();
 
     public BlastLayerBundle() {
         init();
@@ -68,27 +63,18 @@ public class BlastLayerBundle extends BfLayerBundle {
 
     @Override
     public void populate() throws Exception {
-        getLayers().addAll(mLayer, mLabelLayer, mSymbolLayer, mPinLayer, mGroundConnectorLayer, mSurfaceLayer);
+        super.populate();
         repaint(DEFAULT_REPAINT_DELAY);
     }
 
     private void init() {
-        mLayer.setName(Bundle.CTL_BlastAction());
-        setCategory(mLayer, SDict.NOISE.toString());
-        setName(Bundle.CTL_BlastAction());
-        attachTopComponentToLayer("BlastTopComponent", mLayer);
+        initCommons(Bundle.CTL_BlastAction(), SDict.NOISE.toString(), "BlastTopComponent");
+
         mLayer.setMaxActiveAltitude(6000);
         mSurfaceLayer.setMaxActiveAltitude(6000);
         mPinLayer.setMaxActiveAltitude(10000);
         mLabelLayer.setMaxActiveAltitude(200);
         mGroundConnectorLayer.setMaxActiveAltitude(1000);
-        setParentLayer(mLayer);
-        setAllChildLayers(mLabelLayer, mSymbolLayer, mPinLayer, mGroundConnectorLayer, mSurfaceLayer);
-
-        mLayer.setPickEnabled(true);
-        mSurfaceLayer.setPickEnabled(false);
-
-        mLayer.setEnabled(false);
     }
 
     private void initListeners() {

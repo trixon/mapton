@@ -18,7 +18,6 @@ package org.mapton.butterfly_activities;
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
-import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwind.render.Renderable;
 import gov.nasa.worldwind.render.SurfacePolygon;
@@ -46,11 +45,8 @@ import se.trixon.almond.nbp.Almond;
 public class ActLayerBundle extends BfLayerBundle {
 
     private final ActAttributeManager mAttributeManager = ActAttributeManager.getInstance();
-    private final RenderableLayer mLabelLayer = new RenderableLayer();
-    private final RenderableLayer mLayer = new RenderableLayer();
     private final ActManager mManager = ActManager.getInstance();
     private final ActOptionsView mOptionsView;
-    private final RenderableLayer mPinLayer = new RenderableLayer();
 
     public ActLayerBundle() {
         init();
@@ -68,24 +64,17 @@ public class ActLayerBundle extends BfLayerBundle {
 
     @Override
     public void populate() throws Exception {
-        getLayers().addAll(mLayer, mLabelLayer, mPinLayer);
+        super.populate();
         repaint(DEFAULT_REPAINT_DELAY);
     }
 
     private void init() {
-        mLayer.setName(Bundle.CTL_ActAction());
-        setCategory(mLayer, "");
-        setName(Bundle.CTL_ActAction());
-        attachTopComponentToLayer("ActTopComponent", mLayer);
+        initCommons(Bundle.CTL_ActAction(), "", "ActTopComponent");
+
         mLabelLayer.setEnabled(true);
         mLayer.setMaxActiveAltitude(6000);
         mPinLayer.setMaxActiveAltitude(10000);
         mLabelLayer.setMaxActiveAltitude(10000);
-        setParentLayer(mLayer);
-        setAllChildLayers(mLabelLayer, mPinLayer);
-        mLayer.setPickEnabled(true);
-
-        mLayer.setEnabled(false);
     }
 
     private void initListeners() {

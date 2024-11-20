@@ -16,6 +16,7 @@
 package org.mapton.butterfly_core.api;
 
 import gov.nasa.worldwind.layers.Layer;
+import gov.nasa.worldwind.layers.RenderableLayer;
 import org.mapton.worldwind.api.LayerBundle;
 
 /**
@@ -23,6 +24,39 @@ import org.mapton.worldwind.api.LayerBundle;
  * @author Patrik Karlström
  */
 public abstract class BfLayerBundle extends LayerBundle {
+
+    protected final RenderableLayer mGroundConnectorLayer = new RenderableLayer();//TODO REMOVE THIS
+    protected final RenderableLayer mLabelLayer = new RenderableLayer();
+    protected final RenderableLayer mLayer = new RenderableLayer();
+    protected final RenderableLayer mPassiveLayer = new RenderableLayer();
+    protected final RenderableLayer mPinLayer = new RenderableLayer();
+    protected final RenderableLayer mSurfaceLayer = new RenderableLayer();
+    protected final RenderableLayer mSymbolLayer = new RenderableLayer();
+
+    public void initCommons(String name, String category, String topComponentId) {
+        mLayer.setName(name);
+        setName(name);
+        setCategory(mLayer, category);
+        attachTopComponentToLayer(topComponentId, mLayer);
+
+        setParentLayer(mLayer);
+
+        mLayer.setPickEnabled(true);
+        mLayer.setEnabled(false);
+        mSurfaceLayer.setPickEnabled(false);
+        mPassiveLayer.setPickEnabled(false);
+
+        super.setAllChildLayers(mPassiveLayer, mLabelLayer, mSymbolLayer, mPinLayer, mSurfaceLayer, mGroundConnectorLayer);
+    }
+
+    public void initCommons() {
+        super.setAllChildLayers(mPassiveLayer, mLabelLayer, mSymbolLayer, mPinLayer, mSurfaceLayer, mGroundConnectorLayer);
+    }
+
+    @Override
+    public void populate() throws Exception {
+        getLayers().addAll(mLayer, mPassiveLayer, mLabelLayer, mSymbolLayer, mPinLayer, mSurfaceLayer);
+    }
 
     @Override
     public void setCategory(Layer layer, String category) {

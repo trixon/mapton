@@ -18,7 +18,6 @@ package org.mapton.butterfly_structural.tilt;
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
-import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.Cylinder;
 import gov.nasa.worldwind.render.PointPlacemark;
 import java.util.ArrayList;
@@ -46,15 +45,8 @@ public class TiltLayerBundle extends BfLayerBundle {
 
     private final TiltAttributeManager mAttributeManager = TiltAttributeManager.getInstance();
     private final GraphicRenderer mGraphicRenderer;
-    private final RenderableLayer mGroundConnectorLayer = new RenderableLayer();
-    private final RenderableLayer mLabelLayer = new RenderableLayer();
-    private final RenderableLayer mLayer = new RenderableLayer();
     private final TiltManager mManager = TiltManager.getInstance();
     private final TiltOptionsView mOptionsView;
-    private final RenderableLayer mPassiveLayer = new RenderableLayer();
-    private final RenderableLayer mPinLayer = new RenderableLayer();
-    private final RenderableLayer mSurfaceLayer = new RenderableLayer();
-    private final RenderableLayer mSymbolLayer = new RenderableLayer();
 
     public TiltLayerBundle() {
         init();
@@ -73,28 +65,18 @@ public class TiltLayerBundle extends BfLayerBundle {
 
     @Override
     public void populate() throws Exception {
-        getLayers().addAll(mLayer, mPassiveLayer, mLabelLayer, mSymbolLayer, mPinLayer, mGroundConnectorLayer, mSurfaceLayer);
+        super.populate();
         repaint(DEFAULT_REPAINT_DELAY);
     }
 
     private void init() {
-        mLayer.setName(Bundle.CTL_TiltAction());
-        setCategory(mLayer, SDict.STRUCTURAL.toString());
-        setName(Bundle.CTL_TiltAction());
-        attachTopComponentToLayer("TiltTopComponent", mLayer);
+        initCommons(Bundle.CTL_TiltAction(), SDict.STRUCTURAL.toString(), "TiltTopComponent");
+
         mLayer.setMaxActiveAltitude(6000);
         mSurfaceLayer.setMaxActiveAltitude(6000);
         mPinLayer.setMaxActiveAltitude(20000);
         mLabelLayer.setMaxActiveAltitude(2000);
         mGroundConnectorLayer.setMaxActiveAltitude(1000);
-        setParentLayer(mLayer);
-        setAllChildLayers(mLabelLayer, mPassiveLayer, mSymbolLayer, mPinLayer, mGroundConnectorLayer, mSurfaceLayer);
-
-        mLayer.setPickEnabled(true);
-        mPassiveLayer.setPickEnabled(false);
-        mSurfaceLayer.setPickEnabled(false);
-
-        mLayer.setEnabled(false);
     }
 
     private void initListeners() {

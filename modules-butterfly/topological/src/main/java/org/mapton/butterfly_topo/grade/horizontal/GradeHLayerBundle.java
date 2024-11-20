@@ -56,7 +56,7 @@ public class GradeHLayerBundle extends TopoBaseLayerBundle {
         init();
         initRepaint();
         getOptionsView();
-        mGraphicRenderer = new GradeHRenderer(mLayer, mMuteLayer, mOptionsView.getComponentCheckModel());
+        mGraphicRenderer = new GradeHRenderer(mLayer, mPassiveLayer, mOptionsView.getComponentCheckModel());
         initListeners();
 //        mAttributeManager.setColorBy(mOptionsView.getColorBy());
 
@@ -120,22 +120,16 @@ public class GradeHLayerBundle extends TopoBaseLayerBundle {
 
     @Override
     public void populate() throws Exception {
-        getLayers().addAll(mLayer, mLabelLayer, mSymbolLayer, mPinLayer, mMuteLayer);
+        super.populate();
         repaint(DEFAULT_REPAINT_DELAY);
     }
 
     private void init() {
-        mLayer.setName(mBundle.getString("grade_h"));
-        setCategory(mLayer, SDict.TOPOGRAPHY.toString());
-        setName(mBundle.getString("grade_h"));
-        attachTopComponentToLayer("TopoTopComponent", mLayer);
-        mLabelLayer.setMaxActiveAltitude(2000);
-        setParentLayer(mLayer);
-        setAllChildLayers(mLabelLayer, mSymbolLayer, mPinLayer, mMuteLayer);
-        mLayer.setPickEnabled(true);
-        mMuteLayer.setPickEnabled(false);
+        initCommons(mBundle.getString("grade_h"), SDict.TOPOGRAPHY.toString(), "TopoTopComponent");
 
-        mLayer.setEnabled(false);
+        mLabelLayer.setMaxActiveAltitude(2000);
+//        mMuteLayer.setPickEnabled(false);
+
         setVisibleInLayerManager(mLayer, false);
         connectToOtherBundle(TopoLayerBundle.class, GradeHOptionsView.class.getName());
     }

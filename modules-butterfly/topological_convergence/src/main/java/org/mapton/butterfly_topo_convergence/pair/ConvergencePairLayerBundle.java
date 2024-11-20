@@ -18,7 +18,6 @@ package org.mapton.butterfly_topo_convergence.pair;
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
-import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.PointPlacemark;
 import java.awt.Color;
 import java.util.ArrayList;
@@ -43,14 +42,8 @@ public class ConvergencePairLayerBundle extends BfLayerBundle {
 
     private final ConvergenceAttributeManager mAttributeManager = ConvergenceAttributeManager.getInstance();
     private final GraphicRenderer mGraphicRenderer;
-    private final RenderableLayer mGroundConnectorLayer = new RenderableLayer();
-    private final RenderableLayer mLabelLayer = new RenderableLayer();
-    private final RenderableLayer mLayer = new RenderableLayer();
     private final ConvergencePairManager mManager = ConvergencePairManager.getInstance();
     private final ConvergencePairOptionsView mOptionsView;
-    private final RenderableLayer mPinLayer = new RenderableLayer();
-    private final RenderableLayer mSurfaceLayer = new RenderableLayer();
-    private final RenderableLayer mSymbolLayer = new RenderableLayer();
 
     public ConvergencePairLayerBundle() {
         init();
@@ -69,27 +62,18 @@ public class ConvergencePairLayerBundle extends BfLayerBundle {
 
     @Override
     public void populate() throws Exception {
-        getLayers().addAll(mLayer, mLabelLayer, mSymbolLayer, mPinLayer, mGroundConnectorLayer, mSurfaceLayer);
+        super.populate();
         repaint(DEFAULT_REPAINT_DELAY);
     }
 
     private void init() {
-        mLayer.setName(Bundle.CTL_ConvergencePairAction());
-        setCategory(mLayer, SDict.TOPOGRAPHY.toString());
-        setName(Bundle.CTL_ConvergencePairAction());
-        attachTopComponentToLayer("ConvergencePairTopComponent", mLayer);
+        initCommons(Bundle.CTL_ConvergencePairAction(), SDict.TOPOGRAPHY.toString(), "ConvergencePairTopComponent");
+
         mLayer.setMaxActiveAltitude(6000);
         mSurfaceLayer.setMaxActiveAltitude(6000);
         mPinLayer.setMaxActiveAltitude(20000);
         mLabelLayer.setMaxActiveAltitude(100);
         mGroundConnectorLayer.setMaxActiveAltitude(1000);
-        setParentLayer(mLayer);
-        setAllChildLayers(mLabelLayer, mSymbolLayer, mPinLayer, mGroundConnectorLayer, mSurfaceLayer);
-
-        mLayer.setPickEnabled(true);
-        mSurfaceLayer.setPickEnabled(false);
-
-        mLayer.setEnabled(false);
     }
 
     private void initListeners() {
