@@ -20,7 +20,7 @@ import java.util.Objects;
 import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.api.ui.forms.PropertiesBuilder;
 import org.mapton.butterfly_alarm.api.AlarmHelper;
-import org.mapton.butterfly_format.types.hydro.BGroundwaterPoint;
+import org.mapton.butterfly_format.types.hydro.BHydroGroundwaterPoint;
 import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SDict;
@@ -30,10 +30,10 @@ import se.trixon.almond.util.StringHelper;
  *
  * @author Patrik Karlström
  */
-public class GroundwaterPropertiesBuilder extends PropertiesBuilder<BGroundwaterPoint> {
+public class GroundwaterPropertiesBuilder extends PropertiesBuilder<BHydroGroundwaterPoint> {
 
     @Override
-    public Object build(BGroundwaterPoint p) {
+    public Object build(BHydroGroundwaterPoint p) {
         if (p == null) {
             return p;
         }

@@ -18,13 +18,13 @@ package org.mapton.butterfly_hydro.groundwater;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.layout.VBox;
-import org.mapton.butterfly_format.types.hydro.BGroundwaterPoint;
+import org.mapton.butterfly_format.types.hydro.BHydroGroundwaterPoint;
 
 /**
  *
  * @author Patrik Karlström
  */
-class GroundwaterListCell extends ListCell<BGroundwaterPoint> {
+class GroundwaterListCell extends ListCell<BHydroGroundwaterPoint> {
 
     private final Label mDesc1Label = new Label();
     private final Label mNameLabel = new Label();
@@ -36,7 +36,7 @@ class GroundwaterListCell extends ListCell<BGroundwaterPoint> {
     }
 
     @Override
-    protected void updateItem(BGroundwaterPoint gw, boolean empty) {
+    protected void updateItem(BHydroGroundwaterPoint gw, boolean empty) {
         super.updateItem(gw, empty);
         if (gw == null || empty) {
             clearContent();
@@ -45,7 +45,7 @@ class GroundwaterListCell extends ListCell<BGroundwaterPoint> {
         }
     }
 
-    private void addContent(BGroundwaterPoint gw) {
+    private void addContent(BHydroGroundwaterPoint gw) {
         setText(null);
         mNameLabel.setText(gw.getName());
         mDesc1Label.setText("%s: %s".formatted(gw.getGroup(), gw.getCategory()));

@@ -15,33 +15,44 @@
  */
 package org.mapton.butterfly_hydro.groundwater;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import org.mapton.api.MTemporalRange;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
-import org.mapton.butterfly_format.types.hydro.BGroundwaterPoint;
+import org.mapton.butterfly_format.types.hydro.BHydroGroundwaterPoint;
+import org.mapton.butterfly_format.types.hydro.BHydroGroundwaterPointObservation;
 import org.openide.util.Exceptions;
+import se.trixon.almond.util.CollectionHelper;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class GroundwaterManager extends BaseManager<BGroundwaterPoint> {
+public class GroundwaterManager extends BaseManager<BHydroGroundwaterPoint> {
 
     private final GroundwaterPropertiesBuilder mPropertiesBuilder = new GroundwaterPropertiesBuilder();
+    private final GroundwaterChartBuilder mChartBuilder = new GroundwaterChartBuilder();
 
     public static GroundwaterManager getInstance() {
         return Holder.INSTANCE;
     }
 
     private GroundwaterManager() {
-        super(BGroundwaterPoint.class);
+        super(BHydroGroundwaterPoint.class);
     }
 
     @Override
-    public Object getObjectProperties(BGroundwaterPoint selectedObject) {
+    public Object getObjectChart(BHydroGroundwaterPoint selectedObject) {
+        return mChartBuilder.build(selectedObject);
+    }
+
+    @Override
+    public Object getObjectProperties(BHydroGroundwaterPoint selectedObject) {
         return mPropertiesBuilder.build(selectedObject);
     }
 
@@ -51,16 +62,50 @@ public class GroundwaterManager extends BaseManager<BGroundwaterPoint> {
 
     @Override
     public void load(Butterfly butterfly) {
+
         try {
             initAllItems(butterfly.hydro().getGroundwaterPoints());
+            initObjectToItemMap();
 
-            var dates = new TreeSet<>(getAllItems().stream()
-                    .map(o -> o.getDateLatest())
-                    .filter(d -> d != null)
-                    .collect(Collectors.toSet()));
+            var nameToObservations = new LinkedHashMap<String, ArrayList<BHydroGroundwaterPointObservation>>();
+            for (var o : butterfly.hydro().getGroundwaterPointsObservations()) {
+                nameToObservations.computeIfAbsent(o.getName(), k -> new ArrayList<>()).add(o);
+            }
+
+            for (var p : butterfly.hydro().getGroundwaterPoints()) {
+                var observations = nameToObservations.getOrDefault(p.getName(), new ArrayList<>());
+                if (!observations.isEmpty()) {
+                    p.setDateLatest(observations.getLast().getDate());
+                }
+
+                p.ext().setDateLatest(p.getDateLatest());
+                p.ext().setObservationsAllRaw(observations);
+                p.ext().getObservationsAllRaw().forEach(o -> o.ext().setParent(p));
+                for (var o : p.ext().getObservationsAllRaw()) {
+                    if (o.isZeroMeasurement()) {
+                        p.ext().setStoredZeroDateTime(o.getDate());
+                        break;
+                    }
+                }
+            }
+
+            var origins = getAllItems()
+                    .stream().map(p -> p.getOrigin())
+                    .collect(Collectors.toCollection(TreeSet::new))
+                    .stream()
+                    .collect(Collectors.toCollection(ArrayList<String>::new));
+            setValue("origins", origins);
+
+            var dates = new TreeSet<LocalDateTime>();
+            getAllItems().stream().forEachOrdered(p -> {
+                dates.addAll(p.ext().getObservationsAllRaw().stream().map(o -> o.getDate()).toList());
+            });
 
             if (!dates.isEmpty()) {
                 setTemporalRange(new MTemporalRange(dates.first(), dates.last()));
+                boolean layerBundleEnabled = isLayerBundleEnabled();
+                updateTemporal(!layerBundleEnabled);
+                updateTemporal(layerBundleEnabled);
             }
         } catch (Exception e) {
             Exceptions.printStackTrace(e);
@@ -69,16 +114,45 @@ public class GroundwaterManager extends BaseManager<BGroundwaterPoint> {
 
     @Override
     protected void applyTemporalFilter() {
-        //TODO Is never measure valid or invalid?
-        var timeFilteredItems = getFilteredItems().stream()
-                .filter(o -> o.getDateLatest() == null ? true : getTemporalManager().isValid(o.getDateLatest()))
-                .toList();
+        var measCountStatsDateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM");
+        var timeFilteredItems = new ArrayList<BHydroGroundwaterPoint>();
+
+        p:
+        for (var p : getFilteredItems()) {
+            if (p.getDateLatest() == null || p.ext().getObservationsAllRaw().isEmpty()) {
+                timeFilteredItems.add(p);
+            } else {
+                for (var o : p.ext().getObservationsAllRaw()) {
+                    if (getTemporalManager().isValid(o.getDate())) {
+                        timeFilteredItems.add(p);
+                        continue p;
+                    }
+                }
+            }
+        }
+
+        getTimeFilteredItemsMap().clear();
+        timeFilteredItems.stream().forEach(p -> {
+            getTimeFilteredItemsMap().put(p.getName(), p);
+            var timeFilteredObservations = p.ext().getObservationsAllRaw().stream()
+                    .filter(o -> getTemporalManager().isValid(o.getDate()))
+                    .collect(Collectors.toCollection(ArrayList::new));
+
+            p.ext().setObservationsTimeFiltered(timeFilteredObservations);
+            //p.ext().calculateObservations(timeFilteredObservations);
+
+            var measCountStats = new LinkedHashMap<String, Integer>();
+            p.ext().setMeasurementCountStats(measCountStats);
+            timeFilteredObservations.forEach(o -> {
+                CollectionHelper.incInteger(measCountStats, o.getDate().format(measCountStatsDateTimeFormatter));
+            });
+        });
 
         getTimeFilteredItems().setAll(timeFilteredItems);
     }
 
     @Override
-    protected void load(ArrayList<BGroundwaterPoint> items) {
+    protected void load(ArrayList<BHydroGroundwaterPoint> items) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

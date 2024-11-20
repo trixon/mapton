@@ -27,7 +27,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.api.Mapton;
 import org.mapton.butterfly_core.api.BfLayerBundle;
 import org.mapton.butterfly_core.api.PinPaddle;
-import org.mapton.butterfly_format.types.hydro.BGroundwaterPoint;
+import org.mapton.butterfly_format.types.hydro.BHydroGroundwaterPoint;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
@@ -70,7 +70,7 @@ public class GroundwaterLayerBundle extends BfLayerBundle {
     }
 
     private void initListeners() {
-        mManager.getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BGroundwaterPoint> c) -> {
+        mManager.getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BHydroGroundwaterPoint> c) -> {
             repaint();
         });
 
@@ -97,7 +97,7 @@ public class GroundwaterLayerBundle extends BfLayerBundle {
 
                     placemark.setLabelText(cp.getName());
                     attrs.setImageAddress("images/pushpins/plain-white.png");
-                    attrs.setImageColor(Color.YELLOW);
+                    attrs.setImageColor(Color.BLUE.brighter());
                     attrs.setScale(Mapton.SCALE_PIN_IMAGE);
                     attrs.setLabelScale(Mapton.SCALE_PIN_LABEL);
                     attrs = PinPaddle.S_BLANK.applyToCopy(attrs);
