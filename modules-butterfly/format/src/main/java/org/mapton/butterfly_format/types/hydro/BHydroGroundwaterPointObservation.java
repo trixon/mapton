@@ -16,7 +16,7 @@
 package org.mapton.butterfly_format.types.hydro;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import org.mapton.butterfly_format.types.BBaseControlPointObservation;
+import org.mapton.butterfly_format.types.BBaseHydroPointObservation;
 
 /**
  *
@@ -35,7 +35,7 @@ import org.mapton.butterfly_format.types.BBaseControlPointObservation;
     "replacementMeasurement",
     "zeroMeasurement"
 })
-public class BGroundwaterObservation extends BBaseControlPointObservation {
+public class BHydroGroundwaterPointObservation extends BBaseHydroPointObservation {
 
     /*
     zm: down measurement from top-edge
@@ -53,7 +53,7 @@ m6: pressure from sensor in mVp
     private Double topEdge;
     private Double preasureMvp;
 
-    public BGroundwaterObservation() {
+    public BHydroGroundwaterPointObservation() {
     }
 
     public Double getGroundWaterLevel() {
@@ -102,6 +102,13 @@ m6: pressure from sensor in mVp
 
     public void setTopEdge(Double topEdge) {
         this.topEdge = topEdge;
+    }
+
+    public class Ext extends BBaseHydroPointObservation.Ext<BHydroGroundwaterPointObservation> {
+
+        public Ext() {
+        }
+
     }
 
 }

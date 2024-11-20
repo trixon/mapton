@@ -47,7 +47,7 @@ import org.mapton.butterfly_format.types.BXyzPoint;
     "comment",
     "meta"
 })
-public class BGroundwaterPoint extends BXyzPoint {
+public class BHydroGroundwaterPoint extends BXyzPoint {
 
     @JsonIgnore
     private BDimension dimension;
@@ -57,7 +57,7 @@ public class BGroundwaterPoint extends BXyzPoint {
     private Double offsetY;
     private Double offsetZ;
 
-    public BGroundwaterPoint() {
+    public BHydroGroundwaterPoint() {
     }
 
     public Ext ext() {
@@ -92,7 +92,7 @@ public class BGroundwaterPoint extends BXyzPoint {
         this.offsetZ = offsetZ;
     }
 
-    public class Ext extends BBasePoint.Ext<BGroundwaterObservation> {
+    public class Ext extends BBasePoint.Ext<BHydroGroundwaterPointObservation> {
 
     }
 

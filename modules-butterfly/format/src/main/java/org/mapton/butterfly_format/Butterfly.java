@@ -32,8 +32,8 @@ import org.mapton.butterfly_format.types.acoustic.BBlast;
 import org.mapton.butterfly_format.types.geo.BGeoExtensometer;
 import org.mapton.butterfly_format.types.geo.BGeoExtensometerPoint;
 import org.mapton.butterfly_format.types.geo.BGeoExtensometerPointObservation;
-import org.mapton.butterfly_format.types.hydro.BGroundwaterObservation;
-import org.mapton.butterfly_format.types.hydro.BGroundwaterPoint;
+import org.mapton.butterfly_format.types.hydro.BHydroGroundwaterPoint;
+import org.mapton.butterfly_format.types.hydro.BHydroGroundwaterPointObservation;
 import org.mapton.butterfly_format.types.monmon.BMonmon;
 import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
 import org.mapton.butterfly_format.types.structural.BStructuralCrackPointObservation;
@@ -68,8 +68,8 @@ public class Butterfly {
     private final ArrayList<BGeoExtensometerPointObservation> mGeoExtensometersPointsObservations = new ArrayList<>();
     private final Geotechnical mGeotechnical = new Geotechnical();
     private final Hydro mHydro = new Hydro();
-    private final ArrayList<BGroundwaterObservation> mHydroGroundwaterObservations = new ArrayList<>();
-    private final ArrayList<BGroundwaterPoint> mHydroGroundwaterPoints = new ArrayList<>();
+    private final ArrayList<BHydroGroundwaterPointObservation> mHydroGroundwaterPointsObservations = new ArrayList<>();
+    private final ArrayList<BHydroGroundwaterPoint> mHydroGroundwaterPoints = new ArrayList<>();
     private final ArrayList<BAcousticMeasuringChannel> mMeasuringChannels = new ArrayList<>();
     private final ArrayList<BAcousticMeasuringLimit> mMeasuringLimits = new ArrayList<>();
     private final ArrayList<BAcousticMeasuringObservation> mMeasuringObservations = new ArrayList<>();
@@ -186,11 +186,11 @@ public class Butterfly {
         }.load(sourceDir, "topoControlPointsConvergence.csv", mTopoConvergenceGroups);
 
         //Hydro
-        new ImportFromCsv<BGroundwaterPoint>(BGroundwaterPoint.class) {
+        new ImportFromCsv<BHydroGroundwaterPoint>(BHydroGroundwaterPoint.class) {
         }.load(sourceDir, "hydroGroundwaterPoints.csv", mHydroGroundwaterPoints);
 
-        new ImportFromCsv<BGroundwaterObservation>(BGroundwaterObservation.class) {
-        }.load(sourceDir, "hydroGroundwaterObservations.csv", mHydroGroundwaterObservations);
+        new ImportFromCsv<BHydroGroundwaterPointObservation>(BHydroGroundwaterPointObservation.class) {
+        }.load(sourceDir, "hydroGroundwaterPointsObservations.csv", mHydroGroundwaterPointsObservations);
 
         //TMO
         new ImportFromCsv<BGrundvatten>(BGrundvatten.class) {
@@ -310,12 +310,12 @@ public class Butterfly {
 
     public class Hydro {
 
-        public ArrayList<BGroundwaterPoint> getGroundwaterPoints() {
+        public ArrayList<BHydroGroundwaterPoint> getGroundwaterPoints() {
             return mHydroGroundwaterPoints;
         }
 
-        public ArrayList<BGroundwaterObservation> getGroundwaterObservations() {
-            return mHydroGroundwaterObservations;
+        public ArrayList<BHydroGroundwaterPointObservation> getGroundwaterPointsObservations() {
+            return mHydroGroundwaterPointsObservations;
         }
 
     }
