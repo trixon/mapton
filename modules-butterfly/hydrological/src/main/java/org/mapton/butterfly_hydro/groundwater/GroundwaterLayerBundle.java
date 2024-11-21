@@ -16,15 +16,14 @@
 package org.mapton.butterfly_hydro.groundwater;
 
 import gov.nasa.worldwind.WorldWind;
+import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.render.PointPlacemark;
-import gov.nasa.worldwind.render.PointPlacemarkAttributes;
 import java.awt.Color;
 import java.util.ArrayList;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import org.apache.commons.lang3.ObjectUtils;
-import org.mapton.api.Mapton;
 import org.mapton.butterfly_core.api.BfLayerBundle;
 import org.mapton.butterfly_core.api.PinPaddle;
 import org.mapton.butterfly_format.types.hydro.BHydroGroundwaterPoint;
@@ -44,6 +43,7 @@ public class GroundwaterLayerBundle extends BfLayerBundle {
     private final GroundwaterManager mManager = GroundwaterManager.getInstance();
     private final GroundwaterOptionsView mOptionsView;
     private final GraphicRenderer mGraphicRenderer;
+    private final GroundwaterAttributeManager mAttributeManager = GroundwaterAttributeManager.getInstance();
 
     public GroundwaterLayerBundle() {
         init();
@@ -83,41 +83,108 @@ public class GroundwaterLayerBundle extends BfLayerBundle {
                 repaint();
             }
         });
+
+        mOptionsView.labelByProperty().addListener((p, o, n) -> {
+            repaint();
+        });
     }
 
     private void initRepaint() {
         setPainter(() -> {
             removeAllRenderables();
+            if (!mLayer.isEnabled()) {
+                return;
+            }
 
-            for (var cp : new ArrayList<>(mManager.getTimeFilteredItems())) {
-                if (ObjectUtils.allNotNull(cp.getLat(), cp.getLon())) {
-                    var placemark = new PointPlacemark(Position.fromDegrees(cp.getLat(), cp.getLon()));
-                    placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
-                    placemark.setEnableLabelPicking(true);
-                    var attrs = new PointPlacemarkAttributes(placemark.getDefaultAttributes());
+            var pointBy = mOptionsView.getPointBy();
+            switch (pointBy) {
+                case NONE -> {
+                    mPinLayer.setEnabled(false);
+                }
+                case PIN -> {
+                    mPinLayer.setEnabled(true);
+                }
+                default ->
+                    throw new AssertionError();
+            }
 
-                    placemark.setLabelText(cp.getName());
-                    attrs.setImageColor(Color.BLUE.brighter());
-                    attrs.setScale(Mapton.SCALE_PIN_IMAGE);
-                    attrs.setLabelScale(Mapton.SCALE_PIN_LABEL);
-                    attrs = PinPaddle.S_BLANK.applyToCopy(attrs);
+            for (var p : new ArrayList<>(mManager.getTimeFilteredItems())) {
+                if (ObjectUtils.allNotNull(p.getLat(), p.getLon())) {
+                    var position = Position.fromDegrees(p.getLat(), p.getLon());
+                    var labelPlacemark = plotLabel(p, mOptionsView.getLabelBy(), position);
+                    var mapObjects = new ArrayList<AVListImpl>();
 
-                    placemark.setAttributes(attrs);
-                    placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(attrs, 1.5));
+                    mapObjects.add(labelPlacemark);
+                    mapObjects.add(plotPin(p, position, labelPlacemark));
+                    //mapObjects.addAll(plotSymbol(p, position, labelPlacemark));
+                    //mapObjects.addAll(plotIndicators(p, position));
 
-                    placemark.setValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK, (Runnable) () -> {
-                        mManager.setSelectedItemAfterReset(cp);
-                    });
+                    mGraphicRenderer.plot(p, position, mapObjects);
 
-                    placemark.setValue(WWHelper.KEY_RUNNABLE_LEFT_DOUBLE_CLICK, (Runnable) () -> {
+                    var leftClickRunnable = (Runnable) () -> {
+                        mManager.setSelectedItemAfterReset(p);
+                    };
+
+                    var leftDoubleClickRunnable = (Runnable) () -> {
                         Almond.openAndActivateTopComponent((String) mLayer.getValue(WWHelper.KEY_FAST_OPEN));
-                    });
+                        mGraphicRenderer.addToAllowList(p);
+                        repaint();
+                    };
 
-                    mLayer.addRenderable(placemark);
+                    mapObjects.stream().filter(r -> r != null).forEach(r -> {
+                        r.setValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK, leftClickRunnable);
+                        r.setValue(WWHelper.KEY_RUNNABLE_LEFT_DOUBLE_CLICK, leftDoubleClickRunnable);
+                    });
                 }
             }
 
             setDragEnabled(false);
         });
     }
+
+    private PointPlacemark plotLabel(BHydroGroundwaterPoint p, GroundwaterLabelBy labelBy, Position position) {
+        if (labelBy == GroundwaterLabelBy.NONE) {
+            return null;
+        }
+
+        String label;
+        try {
+            label = mOptionsView.getLabelBy().getLabel(p);
+        } catch (Exception e) {
+            label = "ERROR %s <<<<<<<<".formatted(p.getName());
+        }
+
+        var placemark = new PointPlacemark(position);
+        placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
+        placemark.setAttributes(mAttributeManager.getLabelPlacemarkAttributes());
+        placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(mAttributeManager.getLabelPlacemarkAttributes(), 1.5));
+        placemark.setLabelText(label);
+        mLabelLayer.addRenderable(placemark);
+
+        return placemark;
+    }
+
+    private PointPlacemark plotPin(BHydroGroundwaterPoint p, Position position, PointPlacemark labelPlacemark) {
+        var attrs = mAttributeManager.getPinAttributes(p);
+        attrs = PinPaddle.S_BLANK.applyToCopy(attrs);
+        attrs.setImageColor(Color.BLUE.brighter());
+
+        var placemark = new PointPlacemark(position);
+        placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
+        placemark.setAttributes(attrs);
+        placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(attrs, 1.5));
+
+        mPinLayer.addRenderable(placemark);
+        if (labelPlacemark != null) {
+            placemark.setValue(WWHelper.KEY_RUNNABLE_HOOVER_ON, (Runnable) () -> {
+                labelPlacemark.setHighlighted(true);
+            });
+            placemark.setValue(WWHelper.KEY_RUNNABLE_HOOVER_OFF, (Runnable) () -> {
+                labelPlacemark.setHighlighted(false);
+            });
+        }
+
+        return placemark;
+    }
+
 }
