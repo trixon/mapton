@@ -17,7 +17,7 @@ package org.mapton.butterfly_alarm.api;
 
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
-import org.mapton.butterfly_format.types.hydro.BGroundwaterPoint;
+import org.mapton.butterfly_format.types.hydro.BHydroGroundwaterPoint;
 import org.mapton.butterfly_format.types.structural.BStructuralStrainGaugePoint;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import se.trixon.almond.util.StringHelper;
@@ -71,7 +71,7 @@ public class AlarmHelper {
         return result;
     }
 
-    public String getLimitsAsString(BGroundwaterPoint p) {
+    public String getLimitsAsString(BHydroGroundwaterPoint p) {
         var result = "";
         var alarm = mManager.getAllItemsMap().get(p.getAlarm1Id());
 
