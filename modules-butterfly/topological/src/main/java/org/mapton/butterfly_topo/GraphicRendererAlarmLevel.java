@@ -31,17 +31,23 @@ import gov.nasa.worldwind.render.airspaces.AbstractAirspace;
 import gov.nasa.worldwind.render.airspaces.BasicAirspaceAttributes;
 import gov.nasa.worldwind.render.airspaces.PartialCappedCylinder;
 import gov.nasa.worldwind.render.airspaces.Polygon;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import static org.mapton.butterfly_core.api.BaseGraphicRenderer.PERCENTAGE_ALTITUDE;
+import static org.mapton.butterfly_core.api.BaseGraphicRenderer.PERCENTAGE_SIZE;
 import static org.mapton.butterfly_core.api.BaseGraphicRenderer.PERCENTAGE_SIZE_ALARM;
 import static org.mapton.butterfly_core.api.BaseGraphicRenderer.PERCENTAGE_SIZE_ALARM_HEIGHT;
 import org.mapton.butterfly_core.api.ButterflyHelper;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
+import org.mapton.butterfly_format.types.topo.BTopoControlPointObservation;
+import static org.mapton.butterfly_topo.GraphicRendererBase.sMapObjects;
 import org.mapton.worldwind.api.WWHelper;
+import se.trixon.almond.util.DateHelper;
 
 /**
  *
@@ -72,8 +78,19 @@ public class GraphicRendererAlarmLevel extends GraphicRendererBase {
         if (isPlotLimitReached(p, GraphicRendererItem.ALARM_CONSUMPTION, position)) {
             return;
         }
+        plotPercentageRod(position, p.ext().getAlarmPercent());
 
+        p.ext().getObservationsTimeFiltered().stream()
+                .filter(o -> DateHelper.isAfterOrEqual(o.getDate().toLocalDate(), LocalDate.now().minusDays(7)))
+                .forEachOrdered(o -> {
+//                    plotAlarmConsumptionObservation(p, position, o, o != p.ext().getObservationFilteredLast());
+                });
         var o = p.ext().getObservationFilteredLast();
+        plotAlarmConsumptionObservation(p, position, o, o != p.ext().getObservationFilteredLast());
+    }
+
+    private void plotAlarmConsumptionObservation(BTopoControlPoint p, Position position, BTopoControlPointObservation o, boolean historic) {
+        var historicOpacity = 0.05;
 
         if (p.getDimension() != BDimension._1d) {
             Integer percentP = p.ext().getAlarmPercent(BComponent.PLANE);
@@ -83,7 +100,9 @@ public class GraphicRendererAlarmLevel extends GraphicRendererBase {
             var material = ButterflyHelper.getAlarmMaterial(p.ext().getAlarmLevelPlane(o));
             var attrs = new BasicAirspaceAttributes();
             attrs.setInteriorMaterial(material);
-
+            if (historic) {
+                attrs.setInteriorOpacity(historicOpacity);
+            }
             var pos = WWHelper.positionFromPosition(position, PERCENTAGE_ALTITUDE * percentP / 100.0);
             var bearing = o.ext().getBearing();
             RigidShape planeShape;
@@ -92,8 +111,11 @@ public class GraphicRendererAlarmLevel extends GraphicRendererBase {
             } else {
                 var wedgeHeight = PERCENTAGE_SIZE * 0.5;
                 var wedgeRadius = PERCENTAGE_SIZE * 3;
-                planeShape = new Wedge(pos, Angle.fromDegrees(5), wedgeHeight, wedgeRadius);
-                planeShape.setHeading(Angle.fromDegrees(bearing));
+                var angle = 5.0;
+//                var pos2 = WWHelper.movePolar(pos, bearing, wedgeRadius, pos.getElevation());
+                planeShape = new Wedge(pos, Angle.fromDegrees(angle), wedgeHeight, wedgeRadius);
+                var az = Angle.normalizedDegrees(bearing - angle / 2);
+                planeShape.setHeading(Angle.fromDegrees(az));
             }
             planeShape.setAttributes(attrs);
             addRenderable(planeShape, true, null, sMapObjects);
@@ -116,6 +138,7 @@ public class GraphicRendererAlarmLevel extends GraphicRendererBase {
                 rise = Math.signum(o.ext().getDeltaZ()) > 0;
             }
             var attrs = mAttributeManager.getComponentTrace1dAttributes(alarmLevel, rise, false);
+
             var scale = 0.6;
             var pos = WWHelper.positionFromPosition(position, PERCENTAGE_ALTITUDE * percentH / 100.0);
             var ellipsoid = new Ellipsoid(pos, PERCENTAGE_SIZE * scale, PERCENTAGE_SIZE * scale, PERCENTAGE_SIZE * scale);
@@ -130,14 +153,16 @@ public class GraphicRendererAlarmLevel extends GraphicRendererBase {
             if (!rise) {
                 pyramid.setTilt(Angle.POS180);
             }
+            if (historic) {
+                attrs = new BasicAirspaceAttributes(attrs);
+                attrs.setInteriorOpacity(historicOpacity);
+            }
             addRenderable(pyramid, false, null, null);
 
             var alarm = p.ext().getAlarm(BComponent.HEIGHT);
             var alarmShape = new Cylinder(position, PERCENTAGE_SIZE_ALARM, PERCENTAGE_SIZE_ALARM_HEIGHT, PERCENTAGE_SIZE_ALARM);
             plotPercentageAlarmIndicator(position, alarm, alarmShape, rise);
         }
-
-        plotPercentageRod(position, p.ext().getAlarmPercent());
     }
 
     private void plotAlarmLevel(BTopoControlPoint p, Position position) {
