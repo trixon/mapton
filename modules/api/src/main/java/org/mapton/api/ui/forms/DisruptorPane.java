@@ -19,8 +19,8 @@ import java.util.ResourceBundle;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
+import javafx.scene.Node;
+import javafx.scene.layout.BorderPane;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.MDisruptorManager;
 import org.openide.util.NbBundle;
@@ -38,14 +38,14 @@ public class DisruptorPane {
     private final SessionDoubleSpinner mDisruptorSds = new SessionDoubleSpinner(0, 500.0, mDefaultDisruptorDistance, 5.0);
     private final SessionCheckComboBox<String> mDisruptorSccb = new SessionCheckComboBox<>();
     private final MDisruptorManager mDisruptorManager = MDisruptorManager.getInstance();
-    private HBox mRoot;
+    private BorderPane mRoot;
     private final ResourceBundle mBundle = NbBundle.getBundle(DisruptorPane.class);
 
     public DisruptorPane() {
         createUI();
     }
 
-    public HBox getRoot() {
+    public Node getRoot() {
         return mRoot;
     }
 
@@ -70,18 +70,13 @@ public class DisruptorPane {
     private void createUI() {
         mDisruptorSccb.setShowCheckedCount(true);
         mDisruptorSccb.setTitle(mBundle.getString("DisruptorCheckComboBoxTitle"));
-
-        mRoot = new HBox(FxHelper.getUIScaled(4),
-                mDisruptorSds,
-                mDisruptorSccb
-        );
+        mRoot = new BorderPane(mDisruptorSccb);
+        mRoot.setLeft(mDisruptorSds);
+        mDisruptorSds.setPadding(FxHelper.getUIScaledInsets(0, 8, 0, 0));
 
         FxHelper.setEditable(true, mDisruptorSds);
         FxHelper.autoCommitSpinners(mDisruptorSds);
         mDisruptorSds.disableProperty().bind(Bindings.isEmpty(mDisruptorSccb.getCheckModel().getCheckedItems()));
-        HBox.setHgrow(mDisruptorSccb, Priority.ALWAYS);
-        FxHelper.bindWidthForRegions(mRoot, mDisruptorSccb);
-
     }
 
     public SimpleStringProperty checkedStringProperty() {
