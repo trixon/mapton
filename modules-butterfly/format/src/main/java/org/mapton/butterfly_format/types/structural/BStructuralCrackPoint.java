@@ -16,6 +16,7 @@
 package org.mapton.butterfly_format.types.structural;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.mapton.butterfly_format.types.BMeasurementMode;
 import org.mapton.butterfly_format.types.BXyzPoint;
 
 /**
@@ -26,6 +27,7 @@ public class BStructuralCrackPoint extends BXyzPoint {
 
     @JsonIgnore
     private Ext mExt;
+    private BMeasurementMode mMeasurementMode;
 
     public Ext ext() {
         if (mExt == null) {
@@ -33,6 +35,14 @@ public class BStructuralCrackPoint extends BXyzPoint {
         }
 
         return mExt;
+    }
+
+    public BMeasurementMode getMeasurementMode() {
+        return mMeasurementMode;
+    }
+
+    public void setMeasurementMode(BMeasurementMode measurementMode) {
+        mMeasurementMode = measurementMode;
     }
 
     public class Ext extends BXyzPoint.Ext<BStructuralCrackPointObservation> {
@@ -46,7 +56,7 @@ public class BStructuralCrackPoint extends BXyzPoint {
         }
 
         private String getDelta(Delta delta) {
-            var s = "Δ µε=%.2f".formatted(delta.getDeltaZ());
+            var s = "Δ=%.3fmm".formatted(delta.getDeltaZ());
 
             return s;
         }
