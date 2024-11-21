@@ -43,7 +43,7 @@ import org.jfree.data.time.Minute;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.mapton.api.ui.forms.ChartBuilder;
-import org.mapton.butterfly_format.types.BXyzPoint;
+import org.mapton.butterfly_format.types.BBaseControlPoint;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.swing.SwingHelper;
 
@@ -51,7 +51,7 @@ import se.trixon.almond.util.swing.SwingHelper;
  *
  * @author Patrik Karlström
  */
-public abstract class XyzChartBuilder<T extends BXyzPoint> extends ChartBuilder<T> {
+public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends ChartBuilder<T> {
 
     protected JFreeChart mChart;
     private ChartPanel mChartPanel;

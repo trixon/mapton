@@ -49,7 +49,7 @@ public class ScaleRulerLayerBundle extends BfLayerBundle {
         setPopulated(true);
         mLayer.setEnabled(true);
         mLayer.setMaxActiveAltitude(1000);
-        initCommons();
+        initCommons("", "", "");
 
         repaint(DEFAULT_REPAINT_DELAY);
     }

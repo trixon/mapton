@@ -15,13 +15,7 @@
  */
 package org.mapton.butterfly_core.api;
 
-import javafx.scene.Node;
 import javafx.scene.control.TabPane;
-import javafx.scene.layout.Region;
-import org.mapton.api.ui.forms.CheckedTab;
-import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.SDict;
-import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
@@ -29,10 +23,6 @@ import se.trixon.almond.util.fx.FxHelper;
  */
 public abstract class BaseTabbedFilterPopOver extends BaseFilterPopOver {
 
-    private final CheckedTab mBasicTab = new CheckedTab("Grunddata", "basic");
-    private final CheckedTab mDisruptorTab = new CheckedTab("Störningskällor", "disruptor");
-    private final CheckedTab mDateTab = new CheckedTab(Dict.DATE.toString(), "date");
-    private final CheckedTab mMeasTab = new CheckedTab(SDict.MEASUREMENTS.toString(), "measurements");
     private final TabPane mTabPane = new TabPane();
 
     public BaseTabbedFilterPopOver() {
@@ -40,62 +30,8 @@ public abstract class BaseTabbedFilterPopOver extends BaseFilterPopOver {
         setContentNode(mTabPane);
     }
 
-    public void addBasicTab(Node node) {
-        mBasicTab.setContent(node);
-        mBasicTab.getTabCheckBox().setSelected(true);
-        addPadding(node);
-        mTabPane.getTabs().add(mBasicTab);
-    }
-
-    public void addBasicTab(Node node, String title) {
-        mBasicTab.setText(title);
-        addBasicTab(node);
-    }
-
-    public void addDisruptorTab(Node node) {
-        mDisruptorTab.setContent(node);
-        mDisruptorTab.getTabCheckBox().setSelected(true);
-        addPadding(node);
-        mTabPane.getTabs().add(mDisruptorTab);
-    }
-
-    public void addDisruptorTab(Node node, String title) {
-        mDisruptorTab.setText(title);
-        addDisruptorTab(node);
-    }
-
-    public void addDateTab(Node node) {
-        mDateTab.setContent(node);
-        mDateTab.getTabCheckBox().setSelected(true);
-        addPadding(node);
-        mTabPane.getTabs().add(mDateTab);
-    }
-
-    public void addDateTab(Node node, String title) {
-        mDateTab.setText(title);
-        addDateTab(node);
-    }
-
-    public void addMeasTab(Node node) {
-        mMeasTab.setContent(node);
-        mMeasTab.getTabCheckBox().setSelected(true);
-        addPadding(node);
-        mTabPane.getTabs().add(mMeasTab);
-    }
-
-    public void addMeasTab(Node node, String title) {
-        mMeasTab.setText(title);
-        addMeasTab(node);
-    }
-
     public TabPane getTabPane() {
         return mTabPane;
     }
 
-    private void addPadding(Node node) {
-        if (node instanceof Region r) {
-            r.setPadding(FxHelper.getUIScaledInsets(16));
-
-        }
-    }
 }
