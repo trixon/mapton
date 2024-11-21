@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
@@ -37,7 +36,6 @@ import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.action.ActionUtils.ActionTextBehavior;
-import org.controlsfx.tools.Borders;
 import org.mapton.api.ui.forms.DisruptorPane;
 import org.mapton.api.ui.forms.NegPosStringConverterDouble;
 import org.mapton.api.ui.forms.NegPosStringConverterInteger;
@@ -63,8 +61,17 @@ import se.trixon.almond.util.fx.session.SessionIntegerSpinner;
  */
 public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
 
+    double columnGap = FxHelper.getUIScaled(16);
+    double hGap = FxHelper.getUIScaled(9.0);
+    double rowGap = FxHelper.getUIScaled(12);
+    double spinnerWidth = FxHelper.getUIScaled(70.0);
+    double titleGap = FxHelper.getUIScaled(3);
+    double vGap = FxHelper.getUIScaled(4.0);
+
     private final SessionCheckComboBox<AlarmLevelFilter> mAlarmSccb = new SessionCheckComboBox<>(true);
     private final BaseFilters mBaseFilters = new BaseFilters();
+    private final BasicFilterSection mBasicFilterSection;
+    private final DateFilterSection mDateFilterSection;
     private final int mDefaultAlarmLevelAgeValue = -7;
     private final int mDefaultDiffPercentageValue = 80;
     private final double mDefaultDiffValue = 0.020;
@@ -87,6 +94,7 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
     private final CheckBox mDimens1Checkbox = new CheckBox("1");
     private final CheckBox mDimens2Checkbox = new CheckBox("2");
     private final CheckBox mDimens3Checkbox = new CheckBox("3");
+    private final DisruptorFilterSection mDisruptorFilterSection;
     private final DisruptorPane mDisruptorPane = new DisruptorPane();
     private final TopoFilter mFilter;
     private final CheckBox mInvertCheckbox = new CheckBox();
@@ -99,6 +107,7 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
     private final SessionComboBox<AlarmLevelChangeUnit> mMeasAlarmLevelChangeUnitScb = new SessionComboBox<>();
     private final SessionIntegerSpinner mMeasAlarmLevelChangeValueSis = new SessionIntegerSpinner(2, 10000, mDefaultMeasAlarmLevelChangeValue);
     private final SessionCheckComboBox<String> mMeasCodeSccb = new SessionCheckComboBox<>(true);
+    private final MeasFilterSection mMeasFilterSection;
     private final CheckBox mMeasIncludeWithoutCheckbox = new CheckBox();
     private final CheckBox mMeasLatestOperatorCheckbox = new CheckBox();
     private final SessionIntegerSpinner mMeasNumOfSis = new SessionIntegerSpinner(Integer.MIN_VALUE, Integer.MAX_VALUE, mDefaultNumOfMeasfValue);
@@ -114,14 +123,12 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
     private final SessionDoubleSpinner mMeasYoyoSizeSds = new SessionDoubleSpinner(0, 1.0, mDefaultMeasYoyoSize, 0.001);
     private final CheckBox mNumOfMeasCheckbox = new CheckBox();
     private final CheckBox mSameAlarmCheckbox = new CheckBox();
-    double rowGap = FxHelper.getUIScaled(12);
-    double titleGap = FxHelper.getUIScaled(3);
-    double hGap = FxHelper.getUIScaled(9.0);
-    double vGap = FxHelper.getUIScaled(4.0);
-    double spinnerWidth = FxHelper.getUIScaled(70.0);
-    double columnGap = FxHelper.getUIScaled(16);
 
     public TopoFilterPopOver(TopoFilter filter) {
+        mBasicFilterSection = new BasicFilterSection();
+        mDateFilterSection = new DateFilterSection();
+        mDisruptorFilterSection = new DisruptorFilterSection();
+        mMeasFilterSection = new MeasFilterSection();
         mFilter = filter;
         setFilter(filter);
         createUI();
@@ -181,6 +188,11 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
         );
         mBaseFilters.clear();
         mDisruptorPane.reset();
+
+        mBasicFilterSection.clear();
+        mDateFilterSection.clear();
+        mDisruptorFilterSection.clear();
+        mMeasFilterSection.clear();
     }
 
     @Override
@@ -276,22 +288,21 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
 
         var bottomBox = new VBox(vGap, new Separator(), mMeasIncludeWithoutCheckbox, mSameAlarmCheckbox);
         bottomBox.setPadding(FxHelper.getUIScaledInsets(8, 16, 8, 16));
+
         var root = new BorderPane(getTabPane());
         root.setTop(getToolBar());
         root.setBottom(bottomBox);
         getToolBar().getItems().add(new Separator());
         populateToolBar();
 
-//        int prefWidth = FxHelper.getUIScaled(250);
-//        leftBox.setPrefWidth(prefWidth);
-//        measBox.setPrefWidth(prefWidth);
-        addBasicTab(new BasicSection().getNode());
-        addDisruptorTab(new DisruptorSection());
-        addDateTab(new DateSection().getGridPane());
-        addMeasTab(new MeasSection());
+        getTabPane().getTabs().addAll(
+                mBasicFilterSection.getTab(),
+                mDateFilterSection.getTab(),
+                mMeasFilterSection.getTab(),
+                mDisruptorFilterSection.getTab()
+        );
 
         setContentNode(root);
-
     }
 
     private void initListeners() {
@@ -380,6 +391,11 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
         mMeasTopListUnitScb.disableProperty().bind(mMeasTopListCheckbox.selectedProperty().not());
         mMeasAlarmLevelChangeValueSis.disableProperty().bind(mMeasAlarmLevelChangeCheckbox.selectedProperty().not());
 
+        mFilter.sectionBasicProperty().bind(mBasicFilterSection.selectedProperty());
+        mFilter.sectionDateProperty().bind(mDateFilterSection.selectedProperty());
+        mFilter.sectionDisruptorProperty().bind(mDisruptorFilterSection.selectedProperty());
+        mFilter.sectionMeasProperty().bind(mMeasFilterSection.selectedProperty());
+
         mFilter.initCheckModelListeners();
     }
 
@@ -425,6 +441,11 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
         sessionManager.register("filter.measAlarmLevelChangeValue", mMeasAlarmLevelChangeValueSis.sessionValueProperty());
         sessionManager.register("filter.measAlarmLevelChangeLimit", mMeasAlarmLevelChangeLimitSis.sessionValueProperty());
 
+        sessionManager.register("filter.section.basic", mBasicFilterSection.selectedProperty());
+        sessionManager.register("filter.section.date", mDateFilterSection.selectedProperty());
+        sessionManager.register("filter.section.disruptor", mDisruptorFilterSection.selectedProperty());
+        sessionManager.register("filter.section.meas", mMeasFilterSection.selectedProperty());
+
         sessionManager.register("filter.invert", mInvertCheckbox.selectedProperty());
         sessionManager.register("filter.sameAlarm", mSameAlarmCheckbox.selectedProperty());
 
@@ -450,10 +471,21 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
         toolBar.getItems().add(internalBox);
     }
 
-    private class BasicSection extends GridPane {
+    private class BasicFilterSection extends BaseFilterSection {
 
-        public BasicSection() {
+        public BasicFilterSection() {
+            super("Grunddata");
             init();
+            setContent(mBaseFilters.getBaseBox());
+        }
+
+        @Override
+        public void clear() {
+            super.clear();
+        }
+
+        @Override
+        public void reset() {
         }
 
         private void init() {
@@ -467,42 +499,80 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
             mBaseFilters.getBaseBox().add(dimensBox, 0, 0, GridPane.REMAINING, 1);
         }
 
-        public Node getNode() {
-            return mBaseFilters.getBaseBox();
-        }
     }
 
-    private class DateSection {
+    private class DateFilterSection extends BaseFilterSection {
 
-        private final GridPane mGridPane = new GridPane(columnGap, rowGap);
+        private final GridPane mRoot = new GridPane(columnGap, rowGap);
 
-        public DateSection() {
+        public DateFilterSection() {
+            super(Dict.DATE.toString());
             init();
+            setContent(mRoot);
         }
 
-        public GridPane getGridPane() {
-            return mGridPane;
+        @Override
+        public void clear() {
+            super.clear();
+        }
+
+        @Override
+        public void reset() {
         }
 
         private void init() {
-            var maxWidth = FxHelper.getUIScaled(500);
-            mGridPane.setMaxWidth(maxWidth);
+            mRoot.setMaxWidth(getMaxWidth());
 
             int row = 0;
-            mGridPane.addRow(row++, mBaseFilters.getDateFirstBorderBox(), mBaseFilters.getDateLastBorderBox());
-            mGridPane.addRow(row++, mBaseFilters.getHasDateFromToSccb());
+            mRoot.addRow(row++, mBaseFilters.getDateFirstBorderBox(), mBaseFilters.getDateLastBorderBox());
+            mRoot.addRow(row++, mBaseFilters.getHasDateFromToSccb());
 
-            FxHelper.autoSizeColumn(mGridPane, 2);
+            FxHelper.autoSizeColumn(mRoot, 2);
         }
 
     }
 
-    private class MeasSection extends GridPane {
+    private class DisruptorFilterSection extends BaseFilterSection {
 
-        public MeasSection() {
-            setHgap(hGap);
-            setVgap(vGap * 4);
+        private final GridPane mRoot = new GridPane();
+
+        public DisruptorFilterSection() {
+            super("Störningskällor");
             init();
+            setContent(mRoot);
+        }
+
+        @Override
+        public void clear() {
+            super.clear();
+        }
+
+        @Override
+        public void reset() {
+        }
+
+        private void init() {
+            mRoot.addRow(0, mDisruptorPane.getRoot());
+        }
+    }
+
+    private class MeasFilterSection extends BaseFilterSection {
+
+        private final GridPane mRoot = new GridPane(hGap, vGap * 4);
+
+        public MeasFilterSection() {
+            super("Mätningar");
+            init();
+            setContent(mRoot);
+        }
+
+        @Override
+        public void clear() {
+            super.clear();
+        }
+
+        @Override
+        public void reset() {
         }
 
         private void init() {
@@ -643,9 +713,9 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
             );
 
             int row = 0;
-            add(wrapInTitleBorder("Rörelser", movementBox), 0, row, 1, REMAINING);
-            add(wrapInTitleBorder("Larmnivå", alarmBox), 1, row++, 1, 1);
-            add(wrapInTitleBorder("Övrigt", miscBox), 1, row++, 1, 1);
+            mRoot.add(wrapInTitleBorder("Rörelser", movementBox), 0, row, 1, REMAINING);
+            mRoot.add(wrapInTitleBorder("Larmnivå", alarmBox), 1, row++, 1, 1);
+            mRoot.add(wrapInTitleBorder("Övrigt", miscBox), 1, row++, 1, 1);
             FxHelper.autoSizeRegionHorizontal(mMeasTopListUnitScb, mMeasAlarmLevelChangeModeScb, mMeasAlarmLevelChangeUnitScb);
             FxHelper.bindWidthForChildrens(movementBox, alarmBox, miscBox);
             FxHelper.bindWidthForRegions(movementBox,
@@ -657,36 +727,9 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
                     mMeasOperatorSccb
             );
 
-            FxHelper.autoSizeColumn(this, 2);
+            FxHelper.autoSizeColumn(mRoot, 2);
             var maxWidth = FxHelper.getUIScaled(500);
             setMaxWidth(maxWidth);
-
-        }
-
-    }
-    private final double mTopBorderInnerPadding = FxHelper.getUIScaled(16.0);
-    private final double mBorderInnerPadding = FxHelper.getUIScaled(8.0);
-
-    private Node wrapInTitleBorder(String title, Node node) {
-        return Borders.wrap(node)
-                .etchedBorder()
-                .title(title)
-                .innerPadding(mTopBorderInnerPadding, mBorderInnerPadding, mBorderInnerPadding, mBorderInnerPadding)
-                .outerPadding(0)
-                .raised()
-                .build()
-                .build();
-    }
-
-    private class DisruptorSection extends VBox {
-
-        public DisruptorSection() {
-            setSpacing(rowGap);
-
-            getChildren().addAll(mDisruptorPane.getRoot());
-            var maxWidth = FxHelper.getUIScaled(500);
-            setMaxWidth(maxWidth);
-//            FxHelper.bindWidthForRegions(mDisruptorPane.getRoot());
 
         }
 

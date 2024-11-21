@@ -105,6 +105,10 @@ public class TopoFilter extends FormFilter<TopoManager> {
     private final SimpleBooleanProperty mMeasYoyoProperty = new SimpleBooleanProperty();
     private final SimpleDoubleProperty mMeasYoyoSizeValueProperty = new SimpleDoubleProperty();
     private final SimpleBooleanProperty mSameAlarmProperty = new SimpleBooleanProperty();
+    private final SimpleBooleanProperty mSectionBasicProperty = new SimpleBooleanProperty();
+    private final SimpleBooleanProperty mSectionDateProperty = new SimpleBooleanProperty();
+    private final SimpleBooleanProperty mSectionDisruptorProperty = new SimpleBooleanProperty();
+    private final SimpleBooleanProperty mSectionMeasProperty = new SimpleBooleanProperty();
 
     public TopoFilter() {
         super(TopoManager.getInstance());
@@ -260,33 +264,25 @@ public class TopoFilter extends FormFilter<TopoManager> {
         return mSameAlarmProperty;
     }
 
+    public SimpleBooleanProperty sectionBasicProperty() {
+        return mSectionBasicProperty;
+    }
+
+    public SimpleBooleanProperty sectionDateProperty() {
+        return mSectionDateProperty;
+    }
+
+    public SimpleBooleanProperty sectionDisruptorProperty() {
+        return mSectionDisruptorProperty;
+    }
+
+    public SimpleBooleanProperty sectionMeasProperty() {
+        return mSectionMeasProperty;
+    }
+
     @Override
     public void update() {
-        var groupActive = true;
-
         var filteredItems = mManager.getAllItems().stream()
-                .filter(p -> {
-                    if (groupActive) {
-                        return validateDimension(p.getDimension())
-                                && validateCheck(mStatusCheckModel, p.getStatus())
-                                && validateCheck(mGroupCheckModel, p.getGroup())
-                                && validateCheck(mCategoryCheckModel, p.getCategory())
-                                && validateAlarmName(p)
-                                && validateFrequency(p.getFrequency())
-                                && validateCheck(mOperatorCheckModel, p.getOperator())
-                                && validateCheck(mOriginCheckModel, p.getOrigin());
-                    } else {
-                        return true;
-                    }
-                })
-                //                .filter(p -> validateDimension(p.getDimension()))
-                //                .filter(p -> validateCheck(mStatusCheckModel, p.getStatus()))
-                //                .filter(p -> validateCheck(mGroupCheckModel, p.getGroup()))
-                //                .filter(p -> validateCheck(mCategoryCheckModel, p.getCategory()))
-                //                .filter(p -> validateAlarmName(p))
-                //                .filter(p -> validateFrequency(p.getFrequency()))
-                //                .filter(p -> validateCheck(mOperatorCheckModel, p.getOperator()))
-                //                .filter(p -> validateCheck(mOriginCheckModel, p.getOrigin()))
                 .filter(p -> {
                     var alarmH = p.ext().getAlarm(BComponent.HEIGHT);
                     var alarmP = p.ext().getAlarm(BComponent.PLANE);
@@ -298,26 +294,62 @@ public class TopoFilter extends FormFilter<TopoManager> {
                 })
                 .filter(p -> validateCoordinateArea(p.getLat(), p.getLon()))
                 .filter(p -> validateCoordinateRuler(p.getLat(), p.getLon()))
-                .filter(p -> validateAlarm(p))
-                .filter(p -> validateMeasAlarmLevelAge(p))
-                .filter(p -> validateMeasAlarmLevelChange(p))
-                .filter(p -> validateMeasDisplacementAll(p))
-                .filter(p -> validateMeasDisplacementLatest(p))
-                .filter(p -> validateMeasDisplacementPercentH(p))
-                .filter(p -> validateMeasDisplacementPercentP(p))
-                .filter(p -> validateMeasSpeed(p))
-                .filter(p -> validateMeasCount(p))
-                .filter(p -> validateAge(p.ext().getDateFirst(), mMeasDateFirstLowProperty, mMeasDateFirstHighProperty))
-                .filter(p -> validateAge(p.getDateLatest(), mMeasDateLastLowProperty, mMeasDateLastHighProperty))
-                .filter(p -> validateNextMeas(p))
+                .filter(p -> {
+                    if (mSectionBasicProperty.get()) {
+                        return validateDimension(p.getDimension())
+                                && validateCheck(mStatusCheckModel, p.getStatus())
+                                && validateCheck(mGroupCheckModel, p.getGroup())
+                                && validateCheck(mCategoryCheckModel, p.getCategory())
+                                && validateAlarmName(p)
+                                && validateFrequency(p.getFrequency())
+                                && validateCheck(mOperatorCheckModel, p.getOperator())
+                                && validateCheck(mOriginCheckModel, p.getOrigin())
+                                && validateNextMeas(p)
+                                && true;
+                    } else {
+                        return true;
+                    }
+                })
+                .filter(p -> {
+                    if (mSectionDateProperty.get()) {
+                        return validateDateFromToHas(p.getDateValidFrom(), p.getDateValidTo())
+                                && validateDateFromToWithout(p.getDateValidFrom(), p.getDateValidTo())
+                                && validateDateFromToIs(p.getDateValidFrom(), p.getDateValidTo())
+                                && validateAge(p.ext().getDateFirst(), mMeasDateFirstLowProperty, mMeasDateFirstHighProperty)
+                                && validateAge(p.getDateLatest(), mMeasDateLastLowProperty, mMeasDateLastHighProperty)
+                                && true;
+                    } else {
+                        return true;
+                    }
+                })
+                .filter(p -> {
+                    if (mSectionDisruptorProperty.get()) {
+                        return validateDisruptor(p.getZeroX(), p.getZeroY())
+                                && true;
+                    } else {
+                        return true;
+                    }
+                })
+                .filter(p -> {
+                    if (mSectionMeasProperty.get()) {
+                        return validateAlarm(p)
+                                && validateMeasAlarmLevelAge(p)
+                                && validateMeasAlarmLevelChange(p)
+                                && validateMeasDisplacementAll(p)
+                                && validateMeasDisplacementLatest(p)
+                                && validateMeasDisplacementPercentH(p)
+                                && validateMeasDisplacementPercentP(p)
+                                && validateMeasSpeed(p)
+                                && validateMeasCount(p)
+                                && validateMeasCode(p)
+                                && validateMeasOperators(p)
+                                && validateMeasYoyo(p)
+                                && true;
+                    } else {
+                        return true;
+                    }
+                })
                 .filter(p -> validateMeasWithout(p))
-                .filter(p -> validateMeasCode(p))
-                .filter(p -> validateMeasOperators(p))
-                .filter(p -> validateDateFromToHas(p.getDateValidFrom(), p.getDateValidTo()))
-                .filter(p -> validateDateFromToWithout(p.getDateValidFrom(), p.getDateValidTo()))
-                .filter(p -> validateDateFromToIs(p.getDateValidFrom(), p.getDateValidTo()))
-                .filter(p -> validateMeasYoyo(p))
-                .filter(p -> validateDisruptor(p.getZeroX(), p.getZeroY()))
                 .toList();
 
         if (mSameAlarmProperty.get()) {
@@ -373,39 +405,41 @@ public class TopoFilter extends FormFilter<TopoManager> {
 
     private ContainerTag createInfoContent() {
         var map = new LinkedHashMap<String, String>();
+        try {
+            map.put(Dict.TEXT.toString(), getFreeText());
+            map.put(SDict.DIMENSION.toString(), makeInfoDimension());
+            map.put(Dict.STATUS.toString(), makeInfo(mStatusCheckModel.getCheckedItems()));
+            map.put(Dict.GROUP.toString(), makeInfo(mGroupCheckModel.getCheckedItems()));
+            map.put(Dict.CATEGORY.toString(), makeInfo(mCategoryCheckModel.getCheckedItems()));
+            map.put(SDict.ALARMS.toString(), makeInfo(mAlarmNameCheckModel.getCheckedItems()));
+            map.put(SDict.OPERATOR.toString(), makeInfo(mOperatorCheckModel.getCheckedItems()));
+            map.put(Dict.ORIGIN.toString(), makeInfo(mOriginCheckModel.getCheckedItems()));
+            map.put(SDict.FREQUENCY.toString(), makeInfoInteger(mFrequencyCheckModel.getCheckedItems()));
+            map.put(SDict.VALID_FROM_TO.toString(), makeInfo(mDateFromToCheckModel.getCheckedItems()));
+            map.put(getBundle().getString("nextMeasCheckComboBoxTitle"), makeInfo(mMeasNextCheckModel.getCheckedItems()));
+            map.put(getBundle().getString("measCodeCheckComboBoxTitle"), makeInfo(mMeasCodeCheckModel.getCheckedItems()));
+            map.put("Första " + Dict.FROM.toString(), mMeasDateFirstLowProperty.get() != null ? mMeasDateFirstLowProperty.get().toString() : "");
+            map.put("Första " + Dict.TO.toString(), mMeasDateFirstHighProperty.get() != null ? mMeasDateFirstHighProperty.get().toString() : "");
+            map.put("Senaste " + Dict.FROM.toString(), mMeasDateLastLowProperty.get() != null ? mMeasDateLastLowProperty.get().toString() : "");
+            map.put("Senaste " + Dict.TO.toString(), mMeasDateLastHighProperty.get() != null ? mMeasDateLastHighProperty.get().toString() : "");
 
-        map.put(Dict.TEXT.toString(), getFreeText());
-        map.put(SDict.DIMENSION.toString(), makeInfoDimension());
-        map.put(Dict.STATUS.toString(), makeInfo(mStatusCheckModel.getCheckedItems()));
-        map.put(Dict.GROUP.toString(), makeInfo(mGroupCheckModel.getCheckedItems()));
-        map.put(Dict.CATEGORY.toString(), makeInfo(mCategoryCheckModel.getCheckedItems()));
-        map.put(SDict.ALARMS.toString(), makeInfo(mAlarmNameCheckModel.getCheckedItems()));
-        map.put(SDict.OPERATOR.toString(), makeInfo(mOperatorCheckModel.getCheckedItems()));
-        map.put(Dict.ORIGIN.toString(), makeInfo(mOriginCheckModel.getCheckedItems()));
-        map.put(SDict.FREQUENCY.toString(), makeInfoInteger(mFrequencyCheckModel.getCheckedItems()));
-        map.put(SDict.VALID_FROM_TO.toString(), makeInfo(mDateFromToCheckModel.getCheckedItems()));
-        map.put(getBundle().getString("nextMeasCheckComboBoxTitle"), makeInfo(mMeasNextCheckModel.getCheckedItems()));
-        map.put(getBundle().getString("measCodeCheckComboBoxTitle"), makeInfo(mMeasCodeCheckModel.getCheckedItems()));
-        map.put("Första " + Dict.FROM.toString(), mMeasDateFirstLowProperty.get() != null ? mMeasDateFirstLowProperty.get().toString() : "");
-        map.put("Första " + Dict.TO.toString(), mMeasDateFirstHighProperty.get() != null ? mMeasDateFirstHighProperty.get().toString() : "");
-        map.put("Senaste " + Dict.FROM.toString(), mMeasDateLastLowProperty.get() != null ? mMeasDateLastLowProperty.get().toString() : "");
-        map.put("Senaste " + Dict.TO.toString(), mMeasDateLastHighProperty.get() != null ? mMeasDateLastHighProperty.get().toString() : "");
+            if (mMeasNumOfProperty.get()) {
+                var value = mMeasNumOfValueProperty.get();
+                map.put(getBundle().getString("numOfMeasCheckBoxText"), FormHelper.negPosToLtGt(value));
+            }
 
-        if (mMeasNumOfProperty.get()) {
-            var value = mMeasNumOfValueProperty.get();
-            map.put(getBundle().getString("numOfMeasCheckBoxText"), FormHelper.negPosToLtGt(value));
-        }
+            if (mMeasDiffAllProperty.get()) {
+                map.put(getBundle().getString("diffMeasAllCheckBoxText"), FormHelper.negPosToLtGt(mMeasDiffAllValueProperty.get()));
+            }
 
-        if (mMeasDiffAllProperty.get()) {
-            map.put(getBundle().getString("diffMeasAllCheckBoxText"), FormHelper.negPosToLtGt(mMeasDiffAllValueProperty.get()));
-        }
+            if (mMeasDiffLatestProperty.get()) {
+                map.put(getBundle().getString("diffMeasLatestCheckBoxText"), FormHelper.negPosToLtGt(mMeasDiffLatestValueProperty.get()));
+            }
 
-        if (mMeasDiffLatestProperty.get()) {
-            map.put(getBundle().getString("diffMeasLatestCheckBoxText"), FormHelper.negPosToLtGt(mMeasDiffLatestValueProperty.get()));
-        }
-
-        if (mSameAlarmProperty.get()) {
-            map.put(getBundle().getString("sameAlarmCheckBoxText"), BooleanHelper.asYesNo(mSameAlarmProperty.get()));
+            if (mSameAlarmProperty.get()) {
+                map.put(getBundle().getString("sameAlarmCheckBoxText"), BooleanHelper.asYesNo(mSameAlarmProperty.get()));
+            }
+        } catch (NullPointerException e) {
         }
 
         return createHtmlFilterInfo(map);
@@ -453,7 +487,10 @@ public class TopoFilter extends FormFilter<TopoManager> {
     }
 
     private void initListeners() {
-        List.of(
+        List.of(mSectionBasicProperty,
+                mSectionDateProperty,
+                mSectionDisruptorProperty,
+                mSectionMeasProperty,
                 mInvertProperty,
                 mDimens1Property,
                 mDimens2Property,

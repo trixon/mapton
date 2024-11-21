@@ -130,6 +130,9 @@ public class TopoPropertiesBuilder extends PropertiesBuilder<BTopoControlPoint> 
         var need = p.getFrequency() == 0 ? "-" : Long.toString(p.ext().getMeasurementUntilNext(ChronoUnit.DAYS));
         propertyMap.put(getCatKey(cat1, Dict.NEED.toString()), need);
         propertyMap.put(getCatKey(cat1, Dict.AGE.toString()), p.ext().getMeasurementAge(ChronoUnit.DAYS));
+
+        var trend = p.ext().getHeightDirectionTrendDaysMeas();
+        propertyMap.put(getCatKey(cat1, "Trend (dagar::antal)"), "%s::%d::%d".formatted(trend[0], trend[1], trend[2]));
         propertyMap.put(getCatKey(cat1, "%s, %s".formatted(Dict.AGE.toString(), SDict.ALARM_LEVEL.toLower())), p.ext().getAlarmLevelAge());
         propertyMap.put(getCatKey(cat1, Dict.LATEST.toString()),
                 "%s (%s)".formatted(lastRaw, lastFiltered)
