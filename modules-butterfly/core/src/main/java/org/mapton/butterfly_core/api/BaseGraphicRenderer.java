@@ -113,10 +113,20 @@ public abstract class BaseGraphicRenderer<T extends Enum<T>, U extends BBase> {
             percent = 0;
         }
 
-        var pos = WWHelper.positionFromPosition(position, PERCENTAGE_ALTITUDE * Math.max(percent, 100) / 100.0);
-        var groundPath = new Path(WWHelper.positionFromPosition(position, 0.0), pos);
-        groundPath.setAttributes(mAttributeManager.getComponentGroundPathAttributes());
-        addRenderable(groundPath, false, null, null);
+        var maxTopAltitudePercentage = Math.max(percent, 100) / 100.0;
+        var stepPercentage = 0.25;
+        var topAltitudePercentage = stepPercentage;
+        var odd = true;
+
+        do {
+            var loPos = WWHelper.positionFromPosition(position, PERCENTAGE_ALTITUDE * (topAltitudePercentage - stepPercentage));
+            var hiPos = WWHelper.positionFromPosition(position, PERCENTAGE_ALTITUDE * topAltitudePercentage);
+            topAltitudePercentage = topAltitudePercentage + stepPercentage;
+            var groundPath = new Path(loPos, hiPos);
+            groundPath.setAttributes(odd ? mAttributeManager.getComponentGroundPathOddAttributes() : mAttributeManager.getComponentGroundPathEvenAttributes());
+            odd = !odd;
+            addRenderable(groundPath, false, null, null);
+        } while (topAltitudePercentage < maxTopAltitudePercentage + stepPercentage);
 
         var pos100 = WWHelper.positionFromPosition(position, PERCENTAGE_ALTITUDE);
         var cylinder = new Cylinder(pos100, 0.25, PERCENTAGE_SIZE * 2);

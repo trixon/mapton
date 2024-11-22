@@ -34,6 +34,8 @@ public abstract class BaseAttributeManager {
     private BasicShapeAttributes mAlarmLimitAttributes;
     private BasicShapeAttributes[] mAlarmOutlineAttributes;
     private BasicShapeAttributes mComponentGroundPathAttributes;
+    private BasicShapeAttributes mComponentGroundPathEvenAttributes;
+    private BasicShapeAttributes mComponentGroundPathOddAttributes;
     private BasicShapeAttributes[][] mComponentTrace1dAttributes;
     private BasicShapeAttributes mComponentZeroAttributes;
     private PointPlacemarkAttributes mLabelPlacemarkAttributes;
@@ -92,10 +94,24 @@ public abstract class BaseAttributeManager {
             mComponentGroundPathAttributes.setDrawOutline(true);
             mComponentGroundPathAttributes.setOutlineMaterial(Material.LIGHT_GRAY);
             mComponentGroundPathAttributes.setEnableLighting(false);
-            mComponentGroundPathAttributes.setOutlineWidth(1);
+            mComponentGroundPathAttributes.setOutlineWidth(1.5);
         }
 
         return mComponentGroundPathAttributes;
+    }
+
+    public BasicShapeAttributes getComponentGroundPathEvenAttributes() {
+        mComponentGroundPathEvenAttributes = new BasicShapeAttributes(getComponentGroundPathAttributes());
+        mComponentGroundPathEvenAttributes.setOutlineMaterial(Material.RED);
+
+        return mComponentGroundPathEvenAttributes;
+    }
+
+    public BasicShapeAttributes getComponentGroundPathOddAttributes() {
+        mComponentGroundPathOddAttributes = new BasicShapeAttributes(getComponentGroundPathAttributes());
+        mComponentGroundPathOddAttributes.setOutlineMaterial(Material.WHITE);
+
+        return mComponentGroundPathOddAttributes;
     }
 
     public BasicShapeAttributes getComponentTrace1dAttributes(int alarmLevel, boolean rise, boolean maximus) {
