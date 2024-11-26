@@ -41,7 +41,6 @@ public abstract class ImportFromCsv<T> {
 
     private static final ZipHelper ZIP_HELPER = ZipHelper.getInstance();
     private final Class<T> classOfT;
-    private final ArrayList<T> items = new ArrayList<>();
     private final CsvMapper mMapper;
     private final CsvSchema schema;
 

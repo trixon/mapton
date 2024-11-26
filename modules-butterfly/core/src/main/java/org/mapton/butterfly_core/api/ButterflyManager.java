@@ -32,6 +32,7 @@ import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.math3.util.FastMath;
@@ -363,7 +364,7 @@ public class ButterflyManager {
     }
 
     private boolean unlockValidatePassword(File source, char[] password) {
-        var zipFile = new ZipFile(source, password);
+        var zipFile = new ZipFile(source, ArrayUtils.addAll(password, password));
         var path = "Project.bfl";
 
         try {

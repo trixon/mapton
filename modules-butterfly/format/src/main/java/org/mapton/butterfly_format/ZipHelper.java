@@ -23,6 +23,7 @@ import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.io.inputstream.ZipInputStream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.openide.util.Exceptions;
 
 /**
@@ -111,7 +112,7 @@ public class ZipHelper {
     }
 
     public void setPassword(char[] password) {
-        mPassword = password;
+        mPassword = ArrayUtils.addAll(password, password);
     }
 
     private static class Holder {

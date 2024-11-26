@@ -205,12 +205,11 @@ public class Butterfly {
         new ImportFromCsv<BTunnelvatten>(BTunnelvatten.class) {
         }.load(sourceDir, "tmoTunnelvatten.csv", mTmo.getTunnelvatten());
 
-        new ImportFromCsv<BVattenkemi>(BVattenkemi.class) {
-        }.load(sourceDir, "tmoVattenkemi.csv", mTmo.getVattenkemi());
-
-        new ImportFromCsv<BVaderstation>(BVaderstation.class) {
-        }.load(sourceDir, "tmoVaderstation.csv", mTmo.getVaderstation());
-
+//        new ImportFromCsv<BVattenkemi>(BVattenkemi.class) {
+//        }.load(sourceDir, "tmoVattenkemi.csv", mTmo.getVattenkemi());
+//
+//        new ImportFromCsv<BVaderstation>(BVaderstation.class) {
+//        }.load(sourceDir, "tmoVaderstation.csv", mTmo.getVaderstation());
         new ImportFromCsv<BGrundvattenObservation>(BGrundvattenObservation.class) {
         }.load(sourceDir, "tmoGrundvattenObservations.csv", mTmo.getGrundvattenObservations());
 
