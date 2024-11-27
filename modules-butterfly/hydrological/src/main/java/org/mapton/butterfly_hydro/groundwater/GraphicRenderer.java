@@ -20,6 +20,7 @@ import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Cylinder;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -59,8 +60,8 @@ public class GraphicRenderer extends GraphicRendererBase {
         }
         var list = p.ext().getObservationsTimeFiltered();
         var waterLevels = list.stream()
-                .filter(d -> d.getGroundWaterLevel() != null)
-                .mapToDouble(BHydroGroundwaterPointObservation::getGroundWaterLevel)
+                .filter(d -> d.getGroundwaterLevel() != null)
+                .mapToDouble(BHydroGroundwaterPointObservation::getGroundwaterLevel)
                 .sorted();
         var median = list.size() % 2 == 0
                 ? waterLevels.skip(list.size() / 2 - 1).limit(2).average().getAsDouble()
@@ -80,11 +81,17 @@ public class GraphicRenderer extends GraphicRendererBase {
         var prevHeight = 0.0;
 
         var reversedList = p.ext().getObservationsTimeFiltered().reversed();
-        var median = getMedian(p);
+        BHydroGroundwaterPointObservation minObservation = p.ext().getMinObservation();
+        //var median = getMedian(p);
+        if (minObservation == null) {
+            return;
+        }
+        var referenceValue = minObservation.getGroundwaterLevel();
 
         for (int i = 0; i < reversedList.size(); i++) {
             var o = reversedList.get(i);
-            if (ObjectUtils.anyNull(o.getDate(), o.getGroundWaterLevel())) {
+            if (ObjectUtils.anyNull(o.getDate(), o.getGroundwaterLevel())
+                    || o.getDate().isBefore(LocalDate.parse("2017-01-01").atStartOfDay())) {
                 continue;
             }
 
@@ -109,9 +116,11 @@ public class GraphicRenderer extends GraphicRendererBase {
             var maxRadius = 100.0;
 
 //            var dZ = o.getNivå() - p.ext().getMaxObservation().getNivå();
-            var dZ = o.getGroundWaterLevel() - median;
+//            var dZ = o.getGroundwaterLevel() - median;
+            var dZ = o.getGroundwaterLevel() - referenceValue;
+
 //            dZ = dZ * dZ;
-            var scale = 1.0;
+            var scale = 2.0;
             var radius = Math.min(maxRadius, Math.abs(dZ) * scale + 0.1);
             var cylinder = new Cylinder(pos, height, radius);
             var attrs = mAttributeManager.getTimeSeriesAttributes(p);

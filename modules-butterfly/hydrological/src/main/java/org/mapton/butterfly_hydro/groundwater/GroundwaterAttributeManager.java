@@ -56,7 +56,7 @@ public class GroundwaterAttributeManager extends BaseAttributeManager {
 //
 //        return mComponentGroundPathAttributes;
 //    }
-    public PointPlacemarkAttributes getPinAttributes(BHydroGroundwaterPoint grundvatten) {
+    public PointPlacemarkAttributes getPinAttributes(BHydroGroundwaterPoint p) {
         if (mPinAttributes == null) {
             mPinAttributes = new PointPlacemarkAttributes(new PointPlacemark(Position.ZERO).getDefaultAttributes());
             mPinAttributes.setImageAddress("images/pushpins/plain-white.png");
@@ -66,7 +66,7 @@ public class GroundwaterAttributeManager extends BaseAttributeManager {
         }
 
         var attrs = new PointPlacemarkAttributes(mPinAttributes);
-        attrs.setImageColor(getColor(grundvatten));
+        attrs.setImageColor(getColor(p));
 
         return attrs;
     }
@@ -83,22 +83,21 @@ public class GroundwaterAttributeManager extends BaseAttributeManager {
         return mSurfaceAttributes;
     }
 
-    public BasicShapeAttributes getTimeSeriesAttributes(BHydroGroundwaterPoint grundvatten) {
+    public BasicShapeAttributes getTimeSeriesAttributes(BHydroGroundwaterPoint p) {
         if (mTimeSeriesAttributes == null) {
             mTimeSeriesAttributes = new BasicShapeAttributes();
             mTimeSeriesAttributes.setDrawOutline(false);
-            mTimeSeriesAttributes.setInteriorMaterial(Material.BLUE);
+            mTimeSeriesAttributes.setInteriorMaterial(new Material(Color.BLUE.brighter()));
             mTimeSeriesAttributes.setEnableLighting(true);
         }
 
-        BasicShapeAttributes attrs = mMagasinToAttributes.computeIfAbsent(grundvatten.getCategory(), k -> {
-            var a = new BasicShapeAttributes(mTimeSeriesAttributes);
-            a.setInteriorMaterial(new Material(getColor(grundvatten)));
-
-            return a;
-        });
-
-        return attrs;
+//        var attrs = mMagasinToAttributes.computeIfAbsent(p.getCategory(), k -> {
+//            var a = new BasicShapeAttributes(mTimeSeriesAttributes);
+//            a.setInteriorMaterial(new Material(getColor(p)));
+//
+//            return a;
+//        });
+        return mTimeSeriesAttributes;
     }
 
     private Color getColor(BHydroGroundwaterPoint grundvatten) {

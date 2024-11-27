@@ -92,6 +92,7 @@ public class GroundwaterLayerBundle extends BfLayerBundle {
     private void initRepaint() {
         setPainter(() -> {
             removeAllRenderables();
+            mGraphicRenderer.reset();
             if (!mLayer.isEnabled()) {
                 return;
             }

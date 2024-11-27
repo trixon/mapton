@@ -82,7 +82,7 @@ public class GroundwaterChartBuilder extends XyzChartBuilder<BHydroGroundwaterPo
         p.ext().getObservationsTimeFiltered().forEach(o -> {
             var minute = mChartHelper.convertToMinute(o.getDate());
 
-            mTimeSeriesH.addOrUpdate(minute, o.getGroundWaterLevel());
+            mTimeSeriesH.addOrUpdate(minute, o.getGroundwaterLevel());
         });
         getDataset().addSeries(mTimeSeriesH);
     }
