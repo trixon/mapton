@@ -45,7 +45,7 @@ public class CandleRenderer extends BaseRenderer {
         var dayOfWeek = christmasEve.getDayOfWeek().getValue();
         var startTimes = new LocalDateTime[4];
         for (int i = 0; i < 4; i++) {
-            startTimes[i] = christmasEve.minusDays(7 * (4 - i) + (dayOfWeek < 7 ? dayOfWeek : 0));
+            startTimes[i] = christmasEve.minusDays(7 * (3 - i) + (dayOfWeek < 7 ? dayOfWeek : 0));
         }
         double[] lats;
         double[] lons;
