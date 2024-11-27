@@ -72,8 +72,8 @@ public class GrundvattenPropertiesBuilder extends PropertiesBuilder<BGrundvatten
             propertyMap.put(getCatKey(cat1, Dict.AGE.toString()), p.ext().getMeasurementAge(ChronoUnit.DAYS));
             propertyMap.put(getCatKey(cat1, "Senaste"), GrundvattenHelper.getLevelAndDate(p.ext().getObservationRawLast()));
             propertyMap.put(getCatKey(cat1, "Första"), GrundvattenHelper.getLevelAndDate(p.ext().getObservationRawFirst()));
-            propertyMap.put(getCatKey(cat1, "Min"), GrundvattenHelper.getLevelAndDate(p.ext().getMinObservation()));
-            propertyMap.put(getCatKey(cat1, "Max"), GrundvattenHelper.getLevelAndDate(p.ext().getMaxObservation()));
+//            propertyMap.put(getCatKey(cat1, "Min"), GrundvattenHelper.getLevelAndDate(p.ext().getMinObservation()));
+//            propertyMap.put(getCatKey(cat1, "Max"), GrundvattenHelper.getLevelAndDate(p.ext().getMaxObservation()));
         }
 
         return propertyMap;

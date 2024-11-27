@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_tmo.grundvatten;
 
+import org.mapton.butterfly_tmo.api.GrundvattenManager;
 import j2html.tags.ContainerTag;
 import java.util.LinkedHashMap;
 import org.controlsfx.control.IndexedCheckModel;

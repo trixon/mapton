@@ -105,7 +105,7 @@ public class GrundvattenChartBuilder extends ChartBuilder<BGrundvatten> {
         p.ext().getObservationsTimeFiltered().forEach(o -> {
             var minute = mChartHelper.convertToMinute(o.getDate());
 
-            mTimeSeriesH.add(minute, o.getNivå());
+            mTimeSeriesH.addOrUpdate(minute, o.getNivå());
 
         });
         mDataset.addSeries(mTimeSeriesH);
