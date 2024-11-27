@@ -49,15 +49,15 @@ m6: pressure from sensor in mVp
     private Double temperature;
     private Double downMeasurement;
     private Double sensorOffset;
-    private Double groundWaterLevel;
+    private Double groundwaterLevel;
     private Double topEdge;
     private Double preasureMvp;
 
     public BHydroGroundwaterPointObservation() {
     }
 
-    public Double getGroundWaterLevel() {
-        return groundWaterLevel;
+    public Double getGroundwaterLevel() {
+        return groundwaterLevel;
     }
 
     public Double getPreasureMvp() {
@@ -80,8 +80,8 @@ m6: pressure from sensor in mVp
         return topEdge;
     }
 
-    public void setGroundWaterLevel(Double groundWaterLevel) {
-        this.groundWaterLevel = groundWaterLevel;
+    public void setGroundwaterLevel(Double groundwaterLevel) {
+        this.groundwaterLevel = groundwaterLevel;
     }
 
     public void setPreasureMvp(Double preasureMvp) {

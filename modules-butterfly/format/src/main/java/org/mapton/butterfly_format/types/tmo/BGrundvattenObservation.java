@@ -15,12 +15,18 @@
  */
 package org.mapton.butterfly_format.types.tmo;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import org.mapton.butterfly_format.types.BBasePointObservation;
 
 /**
  *
  * @author Patrik Karlström
  */
+@JsonPropertyOrder({
+    "name",
+    "date",
+    "nivå"
+})
 public class BGrundvattenObservation extends BBasePointObservation {
 
     private Ext mExt;

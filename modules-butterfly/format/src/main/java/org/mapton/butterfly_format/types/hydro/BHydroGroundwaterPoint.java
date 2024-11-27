@@ -17,6 +17,7 @@ package org.mapton.butterfly_format.types.hydro;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import java.util.Comparator;
 import org.mapton.butterfly_format.types.BBasePoint;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.BXyzPoint;
@@ -93,6 +94,20 @@ public class BHydroGroundwaterPoint extends BXyzPoint {
     }
 
     public class Ext extends BBasePoint.Ext<BHydroGroundwaterPointObservation> {
+
+        public BHydroGroundwaterPointObservation getMaxObservation() {
+            return getObservationsAllRaw().stream()
+                    .filter(o -> o.getGroundwaterLevel() != null)
+                    .max(Comparator.comparing(BHydroGroundwaterPointObservation::getGroundwaterLevel))
+                    .orElse(null);
+        }
+
+        public BHydroGroundwaterPointObservation getMinObservation() {
+            return getObservationsAllRaw().stream()
+                    .filter(o -> o.getGroundwaterLevel() != null)
+                    .min(Comparator.comparing(BHydroGroundwaterPointObservation::getGroundwaterLevel))
+                    .orElse(null);
+        }
 
     }
 

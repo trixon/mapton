@@ -15,14 +15,19 @@
  */
 package org.mapton.butterfly_format.types.tmo;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import org.mapton.butterfly_format.types.BBasePointObservation;
 
 /**
  *
  * @author Patrik Karlström
  */
+@JsonPropertyOrder({
+    "name",
+    "date",
+    "varde"
+})
 public class BRorelseObservation extends BBasePointObservation {
-//id	Benämning	Mätningstyp	Tidpunkt	Operator	Värde	Uppmätt värde	Felkod	Granskning	Fixpunkt	Rapportör	Mätutrustning	Beräkningstidpunkt	Kommentar
 
     private Ext mExt;
     private Double varde;
