@@ -13,27 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_topo;
+package org.mapton.api.ui.forms;
 
+import com.dlsc.gemsfx.util.SessionManager;
 import javafx.beans.property.BooleanProperty;
 import javafx.scene.Node;
 import javafx.scene.layout.Region;
 import org.controlsfx.tools.Borders;
-import org.mapton.api.ui.forms.CheckedTab;
 import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
  * @author Patrik Karlström
  */
-public abstract class BaseFilterSection {
+public abstract class MBaseFilterSection {
 
+    public double columnGap = FxHelper.getUIScaled(16);
+    public double hGap = FxHelper.getUIScaled(9.0);
+    public double rowGap = FxHelper.getUIScaled(12);
+    public double spinnerWidth = FxHelper.getUIScaled(70.0);
+    public double titleGap = FxHelper.getUIScaled(3);
+    public double vGap = FxHelper.getUIScaled(4.0);
     private final double mBorderInnerPadding = FxHelper.getUIScaled(8.0);
     private final CheckedTab mCheckedTab;
     private double mMaxWidth = FxHelper.getUIScaled(500);
     private final double mTopBorderInnerPadding = FxHelper.getUIScaled(16.0);
 
-    public BaseFilterSection(String title) {
+    public MBaseFilterSection(String title) {
         mCheckedTab = new CheckedTab(title, null);
     }
 
@@ -54,6 +60,10 @@ public abstract class BaseFilterSection {
 
     public CheckedTab getTab() {
         return mCheckedTab;
+    }
+
+    public void initSession(SessionManager sessionManager) {
+
     }
 
     public abstract void reset();
