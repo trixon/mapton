@@ -63,15 +63,14 @@ import se.trixon.almond.util.fx.DelayedResetRunner;
  */
 public abstract class FormFilter<ManagerType extends MBaseDataManager> {
 
-    public IndexedCheckModel mDateFromToCheckModel;
-    public IndexedCheckModel mDisruptorCheckModel;
     public IndexedCheckModel<Integer> mFrequencyCheckModel;
-
     protected ChangeListener<Object> mChangeListenerObject;
     protected final MDisruptorManager mDisruptorManager = MDisruptorManager.getInstance();
     protected ListChangeListener<Object> mListChangeListener;
     private final MAreaFilterManager mAreaFilterManager = MAreaFilterManager.getInstance();
+    private IndexedCheckModel mDateFromToCheckModel;
     private final DelayedResetRunner mDelayedResetRunner;
+    private IndexedCheckModel mDisruptorCheckModel;
 //    private final SimpleBooleanProperty mDisruptorProperty = new SimpleBooleanProperty();
     private final SimpleDoubleProperty mDisruptorDistanceProperty = new SimpleDoubleProperty();
     private final StringProperty mFreeTextProperty = new SimpleStringProperty();
@@ -130,6 +129,14 @@ public abstract class FormFilter<ManagerType extends MBaseDataManager> {
         return NbBundle.getBundle(getClass());
     }
 
+    public IndexedCheckModel getDateFromToCheckModel() {
+        return mDateFromToCheckModel;
+    }
+
+    public IndexedCheckModel getDisruptorCheckModel() {
+        return mDisruptorCheckModel;
+    }
+
     public String getFreeText() {
         return freeTextProperty().get();
     }
@@ -152,6 +159,14 @@ public abstract class FormFilter<ManagerType extends MBaseDataManager> {
 
     public BooleanProperty polygonFilterProperty() {
         return mPolygonFilterProperty;
+    }
+
+    public void setDateFromToCheckModel(IndexedCheckModel dateFromToCheckModel) {
+        mDateFromToCheckModel = dateFromToCheckModel;
+    }
+
+    public void setDisruptorCheckModel(IndexedCheckModel disruptorCheckModel) {
+        mDisruptorCheckModel = disruptorCheckModel;
     }
 
     public abstract void update();

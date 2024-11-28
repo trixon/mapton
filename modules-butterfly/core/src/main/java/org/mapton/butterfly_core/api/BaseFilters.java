@@ -23,7 +23,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.controlsfx.tools.Borders;
-import org.mapton.api.ui.forms.DateRangePane;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SDict;
@@ -39,20 +38,15 @@ public class BaseFilters {
     private final SessionCheckComboBox<String> mAlarmNameSccb = new SessionCheckComboBox<>();
     private Node mBaseBorderBox;
     private GridPane mBaseBox;
-    private final double mBorderInnerPadding = FxHelper.getUIScaled(8.0);
     private final ResourceBundle mBundle = NbBundle.getBundle(getClass());
     private final SessionCheckComboBox<String> mCategorySccb = new SessionCheckComboBox<>();
-    private Node mDateFirstBorderBox;
-    private Node mDateLastBorderBox;
-    private final DateRangePane mDateRangeFirstPane = new DateRangePane();
-    private final DateRangePane mDateRangeLastPane = new DateRangePane();
     private final SessionCheckComboBox<Integer> mFrequencySccb = new SessionCheckComboBox<>();
     private final SessionCheckComboBox<String> mGroupSccb = new SessionCheckComboBox<>();
-    private final SessionCheckComboBox<String> mHasDateFromToSccb = new SessionCheckComboBox<>(true);
     private final SessionCheckComboBox<String> mMeasNextSccb = new SessionCheckComboBox<>(true);
     private final SessionCheckComboBox<String> mOperatorSccb = new SessionCheckComboBox<>();
     private final SessionCheckComboBox<String> mOriginSccb = new SessionCheckComboBox<>();
     private final SessionCheckComboBox<String> mStatusSccb = new SessionCheckComboBox<>();
+    private final double mBorderInnerPadding = FxHelper.getUIScaled(8.0);
     private final double mTopBorderInnerPadding = FxHelper.getUIScaled(16.0);
 
     public BaseFilters() {
@@ -68,12 +62,8 @@ public class BaseFilters {
                 mOperatorSccb,
                 mOriginSccb,
                 mMeasNextSccb,
-                mHasDateFromToSccb,
                 mFrequencySccb
         );
-
-        mDateRangeFirstPane.reset();
-        mDateRangeLastPane.reset();
     }
 
     public SessionCheckComboBox<String> getAlarmNameSccb() {
@@ -102,54 +92,12 @@ public class BaseFilters {
         return mCategorySccb;
     }
 
-    public Node getDateFirstBorderBox() {
-        if (mDateFirstBorderBox == null) {
-            mDateFirstBorderBox = Borders.wrap(mDateRangeFirstPane.getRoot())
-                    .etchedBorder()
-                    .title("Period för första mätning")
-                    .innerPadding(mTopBorderInnerPadding, mBorderInnerPadding, mBorderInnerPadding, mBorderInnerPadding)
-                    .outerPadding(0)
-                    .raised()
-                    .build()
-                    .build();
-        }
-
-        return mDateFirstBorderBox;
-    }
-
-    public Node getDateLastBorderBox() {
-        if (mDateLastBorderBox == null) {
-            mDateLastBorderBox = Borders.wrap(mDateRangeLastPane.getRoot())
-                    .etchedBorder()
-                    .title("Period för senaste mätning")
-                    .innerPadding(mTopBorderInnerPadding, mBorderInnerPadding, mBorderInnerPadding, mBorderInnerPadding)
-                    .outerPadding(0)
-                    .raised()
-                    .build()
-                    .build();
-        }
-
-        return mDateLastBorderBox;
-    }
-
-    public DateRangePane getDateRangeFirstPane() {
-        return mDateRangeFirstPane;
-    }
-
-    public DateRangePane getDateRangeLastPane() {
-        return mDateRangeLastPane;
-    }
-
     public SessionCheckComboBox<Integer> getFrequencySccb() {
         return mFrequencySccb;
     }
 
     public SessionCheckComboBox<String> getGroupSccb() {
         return mGroupSccb;
-    }
-
-    public SessionCheckComboBox<String> getHasDateFromToSccb() {
-        return mHasDateFromToSccb;
     }
 
     public SessionCheckComboBox<String> getMeasNextSccb() {
@@ -171,7 +119,6 @@ public class BaseFilters {
     public void initSession(SessionManager sessionManager) {
         sessionManager.register("filter.checkedAlarmName", mAlarmNameSccb.checkedStringProperty());
         sessionManager.register("filter.checkedCategory", mCategorySccb.checkedStringProperty());
-        sessionManager.register("filter.checkedDateFromTo", mHasDateFromToSccb.checkedStringProperty());
         sessionManager.register("filter.checkedFrequency", mFrequencySccb.checkedStringProperty());
         sessionManager.register("filter.checkedGroup", mGroupSccb.checkedStringProperty());
         sessionManager.register("filter.checkedOperators", mOperatorSccb.checkedStringProperty());
@@ -197,7 +144,6 @@ public class BaseFilters {
 
     private void createUI() {
         FxHelper.setShowCheckedCount(true,
-                mHasDateFromToSccb,
                 mMeasNextSccb,
                 mStatusSccb,
                 mGroupSccb,
@@ -208,7 +154,6 @@ public class BaseFilters {
                 mFrequencySccb
         );
 
-        mHasDateFromToSccb.setTitle(SDict.VALID_FROM_TO.toString());
         mMeasNextSccb.setTitle(mBundle.getString("nextMeasCheckComboBoxTitle"));
         mStatusSccb.setTitle(Dict.STATUS.toString());
         mGroupSccb.setTitle(Dict.GROUP.toString());
@@ -217,15 +162,6 @@ public class BaseFilters {
         mOperatorSccb.setTitle(SDict.OPERATOR.toString());
         mOriginSccb.setTitle(Dict.ORIGIN.toString());
         mFrequencySccb.setTitle(SDict.FREQUENCY.toString());
-
-        mHasDateFromToSccb.getItems().setAll(List.of(
-                SDict.HAS_VALID_FROM.toString(),
-                SDict.HAS_VALID_TO.toString(),
-                SDict.WITHOUT_VALID_FROM.toString(),
-                SDict.WITHOUT_VALID_TO.toString(),
-                SDict.IS_VALID.toString(),
-                SDict.IS_INVALID.toString()
-        ));
 
         mMeasNextSccb.getItems().setAll(List.of(
                 "<0",

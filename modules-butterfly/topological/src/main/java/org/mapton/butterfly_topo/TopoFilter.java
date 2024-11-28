@@ -37,6 +37,8 @@ import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.MTemporalManager;
 import org.mapton.api.ui.forms.FormFilter;
 import org.mapton.api.ui.forms.FormHelper;
+import org.mapton.api.ui.forms.MFilterSectionDateProvider;
+import org.mapton.api.ui.forms.MFilterSectionDisruptorProvider;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
@@ -55,7 +57,7 @@ import se.trixon.almond.util.SDict;
  *
  * @author Patrik Karlström
  */
-public class TopoFilter extends FormFilter<TopoManager> {
+public class TopoFilter extends FormFilter<TopoManager> implements MFilterSectionDateProvider, MFilterSectionDisruptorProvider {
 
     IndexedCheckModel<AlarmLevelFilter> mAlarmLevelCheckModel;
     IndexedCheckModel mAlarmNameCheckModel;
@@ -160,18 +162,22 @@ public class TopoFilter extends FormFilter<TopoManager> {
         return mMeasAlarmLevelChangeValueProperty;
     }
 
+    @Override
     public SimpleObjectProperty<LocalDate> measDateFirstHighProperty() {
         return mMeasDateFirstHighProperty;
     }
 
+    @Override
     public SimpleObjectProperty<LocalDate> measDateFirstLowProperty() {
         return mMeasDateFirstLowProperty;
     }
 
+    @Override
     public SimpleObjectProperty<LocalDate> measDateLastHighProperty() {
         return mMeasDateLastHighProperty;
     }
 
+    @Override
     public SimpleObjectProperty<LocalDate> measDateLastLowProperty() {
         return mMeasDateLastLowProperty;
     }
@@ -390,7 +396,7 @@ public class TopoFilter extends FormFilter<TopoManager> {
                 mAlarmLevelCheckModel,
                 mAlarmNameCheckModel,
                 mCategoryCheckModel,
-                mDateFromToCheckModel,
+                getDateFromToCheckModel(),
                 mFrequencyCheckModel,
                 mGroupCheckModel,
                 mMeasCodeCheckModel,
@@ -399,7 +405,7 @@ public class TopoFilter extends FormFilter<TopoManager> {
                 mOperatorCheckModel,
                 mOriginCheckModel,
                 mStatusCheckModel,
-                mDisruptorCheckModel
+                getDisruptorCheckModel()
         ).forEach(cm -> cm.getCheckedItems().addListener(mListChangeListener));
     }
 
@@ -415,7 +421,7 @@ public class TopoFilter extends FormFilter<TopoManager> {
             map.put(SDict.OPERATOR.toString(), makeInfo(mOperatorCheckModel.getCheckedItems()));
             map.put(Dict.ORIGIN.toString(), makeInfo(mOriginCheckModel.getCheckedItems()));
             map.put(SDict.FREQUENCY.toString(), makeInfoInteger(mFrequencyCheckModel.getCheckedItems()));
-            map.put(SDict.VALID_FROM_TO.toString(), makeInfo(mDateFromToCheckModel.getCheckedItems()));
+            map.put(SDict.VALID_FROM_TO.toString(), makeInfo(getDateFromToCheckModel().getCheckedItems()));
             map.put(getBundle().getString("nextMeasCheckComboBoxTitle"), makeInfo(mMeasNextCheckModel.getCheckedItems()));
             map.put(getBundle().getString("measCodeCheckComboBoxTitle"), makeInfo(mMeasCodeCheckModel.getCheckedItems()));
             map.put("Första " + Dict.FROM.toString(), mMeasDateFirstLowProperty.get() != null ? mMeasDateFirstLowProperty.get().toString() : "");

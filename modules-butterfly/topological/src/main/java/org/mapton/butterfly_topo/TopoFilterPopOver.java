@@ -32,13 +32,13 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import org.controlsfx.control.action.ActionUtils.ActionTextBehavior;
 import org.mapton.api.ui.forms.MBaseFilterSection;
-import org.mapton.api.ui.forms.DisruptorPane;
+import org.mapton.api.ui.forms.MFilterSectionDate;
+import org.mapton.api.ui.forms.MFilterSectionDisruptor;
 import org.mapton.butterfly_core.api.BaseFilters;
 import org.mapton.butterfly_core.api.BaseTabbedFilterPopOver;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_topo.api.TopoManager;
 import org.openide.util.NbPreferences;
-import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
 
 /**
@@ -53,11 +53,10 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
     private final CheckBox mDimens1Checkbox = new CheckBox("1");
     private final CheckBox mDimens2Checkbox = new CheckBox("2");
     private final CheckBox mDimens3Checkbox = new CheckBox("3");
-    private final DisruptorPane mDisruptorPane = new DisruptorPane();
     private final TopoFilter mFilter;
     private final FilterSectionBasic mFilterSectionBasic;
-    private final FilterSectionDate mFilterSectionDate;
-    private final FilterSectionDisruptor mFilterSectionDisruptor;
+    private final MFilterSectionDate mFilterSectionDate;
+    private final MFilterSectionDisruptor mFilterSectionDisruptor;
     private final FilterSectionMeas mFilterSectionMeas;
     private final CheckBox mInvertCheckbox = new CheckBox();
     private final TopoManager mManager = TopoManager.getInstance();
@@ -66,8 +65,8 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
 
     public TopoFilterPopOver(TopoFilter filter) {
         mFilterSectionBasic = new FilterSectionBasic();
-        mFilterSectionDate = new FilterSectionDate();
-        mFilterSectionDisruptor = new FilterSectionDisruptor();
+        mFilterSectionDate = new MFilterSectionDate();
+        mFilterSectionDisruptor = new MFilterSectionDisruptor();
         mFilterSectionMeas = new FilterSectionMeas();
         mFilter = filter;
         setFilter(filter);
@@ -93,7 +92,6 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
         );
 
         mBaseFilters.clear();
-        mDisruptorPane.reset();
 
         mFilterSectionBasic.clear();
         mFilterSectionDate.clear();
@@ -131,20 +129,9 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
                 .map(o -> o.getFrequency()));
         mBaseFilters.getMeasNextSccb().loadAndRestoreCheckItems();
 
+        mFilterSectionDisruptor.load();
         mFilterSectionMeas.load(items);
-        mDisruptorPane.load();
-
-        var temporalRange = mManager.getTemporalRange();
-        if (temporalRange != null) {
-            mBaseFilters.getDateRangeFirstPane().setMinMaxDate(temporalRange.getFromLocalDate(), temporalRange.getToLocalDate());
-            mBaseFilters.getDateRangeLastPane().setMinMaxDate(temporalRange.getFromLocalDate(), temporalRange.getToLocalDate());
-        }
-
-        var sessionManager = getSessionManager();
-        sessionManager.register("filter.DateFirstLow", mBaseFilters.getDateRangeFirstPane().lowStringProperty());
-        sessionManager.register("filter.DateFirstHigh", mBaseFilters.getDateRangeFirstPane().highStringProperty());
-        sessionManager.register("filter.DateLastLow", mBaseFilters.getDateRangeLastPane().lowStringProperty());
-        sessionManager.register("filter.DateLastHigh", mBaseFilters.getDateRangeLastPane().highStringProperty());
+        mFilterSectionDate.load(mManager.getTemporalRange());
     }
 
     @Override
@@ -205,20 +192,17 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
 
         mFilter.invertProperty().bind(mInvertCheckbox.selectedProperty());
 
+        mFilterSectionDate.initListeners(mFilter);
+        mFilterSectionDisruptor.initListeners(mFilter);
         mFilterSectionMeas.initListeners(mFilter);
 
         mFilter.measIncludeWithoutProperty().bind(mMeasIncludeWithoutCheckbox.selectedProperty());
         mFilter.dimens1Property().bind(mDimens1Checkbox.selectedProperty());
         mFilter.dimens2Property().bind(mDimens2Checkbox.selectedProperty());
         mFilter.dimens3Property().bind(mDimens3Checkbox.selectedProperty());
-        mFilter.disruptorDistanceProperty().bind(mDisruptorPane.distanceProperty());
 
         mFilter.sameAlarmProperty().bind(mSameAlarmCheckbox.selectedProperty());
         mFilter.polygonFilterProperty().bind(usePolygonFilterProperty());
-        mFilter.measDateFirstLowProperty().bind(mBaseFilters.getDateRangeFirstPane().lowDateProperty());
-        mFilter.measDateFirstHighProperty().bind(mBaseFilters.getDateRangeFirstPane().highDateProperty());
-        mFilter.measDateLastLowProperty().bind(mBaseFilters.getDateRangeLastPane().lowDateProperty());
-        mFilter.measDateLastHighProperty().bind(mBaseFilters.getDateRangeLastPane().highDateProperty());
 
         mFilter.mStatusCheckModel = mBaseFilters.getStatusSccb().getCheckModel();
         mFilter.mGroupCheckModel = mBaseFilters.getGroupSccb().getCheckModel();
@@ -227,9 +211,7 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
         mFilter.mOriginCheckModel = mBaseFilters.getOriginSccb().getCheckModel();
         mFilter.mMeasNextCheckModel = mBaseFilters.getMeasNextSccb().getCheckModel();
         mFilter.mAlarmNameCheckModel = mBaseFilters.getAlarmNameSccb().getCheckModel();
-        mFilter.mDateFromToCheckModel = mBaseFilters.getHasDateFromToSccb().getCheckModel();
         mFilter.mFrequencyCheckModel = mBaseFilters.getFrequencySccb().getCheckModel();
-        mFilter.mDisruptorCheckModel = mDisruptorPane.getCheckModel();
 
         mFilter.sectionBasicProperty().bind(mFilterSectionBasic.selectedProperty());
         mFilter.sectionDateProperty().bind(mFilterSectionDate.selectedProperty());
@@ -241,16 +223,14 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
 
     private SessionManager initSession(Preferences preferences) {
         var sessionManager = new SessionManager(preferences);
+        mFilterSectionDisruptor.initSession(sessionManager);
         mFilterSectionMeas.initSession(sessionManager);
 
         sessionManager.register("filter.freeText", mFilter.freeTextProperty());
 
-        sessionManager.register("filter.checkedDisruptors", mDisruptorPane.checkedStringProperty());
-
         sessionManager.register("filter.checkedDimension1", mDimens1Checkbox.selectedProperty());
         sessionManager.register("filter.checkedDimension2", mDimens2Checkbox.selectedProperty());
         sessionManager.register("filter.checkedDimension3", mDimens3Checkbox.selectedProperty());
-        sessionManager.register("filter.disruptorDistance", mDisruptorPane.distanceProperty());
 
         sessionManager.register("filter.measIncludeWithout", mMeasIncludeWithoutCheckbox.selectedProperty());
 
@@ -312,61 +292,6 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
             mBaseFilters.getBaseBox().add(dimensBox, 0, 0, GridPane.REMAINING, 1);
         }
 
-    }
-
-    private class FilterSectionDate extends MBaseFilterSection {
-
-        private final GridPane mRoot = new GridPane(columnGap, rowGap);
-
-        public FilterSectionDate() {
-            super(Dict.DATE.toString());
-            init();
-            setContent(mRoot);
-        }
-
-        @Override
-        public void clear() {
-            super.clear();
-        }
-
-        @Override
-        public void reset() {
-        }
-
-        private void init() {
-            mRoot.setMaxWidth(getMaxWidth());
-
-            int row = 0;
-            mRoot.addRow(row++, mBaseFilters.getDateFirstBorderBox(), mBaseFilters.getDateLastBorderBox());
-            mRoot.addRow(row++, mBaseFilters.getHasDateFromToSccb());
-
-            FxHelper.autoSizeColumn(mRoot, 2);
-        }
-
-    }
-
-    private class FilterSectionDisruptor extends MBaseFilterSection {
-
-        private final GridPane mRoot = new GridPane();
-
-        public FilterSectionDisruptor() {
-            super("Störningskällor");
-            init();
-            setContent(mRoot);
-        }
-
-        @Override
-        public void clear() {
-            super.clear();
-        }
-
-        @Override
-        public void reset() {
-        }
-
-        private void init() {
-            mRoot.addRow(0, mDisruptorPane.getRoot());
-        }
     }
 
 }

@@ -30,14 +30,15 @@ public abstract class MBaseFilterSection {
 
     public double columnGap = FxHelper.getUIScaled(16);
     public double hGap = FxHelper.getUIScaled(9.0);
+    public final double mBorderInnerPadding = FxHelper.getUIScaled(8.0);
+    public final double mTopBorderInnerPadding = FxHelper.getUIScaled(16.0);
     public double rowGap = FxHelper.getUIScaled(12);
     public double spinnerWidth = FxHelper.getUIScaled(70.0);
     public double titleGap = FxHelper.getUIScaled(3);
     public double vGap = FxHelper.getUIScaled(4.0);
-    private final double mBorderInnerPadding = FxHelper.getUIScaled(8.0);
     private final CheckedTab mCheckedTab;
     private double mMaxWidth = FxHelper.getUIScaled(500);
-    private final double mTopBorderInnerPadding = FxHelper.getUIScaled(16.0);
+    private SessionManager mSessionManager;
 
     public MBaseFilterSection(String title) {
         mCheckedTab = new CheckedTab(title, null);
@@ -56,6 +57,10 @@ public abstract class MBaseFilterSection {
 
     public double getMaxWidth() {
         return mMaxWidth;
+    }
+
+    public SessionManager getSessionManager() {
+        return mSessionManager;
     }
 
     public CheckedTab getTab() {
@@ -82,7 +87,11 @@ public abstract class MBaseFilterSection {
     }
 
     public void setMaxWidth(double maxWidth) {
-        this.mMaxWidth = maxWidth;
+        mMaxWidth = maxWidth;
+    }
+
+    public void setSessionManager(SessionManager sessionManager) {
+        mSessionManager = sessionManager;
     }
 
     public Node wrapInTitleBorder(String title, Node node) {
