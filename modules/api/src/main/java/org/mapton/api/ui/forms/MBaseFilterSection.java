@@ -19,6 +19,7 @@ import com.dlsc.gemsfx.util.SessionManager;
 import javafx.beans.property.BooleanProperty;
 import javafx.scene.Node;
 import javafx.scene.layout.Region;
+import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.controlsfx.tools.Borders;
 import se.trixon.almond.util.fx.FxHelper;
 
@@ -71,7 +72,9 @@ public abstract class MBaseFilterSection {
 
     }
 
-    public abstract void reset();
+    public abstract void onShownFirstTime();
+
+    public abstract void reset(PropertiesConfiguration filterConfig);
 
     public BooleanProperty selectedProperty() {
         return mCheckedTab.getTabCheckBox().selectedProperty();

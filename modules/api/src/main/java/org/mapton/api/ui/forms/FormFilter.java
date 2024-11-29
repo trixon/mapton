@@ -63,7 +63,7 @@ import se.trixon.almond.util.fx.DelayedResetRunner;
  */
 public abstract class FormFilter<ManagerType extends MBaseDataManager> {
 
-    public IndexedCheckModel<Integer> mFrequencyCheckModel;
+    protected IndexedCheckModel<Integer> mFrequencyCheckModel;
     protected ChangeListener<Object> mChangeListenerObject;
     protected final MDisruptorManager mDisruptorManager = MDisruptorManager.getInstance();
     protected ListChangeListener<Object> mListChangeListener;
@@ -141,6 +141,10 @@ public abstract class FormFilter<ManagerType extends MBaseDataManager> {
         return freeTextProperty().get();
     }
 
+    public IndexedCheckModel<Integer> getFrequencyCheckModel() {
+        return mFrequencyCheckModel;
+    }
+
     public MInfoPopOver getInfoPopOver() {
         return mInfoPopOver;
     }
@@ -167,6 +171,10 @@ public abstract class FormFilter<ManagerType extends MBaseDataManager> {
 
     public void setDisruptorCheckModel(IndexedCheckModel disruptorCheckModel) {
         mDisruptorCheckModel = disruptorCheckModel;
+    }
+
+    public void setFrequencyCheckModel(IndexedCheckModel frequencyCheckModel) {
+        this.mFrequencyCheckModel = frequencyCheckModel;
     }
 
     public abstract void update();

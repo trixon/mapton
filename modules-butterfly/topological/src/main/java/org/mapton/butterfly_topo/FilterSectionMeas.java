@@ -26,6 +26,7 @@ import javafx.scene.control.Spinner;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
+import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.api.ui.forms.MBaseFilterSection;
 import org.mapton.api.ui.forms.NegPosStringConverterDouble;
@@ -49,6 +50,7 @@ import se.trixon.almond.util.fx.session.SessionIntegerSpinner;
  */
 class FilterSectionMeas extends MBaseFilterSection {
 
+    private final SessionCheckComboBox<AlarmLevelFilter> mAlarmSccb = new SessionCheckComboBox<>(true);
     private final int mDefaultAlarmLevelAgeValue = -7;
     private final int mDefaultDiffPercentageValue = 80;
     private final double mDefaultDiffValue = 0.020;
@@ -91,7 +93,6 @@ class FilterSectionMeas extends MBaseFilterSection {
     private final SessionDoubleSpinner mMeasYoyoSizeSds = new SessionDoubleSpinner(0, 1.0, mDefaultMeasYoyoSize, 0.001);
     private final CheckBox mNumOfMeasCheckbox = new CheckBox();
     private final GridPane mRoot = new GridPane(hGap, vGap * 4);
-    private final SessionCheckComboBox<AlarmLevelFilter> mAlarmSccb = new SessionCheckComboBox<>(true);
 
     public FilterSectionMeas() {
         super("Mätningar");
@@ -121,6 +122,10 @@ class FilterSectionMeas extends MBaseFilterSection {
                 mMeasOperatorSccb,
                 mMeasCodeSccb
         );
+    }
+
+    public ResourceBundle getBundle() {
+        return NbBundle.getBundle(getClass());
     }
 
     @Override
@@ -158,7 +163,83 @@ class FilterSectionMeas extends MBaseFilterSection {
     }
 
     @Override
-    public void reset() {
+    public void onShownFirstTime() {
+    }
+
+    @Override
+    public void reset(PropertiesConfiguration filterConfig) {
+    }
+
+    void initListeners(TopoFilter filter) {
+        filter.measNumOfProperty().bind(mNumOfMeasCheckbox.selectedProperty());
+        filter.measAlarmLevelAgeProperty().bind(mMeasAlarmLevelAgeCheckbox.selectedProperty());
+        filter.measDiffAllProperty().bind(mDiffMeasAllCheckbox.selectedProperty());
+        filter.measDiffPercentageHProperty().bind(mDiffMeasPercentageHCheckbox.selectedProperty());
+        filter.measDiffPercentagePProperty().bind(mDiffMeasPercentagePCheckbox.selectedProperty());
+        filter.measYoyoProperty().bind(mMeasYoyoCheckbox.selectedProperty());
+        filter.measTopListProperty().bind(mMeasTopListCheckbox.selectedProperty());
+        filter.measSpeedProperty().bind(mMeasSpeedCheckbox.selectedProperty());
+        filter.measDiffLatestProperty().bind(mDiffMeasLatestCheckbox.selectedProperty());
+        filter.measLatestOperatorProperty().bind(mMeasLatestOperatorCheckbox.selectedProperty());
+        filter.measNumOfValueProperty().bind(mMeasNumOfSis.sessionValueProperty());
+        filter.measAlarmLevelAgeValueProperty().bind(mMeasAlarmLevelAgeSis.sessionValueProperty());
+        filter.measDiffAllValueProperty().bind(mDiffMeasAllSds.sessionValueProperty());
+        filter.measDiffPercentageHValueProperty().bind(mDiffMeasPercentageHSis.sessionValueProperty());
+        filter.measYoyoCountValueProperty().bind(mMeasYoyoCountSds.sessionValueProperty());
+        filter.measTopListSizeValueProperty().bind(mMeasTopListSizeSds.sessionValueProperty());
+        filter.measYoyoSizeValueProperty().bind(mMeasYoyoSizeSds.sessionValueProperty());
+        filter.measDiffLatestValueProperty().bind(mDiffMeasLatestSds.sessionValueProperty());
+        filter.measDiffPercentagePValueProperty().bind(mDiffMeasPercentagePSis.sessionValueProperty());
+        filter.measSpeedValueProperty().bind(mMeasSpeedSds.sessionValueProperty());
+        filter.measAlarmLevelChangeProperty().bind(mMeasAlarmLevelChangeCheckbox.selectedProperty());
+        filter.measAlarmLevelChangeModeProperty().bind(mMeasAlarmLevelChangeModeScb.getSelectionModel().selectedItemProperty());
+        filter.measAlarmLevelChangeUnitProperty().bind(mMeasAlarmLevelChangeUnitScb.getSelectionModel().selectedItemProperty());
+        filter.measTopListUnitProperty().bind(mMeasTopListUnitScb.getSelectionModel().selectedItemProperty());
+        filter.measAlarmLevelChangeValueProperty().bind(mMeasAlarmLevelChangeValueSis.sessionValueProperty());
+        filter.measAlarmLevelChangeLimitProperty().bind(mMeasAlarmLevelChangeLimitSis.sessionValueProperty());
+        filter.measTopListLimitProperty().bind(mMeasTopListLimitSis.sessionValueProperty());
+        filter.mMeasOperatorsCheckModel = mMeasOperatorSccb.getCheckModel();
+        filter.mMeasCodeCheckModel = mMeasCodeSccb.getCheckModel();
+        filter.mAlarmLevelCheckModel = mAlarmSccb.getCheckModel();
+    }
+
+    void load(ArrayList<BTopoControlPoint> items) {
+        mMeasOperatorSccb.loadAndRestoreCheckItems(items.stream().flatMap(p -> p.ext().getObservationsAllRaw().stream().map(o -> o.getOperator())));
+        mMeasCodeSccb.loadAndRestoreCheckItems();
+        mMeasAlarmLevelChangeModeScb.load();
+        mMeasAlarmLevelChangeUnitScb.load();
+        mMeasTopListUnitScb.load();
+        mMeasAlarmLevelChangeValueSis.load();
+        mMeasAlarmLevelChangeLimitSis.load();
+        mMeasTopListLimitSis.load();
+        mMeasSpeedSds.load();
+        mDiffMeasLatestSds.load();
+        mDiffMeasAllSds.load();
+        mDiffMeasPercentageHSis.load();
+        mDiffMeasPercentagePSis.load();
+        mMeasYoyoCountSds.load();
+        mMeasYoyoSizeSds.load();
+        mMeasTopListSizeSds.load();
+        mMeasNumOfSis.load();
+        mMeasAlarmLevelAgeSis.load();
+        mMeasNumOfSis.disableProperty().bind(mNumOfMeasCheckbox.selectedProperty().not());
+        mMeasAlarmLevelAgeSis.disableProperty().bind(mMeasAlarmLevelAgeCheckbox.selectedProperty().not());
+        mDiffMeasAllSds.disableProperty().bind(mDiffMeasAllCheckbox.selectedProperty().not());
+        mDiffMeasLatestSds.disableProperty().bind(mDiffMeasLatestCheckbox.selectedProperty().not());
+        mDiffMeasPercentageHSis.disableProperty().bind(mDiffMeasPercentageHCheckbox.selectedProperty().not());
+        mDiffMeasPercentagePSis.disableProperty().bind(mDiffMeasPercentagePCheckbox.selectedProperty().not());
+        mMeasSpeedSds.disableProperty().bind(mMeasSpeedCheckbox.selectedProperty().not());
+        mMeasTopListSizeSds.disableProperty().bind(mMeasTopListCheckbox.selectedProperty().not());
+        mMeasYoyoCountSds.disableProperty().bind(mMeasYoyoCheckbox.selectedProperty().not());
+        mMeasYoyoSizeSds.disableProperty().bind(mMeasYoyoCheckbox.selectedProperty().not());
+        mMeasAlarmLevelChangeLimitSis.disableProperty().bind(mMeasAlarmLevelChangeCheckbox.selectedProperty().not());
+        mMeasTopListLimitSis.disableProperty().bind(mMeasTopListCheckbox.selectedProperty().not());
+        mMeasAlarmLevelChangeModeScb.disableProperty().bind(mMeasAlarmLevelChangeCheckbox.selectedProperty().not());
+        mMeasAlarmLevelChangeUnitScb.disableProperty().bind(mMeasAlarmLevelChangeCheckbox.selectedProperty().not());
+        mMeasTopListUnitScb.disableProperty().bind(mMeasTopListCheckbox.selectedProperty().not());
+        mMeasAlarmLevelChangeValueSis.disableProperty().bind(mMeasAlarmLevelChangeCheckbox.selectedProperty().not());
+
+        mAlarmSccb.loadAndRestoreCheckItems();
     }
 
     private void init() {
@@ -245,83 +326,6 @@ class FilterSectionMeas extends MBaseFilterSection {
         FxHelper.autoSizeColumn(mRoot, 2);
         int maxWidth = FxHelper.getUIScaled(500);
         setMaxWidth(maxWidth);
-    }
-
-    public ResourceBundle getBundle() {
-        return NbBundle.getBundle(getClass());
-    }
-
-    void initListeners(TopoFilter filter) {
-        filter.measNumOfProperty().bind(mNumOfMeasCheckbox.selectedProperty());
-        filter.measAlarmLevelAgeProperty().bind(mMeasAlarmLevelAgeCheckbox.selectedProperty());
-        filter.measDiffAllProperty().bind(mDiffMeasAllCheckbox.selectedProperty());
-        filter.measDiffPercentageHProperty().bind(mDiffMeasPercentageHCheckbox.selectedProperty());
-        filter.measDiffPercentagePProperty().bind(mDiffMeasPercentagePCheckbox.selectedProperty());
-        filter.measYoyoProperty().bind(mMeasYoyoCheckbox.selectedProperty());
-        filter.measTopListProperty().bind(mMeasTopListCheckbox.selectedProperty());
-        filter.measSpeedProperty().bind(mMeasSpeedCheckbox.selectedProperty());
-        filter.measDiffLatestProperty().bind(mDiffMeasLatestCheckbox.selectedProperty());
-        filter.measLatestOperatorProperty().bind(mMeasLatestOperatorCheckbox.selectedProperty());
-        filter.measNumOfValueProperty().bind(mMeasNumOfSis.sessionValueProperty());
-        filter.measAlarmLevelAgeValueProperty().bind(mMeasAlarmLevelAgeSis.sessionValueProperty());
-        filter.measDiffAllValueProperty().bind(mDiffMeasAllSds.sessionValueProperty());
-        filter.measDiffPercentageHValueProperty().bind(mDiffMeasPercentageHSis.sessionValueProperty());
-        filter.measYoyoCountValueProperty().bind(mMeasYoyoCountSds.sessionValueProperty());
-        filter.measTopListSizeValueProperty().bind(mMeasTopListSizeSds.sessionValueProperty());
-        filter.measYoyoSizeValueProperty().bind(mMeasYoyoSizeSds.sessionValueProperty());
-        filter.measDiffLatestValueProperty().bind(mDiffMeasLatestSds.sessionValueProperty());
-        filter.measDiffPercentagePValueProperty().bind(mDiffMeasPercentagePSis.sessionValueProperty());
-        filter.measSpeedValueProperty().bind(mMeasSpeedSds.sessionValueProperty());
-        filter.measAlarmLevelChangeProperty().bind(mMeasAlarmLevelChangeCheckbox.selectedProperty());
-        filter.measAlarmLevelChangeModeProperty().bind(mMeasAlarmLevelChangeModeScb.getSelectionModel().selectedItemProperty());
-        filter.measAlarmLevelChangeUnitProperty().bind(mMeasAlarmLevelChangeUnitScb.getSelectionModel().selectedItemProperty());
-        filter.measTopListUnitProperty().bind(mMeasTopListUnitScb.getSelectionModel().selectedItemProperty());
-        filter.measAlarmLevelChangeValueProperty().bind(mMeasAlarmLevelChangeValueSis.sessionValueProperty());
-        filter.measAlarmLevelChangeLimitProperty().bind(mMeasAlarmLevelChangeLimitSis.sessionValueProperty());
-        filter.measTopListLimitProperty().bind(mMeasTopListLimitSis.sessionValueProperty());
-        filter.mMeasOperatorsCheckModel = mMeasOperatorSccb.getCheckModel();
-        filter.mMeasCodeCheckModel = mMeasCodeSccb.getCheckModel();
-        filter.mAlarmLevelCheckModel = mAlarmSccb.getCheckModel();
-    }
-
-    void load(ArrayList<BTopoControlPoint> items) {
-        mMeasOperatorSccb.loadAndRestoreCheckItems(items.stream().flatMap(p -> p.ext().getObservationsAllRaw().stream().map(o -> o.getOperator())));
-        mMeasCodeSccb.loadAndRestoreCheckItems();
-        mMeasAlarmLevelChangeModeScb.load();
-        mMeasAlarmLevelChangeUnitScb.load();
-        mMeasTopListUnitScb.load();
-        mMeasAlarmLevelChangeValueSis.load();
-        mMeasAlarmLevelChangeLimitSis.load();
-        mMeasTopListLimitSis.load();
-        mMeasSpeedSds.load();
-        mDiffMeasLatestSds.load();
-        mDiffMeasAllSds.load();
-        mDiffMeasPercentageHSis.load();
-        mDiffMeasPercentagePSis.load();
-        mMeasYoyoCountSds.load();
-        mMeasYoyoSizeSds.load();
-        mMeasTopListSizeSds.load();
-        mMeasNumOfSis.load();
-        mMeasAlarmLevelAgeSis.load();
-        mMeasNumOfSis.disableProperty().bind(mNumOfMeasCheckbox.selectedProperty().not());
-        mMeasAlarmLevelAgeSis.disableProperty().bind(mMeasAlarmLevelAgeCheckbox.selectedProperty().not());
-        mDiffMeasAllSds.disableProperty().bind(mDiffMeasAllCheckbox.selectedProperty().not());
-        mDiffMeasLatestSds.disableProperty().bind(mDiffMeasLatestCheckbox.selectedProperty().not());
-        mDiffMeasPercentageHSis.disableProperty().bind(mDiffMeasPercentageHCheckbox.selectedProperty().not());
-        mDiffMeasPercentagePSis.disableProperty().bind(mDiffMeasPercentagePCheckbox.selectedProperty().not());
-        mMeasSpeedSds.disableProperty().bind(mMeasSpeedCheckbox.selectedProperty().not());
-        mMeasTopListSizeSds.disableProperty().bind(mMeasTopListCheckbox.selectedProperty().not());
-        mMeasYoyoCountSds.disableProperty().bind(mMeasYoyoCheckbox.selectedProperty().not());
-        mMeasYoyoSizeSds.disableProperty().bind(mMeasYoyoCheckbox.selectedProperty().not());
-        mMeasAlarmLevelChangeLimitSis.disableProperty().bind(mMeasAlarmLevelChangeCheckbox.selectedProperty().not());
-        mMeasTopListLimitSis.disableProperty().bind(mMeasTopListCheckbox.selectedProperty().not());
-        mMeasAlarmLevelChangeModeScb.disableProperty().bind(mMeasAlarmLevelChangeCheckbox.selectedProperty().not());
-        mMeasAlarmLevelChangeUnitScb.disableProperty().bind(mMeasAlarmLevelChangeCheckbox.selectedProperty().not());
-        mMeasTopListUnitScb.disableProperty().bind(mMeasTopListCheckbox.selectedProperty().not());
-        mMeasAlarmLevelChangeValueSis.disableProperty().bind(mMeasAlarmLevelChangeCheckbox.selectedProperty().not());
-
-        mAlarmSccb.loadAndRestoreCheckItems();
-
     }
 
 }

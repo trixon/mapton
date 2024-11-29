@@ -23,6 +23,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.Node;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.MDisruptorManager;
 import org.openide.util.NbBundle;
@@ -68,7 +69,11 @@ public class MFilterSectionDisruptor extends MBaseFilterSection {
     }
 
     @Override
-    public void reset() {
+    public void onShownFirstTime() {
+    }
+
+    @Override
+    public void reset(PropertiesConfiguration filterConfig) {
     }
 
     private void init() {

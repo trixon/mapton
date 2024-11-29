@@ -17,6 +17,7 @@ package org.mapton.butterfly_topo;
 
 import com.dlsc.gemsfx.Spacer;
 import com.dlsc.gemsfx.util.SessionManager;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.prefs.Preferences;
@@ -29,13 +30,16 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.controlsfx.control.action.ActionUtils.ActionTextBehavior;
 import org.mapton.api.ui.forms.MBaseFilterSection;
+import org.mapton.api.ui.forms.MFilterSectionBasicProvider;
 import org.mapton.api.ui.forms.MFilterSectionDate;
 import org.mapton.api.ui.forms.MFilterSectionDisruptor;
 import org.mapton.butterfly_core.api.BaseFilters;
 import org.mapton.butterfly_core.api.BaseTabbedFilterPopOver;
 import org.mapton.butterfly_format.Butterfly;
+import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_topo.api.TopoManager;
 import org.openide.util.NbPreferences;
 import se.trixon.almond.util.fx.FxHelper;
@@ -60,7 +64,6 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
     private final TopoManager mManager = TopoManager.getInstance();
     private final CheckBox mMeasIncludeWithoutCheckbox = new CheckBox();
     private final CheckBox mSameAlarmCheckbox = new CheckBox();
-    private final BaseFilters mBaseFilters = new BaseFilters();
 
     public TopoFilterPopOver(TopoFilter filter) {
         mFilterSectionBasic = new FilterSectionBasic();
@@ -113,19 +116,7 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
     public void load(Butterfly butterfly) {
         var items = butterfly.topo().getControlPoints();
 
-        var allAlarmNames = items.stream().map(o -> o.getAlarm1Id()).collect(Collectors.toCollection(HashSet::new));
-        allAlarmNames.addAll(items.stream().map(o -> o.getAlarm2Id()).collect(Collectors.toSet()));
-        mBaseFilters.getAlarmNameSccb().loadAndRestoreCheckItems(allAlarmNames.stream());
-        mBaseFilters.getGroupSccb().loadAndRestoreCheckItems(items.stream().map(o -> o.getGroup()));
-        mBaseFilters.getCategorySccb().loadAndRestoreCheckItems(items.stream().map(o -> o.getCategory()));
-        mBaseFilters.getOperatorSccb().loadAndRestoreCheckItems(items.stream().map(o -> o.getOperator()));
-        mBaseFilters.getOriginSccb().loadAndRestoreCheckItems(items.stream().map(o -> o.getOrigin()));
-        mBaseFilters.getStatusSccb().loadAndRestoreCheckItems(items.stream().map(o -> o.getStatus()));
-        mBaseFilters.getFrequencySccb().loadAndRestoreCheckItems(items.stream()
-                .filter(o -> o.getFrequency() != null)
-                .map(o -> o.getFrequency()));
-        mBaseFilters.getMeasNextSccb().loadAndRestoreCheckItems();
-
+        mFilterSectionBasic.load(items);
         mFilterSectionDisruptor.load();
         mFilterSectionMeas.load(items);
         mFilterSectionDate.load(mManager.getTemporalRange());
@@ -142,7 +133,7 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
 //                mMeasOperatorSccb,
 //                mAlarmSccb
 //        );
-        mBaseFilters.onShownFirstTime();
+        mFilterSectionBasic.onShownFirstTime();
     }
 
     @Override
@@ -150,7 +141,7 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
         clear();
 
         mFilter.freeTextProperty().set("*");
-        mBaseFilters.reset(TopoFilterDefaultsConfig.getInstance().getConfig());
+        mFilterSectionBasic.reset(TopoFilterDefaultsConfig.getInstance().getConfig());
     }
 
     private void createUI() {
@@ -174,6 +165,15 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
         );
 
         setContentNode(root);
+
+        var dimensButton = new Button("Alla dimensioner");
+        dimensButton.setOnAction(actionEvent -> {
+            List.of(mDimens1Checkbox, mDimens2Checkbox, mDimens3Checkbox).forEach(cb -> cb.setSelected(false));
+        });
+        var dimensBox = new HBox(FxHelper.getUIScaled(8), mDimens1Checkbox, mDimens2Checkbox, mDimens3Checkbox, new Spacer(), dimensButton);
+        dimensBox.setAlignment(Pos.CENTER_LEFT);
+
+        mFilterSectionBasic.getRoot().add(dimensBox, 0, 0, GridPane.REMAINING, 1);
     }
 
     private void initListeners() {
@@ -189,6 +189,7 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
 
         mFilter.invertProperty().bind(mInvertCheckbox.selectedProperty());
 
+        mFilterSectionBasic.initListeners(mFilter);
         mFilterSectionDate.initListeners(mFilter);
         mFilterSectionDisruptor.initListeners(mFilter);
         mFilterSectionMeas.initListeners(mFilter);
@@ -200,15 +201,6 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
 
         mFilter.sameAlarmProperty().bind(mSameAlarmCheckbox.selectedProperty());
         mFilter.polygonFilterProperty().bind(usePolygonFilterProperty());
-
-        mFilter.setStatusCheckModel(mBaseFilters.getStatusSccb().getCheckModel());
-        mFilter.setGroupCheckModel(mBaseFilters.getGroupSccb().getCheckModel());
-        mFilter.setCategoryCheckModel(mBaseFilters.getCategorySccb().getCheckModel());
-        mFilter.setOperatorCheckModel(mBaseFilters.getOperatorSccb().getCheckModel());
-        mFilter.setOriginCheckModel(mBaseFilters.getOriginSccb().getCheckModel());
-        mFilter.setAlarmNameCheckModel(mBaseFilters.getAlarmNameSccb().getCheckModel());
-        mFilter.mMeasNextCheckModel = mBaseFilters.getMeasNextSccb().getCheckModel();
-        mFilter.mFrequencyCheckModel = mBaseFilters.getFrequencySccb().getCheckModel();
 
         mFilter.sectionBasicProperty().bind(mFilterSectionBasic.selectedProperty());
         mFilter.sectionDateProperty().bind(mFilterSectionDate.selectedProperty());
@@ -262,10 +254,16 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
 
     private class FilterSectionBasic extends MBaseFilterSection {
 
+        private final BaseFilters mBaseFilters = new BaseFilters();
+
         public FilterSectionBasic() {
             super("Grunddata");
             init();
             setContent(mBaseFilters.getBaseBox());
+        }
+
+        public GridPane getRoot() {
+            return mBaseFilters.getBaseBox();
         }
 
         @Override
@@ -274,24 +272,50 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
             mBaseFilters.clear();
         }
 
+        public void initListeners(MFilterSectionBasicProvider filter) {
+            filter.setStatusCheckModel(mBaseFilters.getStatusSccb().getCheckModel());
+            filter.setGroupCheckModel(mBaseFilters.getGroupSccb().getCheckModel());
+            filter.setCategoryCheckModel(mBaseFilters.getCategorySccb().getCheckModel());
+            filter.setOperatorCheckModel(mBaseFilters.getOperatorSccb().getCheckModel());
+            filter.setOriginCheckModel(mBaseFilters.getOriginSccb().getCheckModel());
+            filter.setAlarmNameCheckModel(mBaseFilters.getAlarmNameSccb().getCheckModel());
+            filter.setMeasNextCheckModel(mBaseFilters.getMeasNextSccb().getCheckModel());
+            filter.setFrequencyCheckModel(mBaseFilters.getFrequencySccb().getCheckModel());
+        }
+
         @Override
         public void initSession(SessionManager sessionManager) {
             mBaseFilters.initSession(sessionManager);
         }
 
         @Override
-        public void reset() {
+        public void onShownFirstTime() {
+            mBaseFilters.onShownFirstTime();
+        }
+
+        @Override
+        public void reset(PropertiesConfiguration filterConfig) {
+            if (filterConfig != null) {
+                mBaseFilters.reset(filterConfig);
+            }
         }
 
         private void init() {
-            var dimensButton = new Button("Alla dimensioner");
-            dimensButton.setOnAction(actionEvent -> {
-                List.of(mDimens1Checkbox, mDimens2Checkbox, mDimens3Checkbox).forEach(cb -> cb.setSelected(false));
-            });
-            var dimensBox = new HBox(FxHelper.getUIScaled(8), mDimens1Checkbox, mDimens2Checkbox, mDimens3Checkbox, new Spacer(), dimensButton);
-            dimensBox.setAlignment(Pos.CENTER_LEFT);
+        }
 
-            mBaseFilters.getBaseBox().add(dimensBox, 0, 0, GridPane.REMAINING, 1);
+        private void load(ArrayList<BTopoControlPoint> items) {
+            var allAlarmNames = items.stream().map(o -> o.getAlarm1Id()).collect(Collectors.toCollection(HashSet::new));
+            allAlarmNames.addAll(items.stream().map(o -> o.getAlarm2Id()).collect(Collectors.toSet()));
+            mBaseFilters.getAlarmNameSccb().loadAndRestoreCheckItems(allAlarmNames.stream());
+            mBaseFilters.getGroupSccb().loadAndRestoreCheckItems(items.stream().map(o -> o.getGroup()));
+            mBaseFilters.getCategorySccb().loadAndRestoreCheckItems(items.stream().map(o -> o.getCategory()));
+            mBaseFilters.getOperatorSccb().loadAndRestoreCheckItems(items.stream().map(o -> o.getOperator()));
+            mBaseFilters.getOriginSccb().loadAndRestoreCheckItems(items.stream().map(o -> o.getOrigin()));
+            mBaseFilters.getStatusSccb().loadAndRestoreCheckItems(items.stream().map(o -> o.getStatus()));
+            mBaseFilters.getFrequencySccb().loadAndRestoreCheckItems(items.stream()
+                    .filter(o -> o.getFrequency() != null)
+                    .map(o -> o.getFrequency()));
+            mBaseFilters.getMeasNextSccb().loadAndRestoreCheckItems();
         }
 
     }

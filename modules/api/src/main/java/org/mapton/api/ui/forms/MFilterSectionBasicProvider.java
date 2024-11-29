@@ -37,5 +37,20 @@ public interface MFilterSectionBasicProvider {
 
     public IndexedCheckModel getStatusCheckModel();
 
-    public void setStatusCheckModel(IndexedCheckModel statusCheckModel);
+    public void setAlarmNameCheckModel(IndexedCheckModel checkModel);
+
+    public void setCategoryCheckModel(IndexedCheckModel checkModel);
+
+    public void setFrequencyCheckModel(IndexedCheckModel checkModel);
+
+    public void setGroupCheckModel(IndexedCheckModel checkModel);
+
+    public void setMeasNextCheckModel(IndexedCheckModel checkModel);
+
+    public void setOperatorCheckModel(IndexedCheckModel checkModel);
+
+    public void setOriginCheckModel(IndexedCheckModel checkModel);
+
+    public void setStatusCheckModel(IndexedCheckModel checkModel);
+
 }

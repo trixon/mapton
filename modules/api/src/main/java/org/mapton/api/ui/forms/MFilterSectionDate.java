@@ -19,6 +19,7 @@ import com.dlsc.gemsfx.util.SessionManager;
 import java.util.List;
 import javafx.scene.Node;
 import javafx.scene.layout.GridPane;
+import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.controlsfx.tools.Borders;
 import org.mapton.api.MTemporalRange;
 import se.trixon.almond.util.Dict;
@@ -109,7 +110,11 @@ public class MFilterSectionDate extends MBaseFilterSection {
     }
 
     @Override
-    public void reset() {
+    public void onShownFirstTime() {
+    }
+
+    @Override
+    public void reset(PropertiesConfiguration filterConfig) {
     }
 
     private void createUI() {

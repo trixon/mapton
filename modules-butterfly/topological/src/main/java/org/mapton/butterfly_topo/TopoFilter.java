@@ -65,7 +65,7 @@ public class TopoFilter extends FormFilter<TopoManager> implements
 
     IndexedCheckModel<AlarmLevelFilter> mAlarmLevelCheckModel;
     IndexedCheckModel<String> mMeasCodeCheckModel;
-    IndexedCheckModel<String> mMeasNextCheckModel;
+    private IndexedCheckModel<String> mMeasNextCheckModel;
     IndexedCheckModel<String> mMeasOperatorsCheckModel;
     private IndexedCheckModel mAlarmNameCheckModel;
     private IndexedCheckModel mCategoryCheckModel;
@@ -152,6 +152,10 @@ public class TopoFilter extends FormFilter<TopoManager> implements
     @Override
     public IndexedCheckModel getGroupCheckModel() {
         return mGroupCheckModel;
+    }
+
+    public IndexedCheckModel<String> getMeasNextCheckModel() {
+        return mMeasNextCheckModel;
     }
 
     @Override
@@ -329,22 +333,32 @@ public class TopoFilter extends FormFilter<TopoManager> implements
         mAlarmLevelCheckModel = alarmLevelCheckModel;
     }
 
+    @Override
     public void setAlarmNameCheckModel(IndexedCheckModel alarmNameCheckModel) {
         mAlarmNameCheckModel = alarmNameCheckModel;
     }
 
+    @Override
     public void setCategoryCheckModel(IndexedCheckModel categoryCheckModel) {
         mCategoryCheckModel = categoryCheckModel;
     }
 
+    @Override
     public void setGroupCheckModel(IndexedCheckModel groupCheckModel) {
         mGroupCheckModel = groupCheckModel;
     }
 
+    @Override
+    public void setMeasNextCheckModel(IndexedCheckModel measNextCheckModel) {
+        mMeasNextCheckModel = measNextCheckModel;
+    }
+
+    @Override
     public void setOperatorCheckModel(IndexedCheckModel operatorCheckModel) {
         mOperatorCheckModel = operatorCheckModel;
     }
 
+    @Override
     public void setOriginCheckModel(IndexedCheckModel originCheckModel) {
         mOriginCheckModel = originCheckModel;
     }
