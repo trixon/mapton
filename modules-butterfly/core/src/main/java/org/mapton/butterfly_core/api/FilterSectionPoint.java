@@ -28,7 +28,7 @@ import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.controlsfx.tools.Borders;
 import org.mapton.api.ui.forms.MBaseFilterSection;
 import org.mapton.api.ui.forms.MFilterSectionPointProvider;
-import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
+import org.mapton.butterfly_format.types.BXyzPoint;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SDict;
@@ -72,11 +72,12 @@ public class FilterSectionPoint extends MBaseFilterSection {
 
     @Override
     public void initSession(SessionManager sessionManager) {
+        sessionManager.register("filter.section.point", selectedProperty());
         mPointFilterUI.initSession(sessionManager);
     }
 
-    public void load(ArrayList<BTopoControlPoint> items) {
-        java.util.HashSet<java.lang.String> allAlarmNames = items.stream().map(o -> o.getAlarm1Id()).collect(Collectors.toCollection(HashSet::new));
+    public void load(ArrayList<? extends BXyzPoint> items) {
+        var allAlarmNames = items.stream().map(o -> o.getAlarm1Id()).collect(Collectors.toCollection(HashSet::new));
         allAlarmNames.addAll(items.stream().map(o -> o.getAlarm2Id()).collect(Collectors.toSet()));
         mPointFilterUI.getAlarmNameSccb().loadAndRestoreCheckItems(allAlarmNames.stream());
         mPointFilterUI.getGroupSccb().loadAndRestoreCheckItems(items.stream().map(o -> o.getGroup()));

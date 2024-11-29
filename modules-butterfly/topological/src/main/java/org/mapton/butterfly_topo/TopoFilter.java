@@ -39,6 +39,7 @@ import org.mapton.api.ui.forms.FormFilter;
 import org.mapton.api.ui.forms.FormHelper;
 import org.mapton.api.ui.forms.MFilterSectionDateProvider;
 import org.mapton.api.ui.forms.MFilterSectionDisruptorProvider;
+import org.mapton.api.ui.forms.MFilterSectionPointProvider;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
@@ -52,7 +53,6 @@ import se.trixon.almond.util.CollectionHelper;
 import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SDict;
-import org.mapton.api.ui.forms.MFilterSectionPointProvider;
 
 /**
  *
@@ -313,14 +313,17 @@ public class TopoFilter extends FormFilter<TopoManager> implements
         return mSameAlarmProperty;
     }
 
-    public SimpleBooleanProperty sectionBasicProperty() {
+    @Override
+    public SimpleBooleanProperty sectionPointProperty() {
         return mSectionBasicProperty;
     }
 
+    @Override
     public SimpleBooleanProperty sectionDateProperty() {
         return mSectionDateProperty;
     }
 
+    @Override
     public SimpleBooleanProperty sectionDisruptorProperty() {
         return mSectionDisruptorProperty;
     }

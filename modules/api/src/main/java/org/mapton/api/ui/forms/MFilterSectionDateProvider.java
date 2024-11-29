@@ -16,6 +16,7 @@
 package org.mapton.api.ui.forms;
 
 import java.time.LocalDate;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import org.controlsfx.control.IndexedCheckModel;
 
@@ -32,6 +33,8 @@ public interface MFilterSectionDateProvider {
     public SimpleObjectProperty<LocalDate> measDateLastHighProperty();
 
     public SimpleObjectProperty<LocalDate> measDateLastLowProperty();
+
+    public SimpleBooleanProperty sectionDateProperty();
 
     public void setDateFromToCheckModel(IndexedCheckModel dateFromToCheckModel);
 

@@ -20,10 +20,13 @@ import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ResourceBundle;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.ui.forms.FormFilter;
 import org.mapton.api.ui.forms.MFilterSectionDateProvider;
+import org.mapton.api.ui.forms.MFilterSectionDisruptorProvider;
+import org.mapton.api.ui.forms.MFilterSectionPointProvider;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
 
@@ -31,26 +34,67 @@ import se.trixon.almond.util.Dict;
  *
  * @author Patrik Karlström
  */
-public class CrackFilter extends FormFilter<CrackManager> implements MFilterSectionDateProvider {
+public class CrackFilter extends FormFilter<CrackManager> implements
+        MFilterSectionPointProvider,
+        MFilterSectionDateProvider,
+        MFilterSectionDisruptorProvider {
 
     private final SimpleObjectProperty<LocalDate> mMeasDateFirstHighProperty = new SimpleObjectProperty();
     private final SimpleObjectProperty<LocalDate> mMeasDateFirstLowProperty = new SimpleObjectProperty();
     private final SimpleObjectProperty<LocalDate> mMeasDateLastHighProperty = new SimpleObjectProperty();
     private final SimpleObjectProperty<LocalDate> mMeasDateLastLowProperty = new SimpleObjectProperty();
 
-    IndexedCheckModel mAlarmNameCheckModel;
-    IndexedCheckModel mCategoryCheckModel;
-    IndexedCheckModel mGroupCheckModel;
-    IndexedCheckModel mOperatorCheckModel;
-    IndexedCheckModel mOriginCheckModel;
-    IndexedCheckModel mStatusCheckModel;
+    private IndexedCheckModel mAlarmNameCheckModel;
+    private IndexedCheckModel mCategoryCheckModel;
+    private IndexedCheckModel mGroupCheckModel;
+    private IndexedCheckModel mOperatorCheckModel;
+    private IndexedCheckModel mOriginCheckModel;
+    private IndexedCheckModel mStatusCheckModel;
     private final ResourceBundle mBundle = NbBundle.getBundle(CrackFilter.class);
     private final CrackManager mManager = CrackManager.getInstance();
+    private final SimpleBooleanProperty mSectionBasicProperty = new SimpleBooleanProperty();
+    private final SimpleBooleanProperty mSectionDateProperty = new SimpleBooleanProperty();
+    private final SimpleBooleanProperty mSectionDisruptorProperty = new SimpleBooleanProperty();
 
     public CrackFilter() {
         super(CrackManager.getInstance());
 
         initListeners();
+    }
+
+    @Override
+    public IndexedCheckModel getAlarmLevelCheckModel() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public IndexedCheckModel getAlarmNameCheckModel() {
+        return mAlarmNameCheckModel;
+    }
+
+    @Override
+    public IndexedCheckModel getCategoryCheckModel() {
+        return mCategoryCheckModel;
+    }
+
+    @Override
+    public IndexedCheckModel getGroupCheckModel() {
+        return mGroupCheckModel;
+    }
+
+    @Override
+    public IndexedCheckModel getOperatorCheckModel() {
+        return mOperatorCheckModel;
+    }
+
+    @Override
+    public IndexedCheckModel getOriginCheckModel() {
+        return mOriginCheckModel;
+    }
+
+    @Override
+    public IndexedCheckModel getStatusCheckModel() {
+        return mStatusCheckModel;
     }
 
     public void initCheckModelListeners() {
@@ -90,6 +134,55 @@ public class CrackFilter extends FormFilter<CrackManager> implements MFilterSect
     @Override
     public SimpleObjectProperty<LocalDate> measDateLastLowProperty() {
         return mMeasDateLastLowProperty;
+    }
+
+    @Override
+    public SimpleBooleanProperty sectionPointProperty() {
+        return mSectionBasicProperty;
+    }
+
+    @Override
+    public SimpleBooleanProperty sectionDateProperty() {
+        return mSectionDateProperty;
+    }
+
+    @Override
+    public SimpleBooleanProperty sectionDisruptorProperty() {
+        return mSectionDisruptorProperty;
+    }
+
+    @Override
+    public void setAlarmNameCheckModel(IndexedCheckModel alarmNameCheckModel) {
+        mAlarmNameCheckModel = alarmNameCheckModel;
+    }
+
+    @Override
+    public void setCategoryCheckModel(IndexedCheckModel categoryCheckModel) {
+        mCategoryCheckModel = categoryCheckModel;
+    }
+
+    @Override
+    public void setGroupCheckModel(IndexedCheckModel groupCheckModel) {
+        mGroupCheckModel = groupCheckModel;
+    }
+
+    @Override
+    public void setMeasNextCheckModel(IndexedCheckModel checkModel) {
+    }
+
+    @Override
+    public void setOperatorCheckModel(IndexedCheckModel operatorCheckModel) {
+        mOperatorCheckModel = operatorCheckModel;
+    }
+
+    @Override
+    public void setOriginCheckModel(IndexedCheckModel originCheckModel) {
+        mOriginCheckModel = originCheckModel;
+    }
+
+    @Override
+    public void setStatusCheckModel(IndexedCheckModel statusCheckModel) {
+        mStatusCheckModel = statusCheckModel;
     }
 
     @Override

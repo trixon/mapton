@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_topo;
 
-import org.mapton.butterfly_core.api.FilterSectionPoint;
 import com.dlsc.gemsfx.Spacer;
 import com.dlsc.gemsfx.util.SessionManager;
 import java.util.List;
@@ -32,6 +31,7 @@ import org.controlsfx.control.action.ActionUtils.ActionTextBehavior;
 import org.mapton.api.ui.forms.MFilterSectionDate;
 import org.mapton.api.ui.forms.MFilterSectionDisruptor;
 import org.mapton.butterfly_core.api.BaseTabbedFilterPopOver;
+import org.mapton.butterfly_core.api.FilterSectionPoint;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_topo.api.TopoManager;
 import org.openide.util.NbPreferences;
@@ -42,8 +42,6 @@ import se.trixon.almond.util.fx.FxHelper;
  * @author Patrik Karlström
  */
 public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
-
-    double vGap = FxHelper.getUIScaled(4.0);
 
     private final CheckBox mDimens1Checkbox = new CheckBox("1");
     private final CheckBox mDimens2Checkbox = new CheckBox("2");
@@ -122,10 +120,6 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
 
     @Override
     public void onShownFirstTime() {
-//        FxHelper.setVisibleRowCount(25,
-//                mMeasOperatorSccb,
-//                mAlarmSccb
-//        );
         mFilterSectionPoint.onShownFirstTime();
     }
 
@@ -141,7 +135,7 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
         mMeasIncludeWithoutCheckbox.setText(getBundle().getString("measIncludeWithoutCheckboxText"));
         mSameAlarmCheckbox.setText(getBundle().getString("sameAlarmCheckBoxText"));
 
-        var bottomBox = new VBox(vGap, new Separator(), mMeasIncludeWithoutCheckbox, mSameAlarmCheckbox);
+        var bottomBox = new VBox(FxHelper.getUIScaled(4.0), new Separator(), mMeasIncludeWithoutCheckbox, mSameAlarmCheckbox);
         bottomBox.setPadding(FxHelper.getUIScaledInsets(8, 16, 8, 16));
 
         var root = new BorderPane(getTabPane());
@@ -195,7 +189,7 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
         mFilter.sameAlarmProperty().bind(mSameAlarmCheckbox.selectedProperty());
         mFilter.polygonFilterProperty().bind(usePolygonFilterProperty());
 
-        mFilter.sectionBasicProperty().bind(mFilterSectionPoint.selectedProperty());
+        mFilter.sectionPointProperty().bind(mFilterSectionPoint.selectedProperty());
         mFilter.sectionDateProperty().bind(mFilterSectionDate.selectedProperty());
         mFilter.sectionDisruptorProperty().bind(mFilterSectionDisruptor.selectedProperty());
         mFilter.sectionMeasProperty().bind(mFilterSectionMeas.selectedProperty());
@@ -217,10 +211,6 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
         sessionManager.register("filter.checkedDimension3", mDimens3Checkbox.selectedProperty());
 
         sessionManager.register("filter.measIncludeWithout", mMeasIncludeWithoutCheckbox.selectedProperty());
-
-        sessionManager.register("filter.section.basic", mFilterSectionPoint.selectedProperty());
-        sessionManager.register("filter.section.disruptor", mFilterSectionDisruptor.selectedProperty());
-        sessionManager.register("filter.section.meas", mFilterSectionMeas.selectedProperty());
 
         sessionManager.register("filter.invert", mInvertCheckbox.selectedProperty());
         sessionManager.register("filter.sameAlarm", mSameAlarmCheckbox.selectedProperty());

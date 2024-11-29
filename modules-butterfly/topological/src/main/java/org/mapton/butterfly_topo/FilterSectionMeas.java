@@ -130,6 +130,7 @@ class FilterSectionMeas extends MBaseFilterSection {
 
     @Override
     public void initSession(SessionManager sessionManager) {
+        sessionManager.register("filter.section.meas", selectedProperty());
         sessionManager.register("filter.measCheckedMeasCode", mMeasCodeSccb.checkedStringProperty());
         sessionManager.register("filter.measCheckedOperators", mMeasOperatorSccb.checkedStringProperty());
         sessionManager.register("filter.measDiffAll", mDiffMeasAllCheckbox.selectedProperty());

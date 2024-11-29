@@ -15,14 +15,18 @@
  */
 package org.mapton.butterfly_structural.crack;
 
+import com.dlsc.gemsfx.util.SessionManager;
 import java.util.ResourceBundle;
+import java.util.prefs.Preferences;
 import javafx.scene.control.Separator;
 import javafx.scene.layout.BorderPane;
 import org.mapton.api.ui.forms.MFilterSectionDate;
-import org.mapton.butterfly_core.api.BaseFilters;
+import org.mapton.api.ui.forms.MFilterSectionDisruptor;
 import org.mapton.butterfly_core.api.BaseTabbedFilterPopOver;
+import org.mapton.butterfly_core.api.FilterSectionPoint;
 import org.mapton.butterfly_format.Butterfly;
 import org.openide.util.NbBundle;
+import org.openide.util.NbPreferences;
 
 /**
  *
@@ -30,20 +34,22 @@ import org.openide.util.NbBundle;
  */
 public class CrackFilterPopOver extends BaseTabbedFilterPopOver {
 
-    private final BaseFilters mBaseFilters = new BaseFilters();
+    private final MFilterSectionDate mFilterSectionDate;
+    private final MFilterSectionDisruptor mFilterSectionDisruptor;
+    private final FilterSectionPoint mFilterSectionPoint;
     private final ResourceBundle mBundle = NbBundle.getBundle(CrackFilterPopOver.class);
     private final CrackFilter mFilter;
-    private CrackManager mManager = CrackManager.getInstance();
-    private final MFilterSectionDate mFilterSectionDate;
+    private final CrackManager mManager = CrackManager.getInstance();
 
     public CrackFilterPopOver(CrackFilter filter) {
-        mFilter = filter;
+        mFilterSectionPoint = new FilterSectionPoint();
         mFilterSectionDate = new MFilterSectionDate();
-//        mFilter = filter;
+        mFilterSectionDisruptor = new MFilterSectionDisruptor();
+        mFilter = filter;
         setFilter(filter);
         createUI();
         initListeners();
-        initSession();
+        initSession(NbPreferences.forModule(getClass()).node(getClass().getSimpleName()));
 
         populate();
     }
@@ -53,22 +59,30 @@ public class CrackFilterPopOver extends BaseTabbedFilterPopOver {
         setUsePolygonFilter(false);
         mFilter.freeTextProperty().set("");
 
+        mFilterSectionPoint.clear();
         mFilterSectionDate.clear();
-        mBaseFilters.clear();
+        mFilterSectionDisruptor.clear();
+    }
+
+    @Override
+    public void filterPresetRestore(Preferences preferences) {
+        clear();
+        filterPresetStore(preferences);
+        //mDateRangePane.reset();
+    }
+
+    @Override
+    public void filterPresetStore(Preferences preferences) {
+        var sessionManager = initSession(preferences);
+        sessionManager.unregisterAll();
     }
 
     @Override
     public void load(Butterfly butterfly) {
         var items = butterfly.structural().getCrackPoints();
-        mBaseFilters.getGroupSccb().loadAndRestoreCheckItems(items.stream().map(p -> p.getGroup()));
-        mBaseFilters.getStatusSccb().loadAndRestoreCheckItems(items.stream().map(p -> p.getStatus()));
-        mBaseFilters.getOperatorSccb().loadAndRestoreCheckItems(items.stream().map(p -> p.getOperator()));
-        mBaseFilters.getOriginSccb().loadAndRestoreCheckItems(items.stream().map(p -> p.getOrigin()));
-        mBaseFilters.getAlarmNameSccb().loadAndRestoreCheckItems(items.stream().map(p -> p.getAlarm1Id()));
-        mBaseFilters.getFrequencySccb().loadAndRestoreCheckItems(items.stream()
-                .filter(p -> p.getFrequency() != null)
-                .map(p -> p.getFrequency()));
 
+        mFilterSectionPoint.load(items);
+        mFilterSectionDisruptor.load();
         mFilterSectionDate.load(mManager.getTemporalRange());
     }
 
@@ -79,7 +93,7 @@ public class CrackFilterPopOver extends BaseTabbedFilterPopOver {
 
     @Override
     public void onShownFirstTime() {
-        mBaseFilters.onShownFirstTime();
+        mFilterSectionPoint.onShownFirstTime();
     }
 
     @Override
@@ -87,79 +101,48 @@ public class CrackFilterPopOver extends BaseTabbedFilterPopOver {
         clear();
         mFilter.freeTextProperty().set("*");
 
-//        mBaseFilters.reset(TopoFilterDefaultsConfig.getInstance().getConfig());
+        mFilterSectionPoint.reset(null);
     }
 
     private void createUI() {
-//        var leftBox = new VBox(GAP,
-//                mBaseFilters.getBaseBorderBox(),
-//                new Spacer(),
-//                mBaseFilters.getDateLastBorderBox()
-//        );
-//
-//        var rightBox = new BorderPane();
-//        var row = 0;
-//        var gridPane = new GridPane(GAP, GAP);
-//        gridPane.setPadding(FxHelper.getUIScaledInsets(GAP));
-//
-//        gridPane.addRow(row++, leftBox, rightBox);
-        ////        gridPane.add(mMeasIncludeWithoutCheckbox, 0, row++, GridPane.REMAINING, 1);
-////        gridPane.add(mSameAlarmCheckbox, 0, row++, GridPane.REMAINING, 1);
-//        FxHelper.autoSizeColumn(gridPane, 2);
-//
-//        var root = new BorderPane(gridPane);
-//        root.setTop(getToolBar());
-//
-//        FxHelper.bindWidthForChildrens(leftBox, mBaseFilters.getBaseBox());
-//        FxHelper.bindWidthForRegions(leftBox);
-//
-//        int prefWidth = FxHelper.getUIScaled(250);
-//        leftBox.setPrefWidth(prefWidth);
-//        rightBox.setPrefWidth(prefWidth);
-//
-//        setContentNode(root);
         var root = new BorderPane(getTabPane());
         root.setTop(getToolBar());
-//        root.setBottom(bottomBox);
         getToolBar().getItems().add(new Separator());
         populateToolBar();
 
         getTabPane().getTabs().addAll(
-                //                mFilterSectionBasic.getTab(),
-                mFilterSectionDate.getTab()
-        //                mFilterSectionMeas.getTab(),
-        //                mFilterSectionDisruptor.getTab()
+                mFilterSectionPoint.getTab(),
+                mFilterSectionDate.getTab(),
+                mFilterSectionDisruptor.getTab()
         );
 
         setContentNode(root);
-
     }
 
     private void initListeners() {
         mFilter.polygonFilterProperty().bind(usePolygonFilterProperty());
 
-        mFilter.mStatusCheckModel = mBaseFilters.getStatusSccb().getCheckModel();
-        mFilter.mGroupCheckModel = mBaseFilters.getGroupSccb().getCheckModel();
-        mFilter.mCategoryCheckModel = mBaseFilters.getCategorySccb().getCheckModel();
-        mFilter.mOperatorCheckModel = mBaseFilters.getOperatorSccb().getCheckModel();
-        mFilter.mOriginCheckModel = mBaseFilters.getOriginSccb().getCheckModel();
-        mFilter.mAlarmNameCheckModel = mBaseFilters.getAlarmNameSccb().getCheckModel();
-        mFilter.mFrequencyCheckModel = mBaseFilters.getFrequencySccb().getCheckModel();
-
+        mFilterSectionPoint.initListeners(mFilter);
         mFilterSectionDate.initListeners(mFilter);
+        mFilterSectionDisruptor.initListeners(mFilter);
+
+        mFilter.sectionPointProperty().bind(mFilterSectionPoint.selectedProperty());
+        mFilter.sectionDateProperty().bind(mFilterSectionDate.selectedProperty());
+        mFilter.sectionDisruptorProperty().bind(mFilterSectionDisruptor.selectedProperty());
 
         mFilter.initCheckModelListeners();
 //                mFilter.sectionDateProperty().bind(mFilterSectionDate.selectedProperty());
-
     }
 
-    private void initSession() {
-        var sessionManager = getSessionManager();
+    private SessionManager initSession(Preferences preferences) {
+        var sessionManager = new SessionManager(preferences);
+        mFilterSectionPoint.initSession(sessionManager);
         mFilterSectionDate.initSession(sessionManager);
+        mFilterSectionDisruptor.initSession(sessionManager);
 
         sessionManager.register("filter.measPoint.freeText", mFilter.freeTextProperty());
 
-        mBaseFilters.initSession(sessionManager);
+        return sessionManager;
     }
 
     private void populateToolBar() {

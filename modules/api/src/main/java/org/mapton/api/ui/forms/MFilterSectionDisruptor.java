@@ -60,6 +60,7 @@ public class MFilterSectionDisruptor extends MBaseFilterSection {
     @Override
     public void initSession(SessionManager sessionManager) {
         setSessionManager(sessionManager);
+        sessionManager.register("filter.section.disruptor", selectedProperty());
         sessionManager.register("filter.checkedDisruptors", mDisruptorPane.checkedStringProperty());
         sessionManager.register("filter.disruptorDistance", mDisruptorPane.distanceProperty());
     }

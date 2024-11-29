@@ -15,6 +15,7 @@
  */
 package org.mapton.api.ui.forms;
 
+import javafx.beans.property.SimpleBooleanProperty;
 import org.controlsfx.control.IndexedCheckModel;
 
 /**
@@ -22,6 +23,8 @@ import org.controlsfx.control.IndexedCheckModel;
  * @author Patrik Karlström
  */
 public interface MFilterSectionPointProvider {
+
+    public SimpleBooleanProperty sectionPointProperty();
 
     public IndexedCheckModel getAlarmLevelCheckModel();
 

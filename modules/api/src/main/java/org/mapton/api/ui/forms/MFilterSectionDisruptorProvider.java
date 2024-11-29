@@ -15,6 +15,7 @@
  */
 package org.mapton.api.ui.forms;
 
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import org.controlsfx.control.IndexedCheckModel;
 
@@ -25,6 +26,8 @@ import org.controlsfx.control.IndexedCheckModel;
 public interface MFilterSectionDisruptorProvider {
 
     public SimpleDoubleProperty disruptorDistanceProperty();
+
+    public SimpleBooleanProperty sectionDisruptorProperty();
 
     public void setDisruptorCheckModel(IndexedCheckModel disruptorCheckModel);
 }
