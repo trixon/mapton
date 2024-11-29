@@ -47,9 +47,9 @@ public class ScaleRulerLayerBundle extends BfLayerBundle {
     public void populate() throws Exception {
         super.populate();
         setPopulated(true);
-        mLayer.setEnabled(true);
         mLayer.setMaxActiveAltitude(1000);
         initCommons("", "", "");
+        mLayer.setEnabled(true);
 
         repaint(DEFAULT_REPAINT_DELAY);
     }
