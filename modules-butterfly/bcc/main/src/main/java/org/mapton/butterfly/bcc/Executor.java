@@ -24,6 +24,7 @@ import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.model.enums.CompressionLevel;
 import net.lingala.zip4j.model.enums.EncryptionMethod;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.butterfly.bcc.helper.BccHelper;
 
@@ -109,7 +110,7 @@ public class Executor {
         zipParameters.setCompressionLevel(CompressionLevel.ULTRA);
         zipParameters.setIncludeRootFolder(false);
 
-        var password = mConfig.getPassword();
+        var password = ArrayUtils.addAll(mConfig.getPassword(), mConfig.getPassword());
         if (password != null && password.length > 0) {
             zipParameters.setEncryptFiles(true);
             zipParameters.setEncryptionMethod(EncryptionMethod.AES);
