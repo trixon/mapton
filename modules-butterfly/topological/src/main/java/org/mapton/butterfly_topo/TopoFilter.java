@@ -37,7 +37,6 @@ import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.MTemporalManager;
 import org.mapton.api.ui.forms.FormFilter;
 import org.mapton.api.ui.forms.FormHelper;
-import org.mapton.api.ui.forms.MFilterSectionBasicProvider;
 import org.mapton.api.ui.forms.MFilterSectionDateProvider;
 import org.mapton.api.ui.forms.MFilterSectionDisruptorProvider;
 import org.mapton.butterfly_format.types.BComponent;
@@ -53,13 +52,14 @@ import se.trixon.almond.util.CollectionHelper;
 import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SDict;
+import org.mapton.api.ui.forms.MFilterSectionPointProvider;
 
 /**
  *
  * @author Patrik Karlström
  */
 public class TopoFilter extends FormFilter<TopoManager> implements
-        MFilterSectionBasicProvider,
+        MFilterSectionPointProvider,
         MFilterSectionDateProvider,
         MFilterSectionDisruptorProvider {
 

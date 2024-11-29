@@ -15,13 +15,11 @@
  */
 package org.mapton.butterfly_topo;
 
+import org.mapton.butterfly_core.api.FilterSectionPoint;
 import com.dlsc.gemsfx.Spacer;
 import com.dlsc.gemsfx.util.SessionManager;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.prefs.Preferences;
-import java.util.stream.Collectors;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -30,16 +28,11 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.controlsfx.control.action.ActionUtils.ActionTextBehavior;
-import org.mapton.api.ui.forms.MBaseFilterSection;
-import org.mapton.api.ui.forms.MFilterSectionBasicProvider;
 import org.mapton.api.ui.forms.MFilterSectionDate;
 import org.mapton.api.ui.forms.MFilterSectionDisruptor;
-import org.mapton.butterfly_core.api.BaseFilters;
 import org.mapton.butterfly_core.api.BaseTabbedFilterPopOver;
 import org.mapton.butterfly_format.Butterfly;
-import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_topo.api.TopoManager;
 import org.openide.util.NbPreferences;
 import se.trixon.almond.util.fx.FxHelper;
@@ -56,17 +49,17 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
     private final CheckBox mDimens2Checkbox = new CheckBox("2");
     private final CheckBox mDimens3Checkbox = new CheckBox("3");
     private final TopoFilter mFilter;
-    private final FilterSectionBasic mFilterSectionBasic;
     private final MFilterSectionDate mFilterSectionDate;
     private final MFilterSectionDisruptor mFilterSectionDisruptor;
     private final FilterSectionMeas mFilterSectionMeas;
+    private final FilterSectionPoint mFilterSectionPoint;
     private final CheckBox mInvertCheckbox = new CheckBox();
     private final TopoManager mManager = TopoManager.getInstance();
     private final CheckBox mMeasIncludeWithoutCheckbox = new CheckBox();
     private final CheckBox mSameAlarmCheckbox = new CheckBox();
 
     public TopoFilterPopOver(TopoFilter filter) {
-        mFilterSectionBasic = new FilterSectionBasic();
+        mFilterSectionPoint = new FilterSectionPoint();
         mFilterSectionDate = new MFilterSectionDate();
         mFilterSectionDisruptor = new MFilterSectionDisruptor();
         mFilterSectionMeas = new FilterSectionMeas();
@@ -93,7 +86,7 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
                 mMeasIncludeWithoutCheckbox
         );
 
-        mFilterSectionBasic.clear();
+        mFilterSectionPoint.clear();
         mFilterSectionDate.clear();
         mFilterSectionDisruptor.clear();
         mFilterSectionMeas.clear();
@@ -116,7 +109,7 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
     public void load(Butterfly butterfly) {
         var items = butterfly.topo().getControlPoints();
 
-        mFilterSectionBasic.load(items);
+        mFilterSectionPoint.load(items);
         mFilterSectionDisruptor.load();
         mFilterSectionMeas.load(items);
         mFilterSectionDate.load(mManager.getTemporalRange());
@@ -133,7 +126,7 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
 //                mMeasOperatorSccb,
 //                mAlarmSccb
 //        );
-        mFilterSectionBasic.onShownFirstTime();
+        mFilterSectionPoint.onShownFirstTime();
     }
 
     @Override
@@ -141,7 +134,7 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
         clear();
 
         mFilter.freeTextProperty().set("*");
-        mFilterSectionBasic.reset(TopoFilterDefaultsConfig.getInstance().getConfig());
+        mFilterSectionPoint.reset(TopoFilterDefaultsConfig.getInstance().getConfig());
     }
 
     private void createUI() {
@@ -158,7 +151,7 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
         populateToolBar();
 
         getTabPane().getTabs().addAll(
-                mFilterSectionBasic.getTab(),
+                mFilterSectionPoint.getTab(),
                 mFilterSectionDate.getTab(),
                 mFilterSectionMeas.getTab(),
                 mFilterSectionDisruptor.getTab()
@@ -173,7 +166,7 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
         var dimensBox = new HBox(FxHelper.getUIScaled(8), mDimens1Checkbox, mDimens2Checkbox, mDimens3Checkbox, new Spacer(), dimensButton);
         dimensBox.setAlignment(Pos.CENTER_LEFT);
 
-        mFilterSectionBasic.getRoot().add(dimensBox, 0, 0, GridPane.REMAINING, 1);
+        mFilterSectionPoint.getRoot().add(dimensBox, 0, 0, GridPane.REMAINING, 1);
     }
 
     private void initListeners() {
@@ -189,7 +182,7 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
 
         mFilter.invertProperty().bind(mInvertCheckbox.selectedProperty());
 
-        mFilterSectionBasic.initListeners(mFilter);
+        mFilterSectionPoint.initListeners(mFilter);
         mFilterSectionDate.initListeners(mFilter);
         mFilterSectionDisruptor.initListeners(mFilter);
         mFilterSectionMeas.initListeners(mFilter);
@@ -202,7 +195,7 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
         mFilter.sameAlarmProperty().bind(mSameAlarmCheckbox.selectedProperty());
         mFilter.polygonFilterProperty().bind(usePolygonFilterProperty());
 
-        mFilter.sectionBasicProperty().bind(mFilterSectionBasic.selectedProperty());
+        mFilter.sectionBasicProperty().bind(mFilterSectionPoint.selectedProperty());
         mFilter.sectionDateProperty().bind(mFilterSectionDate.selectedProperty());
         mFilter.sectionDisruptorProperty().bind(mFilterSectionDisruptor.selectedProperty());
         mFilter.sectionMeasProperty().bind(mFilterSectionMeas.selectedProperty());
@@ -212,7 +205,7 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
 
     private SessionManager initSession(Preferences preferences) {
         var sessionManager = new SessionManager(preferences);
-        mFilterSectionBasic.initSession(sessionManager);
+        mFilterSectionPoint.initSession(sessionManager);
         mFilterSectionDate.initSession(sessionManager);
         mFilterSectionDisruptor.initSession(sessionManager);
         mFilterSectionMeas.initSession(sessionManager);
@@ -225,7 +218,7 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
 
         sessionManager.register("filter.measIncludeWithout", mMeasIncludeWithoutCheckbox.selectedProperty());
 
-        sessionManager.register("filter.section.basic", mFilterSectionBasic.selectedProperty());
+        sessionManager.register("filter.section.basic", mFilterSectionPoint.selectedProperty());
         sessionManager.register("filter.section.disruptor", mFilterSectionDisruptor.selectedProperty());
         sessionManager.register("filter.section.meas", mFilterSectionMeas.selectedProperty());
 
@@ -250,74 +243,6 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
         internalBox.setPadding(FxHelper.getUIScaledInsets(0, 0, 0, 8.0));
         internalBox.setAlignment(Pos.CENTER_LEFT);
         toolBar.getItems().add(internalBox);
-    }
-
-    private class FilterSectionBasic extends MBaseFilterSection {
-
-        private final BaseFilters mBaseFilters = new BaseFilters();
-
-        public FilterSectionBasic() {
-            super("Grunddata");
-            init();
-            setContent(mBaseFilters.getBaseBox());
-        }
-
-        public GridPane getRoot() {
-            return mBaseFilters.getBaseBox();
-        }
-
-        @Override
-        public void clear() {
-            super.clear();
-            mBaseFilters.clear();
-        }
-
-        public void initListeners(MFilterSectionBasicProvider filter) {
-            filter.setStatusCheckModel(mBaseFilters.getStatusSccb().getCheckModel());
-            filter.setGroupCheckModel(mBaseFilters.getGroupSccb().getCheckModel());
-            filter.setCategoryCheckModel(mBaseFilters.getCategorySccb().getCheckModel());
-            filter.setOperatorCheckModel(mBaseFilters.getOperatorSccb().getCheckModel());
-            filter.setOriginCheckModel(mBaseFilters.getOriginSccb().getCheckModel());
-            filter.setAlarmNameCheckModel(mBaseFilters.getAlarmNameSccb().getCheckModel());
-            filter.setMeasNextCheckModel(mBaseFilters.getMeasNextSccb().getCheckModel());
-            filter.setFrequencyCheckModel(mBaseFilters.getFrequencySccb().getCheckModel());
-        }
-
-        @Override
-        public void initSession(SessionManager sessionManager) {
-            mBaseFilters.initSession(sessionManager);
-        }
-
-        @Override
-        public void onShownFirstTime() {
-            mBaseFilters.onShownFirstTime();
-        }
-
-        @Override
-        public void reset(PropertiesConfiguration filterConfig) {
-            if (filterConfig != null) {
-                mBaseFilters.reset(filterConfig);
-            }
-        }
-
-        private void init() {
-        }
-
-        private void load(ArrayList<BTopoControlPoint> items) {
-            var allAlarmNames = items.stream().map(o -> o.getAlarm1Id()).collect(Collectors.toCollection(HashSet::new));
-            allAlarmNames.addAll(items.stream().map(o -> o.getAlarm2Id()).collect(Collectors.toSet()));
-            mBaseFilters.getAlarmNameSccb().loadAndRestoreCheckItems(allAlarmNames.stream());
-            mBaseFilters.getGroupSccb().loadAndRestoreCheckItems(items.stream().map(o -> o.getGroup()));
-            mBaseFilters.getCategorySccb().loadAndRestoreCheckItems(items.stream().map(o -> o.getCategory()));
-            mBaseFilters.getOperatorSccb().loadAndRestoreCheckItems(items.stream().map(o -> o.getOperator()));
-            mBaseFilters.getOriginSccb().loadAndRestoreCheckItems(items.stream().map(o -> o.getOrigin()));
-            mBaseFilters.getStatusSccb().loadAndRestoreCheckItems(items.stream().map(o -> o.getStatus()));
-            mBaseFilters.getFrequencySccb().loadAndRestoreCheckItems(items.stream()
-                    .filter(o -> o.getFrequency() != null)
-                    .map(o -> o.getFrequency()));
-            mBaseFilters.getMeasNextSccb().loadAndRestoreCheckItems();
-        }
-
     }
 
 }

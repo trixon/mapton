@@ -21,7 +21,7 @@ import org.controlsfx.control.IndexedCheckModel;
  *
  * @author Patrik Karlström
  */
-public interface MFilterSectionBasicProvider {
+public interface MFilterSectionPointProvider {
 
     public IndexedCheckModel getAlarmLevelCheckModel();
 
