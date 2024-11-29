@@ -92,6 +92,7 @@ public class MFilterSectionDate extends MBaseFilterSection {
     @Override
     public void initSession(SessionManager sessionManager) {
         setSessionManager(sessionManager);
+        sessionManager.register("filter.section.date", selectedProperty());
         sessionManager.register("filter.checkedDateFromTo", mHasDateFromToSccb.checkedStringProperty());
     }
 
@@ -100,7 +101,7 @@ public class MFilterSectionDate extends MBaseFilterSection {
             getDateRangeFirstPane().setMinMaxDate(temporalRange.getFromLocalDate(), temporalRange.getToLocalDate());
             getDateRangeLastPane().setMinMaxDate(temporalRange.getFromLocalDate(), temporalRange.getToLocalDate());
         }
-        com.dlsc.gemsfx.util.SessionManager sessionManager = getSessionManager();
+        var sessionManager = getSessionManager();
         sessionManager.register("filter.DateFirstLow", getDateRangeFirstPane().lowStringProperty());
         sessionManager.register("filter.DateFirstHigh", getDateRangeFirstPane().highStringProperty());
         sessionManager.register("filter.DateLastLow", getDateRangeLastPane().lowStringProperty());

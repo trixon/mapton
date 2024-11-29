@@ -25,7 +25,6 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Separator;
-import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -49,7 +48,6 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
 
     double vGap = FxHelper.getUIScaled(4.0);
 
-    private final BaseFilters mBaseFilters = new BaseFilters();
     private final CheckBox mDimens1Checkbox = new CheckBox("1");
     private final CheckBox mDimens2Checkbox = new CheckBox("2");
     private final CheckBox mDimens3Checkbox = new CheckBox("3");
@@ -62,6 +60,7 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
     private final TopoManager mManager = TopoManager.getInstance();
     private final CheckBox mMeasIncludeWithoutCheckbox = new CheckBox();
     private final CheckBox mSameAlarmCheckbox = new CheckBox();
+    private final BaseFilters mBaseFilters = new BaseFilters();
 
     public TopoFilterPopOver(TopoFilter filter) {
         mFilterSectionBasic = new FilterSectionBasic();
@@ -90,8 +89,6 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
                 mInvertCheckbox,
                 mMeasIncludeWithoutCheckbox
         );
-
-        mBaseFilters.clear();
 
         mFilterSectionBasic.clear();
         mFilterSectionDate.clear();
@@ -204,13 +201,13 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
         mFilter.sameAlarmProperty().bind(mSameAlarmCheckbox.selectedProperty());
         mFilter.polygonFilterProperty().bind(usePolygonFilterProperty());
 
-        mFilter.mStatusCheckModel = mBaseFilters.getStatusSccb().getCheckModel();
-        mFilter.mGroupCheckModel = mBaseFilters.getGroupSccb().getCheckModel();
-        mFilter.mCategoryCheckModel = mBaseFilters.getCategorySccb().getCheckModel();
-        mFilter.mOperatorCheckModel = mBaseFilters.getOperatorSccb().getCheckModel();
-        mFilter.mOriginCheckModel = mBaseFilters.getOriginSccb().getCheckModel();
+        mFilter.setStatusCheckModel(mBaseFilters.getStatusSccb().getCheckModel());
+        mFilter.setGroupCheckModel(mBaseFilters.getGroupSccb().getCheckModel());
+        mFilter.setCategoryCheckModel(mBaseFilters.getCategorySccb().getCheckModel());
+        mFilter.setOperatorCheckModel(mBaseFilters.getOperatorSccb().getCheckModel());
+        mFilter.setOriginCheckModel(mBaseFilters.getOriginSccb().getCheckModel());
+        mFilter.setAlarmNameCheckModel(mBaseFilters.getAlarmNameSccb().getCheckModel());
         mFilter.mMeasNextCheckModel = mBaseFilters.getMeasNextSccb().getCheckModel();
-        mFilter.mAlarmNameCheckModel = mBaseFilters.getAlarmNameSccb().getCheckModel();
         mFilter.mFrequencyCheckModel = mBaseFilters.getFrequencySccb().getCheckModel();
 
         mFilter.sectionBasicProperty().bind(mFilterSectionBasic.selectedProperty());
@@ -223,6 +220,8 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
 
     private SessionManager initSession(Preferences preferences) {
         var sessionManager = new SessionManager(preferences);
+        mFilterSectionBasic.initSession(sessionManager);
+        mFilterSectionDate.initSession(sessionManager);
         mFilterSectionDisruptor.initSession(sessionManager);
         mFilterSectionMeas.initSession(sessionManager);
 
@@ -235,20 +234,17 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
         sessionManager.register("filter.measIncludeWithout", mMeasIncludeWithoutCheckbox.selectedProperty());
 
         sessionManager.register("filter.section.basic", mFilterSectionBasic.selectedProperty());
-        sessionManager.register("filter.section.date", mFilterSectionDate.selectedProperty());
         sessionManager.register("filter.section.disruptor", mFilterSectionDisruptor.selectedProperty());
         sessionManager.register("filter.section.meas", mFilterSectionMeas.selectedProperty());
 
         sessionManager.register("filter.invert", mInvertCheckbox.selectedProperty());
         sessionManager.register("filter.sameAlarm", mSameAlarmCheckbox.selectedProperty());
 
-        mBaseFilters.initSession(sessionManager);
-
         return sessionManager;
     }
 
     private void populateToolBar() {
-        final ToolBar toolBar = getToolBar();
+        var toolBar = getToolBar();
         addToToolBar("mc", ActionTextBehavior.SHOW);
         addToToolBar("mr", ActionTextBehavior.SHOW);
         addToToolBar("mm", ActionTextBehavior.SHOW);
@@ -275,6 +271,12 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
         @Override
         public void clear() {
             super.clear();
+            mBaseFilters.clear();
+        }
+
+        @Override
+        public void initSession(SessionManager sessionManager) {
+            mBaseFilters.initSession(sessionManager);
         }
 
         @Override

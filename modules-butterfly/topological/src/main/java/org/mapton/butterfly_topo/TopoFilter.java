@@ -37,6 +37,7 @@ import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.MTemporalManager;
 import org.mapton.api.ui.forms.FormFilter;
 import org.mapton.api.ui.forms.FormHelper;
+import org.mapton.api.ui.forms.MFilterSectionBasicProvider;
 import org.mapton.api.ui.forms.MFilterSectionDateProvider;
 import org.mapton.api.ui.forms.MFilterSectionDisruptorProvider;
 import org.mapton.butterfly_format.types.BComponent;
@@ -57,21 +58,21 @@ import se.trixon.almond.util.SDict;
  *
  * @author Patrik Karlström
  */
-public class TopoFilter extends FormFilter<TopoManager> implements MFilterSectionDateProvider, MFilterSectionDisruptorProvider {
+public class TopoFilter extends FormFilter<TopoManager> implements
+        MFilterSectionBasicProvider,
+        MFilterSectionDateProvider,
+        MFilterSectionDisruptorProvider {
 
     IndexedCheckModel<AlarmLevelFilter> mAlarmLevelCheckModel;
-    IndexedCheckModel mAlarmNameCheckModel;
-    IndexedCheckModel mCategoryCheckModel;
-    IndexedCheckModel mGroupCheckModel;
     IndexedCheckModel<String> mMeasCodeCheckModel;
     IndexedCheckModel<String> mMeasNextCheckModel;
     IndexedCheckModel<String> mMeasOperatorsCheckModel;
-    IndexedCheckModel mOperatorCheckModel;
-    IndexedCheckModel mOriginCheckModel;
-    IndexedCheckModel mStatusCheckModel;
+    private IndexedCheckModel mAlarmNameCheckModel;
+    private IndexedCheckModel mCategoryCheckModel;
     private final SimpleBooleanProperty mDimens1Property = new SimpleBooleanProperty();
     private final SimpleBooleanProperty mDimens2Property = new SimpleBooleanProperty();
     private final SimpleBooleanProperty mDimens3Property = new SimpleBooleanProperty();
+    private IndexedCheckModel mGroupCheckModel;
     private final SimpleBooleanProperty mInvertProperty = new SimpleBooleanProperty();
     private final TopoManager mManager = TopoManager.getInstance();
     private final SimpleBooleanProperty mMeasAlarmLevelAgeProperty = new SimpleBooleanProperty();
@@ -106,11 +107,14 @@ public class TopoFilter extends FormFilter<TopoManager> implements MFilterSectio
     private final SimpleDoubleProperty mMeasYoyoCountValueProperty = new SimpleDoubleProperty();
     private final SimpleBooleanProperty mMeasYoyoProperty = new SimpleBooleanProperty();
     private final SimpleDoubleProperty mMeasYoyoSizeValueProperty = new SimpleDoubleProperty();
+    private IndexedCheckModel mOperatorCheckModel;
+    private IndexedCheckModel mOriginCheckModel;
     private final SimpleBooleanProperty mSameAlarmProperty = new SimpleBooleanProperty();
     private final SimpleBooleanProperty mSectionBasicProperty = new SimpleBooleanProperty();
     private final SimpleBooleanProperty mSectionDateProperty = new SimpleBooleanProperty();
     private final SimpleBooleanProperty mSectionDisruptorProperty = new SimpleBooleanProperty();
     private final SimpleBooleanProperty mSectionMeasProperty = new SimpleBooleanProperty();
+    private IndexedCheckModel mStatusCheckModel;
 
     public TopoFilter() {
         super(TopoManager.getInstance());
@@ -128,6 +132,41 @@ public class TopoFilter extends FormFilter<TopoManager> implements MFilterSectio
 
     public SimpleBooleanProperty dimens3Property() {
         return mDimens3Property;
+    }
+
+    @Override
+    public IndexedCheckModel<AlarmLevelFilter> getAlarmLevelCheckModel() {
+        return mAlarmLevelCheckModel;
+    }
+
+    @Override
+    public IndexedCheckModel getAlarmNameCheckModel() {
+        return mAlarmNameCheckModel;
+    }
+
+    @Override
+    public IndexedCheckModel getCategoryCheckModel() {
+        return mCategoryCheckModel;
+    }
+
+    @Override
+    public IndexedCheckModel getGroupCheckModel() {
+        return mGroupCheckModel;
+    }
+
+    @Override
+    public IndexedCheckModel getOperatorCheckModel() {
+        return mOperatorCheckModel;
+    }
+
+    @Override
+    public IndexedCheckModel getOriginCheckModel() {
+        return mOriginCheckModel;
+    }
+
+    @Override
+    public IndexedCheckModel getStatusCheckModel() {
+        return mStatusCheckModel;
     }
 
     public SimpleBooleanProperty invertProperty() {
@@ -284,6 +323,35 @@ public class TopoFilter extends FormFilter<TopoManager> implements MFilterSectio
 
     public SimpleBooleanProperty sectionMeasProperty() {
         return mSectionMeasProperty;
+    }
+
+    public void setAlarmLevelCheckModel(IndexedCheckModel<AlarmLevelFilter> alarmLevelCheckModel) {
+        mAlarmLevelCheckModel = alarmLevelCheckModel;
+    }
+
+    public void setAlarmNameCheckModel(IndexedCheckModel alarmNameCheckModel) {
+        mAlarmNameCheckModel = alarmNameCheckModel;
+    }
+
+    public void setCategoryCheckModel(IndexedCheckModel categoryCheckModel) {
+        mCategoryCheckModel = categoryCheckModel;
+    }
+
+    public void setGroupCheckModel(IndexedCheckModel groupCheckModel) {
+        mGroupCheckModel = groupCheckModel;
+    }
+
+    public void setOperatorCheckModel(IndexedCheckModel operatorCheckModel) {
+        mOperatorCheckModel = operatorCheckModel;
+    }
+
+    public void setOriginCheckModel(IndexedCheckModel originCheckModel) {
+        mOriginCheckModel = originCheckModel;
+    }
+
+    @Override
+    public void setStatusCheckModel(IndexedCheckModel statusCheckModel) {
+        mStatusCheckModel = statusCheckModel;
     }
 
     @Override

@@ -38,6 +38,7 @@ public class BaseFilters {
     private final SessionCheckComboBox<String> mAlarmNameSccb = new SessionCheckComboBox<>();
     private Node mBaseBorderBox;
     private GridPane mBaseBox;
+    private final double mBorderInnerPadding = FxHelper.getUIScaled(8.0);
     private final ResourceBundle mBundle = NbBundle.getBundle(getClass());
     private final SessionCheckComboBox<String> mCategorySccb = new SessionCheckComboBox<>();
     private final SessionCheckComboBox<Integer> mFrequencySccb = new SessionCheckComboBox<>();
@@ -46,7 +47,6 @@ public class BaseFilters {
     private final SessionCheckComboBox<String> mOperatorSccb = new SessionCheckComboBox<>();
     private final SessionCheckComboBox<String> mOriginSccb = new SessionCheckComboBox<>();
     private final SessionCheckComboBox<String> mStatusSccb = new SessionCheckComboBox<>();
-    private final double mBorderInnerPadding = FxHelper.getUIScaled(8.0);
     private final double mTopBorderInnerPadding = FxHelper.getUIScaled(16.0);
 
     public BaseFilters() {
@@ -67,6 +67,7 @@ public class BaseFilters {
     }
 
     public SessionCheckComboBox<String> getAlarmNameSccb() {
+        mAlarmNameSccb.setDisable(false);
         return mAlarmNameSccb;
     }
 
@@ -89,30 +90,37 @@ public class BaseFilters {
     }
 
     public SessionCheckComboBox<String> getCategorySccb() {
+        mCategorySccb.setDisable(false);
         return mCategorySccb;
     }
 
     public SessionCheckComboBox<Integer> getFrequencySccb() {
+        mFrequencySccb.setDisable(false);
         return mFrequencySccb;
     }
 
     public SessionCheckComboBox<String> getGroupSccb() {
+        mGroupSccb.setDisable(false);
         return mGroupSccb;
     }
 
     public SessionCheckComboBox<String> getMeasNextSccb() {
+        mMeasNextSccb.setDisable(false);
         return mMeasNextSccb;
     }
 
     public SessionCheckComboBox<String> getOperatorSccb() {
+        mOperatorSccb.setDisable(false);
         return mOperatorSccb;
     }
 
     public SessionCheckComboBox<String> getOriginSccb() {
+        mOriginSccb.setDisable(false);
         return mOriginSccb;
     }
 
     public SessionCheckComboBox<String> getStatusSccb() {
+        mStatusSccb.setDisable(false);
         return mStatusSccb;
     }
 
@@ -153,6 +161,15 @@ public class BaseFilters {
                 mOriginSccb,
                 mFrequencySccb
         );
+
+        mStatusSccb.setDisable(true);
+        mGroupSccb.setDisable(true);
+        mCategorySccb.setDisable(true);
+        mAlarmNameSccb.setDisable(true);
+        mOperatorSccb.setDisable(true);
+        mOriginSccb.setDisable(true);
+        mFrequencySccb.setDisable(true);
+        mMeasNextSccb.setDisable(true);
 
         mMeasNextSccb.setTitle(mBundle.getString("nextMeasCheckComboBoxTitle"));
         mStatusSccb.setTitle(Dict.STATUS.toString());

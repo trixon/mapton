@@ -15,31 +15,32 @@
  */
 package org.mapton.butterfly_structural.crack;
 
-import com.dlsc.gemsfx.Spacer;
 import java.util.ResourceBundle;
+import javafx.scene.control.Separator;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.VBox;
-import static org.mapton.api.ui.MPopOver.GAP;
-import org.mapton.butterfly_core.api.BaseFilterPopOver;
+import org.mapton.api.ui.forms.MFilterSectionDate;
 import org.mapton.butterfly_core.api.BaseFilters;
+import org.mapton.butterfly_core.api.BaseTabbedFilterPopOver;
 import org.mapton.butterfly_format.Butterfly;
 import org.openide.util.NbBundle;
-import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class CrackFilterPopOver extends BaseFilterPopOver {
+public class CrackFilterPopOver extends BaseTabbedFilterPopOver {
 
     private final BaseFilters mBaseFilters = new BaseFilters();
     private final ResourceBundle mBundle = NbBundle.getBundle(CrackFilterPopOver.class);
     private final CrackFilter mFilter;
     private CrackManager mManager = CrackManager.getInstance();
+    private final MFilterSectionDate mFilterSectionDate;
 
     public CrackFilterPopOver(CrackFilter filter) {
         mFilter = filter;
+        mFilterSectionDate = new MFilterSectionDate();
+//        mFilter = filter;
+        setFilter(filter);
         createUI();
         initListeners();
         initSession();
@@ -52,6 +53,7 @@ public class CrackFilterPopOver extends BaseFilterPopOver {
         setUsePolygonFilter(false);
         mFilter.freeTextProperty().set("");
 
+        mFilterSectionDate.clear();
         mBaseFilters.clear();
     }
 
@@ -67,14 +69,7 @@ public class CrackFilterPopOver extends BaseFilterPopOver {
                 .filter(p -> p.getFrequency() != null)
                 .map(p -> p.getFrequency()));
 
-        var temporalRange = mManager.getTemporalRange();
-        if (temporalRange != null) {
-            mBaseFilters.getDateRangeLastPane().setMinMaxDate(temporalRange.getFromLocalDate(), temporalRange.getToLocalDate());
-        }
-
-        var sessionManager = getSessionManager();
-        sessionManager.register("filter.DateLow", mBaseFilters.getDateRangeLastPane().lowStringProperty());
-        sessionManager.register("filter.DateHigh", mBaseFilters.getDateRangeLastPane().highStringProperty());
+        mFilterSectionDate.load(mManager.getTemporalRange());
     }
 
     @Override
@@ -96,33 +91,48 @@ public class CrackFilterPopOver extends BaseFilterPopOver {
     }
 
     private void createUI() {
-        var leftBox = new VBox(GAP,
-                mBaseFilters.getBaseBorderBox(),
-                new Spacer(),
-                mBaseFilters.getDateLastBorderBox()
+//        var leftBox = new VBox(GAP,
+//                mBaseFilters.getBaseBorderBox(),
+//                new Spacer(),
+//                mBaseFilters.getDateLastBorderBox()
+//        );
+//
+//        var rightBox = new BorderPane();
+//        var row = 0;
+//        var gridPane = new GridPane(GAP, GAP);
+//        gridPane.setPadding(FxHelper.getUIScaledInsets(GAP));
+//
+//        gridPane.addRow(row++, leftBox, rightBox);
+        ////        gridPane.add(mMeasIncludeWithoutCheckbox, 0, row++, GridPane.REMAINING, 1);
+////        gridPane.add(mSameAlarmCheckbox, 0, row++, GridPane.REMAINING, 1);
+//        FxHelper.autoSizeColumn(gridPane, 2);
+//
+//        var root = new BorderPane(gridPane);
+//        root.setTop(getToolBar());
+//
+//        FxHelper.bindWidthForChildrens(leftBox, mBaseFilters.getBaseBox());
+//        FxHelper.bindWidthForRegions(leftBox);
+//
+//        int prefWidth = FxHelper.getUIScaled(250);
+//        leftBox.setPrefWidth(prefWidth);
+//        rightBox.setPrefWidth(prefWidth);
+//
+//        setContentNode(root);
+        var root = new BorderPane(getTabPane());
+        root.setTop(getToolBar());
+//        root.setBottom(bottomBox);
+        getToolBar().getItems().add(new Separator());
+        populateToolBar();
+
+        getTabPane().getTabs().addAll(
+                //                mFilterSectionBasic.getTab(),
+                mFilterSectionDate.getTab()
+        //                mFilterSectionMeas.getTab(),
+        //                mFilterSectionDisruptor.getTab()
         );
 
-        var rightBox = new BorderPane();
-        var row = 0;
-        var gridPane = new GridPane(GAP, GAP);
-        gridPane.setPadding(FxHelper.getUIScaledInsets(GAP));
-
-        gridPane.addRow(row++, leftBox, rightBox);
-//        gridPane.add(mMeasIncludeWithoutCheckbox, 0, row++, GridPane.REMAINING, 1);
-//        gridPane.add(mSameAlarmCheckbox, 0, row++, GridPane.REMAINING, 1);
-        FxHelper.autoSizeColumn(gridPane, 2);
-
-        var root = new BorderPane(gridPane);
-        root.setTop(getToolBar());
-
-        FxHelper.bindWidthForChildrens(leftBox, mBaseFilters.getBaseBox());
-        FxHelper.bindWidthForRegions(leftBox);
-
-        int prefWidth = FxHelper.getUIScaled(250);
-        leftBox.setPrefWidth(prefWidth);
-        rightBox.setPrefWidth(prefWidth);
-
         setContentNode(root);
+
     }
 
     private void initListeners() {
@@ -134,17 +144,25 @@ public class CrackFilterPopOver extends BaseFilterPopOver {
         mFilter.mOperatorCheckModel = mBaseFilters.getOperatorSccb().getCheckModel();
         mFilter.mOriginCheckModel = mBaseFilters.getOriginSccb().getCheckModel();
         mFilter.mAlarmNameCheckModel = mBaseFilters.getAlarmNameSccb().getCheckModel();
-        mFilter.mDateFromToCheckModel = mBaseFilters.getHasDateFromToSccb().getCheckModel();
         mFilter.mFrequencyCheckModel = mBaseFilters.getFrequencySccb().getCheckModel();
 
+        mFilterSectionDate.initListeners(mFilter);
+
         mFilter.initCheckModelListeners();
+//                mFilter.sectionDateProperty().bind(mFilterSectionDate.selectedProperty());
+
     }
 
     private void initSession() {
         var sessionManager = getSessionManager();
+        mFilterSectionDate.initSession(sessionManager);
+
         sessionManager.register("filter.measPoint.freeText", mFilter.freeTextProperty());
 
         mBaseFilters.initSession(sessionManager);
+    }
+
+    private void populateToolBar() {
     }
 
 }

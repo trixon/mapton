@@ -16,11 +16,14 @@
 package org.mapton.butterfly_structural.crack;
 
 import j2html.tags.ContainerTag;
+import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ResourceBundle;
+import javafx.beans.property.SimpleObjectProperty;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.ui.forms.FormFilter;
+import org.mapton.api.ui.forms.MFilterSectionDateProvider;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
 
@@ -28,7 +31,12 @@ import se.trixon.almond.util.Dict;
  *
  * @author Patrik Karlström
  */
-public class CrackFilter extends FormFilter<CrackManager> {
+public class CrackFilter extends FormFilter<CrackManager> implements MFilterSectionDateProvider {
+
+    private final SimpleObjectProperty<LocalDate> mMeasDateFirstHighProperty = new SimpleObjectProperty();
+    private final SimpleObjectProperty<LocalDate> mMeasDateFirstLowProperty = new SimpleObjectProperty();
+    private final SimpleObjectProperty<LocalDate> mMeasDateLastHighProperty = new SimpleObjectProperty();
+    private final SimpleObjectProperty<LocalDate> mMeasDateLastLowProperty = new SimpleObjectProperty();
 
     IndexedCheckModel mAlarmNameCheckModel;
     IndexedCheckModel mCategoryCheckModel;
@@ -51,7 +59,7 @@ public class CrackFilter extends FormFilter<CrackManager> {
                 //                mAlarmLevelCheckModel,
                 mAlarmNameCheckModel,
                 mCategoryCheckModel,
-                mDateFromToCheckModel,
+                getDateFromToCheckModel(),
                 mFrequencyCheckModel,
                 mGroupCheckModel,
                 //                mMeasCodeCheckModel,
@@ -62,6 +70,26 @@ public class CrackFilter extends FormFilter<CrackManager> {
                 mStatusCheckModel
         //                mDisruptorCheckModel
         ).forEach(cm -> cm.getCheckedItems().addListener(mListChangeListener));
+    }
+
+    @Override
+    public SimpleObjectProperty<LocalDate> measDateFirstHighProperty() {
+        return mMeasDateFirstHighProperty;
+    }
+
+    @Override
+    public SimpleObjectProperty<LocalDate> measDateFirstLowProperty() {
+        return mMeasDateFirstLowProperty;
+    }
+
+    @Override
+    public SimpleObjectProperty<LocalDate> measDateLastHighProperty() {
+        return mMeasDateLastHighProperty;
+    }
+
+    @Override
+    public SimpleObjectProperty<LocalDate> measDateLastLowProperty() {
+        return mMeasDateLastLowProperty;
     }
 
     @Override
