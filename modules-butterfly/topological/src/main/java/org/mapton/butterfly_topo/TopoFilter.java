@@ -35,11 +35,11 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.MTemporalManager;
-import org.mapton.api.ui.forms.FormFilter;
 import org.mapton.api.ui.forms.FormHelper;
 import org.mapton.api.ui.forms.MFilterSectionDateProvider;
 import org.mapton.api.ui.forms.MFilterSectionDisruptorProvider;
 import org.mapton.api.ui.forms.MFilterSectionPointProvider;
+import org.mapton.butterfly_core.api.ButterflyFormFilter;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
@@ -58,7 +58,7 @@ import se.trixon.almond.util.SDict;
  *
  * @author Patrik Karlström
  */
-public class TopoFilter extends FormFilter<TopoManager> implements
+public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
         MFilterSectionPointProvider,
         MFilterSectionDateProvider,
         MFilterSectionDisruptorProvider {
@@ -391,11 +391,11 @@ public class TopoFilter extends FormFilter<TopoManager> implements
                                 && validateCheck(mStatusCheckModel, p.getStatus())
                                 && validateCheck(mGroupCheckModel, p.getGroup())
                                 && validateCheck(mCategoryCheckModel, p.getCategory())
-                                && validateAlarmName(p)
+                                && validateAlarmName(p, mAlarmNameCheckModel)
                                 && validateFrequency(p.getFrequency())
                                 && validateCheck(mOperatorCheckModel, p.getOperator())
                                 && validateCheck(mOriginCheckModel, p.getOrigin())
-                                && validateNextMeas(p)
+                                && validateNextMeas(p, mMeasNextCheckModel, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS))
                                 && true;
                     } else {
                         return true;
@@ -699,25 +699,6 @@ public class TopoFilter extends FormFilter<TopoManager> implements
         }
 
         return false;
-    }
-
-    private boolean validateAlarmName(BTopoControlPoint p) {
-        var ah = p.getAlarm1Id();
-        var ap = p.getAlarm2Id();
-
-        switch (p.getDimension()) {
-            case _1d -> {
-                return validateCheck(mAlarmNameCheckModel, ah);
-            }
-            case _2d -> {
-                return validateCheck(mAlarmNameCheckModel, ap);
-            }
-            case _3d -> {
-                return validateCheck(mAlarmNameCheckModel, ah) && validateCheck(mAlarmNameCheckModel, ap);
-            }
-        }
-
-        return true;
     }
 
     private boolean validateDimension(BDimension dimension) {
@@ -1096,29 +1077,4 @@ public class TopoFilter extends FormFilter<TopoManager> implements
         return matches >= mMeasYoyoCountValueProperty.get();
     }
 
-    private boolean validateNextMeas(BTopoControlPoint p) {
-        var frequency = p.getFrequency();
-        var latest = p.getDateLatest() != null ? p.getDateLatest().toLocalDate() : LocalDate.MIN;
-        var today = LocalDate.now();
-        var nextMeas = latest.plusDays(frequency);
-        var remainingDays = p.ext().getMeasurementUntilNext(ChronoUnit.DAYS);
-
-        if (mMeasNextCheckModel.isEmpty()) {
-            return true;
-        } else if (mMeasNextCheckModel.isChecked("∞") && frequency == 0) {
-            return true;
-        } else if (frequency > 0 && mMeasNextCheckModel.isChecked("<0") && nextMeas.isBefore(today)) {
-            return true;
-        } else if (frequency > 0 && mMeasNextCheckModel.isChecked("0") && remainingDays == 0) {
-            return true;
-        } else {
-            return mMeasNextCheckModel.getCheckedItems().stream()
-                    .filter(s -> StringUtils.countMatches(s, "-") == 1)
-                    .anyMatch(s -> {
-                        int start = Integer.parseInt(StringUtils.substringBefore(s, "-"));
-                        int end = Integer.parseInt(StringUtils.substringAfter(s, "-"));
-                        return remainingDays >= start && remainingDays <= end;
-                    });
-        }
-    }
 }

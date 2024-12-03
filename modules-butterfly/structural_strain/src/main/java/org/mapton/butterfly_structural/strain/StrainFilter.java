@@ -17,16 +17,17 @@ package org.mapton.butterfly_structural.strain;
 
 import j2html.tags.ContainerTag;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ResourceBundle;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import org.controlsfx.control.IndexedCheckModel;
-import org.mapton.api.ui.forms.FormFilter;
 import org.mapton.api.ui.forms.MFilterSectionDateProvider;
 import org.mapton.api.ui.forms.MFilterSectionDisruptorProvider;
 import org.mapton.api.ui.forms.MFilterSectionPointProvider;
+import org.mapton.butterfly_core.api.ButterflyFormFilter;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
 
@@ -34,7 +35,7 @@ import se.trixon.almond.util.Dict;
  *
  * @author Patrik Karlström
  */
-public class StrainFilter extends FormFilter<StrainManager> implements
+public class StrainFilter extends ButterflyFormFilter<StrainManager> implements
         MFilterSectionPointProvider,
         MFilterSectionDateProvider,
         MFilterSectionDisruptorProvider {
@@ -48,6 +49,7 @@ public class StrainFilter extends FormFilter<StrainManager> implements
     private final SimpleObjectProperty<LocalDate> mDateLastLowProperty = new SimpleObjectProperty();
     private IndexedCheckModel mGroupCheckModel;
     private final StrainManager mManager = StrainManager.getInstance();
+    private IndexedCheckModel<String> mMeasNextCheckModel;
     private IndexedCheckModel mOperatorCheckModel;
     private IndexedCheckModel mOriginCheckModel;
     private final SimpleBooleanProperty mSectionDateProperty = new SimpleBooleanProperty();
@@ -101,6 +103,10 @@ public class StrainFilter extends FormFilter<StrainManager> implements
         return mGroupCheckModel;
     }
 
+    public IndexedCheckModel<String> getMeasNextCheckModel() {
+        return mMeasNextCheckModel;
+    }
+
     @Override
     public IndexedCheckModel getOperatorCheckModel() {
         return mOperatorCheckModel;
@@ -122,6 +128,7 @@ public class StrainFilter extends FormFilter<StrainManager> implements
                 mCategoryCheckModel,
                 getDateFromToCheckModel(),
                 mFrequencyCheckModel,
+                mMeasNextCheckModel,
                 mGroupCheckModel,
                 mOperatorCheckModel,
                 mOriginCheckModel,
@@ -161,7 +168,8 @@ public class StrainFilter extends FormFilter<StrainManager> implements
     }
 
     @Override
-    public void setMeasNextCheckModel(IndexedCheckModel checkModel) {
+    public void setMeasNextCheckModel(IndexedCheckModel measNextCheckModel) {
+        mMeasNextCheckModel = measNextCheckModel;
     }
 
     @Override
@@ -190,11 +198,11 @@ public class StrainFilter extends FormFilter<StrainManager> implements
                         return validateCheck(mStatusCheckModel, p.getStatus())
                                 && validateCheck(mGroupCheckModel, p.getGroup())
                                 && validateCheck(mCategoryCheckModel, p.getCategory())
-                                //                                && validateAlarmName(p)
+                                && validateAlarmName(p, mAlarmNameCheckModel)
                                 && validateFrequency(p.getFrequency())
                                 && validateCheck(mOperatorCheckModel, p.getOperator())
                                 && validateCheck(mOriginCheckModel, p.getOrigin())
-                                //                                && validateNextMeas(p)
+                                && validateNextMeas(p, mMeasNextCheckModel, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS))
                                 && true;
                     } else {
                         return true;
