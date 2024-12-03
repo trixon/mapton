@@ -21,6 +21,7 @@ import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.SingleListForm;
 import org.mapton.butterfly_format.types.structural.BStructuralStrainGaugePoint;
+import org.mapton.core.api.ui.MFilterPresetPopOver;
 import se.trixon.almond.util.Dict;
 
 /**
@@ -31,6 +32,7 @@ public class StrainView {
 
     private final StrainFilter mFilter = new StrainFilter();
     private final StrainFilterPopOver mFilterPopOver = new StrainFilterPopOver(mFilter);
+    private final MFilterPresetPopOver mFilterPresetPopOver = new MFilterPresetPopOver(mFilterPopOver, "strain");
     private final SingleListForm<StrainManager, BStructuralStrainGaugePoint> mListForm;
     private final StrainManager mManager = StrainManager.getInstance();
 
@@ -39,6 +41,7 @@ public class StrainView {
                 ActionUtils.ACTION_SPAN,
                 mManager.geZoomExtentstAction(),
                 mFilter.getInfoPopOver().getAction(),
+                mFilterPresetPopOver.getAction(),
                 mFilterPopOver.getAction()
         );
 
