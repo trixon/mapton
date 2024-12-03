@@ -17,6 +17,7 @@ package org.mapton.butterfly_topo;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.util.Date;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 import org.apache.commons.lang3.StringUtils;
@@ -46,6 +47,8 @@ import se.trixon.almond.util.Dict;
 public class TopoChartBuilder extends XyzChartBuilder<BTopoControlPoint> {
 
     private final ChartHelper mChartHelper = new ChartHelper();
+    private Date mDateEnd;
+    private Date mDateNull;
     private final TimeSeries mTimeSeries2d = new TimeSeries(Dict.Geometry.PLANE);
     private final TimeSeries mTimeSeries3d = new TimeSeries("3d");
     private final TimeSeries mTimeSeriesH = new TimeSeries(Dict.Geometry.HEIGHT);
@@ -62,11 +65,12 @@ public class TopoChartBuilder extends XyzChartBuilder<BTopoControlPoint> {
 
         var callable = (Callable<ChartPanel>) () -> {
             setTitle(p);
-            updateDataset(p);
             var plot = (XYPlot) mChart.getPlot();
             var dateAxis = (DateAxis) plot.getDomainAxis();
-            //dateAxis.setRange(DateHelper.convertToDate(mTemporalManager.getLowDate()), DateHelper.convertToDate(mTemporalManager.getHighDate()));
             dateAxis.setAutoRange(true);
+            updateDataset(p);
+//            dateAxis.setRange(DateHelper.convertToDate(mTemporalManager.getLowDate()), DateHelper.convertToDate(mTemporalManager.getHighDate()));
+            dateAxis.setRange(mDateNull, mDateEnd);
             plot.clearRangeMarkers();
             plotAlarmIndicators(p);
 
@@ -78,60 +82,6 @@ public class TopoChartBuilder extends XyzChartBuilder<BTopoControlPoint> {
         };
 
         return callable;
-    }
-
-    private void plotAlarmIndicator(BComponent component, double value, Color color) {
-        var marker = new ValueMarker(value);
-        float width = 1.0f;
-        float dash[] = {5.0f, 5.0f};
-        var dashedStroke = new BasicStroke(width, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER, 1.5f, dash, 0);
-        var stroke = new BasicStroke(width, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER, 1.5f, null, 0);
-        if (component == BComponent.HEIGHT) {
-            marker.setStroke(dashedStroke);
-        } else {
-            marker.setStroke(stroke);
-        }
-        marker.setLabelOffsetType(LengthAdjustmentType.EXPAND);
-        marker.setPaint(color);
-
-        var plot = (XYPlot) mChart.getPlot();
-        plot.addRangeMarker(marker);
-    }
-
-    private void plotAlarmIndicators(BTopoControlPoint p) {
-        var ha = p.ext().getAlarm(BComponent.HEIGHT);
-        if (ha != null) {
-            var range0 = ha.ext().getRange0();
-            if (range0 != null) {
-                plotAlarmIndicator(BComponent.HEIGHT, range0.getMinimum(), Color.YELLOW);
-                plotAlarmIndicator(BComponent.HEIGHT, range0.getMaximum(), Color.YELLOW);
-            }
-
-            var range1 = ha.ext().getRange1();
-            if (range1 != null) {
-                plotAlarmIndicator(BComponent.HEIGHT, range1.getMinimum(), Color.RED);
-                plotAlarmIndicator(BComponent.HEIGHT, range1.getMaximum(), Color.RED);
-            }
-        }
-
-        var pa = p.ext().getAlarm(BComponent.PLANE);
-        if (pa != null) {
-            var range0 = pa.ext().getRange0();
-            if (range0 != null) {
-                if (!Precision.equals(range0.getMinimum(), 0.0)) {
-                    plotAlarmIndicator(BComponent.PLANE, range0.getMinimum(), Color.YELLOW);
-                }
-                plotAlarmIndicator(BComponent.PLANE, range0.getMaximum(), Color.YELLOW);
-            }
-
-            var range1 = pa.ext().getRange1();
-            if (range1 != null) {
-                if (!Precision.equals(range1.getMinimum(), 0.0)) {
-                    plotAlarmIndicator(BComponent.PLANE, range1.getMinimum(), Color.RED);
-                }
-                plotAlarmIndicator(BComponent.PLANE, range1.getMaximum(), Color.RED);
-            }
-        }
     }
 
     @Override
@@ -192,6 +142,7 @@ public class TopoChartBuilder extends XyzChartBuilder<BTopoControlPoint> {
                 addMarker(plot, minute, "E", Color.RED);
             } else if (o.isZeroMeasurement()) {
                 addMarker(plot, minute, "N", Color.BLUE);
+                mDateNull = DateHelper.convertToDate(o.getDate());
             }
 
             if (p.getDimension() == BDimension._1d || p.getDimension() == BDimension._3d) {
@@ -209,6 +160,8 @@ public class TopoChartBuilder extends XyzChartBuilder<BTopoControlPoint> {
                     System.err.println("Failed to add observation to chart %s %s".formatted(p.getName(), o.getDate()));
                 }
             }
+
+            mDateEnd = DateHelper.convertToDate(o.getDate());
         });
 
         var renderer = plot.getRenderer();
@@ -254,6 +207,60 @@ public class TopoChartBuilder extends XyzChartBuilder<BTopoControlPoint> {
                 } catch (Exception e) {
                     Exceptions.printStackTrace(e);
                 }
+            }
+        }
+    }
+
+    private void plotAlarmIndicator(BComponent component, double value, Color color) {
+        var marker = new ValueMarker(value);
+        float width = 1.0f;
+        float dash[] = {5.0f, 5.0f};
+        var dashedStroke = new BasicStroke(width, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER, 1.5f, dash, 0);
+        var stroke = new BasicStroke(width, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER, 1.5f, null, 0);
+        if (component == BComponent.HEIGHT) {
+            marker.setStroke(dashedStroke);
+        } else {
+            marker.setStroke(stroke);
+        }
+        marker.setLabelOffsetType(LengthAdjustmentType.EXPAND);
+        marker.setPaint(color);
+
+        var plot = (XYPlot) mChart.getPlot();
+        plot.addRangeMarker(marker);
+    }
+
+    private void plotAlarmIndicators(BTopoControlPoint p) {
+        var ha = p.ext().getAlarm(BComponent.HEIGHT);
+        if (ha != null) {
+            var range0 = ha.ext().getRange0();
+            if (range0 != null) {
+                plotAlarmIndicator(BComponent.HEIGHT, range0.getMinimum(), Color.YELLOW);
+                plotAlarmIndicator(BComponent.HEIGHT, range0.getMaximum(), Color.YELLOW);
+            }
+
+            var range1 = ha.ext().getRange1();
+            if (range1 != null) {
+                plotAlarmIndicator(BComponent.HEIGHT, range1.getMinimum(), Color.RED);
+                plotAlarmIndicator(BComponent.HEIGHT, range1.getMaximum(), Color.RED);
+            }
+        }
+
+        var pa = p.ext().getAlarm(BComponent.PLANE);
+        if (pa != null) {
+            var range0 = pa.ext().getRange0();
+            if (range0 != null) {
+                if (!Precision.equals(range0.getMinimum(), 0.0)) {
+                    plotAlarmIndicator(BComponent.PLANE, range0.getMinimum(), Color.YELLOW);
+                }
+                plotAlarmIndicator(BComponent.PLANE, range0.getMaximum(), Color.YELLOW);
+            }
+
+            var range1 = pa.ext().getRange1();
+            if (range1 != null) {
+                if (!Precision.equals(range1.getMinimum(), 0.0)) {
+                    plotAlarmIndicator(BComponent.PLANE, range1.getMinimum(), Color.RED);
+                }
+                plotAlarmIndicator(BComponent.PLANE, range1.getMaximum(), Color.RED);
             }
         }
     }
