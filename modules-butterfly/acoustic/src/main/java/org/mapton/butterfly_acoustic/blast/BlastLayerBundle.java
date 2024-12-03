@@ -18,7 +18,6 @@ package org.mapton.butterfly_acoustic.blast;
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
-import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.PointPlacemark;
 import java.awt.Color;
 import java.util.ArrayList;
@@ -42,7 +41,6 @@ public class BlastLayerBundle extends BfLayerBundle {
 
     private final BlastAttributeManager mAttributeManager = BlastAttributeManager.getInstance();
     private final GraphicRenderer mGraphicRenderer;
-    private final RenderableLayer mGroundConnectorLayer = new RenderableLayer();
     private final BlastManager mManager = BlastManager.getInstance();
     private final BlastOptionsView mOptionsView;
 
@@ -50,7 +48,7 @@ public class BlastLayerBundle extends BfLayerBundle {
         init();
         initRepaint();
         mOptionsView = new BlastOptionsView(this);
-        mGraphicRenderer = new GraphicRenderer(mLayer, mGroundConnectorLayer, mSurfaceLayer, mOptionsView.getGraphicCheckModel());
+        mGraphicRenderer = new GraphicRenderer(mLayer, mPassiveLayer, mOptionsView.getGraphicCheckModel());
         initListeners();
 
         mManager.setInitialTemporalState(WWHelper.isStoredAsVisible(mLayer, mLayer.isEnabled()));

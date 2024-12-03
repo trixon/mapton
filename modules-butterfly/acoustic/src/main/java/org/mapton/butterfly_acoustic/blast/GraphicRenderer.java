@@ -21,12 +21,13 @@ import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Ellipsoid;
 import gov.nasa.worldwind.render.Path;
-import gov.nasa.worldwind.render.Renderable;
 import gov.nasa.worldwind.render.SurfaceCircle;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import org.controlsfx.control.IndexedCheckModel;
+import org.mapton.butterfly_core.api.BaseGraphicRenderer;
+import org.mapton.butterfly_core.api.PlotLimiter;
 import org.mapton.butterfly_format.types.acoustic.BBlast;
 import org.mapton.worldwind.api.WWHelper;
 
@@ -34,31 +35,18 @@ import org.mapton.worldwind.api.WWHelper;
  *
  * @author Patrik Karlström
  */
-public class GraphicRenderer {
+public class GraphicRenderer extends BaseGraphicRenderer<GraphicRendererItem, BBlast> {
+
+    protected static final PlotLimiter sPlotLimiter = new PlotLimiter();
 
     private final BlastAttributeManager mAttributeManager = BlastAttributeManager.getInstance();
     private final IndexedCheckModel<GraphicRendererItem> mCheckModel;
-    private final RenderableLayer mEllipsoidLayer;
-    private final RenderableLayer mGroundConnectorLayer;
     private ArrayList<AVListImpl> mMapObjects;
-    private final RenderableLayer mSurfaceLayer;
 
-    public GraphicRenderer(RenderableLayer ellipsoidLayer, RenderableLayer groundConnectorLayer, RenderableLayer surfaceLayer, IndexedCheckModel<GraphicRendererItem> checkModel) {
-        mEllipsoidLayer = ellipsoidLayer;
-        mGroundConnectorLayer = groundConnectorLayer;
-        mSurfaceLayer = surfaceLayer;
+    public GraphicRenderer(RenderableLayer layer, RenderableLayer passiveLayer, IndexedCheckModel<GraphicRendererItem> checkModel) {
+        super(layer, passiveLayer, sPlotLimiter);
+
         mCheckModel = checkModel;
-    }
-
-    public void addRenderable(RenderableLayer layer, Renderable renderable) {
-        layer.addRenderable(renderable);
-        if (layer == mEllipsoidLayer) {
-            if (renderable instanceof AVListImpl avlist) {
-                mMapObjects.add(avlist);
-            }
-        } else {
-            //mLayerXYZ.addRenderable(renderable); //TODO Add to a non responsive layer
-        }
     }
 
     public void plot(BBlast blast, Position position, ArrayList<AVListImpl> mapObjects) {
@@ -72,11 +60,11 @@ public class GraphicRenderer {
             var radius = 1.2;
             var endEllipsoid = new Ellipsoid(endPosition, radius, radius, radius);
             endEllipsoid.setAttributes(mAttributeManager.getComponentEllipsoidAttributes());
-            addRenderable(mEllipsoidLayer, endEllipsoid);
+            addRenderable(endEllipsoid, true, GraphicRendererItem.BALLS, mMapObjects);
 
             var groundPath = new Path(startPosition, endPosition);
             groundPath.setAttributes(mAttributeManager.getComponentGroundPathAttributes());
-            addRenderable(mGroundConnectorLayer, groundPath);
+            addRenderable(groundPath, true, GraphicRendererItem.BALLS, mMapObjects);
         }
 
         if (mCheckModel.isChecked(GraphicRendererItem.BALLS_Z) && blast.getZ() != null) {
@@ -86,11 +74,11 @@ public class GraphicRenderer {
             var radius = 1.2;
             var endEllipsoid = new Ellipsoid(endPosition, radius, radius, radius);
             endEllipsoid.setAttributes(mAttributeManager.getComponentEllipsoidAttributes());
-            addRenderable(mEllipsoidLayer, endEllipsoid);
+            addRenderable(endEllipsoid, true, GraphicRendererItem.BALLS_Z, mMapObjects);
 
             var groundPath = new Path(startPosition, endPosition);
             groundPath.setAttributes(mAttributeManager.getComponentGroundPathAttributes());
-            addRenderable(mGroundConnectorLayer, groundPath);
+            addRenderable(groundPath, true, GraphicRendererItem.BALLS_Z, mMapObjects);
         }
 
         if (mCheckModel.isChecked(GraphicRendererItem.RECENT)) {
@@ -106,12 +94,14 @@ public class GraphicRenderer {
                 attrs.setInteriorOpacity(opacity);
                 circle.setAttributes(attrs);
 
-                addRenderable(mSurfaceLayer, circle);
+                addRenderable(circle, false, GraphicRendererItem.RECENT, null);
             }
         }
     }
 
+    @Override
     public void reset() {
+        super.reset();
     }
 
 }
