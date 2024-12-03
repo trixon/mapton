@@ -30,11 +30,13 @@ import static j2html.TagCreator.title;
 import static j2html.TagCreator.tr;
 import j2html.tags.ContainerTag;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.ResourceBundle;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
@@ -63,15 +65,14 @@ import se.trixon.almond.util.fx.DelayedResetRunner;
  */
 public abstract class FormFilter<ManagerType extends MBaseDataManager> {
 
-    protected IndexedCheckModel<Integer> mFrequencyCheckModel;
     protected ChangeListener<Object> mChangeListenerObject;
     protected final MDisruptorManager mDisruptorManager = MDisruptorManager.getInstance();
+    protected IndexedCheckModel<Integer> mFrequencyCheckModel;
     protected ListChangeListener<Object> mListChangeListener;
     private final MAreaFilterManager mAreaFilterManager = MAreaFilterManager.getInstance();
     private IndexedCheckModel mDateFromToCheckModel;
     private final DelayedResetRunner mDelayedResetRunner;
     private IndexedCheckModel mDisruptorCheckModel;
-//    private final SimpleBooleanProperty mDisruptorProperty = new SimpleBooleanProperty();
     private final SimpleDoubleProperty mDisruptorDistanceProperty = new SimpleDoubleProperty();
     private final StringProperty mFreeTextProperty = new SimpleStringProperty();
     private final MInfoPopOver mInfoPopOver = new MInfoPopOver() {
@@ -178,6 +179,18 @@ public abstract class FormFilter<ManagerType extends MBaseDataManager> {
     }
 
     public abstract void update();
+
+    public boolean validateAge(LocalDateTime dateTime, SimpleObjectProperty<LocalDate> low, SimpleObjectProperty<LocalDate> high) {
+        if (null != dateTime) {
+            var lowDate = low.get();
+            var highDate = high.get();
+            var valid = DateHelper.isBetween(lowDate, highDate, dateTime.toLocalDate());
+
+            return valid;
+        } else {
+            return false;
+        }
+    }
 
     public boolean validateCheck(IndexedCheckModel checkModel, Object o) {
         return checkModel.isEmpty() || checkModel.isChecked(o);

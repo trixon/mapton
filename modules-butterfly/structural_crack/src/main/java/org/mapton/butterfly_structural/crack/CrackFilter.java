@@ -39,27 +39,46 @@ public class CrackFilter extends FormFilter<CrackManager> implements
         MFilterSectionDateProvider,
         MFilterSectionDisruptorProvider {
 
-    private final SimpleObjectProperty<LocalDate> mMeasDateFirstHighProperty = new SimpleObjectProperty();
-    private final SimpleObjectProperty<LocalDate> mMeasDateFirstLowProperty = new SimpleObjectProperty();
-    private final SimpleObjectProperty<LocalDate> mMeasDateLastHighProperty = new SimpleObjectProperty();
-    private final SimpleObjectProperty<LocalDate> mMeasDateLastLowProperty = new SimpleObjectProperty();
-
     private IndexedCheckModel mAlarmNameCheckModel;
+    private final ResourceBundle mBundle = NbBundle.getBundle(CrackFilter.class);
     private IndexedCheckModel mCategoryCheckModel;
+    private final SimpleObjectProperty<LocalDate> mDateFirstHighProperty = new SimpleObjectProperty();
+    private final SimpleObjectProperty<LocalDate> mDateFirstLowProperty = new SimpleObjectProperty();
+    private final SimpleObjectProperty<LocalDate> mDateLastHighProperty = new SimpleObjectProperty();
+    private final SimpleObjectProperty<LocalDate> mDateLastLowProperty = new SimpleObjectProperty();
     private IndexedCheckModel mGroupCheckModel;
+    private final CrackManager mManager = CrackManager.getInstance();
     private IndexedCheckModel mOperatorCheckModel;
     private IndexedCheckModel mOriginCheckModel;
-    private IndexedCheckModel mStatusCheckModel;
-    private final ResourceBundle mBundle = NbBundle.getBundle(CrackFilter.class);
-    private final CrackManager mManager = CrackManager.getInstance();
-    private final SimpleBooleanProperty mSectionBasicProperty = new SimpleBooleanProperty();
     private final SimpleBooleanProperty mSectionDateProperty = new SimpleBooleanProperty();
     private final SimpleBooleanProperty mSectionDisruptorProperty = new SimpleBooleanProperty();
+    private final SimpleBooleanProperty mSectionPointProperty = new SimpleBooleanProperty();
+    private IndexedCheckModel mStatusCheckModel;
 
     public CrackFilter() {
         super(CrackManager.getInstance());
 
         initListeners();
+    }
+
+    @Override
+    public SimpleObjectProperty<LocalDate> dateFirstHighProperty() {
+        return mDateFirstHighProperty;
+    }
+
+    @Override
+    public SimpleObjectProperty<LocalDate> dateFirstLowProperty() {
+        return mDateFirstLowProperty;
+    }
+
+    @Override
+    public SimpleObjectProperty<LocalDate> dateLastHighProperty() {
+        return mDateLastHighProperty;
+    }
+
+    @Override
+    public SimpleObjectProperty<LocalDate> dateLastLowProperty() {
+        return mDateLastLowProperty;
     }
 
     @Override
@@ -98,47 +117,17 @@ public class CrackFilter extends FormFilter<CrackManager> implements
     }
 
     public void initCheckModelListeners() {
-        mGroupCheckModel.getCheckedItems().addListener(mListChangeListener);
         List.of(
-                //                mAlarmLevelCheckModel,
                 mAlarmNameCheckModel,
                 mCategoryCheckModel,
                 getDateFromToCheckModel(),
                 mFrequencyCheckModel,
                 mGroupCheckModel,
-                //                mMeasCodeCheckModel,
-                //                mMeasOperatorsCheckModel,
-                //                mMeasNextCheckModel,
                 mOperatorCheckModel,
                 mOriginCheckModel,
-                mStatusCheckModel
-        //                mDisruptorCheckModel
+                mStatusCheckModel,
+                getDisruptorCheckModel()
         ).forEach(cm -> cm.getCheckedItems().addListener(mListChangeListener));
-    }
-
-    @Override
-    public SimpleObjectProperty<LocalDate> measDateFirstHighProperty() {
-        return mMeasDateFirstHighProperty;
-    }
-
-    @Override
-    public SimpleObjectProperty<LocalDate> measDateFirstLowProperty() {
-        return mMeasDateFirstLowProperty;
-    }
-
-    @Override
-    public SimpleObjectProperty<LocalDate> measDateLastHighProperty() {
-        return mMeasDateLastHighProperty;
-    }
-
-    @Override
-    public SimpleObjectProperty<LocalDate> measDateLastLowProperty() {
-        return mMeasDateLastLowProperty;
-    }
-
-    @Override
-    public SimpleBooleanProperty sectionPointProperty() {
-        return mSectionBasicProperty;
     }
 
     @Override
@@ -149,6 +138,11 @@ public class CrackFilter extends FormFilter<CrackManager> implements
     @Override
     public SimpleBooleanProperty sectionDisruptorProperty() {
         return mSectionDisruptorProperty;
+    }
+
+    @Override
+    public SimpleBooleanProperty sectionPointProperty() {
+        return mSectionPointProperty;
     }
 
     @Override
@@ -189,18 +183,44 @@ public class CrackFilter extends FormFilter<CrackManager> implements
     public void update() {
         var filteredItems = mManager.getAllItems().stream()
                 .filter(p -> validateFreeText(p.getName(), p.getGroup(), p.getComment()))
-                .filter(p -> validateCheck(mStatusCheckModel, p.getStatus()))
-                .filter(p -> validateCheck(mGroupCheckModel, p.getGroup()))
-                .filter(p -> validateCheck(mCategoryCheckModel, p.getCategory()))
-                .filter(p -> validateCheck(mOperatorCheckModel, p.getOperator()))
-                .filter(p -> validateCheck(mOriginCheckModel, p.getOrigin()))
-                .filter(p -> validateCheck(mAlarmNameCheckModel, p.getAlarm1Id()))
-                .filter(p -> validateFrequency(p.getFrequency()))
-                .filter(p -> validateDateFromToHas(p.getDateValidFrom(), p.getDateValidTo()))
-                .filter(p -> validateDateFromToWithout(p.getDateValidFrom(), p.getDateValidTo()))
-                .filter(p -> validateDateFromToIs(p.getDateValidFrom(), p.getDateValidTo()))
                 .filter(p -> validateCoordinateArea(p.getLat(), p.getLon()))
                 .filter(p -> validateCoordinateRuler(p.getLat(), p.getLon()))
+                .filter(p -> {
+                    if (mSectionPointProperty.get()) {
+                        return validateCheck(mStatusCheckModel, p.getStatus())
+                                && validateCheck(mGroupCheckModel, p.getGroup())
+                                && validateCheck(mCategoryCheckModel, p.getCategory())
+                                //                                && validateAlarmName(p)
+                                && validateFrequency(p.getFrequency())
+                                && validateCheck(mOperatorCheckModel, p.getOperator())
+                                && validateCheck(mOriginCheckModel, p.getOrigin())
+                                //                                && validateNextMeas(p)
+                                && true;
+                    } else {
+                        return true;
+                    }
+                })
+                .filter(p -> {
+                    if (mSectionDateProperty.get()) {
+                        return validateDateFromToHas(p.getDateValidFrom(), p.getDateValidTo())
+                                && validateDateFromToWithout(p.getDateValidFrom(), p.getDateValidTo())
+                                && validateDateFromToIs(p.getDateValidFrom(), p.getDateValidTo())
+                                && validateAge(p.ext().getDateFirst(), mDateFirstLowProperty, mDateFirstHighProperty)
+                                && validateAge(p.getDateLatest(), mDateLastLowProperty, mDateLastHighProperty)
+                                && true;
+                    } else {
+                        return true;
+                    }
+                })
+                .filter(p -> {
+                    if (mSectionDisruptorProperty.get()) {
+                        return validateDisruptor(p.getZeroX(), p.getZeroY())
+                                && true;
+                    } else {
+                        return true;
+                    }
+                })
+                //                .filter(p -> validateCheck(mAlarmNameCheckModel, p.getAlarm1Id()))
                 .toList();
 
         mManager.getFilteredItems().setAll(filteredItems);
@@ -222,6 +242,17 @@ public class CrackFilter extends FormFilter<CrackManager> implements
     }
 
     private void initListeners() {
+        List.of(mSectionPointProperty,
+                mSectionDateProperty,
+                mSectionDisruptorProperty,
+                mDateFirstLowProperty,
+                mDateFirstHighProperty,
+                mDateLastLowProperty,
+                mDateLastHighProperty,
+                //
+                disruptorDistanceProperty(),
+                mDisruptorManager.lastChangedProperty()
+        ).forEach(propertyBase -> propertyBase.addListener(mChangeListenerObject));
 
     }
 }

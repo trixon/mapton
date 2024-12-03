@@ -70,7 +70,10 @@ public class StrainManager extends BaseManager<BStructuralStrainGaugePoint> {
             for (var p : butterfly.structural().getStrainPoints()) {
                 var observations = nameToObservations.getOrDefault(p.getName(), new ArrayList<>());
                 if (!observations.isEmpty()) {
+                    p.ext().setDateFirst(observations.getFirst().getDate());
                     p.setDateLatest(observations.getLast().getDate());
+                } else {
+                    p.ext().setDateFirst(LocalDateTime.MIN);
                 }
 
                 p.ext().setDateLatest(p.getDateLatest());

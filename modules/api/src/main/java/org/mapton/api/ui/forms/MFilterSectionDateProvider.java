@@ -26,13 +26,13 @@ import org.controlsfx.control.IndexedCheckModel;
  */
 public interface MFilterSectionDateProvider {
 
-    public SimpleObjectProperty<LocalDate> measDateFirstHighProperty();
+    public SimpleObjectProperty<LocalDate> dateFirstHighProperty();
 
-    public SimpleObjectProperty<LocalDate> measDateFirstLowProperty();
+    public SimpleObjectProperty<LocalDate> dateFirstLowProperty();
 
-    public SimpleObjectProperty<LocalDate> measDateLastHighProperty();
+    public SimpleObjectProperty<LocalDate> dateLastHighProperty();
 
-    public SimpleObjectProperty<LocalDate> measDateLastLowProperty();
+    public SimpleObjectProperty<LocalDate> dateLastLowProperty();
 
     public SimpleBooleanProperty sectionDateProperty();
 

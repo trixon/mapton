@@ -65,10 +65,13 @@ public class TopoFilter extends FormFilter<TopoManager> implements
 
     IndexedCheckModel<AlarmLevelFilter> mAlarmLevelCheckModel;
     IndexedCheckModel<String> mMeasCodeCheckModel;
-    private IndexedCheckModel<String> mMeasNextCheckModel;
     IndexedCheckModel<String> mMeasOperatorsCheckModel;
     private IndexedCheckModel mAlarmNameCheckModel;
     private IndexedCheckModel mCategoryCheckModel;
+    private final SimpleObjectProperty<LocalDate> mDateFirstHighProperty = new SimpleObjectProperty();
+    private final SimpleObjectProperty<LocalDate> mDateFirstLowProperty = new SimpleObjectProperty();
+    private final SimpleObjectProperty<LocalDate> mDateLastHighProperty = new SimpleObjectProperty();
+    private final SimpleObjectProperty<LocalDate> mDateLastLowProperty = new SimpleObjectProperty();
     private final SimpleBooleanProperty mDimens1Property = new SimpleBooleanProperty();
     private final SimpleBooleanProperty mDimens2Property = new SimpleBooleanProperty();
     private final SimpleBooleanProperty mDimens3Property = new SimpleBooleanProperty();
@@ -82,10 +85,6 @@ public class TopoFilter extends FormFilter<TopoManager> implements
     private final SimpleBooleanProperty mMeasAlarmLevelChangeProperty = new SimpleBooleanProperty();
     private final SimpleObjectProperty mMeasAlarmLevelChangeUnitProperty = new SimpleObjectProperty();
     private final SimpleIntegerProperty mMeasAlarmLevelChangeValueProperty = new SimpleIntegerProperty();
-    private final SimpleObjectProperty<LocalDate> mMeasDateFirstHighProperty = new SimpleObjectProperty();
-    private final SimpleObjectProperty<LocalDate> mMeasDateFirstLowProperty = new SimpleObjectProperty();
-    private final SimpleObjectProperty<LocalDate> mMeasDateLastHighProperty = new SimpleObjectProperty();
-    private final SimpleObjectProperty<LocalDate> mMeasDateLastLowProperty = new SimpleObjectProperty();
     private final SimpleBooleanProperty mMeasDiffAllProperty = new SimpleBooleanProperty();
     private final SimpleDoubleProperty mMeasDiffAllValueProperty = new SimpleDoubleProperty();
     private final SimpleBooleanProperty mMeasDiffLatestProperty = new SimpleBooleanProperty();
@@ -96,6 +95,7 @@ public class TopoFilter extends FormFilter<TopoManager> implements
     private final SimpleIntegerProperty mMeasDiffPercentagePValueProperty = new SimpleIntegerProperty();
     private final SimpleBooleanProperty mMeasIncludeWithout = new SimpleBooleanProperty();
     private final SimpleBooleanProperty mMeasLatestOperator = new SimpleBooleanProperty();
+    private IndexedCheckModel<String> mMeasNextCheckModel;
     private final SimpleBooleanProperty mMeasNumOfProperty = new SimpleBooleanProperty();
     private final SimpleIntegerProperty mMeasNumOfValueProperty = new SimpleIntegerProperty();
     private final SimpleBooleanProperty mMeasSpeedProperty = new SimpleBooleanProperty();
@@ -110,16 +110,36 @@ public class TopoFilter extends FormFilter<TopoManager> implements
     private IndexedCheckModel mOperatorCheckModel;
     private IndexedCheckModel mOriginCheckModel;
     private final SimpleBooleanProperty mSameAlarmProperty = new SimpleBooleanProperty();
-    private final SimpleBooleanProperty mSectionBasicProperty = new SimpleBooleanProperty();
     private final SimpleBooleanProperty mSectionDateProperty = new SimpleBooleanProperty();
     private final SimpleBooleanProperty mSectionDisruptorProperty = new SimpleBooleanProperty();
     private final SimpleBooleanProperty mSectionMeasProperty = new SimpleBooleanProperty();
+    private final SimpleBooleanProperty mSectionPointProperty = new SimpleBooleanProperty();
     private IndexedCheckModel mStatusCheckModel;
 
     public TopoFilter() {
         super(TopoManager.getInstance());
 
         initListeners();
+    }
+
+    @Override
+    public SimpleObjectProperty<LocalDate> dateFirstHighProperty() {
+        return mDateFirstHighProperty;
+    }
+
+    @Override
+    public SimpleObjectProperty<LocalDate> dateFirstLowProperty() {
+        return mDateFirstLowProperty;
+    }
+
+    @Override
+    public SimpleObjectProperty<LocalDate> dateLastHighProperty() {
+        return mDateLastHighProperty;
+    }
+
+    @Override
+    public SimpleObjectProperty<LocalDate> dateLastLowProperty() {
+        return mDateLastLowProperty;
     }
 
     public SimpleBooleanProperty dimens1Property() {
@@ -203,26 +223,6 @@ public class TopoFilter extends FormFilter<TopoManager> implements
 
     public SimpleIntegerProperty measAlarmLevelChangeValueProperty() {
         return mMeasAlarmLevelChangeValueProperty;
-    }
-
-    @Override
-    public SimpleObjectProperty<LocalDate> measDateFirstHighProperty() {
-        return mMeasDateFirstHighProperty;
-    }
-
-    @Override
-    public SimpleObjectProperty<LocalDate> measDateFirstLowProperty() {
-        return mMeasDateFirstLowProperty;
-    }
-
-    @Override
-    public SimpleObjectProperty<LocalDate> measDateLastHighProperty() {
-        return mMeasDateLastHighProperty;
-    }
-
-    @Override
-    public SimpleObjectProperty<LocalDate> measDateLastLowProperty() {
-        return mMeasDateLastLowProperty;
     }
 
     public SimpleBooleanProperty measDiffAllProperty() {
@@ -314,11 +314,6 @@ public class TopoFilter extends FormFilter<TopoManager> implements
     }
 
     @Override
-    public SimpleBooleanProperty sectionPointProperty() {
-        return mSectionBasicProperty;
-    }
-
-    @Override
     public SimpleBooleanProperty sectionDateProperty() {
         return mSectionDateProperty;
     }
@@ -330,6 +325,11 @@ public class TopoFilter extends FormFilter<TopoManager> implements
 
     public SimpleBooleanProperty sectionMeasProperty() {
         return mSectionMeasProperty;
+    }
+
+    @Override
+    public SimpleBooleanProperty sectionPointProperty() {
+        return mSectionPointProperty;
     }
 
     public void setAlarmLevelCheckModel(IndexedCheckModel<AlarmLevelFilter> alarmLevelCheckModel) {
@@ -386,7 +386,7 @@ public class TopoFilter extends FormFilter<TopoManager> implements
                 .filter(p -> validateCoordinateArea(p.getLat(), p.getLon()))
                 .filter(p -> validateCoordinateRuler(p.getLat(), p.getLon()))
                 .filter(p -> {
-                    if (mSectionBasicProperty.get()) {
+                    if (mSectionPointProperty.get()) {
                         return validateDimension(p.getDimension())
                                 && validateCheck(mStatusCheckModel, p.getStatus())
                                 && validateCheck(mGroupCheckModel, p.getGroup())
@@ -406,8 +406,8 @@ public class TopoFilter extends FormFilter<TopoManager> implements
                         return validateDateFromToHas(p.getDateValidFrom(), p.getDateValidTo())
                                 && validateDateFromToWithout(p.getDateValidFrom(), p.getDateValidTo())
                                 && validateDateFromToIs(p.getDateValidFrom(), p.getDateValidTo())
-                                && validateAge(p.ext().getDateFirst(), mMeasDateFirstLowProperty, mMeasDateFirstHighProperty)
-                                && validateAge(p.getDateLatest(), mMeasDateLastLowProperty, mMeasDateLastHighProperty)
+                                && validateAge(p.ext().getDateFirst(), mDateFirstLowProperty, mDateFirstHighProperty)
+                                && validateAge(p.getDateLatest(), mDateLastLowProperty, mDateLastHighProperty)
                                 && true;
                     } else {
                         return true;
@@ -509,10 +509,10 @@ public class TopoFilter extends FormFilter<TopoManager> implements
             map.put(SDict.VALID_FROM_TO.toString(), makeInfo(getDateFromToCheckModel().getCheckedItems()));
             map.put(getBundle().getString("nextMeasCheckComboBoxTitle"), makeInfo(mMeasNextCheckModel.getCheckedItems()));
             map.put(getBundle().getString("measCodeCheckComboBoxTitle"), makeInfo(mMeasCodeCheckModel.getCheckedItems()));
-            map.put("Första " + Dict.FROM.toString(), mMeasDateFirstLowProperty.get() != null ? mMeasDateFirstLowProperty.get().toString() : "");
-            map.put("Första " + Dict.TO.toString(), mMeasDateFirstHighProperty.get() != null ? mMeasDateFirstHighProperty.get().toString() : "");
-            map.put("Senaste " + Dict.FROM.toString(), mMeasDateLastLowProperty.get() != null ? mMeasDateLastLowProperty.get().toString() : "");
-            map.put("Senaste " + Dict.TO.toString(), mMeasDateLastHighProperty.get() != null ? mMeasDateLastHighProperty.get().toString() : "");
+            map.put("Första " + Dict.FROM.toString(), mDateFirstLowProperty.get() != null ? mDateFirstLowProperty.get().toString() : "");
+            map.put("Första " + Dict.TO.toString(), mDateFirstHighProperty.get() != null ? mDateFirstHighProperty.get().toString() : "");
+            map.put("Senaste " + Dict.FROM.toString(), mDateLastLowProperty.get() != null ? mDateLastLowProperty.get().toString() : "");
+            map.put("Senaste " + Dict.TO.toString(), mDateLastHighProperty.get() != null ? mDateLastHighProperty.get().toString() : "");
 
             if (mMeasNumOfProperty.get()) {
                 var value = mMeasNumOfValueProperty.get();
@@ -578,7 +578,7 @@ public class TopoFilter extends FormFilter<TopoManager> implements
     }
 
     private void initListeners() {
-        List.of(mSectionBasicProperty,
+        List.of(mSectionPointProperty,
                 mSectionDateProperty,
                 mSectionDisruptorProperty,
                 mSectionMeasProperty,
@@ -615,10 +615,10 @@ public class TopoFilter extends FormFilter<TopoManager> implements
                 mMeasYoyoCountValueProperty,
                 mMeasYoyoSizeValueProperty,
                 mMeasYoyoProperty,
-                mMeasDateFirstLowProperty,
-                mMeasDateFirstHighProperty,
-                mMeasDateLastLowProperty,
-                mMeasDateLastHighProperty,
+                mDateFirstLowProperty,
+                mDateFirstHighProperty,
+                mDateLastLowProperty,
+                mDateLastHighProperty,
                 //
                 disruptorDistanceProperty(),
                 mDisruptorManager.lastChangedProperty()
@@ -637,18 +637,6 @@ public class TopoFilter extends FormFilter<TopoManager> implements
                 .append(BooleanHelper.asCheckBox(d3, "3"));
 
         return sb.toString();
-    }
-
-    private boolean validateAge(LocalDateTime lastMeasurementDateTime, SimpleObjectProperty<LocalDate> low, SimpleObjectProperty<LocalDate> high) {
-        if (null != lastMeasurementDateTime) {
-            var lowDate = low.get();
-            var highDate = high.get();
-            var valid = DateHelper.isBetween(lowDate, highDate, lastMeasurementDateTime.toLocalDate());
-
-            return valid;
-        } else {
-            return false;
-        }
     }
 
     private boolean validateAlarm(BTopoControlPoint p) {

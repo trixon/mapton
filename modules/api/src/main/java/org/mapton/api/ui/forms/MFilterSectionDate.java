@@ -83,10 +83,10 @@ public class MFilterSectionDate extends MBaseFilterSection {
     }
 
     public void initListeners(MFilterSectionDateProvider filter) {
-        filter.measDateFirstLowProperty().bind(getDateRangeFirstPane().lowDateProperty());
-        filter.measDateFirstHighProperty().bind(getDateRangeFirstPane().highDateProperty());
-        filter.measDateLastLowProperty().bind(getDateRangeLastPane().lowDateProperty());
-        filter.measDateLastHighProperty().bind(getDateRangeLastPane().highDateProperty());
+        filter.dateFirstLowProperty().bind(getDateRangeFirstPane().lowDateProperty());
+        filter.dateFirstHighProperty().bind(getDateRangeFirstPane().highDateProperty());
+        filter.dateLastLowProperty().bind(getDateRangeLastPane().lowDateProperty());
+        filter.dateLastHighProperty().bind(getDateRangeLastPane().highDateProperty());
         filter.setDateFromToCheckModel(getHasDateFromToSccb().getCheckModel());
     }
 

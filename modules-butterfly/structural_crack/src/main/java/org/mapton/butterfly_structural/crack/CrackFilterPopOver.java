@@ -34,11 +34,11 @@ import org.openide.util.NbPreferences;
  */
 public class CrackFilterPopOver extends BaseTabbedFilterPopOver {
 
+    private final ResourceBundle mBundle = NbBundle.getBundle(CrackFilterPopOver.class);
+    private final CrackFilter mFilter;
     private final MFilterSectionDate mFilterSectionDate;
     private final MFilterSectionDisruptor mFilterSectionDisruptor;
     private final FilterSectionPoint mFilterSectionPoint;
-    private final ResourceBundle mBundle = NbBundle.getBundle(CrackFilterPopOver.class);
-    private final CrackFilter mFilter;
     private final CrackManager mManager = CrackManager.getInstance();
 
     public CrackFilterPopOver(CrackFilter filter) {
@@ -50,6 +50,10 @@ public class CrackFilterPopOver extends BaseTabbedFilterPopOver {
         createUI();
         initListeners();
         initSession(NbPreferences.forModule(getClass()).node(getClass().getSimpleName()));
+
+        mFilterSectionPoint.getMeasNextSccb().setDisable(true);
+        mFilterSectionPoint.getMeasNextSccb().setDisable(true);
+        mFilterSectionPoint.getAlarmNameSccb().setDisable(true);
 
         populate();
     }

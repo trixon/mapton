@@ -41,10 +41,27 @@ import se.trixon.almond.util.fx.session.SessionCheckComboBox;
  */
 public class FilterSectionPoint extends MBaseFilterSection {
 
-    private final PointFilterUI mPointFilterUI = new PointFilterUI();
+    private final SessionCheckComboBox<String> mAlarmNameSccb;
+    private final SessionCheckComboBox<String> mCategorySccb;
+    private final SessionCheckComboBox<Integer> mFrequencySccb;
+    private final SessionCheckComboBox<String> mGroupSccb;
+    private final SessionCheckComboBox<String> mMeasNextSccb;
+    private final SessionCheckComboBox<String> mOperatorSccb;
+    private final SessionCheckComboBox<String> mOriginSccb;
+    private final PointFilterUI mPointFilterUI;
+    private final SessionCheckComboBox<String> mStatusSccb;
 
     public FilterSectionPoint() {
         super("Grunddata");
+        mAlarmNameSccb = new SessionCheckComboBox<>();
+        mStatusSccb = new SessionCheckComboBox<>();
+        mOriginSccb = new SessionCheckComboBox<>();
+        mOperatorSccb = new SessionCheckComboBox<>();
+        mMeasNextSccb = new SessionCheckComboBox<>(true);
+        mGroupSccb = new SessionCheckComboBox<>();
+        mFrequencySccb = new SessionCheckComboBox<>();
+        mCategorySccb = new SessionCheckComboBox<>();
+        mPointFilterUI = new PointFilterUI();
         init();
         setContent(mPointFilterUI.getBaseBox());
     }
@@ -55,19 +72,59 @@ public class FilterSectionPoint extends MBaseFilterSection {
         mPointFilterUI.clear();
     }
 
+    public SessionCheckComboBox<String> getAlarmNameSccb() {
+        mAlarmNameSccb.setDisable(false);
+        return mAlarmNameSccb;
+    }
+
+    public SessionCheckComboBox<String> getCategorySccb() {
+        mCategorySccb.setDisable(false);
+        return mCategorySccb;
+    }
+
+    public SessionCheckComboBox<Integer> getFrequencySccb() {
+        mFrequencySccb.setDisable(false);
+        return mFrequencySccb;
+    }
+
+    public SessionCheckComboBox<String> getGroupSccb() {
+        mGroupSccb.setDisable(false);
+        return mGroupSccb;
+    }
+
+    public SessionCheckComboBox<String> getMeasNextSccb() {
+        mMeasNextSccb.setDisable(false);
+        return mMeasNextSccb;
+    }
+
+    public SessionCheckComboBox<String> getOperatorSccb() {
+        mOperatorSccb.setDisable(false);
+        return mOperatorSccb;
+    }
+
+    public SessionCheckComboBox<String> getOriginSccb() {
+        mOriginSccb.setDisable(false);
+        return mOriginSccb;
+    }
+
     public GridPane getRoot() {
         return mPointFilterUI.getBaseBox();
     }
 
+    public SessionCheckComboBox<String> getStatusSccb() {
+        mStatusSccb.setDisable(false);
+        return mStatusSccb;
+    }
+
     public void initListeners(MFilterSectionPointProvider filter) {
-        filter.setStatusCheckModel(mPointFilterUI.getStatusSccb().getCheckModel());
-        filter.setGroupCheckModel(mPointFilterUI.getGroupSccb().getCheckModel());
-        filter.setCategoryCheckModel(mPointFilterUI.getCategorySccb().getCheckModel());
-        filter.setOperatorCheckModel(mPointFilterUI.getOperatorSccb().getCheckModel());
-        filter.setOriginCheckModel(mPointFilterUI.getOriginSccb().getCheckModel());
-        filter.setAlarmNameCheckModel(mPointFilterUI.getAlarmNameSccb().getCheckModel());
-        filter.setMeasNextCheckModel(mPointFilterUI.getMeasNextSccb().getCheckModel());
-        filter.setFrequencyCheckModel(mPointFilterUI.getFrequencySccb().getCheckModel());
+        filter.setStatusCheckModel(getStatusSccb().getCheckModel());
+        filter.setGroupCheckModel(getGroupSccb().getCheckModel());
+        filter.setCategoryCheckModel(getCategorySccb().getCheckModel());
+        filter.setOperatorCheckModel(getOperatorSccb().getCheckModel());
+        filter.setOriginCheckModel(getOriginSccb().getCheckModel());
+        filter.setAlarmNameCheckModel(getAlarmNameSccb().getCheckModel());
+        filter.setMeasNextCheckModel(getMeasNextSccb().getCheckModel());
+        filter.setFrequencyCheckModel(getFrequencySccb().getCheckModel());
     }
 
     @Override
@@ -79,14 +136,14 @@ public class FilterSectionPoint extends MBaseFilterSection {
     public void load(ArrayList<? extends BXyzPoint> items) {
         var allAlarmNames = items.stream().map(o -> o.getAlarm1Id()).collect(Collectors.toCollection(HashSet::new));
         allAlarmNames.addAll(items.stream().map(o -> o.getAlarm2Id()).collect(Collectors.toSet()));
-        mPointFilterUI.getAlarmNameSccb().loadAndRestoreCheckItems(allAlarmNames.stream());
-        mPointFilterUI.getGroupSccb().loadAndRestoreCheckItems(items.stream().map(o -> o.getGroup()));
-        mPointFilterUI.getCategorySccb().loadAndRestoreCheckItems(items.stream().map(o -> o.getCategory()));
-        mPointFilterUI.getOperatorSccb().loadAndRestoreCheckItems(items.stream().map(o -> o.getOperator()));
-        mPointFilterUI.getOriginSccb().loadAndRestoreCheckItems(items.stream().map(o -> o.getOrigin()));
-        mPointFilterUI.getStatusSccb().loadAndRestoreCheckItems(items.stream().map(o -> o.getStatus()));
-        mPointFilterUI.getFrequencySccb().loadAndRestoreCheckItems(items.stream().filter(o -> o.getFrequency() != null).map(o -> o.getFrequency()));
-        mPointFilterUI.getMeasNextSccb().loadAndRestoreCheckItems();
+        getAlarmNameSccb().loadAndRestoreCheckItems(allAlarmNames.stream());
+        getGroupSccb().loadAndRestoreCheckItems(items.stream().map(o -> o.getGroup()));
+        getCategorySccb().loadAndRestoreCheckItems(items.stream().map(o -> o.getCategory()));
+        getOperatorSccb().loadAndRestoreCheckItems(items.stream().map(o -> o.getOperator()));
+        getOriginSccb().loadAndRestoreCheckItems(items.stream().map(o -> o.getOrigin()));
+        getStatusSccb().loadAndRestoreCheckItems(items.stream().map(o -> o.getStatus()));
+        getFrequencySccb().loadAndRestoreCheckItems(items.stream().filter(o -> o.getFrequency() != null).map(o -> o.getFrequency()));
+        getMeasNextSccb().loadAndRestoreCheckItems();
     }
 
     @Override
@@ -106,18 +163,10 @@ public class FilterSectionPoint extends MBaseFilterSection {
 
     public class PointFilterUI {
 
-        private final SessionCheckComboBox<String> mAlarmNameSccb = new SessionCheckComboBox<>();
         private Node mBaseBorderBox;
         private GridPane mBaseBox;
         private final double mBorderInnerPadding = FxHelper.getUIScaled(8.0);
         private final ResourceBundle mBundle = NbBundle.getBundle(getClass());
-        private final SessionCheckComboBox<String> mCategorySccb = new SessionCheckComboBox<>();
-        private final SessionCheckComboBox<Integer> mFrequencySccb = new SessionCheckComboBox<>();
-        private final SessionCheckComboBox<String> mGroupSccb = new SessionCheckComboBox<>();
-        private final SessionCheckComboBox<String> mMeasNextSccb = new SessionCheckComboBox<>(true);
-        private final SessionCheckComboBox<String> mOperatorSccb = new SessionCheckComboBox<>();
-        private final SessionCheckComboBox<String> mOriginSccb = new SessionCheckComboBox<>();
-        private final SessionCheckComboBox<String> mStatusSccb = new SessionCheckComboBox<>();
         private final double mTopBorderInnerPadding = FxHelper.getUIScaled(16.0);
 
         public PointFilterUI() {
@@ -137,11 +186,6 @@ public class FilterSectionPoint extends MBaseFilterSection {
             );
         }
 
-        public SessionCheckComboBox<String> getAlarmNameSccb() {
-            mAlarmNameSccb.setDisable(false);
-            return mAlarmNameSccb;
-        }
-
         public Node getBaseBorderBox() {
             if (mBaseBorderBox == null) {
                 mBaseBorderBox = Borders.wrap(mBaseBox)
@@ -158,41 +202,6 @@ public class FilterSectionPoint extends MBaseFilterSection {
 
         public GridPane getBaseBox() {
             return mBaseBox;
-        }
-
-        public SessionCheckComboBox<String> getCategorySccb() {
-            mCategorySccb.setDisable(false);
-            return mCategorySccb;
-        }
-
-        public SessionCheckComboBox<Integer> getFrequencySccb() {
-            mFrequencySccb.setDisable(false);
-            return mFrequencySccb;
-        }
-
-        public SessionCheckComboBox<String> getGroupSccb() {
-            mGroupSccb.setDisable(false);
-            return mGroupSccb;
-        }
-
-        public SessionCheckComboBox<String> getMeasNextSccb() {
-            mMeasNextSccb.setDisable(false);
-            return mMeasNextSccb;
-        }
-
-        public SessionCheckComboBox<String> getOperatorSccb() {
-            mOperatorSccb.setDisable(false);
-            return mOperatorSccb;
-        }
-
-        public SessionCheckComboBox<String> getOriginSccb() {
-            mOriginSccb.setDisable(false);
-            return mOriginSccb;
-        }
-
-        public SessionCheckComboBox<String> getStatusSccb() {
-            mStatusSccb.setDisable(false);
-            return mStatusSccb;
         }
 
         public void initSession(SessionManager sessionManager) {

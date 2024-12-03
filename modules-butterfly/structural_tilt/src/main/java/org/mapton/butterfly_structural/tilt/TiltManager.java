@@ -71,7 +71,10 @@ public class TiltManager extends BaseManager<BStructuralTiltPoint> {
             for (var p : butterfly.structural().getTiltPoints()) {
                 var observations = nameToObservations.getOrDefault(p.getName(), new ArrayList<>());
                 if (!observations.isEmpty()) {
+                    p.ext().setDateFirst(observations.getFirst().getDate());
                     p.setDateLatest(observations.getLast().getDate());
+                } else {
+                    p.ext().setDateFirst(LocalDateTime.MIN);
                 }
 
                 p.ext().setDateLatest(p.getDateLatest());
