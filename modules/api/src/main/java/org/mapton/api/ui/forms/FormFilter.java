@@ -180,6 +180,7 @@ public abstract class FormFilter<ManagerType extends MBaseDataManager> {
 
     public abstract void update();
 
+    @Deprecated
     public boolean validateAge(LocalDateTime dateTime, SimpleObjectProperty<LocalDate> low, SimpleObjectProperty<LocalDate> high) {
         if (null != dateTime) {
             var lowDate = low.get();
@@ -210,6 +211,7 @@ public abstract class FormFilter<ManagerType extends MBaseDataManager> {
         return valid;
     }
 
+    @Deprecated
     public boolean validateDateFromToHas(LocalDate fromDate, LocalDate toDate) {
         var validFromChecked = mDateFromToCheckModel.isChecked(SDict.HAS_VALID_FROM.toString());
         var validToChecked = mDateFromToCheckModel.isChecked(SDict.HAS_VALID_TO.toString());
@@ -220,6 +222,7 @@ public abstract class FormFilter<ManagerType extends MBaseDataManager> {
         return valid;
     }
 
+    @Deprecated
     public boolean validateDateFromToIs(LocalDate fromDate, LocalDate toDate) {
         var now = LocalDate.now();
         var validChecked = mDateFromToCheckModel.isChecked(SDict.IS_VALID.toString());
@@ -242,6 +245,7 @@ public abstract class FormFilter<ManagerType extends MBaseDataManager> {
         }
     }
 
+    @Deprecated
     public boolean validateDateFromToWithout(LocalDate fromDate, LocalDate toDate) {
         var validFromChecked = mDateFromToCheckModel.isChecked(SDict.WITHOUT_VALID_FROM.toString());
         var validToChecked = mDateFromToCheckModel.isChecked(SDict.WITHOUT_VALID_TO.toString());

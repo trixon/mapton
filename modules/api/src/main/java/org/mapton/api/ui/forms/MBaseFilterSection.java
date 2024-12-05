@@ -76,6 +76,10 @@ public abstract class MBaseFilterSection {
 
     public abstract void reset(PropertiesConfiguration filterConfig);
 
+    public boolean isSelected() {
+        return selectedProperty().get();
+    }
+
     public BooleanProperty selectedProperty() {
         return mCheckedTab.getTabCheckBox().selectedProperty();
     }

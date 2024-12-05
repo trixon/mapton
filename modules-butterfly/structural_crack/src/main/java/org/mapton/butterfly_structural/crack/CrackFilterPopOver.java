@@ -19,8 +19,8 @@ import com.dlsc.gemsfx.util.SessionManager;
 import java.util.ResourceBundle;
 import java.util.prefs.Preferences;
 import javafx.scene.layout.BorderPane;
-import org.mapton.api.ui.forms.MFilterSectionDate;
 import org.mapton.api.ui.forms.MFilterSectionDisruptor;
+import org.mapton.butterfly_core.api.BFilterSectionDate;
 import org.mapton.butterfly_core.api.BaseTabbedFilterPopOver;
 import org.mapton.butterfly_core.api.FilterSectionMisc;
 import org.mapton.butterfly_core.api.FilterSectionPoint;
@@ -36,7 +36,7 @@ public class CrackFilterPopOver extends BaseTabbedFilterPopOver {
 
     private final ResourceBundle mBundle = NbBundle.getBundle(CrackFilterPopOver.class);
     private final CrackFilter mFilter;
-    private final MFilterSectionDate mFilterSectionDate;
+    private final BFilterSectionDate mFilterSectionDate;
     private final MFilterSectionDisruptor mFilterSectionDisruptor;
     private final FilterSectionMisc mFilterSectionMisc;
     private final FilterSectionPoint mFilterSectionPoint;
@@ -44,11 +44,13 @@ public class CrackFilterPopOver extends BaseTabbedFilterPopOver {
 
     public CrackFilterPopOver(CrackFilter filter) {
         mFilterSectionPoint = new FilterSectionPoint();
-        mFilterSectionDate = new MFilterSectionDate();
+        mFilterSectionDate = new BFilterSectionDate();
         mFilterSectionDisruptor = new MFilterSectionDisruptor();
         mFilterSectionMisc = new FilterSectionMisc();
 
         mFilter = filter;
+        mFilter.setFilterSectionDate(mFilterSectionDate);
+
         setFilter(filter);
         createUI();
         initListeners();
@@ -139,15 +141,13 @@ public class CrackFilterPopOver extends BaseTabbedFilterPopOver {
         });
 
         mFilterSectionPoint.initListeners(mFilter);
-        mFilterSectionDate.initListeners(mFilter);
         mFilterSectionDisruptor.initListeners(mFilter);
         mFilterSectionMisc.initListeners(mFilter);
 
         mFilter.sectionPointProperty().bind(mFilterSectionPoint.selectedProperty());
-        mFilter.sectionDateProperty().bind(mFilterSectionDate.selectedProperty());
         mFilter.sectionDisruptorProperty().bind(mFilterSectionDisruptor.selectedProperty());
-        mFilter.polygonFilterProperty().bind(usePolygonFilterProperty());
 
+        mFilter.polygonFilterProperty().bind(usePolygonFilterProperty());
         mFilter.initCheckModelListeners();
     }
 

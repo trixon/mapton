@@ -16,18 +16,17 @@
 package org.mapton.butterfly_structural.tilt;
 
 import j2html.tags.ContainerTag;
-import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ResourceBundle;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import org.controlsfx.control.IndexedCheckModel;
-import org.mapton.api.ui.forms.MFilterSectionDateProvider;
 import org.mapton.api.ui.forms.MFilterSectionDisruptorProvider;
 import org.mapton.api.ui.forms.MFilterSectionPointProvider;
+import org.mapton.butterfly_core.api.BFilterSectionDate;
+import org.mapton.butterfly_core.api.BFilterSectionDateProvider;
 import org.mapton.butterfly_core.api.ButterflyFormFilter;
 import org.mapton.butterfly_core.api.FilterSectionMiscProvider;
 import org.openide.util.NbBundle;
@@ -40,23 +39,19 @@ import se.trixon.almond.util.Dict;
 public class TiltFilter extends ButterflyFormFilter<TiltManager> implements
         FilterSectionMiscProvider,
         MFilterSectionPointProvider,
-        MFilterSectionDateProvider,
+        BFilterSectionDateProvider,
         MFilterSectionDisruptorProvider {
 
     private IndexedCheckModel mAlarmNameCheckModel;
     private final ResourceBundle mBundle = NbBundle.getBundle(TiltFilter.class);
     private IndexedCheckModel mCategoryCheckModel;
-    private final SimpleObjectProperty<LocalDate> mDateFirstHighProperty = new SimpleObjectProperty();
-    private final SimpleObjectProperty<LocalDate> mDateFirstLowProperty = new SimpleObjectProperty();
-    private final SimpleObjectProperty<LocalDate> mDateLastHighProperty = new SimpleObjectProperty();
-    private final SimpleObjectProperty<LocalDate> mDateLastLowProperty = new SimpleObjectProperty();
+    private BFilterSectionDate mFilterSectionDate;
     private IndexedCheckModel mGroupCheckModel;
     private final SimpleBooleanProperty mInvertProperty = new SimpleBooleanProperty();
     private final TiltManager mManager = TiltManager.getInstance();
     private IndexedCheckModel<String> mMeasNextCheckModel;
     private IndexedCheckModel mOperatorCheckModel;
     private IndexedCheckModel mOriginCheckModel;
-    private final SimpleBooleanProperty mSectionDateProperty = new SimpleBooleanProperty();
     private final SimpleBooleanProperty mSectionDisruptorProperty = new SimpleBooleanProperty();
     private final SimpleBooleanProperty mSectionPointProperty = new SimpleBooleanProperty();
     private IndexedCheckModel mStatusCheckModel;
@@ -65,26 +60,6 @@ public class TiltFilter extends ButterflyFormFilter<TiltManager> implements
         super(TiltManager.getInstance());
 
         initListeners();
-    }
-
-    @Override
-    public SimpleObjectProperty<LocalDate> dateFirstHighProperty() {
-        return mDateFirstHighProperty;
-    }
-
-    @Override
-    public SimpleObjectProperty<LocalDate> dateFirstLowProperty() {
-        return mDateFirstLowProperty;
-    }
-
-    @Override
-    public SimpleObjectProperty<LocalDate> dateLastHighProperty() {
-        return mDateLastHighProperty;
-    }
-
-    @Override
-    public SimpleObjectProperty<LocalDate> dateLastLowProperty() {
-        return mDateLastLowProperty;
     }
 
     @Override
@@ -130,7 +105,6 @@ public class TiltFilter extends ButterflyFormFilter<TiltManager> implements
         List.of(
                 mAlarmNameCheckModel,
                 mCategoryCheckModel,
-                getDateFromToCheckModel(),
                 mFrequencyCheckModel,
                 mMeasNextCheckModel,
                 mGroupCheckModel,
@@ -144,11 +118,6 @@ public class TiltFilter extends ButterflyFormFilter<TiltManager> implements
     @Override
     public SimpleBooleanProperty invertProperty() {
         return mInvertProperty;
-    }
-
-    @Override
-    public SimpleBooleanProperty sectionDateProperty() {
-        return mSectionDateProperty;
     }
 
     @Override
@@ -169,6 +138,12 @@ public class TiltFilter extends ButterflyFormFilter<TiltManager> implements
     @Override
     public void setCategoryCheckModel(IndexedCheckModel categoryCheckModel) {
         mCategoryCheckModel = categoryCheckModel;
+    }
+
+    @Override
+    public void setFilterSectionDate(BFilterSectionDate filterSectionDate) {
+        mFilterSectionDate = filterSectionDate;
+        mFilterSectionDate.initListeners(mChangeListenerObject, mListChangeListener);
     }
 
     @Override
@@ -217,18 +192,7 @@ public class TiltFilter extends ButterflyFormFilter<TiltManager> implements
                         return true;
                     }
                 })
-                .filter(p -> {
-                    if (mSectionDateProperty.get()) {
-                        return validateDateFromToHas(p.getDateValidFrom(), p.getDateValidTo())
-                                && validateDateFromToWithout(p.getDateValidFrom(), p.getDateValidTo())
-                                && validateDateFromToIs(p.getDateValidFrom(), p.getDateValidTo())
-                                && validateAge(p.ext().getDateFirst(), mDateFirstLowProperty, mDateFirstHighProperty)
-                                && validateAge(p.getDateLatest(), mDateLastLowProperty, mDateLastHighProperty)
-                                && true;
-                    } else {
-                        return true;
-                    }
-                })
+                .filter(p -> mFilterSectionDate.filter(p, p.ext().getDateFirst()))
                 .filter(p -> {
                     if (mSectionDisruptorProperty.get()) {
                         return validateDisruptor(p.getZeroX(), p.getZeroY())
@@ -267,12 +231,7 @@ public class TiltFilter extends ButterflyFormFilter<TiltManager> implements
 
     private void initListeners() {
         List.of(mSectionPointProperty,
-                mSectionDateProperty,
                 mSectionDisruptorProperty,
-                mDateFirstLowProperty,
-                mDateFirstHighProperty,
-                mDateLastLowProperty,
-                mDateLastHighProperty,
                 mInvertProperty,
                 //
                 disruptorDistanceProperty(),

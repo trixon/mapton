@@ -13,15 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.api.ui.forms;
+package org.mapton.butterfly_core.api;
 
 import com.dlsc.gemsfx.util.SessionManager;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import javafx.scene.layout.GridPane;
 import org.apache.commons.configuration2.PropertiesConfiguration;
+import org.controlsfx.control.IndexedCheckModel;
 import org.controlsfx.tools.Borders;
 import org.mapton.api.MTemporalRange;
+import org.mapton.api.ui.forms.DateRangePane;
+import org.mapton.api.ui.forms.MBaseFilterSection;
+import org.mapton.butterfly_format.types.BXyzPoint;
+import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SDict;
 import se.trixon.almond.util.fx.FxHelper;
@@ -31,7 +41,7 @@ import se.trixon.almond.util.fx.session.SessionCheckComboBox;
  *
  * @author Patrik Karlström
  */
-public class MFilterSectionDate extends MBaseFilterSection {
+public class BFilterSectionDate extends MBaseFilterSection {
 
     private Node mDateFirstBorderBox;
     private Node mDateLastBorderBox;
@@ -40,7 +50,7 @@ public class MFilterSectionDate extends MBaseFilterSection {
     private final SessionCheckComboBox<String> mHasDateFromToSccb = new SessionCheckComboBox<>(true);
     private final GridPane mRoot = new GridPane(columnGap, rowGap);
 
-    public MFilterSectionDate() {
+    public BFilterSectionDate() {
         super(Dict.DATE.toString());
         createUI();
         setContent(mRoot);
@@ -56,11 +66,44 @@ public class MFilterSectionDate extends MBaseFilterSection {
         );
     }
 
+    public SimpleObjectProperty<LocalDate> dateFirstHighProperty() {
+        return mDateRangeFirstPane.highDateProperty();
+    }
+
+    public SimpleObjectProperty<LocalDate> dateFirstLowProperty() {
+        return mDateRangeFirstPane.lowDateProperty();
+    }
+
+    public SimpleObjectProperty<LocalDate> dateLastHighProperty() {
+        return mDateRangeLastPane.highDateProperty();
+    }
+
+    public SimpleObjectProperty<LocalDate> dateLastLowProperty() {
+        return mDateRangeLastPane.lowDateProperty();
+    }
+
+    public boolean filter(BXyzPoint p, LocalDateTime dateFirst) {
+        if (isSelected()) {
+            return validateDateFromToHas(p.getDateValidFrom(), p.getDateValidTo())
+                    && validateDateFromToWithout(p.getDateValidFrom(), p.getDateValidTo())
+                    && validateDateFromToIs(p.getDateValidFrom(), p.getDateValidTo())
+                    && validateAge(dateFirst, dateFirstLowProperty(), dateFirstHighProperty())
+                    && validateAge(p.getDateLatest(), dateLastLowProperty(), dateLastHighProperty())
+                    && true;
+        } else {
+            return true;
+        }
+    }
+
     public Node getDateFirstBorderBox() {
         if (mDateFirstBorderBox == null) {
             mDateFirstBorderBox = Borders.wrap(mDateRangeFirstPane.getRoot()).etchedBorder().title("Period för första mätning").innerPadding(mTopBorderInnerPadding, mBorderInnerPadding, mBorderInnerPadding, mBorderInnerPadding).outerPadding(0).raised().build().build();
         }
         return mDateFirstBorderBox;
+    }
+
+    public IndexedCheckModel getDateFromToCheckModel() {
+        return mHasDateFromToSccb.getCheckModel();
     }
 
     public Node getDateLastBorderBox() {
@@ -82,12 +125,17 @@ public class MFilterSectionDate extends MBaseFilterSection {
         return mHasDateFromToSccb;
     }
 
-    public void initListeners(MFilterSectionDateProvider filter) {
-        filter.dateFirstLowProperty().bind(getDateRangeFirstPane().lowDateProperty());
-        filter.dateFirstHighProperty().bind(getDateRangeFirstPane().highDateProperty());
-        filter.dateLastLowProperty().bind(getDateRangeLastPane().lowDateProperty());
-        filter.dateLastHighProperty().bind(getDateRangeLastPane().highDateProperty());
-        filter.setDateFromToCheckModel(getHasDateFromToSccb().getCheckModel());
+    public void initListeners(ChangeListener changeListenerObject, ListChangeListener<Object> listChangeListener) {
+        List.of(
+                dateFirstHighProperty(),
+                dateFirstLowProperty(),
+                dateLastHighProperty(),
+                dateLastLowProperty()
+        ).forEach(propertyBase -> propertyBase.addListener(changeListenerObject));
+
+        List.of(
+                getDateFromToCheckModel()
+        ).forEach(cm -> cm.getCheckedItems().addListener(listChangeListener));
     }
 
     @Override
@@ -136,6 +184,60 @@ public class MFilterSectionDate extends MBaseFilterSection {
         mRoot.addRow(row++, getDateFirstBorderBox(), getDateLastBorderBox());
         mRoot.addRow(row++, getHasDateFromToSccb());
         FxHelper.autoSizeColumn(mRoot, 2);
+    }
+
+    private boolean validateAge(LocalDateTime dateTime, SimpleObjectProperty<LocalDate> low, SimpleObjectProperty<LocalDate> high) {
+        if (null != dateTime) {
+            var lowDate = low.get();
+            var highDate = high.get();
+            var valid = DateHelper.isBetween(lowDate, highDate, dateTime.toLocalDate());
+
+            return valid;
+        } else {
+            return false;
+        }
+    }
+
+    private boolean validateDateFromToHas(LocalDate fromDate, LocalDate toDate) {
+        var validFromChecked = getDateFromToCheckModel().isChecked(SDict.HAS_VALID_FROM.toString());
+        var validToChecked = getDateFromToCheckModel().isChecked(SDict.HAS_VALID_TO.toString());
+        var valid = (!validFromChecked && !validToChecked)
+                || (fromDate != null && validFromChecked)
+                || (toDate != null && validToChecked);
+
+        return valid;
+    }
+
+    private boolean validateDateFromToIs(LocalDate fromDate, LocalDate toDate) {
+        var now = LocalDate.now();
+        var validChecked = getDateFromToCheckModel().isChecked(SDict.IS_VALID.toString());
+        var invalidChecked = getDateFromToCheckModel().isChecked(SDict.IS_INVALID.toString());
+
+        if (validChecked && invalidChecked) {
+            return false;
+        } else if (!validChecked && !invalidChecked) {
+            return true;
+        }
+
+        if (validChecked) {
+            var validFromDate = fromDate == null ? false : DateHelper.isAfterOrEqual(now, fromDate);
+            var validToDate = toDate == null ? false : DateHelper.isBeforeOrEqual(now, toDate);
+            return validFromDate || validToDate;
+        } else {//invalidChecked
+            var invalidFromDate = fromDate == null ? true : DateHelper.isAfterOrEqual(now, fromDate);
+            var invalidToDate = toDate == null ? true : DateHelper.isBeforeOrEqual(now, toDate);
+            return !invalidFromDate || !invalidToDate;
+        }
+    }
+
+    private boolean validateDateFromToWithout(LocalDate fromDate, LocalDate toDate) {
+        var validFromChecked = getDateFromToCheckModel().isChecked(SDict.WITHOUT_VALID_FROM.toString());
+        var validToChecked = getDateFromToCheckModel().isChecked(SDict.WITHOUT_VALID_TO.toString());
+        var valid = (!validFromChecked && !validToChecked)
+                || (fromDate == null && validFromChecked)
+                || (toDate == null && validToChecked);
+
+        return valid;
     }
 
 }
