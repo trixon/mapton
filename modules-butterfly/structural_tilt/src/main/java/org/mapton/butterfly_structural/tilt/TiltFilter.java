@@ -22,11 +22,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ResourceBundle;
 import javafx.beans.property.SimpleBooleanProperty;
-import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.ui.forms.MFilterSectionDisruptorProvider;
-import org.mapton.api.ui.forms.MFilterSectionPointProvider;
 import org.mapton.butterfly_core.api.BFilterSectionDate;
 import org.mapton.butterfly_core.api.BFilterSectionDateProvider;
+import org.mapton.butterfly_core.api.BFilterSectionPoint;
+import org.mapton.butterfly_core.api.BFilterSectionPointProvider;
 import org.mapton.butterfly_core.api.ButterflyFormFilter;
 import org.mapton.butterfly_core.api.FilterSectionMiscProvider;
 import org.openide.util.NbBundle;
@@ -38,23 +38,16 @@ import se.trixon.almond.util.Dict;
  */
 public class TiltFilter extends ButterflyFormFilter<TiltManager> implements
         FilterSectionMiscProvider,
-        MFilterSectionPointProvider,
+        BFilterSectionPointProvider,
         BFilterSectionDateProvider,
         MFilterSectionDisruptorProvider {
 
-    private IndexedCheckModel mAlarmNameCheckModel;
     private final ResourceBundle mBundle = NbBundle.getBundle(TiltFilter.class);
-    private IndexedCheckModel mCategoryCheckModel;
     private BFilterSectionDate mFilterSectionDate;
-    private IndexedCheckModel mGroupCheckModel;
     private final SimpleBooleanProperty mInvertProperty = new SimpleBooleanProperty();
     private final TiltManager mManager = TiltManager.getInstance();
-    private IndexedCheckModel<String> mMeasNextCheckModel;
-    private IndexedCheckModel mOperatorCheckModel;
-    private IndexedCheckModel mOriginCheckModel;
     private final SimpleBooleanProperty mSectionDisruptorProperty = new SimpleBooleanProperty();
-    private final SimpleBooleanProperty mSectionPointProperty = new SimpleBooleanProperty();
-    private IndexedCheckModel mStatusCheckModel;
+    private BFilterSectionPoint mFilterSectionPoint;
 
     public TiltFilter() {
         super(TiltManager.getInstance());
@@ -62,55 +55,8 @@ public class TiltFilter extends ButterflyFormFilter<TiltManager> implements
         initListeners();
     }
 
-    @Override
-    public IndexedCheckModel getAlarmLevelCheckModel() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public IndexedCheckModel getAlarmNameCheckModel() {
-        return mAlarmNameCheckModel;
-    }
-
-    @Override
-    public IndexedCheckModel getCategoryCheckModel() {
-        return mCategoryCheckModel;
-    }
-
-    @Override
-    public IndexedCheckModel getGroupCheckModel() {
-        return mGroupCheckModel;
-    }
-
-    public IndexedCheckModel<String> getMeasNextCheckModel() {
-        return mMeasNextCheckModel;
-    }
-
-    @Override
-    public IndexedCheckModel getOperatorCheckModel() {
-        return mOperatorCheckModel;
-    }
-
-    @Override
-    public IndexedCheckModel getOriginCheckModel() {
-        return mOriginCheckModel;
-    }
-
-    @Override
-    public IndexedCheckModel getStatusCheckModel() {
-        return mStatusCheckModel;
-    }
-
     public void initCheckModelListeners() {
         List.of(
-                mAlarmNameCheckModel,
-                mCategoryCheckModel,
-                mFrequencyCheckModel,
-                mMeasNextCheckModel,
-                mGroupCheckModel,
-                mOperatorCheckModel,
-                mOriginCheckModel,
-                mStatusCheckModel,
                 getDisruptorCheckModel()
         ).forEach(cm -> cm.getCheckedItems().addListener(mListChangeListener));
     }
@@ -126,49 +72,15 @@ public class TiltFilter extends ButterflyFormFilter<TiltManager> implements
     }
 
     @Override
-    public SimpleBooleanProperty sectionPointProperty() {
-        return mSectionPointProperty;
-    }
-
-    @Override
-    public void setAlarmNameCheckModel(IndexedCheckModel alarmNameCheckModel) {
-        mAlarmNameCheckModel = alarmNameCheckModel;
-    }
-
-    @Override
-    public void setCategoryCheckModel(IndexedCheckModel categoryCheckModel) {
-        mCategoryCheckModel = categoryCheckModel;
-    }
-
-    @Override
-    public void setFilterSectionDate(BFilterSectionDate filterSectionDate) {
+    public void setFilterSection(BFilterSectionDate filterSectionDate) {
         mFilterSectionDate = filterSectionDate;
         mFilterSectionDate.initListeners(mChangeListenerObject, mListChangeListener);
     }
 
     @Override
-    public void setGroupCheckModel(IndexedCheckModel groupCheckModel) {
-        mGroupCheckModel = groupCheckModel;
-    }
-
-    @Override
-    public void setMeasNextCheckModel(IndexedCheckModel measNextCheckModel) {
-        mMeasNextCheckModel = measNextCheckModel;
-    }
-
-    @Override
-    public void setOperatorCheckModel(IndexedCheckModel operatorCheckModel) {
-        mOperatorCheckModel = operatorCheckModel;
-    }
-
-    @Override
-    public void setOriginCheckModel(IndexedCheckModel originCheckModel) {
-        mOriginCheckModel = originCheckModel;
-    }
-
-    @Override
-    public void setStatusCheckModel(IndexedCheckModel statusCheckModel) {
-        mStatusCheckModel = statusCheckModel;
+    public void setFilterSection(BFilterSectionPoint filterSection) {
+        mFilterSectionPoint = filterSection;
+        mFilterSectionPoint.initListeners(mChangeListenerObject, mListChangeListener);
     }
 
     @Override
@@ -177,21 +89,7 @@ public class TiltFilter extends ButterflyFormFilter<TiltManager> implements
                 .filter(p -> validateFreeText(p.getName(), p.getGroup(), p.getComment()))
                 .filter(p -> validateCoordinateArea(p.getLat(), p.getLon()))
                 .filter(p -> validateCoordinateRuler(p.getLat(), p.getLon()))
-                .filter(p -> {
-                    if (mSectionPointProperty.get()) {
-                        return validateCheck(mStatusCheckModel, p.getStatus())
-                                && validateCheck(mGroupCheckModel, p.getGroup())
-                                && validateCheck(mCategoryCheckModel, p.getCategory())
-                                && validateAlarmName1(p, mAlarmNameCheckModel)
-                                && validateFrequency(p.getFrequency())
-                                && validateCheck(mOperatorCheckModel, p.getOperator())
-                                && validateCheck(mOriginCheckModel, p.getOrigin())
-                                && validateNextMeas(p, mMeasNextCheckModel, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS))
-                                && true;
-                    } else {
-                        return true;
-                    }
-                })
+                .filter(p -> mFilterSectionPoint.filter(p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS)))
                 .filter(p -> mFilterSectionDate.filter(p, p.ext().getDateFirst()))
                 .filter(p -> {
                     if (mSectionDisruptorProperty.get()) {
@@ -221,7 +119,7 @@ public class TiltFilter extends ButterflyFormFilter<TiltManager> implements
         var map = new LinkedHashMap<String, String>();
 
         map.put(Dict.TEXT.toString(), getFreeText());
-        map.put(Dict.GROUP.toString(), makeInfo(mGroupCheckModel.getCheckedItems()));
+//        map.put(Dict.GROUP.toString(), makeInfo(mGroupCheckModel.getCheckedItems()));
 //        map.put(Dict.TYPE.toString(), makeInfo(mTypeCheckModel.getCheckedItems()));
 //        map.put(mBundle.getString("soilMaterial"), makeInfo(mSoilCheckModel.getCheckedItems()));
 
@@ -230,7 +128,7 @@ public class TiltFilter extends ButterflyFormFilter<TiltManager> implements
     }
 
     private void initListeners() {
-        List.of(mSectionPointProperty,
+        List.of(
                 mSectionDisruptorProperty,
                 mInvertProperty,
                 //

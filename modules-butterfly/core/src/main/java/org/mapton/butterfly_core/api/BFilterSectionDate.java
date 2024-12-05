@@ -127,6 +127,8 @@ public class BFilterSectionDate extends MBaseFilterSection {
 
     public void initListeners(ChangeListener changeListenerObject, ListChangeListener<Object> listChangeListener) {
         List.of(
+                selectedProperty(),
+                //
                 dateFirstHighProperty(),
                 dateFirstLowProperty(),
                 dateLastHighProperty(),

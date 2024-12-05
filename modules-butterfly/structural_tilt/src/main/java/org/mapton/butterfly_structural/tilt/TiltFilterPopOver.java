@@ -21,9 +21,9 @@ import java.util.prefs.Preferences;
 import javafx.scene.layout.BorderPane;
 import org.mapton.api.ui.forms.MFilterSectionDisruptor;
 import org.mapton.butterfly_core.api.BFilterSectionDate;
+import org.mapton.butterfly_core.api.BFilterSectionPoint;
 import org.mapton.butterfly_core.api.BaseTabbedFilterPopOver;
 import org.mapton.butterfly_core.api.FilterSectionMisc;
-import org.mapton.butterfly_core.api.FilterSectionPoint;
 import org.mapton.butterfly_format.Butterfly;
 import org.openide.util.NbBundle;
 import org.openide.util.NbPreferences;
@@ -39,17 +39,18 @@ public class TiltFilterPopOver extends BaseTabbedFilterPopOver {
     private final BFilterSectionDate mFilterSectionDate;
     private final MFilterSectionDisruptor mFilterSectionDisruptor;
     private final FilterSectionMisc mFilterSectionMisc;
-    private final FilterSectionPoint mFilterSectionPoint;
+    private final BFilterSectionPoint mFilterSectionPoint;
     private final TiltManager mManager = TiltManager.getInstance();
 
     public TiltFilterPopOver(TiltFilter filter) {
-        mFilterSectionPoint = new FilterSectionPoint();
+        mFilterSectionPoint = new BFilterSectionPoint();
         mFilterSectionDate = new BFilterSectionDate();
         mFilterSectionDisruptor = new MFilterSectionDisruptor();
         mFilterSectionMisc = new FilterSectionMisc();
 
         mFilter = filter;
-        mFilter.setFilterSectionDate(mFilterSectionDate);
+        mFilter.setFilterSection(mFilterSectionPoint);
+        mFilter.setFilterSection(mFilterSectionDate);
 
         setFilter(filter);
         createUI();
@@ -136,11 +137,9 @@ public class TiltFilterPopOver extends BaseTabbedFilterPopOver {
             mFilter.freeTextProperty().set(mManager.getSelectedItem().getName());
         });
 
-        mFilterSectionPoint.initListeners(mFilter);
         mFilterSectionDisruptor.initListeners(mFilter);
         mFilterSectionMisc.initListeners(mFilter);
 
-        mFilter.sectionPointProperty().bind(mFilterSectionPoint.selectedProperty());
         mFilter.sectionDisruptorProperty().bind(mFilterSectionDisruptor.selectedProperty());
 
         mFilter.polygonFilterProperty().bind(usePolygonFilterProperty());

@@ -37,9 +37,10 @@ import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.MTemporalManager;
 import org.mapton.api.ui.forms.FormHelper;
 import org.mapton.api.ui.forms.MFilterSectionDisruptorProvider;
-import org.mapton.api.ui.forms.MFilterSectionPointProvider;
 import org.mapton.butterfly_core.api.BFilterSectionDate;
 import org.mapton.butterfly_core.api.BFilterSectionDateProvider;
+import org.mapton.butterfly_core.api.BFilterSectionPoint;
+import org.mapton.butterfly_core.api.BFilterSectionPointProvider;
 import org.mapton.butterfly_core.api.ButterflyFormFilter;
 import org.mapton.butterfly_core.api.FilterSectionMiscProvider;
 import org.mapton.butterfly_format.types.BComponent;
@@ -62,20 +63,18 @@ import se.trixon.almond.util.SDict;
  */
 public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
         FilterSectionMiscProvider,
-        MFilterSectionPointProvider,
+        BFilterSectionPointProvider,
         BFilterSectionDateProvider,
         MFilterSectionDisruptorProvider {
 
     IndexedCheckModel<AlarmLevelFilter> mAlarmLevelCheckModel;
     IndexedCheckModel<String> mMeasCodeCheckModel;
     IndexedCheckModel<String> mMeasOperatorsCheckModel;
-    private IndexedCheckModel mAlarmNameCheckModel;
-    private IndexedCheckModel mCategoryCheckModel;
     private final SimpleBooleanProperty mDimens1Property = new SimpleBooleanProperty();
     private final SimpleBooleanProperty mDimens2Property = new SimpleBooleanProperty();
     private final SimpleBooleanProperty mDimens3Property = new SimpleBooleanProperty();
     private BFilterSectionDate mFilterSectionDate;
-    private IndexedCheckModel mGroupCheckModel;
+    private BFilterSectionPoint mFilterSectionPoint;
     private final SimpleBooleanProperty mInvertProperty = new SimpleBooleanProperty();
     private final TopoManager mManager = TopoManager.getInstance();
     private final SimpleBooleanProperty mMeasAlarmLevelAgeProperty = new SimpleBooleanProperty();
@@ -95,7 +94,6 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
     private final SimpleIntegerProperty mMeasDiffPercentagePValueProperty = new SimpleIntegerProperty();
     private final SimpleBooleanProperty mMeasIncludeWithout = new SimpleBooleanProperty();
     private final SimpleBooleanProperty mMeasLatestOperator = new SimpleBooleanProperty();
-    private IndexedCheckModel<String> mMeasNextCheckModel;
     private final SimpleBooleanProperty mMeasNumOfProperty = new SimpleBooleanProperty();
     private final SimpleIntegerProperty mMeasNumOfValueProperty = new SimpleIntegerProperty();
     private final SimpleBooleanProperty mMeasSpeedProperty = new SimpleBooleanProperty();
@@ -107,13 +105,9 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
     private final SimpleDoubleProperty mMeasYoyoCountValueProperty = new SimpleDoubleProperty();
     private final SimpleBooleanProperty mMeasYoyoProperty = new SimpleBooleanProperty();
     private final SimpleDoubleProperty mMeasYoyoSizeValueProperty = new SimpleDoubleProperty();
-    private IndexedCheckModel mOperatorCheckModel;
-    private IndexedCheckModel mOriginCheckModel;
     private final SimpleBooleanProperty mSameAlarmProperty = new SimpleBooleanProperty();
     private final SimpleBooleanProperty mSectionDisruptorProperty = new SimpleBooleanProperty();
     private final SimpleBooleanProperty mSectionMeasProperty = new SimpleBooleanProperty();
-    private final SimpleBooleanProperty mSectionPointProperty = new SimpleBooleanProperty();
-    private IndexedCheckModel mStatusCheckModel;
 
     public TopoFilter() {
         super(TopoManager.getInstance());
@@ -133,58 +127,11 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
         return mDimens3Property;
     }
 
-    @Override
-    public IndexedCheckModel<AlarmLevelFilter> getAlarmLevelCheckModel() {
-        return mAlarmLevelCheckModel;
-    }
-
-    @Override
-    public IndexedCheckModel getAlarmNameCheckModel() {
-        return mAlarmNameCheckModel;
-    }
-
-    @Override
-    public IndexedCheckModel getCategoryCheckModel() {
-        return mCategoryCheckModel;
-    }
-
-    @Override
-    public IndexedCheckModel getGroupCheckModel() {
-        return mGroupCheckModel;
-    }
-
-    public IndexedCheckModel<String> getMeasNextCheckModel() {
-        return mMeasNextCheckModel;
-    }
-
-    @Override
-    public IndexedCheckModel getOperatorCheckModel() {
-        return mOperatorCheckModel;
-    }
-
-    @Override
-    public IndexedCheckModel getOriginCheckModel() {
-        return mOriginCheckModel;
-    }
-
-    @Override
-    public IndexedCheckModel getStatusCheckModel() {
-        return mStatusCheckModel;
-    }
-
     public void initCheckModelListeners() {
         List.of(
                 mAlarmLevelCheckModel,
-                mAlarmNameCheckModel,
-                mCategoryCheckModel,
-                mFrequencyCheckModel,
-                mGroupCheckModel,
                 mMeasCodeCheckModel,
                 mMeasOperatorsCheckModel,
-                mMeasNextCheckModel,
-                mOperatorCheckModel,
-                mOriginCheckModel,
-                mStatusCheckModel,
                 getDisruptorCheckModel()
         ).forEach(cm -> cm.getCheckedItems().addListener(mListChangeListener));
     }
@@ -319,54 +266,20 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
         return mSectionMeasProperty;
     }
 
-    @Override
-    public SimpleBooleanProperty sectionPointProperty() {
-        return mSectionPointProperty;
-    }
-
     public void setAlarmLevelCheckModel(IndexedCheckModel<AlarmLevelFilter> alarmLevelCheckModel) {
         mAlarmLevelCheckModel = alarmLevelCheckModel;
     }
 
     @Override
-    public void setAlarmNameCheckModel(IndexedCheckModel alarmNameCheckModel) {
-        mAlarmNameCheckModel = alarmNameCheckModel;
-    }
-
-    @Override
-    public void setCategoryCheckModel(IndexedCheckModel categoryCheckModel) {
-        mCategoryCheckModel = categoryCheckModel;
-    }
-
-    @Override
-    public void setFilterSectionDate(BFilterSectionDate filterSectionDate) {
-        mFilterSectionDate = filterSectionDate;
+    public void setFilterSection(BFilterSectionDate filterSection) {
+        mFilterSectionDate = filterSection;
         mFilterSectionDate.initListeners(mChangeListenerObject, mListChangeListener);
     }
 
     @Override
-    public void setGroupCheckModel(IndexedCheckModel groupCheckModel) {
-        mGroupCheckModel = groupCheckModel;
-    }
-
-    @Override
-    public void setMeasNextCheckModel(IndexedCheckModel measNextCheckModel) {
-        mMeasNextCheckModel = measNextCheckModel;
-    }
-
-    @Override
-    public void setOperatorCheckModel(IndexedCheckModel operatorCheckModel) {
-        mOperatorCheckModel = operatorCheckModel;
-    }
-
-    @Override
-    public void setOriginCheckModel(IndexedCheckModel originCheckModel) {
-        mOriginCheckModel = originCheckModel;
-    }
-
-    @Override
-    public void setStatusCheckModel(IndexedCheckModel statusCheckModel) {
-        mStatusCheckModel = statusCheckModel;
+    public void setFilterSection(BFilterSectionPoint filterSection) {
+        mFilterSectionPoint = filterSection;
+        mFilterSectionPoint.initListeners(mChangeListenerObject, mListChangeListener);
     }
 
     @Override
@@ -383,22 +296,8 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
                 })
                 .filter(p -> validateCoordinateArea(p.getLat(), p.getLon()))
                 .filter(p -> validateCoordinateRuler(p.getLat(), p.getLon()))
-                .filter(p -> {
-                    if (mSectionPointProperty.get()) {
-                        return validateDimension(p.getDimension())
-                                && validateCheck(mStatusCheckModel, p.getStatus())
-                                && validateCheck(mGroupCheckModel, p.getGroup())
-                                && validateCheck(mCategoryCheckModel, p.getCategory())
-                                && validateAlarmName(p, mAlarmNameCheckModel)
-                                && validateFrequency(p.getFrequency())
-                                && validateCheck(mOperatorCheckModel, p.getOperator())
-                                && validateCheck(mOriginCheckModel, p.getOrigin())
-                                && validateNextMeas(p, mMeasNextCheckModel, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS))
-                                && true;
-                    } else {
-                        return true;
-                    }
-                })
+                .filter(p -> mFilterSectionPoint.isSelected() && validateDimension(p.getDimension()))
+                .filter(p -> mFilterSectionPoint.filter(p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS)))
                 .filter(p -> mFilterSectionDate.filter(p, p.ext().getDateFirst()))
                 .filter(p -> {
                     if (mSectionDisruptorProperty.get()) {
@@ -468,15 +367,15 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
         try {
             map.put(Dict.TEXT.toString(), getFreeText());
             map.put(SDict.DIMENSION.toString(), makeInfoDimension());
-            map.put(Dict.STATUS.toString(), makeInfo(mStatusCheckModel.getCheckedItems()));
-            map.put(Dict.GROUP.toString(), makeInfo(mGroupCheckModel.getCheckedItems()));
-            map.put(Dict.CATEGORY.toString(), makeInfo(mCategoryCheckModel.getCheckedItems()));
-            map.put(SDict.ALARMS.toString(), makeInfo(mAlarmNameCheckModel.getCheckedItems()));
-            map.put(SDict.OPERATOR.toString(), makeInfo(mOperatorCheckModel.getCheckedItems()));
-            map.put(Dict.ORIGIN.toString(), makeInfo(mOriginCheckModel.getCheckedItems()));
-            map.put(SDict.FREQUENCY.toString(), makeInfoInteger(mFrequencyCheckModel.getCheckedItems()));
-            map.put(SDict.VALID_FROM_TO.toString(), makeInfo(getDateFromToCheckModel().getCheckedItems()));
-            map.put(getBundle().getString("nextMeasCheckComboBoxTitle"), makeInfo(mMeasNextCheckModel.getCheckedItems()));
+//            map.put(Dict.STATUS.toString(), makeInfo(mStatusCheckModel.getCheckedItems()));
+//            map.put(Dict.GROUP.toString(), makeInfo(mGroupCheckModel.getCheckedItems()));
+//            map.put(Dict.CATEGORY.toString(), makeInfo(mCategoryCheckModel.getCheckedItems()));
+//            map.put(SDict.ALARMS.toString(), makeInfo(mAlarmNameCheckModel.getCheckedItems()));
+//            map.put(SDict.OPERATOR.toString(), makeInfo(mOperatorCheckModel.getCheckedItems()));
+//            map.put(Dict.ORIGIN.toString(), makeInfo(mOriginCheckModel.getCheckedItems()));
+//            map.put(SDict.FREQUENCY.toString(), makeInfoInteger(mFrequencyCheckModel.getCheckedItems()));
+//            map.put(SDict.VALID_FROM_TO.toString(), makeInfo(getDateFromToCheckModel().getCheckedItems()));
+//            map.put(getBundle().getString("nextMeasCheckComboBoxTitle"), makeInfo(mMeasNextCheckModel.getCheckedItems()));
             map.put(getBundle().getString("measCodeCheckComboBoxTitle"), makeInfo(mMeasCodeCheckModel.getCheckedItems()));
 //            map.put("Första " + Dict.FROM.toString(), mDateFirstLowProperty.get() != null ? mDateFirstLowProperty.get().toString() : "");
 //            map.put("Första " + Dict.TO.toString(), mDateFirstHighProperty.get() != null ? mDateFirstHighProperty.get().toString() : "");
@@ -547,7 +446,7 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
     }
 
     private void initListeners() {
-        List.of(mSectionPointProperty,
+        List.of(
                 mSectionDisruptorProperty,
                 mSectionMeasProperty,
                 mInvertProperty,

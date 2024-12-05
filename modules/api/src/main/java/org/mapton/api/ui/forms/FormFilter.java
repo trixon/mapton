@@ -193,6 +193,7 @@ public abstract class FormFilter<ManagerType extends MBaseDataManager> {
         }
     }
 
+    @Deprecated
     public boolean validateCheck(IndexedCheckModel checkModel, Object o) {
         return checkModel.isEmpty() || checkModel.isChecked(o);
     }
@@ -268,6 +269,7 @@ public abstract class FormFilter<ManagerType extends MBaseDataManager> {
         return StringUtils.isBlank(getFreeText()) || StringHelper.matchesSimpleGlobByWordNegatable(getFreeText(), true, false, strings);
     }
 
+    @Deprecated
     public boolean validateFrequency(Integer frequency) {
         return validateCheck(mFrequencyCheckModel, frequency);
     }

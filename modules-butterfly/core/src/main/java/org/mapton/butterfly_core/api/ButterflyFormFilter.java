@@ -35,6 +35,7 @@ public abstract class ButterflyFormFilter<ManagerType extends MBaseDataManager> 
         super(manager);
     }
 
+    @Deprecated
     public boolean validateAlarmName(BXyzPoint p, IndexedCheckModel checkModel) {
         var ah = p.getAlarm1Id();
         var ap = p.getAlarm2Id();
@@ -62,6 +63,7 @@ public abstract class ButterflyFormFilter<ManagerType extends MBaseDataManager> 
         return validateCheck(checkModel, p.getAlarm2Id());
     }
 
+    @Deprecated
     public boolean validateNextMeas(BXyzPoint p, IndexedCheckModel<String> checkModel, long remainingDays) {
         var frequency = p.getFrequency();
         var latest = p.getDateLatest() != null ? p.getDateLatest().toLocalDate() : LocalDate.MIN;

@@ -20,6 +20,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.scene.Node;
 import javafx.scene.layout.Region;
 import org.apache.commons.configuration2.PropertiesConfiguration;
+import org.controlsfx.control.IndexedCheckModel;
 import org.controlsfx.tools.Borders;
 import se.trixon.almond.util.fx.FxHelper;
 
@@ -66,6 +67,10 @@ public abstract class MBaseFilterSection {
 
     public CheckedTab getTab() {
         return mCheckedTab;
+    }
+
+    public boolean validateCheck(IndexedCheckModel checkModel, Object o) {
+        return checkModel.isEmpty() || checkModel.isChecked(o);
     }
 
     public void initSession(SessionManager sessionManager) {

@@ -19,8 +19,8 @@ package org.mapton.butterfly_core.api;
  *
  * @author Patrik Karlström
  */
-public interface BFilterSectionDateProvider {
+public interface BFilterSectionPointProvider {
 
-    public void setFilterSection(BFilterSectionDate filterSection);
+    public void setFilterSection(BFilterSectionPoint filterSection);
 
 }

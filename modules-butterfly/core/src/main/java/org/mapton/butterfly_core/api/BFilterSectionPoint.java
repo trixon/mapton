@@ -16,18 +16,25 @@
 package org.mapton.butterfly_core.api;
 
 import com.dlsc.gemsfx.util.SessionManager;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
+import javafx.beans.value.ChangeListener;
+import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import org.apache.commons.configuration2.PropertiesConfiguration;
+import org.apache.commons.lang3.StringUtils;
+import org.controlsfx.control.IndexedCheckModel;
 import org.controlsfx.tools.Borders;
 import org.mapton.api.ui.forms.MBaseFilterSection;
-import org.mapton.api.ui.forms.MFilterSectionPointProvider;
+import static org.mapton.butterfly_format.types.BDimension._1d;
+import static org.mapton.butterfly_format.types.BDimension._2d;
+import static org.mapton.butterfly_format.types.BDimension._3d;
 import org.mapton.butterfly_format.types.BXyzPoint;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
@@ -39,7 +46,7 @@ import se.trixon.almond.util.fx.session.SessionCheckComboBox;
  *
  * @author Patrik Karlström
  */
-public class FilterSectionPoint extends MBaseFilterSection {
+public class BFilterSectionPoint extends MBaseFilterSection {
 
     private final SessionCheckComboBox<String> mAlarmNameSccb;
     private final SessionCheckComboBox<String> mCategorySccb;
@@ -51,7 +58,7 @@ public class FilterSectionPoint extends MBaseFilterSection {
     private final PointFilterUI mPointFilterUI;
     private final SessionCheckComboBox<String> mStatusSccb;
 
-    public FilterSectionPoint() {
+    public BFilterSectionPoint() {
         super("Grunddata");
         mAlarmNameSccb = new SessionCheckComboBox<>();
         mStatusSccb = new SessionCheckComboBox<>();
@@ -70,6 +77,22 @@ public class FilterSectionPoint extends MBaseFilterSection {
     public void clear() {
         super.clear();
         mPointFilterUI.clear();
+    }
+
+    public boolean filter(BXyzPoint p, Long remainingDays) {
+        if (isSelected()) {
+            return validateCheck(getStatusSccb().getCheckModel(), p.getStatus())
+                    && validateCheck(getGroupSccb().getCheckModel(), p.getGroup())
+                    && validateCheck(getCategorySccb().getCheckModel(), p.getCategory())
+                    && validateAlarmName(p, getAlarmNameSccb().getCheckModel())
+                    && validateCheck(getFrequencySccb().getCheckModel(), p.getFrequency())
+                    && validateCheck(getOperatorSccb().getCheckModel(), p.getOperator())
+                    && validateCheck(getOriginSccb().getCheckModel(), p.getOrigin())
+                    && validateNextMeas(p, getMeasNextSccb().getCheckModel(), remainingDays)
+                    && true;
+        } else {
+            return true;
+        }
     }
 
     public SessionCheckComboBox<String> getAlarmNameSccb() {
@@ -116,15 +139,21 @@ public class FilterSectionPoint extends MBaseFilterSection {
         return mStatusSccb;
     }
 
-    public void initListeners(MFilterSectionPointProvider filter) {
-        filter.setStatusCheckModel(getStatusSccb().getCheckModel());
-        filter.setGroupCheckModel(getGroupSccb().getCheckModel());
-        filter.setCategoryCheckModel(getCategorySccb().getCheckModel());
-        filter.setOperatorCheckModel(getOperatorSccb().getCheckModel());
-        filter.setOriginCheckModel(getOriginSccb().getCheckModel());
-        filter.setAlarmNameCheckModel(getAlarmNameSccb().getCheckModel());
-        filter.setMeasNextCheckModel(getMeasNextSccb().getCheckModel());
-        filter.setFrequencyCheckModel(getFrequencySccb().getCheckModel());
+    public void initListeners(ChangeListener changeListenerObject, ListChangeListener<Object> listChangeListener) {
+        List.of(
+                selectedProperty()
+        ).forEach(propertyBase -> propertyBase.addListener(changeListenerObject));
+
+        List.of(
+                getMeasNextSccb().getCheckModel(),
+                getStatusSccb().getCheckModel(),
+                getGroupSccb().getCheckModel(),
+                getCategorySccb().getCheckModel(),
+                getAlarmNameSccb().getCheckModel(),
+                getFrequencySccb().getCheckModel(),
+                getOperatorSccb().getCheckModel(),
+                getOriginSccb().getCheckModel()
+        ).forEach(cm -> cm.getCheckedItems().addListener(listChangeListener));
     }
 
     @Override
@@ -155,6 +184,59 @@ public class FilterSectionPoint extends MBaseFilterSection {
     public void reset(PropertiesConfiguration filterConfig) {
         if (filterConfig != null) {
             mPointFilterUI.reset(filterConfig);
+        }
+    }
+
+    public boolean validateAlarmName(BXyzPoint p, IndexedCheckModel checkModel) {
+        var ah = p.getAlarm1Id();
+        var ap = p.getAlarm2Id();
+
+        switch (p.getDimension()) {
+            case _1d -> {
+                return validateCheck(checkModel, ah);
+            }
+            case _2d -> {
+                return validateCheck(checkModel, ap);
+            }
+            case _3d -> {
+                return validateCheck(checkModel, ah) && validateCheck(checkModel, ap);
+            }
+        }
+
+        return true;
+    }
+
+    public boolean validateAlarmName1(BXyzPoint p, IndexedCheckModel checkModel) {
+        return validateCheck(checkModel, p.getAlarm1Id());
+    }
+
+    public boolean validateAlarmName2(BXyzPoint p, IndexedCheckModel checkModel) {
+        return validateCheck(checkModel, p.getAlarm2Id());
+    }
+
+    public boolean validateNextMeas(BXyzPoint p, IndexedCheckModel<String> checkModel, long remainingDays) {
+        var frequency = p.getFrequency();
+        var latest = p.getDateLatest() != null ? p.getDateLatest().toLocalDate() : LocalDate.MIN;
+        var today = LocalDate.now();
+        var nextMeas = latest.plusDays(frequency);
+//        var remainingDays = ;
+
+        if (checkModel.isEmpty()) {
+            return true;
+        } else if (checkModel.isChecked("∞") && frequency == 0) {
+            return true;
+        } else if (frequency > 0 && checkModel.isChecked("<0") && nextMeas.isBefore(today)) {
+            return true;
+        } else if (frequency > 0 && checkModel.isChecked("0") && remainingDays == 0) {
+            return true;
+        } else {
+            return checkModel.getCheckedItems().stream()
+                    .filter(s -> StringUtils.countMatches(s, "-") == 1)
+                    .anyMatch(s -> {
+                        int start = Integer.parseInt(StringUtils.substringBefore(s, "-"));
+                        int end = Integer.parseInt(StringUtils.substringAfter(s, "-"));
+                        return remainingDays >= start && remainingDays <= end;
+                    });
         }
     }
 
@@ -292,7 +374,5 @@ public class FilterSectionPoint extends MBaseFilterSection {
             FxHelper.autoSizeColumn(mBaseBox, 2);
             FxHelper.bindWidthForChildrens(leftBox, rightBox);
         }
-
     }
-
 }
