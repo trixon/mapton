@@ -27,10 +27,10 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import org.controlsfx.control.action.ActionUtils.ActionTextBehavior;
 import org.mapton.api.ui.forms.MFilterSectionDate;
 import org.mapton.api.ui.forms.MFilterSectionDisruptor;
 import org.mapton.butterfly_core.api.BaseTabbedFilterPopOver;
+import org.mapton.butterfly_core.api.FilterSectionMisc;
 import org.mapton.butterfly_core.api.FilterSectionPoint;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_topo.api.TopoManager;
@@ -50,8 +50,8 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
     private final MFilterSectionDate mFilterSectionDate;
     private final MFilterSectionDisruptor mFilterSectionDisruptor;
     private final FilterSectionMeas mFilterSectionMeas;
+    private final FilterSectionMisc mFilterSectionMisc;
     private final FilterSectionPoint mFilterSectionPoint;
-    private final CheckBox mInvertCheckbox = new CheckBox();
     private final TopoManager mManager = TopoManager.getInstance();
     private final CheckBox mMeasIncludeWithoutCheckbox = new CheckBox();
     private final CheckBox mSameAlarmCheckbox = new CheckBox();
@@ -61,6 +61,8 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionDate = new MFilterSectionDate();
         mFilterSectionDisruptor = new MFilterSectionDisruptor();
         mFilterSectionMeas = new FilterSectionMeas();
+        mFilterSectionMisc = new FilterSectionMisc();
+
         mFilter = filter;
         setFilter(filter);
         createUI();
@@ -80,7 +82,6 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
                 mDimens2Checkbox,
                 mDimens3Checkbox,
                 mSameAlarmCheckbox,
-                mInvertCheckbox,
                 mMeasIncludeWithoutCheckbox
         );
 
@@ -88,6 +89,7 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionDate.clear();
         mFilterSectionDisruptor.clear();
         mFilterSectionMeas.clear();
+        mFilterSectionMisc.clear();
     }
 
     @Override
@@ -111,6 +113,7 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionDisruptor.load();
         mFilterSectionMeas.load(items);
         mFilterSectionDate.load(mManager.getTemporalRange());
+        mFilterSectionMisc.load();
     }
 
     @Override
@@ -129,6 +132,7 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
 
         mFilter.freeTextProperty().set("*");
         mFilterSectionPoint.reset(TopoFilterDefaultsConfig.getInstance().getConfig());
+        mFilterSectionMisc.reset(null);
     }
 
     private void createUI() {
@@ -141,8 +145,7 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
         var root = new BorderPane(getTabPane());
         root.setTop(getToolBar());
         root.setBottom(bottomBox);
-        getToolBar().getItems().add(new Separator());
-        populateToolBar();
+        populateToolBar(mFilterSectionMisc.getInvertCheckboxToolBarItem());
 
         getTabPane().getTabs().addAll(
                 mFilterSectionPoint.getTab(),
@@ -174,12 +177,11 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
             mSameAlarmCheckbox.setSelected(true);
         });
 
-        mFilter.invertProperty().bind(mInvertCheckbox.selectedProperty());
-
         mFilterSectionPoint.initListeners(mFilter);
         mFilterSectionDate.initListeners(mFilter);
         mFilterSectionDisruptor.initListeners(mFilter);
         mFilterSectionMeas.initListeners(mFilter);
+        mFilterSectionMisc.initListeners(mFilter);
 
         mFilter.measIncludeWithoutProperty().bind(mMeasIncludeWithoutCheckbox.selectedProperty());
         mFilter.dimens1Property().bind(mDimens1Checkbox.selectedProperty());
@@ -203,6 +205,7 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionDate.initSession(sessionManager);
         mFilterSectionDisruptor.initSession(sessionManager);
         mFilterSectionMeas.initSession(sessionManager);
+        mFilterSectionMisc.initSession(sessionManager);
 
         sessionManager.register("filter.freeText", mFilter.freeTextProperty());
 
@@ -212,27 +215,9 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
 
         sessionManager.register("filter.measIncludeWithout", mMeasIncludeWithoutCheckbox.selectedProperty());
 
-        sessionManager.register("filter.invert", mInvertCheckbox.selectedProperty());
         sessionManager.register("filter.sameAlarm", mSameAlarmCheckbox.selectedProperty());
 
         return sessionManager;
-    }
-
-    private void populateToolBar() {
-        var toolBar = getToolBar();
-        addToToolBar("mc", ActionTextBehavior.SHOW);
-        addToToolBar("mr", ActionTextBehavior.SHOW);
-        addToToolBar("mm", ActionTextBehavior.SHOW);
-        addToToolBar("mp", ActionTextBehavior.SHOW);
-        toolBar.getItems().add(new Separator());
-        addToToolBar("copyNames", ActionTextBehavior.HIDE);
-        addToToolBar("paste", ActionTextBehavior.HIDE);
-
-        mInvertCheckbox.setText(getBundle().getString("invertCheckBoxText"));
-        var internalBox = new HBox(FxHelper.getUIScaled(8.0), mInvertCheckbox);
-        internalBox.setPadding(FxHelper.getUIScaledInsets(0, 0, 0, 8.0));
-        internalBox.setAlignment(Pos.CENTER_LEFT);
-        toolBar.getItems().add(internalBox);
     }
 
 }

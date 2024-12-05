@@ -40,6 +40,7 @@ import org.mapton.api.ui.forms.MFilterSectionDateProvider;
 import org.mapton.api.ui.forms.MFilterSectionDisruptorProvider;
 import org.mapton.api.ui.forms.MFilterSectionPointProvider;
 import org.mapton.butterfly_core.api.ButterflyFormFilter;
+import org.mapton.butterfly_core.api.FilterSectionMiscProvider;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
@@ -59,6 +60,7 @@ import se.trixon.almond.util.SDict;
  * @author Patrik Karlström
  */
 public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
+        FilterSectionMiscProvider,
         MFilterSectionPointProvider,
         MFilterSectionDateProvider,
         MFilterSectionDisruptorProvider {
@@ -193,6 +195,7 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
         return mStatusCheckModel;
     }
 
+    @Override
     public SimpleBooleanProperty invertProperty() {
         return mInvertProperty;
     }

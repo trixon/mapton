@@ -18,11 +18,11 @@ package org.mapton.butterfly_structural.tilt;
 import com.dlsc.gemsfx.util.SessionManager;
 import java.util.ResourceBundle;
 import java.util.prefs.Preferences;
-import javafx.scene.control.Separator;
 import javafx.scene.layout.BorderPane;
 import org.mapton.api.ui.forms.MFilterSectionDate;
 import org.mapton.api.ui.forms.MFilterSectionDisruptor;
 import org.mapton.butterfly_core.api.BaseTabbedFilterPopOver;
+import org.mapton.butterfly_core.api.FilterSectionMisc;
 import org.mapton.butterfly_core.api.FilterSectionPoint;
 import org.mapton.butterfly_format.Butterfly;
 import org.openide.util.NbBundle;
@@ -34,17 +34,20 @@ import org.openide.util.NbPreferences;
  */
 public class TiltFilterPopOver extends BaseTabbedFilterPopOver {
 
-    private final MFilterSectionDate mFilterSectionDate;
-    private final MFilterSectionDisruptor mFilterSectionDisruptor;
-    private final FilterSectionPoint mFilterSectionPoint;
     private final ResourceBundle mBundle = NbBundle.getBundle(TiltFilterPopOver.class);
     private final TiltFilter mFilter;
+    private final MFilterSectionDate mFilterSectionDate;
+    private final MFilterSectionDisruptor mFilterSectionDisruptor;
+    private final FilterSectionMisc mFilterSectionMisc;
+    private final FilterSectionPoint mFilterSectionPoint;
     private final TiltManager mManager = TiltManager.getInstance();
 
     public TiltFilterPopOver(TiltFilter filter) {
         mFilterSectionPoint = new FilterSectionPoint();
         mFilterSectionDate = new MFilterSectionDate();
         mFilterSectionDisruptor = new MFilterSectionDisruptor();
+        mFilterSectionMisc = new FilterSectionMisc();
+
         mFilter = filter;
         setFilter(filter);
         createUI();
@@ -62,6 +65,7 @@ public class TiltFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionPoint.clear();
         mFilterSectionDate.clear();
         mFilterSectionDisruptor.clear();
+        mFilterSectionMisc.clear();
     }
 
     @Override
@@ -84,6 +88,7 @@ public class TiltFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionPoint.load(items);
         mFilterSectionDisruptor.load();
         mFilterSectionDate.load(mManager.getTemporalRange());
+        mFilterSectionMisc.load();
     }
 
     @Override
@@ -102,13 +107,13 @@ public class TiltFilterPopOver extends BaseTabbedFilterPopOver {
         mFilter.freeTextProperty().set("*");
 
         mFilterSectionPoint.reset(null);
+        mFilterSectionMisc.reset(null);
     }
 
     private void createUI() {
         var root = new BorderPane(getTabPane());
         root.setTop(getToolBar());
-        getToolBar().getItems().add(new Separator());
-        //populateToolBar();
+        populateToolBar(mFilterSectionMisc.getInvertCheckboxToolBarItem());
 
         getTabPane().getTabs().addAll(
                 mFilterSectionPoint.getTab(),
@@ -135,6 +140,7 @@ public class TiltFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionPoint.initListeners(mFilter);
         mFilterSectionDate.initListeners(mFilter);
         mFilterSectionDisruptor.initListeners(mFilter);
+        mFilterSectionMisc.initListeners(mFilter);
 
         mFilter.sectionPointProperty().bind(mFilterSectionPoint.selectedProperty());
         mFilter.sectionDateProperty().bind(mFilterSectionDate.selectedProperty());
@@ -149,6 +155,7 @@ public class TiltFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionPoint.initSession(sessionManager);
         mFilterSectionDate.initSession(sessionManager);
         mFilterSectionDisruptor.initSession(sessionManager);
+        mFilterSectionMisc.initSession(sessionManager);
 
         sessionManager.register("filter.measPoint.freeText", mFilter.freeTextProperty());
 

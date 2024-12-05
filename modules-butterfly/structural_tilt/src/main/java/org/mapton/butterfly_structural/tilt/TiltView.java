@@ -16,6 +16,7 @@
 package org.mapton.butterfly_structural.tilt;
 
 import java.util.Arrays;
+import javafx.collections.ListChangeListener;
 import javafx.scene.layout.Pane;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.ui.forms.ListFormConfiguration;
@@ -57,6 +58,10 @@ public class TiltView {
         mListForm.setFreeTextTooltip(
                 Dict.NAME.toString()
         );
+
+        mManager.getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BStructuralTiltPoint> c) -> {
+            mFilterPopOver.setNames(mManager.getTimeFilteredItems().stream().map(p -> p.getName()).toList());
+        });
     }
 
     public Pane getView() {

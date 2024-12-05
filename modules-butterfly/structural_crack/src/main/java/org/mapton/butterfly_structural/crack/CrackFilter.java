@@ -18,6 +18,7 @@ package org.mapton.butterfly_structural.crack;
 import j2html.tags.ContainerTag;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -28,6 +29,7 @@ import org.mapton.api.ui.forms.MFilterSectionDateProvider;
 import org.mapton.api.ui.forms.MFilterSectionDisruptorProvider;
 import org.mapton.api.ui.forms.MFilterSectionPointProvider;
 import org.mapton.butterfly_core.api.ButterflyFormFilter;
+import org.mapton.butterfly_core.api.FilterSectionMiscProvider;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
 
@@ -36,6 +38,7 @@ import se.trixon.almond.util.Dict;
  * @author Patrik Karlström
  */
 public class CrackFilter extends ButterflyFormFilter<CrackManager> implements
+        FilterSectionMiscProvider,
         MFilterSectionPointProvider,
         MFilterSectionDateProvider,
         MFilterSectionDisruptorProvider {
@@ -48,6 +51,7 @@ public class CrackFilter extends ButterflyFormFilter<CrackManager> implements
     private final SimpleObjectProperty<LocalDate> mDateLastHighProperty = new SimpleObjectProperty();
     private final SimpleObjectProperty<LocalDate> mDateLastLowProperty = new SimpleObjectProperty();
     private IndexedCheckModel mGroupCheckModel;
+    private final SimpleBooleanProperty mInvertProperty = new SimpleBooleanProperty();
     private final CrackManager mManager = CrackManager.getInstance();
     private IndexedCheckModel<String> mMeasNextCheckModel;
     private IndexedCheckModel mOperatorCheckModel;
@@ -135,6 +139,11 @@ public class CrackFilter extends ButterflyFormFilter<CrackManager> implements
                 mStatusCheckModel,
                 getDisruptorCheckModel()
         ).forEach(cm -> cm.getCheckedItems().addListener(mListChangeListener));
+    }
+
+    @Override
+    public SimpleBooleanProperty invertProperty() {
+        return mInvertProperty;
     }
 
     @Override
@@ -230,6 +239,13 @@ public class CrackFilter extends ButterflyFormFilter<CrackManager> implements
                 })
                 .toList();
 
+        if (mInvertProperty.get()) {
+            var toBeExluded = new HashSet<>(filteredItems);
+            filteredItems = mManager.getAllItems().stream()
+                    .filter(p -> !toBeExluded.contains(p))
+                    .toList();
+        }
+
         mManager.getFilteredItems().setAll(filteredItems);
 
         getInfoPopOver().loadContent(createInfoContent().renderFormatted());
@@ -240,12 +256,14 @@ public class CrackFilter extends ButterflyFormFilter<CrackManager> implements
         var map = new LinkedHashMap<String, String>();
 
         map.put(Dict.TEXT.toString(), getFreeText());
-        map.put(Dict.GROUP.toString(), makeInfo(mGroupCheckModel.getCheckedItems()));
+        try {
+            map.put(Dict.GROUP.toString(), makeInfo(mGroupCheckModel.getCheckedItems()));
 //        map.put(Dict.TYPE.toString(), makeInfo(mTypeCheckModel.getCheckedItems()));
 //        map.put(mBundle.getString("soilMaterial"), makeInfo(mSoilCheckModel.getCheckedItems()));
+        } catch (Exception e) {
+        }
 
         return createHtmlFilterInfo(map);
-
     }
 
     private void initListeners() {
@@ -256,6 +274,7 @@ public class CrackFilter extends ButterflyFormFilter<CrackManager> implements
                 mDateFirstHighProperty,
                 mDateLastLowProperty,
                 mDateLastHighProperty,
+                mInvertProperty,
                 //
                 disruptorDistanceProperty(),
                 mDisruptorManager.lastChangedProperty()

@@ -15,7 +15,10 @@
  */
 package org.mapton.butterfly_core.api;
 
+import javafx.scene.Node;
+import javafx.scene.control.Separator;
 import javafx.scene.control.TabPane;
+import org.controlsfx.control.action.ActionUtils;
 
 /**
  *
@@ -32,6 +35,21 @@ public abstract class BaseTabbedFilterPopOver extends BaseFilterPopOver {
 
     public TabPane getTabPane() {
         return mTabPane;
+    }
+
+    public void populateToolBar(Node... nodes) {
+        getToolBar().getItems().add(new Separator());
+        addToToolBar("mc", ActionUtils.ActionTextBehavior.SHOW);
+        addToToolBar("mr", ActionUtils.ActionTextBehavior.SHOW);
+        addToToolBar("mm", ActionUtils.ActionTextBehavior.SHOW);
+        addToToolBar("mp", ActionUtils.ActionTextBehavior.SHOW);
+        getToolBar().getItems().add(new Separator());
+        addToToolBar("copyNames", ActionUtils.ActionTextBehavior.HIDE);
+        addToToolBar("paste", ActionUtils.ActionTextBehavior.HIDE);
+
+        if (nodes != null) {
+            getToolBar().getItems().addAll(nodes);
+        }
     }
 
 }
