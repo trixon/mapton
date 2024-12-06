@@ -36,9 +36,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.MTemporalManager;
 import org.mapton.api.ui.forms.FormHelper;
-import org.mapton.api.ui.forms.MFilterSectionDisruptorProvider;
 import org.mapton.butterfly_core.api.BFilterSectionDate;
 import org.mapton.butterfly_core.api.BFilterSectionDateProvider;
+import org.mapton.butterfly_core.api.BFilterSectionDisruptor;
+import org.mapton.butterfly_core.api.BFilterSectionDisruptorProvider;
 import org.mapton.butterfly_core.api.BFilterSectionPoint;
 import org.mapton.butterfly_core.api.BFilterSectionPointProvider;
 import org.mapton.butterfly_core.api.ButterflyFormFilter;
@@ -65,7 +66,7 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
         FilterSectionMiscProvider,
         BFilterSectionPointProvider,
         BFilterSectionDateProvider,
-        MFilterSectionDisruptorProvider {
+        BFilterSectionDisruptorProvider {
 
     IndexedCheckModel<AlarmLevelFilter> mAlarmLevelCheckModel;
     IndexedCheckModel<String> mMeasCodeCheckModel;
@@ -74,6 +75,7 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
     private final SimpleBooleanProperty mDimens2Property = new SimpleBooleanProperty();
     private final SimpleBooleanProperty mDimens3Property = new SimpleBooleanProperty();
     private BFilterSectionDate mFilterSectionDate;
+    private BFilterSectionDisruptor mFilterSectionDisruptor;
     private BFilterSectionPoint mFilterSectionPoint;
     private final SimpleBooleanProperty mInvertProperty = new SimpleBooleanProperty();
     private final TopoManager mManager = TopoManager.getInstance();
@@ -106,7 +108,6 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
     private final SimpleBooleanProperty mMeasYoyoProperty = new SimpleBooleanProperty();
     private final SimpleDoubleProperty mMeasYoyoSizeValueProperty = new SimpleDoubleProperty();
     private final SimpleBooleanProperty mSameAlarmProperty = new SimpleBooleanProperty();
-    private final SimpleBooleanProperty mSectionDisruptorProperty = new SimpleBooleanProperty();
     private final SimpleBooleanProperty mSectionMeasProperty = new SimpleBooleanProperty();
 
     public TopoFilter() {
@@ -131,8 +132,7 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
         List.of(
                 mAlarmLevelCheckModel,
                 mMeasCodeCheckModel,
-                mMeasOperatorsCheckModel,
-                getDisruptorCheckModel()
+                mMeasOperatorsCheckModel
         ).forEach(cm -> cm.getCheckedItems().addListener(mListChangeListener));
     }
 
@@ -257,11 +257,6 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
         return mSameAlarmProperty;
     }
 
-    @Override
-    public SimpleBooleanProperty sectionDisruptorProperty() {
-        return mSectionDisruptorProperty;
-    }
-
     public SimpleBooleanProperty sectionMeasProperty() {
         return mSectionMeasProperty;
     }
@@ -283,6 +278,12 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
     }
 
     @Override
+    public void setFilterSection(BFilterSectionDisruptor filterSection) {
+        mFilterSectionDisruptor = filterSection;
+        mFilterSectionDisruptor.initListeners(mChangeListenerObject, mListChangeListener);
+    }
+
+    @Override
     public void update() {
         var filteredItems = mManager.getAllItems().stream()
                 .filter(p -> {
@@ -299,14 +300,7 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
                 .filter(p -> mFilterSectionPoint.isSelected() && validateDimension(p.getDimension()))
                 .filter(p -> mFilterSectionPoint.filter(p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS)))
                 .filter(p -> mFilterSectionDate.filter(p, p.ext().getDateFirst()))
-                .filter(p -> {
-                    if (mSectionDisruptorProperty.get()) {
-                        return validateDisruptor(p.getZeroX(), p.getZeroY())
-                                && true;
-                    } else {
-                        return true;
-                    }
-                })
+                .filter(p -> mFilterSectionDisruptor.filter(p))
                 .filter(p -> {
                     if (mSectionMeasProperty.get()) {
                         return validateAlarm(p)
@@ -447,7 +441,6 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
 
     private void initListeners() {
         List.of(
-                mSectionDisruptorProperty,
                 mSectionMeasProperty,
                 mInvertProperty,
                 mDimens1Property,
@@ -481,10 +474,7 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
                 mSameAlarmProperty,
                 mMeasYoyoCountValueProperty,
                 mMeasYoyoSizeValueProperty,
-                mMeasYoyoProperty,
-                //
-                disruptorDistanceProperty(),
-                mDisruptorManager.lastChangedProperty()
+                mMeasYoyoProperty
         ).forEach(propertyBase -> propertyBase.addListener(mChangeListenerObject));
     }
 

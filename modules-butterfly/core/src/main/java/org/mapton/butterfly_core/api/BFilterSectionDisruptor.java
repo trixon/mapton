@@ -13,19 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.api.ui.forms;
+package org.mapton.butterfly_core.api;
 
 import com.dlsc.gemsfx.util.SessionManager;
+import java.util.List;
 import java.util.ResourceBundle;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.MDisruptorManager;
+import org.mapton.api.ui.forms.MBaseFilterSection;
+import org.mapton.butterfly_format.types.BXyzPoint;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.session.SessionCheckComboBox;
@@ -35,12 +40,13 @@ import se.trixon.almond.util.fx.session.SessionDoubleSpinner;
  *
  * @author Patrik Karlström
  */
-public class MFilterSectionDisruptor extends MBaseFilterSection {
+public class BFilterSectionDisruptor extends MBaseFilterSection {
 
+    private final MDisruptorManager mDisruptorManager = MDisruptorManager.getInstance();
     private final DisruptorPane mDisruptorPane = new DisruptorPane();
     private final GridPane mRoot = new GridPane();
 
-    public MFilterSectionDisruptor() {
+    public BFilterSectionDisruptor() {
         super("Störningskällor");
         init();
         setContent(mRoot);
@@ -52,9 +58,24 @@ public class MFilterSectionDisruptor extends MBaseFilterSection {
         mDisruptorPane.reset();
     }
 
-    public void initListeners(MFilterSectionDisruptorProvider filter) {
-        filter.disruptorDistanceProperty().bind(mDisruptorPane.distanceProperty());
-        filter.setDisruptorCheckModel(mDisruptorPane.getCheckModel());
+    public boolean filter(BXyzPoint p) {
+        if (isSelected()) {
+            return validateDisruptor(p.getZeroX(), p.getZeroY());
+        } else {
+            return true;
+        }
+    }
+
+    public void initListeners(ChangeListener changeListener, ListChangeListener<Object> listChangeListener) {
+        List.of(
+                selectedProperty(),
+                mDisruptorPane.distanceProperty(),
+                mDisruptorManager.lastChangedProperty()
+        ).forEach(propertyBase -> propertyBase.addListener(changeListener));
+
+        List.of(
+                getDisruptorCheckModel()
+        ).forEach(cm -> cm.getCheckedItems().addListener(listChangeListener));
     }
 
     @Override
@@ -77,33 +98,50 @@ public class MFilterSectionDisruptor extends MBaseFilterSection {
     public void reset(PropertiesConfiguration filterConfig) {
     }
 
+    private IndexedCheckModel<String> getDisruptorCheckModel() {
+        return mDisruptorPane.mDisruptorSccb.getCheckModel();
+    }
+
     private void init() {
         mRoot.addRow(0, mDisruptorPane.getRoot());
     }
 
+    private boolean validateDisruptor(Double x, Double y) {
+        if (getDisruptorCheckModel().isEmpty()) {
+            return true;
+        } else {
+            return mDisruptorManager.isValidCoordinate(getDisruptorCheckModel(), mDisruptorPane.distanceProperty().getValue(), x, y);
+        }
+    }
+
     public class DisruptorPane {
 
-        private final double mDefaultDisruptorDistance = 75.0;
-        private final SessionDoubleSpinner mDisruptorSds = new SessionDoubleSpinner(0, 500.0, mDefaultDisruptorDistance, 5.0);
-        private final SessionCheckComboBox<String> mDisruptorSccb = new SessionCheckComboBox<>();
-        private final MDisruptorManager mDisruptorManager = MDisruptorManager.getInstance();
-        private BorderPane mRoot;
         private final ResourceBundle mBundle = NbBundle.getBundle(DisruptorPane.class);
+
+        private final double mDefaultDisruptorDistance = 75.0;
+        private final MDisruptorManager mDisruptorManager = MDisruptorManager.getInstance();
+        private final SessionCheckComboBox<String> mDisruptorSccb = new SessionCheckComboBox<>();
+        private final SessionDoubleSpinner mDisruptorSds = new SessionDoubleSpinner(0, 500.0, mDefaultDisruptorDistance, 5.0);
+        private BorderPane mRoot;
 
         public DisruptorPane() {
             createUI();
         }
 
-        public Node getRoot() {
-            return mRoot;
+        public SimpleStringProperty checkedStringProperty() {
+            return mDisruptorSccb.checkedStringProperty();
+        }
+
+        public SimpleDoubleProperty distanceProperty() {
+            return mDisruptorSds.sessionValueProperty();
         }
 
         public IndexedCheckModel<String> getCheckModel() {
             return mDisruptorSccb.getCheckModel();
         }
 
-        public SimpleDoubleProperty distanceProperty() {
-            return mDisruptorSds.sessionValueProperty();
+        public Node getRoot() {
+            return mRoot;
         }
 
         public void load() {
@@ -128,10 +166,5 @@ public class MFilterSectionDisruptor extends MBaseFilterSection {
             mDisruptorSds.disableProperty().bind(Bindings.isEmpty(mDisruptorSccb.getCheckModel().getCheckedItems()));
         }
 
-        public SimpleStringProperty checkedStringProperty() {
-            return mDisruptorSccb.checkedStringProperty();
-        }
-
     }
-
 }

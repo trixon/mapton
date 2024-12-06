@@ -22,9 +22,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ResourceBundle;
 import javafx.beans.property.SimpleBooleanProperty;
-import org.mapton.api.ui.forms.MFilterSectionDisruptorProvider;
 import org.mapton.butterfly_core.api.BFilterSectionDate;
 import org.mapton.butterfly_core.api.BFilterSectionDateProvider;
+import org.mapton.butterfly_core.api.BFilterSectionDisruptor;
+import org.mapton.butterfly_core.api.BFilterSectionDisruptorProvider;
 import org.mapton.butterfly_core.api.BFilterSectionPoint;
 import org.mapton.butterfly_core.api.BFilterSectionPointProvider;
 import org.mapton.butterfly_core.api.ButterflyFormFilter;
@@ -40,14 +41,14 @@ public class CrackFilter extends ButterflyFormFilter<CrackManager> implements
         FilterSectionMiscProvider,
         BFilterSectionPointProvider,
         BFilterSectionDateProvider,
-        MFilterSectionDisruptorProvider {
+        BFilterSectionDisruptorProvider {
 
     private final ResourceBundle mBundle = NbBundle.getBundle(CrackFilter.class);
     private BFilterSectionDate mFilterSectionDate;
+    private BFilterSectionDisruptor mFilterSectionDisruptor;
     private BFilterSectionPoint mFilterSectionPoint;
     private final SimpleBooleanProperty mInvertProperty = new SimpleBooleanProperty();
     private final CrackManager mManager = CrackManager.getInstance();
-    private final SimpleBooleanProperty mSectionDisruptorProperty = new SimpleBooleanProperty();
 
     public CrackFilter() {
         super(CrackManager.getInstance());
@@ -56,19 +57,13 @@ public class CrackFilter extends ButterflyFormFilter<CrackManager> implements
     }
 
     public void initCheckModelListeners() {
-        List.of(
-                getDisruptorCheckModel()
-        ).forEach(cm -> cm.getCheckedItems().addListener(mListChangeListener));
+//        List.of(
+//        ).forEach(cm -> cm.getCheckedItems().addListener(mListChangeListener));
     }
 
     @Override
     public SimpleBooleanProperty invertProperty() {
         return mInvertProperty;
-    }
-
-    @Override
-    public SimpleBooleanProperty sectionDisruptorProperty() {
-        return mSectionDisruptorProperty;
     }
 
     @Override
@@ -84,6 +79,12 @@ public class CrackFilter extends ButterflyFormFilter<CrackManager> implements
     }
 
     @Override
+    public void setFilterSection(BFilterSectionDisruptor filterSection) {
+        mFilterSectionDisruptor = filterSection;
+        mFilterSectionDisruptor.initListeners(mChangeListenerObject, mListChangeListener);
+    }
+
+    @Override
     public void update() {
         var filteredItems = mManager.getAllItems().stream()
                 .filter(p -> validateFreeText(p.getName(), p.getGroup(), p.getComment()))
@@ -91,14 +92,7 @@ public class CrackFilter extends ButterflyFormFilter<CrackManager> implements
                 .filter(p -> validateCoordinateRuler(p.getLat(), p.getLon()))
                 .filter(p -> mFilterSectionPoint.filter(p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS)))
                 .filter(p -> mFilterSectionDate.filter(p, p.ext().getDateFirst()))
-                .filter(p -> {
-                    if (mSectionDisruptorProperty.get()) {
-                        return validateDisruptor(p.getZeroX(), p.getZeroY())
-                                && true;
-                    } else {
-                        return true;
-                    }
-                })
+                .filter(p -> mFilterSectionDisruptor.filter(p))
                 .toList();
 
         if (mInvertProperty.get()) {
@@ -130,11 +124,7 @@ public class CrackFilter extends ButterflyFormFilter<CrackManager> implements
 
     private void initListeners() {
         List.of(
-                mSectionDisruptorProperty,
-                mInvertProperty,
-                //
-                disruptorDistanceProperty(),
-                mDisruptorManager.lastChangedProperty()
+                mInvertProperty
         ).forEach(propertyBase -> propertyBase.addListener(mChangeListenerObject));
     }
 }

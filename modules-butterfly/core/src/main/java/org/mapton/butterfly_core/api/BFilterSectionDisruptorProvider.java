@@ -13,21 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.api.ui.forms;
-
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import org.controlsfx.control.IndexedCheckModel;
+package org.mapton.butterfly_core.api;
 
 /**
  *
  * @author Patrik Karlström
  */
-public interface MFilterSectionDisruptorProvider {
+public interface BFilterSectionDisruptorProvider {
 
-    public SimpleDoubleProperty disruptorDistanceProperty();
+    public void setFilterSection(BFilterSectionDisruptor filterSection);
 
-    public SimpleBooleanProperty sectionDisruptorProperty();
-
-    public void setDisruptorCheckModel(IndexedCheckModel disruptorCheckModel);
 }

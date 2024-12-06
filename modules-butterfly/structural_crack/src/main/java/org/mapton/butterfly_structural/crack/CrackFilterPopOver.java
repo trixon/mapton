@@ -19,8 +19,8 @@ import com.dlsc.gemsfx.util.SessionManager;
 import java.util.ResourceBundle;
 import java.util.prefs.Preferences;
 import javafx.scene.layout.BorderPane;
-import org.mapton.api.ui.forms.MFilterSectionDisruptor;
 import org.mapton.butterfly_core.api.BFilterSectionDate;
+import org.mapton.butterfly_core.api.BFilterSectionDisruptor;
 import org.mapton.butterfly_core.api.BFilterSectionPoint;
 import org.mapton.butterfly_core.api.BaseTabbedFilterPopOver;
 import org.mapton.butterfly_core.api.FilterSectionMisc;
@@ -37,7 +37,7 @@ public class CrackFilterPopOver extends BaseTabbedFilterPopOver {
     private final ResourceBundle mBundle = NbBundle.getBundle(CrackFilterPopOver.class);
     private final CrackFilter mFilter;
     private final BFilterSectionDate mFilterSectionDate;
-    private final MFilterSectionDisruptor mFilterSectionDisruptor;
+    private final BFilterSectionDisruptor mFilterSectionDisruptor;
     private final FilterSectionMisc mFilterSectionMisc;
     private final BFilterSectionPoint mFilterSectionPoint;
     private final CrackManager mManager = CrackManager.getInstance();
@@ -45,12 +45,13 @@ public class CrackFilterPopOver extends BaseTabbedFilterPopOver {
     public CrackFilterPopOver(CrackFilter filter) {
         mFilterSectionPoint = new BFilterSectionPoint();
         mFilterSectionDate = new BFilterSectionDate();
-        mFilterSectionDisruptor = new MFilterSectionDisruptor();
+        mFilterSectionDisruptor = new BFilterSectionDisruptor();
         mFilterSectionMisc = new FilterSectionMisc();
 
         mFilter = filter;
         mFilter.setFilterSection(mFilterSectionPoint);
         mFilter.setFilterSection(mFilterSectionDate);
+        mFilter.setFilterSection(mFilterSectionDisruptor);
 
         setFilter(filter);
         createUI();
@@ -141,10 +142,7 @@ public class CrackFilterPopOver extends BaseTabbedFilterPopOver {
             mFilter.freeTextProperty().set(mManager.getSelectedItem().getName());
         });
 
-        mFilterSectionDisruptor.initListeners(mFilter);
         mFilterSectionMisc.initListeners(mFilter);
-
-        mFilter.sectionDisruptorProperty().bind(mFilterSectionDisruptor.selectedProperty());
 
         mFilter.polygonFilterProperty().bind(usePolygonFilterProperty());
         mFilter.initCheckModelListeners();

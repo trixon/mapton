@@ -66,6 +66,7 @@ import se.trixon.almond.util.fx.DelayedResetRunner;
 public abstract class FormFilter<ManagerType extends MBaseDataManager> {
 
     protected ChangeListener<Object> mChangeListenerObject;
+    @Deprecated
     protected final MDisruptorManager mDisruptorManager = MDisruptorManager.getInstance();
     protected IndexedCheckModel<Integer> mFrequencyCheckModel;
     protected ListChangeListener<Object> mListChangeListener;
@@ -257,6 +258,7 @@ public abstract class FormFilter<ManagerType extends MBaseDataManager> {
         return valid;
     }
 
+    @Deprecated
     public boolean validateDisruptor(Double x, Double y) {
         if (mDisruptorCheckModel.isEmpty()) {
             return true;

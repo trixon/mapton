@@ -27,8 +27,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import org.mapton.api.ui.forms.MFilterSectionDisruptor;
 import org.mapton.butterfly_core.api.BFilterSectionDate;
+import org.mapton.butterfly_core.api.BFilterSectionDisruptor;
 import org.mapton.butterfly_core.api.BFilterSectionPoint;
 import org.mapton.butterfly_core.api.BaseTabbedFilterPopOver;
 import org.mapton.butterfly_core.api.FilterSectionMisc;
@@ -48,7 +48,7 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
     private final CheckBox mDimens3Checkbox = new CheckBox("3");
     private final TopoFilter mFilter;
     private final BFilterSectionDate mFilterSectionDate;
-    private final MFilterSectionDisruptor mFilterSectionDisruptor;
+    private final BFilterSectionDisruptor mFilterSectionDisruptor;
     private final FilterSectionMeas mFilterSectionMeas;
     private final FilterSectionMisc mFilterSectionMisc;
     private final BFilterSectionPoint mFilterSectionPoint;
@@ -59,13 +59,14 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
     public TopoFilterPopOver(TopoFilter filter) {
         mFilterSectionPoint = new BFilterSectionPoint();
         mFilterSectionDate = new BFilterSectionDate();
-        mFilterSectionDisruptor = new MFilterSectionDisruptor();
+        mFilterSectionDisruptor = new BFilterSectionDisruptor();
         mFilterSectionMeas = new FilterSectionMeas();
         mFilterSectionMisc = new FilterSectionMisc();
 
         mFilter = filter;
         mFilter.setFilterSection(mFilterSectionPoint);
         mFilter.setFilterSection(mFilterSectionDate);
+        mFilter.setFilterSection(mFilterSectionDisruptor);
 
         setFilter(filter);
         createUI();
@@ -180,7 +181,6 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
             mSameAlarmCheckbox.setSelected(true);
         });
 
-        mFilterSectionDisruptor.initListeners(mFilter);
         mFilterSectionMeas.initListeners(mFilter);
         mFilterSectionMisc.initListeners(mFilter);
 
@@ -191,7 +191,6 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
 
         mFilter.sameAlarmProperty().bind(mSameAlarmCheckbox.selectedProperty());
 
-        mFilter.sectionDisruptorProperty().bind(mFilterSectionDisruptor.selectedProperty());
         mFilter.sectionMeasProperty().bind(mFilterSectionMeas.selectedProperty());
 
         mFilter.polygonFilterProperty().bind(usePolygonFilterProperty());
