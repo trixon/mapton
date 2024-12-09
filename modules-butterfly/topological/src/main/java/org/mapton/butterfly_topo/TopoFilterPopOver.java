@@ -172,11 +172,6 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
     }
 
     private void initListeners() {
-        activateCopyNames(actionEvent -> {
-            var names = mManager.getTimeFilteredItems().stream().map(o -> o.getName()).toList();
-            copyNames(names);
-        });
-
         activatePasteName(actionEvent -> {
             mFilter.freeTextProperty().set(mManager.getSelectedItem().getName());
             mSameAlarmCheckbox.setSelected(true);

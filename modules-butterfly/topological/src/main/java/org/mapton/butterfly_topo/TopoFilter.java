@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -70,6 +71,9 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
         BFilterSectionDisruptorProvider {
 
     IndexedCheckModel<AlarmLevelFilter> mAlarmLevelCheckModel;
+    DoubleProperty mMeasBearingMaxProperty = new SimpleDoubleProperty();
+    DoubleProperty mMeasBearingMinProperty = new SimpleDoubleProperty();
+    SimpleBooleanProperty mMeasBearingSelectedProperty = new SimpleBooleanProperty();
     IndexedCheckModel<String> mMeasCodeCheckModel;
     IndexedCheckModel<String> mMeasOperatorsCheckModel;
     private final SimpleBooleanProperty mDimens1Property = new SimpleBooleanProperty();
@@ -317,7 +321,7 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
                                 && validateMeasCode(p)
                                 && validateMeasOperators(p)
                                 && validateMeasYoyo(p)
-                                && true;
+                                && validateMeasBearing(p);
                     } else {
                         return true;
                     }
@@ -437,8 +441,15 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
                 .toList();
     }
 
+    private boolean inRange(double value, DoubleProperty minProperty, DoubleProperty maxProperty) {
+//        value = Math.abs(value);
+        return value >= minProperty.get() && value <= maxProperty.get();
+    }
+
     private void initListeners() {
-        List.of(
+        List.of(mMeasBearingSelectedProperty,
+                mMeasBearingMinProperty,
+                mMeasBearingMaxProperty,
                 mSectionMeasProperty,
                 mInvertProperty,
                 mDimens1Property,
@@ -735,6 +746,21 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
             }
             default ->
                 throw new AssertionError();
+        }
+    }
+
+    private boolean validateMeasBearing(BTopoControlPoint p) {
+        try {
+            var o = p.ext().getObservationsTimeFiltered().getLast();
+            var bearing = o.ext().getBearing();
+            if (mMeasBearingSelectedProperty.get()) {
+                return inRange(bearing, mMeasBearingMinProperty, mMeasBearingMaxProperty)
+                        || inRange(bearing - 360.0, mMeasBearingMinProperty, mMeasBearingMaxProperty);
+            } else {
+                return true;
+            }
+        } catch (Exception e) {
+            return false;
         }
     }
 

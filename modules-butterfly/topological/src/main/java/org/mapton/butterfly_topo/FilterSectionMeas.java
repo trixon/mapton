@@ -39,6 +39,7 @@ import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SDict;
 import se.trixon.almond.util.fx.FxHelper;
+import se.trixon.almond.util.fx.control.RangeSliderPane;
 import se.trixon.almond.util.fx.session.SessionCheckComboBox;
 import se.trixon.almond.util.fx.session.SessionComboBox;
 import se.trixon.almond.util.fx.session.SessionDoubleSpinner;
@@ -62,7 +63,6 @@ class FilterSectionMeas extends MBaseFilterSection {
     private final double mDefaultMeasYoyoSize = 0.003;
     private final int mDefaultNumOfMeasfValue = 1;
     private final double mDefaultSpeedValue = 0.020;
-
     private final CheckBox mDiffMeasAllCheckbox = new CheckBox();
     private final SessionDoubleSpinner mDiffMeasAllSds = new SessionDoubleSpinner(-1.0, 1.0, mDefaultDiffValue, 0.001);
     private final CheckBox mDiffMeasLatestCheckbox = new CheckBox();
@@ -78,6 +78,7 @@ class FilterSectionMeas extends MBaseFilterSection {
     private final SessionComboBox<AlarmLevelChangeMode> mMeasAlarmLevelChangeModeScb = new SessionComboBox<>();
     private final SessionComboBox<AlarmLevelChangeUnit> mMeasAlarmLevelChangeUnitScb = new SessionComboBox<>();
     private final SessionIntegerSpinner mMeasAlarmLevelChangeValueSis = new SessionIntegerSpinner(2, 10000, mDefaultMeasAlarmLevelChangeValue);
+    private final RangeSliderPane mMeasBearingRangeSlider = new RangeSliderPane(Dict.BEARING.toString(), -90.0, 360.0, false);
     private final SessionCheckComboBox<String> mMeasCodeSccb = new SessionCheckComboBox<>(true);
     private final CheckBox mMeasLatestOperatorCheckbox = new CheckBox();
     private final SessionIntegerSpinner mMeasNumOfSis = new SessionIntegerSpinner(Integer.MIN_VALUE, Integer.MAX_VALUE, mDefaultNumOfMeasfValue);
@@ -117,6 +118,7 @@ class FilterSectionMeas extends MBaseFilterSection {
         mMeasTopListSizeSds.getValueFactory().setValue(mDefaultMeasTopListSize);
         mMeasYoyoCountSds.getValueFactory().setValue(mDefaultMeasYoyoCount);
         mMeasYoyoSizeSds.getValueFactory().setValue(mDefaultMeasYoyoSize);
+        mMeasBearingRangeSlider.clear();
         SessionCheckComboBox.clearChecks(
                 mAlarmSccb,
                 mMeasOperatorSccb,
@@ -161,6 +163,8 @@ class FilterSectionMeas extends MBaseFilterSection {
         sessionManager.register("filter.measAlarmLevelChangeValue", mMeasAlarmLevelChangeValueSis.sessionValueProperty());
         sessionManager.register("filter.measAlarmLevelChangeLimit", mMeasAlarmLevelChangeLimitSis.sessionValueProperty());
         sessionManager.register("filter.checkedNextAlarm", mAlarmSccb.checkedStringProperty());
+        sessionManager.register("filter.checkedNextAlarm", mAlarmSccb.checkedStringProperty());
+        mMeasBearingRangeSlider.initSession("filter.measBearing", sessionManager);
     }
 
     @Override
@@ -202,6 +206,9 @@ class FilterSectionMeas extends MBaseFilterSection {
         filter.mMeasOperatorsCheckModel = mMeasOperatorSccb.getCheckModel();
         filter.mMeasCodeCheckModel = mMeasCodeSccb.getCheckModel();
         filter.mAlarmLevelCheckModel = mAlarmSccb.getCheckModel();
+        filter.mMeasBearingSelectedProperty.bind(mMeasBearingRangeSlider.selectedProperty());
+        filter.mMeasBearingMinProperty.bind(mMeasBearingRangeSlider.minProperty());
+        filter.mMeasBearingMaxProperty.bind(mMeasBearingRangeSlider.maxProperty());
     }
 
     void load(ArrayList<BTopoControlPoint> items) {
@@ -287,36 +294,36 @@ class FilterSectionMeas extends MBaseFilterSection {
         mDiffMeasAllSds.getValueFactory().setConverter(new NegPosStringConverterDouble());
         mDiffMeasPercentageHSis.getValueFactory().setConverter(new NegPosStringConverterInteger());
         mDiffMeasPercentagePSis.getValueFactory().setConverter(new NegPosStringConverterInteger());
-        javafx.scene.layout.GridPane diffGridPane = new GridPane(hGap, vGap);
+        var diffGridPane = new GridPane(hGap, vGap);
         diffGridPane.addColumn(0, mDiffMeasAllCheckbox, mDiffMeasAllSds);
         diffGridPane.addColumn(1, mDiffMeasLatestCheckbox, mDiffMeasLatestSds);
         FxHelper.autoSizeColumn(diffGridPane, 2);
-        javafx.scene.layout.GridPane diffPercentGridPane = new GridPane(hGap, vGap);
+        var diffPercentGridPane = new GridPane(hGap, vGap);
         diffPercentGridPane.addColumn(0, mDiffMeasPercentageHCheckbox, mDiffMeasPercentageHSis);
         diffPercentGridPane.addColumn(1, mDiffMeasPercentagePCheckbox, mDiffMeasPercentagePSis);
         FxHelper.autoSizeColumn(diffPercentGridPane, 2);
-        javafx.scene.layout.GridPane yoyoGridPane = new GridPane(hGap, vGap);
+        var yoyoGridPane = new GridPane(hGap, vGap);
         yoyoGridPane.add(mMeasYoyoCheckbox, 0, 0, GridPane.REMAINING, 1);
         yoyoGridPane.addRow(1, mMeasYoyoCountSds, mMeasYoyoSizeSds);
         FxHelper.autoSizeColumn(yoyoGridPane, 2);
-        javafx.scene.layout.GridPane displacementGridPane = new GridPane(hGap, vGap);
+        var displacementGridPane = new GridPane(hGap, vGap);
         displacementGridPane.add(mMeasTopListCheckbox, 0, 0, GridPane.REMAINING, 1);
         displacementGridPane.addRow(1, mMeasTopListSizeSds, new Label(SDict.POINTS.toLower()));
         displacementGridPane.addRow(2, mMeasTopListLimitSis, mMeasTopListUnitScb);
         mMeasTopListSizeSds.setPrefWidth(spinnerWidth);
         mMeasTopListLimitSis.setPrefWidth(spinnerWidth);
-        javafx.scene.layout.GridPane alcGridPane = new GridPane(hGap, vGap);
+        var alcGridPane = new GridPane(hGap, vGap);
         alcGridPane.add(mMeasAlarmLevelChangeCheckbox, 0, 0, GridPane.REMAINING, 1);
         alcGridPane.addRow(1, mMeasAlarmLevelChangeLimitSis, mMeasAlarmLevelChangeModeScb);
         alcGridPane.addRow(2, mMeasAlarmLevelChangeValueSis, mMeasAlarmLevelChangeUnitScb);
         mMeasAlarmLevelChangeLimitSis.setPrefWidth(spinnerWidth);
         mMeasAlarmLevelChangeValueSis.setPrefWidth(spinnerWidth);
-        javafx.scene.control.Spinner[] spinners = new Spinner[]{mDiffMeasAllSds, mDiffMeasLatestSds, mDiffMeasPercentageHSis, mDiffMeasPercentagePSis, mMeasSpeedSds, mMeasNumOfSis, mMeasYoyoCountSds, mMeasYoyoSizeSds, mMeasAlarmLevelChangeValueSis, mMeasAlarmLevelChangeLimitSis, mMeasAlarmLevelAgeSis, mMeasTopListSizeSds, mMeasTopListLimitSis};
+        var spinners = new Spinner[]{mDiffMeasAllSds, mDiffMeasLatestSds, mDiffMeasPercentageHSis, mDiffMeasPercentagePSis, mMeasSpeedSds, mMeasNumOfSis, mMeasYoyoCountSds, mMeasYoyoSizeSds, mMeasAlarmLevelChangeValueSis, mMeasAlarmLevelChangeLimitSis, mMeasAlarmLevelAgeSis, mMeasTopListSizeSds, mMeasTopListLimitSis};
         FxHelper.setEditable(true, spinners);
         FxHelper.autoCommitSpinners(spinners);
-        javafx.scene.layout.VBox movementBox = new VBox(vGap, diffGridPane, diffPercentGridPane, displacementGridPane, new VBox(titleGap, mMeasSpeedCheckbox, mMeasSpeedSds), yoyoGridPane);
-        javafx.scene.layout.VBox miscBox = new VBox(vGap, new VBox(titleGap, mNumOfMeasCheckbox, mMeasNumOfSis), new Separator(), mMeasCodeSccb, new VBox(titleGap, mMeasOperatorSccb, mMeasLatestOperatorCheckbox));
-        javafx.scene.layout.VBox alarmBox = new VBox(vGap, mAlarmSccb, new VBox(titleGap, mMeasAlarmLevelAgeCheckbox, mMeasAlarmLevelAgeSis), alcGridPane);
+        var movementBox = new VBox(vGap, diffGridPane, diffPercentGridPane, displacementGridPane, new VBox(titleGap, mMeasSpeedCheckbox, mMeasSpeedSds), yoyoGridPane, mMeasBearingRangeSlider);
+        var miscBox = new VBox(vGap, new VBox(titleGap, mNumOfMeasCheckbox, mMeasNumOfSis), new Separator(), mMeasCodeSccb, new VBox(titleGap, mMeasOperatorSccb, mMeasLatestOperatorCheckbox));
+        var alarmBox = new VBox(vGap, mAlarmSccb, new VBox(titleGap, mMeasAlarmLevelAgeCheckbox, mMeasAlarmLevelAgeSis), alcGridPane);
         int row = 0;
         mRoot.add(wrapInTitleBorder("Rörelser", movementBox), 0, row, 1, GridPane.REMAINING);
         mRoot.add(wrapInTitleBorder("Larmnivå", alarmBox), 1, row++, 1, 1);

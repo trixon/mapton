@@ -15,6 +15,8 @@
  */
 package org.mapton.butterfly_core.api;
 
+import java.util.List;
+import java.util.concurrent.Callable;
 import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.api.MBaseDataManager;
 import org.mapton.api.MLatLon;
@@ -47,6 +49,12 @@ public abstract class BaseManager<T extends BBase> extends MBaseDataManager<T> {
             mButterfly = mButterflyManager.getButterfly();
             FxHelper.runLater(() -> load(mButterfly));
         }
+    }
+
+    public Callable<List<String>> getCopyNamesCallable() {
+        return () -> {
+            return getTimeFilteredItems().stream().map(o -> o.getName()).toList();
+        };
     }
 
     @Override

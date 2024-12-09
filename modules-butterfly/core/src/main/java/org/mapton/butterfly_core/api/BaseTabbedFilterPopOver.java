@@ -44,7 +44,6 @@ public abstract class BaseTabbedFilterPopOver extends BaseFilterPopOver {
         addToToolBar("mm", ActionUtils.ActionTextBehavior.SHOW);
         addToToolBar("mp", ActionUtils.ActionTextBehavior.SHOW);
         getToolBar().getItems().add(new Separator());
-        addToToolBar("copyNames", ActionUtils.ActionTextBehavior.HIDE);
         addToToolBar("paste", ActionUtils.ActionTextBehavior.HIDE);
 
         if (nodes != null) {

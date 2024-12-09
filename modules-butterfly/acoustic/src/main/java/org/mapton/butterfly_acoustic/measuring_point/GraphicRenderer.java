@@ -47,6 +47,7 @@ public class GraphicRenderer extends GraphicRendererBase {
         }
     }
 
+    @Override
     public void reset() {
         resetPlotLimiter();
     }
