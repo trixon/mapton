@@ -85,9 +85,7 @@ public class ConvergenceGroupView {
         var ref = String.join(",", items.stream().map(p -> p.getName()).toList());
         var g = new BTopoConvergenceGroup();
         g.setName("Dynamic " + LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
-        System.out.println(g.getName());
-        System.out.println(ref);
-        g.setLimit(0.008);
+        g.setLimit(0.010);
         g.setRef(ref);
 
         var p = items.getFirst();

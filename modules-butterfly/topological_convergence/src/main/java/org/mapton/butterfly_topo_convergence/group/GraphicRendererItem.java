@@ -22,9 +22,7 @@ import org.mapton.butterfly_core.api.GraphicRenderItemLimitProvider;
  * @author Patrik Karlström
  */
 public enum GraphicRendererItem implements GraphicRenderItemLimitProvider {
-    BALLS("Klot", Integer.MAX_VALUE),
-    BALLS_Z("Klot z", Integer.MAX_VALUE),
-    RECENT("Senaste cirklar", Integer.MAX_VALUE);
+    NONE("-", Integer.MAX_VALUE);
     private final String mName;
     private final int mPlotLimit;
 
@@ -34,16 +32,19 @@ public enum GraphicRendererItem implements GraphicRenderItemLimitProvider {
     }
 
     @Override
+
     public String getName() {
         return mName;
     }
 
     @Override
+
     public int getPlotLimit() {
         return mPlotLimit;
     }
 
     @Override
+
     public String toString() {
         return getName();
     }

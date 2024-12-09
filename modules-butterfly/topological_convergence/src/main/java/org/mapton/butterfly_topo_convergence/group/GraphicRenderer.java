@@ -22,53 +22,32 @@ import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.Path;
 import gov.nasa.worldwind.render.Pyramid;
-import gov.nasa.worldwind.render.Renderable;
 import java.util.ArrayList;
 import java.util.Random;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.butterfly_format.types.topo.BTopoConvergenceGroup;
-import org.mapton.butterfly_topo_convergence.ConvergenceAttributeManager;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class GraphicRenderer {
+public class GraphicRenderer extends GraphicRendererBase {
 
-    private final ConvergenceAttributeManager mAttributeManager = ConvergenceAttributeManager.getInstance();
-    private final IndexedCheckModel<GraphicRendererItem> mCheckModel;
-    private final RenderableLayer mEllipsoidLayer;
-    private final RenderableLayer mGroundConnectorLayer;
-    private ArrayList<AVListImpl> mMapObjects;
-    private final RenderableLayer mSurfaceLayer;
-
-    public GraphicRenderer(RenderableLayer ellipsoidLayer, RenderableLayer groundConnectorLayer, RenderableLayer surfaceLayer, IndexedCheckModel<GraphicRendererItem> checkModel) {
-        mEllipsoidLayer = ellipsoidLayer;
-        mGroundConnectorLayer = groundConnectorLayer;
-        mSurfaceLayer = surfaceLayer;
-        mCheckModel = checkModel;
-    }
-
-    public void addRenderable(RenderableLayer layer, Renderable renderable) {
-        layer.addRenderable(renderable);
-        if (layer == mEllipsoidLayer) {
-            if (renderable instanceof AVListImpl avlist) {
-                mMapObjects.add(avlist);
-            }
-        } else {
-            //mLayerXYZ.addRenderable(renderable); //TODO Add to a non responsive layer
-        }
+    public GraphicRenderer(RenderableLayer layer, RenderableLayer passiveLayer, IndexedCheckModel<GraphicRendererItem> checkModel) {
+        super(layer, passiveLayer);
+        sCheckModel = checkModel;
     }
 
     public void plot(BTopoConvergenceGroup convergenceGroup, Position position, ArrayList<AVListImpl> mapObjects) {
-        mMapObjects = mapObjects;
+        sMapObjects = mapObjects;
 
-        if (mCheckModel.isChecked(GraphicRendererItem.BALLS)) {
-            plotPoints(convergenceGroup, position, mapObjects);
+        if (sCheckModel.isChecked(GraphicRendererItem.NONE)) {
         }
     }
 
+    @Override
     public void reset() {
+        resetPlotLimiter();
     }
 
     private void plotPoints(BTopoConvergenceGroup convergenceGroup, Position position, ArrayList<AVListImpl> mapObjects) {
@@ -87,7 +66,7 @@ public class GraphicRenderer {
             var pyramid = new Pyramid(p, radius * 1.0, radius * 1.0);
 
             pyramid.setAttributes(mAttributeManager.getNodeAttributes());
-            addRenderable(mEllipsoidLayer, pyramid);
+            addRenderable(pyramid, true, GraphicRendererItem.NONE, sMapObjects);
 
             for (var cp2 : convergenceGroup.ext2().getControlPoints()) {
                 if (cp2 == controlPoint) {
@@ -95,7 +74,7 @@ public class GraphicRenderer {
                 }
                 var altitude2 = cp2.getZeroZ() + offset;
                 var p2 = Position.fromDegrees(cp2.getLat(), cp2.getLon(), altitude2);
-                var groundPath = new Path(p, p2);
+                var pairPath = new Path(p, p2);
                 var attrs = new BasicShapeAttributes(mAttributeManager.getPairPathAttributes());
                 int colorIndex = random.nextInt(0, 3);
                 switch (colorIndex) {
@@ -115,8 +94,8 @@ public class GraphicRenderer {
                     attrs.setOutlineStippleFactor(3);
                 }
 
-                groundPath.setAttributes(attrs);
-                addRenderable(mGroundConnectorLayer, groundPath);
+                pairPath.setAttributes(attrs);
+                addRenderable(pairPath, true, null, null);
             }
         }
     }

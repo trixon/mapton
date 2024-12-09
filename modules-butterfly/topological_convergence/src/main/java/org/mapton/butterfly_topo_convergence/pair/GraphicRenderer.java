@@ -24,7 +24,6 @@ import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.Path;
 import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwind.render.Pyramid;
-import gov.nasa.worldwind.render.Renderable;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -33,30 +32,22 @@ import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.Mapton;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.topo.BTopoConvergencePair;
-import org.mapton.butterfly_topo_convergence.ConvergenceAttributeManager;
 import org.mapton.worldwind.api.WWHelper;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class GraphicRenderer {
+public class GraphicRenderer extends GraphicRendererBase {
 
-    private final ConvergenceAttributeManager mAttributeManager = ConvergenceAttributeManager.getInstance();
-    private final IndexedCheckModel<GraphicRendererItem> mCheckModel;
-    private final RenderableLayer mLineLayer;
-    private ArrayList<AVListImpl> mMapObjects;
     private final Material[] mMaterials;
-    private final RenderableLayer mNodeLayer;
     private final HashSet<String> mPlottedLabels = new HashSet<>();
     private final HashSet<String> mPlottedNodes = new HashSet<>();
-    private final RenderableLayer mSurfaceLayer;
 
-    public GraphicRenderer(RenderableLayer nodeLayer, RenderableLayer groundConnectorLayer, RenderableLayer surfaceLayer, IndexedCheckModel<GraphicRendererItem> checkModel) {
-        mNodeLayer = nodeLayer;
-        mLineLayer = groundConnectorLayer;
-        mSurfaceLayer = surfaceLayer;
-        mCheckModel = checkModel;
+    public GraphicRenderer(RenderableLayer layer, RenderableLayer passiveLayer, IndexedCheckModel<GraphicRendererItem> checkModel) {
+        super(layer, passiveLayer);
+        sCheckModel = checkModel;
+
         mMaterials = new Material[]{
             //https://colordesigner.io/gradient-generator/?mode=hsl#00FF00-FF0000
             new Material(Color.decode("#00ff00")),
@@ -78,34 +69,25 @@ public class GraphicRenderer {
         };
     }
 
-    public void addRenderable(RenderableLayer layer, Renderable renderable) {
-        layer.addRenderable(renderable);
-        if (layer == mLineLayer) {
-            if (renderable instanceof AVListImpl avlist) {
-                mMapObjects.add(avlist);
-            }
-        } else {
-            //mLayerXYZ.addRenderable(renderable); //TODO Add to a non responsive layer
-        }
-    }
-
     public void plot(BTopoConvergencePair pair, Position position, ArrayList<AVListImpl> mapObjects) {
-        mMapObjects = mapObjects;
+        sMapObjects = mapObjects;
 
-        if (mCheckModel.isChecked(GraphicRendererItem.LINES)) {
+        if (sCheckModel.isChecked(GraphicRendererItem.LINES)) {
             plotLine(pair);
         }
 
-        if (mCheckModel.isChecked(GraphicRendererItem.NODE)) {
+        if (sCheckModel.isChecked(GraphicRendererItem.NODE)) {
             plotNodes(pair);
         }
 
-        if (mCheckModel.isChecked(GraphicRendererItem.LABELS)) {
+        if (sCheckModel.isChecked(GraphicRendererItem.LABELS)) {
             plotLabels(pair);
         }
     }
 
+    @Override
     public void reset() {
+        super.reset();
         mPlottedNodes.clear();
         mPlottedLabels.clear();
     }
@@ -120,7 +102,7 @@ public class GraphicRenderer {
             placemark.setAttributes(mAttributeManager.getLabelPlacemarkAttributes());
             placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(mAttributeManager.getLabelPlacemarkAttributes(), 1.5));
             placemark.setLabelText(StringUtils.remove(controlPoint.getName(), pair.getConvergenceGroup().getName()));
-            addRenderable(mNodeLayer, placemark);
+            addRenderable(placemark, true, null, sMapObjects);
             mPlottedLabels.add(name);
         }
     }
@@ -148,7 +130,7 @@ public class GraphicRenderer {
         }
 
         path.setAttributes(attrs);
-        addRenderable(mLineLayer, path);
+        addRenderable(path, true, GraphicRendererItem.LINES, sMapObjects);
     }
 
     private void plotNode(BTopoControlPoint controlPoint, double offset) {
@@ -158,11 +140,11 @@ public class GraphicRenderer {
             var position = PairHelper.getPosition(controlPoint, offset);
             var pyramid = new Pyramid(position, radius, radius);
             pyramid.setAttributes(mAttributeManager.getNodeAttributes());
-            addRenderable(mNodeLayer, pyramid);
+            addRenderable(pyramid, true, GraphicRendererItem.NODE, null);
 
             var groundPath = new Path(position, WWHelper.positionFromPosition(position, 0.0));
             groundPath.setAttributes(mAttributeManager.getGroundPathAttributes());
-            addRenderable(mNodeLayer, groundPath);
+            addRenderable(groundPath, false, GraphicRendererItem.NODE, sMapObjects);
 
             mPlottedNodes.add(name);
 

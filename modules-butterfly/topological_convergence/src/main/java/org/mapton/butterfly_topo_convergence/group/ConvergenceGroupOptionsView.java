@@ -88,8 +88,8 @@ public class ConvergenceGroupOptionsView extends MOptionsView {
                 pointLabel,
                 mPointScb,
                 labelLabel,
-                mLabelMenuButton,
-                mGraphicSccb
+                mLabelMenuButton
+        //                mGraphicSccb
         );
         box.setPadding(FxHelper.getUIScaledInsets(8));
 

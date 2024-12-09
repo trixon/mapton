@@ -49,7 +49,7 @@ public class ConvergenceGroupLayerBundle extends BfLayerBundle {
         init();
         initRepaint();
         mOptionsView = new ConvergenceGroupOptionsView(this);
-        mGraphicRenderer = new GraphicRenderer(mLayer, mGroundConnectorLayer, mSurfaceLayer, mOptionsView.getGraphicCheckModel());
+        mGraphicRenderer = new GraphicRenderer(mLayer, mPassiveLayer, mOptionsView.getGraphicCheckModel());
         initListeners();
 
         mManager.setInitialTemporalState(WWHelper.isStoredAsVisible(mLayer, mLayer.isEnabled()));
