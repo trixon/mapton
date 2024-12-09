@@ -16,10 +16,13 @@
 package org.mapton.api.ui.forms;
 
 import com.dlsc.gemsfx.util.SessionManager;
+import java.util.LinkedHashMap;
 import javafx.beans.property.BooleanProperty;
+import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.layout.Region;
 import org.apache.commons.configuration2.PropertiesConfiguration;
+import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.IndexedCheckModel;
 import org.controlsfx.tools.Borders;
 import se.trixon.almond.util.fx.FxHelper;
@@ -51,6 +54,21 @@ public abstract class MBaseFilterSection {
             mCheckedTab.getTabCheckBox().setSelected(true);
         } catch (NullPointerException e) {
         }
+    }
+
+    public String makeInfo(ObservableList<String> list) {
+        return String.join(",", list);
+    }
+
+    public String makeInfo(String s, String empty) {
+        return StringUtils.equalsIgnoreCase(s, empty) ? "" : s;
+    }
+
+    public String makeInfoInteger(ObservableList<Integer> list) {
+        return String.join(",", list.stream().map(o -> Integer.toString(o)).toList());
+    }
+
+    public void createInfoContent(LinkedHashMap<String, String> map) {
     }
 
     public Node getContent() {

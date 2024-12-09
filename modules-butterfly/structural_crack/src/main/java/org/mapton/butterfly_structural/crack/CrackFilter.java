@@ -108,16 +108,11 @@ public class CrackFilter extends ButterflyFormFilter<CrackManager> implements
     }
 
     private ContainerTag createInfoContent() {
-        //TODO Add measOperator+latest
         var map = new LinkedHashMap<String, String>();
-
         map.put(Dict.TEXT.toString(), getFreeText());
-        try {
-//            map.put(Dict.GROUP.toString(), makeInfo(mGroupCheckModel.getCheckedItems()));
-//        map.put(Dict.TYPE.toString(), makeInfo(mTypeCheckModel.getCheckedItems()));
-//        map.put(mBundle.getString("soilMaterial"), makeInfo(mSoilCheckModel.getCheckedItems()));
-        } catch (Exception e) {
-        }
+        mFilterSectionPoint.createInfoContent(map);
+        mFilterSectionDate.createInfoContent(map);
+        mFilterSectionDisruptor.createInfoContent(map);
 
         return createHtmlFilterInfo(map);
     }

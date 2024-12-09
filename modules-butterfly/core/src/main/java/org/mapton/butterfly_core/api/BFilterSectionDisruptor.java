@@ -16,7 +16,9 @@
 package org.mapton.butterfly_core.api;
 
 import com.dlsc.gemsfx.util.SessionManager;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.ResourceBundle;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -64,6 +66,14 @@ public class BFilterSectionDisruptor extends MBaseFilterSection {
         } else {
             return true;
         }
+    }
+
+    @Override
+    public void createInfoContent(LinkedHashMap<String, String> map) {
+        if (!isSelected()) {
+            return;
+        }
+        map.put(getTab().getText().toUpperCase(Locale.ROOT), ".");
     }
 
     public void initListeners(ChangeListener changeListener, ListChangeListener<Object> listChangeListener) {

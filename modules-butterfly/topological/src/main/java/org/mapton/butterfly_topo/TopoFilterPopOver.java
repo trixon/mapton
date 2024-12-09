@@ -67,6 +67,7 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
         mFilter.setFilterSection(mFilterSectionPoint);
         mFilter.setFilterSection(mFilterSectionDate);
         mFilter.setFilterSection(mFilterSectionDisruptor);
+        mFilter.setFilterSection(mFilterSectionMeas);
 
         setFilter(filter);
         createUI();

@@ -19,6 +19,7 @@ import com.dlsc.gemsfx.util.SessionManager;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
@@ -49,6 +50,7 @@ import se.trixon.almond.util.fx.session.SessionCheckComboBox;
 public class BFilterSectionPoint extends MBaseFilterSection {
 
     private final SessionCheckComboBox<String> mAlarmNameSccb;
+    private final ResourceBundle mBundle = NbBundle.getBundle(getClass());
     private final SessionCheckComboBox<String> mCategorySccb;
     private final SessionCheckComboBox<Integer> mFrequencySccb;
     private final SessionCheckComboBox<String> mGroupSccb;
@@ -77,6 +79,22 @@ public class BFilterSectionPoint extends MBaseFilterSection {
     public void clear() {
         super.clear();
         mPointFilterUI.clear();
+    }
+
+    @Override
+    public void createInfoContent(LinkedHashMap<String, String> map) {
+        if (!isSelected()) {
+            return;
+        }
+        map.put(Dict.Geometry.POINT.toUpper(), ".");
+        map.put(Dict.STATUS.toString(), makeInfo(mStatusSccb.getCheckModel().getCheckedItems()));
+        map.put(SDict.FREQUENCY.toString(), makeInfoInteger(mFrequencySccb.getCheckModel().getCheckedItems()));
+        map.put(mBundle.getString("nextMeasCheckComboBoxTitle"), makeInfo(mMeasNextSccb.getCheckModel().getCheckedItems()));
+        map.put(Dict.GROUP.toString(), makeInfo(mGroupSccb.getCheckModel().getCheckedItems()));
+        map.put(Dict.CATEGORY.toString(), makeInfo(mCategorySccb.getCheckModel().getCheckedItems()));
+        map.put(SDict.ALARMS.toString(), makeInfo(mAlarmNameSccb.getCheckModel().getCheckedItems()));
+        map.put(SDict.OPERATOR.toString(), makeInfo(mOperatorSccb.getCheckModel().getCheckedItems()));
+        map.put(Dict.ORIGIN.toString(), makeInfo(mOriginSccb.getCheckModel().getCheckedItems()));
     }
 
     public boolean filter(BXyzPoint p, Long remainingDays) {
@@ -248,7 +266,6 @@ public class BFilterSectionPoint extends MBaseFilterSection {
         private Node mBaseBorderBox;
         private GridPane mBaseBox;
         private final double mBorderInnerPadding = FxHelper.getUIScaled(8.0);
-        private final ResourceBundle mBundle = NbBundle.getBundle(getClass());
         private final double mTopBorderInnerPadding = FxHelper.getUIScaled(16.0);
 
         public PointFilterUI() {

@@ -24,6 +24,7 @@ import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -76,6 +77,7 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
     private final SimpleBooleanProperty mDimens3Property = new SimpleBooleanProperty();
     private BFilterSectionDate mFilterSectionDate;
     private BFilterSectionDisruptor mFilterSectionDisruptor;
+    private FilterSectionMeas mFilterSectionMeas;
     private BFilterSectionPoint mFilterSectionPoint;
     private final SimpleBooleanProperty mInvertProperty = new SimpleBooleanProperty();
     private final TopoManager mManager = TopoManager.getInstance();
@@ -356,25 +358,21 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
         getInfoPopOver().loadContent(createInfoContent().renderFormatted());
     }
 
+    void setFilterSection(FilterSectionMeas filterSectionMeas) {
+        mFilterSectionMeas = filterSectionMeas;
+    }
+
     private ContainerTag createInfoContent() {
         var map = new LinkedHashMap<String, String>();
+        map.put(Dict.TEXT.toString(), getFreeText());
+        mFilterSectionPoint.createInfoContent(map);
+        map.put(SDict.DIMENSION.toString(), makeInfoDimension());
+        mFilterSectionDate.createInfoContent(map);
+        mFilterSectionDisruptor.createInfoContent(map);
+
         try {
-            map.put(Dict.TEXT.toString(), getFreeText());
-            map.put(SDict.DIMENSION.toString(), makeInfoDimension());
-//            map.put(Dict.STATUS.toString(), makeInfo(mStatusCheckModel.getCheckedItems()));
-//            map.put(Dict.GROUP.toString(), makeInfo(mGroupCheckModel.getCheckedItems()));
-//            map.put(Dict.CATEGORY.toString(), makeInfo(mCategoryCheckModel.getCheckedItems()));
-//            map.put(SDict.ALARMS.toString(), makeInfo(mAlarmNameCheckModel.getCheckedItems()));
-//            map.put(SDict.OPERATOR.toString(), makeInfo(mOperatorCheckModel.getCheckedItems()));
-//            map.put(Dict.ORIGIN.toString(), makeInfo(mOriginCheckModel.getCheckedItems()));
-//            map.put(SDict.FREQUENCY.toString(), makeInfoInteger(mFrequencyCheckModel.getCheckedItems()));
-//            map.put(SDict.VALID_FROM_TO.toString(), makeInfo(getDateFromToCheckModel().getCheckedItems()));
-//            map.put(getBundle().getString("nextMeasCheckComboBoxTitle"), makeInfo(mMeasNextCheckModel.getCheckedItems()));
+            map.put(mFilterSectionMeas.getTab().getText().toUpperCase(Locale.ROOT), ".");
             map.put(getBundle().getString("measCodeCheckComboBoxTitle"), makeInfo(mMeasCodeCheckModel.getCheckedItems()));
-//            map.put("Första " + Dict.FROM.toString(), mDateFirstLowProperty.get() != null ? mDateFirstLowProperty.get().toString() : "");
-//            map.put("Första " + Dict.TO.toString(), mDateFirstHighProperty.get() != null ? mDateFirstHighProperty.get().toString() : "");
-//            map.put("Senaste " + Dict.FROM.toString(), mDateLastLowProperty.get() != null ? mDateLastLowProperty.get().toString() : "");
-//            map.put("Senaste " + Dict.TO.toString(), mDateLastHighProperty.get() != null ? mDateLastHighProperty.get().toString() : "");
 
             if (mMeasNumOfProperty.get()) {
                 var value = mMeasNumOfValueProperty.get();

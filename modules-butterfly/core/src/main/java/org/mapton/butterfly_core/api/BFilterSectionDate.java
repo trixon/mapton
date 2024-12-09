@@ -18,6 +18,7 @@ package org.mapton.butterfly_core.api;
 import com.dlsc.gemsfx.util.SessionManager;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.LinkedHashMap;
 import java.util.List;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
@@ -66,19 +67,32 @@ public class BFilterSectionDate extends MBaseFilterSection {
         );
     }
 
-    public SimpleObjectProperty<LocalDate> dateFirstHighProperty() {
+    @Override
+    public void createInfoContent(LinkedHashMap<String, String> map) {
+        if (!isSelected()) {
+            return;
+        }
+        map.put(Dict.DATE.toUpper(), ".");
+        map.put(SDict.VALID_FROM_TO.toString(), makeInfo(getDateFromToCheckModel().getCheckedItems()));
+        map.put("Första " + Dict.FROM.toString(), dateFirstLowProperty().get() != null ? dateFirstLowProperty().get().toString() : "");
+        map.put("Första " + Dict.TO.toString(), dateFirstHighProperty().get() != null ? dateFirstHighProperty().get().toString() : "");
+        map.put("Senaste " + Dict.FROM.toString(), dateLastLowProperty().get() != null ? dateLastLowProperty().get().toString() : "");
+        map.put("Senaste " + Dict.TO.toString(), dateLastHighProperty().get() != null ? dateLastHighProperty().get().toString() : "");
+    }
+
+    private SimpleObjectProperty<LocalDate> dateFirstHighProperty() {
         return mDateRangeFirstPane.highDateProperty();
     }
 
-    public SimpleObjectProperty<LocalDate> dateFirstLowProperty() {
+    private SimpleObjectProperty<LocalDate> dateFirstLowProperty() {
         return mDateRangeFirstPane.lowDateProperty();
     }
 
-    public SimpleObjectProperty<LocalDate> dateLastHighProperty() {
+    private SimpleObjectProperty<LocalDate> dateLastHighProperty() {
         return mDateRangeLastPane.highDateProperty();
     }
 
-    public SimpleObjectProperty<LocalDate> dateLastLowProperty() {
+    private SimpleObjectProperty<LocalDate> dateLastLowProperty() {
         return mDateRangeLastPane.lowDateProperty();
     }
 
