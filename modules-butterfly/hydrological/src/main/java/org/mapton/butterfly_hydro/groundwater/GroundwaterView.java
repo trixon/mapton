@@ -16,6 +16,7 @@
 package org.mapton.butterfly_hydro.groundwater;
 
 import java.util.Arrays;
+import javafx.collections.ListChangeListener;
 import javafx.scene.layout.Pane;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.ui.forms.ListFormConfiguration;
@@ -55,6 +56,11 @@ public class GroundwaterView {
                 Dict.CATEGORY.toString(),
                 Dict.GROUP.toString()
         );
+
+        mManager.getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BHydroGroundwaterPoint> c) -> {
+            mFilterPopOver.setNames(mManager.getTimeFilteredItems().stream().map(p -> p.getName()).toList());
+        });
+
     }
 
     public Pane getView() {

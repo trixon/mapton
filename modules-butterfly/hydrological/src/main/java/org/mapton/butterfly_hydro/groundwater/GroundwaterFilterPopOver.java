@@ -15,34 +15,85 @@
  */
 package org.mapton.butterfly_hydro.groundwater;
 
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Separator;
-import javafx.scene.layout.VBox;
-import org.mapton.api.ui.MFilterPopOver;
-import static org.mapton.api.ui.MPopOver.GAP;
-import static org.mapton.api.ui.MPopOver.autoSize;
+import com.dlsc.gemsfx.util.SessionManager;
+import java.util.prefs.Preferences;
+import javafx.scene.layout.BorderPane;
+import org.mapton.butterfly_core.api.BFilterSectionDate;
+import org.mapton.butterfly_core.api.BFilterSectionDisruptor;
+import org.mapton.butterfly_core.api.BFilterSectionPoint;
+import org.mapton.butterfly_core.api.BaseTabbedFilterPopOver;
+import org.mapton.butterfly_core.api.FilterSectionMisc;
+import org.mapton.butterfly_format.Butterfly;
+import org.openide.util.NbPreferences;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class GroundwaterFilterPopOver extends MFilterPopOver {
+public class GroundwaterFilterPopOver extends BaseTabbedFilterPopOver {
 
-    private final CheckBox mCheckbox = new CheckBox("TEST");
     private final GroundwaterFilter mFilter;
+    private final BFilterSectionDate mFilterSectionDate;
+    private final BFilterSectionDisruptor mFilterSectionDisruptor;
+    private final FilterSectionMisc mFilterSectionMisc;
+    private final BFilterSectionPoint mFilterSectionPoint;
+    private final GroundwaterManager mManager = GroundwaterManager.getInstance();
 
     public GroundwaterFilterPopOver(GroundwaterFilter filter) {
+        mFilterSectionPoint = new BFilterSectionPoint();
+        mFilterSectionDate = new BFilterSectionDate();
+        mFilterSectionDisruptor = new BFilterSectionDisruptor();
+        mFilterSectionMisc = new FilterSectionMisc();
+
         mFilter = filter;
+        mFilter.setFilterSection(mFilterSectionPoint);
+        mFilter.setFilterSection(mFilterSectionDate);
+        mFilter.setFilterSection(mFilterSectionDisruptor);
+
+        setFilter(filter);
         createUI();
         initListeners();
-        initSession();
+        initSession(NbPreferences.forModule(getClass()).node(getClass().getSimpleName()));
+
+        mFilterSectionPoint.getMeasNextSccb().setDisable(true);
+        mFilterSectionPoint.getMeasNextSccb().setDisable(true);
+        mFilterSectionPoint.getAlarmNameSccb().setDisable(true);
+
+        populate();
     }
 
     @Override
     public void clear() {
         setUsePolygonFilter(false);
         mFilter.freeTextProperty().set("");
-        mCheckbox.setSelected(false);
+
+        mFilterSectionPoint.clear();
+        mFilterSectionDate.clear();
+        mFilterSectionDisruptor.clear();
+        mFilterSectionMisc.clear();
+    }
+
+    @Override
+    public void filterPresetRestore(Preferences preferences) {
+        clear();
+        filterPresetStore(preferences);
+        //mDateRangePane.reset();
+    }
+
+    @Override
+    public void filterPresetStore(Preferences preferences) {
+        var sessionManager = initSession(preferences);
+        sessionManager.unregisterAll();
+    }
+
+    @Override
+    public void load(Butterfly butterfly) {
+        var items = butterfly.hydro().getGroundwaterPoints();
+
+        mFilterSectionPoint.load(items);
+        mFilterSectionDisruptor.load();
+        mFilterSectionDate.load(mManager.getTemporalRange());
+        mFilterSectionMisc.load();
     }
 
     @Override
@@ -54,27 +105,46 @@ public class GroundwaterFilterPopOver extends MFilterPopOver {
     public void reset() {
         clear();
         mFilter.freeTextProperty().set("*");
+
+        mFilterSectionPoint.reset(null);
+        mFilterSectionMisc.reset(null);
     }
 
     private void createUI() {
-        var vBox = new VBox(GAP,
-                getButtonBox(),
-                new Separator(),
-                mCheckbox
+        var root = new BorderPane(getTabPane());
+        root.setTop(getToolBar());
+        populateToolBar(mFilterSectionMisc.getInvertCheckboxToolBarItem());
+
+        getTabPane().getTabs().addAll(
+                mFilterSectionPoint.getTab(),
+                mFilterSectionDate.getTab(),
+                mFilterSectionDisruptor.getTab()
         );
 
-        autoSize(vBox);
-        setContentNode(vBox);
+        setContentNode(root);
     }
 
     private void initListeners() {
-        mFilter.property().bind(mCheckbox.selectedProperty());
+        activatePasteName(actionEvent -> {
+            mFilter.freeTextProperty().set(mManager.getSelectedItem().getName());
+        });
+
+        mFilterSectionMisc.initListeners(mFilter);
+
         mFilter.polygonFilterProperty().bind(usePolygonFilterProperty());
+        mFilter.initCheckModelListeners();
     }
 
-    private void initSession() {
-        getSessionManager().register("freeText", mFilter.freeTextProperty());
+    private SessionManager initSession(Preferences preferences) {
+        var sessionManager = new SessionManager(preferences);
+        mFilterSectionPoint.initSession(sessionManager);
+        mFilterSectionDate.initSession(sessionManager);
+        mFilterSectionDisruptor.initSession(sessionManager);
+        mFilterSectionMisc.initSession(sessionManager);
 
+        sessionManager.register("filter.measPoint.freeText", mFilter.freeTextProperty());
+
+        return sessionManager;
     }
 
 }

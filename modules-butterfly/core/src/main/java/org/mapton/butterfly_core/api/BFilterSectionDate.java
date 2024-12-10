@@ -102,8 +102,7 @@ public class BFilterSectionDate extends MBaseFilterSection {
                     && validateDateFromToWithout(p.getDateValidFrom(), p.getDateValidTo())
                     && validateDateFromToIs(p.getDateValidFrom(), p.getDateValidTo())
                     && validateAge(dateFirst, dateFirstLowProperty(), dateFirstHighProperty())
-                    && validateAge(p.getDateLatest(), dateLastLowProperty(), dateLastHighProperty())
-                    && true;
+                    && validateAge(p.getDateLatest(), dateLastLowProperty(), dateLastHighProperty());
         } else {
             return true;
         }

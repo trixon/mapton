@@ -15,18 +15,37 @@
  */
 package org.mapton.butterfly_hydro.groundwater;
 
-import javafx.beans.property.BooleanProperty;
+import j2html.tags.ContainerTag;
+import java.time.temporal.ChronoUnit;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
 import javafx.beans.property.SimpleBooleanProperty;
-import org.mapton.api.ui.forms.FormFilter;
+import org.mapton.butterfly_core.api.BFilterSectionDate;
+import org.mapton.butterfly_core.api.BFilterSectionDateProvider;
+import org.mapton.butterfly_core.api.BFilterSectionDisruptor;
+import org.mapton.butterfly_core.api.BFilterSectionDisruptorProvider;
+import org.mapton.butterfly_core.api.BFilterSectionPoint;
+import org.mapton.butterfly_core.api.BFilterSectionPointProvider;
+import org.mapton.butterfly_core.api.ButterflyFormFilter;
+import org.mapton.butterfly_core.api.FilterSectionMiscProvider;
+import se.trixon.almond.util.Dict;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class GroundwaterFilter extends FormFilter<GroundwaterManager> {
+public class GroundwaterFilter extends ButterflyFormFilter<GroundwaterManager> implements
+        FilterSectionMiscProvider,
+        BFilterSectionPointProvider,
+        BFilterSectionDateProvider,
+        BFilterSectionDisruptorProvider {
 
+    private BFilterSectionDate mFilterSectionDate;
+    private BFilterSectionDisruptor mFilterSectionDisruptor;
+    private BFilterSectionPoint mFilterSectionPoint;
+    private final SimpleBooleanProperty mInvertProperty = new SimpleBooleanProperty();
     private final GroundwaterManager mManager = GroundwaterManager.getInstance();
-    private final BooleanProperty mProperty = new SimpleBooleanProperty();
 
     public GroundwaterFilter() {
         super(GroundwaterManager.getInstance());
@@ -34,22 +53,70 @@ public class GroundwaterFilter extends FormFilter<GroundwaterManager> {
         initListeners();
     }
 
-    public BooleanProperty property() {
-        return mProperty;
+    public void initCheckModelListeners() {
+//        List.of(
+//        ).forEach(cm -> cm.getCheckedItems().addListener(mListChangeListener));
+    }
+
+    @Override
+    public SimpleBooleanProperty invertProperty() {
+        return mInvertProperty;
+    }
+
+    @Override
+    public void setFilterSection(BFilterSectionDate filterSectionDate) {
+        mFilterSectionDate = filterSectionDate;
+        mFilterSectionDate.initListeners(mChangeListenerObject, mListChangeListener);
+    }
+
+    @Override
+    public void setFilterSection(BFilterSectionPoint filterSection) {
+        mFilterSectionPoint = filterSection;
+        mFilterSectionPoint.initListeners(mChangeListenerObject, mListChangeListener);
+    }
+
+    @Override
+    public void setFilterSection(BFilterSectionDisruptor filterSection) {
+        mFilterSectionDisruptor = filterSection;
+        mFilterSectionDisruptor.initListeners(mChangeListenerObject, mListChangeListener);
     }
 
     @Override
     public void update() {
         var filteredItems = mManager.getAllItems().stream()
-                .filter(gw -> validateFreeText(gw.getName(), gw.getCategory(), gw.getGroup()))
-                .filter(gw -> validateCoordinateArea(gw.getLat(), gw.getLon()))
-                .filter(gw -> validateCoordinateRuler(gw.getLat(), gw.getLon()))
+                .filter(p -> validateFreeText(p.getName(), p.getGroup(), p.getComment()))
+                .filter(p -> validateCoordinateArea(p.getLat(), p.getLon()))
+                .filter(p -> validateCoordinateRuler(p.getLat(), p.getLon()))
+                .filter(p -> mFilterSectionPoint.filter(p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS)))
+                .filter(p -> mFilterSectionDate.filter(p, p.ext().getDateFirst()))
+                .filter(p -> mFilterSectionDisruptor.filter(p))
                 .toList();
 
+        if (mInvertProperty.get()) {
+            var toBeExluded = new HashSet<>(filteredItems);
+            filteredItems = mManager.getAllItems().stream()
+                    .filter(p -> !toBeExluded.contains(p))
+                    .toList();
+        }
+
         mManager.getFilteredItems().setAll(filteredItems);
+
+        getInfoPopOver().loadContent(createInfoContent().renderFormatted());
+    }
+
+    private ContainerTag createInfoContent() {
+        var map = new LinkedHashMap<String, String>();
+        map.put(Dict.TEXT.toString(), getFreeText());
+        mFilterSectionPoint.createInfoContent(map);
+        mFilterSectionDate.createInfoContent(map);
+        mFilterSectionDisruptor.createInfoContent(map);
+
+        return createHtmlFilterInfo(map);
     }
 
     private void initListeners() {
-        mProperty.addListener(mChangeListenerObject);
+        List.of(
+                mInvertProperty
+        ).forEach(propertyBase -> propertyBase.addListener(mChangeListenerObject));
     }
 }

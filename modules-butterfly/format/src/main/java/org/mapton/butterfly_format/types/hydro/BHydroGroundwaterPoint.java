@@ -17,6 +17,8 @@ package org.mapton.butterfly_format.types.hydro;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import org.mapton.butterfly_format.types.BBasePoint;
 import org.mapton.butterfly_format.types.BDimension;
@@ -100,6 +102,13 @@ public class BHydroGroundwaterPoint extends BXyzPoint {
                     .filter(o -> o.getGroundwaterLevel() != null)
                     .max(Comparator.comparing(BHydroGroundwaterPointObservation::getGroundwaterLevel))
                     .orElse(null);
+        }
+
+        public long getMeasurementUntilNext(ChronoUnit chronoUnit) {
+            var latest = getDateLatest() != null ? getDateLatest().toLocalDate() : LocalDate.MIN;
+            var nextMeas = latest.plusDays(getFrequency());
+
+            return chronoUnit.between(LocalDate.now(), nextMeas);
         }
 
         public BHydroGroundwaterPointObservation getMinObservation() {

@@ -35,8 +35,8 @@ import se.trixon.almond.util.CollectionHelper;
  */
 public class GroundwaterManager extends BaseManager<BHydroGroundwaterPoint> {
 
-    private final GroundwaterPropertiesBuilder mPropertiesBuilder = new GroundwaterPropertiesBuilder();
     private final GroundwaterChartBuilder mChartBuilder = new GroundwaterChartBuilder();
+    private final GroundwaterPropertiesBuilder mPropertiesBuilder = new GroundwaterPropertiesBuilder();
 
     public static GroundwaterManager getInstance() {
         return Holder.INSTANCE;
@@ -62,7 +62,6 @@ public class GroundwaterManager extends BaseManager<BHydroGroundwaterPoint> {
 
     @Override
     public void load(Butterfly butterfly) {
-
         try {
             initAllItems(butterfly.hydro().getGroundwaterPoints());
             initObjectToItemMap();
@@ -75,7 +74,10 @@ public class GroundwaterManager extends BaseManager<BHydroGroundwaterPoint> {
             for (var p : butterfly.hydro().getGroundwaterPoints()) {
                 var observations = nameToObservations.getOrDefault(p.getName(), new ArrayList<>());
                 if (!observations.isEmpty()) {
+                    p.ext().setDateFirst(observations.getFirst().getDate());
                     p.setDateLatest(observations.getLast().getDate());
+                } else {
+                    p.ext().setDateFirst(LocalDateTime.MIN);
                 }
 
                 p.ext().setDateLatest(p.getDateLatest());

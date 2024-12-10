@@ -24,6 +24,7 @@ import org.mapton.butterfly_format.io.ImportFromCsv;
 import org.mapton.butterfly_format.types.BAlarm;
 import org.mapton.butterfly_format.types.BAreaActivity;
 import org.mapton.butterfly_format.types.BAreaBase;
+import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.acoustic.BAcousticMeasuringChannel;
 import org.mapton.butterfly_format.types.acoustic.BAcousticMeasuringLimit;
 import org.mapton.butterfly_format.types.acoustic.BAcousticMeasuringObservation;
@@ -231,6 +232,11 @@ public class Butterfly {
         for (var a : mAlarms) {
             a.setButterfly(this);
             a.ext().populateRanges();
+        }
+
+        for (var p : mHydroGroundwaterPoints) {
+            p.setButterfly(this);
+            p.setDimension(BDimension._1d);
         }
 
         for (var p : mStructuralCrackPoints) {
