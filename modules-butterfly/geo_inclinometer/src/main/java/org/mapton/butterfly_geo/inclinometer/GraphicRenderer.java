@@ -25,7 +25,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.butterfly_format.types.BComponent;
-import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
+import org.mapton.butterfly_format.types.geo.BGeoInclinometerPoint;
 import org.mapton.worldwind.api.WWHelper;
 
 /**
@@ -41,7 +41,7 @@ public class GraphicRenderer extends GraphicRendererBase {
         sCheckModel = checkModel;
     }
 
-    public void plot(BStructuralCrackPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
+    public void plot(BGeoInclinometerPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
         sMapObjects = mapObjects;
 
         if (sCheckModel.isChecked(GraphicRendererItem.ALARM_CONSUMPTION)) {
@@ -53,7 +53,7 @@ public class GraphicRenderer extends GraphicRendererBase {
         }
     }
 
-    private void plotAlarmConsumption(BStructuralCrackPoint p, Position position) {
+    private void plotAlarmConsumption(BGeoInclinometerPoint p, Position position) {
         if (isPlotLimitReached(p, GraphicRendererItem.ALARM_CONSUMPTION, position) || p.ext().getObservationFilteredLast() == null) {
             return;
         }
@@ -84,7 +84,7 @@ public class GraphicRenderer extends GraphicRendererBase {
         plotPercentageRod(position, p.ext().getAlarmPercent());
     }
 
-    private void plotTrace(BStructuralCrackPoint p, Position position) {
+    private void plotTrace(BGeoInclinometerPoint p, Position position) {
         if (isPlotLimitReached(p, GraphicRendererItem.TRACE, position)) {
             return;
         }

@@ -31,7 +31,7 @@ import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
 import org.mapton.butterfly_format.types.BComponent;
-import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
+import org.mapton.butterfly_format.types.geo.BGeoInclinometerPoint;
 import org.mapton.ce_jfreechart.api.ChartHelper;
 import se.trixon.almond.util.CircularInt;
 import se.trixon.almond.util.DateHelper;
@@ -41,7 +41,7 @@ import se.trixon.almond.util.MathHelper;
  *
  * @author Patrik Karlström
  */
-public class InclinoChartBuilder extends XyzChartBuilder<BStructuralCrackPoint> {
+public class InclinoChartBuilder extends XyzChartBuilder<BGeoInclinometerPoint> {
 
     private final ChartHelper mChartHelper = new ChartHelper();
     private final CircularInt mColorCircularInt = new CircularInt(0, 5);
@@ -63,7 +63,7 @@ public class InclinoChartBuilder extends XyzChartBuilder<BStructuralCrackPoint> 
     }
 
     @Override
-    public synchronized Callable<ChartPanel> build(BStructuralCrackPoint p) {
+    public synchronized Callable<ChartPanel> build(BGeoInclinometerPoint p) {
         if (p == null) {
             return null;
         }
@@ -89,7 +89,7 @@ public class InclinoChartBuilder extends XyzChartBuilder<BStructuralCrackPoint> 
     }
 
     @Override
-    public void setTitle(BStructuralCrackPoint p) {
+    public void setTitle(BGeoInclinometerPoint p) {
         setTitle(p, InclinoHelper.getAlarmColorAwt(p));
 
         var dateFirst = Objects.toString(DateHelper.toDateString(p.getDateZero()), "");
@@ -102,7 +102,7 @@ public class InclinoChartBuilder extends XyzChartBuilder<BStructuralCrackPoint> 
     }
 
     @Override
-    public synchronized void updateDataset(BStructuralCrackPoint p) {
+    public synchronized void updateDataset(BGeoInclinometerPoint p) {
         getDataset().removeAllSeries();
         mTimeSeriesZ.clear();
 
@@ -161,7 +161,7 @@ public class InclinoChartBuilder extends XyzChartBuilder<BStructuralCrackPoint> 
         plot.addRangeMarker(marker);
     }
 
-    private void plotAlarmIndicators(BStructuralCrackPoint p) {
+    private void plotAlarmIndicators(BGeoInclinometerPoint p) {
         var ha = p.ext().getAlarm(BComponent.HEIGHT);
         if (ha != null) {
             var range0 = ha.ext().getRange0();
@@ -178,7 +178,7 @@ public class InclinoChartBuilder extends XyzChartBuilder<BStructuralCrackPoint> 
         }
     }
 
-    private void updateDataset(BStructuralCrackPoint p, Color color, boolean plotZeroAndReplacement) {
+    private void updateDataset(BGeoInclinometerPoint p, Color color, boolean plotZeroAndReplacement) {
         var plot = (XYPlot) mChart.getPlot();
         var timeSeries = new TimeSeries(p.getName());
 
@@ -203,7 +203,7 @@ public class InclinoChartBuilder extends XyzChartBuilder<BStructuralCrackPoint> 
         renderer.setSeriesPaint(getDataset().getSeriesIndex(timeSeries.getKey()), color);
     }
 
-    private void updateDatasetTemperature(BStructuralCrackPoint p) {
+    private void updateDatasetTemperature(BGeoInclinometerPoint p) {
         p.ext().getObservationsTimeFiltered().forEach(o -> {
             var minute = mChartHelper.convertToMinute(o.getDate());
             if (MathHelper.isBetween(-40d, +40d, o.getTemperature())) {

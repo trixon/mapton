@@ -91,7 +91,7 @@ public class InclinoFilterPopOver extends BaseTabbedFilterPopOver {
 
     @Override
     public void load(Butterfly butterfly) {
-        var items = butterfly.structural().getCrackPoints();
+        var items = butterfly.geotechnical().getInclinometerPoints();
 
         mFilterSectionPoint.load(items);
         mFilterSectionDisruptor.load();

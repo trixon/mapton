@@ -26,7 +26,7 @@ import javafx.scene.Node;
 import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.butterfly_core.api.BfLayerBundle;
 import org.mapton.butterfly_core.api.PinPaddle;
-import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
+import org.mapton.butterfly_format.types.geo.BGeoInclinometerPoint;
 import org.mapton.butterfly_geo.api.GeotechnicalHelper;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
@@ -79,7 +79,7 @@ public class InclinoLayerBundle extends BfLayerBundle {
     }
 
     private void initListeners() {
-        mManager.getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BStructuralCrackPoint> c) -> {
+        mManager.getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BGeoInclinometerPoint> c) -> {
             repaint();
         });
 
@@ -159,7 +159,7 @@ public class InclinoLayerBundle extends BfLayerBundle {
         });
     }
 
-    private PointPlacemark plotLabel(BStructuralCrackPoint p, LabelBy labelBy, Position position) {
+    private PointPlacemark plotLabel(BGeoInclinometerPoint p, LabelBy labelBy, Position position) {
         if (labelBy == LabelBy.NONE) {
             return null;
         }
@@ -174,7 +174,7 @@ public class InclinoLayerBundle extends BfLayerBundle {
         return placemark;
     }
 
-    private PointPlacemark plotPin(BStructuralCrackPoint p, Position position, PointPlacemark labelPlacemark) {
+    private PointPlacemark plotPin(BGeoInclinometerPoint p, Position position, PointPlacemark labelPlacemark) {
         var attrs = mAttributeManager.getPinAttributes(p);
         attrs = PinPaddle.W_CIRCLE.applyToCopy(attrs);
 
@@ -196,7 +196,7 @@ public class InclinoLayerBundle extends BfLayerBundle {
         return placemark;
     }
 
-    private ArrayList<AVListImpl> plotSymbol(BStructuralCrackPoint p, Position position, PointPlacemark labelPlacemark) {
+    private ArrayList<AVListImpl> plotSymbol(BGeoInclinometerPoint p, Position position, PointPlacemark labelPlacemark) {
         var mapObjects = new ArrayList<AVListImpl>();
         var cylinder = new Cylinder(position, SYMBOL_HEIGHT, SYMBOL_RADIUS);
         var attrs = mAttributeManager.getAlarmInteriorAttributes(InclinoHelper.getAlarmLevel(p));

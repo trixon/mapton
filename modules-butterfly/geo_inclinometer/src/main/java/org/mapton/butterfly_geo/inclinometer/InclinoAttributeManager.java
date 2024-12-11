@@ -19,7 +19,7 @@ import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
 import org.mapton.butterfly_core.api.BaseAttributeManager;
-import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
+import org.mapton.butterfly_format.types.geo.BGeoInclinometerPoint;
 
 /**
  *
@@ -28,7 +28,7 @@ import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
 public class InclinoAttributeManager extends BaseAttributeManager {
 
     private BasicShapeAttributes mComponentEllipsoidAttributes;
-    private BasicShapeAttributes mCrackAttribute;
+    private BasicShapeAttributes mInclinoAttribute;
     private BasicShapeAttributes mSurfaceAttributes;
 
     public static InclinoAttributeManager getInstance() {
@@ -49,19 +49,19 @@ public class InclinoAttributeManager extends BaseAttributeManager {
         return mComponentEllipsoidAttributes;
     }
 
-    public BasicShapeAttributes getCrackAttribute() {
-        if (mCrackAttribute == null) {
-            mCrackAttribute = new BasicShapeAttributes();
-            mCrackAttribute.setDrawOutline(true);
-            mCrackAttribute.setOutlineMaterial(Material.RED);
-            mCrackAttribute.setOutlineWidth(4.0);
-            mCrackAttribute.setOutlineOpacity(1.0);
+    public BasicShapeAttributes getInclinoAttribute() {
+        if (mInclinoAttribute == null) {
+            mInclinoAttribute = new BasicShapeAttributes();
+            mInclinoAttribute.setDrawOutline(true);
+            mInclinoAttribute.setOutlineMaterial(Material.RED);
+            mInclinoAttribute.setOutlineWidth(4.0);
+            mInclinoAttribute.setOutlineOpacity(1.0);
         }
 
-        return mCrackAttribute;
+        return mInclinoAttribute;
     }
 
-    public PointPlacemarkAttributes getPinAttributes(BStructuralCrackPoint p) {
+    public PointPlacemarkAttributes getPinAttributes(BGeoInclinometerPoint p) {
         var attrs = getPinAttributes(InclinoHelper.getAlarmLevel(p));
 //        attrs.setImageAddress("https://maps.google.com/mapfiles/kml/paddle/wht-circle.png");
 //        PinPaddle.SQUARE.apply(attrs);

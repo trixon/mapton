@@ -22,7 +22,7 @@ import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.SingleListForm;
 import org.mapton.butterfly_core.api.CopyNamesAction;
-import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
+import org.mapton.butterfly_format.types.geo.BGeoInclinometerPoint;
 import org.mapton.core.api.ui.MFilterPresetPopOver;
 import se.trixon.almond.util.Dict;
 
@@ -34,8 +34,8 @@ public class InclinoView {
 
     private final InclinoFilter mFilter = new InclinoFilter();
     private final InclinoFilterPopOver mFilterPopOver = new InclinoFilterPopOver(mFilter);
-    private final MFilterPresetPopOver mFilterPresetPopOver = new MFilterPresetPopOver(mFilterPopOver, "crack");
-    private final SingleListForm<InclinoManager, BStructuralCrackPoint> mListForm;
+    private final MFilterPresetPopOver mFilterPresetPopOver = new MFilterPresetPopOver(mFilterPopOver, "inclinometer");
+    private final SingleListForm<InclinoManager, BGeoInclinometerPoint> mListForm;
     private final InclinoManager mManager = InclinoManager.getInstance();
 
     public InclinoView() {
@@ -61,7 +61,7 @@ public class InclinoView {
                 Dict.NAME.toString()
         );
 
-        mManager.getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BStructuralCrackPoint> c) -> {
+        mManager.getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BGeoInclinometerPoint> c) -> {
             mFilterPopOver.setNames(mManager.getTimeFilteredItems().stream().map(p -> p.getName()).toList());
         });
     }

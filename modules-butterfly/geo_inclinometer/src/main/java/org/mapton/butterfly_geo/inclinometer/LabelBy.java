@@ -21,7 +21,7 @@ import java.util.function.Function;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.butterfly_core.api.LabelByCategories;
-import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
+import org.mapton.butterfly_format.types.geo.BGeoInclinometerPoint;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SDict;
 
@@ -185,10 +185,10 @@ public enum LabelBy {
 //        }
     });
     private final String mCategory;
-    private final Function<BStructuralCrackPoint, String> mFunction;
+    private final Function<BGeoInclinometerPoint, String> mFunction;
     private final String mName;
 
-    private LabelBy(String category, String name, Function<BStructuralCrackPoint, String> function) {
+    private LabelBy(String category, String name, Function<BGeoInclinometerPoint, String> function) {
         mCategory = category;
         mName = name;
         mFunction = function;
@@ -206,7 +206,7 @@ public enum LabelBy {
         }
     }
 
-    public String getLabel(BStructuralCrackPoint o) {
+    public String getLabel(BGeoInclinometerPoint o) {
         try {
             return mFunction.apply(o);
         } catch (Exception e) {

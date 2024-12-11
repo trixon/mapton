@@ -22,13 +22,13 @@ import java.util.ArrayList;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.butterfly_core.api.BaseGraphicRenderer;
 import org.mapton.butterfly_core.api.PlotLimiter;
-import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
+import org.mapton.butterfly_format.types.geo.BGeoInclinometerPoint;
 
 /**
  *
  * @author Patrik Karlström
  */
-public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicRendererItem, BStructuralCrackPoint> {
+public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicRendererItem, BGeoInclinometerPoint> {
 
     protected static IndexedCheckModel<GraphicRendererItem> sCheckModel;
     protected static ArrayList<AVListImpl> sMapObjects;
@@ -44,7 +44,7 @@ public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicRen
         super(layer, passiveLayer, sPlotLimiter);
     }
 
-    protected boolean isPlotLimitReached(BStructuralCrackPoint p, Object key, Position position) {
+    protected boolean isPlotLimitReached(BGeoInclinometerPoint p, Object key, Position position) {
         return super.isPlotLimitReached(p, key, position, p.ext().getObservationsTimeFiltered().isEmpty(), sMapObjects);
     }
 

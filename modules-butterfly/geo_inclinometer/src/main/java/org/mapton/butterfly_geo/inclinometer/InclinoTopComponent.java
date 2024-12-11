@@ -60,9 +60,9 @@ public final class InclinoTopComponent extends MTopComponent {
     }
 
     private Scene createScene() {
-        var crackView = new InclinoView();
+        var inclinoView = new InclinoView();
 
-        return new Scene(crackView.getView());
+        return new Scene(inclinoView.getView());
     }
 
     void writeProperties(java.util.Properties p) {

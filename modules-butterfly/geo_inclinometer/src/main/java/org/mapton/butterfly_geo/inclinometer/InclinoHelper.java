@@ -17,7 +17,7 @@ package org.mapton.butterfly_geo.inclinometer;
 
 import java.awt.Color;
 import org.mapton.butterfly_core.api.ButterflyHelper;
-import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
+import org.mapton.butterfly_format.types.geo.BGeoInclinometerPoint;
 
 /**
  *
@@ -25,19 +25,19 @@ import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
  */
 public class InclinoHelper {
 
-    public static Color getAlarmColorAwt(BStructuralCrackPoint p) {
+    public static Color getAlarmColorAwt(BGeoInclinometerPoint p) {
         return ButterflyHelper.getAlarmColorAwt(getAlarmLevel(p));
     }
 
-    public static javafx.scene.paint.Color getAlarmColorHeightFx(BStructuralCrackPoint p) {
+    public static javafx.scene.paint.Color getAlarmColorHeightFx(BGeoInclinometerPoint p) {
         return ButterflyHelper.getAlarmColorFx(getAlarmLevelHeight(p));
     }
 
-    public static int getAlarmLevel(BStructuralCrackPoint p) {
+    public static int getAlarmLevel(BGeoInclinometerPoint p) {
         return p.ext().getAlarmLevel(p.ext().getObservationFilteredLast());
     }
 
-    public static int getAlarmLevelHeight(BStructuralCrackPoint p) {
+    public static int getAlarmLevelHeight(BGeoInclinometerPoint p) {
         return p.ext().getAlarmLevel(p.ext().getObservationFilteredLast());
     }
 

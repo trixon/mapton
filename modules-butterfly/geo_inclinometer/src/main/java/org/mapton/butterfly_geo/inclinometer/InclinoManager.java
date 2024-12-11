@@ -24,8 +24,8 @@ import java.util.stream.Collectors;
 import org.mapton.api.MTemporalRange;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
-import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
-import org.mapton.butterfly_format.types.structural.BStructuralCrackPointObservation;
+import org.mapton.butterfly_format.types.geo.BGeoInclinometerPoint;
+import org.mapton.butterfly_format.types.geo.BGeoInclinometerPointObservation;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.CollectionHelper;
 
@@ -33,7 +33,7 @@ import se.trixon.almond.util.CollectionHelper;
  *
  * @author Patrik Karlström
  */
-public class InclinoManager extends BaseManager<BStructuralCrackPoint> {
+public class InclinoManager extends BaseManager<BGeoInclinometerPoint> {
 
     private final InclinoChartBuilder mChartBuilder = new InclinoChartBuilder();
     private final InclinoPropertiesBuilder mPropertiesBuilder = new InclinoPropertiesBuilder();
@@ -43,31 +43,31 @@ public class InclinoManager extends BaseManager<BStructuralCrackPoint> {
     }
 
     private InclinoManager() {
-        super(BStructuralCrackPoint.class);
+        super(BGeoInclinometerPoint.class);
     }
 
     @Override
-    public Object getObjectChart(BStructuralCrackPoint selectedObject) {
+    public Object getObjectChart(BGeoInclinometerPoint selectedObject) {
         return mChartBuilder.build(selectedObject);
     }
 
     @Override
-    public Object getObjectProperties(BStructuralCrackPoint selectedObject) {
+    public Object getObjectProperties(BGeoInclinometerPoint selectedObject) {
         return mPropertiesBuilder.build(selectedObject);
     }
 
     @Override
     public void load(Butterfly butterfly) {
         try {
-            initAllItems(butterfly.structural().getCrackPoints());
+            initAllItems(butterfly.geotechnical().getInclinometerPoints());
             initObjectToItemMap();
 
-            var nameToObservations = new LinkedHashMap<String, ArrayList<BStructuralCrackPointObservation>>();
-            for (var o : butterfly.structural().getCrackPointsObservations()) {
+            var nameToObservations = new LinkedHashMap<String, ArrayList<BGeoInclinometerPointObservation>>();
+            for (var o : butterfly.geotechnical().getInclinometerPointsObservations()) {
                 nameToObservations.computeIfAbsent(o.getName(), k -> new ArrayList<>()).add(o);
             }
 
-            for (var p : butterfly.structural().getCrackPoints()) {
+            for (var p : butterfly.geotechnical().getInclinometerPoints()) {
                 var observations = nameToObservations.getOrDefault(p.getName(), new ArrayList<>());
                 if (!observations.isEmpty()) {
                     p.ext().setDateFirst(observations.getFirst().getDate());
@@ -113,7 +113,7 @@ public class InclinoManager extends BaseManager<BStructuralCrackPoint> {
     @Override
     protected void applyTemporalFilter() {
         var measCountStatsDateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM");
-        var timeFilteredItems = new ArrayList<BStructuralCrackPoint>();
+        var timeFilteredItems = new ArrayList<BGeoInclinometerPoint>();
 
         p:
         for (var p : getFilteredItems()) {
@@ -150,7 +150,7 @@ public class InclinoManager extends BaseManager<BStructuralCrackPoint> {
     }
 
     @Override
-    protected void load(ArrayList<BStructuralCrackPoint> items) {
+    protected void load(ArrayList<BGeoInclinometerPoint> items) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

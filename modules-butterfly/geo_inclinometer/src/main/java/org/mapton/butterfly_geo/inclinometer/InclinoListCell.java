@@ -26,7 +26,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 import javafx.util.Duration;
 import org.apache.commons.lang3.StringUtils;
-import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
+import org.mapton.butterfly_format.types.geo.BGeoInclinometerPoint;
 import se.trixon.almond.util.StringHelper;
 import se.trixon.almond.util.fx.FxHelper;
 
@@ -34,7 +34,7 @@ import se.trixon.almond.util.fx.FxHelper;
  *
  * @author Patrik Karlström
  */
-class InclinoListCell extends ListCell<BStructuralCrackPoint> {
+class InclinoListCell extends ListCell<BGeoInclinometerPoint> {
 
     private final AlarmIndicator mAlarmIndicator = new AlarmIndicator();
     private final Label mDesc1Label = new Label();
@@ -51,7 +51,7 @@ class InclinoListCell extends ListCell<BStructuralCrackPoint> {
     }
 
     @Override
-    protected void updateItem(BStructuralCrackPoint p, boolean empty) {
+    protected void updateItem(BGeoInclinometerPoint p, boolean empty) {
         super.updateItem(p, empty);
         if (p == null || empty) {
             clearContent();
@@ -60,7 +60,7 @@ class InclinoListCell extends ListCell<BStructuralCrackPoint> {
         }
     }
 
-    private void addContent(BStructuralCrackPoint p) {
+    private void addContent(BGeoInclinometerPoint p) {
         setText(null);
         var header = p.getName();
         if (StringUtils.isNotBlank(p.getStatus())) {
@@ -132,7 +132,7 @@ class InclinoListCell extends ListCell<BStructuralCrackPoint> {
             createUI();
         }
 
-        public void update(BStructuralCrackPoint p) {
+        public void update(BGeoInclinometerPoint p) {
             mResultantShape.setFill(InclinoHelper.getAlarmColorHeightFx(p));
         }
 
