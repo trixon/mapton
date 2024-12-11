@@ -39,7 +39,8 @@ public class CrackView {
     private final CrackManager mManager = CrackManager.getInstance();
 
     public CrackView() {
-        var actions = Arrays.asList(new CopyNamesAction(mManager),
+        var actions = Arrays.asList(
+                new CopyNamesAction(mManager),
                 ActionUtils.ACTION_SPAN,
                 mManager.geZoomExtentstAction(),
                 mFilter.getInfoPopOver().getAction(),
