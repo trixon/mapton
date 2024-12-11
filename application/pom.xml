@@ -350,6 +350,10 @@
                 </dependency>
                 <dependency>
                     <groupId>${project.groupId}</groupId>
+                    <artifactId>butterfly-geo-inclinometer</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
                     <artifactId>butterfly-structural</artifactId>
                 </dependency>
                 <dependency>

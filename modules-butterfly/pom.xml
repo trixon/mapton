@@ -43,6 +43,7 @@ limitations under the License.
         <module>monmon</module>
         <module>geo</module>
         <module>geo_extensometer</module>
+        <module>geo_inclinometer</module>
         <module>structural</module>
         <module>structural_crack</module>
         <module>structural_strain</module>
