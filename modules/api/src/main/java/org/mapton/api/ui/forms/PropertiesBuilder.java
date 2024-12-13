@@ -15,6 +15,8 @@
  */
 package org.mapton.api.ui.forms;
 
+import java.util.HashMap;
+
 /**
  *
  * @author Patrik Karlström
@@ -23,6 +25,7 @@ package org.mapton.api.ui.forms;
 public abstract class PropertiesBuilder<T> {
 
     public static final String SEPARATOR = " :: ";
+    private final HashMap<String, String> mNameToIndexName = new HashMap<>();
 
     public PropertiesBuilder() {
     }
@@ -31,6 +34,13 @@ public abstract class PropertiesBuilder<T> {
 
     public String getCatKey(String category, String value) {
         return "%s#%s".formatted(category, value);
+    }
+
+    public String getCatKeyNum(String category, String value) {
+        String s = mNameToIndexName.computeIfAbsent(category, r -> {
+            return "%d. %s".formatted(mNameToIndexName.size() + 1, category);
+        });
+        return getCatKey(s, value);
     }
 
 }

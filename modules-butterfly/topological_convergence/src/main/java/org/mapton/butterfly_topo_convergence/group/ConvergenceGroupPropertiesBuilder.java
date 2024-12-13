@@ -13,24 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_structural.tilt;
+package org.mapton.butterfly_topo_convergence.group;
 
 import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
 import org.mapton.butterfly_alarm.api.AlarmHelper;
 import org.mapton.butterfly_core.api.BPropertiesBuilder;
 import org.mapton.butterfly_format.types.BComponent;
-import org.mapton.butterfly_format.types.structural.BStructuralTiltPoint;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
+import org.mapton.butterfly_format.types.topo.BTopoConvergenceGroup;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class TiltPropertiesBuilder extends BPropertiesBuilder<BStructuralTiltPoint> {
+public class ConvergenceGroupPropertiesBuilder extends BPropertiesBuilder<BTopoConvergenceGroup> {
 
     @Override
-    public Object build(BStructuralTiltPoint p) {
+    public Object build(BTopoConvergenceGroup p) {
         if (p == null) {
             return p;
         }
@@ -46,7 +46,7 @@ public class TiltPropertiesBuilder extends BPropertiesBuilder<BStructuralTiltPoi
             azimuth = o.ext().getBearing();
         } catch (Exception e) {
         }
-        var measParams = new MeasParams<BTopoControlPoint>(
+        var measParams = new BPropertiesBuilder.MeasParams<BTopoControlPoint>(
                 azimuth,
                 p.ext().getMeasurementUntilNext(ChronoUnit.DAYS),
                 p.ext().getMeasurementAge(ChronoUnit.DAYS),
@@ -56,14 +56,14 @@ public class TiltPropertiesBuilder extends BPropertiesBuilder<BStructuralTiltPoi
                 p.ext().getObservationsAllRaw().stream().filter(obs -> obs.isReplacementMeasurement()).count(),
                 AlarmHelper.getInstance().getLimitsAsString(BComponent.HEIGHT, p),
                 AlarmHelper.getInstance().getLimitsAsString(BComponent.PLANE, p),
-                p.ext().getAlarmPercentString(p.ext()),
+                null,
                 p.ext().getAlarmLevelAge(),
                 p.ext().deltaRolling().getDelta(3),
                 p.ext().deltaZero().getDelta(3)
         );
         propertyMap.putAll(populateMeas(p, measParams));
 //******************************************************************************
-        var dateParams = new DateParams(
+        var dateParams = new BPropertiesBuilder.DateParams(
                 p.ext().getObservationRawFirstDate(),
                 p.ext().getObservationFilteredFirstDate(),
                 p.ext().getObservationRawLastDate(),

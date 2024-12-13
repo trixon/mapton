@@ -31,7 +31,7 @@ import org.openide.util.Exceptions;
 public class ConvergenceGroupManager extends BaseManager<BTopoConvergenceGroup> {
 
     private final ArrayList<BTopoConvergenceGroup> mDynamicItems = new ArrayList<>();
-//    private final ConvergencePropertiesBuilder mPropertiesBuilder = new ConvergencePropertiesBuilder();
+    private final ConvergenceGroupPropertiesBuilder mPropertiesBuilder = new ConvergenceGroupPropertiesBuilder();
 
     public static ConvergenceGroupManager getInstance() {
         return Holder.INSTANCE;
@@ -49,8 +49,7 @@ public class ConvergenceGroupManager extends BaseManager<BTopoConvergenceGroup> 
 
     @Override
     public Object getObjectProperties(BTopoConvergenceGroup selectedObject) {
-//        return mPropertiesBuilder.build(selectedObject);
-        return selectedObject;
+        return mPropertiesBuilder.build(selectedObject);
     }
 
     @Override

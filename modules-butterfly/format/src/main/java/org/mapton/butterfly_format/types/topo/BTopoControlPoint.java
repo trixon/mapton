@@ -106,6 +106,13 @@ public class BTopoControlPoint extends BXyzPoint {
             Ext.this.getObservationFilteredFirst();
         }
 
+//        public boolean firstIsZero() {
+//            if (getObservationsAllRaw().isEmpty()) {
+//                return false;
+//            } else {
+//                return getObservationRawFirstDate().equals(getDateZero());
+//            }
+//        }
         public LimitValuePredictor limitValuePredictor() {
             return limitValuePredictor;
         }
