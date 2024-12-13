@@ -33,6 +33,8 @@ import org.mapton.butterfly_format.types.acoustic.BBlast;
 import org.mapton.butterfly_format.types.geo.BGeoExtensometer;
 import org.mapton.butterfly_format.types.geo.BGeoExtensometerPoint;
 import org.mapton.butterfly_format.types.geo.BGeoExtensometerPointObservation;
+import org.mapton.butterfly_format.types.geo.BGeoInclinometerPoint;
+import org.mapton.butterfly_format.types.geo.BGeoInclinometerPointObservation;
 import org.mapton.butterfly_format.types.hydro.BHydroGroundwaterPoint;
 import org.mapton.butterfly_format.types.hydro.BHydroGroundwaterPointObservation;
 import org.mapton.butterfly_format.types.monmon.BMonmon;
@@ -67,10 +69,12 @@ public class Butterfly {
     private final ArrayList<BGeoExtensometer> mGeoExtensometers = new ArrayList<>();
     private final ArrayList<BGeoExtensometerPoint> mGeoExtensometersPoints = new ArrayList<>();
     private final ArrayList<BGeoExtensometerPointObservation> mGeoExtensometersPointsObservations = new ArrayList<>();
+    private final ArrayList<BGeoInclinometerPoint> mGeoInclinometerPoints = new ArrayList<>();
+    private final ArrayList<BGeoInclinometerPointObservation> mGeoInclinometerPointsObservations = new ArrayList<>();
     private final Geotechnical mGeotechnical = new Geotechnical();
     private final Hydro mHydro = new Hydro();
-    private final ArrayList<BHydroGroundwaterPointObservation> mHydroGroundwaterPointsObservations = new ArrayList<>();
     private final ArrayList<BHydroGroundwaterPoint> mHydroGroundwaterPoints = new ArrayList<>();
+    private final ArrayList<BHydroGroundwaterPointObservation> mHydroGroundwaterPointsObservations = new ArrayList<>();
     private final ArrayList<BAcousticMeasuringChannel> mMeasuringChannels = new ArrayList<>();
     private final ArrayList<BAcousticMeasuringLimit> mMeasuringLimits = new ArrayList<>();
     private final ArrayList<BAcousticMeasuringObservation> mMeasuringObservations = new ArrayList<>();
@@ -226,6 +230,13 @@ public class Butterfly {
 
         new ImportFromCsv<BGeoExtensometerPointObservation>(BGeoExtensometerPointObservation.class) {
         }.load(sourceDir, "geoExtensometersPointsObservations.csv", mGeoExtensometersPointsObservations);
+
+        new ImportFromCsv<BGeoInclinometerPoint>(BGeoInclinometerPoint.class) {
+        }.load(sourceDir, "geoInclinometerPoints.csv", mGeoInclinometerPoints);
+
+        new ImportFromCsv<BGeoInclinometerPointObservation>(BGeoInclinometerPointObservation.class) {
+        }.load(sourceDir, "geoInclinometerPointsObservations.csv", mGeoInclinometerPointsObservations);
+
     }
 
     void postLoad() {
@@ -260,6 +271,10 @@ public class Butterfly {
         }
 
         for (var p : mGeoExtensometers) {
+            p.setButterfly(this);
+        }
+
+        for (var p : mGeoInclinometerPoints) {
             p.setButterfly(this);
         }
 
@@ -309,6 +324,14 @@ public class Butterfly {
 
         public ArrayList<BGeoExtensometerPointObservation> getExtensometersPointsObservations() {
             return mGeoExtensometersPointsObservations;
+        }
+
+        public ArrayList<BGeoInclinometerPoint> getInclinometerPoints() {
+            return mGeoInclinometerPoints;
+        }
+
+        public ArrayList<BGeoInclinometerPointObservation> getInclinometerPointsObservations() {
+            return mGeoInclinometerPointsObservations;
         }
 
     }

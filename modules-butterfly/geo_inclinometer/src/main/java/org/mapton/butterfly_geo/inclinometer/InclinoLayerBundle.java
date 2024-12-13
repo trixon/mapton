@@ -176,7 +176,7 @@ public class InclinoLayerBundle extends BfLayerBundle {
 
     private PointPlacemark plotPin(BGeoInclinometerPoint p, Position position, PointPlacemark labelPlacemark) {
         var attrs = mAttributeManager.getPinAttributes(p);
-        attrs = PinPaddle.W_CIRCLE.applyToCopy(attrs);
+        attrs = PinPaddle.E_CIRCLE.applyToCopy(attrs);
 
         var placemark = new PointPlacemark(position);
         placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
