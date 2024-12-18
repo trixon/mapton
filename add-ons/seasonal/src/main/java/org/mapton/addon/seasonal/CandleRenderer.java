@@ -72,6 +72,8 @@ public class CandleRenderer extends BaseRenderer {
             );
         }
 
+        JulgranRenderer.latLon = new MLatLon(lats[3], lons[3]);
+
         var timer = new Timer(700, event -> {
             mLayer.removeAllRenderables();
             if (MSimpleObjectStorageManager.getInstance().getBoolean(SeasonalSOSB.class, true)) {

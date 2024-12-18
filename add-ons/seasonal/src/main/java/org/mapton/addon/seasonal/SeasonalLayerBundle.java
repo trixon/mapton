@@ -40,6 +40,8 @@ public class SeasonalLayerBundle extends LayerBundle {
     private final int STARTUP_DELAY = 5;
     private final RenderableLayer mCandleLayer = new RenderableLayer();
     private final CandleRenderer mCandleRenderer;
+    private final RenderableLayer mJulgranLayer = new RenderableLayer();
+    private final JulgranRenderer mJulgranRenderer;
     private final RenderableLayer mLayer = new RenderableLayer();
 
     public SeasonalLayerBundle() {
@@ -49,13 +51,13 @@ public class SeasonalLayerBundle extends LayerBundle {
         mCandleLayer.setPickEnabled(false);
         setVisibleInLayerManager(mCandleLayer, false);
         mCandleRenderer = new CandleRenderer(mCandleLayer);
-
+        mJulgranRenderer = new JulgranRenderer(mJulgranLayer);
         initListeners();
     }
 
     @Override
     public void populate() {
-        getLayers().addAll(mLayer, mCandleLayer);
+        getLayers().addAll(mLayer, mCandleLayer, mJulgranLayer);
         setPopulated(true);
         mLayer.setEnabled(true);
         mLayer.setMinActiveAltitude(10000);
