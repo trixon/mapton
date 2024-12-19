@@ -36,7 +36,6 @@ public class ScaleRulerLayerBundle extends BfLayerBundle {
     private final ScaleRulerManager mScaleRulerManager = ScaleRulerManager.getInstance();
 
     public ScaleRulerLayerBundle() {
-        mLayer.setPickEnabled(false);
         setVisibleInLayerManager(mLayer, false);
 
         initRepaint();
@@ -47,9 +46,9 @@ public class ScaleRulerLayerBundle extends BfLayerBundle {
     public void populate() throws Exception {
         super.populate();
         setPopulated(true);
-        mLayer.setMaxActiveAltitude(1000);
         initCommons("", "", "");
         mLayer.setEnabled(true);
+        mLayer.setPickEnabled(false);
 
         repaint(DEFAULT_REPAINT_DELAY);
     }
