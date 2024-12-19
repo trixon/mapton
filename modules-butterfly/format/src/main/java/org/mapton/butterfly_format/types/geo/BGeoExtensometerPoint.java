@@ -18,9 +18,6 @@ package org.mapton.butterfly_format.types.geo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import java.util.ArrayList;
-import org.apache.commons.lang3.ObjectUtils;
-import org.mapton.butterfly_format.types.BBasePoint;
 import org.mapton.butterfly_format.types.BXyzPoint;
 
 /**
@@ -119,58 +116,9 @@ public class BGeoExtensometerPoint extends BXyzPoint {
         this.limit3 = limit3;
     }
 
-    public class Ext extends BBasePoint.Ext<BGeoExtensometerPointObservation> {
+    public class Ext extends BXyzPoint.Ext<BGeoExtensometerPointObservation> {
 
         public Ext() {
-        }
-
-        public void calculateObservations(ArrayList<BGeoExtensometerPointObservation> observations) {
-            if (observations.isEmpty()) {
-                return;
-            }
-
-            var p = BGeoExtensometerPoint.this;
-
-            observations.forEach(o -> {
-                var dateMatch = p.ext().getStoredZeroDateTime() == o.getDate();
-                if (dateMatch) {
-                    setZeroUnset(false);
-                }
-                o.setZeroMeasurement(dateMatch);
-            });
-
-            if (isZeroUnset()) {
-                observations.getFirst().setZeroMeasurement(true);
-            }
-
-            var latestZero = observations.reversed().stream()
-                    .filter(o -> o.isZeroMeasurement())
-                    .findFirst().orElse(observations.getFirst());
-
-            Double zeroValue = latestZero.getValue();
-            var replacementValue = 0.0;
-
-            for (int i = 0; i < observations.size(); i++) {
-                var o = observations.get(i);
-                BGeoExtensometerPointObservation prev = null;
-                if (i > 0) {
-                    prev = observations.get(i - 1);
-                }
-                Double z = o.getValue();
-
-                if (ObjectUtils.allNotNull(z, zeroValue)) {
-                    o.ext().setDelta(z - zeroValue);
-                }
-
-                if (o.isReplacementMeasurement() && prev != null) {
-                    var mZ = o.getValue();
-                    var pZ = prev.getValue();
-                    if (ObjectUtils.allNotNull(mZ, pZ, o.ext().getDelta())) {
-                        replacementValue = replacementValue + mZ - pZ;
-                        o.ext().setDelta(o.ext().getDelta() + replacementValue);
-                    }
-                }
-            }
         }
 
         public int getAlarmLevel() {

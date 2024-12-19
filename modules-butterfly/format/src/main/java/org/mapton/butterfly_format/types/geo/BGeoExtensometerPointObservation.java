@@ -18,7 +18,7 @@ package org.mapton.butterfly_format.types.geo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import org.mapton.butterfly_format.types.BBaseControlPointObservation;
+import org.mapton.butterfly_format.types.BXyzPointObservation;
 
 /**
  *
@@ -27,7 +27,7 @@ import org.mapton.butterfly_format.types.BBaseControlPointObservation;
 @JsonPropertyOrder({
     "name",
     "date",
-    "value",
+    "measuredZ",
     "status",
     "replacementMeasurement",
     "zeroMeasurement"
@@ -53,7 +53,7 @@ import org.mapton.butterfly_format.types.BBaseControlPointObservation;
     "dateValidFrom", "dateValidTo", "lat", "lon", "origin",
     "dateLatest"
 })
-public class BGeoExtensometerPointObservation extends BBaseControlPointObservation {
+public class BGeoExtensometerPointObservation extends BXyzPointObservation {
 
     @JsonIgnore
     private transient String comment;
@@ -63,11 +63,11 @@ public class BGeoExtensometerPointObservation extends BBaseControlPointObservati
     private BGeoExtensometerPointObservation.Ext mExt;
     @JsonIgnore
     private transient String operator;
-    private Double value;
 
     public BGeoExtensometerPointObservation() {
     }
 
+    @Override
     public Ext ext() {
         if (mExt == null) {
             mExt = new Ext();
@@ -76,36 +76,7 @@ public class BGeoExtensometerPointObservation extends BBaseControlPointObservati
         return mExt;
     }
 
-    public Double getValue() {
-        return value;
-    }
+    public class Ext extends BXyzPointObservation.Ext<BGeoExtensometerPoint> {
 
-    public void setValue(Double measuredZ) {
-        this.value = measuredZ;
-    }
-
-    public class Ext {
-
-        private Double mDelta;
-        private BGeoExtensometerPoint mParent;
-
-        public Ext() {
-        }
-
-        public Double getDelta() {
-            return mDelta;
-        }
-
-        public BGeoExtensometerPoint getParent() {
-            return mParent;
-        }
-
-        public void setDelta(Double delta) {
-            this.mDelta = delta;
-        }
-
-        public void setParent(BGeoExtensometerPoint point) {
-            this.mParent = point;
-        }
     }
 }

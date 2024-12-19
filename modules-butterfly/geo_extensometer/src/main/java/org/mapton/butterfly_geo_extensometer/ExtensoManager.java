@@ -17,7 +17,6 @@ package org.mapton.butterfly_geo_extensometer;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.TreeSet;
 import java.util.function.Function;
@@ -89,15 +88,15 @@ public class ExtensoManager extends BaseManager<BGeoExtensometer> {
 
                     var observations = nameToObservations.getOrDefault(pointName, new ArrayList<>());
                     if (!observations.isEmpty()) {
+                        p.ext().setDateFirst(observations.getFirst().getDate());
                         p.setDateLatest(observations.getLast().getDate());
+                    } else {
+                        p.ext().setDateFirst(LocalDateTime.MIN);
                     }
 
                     p.ext().setDateLatest(p.getDateLatest());
                     p.ext().setObservationsAllRaw(observations);
                     p.ext().getObservationsAllRaw().forEach(o -> o.ext().setParent(p));
-                    var dateLatest = ext.getPoints().stream().map(pp -> pp.getDateLatest()).max(Comparator.naturalOrder()).orElse(null);
-
-                    ext.setDateLatest(dateLatest);
                     for (var o : p.ext().getObservationsAllRaw()) {
                         if (o.isZeroMeasurement()) {
                             p.ext().setStoredZeroDateTime(o.getDate());
@@ -106,6 +105,13 @@ public class ExtensoManager extends BaseManager<BGeoExtensometer> {
                     }
                 }
             });
+
+            var origins = getAllItems()
+                    .stream().map(p -> p.getOrigin())
+                    .collect(Collectors.toCollection(TreeSet::new))
+                    .stream()
+                    .collect(Collectors.toCollection(ArrayList<String>::new));
+            setValue("origins", origins);
 
             var dates = new TreeSet<LocalDateTime>();
             extensometers.forEach(ext -> {
@@ -146,7 +152,6 @@ public class ExtensoManager extends BaseManager<BGeoExtensometer> {
         }
 
         getTimeFilteredItemsMap().clear();
-
         timeFilteredItems.stream().forEach(ext -> {
             getTimeFilteredItemsMap().put(ext.getName(), ext);
             for (var p : ext.getPoints()) {
