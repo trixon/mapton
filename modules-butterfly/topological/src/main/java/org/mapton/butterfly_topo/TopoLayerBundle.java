@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import org.apache.commons.lang3.ObjectUtils;
+import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.PinPaddle;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_topo.api.TopoManager;
@@ -248,6 +249,7 @@ public class TopoLayerBundle extends TopoBaseLayerBundle {
         placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(mAttributeManager.getLabelPlacemarkAttributes(), 1.5));
         placemark.setLabelText(label);
         mLabelLayer.addRenderable(placemark);
+        p.setValue(BKey.PIN_NAME, label);
 
         return placemark;
     }
@@ -264,6 +266,9 @@ public class TopoLayerBundle extends TopoBaseLayerBundle {
             default ->
                 throw new AssertionError();
         }
+
+        p.setValue(BKey.PIN_URL, attrs.getImageAddress());
+        p.setValue(BKey.PIN_COLOR, attrs.getImageColor());
 
         var placemark = new PointPlacemark(position);
         placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);

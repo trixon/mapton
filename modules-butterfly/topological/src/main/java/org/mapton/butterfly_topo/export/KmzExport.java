@@ -15,11 +15,14 @@
  */
 package org.mapton.butterfly_topo.export;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import org.mapton.api.MCooTrans;
 import org.mapton.butterfly_topo.TopoView;
 import org.mapton.core.api.ui.ExportConfiguration;
 import org.mapton.core.api.ui.ExportProvider;
+import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.swing.dialogs.SimpleDialog;
 
@@ -36,8 +39,17 @@ public class KmzExport extends ExportProvider {
     }
 
     @Override
-    public void export(ExportConfiguration exportConfiguration) {
-        System.out.println("save kml");
+    public void export(ExportConfiguration ec) {
+        var generator = new KmlGenerator();
+        var kml = generator.generate(ec);
+
+        try {
+            kml.marshalAsKmz(ec.getFile().getAbsolutePath());
+        } catch (FileNotFoundException ex) {
+            Exceptions.printStackTrace(ex);
+        } catch (IOException ex) {
+            Exceptions.printStackTrace(ex);
+        }
     }
 
     @Override

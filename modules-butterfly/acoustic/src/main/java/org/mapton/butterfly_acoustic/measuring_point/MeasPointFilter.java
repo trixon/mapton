@@ -52,7 +52,7 @@ public class MeasPointFilter extends FormFilter<MeasPointManager> {
     @Override
     public void update() {
         var filteredItems = mManager.getAllItems().stream()
-                .filter(b -> validateFreeText(b.getName(), b.getGroup(), b.getComment()))
+                .filter(b -> validateFreeText(b.getName(), b.getGroup(), b.getComment(), b.getAddress()))
                 .filter(b -> validateCheck(mStatusCheckModel, b.getStatus()))
                 .filter(b -> validateCheck(mGroupCheckModel, b.getGroup()))
                 .filter(b -> validateCheck(mCategoryCheckModel, b.getCategory()))

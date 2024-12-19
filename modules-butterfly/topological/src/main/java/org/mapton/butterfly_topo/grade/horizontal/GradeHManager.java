@@ -68,14 +68,8 @@ public class GradeHManager extends GradeManagerBase {
                 .toList();
 
         for (var p1 : sourcePoints) {
-            if (ObjectUtils.anyNull(p1.getZeroX(), p1.getZeroY())) {
-                continue;
-            }
             var point = new Point2D(p1.getZeroX(), p1.getZeroY());
             for (var p2 : sourcePoints) {
-                if (ObjectUtils.anyNull(p2.getZeroX(), p2.getZeroY())) {
-                    continue;
-                }
                 double distance = point.distance(p2.getZeroX(), p2.getZeroY());
                 if (p1 != p2 && distance >= MIN_RADIAL_DISTANCE && distance <= MAX_RADIAL_DISTANCE) {
                     if (!pointToPoints.computeIfAbsent(p2.getName(), k -> new HashSet<>()).contains(p1.getName())) {//Skip A-B, B-A
@@ -99,14 +93,14 @@ public class GradeHManager extends GradeManagerBase {
 
         Collections.sort(grades, (o1, o2) -> Double.valueOf(Math.abs(o2.ext().getDiff().getZQuota())).compareTo(Math.abs(o1.ext().getDiff().getZQuota())));
 
-        grades.forEach(t -> {
-            var first = new MLatLon(t.getP1().getLat(), t.getP1().getLon());
-            var second = new MLatLon(t.getP2().getLat(), t.getP2().getLon());
+        grades.forEach(g -> {
+            var first = new MLatLon(g.getP1().getLat(), g.getP1().getLon());
+            var second = new MLatLon(g.getP2().getLat(), g.getP2().getLon());
             var d = first.distance(second);
             var b = first.getBearing(second);
             var mid = first.getDestinationPoint(b, d * .5);
-            t.setLat(mid.getLatitude());
-            t.setLon(mid.getLongitude());
+            g.setLat(mid.getLatitude());
+            g.setLon(mid.getLongitude());
         });
 
         FxHelper.runLater(() -> {
