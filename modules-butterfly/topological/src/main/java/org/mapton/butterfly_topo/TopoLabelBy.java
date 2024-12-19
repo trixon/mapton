@@ -28,6 +28,7 @@ import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.MathHelper;
 import se.trixon.almond.util.SDict;
+import se.trixon.almond.util.StringHelper;
 
 /**
  *
@@ -194,6 +195,52 @@ public enum TopoLabelBy {
         var daysSinceMeasurement = p.ext().getZeroMeasurementAge(ChronoUnit.DAYS);
 
         return "%s (%d)".formatted(p.ext().deltaZero().getDelta1(3), daysSinceMeasurement);
+    }),
+    VALUE_DELTA_LATEST_Z(LabelByCategories.VALUE, "ΔZ (dagar)", p -> {
+        if (p.getDimension() == BDimension._2d) {
+            return ":";
+        }
+        long daysSinceMeasurement;
+        var observations = p.ext().getObservationsTimeFiltered();
+        double delta;
+        if (observations.size() > 1) {
+            var secondLast = observations.get(observations.size() - 2);
+            var last = observations.get(observations.size() - 1);
+            var lastDelta = last.ext().getDeltaZ();
+            var secondLastDelta = secondLast.ext().getDeltaZ();
+            if (ObjectUtils.anyNull(secondLastDelta, lastDelta)) {
+                return "-";
+            }
+
+            delta = lastDelta - secondLastDelta;
+            daysSinceMeasurement = ChronoUnit.DAYS.between(secondLast.getDate(), last.getDate());
+        } else {
+            return "-";
+        }
+
+        return "%s (%d)".formatted(StringHelper.round(delta, 3), daysSinceMeasurement);
+    }),
+    VALUE_DELTA_LATEST_Z_ZERO(LabelByCategories.VALUE, "ΔZ (ΔZ₀)", p -> {
+        if (p.getDimension() == BDimension._2d) {
+            return ":";
+        }
+        var observations = p.ext().getObservationsTimeFiltered();
+        double delta;
+        if (observations.size() > 1) {
+            var secondLast = observations.get(observations.size() - 2);
+            var last = observations.get(observations.size() - 1);
+            var lastDelta = last.ext().getDeltaZ();
+            var secondLastDelta = secondLast.ext().getDeltaZ();
+            if (ObjectUtils.anyNull(secondLastDelta, lastDelta)) {
+                return "-";
+            }
+
+            delta = lastDelta - secondLastDelta;
+        } else {
+            return "-";
+        }
+
+        return "%s (%.3f)".formatted(StringHelper.round(delta, 3), p.ext().deltaZero().getDelta1());
     }),
     VALUE_DELTA_ROLLING(LabelByCategories.VALUE, "Δᵣ", p -> {
         return p.ext().deltaRolling().getDelta(3);
