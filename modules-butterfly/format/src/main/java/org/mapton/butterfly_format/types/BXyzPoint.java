@@ -222,6 +222,14 @@ public abstract class BXyzPoint extends BBaseControlPoint {
             return deltaZero;
         }
 
+        public boolean firstIsZero() {
+            if (getObservationsAllRaw().isEmpty()) {
+                return false;
+            } else {
+                return getObservationRawFirstDate().equals(getDateZero());
+            }
+        }
+
         public BAlarm getAlarm(BComponent component) {
             var alarm = getButterfly().getAlarms().stream()
                     .filter(a -> {
@@ -422,6 +430,83 @@ public abstract class BXyzPoint extends BBaseControlPoint {
 
         }
 
+        /**
+         * WARNING!!!
+         */
+        public Object[] getHeightDirectionTrendDaysMeas() {
+            var observations = getObservationsTimeFiltered();
+            if (observations.size() < 2 || getDimension() == _2d) {
+                return new Object[]{null, -1, -1};
+            }
+
+            T last = observations.getLast();
+            T prevO = observations.get(observations.size() - 2);
+            T firstO = null;
+
+            int days = -1;
+            int meas = 1;
+
+            var prevSignum = Math.signum(rounder(last.ext().getDeltaZ()) - rounder(prevO.ext().getDeltaZ()));
+            for (T o : observations.reversed()) {
+                if (o == last) {
+                    continue;
+                }
+                var signum = Math.signum(rounder(o.ext().getDeltaZ()) - rounder(prevO.ext().getDeltaZ()));
+                firstO = o;
+
+                if (signum != prevSignum) {
+                    break;
+                }
+                meas++;
+                prevO = o;
+            }
+
+            if (firstO != null) {
+                days = (int) ChronoUnit.DAYS.between(firstO.getDate(), last.getDate());
+            }
+
+            return new Object[]{firstO.getDate().toLocalDate().toString(), days, meas};
+        }
+
+        /**
+         * WARNING!!!
+         */
+        public int[] getHeightDirectionTrendDaysMeasXXX() {
+            var observations = getObservationsTimeFiltered();
+
+            if (observations.size() < 2 || getDimension() == _2d) {
+                return new int[]{-1, -1};
+            }
+
+            T last = observations.getLast();
+            T prevO = observations.get(observations.size() - 2);
+            T firstO = null;
+
+            int days = -1;
+            int meas = 1;
+
+            double prevSignum = Math.signum(last.ext().getDeltaZ() - prevO.ext().getDeltaZ());
+            for (T o : observations.reversed()) {
+                if (o == last) {
+                    continue;
+                }
+                var signum = Math.signum(o.ext().getDeltaZ() - prevO.ext().getDeltaZ());
+                firstO = o;
+
+                if (signum != prevSignum) {
+                    break;
+                }
+                meas++;
+                prevO = o;
+            }
+
+            if (firstO != null) {
+                days = (int) ChronoUnit.DAYS.between(firstO.getDate(), last.getDate());
+            }
+
+            return new int[]{days, meas};
+        }
+
         public long getMeasurementUntilNext(ChronoUnit chronoUnit) {
             var latest = getDateLatest() != null ? getDateLatest().toLocalDate() : LocalDate.MIN;
             var nextMeas = latest.plusDays(getFrequency());
@@ -466,6 +551,11 @@ public abstract class BXyzPoint extends BBaseControlPoint {
             } else {
                 return -1L;
             }
+        }
+
+        private double rounder(double d) {
+            var snap = 3;
+            return snap * (Math.round(d * 1000 / snap));
         }
 
         public abstract class Delta {
