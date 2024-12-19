@@ -35,7 +35,7 @@ import se.trixon.almond.util.DateHelper;
  */
 public class JulgranRenderer extends BaseRenderer {
 
-    static MLatLon latLon;
+    private final MLatLon mLatLon = new MLatLon(57.707144, 11.966839);
 
     public JulgranRenderer(RenderableLayer layer) {
         super(layer);
@@ -60,8 +60,7 @@ public class JulgranRenderer extends BaseRenderer {
             var ballRadius = 40.0;
             var ballHeight = trunkHeight + coneHeight + 0.25 * ballRadius;
 
-            latLon = latLon.getDestinationPoint(90.0, 290);
-            var position = Position.fromDegrees(latLon.getLatitude(), latLon.getLongitude());
+            var position = Position.fromDegrees(mLatLon.getLatitude(), mLatLon.getLongitude());
 
             var trunk = new CappedCylinder(position, trunkRadius);
             trunk.setAltitudes(0, trunkHeight);

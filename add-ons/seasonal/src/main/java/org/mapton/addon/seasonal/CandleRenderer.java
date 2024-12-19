@@ -33,6 +33,7 @@ public class CandleRenderer extends BaseRenderer {
     public CandleRenderer(RenderableLayer layer) {
         super(layer);
         initAdvent();
+        mLayer.setPickEnabled(false);
     }
 
     @Override
@@ -71,8 +72,6 @@ public class CandleRenderer extends BaseRenderer {
                     5.0
             );
         }
-
-        JulgranRenderer.latLon = new MLatLon(lats[3], lons[3]);
 
         var timer = new Timer(700, event -> {
             mLayer.removeAllRenderables();

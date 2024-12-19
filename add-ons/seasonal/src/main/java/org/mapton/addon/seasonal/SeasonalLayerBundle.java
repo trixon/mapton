@@ -48,10 +48,12 @@ public class SeasonalLayerBundle extends LayerBundle {
         mLayer.setPickEnabled(false);
         setVisibleInLayerManager(mLayer, false);
 
-        mCandleLayer.setPickEnabled(false);
         setVisibleInLayerManager(mCandleLayer, false);
         mCandleRenderer = new CandleRenderer(mCandleLayer);
+
+        setVisibleInLayerManager(mJulgranLayer, false);
         mJulgranRenderer = new JulgranRenderer(mJulgranLayer);
+
         initListeners();
     }
 
