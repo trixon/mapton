@@ -101,15 +101,21 @@ public abstract class BaseAttributeManager {
     }
 
     public BasicShapeAttributes getComponentGroundPathEvenAttributes() {
-        mComponentGroundPathEvenAttributes = new BasicShapeAttributes(getComponentGroundPathAttributes());
-        mComponentGroundPathEvenAttributes.setOutlineMaterial(Material.RED);
+        if (mComponentGroundPathEvenAttributes == null) {
+            mComponentGroundPathEvenAttributes = new BasicShapeAttributes(getComponentGroundPathAttributes());
+            mComponentGroundPathEvenAttributes.setOutlineMaterial(Material.RED);
+            mComponentGroundPathEvenAttributes.setOutlineOpacity(0.5);
+        }
 
         return mComponentGroundPathEvenAttributes;
     }
 
     public BasicShapeAttributes getComponentGroundPathOddAttributes() {
-        mComponentGroundPathOddAttributes = new BasicShapeAttributes(getComponentGroundPathAttributes());
-        mComponentGroundPathOddAttributes.setOutlineMaterial(Material.WHITE);
+        if (mComponentGroundPathOddAttributes == null) {
+            mComponentGroundPathOddAttributes = new BasicShapeAttributes(getComponentGroundPathAttributes());
+            mComponentGroundPathOddAttributes.setOutlineMaterial(Material.WHITE);
+            mComponentGroundPathOddAttributes.setOutlineOpacity(0.5);
+        }
 
         return mComponentGroundPathOddAttributes;
     }
