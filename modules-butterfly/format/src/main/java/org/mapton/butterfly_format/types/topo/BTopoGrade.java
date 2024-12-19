@@ -129,20 +129,20 @@ public class BTopoGrade extends BBasePoint {
 
         if (p.getDimension() == BDimension._1d) {
             for (var o : p.ext().getObservationsTimeFiltered()) {
-                if (ObjectUtils.anyNull(o.getMeasuredZ())) {
+                if (ObjectUtils.anyNull(o.ext().getDeltaZ())) {
                     continue;
                 }
                 var yyyyww = o.getDate().toLocalDate().format(mWeeklyAvgFormatterTo);
-                var point3D = new Point3D(0, 0, o.getMeasuredZ());
+                var point3D = new Point3D(0, 0, o.ext().getDeltaZ());
                 weekToObservations.computeIfAbsent(yyyyww, k -> new ArrayList<>()).add(point3D);
             }
         } else if (p.getDimension() == BDimension._3d) {
             for (var o : p.ext().getObservationsTimeFiltered()) {
-                if (ObjectUtils.anyNull(o.getMeasuredX(), o.getMeasuredY(), o.getMeasuredZ())) {
+                if (ObjectUtils.anyNull(o.ext().getDeltaX(), o.ext().getDeltaY(), o.ext().getDeltaZ())) {
                     continue;
                 }
                 var key = o.getDate().toLocalDate().format(mWeeklyAvgFormatterTo);
-                var point3D = new Point3D(o.getMeasuredX(), o.getMeasuredY(), o.getMeasuredZ());
+                var point3D = new Point3D(o.ext().getDeltaX(), o.ext().getDeltaY(), o.ext().getDeltaZ());
                 weekToObservations.computeIfAbsent(key, k -> new ArrayList<>()).add(point3D);
             }
         }
