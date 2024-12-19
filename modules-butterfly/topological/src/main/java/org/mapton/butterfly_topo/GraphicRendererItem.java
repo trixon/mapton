@@ -35,6 +35,7 @@ public enum GraphicRendererItem implements GraphicRenderItemLimitProvider {
     TRACE_3D(SDict.TRACE_3D.toString(), Integer.MAX_VALUE),
     VECTOR_3D(SDict.VECTOR_3D.toString(), Integer.MAX_VALUE),
     MEASUREMENTS(Dict.NUM_OF_S.toString().formatted(SDict.MEASUREMENTS.toLower()), Integer.MAX_VALUE),
+    MEASUREMENTS_PER_MONTH(Dict.NUM_OF_S.toString().formatted(SDict.MEASUREMENTS.toLower() + "/" + Dict.Time.MONTH.toLower()), 10_000),
     SPEED_1D("1d %s".formatted(Dict.SPEED.toLower()), Integer.MAX_VALUE),
     SPEED_1D_TRACE("1d %s (%s)".formatted(Dict.SPEED.toLower(), SDict.TRACE.toLower()), Integer.MAX_VALUE),
     ALARM_LEVEL(SDict.ALARM_LEVEL.toString(), Integer.MAX_VALUE),
