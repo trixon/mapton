@@ -37,6 +37,7 @@ public class GraphicRenderer extends GraphicRendererBase {
     private final GraphicRendererSpeed mSpeedRenderer;
     private final GraphicRendererTrace mTraceRenderer;
     private final GraphicRendererVector mVectorRenderer;
+    private final GraphicRendererGroup mGroupRenderer;
 
     public GraphicRenderer(RenderableLayer layer, RenderableLayer passiveLayer, IndexedCheckModel<GraphicRendererItem> checkModel) {
         super(layer, passiveLayer);
@@ -46,6 +47,7 @@ public class GraphicRenderer extends GraphicRendererBase {
         mCountRenderer = new GraphicRendererCount(layer, passiveLayer);
         mCircleRenderer = new GraphicRendererCircle(layer, passiveLayer);
         mAlarmRenderer = new GraphicRendererAlarmLevel(layer, passiveLayer);
+        mGroupRenderer = new GraphicRendererGroup(layer, passiveLayer);
 
         sCheckModel = checkModel;
     }
@@ -62,13 +64,20 @@ public class GraphicRenderer extends GraphicRendererBase {
             mCountRenderer.plot(p, position);
             mAlarmRenderer.plot(p, position);
             mSpeedRenderer.plot(p, position);
+            mGroupRenderer.plot(p, position);
         }
+    }
+
+    @Override
+    public void postPlot() {
+        mGroupRenderer.postPlot();
     }
 
     @Override
     public void reset() {
         super.reset();
         sPointToPositionMap.clear();
+        mGroupRenderer.reset();
     }
 
     private void plotBearing(BTopoControlPoint p, Position position) {

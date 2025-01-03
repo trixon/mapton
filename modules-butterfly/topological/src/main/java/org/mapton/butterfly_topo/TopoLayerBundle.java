@@ -185,6 +185,7 @@ public class TopoLayerBundle extends TopoBaseLayerBundle {
                         });
                     }
                 }
+                mGraphicRenderer.postPlot();
             }
 
             setDragEnabled(false);

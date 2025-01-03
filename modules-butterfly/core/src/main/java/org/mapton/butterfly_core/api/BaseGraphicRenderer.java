@@ -134,6 +134,10 @@ public abstract class BaseGraphicRenderer<T extends Enum<T>, U extends BBase> {
         addRenderable(cylinder, false, null, null);
     }
 
+    public void postPlot() {
+
+    }
+
     public void reset() {
         resetPlotLimiter();
     }

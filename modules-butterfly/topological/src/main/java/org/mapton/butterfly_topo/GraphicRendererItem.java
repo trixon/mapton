@@ -24,6 +24,7 @@ import se.trixon.almond.util.SDict;
  * @author Patrik Karlström
  */
 public enum GraphicRendererItem implements GraphicRenderItemLimitProvider {
+    GROUP_DEFORMATION("Grupp, deformation", Integer.MAX_VALUE),
     BEARING(Dict.BEARING.toString(), Integer.MAX_VALUE),
     CIRCLE_1D("1d Delta", Integer.MAX_VALUE),
     CIRCLE_3D("3d Delta", Integer.MAX_VALUE),
