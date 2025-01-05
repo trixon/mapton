@@ -32,7 +32,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.controlsfx.control.PopOver;
 import org.controlsfx.control.action.Action;
-import org.mapton.api.FileChooserHelper;
+import se.trixon.almond.nbp.FileChooserHelper;
 import org.mapton.api.MBookmark;
 import org.mapton.api.MBookmarkManager;
 import org.mapton.api.MNotificationIcons;

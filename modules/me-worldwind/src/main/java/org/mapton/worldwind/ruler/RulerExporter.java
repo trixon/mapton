@@ -25,7 +25,7 @@ import java.util.LinkedHashMap;
 import javax.swing.JFileChooser;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
-import org.mapton.api.FileChooserHelper;
+import se.trixon.almond.nbp.FileChooserHelper;
 import org.mapton.api.MKmlCreator;
 import org.mapton.api.MOptions;
 import org.openide.filesystems.FileChooserBuilder;

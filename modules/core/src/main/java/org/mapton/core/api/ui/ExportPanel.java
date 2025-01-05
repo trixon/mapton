@@ -30,7 +30,7 @@ import javafx.scene.layout.GridPane;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.tools.Borders;
-import org.mapton.api.FileChooserHelper;
+import se.trixon.almond.nbp.FileChooserHelper;
 import org.mapton.api.MCooTrans;
 import org.mapton.api.MCrsManager;
 import org.mapton.api.MDict;

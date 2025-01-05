@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 import javafx.scene.Node;
 import javax.swing.JFileChooser;
 import org.controlsfx.control.action.Action;
-import org.mapton.api.FileChooserHelper;
+import se.trixon.almond.nbp.FileChooserHelper;
 import org.mapton.api.MNotificationIcons;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.openide.awt.NotificationDisplayer;

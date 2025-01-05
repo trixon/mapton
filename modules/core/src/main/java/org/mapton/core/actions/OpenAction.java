@@ -25,7 +25,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import org.mapton.api.FileChooserHelper;
+import se.trixon.almond.nbp.FileChooserHelper;
 import org.mapton.api.MCoordinateFileOpener;
 import org.mapton.core.api.BaseAction;
 import org.mapton.core.ui.MapTopComponent;
