@@ -17,7 +17,13 @@ package org.mapton.butterfly_topo;
 
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
+import gov.nasa.worldwind.render.AbstractSurfaceShape;
+import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Cylinder;
+import gov.nasa.worldwind.render.Material;
+import gov.nasa.worldwind.render.SurfaceCircle;
+import gov.nasa.worldwind.render.SurfacePolygon;
+import java.time.temporal.ChronoUnit;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.topo.BTopoControlPointObservation;
@@ -40,6 +46,10 @@ public class GraphicRendererCircle extends GraphicRendererBase {
 
         if (sCheckModel.isChecked(GraphicRendererItem.CIRCLE_3D) && p.getDimension() == BDimension._3d) {
             plot3dCircle(p, position);
+        }
+
+        if (sCheckModel.isChecked(GraphicRendererItem.CIRCLE_VERTICAL_DIRECTION) && p.getDimension() != BDimension._2d) {
+            plotVerticalDirection(p, position);
         }
     }
 
@@ -98,5 +108,52 @@ public class GraphicRendererCircle extends GraphicRendererBase {
 
         cylinder.setAttributes(attrs);
         addRenderable(cylinder, true, GraphicRendererItem.CIRCLE_3D, sMapObjects);
+    }
+
+    private void plotVerticalDirection(BTopoControlPoint p, Position position) {
+        var days = p.ext().getZeroToLatestMeasurementAge(ChronoUnit.DAYS);
+        var minDays = 90.0;
+        var dayToMeter = 0.004;
+        var minRadius = minDays * dayToMeter;
+        var maxRadius = minRadius * 10.0;
+        var radius = days * dayToMeter;
+        radius = Math.min(Math.max(radius, minRadius), maxRadius);
+
+        var sa = new BasicShapeAttributes();
+
+        sa.setDrawOutline(radius == maxRadius);
+//        sa.setOutlineMaterial(Material.MAGENTA);
+//        sa.setOutlineWidth(2.0);
+        sa.setDrawOutline(false);
+        if (radius == minRadius) {
+            sa.setInteriorOpacity(0.25);
+        }
+
+        var dz = p.ext().deltaZero().getDeltaZ();
+        if (dz == null) {
+            return;
+        }
+
+        sa.setInteriorMaterial(TopoHelper.getVerticalMaterial(p));
+
+        AbstractSurfaceShape shape;
+        if (p.getDimension() == BDimension._1d) {
+            shape = new SurfaceCircle(sa, position, radius);
+        } else {
+            var box = new SurfacePolygon(WWHelper.createNodes(position, radius, 3));
+            shape = box;
+        }
+        shape.setAttributes(sa);
+        addRenderable(shape, true, GraphicRendererItem.CIRCLE_VERTICAL_DIRECTION, sMapObjects);
+
+        var sa2 = new BasicShapeAttributes();
+        sa2.setDrawOutline(false);
+        sa2.setInteriorMaterial(Material.PINK);
+
+        if (radius == maxRadius) {
+            var circle = new SurfaceCircle(sa, position, minRadius);
+            circle.setAttributes(sa2);
+            addRenderable(circle, false, GraphicRendererItem.CIRCLE_VERTICAL_DIRECTION, sMapObjects);
+        }
     }
 }

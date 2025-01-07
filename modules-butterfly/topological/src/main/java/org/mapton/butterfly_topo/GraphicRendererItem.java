@@ -28,6 +28,7 @@ public enum GraphicRendererItem implements GraphicRenderItemLimitProvider {
     BEARING(Dict.BEARING.toString(), Integer.MAX_VALUE),
     CIRCLE_1D("1d Delta", Integer.MAX_VALUE),
     CIRCLE_3D("3d Delta", Integer.MAX_VALUE),
+    CIRCLE_VERTICAL_DIRECTION("Färgskala, vertikalrörelse", Integer.MAX_VALUE),
     TRACE_1D(SDict.TRACE_1D.toString(), 10_000),
     VECTOR_1D(SDict.VECTOR_1D.toString(), 100),
     VECTOR_1D_ALARM("%s (%s)".formatted(SDict.VECTOR_1D.toString(), SDict.ALARM_LEVEL.toLower()), 100),

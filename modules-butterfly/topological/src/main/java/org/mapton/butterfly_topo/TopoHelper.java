@@ -28,6 +28,10 @@ public class TopoHelper {
 
     private static final Color[] sSpeedColors;
     private static final Material[] sSpeedMaterials;
+    private static final Color[] sVerticalNegColors;
+    private static final Material[] sVerticalNegMaterials;
+    private static final Color[] sVerticalPosColors;
+    private static final Material[] sVerticalPosMaterials;
 
     static {
         sSpeedColors = new Color[]{
@@ -48,6 +52,38 @@ public class TopoHelper {
         sSpeedMaterials = new Material[sSpeedColors.length];
         for (int i = 0; i < sSpeedMaterials.length; i++) {
             sSpeedMaterials[i] = new Material(sSpeedColors[i]);
+        }
+
+        sVerticalPosColors = new Color[]{
+            //https://colordesigner.io/gradient-generator/?mode=oklab#FFFFFF-FF0000
+            Color.decode("#00ff00"),
+            Color.decode("#ffe5df"),
+            Color.decode("#ffcac0"),
+            Color.decode("#ffafa1"),
+            Color.decode("#ff9281"),
+            Color.decode("#ff7361"),
+            Color.decode("#ff4e3e"),
+            Color.decode("#ff0000")
+        };
+        sVerticalNegColors = new Color[]{
+            //https://colordesigner.io/gradient-generator/?mode=oklab#0000FF-FFFFFF
+            Color.decode("#0000ff"),
+            Color.decode("#1250ff"),
+            Color.decode("#3a75ff"),
+            Color.decode("#6094ff"),
+            Color.decode("#87b1ff"),
+            Color.decode("#aeccff"),
+            Color.decode("#d6e6ff"),
+            Color.decode("#00ff00")
+        };
+
+        sVerticalPosMaterials = new Material[sVerticalPosColors.length];
+        for (int i = 0; i < sVerticalPosMaterials.length; i++) {
+            sVerticalPosMaterials[i] = new Material(sVerticalPosColors[i]);
+        }
+        sVerticalNegMaterials = new Material[sVerticalNegColors.length];
+        for (int i = 0; i < sVerticalNegMaterials.length; i++) {
+            sVerticalNegMaterials[i] = new Material(sVerticalNegColors[i]);
         }
     }
 
@@ -107,11 +143,45 @@ public class TopoHelper {
         return sSpeedMaterials[getSpeedLevel(p)];
     }
 
+    public static Color getVerticalColor(BTopoControlPoint p) {
+        var dZ = p.ext().deltaZero().getDelta1();
+        if (dZ == null) {
+            return Color.YELLOW;
+        } else if (dZ < 0) {
+            return sVerticalNegColors[getVerticalLevel(p, dZ)];
+        } else {
+            return sVerticalPosColors[getVerticalLevel(p, dZ)];
+        }
+    }
+
+    public static Material getVerticalMaterial(BTopoControlPoint p) {
+        var dZ = p.ext().deltaZero().getDelta1();
+        if (dZ == null) {
+            return Material.YELLOW;
+        } else if (dZ < 0) {
+            return sVerticalNegMaterials[getVerticalLevel(p, dZ)];
+        } else {
+            return sVerticalPosMaterials[getVerticalLevel(p, dZ)];
+        }
+    }
+
     private static int getSpeedLevel(BTopoControlPoint p) {
         var dZ = p.ext().getSpeed()[0];
         var length = sSpeedMaterials.length;
         var limit = 0.025;
         int level = (int) Math.min(length - 1, (Math.abs(dZ) / limit) * (length - 1));
+
+        return level;
+    }
+
+    private static int getVerticalLevel(BTopoControlPoint p, double dZ) {
+        var length = sVerticalNegMaterials.length;
+        var limit = 0.025;
+        int level = (int) Math.min(length - 1, (Math.abs(dZ) / limit) * (length - 1));
+        if (dZ < 0) {
+            level = length - level - 1;
+        }
+
         return level;
     }
 
