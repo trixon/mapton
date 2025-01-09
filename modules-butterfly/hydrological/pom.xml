@@ -32,6 +32,9 @@ limitations under the License.
                 <extensions>true</extensions>
                 <configuration>
                     <!--<moduleType>disabled</moduleType>-->
+                    <publicPackages>
+                        <publicPackage>org.mapton.butterfly_hydro.groundwater</publicPackage>
+                    </publicPackages>
                 </configuration>            
             </plugin>
             <plugin>

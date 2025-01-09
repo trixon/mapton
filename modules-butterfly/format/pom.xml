@@ -76,7 +76,6 @@ limitations under the License.
             <dependency>
                 <groupId>commons-beanutils</groupId>
                 <artifactId>commons-beanutils</artifactId>
-                <version>1.9.4</version>
             </dependency>
         <dependency>
             <groupId>net.lingala.zip4j</groupId>
