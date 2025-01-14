@@ -38,17 +38,20 @@ public class GroundwaterFilterPopOver extends BaseTabbedFilterPopOver {
     private final FilterSectionMisc mFilterSectionMisc;
     private final BFilterSectionPoint mFilterSectionPoint;
     private final GroundwaterManager mManager = GroundwaterManager.getInstance();
+    private final FilterSectionMeas mFilterSectionMeas;
 
     public GroundwaterFilterPopOver(GroundwaterFilter filter) {
         mFilterSectionPoint = new BFilterSectionPoint();
         mFilterSectionDate = new BFilterSectionDate();
         mFilterSectionDisruptor = new BFilterSectionDisruptor();
+        mFilterSectionMeas = new FilterSectionMeas();
         mFilterSectionMisc = new FilterSectionMisc();
 
         mFilter = filter;
         mFilter.setFilterSection(mFilterSectionPoint);
         mFilter.setFilterSection(mFilterSectionDate);
         mFilter.setFilterSection(mFilterSectionDisruptor);
+        mFilter.setFilterSection(mFilterSectionMeas);
 
         setFilter(filter);
         createUI();
@@ -70,6 +73,7 @@ public class GroundwaterFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionPoint.clear();
         mFilterSectionDate.clear();
         mFilterSectionDisruptor.clear();
+        mFilterSectionMeas.clear();
         mFilterSectionMisc.clear();
     }
 
@@ -92,6 +96,7 @@ public class GroundwaterFilterPopOver extends BaseTabbedFilterPopOver {
 
         mFilterSectionPoint.load(items);
         mFilterSectionDisruptor.load();
+        mFilterSectionMeas.load(items, mManager.getTemporalRange());
         mFilterSectionDate.load(mManager.getTemporalRange());
         mFilterSectionMisc.load();
     }
@@ -118,6 +123,7 @@ public class GroundwaterFilterPopOver extends BaseTabbedFilterPopOver {
         getTabPane().getTabs().addAll(
                 mFilterSectionPoint.getTab(),
                 mFilterSectionDate.getTab(),
+                mFilterSectionMeas.getTab(),
                 mFilterSectionDisruptor.getTab()
         );
 
@@ -130,6 +136,7 @@ public class GroundwaterFilterPopOver extends BaseTabbedFilterPopOver {
         });
 
         mFilterSectionMisc.initListeners(mFilter);
+//        mFilterSectionMeas.initListeners(mFilter);
 
         mFilter.polygonFilterProperty().bind(usePolygonFilterProperty());
         mFilter.initCheckModelListeners();
@@ -140,6 +147,7 @@ public class GroundwaterFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionPoint.initSession(sessionManager);
         mFilterSectionDate.initSession(sessionManager);
         mFilterSectionDisruptor.initSession(sessionManager);
+        mFilterSectionMeas.initSession(sessionManager);
         mFilterSectionMisc.initSession(sessionManager);
 
         sessionManager.register("filter.measPoint.freeText", mFilter.freeTextProperty());

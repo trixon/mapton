@@ -39,10 +39,12 @@ public class GroundwaterFilter extends ButterflyFormFilter<GroundwaterManager> i
         FilterSectionMiscProvider,
         BFilterSectionPointProvider,
         BFilterSectionDateProvider,
-        BFilterSectionDisruptorProvider {
+        BFilterSectionDisruptorProvider,
+        FilterSectionMeasProvider {
 
     private BFilterSectionDate mFilterSectionDate;
     private BFilterSectionDisruptor mFilterSectionDisruptor;
+    private FilterSectionMeas mFilterSectionMeas;
     private BFilterSectionPoint mFilterSectionPoint;
     private final SimpleBooleanProperty mInvertProperty = new SimpleBooleanProperty();
     private final GroundwaterManager mManager = GroundwaterManager.getInstance();
@@ -82,6 +84,12 @@ public class GroundwaterFilter extends ButterflyFormFilter<GroundwaterManager> i
     }
 
     @Override
+    public void setFilterSection(FilterSectionMeas filterSectionMeas) {
+        mFilterSectionMeas = filterSectionMeas;
+        mFilterSectionMeas.initListeners(mChangeListenerObject, mListChangeListener);
+    }
+
+    @Override
     public void update() {
         var filteredItems = mManager.getAllItems().stream()
                 .filter(p -> validateFreeText(p.getName(), p.getGroup(), p.getComment()))
@@ -90,6 +98,7 @@ public class GroundwaterFilter extends ButterflyFormFilter<GroundwaterManager> i
                 .filter(p -> mFilterSectionPoint.filter(p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS)))
                 .filter(p -> mFilterSectionDate.filter(p, p.ext().getDateFirst()))
                 .filter(p -> mFilterSectionDisruptor.filter(p))
+                .filter(p -> mFilterSectionMeas.filter(p))
                 .toList();
 
         if (mInvertProperty.get()) {

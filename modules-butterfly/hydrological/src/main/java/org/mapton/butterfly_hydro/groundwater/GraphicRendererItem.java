@@ -24,7 +24,7 @@ import se.trixon.almond.util.SDict;
  */
 public enum GraphicRendererItem implements GraphicRenderItemLimitProvider {
 
-    LEVEL(SDict.LEVEL.toString(), 100_000);
+    LEVEL(SDict.LEVEL.toString(), 10_000);
     private final String mName;
     private final int mPlotLimit;
 

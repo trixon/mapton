@@ -57,10 +57,6 @@ public class GroundwaterManager extends BaseManager<BHydroGroundwaterPoint> {
     }
 
     @Override
-    public void initObjectToItemMap() {
-    }
-
-    @Override
     public void load(Butterfly butterfly) {
         try {
             initAllItems(butterfly.hydro().getGroundwaterPoints());
