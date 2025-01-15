@@ -80,7 +80,7 @@ public class GroundwaterFilter extends ButterflyFormFilter<GroundwaterManager> i
     @Override
     public void setFilterSection(BFilterSectionDisruptor filterSection) {
         mFilterSectionDisruptor = filterSection;
-        mFilterSectionDisruptor.initListeners(mChangeListenerObject, mListChangeListener);
+        //mFilterSectionDisruptor.initListeners(mChangeListenerObject, mListChangeListener);
     }
 
     @Override
@@ -97,7 +97,7 @@ public class GroundwaterFilter extends ButterflyFormFilter<GroundwaterManager> i
                 .filter(p -> validateCoordinateRuler(p.getLat(), p.getLon()))
                 .filter(p -> mFilterSectionPoint.filter(p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS)))
                 .filter(p -> mFilterSectionDate.filter(p, p.ext().getDateFirst()))
-                .filter(p -> mFilterSectionDisruptor.filter(p))
+                // .filter(p -> mFilterSectionDisruptor.filter(p))
                 .filter(p -> mFilterSectionMeas.filter(p))
                 .toList();
 
@@ -118,6 +118,7 @@ public class GroundwaterFilter extends ButterflyFormFilter<GroundwaterManager> i
         map.put(Dict.TEXT.toString(), getFreeText());
         mFilterSectionPoint.createInfoContent(map);
         mFilterSectionDate.createInfoContent(map);
+        mFilterSectionMeas.createInfoContent(map);
         mFilterSectionDisruptor.createInfoContent(map);
 
         return createHtmlFilterInfo(map);

@@ -123,8 +123,8 @@ public class GroundwaterFilterPopOver extends BaseTabbedFilterPopOver {
         getTabPane().getTabs().addAll(
                 mFilterSectionPoint.getTab(),
                 mFilterSectionDate.getTab(),
-                mFilterSectionMeas.getTab(),
-                mFilterSectionDisruptor.getTab()
+                mFilterSectionMeas.getTab()
+        //                mFilterSectionDisruptor.getTab()
         );
 
         setContentNode(root);
