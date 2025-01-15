@@ -24,10 +24,8 @@ import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.airspaces.CappedCylinder;
 import java.awt.Color;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import org.mapton.api.MLatLon;
 import org.mapton.worldwind.api.WWHelper;
-import se.trixon.almond.util.DateHelper;
 
 /**
  *
@@ -48,11 +46,11 @@ public class JulgranRenderer extends BaseRenderer {
     }
 
     private void initJulgran() {
-        var now = LocalDateTime.now();
-        var startDate = LocalDate.of(now.getYear(), 12, 14);
-        var endDate = LocalDate.of(now.getYear() + 1, 1, 14);
+        var now = LocalDate.now();
+        var day = now.getDayOfMonth();
+        var month = now.getMonthValue();
 
-        if (DateHelper.isBetween(startDate, endDate, now.toLocalDate())) {
+        if (month == 12 && day >= 14 || month == 1 && day <= 13) {
             var trunkHeight = 150.0;
             var trunkRadius = 20.0;
             var coneHeight = 400.0;
