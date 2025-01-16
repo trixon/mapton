@@ -83,9 +83,21 @@ public class MDisruptorManager {
         return mLastChangedProperty;
     }
 
-    public void put(String id, List<? extends Geometry> list) {
+    public void putGeometries(String id, List<? extends Geometry> list) {
         mIdToGeometries.put(id, list);
         mLastChangedProperty.set(System.currentTimeMillis());
+    }
+
+    public void putLatLons(String DISRUPTOR_NAME, List<MLatLon> list) {
+        var cooTrans = MOptions.getInstance().getMapCooTrans();
+        var geometries = list.stream().map(b -> {
+            var p = cooTrans.fromWgs84(b.getLatitude(), b.getLongitude());
+            var coordinate = new Coordinate(p.getY(), p.getX());
+
+            return mGeometryFactory.createPoint(coordinate);
+        }).toList();
+
+        putGeometries(DISRUPTOR_NAME, geometries);
     }
 
     public List<MLatLon> remove(String id) {
