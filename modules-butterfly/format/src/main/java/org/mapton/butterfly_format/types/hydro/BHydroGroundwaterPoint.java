@@ -20,9 +20,11 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
+import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.butterfly_format.types.BBasePoint;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.BXyzPoint;
+import se.trixon.almond.util.DateHelper;
 
 /**
  *
@@ -118,6 +120,27 @@ public class BHydroGroundwaterPoint extends BXyzPoint {
                     .orElse(null);
         }
 
-    }
+        public Double getGroundwaterLevelDiff(int daysBeforeNow) {
+            var now = LocalDate.now();
+            return getGroundwaterLevelDiff(now.minusDays(daysBeforeNow), now);
+        }
 
+        public Double getGroundwaterLevelDiff(LocalDate firstDate, LocalDate lastDate) {
+            var obs = getObservationsTimeFiltered().stream()
+                    .filter(o -> DateHelper.isBetween(firstDate, lastDate, o.getDate().toLocalDate()))
+                    .toList();
+
+            if (obs.size() < 2) {
+                return null;
+            } else {
+                var o1 = obs.getFirst();
+                var o2 = obs.getLast();
+
+                if (ObjectUtils.anyNull(o1.getGroundwaterLevel(), o2.getGroundwaterLevel())) {
+                    return null;
+                }
+                return o2.getGroundwaterLevel() - o1.getGroundwaterLevel();
+            }
+        }
+    }
 }

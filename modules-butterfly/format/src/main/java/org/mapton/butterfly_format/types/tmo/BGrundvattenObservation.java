@@ -25,10 +25,12 @@ import org.mapton.butterfly_format.types.BBasePointObservation;
 @JsonPropertyOrder({
     "name",
     "date",
-    "nivå"
+    "nivå",
+    "granskning"
 })
 public class BGrundvattenObservation extends BBasePointObservation {
 
+    private String granskning;
     private Ext mExt;
     private Double nivå;
 
@@ -43,8 +45,16 @@ public class BGrundvattenObservation extends BBasePointObservation {
         return mExt;
     }
 
+    public String getGranskning() {
+        return granskning;
+    }
+
     public Double getNivå() {
         return nivå;
+    }
+
+    public void setGranskning(String granskning) {
+        this.granskning = granskning;
     }
 
     public void setNivå(Double nivå) {

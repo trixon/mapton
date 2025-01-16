@@ -553,6 +553,14 @@ public abstract class BXyzPoint extends BBaseControlPoint {
             }
         }
 
+        public long getZeroToLatestMeasurementAge(ChronoUnit chronoUnit) {
+            if (getDateZero() != null) {
+                return chronoUnit.between(getDateZero(), getDateLatest());
+            } else {
+                return -1L;
+            }
+        }
+
         private double rounder(double d) {
             var snap = 3;
             return snap * (Math.round(d * 1000 / snap));
