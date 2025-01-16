@@ -24,11 +24,14 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import org.apache.commons.lang3.ObjectUtils;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.butterfly_format.types.hydro.BHydroGroundwaterPoint;
 import org.mapton.butterfly_format.types.hydro.BHydroGroundwaterPointObservation;
 import org.mapton.worldwind.api.WWHelper;
+import se.trixon.almond.util.DateHelper;
 
 /**
  *
@@ -51,7 +54,11 @@ public class GraphicRenderer extends GraphicRendererBase {
     public void plot(BHydroGroundwaterPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
         GraphicRendererBase.sMapObjects = mapObjects;
 
-        plotTrace(p, position);
+        plotTrace(p, position, GraphicRendererItem.LEVEL_3, 3);
+        plotTrace(p, position, GraphicRendererItem.LEVEL_6, 6);
+        plotTrace(p, position, GraphicRendererItem.LEVEL_12, 12);
+        plotTrace(p, position, GraphicRendererItem.LEVEL_18, 18);
+        plotTrace(p, position, GraphicRendererItem.LEVEL_ALL, Integer.MAX_VALUE);
     }
 
     private Double getMedian(BHydroGroundwaterPoint p) {
@@ -70,18 +77,17 @@ public class GraphicRenderer extends GraphicRendererBase {
         return median;
     }
 
-    private void plotTrace(BHydroGroundwaterPoint p, Position position) {
-        if (!sCheckModel.isChecked(GraphicRendererItem.LEVEL)
-                || isPlotLimitReached(p, GraphicRendererItem.LEVEL, position)) {
-            return;
-        }
-
+    private void plotTrace(BHydroGroundwaterPoint p, Position position, List<BHydroGroundwaterPointObservation> list, GraphicRendererItem rendererItem) {
         var prevDate = LocalDateTime.now();
         var altitude = 0.0;
         var prevHeight = 0.0;
 
-        var reversedList = p.ext().getObservationsTimeFiltered().reversed();
-        BHydroGroundwaterPointObservation minObservation = p.ext().getMinObservation();
+        var reversedList = list.reversed();
+        var minObservation = list.stream()
+                .filter(o -> o.getGroundwaterLevel() != null)
+                .min(Comparator.comparing(BHydroGroundwaterPointObservation::getGroundwaterLevel))
+                .orElse(null);
+
         //var median = getMedian(p);
         if (minObservation == null) {
             return;
@@ -135,9 +141,19 @@ public class GraphicRenderer extends GraphicRendererBase {
             }
 
             cylinder.setAttributes(attrs);
-            addRenderable(cylinder, true, GraphicRendererItem.LEVEL, sMapObjects);
+            addRenderable(cylinder, true, rendererItem, sMapObjects);
         }
 
     }
 
+    private void plotTrace(BHydroGroundwaterPoint p, Position position, GraphicRendererItem rendererItem, int months) {
+        if (!sCheckModel.isChecked(rendererItem)
+                || isPlotLimitReached(p, rendererItem, position)) {
+            return;
+        }
+
+        plotTrace(p, position,
+                p.ext().getObservationsTimeFiltered().stream().filter(o -> DateHelper.isAfterOrEqual(o.getDate().toLocalDate(), LocalDate.now().minusMonths(months))).toList(),
+                rendererItem);
+    }
 }

@@ -16,6 +16,7 @@
 package org.mapton.butterfly_hydro.groundwater;
 
 import org.mapton.butterfly_core.api.GraphicRenderItemLimitProvider;
+import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SDict;
 
 /**
@@ -24,7 +25,11 @@ import se.trixon.almond.util.SDict;
  */
 public enum GraphicRendererItem implements GraphicRenderItemLimitProvider {
 
-    LEVEL(SDict.LEVEL.toString(), 10_000);
+    LEVEL_3("%s, 3 %s".formatted(SDict.LEVEL.toString(), Dict.Time.MONTHS.toLower()), 10_000),
+    LEVEL_6("%s, 6 %s".formatted(SDict.LEVEL.toString(), Dict.Time.MONTHS.toLower()), 10_000),
+    LEVEL_12("%s, 12 %s".formatted(SDict.LEVEL.toString(), Dict.Time.MONTHS.toLower()), 10_000),
+    LEVEL_18("%s, 18 %s".formatted(SDict.LEVEL.toString(), Dict.Time.MONTHS.toLower()), 10_000),
+    LEVEL_ALL(SDict.LEVEL.toString(), 10_000);
     private final String mName;
     private final int mPlotLimit;
 
