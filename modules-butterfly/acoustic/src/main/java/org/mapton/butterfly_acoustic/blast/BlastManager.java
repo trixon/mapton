@@ -18,9 +18,8 @@ package org.mapton.butterfly_acoustic.blast;
 import java.util.ArrayList;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
-import org.locationtech.jts.geom.Coordinate;
 import org.mapton.api.MDisruptorProvider;
-import org.mapton.api.MOptions;
+import org.mapton.api.MLatLon;
 import org.mapton.api.MTemporalRange;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
@@ -78,16 +77,8 @@ public class BlastManager extends BaseManager<BBlast> {
                 .filter(o -> o.getDateTime() == null ? true : getTemporalManager().isValid(o.getDateTime()))
                 .toList();
 
-        var cooTrans = MOptions.getInstance().getMapCooTrans();
-
-        var geometries = timeFilteredItems.stream().map(b -> {
-            var p = cooTrans.fromWgs84(b.getLat(), b.getLon());
-            var coordinate = new Coordinate(p.getY(), p.getX());
-
-            return mGeometryFactory.createPoint(coordinate);
-        }).toList();
-
-        mDisruptorManager.put(DISRUPTOR_NAME, geometries);
+        var latLonDisruptors = timeFilteredItems.stream().map(p -> new MLatLon(p.getLat(), p.getLon())).toList();
+        mDisruptorManager.putLatLons(DISRUPTOR_NAME, latLonDisruptors);
         getTimeFilteredItems().setAll(timeFilteredItems);
     }
 
