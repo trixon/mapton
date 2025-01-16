@@ -19,7 +19,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
 import org.mapton.butterfly_core.api.BPropertiesBuilder;
 import org.mapton.butterfly_format.types.hydro.BHydroGroundwaterPoint;
-import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 
 /**
  *
@@ -39,7 +38,7 @@ public class GroundwaterPropertiesBuilder extends BPropertiesBuilder<BHydroGroun
         propertyMap.putAll(populateBasics(p, basicParams));
 //******************************************************************************
         Double azimuth = null;
-        var measParams = new BPropertiesBuilder.MeasParams<BTopoControlPoint>(
+        var measParams = new BPropertiesBuilder.MeasParams<BHydroGroundwaterPoint>(
                 azimuth,
                 p.ext().getMeasurementUntilNext(ChronoUnit.DAYS),
                 p.ext().getMeasurementAge(ChronoUnit.DAYS),
