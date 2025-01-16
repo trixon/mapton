@@ -57,6 +57,11 @@ public enum PinPaddle {
         mHeadingToOffset.put(270d, Offset.RIGHT_CENTER);
     }
 
+    public void apply(PointPlacemarkAttributes attrs) {
+        attrs.setImageAddress(mAddress);
+        attrs.setImageOffset(Offset.BOTTOM_CENTER);
+    }
+
     public PointPlacemarkAttributes applyToCopy(PointPlacemarkAttributes attrs) {
         var a = new PointPlacemarkAttributes(attrs);
         a.setImageAddress(mAddress);
@@ -66,8 +71,7 @@ public enum PinPaddle {
         return a;
     }
 
-    public void apply(PointPlacemarkAttributes attrs) {
-        attrs.setImageAddress(mAddress);
-        attrs.setImageOffset(Offset.BOTTOM_CENTER);
+    public String getAddress() {
+        return mAddress;
     }
 }
