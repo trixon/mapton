@@ -66,6 +66,10 @@ public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicRen
     }
 
     public Position[] plot3dOffsetPole(BTopoControlPoint p, Position position) {
+        return plot3dOffsetPole(p, position, true);
+    }
+
+    public Position[] plot3dOffsetPole(BTopoControlPoint p, Position position, boolean plotEnabled) {
         var scale3dH = MSimpleObjectStorageManager.getInstance().getInteger(ScalePlot3dHSosd.class, 500);
         var scale3dP = MSimpleObjectStorageManager.getInstance().getInteger(ScalePlot3dPSosd.class, 500);
 
@@ -78,11 +82,15 @@ public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicRen
             var startEllipsoid = new Ellipsoid(startPosition, ZERO_SIZE, ZERO_SIZE, ZERO_SIZE);
             startEllipsoid.setAttributes(mAttributeManager.getComponentZeroAttributes());
 
-            addRenderable(startEllipsoid, true, null, sMapObjects);
+            if (plotEnabled) {
+                addRenderable(startEllipsoid, true, null, sMapObjects);
+            }
 
             var groundPath = new Path(position, startPosition);
             groundPath.setAttributes(mAttributeManager.getComponentGroundPathAttributes());
-            addRenderable(groundPath, true, null, sMapObjects);
+            if (plotEnabled) {
+                addRenderable(groundPath, true, null, sMapObjects);
+            }
 
             var currentPosition = startPosition;
 //            var o1 = p.ext().getObservationsTimeFiltered().getFirst();
@@ -101,7 +109,9 @@ public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicRen
 
             var currentEllipsoid = new Ellipsoid(currentPosition, CURRENT_SIZE, CURRENT_SIZE, CURRENT_SIZE);
             currentEllipsoid.setAttributes(mAttributeManager.getComponentVectorCurrentAttributes(p));
-            addRenderable(currentEllipsoid, true, null, sMapObjects);
+            if (plotEnabled) {
+                addRenderable(currentEllipsoid, true, null, sMapObjects);
+            }
 
             return new Position[]{startPosition, currentPosition};
         });

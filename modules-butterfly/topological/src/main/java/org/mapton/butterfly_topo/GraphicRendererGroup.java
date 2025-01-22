@@ -15,18 +15,31 @@
  */
 package org.mapton.butterfly_topo;
 
+import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
+import gov.nasa.worldwind.render.Ellipsoid;
 import gov.nasa.worldwind.render.Material;
+import gov.nasa.worldwind.render.Offset;
+import gov.nasa.worldwind.render.Path;
+import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwind.render.Polygon;
 import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.math3.ml.clustering.DBSCANClusterer;
+import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import static org.mapton.butterfly_topo.GraphicRendererBase.sCheckModel;
+import static org.mapton.butterfly_topo.GraphicRendererBase.sMapObjects;
+import org.mapton.worldwind.api.WWHelper;
+import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.ext.GrahamScan;
 
 /**
@@ -48,8 +61,12 @@ public class GraphicRendererGroup extends GraphicRendererBase {
 
     @Override
     public void postPlot() {
-        if (sCheckModel.isChecked(GraphicRendererItem.GROUP_DEFORMATION) && mPoints.size() > 2) {
+        if (sCheckModel.isChecked(GraphicRendererItem.CLUSTER_DEFORMATION) && mPoints.size() > 2) {
             plotDeformation();
+        }
+
+        if (sCheckModel.isChecked(GraphicRendererItem.CLUSTER_DEFORMATION_PLANE_ALTITUDES) && mPoints.size() > 1) {
+            plotDeformationPlaneAltitudes();
         }
     }
 
@@ -110,4 +127,80 @@ public class GraphicRendererGroup extends GraphicRendererBase {
         addRenderable(polygon2, false, null, null);
     }
 
+    private void plotDeformationPlaneAltitudes() {
+        //Manage noise, scale data
+        var epsilon = 1.5;
+        var minPoints = 2;
+        var dbscan = new DBSCANClusterer<BTopoControlPoint>(epsilon, minPoints);
+        var filteredPoints = mPoints.stream()
+                .filter(p -> p.getDimension() == BDimension._3d)
+                .filter(p -> ObjectUtils.allNotNull(p.getZeroX(), p.getZeroY(), p.getZeroZ()))
+                .toList();
+        var clusters = dbscan.cluster(filteredPoints);
+        var labelAttributes = mAttributeManager.getLabelPlacemarkAttributes();
+        labelAttributes.setLabelOffset(Offset.CENTER);
+
+        for (var cluster : clusters) {
+            var points = cluster.getPoints();
+            Collections.sort(points, Comparator.comparing(BTopoControlPoint::getZeroZ));
+            var pathPositions = new ArrayList<Position>();
+            var lastP = points.getLast();
+            Position firstPosition = points.getLast().getValue("position");
+
+            for (int i = 0; i < points.size(); i++) {
+                var p = points.get(i);
+                if (i == 0) {
+                    var startPosition = WWHelper.positionFromPosition(firstPosition, 0);
+                    var endPosition = WWHelper.positionFromPosition(firstPosition, lastP.getZeroZ() + TopoLayerBundle.getZOffset());
+                    var groundPath = new Path(startPosition, endPosition);
+                    groundPath.setAttributes(mAttributeManager.getComponentGroundPathAttributes());
+                    addRenderable(groundPath, true, null, sMapObjects);
+                }
+
+                var positions = plot3dOffsetPole(p, p.getValue("position"), false);
+                var altitude = p.getZeroZ() + TopoLayerBundle.getZOffset();
+                var startPosition = WWHelper.positionFromPosition(firstPosition, altitude);
+                var endPosition = WWHelper.positionFromPosition(positions[1], altitude);
+                pathPositions.add(endPosition);
+
+                var path = new Path(startPosition, endPosition);
+                path.setAttributes(mAttributeManager.getComponentVector2dAttributes(p));
+                addRenderable(path, true, null, sMapObjects);
+                var leftClickRunnable = (Runnable) () -> {
+                    mManager.setSelectedItemAfterReset(p);
+                };
+
+                var leftDoubleClickRunnable = (Runnable) () -> {
+                    Almond.openAndActivateTopComponent((String) getInteractiveLayer().getValue(WWHelper.KEY_FAST_OPEN));
+                };
+
+                path.setValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK, leftClickRunnable);
+                path.setValue(WWHelper.KEY_RUNNABLE_LEFT_DOUBLE_CLICK, leftDoubleClickRunnable);
+
+                var d2 = p.ext().deltaZero().getDelta2();
+                if (d2 != null) {
+                    var scaleStep = 0.005;
+                    var r = 0.05;
+                    var bearing = WWHelper.latLonFromPosition(startPosition).getBearing(WWHelper.latLonFromPosition(endPosition));
+                    for (double j = scaleStep; j < d2; j += scaleStep) {
+                        var rulerPosition = WWHelper.movePolar(startPosition, bearing, j * 500, endPosition.getAltitude());
+                        var ellipsoid = new Ellipsoid(rulerPosition, r, r, r);
+                        ellipsoid.setAttributes(mAttributeManager.getSymbolAttributes(p));
+                        addRenderable(ellipsoid, false, null, null);
+                    }
+                }
+
+                var placemark = new PointPlacemark(startPosition);
+                placemark.setAltitudeMode(WorldWind.ABSOLUTE);
+                placemark.setAttributes(labelAttributes);
+                placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(mAttributeManager.getLabelPlacemarkAttributes(), 1.5));
+                placemark.setLabelText(p.getName());
+                addRenderable(placemark, false, null, null);
+            }
+
+            var path = new Path(pathPositions);
+            path.setAttributes(mAttributeManager.getBearingAttribute(true));
+            addRenderable(path, false, null, sMapObjects);
+        }
+    }
 }
