@@ -68,6 +68,10 @@ public abstract class BaseGraphicRenderer<T extends Enum<T>, U extends BBase> {
         mPlotLimiter.addToAllowList(item);
     }
 
+    public RenderableLayer getInteractiveLayer() {
+        return mInteractiveLayer;
+    }
+
     public PlotLimiter getPlotLimiter() {
         return mPlotLimiter;
     }
