@@ -15,15 +15,28 @@
  */
 package org.mapton.butterfly_format.types.geo;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import org.mapton.butterfly_format.types.BXyzPointObservation;
 
 /**
  *
  * @author Patrik Karlström
  */
+@JsonPropertyOrder({
+    "name",
+    "date",
+    "values",
+    "down",
+    "a",
+    "b",
+    "replacementMeasurement",
+    "zeroMeasurement"
+})
 public class BGeoInclinometerPointObservation extends BXyzPointObservation {
 
-    private Double temperature;
+    private Double a;
+    private Double b;
+    private Double down;
     private Ext mExt;
 
     @Override
@@ -35,12 +48,28 @@ public class BGeoInclinometerPointObservation extends BXyzPointObservation {
         return mExt;
     }
 
-    public Double getTemperature() {
-        return temperature;
+    public Double getA() {
+        return a;
     }
 
-    public void setTemperature(Double temperature) {
-        this.temperature = temperature;
+    public Double getB() {
+        return b;
+    }
+
+    public Double getDown() {
+        return down;
+    }
+
+    public void setA(Double a) {
+        this.a = a;
+    }
+
+    public void setB(Double b) {
+        this.b = b;
+    }
+
+    public void setDown(Double down) {
+        this.down = down;
     }
 
     public class Ext extends BXyzPointObservation.Ext<BGeoInclinometerPoint> {

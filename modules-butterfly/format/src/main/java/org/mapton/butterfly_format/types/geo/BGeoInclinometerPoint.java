@@ -15,6 +15,10 @@
  */
 package org.mapton.butterfly_format.types.geo;
 
+import java.awt.Point;
+import java.awt.geom.Point2D;
+import java.time.LocalDateTime;
+import java.util.TreeMap;
 import org.mapton.butterfly_format.types.BMeasurementMode;
 import org.mapton.butterfly_format.types.BXyzPoint;
 
@@ -47,6 +51,16 @@ public class BGeoInclinometerPoint extends BXyzPoint {
     }
 
     public class Ext extends BXyzPoint.Ext<BGeoInclinometerPointObservation> {
+
+        private TreeMap<LocalDateTime, TreeMap<Double, Point.Double>> values = new TreeMap<>();
+
+        public TreeMap<LocalDateTime, TreeMap<Double, Point2D.Double>> getValues() {
+            return values;
+        }
+
+        public void setValues(TreeMap<LocalDateTime, TreeMap<Double, Point2D.Double>> values) {
+            this.values = values;
+        }
 
         public String getDeltaRolling() {
             return getDelta(deltaRolling());
