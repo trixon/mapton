@@ -206,8 +206,8 @@ public class InclinoChartBuilder extends XyzChartBuilder<BGeoInclinometerPoint> 
     private void updateDatasetTemperature(BGeoInclinometerPoint p) {
         p.ext().getObservationsTimeFiltered().forEach(o -> {
             var minute = mChartHelper.convertToMinute(o.getDate());
-            if (MathHelper.isBetween(-40d, +40d, o.getTemperature())) {
-                mTimeSeriesTemperature.addOrUpdate(minute, o.getTemperature());
+            if (MathHelper.isBetween(-40d, +40d, o.getA())) {
+                mTimeSeriesTemperature.addOrUpdate(minute, o.getA());
             }
         });
 

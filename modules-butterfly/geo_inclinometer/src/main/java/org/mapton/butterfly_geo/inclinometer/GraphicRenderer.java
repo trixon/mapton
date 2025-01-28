@@ -16,17 +16,27 @@
 package org.mapton.butterfly_geo.inclinometer;
 
 import gov.nasa.worldwind.avlist.AVListImpl;
+import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Box;
+import gov.nasa.worldwind.render.Cylinder;
+import gov.nasa.worldwind.render.Ellipsoid;
+import gov.nasa.worldwind.render.Path;
+import gov.nasa.worldwind.render.RigidShape;
+import gov.nasa.worldwind.render.Wedge;
+import java.awt.geom.Point2D;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.Set;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.geo.BGeoInclinometerPoint;
 import org.mapton.worldwind.api.WWHelper;
+import se.trixon.almond.util.MathHelper;
 
 /**
  *
@@ -35,6 +45,7 @@ import org.mapton.worldwind.api.WWHelper;
 public class GraphicRenderer extends GraphicRendererBase {
 
     private final InclinoAttributeManager mAttributeManager = InclinoAttributeManager.getInstance();
+    private final double mHeightOffset = 5.0;
 
     public GraphicRenderer(RenderableLayer layer, RenderableLayer passiveLayer, IndexedCheckModel<GraphicRendererItem> checkModel) {
         super(layer, passiveLayer);
@@ -44,6 +55,15 @@ public class GraphicRenderer extends GraphicRendererBase {
     public void plot(BGeoInclinometerPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
         sMapObjects = mapObjects;
 
+        if (sCheckModel.isChecked(GraphicRendererItem.CIRCLE_SECTORS)) {
+            plotCircleSectors(p, position);
+        }
+        if (sCheckModel.isChecked(GraphicRendererItem.EXCENTRIC_CIRCLES)) {
+            plotExentricCircles(p, position);
+        }
+        if (sCheckModel.isChecked(GraphicRendererItem.SNAKE)) {
+            plotSnake(p, position);
+        }
         if (sCheckModel.isChecked(GraphicRendererItem.ALARM_CONSUMPTION)) {
             plotAlarmConsumption(p, position);
         }
@@ -51,6 +71,29 @@ public class GraphicRenderer extends GraphicRendererBase {
         if (sCheckModel.isChecked(GraphicRendererItem.TRACE)) {
             plotTrace(p, position);
         }
+    }
+
+    private ArrayList<Position> createNodes(BGeoInclinometerPoint p, Position position, Set<Map.Entry<Double, Point2D.Double>> entrySet) {
+        var positions = new ArrayList<Position>();
+        for (var downEntry : entrySet) {
+            var ab = downEntry.getValue();
+            var distance = 200 * Math.hypot(ab.x, ab.y) / 1000;
+            var azimuth = MathHelper.azimuthToDegrees(ab.x, ab.y);
+            var position2 = position;
+            if (distance > 0) {
+                position2 = WWHelper.movePolar(position, azimuth, distance);
+
+            }
+            positions.add(createPosition(p, position2, downEntry.getKey(), ab));
+        }
+        positions.add(WWHelper.positionFromPosition(position, mHeightOffset));
+        return new ArrayList<>(positions.reversed());
+    }
+
+    private Position createPosition(BGeoInclinometerPoint p, Position position, Double down, Point2D.Double ab) {
+        var height = mHeightOffset + Math.abs(down);
+
+        return WWHelper.positionFromPosition(position, height);
     }
 
     private void plotAlarmConsumption(BGeoInclinometerPoint p, Position position) {
@@ -82,6 +125,82 @@ public class GraphicRenderer extends GraphicRendererBase {
         plotPercentageAlarmIndicator(position, alarm, alarmShape, false);
 
         plotPercentageRod(position, p.ext().getAlarmPercent());
+    }
+
+    private void plotCircleSectors(BGeoInclinometerPoint p, Position position) {
+        if (isPlotLimitReached(p, GraphicRendererItem.CIRCLE_SECTORS, position) || p.ext().getObservationFilteredLast() == null) {
+            return;
+        }
+
+        var positions = createNodes(p, position, p.ext().getValues().lastEntry().getValue().entrySet());
+        plotRod(position, positions);
+
+        for (var downEntry : p.ext().getValues().lastEntry().getValue().entrySet()) {
+            var down = downEntry.getKey();
+            var ab = downEntry.getValue();
+            var wedgeHeight = 2.0;
+            var angle = 45.0;
+            var wedgeRadius = 200 * Math.hypot(ab.x, ab.y) / 1000;
+            var position2 = WWHelper.positionFromPosition(position, Math.abs(down) + mHeightOffset);
+
+            RigidShape shape;
+            if (wedgeRadius > 0) {
+                var bearing = MathHelper.azimuthToDegrees(ab.x, ab.y);
+                shape = new Wedge(position2, Angle.fromDegrees(angle), wedgeHeight, wedgeRadius);
+                var az = Angle.normalizedDegrees(bearing - angle / 2);
+                shape.setHeading(Angle.fromDegrees(az));
+            } else {
+                var size = 0.25;
+                shape = new Box(position2, size, size, size);
+            }
+
+            shape.setAttributes(mAttributeManager.getComponentEllipsoidAttributes());
+            addRenderable(shape, true, null, null);
+        }
+    }
+
+    private void plotExentricCircles(BGeoInclinometerPoint p, Position position) {
+        if (isPlotLimitReached(p, GraphicRendererItem.EXCENTRIC_CIRCLES, position) || p.ext().getObservationFilteredLast() == null) {
+            return;
+        }
+
+        var positions = createNodes(p, position, p.ext().getValues().lastEntry().getValue().entrySet());
+        plotRod(position, positions);
+
+        for (var node : positions) {
+            var h = 2;
+            var r = 4;
+            var cylinder = new Cylinder(node, h, r);
+            cylinder.setAttributes(mAttributeManager.getComponentEllipsoidAttributes());
+            addRenderable(cylinder, true, null, null);
+        }
+    }
+
+    private void plotRod(Position position, ArrayList<Position> positions) {
+        var max = positions.stream().mapToDouble(p -> p.elevation).max().orElse(0);
+        var path = new Path(WWHelper.positionFromPosition(position, 0), WWHelper.positionFromPosition(position, max + mHeightOffset));
+
+        addRenderable(path, true, null, null);
+    }
+
+    private void plotSnake(BGeoInclinometerPoint p, Position position) {
+        if (isPlotLimitReached(p, GraphicRendererItem.SNAKE, position) || p.ext().getObservationFilteredLast() == null) {
+            return;
+        }
+
+        var positions = createNodes(p, position, p.ext().getValues().lastEntry().getValue().entrySet());
+        plotRod(position, positions);
+
+        for (var node : positions) {
+            var r = 0.25;
+            var ellipsoid = new Ellipsoid(node, r, r, r);
+            ellipsoid.setAttributes(mAttributeManager.getComponentEllipsoidAttributes());
+            addRenderable(ellipsoid, true, null, null);
+        }
+
+        var path = new Path(positions);
+        path.setAttributes(mAttributeManager.getInclinoAttribute());
+        addRenderable(path, true, null, null);
     }
 
     private void plotTrace(BGeoInclinometerPoint p, Position position) {
