@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_format.types;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -22,6 +23,7 @@ import java.util.Objects;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.Range;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.math3.ml.clustering.Clusterable;
 import static org.mapton.butterfly_format.types.BDimension._1d;
 import static org.mapton.butterfly_format.types.BDimension._2d;
 import static org.mapton.butterfly_format.types.BDimension._3d;
@@ -32,7 +34,7 @@ import se.trixon.almond.util.StringHelper;
  *
  * @author Patrik Karlström
  */
-public abstract class BXyzPoint extends BBaseControlPoint {
+public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable {
 
     private String alarm1Id;
     private String alarm2Id;
@@ -45,6 +47,14 @@ public abstract class BXyzPoint extends BBaseControlPoint {
     private Double zeroX;
     private Double zeroY;
     private Double zeroZ;
+    @JsonIgnore
+    private transient Double zeroXScaled;
+    @JsonIgnore
+    private transient Double zeroYScaled;
+    @JsonIgnore
+    private transient Double zeroZScaled;
+    @JsonIgnore
+    private transient double[] point;
 
     public String getAlarm1Id() {
         return alarm1Id;
@@ -66,6 +76,11 @@ public abstract class BXyzPoint extends BBaseControlPoint {
         return numOfDecZ;
     }
 
+    @Override
+    public double[] getPoint() {
+        return new double[]{zeroXScaled, zeroYScaled, zeroZScaled};
+    }
+
     public Double getRollingX() {
         return rollingX;
     }
@@ -82,12 +97,24 @@ public abstract class BXyzPoint extends BBaseControlPoint {
         return zeroX;
     }
 
+    public Double getZeroXScaled() {
+        return zeroXScaled;
+    }
+
     public Double getZeroY() {
         return zeroY;
     }
 
+    public Double getZeroYScaled() {
+        return zeroYScaled;
+    }
+
     public Double getZeroZ() {
         return zeroZ;
+    }
+
+    public Double getZeroZScaled() {
+        return zeroZScaled;
     }
 
     public void setAlarm1Id(String alarm1Id) {
@@ -126,12 +153,24 @@ public abstract class BXyzPoint extends BBaseControlPoint {
         this.zeroX = zeroX;
     }
 
+    public void setZeroXScaled(Double zeroXScaled) {
+        this.zeroXScaled = zeroXScaled;
+    }
+
     public void setZeroY(Double zeroY) {
         this.zeroY = zeroY;
     }
 
+    public void setZeroYScaled(Double zeroYScaled) {
+        this.zeroYScaled = zeroYScaled;
+    }
+
     public void setZeroZ(Double zeroZ) {
         this.zeroZ = zeroZ;
+    }
+
+    public void setZeroZScaled(Double zeroZScaled) {
+        this.zeroZScaled = zeroZScaled;
     }
 
     public abstract class Ext<T extends BXyzPointObservation> extends BBasePoint.Ext<T> {
