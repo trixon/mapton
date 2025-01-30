@@ -19,7 +19,6 @@ import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Cylinder;
-import gov.nasa.worldwind.render.Ellipsoid;
 import gov.nasa.worldwind.render.Path;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -158,16 +157,18 @@ public class GraphicRendererTrace extends GraphicRendererBase {
             addRenderable(path, true, null, sMapObjects);
         }
 
-        var END_SIZE = 0.25;
-        if (nodes.isEmpty()) {
-//            System.out.println(p.getName());
-        } else {
-            var startEllipsoid = new Ellipsoid(nodes.getFirst(), END_SIZE, END_SIZE, END_SIZE);
-            addRenderable(startEllipsoid, true, null, sMapObjects);
+//        var END_SIZE = 0.25;
+//        if (nodes.isEmpty()) {
 
-            var endEllipsoid = new Ellipsoid(nodes.getLast(), END_SIZE, END_SIZE, END_SIZE);
-            addRenderable(endEllipsoid, true, null, sMapObjects);
-        }
+
+////            System.out.println(p.getName());
+//        } else {
+//            var startEllipsoid = new Ellipsoid(nodes.getFirst(), END_SIZE, END_SIZE, END_SIZE);
+//            addRenderable(startEllipsoid, true, null, sMapObjects);
+//
+//            var endEllipsoid = new Ellipsoid(nodes.getLast(), END_SIZE, END_SIZE, END_SIZE);
+//            addRenderable(endEllipsoid, true, null, sMapObjects);
+//        }
     }
 
 }

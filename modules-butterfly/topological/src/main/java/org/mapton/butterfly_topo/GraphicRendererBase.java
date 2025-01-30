@@ -74,8 +74,8 @@ public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicRen
         var scale3dP = MSimpleObjectStorageManager.getInstance().getInteger(ScalePlot3dPSosd.class, 500);
 
         return sPointToPositionMap.computeIfAbsent(p, k -> {
-            var ZERO_SIZE = 1.2;
-            var CURRENT_SIZE = 1.0;
+            var CURRENT_SIZE = 0.001 * scale3dP;
+            var ZERO_SIZE = CURRENT_SIZE * 1.2;
             var zeroZ = p.getZeroZ();
 
             var startPosition = WWHelper.positionFromPosition(position, zeroZ + TopoLayerBundle.getZOffset());
