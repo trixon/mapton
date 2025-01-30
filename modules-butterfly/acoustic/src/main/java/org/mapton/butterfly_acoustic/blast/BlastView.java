@@ -21,6 +21,7 @@ import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.SingleListForm;
 import org.mapton.butterfly_format.types.acoustic.BBlast;
+import org.mapton.core.api.ui.ExportAction;
 import se.trixon.almond.util.Dict;
 
 /**
@@ -36,6 +37,7 @@ public class BlastView {
 
     public BlastView() {
         var actions = Arrays.asList(
+                new ExportAction("Salvor"),
                 ActionUtils.ACTION_SPAN,
                 mManager.geZoomExtentstAction(),
                 mFilter.getInfoPopOver().getAction(),
