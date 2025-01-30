@@ -26,6 +26,7 @@ import org.mapton.butterfly_format.Butterfly;
  */
 public abstract class BBase {
 
+    private Double azimuth;
     @JsonIgnore
     private transient Butterfly butterfly;
     private LocalDateTime dateChanged;
@@ -35,6 +36,10 @@ public abstract class BBase {
     private String origin;
     @JsonIgnore
     private transient final HashMap<Object, Object> values = new HashMap<>();
+
+    public Double getAzimuth() {
+        return azimuth;
+    }
 
     public Butterfly getButterfly() {
         return butterfly;
@@ -75,6 +80,10 @@ public abstract class BBase {
 
     public HashMap<Object, Object> getValues() {
         return values;
+    }
+
+    public void setAzimuth(Double azimuth) {
+        this.azimuth = azimuth;
     }
 
     public void setButterfly(Butterfly butterfly) {

@@ -16,22 +16,32 @@
 package org.mapton.butterfly_format.types.geo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.mapton.butterfly_format.types.BMeasurementMode;
-import org.mapton.butterfly_format.types.BXyzPoint;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import org.mapton.butterfly_format.types.BXyzPointObservation;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class BGeoInclinometerPoint extends BXyzPoint {
+@JsonPropertyOrder({
+    "name",
+    "date",
+    "values",
+    "down",
+    "a",
+    "b",
+    "replacementMeasurement",
+    "zeroMeasurement"
+})
+public class BGeoInclinometerPointObservationPre extends BXyzPointObservation {
 
+    private Double a;
+    private Double b;
+    private Double down;
     @JsonIgnore
     private Ext mExt;
-    private BMeasurementMode mMeasurementMode;
 
-    public BGeoInclinometerPoint() {
-    }
-
+    @Override
     public Ext ext() {
         if (mExt == null) {
             mExt = new Ext();
@@ -40,15 +50,34 @@ public class BGeoInclinometerPoint extends BXyzPoint {
         return mExt;
     }
 
-    public BMeasurementMode getMeasurementMode() {
-        return mMeasurementMode;
+    public Double getA() {
+        return a;
     }
 
-    public void setMeasurementMode(BMeasurementMode measurementMode) {
-        mMeasurementMode = measurementMode;
+    public Double getB() {
+        return b;
     }
 
-    public class Ext extends BXyzPoint.Ext<BGeoInclinometerPointObservation> {
+    public Double getDown() {
+        return down;
+    }
+
+    public void setA(Double a) {
+        this.a = a;
+    }
+
+    public void setB(Double b) {
+        this.b = b;
+    }
+
+    public void setDown(Double down) {
+        this.down = down;
+    }
+
+    public class Ext extends BXyzPointObservation.Ext<BGeoInclinometerPoint> {
+
+        public Ext() {
+        }
 
     }
 

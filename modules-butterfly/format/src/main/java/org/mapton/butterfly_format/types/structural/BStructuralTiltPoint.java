@@ -31,7 +31,6 @@ public class BStructuralTiltPoint extends BXyzPoint {
     private Double zeroTiltX;
     private Double zeroTiltY;
     private Double zeroTiltZ;
-    private Double directionX;
 
     public Ext ext() {
         if (mExt == null) {
@@ -39,10 +38,6 @@ public class BStructuralTiltPoint extends BXyzPoint {
         }
 
         return mExt;
-    }
-
-    public Double getDirectionX() {
-        return directionX;
     }
 
     public Double getZeroTiltX() {
@@ -55,10 +50,6 @@ public class BStructuralTiltPoint extends BXyzPoint {
 
     public Double getZeroTiltZ() {
         return zeroTiltZ;
-    }
-
-    public void setDirectionX(Double directionX) {
-        this.directionX = directionX;
     }
 
     public void setZeroTiltX(Double zeroTiltX) {

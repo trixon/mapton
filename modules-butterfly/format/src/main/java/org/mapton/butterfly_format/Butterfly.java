@@ -18,12 +18,16 @@ package org.mapton.butterfly_format;
 import internal.org.mapton.butterfly_format.monmon.MonmonConfig;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.butterfly_format.io.ImportFromCsv;
 import org.mapton.butterfly_format.types.BAlarm;
 import org.mapton.butterfly_format.types.BAreaActivity;
 import org.mapton.butterfly_format.types.BAreaBase;
+import org.mapton.butterfly_format.types.BBasePointObservation;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.acoustic.BAcousticMeasuringChannel;
 import org.mapton.butterfly_format.types.acoustic.BAcousticMeasuringLimit;
@@ -35,6 +39,8 @@ import org.mapton.butterfly_format.types.geo.BGeoExtensometerPoint;
 import org.mapton.butterfly_format.types.geo.BGeoExtensometerPointObservation;
 import org.mapton.butterfly_format.types.geo.BGeoInclinometerPoint;
 import org.mapton.butterfly_format.types.geo.BGeoInclinometerPointObservation;
+import org.mapton.butterfly_format.types.geo.BGeoInclinometerPointObservation.ObservationItem;
+import org.mapton.butterfly_format.types.geo.BGeoInclinometerPointObservationPre;
 import org.mapton.butterfly_format.types.hydro.BHydroGroundwaterPoint;
 import org.mapton.butterfly_format.types.hydro.BHydroGroundwaterPointObservation;
 import org.mapton.butterfly_format.types.monmon.BMonmon;
@@ -71,6 +77,7 @@ public class Butterfly {
     private final ArrayList<BGeoExtensometerPointObservation> mGeoExtensometersPointsObservations = new ArrayList<>();
     private final ArrayList<BGeoInclinometerPoint> mGeoInclinometerPoints = new ArrayList<>();
     private final ArrayList<BGeoInclinometerPointObservation> mGeoInclinometerPointsObservations = new ArrayList<>();
+    private final ArrayList<BGeoInclinometerPointObservationPre> mGeoInclinometerPointsObservationsPre = new ArrayList<>();
     private final Geotechnical mGeotechnical = new Geotechnical();
     private final Hydro mHydro = new Hydro();
     private final ArrayList<BHydroGroundwaterPoint> mHydroGroundwaterPoints = new ArrayList<>();
@@ -234,8 +241,8 @@ public class Butterfly {
         new ImportFromCsv<BGeoInclinometerPoint>(BGeoInclinometerPoint.class) {
         }.load(sourceDir, "geoInclinometerPoints.csv", mGeoInclinometerPoints);
 
-        new ImportFromCsv<BGeoInclinometerPointObservation>(BGeoInclinometerPointObservation.class) {
-        }.load(sourceDir, "geoInclinometerPointsObservations.csv", mGeoInclinometerPointsObservations);
+        new ImportFromCsv<BGeoInclinometerPointObservationPre>(BGeoInclinometerPointObservationPre.class) {
+        }.load(sourceDir, "geoInclinometerPointsObservations.csv", mGeoInclinometerPointsObservationsPre);
 
     }
 
@@ -280,6 +287,7 @@ public class Butterfly {
 
         structural().postLoad();
         topo().postLoad();
+        geotechnical().postLoad();
         populateMonmon();
     }
 
@@ -334,6 +342,37 @@ public class Butterfly {
             return mGeoInclinometerPointsObservations;
         }
 
+        private void postLoad() {
+            mGeoInclinometerPointsObservations.clear();
+            var nameToObservations = mGeoInclinometerPointsObservationsPre.stream()
+                    .collect(Collectors.groupingBy(BGeoInclinometerPointObservationPre::getName));
+
+            for (var observationsPerPoint : nameToObservations.values()) {
+                var dateToObservations = observationsPerPoint.stream()
+                        .collect(Collectors.groupingBy(BGeoInclinometerPointObservationPre::getDate));
+
+                for (var entry : dateToObservations.entrySet()) {
+                    var o = new BGeoInclinometerPointObservation();
+                    o.setDate(entry.getKey());
+                    for (var o0 : entry.getValue()) {
+                        o.setName(o0.getName());
+                        var item = new ObservationItem();
+                        item.setA(o0.getA() / 1000.0);
+                        item.setB(o0.getB() / 1000.0);
+                        item.setDown(o0.getDown());
+                        item.recalc();
+                        o.getObservationItems().add(item);
+                    }
+
+                    if (o.getObservationItems().size() > 1) {
+                        Collections.sort(o.getObservationItems(), Comparator.comparingDouble(ObservationItem::getDown).reversed());
+                        mGeoInclinometerPointsObservations.add(o);
+                    }
+                }
+            }
+
+            Collections.sort(mGeoInclinometerPointsObservations, Comparator.comparing(BBasePointObservation::getName).thenComparing(Comparator.comparing(BBasePointObservation::getDate)));
+        }
     }
 
     public class Hydro {
