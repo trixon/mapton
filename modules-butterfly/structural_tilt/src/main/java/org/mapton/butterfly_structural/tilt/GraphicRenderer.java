@@ -21,9 +21,7 @@ import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.Box;
 import gov.nasa.worldwind.render.Cylinder;
 import gov.nasa.worldwind.render.Path;
-import gov.nasa.worldwind.render.airspaces.Polygon;
 import java.util.ArrayList;
-import java.util.List;
 import org.apache.commons.lang3.ObjectUtils;
 import org.controlsfx.control.IndexedCheckModel;
 import static org.mapton.butterfly_core.api.BaseGraphicRenderer.PERCENTAGE_ALTITUDE;
@@ -61,7 +59,7 @@ public class GraphicRenderer extends GraphicRendererBase {
         }
 
         if (sCheckModel.isChecked(GraphicRendererItem.AXIS)) {
-            plotAxis(p, position);
+            plotAxis(p, position, DEFAULT_AXIS_LENGTH);
         }
 
         if (sCheckModel.isChecked(GraphicRendererItem.TILT)) {
@@ -80,11 +78,11 @@ public class GraphicRenderer extends GraphicRendererBase {
     private Double calcBearing(BStructuralTiltPoint p) {
         var dX = p.ext().deltaZero().getDeltaX();
         var dY = p.ext().deltaZero().getDeltaY();
-        if (ObjectUtils.anyNull(p.getDirectionX(), dX, dY)) {
+        if (ObjectUtils.anyNull(p.getAzimuth(), dX, dY)) {
             return null;
         }
 
-        var bearing = MathHelper.convertCcwDegreeToCw(p.getDirectionX());
+        var bearing = MathHelper.convertCcwDegreeToCw(p.getAzimuth());
         if (dX == 0.0 && dY == 0.0) {
             return null;
         } else if (dX == 0.0) {
@@ -123,7 +121,7 @@ public class GraphicRenderer extends GraphicRendererBase {
 
         var transDelta = p.ext().deltaZero().getDeltaX();
         if (transDelta != null) {
-            var transBearing = MathHelper.convertCcwDegreeToCw(p.getDirectionX());
+            var transBearing = MathHelper.convertCcwDegreeToCw(p.getAzimuth());
             if (transDelta < 0) {
                 transBearing -= 180.0;
             }
@@ -133,7 +131,7 @@ public class GraphicRenderer extends GraphicRendererBase {
 
         var longDelta = p.ext().deltaZero().getDeltaY();
         if (longDelta != null) {
-            var longBearing = MathHelper.convertCcwDegreeToCw(p.getDirectionX());
+            var longBearing = MathHelper.convertCcwDegreeToCw(p.getAzimuth());
             if (longDelta > 0) {
                 longBearing -= 90.0;
             } else {
@@ -171,63 +169,6 @@ public class GraphicRenderer extends GraphicRendererBase {
         plotPercentageAlarmIndicator(position, alarm, alarmShape, false);
 
         plotPercentageRod(position, p.ext().getAlarmPercent());
-    }
-
-    private void plotAxis(BStructuralTiltPoint p, Position position) {
-        if (p.getDirectionX() == null) {
-            return;
-        }
-
-        try {
-            var bearing = MathHelper.convertCcwDegreeToCw(p.getDirectionX());
-            var length = 2.0;
-            var p2 = WWHelper.movePolar(position, bearing, length);
-            var z = 0.1;
-            position = WWHelper.positionFromPosition(position, z);
-            p2 = WWHelper.positionFromPosition(p2, z);
-            var arrowHeadSize = 0.15;
-
-            //East - Positive X
-            var pathE = new Path(position, p2);
-            pathE.setAttributes(mAttributeManager.getAxisAttributes());
-            addRenderable(pathE, false, null, sMapObjects);
-
-            var x0 = WWHelper.movePolar(p2, bearing + 0, arrowHeadSize);
-            var x1 = WWHelper.movePolar(p2, bearing + 120, arrowHeadSize);
-            var x2 = WWHelper.movePolar(p2, bearing + 240, arrowHeadSize);
-            var xPolygon = new Polygon(List.of(x0, x1, x2));
-            xPolygon.setAltitudes(0.0, 0.1);
-            xPolygon.setAttributes(mAttributeManager.getAxisAttributes());
-            addRenderable(xPolygon, false, null, null);
-
-            //West
-            p2 = WWHelper.movePolar(position, bearing - 180, length);
-            var pathW = new Path(position, p2);
-            pathW.setAttributes(mAttributeManager.getAxisAttributes());
-            addRenderable(pathW, false, null, sMapObjects);
-
-            //North
-            p2 = WWHelper.movePolar(position, bearing - 90, length);
-            var pathN = new Path(position, p2);
-            pathN.setAttributes(mAttributeManager.getAxisAttributes());
-            addRenderable(pathN, false, null, sMapObjects);
-
-            var y0 = WWHelper.movePolar(p2, bearing - 90 + 0, arrowHeadSize);
-            var y1 = WWHelper.movePolar(p2, bearing - 90 + 120, arrowHeadSize);
-            var y2 = WWHelper.movePolar(p2, bearing - 90 + 240, arrowHeadSize);
-            var yPolygon = new Polygon(List.of(y0, y1, y2));
-            yPolygon.setAltitudes(0.0, 0.1);
-            yPolygon.setAttributes(mAttributeManager.getAxisAttributes());
-            addRenderable(yPolygon, false, null, null);
-
-            //South
-            p2 = WWHelper.movePolar(position, bearing + 90, length);
-            var pathS = new Path(position, p2);
-            pathS.setAttributes(mAttributeManager.getAxisAttributes());
-            addRenderable(pathS, false, null, sMapObjects);
-        } catch (Exception e) {
-            //System.err.println(e);
-        }
     }
 
     private void plotTilt(BStructuralTiltPoint p) {

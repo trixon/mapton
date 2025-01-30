@@ -25,7 +25,6 @@ import org.mapton.butterfly_core.api.BaseAttributeManager;
  */
 public class TiltAttributeManager extends BaseAttributeManager {
 
-    private BasicShapeAttributes mAxisAttributes;
     private BasicShapeAttributes mComponentEllipsoidAttributes;
     private BasicShapeAttributes mSurfaceAttributes;
 
@@ -34,20 +33,6 @@ public class TiltAttributeManager extends BaseAttributeManager {
     }
 
     private TiltAttributeManager() {
-    }
-
-    public BasicShapeAttributes getAxisAttributes() {
-        if (mAxisAttributes == null) {
-            mAxisAttributes = new BasicShapeAttributes();
-            mAxisAttributes.setDrawInterior(true);
-            mAxisAttributes.setInteriorMaterial(Material.CYAN);
-            mAxisAttributes.setDrawOutline(true);
-            mAxisAttributes.setOutlineMaterial(Material.CYAN);
-            mAxisAttributes.setOutlineWidth(1.0);
-//            mAxisAttributes.setOutlineOpacity(1.0);
-        }
-
-        return mAxisAttributes;
     }
 
     public BasicShapeAttributes getComponentEllipsoidAttributes() {
