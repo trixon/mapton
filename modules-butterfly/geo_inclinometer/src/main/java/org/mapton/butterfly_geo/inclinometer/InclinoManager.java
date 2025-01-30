@@ -15,12 +15,10 @@
  */
 package org.mapton.butterfly_geo.inclinometer;
 
-import java.awt.Point;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import org.mapton.api.MTemporalRange;
@@ -55,6 +53,15 @@ public class InclinoManager extends BaseManager<BGeoInclinometerPoint> {
 
     @Override
     public Object getObjectProperties(BGeoInclinometerPoint selectedObject) {
+//        System.out.println(selectedObject.getName());
+//        for (var o : selectedObject.ext().getObservationsTimeFiltered()) {
+//            System.out.println(o.getDate());
+//            for (var item : o.getObservationItems()) {
+//                System.out.println("x\t\t%.1f\t%.3f\t%.0f\t%.3f\t%.3f".formatted(item.getDown(), item.getDistance(), item.getAzimuth(), item.getA(), item.getB()));
+//            }
+//
+//        }
+//        System.out.println("");
         return mPropertiesBuilder.build(selectedObject);
     }
 
@@ -149,16 +156,6 @@ public class InclinoManager extends BaseManager<BGeoInclinometerPoint> {
         });
 
         getTimeFilteredItems().setAll(timeFilteredItems);
-
-        timeFilteredItems.forEach(p -> {
-            var dateMap = p.ext().getValues();
-            p.ext().getObservationsTimeFiltered().forEach(o -> {
-                var date = o.getDate();
-                var down = o.getDown();
-                var downMap = dateMap.computeIfAbsent(date, k -> new TreeMap<>());
-                downMap.put(down, new Point.Double(o.getA(), o.getB()));
-            });
-        });
     }
 
     @Override

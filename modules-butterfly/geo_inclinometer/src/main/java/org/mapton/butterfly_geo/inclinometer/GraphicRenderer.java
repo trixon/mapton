@@ -23,20 +23,14 @@ import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Box;
 import gov.nasa.worldwind.render.Cylinder;
 import gov.nasa.worldwind.render.Ellipsoid;
+import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.Path;
 import gov.nasa.worldwind.render.RigidShape;
 import gov.nasa.worldwind.render.Wedge;
-import java.awt.geom.Point2D;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Map;
-import java.util.Set;
 import org.controlsfx.control.IndexedCheckModel;
-import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.geo.BGeoInclinometerPoint;
 import org.mapton.worldwind.api.WWHelper;
-import se.trixon.almond.util.MathHelper;
 
 /**
  *
@@ -45,7 +39,7 @@ import se.trixon.almond.util.MathHelper;
 public class GraphicRenderer extends GraphicRendererBase {
 
     private final InclinoAttributeManager mAttributeManager = InclinoAttributeManager.getInstance();
-    private final double mHeightOffset = 5.0;
+    private final double mHeightOffset = 25.0;
 
     public GraphicRenderer(RenderableLayer layer, RenderableLayer passiveLayer, IndexedCheckModel<GraphicRendererItem> checkModel) {
         super(layer, passiveLayer);
@@ -54,6 +48,13 @@ public class GraphicRenderer extends GraphicRendererBase {
 
     public void plot(BGeoInclinometerPoint p, Position position, ArrayList<AVListImpl> mapObjects) {
         sMapObjects = mapObjects;
+        if (sCheckModel.isChecked(GraphicRendererItem.AXIS)) {
+            Double azimuth = p.getAzimuth();
+            if (azimuth != null) {
+                azimuth -= 90;
+            }
+            plotAxis(p, position, DEFAULT_AXIS_LENGTH * 2, azimuth);
+        }
 
         if (sCheckModel.isChecked(GraphicRendererItem.CIRCLE_SECTORS)) {
             plotCircleSectors(p, position);
@@ -64,67 +65,27 @@ public class GraphicRenderer extends GraphicRendererBase {
         if (sCheckModel.isChecked(GraphicRendererItem.SNAKE)) {
             plotSnake(p, position);
         }
-        if (sCheckModel.isChecked(GraphicRendererItem.ALARM_CONSUMPTION)) {
-            plotAlarmConsumption(p, position);
-        }
-
-        if (sCheckModel.isChecked(GraphicRendererItem.TRACE)) {
-            plotTrace(p, position);
-        }
     }
 
-    private ArrayList<Position> createNodes(BGeoInclinometerPoint p, Position position, Set<Map.Entry<Double, Point2D.Double>> entrySet) {
+    private ArrayList<Position> createPoints(BGeoInclinometerPoint p, Position position) {
         var positions = new ArrayList<Position>();
-        for (var downEntry : entrySet) {
-            var ab = downEntry.getValue();
-            var distance = 200 * Math.hypot(ab.x, ab.y) / 1000;
-            var azimuth = MathHelper.azimuthToDegrees(ab.x, ab.y);
+        positions.add(WWHelper.positionFromPosition(position, mHeightOffset));
+        for (var item : p.ext().getObservationFilteredLast().getObservationItems()) {
+            var distance = 200 * item.getDistance();
+            var azimuth = item.getAzimuth();
+            if (p.getAzimuth() != null) {
+                azimuth = Angle.normalizedDegrees(azimuth + p.getAzimuth());
+            }
+
             var position2 = position;
             if (distance > 0) {
                 position2 = WWHelper.movePolar(position, azimuth, distance);
-
             }
-            positions.add(createPosition(p, position2, downEntry.getKey(), ab));
-        }
-        positions.add(WWHelper.positionFromPosition(position, mHeightOffset));
-        return new ArrayList<>(positions.reversed());
-    }
 
-    private Position createPosition(BGeoInclinometerPoint p, Position position, Double down, Point2D.Double ab) {
-        var height = mHeightOffset + Math.abs(down);
-
-        return WWHelper.positionFromPosition(position, height);
-    }
-
-    private void plotAlarmConsumption(BGeoInclinometerPoint p, Position position) {
-        if (isPlotLimitReached(p, GraphicRendererItem.ALARM_CONSUMPTION, position) || p.ext().getObservationFilteredLast() == null) {
-            return;
+            positions.add(WWHelper.positionFromPosition(position2, mHeightOffset + item.getDown()));
         }
 
-        var o = p.ext().getObservationFilteredLast();
-
-        Integer percentH = p.ext().getAlarmPercent(BComponent.HEIGHT);
-        if (percentH == null) {
-            percentH = 0;
-        }
-
-        int alarmLevel = p.ext().getAlarmLevelHeight(o);
-        var dZ = o.ext().getDeltaZ();
-        var rise = false;
-        if (dZ != null) {
-            rise = Math.signum(o.ext().getDeltaZ()) > 0;
-        }
-        var attrs = mAttributeManager.getComponentTrace1dAttributes(alarmLevel, rise, false);
-        var pos = WWHelper.positionFromPosition(position, PERCENTAGE_ALTITUDE * percentH / 100.0);
-        var box = new Box(pos, PERCENTAGE_SIZE, PERCENTAGE_SIZE, PERCENTAGE_SIZE);
-        box.setAttributes(attrs);
-        addRenderable(box, true, GraphicRendererItem.ALARM_CONSUMPTION, sMapObjects);
-
-        var alarm = p.ext().getAlarm(BComponent.HEIGHT);
-        var alarmShape = new Box(position, PERCENTAGE_SIZE_ALARM, PERCENTAGE_SIZE_ALARM_HEIGHT, PERCENTAGE_SIZE_ALARM);
-        plotPercentageAlarmIndicator(position, alarm, alarmShape, false);
-
-        plotPercentageRod(position, p.ext().getAlarmPercent());
+        return positions;
     }
 
     private void plotCircleSectors(BGeoInclinometerPoint p, Position position) {
@@ -132,20 +93,21 @@ public class GraphicRenderer extends GraphicRendererBase {
             return;
         }
 
-        var positions = createNodes(p, position, p.ext().getValues().lastEntry().getValue().entrySet());
+        var positions = createPoints(p, position);
         plotRod(position, positions);
 
-        for (var downEntry : p.ext().getValues().lastEntry().getValue().entrySet()) {
-            var down = downEntry.getKey();
-            var ab = downEntry.getValue();
+        for (var observationItem : p.ext().getObservationFilteredLast().getObservationItems()) {
             var wedgeHeight = 2.0;
             var angle = 45.0;
-            var wedgeRadius = 200 * Math.hypot(ab.x, ab.y) / 1000;
-            var position2 = WWHelper.positionFromPosition(position, Math.abs(down) + mHeightOffset);
+            var wedgeRadius = 200 * observationItem.getDistance();
+            var position2 = WWHelper.positionFromPosition(position, observationItem.getDown() + mHeightOffset);
 
             RigidShape shape;
             if (wedgeRadius > 0) {
-                var bearing = MathHelper.azimuthToDegrees(ab.x, ab.y);
+                var bearing = observationItem.getAzimuth();
+                if (p.getAzimuth() != null) {
+                    bearing = Angle.normalizedDegrees(bearing + p.getAzimuth());
+                }
                 shape = new Wedge(position2, Angle.fromDegrees(angle), wedgeHeight, wedgeRadius);
                 var az = Angle.normalizedDegrees(bearing - angle / 2);
                 shape.setHeading(Angle.fromDegrees(az));
@@ -164,7 +126,7 @@ public class GraphicRenderer extends GraphicRendererBase {
             return;
         }
 
-        var positions = createNodes(p, position, p.ext().getValues().lastEntry().getValue().entrySet());
+        var positions = createPoints(p, position);
         plotRod(position, positions);
 
         for (var node : positions) {
@@ -177,10 +139,17 @@ public class GraphicRenderer extends GraphicRendererBase {
     }
 
     private void plotRod(Position position, ArrayList<Position> positions) {
-        var max = positions.stream().mapToDouble(p -> p.elevation).max().orElse(0);
-        var path = new Path(WWHelper.positionFromPosition(position, 0), WWHelper.positionFromPosition(position, max + mHeightOffset));
-
+        double topZ = mHeightOffset + 1.0;
+        var path = new Path(WWHelper.positionFromPosition(position, 0), WWHelper.positionFromPosition(position, topZ));
         addRenderable(path, true, null, null);
+
+        var attrs = new BasicShapeAttributes();
+        attrs.setDrawOutline(false);
+        attrs.setInteriorMaterial(Material.BLACK);
+        attrs.setInteriorOpacity(0.2);
+        var cylinder = new Cylinder(WWHelper.positionFromPosition(position, topZ / 2), topZ, 0.010 * 200);
+        cylinder.setAttributes(attrs);
+        addRenderable(cylinder, false, null, null);
     }
 
     private void plotSnake(BGeoInclinometerPoint p, Position position) {
@@ -188,7 +157,7 @@ public class GraphicRenderer extends GraphicRendererBase {
             return;
         }
 
-        var positions = createNodes(p, position, p.ext().getValues().lastEntry().getValue().entrySet());
+        var positions = createPoints(p, position);
         plotRod(position, positions);
 
         for (var node : positions) {
@@ -203,49 +172,4 @@ public class GraphicRenderer extends GraphicRendererBase {
         addRenderable(path, true, null, null);
     }
 
-    private void plotTrace(BGeoInclinometerPoint p, Position position) {
-        if (isPlotLimitReached(p, GraphicRendererItem.TRACE, position)) {
-            return;
-        }
-        var reversedList = p.ext().getObservationsTimeFiltered().reversed();
-        var prevDate = LocalDateTime.now();
-        var altitude = 0.0;
-        var prevHeight = 0.0;
-
-        for (int i = 0; i < reversedList.size(); i++) {
-            var o = reversedList.get(i);
-
-            var timeSpan = ChronoUnit.MINUTES.between(o.getDate(), prevDate);
-            var height = timeSpan / 24000.0;
-            altitude = altitude + height * 0.5 + prevHeight * 0.5;
-            prevDate = o.getDate();
-            prevHeight = height;
-
-            if (o.ext().getDeltaZ() == null) {
-                continue;
-            }
-
-            var pos = WWHelper.positionFromPosition(position, altitude);
-            var maxRadius = 10.0;
-
-            var mScale1dH = 0.02;
-            var dZ = o.ext().getDeltaZ();
-            var radius = Math.min(maxRadius, Math.abs(dZ) * mScale1dH + 0.05);
-            var maximus = radius == maxRadius;
-
-            var cylinder = new Box(pos, radius, height, radius);
-            var alarmLevel = p.ext().getAlarmLevelHeight(o);
-            var rise = Math.signum(dZ) > 0;
-            var attrs = mAttributeManager.getComponentTrace1dAttributes(alarmLevel, rise, maximus);
-
-            if (i == 0 && ChronoUnit.DAYS.between(o.getDate(), LocalDateTime.now()) > 180) {
-                attrs = new BasicShapeAttributes(attrs);
-                attrs.setInteriorOpacity(0.25);
-                attrs.setOutlineOpacity(0.20);
-            }
-
-            cylinder.setAttributes(attrs);
-            addRenderable(cylinder, true, GraphicRendererItem.TRACE, sMapObjects);
-        }
-    }
 }

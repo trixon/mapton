@@ -15,8 +15,8 @@
  */
 package org.mapton.butterfly_geo.inclinometer;
 
+import org.mapton.api.MDict;
 import org.mapton.butterfly_core.api.GraphicRenderItemLimitProvider;
-import se.trixon.almond.util.SDict;
 
 /**
  *
@@ -24,11 +24,10 @@ import se.trixon.almond.util.SDict;
  */
 public enum GraphicRendererItem implements GraphicRenderItemLimitProvider {
 
+    AXIS(MDict.COORDINATE_SYSTEM.toString(), Integer.MAX_VALUE),
     EXCENTRIC_CIRCLES("EXCENTRIC_CIRCLES", Integer.MAX_VALUE),
     SNAKE("SNAKE", Integer.MAX_VALUE),
-    CIRCLE_SECTORS("CIRCLE_SECTORS", Integer.MAX_VALUE),
-    ALARM_CONSUMPTION("Larmförbrukning", Integer.MAX_VALUE),
-    TRACE(SDict.TRACE.toString(), 10_000);
+    CIRCLE_SECTORS("CIRCLE_SECTORS", Integer.MAX_VALUE);
 
     private final String mName;
     private final int mPlotLimit;

@@ -35,7 +35,6 @@ import org.mapton.butterfly_format.types.geo.BGeoInclinometerPoint;
 import org.mapton.ce_jfreechart.api.ChartHelper;
 import se.trixon.almond.util.CircularInt;
 import se.trixon.almond.util.DateHelper;
-import se.trixon.almond.util.MathHelper;
 
 /**
  *
@@ -97,8 +96,8 @@ public class InclinoChartBuilder extends XyzChartBuilder<BGeoInclinometerPoint> 
         var date = "(%s) → %s".formatted(dateFirst, dateLast);
         getLeftSubTextTitle().setText(date);
 
-        var rightTitle = "%s: %s".formatted(p.getAlarm1Id(), p.ext().getDeltaZero());
-        getRightSubTextTitle().setText(rightTitle);
+//        var rightTitle = "%s: %s".formatted(p.getAlarm1Id(), p.ext().getDeltaZero());
+//        getRightSubTextTitle().setText(rightTitle);
     }
 
     @Override
@@ -206,9 +205,9 @@ public class InclinoChartBuilder extends XyzChartBuilder<BGeoInclinometerPoint> 
     private void updateDatasetTemperature(BGeoInclinometerPoint p) {
         p.ext().getObservationsTimeFiltered().forEach(o -> {
             var minute = mChartHelper.convertToMinute(o.getDate());
-            if (MathHelper.isBetween(-40d, +40d, o.getA())) {
-                mTimeSeriesTemperature.addOrUpdate(minute, o.getA());
-            }
+//            if (MathHelper.isBetween(-40d, +40d, o.getA())) {
+//                mTimeSeriesTemperature.addOrUpdate(minute, o.getA());
+//            }
         });
 
         if (!mTimeSeriesTemperature.isEmpty()) {

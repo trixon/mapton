@@ -168,9 +168,9 @@ public enum LabelBy {
         var need = p.getFrequency() == 0 ? "-" : Long.toString(p.ext().getMeasurementUntilNext(ChronoUnit.DAYS));
         return need;
     }),
-    VALUE_DELTA_ZERO(LabelByCategories.VALUE, "Δ₀", p -> {
-        return p.ext().getDeltaZero();
-    }),
+    //    VALUE_DELTA_ZERO(LabelByCategories.VALUE, "Δ₀", p -> {
+    //        return p.ext().getDeltaZero();
+    //    }),
     VALUE_DELTA_ZERO_Z(LabelByCategories.VALUE, "ΔR₀", p -> {
         String deltaRAbsolute = p.ext().deltaZero().getDeltaZAbsolute(1);
         return StringUtils.replace(deltaRAbsolute, "Z", "R");

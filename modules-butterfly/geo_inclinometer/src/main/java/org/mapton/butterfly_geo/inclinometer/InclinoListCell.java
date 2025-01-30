@@ -80,16 +80,16 @@ class InclinoListCell extends ListCell<BGeoInclinometerPoint> {
         }
 
         var dateRolling = StringHelper.toString(p.getDateRolling(), "NOVALUE");
-        var desc3 = "%s: %s".formatted(dateRolling, p.ext().getDeltaRolling());
+//        var desc3 = "%s: %s".formatted(dateRolling, p.ext().getDeltaRolling());
 
         var dateZero = StringHelper.toString(p.getDateZero(), "NOVALUE");
-        var desc4 = "%s: %s".formatted(dateZero, p.ext().getDeltaZero());
+//        var desc4 = "%s: %s".formatted(dateZero, p.ext().getDeltaZero());
         mAlarmIndicator.update(p);
         mHeaderLabel.setText(header);
         mDesc1Label.setText(desc1);
         mDesc2Label.setText(dateSB.toString());
-        mDesc3Label.setText(desc3);
-        mDesc4Label.setText(desc4);
+//        mDesc3Label.setText(desc3);
+//        mDesc4Label.setText(desc4);
 
         mHeaderLabel.setTooltip(new Tooltip("Add custom tooltip: " + p.getName()));
         mTooltip.setText("TODO");

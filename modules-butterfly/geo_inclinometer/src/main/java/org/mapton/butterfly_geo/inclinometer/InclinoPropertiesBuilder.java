@@ -45,6 +45,8 @@ public class InclinoPropertiesBuilder extends BPropertiesBuilder<BGeoInclinomete
         );
         propertyMap.putAll(populateDates(p, dateParams));
 //******************************************************************************
+        propertyMap.put(getCatKeyNum("TEST", "az"), p.getAzimuth());
+
 //******************************************************************************
 //******************************************************************************
 //******************************************************************************
