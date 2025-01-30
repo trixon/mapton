@@ -23,10 +23,13 @@ import gov.nasa.worldwind.render.Cylinder;
 import gov.nasa.worldwind.render.Path;
 import gov.nasa.worldwind.render.Renderable;
 import gov.nasa.worldwind.render.RigidShape;
+import gov.nasa.worldwind.render.airspaces.Polygon;
 import java.util.ArrayList;
+import java.util.List;
 import org.mapton.butterfly_format.types.BAlarm;
 import org.mapton.butterfly_format.types.BBase;
 import org.mapton.worldwind.api.WWHelper;
+import se.trixon.almond.util.MathHelper;
 
 /**
  *
@@ -34,6 +37,7 @@ import org.mapton.worldwind.api.WWHelper;
  */
 public abstract class BaseGraphicRenderer<T extends Enum<T>, U extends BBase> {
 
+    public static final double DEFAULT_AXIS_LENGTH = 2.0;
     public static final double PERCENTAGE_ALTITUDE = 50.0;
     public static final double PERCENTAGE_SIZE = 1.5;
     public static final double PERCENTAGE_SIZE_ALARM = PERCENTAGE_SIZE * 1.2;
@@ -74,6 +78,66 @@ public abstract class BaseGraphicRenderer<T extends Enum<T>, U extends BBase> {
 
     public PlotLimiter getPlotLimiter() {
         return mPlotLimiter;
+    }
+
+    public void plotAxis(BBase p, Position position, double length) {
+        plotAxis(p, position, length, p.getAzimuth());
+    }
+
+    public void plotAxis(BBase p, Position position, double length, Double azimuth) {
+        if (azimuth == null) {
+            return;
+        }
+
+        try {
+            var bearing = MathHelper.convertCcwDegreeToCw(p.getAzimuth() - 90.0);
+            var p2 = WWHelper.movePolar(position, bearing, length);
+            var z = 0.1;
+            position = WWHelper.positionFromPosition(position, z);
+            p2 = WWHelper.positionFromPosition(p2, z);
+            var arrowHeadSize = 0.15;
+
+            //East - Positive X
+            var pathE = new Path(position, p2);
+            pathE.setAttributes(mAttributeManager.getAxisAttributes());
+            addRenderable(pathE, false, null, null);
+
+            var x0 = WWHelper.movePolar(p2, bearing + 0, arrowHeadSize);
+            var x1 = WWHelper.movePolar(p2, bearing + 120, arrowHeadSize);
+            var x2 = WWHelper.movePolar(p2, bearing + 240, arrowHeadSize);
+            var xPolygon = new Polygon(List.of(x0, x1, x2));
+            xPolygon.setAltitudes(0.0, 0.1);
+            xPolygon.setAttributes(mAttributeManager.getAxisAttributes());
+            addRenderable(xPolygon, false, null, null);
+
+            //West
+            p2 = WWHelper.movePolar(position, bearing - 180, length);
+            var pathW = new Path(position, p2);
+            pathW.setAttributes(mAttributeManager.getAxisAttributes());
+            addRenderable(pathW, false, null, null);
+
+            //North
+            p2 = WWHelper.movePolar(position, bearing - 90, length);
+            var pathN = new Path(position, p2);
+            pathN.setAttributes(mAttributeManager.getAxisAttributes());
+            addRenderable(pathN, false, null, null);
+
+            var y0 = WWHelper.movePolar(p2, bearing - 90 + 0, arrowHeadSize);
+            var y1 = WWHelper.movePolar(p2, bearing - 90 + 120, arrowHeadSize);
+            var y2 = WWHelper.movePolar(p2, bearing - 90 + 240, arrowHeadSize);
+            var yPolygon = new Polygon(List.of(y0, y1, y2));
+            yPolygon.setAltitudes(0.0, 0.1);
+            yPolygon.setAttributes(mAttributeManager.getAxisAttributes());
+            addRenderable(yPolygon, false, null, null);
+
+            //South
+            p2 = WWHelper.movePolar(position, bearing + 90, length);
+            var pathS = new Path(position, p2);
+            pathS.setAttributes(mAttributeManager.getAxisAttributes());
+            addRenderable(pathS, false, null, null);
+        } catch (Exception e) {
+            //System.err.println(e);
+        }
     }
 
     public void plotPercentageAlarmIndicator(Position position, BAlarm alarm, RigidShape rigidShape, boolean rising) {

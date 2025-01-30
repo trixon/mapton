@@ -33,6 +33,7 @@ public abstract class BaseAttributeManager {
     private BasicShapeAttributes[] mAlarmInteriorAttributes;
     private BasicShapeAttributes mAlarmLimitAttributes;
     private BasicShapeAttributes[] mAlarmOutlineAttributes;
+    private BasicShapeAttributes mAxisAttributes;
     private BasicShapeAttributes mComponentGroundPathAttributes;
     private BasicShapeAttributes mComponentGroundPathEvenAttributes;
     private BasicShapeAttributes mComponentGroundPathOddAttributes;
@@ -86,6 +87,20 @@ public abstract class BaseAttributeManager {
         }
 
         return mAlarmOutlineAttributes[alarmLevel + 1];
+    }
+
+    public BasicShapeAttributes getAxisAttributes() {
+        if (mAxisAttributes == null) {
+            mAxisAttributes = new BasicShapeAttributes();
+            mAxisAttributes.setDrawInterior(true);
+            mAxisAttributes.setInteriorMaterial(Material.CYAN);
+            mAxisAttributes.setDrawOutline(true);
+            mAxisAttributes.setOutlineMaterial(Material.CYAN);
+            mAxisAttributes.setOutlineWidth(1.0);
+//            mAxisAttributes.setOutlineOpacity(1.0);
+        }
+
+        return mAxisAttributes;
     }
 
     public BasicShapeAttributes getComponentGroundPathAttributes() {
