@@ -106,6 +106,12 @@ public class BTopoControlPoint extends BXyzPoint {
             Ext.this.getObservationFilteredFirst();
         }
 
+        public BTopoControlPointObservation getReferenceObservation() {
+            return getObservationsTimeFiltered().stream()
+                    .filter(o -> o.isZeroMeasurement())
+                    .findFirst().orElse(getObservationsTimeFiltered().getFirst());
+        }
+
 //        public boolean firstIsZero() {
 //            if (getObservationsAllRaw().isEmpty()) {
 //                return false;

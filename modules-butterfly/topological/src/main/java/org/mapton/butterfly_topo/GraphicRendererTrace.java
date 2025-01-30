@@ -121,7 +121,7 @@ public class GraphicRendererTrace extends GraphicRendererBase {
         if (ObjectUtils.anyNull(p.getZeroX(), p.getZeroY(), p.getZeroZ())) {
             return;
         }
-        var o1 = p.ext().getObservationsTimeFiltered().getFirst();
+        var o1 = p.ext().getReferenceObservation();
 
         var collectedNodes = p.ext().getObservationsTimeFiltered().stream()
                 .filter(o -> ObjectUtils.allNotNull(o.ext().getDeltaX(), o.ext().getDeltaY(), o.ext().getDeltaZ(), o1.getMeasuredX(), o1.getMeasuredY(), o1.getMeasuredZ()))
