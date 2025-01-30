@@ -34,6 +34,7 @@ import java.util.HashSet;
 import java.util.List;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.math3.ml.clustering.DBSCANClusterer;
+import org.apache.commons.math3.ml.distance.DistanceMeasure;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import static org.mapton.butterfly_topo.GraphicRendererBase.sCheckModel;
@@ -48,10 +49,20 @@ import se.trixon.almond.util.ext.GrahamScan;
  */
 public class GraphicRendererGroup extends GraphicRendererBase {
 
+    private final DistanceMeasure mDistanceMeasure;
     private final HashSet<BTopoControlPoint> mPoints = new HashSet<>();
 
     public GraphicRendererGroup(RenderableLayer layer, RenderableLayer passiveLayer) {
         super(layer, passiveLayer);
+        mDistanceMeasure = (DistanceMeasure) (double[] a, double[] b) -> {
+            var plane = Math.hypot(b[1] - a[1], b[0] - a[0]);
+            var height = Math.abs(b[2] - a[2]);
+            if (height < 1.0) {
+                return Double.MAX_VALUE;
+            } else {
+                return plane;
+            }
+        };
     }
 
     public void plot(BTopoControlPoint p, Position position) {
@@ -128,14 +139,28 @@ public class GraphicRendererGroup extends GraphicRendererBase {
     }
 
     private void plotDeformationPlaneAltitudes() {
-        //Manage noise, scale data
-        var epsilon = 1.5;
-        var minPoints = 2;
-        var dbscan = new DBSCANClusterer<BTopoControlPoint>(epsilon, minPoints);
+        var epsilon = 2.5;
+        var minPoints = 1;
+        var dbscan = new DBSCANClusterer<BTopoControlPoint>(epsilon, minPoints, mDistanceMeasure);
         var filteredPoints = mPoints.stream()
                 .filter(p -> p.getDimension() == BDimension._3d)
                 .filter(p -> ObjectUtils.allNotNull(p.getZeroX(), p.getZeroY(), p.getZeroZ()))
                 .toList();
+
+        if (filteredPoints.isEmpty()) {
+            return;
+        }
+
+        var minX = filteredPoints.stream().mapToDouble(p -> p.getZeroX()).min().getAsDouble();
+        var minY = filteredPoints.stream().mapToDouble(p -> p.getZeroY()).min().getAsDouble();
+        var minZ = filteredPoints.stream().mapToDouble(p -> p.getZeroZ()).min().getAsDouble();
+
+        filteredPoints.forEach(p -> {
+            p.setZeroXScaled(p.getZeroX() - minX);
+            p.setZeroYScaled(p.getZeroY() - minY);
+            p.setZeroZScaled(p.getZeroZ() - minZ);
+        });
+
         var clusters = dbscan.cluster(filteredPoints);
         var labelAttributes = mAttributeManager.getLabelPlacemarkAttributes();
         labelAttributes.setLabelOffset(Offset.CENTER);
@@ -195,7 +220,7 @@ public class GraphicRendererGroup extends GraphicRendererBase {
                 placemark.setAttributes(labelAttributes);
                 placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(mAttributeManager.getLabelPlacemarkAttributes(), 1.5));
                 placemark.setLabelText(p.getName());
-                addRenderable(placemark, false, null, null);
+                //addRenderable(placemark, false, null, null);
             }
 
             var path = new Path(pathPositions);

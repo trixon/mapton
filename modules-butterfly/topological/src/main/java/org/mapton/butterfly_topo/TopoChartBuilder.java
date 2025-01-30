@@ -70,7 +70,11 @@ public class TopoChartBuilder extends XyzChartBuilder<BTopoControlPoint> {
             dateAxis.setAutoRange(true);
             updateDataset(p);
 //            dateAxis.setRange(DateHelper.convertToDate(mTemporalManager.getLowDate()), DateHelper.convertToDate(mTemporalManager.getHighDate()));
-            dateAxis.setRange(mDateNull, mDateEnd);
+            try {
+                dateAxis.setRange(mDateNull, mDateEnd);
+            } catch (IllegalArgumentException e) {
+                System.out.println("%s: Bad chart plot range".formatted(p.getName()));
+            }
             plot.clearRangeMarkers();
             plotAlarmIndicators(p);
 
