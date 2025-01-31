@@ -16,6 +16,7 @@
 package org.mapton.butterfly_geo.inclinometer;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -27,6 +28,7 @@ import javafx.scene.shape.Circle;
 import javafx.util.Duration;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.butterfly_format.types.geo.BGeoInclinometerPoint;
+import org.mapton.butterfly_format.types.geo.BGeoInclinometerPointObservation.ObservationItem;
 import se.trixon.almond.util.StringHelper;
 import se.trixon.almond.util.fx.FxHelper;
 
@@ -79,17 +81,24 @@ class InclinoListCell extends ListCell<BGeoInclinometerPoint> {
             }
         }
 
-        var dateRolling = StringHelper.toString(p.getDateRolling(), "NOVALUE");
-//        var desc3 = "%s: %s".formatted(dateRolling, p.ext().getDeltaRolling());
-
         var dateZero = StringHelper.toString(p.getDateZero(), "NOVALUE");
-//        var desc4 = "%s: %s".formatted(dateZero, p.ext().getDeltaZero());
+        String desc4 = "";
+        var lastObservation = p.ext().getObservationFilteredLast();
+
+        if (lastObservation != null) {
+            var maxItem = lastObservation.getObservationItems().stream()
+                    .max(Comparator.comparingDouble(ObservationItem::getDistance));
+            if (maxItem.isPresent()) {
+                var item = maxItem.get();
+                desc4 = "%.1fmm @ %.1fm".formatted(item.getDistance() * 1000, item.getDown());
+            }
+        }
         mAlarmIndicator.update(p);
         mHeaderLabel.setText(header);
         mDesc1Label.setText(desc1);
         mDesc2Label.setText(dateSB.toString());
-//        mDesc3Label.setText(desc3);
-//        mDesc4Label.setText(desc4);
+        mDesc3Label.setText(dateZero);
+        mDesc4Label.setText(desc4);
 
         mHeaderLabel.setTooltip(new Tooltip("Add custom tooltip: " + p.getName()));
         mTooltip.setText("TODO");

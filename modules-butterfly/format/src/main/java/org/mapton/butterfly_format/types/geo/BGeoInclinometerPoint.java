@@ -16,6 +16,7 @@
 package org.mapton.butterfly_format.types.geo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.TreeSet;
 import org.mapton.butterfly_format.types.BMeasurementMode;
 import org.mapton.butterfly_format.types.BXyzPoint;
 
@@ -50,6 +51,16 @@ public class BGeoInclinometerPoint extends BXyzPoint {
 
     public class Ext extends BXyzPoint.Ext<BGeoInclinometerPointObservation> {
 
+        public TreeSet<Double> getDepths() {
+            var set = new TreeSet<Double>();
+            for (var o : getObservationsTimeFiltered()) {
+                for (var oi : o.getObservationItems()) {
+                    set.add(oi.getDown());
+                }
+            }
+
+            return set;
+        }
     }
 
 }

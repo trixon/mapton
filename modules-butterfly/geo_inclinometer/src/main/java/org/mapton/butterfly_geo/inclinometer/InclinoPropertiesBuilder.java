@@ -15,9 +15,16 @@
  */
 package org.mapton.butterfly_geo.inclinometer;
 
+import gov.nasa.worldwind.geom.Angle;
+import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
+import org.mapton.butterfly_alarm.api.AlarmHelper;
 import org.mapton.butterfly_core.api.BPropertiesBuilder;
+import org.mapton.butterfly_format.types.BComponent;
+import org.mapton.butterfly_format.types.BXyzPoint;
 import org.mapton.butterfly_format.types.geo.BGeoInclinometerPoint;
+import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.StringHelper;
 
 /**
  *
@@ -45,7 +52,43 @@ public class InclinoPropertiesBuilder extends BPropertiesBuilder<BGeoInclinomete
         );
         propertyMap.putAll(populateDates(p, dateParams));
 //******************************************************************************
-        propertyMap.put(getCatKeyNum("TEST", "az"), p.getAzimuth());
+//        Double azimuth = null;
+//        try {
+//            var o = p.ext().getObservationsTimeFiltered().getLast();
+//            azimuth = o.ext().getBearing();
+//        } catch (Exception e) {
+//        }
+        var cat = "CUSTOM";
+        propertyMap.put(getCatKeyNum(cat, Dict.BEARING.toString()), StringHelper.round(p.getAzimuth(), 0));
+        var lastObservation = p.ext().getObservationFilteredLast();
+
+        if (lastObservation != null) {
+            for (var o : lastObservation.getObservationItems()) {
+                var azimuth = Angle.normalizedDegrees(o.getAzimuth() + p.getAzimuth());
+                if (azimuth < 0) {
+                    azimuth += 360;
+                }
+                var value = "%smm :: %.0f°".formatted(StringHelper.round(o.getDistance() * 1000, 1), azimuth);
+                propertyMap.put(getCatKeyNum(cat, "%.1f".formatted(o.getDown())), value);
+            }
+        }
+
+        var measParams = new MeasParams<BXyzPoint>(
+                0.0,
+                p.ext().getMeasurementUntilNext(ChronoUnit.DAYS),
+                p.ext().getMeasurementAge(ChronoUnit.DAYS),
+                p.ext().getNumOfObservationsFiltered(),
+                p.ext().getNumOfObservations(),
+                p.ext().firstIsZero(),
+                p.ext().getObservationsAllRaw().stream().filter(obs -> obs.isReplacementMeasurement()).count(),
+                AlarmHelper.getInstance().getLimitsAsString(BComponent.HEIGHT, p),
+                AlarmHelper.getInstance().getLimitsAsString(BComponent.PLANE, p),
+                p.ext().getAlarmPercentString(p.ext()),
+                p.ext().getAlarmLevelAge(),
+                p.ext().deltaRolling().getDelta(3),
+                p.ext().deltaZero().getDelta(3)
+        );
+//        propertyMap.putAll(populateMeas(p, measParams));
 
 //******************************************************************************
 //******************************************************************************

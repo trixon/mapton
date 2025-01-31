@@ -17,6 +17,7 @@ package org.mapton.butterfly_geo.inclinometer;
 
 import org.mapton.api.MDict;
 import org.mapton.butterfly_core.api.GraphicRenderItemLimitProvider;
+import se.trixon.almond.util.Dict;
 
 /**
  *
@@ -25,9 +26,10 @@ import org.mapton.butterfly_core.api.GraphicRenderItemLimitProvider;
 public enum GraphicRendererItem implements GraphicRenderItemLimitProvider {
 
     AXIS(MDict.COORDINATE_SYSTEM.toString(), Integer.MAX_VALUE),
-    EXCENTRIC_CIRCLES("EXCENTRIC_CIRCLES", Integer.MAX_VALUE),
-    SNAKE("SNAKE", Integer.MAX_VALUE),
-    CIRCLE_SECTORS("CIRCLE_SECTORS", Integer.MAX_VALUE);
+    CIRCLE(Dict.Geometry.CIRCLE.toString(), Integer.MAX_VALUE),
+    PATH(Dict.Geometry.PATH.toString(), Integer.MAX_VALUE),
+    VALUE(Dict.VALUE.toString(), Integer.MAX_VALUE),
+    WEDGE(Dict.Geometry.WEDGE.toString(), Integer.MAX_VALUE);
 
     private final String mName;
     private final int mPlotLimit;
