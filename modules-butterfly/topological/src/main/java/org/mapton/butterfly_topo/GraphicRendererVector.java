@@ -25,8 +25,8 @@ import org.mapton.api.MSimpleObjectStorageManager;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
-import org.mapton.butterfly_topo.sos.ScalePlot3dHSosd;
-import org.mapton.butterfly_topo.sos.ScalePlot3dPSosd;
+import org.mapton.butterfly_core.api.sos.ScalePlot3dHSosi;
+import org.mapton.butterfly_core.api.sos.ScalePlot3dPSosi;
 import org.mapton.worldwind.api.WWHelper;
 import se.trixon.almond.util.MathHelper;
 
@@ -44,8 +44,8 @@ public class GraphicRendererVector extends GraphicRendererBase {
     }
 
     public void plot(BTopoControlPoint p, Position position) {
-        mScale3dH = MSimpleObjectStorageManager.getInstance().getInteger(ScalePlot3dHSosd.class, 500);
-        mScale3dP = MSimpleObjectStorageManager.getInstance().getInteger(ScalePlot3dPSosd.class, 500);
+        mScale3dH = MSimpleObjectStorageManager.getInstance().getInteger(ScalePlot3dHSosi.class, 500);
+        mScale3dP = MSimpleObjectStorageManager.getInstance().getInteger(ScalePlot3dPSosi.class, 500);
 
         var dimension = p.getDimension();
 

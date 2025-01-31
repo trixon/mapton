@@ -20,8 +20,8 @@ import java.util.LinkedHashMap;
 import org.mapton.butterfly_alarm.api.AlarmHelper;
 import org.mapton.butterfly_core.api.BPropertiesBuilder;
 import org.mapton.butterfly_format.types.BComponent;
+import org.mapton.butterfly_format.types.BXyzPoint;
 import org.mapton.butterfly_format.types.structural.BStructuralTiltPoint;
-import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 
 /**
  *
@@ -46,7 +46,7 @@ public class TiltPropertiesBuilder extends BPropertiesBuilder<BStructuralTiltPoi
             azimuth = o.ext().getBearing();
         } catch (Exception e) {
         }
-        var measParams = new MeasParams<BTopoControlPoint>(
+        var measParams = new MeasParams<BXyzPoint>(
                 azimuth,
                 p.ext().getMeasurementUntilNext(ChronoUnit.DAYS),
                 p.ext().getMeasurementAge(ChronoUnit.DAYS),

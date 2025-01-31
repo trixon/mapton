@@ -32,7 +32,7 @@ import gov.nasa.worldwind.render.Wedge;
 import java.util.ArrayList;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.MSimpleObjectStorageManager;
-import org.mapton.butterfly_core.api.sos.ScalePlot3dPSosd;
+import org.mapton.butterfly_core.api.sos.ScalePlot3dPSosi;
 import org.mapton.butterfly_format.types.geo.BGeoInclinometerPoint;
 import org.mapton.worldwind.api.WWHelper;
 
@@ -58,7 +58,7 @@ public class GraphicRenderer extends GraphicRendererBase {
             return;
         }
         sMapObjects = mapObjects;
-        mScale3dP = MSimpleObjectStorageManager.getInstance().getInteger(ScalePlot3dPSosd.class, ScalePlot3dPSosd.DEFAULT_VALUE);
+        mScale3dP = MSimpleObjectStorageManager.getInstance().getInteger(ScalePlot3dPSosi.class, ScalePlot3dPSosi.DEFAULT_VALUE);
         mScaleIndicatorSize = 0.010 * mScale3dP;
 
         if (sCheckModel.isChecked(GraphicRendererItem.AXIS)) {

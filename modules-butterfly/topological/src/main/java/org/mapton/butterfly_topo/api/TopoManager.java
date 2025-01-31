@@ -30,7 +30,7 @@ import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.topo.BTopoControlPointObservation;
 import org.mapton.butterfly_topo.TopoChartBuilder;
 import org.mapton.butterfly_topo.TopoPropertiesBuilder;
-import org.mapton.butterfly_topo.sos.ScalePlot3dHSosd;
+import org.mapton.butterfly_core.api.sos.ScalePlot3dHSosi;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.CollectionHelper;
 
@@ -156,7 +156,7 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
             });
         });
 
-        var mScale3dH = MSimpleObjectStorageManager.getInstance().getInteger(ScalePlot3dHSosd.class, 500);
+        var mScale3dH = MSimpleObjectStorageManager.getInstance().getInteger(ScalePlot3dHSosi.class, 500);
 
         mMinimumZscaled = Double.MAX_VALUE;
         for (var p : timeFilteredItems) {

@@ -13,18 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_topo.sos;
+package org.mapton.butterfly_core.api.sos;
 
-import org.mapton.api.MSimpleObjectStorageDouble;
+import org.mapton.api.MSimpleObjectStorageInteger;
+import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
  * @author Patrik Karlström
  */
-public abstract class ScalePlot extends MSimpleObjectStorageDouble.Misc {
+@ServiceProvider(service = MSimpleObjectStorageInteger.Misc.class)
+public class ScalePlot3dHSosi extends ScalePlot {
 
-    public ScalePlot() {
-        setGroup("Butterfly");
+    public ScalePlot3dHSosi() {
+        setName("Butterfly/Plot/Scale 3d H");
+        setTooltipText("tooltipText");
     }
 
 }

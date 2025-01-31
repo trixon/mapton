@@ -26,11 +26,11 @@ import java.util.ArrayList;
 import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.api.MOptions;
 import org.mapton.api.MSimpleObjectStorageManager;
+import org.mapton.butterfly_core.api.sos.ScalePlot1dHSosi;
+import org.mapton.butterfly_core.api.sos.ScalePlot3dHSosi;
+import org.mapton.butterfly_core.api.sos.ScalePlot3dPSosi;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
-import org.mapton.butterfly_topo.sos.ScalePlot1dHSosd;
-import org.mapton.butterfly_topo.sos.ScalePlot3dHSosd;
-import org.mapton.butterfly_topo.sos.ScalePlot3dPSosd;
 import org.mapton.worldwind.api.WWHelper;
 import se.trixon.almond.util.MathHelper;
 
@@ -49,9 +49,9 @@ public class GraphicRendererTrace extends GraphicRendererBase {
     }
 
     public void plot(BTopoControlPoint p, Position position) {
-        mScale1dH = MSimpleObjectStorageManager.getInstance().getInteger(ScalePlot1dHSosd.class, 500);
-        mScale3dH = MSimpleObjectStorageManager.getInstance().getInteger(ScalePlot3dHSosd.class, 500);
-        mScale3dP = MSimpleObjectStorageManager.getInstance().getInteger(ScalePlot3dPSosd.class, 500);
+        mScale1dH = MSimpleObjectStorageManager.getInstance().getInteger(ScalePlot1dHSosi.class, ScalePlot1dHSosi.DEFAULT_VALUE);
+        mScale3dH = MSimpleObjectStorageManager.getInstance().getInteger(ScalePlot3dHSosi.class, ScalePlot3dHSosi.DEFAULT_VALUE);
+        mScale3dP = MSimpleObjectStorageManager.getInstance().getInteger(ScalePlot3dPSosi.class, ScalePlot3dPSosi.DEFAULT_VALUE);
 
         var dimension = p.getDimension();
 

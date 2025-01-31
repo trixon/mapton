@@ -30,8 +30,8 @@ import org.mapton.butterfly_core.api.BaseGraphicRenderer;
 import org.mapton.butterfly_core.api.PlotLimiter;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_topo.api.TopoManager;
-import org.mapton.butterfly_topo.sos.ScalePlot3dHSosd;
-import org.mapton.butterfly_topo.sos.ScalePlot3dPSosd;
+import org.mapton.butterfly_core.api.sos.ScalePlot3dHSosi;
+import org.mapton.butterfly_core.api.sos.ScalePlot3dPSosi;
 import org.mapton.worldwind.api.WWHelper;
 import se.trixon.almond.util.MathHelper;
 
@@ -70,8 +70,8 @@ public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicRen
     }
 
     public Position[] plot3dOffsetPole(BTopoControlPoint p, Position position, boolean plotEnabled) {
-        var scale3dH = MSimpleObjectStorageManager.getInstance().getInteger(ScalePlot3dHSosd.class, 500);
-        var scale3dP = MSimpleObjectStorageManager.getInstance().getInteger(ScalePlot3dPSosd.class, 500);
+        var scale3dH = MSimpleObjectStorageManager.getInstance().getInteger(ScalePlot3dHSosi.class, 500);
+        var scale3dP = MSimpleObjectStorageManager.getInstance().getInteger(ScalePlot3dPSosi.class, 500);
 
         return sPointToPositionMap.computeIfAbsent(p, k -> {
             var CURRENT_SIZE = 0.001 * scale3dP;
