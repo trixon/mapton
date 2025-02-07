@@ -46,6 +46,9 @@ public enum BlastLabelBy {
     MISC_GROUP(Strings.CAT_MISC, Dict.GROUP.toString(), p -> {
         return Objects.toString(p.getGroup(), "NODATA");
     }),
+    MISC_EXT_ID(Strings.CAT_MISC, "Ext.id", p -> {
+        return p.getExternalId();
+    }),
     MISC_Z(Strings.CAT_MISC, "Z", p -> {
         return MathHelper.convertDoubleToString(p.getZ(), 1);
     });

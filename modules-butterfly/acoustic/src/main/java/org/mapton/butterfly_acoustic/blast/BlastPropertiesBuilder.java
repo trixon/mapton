@@ -40,6 +40,7 @@ public class BlastPropertiesBuilder extends PropertiesBuilder<BBlast> {
         var cat1 = Dict.BASIC.toString();
         var date = Objects.toString(DateHelper.toDateString(p.getDateTime()), "-");
 
+        propertyMap.put(getCatKey(cat1, "Ext.id"), p.getExternalId());
         propertyMap.put(getCatKey(cat1, Dict.NAME.toString()), p.getName());
         propertyMap.put(getCatKey(cat1, Dict.GROUP.toString()), p.getGroup());
         propertyMap.put(getCatKey(cat1, Dict.COMMENT.toString()), p.getComment());
