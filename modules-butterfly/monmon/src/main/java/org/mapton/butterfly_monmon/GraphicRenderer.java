@@ -21,6 +21,7 @@ import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.Ellipsoid;
 import gov.nasa.worldwind.render.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.MLatLon;
 import org.mapton.butterfly_format.types.monmon.BMonmon;
@@ -36,13 +37,20 @@ public class GraphicRenderer {
     private final MonAttributeManager mAttributeManager = MonAttributeManager.getInstance();
     private final IndexedCheckModel<GraphicRendererItem> mCheckModel;
     private final RenderableLayer mLayer;
+    private Double zOffset;
 
     public GraphicRenderer(RenderableLayer layer, IndexedCheckModel<GraphicRendererItem> checkModel) {
         mLayer = layer;
         mCheckModel = checkModel;
     }
 
-    public void plot(BMonmon mon, Position position, int stationIndex, ArrayList<AVListImpl> mapObjects) {
+    public void plot(BMonmon mon, Position position, int stationIndex, HashMap<String, Double> pointToZ, ArrayList<AVListImpl> mapObjects) {
+        zOffset = 3.0;
+        var minZ = pointToZ.get(mon.getStationName());
+        if (minZ < 0) {
+            zOffset += Math.abs(minZ);
+        }
+
         mapObjects.add(plotGroundConnector(mon, 0.0));
         if (mon.isChild()) {
             if (null != TopoManager.getInstance().getAllItemsMap().get(mon.getStationName())) {
@@ -67,7 +75,7 @@ public class GraphicRenderer {
 
     private AVListImpl plotGroundConnector(BMonmon mon, double groundZ) {
         var p0 = WWHelper.positionFromLatLon(new MLatLon(mon.getLat(), mon.getLon()), groundZ);
-        var p1 = WWHelper.positionFromLatLon(new MLatLon(mon.getLat(), mon.getLon()), mon.getControlPoint().getZeroZ());
+        var p1 = WWHelper.positionFromLatLon(new MLatLon(mon.getLat(), mon.getLon()), mon.getControlPoint().getZeroZ() + zOffset);
         var path = new Path(p0, p1);
         path.setAttributes(mAttributeManager.getGroundConnectorAttributes());
         mLayer.addRenderable(path);
@@ -79,8 +87,8 @@ public class GraphicRenderer {
         var stationName = mon.getStationName();
         var p = mon.getControlPoint();
         var s = TopoManager.getInstance().getAllItemsMap().get(stationName);
-        var p0 = WWHelper.positionFromLatLon(new MLatLon(s.getLat(), s.getLon()), s.getZeroZ());
-        var p1 = WWHelper.positionFromLatLon(new MLatLon(mon.getLat(), mon.getLon()), p.getZeroZ());
+        var p0 = WWHelper.positionFromLatLon(new MLatLon(s.getLat(), s.getLon()), s.getZeroZ() + zOffset);
+        var p1 = WWHelper.positionFromLatLon(new MLatLon(mon.getLat(), mon.getLon()), p.getZeroZ() + zOffset);
         var path = new Path(p0, p1);
         path.setAttributes(mAttributeManager.getStationConnectorAttribute(stationIndex));
         mLayer.addRenderable(path);
@@ -96,7 +104,7 @@ public class GraphicRenderer {
 
     private AVListImpl plotStatus(BMonmon mon, int index, int order) {
         var size = 1.0;
-        var z = mon.getControlPoint().getZeroZ() + size * 2 * order;
+        var z = zOffset + mon.getControlPoint().getZeroZ() + size * 2 * order;
         var latLon = new MLatLon(mon.getLat(), mon.getLon());
         var p = WWHelper.positionFromLatLon(latLon, z);
         var ellipsoid = new Ellipsoid(p, size, size, size);

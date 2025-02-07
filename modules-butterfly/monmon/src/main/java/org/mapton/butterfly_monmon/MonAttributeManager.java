@@ -47,6 +47,11 @@ public class MonAttributeManager extends BaseAttributeManager {
             Color.MAGENTA,
             Color.YELLOW,
             Color.ORANGE,
+            Color.PINK,
+            Color.WHITE,
+            Color.BLUE,
+            Color.GREEN,
+            Color.RED,
             Color.BLACK
         };
     }
