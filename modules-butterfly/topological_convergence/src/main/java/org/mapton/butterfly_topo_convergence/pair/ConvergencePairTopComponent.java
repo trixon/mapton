@@ -47,7 +47,7 @@ import org.openide.windows.TopComponent;
         preferredID = "ConvergencePairTopComponent"
 )
 @Messages({
-    "CTL_ConvergencePairAction=Convergence pairs"
+    "CTL_ConvergencePairAction=🕱 Convergence pairs"
 })
 public final class ConvergencePairTopComponent extends MTopComponent {
 
