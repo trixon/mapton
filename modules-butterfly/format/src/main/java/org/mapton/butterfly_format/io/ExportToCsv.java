@@ -23,7 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.util.List;
 import org.mapton.butterfly_format.jackson.DimensionSerializer;
 import org.mapton.butterfly_format.jackson.LocalDateTimeSerializer;
 import org.mapton.butterfly_format.types.BDimension;
@@ -37,7 +37,7 @@ public abstract class ExportToCsv {
     public ExportToCsv() {
     }
 
-    public void writeCsv(File destDir, String basename, Class clazz, ArrayList list) throws IOException {
+    public void writeCsv(File destDir, String basename, Class clazz, List list) throws IOException {
         var simpleModule = new SimpleModule();
         simpleModule.addSerializer(BDimension.class, new DimensionSerializer());
         simpleModule.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer());
