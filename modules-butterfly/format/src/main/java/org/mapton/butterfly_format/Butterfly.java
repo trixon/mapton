@@ -28,6 +28,7 @@ import org.mapton.butterfly_format.types.BAlarm;
 import org.mapton.butterfly_format.types.BAreaActivity;
 import org.mapton.butterfly_format.types.BAreaBase;
 import org.mapton.butterfly_format.types.BBasePointObservation;
+import org.mapton.butterfly_format.types.BCoordinate;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.acoustic.BAcousticMeasuringChannel;
 import org.mapton.butterfly_format.types.acoustic.BAcousticMeasuringLimit;
@@ -72,6 +73,8 @@ public class Butterfly {
     private final ArrayList<BAreaActivity> mAreaActivities = new ArrayList<>();
     private final ArrayList<BAreaBase> mAreaFilters = new ArrayList<>();
     private final ArrayList<BBlast> mBlasts = new ArrayList<>();
+    private final ArrayList<BCoordinate> mCoordinates = new ArrayList<>();
+    private final Dev mDev = new Dev();
     private final ArrayList<BGeoExtensometer> mGeoExtensometers = new ArrayList<>();
     private final ArrayList<BGeoExtensometerPoint> mGeoExtensometersPoints = new ArrayList<>();
     private final ArrayList<BGeoExtensometerPointObservation> mGeoExtensometersPointsObservations = new ArrayList<>();
@@ -102,6 +105,15 @@ public class Butterfly {
     private final ArrayList<BTopoConvergenceGroup> mTopoConvergenceGroups = new ArrayList<>();
 
     public Butterfly() {
+    }
+
+    /**
+     * A place for incubating structures
+     *
+     * @return
+     */
+    public Dev dev() {
+        return mDev;
     }
 
     public Geotechnical geotechnical() {
@@ -145,6 +157,9 @@ public class Butterfly {
     }
 
     void load(File sourceDir) {
+        new ImportFromCsv<BCoordinate>(BCoordinate.class) {
+        }.load(sourceDir, "coordinates.csv", mCoordinates);
+
         new ImportFromCsv<BBlast>(BBlast.class) {
         }.load(sourceDir, "noiseBlasts.csv", mBlasts);
 
@@ -314,6 +329,14 @@ public class Butterfly {
 
         mMonmons.clear();
         mMonmons.addAll(list);
+    }
+
+    public class Dev {
+
+        public ArrayList<BCoordinate> getCoordinates() {
+            return mCoordinates;
+        }
+
     }
 
     public class Ext {
