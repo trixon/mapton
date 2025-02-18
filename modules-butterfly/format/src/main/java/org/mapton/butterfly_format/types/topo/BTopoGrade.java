@@ -28,6 +28,7 @@ import java.util.TreeMap;
 import javafx.geometry.Point2D;
 import javafx.geometry.Point3D;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.mapton.butterfly_format.types.BAxis;
 import org.mapton.butterfly_format.types.BBasePoint;
 import org.mapton.butterfly_format.types.BDimension;
@@ -186,6 +187,13 @@ public class BTopoGrade extends BBasePoint {
             return ChronoUnit.DAYS.between(getLastDate(), LocalDate.now());
         }
 
+        public Vector3D getMidPoint() {
+            var a = new Vector3D(getP1().getZeroX(), getP1().getZeroY(), getP1().getZeroZ());
+            var b = new Vector3D(getP2().getZeroX(), getP2().getZeroY(), getP2().getZeroZ());
+            var midpoint = a.add(b).scalarMultiply(0.5);
+
+            return midpoint;
+        }
     }
 
 }
