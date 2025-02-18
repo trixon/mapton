@@ -45,16 +45,14 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
     private Double rollingY;
     private Double rollingZ;
     private Double zeroX;
-    private Double zeroY;
-    private Double zeroZ;
     @JsonIgnore
     private transient Double zeroXScaled;
+    private Double zeroY;
     @JsonIgnore
     private transient Double zeroYScaled;
+    private Double zeroZ;
     @JsonIgnore
     private transient Double zeroZScaled;
-    @JsonIgnore
-    private transient double[] point;
 
     public String getAlarm1Id() {
         return alarm1Id;
@@ -393,6 +391,19 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
         }
 
         public Integer getAlarmPercent(BComponent component) {
+            try {
+                var delta = component == BComponent.HEIGHT ? deltaZero().getDelta1() : deltaZero().getDelta2();
+                return getAlarmPercent(component, delta);
+            } catch (Exception e) {
+                return null;
+            }
+        }
+
+        public Integer getAlarmPercent(BComponent component, Double delta) {
+            if (delta == null) {
+                return null;
+            }
+
             var alarm = getAlarm(component);
             if (alarm == null
                     || (component == BComponent.HEIGHT && getDimension() == _2d)
@@ -401,7 +412,6 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
             }
 
             try {
-                var delta = component == BComponent.HEIGHT ? deltaZero().getDelta1() : deltaZero().getDelta2();
                 double limit;
                 Range<Double> range;
                 if (alarm.ext().getRange2() != null) {
