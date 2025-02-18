@@ -25,6 +25,7 @@ import gov.nasa.worldwind.render.PointPlacemark;
 import java.util.ArrayList;
 import java.util.HashSet;
 import org.controlsfx.control.IndexedCheckModel;
+import org.mapton.api.MOptions;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.topo.BTopoGrade;
 import org.mapton.worldwind.api.WWHelper;
@@ -55,8 +56,11 @@ public class GradeHRenderer extends GradeHRendererBase {
         var pos1 = Position.fromDegrees(p.getP1().getLat(), p.getP1().getLon());
         var pos2 = Position.fromDegrees(p.getP2().getLat(), p.getP2().getLon());
 
-        if (sCheckModel.isChecked(GradeHRendererItem.INDICATOR)) {
-            plotIndicator(p, position, pos1, pos2, mapObjects);
+        if (sCheckModel.isChecked(GradeHRendererItem.HOR_INDICATOR)) {
+            plotHorIndicator(p, position, pos1, pos2, mapObjects);
+        }
+        if (sCheckModel.isChecked(GradeHRendererItem.VER_INDICATOR)) {
+            plotVerIndicator(p, position, pos1, pos2, mapObjects);
         }
         if (sCheckModel.isChecked(GradeHRendererItem.NAME)) {
             plotName(p, position, pos1, pos2);
@@ -70,8 +74,8 @@ public class GradeHRenderer extends GradeHRendererBase {
         mPlottedNames.clear();
     }
 
-    private void plotIndicator(BTopoGrade p, Position position, Position pos1, Position pos2, ArrayList<AVListImpl> mapObjects) {
-        if (getPlotLimiter().isLimitReached(GradeHRendererItem.INDICATOR, p.getName())) {
+    private void plotHorIndicator(BTopoGrade p, Position position, Position pos1, Position pos2, ArrayList<AVListImpl> mapObjects) {
+        if (getPlotLimiter().isLimitReached(GradeHRendererItem.HOR_INDICATOR, p.getName())) {
             return;
         }
 
@@ -93,7 +97,28 @@ public class GradeHRenderer extends GradeHRendererBase {
 
         var path = new Path(WWHelper.positionFromPosition(pos1, z1), WWHelper.positionFromPosition(pos2, z2));
         path.setAttributes(mAttributeManager.getGradeHAttributes(p));
-        addRenderable(path, true, GradeHRendererItem.INDICATOR, sMapObjects);
+        addRenderable(path, true, GradeHRendererItem.HOR_INDICATOR, sMapObjects);
+
+        mapObjects.add(path);
+    }
+
+    private void plotVerIndicator(BTopoGrade p, Position position, Position pos1, Position pos2, ArrayList<AVListImpl> mapObjects) {
+        if (getPlotLimiter().isLimitReached(GradeHRendererItem.VER_INDICATOR, p.getName())) {
+            return;
+        }
+
+        var cootrans = MOptions.getInstance().getMapCooTrans();
+        var wgs = cootrans.toWgs84(p.ext().getMidPoint().getY(), p.ext().getMidPoint().getX());
+
+        var begPos = Position.fromDegrees(wgs.getY(), wgs.getX(), 0.0);
+        var height = Math.abs(p.ext().getDiff().getZPerMille() * 25);
+        var endPos = WWHelper.positionFromPosition(begPos, height);
+
+        var path = new Path(begPos, endPos);
+        var attrs = mAttributeManager.getGradeHAttributes(p);
+        attrs.setOutlineWidth(4.0);
+        path.setAttributes(attrs);
+        addRenderable(path, true, GradeHRendererItem.HOR_INDICATOR, sMapObjects);
 
         mapObjects.add(path);
     }

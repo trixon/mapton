@@ -28,7 +28,8 @@ public enum ColorBy {
     MEAS_NEED(SDict.MEASUREMENT_NEED.toString()),
     ORIGIN(Dict.ORIGIN.toString()),
     SPEED(Dict.SPEED.toString()),
-    STYLE(Dict.STYLE.toString());
+    STYLE(Dict.STYLE.toString()),
+    VERTICAL_DIRECTION("Vertikal riktning");
     private final String mName;
 
     private ColorBy(String name) {

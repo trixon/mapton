@@ -22,7 +22,8 @@ import se.trixon.almond.util.Dict;
  * @author Patrik Karlström
  */
 public enum GradeHRendererItem {
-    INDICATOR(Dict.INDICATORS.toString(), Integer.MAX_VALUE),
+    HOR_INDICATOR("H %s".formatted(Dict.INDICATORS.toLower()), Integer.MAX_VALUE),
+    VER_INDICATOR("V %s".formatted(Dict.INDICATORS.toLower()), Integer.MAX_VALUE),
     NAME(Dict.NAME.toString(), Integer.MAX_VALUE);
     private final String mName;
     private final int mPlotLimit;

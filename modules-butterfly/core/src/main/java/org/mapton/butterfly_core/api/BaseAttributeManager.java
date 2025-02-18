@@ -34,6 +34,8 @@ public abstract class BaseAttributeManager {
     private BasicShapeAttributes mAlarmLimitAttributes;
     private BasicShapeAttributes[] mAlarmOutlineAttributes;
     private BasicShapeAttributes mAxisAttributes;
+    private BasicShapeAttributes mComponentAlarmLevelTrace1dAttributes;
+    private BasicShapeAttributes mComponentAlarmLevelTrace2dAttributes;
     private BasicShapeAttributes mComponentGroundPathAttributes;
     private BasicShapeAttributes mComponentGroundPathEvenAttributes;
     private BasicShapeAttributes mComponentGroundPathOddAttributes;
@@ -185,6 +187,26 @@ public abstract class BaseAttributeManager {
         }
 
         return mComponentZeroAttributes;
+    }
+
+    public BasicShapeAttributes getComponentmAlarmLevelTrace1dAttributes() {
+        if (mComponentAlarmLevelTrace1dAttributes == null) {
+            mComponentAlarmLevelTrace1dAttributes = new BasicShapeAttributes();
+            mComponentAlarmLevelTrace1dAttributes.setDrawOutline(false);
+            mComponentAlarmLevelTrace1dAttributes.setInteriorMaterial(new Material(Color.PINK));
+        }
+
+        return mComponentAlarmLevelTrace1dAttributes;
+    }
+
+    public BasicShapeAttributes getComponentmAlarmLevelTrace2dAttributes() {
+        if (mComponentAlarmLevelTrace2dAttributes == null) {
+            mComponentAlarmLevelTrace2dAttributes = new BasicShapeAttributes();
+            mComponentAlarmLevelTrace2dAttributes.setDrawOutline(false);
+            mComponentAlarmLevelTrace2dAttributes.setInteriorMaterial(new Material(Color.decode("#89cff0")));
+        }
+
+        return mComponentAlarmLevelTrace2dAttributes;
     }
 
     public PointPlacemarkAttributes getLabelPlacemarkAttributes() {

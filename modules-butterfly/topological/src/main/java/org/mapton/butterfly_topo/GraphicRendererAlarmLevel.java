@@ -31,7 +31,6 @@ import gov.nasa.worldwind.render.airspaces.AbstractAirspace;
 import gov.nasa.worldwind.render.airspaces.BasicAirspaceAttributes;
 import gov.nasa.worldwind.render.airspaces.PartialCappedCylinder;
 import gov.nasa.worldwind.render.airspaces.Polygon;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -66,6 +65,12 @@ public class GraphicRendererAlarmLevel extends GraphicRendererBase {
 
         if (sCheckModel.isChecked(GraphicRendererItem.ALARM_CONSUMPTION)) {
             plotAlarmConsumption(p, position);
+            if (sCheckModel.isChecked(GraphicRendererItem.ALARM_CONSUMPTION_TRACE_1)) {
+                plotAlarmConsumptionTrace1(p, position);
+            }
+            if (sCheckModel.isChecked(GraphicRendererItem.ALARM_CONSUMPTION_TRACE_2)) {
+                plotAlarmConsumptionTrace2(p, position);
+            }
         }
 
         if (sCheckModel.isChecked(GraphicRendererItem.TRACE_ALARM_LEVEL)) {
@@ -74,17 +79,28 @@ public class GraphicRendererAlarmLevel extends GraphicRendererBase {
         }
     }
 
+    private ArrayList<BTopoControlPointObservation> getHistoryObservation(BTopoControlPoint p) {
+        var weeks = new int[]{1, 2, 3, 4, 5, 6, 7, 8};
+        var observations = new ArrayList<BTopoControlPointObservation>();
+        var lastDate = p.ext().getObservationFilteredLastDate();
+        for (int week : weeks) {
+            for (var o : p.ext().getObservationsTimeFiltered().reversed()) {
+                if (DateHelper.isAfterOrEqual(lastDate.minusWeeks(week), o.getDate().toLocalDate())) {
+                    observations.add(o);
+                    break;
+                }
+            }
+        }
+
+        return observations;
+    }
+
     private void plotAlarmConsumption(BTopoControlPoint p, Position position) {
         if (isPlotLimitReached(p, GraphicRendererItem.ALARM_CONSUMPTION, position)) {
             return;
         }
         plotPercentageRod(position, p.ext().getAlarmPercent());
 
-        p.ext().getObservationsTimeFiltered().stream()
-                .filter(o -> DateHelper.isAfterOrEqual(o.getDate().toLocalDate(), LocalDate.now().minusDays(7)))
-                .forEachOrdered(o -> {
-//                    plotAlarmConsumptionObservation(p, position, o, o != p.ext().getObservationFilteredLast());
-                });
         var o = p.ext().getObservationFilteredLast();
         plotAlarmConsumptionObservation(p, position, o, o != p.ext().getObservationFilteredLast());
     }
@@ -162,6 +178,67 @@ public class GraphicRendererAlarmLevel extends GraphicRendererBase {
             var alarm = p.ext().getAlarm(BComponent.HEIGHT);
             var alarmShape = new Cylinder(position, PERCENTAGE_SIZE_ALARM, PERCENTAGE_SIZE_ALARM_HEIGHT, PERCENTAGE_SIZE_ALARM);
             plotPercentageAlarmIndicator(position, alarm, alarmShape, rise);
+        }
+    }
+
+    private void plotAlarmConsumptionTrace1(BTopoControlPoint p, Position position) {
+        if (isPlotLimitReached(p, GraphicRendererItem.ALARM_CONSUMPTION_TRACE_1, position) || p.getDimension() == BDimension._2d) {
+            return;
+        }
+
+        var observations = getHistoryObservation(p);
+        double cylinderHeight = 0.05;
+        for (int i = 0; i < observations.size(); i++) {
+            var o = observations.get(i);
+            Integer percent = p.ext().getAlarmPercent(BComponent.HEIGHT, o.ext().getDeltaZ());
+            if (percent == null) {
+                percent = 0;
+            }
+
+            var attrs = new BasicShapeAttributes(mAttributeManager.getComponentmAlarmLevelTrace1dAttributes());
+            var opacity = Math.max(0.1, 1.0 - i * 0.15);
+            attrs.setInteriorOpacity(opacity);
+
+            var radius = 0.5 * i + 1.2;
+            var pos = WWHelper.positionFromPosition(position, PERCENTAGE_ALTITUDE * percent / 100.0);
+            var cylinder = new Cylinder(pos, cylinderHeight, radius);
+            cylinder.setAttributes(attrs);
+            addRenderable(cylinder, true, null, sMapObjects);
+        }
+    }
+
+    private void plotAlarmConsumptionTrace2(BTopoControlPoint p, Position position) {
+        if (isPlotLimitReached(p, GraphicRendererItem.ALARM_CONSUMPTION_TRACE_2, position) || p.getDimension() == BDimension._1d) {
+            return;
+        }
+
+        var observations = getHistoryObservation(p);
+        for (int i = 0; i < observations.size(); i++) {
+            var o = observations.get(i);
+            Integer percent = p.ext().getAlarmPercent(BComponent.PLANE, o.ext().getDelta2d());
+            if (percent == null) {
+                percent = 0;
+            }
+
+            var attrs = new BasicShapeAttributes(mAttributeManager.getComponentmAlarmLevelTrace2dAttributes());
+            var opacity = Math.max(0.1, 1.0 - i * 0.18);
+            attrs.setInteriorOpacity(opacity);
+
+            var pos = WWHelper.positionFromPosition(position, PERCENTAGE_ALTITUDE * percent / 100.0);
+            var bearing = o.ext().getBearing();
+            RigidShape planeShape;
+            if (bearing == null || Double.isNaN(bearing)) {
+                planeShape = new Pyramid(pos, PERCENTAGE_SIZE, PERCENTAGE_SIZE);
+            } else {
+                var wedgeHeight = PERCENTAGE_SIZE * 0.5;
+                var wedgeRadius = 2 * i + 1.5;
+                var angle = 5.0;
+                planeShape = new Wedge(pos, Angle.fromDegrees(angle), wedgeHeight, wedgeRadius);
+                var az = Angle.normalizedDegrees(bearing - angle / 2);
+                planeShape.setHeading(Angle.fromDegrees(az));
+            }
+            planeShape.setAttributes(attrs);
+            addRenderable(planeShape, true, null, sMapObjects);
         }
     }
 
@@ -285,7 +362,6 @@ public class GraphicRendererAlarmLevel extends GraphicRendererBase {
                 airspace.setAttributes(attrs);
                 addRenderable(airspace, true, GraphicRendererItem.TRACE_ALARM_LEVEL, sMapObjects);
             }
-
         }
     }
 

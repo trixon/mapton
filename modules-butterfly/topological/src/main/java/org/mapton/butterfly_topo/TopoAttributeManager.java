@@ -24,6 +24,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import org.mapton.butterfly_core.api.BaseAttributeManager;
 import org.mapton.butterfly_core.api.ButterflyHelper;
+import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_topo.api.TopoManager;
 import org.mapton.butterfly_topo.shared.ColorBy;
@@ -303,6 +304,9 @@ public class TopoAttributeManager extends BaseAttributeManager {
             case SPEED -> {
                 return getColorForSpeed(p);
             }
+            case VERTICAL_DIRECTION -> {
+                return getColorForVerticalDirection(p);
+            }
             default ->
                 throw new AssertionError();
         }
@@ -381,6 +385,20 @@ public class TopoAttributeManager extends BaseAttributeManager {
 
     private Color getColorForSpeed(BTopoControlPoint p) {
         return TopoHelper.getSpeedColor(p);
+    }
+
+    private Color getColorForVerticalDirection(BTopoControlPoint p) {
+        var deltaZ = p.ext().deltaZero().getDeltaZ();
+        if (p.getDimension() == BDimension._2d || p.ext().getNumOfObservationsFiltered() == 0 || deltaZ == null) {
+            return Color.BLUE;
+        } else if (deltaZ == 0) {
+            return Color.WHITE;
+        } else if (deltaZ > 0) {
+            return Color.GREEN.brighter();
+        } else if (deltaZ < 0) {
+            return Color.RED.brighter();
+        }
+        return Color.BLACK;
     }
 
     private void initAttributes() {

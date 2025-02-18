@@ -71,7 +71,7 @@ public class GradeAttributeManager extends BaseAttributeManager {
 
     public BasicShapeAttributes getGradeHAttributes(BTopoGrade p) {
 //        if (mGradeHAttributes == null) {
-        mGradeHAttributes = new BasicShapeAttributes();
+        var mGradeHAttributes = new BasicShapeAttributes();
         mGradeHAttributes.setDrawOutline(true);
         mGradeHAttributes.setOutlineMaterial(Material.BLUE);
         mGradeHAttributes.setEnableLighting(false);
