@@ -71,7 +71,7 @@ public class BlastLayerBundle extends BfLayerBundle {
         mLayer.setMaxActiveAltitude(6000);
         mSurfaceLayer.setMaxActiveAltitude(6000);
         mPinLayer.setMaxActiveAltitude(10000);
-        mLabelLayer.setMaxActiveAltitude(200);
+        mLabelLayer.setMaxActiveAltitude(400);
         mGroundConnectorLayer.setMaxActiveAltitude(1000);
     }
 
