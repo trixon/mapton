@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_format.types.tmo;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Comparator;
 import org.mapton.butterfly_format.types.BBasePoint;
 
@@ -25,8 +24,7 @@ import org.mapton.butterfly_format.types.BBasePoint;
  */
 public class BGrundvatten extends BBasVatten {
 
-    @JsonIgnore
-    private Ext mExt;
+    private transient Ext mExt;
     private String mFiltertyp;
     private Integer mGradning;
     private Double mReferensnivå;

@@ -24,7 +24,7 @@ import java.util.ArrayList;
  */
 public class BRorelse extends BBasObjekt {
 
-    private Ext mExt;
+    private transient Ext mExt;
     private String mFixpunkt;
     private String mPlacering;
     private String mPlacering_kommentar;

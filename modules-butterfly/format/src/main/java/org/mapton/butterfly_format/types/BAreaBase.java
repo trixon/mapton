@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_format.types;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import org.locationtech.jts.geom.Geometry;
 
@@ -33,10 +32,8 @@ public class BAreaBase extends BBasePoint {
 
     private String description;
     private String id;
-    @JsonIgnore
-    private Geometry geometry;
-    @JsonIgnore
-    private Geometry targetGeometry;
+    private transient Geometry geometry;
+    private transient Geometry targetGeometry;
     private String wkt;
 
     public BAreaBase() {

@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_format.types.topo;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import org.mapton.butterfly_format.types.BXyzPointObservation;
 
@@ -38,8 +37,7 @@ import org.mapton.butterfly_format.types.BXyzPointObservation;
 })
 public class BTopoControlPointObservation extends BXyzPointObservation {
 
-    @JsonIgnore
-    private Ext mExt;
+    private transient Ext mExt;
 
     public BTopoControlPointObservation() {
     }

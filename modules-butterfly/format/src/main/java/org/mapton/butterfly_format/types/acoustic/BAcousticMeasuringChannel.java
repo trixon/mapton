@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_format.types.acoustic;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
@@ -27,8 +26,7 @@ public class BAcousticMeasuringChannel {
 
     private LocalDate from;
     private String id;
-    @JsonIgnore
-    private Ext mExt;
+    private transient Ext mExt;
     private String pointId;
     private String type;
     private LocalDate until;

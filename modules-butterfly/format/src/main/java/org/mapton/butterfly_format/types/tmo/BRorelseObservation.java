@@ -29,7 +29,7 @@ import org.mapton.butterfly_format.types.BBasePointObservation;
 })
 public class BRorelseObservation extends BBasePointObservation {
 
-    private Ext mExt;
+    private transient Ext mExt;
     private Double varde;
 
     public BRorelseObservation() {

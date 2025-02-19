@@ -46,7 +46,7 @@ public class BAcousticMeasuringObservation extends BXyzPointObservation {
     private Double frequencyZ;
     private transient String id;
     private Double limit;
-    private Ext mExt;
+    private transient Ext mExt;
     private String unit;
 
     public BAcousticMeasuringObservation() {

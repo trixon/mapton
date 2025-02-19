@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_format.types.geo;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import org.mapton.butterfly_format.types.BXyzPointObservation;
 
@@ -38,8 +37,7 @@ public class BGeoInclinometerPointObservationPre extends BXyzPointObservation {
     private Double a;
     private Double b;
     private Double down;
-    @JsonIgnore
-    private Ext mExt;
+    private transient Ext mExt;
 
     @Override
     public Ext ext() {

@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_format.io;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.csv.CsvGenerator;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
@@ -47,6 +48,12 @@ public abstract class ExportToCsv {
                 .addModule(simpleModule)
                 .enable(CsvGenerator.Feature.ALWAYS_QUOTE_STRINGS)
                 .build();
+
+        mapper.setVisibility(mapper.getSerializationConfig()
+                .getDefaultVisibilityChecker()
+                .withFieldVisibility(JsonAutoDetect.Visibility.ANY)
+                .withGetterVisibility(JsonAutoDetect.Visibility.NONE)
+        );
 
         mapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
 

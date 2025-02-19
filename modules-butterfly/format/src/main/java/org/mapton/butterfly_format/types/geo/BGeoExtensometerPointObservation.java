@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_format.types.geo;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import org.mapton.butterfly_format.types.BXyzPointObservation;
@@ -55,13 +54,9 @@ import org.mapton.butterfly_format.types.BXyzPointObservation;
 })
 public class BGeoExtensometerPointObservation extends BXyzPointObservation {
 
-    @JsonIgnore
     private transient String comment;
-    @JsonIgnore
     private transient String instrument;
-    @JsonIgnore
-    private BGeoExtensometerPointObservation.Ext mExt;
-    @JsonIgnore
+    private transient BGeoExtensometerPointObservation.Ext mExt;
     private transient String operator;
 
     public BGeoExtensometerPointObservation() {

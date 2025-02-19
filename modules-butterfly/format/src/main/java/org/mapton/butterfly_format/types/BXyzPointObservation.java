@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_format.types;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang3.ObjectUtils;
 import se.trixon.almond.util.MathHelper;
 
@@ -25,9 +24,7 @@ import se.trixon.almond.util.MathHelper;
  */
 public class BXyzPointObservation extends BBaseControlPointObservation {
 
-    @JsonIgnore
-    private Ext mExt;
-
+    private transient Ext mExt;
     private Double measuredX;
     private Double measuredY;
     private Double measuredZ;

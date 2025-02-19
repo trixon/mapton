@@ -31,7 +31,7 @@ import org.mapton.butterfly_format.types.BBasePointObservation;
 public class BGrundvattenObservation extends BBasePointObservation {
 
     private String granskning;
-    private Ext mExt;
+    private transient Ext mExt;
     private Double nivå;
 
     public BGrundvattenObservation() {

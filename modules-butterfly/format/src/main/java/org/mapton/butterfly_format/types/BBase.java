@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_format.types;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import org.mapton.butterfly_format.Butterfly;
@@ -27,7 +26,6 @@ import org.mapton.butterfly_format.Butterfly;
 public abstract class BBase {
 
     private Double azimuth;
-    @JsonIgnore
     private transient Butterfly butterfly;
     private LocalDateTime dateChanged;
     private LocalDateTime dateCreated;
@@ -35,7 +33,6 @@ public abstract class BBase {
     private String meta;
     private String name;
     private String origin;
-    @JsonIgnore
     private transient final HashMap<Object, Object> values = new HashMap<>();
 
     public Double getAzimuth() {

@@ -15,9 +15,11 @@
  */
 package org.mapton.butterfly_format.types.geo;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import org.mapton.butterfly_format.types.BXyzPoint;
 
@@ -32,6 +34,7 @@ import org.mapton.butterfly_format.types.BXyzPoint;
     "status",
     "frequency",
     "operator",
+    "origin",
     "numOfDecXY",
     "numOfDecZ",
     "limit1",
@@ -42,6 +45,7 @@ import org.mapton.butterfly_format.types.BXyzPoint;
     "zeroX",
     "zeroY",
     "zeroZ",
+    "dimension",
     "comment",
     "meta"
 })
@@ -55,18 +59,18 @@ import org.mapton.butterfly_format.types.BXyzPoint;
     "rollingZ",
     "dateRolling",
     "tag",
-    "dimension",
     "nameOfAlarmHeight",
     "nameOfAlarmPlane",
-    "dateValidFrom", "dateValidTo", "lat", "lon", "origin",
+    "dateValidFrom",
+    "dateValidTo",
+    "lat",
+    "lon",
     "dateLatest"
 })
 public class BGeoExtensometer extends BXyzPoint {
 
-    @JsonIgnore
-    private Ext mExt;
-    @JsonIgnore
-    private ArrayList<BGeoExtensometerPoint> mPoints = new ArrayList<>();
+    private transient Ext mExt;
+    private transient ArrayList<BGeoExtensometerPoint> mPoints = new ArrayList<>();
     private String sensors;
 
     public BGeoExtensometer() {
@@ -99,6 +103,19 @@ public class BGeoExtensometer extends BXyzPoint {
     public class Ext {
 
         public Ext() {
+        }
+
+        public long getMeasurementUntilNext(ChronoUnit chronoUnit) {
+            var latest = getPoints().stream().map(p -> p.ext().getDateLatest()).max(LocalDateTime::compareTo).orElse(LocalDateTime.MIN);
+            var nextMeas = latest.plusDays(getFrequency());
+
+            return chronoUnit.between(LocalDate.now(), nextMeas);
+        }
+
+        public LocalDateTime getDateFirst() {
+            var first = getPoints().stream().map(p -> p.ext().getDateFirst()).min(LocalDateTime::compareTo).orElse(LocalDateTime.MAX);
+
+            return first;
         }
 
         public boolean hasNoObservations() {

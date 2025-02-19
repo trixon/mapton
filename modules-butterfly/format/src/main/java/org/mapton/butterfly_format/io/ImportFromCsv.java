@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_format.io;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -57,6 +58,12 @@ public abstract class ImportFromCsv<T> {
                 .configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true)
                 .disable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY)
                 .build();
+
+        mMapper.setVisibility(mMapper.getSerializationConfig()
+                .getDefaultVisibilityChecker()
+                .withFieldVisibility(JsonAutoDetect.Visibility.ANY)
+                .withGetterVisibility(JsonAutoDetect.Visibility.NONE)
+        );
 
         schema = mMapper.schemaFor(classOfT)
                 .withHeader()

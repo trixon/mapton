@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_format.types.structural;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang3.Range;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BXyzPoint;
@@ -26,8 +25,7 @@ import org.mapton.butterfly_format.types.BXyzPoint;
  */
 public class BStructuralTiltPoint extends BXyzPoint {
 
-    @JsonIgnore
-    private Ext mExt;
+    private transient Ext mExt;
     private Double zeroTiltX;
     private Double zeroTiltY;
     private Double zeroTiltZ;

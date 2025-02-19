@@ -15,16 +15,13 @@
  */
 package org.mapton.butterfly_format.types;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 /**
  *
  * @author Patrik Karlström
  */
 public class BBaseHydroPointObservation extends BBaseControlPointObservation {
 
-    @JsonIgnore
-    private Ext mExt;
+    private transient Ext mExt;
 
     public BBaseHydroPointObservation() {
     }

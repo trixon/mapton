@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_format.types.acoustic;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.util.ArrayList;
 import org.mapton.butterfly_format.types.BXyzPoint;
@@ -37,8 +36,7 @@ public class BAcousticMeasuringPoint extends BXyzPoint {
 
     private String address;
     private String id;
-    @JsonIgnore
-    private Ext mExt;
+    private transient Ext mExt;
     private String soilMaterial;
     private String url;
 

@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_format.types.acoustic;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -38,8 +37,7 @@ import org.mapton.butterfly_format.types.BBasePoint;
 public class BBlast extends BBasePoint {
 
     private LocalDateTime dateTime;
-    @JsonIgnore
-    private Ext mExt;
+    private transient Ext mExt;
     private String url;
     private Double z;
 

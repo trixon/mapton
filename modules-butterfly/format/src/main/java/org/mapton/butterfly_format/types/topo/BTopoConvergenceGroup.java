@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_format.types.topo;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.ArrayList;
 
 /**
@@ -24,8 +23,7 @@ import java.util.ArrayList;
  */
 public class BTopoConvergenceGroup extends BTopoControlPoint {
 
-    @JsonIgnore
-    private Ext mExt;
+    private transient Ext mExt;
     private double mLimit;
     private String mRef;
 

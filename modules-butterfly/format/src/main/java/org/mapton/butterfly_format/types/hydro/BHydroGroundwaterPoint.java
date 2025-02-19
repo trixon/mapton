@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_format.types.hydro;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -54,10 +53,8 @@ import se.trixon.almond.util.DateHelper;
 })
 public class BHydroGroundwaterPoint extends BXyzPoint {
 
-    @JsonIgnore
-    private BDimension dimension;
-    @JsonIgnore
-    private Ext mExt;
+    private transient BDimension dimension;
+    private transient Ext mExt;
     private Double offsetX;
     private Double offsetY;
     private Double offsetZ;

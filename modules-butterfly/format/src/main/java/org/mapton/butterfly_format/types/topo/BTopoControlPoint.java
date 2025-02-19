@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_format.types.topo;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.time.LocalDateTime;
@@ -57,8 +56,7 @@ import org.mapton.butterfly_format.types.BXyzPoint;
 @JsonIgnoreProperties(value = {"values", "dateLatest"})
 public class BTopoControlPoint extends BXyzPoint {
 
-    @JsonIgnore
-    private Ext mExt;
+    private transient Ext mExt;
     private Double offsetX;
     private Double offsetY;
     private Double offsetZ;

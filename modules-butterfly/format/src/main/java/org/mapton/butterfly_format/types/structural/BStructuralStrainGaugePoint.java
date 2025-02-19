@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_format.types.structural;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.mapton.butterfly_format.types.BXyzPoint;
 
 /**
@@ -25,8 +24,7 @@ import org.mapton.butterfly_format.types.BXyzPoint;
 public class BStructuralStrainGaugePoint extends BXyzPoint {
 
     private Double directionX;
-    @JsonIgnore
-    private Ext mExt;
+    private transient Ext mExt;
 
     public Ext ext() {
         if (mExt == null) {

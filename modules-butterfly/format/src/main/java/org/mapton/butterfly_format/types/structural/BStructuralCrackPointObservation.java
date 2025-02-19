@@ -24,7 +24,7 @@ import org.mapton.butterfly_format.types.BXyzPointObservation;
 public class BStructuralCrackPointObservation extends BXyzPointObservation {
 
     private Double temperature;
-    private Ext mExt;
+    private transient Ext mExt;
 
     @Override
     public Ext ext() {

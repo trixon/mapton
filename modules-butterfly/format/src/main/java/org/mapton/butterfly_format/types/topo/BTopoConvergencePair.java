@@ -32,7 +32,7 @@ public class BTopoConvergencePair extends BXyzPoint {
     private BTopoConvergenceGroup mConvergenceGroup;
     private final Point3D mDelta;
     private final double mDistance;
-    private Ext mExt;
+    private transient Ext mExt;
     private ArrayList<BTopoConvergencePairObservation> mObservations = new ArrayList<>();
     private BTopoControlPoint mP1;
     private BTopoControlPoint mP2;

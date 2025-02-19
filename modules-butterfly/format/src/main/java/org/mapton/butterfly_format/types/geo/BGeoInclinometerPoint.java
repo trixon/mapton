@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_format.types.geo;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.TreeSet;
 import org.mapton.butterfly_format.types.BMeasurementMode;
 import org.mapton.butterfly_format.types.BXyzPoint;
@@ -26,8 +25,7 @@ import org.mapton.butterfly_format.types.BXyzPoint;
  */
 public class BGeoInclinometerPoint extends BXyzPoint {
 
-    @JsonIgnore
-    private Ext mExt;
+    private transient Ext mExt;
     private BMeasurementMode mMeasurementMode;
 
     public BGeoInclinometerPoint() {

@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_format.types;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -45,13 +44,10 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
     private Double rollingY;
     private Double rollingZ;
     private Double zeroX;
-    @JsonIgnore
     private transient Double zeroXScaled;
     private Double zeroY;
-    @JsonIgnore
     private transient Double zeroYScaled;
     private Double zeroZ;
-    @JsonIgnore
     private transient Double zeroZScaled;
 
     public String getAlarm1Id() {

@@ -42,7 +42,7 @@ public class BTopoGrade extends BBasePoint {
     private static final String DATE_PATTERN = "YYYY-'W'ww";
     private final BAxis mAxis;
     private final TreeMap<LocalDate, BTopoGradeObservation> mCommonObservations = new TreeMap<>();
-    private Ext mExt;
+    private transient Ext mExt;
     private final BTopoControlPoint mP1;
     private final BTopoControlPoint mP2;
     private final DateTimeFormatter mWeeklyAvgFormatterFrom = new DateTimeFormatterBuilder()
