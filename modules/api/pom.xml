@@ -303,7 +303,7 @@
         <dependency>
             <groupId>eu.hansolo</groupId>
             <artifactId>jdktools</artifactId>
-            <version>21.0.15</version>
+            <version>21.0.17</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.openjfx</groupId>

@@ -360,7 +360,7 @@
             <dependency>
                 <groupId>org.jsoup</groupId>
                 <artifactId>jsoup</artifactId>
-                <version>1.18.3</version>
+                <version>1.19.1</version>
             </dependency>
             <dependency>
                 <groupId>com.drewnoakes</groupId>
@@ -387,7 +387,7 @@
     </profiles>
 
     <properties>
-        <jackson.version>2.18.2</jackson.version>
+        <jackson.version>2.18.3</jackson.version>
         <brandingToken>mapton</brandingToken>
         <mapton.version>3.2.0-SNAPSHOT</mapton.version>
         <geotools.version>32.2</geotools.version>
