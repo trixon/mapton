@@ -82,6 +82,8 @@ public class ExtensoManager extends BaseManager<BGeoExtensometer> {
             }
 
             extensometers.forEach(ext -> {
+                var dates = new TreeSet<LocalDateTime>();
+
                 for (var pointName : StringUtils.split(ext.getSensors(), ",")) {
                     var p = nameToPoint.get(pointName);
                     ext.getPoints().add(p);
@@ -103,16 +105,17 @@ public class ExtensoManager extends BaseManager<BGeoExtensometer> {
                             break;
                         }
                     }
+                    dates.add(p.ext().getDateFirst());
+                    dates.add(p.ext().getDateLatest());
                 }
+                ext.setDateLatest(dates.last());
             });
-
-            var origins = getAllItems()
-                    .stream().map(p -> p.getOrigin())
-                    .collect(Collectors.toCollection(TreeSet::new))
-                    .stream()
-                    .collect(Collectors.toCollection(ArrayList<String>::new));
-            setValue("origins", origins);
-
+//            var origins = getAllItems()
+//                    .stream().map(p -> p.getOrigin())
+//                    .collect(Collectors.toCollection(TreeSet::new))
+//                    .stream()
+//                    .collect(Collectors.toCollection(ArrayList<String>::new));
+//            setValue("origins", origins);
             var dates = new TreeSet<LocalDateTime>();
             extensometers.forEach(ext -> {
                 ext.getPoints().forEach(p -> {

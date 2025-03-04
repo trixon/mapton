@@ -15,37 +15,85 @@
  */
 package org.mapton.butterfly_geo_extensometer;
 
-import javafx.scene.control.Separator;
-import javafx.scene.layout.VBox;
-import static org.mapton.api.ui.MPopOver.GAP;
-import static org.mapton.api.ui.MPopOver.autoSize;
-import org.mapton.butterfly_core.api.BaseFilterPopOver;
+import com.dlsc.gemsfx.util.SessionManager;
+import java.util.prefs.Preferences;
+import javafx.scene.layout.BorderPane;
+import org.mapton.butterfly_core.api.BFilterSectionDate;
+import org.mapton.butterfly_core.api.BFilterSectionDisruptor;
+import org.mapton.butterfly_core.api.BFilterSectionPoint;
+import org.mapton.butterfly_core.api.BaseTabbedFilterPopOver;
+import org.mapton.butterfly_core.api.FilterSectionMisc;
 import org.mapton.butterfly_format.Butterfly;
-import se.trixon.almond.util.swing.SwingHelper;
+import org.openide.util.NbPreferences;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class ExtensoFilterPopOver extends BaseFilterPopOver {
+public class ExtensoFilterPopOver extends BaseTabbedFilterPopOver {
 
     private final ExtensoFilter mFilter;
+    private final BFilterSectionDate mFilterSectionDate;
+    private final BFilterSectionDisruptor mFilterSectionDisruptor;
+    private final FilterSectionMisc mFilterSectionMisc;
+    private final BFilterSectionPoint mFilterSectionPoint;
+    private final ExtensoManager mManager = ExtensoManager.getInstance();
 
     public ExtensoFilterPopOver(ExtensoFilter filter) {
+        mFilterSectionPoint = new BFilterSectionPoint();
+        mFilterSectionDate = new BFilterSectionDate();
+        mFilterSectionDisruptor = new BFilterSectionDisruptor();
+        mFilterSectionMisc = new FilterSectionMisc();
+
         mFilter = filter;
+        mFilter.setFilterSection(mFilterSectionPoint);
+        mFilter.setFilterSection(mFilterSectionDate);
+        mFilter.setFilterSection(mFilterSectionDisruptor);
+
+        setFilter(filter);
         createUI();
         initListeners();
-        initSession();
+        initSession(NbPreferences.forModule(getClass()).node(getClass().getSimpleName()));
+
+        mFilterSectionPoint.getMeasNextSccb().setDisable(true);
+        mFilterSectionPoint.getMeasNextSccb().setDisable(true);
+        mFilterSectionPoint.getAlarmNameSccb().setDisable(true);
+
+        populate();
     }
 
     @Override
     public void clear() {
         setUsePolygonFilter(false);
         mFilter.freeTextProperty().set("");
+
+        mFilterSectionPoint.clear();
+        mFilterSectionDate.clear();
+        mFilterSectionDisruptor.clear();
+        mFilterSectionMisc.clear();
+    }
+
+    @Override
+    public void filterPresetRestore(Preferences preferences) {
+        clear();
+        filterPresetStore(preferences);
+        //mDateRangePane.reset();
+    }
+
+    @Override
+    public void filterPresetStore(Preferences preferences) {
+        var sessionManager = initSession(preferences);
+        sessionManager.unregisterAll();
     }
 
     @Override
     public void load(Butterfly butterfly) {
+        var items = butterfly.geotechnical().getExtensometers();
+
+        mFilterSectionPoint.load(items);
+        mFilterSectionDisruptor.load();
+        mFilterSectionDate.load(mManager.getTemporalRange());
+        mFilterSectionMisc.load();
     }
 
     @Override
@@ -54,32 +102,54 @@ public class ExtensoFilterPopOver extends BaseFilterPopOver {
     }
 
     @Override
+    public void onShownFirstTime() {
+        mFilterSectionPoint.onShownFirstTime();
+    }
+
+    @Override
     public void reset() {
         clear();
         mFilter.freeTextProperty().set("*");
+
+        mFilterSectionPoint.reset(null);
+        mFilterSectionMisc.reset(null);
     }
 
     private void createUI() {
-        int titleGap = SwingHelper.getUIScaled(2);
+        var root = new BorderPane(getTabPane());
+        root.setTop(getToolBar());
+        populateToolBar(mFilterSectionMisc.getInvertCheckboxToolBarItem());
 
-        var vBox = new VBox(GAP,
-                getButtonBox(),
-                new Separator()
+        getTabPane().getTabs().addAll(
+                mFilterSectionPoint.getTab(),
+                mFilterSectionDate.getTab(),
+                mFilterSectionDisruptor.getTab()
         );
 
-        autoSize(vBox);
-        setContentNode(vBox);
+        setContentNode(root);
     }
 
     private void initListeners() {
-        mFilter.polygonFilterProperty().bind(usePolygonFilterProperty());
+        activatePasteName(actionEvent -> {
+            mFilter.freeTextProperty().set(mManager.getSelectedItem().getName());
+        });
 
+        mFilterSectionMisc.initListeners(mFilter);
+
+        mFilter.polygonFilterProperty().bind(usePolygonFilterProperty());
         mFilter.initCheckModelListeners();
     }
 
-    private void initSession() {
-        var sessionManager = getSessionManager();
-        getSessionManager().register("filter.freeText", mFilter.freeTextProperty());
+    private SessionManager initSession(Preferences preferences) {
+        var sessionManager = new SessionManager(preferences);
+        mFilterSectionPoint.initSession(sessionManager);
+        mFilterSectionDate.initSession(sessionManager);
+        mFilterSectionDisruptor.initSession(sessionManager);
+        mFilterSectionMisc.initSession(sessionManager);
+
+        sessionManager.register("filter.measPoint.freeText", mFilter.freeTextProperty());
+
+        return sessionManager;
     }
 
 }

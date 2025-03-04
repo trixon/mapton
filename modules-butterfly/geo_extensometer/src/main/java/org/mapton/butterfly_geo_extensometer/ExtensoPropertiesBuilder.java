@@ -16,41 +16,90 @@
 package org.mapton.butterfly_geo_extensometer;
 
 import java.util.LinkedHashMap;
-import org.mapton.api.ui.forms.PropertiesBuilder;
+import org.mapton.butterfly_core.api.BPropertiesBuilder;
 import org.mapton.butterfly_format.types.geo.BGeoExtensometer;
-import se.trixon.almond.util.Dict;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class ExtensoPropertiesBuilder extends PropertiesBuilder<BGeoExtensometer> {
+public class ExtensoPropertiesBuilder extends BPropertiesBuilder<BGeoExtensometer> {
 
     @Override
-    public Object build(BGeoExtensometer extenso) {
-        if (extenso == null) {
-            return extenso;
+    public Object build(BGeoExtensometer p) {
+        if (p == null) {
+            return p;
         }
 
         var propertyMap = new LinkedHashMap<String, Object>();
-        var cat1 = Dict.BASIC.toString();
+//******************************************************************************
+        var basicParams = new BasicParams();
+        propertyMap.putAll(populateBasics(p, basicParams));
+//******************************************************************************
+        var dateParams = new DateParams(
+                p.ext().getObservationRawFirstDate(),
+                p.ext().getObservationFilteredFirstDate(),
+                p.ext().getObservationRawLastDate(),
+                p.ext().getObservationFilteredLastDate(),
+                p.ext().getObservationRawNextDate()
+        );
+        propertyMap.putAll(populateDates(p, dateParams));
+//******************************************************************************
+//        Double azimuth = null;
+//        try {
+//            var o = p.ext().getObservationsTimeFiltered().getLast();
+//            azimuth = o.ext().getBearing();
+//        } catch (Exception e) {
+//        }
+//        var cat = "CUSTOM";
+//        propertyMap.put(getCatKeyNum(cat, Dict.BEARING.toString()), StringHelper.round(p.getAzimuth(), 0));
+//        var lastObservation = p.ext().getObservationFilteredLast();
+//
+//        if (lastObservation != null) {
+//            for (var o : lastObservation.getObservationItems()) {
+//                var azimuth = Angle.normalizedDegrees(o.getAzimuth() + p.getAzimuth());
+//                if (azimuth < 0) {
+//                    azimuth += 360;
+//                }
+//                var value = "%smm :: %.0f°".formatted(StringHelper.round(o.getDistance() * 1000, 1), azimuth);
+//                propertyMap.put(getCatKeyNum(cat, "%.1f".formatted(o.getDown())), value);
+//            }
+//        }
 
-        propertyMap.put(getCatKey(cat1, Dict.NAME.toString()), extenso.getName());
-        propertyMap.put(getCatKey(cat1, Dict.LATEST.toString()), extenso.getDateLatest());
-
-        for (var point : extenso.getPoints()) {
-            var d = point.ext().getDelta();
-//            var delta = d == null ? null : "%.2f".formatted(d);
-//            String key = "%s_%s".formatted(point.getName(), "delta");
-//            propertyMap.put(getCatKey(cat1, key), delta);
-//            key = "%s_%s".formatted(point.getName(), "alarms");
-//            propertyMap.put(getCatKey(cat1, key), "%.4f, %.4f, %.4f".formatted(
-//                    point.getLimit1(), point.getLimit2(), point.getLimit3()));
-
-            var s = "%.2f (%.4f, %.4f, %.4f)".formatted(d,
-                    point.getLimit1(), point.getLimit2(), point.getLimit3());
-            propertyMap.put(getCatKey(cat1, point.getName()), s);
-        }
+//        var measParams = new MeasParams<BXyzPoint>(
+//                0.0,
+//                p.ext().getMeasurementUntilNext(ChronoUnit.DAYS),
+//                p.ext().getMeasurementAge(ChronoUnit.DAYS),
+//                p.ext().getNumOfObservationsFiltered(),
+//                p.ext().getNumOfObservations(),
+//                p.ext().firstIsZero(),
+//                p.ext().getObservationsAllRaw().stream().filter(obs -> obs.isReplacementMeasurement()).count(),
+//                AlarmHelper.getInstance().getLimitsAsString(BComponent.HEIGHT, p),
+//                AlarmHelper.getInstance().getLimitsAsString(BComponent.PLANE, p),
+//                p.ext().getAlarmPercentString(p.ext()),
+//                p.ext().getAlarmLevelAge(),
+//                p.ext().deltaRolling().getDelta(3),
+//                p.ext().deltaZero().getDelta(3)
+//        );
+//        propertyMap.putAll(populateMeas(p, measParams));
+//******************************************************************************
+//******************************************************************************
+//
+//        for (var point : extenso.getPoints()) {
+//            var d = point.ext().getDelta();
+        ////            var delta = d == null ? null : "%.2f".formatted(d);
+////            String key = "%s_%s".formatted(point.getName(), "delta");
+////            propertyMap.put(getCatKey(cat1, key), delta);
+////            key = "%s_%s".formatted(point.getName(), "alarms");
+////            propertyMap.put(getCatKey(cat1, key), "%.4f, %.4f, %.4f".formatted(
+////                    point.getLimit1(), point.getLimit2(), point.getLimit3()));
+//
+//            var s = "%.2f (%.4f, %.4f, %.4f)".formatted(d,
+//                    point.getLimit1(), point.getLimit2(), point.getLimit3());
+//            propertyMap.put(getCatKey(cat1, point.getName()), s);
+//        }
+//******************************************************************************
+        propertyMap.putAll(populateDatabase(p));
 
         return propertyMap;
     }
