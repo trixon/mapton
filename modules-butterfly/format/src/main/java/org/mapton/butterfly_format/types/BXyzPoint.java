@@ -205,7 +205,27 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
                 var measuredX = o.getMeasuredX();
                 var measuredY = o.getMeasuredY();
                 var measuredZ = o.getMeasuredZ();
+                var hasAccumulatedReplacements = MathHelper.convertDoubleToDouble(accumulatedReplacementsX) != 0
+                        || MathHelper.convertDoubleToDouble(accumulatedReplacementsY) != 0
+                        || MathHelper.convertDoubleToDouble(accumulatedReplacementsZ) != 0;
+
                 if (o.isZeroMeasurement()) {
+                    if (hasAccumulatedReplacements) {
+                        for (var oo : observations) {
+                            if (oo == o) {
+                                break;
+                            }
+                            if (oo.ext().getDeltaX() != null) {
+                                oo.ext().setDeltaX(oo.ext().getDeltaX() + accumulatedReplacementsX);
+                            }
+                            if (oo.ext().getDeltaY() != null) {
+                                oo.ext().setDeltaY(oo.ext().getDeltaY() + accumulatedReplacementsY);
+                            }
+                            if (oo.ext().getDeltaZ() != null) {
+                                oo.ext().setDeltaZ(oo.ext().getDeltaZ() + accumulatedReplacementsZ);
+                            }
+                        }
+                    }
                     accumulatedReplacementsX = 0.0;
                     accumulatedReplacementsY = 0.0;
                     accumulatedReplacementsZ = 0.0;

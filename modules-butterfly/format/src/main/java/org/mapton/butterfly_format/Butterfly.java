@@ -380,11 +380,15 @@ public class Butterfly {
                     for (var o0 : entry.getValue()) {
                         o.setName(o0.getName());
                         var item = new ObservationItem();
-                        item.setA(o0.getA() / 1000.0);
-                        item.setB(o0.getB() / 1000.0);
-                        item.setDown(o0.getDown());
-                        item.recalc();
-                        o.getObservationItems().add(item);
+                        try {
+                            item.setA(o0.getA() / 1000.0);
+                            item.setB(o0.getB() / 1000.0);
+                            item.setDown(o0.getDown());
+                            item.recalc();
+                            o.getObservationItems().add(item);
+                        } catch (NullPointerException e) {
+                            //nvm
+                        }
                     }
 
                     if (o.getObservationItems().size() > 1) {
