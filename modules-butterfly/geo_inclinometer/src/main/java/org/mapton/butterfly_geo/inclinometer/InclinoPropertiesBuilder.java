@@ -88,7 +88,7 @@ public class InclinoPropertiesBuilder extends BPropertiesBuilder<BGeoInclinomete
                 p.ext().deltaRolling().getDelta(3),
                 p.ext().deltaZero().getDelta(3)
         );
-//        propertyMap.putAll(populateMeas(p, measParams));
+        propertyMap.putAll(populateMeas(p, measParams));
 
 //******************************************************************************
 //******************************************************************************

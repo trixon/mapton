@@ -275,7 +275,7 @@ class FilterSectionMeas extends MBaseFilterSection {
         mMeasAlarmLevelChangeUnitScb.getItems().setAll(AlarmLevelChangeUnit.values());
         mMeasTopListUnitScb.getItems().setAll(AlarmLevelChangeUnit.values());
         mMeasTopListUnitScb.getSelectionModel().selectFirst();
-        mMeasCodeSccb.getItems().setAll(List.of(getBundle().getString("measCodeZero"), getBundle().getString("measCodeReplacement")));
+        mMeasCodeSccb.getItems().setAll(List.of(getBundle().getString("measCodeZeroIs"), getBundle().getString("measCodeZero"), getBundle().getString("measCodeReplacement")));
         mMeasNumOfSis.getValueFactory().setConverter(new NegPosStringConverterInteger());
         mMeasAlarmLevelAgeSis.getValueFactory().setConverter(new NegPosStringConverterInteger());
         mMeasAlarmLevelChangeCheckbox.setText(getBundle().getString("measAlarmLevelChangeCheckBoxText"));

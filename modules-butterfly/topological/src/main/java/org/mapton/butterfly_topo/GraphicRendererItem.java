@@ -43,8 +43,8 @@ public enum GraphicRendererItem implements GraphicRenderItemLimitProvider {
     SPEED_1D_TRACE("1d %s (%s)".formatted(Dict.SPEED.toLower(), SDict.TRACE.toLower()), Integer.MAX_VALUE),
     ALARM_LEVEL(SDict.ALARM_LEVEL.toString(), Integer.MAX_VALUE),
     ALARM_CONSUMPTION("Larmförbrukning", Integer.MAX_VALUE),
-    ALARM_CONSUMPTION_TRACE_1("Larmförbrukning, spår höjd", Integer.MAX_VALUE),
-    ALARM_CONSUMPTION_TRACE_2("Larmförbrukning, spår plan", Integer.MAX_VALUE),
+    ALARM_CONSUMPTION_TRACE_1("\t— spår höjd", Integer.MAX_VALUE),
+    ALARM_CONSUMPTION_TRACE_2("\t— spår plan", Integer.MAX_VALUE),
     TRACE_ALARM_LEVEL("%s (%s)".formatted(SDict.ALARM_LEVEL.toString(), SDict.TRACE.toLower()), Integer.MAX_VALUE);
     private final String mName;
     private final int mPlotLimit;

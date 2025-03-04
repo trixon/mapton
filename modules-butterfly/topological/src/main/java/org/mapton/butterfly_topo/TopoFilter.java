@@ -768,9 +768,10 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
         if (p.ext().getObservationsAllRaw().isEmpty()) {
             return true;
         }
-        var firstNotZero = !p.ext().getObservationRawFirstDate().equals(p.getDateZero());
+        var firstIsZero = p.ext().getObservationRawFirstDate().equals(p.getDateZero());
         var valid = mMeasCodeCheckModel.isEmpty()
-                || mMeasCodeCheckModel.isChecked(getBundle().getString("measCodeZero")) && firstNotZero
+                || mMeasCodeCheckModel.isChecked(getBundle().getString("measCodeZero")) && !firstIsZero
+                || mMeasCodeCheckModel.isChecked(getBundle().getString("measCodeZeroIs")) && firstIsZero
                 || mMeasCodeCheckModel.isChecked(getBundle().getString("measCodeReplacement")) && p.ext().getObservationsAllRaw().stream().filter(oo -> oo.isReplacementMeasurement()).count() > 0;
 
         return valid;

@@ -53,15 +53,6 @@ public class InclinoManager extends BaseManager<BGeoInclinometerPoint> {
 
     @Override
     public Object getObjectProperties(BGeoInclinometerPoint selectedObject) {
-//        System.out.println(selectedObject.getName());
-//        for (var o : selectedObject.ext().getObservationsTimeFiltered()) {
-//            System.out.println(o.getDate());
-//            for (var item : o.getObservationItems()) {
-//                System.out.println("x\t\t%.1f\t%.3f\t%.0f\t%.3f\t%.3f".formatted(item.getDown(), item.getDistance(), item.getAzimuth(), item.getA(), item.getB()));
-//            }
-//
-//        }
-//        System.out.println("");
         return mPropertiesBuilder.build(selectedObject);
     }
 
