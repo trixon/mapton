@@ -40,6 +40,9 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
     private BDimension dimension;
     private Integer numOfDecXY;
     private Integer numOfDecZ;
+    private Double offsetX;
+    private Double offsetY;
+    private Double offsetZ;
     private Double rollingX;
     private Double rollingY;
     private Double rollingZ;
@@ -68,6 +71,18 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
 
     public Integer getNumOfDecZ() {
         return numOfDecZ;
+    }
+
+    public Double getOffsetX() {
+        return offsetX;
+    }
+
+    public Double getOffsetY() {
+        return offsetY;
+    }
+
+    public Double getOffsetZ() {
+        return offsetZ;
     }
 
     @Override
@@ -129,6 +144,18 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
 
     public void setNumOfDecZ(Integer numOfDecZ) {
         this.numOfDecZ = numOfDecZ;
+    }
+
+    public void setOffsetX(Double offsetX) {
+        this.offsetX = offsetX;
+    }
+
+    public void setOffsetY(Double offsetY) {
+        this.offsetY = offsetY;
+    }
+
+    public void setOffsetZ(Double offsetZ) {
+        this.offsetZ = offsetZ;
     }
 
     public void setRollingX(Double rollingX) {
@@ -263,6 +290,10 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
                         o.ext().setDeltaZ(o.ext().getDeltaZ() - replacementZ);
                         accumulatedReplacementsZ = accumulatedReplacementsZ + replacementZ;
                     }
+                }
+
+                if (offsetZ != null && offsetZ != 0d) {
+                    o.ext().setDeltaZ(o.ext().getDeltaZ() + offsetZ);
                 }
             }
         }

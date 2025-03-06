@@ -25,7 +25,6 @@ import org.mapton.butterfly_format.types.BXyzPointObservation;
 @JsonPropertyOrder({
     "name",
     "date",
-    "values",
     "down",
     "a",
     "b",

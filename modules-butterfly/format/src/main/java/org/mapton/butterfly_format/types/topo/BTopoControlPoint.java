@@ -57,9 +57,6 @@ import org.mapton.butterfly_format.types.BXyzPoint;
 public class BTopoControlPoint extends BXyzPoint {
 
     private transient Ext mExt;
-    private Double offsetX;
-    private Double offsetY;
-    private Double offsetZ;
 
     public BTopoControlPoint() {
     }
@@ -70,30 +67,6 @@ public class BTopoControlPoint extends BXyzPoint {
         }
 
         return mExt;
-    }
-
-    public Double getOffsetX() {
-        return offsetX;
-    }
-
-    public Double getOffsetY() {
-        return offsetY;
-    }
-
-    public Double getOffsetZ() {
-        return offsetZ;
-    }
-
-    public void setOffsetX(Double offsetX) {
-        this.offsetX = offsetX;
-    }
-
-    public void setOffsetY(Double offsetY) {
-        this.offsetY = offsetY;
-    }
-
-    public void setOffsetZ(Double offsetZ) {
-        this.offsetZ = offsetZ;
     }
 
     public class Ext extends BXyzPoint.Ext<BTopoControlPointObservation> {

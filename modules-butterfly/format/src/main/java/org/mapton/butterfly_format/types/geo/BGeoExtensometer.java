@@ -17,11 +17,8 @@ package org.mapton.butterfly_format.types.geo;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.butterfly_format.types.BXyzPoint;
 
 /**
@@ -85,6 +82,16 @@ public class BGeoExtensometer extends BXyzPoint {
         return mExt;
     }
 
+    @Override
+    public LocalDateTime getDateCreated() {
+        return getPoints().stream().map(p -> p.getDateCreated()).min(LocalDateTime::compareTo).orElse(null);
+    }
+
+    @Override
+    public LocalDateTime getDateChanged() {
+        return getPoints().stream().map(p -> p.getDateChanged()).max(LocalDateTime::compareTo).orElse(null);
+    }
+
     public ArrayList<BGeoExtensometerPoint> getPoints() {
         return mPoints;
     }
@@ -101,60 +108,59 @@ public class BGeoExtensometer extends BXyzPoint {
         this.sensors = points;
     }
 
-    public class Ext {
+    public class Ext extends BXyzPoint.Ext<BGeoExtensometerPointObservation> {
 
         public Ext() {
         }
 
-        public LocalDateTime getDateFirst() {
-            var first = getPoints().stream().map(p -> p.ext().getDateFirst()).min(LocalDateTime::compareTo).orElse(LocalDateTime.MAX);
-
-            return first;
-        }
-
-        public long getMeasurementUntilNext(ChronoUnit chronoUnit) {
-            var latest = getPoints().stream().map(p -> p.ext().getDateLatest()).max(LocalDateTime::compareTo).orElse(LocalDateTime.MIN);
-            var nextMeas = latest.plusDays(getFrequency());
-
-            return chronoUnit.between(LocalDate.now(), nextMeas);
-        }
-
-        public LocalDate getObservationFilteredFirstDate() {
-            return getPoints().stream()
-                    .map(p -> p.ext().getObservationFilteredFirstDate())
-                    .min(LocalDate::compareTo)
-                    .orElse(LocalDate.MAX);
-        }
-
-        public LocalDate getObservationFilteredLastDate() {
-            return getPoints().stream()
-                    .map(p -> p.ext().getObservationFilteredLastDate())
-                    .max(LocalDate::compareTo)
-                    .orElse(LocalDate.MIN);
-        }
-
-        public LocalDate getObservationRawFirstDate() {
-            return getPoints().stream()
-                    .map(p -> p.ext().getObservationRawFirstDate())
-                    .min(LocalDate::compareTo)
-                    .orElse(LocalDate.MAX);
-        }
-
-        public LocalDate getObservationRawLastDate() {
-            return getPoints().stream()
-                    .map(p -> p.ext().getObservationRawLastDate())
-                    .max(LocalDate::compareTo)
-                    .orElse(LocalDate.MIN);
-        }
-
-        public LocalDate getObservationRawNextDate() {
-            if (ObjectUtils.allNotNull(getObservationRawLastDate(), getFrequency()) && getFrequency() != 0) {
-                return getObservationRawLastDate().plusDays(getFrequency());
-            } else {
-                return null;
-            }
-        }
-
+//        public LocalDateTime getDateFirst() {
+//            var first = getPoints().stream().map(p -> p.ext().getDateFirst()).min(LocalDateTime::compareTo).orElse(LocalDateTime.MAX);
+//
+//            return first;
+//        }
+//
+//        public long getMeasurementUntilNext(ChronoUnit chronoUnit) {
+//            var latest = getPoints().stream().map(p -> p.ext().getDateLatest()).max(LocalDateTime::compareTo).orElse(LocalDateTime.MIN);
+//            var nextMeas = latest.plusDays(getFrequency());
+//
+//            return chronoUnit.between(LocalDate.now(), nextMeas);
+//        }
+//
+//        public LocalDate getObservationFilteredFirstDate() {
+//            return getPoints().stream()
+//                    .map(p -> p.ext().getObservationFilteredFirstDate())
+//                    .min(LocalDate::compareTo)
+//                    .orElse(LocalDate.MAX);
+//        }
+//
+//        public LocalDate getObservationFilteredLastDate() {
+//            return getPoints().stream()
+//                    .map(p -> p.ext().getObservationFilteredLastDate())
+//                    .max(LocalDate::compareTo)
+//                    .orElse(LocalDate.MIN);
+//        }
+//
+//        public LocalDate getObservationRawFirstDate() {
+//            return getPoints().stream()
+//                    .map(p -> p.ext().getObservationRawFirstDate())
+//                    .min(LocalDate::compareTo)
+//                    .orElse(LocalDate.MAX);
+//        }
+//
+//        public LocalDate getObservationRawLastDate() {
+//            return getPoints().stream()
+//                    .map(p -> p.ext().getObservationRawLastDate())
+//                    .max(LocalDate::compareTo)
+//                    .orElse(LocalDate.MIN);
+//        }
+//
+//        public LocalDate getObservationRawNextDate() {
+//            if (ObjectUtils.allNotNull(getObservationRawLastDate(), getFrequency()) && getFrequency() != 0) {
+//                return getObservationRawLastDate().plusDays(getFrequency());
+//            } else {
+//                return null;
+//            }
+//        }
         public boolean hasNoObservations() {
             return mPoints.stream()
                     .noneMatch(point -> !point.ext().getObservationsAllRaw().isEmpty());
