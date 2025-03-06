@@ -15,8 +15,11 @@
  */
 package org.mapton.butterfly_geo_extensometer;
 
+import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
+import org.apache.commons.lang3.StringUtils;
 import org.mapton.butterfly_core.api.BPropertiesBuilder;
+import org.mapton.butterfly_format.types.BXyzPoint;
 import org.mapton.butterfly_format.types.geo.BGeoExtensometer;
 
 /**
@@ -65,41 +68,56 @@ public class ExtensoPropertiesBuilder extends BPropertiesBuilder<BGeoExtensomete
 //                propertyMap.put(getCatKeyNum(cat, "%.1f".formatted(o.getDown())), value);
 //            }
 //        }
+        var dayUntilNext = p.getPoints().stream()
+                .mapToLong(point -> point.ext().getMeasurementUntilNext(ChronoUnit.DAYS))
+                .min().getAsLong();
 
-//        var measParams = new MeasParams<BXyzPoint>(
-//                0.0,
-//                p.ext().getMeasurementUntilNext(ChronoUnit.DAYS),
-//                p.ext().getMeasurementAge(ChronoUnit.DAYS),
-//                p.ext().getNumOfObservationsFiltered(),
-//                p.ext().getNumOfObservations(),
-//                p.ext().firstIsZero(),
-//                p.ext().getObservationsAllRaw().stream().filter(obs -> obs.isReplacementMeasurement()).count(),
-//                AlarmHelper.getInstance().getLimitsAsString(BComponent.HEIGHT, p),
-//                AlarmHelper.getInstance().getLimitsAsString(BComponent.PLANE, p),
-//                p.ext().getAlarmPercentString(p.ext()),
-//                p.ext().getAlarmLevelAge(),
-//                p.ext().deltaRolling().getDelta(3),
-//                p.ext().deltaZero().getDelta(3)
-//        );
-//        propertyMap.putAll(populateMeas(p, measParams));
+        var age = p.getPoints().stream()
+                .mapToLong(point -> point.ext().getMeasurementAge(ChronoUnit.DAYS))
+                .max().getAsLong();
+
+        var numOfFilteredObs = p.getPoints().stream()
+                .mapToInt(point -> point.ext().getNumOfObservationsFiltered())
+                .sum();
+
+        var numOfObs = p.getPoints().stream()
+                .mapToInt(point -> point.ext().getNumOfObservations())
+                .sum();
+
+        var measParams = new MeasParams<BXyzPoint>(
+                0.0,
+                dayUntilNext,
+                age,
+                numOfFilteredObs,
+                numOfObs,
+                p.ext().firstIsZero(),
+                p.ext().getObservationsAllRaw().stream().filter(obs -> obs.isReplacementMeasurement()).count(),
+                NA,
+                NA,
+                NA,
+                NA,
+                NA,
+                NA
+        );
+
+        var measMap = populateMeas(p, measParams);
+        measMap.put(getCatKeyNum(CAT_MEAS, "FIRST_IS_ZERO"), NA);
+        measMap.put(getCatKeyNum(CAT_MEAS, "NUM_OF_REPLACEMENTS"), NA);
+
+        propertyMap.putAll(measMap);
 //******************************************************************************
-//******************************************************************************
-//
-//        for (var point : extenso.getPoints()) {
-//            var d = point.ext().getDelta();
-        ////            var delta = d == null ? null : "%.2f".formatted(d);
-////            String key = "%s_%s".formatted(point.getName(), "delta");
-////            propertyMap.put(getCatKey(cat1, key), delta);
-////            key = "%s_%s".formatted(point.getName(), "alarms");
-////            propertyMap.put(getCatKey(cat1, key), "%.4f, %.4f, %.4f".formatted(
-////                    point.getLimit1(), point.getLimit2(), point.getLimit3()));
-//
-//            var s = "%.2f (%.4f, %.4f, %.4f)".formatted(d,
-//                    point.getLimit1(), point.getLimit2(), point.getLimit3());
-//            propertyMap.put(getCatKey(cat1, point.getName()), s);
-//        }
+        var cat1 = "Värden";
+        for (var point : p.getPoints()) {
+            var d = point.ext().getDelta();
+            var s = "%.2f (%.1f, %.1f, %.1f)".formatted(d,
+                    point.getLimit1() * 1000, point.getLimit2() * 1000, point.getLimit3() * 1000);
+            var depth = "-%s".formatted(StringUtils.substringAfter(point.getName(), "-"));
+            propertyMap.put(getCatKey(cat1, depth), s);
+        }
 //******************************************************************************
         propertyMap.putAll(populateDatabase(p));
+
+        removeByValues(propertyMap, NA, " :: ");
 
         return propertyMap;
     }

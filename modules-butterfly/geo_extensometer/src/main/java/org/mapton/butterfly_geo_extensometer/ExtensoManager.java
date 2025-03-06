@@ -82,8 +82,6 @@ public class ExtensoManager extends BaseManager<BGeoExtensometer> {
             }
 
             extensometers.forEach(ext -> {
-                var dates = new TreeSet<LocalDateTime>();
-
                 for (var pointName : StringUtils.split(ext.getSensors(), ",")) {
                     var p = nameToPoint.get(pointName);
                     ext.getPoints().add(p);
@@ -105,21 +103,26 @@ public class ExtensoManager extends BaseManager<BGeoExtensometer> {
                             break;
                         }
                     }
-                    dates.add(p.ext().getDateFirst());
-                    dates.add(p.ext().getDateLatest());
                 }
-                ext.setDateLatest(dates.last());
             });
-//            var origins = getAllItems()
-//                    .stream().map(p -> p.getOrigin())
-//                    .collect(Collectors.toCollection(TreeSet::new))
-//                    .stream()
-//                    .collect(Collectors.toCollection(ArrayList<String>::new));
-//            setValue("origins", origins);
+
             var dates = new TreeSet<LocalDateTime>();
             extensometers.forEach(ext -> {
+                ext.ext().getObservationsAllRaw().clear();
+                ext.ext().getObservationsTimeFiltered().clear();
                 ext.getPoints().forEach(p -> {
                     dates.addAll(p.ext().getObservationsAllRaw().stream().map(o -> o.getDate()).toList());
+                    ext.ext().getObservationsAllRaw().addAll(p.ext().getObservationsAllRaw());
+                    ext.ext().getObservationsTimeFiltered().addAll(p.ext().getObservationsTimeFiltered());
+                    ext.setDateRolling(p.getDateRolling());
+                    ext.setDateValidFrom(p.getDateValidFrom());
+                    ext.setDateValidTo(p.getDateValidTo());
+                    ext.setDateZero(p.getDateZero());
+
+                    if (!dates.isEmpty()) {
+                        ext.ext().setDateFirst(dates.first());
+                        ext.setDateLatest(dates.last());
+                    }
                 });
             });
 
