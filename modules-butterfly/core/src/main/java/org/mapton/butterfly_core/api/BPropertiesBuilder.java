@@ -35,52 +35,54 @@ import se.trixon.almond.util.StringHelper;
  */
 public abstract class BPropertiesBuilder<T> extends PropertiesBuilder<T> {
 
+    public static final String CAT_BASIC = Dict.BASIC.toString();
+    public static final String CAT_DATABASE = Dict.DATABASE.toString();
+    public static final String CAT_DATE = Dict.DATE.toString();
+    public static final String CAT_MEAS = SDict.MEASUREMENTS.toString();
+
     public BPropertiesBuilder() {
     }
 
     public LinkedHashMap<String, Object> populateBasics(BXyzPoint p, BasicParams params) {
         var map = new LinkedHashMap<String, Object>();
-        var category = Dict.BASIC.toString();
 
-        map.put(getCatKeyNum(category, Dict.NAME.toString()), p.getName());
-        map.put(getCatKeyNum(category,
+        map.put(getCatKeyNum(CAT_BASIC, Dict.NAME.toString()), p.getName());
+        map.put(getCatKeyNum(CAT_BASIC,
                 StringHelper.join(SEPARATOR, "", Dict.STATUS.toString(), SDict.DIMENSION.toString())),
                 StringHelper.join(SEPARATOR, "", p.getStatus(), p.getDimension().getName()));
-        map.put(getCatKeyNum(category,
+        map.put(getCatKeyNum(CAT_BASIC,
                 StringHelper.join(SEPARATOR, "", Dict.GROUP.toString(), Dict.CATEGORY.toString())),
                 StringHelper.join(SEPARATOR, "", p.getGroup(), p.getCategory()));
-        map.put(getCatKeyNum(category,
+        map.put(getCatKeyNum(CAT_BASIC,
                 StringHelper.join(SEPARATOR, "", Dict.ORIGIN.toString(), SDict.OPERATOR.toString())),
                 StringHelper.join(SEPARATOR, "", p.getOrigin(), p.getOperator()));
-        map.put(getCatKeyNum(category, Dict.COMMENT.toString()), p.getComment());
+        map.put(getCatKeyNum(CAT_BASIC, Dict.COMMENT.toString()), p.getComment());
 
         return map;
     }
 
     public LinkedHashMap<String, Object> populateDatabase(BXyzPoint p) {
         var map = new LinkedHashMap<String, Object>();
-        var category = Dict.DATABASE.toString();
 
-        map.put(getCatKeyNum(category, Dict.CREATED.toString()), DateHelper.toDateString(p.getDateCreated()));
-        map.put(getCatKeyNum(category, Dict.CHANGED.toString()), DateHelper.toDateString(p.getDateChanged()));
+        map.put(getCatKeyNum(CAT_DATABASE, Dict.CREATED.toString()), DateHelper.toDateString(p.getDateCreated()));
+        map.put(getCatKeyNum(CAT_DATABASE, Dict.CHANGED.toString()), DateHelper.toDateString(p.getDateChanged()));
 
         return map;
     }
 
     public LinkedHashMap<String, Object> populateDates(BXyzPoint p, DateParams params) {
         var map = new LinkedHashMap<String, Object>();
-        var category = Dict.DATE.toString();
 
         var firstRaw = Objects.toString(DateHelper.toDateString(params.firstRawDate), "-");
         var firstFiltered = Objects.toString(DateHelper.toDateString(params.firstFilteredDate), "-");
         var lastRaw = Objects.toString(DateHelper.toDateString(params.lastRawDate), "-");
         var lastFiltered = Objects.toString(DateHelper.toDateString(params.lastFilteredDate), "-");
         var nextRaw = Objects.toString(DateHelper.toDateString(params.nextRawDate), "-");
-        map.put(getCatKeyNum(category, Dict.LATEST.toString()),
+        map.put(getCatKeyNum(CAT_DATE, Dict.LATEST.toString()),
                 "%s (%s)".formatted(lastRaw, lastFiltered)
         );
-        map.put(getCatKeyNum(category, Dict.NEXT.toString()), nextRaw);
-        map.put(getCatKeyNum(category, Dict.FIRST.toString()),
+        map.put(getCatKeyNum(CAT_DATE, Dict.NEXT.toString()), nextRaw);
+        map.put(getCatKeyNum(CAT_DATE, Dict.FIRST.toString()),
                 "%s (%s)".formatted(firstRaw, firstFiltered)
         );
 
@@ -91,8 +93,8 @@ public abstract class BPropertiesBuilder<T> extends PropertiesBuilder<T> {
             validFromTo = StringHelper.joinNonNulls(" // ", fromDat, toDat);
         }
 
-        map.put(getCatKeyNum(category, "%s %s - %s".formatted(Dict.VALID.toString(), Dict.FROM.toLower(), Dict.TO.toLower())), validFromTo);
-        map.put(getCatKeyNum(category, Dict.REFERENCE.toString()),
+        map.put(getCatKeyNum(CAT_DATE, "%s %s - %s".formatted(Dict.VALID.toString(), Dict.FROM.toLower(), Dict.TO.toLower())), validFromTo);
+        map.put(getCatKeyNum(CAT_DATE, Dict.REFERENCE.toString()),
                 "%s (%s)".formatted(
                         Objects.toString(DateHelper.toDateString(p.getDateZero()), "-"),
                         Objects.toString(DateHelper.toDateString(p.getDateRolling()), "-"))
@@ -103,32 +105,31 @@ public abstract class BPropertiesBuilder<T> extends PropertiesBuilder<T> {
 
     public LinkedHashMap<String, Object> populateMeas(BXyzPoint p, MeasParams params) {
         var map = new LinkedHashMap<String, Object>();
-        var category = SDict.MEASUREMENTS.toString();
 
-        map.put(getCatKeyNum(category, SDict.ALARM.toString()), StringHelper.join(SEPARATOR, "", p.getAlarm1Id(), p.getAlarm2Id()));
-        map.put(getCatKeyNum(category, Dict.Geometry.HEIGHT.toString()), params.alarmLimitH);
-        map.put(getCatKeyNum(category, Dict.Geometry.PLANE.toString()), params.alarmLimitP);
-        map.put(getCatKeyNum(category, "Larmförbrukning"), params.alarmPercent);
-        map.put(getCatKeyNum(category, "%s, %s".formatted(Dict.AGE.toString(), SDict.ALARM_LEVEL.toLower())), params.alarmLevelAge);
+        map.put(getCatKeyNum(CAT_MEAS, SDict.ALARM.toString()), StringHelper.join(SEPARATOR, "", p.getAlarm1Id(), p.getAlarm2Id()));
+        map.put(getCatKeyNum(CAT_MEAS, Dict.Geometry.HEIGHT.toString()), params.alarmLimitH);
+        map.put(getCatKeyNum(CAT_MEAS, Dict.Geometry.PLANE.toString()), params.alarmLimitP);
+        map.put(getCatKeyNum(CAT_MEAS, "Larmförbrukning"), params.alarmPercent);
+        map.put(getCatKeyNum(CAT_MEAS, "%s, %s".formatted(Dict.AGE.toString(), SDict.ALARM_LEVEL.toLower())), params.alarmLevelAge);
         //
         var need = p.getFrequency() == 0 ? "-" : Long.toString(params.dayUntilNext);
-        map.put(getCatKeyNum(category, SDict.FREQUENCY.toString()), p.getFrequency());
-        map.put(getCatKeyNum(category, Dict.NEED.toString()), need);
-        map.put(getCatKeyNum(category, Dict.AGE.toString()), params.age);
+        map.put(getCatKeyNum(CAT_MEAS, SDict.FREQUENCY.toString()), p.getFrequency());
+        map.put(getCatKeyNum(CAT_MEAS, Dict.NEED.toString()), need);
+        map.put(getCatKeyNum(CAT_MEAS, Dict.AGE.toString()), params.age);
         var measurements = "%d / %d".formatted(
                 params.numOfObsFiltered,
                 params.numOfObsTotal
         );
-        map.put(getCatKeyNum(category, SDict.MEASUREMENTS.toString()), measurements);
-        map.put(getCatKeyNum(category, "FIRST_IS_ZERO"), BooleanHelper.asYesNo(params.firstIsZero));
-        map.put(getCatKeyNum(category, "NUM_OF_REPLACEMENTS"), params.numOfReplacements);
+        map.put(getCatKeyNum(CAT_MEAS, SDict.MEASUREMENTS.toString()), measurements);
+        map.put(getCatKeyNum(CAT_MEAS, "FIRST_IS_ZERO"), BooleanHelper.asYesNo(params.firstIsZero));
+        map.put(getCatKeyNum(CAT_MEAS, "NUM_OF_REPLACEMENTS"), params.numOfReplacements);
         var delta = "Δ ";
-        map.put(getCatKeyNum(category, Dict.BEARING.toString()), StringHelper.round(params.azimuth(), 0));
-        map.put(getCatKeyNum(category, delta + SDict.ROLLING.toString()), params.deltaRolling);
-        map.put(getCatKeyNum(category, delta + Dict.REFERENCE.toString()), params.deltaZero);
-        map.put(getCatKeyNum(category, "N"), StringHelper.round(p.getZeroY(), 3));
-        map.put(getCatKeyNum(category, "E"), StringHelper.round(p.getZeroX(), 3));
-        map.put(getCatKeyNum(category, "H"), StringHelper.round(p.getZeroZ(), 3));
+        map.put(getCatKeyNum(CAT_MEAS, Dict.BEARING.toString()), StringHelper.round(params.azimuth(), 0));
+        map.put(getCatKeyNum(CAT_MEAS, delta + SDict.ROLLING.toString()), params.deltaRolling);
+        map.put(getCatKeyNum(CAT_MEAS, delta + Dict.REFERENCE.toString()), params.deltaZero);
+        map.put(getCatKeyNum(CAT_MEAS, "N"), StringHelper.round(p.getZeroY(), 3));
+        map.put(getCatKeyNum(CAT_MEAS, "E"), StringHelper.round(p.getZeroX(), 3));
+        map.put(getCatKeyNum(CAT_MEAS, "H"), StringHelper.round(p.getZeroZ(), 3));
 
         return map;
     }
