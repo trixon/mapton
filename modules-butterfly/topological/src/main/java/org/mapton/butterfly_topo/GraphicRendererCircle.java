@@ -44,6 +44,10 @@ public class GraphicRendererCircle extends GraphicRendererBase {
             plot1dCircle(p, position);
         }
 
+        if (sCheckModel.isChecked(GraphicRendererItem.CIRCLE_2D) && p.getDimension() != BDimension._1d) {
+            plot2dCircle(p, position);
+        }
+
         if (sCheckModel.isChecked(GraphicRendererItem.CIRCLE_3D) && p.getDimension() == BDimension._3d) {
             plot3dCircle(p, position);
         }
@@ -82,6 +86,31 @@ public class GraphicRendererCircle extends GraphicRendererBase {
 
         cylinder.setAttributes(attrs);
         addRenderable(cylinder, true, GraphicRendererItem.CIRCLE_1D, sMapObjects);
+    }
+
+    private void plot2dCircle(BTopoControlPoint p, Position position) {
+        if (isPlotLimitReached(p, GraphicRendererItem.CIRCLE_2D, position)) {
+            return;
+        }
+
+        var height = 0.8;
+        var pos = WWHelper.positionFromPosition(position, height * 0.5 * 2);
+        var maxRadius = 10.0;
+        var o = p.ext().getObservationFilteredLast();
+
+        var delta2d = o.ext().getDelta2d();
+        if (delta2d == null) {
+            return;
+        }
+        var radius = Math.min(maxRadius, Math.abs(delta2d) * 250 + 0.05);
+        var maximus = radius == maxRadius;
+
+        var cylinder = new Cylinder(pos, height, radius);
+        var alarmLevel = p.ext().getAlarmLevel(o);
+        var attrs = mAttributeManager.getComponentCircle1dAttributes(p, alarmLevel, false, maximus);
+
+        cylinder.setAttributes(attrs);
+        addRenderable(cylinder, true, GraphicRendererItem.CIRCLE_2D, sMapObjects);
     }
 
     private void plot3dCircle(BTopoControlPoint p, Position position) {
