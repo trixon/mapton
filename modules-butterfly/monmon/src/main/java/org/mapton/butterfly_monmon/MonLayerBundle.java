@@ -127,31 +127,33 @@ public class MonLayerBundle extends BfLayerBundle {
                 pointToZ.put(stationName, min);
             }
 
-            for (var mon : new ArrayList<>(mManager.getTimeFilteredItems())) {
-                var stationIndex = sortedStations.indexOf(mon.getStationName());
-                var mapObjects = new ArrayList<AVListImpl>();
+            synchronized (mManager.getTimeFilteredItems()) {
+                for (var mon : mManager.getTimeFilteredItems()) {
+                    var stationIndex = sortedStations.indexOf(mon.getStationName());
+                    var mapObjects = new ArrayList<AVListImpl>();
 
-                if (ObjectUtils.allNotNull(mon.getLat(), mon.getLon())) {
-                    var position = Position.fromDegrees(mon.getLat(), mon.getLon());
-                    var labelPlacemark = plotLabel(mon, mOptionsView.getLabelBy(), position);
+                    if (ObjectUtils.allNotNull(mon.getLat(), mon.getLon())) {
+                        var position = Position.fromDegrees(mon.getLat(), mon.getLon());
+                        var labelPlacemark = plotLabel(mon, mOptionsView.getLabelBy(), position);
 
-                    mapObjects.add(labelPlacemark);
-                    mapObjects.add(plotPin(mon, position, labelPlacemark, stationIndex));
-                    mGraphicRenderer.plot(mon, position, stationIndex, pointToZ, mapObjects);
+                        mapObjects.add(labelPlacemark);
+                        mapObjects.add(plotPin(mon, position, labelPlacemark, stationIndex));
+                        mGraphicRenderer.plot(mon, position, stationIndex, pointToZ, mapObjects);
+                    }
+
+                    var leftClickRunnable = (Runnable) () -> {
+                        mManager.setSelectedItemAfterReset(mon);
+                    };
+
+                    var leftDoubleClickRunnable = (Runnable) () -> {
+                        Almond.openAndActivateTopComponent((String) mLayer.getValue(WWHelper.KEY_FAST_OPEN));
+                    };
+
+                    mapObjects.stream().filter(r -> r != null).forEach(r -> {
+                        r.setValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK, leftClickRunnable);
+                        r.setValue(WWHelper.KEY_RUNNABLE_LEFT_DOUBLE_CLICK, leftDoubleClickRunnable);
+                    });
                 }
-
-                var leftClickRunnable = (Runnable) () -> {
-                    mManager.setSelectedItemAfterReset(mon);
-                };
-
-                var leftDoubleClickRunnable = (Runnable) () -> {
-                    Almond.openAndActivateTopComponent((String) mLayer.getValue(WWHelper.KEY_FAST_OPEN));
-                };
-
-                mapObjects.stream().filter(r -> r != null).forEach(r -> {
-                    r.setValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK, leftClickRunnable);
-                    r.setValue(WWHelper.KEY_RUNNABLE_LEFT_DOUBLE_CLICK, leftDoubleClickRunnable);
-                });
             }
 
             setDragEnabled(false);

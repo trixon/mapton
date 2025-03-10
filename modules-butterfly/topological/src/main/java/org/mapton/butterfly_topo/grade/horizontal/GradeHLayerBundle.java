@@ -188,34 +188,36 @@ public class GradeHLayerBundle extends TopoBaseLayerBundle {
                     throw new AssertionError();
             }
 
-            new ArrayList<>(mManager.getTimeFilteredItems()).stream()
-                    .filter(p -> ObjectUtils.allNotNull(p.getLat(), p.getLon()))
-                    .limit(PLOT_LIMIT)
-                    .forEachOrdered(p -> {
-                        var position = Position.fromDegrees(p.getLat(), p.getLon());
-                        var labelPlacemark = plotLabel(p, null, position);
-                        var mapObjects = new ArrayList<AVListImpl>();
+            synchronized (mManager.getTimeFilteredItems()) {
+                mManager.getTimeFilteredItems().stream()
+                        .filter(p -> ObjectUtils.allNotNull(p.getLat(), p.getLon()))
+                        .limit(PLOT_LIMIT)
+                        .forEachOrdered(p -> {
+                            var position = Position.fromDegrees(p.getLat(), p.getLon());
+                            var labelPlacemark = plotLabel(p, null, position);
+                            var mapObjects = new ArrayList<AVListImpl>();
 
-                        mapObjects.add(labelPlacemark);
-                        mapObjects.add(plotPin(p, position, labelPlacemark));
+                            mapObjects.add(labelPlacemark);
+                            mapObjects.add(plotPin(p, position, labelPlacemark));
 //                    mapObjects.addAll(plotSymbol(p, position, labelPlacemark));
-                        mGraphicRenderer.plot(p, position, mapObjects);
+                            mGraphicRenderer.plot(p, position, mapObjects);
 
-                        var leftClickRunnable = (Runnable) () -> {
-                            mManager.setSelectedItemAfterReset(p);
-                        };
+                            var leftClickRunnable = (Runnable) () -> {
+                                mManager.setSelectedItemAfterReset(p);
+                            };
 
-                        var leftDoubleClickRunnable = (Runnable) () -> {
-                            Almond.openAndActivateTopComponent((String) mLayer.getValue(WWHelper.KEY_FAST_OPEN));
-                            mGraphicRenderer.addToAllowList(p);
-                            repaint();
-                        };
+                            var leftDoubleClickRunnable = (Runnable) () -> {
+                                Almond.openAndActivateTopComponent((String) mLayer.getValue(WWHelper.KEY_FAST_OPEN));
+                                mGraphicRenderer.addToAllowList(p);
+                                repaint();
+                            };
 
-                        mapObjects.stream().filter(r -> r != null).forEach(r -> {
-                            r.setValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK, leftClickRunnable);
-                            r.setValue(WWHelper.KEY_RUNNABLE_LEFT_DOUBLE_CLICK, leftDoubleClickRunnable);
+                            mapObjects.stream().filter(r -> r != null).forEach(r -> {
+                                r.setValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK, leftClickRunnable);
+                                r.setValue(WWHelper.KEY_RUNNABLE_LEFT_DOUBLE_CLICK, leftDoubleClickRunnable);
+                            });
                         });
-                    });
+            }
 
             setDragEnabled(false);
         });

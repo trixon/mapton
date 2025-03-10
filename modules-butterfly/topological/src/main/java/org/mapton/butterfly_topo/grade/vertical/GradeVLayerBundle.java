@@ -177,32 +177,34 @@ public class GradeVLayerBundle extends TopoBaseLayerBundle {
                     throw new AssertionError();
             }
 
-            mManager.getTimeFilteredItems().stream()
-                    .filter(p -> ObjectUtils.allNotNull(p.getLat(), p.getLon()))
-                    .forEachOrdered(p -> {
-                        var position = Position.fromDegrees(p.getLat(), p.getLon());
-                        var labelPlacemark = plotLabel(p, null, position);
-                        var mapObjects = new ArrayList<AVListImpl>();
+            synchronized (mManager.getTimeFilteredItems()) {
+                mManager.getTimeFilteredItems().stream()
+                        .filter(p -> ObjectUtils.allNotNull(p.getLat(), p.getLon()))
+                        .forEachOrdered(p -> {
+                            var position = Position.fromDegrees(p.getLat(), p.getLon());
+                            var labelPlacemark = plotLabel(p, null, position);
+                            var mapObjects = new ArrayList<AVListImpl>();
 
-                        mapObjects.add(labelPlacemark);
-                        mapObjects.add(plotPin(p, position, labelPlacemark));
+                            mapObjects.add(labelPlacemark);
+                            mapObjects.add(plotPin(p, position, labelPlacemark));
 //                    mapObjects.addAll(plotSymbol(p, position, labelPlacemark));
 
-                        var leftClickRunnable = (Runnable) () -> {
-                            mManager.setSelectedItemAfterReset(p);
-                        };
+                            var leftClickRunnable = (Runnable) () -> {
+                                mManager.setSelectedItemAfterReset(p);
+                            };
 
-                        var leftDoubleClickRunnable = (Runnable) () -> {
-                            Almond.openAndActivateTopComponent((String) mLayer.getValue(WWHelper.KEY_FAST_OPEN));
+                            var leftDoubleClickRunnable = (Runnable) () -> {
+                                Almond.openAndActivateTopComponent((String) mLayer.getValue(WWHelper.KEY_FAST_OPEN));
 //                            mGraphicRenderer.addToAllowList(p.getName());
-                            repaint();
-                        };
+                                repaint();
+                            };
 
-                        mapObjects.stream().filter(r -> r != null).forEach(r -> {
-                            r.setValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK, leftClickRunnable);
-                            r.setValue(WWHelper.KEY_RUNNABLE_LEFT_DOUBLE_CLICK, leftDoubleClickRunnable);
+                            mapObjects.stream().filter(r -> r != null).forEach(r -> {
+                                r.setValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK, leftClickRunnable);
+                                r.setValue(WWHelper.KEY_RUNNABLE_LEFT_DOUBLE_CLICK, leftDoubleClickRunnable);
+                            });
                         });
-                    });
+            }
 
             setDragEnabled(false);
         });

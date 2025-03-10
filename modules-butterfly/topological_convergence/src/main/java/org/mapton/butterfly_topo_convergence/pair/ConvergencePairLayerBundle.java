@@ -116,28 +116,30 @@ public class ConvergencePairLayerBundle extends BfLayerBundle {
                     throw new AssertionError();
             }
 
-            for (var p : new ArrayList<>(mManager.getTimeFilteredItems())) {
-                if (ObjectUtils.allNotNull(p.getLat(), p.getLon())) {
-                    var position = Position.fromDegrees(p.getLat(), p.getLon());
-                    var labelPlacemark = plotLabel(p, mOptionsView.getLabelBy(), position);
-                    var mapObjects = new ArrayList<AVListImpl>();
+            synchronized (mManager.getTimeFilteredItems()) {
+                for (var p : mManager.getTimeFilteredItems()) {
+                    if (ObjectUtils.allNotNull(p.getLat(), p.getLon())) {
+                        var position = Position.fromDegrees(p.getLat(), p.getLon());
+                        var labelPlacemark = plotLabel(p, mOptionsView.getLabelBy(), position);
+                        var mapObjects = new ArrayList<AVListImpl>();
 
-                    mapObjects.add(labelPlacemark);
-                    mapObjects.add(plotPin(position, labelPlacemark));
+                        mapObjects.add(labelPlacemark);
+                        mapObjects.add(plotPin(position, labelPlacemark));
 
-                    mGraphicRenderer.plot(p, position, mapObjects);
-                    var leftClickRunnable = (Runnable) () -> {
-                        mManager.setSelectedItemAfterReset(p);
-                    };
+                        mGraphicRenderer.plot(p, position, mapObjects);
+                        var leftClickRunnable = (Runnable) () -> {
+                            mManager.setSelectedItemAfterReset(p);
+                        };
 
-                    var leftDoubleClickRunnable = (Runnable) () -> {
-                        Almond.openAndActivateTopComponent((String) mLayer.getValue(WWHelper.KEY_FAST_OPEN));
-                    };
+                        var leftDoubleClickRunnable = (Runnable) () -> {
+                            Almond.openAndActivateTopComponent((String) mLayer.getValue(WWHelper.KEY_FAST_OPEN));
+                        };
 
-                    mapObjects.stream().filter(r -> r != null).forEach(r -> {
-                        r.setValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK, leftClickRunnable);
-                        r.setValue(WWHelper.KEY_RUNNABLE_LEFT_DOUBLE_CLICK, leftDoubleClickRunnable);
-                    });
+                        mapObjects.stream().filter(r -> r != null).forEach(r -> {
+                            r.setValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK, leftClickRunnable);
+                            r.setValue(WWHelper.KEY_RUNNABLE_LEFT_DOUBLE_CLICK, leftDoubleClickRunnable);
+                        });
+                    }
                 }
             }
 

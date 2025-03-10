@@ -115,30 +115,32 @@ public class ActLayerBundle extends BfLayerBundle {
                     throw new AssertionError();
             }
 
-            for (var area : new ArrayList<>(mManager.getTimeFilteredItems())) {
-                var mapObjects = new ArrayList<AVListImpl>();
-                if (ObjectUtils.allNotNull(area.getLat(), area.getLon())) {
-                    var position = Position.fromDegrees(area.getLat(), area.getLon());
-                    var labelPlacemark = plotLabel(area, mOptionsView.getLabelBy(), position);
+            synchronized (mManager.getTimeFilteredItems()) {
+                for (var area : mManager.getTimeFilteredItems()) {
+                    var mapObjects = new ArrayList<AVListImpl>();
+                    if (ObjectUtils.allNotNull(area.getLat(), area.getLon())) {
+                        var position = Position.fromDegrees(area.getLat(), area.getLon());
+                        var labelPlacemark = plotLabel(area, mOptionsView.getLabelBy(), position);
 
-                    mapObjects.add(labelPlacemark);
-                    mapObjects.add(plotPin(area, position, labelPlacemark));
+                        mapObjects.add(labelPlacemark);
+                        mapObjects.add(plotPin(area, position, labelPlacemark));
+                    }
+
+                    mapObjects.add(plotArea(area));
+
+                    var leftClickRunnable = (Runnable) () -> {
+                        mManager.setSelectedItemAfterReset(area);
+                    };
+
+                    var leftDoubleClickRunnable = (Runnable) () -> {
+                        Almond.openAndActivateTopComponent((String) mLayer.getValue(WWHelper.KEY_FAST_OPEN));
+                    };
+
+                    mapObjects.stream().filter(r -> r != null).forEach(r -> {
+                        r.setValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK, leftClickRunnable);
+                        r.setValue(WWHelper.KEY_RUNNABLE_LEFT_DOUBLE_CLICK, leftDoubleClickRunnable);
+                    });
                 }
-
-                mapObjects.add(plotArea(area));
-
-                var leftClickRunnable = (Runnable) () -> {
-                    mManager.setSelectedItemAfterReset(area);
-                };
-
-                var leftDoubleClickRunnable = (Runnable) () -> {
-                    Almond.openAndActivateTopComponent((String) mLayer.getValue(WWHelper.KEY_FAST_OPEN));
-                };
-
-                mapObjects.stream().filter(r -> r != null).forEach(r -> {
-                    r.setValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK, leftClickRunnable);
-                    r.setValue(WWHelper.KEY_RUNNABLE_LEFT_DOUBLE_CLICK, leftDoubleClickRunnable);
-                });
             }
 
             setDragEnabled(false);

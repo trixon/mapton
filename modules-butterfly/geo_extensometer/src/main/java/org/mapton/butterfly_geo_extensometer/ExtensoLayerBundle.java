@@ -112,30 +112,32 @@ public class ExtensoLayerBundle extends BfLayerBundle {
                     throw new AssertionError();
             }
 
-            for (var extenso : new ArrayList<>(mManager.getTimeFilteredItems())) {
-                var mapObjects = new ArrayList<AVListImpl>();
+            synchronized (mManager.getTimeFilteredItems()) {
+                for (var extenso : mManager.getTimeFilteredItems()) {
+                    var mapObjects = new ArrayList<AVListImpl>();
 
-                if (ObjectUtils.allNotNull(extenso.getLat(), extenso.getLon())) {
-                    var position = Position.fromDegrees(extenso.getLat(), extenso.getLon());
-                    var labelPlacemark = plotLabel(extenso, mOptionsView.getLabelBy(), position);
+                    if (ObjectUtils.allNotNull(extenso.getLat(), extenso.getLon())) {
+                        var position = Position.fromDegrees(extenso.getLat(), extenso.getLon());
+                        var labelPlacemark = plotLabel(extenso, mOptionsView.getLabelBy(), position);
 
-                    mapObjects.add(labelPlacemark);
-                    mapObjects.add(plotPin(extenso, position, labelPlacemark));
-                    mGraphicRenderer.plot(extenso, position, mapObjects);
+                        mapObjects.add(labelPlacemark);
+                        mapObjects.add(plotPin(extenso, position, labelPlacemark));
+                        mGraphicRenderer.plot(extenso, position, mapObjects);
+                    }
+
+                    var leftClickRunnable = (Runnable) () -> {
+                        mManager.setSelectedItemAfterReset(extenso);
+                    };
+
+                    var leftDoubleClickRunnable = (Runnable) () -> {
+                        Almond.openAndActivateTopComponent((String) mLayer.getValue(WWHelper.KEY_FAST_OPEN));
+                    };
+
+                    mapObjects.stream().filter(r -> r != null).forEach(r -> {
+                        r.setValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK, leftClickRunnable);
+                        r.setValue(WWHelper.KEY_RUNNABLE_LEFT_DOUBLE_CLICK, leftDoubleClickRunnable);
+                    });
                 }
-
-                var leftClickRunnable = (Runnable) () -> {
-                    mManager.setSelectedItemAfterReset(extenso);
-                };
-
-                var leftDoubleClickRunnable = (Runnable) () -> {
-                    Almond.openAndActivateTopComponent((String) mLayer.getValue(WWHelper.KEY_FAST_OPEN));
-                };
-
-                mapObjects.stream().filter(r -> r != null).forEach(r -> {
-                    r.setValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK, leftClickRunnable);
-                    r.setValue(WWHelper.KEY_RUNNABLE_LEFT_DOUBLE_CLICK, leftDoubleClickRunnable);
-                });
             }
 
             setDragEnabled(false);

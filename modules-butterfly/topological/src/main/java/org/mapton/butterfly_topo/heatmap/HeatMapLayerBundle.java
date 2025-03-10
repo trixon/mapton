@@ -103,13 +103,14 @@ public class HeatMapLayerBundle extends TopoBaseLayerBundle {
             }
 
             var values = new ArrayList<GridValue>();
-
-            mManager.getTimeFilteredItems().stream()
-                    .filter(p -> ObjectUtils.allNotNull(p.getLat(), p.getLon()))
-                    .forEach(p -> {
-                        var value = Double.valueOf(p.ext().getNumOfObservationsFiltered());
-                        values.add(new GridValue(new MLatLon(p.getLat(), p.getLon()), value));
-                    });
+            synchronized (mManager.getTimeFilteredItems()) {
+                mManager.getTimeFilteredItems().stream()
+                        .filter(p -> ObjectUtils.allNotNull(p.getLat(), p.getLon()))
+                        .forEach(p -> {
+                            var value = Double.valueOf(p.ext().getNumOfObservationsFiltered());
+                            values.add(new GridValue(new MLatLon(p.getLat(), p.getLon()), value));
+                        });
+            }
 
             if (values.isEmpty()) {
                 return;

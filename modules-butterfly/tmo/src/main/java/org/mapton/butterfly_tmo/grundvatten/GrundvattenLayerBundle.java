@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_tmo.grundvatten;
 
-import org.mapton.butterfly_tmo.api.GrundvattenManager;
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
@@ -26,6 +25,7 @@ import javafx.scene.Node;
 import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.butterfly_core.api.BfLayerBundle;
 import org.mapton.butterfly_format.types.tmo.BGrundvatten;
+import org.mapton.butterfly_tmo.api.GrundvattenManager;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
@@ -114,34 +114,36 @@ public class GrundvattenLayerBundle extends BfLayerBundle {
                     throw new AssertionError();
             }
 
-            for (var p : new ArrayList<>(mManager.getTimeFilteredItems())) {
-                if (ObjectUtils.allNotNull(p.getLat(), p.getLon())) {
-                    var position = Position.fromDegrees(p.getLat(), p.getLon());
+            synchronized (mManager.getTimeFilteredItems()) {
+                for (var p : mManager.getTimeFilteredItems()) {
+                    if (ObjectUtils.allNotNull(p.getLat(), p.getLon())) {
+                        var position = Position.fromDegrees(p.getLat(), p.getLon());
 
-                    var labelPlacemark = plotLabel(p, mOptionsView.getLabelBy(), position);
-                    var mapObjects = new ArrayList<AVListImpl>();
+                        var labelPlacemark = plotLabel(p, mOptionsView.getLabelBy(), position);
+                        var mapObjects = new ArrayList<AVListImpl>();
 
-                    mapObjects.add(labelPlacemark);
-                    mapObjects.add(plotPin(p, position, labelPlacemark));
+                        mapObjects.add(labelPlacemark);
+                        mapObjects.add(plotPin(p, position, labelPlacemark));
 
-                    mGraphicRenderer.plot(p, position, mapObjects);
+                        mGraphicRenderer.plot(p, position, mapObjects);
 
-                    var leftClickRunnable = (Runnable) () -> {
-                        mManager.setSelectedItemAfterReset(p);
-                    };
+                        var leftClickRunnable = (Runnable) () -> {
+                            mManager.setSelectedItemAfterReset(p);
+                        };
 
-                    var leftDoubleClickRunnable = (Runnable) () -> {
-                        Almond.openAndActivateTopComponent((String) mLayer.getValue(WWHelper.KEY_FAST_OPEN));
-                        if (!p.ext().getObservationsTimeFiltered().isEmpty()) {
-                            mGraphicRenderer.addToAllowList(p.getName());
-                            repaint();
-                        }
-                    };
+                        var leftDoubleClickRunnable = (Runnable) () -> {
+                            Almond.openAndActivateTopComponent((String) mLayer.getValue(WWHelper.KEY_FAST_OPEN));
+                            if (!p.ext().getObservationsTimeFiltered().isEmpty()) {
+                                mGraphicRenderer.addToAllowList(p.getName());
+                                repaint();
+                            }
+                        };
 
-                    mapObjects.stream().filter(r -> r != null).forEach(r -> {
-                        r.setValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK, leftClickRunnable);
-                        r.setValue(WWHelper.KEY_RUNNABLE_LEFT_DOUBLE_CLICK, leftDoubleClickRunnable);
-                    });
+                        mapObjects.stream().filter(r -> r != null).forEach(r -> {
+                            r.setValue(WWHelper.KEY_RUNNABLE_LEFT_CLICK, leftClickRunnable);
+                            r.setValue(WWHelper.KEY_RUNNABLE_LEFT_DOUBLE_CLICK, leftDoubleClickRunnable);
+                        });
+                    }
                 }
             }
 
