@@ -357,8 +357,7 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
             filteredItems = createTopList(filteredItems);
         }
 
-        mManager.getFilteredItems().setAll(filteredItems);
-
+        mManager.setItemsFiltered(filteredItems);
         getInfoPopOver().loadContent(createInfoContent().renderFormatted());
     }
 

@@ -57,7 +57,7 @@ public class ConvergencePairFilter extends FormFilter<ConvergencePairManager> {
                 .filter(b -> validateCoordinateRuler(b.getLat(), b.getLon()))
                 .toList();
 
-        mManager.getFilteredItems().setAll(filteredItems);
+        mManager.setItemsFiltered(filteredItems);
 
         getInfoPopOver().loadContent(createInfoContent().renderFormatted());
     }

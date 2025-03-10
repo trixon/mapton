@@ -102,7 +102,7 @@ public class CrackFilter extends ButterflyFormFilter<CrackManager> implements
                     .toList();
         }
 
-        mManager.getFilteredItems().setAll(filteredItems);
+        mManager.setItemsFiltered(filteredItems);
 
         getInfoPopOver().loadContent(createInfoContent().renderFormatted());
     }

@@ -49,7 +49,7 @@ public class VattenkemiFilter extends FormFilter<VattenkemiManager> {
                 .filter(b -> validateCoordinateRuler(b.getLat(), b.getLon()))
                 .toList();
 
-        mManager.getFilteredItems().setAll(filteredItems);
+        mManager.setItemsFiltered(filteredItems);
 
         getInfoPopOver().loadContent(createInfoContent().renderFormatted());
     }

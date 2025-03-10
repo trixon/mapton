@@ -103,7 +103,7 @@ public class StrainFilter extends ButterflyFormFilter<StrainManager> implements
                     .toList();
         }
 
-        mManager.getFilteredItems().setAll(filteredItems);
+        mManager.setItemsFiltered(filteredItems);
 
         getInfoPopOver().loadContent(createInfoContent().renderFormatted());
     }

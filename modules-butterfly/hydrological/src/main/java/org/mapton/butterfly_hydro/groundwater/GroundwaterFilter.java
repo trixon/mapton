@@ -108,7 +108,7 @@ public class GroundwaterFilter extends ButterflyFormFilter<GroundwaterManager> i
                     .toList();
         }
 
-        mManager.getFilteredItems().setAll(filteredItems);
+        mManager.setItemsFiltered(filteredItems);
 
         getInfoPopOver().loadContent(createInfoContent().renderFormatted());
     }

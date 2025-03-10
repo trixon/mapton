@@ -53,7 +53,7 @@ public class ActFilter extends FormFilter<ActManager> {
                 .filter(aa -> validateCoordinateRuler(aa.getLat(), aa.getLon()))
                 .toList();
 
-        mManager.getFilteredItems().setAll(filteredItems);
+        mManager.setItemsFiltered(filteredItems);
     }
 
     void initCheckModelListeners() {

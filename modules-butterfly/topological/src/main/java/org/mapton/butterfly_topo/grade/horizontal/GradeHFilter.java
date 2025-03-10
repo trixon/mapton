@@ -43,7 +43,7 @@ public class GradeHFilter extends GradeFilterBase {
                 .filter(p -> validateGradeVertical(p))
                 .toList();
 
-        mManager.getFilteredItems().setAll(filteredItems);
+        mManager.setItemsFiltered(filteredItems);
     }
 
     private void initListeners() {

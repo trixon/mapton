@@ -81,7 +81,7 @@ public class MonFilter extends FormFilter<MonManager> {
                 .filter(mon -> validateCoordinateRuler(mon.getLat(), mon.getLon()))
                 .toList();
 
-        mManager.getFilteredItems().setAll(filteredItems);
+        mManager.setItemsFiltered(filteredItems);
     }
 
     void initCheckModelListeners() {

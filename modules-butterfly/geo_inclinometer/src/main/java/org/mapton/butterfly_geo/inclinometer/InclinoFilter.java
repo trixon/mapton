@@ -102,7 +102,7 @@ public class InclinoFilter extends ButterflyFormFilter<InclinoManager> implement
                     .toList();
         }
 
-        mManager.getFilteredItems().setAll(filteredItems);
+        mManager.setItemsFiltered(filteredItems);
 
         getInfoPopOver().loadContent(createInfoContent().renderFormatted());
     }

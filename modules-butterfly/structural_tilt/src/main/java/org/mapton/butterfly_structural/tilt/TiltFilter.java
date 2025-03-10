@@ -103,7 +103,7 @@ public class TiltFilter extends ButterflyFormFilter<TiltManager> implements
                     .toList();
         }
 
-        mManager.getFilteredItems().setAll(filteredItems);
+        mManager.setItemsFiltered(filteredItems);
 
         getInfoPopOver().loadContent(createInfoContent().renderFormatted());
     }

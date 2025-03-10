@@ -15,11 +15,11 @@
  */
 package org.mapton.butterfly_tmo.grundvatten;
 
-import org.mapton.butterfly_tmo.api.GrundvattenManager;
 import j2html.tags.ContainerTag;
 import java.util.LinkedHashMap;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.ui.forms.FormFilter;
+import org.mapton.butterfly_tmo.api.GrundvattenManager;
 import se.trixon.almond.util.Dict;
 
 /**
@@ -58,7 +58,7 @@ public class GrundvattenFilter extends FormFilter<GrundvattenManager> {
                 .filter(g -> validateCoordinateRuler(g.getLat(), g.getLon()))
                 .toList();
 
-        mManager.getFilteredItems().setAll(filteredItems);
+        mManager.setItemsFiltered(filteredItems);
 
         getInfoPopOver().loadContent(createInfoContent().renderFormatted());
     }

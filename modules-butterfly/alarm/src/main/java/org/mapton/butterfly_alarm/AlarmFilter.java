@@ -15,10 +15,10 @@
  */
 package org.mapton.butterfly_alarm;
 
-import org.mapton.butterfly_alarm.api.AlarmManager;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import org.mapton.api.ui.forms.FormFilter;
+import org.mapton.butterfly_alarm.api.AlarmManager;
 
 /**
  *
@@ -45,7 +45,7 @@ public class AlarmFilter extends FormFilter<AlarmManager> {
                 .filter(o -> validateFreeText(o.getName(), o.getDescription(), o.getId()))
                 .toList();
 
-        mManager.getFilteredItems().setAll(filteredItems);
+        mManager.setItemsFiltered(filteredItems);
     }
 
     private void initListeners() {

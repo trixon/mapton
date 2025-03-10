@@ -49,7 +49,7 @@ public class TunnelvattenFilter extends FormFilter<TunnelvattenManager> {
                 .filter(b -> validateCoordinateRuler(b.getLat(), b.getLon()))
                 .toList();
 
-        mManager.getFilteredItems().setAll(filteredItems);
+        mManager.setItemsFiltered(filteredItems);
 
         getInfoPopOver().loadContent(createInfoContent().renderFormatted());
     }

@@ -61,7 +61,7 @@ public class MeasPointFilter extends FormFilter<MeasPointManager> {
                 .filter(b -> validateCoordinateRuler(b.getLat(), b.getLon()))
                 .toList();
 
-        mManager.getFilteredItems().setAll(filteredItems);
+        mManager.setItemsFiltered(filteredItems);
 
         getInfoPopOver().loadContent(createInfoContent().renderFormatted());
     }

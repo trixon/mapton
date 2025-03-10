@@ -54,7 +54,7 @@ public class RorelseFilter extends FormFilter<RorelseManager> {
                 .filter(r -> validateCoordinateRuler(r.getLat(), r.getLon()))
                 .toList();
 
-        mManager.getFilteredItems().setAll(filteredItems);
+        mManager.setItemsFiltered(filteredItems);
 
         getInfoPopOver().loadContent(createInfoContent().renderFormatted());
     }

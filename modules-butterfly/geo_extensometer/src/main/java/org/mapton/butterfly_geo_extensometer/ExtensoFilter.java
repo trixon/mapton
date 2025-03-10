@@ -94,7 +94,7 @@ public class ExtensoFilter extends FormFilter<ExtensoManager> implements
                     .toList();
         }
 
-        mManager.getFilteredItems().setAll(filteredItems);
+        mManager.setItemsFiltered(filteredItems);
 
         getInfoPopOver().loadContent(createInfoContent().renderFormatted());
     }
