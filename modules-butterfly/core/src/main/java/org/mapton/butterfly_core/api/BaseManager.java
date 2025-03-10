@@ -84,8 +84,10 @@ public abstract class BaseManager<T extends BBase> extends MBaseDataManager<T> {
     }
 
     public void initObjectToItemMap() {
-        for (var item : getAllItems()) {
-            getAllItemsMap().put(item.getName(), item);
+        synchronized (getAllItems()) {
+            for (var item : getAllItems()) {
+                getAllItemsMap().put(item.getName(), item);
+            }
         }
     }
 

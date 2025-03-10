@@ -179,7 +179,7 @@ public class ExtensoManager extends BaseManager<BGeoExtensometer> {
             }
         }
 
-        getTimeFilteredItems().setAll(timeFilteredItems);
+        setItemsTimeFiltered(timeFilteredItems);
     }
 
     @Override

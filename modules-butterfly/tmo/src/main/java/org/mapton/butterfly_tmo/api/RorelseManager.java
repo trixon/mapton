@@ -99,7 +99,7 @@ public class RorelseManager extends BaseManager<BRorelse> {
                 updateTemporal(layerBundleEnabled);
             }
 
-////            var dates = new TreeSet<>(getAllItems().stream()
+         ////            var dates = new TreeSet<>(getAllItems().stream()
 ////                    .map(p -> p.getInstallationsdatum())
 ////                    .filter(d -> d != null)
 ////                    .collect(Collectors.toSet()));
@@ -122,7 +122,7 @@ public class RorelseManager extends BaseManager<BRorelse> {
 //                .filter(o -> o.getDateTime() == null ? true : getTemporalManager().isValid(o.getDateTime()))
 //                .toList();
 
-        getTimeFilteredItems().setAll(getFilteredItems());
+        setItemsTimeFiltered(getFilteredItems());
     }
 
     @Override

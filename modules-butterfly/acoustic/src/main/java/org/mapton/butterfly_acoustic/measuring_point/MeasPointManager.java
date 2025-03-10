@@ -146,7 +146,7 @@ public class MeasPointManager extends BaseManager<BAcousticMeasuringPoint> {
             });
         });
 
-        getTimeFilteredItems().setAll(timeFilteredItems);
+        setItemsTimeFiltered(timeFilteredItems);
     }
 
     @Override

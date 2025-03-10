@@ -25,12 +25,12 @@ import org.apache.commons.math3.util.FastMath;
 import org.mapton.api.MSimpleObjectStorageManager;
 import org.mapton.api.MTemporalRange;
 import org.mapton.butterfly_core.api.BaseManager;
+import org.mapton.butterfly_core.api.sos.ScalePlot3dHSosi;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.topo.BTopoControlPointObservation;
 import org.mapton.butterfly_topo.TopoChartBuilder;
 import org.mapton.butterfly_topo.TopoPropertiesBuilder;
-import org.mapton.butterfly_core.api.sos.ScalePlot3dHSosi;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.CollectionHelper;
 
@@ -167,7 +167,7 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
             }
         }
 
-        getTimeFilteredItems().setAll(timeFilteredItems);
+        setItemsTimeFiltered(timeFilteredItems);
     }
 
     @Override

@@ -64,7 +64,7 @@ public class MonManager extends BaseManager<BMonmon> {
 
     @Override
     protected void applyTemporalFilter() {
-        getTimeFilteredItems().setAll(getFilteredItems());
+        setItemsTimeFiltered(getFilteredItems());
     }
 
     @Override

@@ -158,7 +158,7 @@ public class TiltManager extends BaseManager<BStructuralTiltPoint> {
 //                //nvm
 //            }
 //        }
-        getTimeFilteredItems().setAll(timeFilteredItems);
+        setItemsTimeFiltered(timeFilteredItems);
     }
 
     @Override

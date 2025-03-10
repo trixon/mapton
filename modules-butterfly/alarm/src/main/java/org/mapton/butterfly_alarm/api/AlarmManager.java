@@ -60,7 +60,7 @@ public class AlarmManager extends BaseManager<BAlarm> {
 
     @Override
     protected void applyTemporalFilter() {
-        getTimeFilteredItems().setAll(getFilteredItems());
+        setItemsTimeFiltered(getFilteredItems());
     }
 
     @Override

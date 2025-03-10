@@ -146,7 +146,7 @@ public class CrackManager extends BaseManager<BStructuralCrackPoint> {
             });
         });
 
-        getTimeFilteredItems().setAll(timeFilteredItems);
+        setItemsTimeFiltered(timeFilteredItems);
     }
 
     @Override

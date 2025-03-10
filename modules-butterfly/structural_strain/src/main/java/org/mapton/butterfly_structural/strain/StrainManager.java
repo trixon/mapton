@@ -146,7 +146,7 @@ public class StrainManager extends BaseManager<BStructuralStrainGaugePoint> {
             });
         });
 
-        getTimeFilteredItems().setAll(timeFilteredItems);
+        setItemsTimeFiltered(timeFilteredItems);
     }
 
     @Override

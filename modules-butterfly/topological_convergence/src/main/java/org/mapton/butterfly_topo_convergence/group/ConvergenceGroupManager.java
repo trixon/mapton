@@ -75,7 +75,7 @@ public class ConvergenceGroupManager extends BaseManager<BTopoConvergenceGroup> 
 
     @Override
     protected void applyTemporalFilter() {
-        getTimeFilteredItems().setAll(getFilteredItems());
+        setItemsTimeFiltered(getFilteredItems());
     }
 
     @Override

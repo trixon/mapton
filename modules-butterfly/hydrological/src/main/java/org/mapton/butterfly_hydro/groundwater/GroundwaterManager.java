@@ -154,7 +154,7 @@ public class GroundwaterManager extends BaseManager<BHydroGroundwaterPoint> {
         var latLonDisruptors = timeFilteredItems.stream().map(p -> new MLatLon(p.getLat(), p.getLon())).toList();
         mDisruptorManager.putLatLons(DISRUPTOR_NAME, latLonDisruptors);
 
-        getTimeFilteredItems().setAll(timeFilteredItems);
+        setItemsTimeFiltered(timeFilteredItems);
     }
 
     @Override

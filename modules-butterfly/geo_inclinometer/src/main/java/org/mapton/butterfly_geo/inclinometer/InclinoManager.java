@@ -146,7 +146,7 @@ public class InclinoManager extends BaseManager<BGeoInclinometerPoint> {
             });
         });
 
-        getTimeFilteredItems().setAll(timeFilteredItems);
+        setItemsTimeFiltered(timeFilteredItems);
     }
 
     @Override

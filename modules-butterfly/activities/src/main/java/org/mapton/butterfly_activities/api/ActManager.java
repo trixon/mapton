@@ -113,7 +113,7 @@ public class ActManager extends BaseManager<BAreaActivity> {
                 .map(aa -> aa.getTargetGeometry()).toList();
 
         mDisruptorManager.putGeometries(DISRUPTOR_NAME, geometries);
-        getTimeFilteredItems().setAll(timeFilteredItems);
+        setItemsTimeFiltered(timeFilteredItems);
     }
 
     @Override

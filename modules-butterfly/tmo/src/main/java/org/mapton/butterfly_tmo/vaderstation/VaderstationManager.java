@@ -73,7 +73,7 @@ public class VaderstationManager extends BaseManager<BVaderstation> {
 //                .filter(o -> o.getDateTime() == null ? true : getTemporalManager().isValid(o.getDateTime()))
 //                .toList();
 
-        getTimeFilteredItems().setAll(getFilteredItems());
+        setItemsTimeFiltered(getFilteredItems());
     }
 
     @Override

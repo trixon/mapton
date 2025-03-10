@@ -73,7 +73,7 @@ public class InfiltrationManager extends BaseManager<BInfiltration> {
 //                .filter(o -> o.getDateTime() == null ? true : getTemporalManager().isValid(o.getDateTime()))
 //                .toList();
 
-        getTimeFilteredItems().setAll(getFilteredItems());
+        setItemsTimeFiltered(getFilteredItems());
     }
 
     @Override

@@ -104,15 +104,15 @@ public class GradeHManager extends GradeManagerBase {
         });
 
         FxHelper.runLater(() -> {
-            getAllItems().setAll(grades);
-            getFilteredItems().setAll(grades);
-            getTimeFilteredItems().setAll(grades);
+            setItemsAll(grades);
+            setItemsFiltered(grades);
+            setItemsTimeFiltered(grades);
         });
     }
 
     @Override
     protected void applyTemporalFilter() {
-        getTimeFilteredItems().setAll(getFilteredItems());
+        setItemsTimeFiltered(getFilteredItems());
     }
 
     @Override

@@ -132,7 +132,7 @@ public class GrundvattenManager extends BaseManager<BGrundvatten> {
             });
         });
 
-        getTimeFilteredItems().setAll(timeFilteredItems);
+        setItemsTimeFiltered(timeFilteredItems);
     }
 
     @Override

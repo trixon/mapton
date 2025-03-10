@@ -107,7 +107,7 @@ public class ConvergencePairManager extends BaseManager<BTopoConvergencePair> {
 
     @Override
     protected void applyTemporalFilter() {
-        getTimeFilteredItems().setAll(getFilteredItems());
+        setItemsTimeFiltered(getFilteredItems());
     }
 
     @Override
