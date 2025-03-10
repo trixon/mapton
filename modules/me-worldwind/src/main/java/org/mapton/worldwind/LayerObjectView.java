@@ -63,6 +63,7 @@ import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.mapton.api.ui.MOptionsPopOver;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
+import org.openide.util.Exceptions;
 import org.openide.util.NbPreferences;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.StringHelper;
@@ -396,8 +397,9 @@ public class LayerObjectView extends BorderPane implements MActivatable {
                         try {
                             mCheckModel.clearCheck(treeItem);
                         } catch (UnsupportedOperationException e) {
-                            System.err.println("Error detected in WWLayerObjectView while clearing check");
-                            System.err.println(e.toString());
+//                            System.err.println("Error detected in WWLayerObjectView while clearing check");
+//                            System.err.println(e.toString());
+                            Exceptions.printStackTrace(e);
                         }
                     }
 

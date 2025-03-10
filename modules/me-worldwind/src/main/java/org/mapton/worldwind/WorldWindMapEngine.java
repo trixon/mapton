@@ -60,7 +60,6 @@ import org.openide.modules.Places;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
-import se.trixon.almond.util.swing.SwingHelper;
 
 /**
  *
@@ -97,14 +96,13 @@ public class WorldWindMapEngine extends MEngine {
                 init();
                 initListeners();
 
-                SwingHelper.runLater(() -> {
-                    mMainPanel.removeAll();
-                    mMainPanel.add(mMap, BorderLayout.CENTER);
-                    postCreateRunnable.run();
-                    mBasicDragger = new BasicDragger(mMap);
-                    mMap.addSelectListener(mBasicDragger);
-
-                });
+//                SwingHelper.runLater(() -> {
+                mMainPanel.removeAll();
+                mMainPanel.add(mMap, BorderLayout.CENTER);
+                postCreateRunnable.run();
+                mBasicDragger = new BasicDragger(mMap);
+                mMap.addSelectListener(mBasicDragger);
+//                });
             }, getClass().getCanonicalName()).start();
         } else {
             postCreateRunnable.run();

@@ -16,6 +16,7 @@
 package org.mapton.worldwind.api;
 
 import gov.nasa.worldwind.geom.Angle;
+import gov.nasa.worldwind.geom.LatLon;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.geom.Sector;
 import gov.nasa.worldwind.layers.Layer;
@@ -80,12 +81,36 @@ public class WWHelper {
         return circle;
     }
 
+    public static ArrayList<LatLon> createNodes(Position position, double radius, int nodes, double offsetAzimuth) {
+        if (nodes < 3) {
+            throw new IllegalArgumentException();
+        }
+
+        var list = new ArrayList<LatLon>();
+
+        for (int i = 0; i < nodes; i++) {
+            list.add(movePolar(position, offsetAzimuth + i * 360.0 / nodes, radius));
+        }
+
+        return list;
+    }
+
+    public static ArrayList<LatLon> createNodes(Position position, double radius, int nodes) {
+        return createNodes(position, radius, nodes, 0);
+    }
+
     public static String getCategory(Layer layer) {
         return StringUtils.defaultString((String) layer.getValue(WWHelper.KEY_LAYER_CATEGORY));
     }
 
     public static String getLayerPath(Layer layer) {
         return "%s/%s".formatted(getCategory(layer), layer.getName());
+    }
+
+    public static boolean isStoredAsVisible(Layer layer, boolean defaultEnablement) {
+        var visibilityPreferences = NbPreferences.forModule(LayerObjectView.class).node("layer_visibility");
+
+        return visibilityPreferences.getBoolean(WWHelper.getLayerPath(layer), layer.isEnabled());
     }
 
     public static MLatLon latLonFromPosition(Position position) {
@@ -188,12 +213,6 @@ public class WWHelper {
                 Angle.fromDegreesLongitude(latLonBox.getSouthWest().getLongitude()),
                 Angle.fromDegreesLongitude(latLonBox.getNorthEast().getLongitude())
         );
-    }
-
-    public static boolean isStoredAsVisible(Layer layer, boolean defaultEnablement) {
-        var visibilityPreferences = NbPreferences.forModule(LayerObjectView.class).node("layer_visibility");
-
-        return visibilityPreferences.getBoolean(WWHelper.getLayerPath(layer), layer.isEnabled());
     }
 
 }
