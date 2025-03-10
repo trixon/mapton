@@ -25,7 +25,9 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import org.mapton.api.MBaseDataManager;
 import org.mapton.api.Mapton;
+import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.FxHelper;
+import se.trixon.almond.util.swing.DelayedResetRunner;
 
 /**
  *
@@ -35,7 +37,11 @@ import se.trixon.almond.util.fx.FxHelper;
  */
 public class ManagedList<ManagerType extends MBaseDataManager, ItemType> {
 
+    private static Object sLastOfAnyObject;
+    private final DelayedResetRunner mDelayedResetRunner = new DelayedResetRunner(10, () -> {
+    });
     private final Label mItemCountLabel = new Label();
+    private long mLastSelection;
     private final ListView<ItemType> mListView = new ListView<>();
     private final MBaseDataManager mManager;
     private final BorderPane mRoot = new BorderPane();
@@ -73,12 +79,17 @@ public class ManagedList<ManagerType extends MBaseDataManager, ItemType> {
         });
 
         mListView.getSelectionModel().selectedItemProperty().addListener((p, o, n) -> {
-            mManager.setSelectedItem(n);
-            updateLabel();
+            if (needsUpdate()) {
+                mManager.setSelectedItem(n);
+                updateLabel();
+            }
         });
 
         mListView.setOnMouseClicked(mouseEvent -> {
-            if (mouseEvent.getButton() == MouseButton.PRIMARY && mouseEvent.getClickCount() == 2) {
+            if (mouseEvent.getButton() == MouseButton.PRIMARY && mouseEvent.getClickCount() == 1) {
+                refreshSelection();
+            } else if (mouseEvent.getButton() == MouseButton.PRIMARY && mouseEvent.getClickCount() == 2) {
+                refreshSelection();
                 var item = mListView.getSelectionModel().getSelectedItem();
 
                 try {
@@ -97,6 +108,19 @@ public class ManagedList<ManagerType extends MBaseDataManager, ItemType> {
                 FxHelper.scrollToItemIfNotVisible(mListView, n);
             }
         });
+    }
+
+    private boolean needsUpdate() {
+        return SystemHelper.age(mLastSelection) > 100;
+    }
+
+    private void refreshSelection() {
+        var selectedItem = mListView.getSelectionModel().getSelectedItem();
+        if (sLastOfAnyObject != selectedItem && needsUpdate()) {
+            mManager.setSelectedItem(null);
+            mManager.setSelectedItem(selectedItem);
+            mLastSelection = System.currentTimeMillis();
+        }
     }
 
     private void updateLabel() {

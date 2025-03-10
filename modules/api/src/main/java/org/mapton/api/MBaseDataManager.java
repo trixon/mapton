@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.logging.Logger;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -225,9 +226,9 @@ public abstract class MBaseDataManager<T> {
     }
 
     public void initAllItems(ArrayList<T> items) {
-        getAllItems().setAll(items);
-        getFilteredItems().setAll(items);
-        getTimeFilteredItems().setAll(items);
+        setItemsAll(items);
+        setItemsFiltered(items);
+        setItemsTimeFiltered(items);
     }
 
     public boolean isLayerBundleEnabled() {
@@ -285,6 +286,24 @@ public abstract class MBaseDataManager<T> {
     public void setInitialTemporalState(boolean initialTemporalState) {
         mInitialTemporalState = initialTemporalState;
         updateTemporal(initialTemporalState);
+    }
+
+    public void setItemsAll(List<T> items) {
+        synchronized (getAllItems()) {
+            getAllItems().setAll(items);
+        }
+    }
+
+    public void setItemsFiltered(List<T> items) {
+        synchronized (getFilteredItems()) {
+            getFilteredItems().setAll(items);
+        }
+    }
+
+    public void setItemsTimeFiltered(List<T> items) {
+        synchronized (getTimeFilteredItems()) {
+            getTimeFilteredItems().setAll(items);
+        }
     }
 
     public void setSelectedItem(T item) {

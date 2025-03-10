@@ -16,6 +16,8 @@
 package org.mapton.api.ui.forms;
 
 import java.util.HashMap;
+import java.util.Map;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  *
@@ -24,6 +26,7 @@ import java.util.HashMap;
  */
 public abstract class PropertiesBuilder<T> {
 
+    public static final String NA = "N/A";
     public static final String SEPARATOR = " :: ";
     private final HashMap<String, String> mNameToIndexName = new HashMap<>();
 
@@ -41,6 +44,25 @@ public abstract class PropertiesBuilder<T> {
             return "%d. %s".formatted(mNameToIndexName.size() + 1, category);
         });
         return getCatKey(s, value);
+    }
+
+    public void remove(Map<String, String> map, String category, String key, String value) {
+        map.remove(getCatKeyNum(category, key));
+    }
+
+    public void removeByValues(Map<String, Object> map, String... values) {
+        var iterator = map.entrySet().iterator();
+        while (iterator.hasNext()) {
+            var entry = iterator.next();
+            Object value = entry.getValue();
+            if (value != null && StringUtils.equalsAnyIgnoreCase(value.toString(), values)) {
+                iterator.remove();
+            }
+        }
+    }
+
+    public void replace(Map<String, String> map, String category, String key, String value) {
+        map.put(getCatKeyNum(category, key), value);
     }
 
 }
