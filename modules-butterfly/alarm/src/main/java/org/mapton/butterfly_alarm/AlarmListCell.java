@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -47,8 +47,8 @@ class AlarmListCell extends ListCell<BAlarm> {
 
     private void addContent(BAlarm alarm) {
         setText(null);
-        mNameLabel.setText(alarm.getName());
-        mDesc1Label.setText("%s: %s".formatted(alarm.getDescription(), alarm.getId()));
+        mNameLabel.setText(alarm.getId());
+        mDesc1Label.setText(alarm.getName());
         setGraphic(mVBox);
     }
 
