@@ -99,10 +99,13 @@ public class GraphicRendererAlarmLevel extends GraphicRendererBase {
         if (isPlotLimitReached(p, GraphicRendererItem.ALARM_CONSUMPTION, position)) {
             return;
         }
-        plotPercentageRod(position, p.ext().getAlarmPercent());
+        var alarmPercent = p.ext().getAlarmPercent();
+        if (alarmPercent != null && alarmPercent < 10000) {
+            plotPercentageRod(position, alarmPercent);
 
-        var o = p.ext().getObservationFilteredLast();
-        plotAlarmConsumptionObservation(p, position, o, o != p.ext().getObservationFilteredLast());
+            var o = p.ext().getObservationFilteredLast();
+            plotAlarmConsumptionObservation(p, position, o, o != p.ext().getObservationFilteredLast());
+        }
     }
 
     private void plotAlarmConsumptionObservation(BTopoControlPoint p, Position position, BTopoControlPointObservation o, boolean historic) {

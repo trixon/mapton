@@ -35,7 +35,7 @@ import org.openide.util.lookup.ServiceProvider;
 public class ActualFrequencyReport extends BaseTopoMeasurementReport {
 
     private final TopoManager mManager = TopoManager.getInstance();
-    private final String mName = "Verklig frekvens";
+    private final String mName = "Frekvens, verklig";
 
     public ActualFrequencyReport() {
         setName(mName);
