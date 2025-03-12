@@ -16,7 +16,6 @@
 package org.mapton.butterfly_format.types.geo;
 
 import java.util.TreeSet;
-import org.mapton.butterfly_format.types.BMeasurementMode;
 import org.mapton.butterfly_format.types.BXyzPoint;
 
 /**
@@ -26,7 +25,6 @@ import org.mapton.butterfly_format.types.BXyzPoint;
 public class BGeoInclinometerPoint extends BXyzPoint {
 
     private transient Ext mExt;
-    private BMeasurementMode mMeasurementMode;
 
     public BGeoInclinometerPoint() {
     }
@@ -37,14 +35,6 @@ public class BGeoInclinometerPoint extends BXyzPoint {
         }
 
         return mExt;
-    }
-
-    public BMeasurementMode getMeasurementMode() {
-        return mMeasurementMode;
-    }
-
-    public void setMeasurementMode(BMeasurementMode measurementMode) {
-        mMeasurementMode = measurementMode;
     }
 
     public class Ext extends BXyzPoint.Ext<BGeoInclinometerPointObservation> {
