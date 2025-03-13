@@ -18,6 +18,7 @@ package org.mapton.butterfly_topo_convergence.group;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
@@ -64,6 +65,8 @@ public class ConvergenceGroupManager extends BaseManager<BTopoConvergenceGroup> 
                 var controlPoints = Arrays.stream(StringUtils.split(convergenceGroup.getRef(), ","))
                         .map(s -> butterfly.topo().getControlPointByName(s))
                         .filter(p -> p != null)
+                        .filter(p -> ObjectUtils.allNotNull(p.getZeroX(), p.getZeroY(), p.getZeroZ()))
+                        //.filter(p -> !StringUtils.endsWithIgnoreCase(p.getName(), "P00"))
                         .collect(Collectors.toCollection(ArrayList::new));
 
                 convergenceGroup.ext2().setControlPoints(controlPoints);

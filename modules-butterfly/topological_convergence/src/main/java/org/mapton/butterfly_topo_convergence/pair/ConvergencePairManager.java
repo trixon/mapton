@@ -141,7 +141,7 @@ public class ConvergencePairManager extends BaseManager<BTopoConvergencePair> {
 
                         pairs.add(pair);
                     } catch (NullPointerException e) {
-                        //System.err.println("NPE  ConvergencePairManager 1 " + p1.getName() + " " + p2.getName());
+                        System.err.println("NPE  ConvergencePairManager 1 " + p1.getName() + " " + p2.getName());
                     }
                 }
             }
