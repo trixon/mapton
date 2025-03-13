@@ -15,8 +15,14 @@
  */
 package org.mapton.butterfly_acoustic.blast;
 
+import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Material;
+import gov.nasa.worldwind.render.Offset;
+import gov.nasa.worldwind.render.PointPlacemark;
+import gov.nasa.worldwind.render.PointPlacemarkAttributes;
+import java.awt.Color;
+import org.mapton.api.Mapton;
 import org.mapton.butterfly_core.api.BaseAttributeManager;
 
 /**
@@ -27,6 +33,7 @@ public class BlastAttributeManager extends BaseAttributeManager {
 
     private BasicShapeAttributes mComponentEllipsoidAttributes;
     private BasicShapeAttributes mComponentGroundPathAttributes;
+    private PointPlacemarkAttributes mSinglePinAttributes;
     private BasicShapeAttributes mSurfaceAttributes;
 
     public static BlastAttributeManager getInstance() {
@@ -57,6 +64,20 @@ public class BlastAttributeManager extends BaseAttributeManager {
         }
 
         return mComponentGroundPathAttributes;
+    }
+
+    @Override
+    public PointPlacemarkAttributes getPinAttributes(Color color) {
+        if (mSinglePinAttributes == null) {
+            mSinglePinAttributes = new PointPlacemarkAttributes(new PointPlacemark(Position.ZERO).getDefaultAttributes());
+            mSinglePinAttributes.setImageAddress("https://maps.google.com/mapfiles/kml/shapes/falling_rocks.png");
+            mSinglePinAttributes.setImageColor(color);
+            mSinglePinAttributes.setScale(Mapton.SCALE_PIN_IMAGE);
+            mSinglePinAttributes.setLabelScale(Mapton.SCALE_PIN_LABEL);
+            mSinglePinAttributes.setImageOffset(Offset.BOTTOM_CENTER);
+        }
+
+        return mSinglePinAttributes;
     }
 
     public BasicShapeAttributes getSurfaceAttributes() {

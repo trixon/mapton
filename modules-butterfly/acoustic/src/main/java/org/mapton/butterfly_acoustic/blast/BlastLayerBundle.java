@@ -163,7 +163,7 @@ public class BlastLayerBundle extends BfLayerBundle {
     }
 
     private PointPlacemark plotPin(Position position, PointPlacemark labelPlacemark) {
-        var attrs = mAttributeManager.getPinAttributes(Color.ORANGE);
+        var attrs = mAttributeManager.getPinAttributes(Color.WHITE);
 
         var placemark = new PointPlacemark(position);
         placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
