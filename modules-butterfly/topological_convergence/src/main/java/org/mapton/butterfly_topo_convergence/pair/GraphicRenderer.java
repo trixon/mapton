@@ -32,6 +32,7 @@ import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.Mapton;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.topo.BTopoConvergencePair;
+import org.mapton.butterfly_topo_convergence.group.ConvergenceGroupManager;
 import org.mapton.worldwind.api.WWHelper;
 
 /**
@@ -41,6 +42,7 @@ import org.mapton.worldwind.api.WWHelper;
 public class GraphicRenderer extends GraphicRendererBase {
 
     private final Material[] mMaterials;
+    private double mOffset;
     private final HashSet<String> mPlottedLabels = new HashSet<>();
     private final HashSet<String> mPlottedNodes = new HashSet<>();
 
@@ -71,7 +73,7 @@ public class GraphicRenderer extends GraphicRendererBase {
 
     public void plot(BTopoConvergencePair pair, Position position, ArrayList<AVListImpl> mapObjects) {
         sMapObjects = mapObjects;
-
+        mOffset = ConvergenceGroupManager.getInstance().getOffset();
         if (sCheckModel.isChecked(GraphicRendererItem.LINES)) {
             plotLine(pair);
         }
@@ -96,7 +98,7 @@ public class GraphicRenderer extends GraphicRendererBase {
         var name = controlPoint.getName();
 
         if (!mPlottedLabels.contains(name)) {
-            var position = PairHelper.getPosition(controlPoint, pair.getOffset());
+            var position = PairHelper.getPosition(controlPoint, mOffset);
             var placemark = new PointPlacemark(position);
             placemark.setAltitudeMode(WorldWind.ABSOLUTE);
             placemark.setAttributes(mAttributeManager.getLabelPlacemarkAttributes());
@@ -117,8 +119,8 @@ public class GraphicRenderer extends GraphicRendererBase {
             return;
         }
 
-        var pos1 = PairHelper.getPosition(pair.getP1(), pair.getOffset());
-        var pos2 = PairHelper.getPosition(pair.getP2(), pair.getOffset());
+        var pos1 = PairHelper.getPosition(pair.getP1(), mOffset);
+        var pos2 = PairHelper.getPosition(pair.getP2(), mOffset);
 
         var path = new Path(pos1, pos2);
         var attrs = new BasicShapeAttributes(mAttributeManager.getPairPathAttributes());
@@ -156,8 +158,8 @@ public class GraphicRenderer extends GraphicRendererBase {
     }
 
     private void plotNodes(BTopoConvergencePair pair) {
-        plotNode(pair.getP1(), pair.getOffset());
-        plotNode(pair.getP2(), pair.getOffset());
+        plotNode(pair.getP1(), mOffset);
+        plotNode(pair.getP2(), mOffset);
     }
 
 }

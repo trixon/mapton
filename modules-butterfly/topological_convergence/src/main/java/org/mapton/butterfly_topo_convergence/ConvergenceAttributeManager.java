@@ -15,8 +15,14 @@
  */
 package org.mapton.butterfly_topo_convergence;
 
+import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Material;
+import gov.nasa.worldwind.render.Offset;
+import gov.nasa.worldwind.render.PointPlacemark;
+import gov.nasa.worldwind.render.PointPlacemarkAttributes;
+import java.awt.Color;
+import org.mapton.api.Mapton;
 import org.mapton.butterfly_core.api.BaseAttributeManager;
 
 /**
@@ -29,6 +35,7 @@ public class ConvergenceAttributeManager extends BaseAttributeManager {
     private BasicShapeAttributes mIndicatorAttributes;
     private BasicShapeAttributes mNodeAttributes;
     private BasicShapeAttributes mPairPathAttributes;
+    private PointPlacemarkAttributes mSinglePinAttributes;
     private BasicShapeAttributes mSurfaceAttributes;
 
     public static ConvergenceAttributeManager getInstance() {
@@ -83,6 +90,20 @@ public class ConvergenceAttributeManager extends BaseAttributeManager {
         }
 
         return mPairPathAttributes;
+    }
+
+    @Override
+    public PointPlacemarkAttributes getPinAttributes(Color color) {
+        if (mSinglePinAttributes == null) {
+            mSinglePinAttributes = new PointPlacemarkAttributes(new PointPlacemark(Position.ZERO).getDefaultAttributes());
+            mSinglePinAttributes.setImageAddress("https://maps.google.com/mapfiles/kml/shapes/polygon.png");
+            mSinglePinAttributes.setImageColor(color);
+            mSinglePinAttributes.setScale(Mapton.SCALE_PIN_IMAGE);
+            mSinglePinAttributes.setLabelScale(Mapton.SCALE_PIN_LABEL);
+            mSinglePinAttributes.setImageOffset(Offset.BOTTOM_CENTER);
+        }
+
+        return mSinglePinAttributes;
     }
 
     public BasicShapeAttributes getSurfaceAttributes() {

@@ -63,8 +63,9 @@ public class ConvergencePairManager extends BaseManager<BTopoConvergencePair> {
             return null;
         }
 
-        var pos1 = PairHelper.getPosition(pair.getP1(), pair.getOffset());
-        var pos2 = PairHelper.getPosition(pair.getP2(), pair.getOffset());
+        var offset = ConvergenceGroupManager.getInstance().getOffset();
+        var pos1 = PairHelper.getPosition(pair.getP1(), offset);
+        var pos2 = PairHelper.getPosition(pair.getP2(), offset);
         var radius = PairHelper.NODE_SIZE * 1.5;
         var e1 = new Ellipsoid(pos1, radius, radius, radius);
         var e2 = new Ellipsoid(pos2, radius, radius, radius);
@@ -123,6 +124,7 @@ public class ConvergencePairManager extends BaseManager<BTopoConvergencePair> {
     private void load() {
         var cooTrans = MOptions.getInstance().getMapCooTrans();
         var pairs = new ArrayList<BTopoConvergencePair>();
+        var offset = mGroupManager.getOffset();
 
         for (var group : mGroupManager.getTimeFilteredItems()) {
             var existingPairs = new HashSet<String>();
@@ -134,7 +136,7 @@ public class ConvergencePairManager extends BaseManager<BTopoConvergencePair> {
 
                     existingPairs.add("%s-%s".formatted(p1.getName(), p2.getName()));
                     try {
-                        var pair = new BTopoConvergencePair(group, p1, p2);
+                        var pair = new BTopoConvergencePair(group, p1, p2, offset);
                         var point = cooTrans.toWgs84(pair.getZeroY(), pair.getZeroX());
                         pair.setLat(point.getY());
                         pair.setLon(point.getX());

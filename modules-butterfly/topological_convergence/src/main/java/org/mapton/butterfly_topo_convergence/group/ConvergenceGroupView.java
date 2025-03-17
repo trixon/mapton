@@ -27,6 +27,7 @@ import org.mapton.api.Mapton;
 import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.SingleListForm;
 import org.mapton.butterfly_core.api.ButterflyManager;
+import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoConvergenceGroup;
 import org.mapton.butterfly_topo.api.TopoManager;
 import se.trixon.almond.util.Dict;
@@ -97,6 +98,8 @@ public class ConvergenceGroupView {
 //        g.setZeroZ(items.stream().mapToDouble(pp -> pp.getZeroZ()).average().orElse(0));
         g.setZeroZ(0.0);
         g.setButterfly(p.getButterfly());
+        g.setDimension(BDimension._3d);
+        g.setFrequency(0);
         ButterflyManager.getInstance().calculateLatLons(new ArrayList<>(List.of(g)));
         mManager.add(g);
     }
