@@ -284,6 +284,9 @@ public class Butterfly {
             p.setButterfly(this);
         }
 
+        for (var p : mTopoConvergenceGroups) {
+            p.setButterfly(this);
+        }
         for (var p : mTopoControlPoints) {
             p.setButterfly(this);
         }

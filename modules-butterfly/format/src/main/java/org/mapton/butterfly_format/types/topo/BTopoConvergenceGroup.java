@@ -16,6 +16,7 @@
 package org.mapton.butterfly_format.types.topo;
 
 import java.util.ArrayList;
+import org.mapton.butterfly_format.types.BXyzPoint;
 
 /**
  *
@@ -51,7 +52,7 @@ public class BTopoConvergenceGroup extends BTopoControlPoint {
         mRef = ref;
     }
 
-    public class Ext {
+    public class Ext extends BXyzPoint.Ext<BTopoControlPointObservation> {
 
         private ArrayList<BTopoControlPoint> mControlPoints = new ArrayList<>();
         private ArrayList<BTopoConvergencePair> mPairs = new ArrayList<>();
@@ -92,6 +93,21 @@ public class BTopoConvergenceGroup extends BTopoControlPoint {
 
             return storedPair;
         }
+
+//        @Override
+//        public int getNumOfObservations() {
+        ////            return getObservationsAllRaw().stream()
+////                    .map(o -> o.getDate().toString())
+////                    .collect(Collectors.toSet()).size();
+//            return 1 + getObservationsAllRaw().size();
+//        }
+//
+//        @Override
+//        public int getNumOfObservationsFiltered() {
+//            return getObservationsTimeFiltered().stream()
+//                    .map(o -> o.getDate().toString())
+//                    .collect(Collectors.toSet()).size();
+//        }
 
         public ArrayList<BTopoConvergencePair> getPairs() {
             return mPairs;

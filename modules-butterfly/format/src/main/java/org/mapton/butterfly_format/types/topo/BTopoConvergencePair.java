@@ -37,7 +37,7 @@ public class BTopoConvergencePair extends BXyzPoint {
     private BTopoControlPoint mP1;
     private BTopoControlPoint mP2;
 
-    public BTopoConvergencePair(BTopoConvergenceGroup group, BTopoControlPoint p1, BTopoControlPoint p2) {
+    public BTopoConvergencePair(BTopoConvergenceGroup group, BTopoControlPoint p1, BTopoControlPoint p2, double offset) {
         mConvergenceGroup = group;
         mP1 = p1;
         mP2 = p2;
@@ -52,7 +52,7 @@ public class BTopoConvergencePair extends BXyzPoint {
         var midPoint = p3d1.midpoint(p3d2);
         setZeroX(midPoint.getX());
         setZeroY(midPoint.getY());
-        setZeroZ(midPoint.getZ() + getOffset());
+        setZeroZ(midPoint.getZ() + offset);
     }
 
     public Ext ext() {
@@ -125,19 +125,18 @@ public class BTopoConvergencePair extends BXyzPoint {
         return mObservations;
     }
 
-    public double getOffset() {
-        var offset = getConvergenceGroup().ext2().getControlPoints().stream()
-                .map(p -> p.getZeroZ())
-                .mapToDouble(Double::doubleValue).min().orElse(0);
-        if (offset < 0) {
-            offset = offset * -1.0;
-        }
-
-        offset += 2;
-
-        return offset;
-    }
-
+//    public double getOffset() {
+//        var offset = getConvergenceGroup().ext2().getControlPoints().stream()
+//                .map(p -> p.getZeroZ())
+//                .mapToDouble(Double::doubleValue).min().orElse(0);
+//        if (offset < 0) {
+//            offset = offset * -1.0;
+//        }
+//
+//        offset += 2;
+//
+//        return offset;
+//    }
     public BTopoControlPoint getP1() {
         return mP1;
     }
