@@ -24,7 +24,9 @@ import java.util.stream.Collectors;
 import org.apache.commons.math3.util.FastMath;
 import org.mapton.api.MSimpleObjectStorageManager;
 import org.mapton.api.MTemporalRange;
+import org.mapton.api.Mapton;
 import org.mapton.butterfly_core.api.BaseManager;
+import org.mapton.butterfly_core.api.ButterflyManager;
 import org.mapton.butterfly_core.api.sos.ScalePlot3dHSosi;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
@@ -40,6 +42,7 @@ import se.trixon.almond.util.CollectionHelper;
  */
 public class TopoManager extends BaseManager<BTopoControlPoint> {
 
+    public static final String KEY_TOPO_POINTS_LOADED = "TopoPointsLoaded";
     private final TopoChartBuilder mChartBuilder = new TopoChartBuilder();
     private double mMinimumZscaled = 0.0;
     private final TopoPropertiesBuilder mPropertiesBuilder = new TopoPropertiesBuilder();
@@ -118,6 +121,8 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
         } catch (Exception e) {
             Exceptions.printStackTrace(e);
         }
+
+        Mapton.getGlobalState().put(KEY_TOPO_POINTS_LOADED, ButterflyManager.getInstance().getButterfly());
     }
 
     @Override
