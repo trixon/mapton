@@ -65,7 +65,7 @@ public class BlastFilter extends FormFilter<BlastManager> {
     @Override
     public void update() {
         var filteredItems = mManager.getAllItems().stream()
-                .filter(b -> validateFreeText(b.getName(), b.getGroup(), b.getComment()))
+                .filter(b -> validateFreeText(b.getName(), b.getGroup(), b.getComment(), b.getExternalId()))
                 .filter(b -> validateCheck(mGroupCheckModel, b.getGroup()))
                 .filter(b -> validateDate(b.getDateTime()))
                 .filter(b -> validateAltitude(b))
