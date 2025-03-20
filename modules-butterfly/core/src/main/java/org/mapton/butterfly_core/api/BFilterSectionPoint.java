@@ -120,7 +120,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
                     && validateDefaultFregFlags(p, getDefaultFrequencyStatSccb().getCheckModel())
                     && validateCheck(getOperatorSccb().getCheckModel(), p.getOperator())
                     && validateCheck(getOriginSccb().getCheckModel(), p.getOrigin())
-                    && validateCheckMeasurementMode(getMeasurementModeSccb().getCheckModel(), p.getEasurementMode())
+                    && validateCheckMeasurementMode(getMeasurementModeSccb().getCheckModel(), p.getMeasurementMode())
                     && validateNextMeas(p, getMeasNextSccb().getCheckModel(), remainingDays)
                     && true;
         } else {
