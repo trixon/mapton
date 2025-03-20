@@ -29,7 +29,7 @@ public abstract class BBase {
     private transient Butterfly butterfly;
     private LocalDateTime dateChanged;
     private LocalDateTime dateCreated;
-    private String mExternalId;
+    private String externalId;
     private String meta;
     private String name;
     private String origin;
@@ -52,7 +52,7 @@ public abstract class BBase {
     }
 
     public String getExternalId() {
-        return mExternalId;
+        return externalId;
     }
 
     public String getMeta() {
@@ -101,7 +101,7 @@ public abstract class BBase {
     }
 
     public void setExternalId(String externalId) {
-        this.mExternalId = externalId;
+        this.externalId = externalId;
     }
 
     public void setMeta(String meta) {

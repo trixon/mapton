@@ -31,6 +31,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import org.apache.commons.configuration2.PropertiesConfiguration;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.IndexedCheckModel;
 import org.controlsfx.tools.Borders;
@@ -55,6 +56,8 @@ public class BFilterSectionPoint extends MBaseFilterSection {
     private final SessionCheckComboBox<String> mAlarmNameSccb;
     private final ResourceBundle mBundle = NbBundle.getBundle(getClass());
     private final SessionCheckComboBox<String> mCategorySccb;
+    private final SessionCheckComboBox<Integer> mDefaultFrequencySccb;
+    private final SessionCheckComboBox<DefaultFreqFlags> mDefaultFrequencyStatSccb;
     private final SessionCheckComboBox<Integer> mFrequencySccb;
     private final SessionCheckComboBox<String> mGroupSccb;
     private final SessionCheckComboBox<String> mMeasNextSccb;
@@ -73,6 +76,8 @@ public class BFilterSectionPoint extends MBaseFilterSection {
         mMeasNextSccb = new SessionCheckComboBox<>(true);
         mGroupSccb = new SessionCheckComboBox<>();
         mFrequencySccb = new SessionCheckComboBox<>();
+        mDefaultFrequencySccb = new SessionCheckComboBox<>();
+        mDefaultFrequencyStatSccb = new SessionCheckComboBox<>();
         mCategorySccb = new SessionCheckComboBox<>();
         mMeasurementModeSccb = new SessionCheckComboBox<>();
         mPointFilterUI = new PointFilterUI();
@@ -94,6 +99,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
         map.put(Dict.Geometry.POINT.toUpper(), ".");
         map.put(Dict.STATUS.toString(), makeInfo(mStatusSccb.getCheckModel().getCheckedItems()));
         map.put(SDict.FREQUENCY.toString(), makeInfoInteger(mFrequencySccb.getCheckModel().getCheckedItems()));
+        map.put("%s (%s)".formatted(SDict.FREQUENCY.toString(), Dict.DEFAULT.toLower()), makeInfoInteger(mDefaultFrequencySccb.getCheckModel().getCheckedItems()));
         map.put(mBundle.getString("nextMeasCheckComboBoxTitle"), makeInfo(mMeasNextSccb.getCheckModel().getCheckedItems()));
         map.put(Dict.GROUP.toString(), makeInfo(mGroupSccb.getCheckModel().getCheckedItems()));
         map.put(Dict.CATEGORY.toString(), makeInfo(mCategorySccb.getCheckModel().getCheckedItems()));
@@ -110,9 +116,11 @@ public class BFilterSectionPoint extends MBaseFilterSection {
                     && validateCheck(getCategorySccb().getCheckModel(), p.getCategory())
                     && validateAlarmName(p, getAlarmNameSccb().getCheckModel())
                     && validateCheck(getFrequencySccb().getCheckModel(), p.getFrequency())
+                    && validateCheck(getDefaultFrequencySccb().getCheckModel(), p.getDefaultFrequency())
+                    && validateDefaultFregFlags(p, getDefaultFrequencyStatSccb().getCheckModel())
                     && validateCheck(getOperatorSccb().getCheckModel(), p.getOperator())
                     && validateCheck(getOriginSccb().getCheckModel(), p.getOrigin())
-                    && validateCheckMeasurementMode(getMeasurementModeSccb().getCheckModel(), p.getMeasurementMode())
+                    && validateCheckMeasurementMode(getMeasurementModeSccb().getCheckModel(), p.getEasurementMode())
                     && validateNextMeas(p, getMeasNextSccb().getCheckModel(), remainingDays)
                     && true;
         } else {
@@ -128,6 +136,16 @@ public class BFilterSectionPoint extends MBaseFilterSection {
     public SessionCheckComboBox<String> getCategorySccb() {
         mCategorySccb.setDisable(false);
         return mCategorySccb;
+    }
+
+    public SessionCheckComboBox<Integer> getDefaultFrequencySccb() {
+        mDefaultFrequencySccb.setDisable(false);
+        return mDefaultFrequencySccb;
+    }
+
+    public SessionCheckComboBox<DefaultFreqFlags> getDefaultFrequencyStatSccb() {
+        mDefaultFrequencyStatSccb.setDisable(false);
+        return mDefaultFrequencyStatSccb;
     }
 
     public SessionCheckComboBox<Integer> getFrequencySccb() {
@@ -182,6 +200,8 @@ public class BFilterSectionPoint extends MBaseFilterSection {
                 getCategorySccb().getCheckModel(),
                 getAlarmNameSccb().getCheckModel(),
                 getFrequencySccb().getCheckModel(),
+                getDefaultFrequencySccb().getCheckModel(),
+                getDefaultFrequencyStatSccb().getCheckModel(),
                 getMeasurementModeSccb().getCheckModel(),
                 getOperatorSccb().getCheckModel(),
                 getOriginSccb().getCheckModel()
@@ -204,9 +224,9 @@ public class BFilterSectionPoint extends MBaseFilterSection {
         getOriginSccb().loadAndRestoreCheckItems(items.stream().map(o -> o.getOrigin()));
         getStatusSccb().loadAndRestoreCheckItems(items.stream().map(o -> o.getStatus()));
         getFrequencySccb().loadAndRestoreCheckItems(items.stream().filter(o -> o.getFrequency() != null).map(o -> o.getFrequency()));
+        getDefaultFrequencySccb().loadAndRestoreCheckItems(items.stream().filter(o -> o.getDefaultFrequency() != null).map(o -> o.getDefaultFrequency()));
         getMeasNextSccb().loadAndRestoreCheckItems();
         getMeasurementModeSccb().loadAndRestoreCheckItems(Stream.of("Automatisk", "Manuell", "Odefinierad"));
-
     }
 
     @Override
@@ -258,6 +278,38 @@ public class BFilterSectionPoint extends MBaseFilterSection {
                 || m == null && checkModel.isChecked("Odefinierad");
     }
 
+    public boolean validateDefaultFregFlags(BXyzPoint p, IndexedCheckModel checkModel) {
+        if (checkModel.isEmpty()) {
+            return true;
+        }
+
+        var eq = true;
+        var neq = true;
+        var set = true;
+        var nset = true;
+
+        if (checkModel.isChecked(DefaultFreqFlags.EQUALS)) {
+            eq = ObjectUtils.compare(p.getFrequency(), p.getDefaultFrequency()) == 0;
+        }
+
+        if (checkModel.isChecked(DefaultFreqFlags.NOT_EQUALS)) {
+            neq = ObjectUtils.compare(p.getFrequency(), p.getDefaultFrequency()) != 0;
+        }
+
+        if (checkModel.isChecked(DefaultFreqFlags.SET)) {
+            set = ObjectUtils.compare(-1, p.getDefaultFrequency()) != 0;
+        }
+
+        if (checkModel.isChecked(DefaultFreqFlags.NOT_SET)) {
+            nset = ObjectUtils.compare(-1, p.getDefaultFrequency()) == 0;
+        }
+
+        return eq
+                && neq
+                && set
+                && nset;
+    }
+
     public boolean validateNextMeas(BXyzPoint p, IndexedCheckModel<String> checkModel, long remainingDays) {
         var frequency = p.getFrequency();
         var latest = p.getDateLatest() != null ? p.getDateLatest().toLocalDate() : LocalDate.MIN;
@@ -287,6 +339,24 @@ public class BFilterSectionPoint extends MBaseFilterSection {
     private void init() {
     }
 
+    public enum DefaultFreqFlags {
+        EQUALS("= %s".formatted(SDict.FREQUENCY.toString())),
+        NOT_EQUALS("≠ %s".formatted(SDict.FREQUENCY.toString())),
+        SET("Har standardfrekvens"),
+        NOT_SET("Saknar standardfrekvens");
+        private final String mTitle;
+
+        private DefaultFreqFlags(String title) {
+            mTitle = title;
+        }
+
+        @Override
+        public String toString() {
+            return mTitle;
+        }
+
+    }
+
     public class PointFilterUI {
 
         private Node mBaseBorderBox;
@@ -308,7 +378,9 @@ public class BFilterSectionPoint extends MBaseFilterSection {
                     mOriginSccb,
                     mMeasNextSccb,
                     mMeasurementModeSccb,
-                    mFrequencySccb
+                    mFrequencySccb,
+                    mDefaultFrequencyStatSccb,
+                    mDefaultFrequencySccb
             );
         }
 
@@ -334,6 +406,8 @@ public class BFilterSectionPoint extends MBaseFilterSection {
             sessionManager.register("filter.checkedAlarmName", mAlarmNameSccb.checkedStringProperty());
             sessionManager.register("filter.checkedCategory", mCategorySccb.checkedStringProperty());
             sessionManager.register("filter.checkedFrequency", mFrequencySccb.checkedStringProperty());
+            sessionManager.register("filter.checkedDefaultFrequency", mDefaultFrequencySccb.checkedStringProperty());
+            sessionManager.register("filter.checkedDefaultFrequencyStat", mDefaultFrequencyStatSccb.checkedStringProperty());
             sessionManager.register("filter.checkedGroup", mGroupSccb.checkedStringProperty());
             sessionManager.register("filter.checkedOperators", mOperatorSccb.checkedStringProperty());
             sessionManager.register("filter.checkedOrigin", mOriginSccb.checkedStringProperty());
@@ -367,7 +441,9 @@ public class BFilterSectionPoint extends MBaseFilterSection {
                     mOperatorSccb,
                     mOriginSccb,
                     mMeasurementModeSccb,
-                    mFrequencySccb
+                    mFrequencySccb,
+                    mDefaultFrequencySccb,
+                    mDefaultFrequencyStatSccb
             );
 
             mStatusSccb.setDisable(true);
@@ -377,6 +453,8 @@ public class BFilterSectionPoint extends MBaseFilterSection {
             mOperatorSccb.setDisable(true);
             mOriginSccb.setDisable(true);
             mFrequencySccb.setDisable(true);
+            mDefaultFrequencySccb.setDisable(true);
+            mDefaultFrequencyStatSccb.setDisable(true);
             mMeasNextSccb.setDisable(true);
             mMeasurementModeSccb.setDisable(true);
 
@@ -388,8 +466,10 @@ public class BFilterSectionPoint extends MBaseFilterSection {
             mOperatorSccb.setTitle(SDict.OPERATOR.toString());
             mOriginSccb.setTitle(Dict.ORIGIN.toString());
             mFrequencySccb.setTitle(SDict.FREQUENCY.toString());
+            mDefaultFrequencySccb.setTitle("Standardfrekvens");
+            mDefaultFrequencyStatSccb.setTitle("Status, standardfrekvens");
+            mDefaultFrequencyStatSccb.getItems().setAll(DefaultFreqFlags.values());
             mMeasurementModeSccb.setTitle("Mätläge");
-
             mMeasNextSccb.getItems().setAll(List.of(
                     "<0",
                     "0",
@@ -405,6 +485,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
             var leftBox = new VBox(rowGap,
                     mStatusSccb,
                     mFrequencySccb,
+                    mDefaultFrequencySccb,
                     mMeasurementModeSccb,
                     mGroupSccb,
                     mOriginSccb
@@ -416,6 +497,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
             var rightBox = new VBox(rowGap,
                     mAlarmNameSccb,
                     mMeasNextSccb,
+                    mDefaultFrequencyStatSccb,
                     dummyLabel,
                     mCategorySccb,
                     mOperatorSccb

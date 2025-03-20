@@ -30,6 +30,7 @@ public abstract class BBaseControlPoint extends BBasePoint {
     private LocalDate dateValidFrom;
     private LocalDate dateValidTo;
     private LocalDate dateZero;
+    private Integer defaultFrequency;
     private Integer frequency;
     private String operator;
     private String status;
@@ -60,6 +61,14 @@ public abstract class BBaseControlPoint extends BBasePoint {
 
     public LocalDate getDateZero() {
         return dateZero;
+    }
+
+    public Integer getDefaultFrequency() {
+        if (defaultFrequency == null) {
+            defaultFrequency = -1;
+        }
+
+        return defaultFrequency;
     }
 
     public Integer getFrequency() {
@@ -100,6 +109,10 @@ public abstract class BBaseControlPoint extends BBasePoint {
 
     public void setDateZero(LocalDate dateZero) {
         this.dateZero = dateZero;
+    }
+
+    public void setDefaultFrequency(Integer defaultFrequency) {
+        this.defaultFrequency = defaultFrequency;
     }
 
     public void setFrequency(Integer frequency) {

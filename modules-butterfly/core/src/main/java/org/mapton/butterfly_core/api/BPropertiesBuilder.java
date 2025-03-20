@@ -113,7 +113,10 @@ public abstract class BPropertiesBuilder<T> extends PropertiesBuilder<T> {
         map.put(getCatKeyNum(CAT_MEAS, "%s, %s".formatted(Dict.AGE.toString(), SDict.ALARM_LEVEL.toLower())), params.alarmLevelAge);
         //
         var need = p.getFrequency() == 0 ? "-" : Long.toString(params.dayUntilNext);
-        map.put(getCatKeyNum(CAT_MEAS, SDict.FREQUENCY.toString()), p.getFrequency());
+        map.put(getCatKeyNum(CAT_MEAS,
+                StringHelper.join(SEPARATOR, "", SDict.FREQUENCY.toString(), Dict.DEFAULT.toString())),
+                StringHelper.join(SEPARATOR, "", p.getFrequency().toString(), p.getDefaultFrequency().toString()));
+
         map.put(getCatKeyNum(CAT_MEAS, Dict.NEED.toString()), need);
         map.put(getCatKeyNum(CAT_MEAS, Dict.AGE.toString()), params.age);
         var measurements = "%d / %d".formatted(

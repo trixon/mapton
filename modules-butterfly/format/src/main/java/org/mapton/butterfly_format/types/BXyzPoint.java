@@ -38,7 +38,7 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
     private String alarm1Id;
     private String alarm2Id;
     private BDimension dimension;
-    private BMeasurementMode mMeasurementMode;
+    private BMeasurementMode measurementMode;
     private Integer numOfDecXY;
     private Integer numOfDecZ;
     private Double offsetX;
@@ -66,8 +66,8 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
         return dimension;
     }
 
-    public BMeasurementMode getMeasurementMode() {
-        return mMeasurementMode;
+    public BMeasurementMode getEasurementMode() {
+        return measurementMode;
     }
 
     public Integer getNumOfDecXY() {
@@ -143,8 +143,8 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
         this.dimension = dimension;
     }
 
-    public void setMeasurementMode(BMeasurementMode measurementMode) {
-        mMeasurementMode = measurementMode;
+    public void setEasurementMode(BMeasurementMode easurementMode) {
+        this.measurementMode = easurementMode;
     }
 
     public void setNumOfDecXY(Integer numOfDecXY) {
