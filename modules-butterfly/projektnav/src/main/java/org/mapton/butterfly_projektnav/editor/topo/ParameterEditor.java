@@ -49,7 +49,10 @@ public class ParameterEditor extends BaseTopoEditor {
 
     private BorderPane mBorderPane;
     private final CheckBox mDagCheckBox = new CheckBox("Dag");
-    private final Spinner mDagSpinner = new Spinner<Integer>(0, 999, 1);
+    private final CheckBox mDefDagCheckBox = new CheckBox("DefDag");
+    private final CheckBox mDefDagRestoreCheckBox = new CheckBox("Reset def");
+    private final Spinner<Integer> mDagSpinner = new Spinner<>(0, 999, 1);
+    private final Spinner<Integer> mDefDagSpinner = new Spinner<>(0, 999, 1);
     private final CheckBox mDatFromCheckBox = new CheckBox("Från");
     private final DatePicker mDatFromDatePicker = new DatePicker();
     private final CheckBox mDatToCheckBox = new CheckBox("Till");
@@ -129,6 +132,7 @@ public class ParameterEditor extends BaseTopoEditor {
         mUtforareComboBox.getItems().setAll(utforare);
 
         mDagSpinner.disableProperty().bind(mDagCheckBox.selectedProperty().not());
+        mDefDagSpinner.disableProperty().bind(mDefDagCheckBox.selectedProperty().not());
         mStatusComboBox.disableProperty().bind(mStatusCheckBox.selectedProperty().not());
         mUtforareComboBox.disableProperty().bind(mUtforareCheckBox.selectedProperty().not());
         mGruppComboBox.disableProperty().bind(mGruppCheckBox.selectedProperty().not());
@@ -142,6 +146,8 @@ public class ParameterEditor extends BaseTopoEditor {
         var settingsGridPane = new GridPane();
         int col = 0;
         settingsGridPane.addColumn(col++, mDagCheckBox, mDagSpinner);
+        settingsGridPane.addColumn(col++, mDefDagCheckBox, mDefDagSpinner);
+        settingsGridPane.addColumn(col++, mDefDagRestoreCheckBox);
         settingsGridPane.addColumn(col++, mStatusCheckBox, mStatusComboBox);
         settingsGridPane.addColumn(col++, mGruppCheckBox, mGruppComboBox);
         settingsGridPane.addColumn(col++, mKategoriCheckBox, mKategoriComboBox);
@@ -152,8 +158,8 @@ public class ParameterEditor extends BaseTopoEditor {
         settingsGridPane.addColumn(col++, mDatToCheckBox, mDatToDatePicker);
         settingsGridPane.addColumn(col++, mDatToLatestCheckBox);
         settingsGridPane.addColumn(col++, mUtglesningCheckBox, mUtglesningTextField);
-        FxHelper.setEditable(true, mDagSpinner);
-        FxHelper.autoCommitSpinners(mDagSpinner);
+        FxHelper.setEditable(true, mDagSpinner, mDefDagSpinner);
+        FxHelper.autoCommitSpinners(mDagSpinner, mDefDagSpinner);
         FxHelper.setEditable(true, mGruppComboBox, mKategoriComboBox, mUtforareComboBox);
 
         mBorderPane.setTop(settingsGridPane);
@@ -215,6 +221,7 @@ public class ParameterEditor extends BaseTopoEditor {
         mPreviewLogPanel.clear();
         var sb = new StringBuilder("nr");
         addConditionlly(sb, mDagCheckBox.isSelected(), "dag");
+        addConditionlly(sb, mDefDagCheckBox.isSelected(), "meta");
         addConditionlly(sb, mStatusCheckBox.isSelected(), "status");
         addConditionlly(sb, mGruppCheckBox.isSelected(), "grupp");
         addConditionlly(sb, mKategoriCheckBox.isSelected(), "kategori");
@@ -250,7 +257,12 @@ public class ParameterEditor extends BaseTopoEditor {
                 }
             }
             sb.append(name);
-            addConditionlly(sb, mDagCheckBox.isSelected(), mDagSpinner.getValue());
+            var dag = mDagSpinner.getValue();
+            if (mDefDagRestoreCheckBox.isSelected() && p.getDefaultFrequency() != null) {
+                dag = p.getDefaultFrequency();
+            }
+            addConditionlly(sb, mDagCheckBox.isSelected(), dag);
+            addConditionlly(sb, mDefDagCheckBox.isSelected(), "DefaultDag=%d".formatted(mDefDagSpinner.getValue()));
             addConditionlly(sb, mStatusCheckBox.isSelected(), mStatusComboBox.getValue());
             addConditionlly(sb, mGruppCheckBox.isSelected(), mGruppComboBox.getValue());
             addConditionlly(sb, mKategoriCheckBox.isSelected(), mKategoriComboBox.getValue());
