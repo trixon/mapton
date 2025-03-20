@@ -25,9 +25,8 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ListChangeListener;
-import javafx.scene.Node;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
+import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
 import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.MDisruptorManager;
@@ -36,6 +35,7 @@ import org.mapton.butterfly_format.types.BXyzPoint;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.session.SessionCheckComboBox;
+import se.trixon.almond.util.fx.session.SessionComboBox;
 import se.trixon.almond.util.fx.session.SessionDoubleSpinner;
 
 /**
@@ -44,28 +44,18 @@ import se.trixon.almond.util.fx.session.SessionDoubleSpinner;
  */
 public class BFilterSectionDisruptor extends MBaseFilterSection {
 
+    private final DisruptorFilterUI mDisruptorFilterUI = new DisruptorFilterUI();
     private final MDisruptorManager mDisruptorManager = MDisruptorManager.getInstance();
-    private final DisruptorPane mDisruptorPane = new DisruptorPane();
-    private final GridPane mRoot = new GridPane();
 
     public BFilterSectionDisruptor() {
         super("Störningskällor");
-        init();
-        setContent(mRoot);
+        setContent(mDisruptorFilterUI.mRoot);
     }
 
     @Override
     public void clear() {
         super.clear();
-        mDisruptorPane.reset();
-    }
-
-    public boolean filter(BXyzPoint p) {
-        if (isSelected()) {
-            return validateDisruptor(p.getZeroX(), p.getZeroY());
-        } else {
-            return true;
-        }
+        mDisruptorFilterUI.reset();
     }
 
     @Override
@@ -76,11 +66,20 @@ public class BFilterSectionDisruptor extends MBaseFilterSection {
         map.put(getTab().getText().toUpperCase(Locale.ROOT), ".");
     }
 
+    public boolean filter(BXyzPoint p) {
+        if (isSelected()) {
+            return validateDisruptor(p.getZeroX(), p.getZeroY());
+        } else {
+            return true;
+        }
+    }
+
     public void initListeners(ChangeListener changeListener, ListChangeListener<Object> listChangeListener) {
         List.of(
                 selectedProperty(),
-                mDisruptorPane.distanceProperty(),
-                mDisruptorManager.lastChangedProperty()
+                mDisruptorFilterUI.distanceProperty(),
+                mDisruptorManager.lastChangedProperty(),
+                mDisruptorFilterUI.mDisruptorGtLtScb.getSelectionModel().selectedItemProperty()
         ).forEach(propertyBase -> propertyBase.addListener(changeListener));
 
         List.of(
@@ -92,12 +91,13 @@ public class BFilterSectionDisruptor extends MBaseFilterSection {
     public void initSession(SessionManager sessionManager) {
         setSessionManager(sessionManager);
         sessionManager.register("filter.section.disruptor", selectedProperty());
-        sessionManager.register("filter.checkedDisruptors", mDisruptorPane.checkedStringProperty());
-        sessionManager.register("filter.disruptorDistance", mDisruptorPane.distanceProperty());
+        sessionManager.register("filter.checkedDisruptors", mDisruptorFilterUI.checkedStringProperty());
+        sessionManager.register("filter.disruptorDistance", mDisruptorFilterUI.distanceProperty());
+        sessionManager.register("filter.disruptor.gtlt", mDisruptorFilterUI.mDisruptorGtLtScb.selectedIndexProperty());
     }
 
     public void load() {
-        mDisruptorPane.load();
+        mDisruptorFilterUI.load();
     }
 
     @Override
@@ -109,32 +109,33 @@ public class BFilterSectionDisruptor extends MBaseFilterSection {
     }
 
     private IndexedCheckModel<String> getDisruptorCheckModel() {
-        return mDisruptorPane.mDisruptorSccb.getCheckModel();
-    }
-
-    private void init() {
-        mRoot.addRow(0, mDisruptorPane.getRoot());
+        return mDisruptorFilterUI.mDisruptorSccb.getCheckModel();
     }
 
     private boolean validateDisruptor(Double x, Double y) {
         if (getDisruptorCheckModel().isEmpty()) {
             return true;
         } else {
-            return mDisruptorManager.isValidCoordinate(getDisruptorCheckModel(), mDisruptorPane.distanceProperty().getValue(), x, y);
+            var min = mDisruptorFilterUI.mDisruptorGtLtScb.getSelectionModel().getSelectedIndex() == 0;
+            return mDisruptorManager.isValidDistance(
+                    getDisruptorCheckModel(),
+                    min,
+                    mDisruptorFilterUI.distanceProperty().getValue(),
+                    x, y);
         }
     }
 
-    public class DisruptorPane {
+    public class DisruptorFilterUI {
 
-        private final ResourceBundle mBundle = NbBundle.getBundle(DisruptorPane.class);
-
+        private final ResourceBundle mBundle = NbBundle.getBundle(DisruptorFilterUI.class);
         private final double mDefaultDisruptorDistance = 75.0;
+        private final SessionComboBox<String> mDisruptorGtLtScb = new SessionComboBox<>();
         private final MDisruptorManager mDisruptorManager = MDisruptorManager.getInstance();
         private final SessionCheckComboBox<String> mDisruptorSccb = new SessionCheckComboBox<>();
         private final SessionDoubleSpinner mDisruptorSds = new SessionDoubleSpinner(0, 500.0, mDefaultDisruptorDistance, 5.0);
-        private BorderPane mRoot;
+        private HBox mRoot;
 
-        public DisruptorPane() {
+        public DisruptorFilterUI() {
             createUI();
         }
 
@@ -150,31 +151,29 @@ public class BFilterSectionDisruptor extends MBaseFilterSection {
             return mDisruptorSccb.getCheckModel();
         }
 
-        public Node getRoot() {
-            return mRoot;
-        }
-
         public void load() {
             mDisruptorSccb.loadAndRestoreCheckItems(mDisruptorManager.getCategories().stream());
             mDisruptorSds.load();
+            mDisruptorGtLtScb.load();
         }
 
         public void reset() {
             mDisruptorSds.getValueFactory().setValue(mDefaultDisruptorDistance);
             mDisruptorSccb.clearChecks();
+            mDisruptorGtLtScb.getSelectionModel().selectFirst();
         }
 
         private void createUI() {
             mDisruptorSccb.setShowCheckedCount(true);
             mDisruptorSccb.setTitle(mBundle.getString("DisruptorCheckComboBoxTitle"));
-            mRoot = new BorderPane(mDisruptorSccb);
-            mRoot.setLeft(mDisruptorSds);
-            mDisruptorSds.setPadding(FxHelper.getUIScaledInsets(0, 8, 0, 0));
-
+            mRoot = new HBox(FxHelper.getUIScaled(8), new Label("Avstånd"), mDisruptorGtLtScb, mDisruptorSds, mDisruptorSccb);
+            mDisruptorGtLtScb.getItems().setAll("<=", ">=");
             FxHelper.setEditable(true, mDisruptorSds);
             FxHelper.autoCommitSpinners(mDisruptorSds);
-            mDisruptorSds.disableProperty().bind(Bindings.isEmpty(mDisruptorSccb.getCheckModel().getCheckedItems()));
-        }
+            mDisruptorGtLtScb.getSelectionModel().selectFirst();
 
+            mDisruptorSds.disableProperty().bind(Bindings.isEmpty(mDisruptorSccb.getCheckModel().getCheckedItems()));
+            mDisruptorGtLtScb.disableProperty().bind(Bindings.isEmpty(mDisruptorSccb.getCheckModel().getCheckedItems()));
+        }
     }
 }
