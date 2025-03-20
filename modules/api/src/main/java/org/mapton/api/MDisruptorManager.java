@@ -56,8 +56,8 @@ public class MDisruptorManager {
         return new TreeSet<>(providers.stream().map(p -> p.getName()).toList());
     }
 
-    public boolean isValidCoordinate(IndexedCheckModel checkModel, Double maxDistance, Double x, Double y) {
-        if (ObjectUtils.anyNull(maxDistance, x, y)) {
+    public boolean isValidDistance(IndexedCheckModel checkModel, boolean min, Double limitDistance, Double x, Double y) {
+        if (ObjectUtils.anyNull(limitDistance, x, y)) {
             return false;
         }
 
@@ -70,13 +70,13 @@ public class MDisruptorManager {
 
             for (var geometry : entry.getValue()) {
                 var distance = geometry.distance(point);
-                if (distance <= maxDistance) {
-                    return true;
+                if (distance <= limitDistance) {
+                    return min;
                 }
             }
         }
 
-        return false;
+        return !min;
     }
 
     public SimpleLongProperty lastChangedProperty() {
@@ -88,7 +88,7 @@ public class MDisruptorManager {
         mLastChangedProperty.set(System.currentTimeMillis());
     }
 
-    public void putLatLons(String DISRUPTOR_NAME, List<MLatLon> list) {
+    public void putLatLons(String disruptorName, List<MLatLon> list) {
         var cooTrans = MOptions.getInstance().getMapCooTrans();
         var geometries = list.stream().map(b -> {
             var p = cooTrans.fromWgs84(b.getLatitude(), b.getLongitude());
@@ -97,7 +97,7 @@ public class MDisruptorManager {
             return mGeometryFactory.createPoint(coordinate);
         }).toList();
 
-        putGeometries(DISRUPTOR_NAME, geometries);
+        putGeometries(disruptorName, geometries);
     }
 
     public List<MLatLon> remove(String id) {
