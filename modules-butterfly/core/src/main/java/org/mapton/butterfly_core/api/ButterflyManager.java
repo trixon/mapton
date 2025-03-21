@@ -44,6 +44,7 @@ import org.mapton.api.MArea;
 import org.mapton.api.MAreaFilterManager;
 import org.mapton.api.MCooTrans;
 import org.mapton.api.MOptions;
+import org.mapton.api.MSearchProviderManager;
 import org.mapton.api.Mapton;
 import org.mapton.butterfly_core.LogoLoader;
 import org.mapton.butterfly_format.BundleMode;
@@ -233,6 +234,7 @@ public class ButterflyManager {
                     }
                 }
 
+                butterfly.sys().getSearchProviders().forEach(p -> MSearchProviderManager.getInstance().getMap().put(p.getId(), p.getKey()));
                 setButterfly(butterfly);
                 mButterflyMonitor.start();
                 refreshTitle();

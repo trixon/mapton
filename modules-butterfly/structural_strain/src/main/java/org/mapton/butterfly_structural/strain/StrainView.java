@@ -22,6 +22,7 @@ import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.SingleListForm;
 import org.mapton.butterfly_core.api.CopyNamesAction;
+import org.mapton.butterfly_core.api.ExternalSearchAction;
 import org.mapton.butterfly_format.types.structural.BStructuralStrainGaugePoint;
 import org.mapton.core.api.ui.MFilterPresetPopOver;
 import se.trixon.almond.util.Dict;
@@ -39,7 +40,9 @@ public class StrainView {
     private final StrainManager mManager = StrainManager.getInstance();
 
     public StrainView() {
-        var actions = Arrays.asList(new CopyNamesAction(mManager),
+        var actions = Arrays.asList(
+                new ExternalSearchAction(mManager),
+                new CopyNamesAction(mManager),
                 ActionUtils.ACTION_SPAN,
                 mManager.geZoomExtentstAction(),
                 mFilter.getInfoPopOver().getAction(),

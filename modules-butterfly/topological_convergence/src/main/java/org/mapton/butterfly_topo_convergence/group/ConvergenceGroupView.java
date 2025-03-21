@@ -27,6 +27,8 @@ import org.mapton.api.Mapton;
 import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.SingleListForm;
 import org.mapton.butterfly_core.api.ButterflyManager;
+import org.mapton.butterfly_core.api.CopyNamesAction;
+import org.mapton.butterfly_core.api.ExternalSearchAction;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoConvergenceGroup;
 import org.mapton.butterfly_topo.api.TopoManager;
@@ -50,7 +52,9 @@ public class ConvergenceGroupView {
         createAction.setGraphic(MaterialIcon._Content.ADD.getImageView(Mapton.getIconSizeToolBarInt()));
 
         var actions = Arrays.asList(
+                new ExternalSearchAction(mManager),
                 createAction,
+                new CopyNamesAction(mManager),
                 ActionUtils.ACTION_SPAN,
                 mManager.geZoomExtentstAction(),
                 mFilter.getInfoPopOver().getAction(),

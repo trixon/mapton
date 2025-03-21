@@ -15,12 +15,13 @@
  */
 package org.mapton.butterfly_alarm;
 
-import org.mapton.butterfly_alarm.api.AlarmManager;
 import java.util.Arrays;
 import javafx.scene.layout.Pane;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.SingleListForm;
+import org.mapton.butterfly_alarm.api.AlarmManager;
+import org.mapton.butterfly_core.api.ExternalSearchAction;
 import org.mapton.butterfly_format.types.BAlarm;
 import se.trixon.almond.util.Dict;
 
@@ -37,6 +38,7 @@ public class AlarmView {
 
     public AlarmView() {
         var actions = Arrays.asList(
+                new ExternalSearchAction(mManager),
                 ActionUtils.ACTION_SPAN,
                 mFilterPopOver.getAction()
         );

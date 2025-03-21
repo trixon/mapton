@@ -25,6 +25,7 @@ import org.mapton.api.ui.forms.ListForm;
 import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.ManagedList;
 import org.mapton.butterfly_core.api.CopyNamesAction;
+import org.mapton.butterfly_core.api.ExternalSearchAction;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_topo.api.TopoManager;
 import org.mapton.butterfly_topo.grade.horizontal.GradeHView;
@@ -59,7 +60,9 @@ public class TopoView {
             pointTab.getTabPane().getSelectionModel().select(pointTab);
         });
 
-        var actions = Arrays.asList(new ExportAction(getClass()),
+        var actions = Arrays.asList(
+                new ExternalSearchAction(mManager),
+                new ExportAction(getClass()),
                 new CopyNamesAction(mManager),
                 ActionUtils.ACTION_SPAN,
                 mManager.geZoomExtentstAction(),

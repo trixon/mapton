@@ -17,10 +17,14 @@ package org.mapton.butterfly_core.api;
 
 import java.util.List;
 import java.util.concurrent.Callable;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.mapton.api.MBaseDataManager;
 import org.mapton.api.MLatLon;
 import org.mapton.api.MLatLonBox;
+import org.mapton.api.MSearchProviderManager;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BBase;
 import org.mapton.butterfly_format.types.BBasePoint;
@@ -34,6 +38,7 @@ import se.trixon.almond.util.fx.FxHelper;
  */
 public abstract class BaseManager<T extends BBase> extends MBaseDataManager<T> {
 
+    private final BooleanProperty mDisabledSearchProperty = new SimpleBooleanProperty(true);
     private Butterfly mButterfly;
     private final ButterflyManager mButterflyManager = ButterflyManager.getInstance();
 
@@ -49,12 +54,27 @@ public abstract class BaseManager<T extends BBase> extends MBaseDataManager<T> {
             mButterfly = mButterflyManager.getButterfly();
             FxHelper.runLater(() -> load(mButterfly));
         }
+
+        selectedItemProperty().addListener((p, o, n) -> {
+            var disabled = n == null || StringUtils.isAnyBlank(n.getExternalSysId(), n.getExternalSysKey());
+            mDisabledSearchProperty.setValue(disabled);
+        });
     }
 
     public Callable<List<String>> getCopyNamesCallable() {
         return () -> {
-            return getTimeFilteredItems().stream().map(o -> o.getName()).toList();
+            return getTimeFilteredItems().stream().map(p -> p.getName()).toList();
         };
+    }
+
+    public Callable<String> getExternalSysUrlCallable() {
+        return () -> {
+            return MSearchProviderManager.getInstance().getUrl(getSelectedItem().getExternalSysId(), getSelectedItem().getExternalSysKey());
+        };
+    }
+
+    public BooleanProperty disabledSearchProperty() {
+        return mDisabledSearchProperty;
     }
 
     @Override

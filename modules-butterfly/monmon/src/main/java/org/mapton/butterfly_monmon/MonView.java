@@ -20,6 +20,7 @@ import javafx.scene.layout.Pane;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.SingleListForm;
+import org.mapton.butterfly_core.api.ExternalSearchAction;
 import org.mapton.butterfly_format.types.monmon.BMonmon;
 import se.trixon.almond.util.Dict;
 
@@ -36,6 +37,7 @@ public class MonView {
 
     public MonView() {
         var actions = Arrays.asList(
+                new ExternalSearchAction(mManager),
                 ActionUtils.ACTION_SPAN,
                 mManager.geZoomExtentstAction(),
                 mFilterPopOver.getAction()

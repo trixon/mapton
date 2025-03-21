@@ -30,6 +30,8 @@ public abstract class BBase {
     private LocalDateTime dateChanged;
     private LocalDateTime dateCreated;
     private String externalId;
+    private String externalSysId;
+    private String externalSysKey;
     private String meta;
     private String name;
     private String origin;
@@ -53,6 +55,14 @@ public abstract class BBase {
 
     public String getExternalId() {
         return externalId;
+    }
+
+    public String getExternalSysId() {
+        return externalSysId;
+    }
+
+    public String getExternalSysKey() {
+        return externalSysKey;
     }
 
     public String getMeta() {
@@ -102,6 +112,14 @@ public abstract class BBase {
 
     public void setExternalId(String externalId) {
         this.externalId = externalId;
+    }
+
+    public void setExternalSysId(String externalSysId) {
+        this.externalSysId = externalSysId;
+    }
+
+    public void setExternalSysKey(String externalSysKey) {
+        this.externalSysKey = externalSysKey;
     }
 
     public void setMeta(String meta) {

@@ -30,6 +30,7 @@ import org.mapton.butterfly_format.types.BAreaBase;
 import org.mapton.butterfly_format.types.BBasePointObservation;
 import org.mapton.butterfly_format.types.BCoordinate;
 import org.mapton.butterfly_format.types.BDimension;
+import org.mapton.butterfly_format.types.BSystemSearchProvider;
 import org.mapton.butterfly_format.types.acoustic.BAcousticMeasuringChannel;
 import org.mapton.butterfly_format.types.acoustic.BAcousticMeasuringLimit;
 import org.mapton.butterfly_format.types.acoustic.BAcousticMeasuringObservation;
@@ -98,6 +99,8 @@ public class Butterfly {
     private final ArrayList<BStructuralStrainGaugePointObservation> mStructuralStrainPointsObservations = new ArrayList<>();
     private final ArrayList<BStructuralTiltPoint> mStructuralTiltPoints = new ArrayList<>();
     private final ArrayList<BStructuralTiltPointObservation> mStructuralTiltPointsObservations = new ArrayList<>();
+    private final Sys mSys = new Sys();
+    private final ArrayList<BSystemSearchProvider> mSystemSearchProviders = new ArrayList<>();
     private final Tmo mTmo = new Tmo();
     private final Topo mTopo = new Topo();
     private final ArrayList<BTopoControlPoint> mTopoControlPoints = new ArrayList<>();
@@ -146,6 +149,10 @@ public class Butterfly {
 
     public Structural structural() {
         return mStructural;
+    }
+
+    public Sys sys() {
+        return mSys;
     }
 
     public Tmo tmo() {
@@ -258,6 +265,10 @@ public class Butterfly {
 
         new ImportFromCsv<BGeoInclinometerPointObservationPre>(BGeoInclinometerPointObservationPre.class) {
         }.load(sourceDir, "geoInclinometerPointsObservations.csv", mGeoInclinometerPointsObservationsPre);
+
+        //System
+        new ImportFromCsv<BSystemSearchProvider>(BSystemSearchProvider.class) {
+        }.load(sourceDir, "systemSearchProviders.csv", mSystemSearchProviders);
 
     }
 
@@ -499,6 +510,13 @@ public class Butterfly {
             });
         }
 
+    }
+
+    public class Sys {
+
+        public ArrayList<BSystemSearchProvider> getSearchProviders() {
+            return mSystemSearchProviders;
+        }
     }
 
     public class Tmo {
