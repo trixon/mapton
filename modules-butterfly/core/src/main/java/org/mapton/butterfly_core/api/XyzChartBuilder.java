@@ -19,6 +19,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Objects;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -42,8 +43,12 @@ import org.jfree.chart.ui.VerticalAlignment;
 import org.jfree.data.time.Minute;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
+import org.mapton.api.MLatLon;
 import org.mapton.api.ui.forms.ChartBuilder;
 import org.mapton.butterfly_format.types.BBaseControlPoint;
+import org.mapton.butterfly_format.types.BBasePoint;
+import org.mapton.ce_jfreechart.api.ChartHelper;
+import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.swing.SwingHelper;
 
@@ -54,6 +59,7 @@ import se.trixon.almond.util.swing.SwingHelper;
 public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends ChartBuilder<T> {
 
     protected JFreeChart mChart;
+    protected final ChartHelper mChartHelper = new ChartHelper();
     private ChartPanel mChartPanel;
     private final TimeSeriesCollection mDataset = new TimeSeriesCollection();
     private TextTitle mLeftSubTextTitle;
@@ -88,6 +94,24 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
 
     public TextTitle getRightSubTextTitle() {
         return mRightSubTextTitle;
+    }
+
+    public void plotBlasts(XYPlot plot, BBasePoint p, LocalDate firstDate, LocalDate lastDate) {
+        var extensometer = new MLatLon(p.getLat(), p.getLon());
+        ButterflyManager.getInstance().getButterfly().noise().getBlasts().stream()
+                .filter(b -> {
+                    var blast = new MLatLon(b.getLat(), b.getLon());
+                    return blast.distance(extensometer) <= 40 && DateHelper.isBetween(
+                            firstDate,
+                            lastDate,
+                            b.getDateTime().toLocalDate());
+                })
+                .forEachOrdered(b -> {
+                    var minute = mChartHelper.convertToMinute(b.getDateTime());
+                    var marker = new ValueMarker(minute.getFirstMillisecond());
+                    marker.setPaint(Color.BLACK);
+                    plot.addDomainMarker(marker);
+                });
     }
 
     @Override
