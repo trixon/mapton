@@ -15,6 +15,9 @@
  */
 package org.mapton.api.ui.forms;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
@@ -48,6 +51,14 @@ public abstract class PropertiesBuilder<T> {
 
     public void remove(Map<String, String> map, String category, String key, String value) {
         map.remove(getCatKeyNum(category, key));
+    }
+
+    public void removeByIndices(Map<String, Object> map, Integer... indices) {
+        Arrays.sort(indices, Collections.reverseOrder());
+        var keys = new ArrayList<String>(map.keySet());
+        for (int index : indices) {
+            map.remove(keys.get(index));
+        }
     }
 
     public void removeByValues(Map<String, Object> map, String... values) {

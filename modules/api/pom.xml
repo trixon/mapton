@@ -354,17 +354,17 @@
         <dependency>
             <groupId>com.helger.font</groupId>
             <artifactId>ph-fonts-api</artifactId>
-            <version>5.0.3</version>
+            <version>5.0.4</version>
         </dependency>
         <dependency>
             <groupId>com.helger.font</groupId>
             <artifactId>ph-fonts-open-sans</artifactId>
-            <version>5.0.3</version>
+            <version>5.0.4</version>
         </dependency>
         <dependency>
             <groupId>com.helger.font</groupId>
             <artifactId>ph-fonts-roboto</artifactId>
-            <version>5.0.3</version>
+            <version>5.0.4</version>
         </dependency>
 
         <!--Jackson-->
