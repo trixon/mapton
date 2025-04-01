@@ -29,7 +29,6 @@ import org.jfree.data.time.TimeSeriesCollection;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.acoustic.BAcousticMeasuringPoint;
-import org.mapton.ce_jfreechart.api.ChartHelper;
 import se.trixon.almond.util.DateHelper;
 
 /**
@@ -38,7 +37,6 @@ import se.trixon.almond.util.DateHelper;
  */
 public class MeasPointChartBuilder extends XyzChartBuilder<BAcousticMeasuringPoint> {
 
-    private final ChartHelper mChartHelper = new ChartHelper();
     private final NumberAxis mFreqAxis = new NumberAxis("Hz");
     private final TimeSeriesCollection mFreqDataset = new TimeSeriesCollection();
     private final XYLineAndShapeRenderer mSecondaryRenderer = new XYLineAndShapeRenderer();
@@ -119,6 +117,7 @@ public class MeasPointChartBuilder extends XyzChartBuilder<BAcousticMeasuringPoi
             mTimeSeriesFreqZ.add(minute, o.getFrequencyZ());
 
         });
+        plotBlasts(plot, p, p.ext().getObservationFilteredFirstDate(), p.ext().getObservationFilteredLastDate());
 
         mFreqDataset.addSeries(mTimeSeriesFreqZ);
 

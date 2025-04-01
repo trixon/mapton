@@ -20,11 +20,14 @@ import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Ellipsoid;
+import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.Path;
 import gov.nasa.worldwind.render.SurfaceCircle;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.butterfly_core.api.BaseGraphicRenderer;
 import org.mapton.butterfly_core.api.PlotLimiter;
@@ -81,12 +84,28 @@ public class GraphicRenderer extends BaseGraphicRenderer<GraphicRendererItem, BB
             addRenderable(groundPath, true, GraphicRendererItem.BALLS_Z, mMapObjects);
         }
 
+        if (mCheckModel.isChecked(GraphicRendererItem.RADIUS_40)) {
+            var map = Map.of(40.0, Material.RED, 60.0, Material.ORANGE);
+            List.of(40.0, 60.0, 80.0).forEach(r -> {
+                var circle = new SurfaceCircle(position, r);
+                var attrs = new BasicShapeAttributes(mAttributeManager.getSurfaceAttributes());
+                attrs.setDrawInterior(false);
+                attrs.setDrawOutline(true);
+                attrs.setOutlineMaterial(map.getOrDefault(r, Material.GREEN));
+                attrs.setOutlineWidth(1.0);
+                attrs.setOutlineOpacity(0.25);
+                circle.setAttributes(attrs);
+
+                addRenderable(circle, false, GraphicRendererItem.RADIUS_40, null);
+            });
+
+        }
         if (mCheckModel.isChecked(GraphicRendererItem.RECENT)) {
             var age = blast.ext().getAge(ChronoUnit.DAYS);
             var maxAge = 30.0;
 
             if (age < maxAge) {
-                var circle = new SurfaceCircle(position, 100.0);
+                var circle = new SurfaceCircle(position, 40.0);
                 var attrs = new BasicShapeAttributes(mAttributeManager.getSurfaceAttributes());
                 var reducer = age / maxAge;//  1/30   15/30 30/30
                 var maxOpacity = 0.2;

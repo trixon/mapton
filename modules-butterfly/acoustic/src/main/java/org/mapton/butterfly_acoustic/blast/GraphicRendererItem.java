@@ -24,6 +24,7 @@ import org.mapton.butterfly_core.api.GraphicRenderItemLimitProvider;
 public enum GraphicRendererItem implements GraphicRenderItemLimitProvider {
     BALLS("Klot", Integer.MAX_VALUE),
     BALLS_Z("Klot z", Integer.MAX_VALUE),
+    RADIUS_40("Radie 40m", Integer.MAX_VALUE),
     RECENT("Senaste cirklar", Integer.MAX_VALUE);
     private final String mName;
     private final int mPlotLimit;
