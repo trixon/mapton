@@ -22,7 +22,7 @@ import java.util.ArrayList;
  *
  * @author Patrik Karlström
  */
-public class BAcousticMeasuringChannel {
+public class BAcousticVibrationChannel {
 
     private LocalDate from;
     private String id;
@@ -31,7 +31,7 @@ public class BAcousticMeasuringChannel {
     private String type;
     private LocalDate until;
 
-    public BAcousticMeasuringChannel() {
+    public BAcousticVibrationChannel() {
     }
 
     public Ext ext() {
@@ -84,13 +84,13 @@ public class BAcousticMeasuringChannel {
 
     public class Ext {
 
-        private ArrayList<BAcousticMeasuringObservation> mObservations = new ArrayList<>();
+        private ArrayList<BAcousticVibrationObservation> mObservations = new ArrayList<>();
 
-        public ArrayList<BAcousticMeasuringObservation> getObservations() {
+        public ArrayList<BAcousticVibrationObservation> getObservations() {
             return mObservations;
         }
 
-        public void setObservations(ArrayList<BAcousticMeasuringObservation> observations) {
+        public void setObservations(ArrayList<BAcousticVibrationObservation> observations) {
             this.mObservations = observations;
         }
     }

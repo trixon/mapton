@@ -20,7 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.Objects;
 import java.util.ResourceBundle;
 import org.mapton.api.ui.forms.PropertiesBuilder;
-import org.mapton.butterfly_format.types.acoustic.BAcousticMeasuringPoint;
+import org.mapton.butterfly_format.types.acoustic.BAcousticVibrationPoint;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
@@ -31,12 +31,12 @@ import se.trixon.almond.util.StringHelper;
  *
  * @author Patrik Karlström
  */
-public class MeasPointPropertiesBuilder extends PropertiesBuilder<BAcousticMeasuringPoint> {
+public class MeasPointPropertiesBuilder extends PropertiesBuilder<BAcousticVibrationPoint> {
 
     private final ResourceBundle mBundle = NbBundle.getBundle(MeasPointPropertiesBuilder.class);
 
     @Override
-    public Object build(BAcousticMeasuringPoint p) {
+    public Object build(BAcousticVibrationPoint p) {
         if (p == null) {
             return p;
         }

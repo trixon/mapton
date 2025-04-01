@@ -21,7 +21,7 @@ import java.util.ArrayList;
  *
  * @author Patrik Karlström
  */
-public class BAcousticMeasuringLimit {
+public class BAcousticVibrationLimit {
 
     private boolean fixed;
     private String pointId;
@@ -29,7 +29,7 @@ public class BAcousticMeasuringLimit {
     private Double value;
     private ArrayList<String> types;
 
-    public BAcousticMeasuringLimit() {
+    public BAcousticVibrationLimit() {
     }
 
     public String getPointId() {

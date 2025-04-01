@@ -32,7 +32,7 @@ import org.mapton.butterfly_format.types.BXyzPoint;
     "address",
     "comment"
 })
-public class BAcousticMeasuringPoint extends BXyzPoint {
+public class BAcousticVibrationPoint extends BXyzPoint {
 
     private String address;
     private String id;
@@ -40,7 +40,7 @@ public class BAcousticMeasuringPoint extends BXyzPoint {
     private String soilMaterial;
     private String url;
 
-    public BAcousticMeasuringPoint() {
+    public BAcousticVibrationPoint() {
     }
 
     public Ext ext() {
@@ -83,24 +83,24 @@ public class BAcousticMeasuringPoint extends BXyzPoint {
         this.url = url;
     }
 
-    public class Ext extends BXyzPoint.Ext<BAcousticMeasuringObservation> {
+    public class Ext extends BXyzPoint.Ext<BAcousticVibrationObservation> {
 
-        private ArrayList<BAcousticMeasuringChannel> mChannels = new ArrayList<>();
-        private ArrayList<BAcousticMeasuringLimit> mLimits = new ArrayList<>();
+        private ArrayList<BAcousticVibrationChannel> mChannels = new ArrayList<>();
+        private ArrayList<BAcousticVibrationLimit> mLimits = new ArrayList<>();
 
-        public ArrayList<BAcousticMeasuringChannel> getChannels() {
+        public ArrayList<BAcousticVibrationChannel> getChannels() {
             return mChannels;
         }
 
-        public ArrayList<BAcousticMeasuringLimit> getLimits() {
+        public ArrayList<BAcousticVibrationLimit> getLimits() {
             return mLimits;
         }
 
-        public void setChannels(ArrayList<BAcousticMeasuringChannel> channels) {
+        public void setChannels(ArrayList<BAcousticVibrationChannel> channels) {
             this.mChannels = channels;
         }
 
-        public void setLimits(ArrayList<BAcousticMeasuringLimit> limits) {
+        public void setLimits(ArrayList<BAcousticVibrationLimit> limits) {
             this.mLimits = limits;
         }
 

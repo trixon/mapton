@@ -34,7 +34,7 @@ import org.mapton.butterfly_format.types.BXyzPointObservation;
  *
  * @author Patrik Karlström
  */
-public class BAcousticMeasuringObservation extends BXyzPointObservation {
+public class BAcousticVibrationObservation extends BXyzPointObservation {
 
     private transient String blastId;
     private String channelIdX;
@@ -49,7 +49,7 @@ public class BAcousticMeasuringObservation extends BXyzPointObservation {
     private transient Ext mExt;
     private String unit;
 
-    public BAcousticMeasuringObservation() {
+    public BAcousticVibrationObservation() {
     }
 
     @Override
@@ -149,7 +149,7 @@ public class BAcousticMeasuringObservation extends BXyzPointObservation {
         this.unit = unit;
     }
 
-    public class Ext extends BXyzPointObservation.Ext<BAcousticMeasuringPoint> {
+    public class Ext extends BXyzPointObservation.Ext<BAcousticVibrationPoint> {
 
         public Ext() {
         }

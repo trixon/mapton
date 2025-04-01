@@ -24,14 +24,14 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.butterfly_core.api.BaseGraphicRenderer;
 import org.mapton.butterfly_core.api.PlotLimiter;
-import org.mapton.butterfly_format.types.acoustic.BAcousticMeasuringPoint;
+import org.mapton.butterfly_format.types.acoustic.BAcousticVibrationPoint;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 
 /**
  *
  * @author Patrik Karlström
  */
-public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicRendererItem, BAcousticMeasuringPoint> {
+public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicRendererItem, BAcousticVibrationPoint> {
 
     protected static IndexedCheckModel<GraphicRendererItem> sCheckModel;
     protected static ArrayList<AVListImpl> sMapObjects;
@@ -50,14 +50,14 @@ public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicRen
         super(layer, passiveLayer, sPlotLimiter);
     }
 
-    public boolean isValidFor3dPlot(BAcousticMeasuringPoint p) {
+    public boolean isValidFor3dPlot(BAcousticVibrationPoint p) {
         var o1 = p.ext().getObservationsTimeFiltered().getFirst();
         var o2 = p.ext().getObservationsTimeFiltered().getLast();
 
         return ObjectUtils.allNotNull(p.getZeroX(), p.getZeroY(), p.getZeroZ(), o1.getMeasuredZ(), o2.getMeasuredZ());
     }
 
-    protected boolean isPlotLimitReached(BAcousticMeasuringPoint p, Object key, Position position) {
+    protected boolean isPlotLimitReached(BAcousticVibrationPoint p, Object key, Position position) {
         return super.isPlotLimitReached(p, key, position, p.ext().getObservationsTimeFiltered().isEmpty(), sMapObjects);
     }
 }

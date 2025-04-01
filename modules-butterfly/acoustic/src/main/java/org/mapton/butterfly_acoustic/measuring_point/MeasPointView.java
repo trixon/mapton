@@ -21,7 +21,7 @@ import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.SingleListForm;
 import org.mapton.butterfly_core.api.ExternalSearchAction;
-import org.mapton.butterfly_format.types.acoustic.BAcousticMeasuringPoint;
+import org.mapton.butterfly_format.types.acoustic.BAcousticVibrationPoint;
 import se.trixon.almond.util.Dict;
 
 /**
@@ -32,7 +32,7 @@ public class MeasPointView {
 
     private final MeasPointFilter mFilter = new MeasPointFilter();
     private final MeasPointFilterPopOver mFilterPopOver = new MeasPointFilterPopOver(mFilter);
-    private final SingleListForm<MeasPointManager, BAcousticMeasuringPoint> mListForm;
+    private final SingleListForm<MeasPointManager, BAcousticVibrationPoint> mListForm;
     private final MeasPointManager mManager = MeasPointManager.getInstance();
 
     public MeasPointView() {

@@ -125,18 +125,6 @@ public class BTopoConvergencePair extends BXyzPoint {
         return mObservations;
     }
 
-//    public double getOffset() {
-//        var offset = getConvergenceGroup().ext2().getControlPoints().stream()
-//                .map(p -> p.getZeroZ())
-//                .mapToDouble(Double::doubleValue).min().orElse(0);
-//        if (offset < 0) {
-//            offset = offset * -1.0;
-//        }
-//
-//        offset += 2;
-//
-//        return offset;
-//    }
     public BTopoControlPoint getP1() {
         return mP1;
     }

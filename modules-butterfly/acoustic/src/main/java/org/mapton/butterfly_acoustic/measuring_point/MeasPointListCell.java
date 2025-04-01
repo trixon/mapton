@@ -18,13 +18,13 @@ package org.mapton.butterfly_acoustic.measuring_point;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.layout.VBox;
-import org.mapton.butterfly_format.types.acoustic.BAcousticMeasuringPoint;
+import org.mapton.butterfly_format.types.acoustic.BAcousticVibrationPoint;
 
 /**
  *
  * @author Patrik Karlström
  */
-class MeasPointListCell extends ListCell<BAcousticMeasuringPoint> {
+class MeasPointListCell extends ListCell<BAcousticVibrationPoint> {
 
     private final Label mNameLabel = new Label();
     private final Label mSoilLabel = new Label();
@@ -37,7 +37,7 @@ class MeasPointListCell extends ListCell<BAcousticMeasuringPoint> {
     }
 
     @Override
-    protected void updateItem(BAcousticMeasuringPoint point, boolean empty) {
+    protected void updateItem(BAcousticVibrationPoint point, boolean empty) {
         super.updateItem(point, empty);
         if (point == null || empty) {
             clearContent();
@@ -46,7 +46,7 @@ class MeasPointListCell extends ListCell<BAcousticMeasuringPoint> {
         }
     }
 
-    private void addContent(BAcousticMeasuringPoint point) {
+    private void addContent(BAcousticVibrationPoint point) {
         setText(null);
         mNameLabel.setText(point.getName());
         mWorkLabel.setText(point.getCategory());

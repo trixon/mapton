@@ -25,7 +25,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import org.controlsfx.control.IndexedCheckModel;
-import org.mapton.butterfly_format.types.acoustic.BAcousticMeasuringPoint;
+import org.mapton.butterfly_format.types.acoustic.BAcousticVibrationPoint;
 import org.mapton.worldwind.api.WWHelper;
 
 /**
@@ -39,7 +39,7 @@ public class GraphicRenderer extends GraphicRendererBase {
         sCheckModel = checkModel;
     }
 
-    public void plot(BAcousticMeasuringPoint point, Position position, ArrayList<AVListImpl> mapObjects) {
+    public void plot(BAcousticVibrationPoint point, Position position, ArrayList<AVListImpl> mapObjects) {
         sMapObjects = mapObjects;
 
         if (sCheckModel.isChecked(GraphicRendererItem.TRACE)) {
@@ -52,7 +52,7 @@ public class GraphicRenderer extends GraphicRendererBase {
         resetPlotLimiter();
     }
 
-    private void plotTrace(BAcousticMeasuringPoint p, Position position) {
+    private void plotTrace(BAcousticVibrationPoint p, Position position) {
         if (isPlotLimitReached(p, GraphicRendererItem.TRACE, position)) {
             return;
         }

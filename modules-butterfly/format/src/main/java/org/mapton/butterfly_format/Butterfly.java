@@ -31,10 +31,10 @@ import org.mapton.butterfly_format.types.BBasePointObservation;
 import org.mapton.butterfly_format.types.BCoordinate;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.BSystemSearchProvider;
-import org.mapton.butterfly_format.types.acoustic.BAcousticMeasuringChannel;
-import org.mapton.butterfly_format.types.acoustic.BAcousticMeasuringLimit;
-import org.mapton.butterfly_format.types.acoustic.BAcousticMeasuringObservation;
-import org.mapton.butterfly_format.types.acoustic.BAcousticMeasuringPoint;
+import org.mapton.butterfly_format.types.acoustic.BAcousticVibrationChannel;
+import org.mapton.butterfly_format.types.acoustic.BAcousticVibrationLimit;
+import org.mapton.butterfly_format.types.acoustic.BAcousticVibrationObservation;
+import org.mapton.butterfly_format.types.acoustic.BAcousticVibrationPoint;
 import org.mapton.butterfly_format.types.acoustic.BBlast;
 import org.mapton.butterfly_format.types.geo.BGeoExtensometer;
 import org.mapton.butterfly_format.types.geo.BGeoExtensometerPoint;
@@ -86,10 +86,10 @@ public class Butterfly {
     private final Hydro mHydro = new Hydro();
     private final ArrayList<BHydroGroundwaterPoint> mHydroGroundwaterPoints = new ArrayList<>();
     private final ArrayList<BHydroGroundwaterPointObservation> mHydroGroundwaterPointsObservations = new ArrayList<>();
-    private final ArrayList<BAcousticMeasuringChannel> mMeasuringChannels = new ArrayList<>();
-    private final ArrayList<BAcousticMeasuringLimit> mMeasuringLimits = new ArrayList<>();
-    private final ArrayList<BAcousticMeasuringObservation> mMeasuringObservations = new ArrayList<>();
-    private final ArrayList<BAcousticMeasuringPoint> mMeasuringPoints = new ArrayList<>();
+    private final ArrayList<BAcousticVibrationChannel> mVibrationChannels = new ArrayList<>();
+    private final ArrayList<BAcousticVibrationLimit> mVibrationLimits = new ArrayList<>();
+    private final ArrayList<BAcousticVibrationObservation> mVibrationObservations = new ArrayList<>();
+    private final ArrayList<BAcousticVibrationPoint> mVibrationPoints = new ArrayList<>();
     private final ArrayList<BMonmon> mMonmons = new ArrayList<>();
     private final Noise mNoise = new Noise();
     private final Structural mStructural = new Structural();
@@ -170,17 +170,17 @@ public class Butterfly {
         new ImportFromCsv<BBlast>(BBlast.class) {
         }.load(sourceDir, "noiseBlasts.csv", mBlasts);
 
-        new ImportFromCsv<BAcousticMeasuringPoint>(BAcousticMeasuringPoint.class) {
-        }.load(sourceDir, "noiseMeasuringPoints.csv", mMeasuringPoints);
+        new ImportFromCsv<BAcousticVibrationPoint>(BAcousticVibrationPoint.class) {
+        }.load(sourceDir, "noiseVibrationPoints.csv", mVibrationPoints);
 
-        new ImportFromCsv<BAcousticMeasuringChannel>(BAcousticMeasuringChannel.class) {
-        }.load(sourceDir, "noiseMeasuringChannels.csv", mMeasuringChannels);
+        new ImportFromCsv<BAcousticVibrationChannel>(BAcousticVibrationChannel.class) {
+        }.load(sourceDir, "noiseVibrationChannels.csv", mVibrationChannels);
 
-        new ImportFromCsv<BAcousticMeasuringLimit>(BAcousticMeasuringLimit.class) {
-        }.load(sourceDir, "noiseMeasuringLimits.csv", mMeasuringLimits);
+        new ImportFromCsv<BAcousticVibrationLimit>(BAcousticVibrationLimit.class) {
+        }.load(sourceDir, "noiseVibrationLimits.csv", mVibrationLimits);
 
-        new ImportFromCsv<BAcousticMeasuringObservation>(BAcousticMeasuringObservation.class) {
-        }.load(sourceDir, "noiseMeasuringObservations.csv", mMeasuringObservations);
+        new ImportFromCsv<BAcousticVibrationObservation>(BAcousticVibrationObservation.class) {
+        }.load(sourceDir, "noiseVibrationObservations.csv", mVibrationObservations);
 
         new ImportFromCsv<BAlarm>(BAlarm.class) {
         }.load(sourceDir, "alarms.csv", mAlarms);
@@ -434,20 +434,20 @@ public class Butterfly {
             return mBlasts;
         }
 
-        public ArrayList<BAcousticMeasuringChannel> getMeasuringChannels() {
-            return mMeasuringChannels;
+        public ArrayList<BAcousticVibrationChannel> getVibrationChannels() {
+            return mVibrationChannels;
         }
 
-        public ArrayList<BAcousticMeasuringLimit> getMeasuringLimits() {
-            return mMeasuringLimits;
+        public ArrayList<BAcousticVibrationLimit> getVibrationLimits() {
+            return mVibrationLimits;
         }
 
-        public ArrayList<BAcousticMeasuringObservation> getMeasuringObservations() {
-            return mMeasuringObservations;
+        public ArrayList<BAcousticVibrationObservation> getVibrationObservations() {
+            return mVibrationObservations;
         }
 
-        public ArrayList<BAcousticMeasuringPoint> getMeasuringPoints() {
-            return mMeasuringPoints;
+        public ArrayList<BAcousticVibrationPoint> getVibrationPoints() {
+            return mVibrationPoints;
         }
     }
 

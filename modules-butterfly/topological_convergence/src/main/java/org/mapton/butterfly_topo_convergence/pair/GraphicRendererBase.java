@@ -24,7 +24,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.butterfly_core.api.BaseGraphicRenderer;
 import org.mapton.butterfly_core.api.PlotLimiter;
-import org.mapton.butterfly_format.types.acoustic.BAcousticMeasuringPoint;
+import org.mapton.butterfly_format.types.acoustic.BAcousticVibrationPoint;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.topo.BTopoConvergencePair;
 import org.mapton.butterfly_topo_convergence.ConvergenceAttributeManager;
@@ -52,7 +52,7 @@ public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicRen
         super(layer, passiveLayer, sPlotLimiter);
     }
 
-    public boolean isValidFor3dPlot(BAcousticMeasuringPoint p) {
+    public boolean isValidFor3dPlot(BAcousticVibrationPoint p) {
         var o1 = p.ext().getObservationsTimeFiltered().getFirst();
         var o2 = p.ext().getObservationsTimeFiltered().getLast();
 

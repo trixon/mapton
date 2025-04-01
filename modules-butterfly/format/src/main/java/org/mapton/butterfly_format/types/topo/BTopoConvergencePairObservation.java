@@ -50,8 +50,11 @@ public class BTopoConvergencePairObservation {
         return getDeltaDistanceInPairForSameDate() - getFirstObservation().getDeltaDistanceInPairForSameDate();
     }
 
+    public double getDeltaDeltaZComparedToFirst() {
+        return getDeltaHInPairForSameDate() - getFirstObservation().getDeltaHInPairForSameDate();
+    }
+
     public double getDeltaDistanceInPairForSameDate() {
-//        return mDelta.distance(Point3D.ZERO);
         return mO1.distance(mO2);
     }
 

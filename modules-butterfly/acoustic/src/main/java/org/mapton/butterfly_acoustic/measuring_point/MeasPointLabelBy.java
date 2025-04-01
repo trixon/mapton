@@ -18,7 +18,7 @@ package org.mapton.butterfly_acoustic.measuring_point;
 import java.util.Objects;
 import java.util.function.Function;
 import org.apache.commons.lang3.StringUtils;
-import org.mapton.butterfly_format.types.acoustic.BAcousticMeasuringPoint;
+import org.mapton.butterfly_format.types.acoustic.BAcousticVibrationPoint;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.MathHelper;
@@ -47,10 +47,10 @@ public enum MeasPointLabelBy {
         return MathHelper.convertDoubleToString(p.getZeroZ(), 1);
     });
     private final String mCategory;
-    private final Function<BAcousticMeasuringPoint, String> mFunction;
+    private final Function<BAcousticVibrationPoint, String> mFunction;
     private final String mName;
 
-    private MeasPointLabelBy(String category, String name, Function<BAcousticMeasuringPoint, String> function) {
+    private MeasPointLabelBy(String category, String name, Function<BAcousticVibrationPoint, String> function) {
         mCategory = category;
         mName = name;
         mFunction = function;
@@ -68,7 +68,7 @@ public enum MeasPointLabelBy {
         }
     }
 
-    public String getLabel(BAcousticMeasuringPoint o) {
+    public String getLabel(BAcousticVibrationPoint o) {
         try {
             return mFunction.apply(o);
         } catch (Exception e) {

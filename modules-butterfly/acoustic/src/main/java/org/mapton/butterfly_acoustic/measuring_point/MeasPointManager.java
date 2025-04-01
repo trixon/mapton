@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 import org.mapton.api.MTemporalRange;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
-import org.mapton.butterfly_format.types.acoustic.BAcousticMeasuringPoint;
+import org.mapton.butterfly_format.types.acoustic.BAcousticVibrationPoint;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.CollectionHelper;
 import se.trixon.almond.util.DateHelper;
@@ -34,7 +34,7 @@ import se.trixon.almond.util.DateHelper;
  *
  * @author Patrik Karlström
  */
-public class MeasPointManager extends BaseManager<BAcousticMeasuringPoint> {
+public class MeasPointManager extends BaseManager<BAcousticVibrationPoint> {
 
     private final MeasPointChartBuilder mChartBuilder = new MeasPointChartBuilder();
     private final MeasPointPropertiesBuilder mPropertiesBuilder = new MeasPointPropertiesBuilder();
@@ -44,16 +44,16 @@ public class MeasPointManager extends BaseManager<BAcousticMeasuringPoint> {
     }
 
     private MeasPointManager() {
-        super(BAcousticMeasuringPoint.class);
+        super(BAcousticVibrationPoint.class);
     }
 
     @Override
-    public Object getObjectChart(BAcousticMeasuringPoint selectedObject) {
+    public Object getObjectChart(BAcousticVibrationPoint selectedObject) {
         return mChartBuilder.build(selectedObject);
     }
 
     @Override
-    public Object getObjectProperties(BAcousticMeasuringPoint selectedObject) {
+    public Object getObjectProperties(BAcousticVibrationPoint selectedObject) {
         return mPropertiesBuilder.build(selectedObject);
     }
 
@@ -64,13 +64,13 @@ public class MeasPointManager extends BaseManager<BAcousticMeasuringPoint> {
     @Override
     public void load(Butterfly butterfly) {
         try {
-            initAllItems(butterfly.noise().getMeasuringPoints());
+            initAllItems(butterfly.noise().getVibrationPoints());
             initObjectToItemMap();
 
-            butterfly.noise().getMeasuringPoints().forEach(p -> {
-                var channels = butterfly.noise().getMeasuringChannels().stream().filter(c -> c.getPointId().equalsIgnoreCase(p.getId())).toList();
+            butterfly.noise().getVibrationPoints().forEach(p -> {
+                var channels = butterfly.noise().getVibrationChannels().stream().filter(c -> c.getPointId().equalsIgnoreCase(p.getId())).toList();
                 p.ext().setChannels(new ArrayList<>(channels));
-                var limits = butterfly.noise().getMeasuringLimits().stream().filter(c -> c.getPointId().equalsIgnoreCase(p.getId())).toList();
+                var limits = butterfly.noise().getVibrationLimits().stream().filter(c -> c.getPointId().equalsIgnoreCase(p.getId())).toList();
                 p.ext().setLimits(new ArrayList<>(limits));
 
                 var status = "S5";
@@ -82,7 +82,7 @@ public class MeasPointManager extends BaseManager<BAcousticMeasuringPoint> {
                 }
                 p.setStatus(status);
 
-                var observations = butterfly.noise().getMeasuringObservations().stream()
+                var observations = butterfly.noise().getVibrationObservations().stream()
                         .filter(o -> o.getName().equalsIgnoreCase(p.getName()))
                         .collect(Collectors.toCollection(ArrayList::new));
 
@@ -113,7 +113,7 @@ public class MeasPointManager extends BaseManager<BAcousticMeasuringPoint> {
     @Override
     protected void applyTemporalFilter() {
         var measCountStatsDateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM");
-        var timeFilteredItems = new ArrayList<BAcousticMeasuringPoint>();
+        var timeFilteredItems = new ArrayList<BAcousticVibrationPoint>();
 
         p:
         for (var p : getFilteredItems()) {
@@ -150,7 +150,7 @@ public class MeasPointManager extends BaseManager<BAcousticMeasuringPoint> {
     }
 
     @Override
-    protected void load(ArrayList<BAcousticMeasuringPoint> items) {
+    protected void load(ArrayList<BAcousticVibrationPoint> items) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

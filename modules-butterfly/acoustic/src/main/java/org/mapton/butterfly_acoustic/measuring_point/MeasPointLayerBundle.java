@@ -25,7 +25,7 @@ import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.butterfly_core.api.BfLayerBundle;
-import org.mapton.butterfly_format.types.acoustic.BAcousticMeasuringPoint;
+import org.mapton.butterfly_format.types.acoustic.BAcousticVibrationPoint;
 import org.mapton.worldwind.api.LayerBundle;
 import org.mapton.worldwind.api.WWHelper;
 import org.openide.util.lookup.ServiceProvider;
@@ -76,7 +76,7 @@ public class MeasPointLayerBundle extends BfLayerBundle {
     }
 
     private void initListeners() {
-        mManager.getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BAcousticMeasuringPoint> c) -> {
+        mManager.getTimeFilteredItems().addListener((ListChangeListener.Change<? extends BAcousticVibrationPoint> c) -> {
             repaint();
         });
 
@@ -151,7 +151,7 @@ public class MeasPointLayerBundle extends BfLayerBundle {
         });
     }
 
-    private PointPlacemark plotLabel(BAcousticMeasuringPoint p, MeasPointLabelBy labelBy, Position position) {
+    private PointPlacemark plotLabel(BAcousticVibrationPoint p, MeasPointLabelBy labelBy, Position position) {
         if (labelBy == MeasPointLabelBy.NONE) {
             return null;
         }

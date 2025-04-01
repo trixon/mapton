@@ -28,14 +28,14 @@ import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
 import org.mapton.butterfly_format.types.BDimension;
-import org.mapton.butterfly_format.types.acoustic.BAcousticMeasuringPoint;
+import org.mapton.butterfly_format.types.acoustic.BAcousticVibrationPoint;
 import se.trixon.almond.util.DateHelper;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class MeasPointChartBuilder extends XyzChartBuilder<BAcousticMeasuringPoint> {
+public class MeasPointChartBuilder extends XyzChartBuilder<BAcousticVibrationPoint> {
 
     private final NumberAxis mFreqAxis = new NumberAxis("Hz");
     private final TimeSeriesCollection mFreqDataset = new TimeSeriesCollection();
@@ -56,7 +56,7 @@ public class MeasPointChartBuilder extends XyzChartBuilder<BAcousticMeasuringPoi
     }
 
     @Override
-    public synchronized Callable<ChartPanel> build(BAcousticMeasuringPoint p) {
+    public synchronized Callable<ChartPanel> build(BAcousticVibrationPoint p) {
         if (p == null) {
             return null;
         }
@@ -81,7 +81,7 @@ public class MeasPointChartBuilder extends XyzChartBuilder<BAcousticMeasuringPoi
     }
 
     @Override
-    public void setTitle(BAcousticMeasuringPoint p) {
+    public void setTitle(BAcousticVibrationPoint p) {
         setTitle(p, Color.BLUE);
 //        setTitle(p, StrainHelper.getAlarmColorAwt(p));
 
@@ -95,7 +95,7 @@ public class MeasPointChartBuilder extends XyzChartBuilder<BAcousticMeasuringPoi
     }
 
     @Override
-    public void updateDataset(BAcousticMeasuringPoint p) {
+    public void updateDataset(BAcousticVibrationPoint p) {
         getDataset().removeAllSeries();
         mFreqDataset.removeAllSeries();
         clear(
