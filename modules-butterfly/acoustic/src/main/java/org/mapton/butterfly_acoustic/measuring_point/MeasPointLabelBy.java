@@ -15,35 +15,77 @@
  */
 package org.mapton.butterfly_acoustic.measuring_point;
 
+import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 import java.util.function.Function;
 import org.apache.commons.lang3.StringUtils;
+import org.mapton.butterfly_core.api.LabelByCategories;
 import org.mapton.butterfly_format.types.acoustic.BAcousticVibrationPoint;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.MathHelper;
+import se.trixon.almond.util.SDict;
 
 /**
  *
  * @author Patrik Karlström
  */
 public enum MeasPointLabelBy {
-    NAME(Strings.CAT_ROOT, Dict.NAME.toString(), p -> {
+    NAME(LabelByCategories.ROOT, Dict.NAME.toString(), p -> {
         return p.getName();
     }),
-    NONE(Strings.CAT_ROOT, Dict.NONE.toString(), p -> {
+    NONE(LabelByCategories.ROOT, Dict.NONE.toString(), p -> {
         return "";
     }),
-    MISC_GROUP(Strings.CAT_MISC, Dict.GROUP.toString(), p -> {
+    DATE_LATEST(LabelByCategories.DATE, SDict.LATEST.toString(), p -> {
+        var date = p.ext().getObservationFilteredLastDate();
+
+        return date == null ? "-" : date.toString();
+    }),
+    DATE_FIRST(LabelByCategories.DATE, Dict.FIRST.toString(), p -> {
+        var date = p.ext().getObservationFilteredFirstDate();
+
+        return date == null ? "-" : date.toString();
+    }),
+    MISC_GROUP(LabelByCategories.MISC, Dict.GROUP.toString(), p -> {
         return Objects.toString(p.getGroup(), "NODATA");
     }),
-    MISC_TYPE(Strings.CAT_MISC, Dict.CATEGORY.toString(), p -> {
+    MISC_CATEGORY(LabelByCategories.MISC, Dict.CATEGORY.toString(), p -> {
         return Objects.toString(p.getCategory(), "NODATA");
     }),
-    //    MISC_SOIL(Strings.CAT_MISC, NbBundle.getMessage(MeasPointLabelBy.class, "soilMaterial"), p -> {
-    //        return Objects.toString(p.getSoilMaterial(), "NODATA");
-    //    }),
-    MISC_Z(Strings.CAT_MISC, "Z", p -> {
-        return MathHelper.convertDoubleToString(p.getZeroZ(), 1);
+    MISC_STATUS(LabelByCategories.MISC, Dict.STATUS.toString(), p -> {
+        return Objects.toString(p.getStatus(), "NODATA");
+    }),
+    MISC_OPERATOR(LabelByCategories.MISC, SDict.OPERATOR.toString(), p -> {
+        return Objects.toString(p.getOperator(), "NODATA");
+    }),
+    MISC_ORIGIN(LabelByCategories.MISC, Dict.ORIGIN.toString(), p -> {
+        return Objects.toString(p.getOrigin(), "NODATA");
+    }),
+    MEAS_COUNT_ALL(LabelByCategories.MEAS, Strings.MEAS_COUNT_ALL, p -> {
+        return "%d".formatted(
+                p.ext().getNumOfObservations()
+        );
+    }),
+    MEAS_COUNT_SELECTION(LabelByCategories.MEAS, Strings.MEAS_COUNT_SELECTION, p -> {
+        return "%d".formatted(
+                p.ext().getNumOfObservationsFiltered()
+        );
+    }),
+    MEAS_COUNT_SELECTION_ALL(LabelByCategories.MEAS, Strings.MEAS_COUNT, p -> {
+        return "%d / %d".formatted(
+                p.ext().getNumOfObservationsFiltered(),
+                p.ext().getNumOfObservations()
+        );
+    }),
+    MEAS_AGE(LabelByCategories.MEAS, Dict.AGE.toString(), p -> {
+        var daysSinceMeasurement = p.ext().getMeasurementAge(ChronoUnit.DAYS);
+
+        return "%d".formatted(daysSinceMeasurement);
+    }),
+    VALUE_Z(LabelByCategories.VALUE, "Z", p -> {
+        var z = p.getZeroZ();
+
+        return z == null ? "-" : MathHelper.convertDoubleToStringWithSign(z, 3);
     });
     private final String mCategory;
     private final Function<BAcousticVibrationPoint, String> mFunction;
@@ -68,11 +110,7 @@ public enum MeasPointLabelBy {
     }
 
     public String getLabel(BAcousticVibrationPoint o) {
-        try {
-            return mFunction.apply(o);
-        } catch (Exception e) {
-            return "ERROR %s <<<<<<<<".formatted(o.getName());
-        }
+        return mFunction.apply(o);
     }
 
     public String getName() {
@@ -81,8 +119,16 @@ public enum MeasPointLabelBy {
 
     private class Strings {
 
-        public static final String CAT_MISC = Dict.MISCELLANEOUS.toString();
-        public static final String CAT_ROOT = "";
+        public static final String HEIGHT_NAME = "%s, %s".formatted(Dict.Geometry.HEIGHT, Dict.NAME.toLower());
+        public static final String HEIGHT_PERCENT = "%s, %%".formatted(Dict.Geometry.HEIGHT);
+        public static final String HEIGHT_VALUE = "%s, %s".formatted(Dict.Geometry.HEIGHT, Dict.VALUE.toLower());
+        public static final String MEAS_COUNT = Dict.NUM_OF_S.toString().formatted(SDict.MEASUREMENTS.toLower());
+        public static final String MEAS_COUNT_ALL = "%s (%s)".formatted(MEAS_COUNT, Dict.ALL.toLower());
+        public static final String MEAS_COUNT_SELECTION = "%s (%s)".formatted(MEAS_COUNT, Dict.SELECTION.toLower());
+        public static final String PLANE_NAME = "%s, %s".formatted(Dict.Geometry.PLANE, Dict.NAME.toLower());
+        public static final String PLANE_PERCENT = "%s, %%".formatted(Dict.Geometry.PLANE);
+        public static final String PLANE_VALUE = "%s, %s".formatted(Dict.Geometry.PLANE, Dict.VALUE.toLower());
+        public static final String DIMENS_FREQ = "%s & %s".formatted(SDict.DIMENSION.toString(), SDict.FREQUENCY.toString());
 
     }
 }

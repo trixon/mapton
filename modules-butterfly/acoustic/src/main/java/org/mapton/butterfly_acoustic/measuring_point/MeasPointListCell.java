@@ -15,10 +15,15 @@
  */
 package org.mapton.butterfly_acoustic.measuring_point;
 
+import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.VBox;
+import javafx.util.Duration;
+import org.apache.commons.lang3.StringUtils;
 import org.mapton.butterfly_format.types.acoustic.BAcousticVibrationPoint;
+import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
@@ -26,11 +31,14 @@ import org.mapton.butterfly_format.types.acoustic.BAcousticVibrationPoint;
  */
 class MeasPointListCell extends ListCell<BAcousticVibrationPoint> {
 
-    private final Label mNameLabel = new Label();
-    private final Label mSoilLabel = new Label();
+    private final Label mDesc1Label = new Label();
+    private final Label mDesc2Label = new Label();
+    private final Label mDesc3Label = new Label();
+    private final Label mDesc4Label = new Label();
+    private final Label mHeaderLabel = new Label();
     private final String mStyleBold = "-fx-font-weight: bold;";
+    private final Tooltip mTooltip = new Tooltip();
     private VBox mVBox;
-    private final Label mWorkLabel = new Label();
 
     public MeasPointListCell() {
         createUI();
@@ -46,11 +54,22 @@ class MeasPointListCell extends ListCell<BAcousticVibrationPoint> {
         }
     }
 
-    private void addContent(BAcousticVibrationPoint point) {
+    private void addContent(BAcousticVibrationPoint p) {
         setText(null);
-        mNameLabel.setText(point.getName());
-        mWorkLabel.setText(point.getCategory());
-        mSoilLabel.setText(point.getGroup());
+        var header = p.getName();
+        if (StringUtils.isNotBlank(p.getStatus())) {
+            header = "%s [%s]".formatted(header, p.getStatus());
+        }
+
+        var desc1 = "%s: %s".formatted(StringUtils.defaultIfBlank(p.getGroup(), "NOVALUE"), StringUtils.defaultIfBlank(p.getCategory(), "NOVALUE"));
+        mHeaderLabel.setText(header);
+        mDesc1Label.setText(desc1);
+        mDesc2Label.setText(StringUtils.replace(p.ext().getDateLatestAsString(), "T", " "));
+        mDesc3Label.setText(StringUtils.replace(p.ext().getDateFirstAsString(), "T", " "));
+        mDesc4Label.setText(p.getComment());
+
+        mHeaderLabel.setTooltip(new Tooltip("Add custom tooltip: " + p.getName()));
+        mTooltip.setText("TODO");
         setGraphic(mVBox);
     }
 
@@ -60,12 +79,24 @@ class MeasPointListCell extends ListCell<BAcousticVibrationPoint> {
     }
 
     private void createUI() {
-        mNameLabel.setStyle(mStyleBold);
+        mHeaderLabel.setStyle(mStyleBold);
         mVBox = new VBox(
-                mNameLabel,
-                mWorkLabel,
-                mSoilLabel
+                mHeaderLabel,
+                mDesc1Label,
+                mDesc2Label,
+                mDesc3Label,
+                mDesc4Label
         );
+
+//        mHeaderLabel.setGraphic(mAlarmIndicator);
+        mHeaderLabel.setGraphicTextGap(FxHelper.getUIScaled(8));
+
+        mVBox.getChildren().stream()
+                .filter(c -> c instanceof Control)
+                .map(c -> (Control) c)
+                .forEach(o -> o.setTooltip(mTooltip));
+
+        mTooltip.setShowDelay(Duration.seconds(2));
     }
 
 }

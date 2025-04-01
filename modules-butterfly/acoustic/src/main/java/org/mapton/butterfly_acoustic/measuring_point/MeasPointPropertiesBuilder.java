@@ -17,21 +17,19 @@ package org.mapton.butterfly_acoustic.measuring_point;
 
 import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
-import java.util.Objects;
 import java.util.ResourceBundle;
-import org.mapton.api.ui.forms.PropertiesBuilder;
+import static org.mapton.api.ui.forms.PropertiesBuilder.NA;
+import org.mapton.butterfly_core.api.BPropertiesBuilder;
+import static org.mapton.butterfly_core.api.BPropertiesBuilder.CAT_MEAS;
+import org.mapton.butterfly_format.types.BXyzPoint;
 import org.mapton.butterfly_format.types.acoustic.BAcousticVibrationPoint;
 import org.openide.util.NbBundle;
-import se.trixon.almond.util.DateHelper;
-import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.SDict;
-import se.trixon.almond.util.StringHelper;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class MeasPointPropertiesBuilder extends PropertiesBuilder<BAcousticVibrationPoint> {
+public class MeasPointPropertiesBuilder extends BPropertiesBuilder<BAcousticVibrationPoint> {
 
     private final ResourceBundle mBundle = NbBundle.getBundle(MeasPointPropertiesBuilder.class);
 
@@ -42,35 +40,74 @@ public class MeasPointPropertiesBuilder extends PropertiesBuilder<BAcousticVibra
         }
 
         var propertyMap = new LinkedHashMap<String, Object>();
-        var cat1 = Dict.BASIC.toString();
+//******************************************************************************
+        var basicParams = new BPropertiesBuilder.BasicParams();
+        propertyMap.putAll(populateBasics(p, basicParams));
+//******************************************************************************
+        var dateParams = new BPropertiesBuilder.DateParams(
+                p.ext().getObservationRawFirstDate(),
+                p.ext().getObservationFilteredFirstDate(),
+                p.ext().getObservationRawLastDate(),
+                p.ext().getObservationFilteredLastDate(),
+                p.ext().getObservationRawNextDate()
+        );
+        propertyMap.putAll(populateDates(p, dateParams));
+//******************************************************************************
+//        Double azimuth = null;
+//        try {
+//            var o = p.ext().getObservationsTimeFiltered().getLast();
+//            azimuth = o.ext().getBearing();
+//        } catch (Exception e) {
+//        }
+//        var cat = "CUSTOM";
+//        propertyMap.put(getCatKeyNum(cat, Dict.BEARING.toString()), StringHelper.round(p.getAzimuth(), 0));
+//        var lastObservation = p.ext().getObservationFilteredLast();
+//
+//        if (lastObservation != null) {
+//            for (var o : lastObservation.getObservationItems()) {
+//                var azimuth = Angle.normalizedDegrees(o.getAzimuth() + p.getAzimuth());
+//                if (azimuth < 0) {
+//                    azimuth += 360;
+//                }
+//                var value = "%smm :: %.0f°".formatted(StringHelper.round(o.getDistance() * 1000, 1), azimuth);
+//                propertyMap.put(getCatKeyNum(cat, "%.1f".formatted(o.getDown())), value);
+//            }
+//        }
 
-        propertyMap.put(getCatKey(cat1, Dict.NAME.toString()), p.getName());
-        propertyMap.put(getCatKey(cat1, Dict.STATUS.toString()), p.getStatus());
-        propertyMap.put(getCatKey(cat1, Dict.TYPE.toString()), p.getCategory());
-        propertyMap.put(getCatKey(cat1, mBundle.getString("soilMaterial")), p.getGroup());
-        propertyMap.put(getCatKey(cat1, "Adress"), p.getComment());
-        propertyMap.put(getCatKey(cat1, Dict.COMMENT.toString()), p.getComment());
-        var measurements = "%d / %d    (%d - %d)".formatted(
+        var measParams = new BPropertiesBuilder.MeasParams<BXyzPoint>(
+                0.0,
+                -1L,
+                p.ext().getMeasurementAge(ChronoUnit.DAYS),
                 p.ext().getNumOfObservationsFiltered(),
                 p.ext().getNumOfObservations(),
-                p.ext().getObservationsAllRaw().stream().filter(obs -> obs.isZeroMeasurement()).count(),
-                p.ext().getObservationsAllRaw().stream().filter(obs -> obs.isReplacementMeasurement()).count()
+                p.ext().firstIsZero(),
+                p.ext().getObservationsAllRaw().stream().filter(obs -> obs.isReplacementMeasurement()).count(),
+                NA,
+                NA,
+                NA,
+                NA,
+                NA,
+                NA
         );
-        propertyMap.put(getCatKey(cat1, SDict.MEASUREMENTS.toString()), measurements);
-        propertyMap.put(getCatKey(cat1, Dict.AGE.toString()), p.ext().getMeasurementAge(ChronoUnit.DAYS));
-        var firstRaw = Objects.toString(DateHelper.toDateString(p.ext().getObservationRawFirstDate()), "-");
-        var firstFiltered = Objects.toString(DateHelper.toDateString(p.ext().getObservationFilteredFirstDate()), "-");
-        var lastRaw = Objects.toString(DateHelper.toDateString(p.ext().getObservationRawLastDate()), "-");
-        var lastFiltered = Objects.toString(DateHelper.toDateString(p.ext().getObservationFilteredLastDate()), "-");
-        propertyMap.put(getCatKey(cat1, Dict.LATEST.toString()),
-                "%s (%s)".formatted(lastRaw, lastFiltered)
-        );
-        propertyMap.put(getCatKey(cat1, Dict.FIRST.toString()),
-                "%s (%s)".formatted(firstRaw, firstFiltered)
-        );
-        propertyMap.put(getCatKey(cat1, "N"), StringHelper.round(p.getZeroY(), 3));
-        propertyMap.put(getCatKey(cat1, "E"), StringHelper.round(p.getZeroX(), 3));
-        propertyMap.put(getCatKey(cat1, "H"), StringHelper.round(p.getZeroZ(), 3));
+
+        var measMap = populateMeas(p, measParams);
+        measMap.put(getCatKeyNum(CAT_MEAS, "FIRST_IS_ZERO"), NA);
+        measMap.put(getCatKeyNum(CAT_MEAS, "NUM_OF_REPLACEMENTS"), NA);
+
+        propertyMap.putAll(measMap);
+//******************************************************************************
+        var cat1 = "Värden";
+//        for (var point : p.getPoints()) {
+//            var d = point.ext().getDelta();
+//            var s = "%.2f (%.1f, %.1f, %.1f)".formatted(d,
+//                    point.getLimit1() * 1000, point.getLimit2() * 1000, point.getLimit3() * 1000);
+//            var depth = "-%s".formatted(StringUtils.substringAfter(point.getName(), "-"));
+//            propertyMap.put(getCatKey(cat1, depth), s);
+//        }
+//******************************************************************************
+        propertyMap.putAll(populateDatabase(p));
+
+        removeByValues(propertyMap, NA, " :: ");
 
         return propertyMap;
     }
