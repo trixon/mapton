@@ -32,7 +32,6 @@ import org.jfree.data.time.TimeSeriesCollection;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.structural.BStructuralCrackPoint;
-import org.mapton.ce_jfreechart.api.ChartHelper;
 import se.trixon.almond.util.CircularInt;
 import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.MathHelper;
@@ -43,7 +42,6 @@ import se.trixon.almond.util.MathHelper;
  */
 public class CrackChartBuilder extends XyzChartBuilder<BStructuralCrackPoint> {
 
-    private final ChartHelper mChartHelper = new ChartHelper();
     private final CircularInt mColorCircularInt = new CircularInt(0, 5);
     private final XYLineAndShapeRenderer mSecondaryRenderer = new XYLineAndShapeRenderer();
     private final NumberAxis mTemperatureAxis = new NumberAxis("°C");

@@ -35,7 +35,6 @@ import org.mapton.butterfly_core.api.XyzChartBuilder;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
-import org.mapton.ce_jfreechart.api.ChartHelper;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
@@ -46,7 +45,6 @@ import se.trixon.almond.util.Dict;
  */
 public class TopoChartBuilder extends XyzChartBuilder<BTopoControlPoint> {
 
-    private final ChartHelper mChartHelper = new ChartHelper();
     private Date mDateEnd;
     private Date mDateNull;
     private final TimeSeries mTimeSeries2d = new TimeSeries(Dict.Geometry.PLANE);

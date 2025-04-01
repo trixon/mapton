@@ -21,5 +21,5 @@ package org.mapton.butterfly_geo.api;
  */
 public class GeotechnicalHelper {
 
-    public static String CAT_GEO = "Geo";
+    public static String CAT_GEO = "Geoteknik";
 }

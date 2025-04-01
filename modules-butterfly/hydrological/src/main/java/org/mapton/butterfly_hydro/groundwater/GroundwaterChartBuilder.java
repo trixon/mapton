@@ -25,7 +25,6 @@ import org.jfree.data.time.TimeSeries;
 import org.mapton.api.MTemporalManager;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
 import org.mapton.butterfly_format.types.hydro.BHydroGroundwaterPoint;
-import org.mapton.ce_jfreechart.api.ChartHelper;
 
 /**
  *
@@ -33,7 +32,6 @@ import org.mapton.ce_jfreechart.api.ChartHelper;
  */
 public class GroundwaterChartBuilder extends XyzChartBuilder<BHydroGroundwaterPoint> {
 
-    private final ChartHelper mChartHelper = new ChartHelper();
     private final MTemporalManager mTemporalManager = MTemporalManager.getInstance();
     private final TimeSeries mTimeSeriesH = new TimeSeries("Nivå");
 

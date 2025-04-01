@@ -33,7 +33,6 @@ import org.jfree.data.time.TimeSeriesCollection;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.structural.BStructuralTiltPoint;
-import org.mapton.ce_jfreechart.api.ChartHelper;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.DateHelper;
 
@@ -43,7 +42,6 @@ import se.trixon.almond.util.DateHelper;
  */
 public class TiltChartBuilder extends XyzChartBuilder<BStructuralTiltPoint> {
 
-    private final ChartHelper mChartHelper = new ChartHelper();
     private final XYLineAndShapeRenderer mSecondaryRenderer = new XYLineAndShapeRenderer();
     private final NumberAxis mTemperatureAxis = new NumberAxis("°C");
     private final TimeSeriesCollection mTemperatureDataset = new TimeSeriesCollection();

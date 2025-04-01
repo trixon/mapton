@@ -26,6 +26,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.TreeMap;
+import org.apache.commons.math3.util.FastMath;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import static org.mapton.butterfly_topo.GraphicRendererBase.sMapObjects;
 import org.mapton.worldwind.api.WWHelper;
@@ -90,7 +91,7 @@ public class GraphicRendererCount extends GraphicRendererBase {
         for (int i = 0; i < reversedList.size(); i++) {
             var o = reversedList.get(i);
             var timeSpan = ChronoUnit.MINUTES.between(o.date(), prevDate);
-            var height = timeSpan / 24000.0;
+            var height = FastMath.max(0.01, timeSpan / 24000.0);
             altitude = altitude + height * 0.5 + prevHeight * 0.5;
             prevDate = o.date();
             prevHeight = height;
