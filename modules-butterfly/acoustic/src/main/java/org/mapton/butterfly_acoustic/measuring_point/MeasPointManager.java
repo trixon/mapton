@@ -68,9 +68,9 @@ public class MeasPointManager extends BaseManager<BAcousticVibrationPoint> {
             initObjectToItemMap();
 
             butterfly.noise().getVibrationPoints().forEach(p -> {
-                var channels = butterfly.noise().getVibrationChannels().stream().filter(c -> c.getPointId().equalsIgnoreCase(p.getId())).toList();
+                var channels = butterfly.noise().getVibrationChannels().stream().filter(c -> c.getPointId().equalsIgnoreCase(p.getExternalId())).toList();
                 p.ext().setChannels(new ArrayList<>(channels));
-                var limits = butterfly.noise().getVibrationLimits().stream().filter(c -> c.getPointId().equalsIgnoreCase(p.getId())).toList();
+                var limits = butterfly.noise().getVibrationLimits().stream().filter(c -> c.getPointId().equalsIgnoreCase(p.getExternalId())).toList();
                 p.ext().setLimits(new ArrayList<>(limits));
 
                 var status = "S5";
@@ -87,7 +87,10 @@ public class MeasPointManager extends BaseManager<BAcousticVibrationPoint> {
                         .collect(Collectors.toCollection(ArrayList::new));
 
                 if (!observations.isEmpty()) {
+                    p.ext().setDateFirst(observations.getFirst().getDate());
                     p.setDateLatest(observations.getLast().getDate());
+                } else {
+                    p.ext().setDateFirst(LocalDateTime.MIN);
                 }
                 p.ext().setDateLatest(p.getDateLatest());
                 p.ext().setObservationsAllRaw(observations);

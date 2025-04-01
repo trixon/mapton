@@ -24,21 +24,14 @@ import org.mapton.butterfly_format.types.BXyzPoint;
  * @author Patrik Karlström
  */
 @JsonPropertyOrder({
-    "id",
     "name",
-    "soilMaterial",
     "lat",
     "lon",
-    "address",
     "comment"
 })
 public class BAcousticVibrationPoint extends BXyzPoint {
 
-    private String address;
-    private String id;
     private transient Ext mExt;
-    private String soilMaterial;
-    private String url;
 
     public BAcousticVibrationPoint() {
     }
@@ -49,38 +42,6 @@ public class BAcousticVibrationPoint extends BXyzPoint {
         }
 
         return mExt;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public String getSoilMaterial() {
-        return soilMaterial;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public void setSoilMaterial(String soilMaterial) {
-        this.soilMaterial = soilMaterial;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
     }
 
     public class Ext extends BXyzPoint.Ext<BAcousticVibrationObservation> {

@@ -19,7 +19,6 @@ import java.util.Objects;
 import java.util.function.Function;
 import org.apache.commons.lang3.StringUtils;
 import org.mapton.butterfly_format.types.acoustic.BAcousticVibrationPoint;
-import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.MathHelper;
 
@@ -40,9 +39,9 @@ public enum MeasPointLabelBy {
     MISC_TYPE(Strings.CAT_MISC, Dict.CATEGORY.toString(), p -> {
         return Objects.toString(p.getCategory(), "NODATA");
     }),
-    MISC_SOIL(Strings.CAT_MISC, NbBundle.getMessage(MeasPointLabelBy.class, "soilMaterial"), p -> {
-        return Objects.toString(p.getSoilMaterial(), "NODATA");
-    }),
+    //    MISC_SOIL(Strings.CAT_MISC, NbBundle.getMessage(MeasPointLabelBy.class, "soilMaterial"), p -> {
+    //        return Objects.toString(p.getSoilMaterial(), "NODATA");
+    //    }),
     MISC_Z(Strings.CAT_MISC, "Z", p -> {
         return MathHelper.convertDoubleToString(p.getZeroZ(), 1);
     });

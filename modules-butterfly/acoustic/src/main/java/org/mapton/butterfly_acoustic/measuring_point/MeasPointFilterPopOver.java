@@ -15,36 +15,52 @@
  */
 package org.mapton.butterfly_acoustic.measuring_point;
 
+import com.dlsc.gemsfx.util.SessionManager;
 import java.util.ResourceBundle;
-import javafx.scene.control.Separator;
-import javafx.scene.layout.VBox;
-import static org.mapton.api.ui.MPopOver.GAP;
-import static org.mapton.api.ui.MPopOver.autoSize;
-import org.mapton.butterfly_core.api.BaseFilterPopOver;
+import java.util.prefs.Preferences;
+import javafx.scene.layout.BorderPane;
+import org.mapton.butterfly_core.api.BFilterSectionDate;
+import org.mapton.butterfly_core.api.BFilterSectionDisruptor;
+import org.mapton.butterfly_core.api.BFilterSectionPoint;
+import org.mapton.butterfly_core.api.BaseTabbedFilterPopOver;
+import org.mapton.butterfly_core.api.FilterSectionMisc;
 import org.mapton.butterfly_format.Butterfly;
 import org.openide.util.NbBundle;
-import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.fx.FxHelper;
-import se.trixon.almond.util.fx.session.SessionCheckComboBox;
+import org.openide.util.NbPreferences;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class MeasPointFilterPopOver extends BaseFilterPopOver {
+public class MeasPointFilterPopOver extends BaseTabbedFilterPopOver {
 
     private final ResourceBundle mBundle = NbBundle.getBundle(MeasPointFilterPopOver.class);
-    private final SessionCheckComboBox<String> mCategorySccb = new SessionCheckComboBox<>();
     private final MeasPointFilter mFilter;
-    private final SessionCheckComboBox<String> mGroupSccb = new SessionCheckComboBox<>();
-    private final SessionCheckComboBox<String> mSoilSccb = new SessionCheckComboBox<>();
-    private final SessionCheckComboBox<String> mStatusSccb = new SessionCheckComboBox<>();
+    private final BFilterSectionDate mFilterSectionDate;
+    private final BFilterSectionDisruptor mFilterSectionDisruptor;
+    private final FilterSectionMisc mFilterSectionMisc;
+    private final BFilterSectionPoint mFilterSectionPoint;
+    private final MeasPointManager mManager = MeasPointManager.getInstance();
 
     public MeasPointFilterPopOver(MeasPointFilter filter) {
+        mFilterSectionPoint = new BFilterSectionPoint();
+        mFilterSectionDate = new BFilterSectionDate();
+        mFilterSectionDisruptor = new BFilterSectionDisruptor();
+        mFilterSectionMisc = new FilterSectionMisc();
+
         mFilter = filter;
+        mFilter.setFilterSection(mFilterSectionPoint);
+        mFilter.setFilterSection(mFilterSectionDate);
+        mFilter.setFilterSection(mFilterSectionDisruptor);
+
+        setFilter(filter);
         createUI();
         initListeners();
-        initSession();
+        initSession(NbPreferences.forModule(getClass()).node(getClass().getSimpleName()));
+
+        mFilterSectionPoint.getMeasNextSccb().setDisable(true);
+        mFilterSectionPoint.getMeasNextSccb().setDisable(true);
+        mFilterSectionPoint.getAlarmNameSccb().setDisable(true);
 
         populate();
     }
@@ -53,21 +69,34 @@ public class MeasPointFilterPopOver extends BaseFilterPopOver {
     public void clear() {
         setUsePolygonFilter(false);
         mFilter.freeTextProperty().set("");
-        SessionCheckComboBox.clearChecks(
-                mStatusSccb,
-                mGroupSccb,
-                mCategorySccb,
-                mSoilSccb
-        );
+
+        mFilterSectionPoint.clear();
+        mFilterSectionDate.clear();
+        mFilterSectionDisruptor.clear();
+        mFilterSectionMisc.clear();
+    }
+
+    @Override
+    public void filterPresetRestore(Preferences preferences) {
+        clear();
+        filterPresetStore(preferences);
+        //mDateRangePane.reset();
+    }
+
+    @Override
+    public void filterPresetStore(Preferences preferences) {
+        var sessionManager = initSession(preferences);
+        sessionManager.unregisterAll();
     }
 
     @Override
     public void load(Butterfly butterfly) {
         var items = butterfly.noise().getVibrationPoints();
-        mStatusSccb.loadAndRestoreCheckItems(items.stream().map(b -> b.getStatus()));
-        mGroupSccb.loadAndRestoreCheckItems(items.stream().map(b -> b.getGroup()));
-        mCategorySccb.loadAndRestoreCheckItems(items.stream().map(b -> b.getCategory()));
-        mSoilSccb.loadAndRestoreCheckItems(items.stream().map(b -> b.getSoilMaterial()));
+
+        mFilterSectionPoint.load(items);
+        mFilterSectionDisruptor.load();
+        mFilterSectionDate.load(mManager.getTemporalRange());
+        mFilterSectionMisc.load();
     }
 
     @Override
@@ -77,70 +106,53 @@ public class MeasPointFilterPopOver extends BaseFilterPopOver {
 
     @Override
     public void onShownFirstTime() {
-        FxHelper.setVisibleRowCount(25,
-                mStatusSccb,
-                mGroupSccb,
-                mCategorySccb,
-                mSoilSccb
-        );
+        mFilterSectionPoint.onShownFirstTime();
     }
 
     @Override
     public void reset() {
         clear();
         mFilter.freeTextProperty().set("*");
-        SessionCheckComboBox.clearChecks(
-                mStatusSccb,
-                mGroupSccb,
-                mCategorySccb,
-                mSoilSccb
-        );
+
+        mFilterSectionPoint.reset(null);
+        mFilterSectionMisc.reset(null);
     }
 
     private void createUI() {
-        FxHelper.setShowCheckedCount(true,
-                mStatusSccb,
-                mGroupSccb,
-                mCategorySccb,
-                mSoilSccb
+        var root = new BorderPane(getTabPane());
+        root.setTop(getToolBar());
+        populateToolBar(mFilterSectionMisc.getInvertCheckboxToolBarItem());
+
+        getTabPane().getTabs().addAll(
+                mFilterSectionPoint.getTab(),
+                mFilterSectionDate.getTab(),
+                mFilterSectionDisruptor.getTab()
         );
 
-        mStatusSccb.setTitle(Dict.STATUS.toString());
-        mGroupSccb.setTitle(Dict.GROUP.toString());
-        mCategorySccb.setTitle(Dict.CATEGORY.toString());
-        mSoilSccb.setTitle(mBundle.getString("soilMaterial"));
-
-        var vBox = new VBox(GAP,
-                getButtonBox(),
-                new Separator(),
-                mStatusSccb,
-                mGroupSccb,
-                mCategorySccb,
-                mSoilSccb
-        );
-
-        autoSize(vBox);
-        setContentNode(vBox);
+        setContentNode(root);
     }
 
     private void initListeners() {
+        activatePasteName(actionEvent -> {
+            mFilter.freeTextProperty().set(mManager.getSelectedItem().getName());
+        });
+
+        mFilterSectionMisc.initListeners(mFilter);
+
         mFilter.polygonFilterProperty().bind(usePolygonFilterProperty());
-
-        mFilter.mStatusCheckModel = mStatusSccb.getCheckModel();
-        mFilter.mGroupCheckModel = mGroupSccb.getCheckModel();
-        mFilter.mCategoryCheckModel = mCategorySccb.getCheckModel();
-        mFilter.mSoilCheckModel = mSoilSccb.getCheckModel();
-
         mFilter.initCheckModelListeners();
     }
 
-    private void initSession() {
-        var sessionManager = getSessionManager();
-        sessionManager.register("filter.measPoint.freeText", mFilter.freeTextProperty());
-        sessionManager.register("filter.measPoint.checkedGroup", mGroupSccb.checkedStringProperty());
-        sessionManager.register("filter.measPoint.checkedStatus", mStatusSccb.checkedStringProperty());
-        sessionManager.register("filter.measPoint.checkedCategory", mCategorySccb.checkedStringProperty());
-        sessionManager.register("filter.measPoint.checkedSoil", mSoilSccb.checkedStringProperty());
+    private SessionManager initSession(Preferences preferences) {
+        var sessionManager = new SessionManager(preferences);
+        mFilterSectionPoint.initSession(sessionManager);
+        mFilterSectionDate.initSession(sessionManager);
+        mFilterSectionDisruptor.initSession(sessionManager);
+        mFilterSectionMisc.initSession(sessionManager);
+
+        sessionManager.register("filter.vibration.freeText", mFilter.freeTextProperty());
+
+        return sessionManager;
     }
 
 }

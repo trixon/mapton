@@ -50,7 +50,7 @@ class MeasPointListCell extends ListCell<BAcousticVibrationPoint> {
         setText(null);
         mNameLabel.setText(point.getName());
         mWorkLabel.setText(point.getCategory());
-        mSoilLabel.setText(point.getSoilMaterial());
+        mSoilLabel.setText(point.getGroup());
         setGraphic(mVBox);
     }
 

@@ -47,8 +47,8 @@ public class MeasPointPropertiesBuilder extends PropertiesBuilder<BAcousticVibra
         propertyMap.put(getCatKey(cat1, Dict.NAME.toString()), p.getName());
         propertyMap.put(getCatKey(cat1, Dict.STATUS.toString()), p.getStatus());
         propertyMap.put(getCatKey(cat1, Dict.TYPE.toString()), p.getCategory());
-        propertyMap.put(getCatKey(cat1, mBundle.getString("soilMaterial")), p.getSoilMaterial());
-        propertyMap.put(getCatKey(cat1, "Adress"), p.getAddress());
+        propertyMap.put(getCatKey(cat1, mBundle.getString("soilMaterial")), p.getGroup());
+        propertyMap.put(getCatKey(cat1, "Adress"), p.getComment());
         propertyMap.put(getCatKey(cat1, Dict.COMMENT.toString()), p.getComment());
         var measurements = "%d / %d    (%d - %d)".formatted(
                 p.ext().getNumOfObservationsFiltered(),
