@@ -18,6 +18,7 @@ package org.mapton.butterfly_geo_extensometer;
 import java.awt.Color;
 import java.awt.Font;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
 import org.apache.commons.lang3.StringUtils;
@@ -45,9 +46,13 @@ import org.jfree.chart.ui.TextAnchor;
 import org.jfree.chart.ui.VerticalAlignment;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
+import org.mapton.api.MLatLon;
 import org.mapton.api.ui.forms.ChartBuilder;
+import org.mapton.butterfly_core.api.ButterflyManager;
+import org.mapton.butterfly_format.types.BBasePoint;
 import org.mapton.butterfly_format.types.geo.BGeoExtensometer;
 import org.mapton.ce_jfreechart.api.ChartHelper;
+import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.swing.SwingHelper;
 
 /**
@@ -132,7 +137,7 @@ public class ExtensoChartBuilder extends ChartBuilder<BGeoExtensometer> {
             rangeAxis.setRange(rangeMin, rangeMax);
             subplot.getRangeAxis().setLabelFont(new Font(Font.SANS_SERIF, Font.BOLD, SwingHelper.getUIScaled(12)));
             renderer.setSeriesPaint(timeSeriesCollection.getSeriesIndex(series.getKey()), Color.RED);
-
+            plotBlasts(subplot, extenso, p.ext().getObservationFilteredFirstDate(), p.ext().getObservationFilteredLastDate());
             for (var o : p.ext().getObservationsTimeFiltered()) {
                 var minute = mChartHelper.convertToMinute(o.getDate());
                 if (o.isReplacementMeasurement()) {
@@ -202,5 +207,23 @@ public class ExtensoChartBuilder extends ChartBuilder<BGeoExtensometer> {
         var compositeTitle = new CompositeTitle(blockContainer);
         compositeTitle.setPadding(new RectangleInsets(0, 20, 0, 20));
         mChart.addSubtitle(compositeTitle);
+    }
+
+    private void plotBlasts(XYPlot plot, BBasePoint p, LocalDate firstDate, LocalDate lastDate) {
+        var extensometer = new MLatLon(p.getLat(), p.getLon());
+        ButterflyManager.getInstance().getButterfly().noise().getBlasts().stream()
+                .filter(b -> {
+                    var blast = new MLatLon(b.getLat(), b.getLon());
+                    return blast.distance(extensometer) <= 40 && DateHelper.isBetween(
+                            firstDate,
+                            lastDate,
+                            b.getDateTime().toLocalDate());
+                })
+                .forEachOrdered(b -> {
+                    var minute = mChartHelper.convertToMinute(b.getDateTime());
+                    var marker = new ValueMarker(minute.getFirstMillisecond());
+                    marker.setPaint(Color.BLACK);
+                    plot.addDomainMarker(marker);
+                });
     }
 }
