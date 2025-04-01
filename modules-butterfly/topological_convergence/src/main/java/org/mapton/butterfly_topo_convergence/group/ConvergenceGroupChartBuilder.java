@@ -1,0 +1,125 @@
+/*
+ * Copyright 2023 Patrik Karlström.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.mapton.butterfly_topo_convergence.group;
+
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.util.Objects;
+import java.util.concurrent.Callable;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.axis.DateAxis;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.data.time.MovingAverage;
+import org.jfree.data.time.TimeSeries;
+import org.mapton.butterfly_core.api.XyzChartBuilder;
+import org.mapton.butterfly_format.types.topo.BTopoConvergenceGroup;
+import se.trixon.almond.util.DateHelper;
+
+/**
+ *
+ * @author Patrik Karlström
+ */
+public class ConvergenceGroupChartBuilder extends XyzChartBuilder<BTopoConvergenceGroup> {
+
+    private final TimeSeries mTimeSeriesX = new TimeSeries("Mätning");
+
+    public ConvergenceGroupChartBuilder() {
+        initChart("mm/m", "0.0");
+
+        var plot = (XYPlot) mChart.getPlot();
+        plot.getRangeAxis().setVisible(false);
+    }
+
+    @Override
+    public synchronized Callable<ChartPanel> build(BTopoConvergenceGroup p) {
+        if (p == null) {
+            return null;
+        }
+
+        var callable = (Callable<ChartPanel>) () -> {
+            setTitle(p);
+            updateDataset(p);
+            var plot = (XYPlot) mChart.getPlot();
+            var dateAxis = (DateAxis) plot.getDomainAxis();
+            dateAxis.setAutoRange(true);
+            plot.clearRangeMarkers();
+
+            var rangeAxis = (NumberAxis) plot.getRangeAxis();
+            rangeAxis.setAutoRange(true);
+
+            return getChartPanel();
+        };
+
+        return callable;
+    }
+
+    @Override
+    public void setTitle(BTopoConvergenceGroup p) {
+        super.setTitle(p);
+//        Color color = TopoHelper.getAlarmColorAwt(p);
+        Color color = Color.BLUE;
+        if (color == Color.RED || color == Color.GREEN) {
+            color = color.darker();
+        }
+        mChart.getTitle().setPaint(color);
+        var dateFirst = Objects.toString(DateHelper.toDateString(p.getDateZero()), "");
+        var dateLast = Objects.toString(DateHelper.toDateString(p.ext().getObservationRawLastDate()), "");
+        var date = "(%s) → %s".formatted(dateFirst, dateLast);
+        getLeftSubTextTitle().setText(date);
+
+//        var rightTitle = "%s: %s".formatted(p.getAlarm1Id(), p.ext().getDeltaZero());
+//        getRightSubTextTitle().setText(rightTitle);
+    }
+
+    @Override
+    public synchronized void updateDataset(BTopoConvergenceGroup p) {
+        getDataset().removeAllSeries();
+        mTimeSeriesX.clear();
+
+        var plot = (XYPlot) mChart.getPlot();
+        plot.clearDomainMarkers();
+
+        p.ext().getObservationsTimeFiltered().forEach(o -> {
+            var minute = mChartHelper.convertToMinute(o.getDate());
+            if (o.isReplacementMeasurement()) {
+                addMarker(plot, minute, "E", Color.RED);
+            } else if (o.isZeroMeasurement()) {
+                addMarker(plot, minute, "N", Color.BLUE);
+            }
+
+            mTimeSeriesX.add(minute, 0.0);
+        });
+
+        var renderer = plot.getRenderer();
+        var avgStroke = new BasicStroke(5.0f);
+        int avdDays = 90 * 60 * 24;
+        int avgSkipMeasurements = 0;
+        boolean plotAvg = false;
+
+        getDataset().addSeries(mTimeSeriesX);
+        renderer.setSeriesPaint(getDataset().getSeriesIndex(mTimeSeriesX.getKey()), Color.RED);
+        if (plotAvg) {
+            var mavg = MovingAverage.createMovingAverage(mTimeSeriesX, "%s (avg)".formatted(mTimeSeriesX.getKey()), avdDays, avgSkipMeasurements);
+            getDataset().addSeries(mavg);
+            int index = getDataset().getSeriesIndex(mavg.getKey());
+            renderer.setSeriesPaint(index, Color.RED);
+            renderer.setSeriesStroke(index, avgStroke);
+        }
+
+        plotBlasts(plot, p, p.ext().getObservationFilteredFirstDate(), p.ext().getObservationFilteredLastDate());
+    }
+}

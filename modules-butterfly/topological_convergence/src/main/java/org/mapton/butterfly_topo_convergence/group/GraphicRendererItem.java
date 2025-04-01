@@ -16,13 +16,17 @@
 package org.mapton.butterfly_topo_convergence.group;
 
 import org.mapton.butterfly_core.api.GraphicRenderItemLimitProvider;
+import se.trixon.almond.util.Dict;
 
 /**
  *
  * @author Patrik Karlström
  */
 public enum GraphicRendererItem implements GraphicRenderItemLimitProvider {
-    NONE("-", Integer.MAX_VALUE);
+    GEOMETRY(Dict.Geometry.GEOMETRY.toString(), Integer.MAX_VALUE),
+    GEOMETRY_NAME("\t— %s".formatted(Dict.NAME.toString()), Integer.MAX_VALUE),
+    ANCHOR_DISPLACEMENT("Diffsättning mot ankarpunkt", Integer.MAX_VALUE),
+    ANCHOR_DISPLACEMENT_NAME("\t— %s".formatted(Dict.NAME.toString()), Integer.MAX_VALUE);
     private final String mName;
     private final int mPlotLimit;
 

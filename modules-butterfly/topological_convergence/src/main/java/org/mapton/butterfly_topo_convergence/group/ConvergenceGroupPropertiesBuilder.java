@@ -61,7 +61,9 @@ public class ConvergenceGroupPropertiesBuilder extends BPropertiesBuilder<BTopoC
                 p.ext().deltaRolling().getDelta(3),
                 p.ext().deltaZero().getDelta(3)
         );
-        propertyMap.putAll(populateMeas(p, measParams));
+        var measMap = populateMeas(p, measParams);
+        removeByIndices(measMap, 3, 4, 5, 6, 9, 10, 11, 12, 13);
+        propertyMap.putAll(measMap);
 //******************************************************************************
         var dateParams = new BPropertiesBuilder.DateParams(
                 p.ext().getObservationRawFirstDate(),

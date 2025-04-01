@@ -30,6 +30,7 @@ import org.mapton.api.Mapton;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.BBaseControlPointObservation;
+import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.topo.BTopoControlPointObservation;
 import org.mapton.butterfly_format.types.topo.BTopoConvergenceGroup;
 import org.mapton.butterfly_topo.api.TopoManager;
@@ -41,6 +42,7 @@ import org.openide.util.Exceptions;
  */
 public class ConvergenceGroupManager extends BaseManager<BTopoConvergenceGroup> {
 
+    private final ConvergenceGroupChartBuilder mChartBuilder = new ConvergenceGroupChartBuilder();
     private final ConvergenceGroupPropertiesBuilder mPropertiesBuilder = new ConvergenceGroupPropertiesBuilder();
 
     public static ConvergenceGroupManager getInstance() {
@@ -62,7 +64,16 @@ public class ConvergenceGroupManager extends BaseManager<BTopoConvergenceGroup> 
     }
 
     @Override
+    public Object getObjectChart(BTopoConvergenceGroup selectedObject) {
+        return mChartBuilder.build(selectedObject);
+    }
+
+    @Override
     public Object getObjectProperties(BTopoConvergenceGroup selectedObject) {
+        if (selectedObject != null) {
+            System.out.println(selectedObject.ext2().getAnchorPoint());
+            selectedObject.ext2().getProjected2dCoordinates();
+        }
         return mPropertiesBuilder.build(selectedObject);
     }
 
@@ -124,6 +135,17 @@ public class ConvergenceGroupManager extends BaseManager<BTopoConvergenceGroup> 
             }
 
             for (var g : butterfly.topo().getConvergenceGroups()) {
+                var maxPoint = g.ext2().getControlPointsWithoutAnchor().stream()
+                        .max(Comparator.comparingDouble(BTopoControlPoint::getZeroZ));
+
+                maxPoint.ifPresent(p -> {
+                    g.setZeroX(p.getZeroX());
+                    g.setZeroY(p.getZeroY());
+                    g.setZeroZ(p.getZeroZ());
+                    g.setLat(p.getLat());
+                    g.setLon(p.getLon());
+                });
+
                 var observations = g.ext().getObservationsAllRaw();
                 if (!observations.isEmpty()) {
                     g.ext().setDateFirst(observations.getFirst().getDate());
