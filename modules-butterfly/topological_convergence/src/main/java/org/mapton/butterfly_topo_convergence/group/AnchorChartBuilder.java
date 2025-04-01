@@ -26,6 +26,7 @@ import org.jfree.chart.title.TextTitle;
 import org.jfree.data.time.TimeSeries;
 import org.mapton.api.MTemporalManager;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
+import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.topo.BTopoConvergencePair;
 import se.trixon.almond.util.DateHelper;
 
@@ -39,6 +40,8 @@ public class AnchorChartBuilder extends XyzChartBuilder<BTopoConvergencePair> {
     private TextTitle mDeltaSubTextTitle;
     private final MTemporalManager mTemporalManager = MTemporalManager.getInstance();
     private final TimeSeries mTimeSeriesDeltaZ = new TimeSeries("ΔZ");
+    private final TimeSeries mTimeSeriesAnchor = new TimeSeries("Ankare");
+    private final TimeSeries mTimeSeriesPoint = new TimeSeries("Punkt");
 
     public AnchorChartBuilder() {
         initChart("m", "0.000");
@@ -88,6 +91,8 @@ public class AnchorChartBuilder extends XyzChartBuilder<BTopoConvergencePair> {
     @Override
     public void updateDataset(BTopoConvergencePair p) {
         getDataset().removeAllSeries();
+        mTimeSeriesAnchor.clear();
+        mTimeSeriesPoint.clear();
         mTimeSeriesDeltaZ.clear();
 
         var plot = (XYPlot) mChart.getPlot();
@@ -97,18 +102,33 @@ public class AnchorChartBuilder extends XyzChartBuilder<BTopoConvergencePair> {
             return;
         }
 
-        var first = p.getObservations().getFirst();
-//        var diff=first.
-
         for (var o : p.getObservations()) {
-
             var minute = mChartHelper.convertToMinute(o.getDate());
-
-            mTimeSeriesDeltaZ.add(minute, o.getDeltaHInPairForSameDate());
+            mTimeSeriesDeltaZ.add(minute, o.getDeltaDeltaZComparedToFirst());
         }
 
         getDataset().addSeries(mTimeSeriesDeltaZ);
+        plotZ(p, p.getP1());
+        plotZ(p, p.getP2());
+
         plotBlasts(plot, p, p.ext().getFirstDate().toLocalDate(), p.ext().getLastDate().toLocalDate());
+    }
+
+    private void plotZ(BTopoConvergencePair pair, BTopoControlPoint p) {
+        var plot = (XYPlot) mChart.getPlot();
+        var firstDate = pair.getObservations().getFirst().getDate().toLocalDate();
+        var lastDate = pair.getObservations().getLast().getDate().toLocalDate();
+        var series = pair.getConvergenceGroup().ext2().getAnchorPoint() == p ? mTimeSeriesAnchor : mTimeSeriesPoint;
+        p.ext().getObservationsAllRaw().stream()
+                .filter(o -> DateHelper.isBetween(
+                firstDate,
+                lastDate,
+                o.getDate().toLocalDate()))
+                .forEachOrdered(o -> {
+                    var minute = mChartHelper.convertToMinute(o.getDate());
+                    series.add(minute, o.ext().getDeltaZ());
+                });
+        getDataset().addSeries(series);
     }
 
 }

@@ -22,6 +22,7 @@ import org.mapton.api.ui.forms.PropertiesBuilder;
 import org.mapton.butterfly_format.types.topo.BTopoConvergencePair;
 import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.StringHelper;
 
 /**
  *
@@ -63,6 +64,8 @@ public class AnchorPropertiesBuilder extends PropertiesBuilder<BTopoConvergenceP
         );
         propertyMap.put(getCatKey(cat1, "Delta 1"), desc2);
         propertyMap.put(getCatKey(cat1, "Delta 2"), desc3);
+        var dz = StringHelper.round(p.getObservations().getLast().getDeltaDeltaZComparedToFirst(), 3);
+        propertyMap.put(getCatKey(cat1, "Delta Z"), dz);
 
         return propertyMap;
     }

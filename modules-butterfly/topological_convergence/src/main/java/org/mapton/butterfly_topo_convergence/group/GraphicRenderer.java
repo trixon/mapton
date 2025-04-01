@@ -70,7 +70,7 @@ public class GraphicRenderer extends GraphicRendererBase {
         }
 
         if (sCheckModel.isChecked(GraphicRendererItem.ANCHOR_DISPLACEMENT)) {
-            plotAnchoDisplacement(convergenceGroup);
+            plotAnchorDisplacement(convergenceGroup);
         }
     }
 
@@ -91,7 +91,7 @@ public class GraphicRenderer extends GraphicRendererBase {
                 .orElse(null);
     }
 
-    private void plotAnchoDisplacement(BTopoConvergenceGroup group) {
+    private void plotAnchorDisplacement(BTopoConvergenceGroup group) {
         if (!group.ext2().hasAnchorPoint()) {
             return;
         }
@@ -105,24 +105,22 @@ public class GraphicRenderer extends GraphicRendererBase {
                 .forEach(p -> {
                     var pair = getPairForPoints(group, anchorPoint, p);
                     if (pair != null) {
-
-                        var delta = pair.getDeltaZOverTime();
-                        var absDelta = FastMath.abs(delta);
+                        var delta = pair.getObservations().getLast().getDeltaDeltaZComparedToFirst();
                         var pos2 = PairHelper.getPosition(p, mOffset);
                         var path = new Path(anchorPosition, pos2);
                         var attrs = new BasicShapeAttributes(mAttributeManager.getPairPathAttributes());
                         var material = Material.GREEN;
-                        //TODO Color by alarm level
-                        if (absDelta > 3) {
+                        var absDelta = FastMath.abs(delta) / 1000.0;
+
+                        if (absDelta > 6) {
                             material = Material.RED;
-                        } else if (absDelta > 2) {
+                        } else if (absDelta > 4) {
                             material = Material.ORANGE;
-                        } else if (absDelta > 1) {
+                        } else if (absDelta > 2) {
                             material = Material.YELLOW;
                         }
                         attrs.setOutlineMaterial(material);
-//                    attrs.setOutlineMaterial(new Material(Color.decode("#add8e6")));
-//                    attrs.setOutlineWidth(1);
+
                         if (delta >= 0) {
                             attrs.setOutlineStippleFactor(3);
                         }
