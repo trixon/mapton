@@ -121,15 +121,13 @@ public class MeasPointChartBuilder extends XyzChartBuilder<BAcousticVibrationPoi
 
         mFreqDataset.addSeries(mTimeSeriesFreqZ);
 
-        mSecondaryRenderer.setSeriesPaint(mFreqDataset.getSeriesIndex(mTimeSeriesFreqZ.getKey()), Color.YELLOW.darker());
+        mSecondaryRenderer.setSeriesPaint(mFreqDataset.getSeriesIndex(mTimeSeriesFreqZ.getKey()), Color.PINK);
 
         var renderer = plot.getRenderer();
-        getDataset().addSeries(mTimeSeriesLimit);
-        renderer.setSeriesPaint(getDataset().getSeriesIndex(mTimeSeriesLimit.getKey()), Color.GRAY);
 
-        if (p.getDimension() == BDimension._1d || p.getDimension() == BDimension._3d) {
-            getDataset().addSeries(mTimeSeriesZ);
-            renderer.setSeriesPaint(getDataset().getSeriesIndex(mTimeSeriesZ.getKey()), Color.PINK);
-        }
+        getDataset().addSeries(mTimeSeriesZ);
+        renderer.setSeriesPaint(getDataset().getSeriesIndex(mTimeSeriesZ.getKey()), Color.RED);
+        getDataset().addSeries(mTimeSeriesLimit);
+        renderer.setSeriesPaint(getDataset().getSeriesIndex(mTimeSeriesLimit.getKey()), Color.GREEN);
     }
 }

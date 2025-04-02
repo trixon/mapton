@@ -21,6 +21,7 @@ import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Cylinder;
 import gov.nasa.worldwind.render.Material;
+import gov.nasa.worldwind.render.Path;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -56,43 +57,24 @@ public class GraphicRenderer extends GraphicRendererBase {
         if (isPlotLimitReached(p, GraphicRendererItem.TRACE, position)) {
             return;
         }
-        var reversedList = p.ext().getObservationsTimeFiltered().reversed();
-        var prevDate = LocalDateTime.now();
-        var altitude = 0.0;
-        var prevHeight = 0.0;
 
-        for (int i = 0; i < reversedList.size(); i++) {
-            var o = reversedList.get(i);
-
-            var timeSpan = ChronoUnit.MINUTES.between(o.getDate(), prevDate);
-            var height = timeSpan / 24000.0;
-            altitude = altitude + height * 0.5 + prevHeight * 0.5;
-            prevDate = o.getDate();
-            prevHeight = height;
-
+        var endPosition = Position.ZERO;
+        for (var o : p.ext().getObservationsTimeFiltered().reversed()) {
             if (o.ext().getDeltaZ() == null) {
                 continue;
             }
 
+            var timeSpan = ChronoUnit.MINUTES.between(o.getDate(), LocalDateTime.now());
+            var altitude = timeSpan / 24000.0;
             var pos = WWHelper.positionFromPosition(position, altitude);
             var maxRadius = 10.0;
-
             var mScale1dH = 1.0;
             var z = o.getMeasuredZ();
             var radius = Math.min(maxRadius, Math.abs(z) * mScale1dH + 0.1);
             var maximus = radius == maxRadius;
-
-            var cylinder = new Cylinder(pos, height, radius);
-            //var alarmLevel = p.ext().getAlarmLevel(o);
+            var cylinder = new Cylinder(pos, 0.025, radius);
             var attrs = mAttributeManager.getComponentTracedAttributes(0, maximus);
 
-            if (i == 0 && ChronoUnit.DAYS.between(o.getDate(), LocalDateTime.now()) > 180) {
-                attrs = new BasicShapeAttributes(attrs);
-                attrs.setInteriorOpacity(0.25);
-                attrs.setOutlineOpacity(0.20);
-            }
-
-//            var max = Math.max(o.getMeasuredX(), Math.max(o.getMeasuredY(), o.getMeasuredZ()));
             if (o.getLimit() != null && z >= o.getLimit()) {
                 attrs = new BasicShapeAttributes(attrs);
                 attrs.setInteriorMaterial(Material.RED);
@@ -100,7 +82,13 @@ public class GraphicRenderer extends GraphicRendererBase {
 
             cylinder.setAttributes(attrs);
             addRenderable(cylinder, true, GraphicRendererItem.TRACE, sMapObjects);
+            endPosition = pos;
         }
+
+        var startPosition = WWHelper.positionFromPosition(position, 0.0);
+        var groundPath = new Path(startPosition, endPosition);
+        groundPath.setAttributes(mAttributeManager.getComponentGroundPathAttributes());
+        addRenderable(groundPath, true, GraphicRendererItem.TRACE, sMapObjects);
     }
 
 }
