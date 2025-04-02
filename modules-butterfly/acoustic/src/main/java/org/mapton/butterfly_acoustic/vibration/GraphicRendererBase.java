@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_acoustic.measuring_point;
+package org.mapton.butterfly_acoustic.vibration;
 
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
@@ -37,8 +37,8 @@ public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicRen
     protected static ArrayList<AVListImpl> sMapObjects;
     protected static final PlotLimiter sPlotLimiter = new PlotLimiter();
     protected static HashMap<BTopoControlPoint, Position[]> sPointToPositionMap = new HashMap<>();
-    protected final MeasPointAttributeManager mAttributeManager = MeasPointAttributeManager.getInstance();
-    protected final MeasPointManager mManager = MeasPointManager.getInstance();
+    protected final VibrationAttributeManager mAttributeManager = VibrationAttributeManager.getInstance();
+    protected final VibrationManager mManager = VibrationManager.getInstance();
 
     static {
         for (var renderItem : GraphicRendererItem.values()) {

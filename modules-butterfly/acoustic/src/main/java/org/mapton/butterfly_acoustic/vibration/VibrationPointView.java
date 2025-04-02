@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_acoustic.measuring_point;
+package org.mapton.butterfly_acoustic.vibration;
 
 import java.util.Arrays;
 import javafx.scene.layout.Pane;
@@ -28,14 +28,14 @@ import se.trixon.almond.util.Dict;
  *
  * @author Patrik Karlström
  */
-public class MeasPointView {
+public class VibrationPointView {
 
-    private final MeasPointFilter mFilter = new MeasPointFilter();
-    private final MeasPointFilterPopOver mFilterPopOver = new MeasPointFilterPopOver(mFilter);
-    private final SingleListForm<MeasPointManager, BAcousticVibrationPoint> mListForm;
-    private final MeasPointManager mManager = MeasPointManager.getInstance();
+    private final VibrationFilter mFilter = new VibrationFilter();
+    private final VibrationFilterPopOver mFilterPopOver = new VibrationFilterPopOver(mFilter);
+    private final SingleListForm<VibrationManager, BAcousticVibrationPoint> mListForm;
+    private final VibrationManager mManager = VibrationManager.getInstance();
 
-    public MeasPointView() {
+    public VibrationPointView() {
         var actions = Arrays.asList(
                 new ExternalSearchAction(mManager),
                 ActionUtils.ACTION_SPAN,
@@ -44,14 +44,14 @@ public class MeasPointView {
                 mFilterPopOver.getAction()
         );
 
-        mListForm = new SingleListForm<>(mManager, Bundle.CTL_MeasPointAction());
+        mListForm = new SingleListForm<>(mManager, Bundle.CTL_VibrationAction());
         var listFormConfiguration = new ListFormConfiguration()
                 .setUseTextFilter(true)
                 .setToolbarActions(actions);
 
         mFilter.bindFreeTextProperty(mListForm.freeTextProperty());
         mListForm.applyConfiguration(listFormConfiguration);
-        mListForm.getListView().setCellFactory(listView -> new MeasPointListCell());
+        mListForm.getListView().setCellFactory(listView -> new VibrationListCell());
 
         mListForm.setFreeTextTooltip(
                 Dict.NAME.toString(),

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_acoustic.measuring_point;
+package org.mapton.butterfly_acoustic.vibration;
 
 import javafx.scene.Scene;
 import org.mapton.core.api.MTopComponent;
@@ -28,31 +28,31 @@ import org.openide.windows.TopComponent;
  * Top component which displays something.
  */
 @ConvertAsProperties(
-        dtd = "-//org.mapton.butterfly-acoustic//MeasuringPoint//EN",
+        dtd = "-//org.mapton.butterfly-acoustic//Vibration//EN",
         autostore = false
 )
 @TopComponent.Description(
-        preferredID = "AcousticMeasuringPointTopComponent",
+        preferredID = "VibrationTopComponent",
         //iconBase="SET/PATH/TO/ICON/HERE",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(mode = "mapTools", openAtStartup = false)
-@ActionID(category = "Butterfly", id = "org.mapton.butterfly-acoustic.measuring_point.AcousticMeasuringPointTopComponent")
+@ActionID(category = "Butterfly", id = "org.mapton.butterfly-acoustic.vibration.VibrationTopComponent")
 @ActionReferences({
     @ActionReference(path = "Shortcuts", name = "DO-V"),
     @ActionReference(path = "Menu/MapTools/Butterfly/Acoustic", position = 1)
 })
 @TopComponent.OpenActionRegistration(
-        displayName = "#CTL_MeasPointAction",
-        preferredID = "AcousticMeasuringPointTopComponent"
+        displayName = "#CTL_VibrationAction",
+        preferredID = "VibrationTopComponent"
 )
 @Messages({
-    "CTL_MeasPointAction=Vibrations"
+    "CTL_VibrationAction=Vibrations"
 })
-public final class MeasPointTopComponent extends MTopComponent {
+public final class VibrationTopComponent extends MTopComponent {
 
-    public MeasPointTopComponent() {
-        setName(Bundle.CTL_MeasPointAction());
+    public VibrationTopComponent() {
+        setName(Bundle.CTL_VibrationAction());
     }
 
     @Override
@@ -73,7 +73,7 @@ public final class MeasPointTopComponent extends MTopComponent {
     }
 
     private Scene createScene() {
-        var hydroView = new MeasPointView();
+        var hydroView = new VibrationPointView();
 
         return new Scene(hydroView.getView());
     }

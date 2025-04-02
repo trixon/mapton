@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_acoustic.measuring_point;
+package org.mapton.butterfly_acoustic.vibration;
 
 import j2html.tags.ContainerTag;
 import java.time.temporal.ChronoUnit;
@@ -37,22 +37,22 @@ import se.trixon.almond.util.Dict;
  *
  * @author Patrik Karlström
  */
-public class MeasPointFilter extends FormFilter<MeasPointManager> implements
+public class VibrationFilter extends FormFilter<VibrationManager> implements
         FilterSectionMiscProvider,
         BFilterSectionPointProvider,
         BFilterSectionDateProvider,
         BFilterSectionDisruptorProvider {
 
-    private final ResourceBundle mBundle = NbBundle.getBundle(MeasPointFilter.class);
+    private final ResourceBundle mBundle = NbBundle.getBundle(VibrationFilter.class);
 
     private BFilterSectionDate mFilterSectionDate;
     private BFilterSectionDisruptor mFilterSectionDisruptor;
     private BFilterSectionPoint mFilterSectionPoint;
     private final SimpleBooleanProperty mInvertProperty = new SimpleBooleanProperty();
-    private final MeasPointManager mManager = MeasPointManager.getInstance();
+    private final VibrationManager mManager = VibrationManager.getInstance();
 
-    public MeasPointFilter() {
-        super(MeasPointManager.getInstance());
+    public VibrationFilter() {
+        super(VibrationManager.getInstance());
 
         initListeners();
     }

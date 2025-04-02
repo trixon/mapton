@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_acoustic.measuring_point;
+package org.mapton.butterfly_acoustic.vibration;
 
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
@@ -29,7 +29,7 @@ import se.trixon.almond.util.fx.FxHelper;
  *
  * @author Patrik Karlström
  */
-class MeasPointListCell extends ListCell<BAcousticVibrationPoint> {
+class VibrationListCell extends ListCell<BAcousticVibrationPoint> {
 
     private final Label mDesc1Label = new Label();
     private final Label mDesc2Label = new Label();
@@ -40,7 +40,7 @@ class MeasPointListCell extends ListCell<BAcousticVibrationPoint> {
     private final Tooltip mTooltip = new Tooltip();
     private VBox mVBox;
 
-    public MeasPointListCell() {
+    public VibrationListCell() {
         createUI();
     }
 

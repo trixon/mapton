@@ -19,6 +19,6 @@ limitations under the License.
   "-//NetBeans//DTD Top Component in Group Properties 2.0//EN"
   "http://www.netbeans.org/dtds/tc-group2_0.dtd">
 <tc-group version="2.0">
-    <tc-id id="AcousticMeasuringPointTopComponent" />
+    <tc-id id="VibrationTopComponent" />
     <open-close-behavior open="false" close="true" />
 </tc-group>

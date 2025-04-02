@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_acoustic.measuring_point;
+package org.mapton.butterfly_acoustic.vibration;
 
 import se.trixon.almond.util.Dict;
 
@@ -21,12 +21,12 @@ import se.trixon.almond.util.Dict;
  *
  * @author Patrik Karlström
  */
-public enum PointBy {
+public enum VibrationPointBy {
     PIN(Dict.PIN.toString()),
     NONE(Dict.NONE.toString());
     private final String mName;
 
-    private PointBy(String name) {
+    private VibrationPointBy(String name) {
         mName = name;
     }
 

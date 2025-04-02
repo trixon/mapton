@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_acoustic.measuring_point;
+package org.mapton.butterfly_acoustic.vibration;
 
 import com.dlsc.gemsfx.util.SessionManager;
 import java.util.ResourceBundle;
@@ -32,17 +32,17 @@ import org.openide.util.NbPreferences;
  *
  * @author Patrik Karlström
  */
-public class MeasPointFilterPopOver extends BaseTabbedFilterPopOver {
+public class VibrationFilterPopOver extends BaseTabbedFilterPopOver {
 
-    private final ResourceBundle mBundle = NbBundle.getBundle(MeasPointFilterPopOver.class);
-    private final MeasPointFilter mFilter;
+    private final ResourceBundle mBundle = NbBundle.getBundle(VibrationFilterPopOver.class);
+    private final VibrationFilter mFilter;
     private final BFilterSectionDate mFilterSectionDate;
     private final BFilterSectionDisruptor mFilterSectionDisruptor;
     private final FilterSectionMisc mFilterSectionMisc;
     private final BFilterSectionPoint mFilterSectionPoint;
-    private final MeasPointManager mManager = MeasPointManager.getInstance();
+    private final VibrationManager mManager = VibrationManager.getInstance();
 
-    public MeasPointFilterPopOver(MeasPointFilter filter) {
+    public VibrationFilterPopOver(VibrationFilter filter) {
         mFilterSectionPoint = new BFilterSectionPoint();
         mFilterSectionDate = new BFilterSectionDate();
         mFilterSectionDisruptor = new BFilterSectionDisruptor();

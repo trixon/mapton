@@ -28,7 +28,7 @@ limitations under the License.
     <folder name="Windows2">
         <folder name="Groups">
             <folder name="MapGroup">
-                <file name="AcousticMeasuringPointTopComponent.wstcgrp" url="AcousticMeasuringPointTopComponentWstcgrp.xml"/>
+                <file name="VibrationTopComponent.wstcgrp" url="VibrationTopComponentWstcgrp.xml"/>
                 <file name="BlastTopComponent.wstcgrp" url="BlastTopComponentWstcgrp.xml"/>
             </folder>
         </folder>

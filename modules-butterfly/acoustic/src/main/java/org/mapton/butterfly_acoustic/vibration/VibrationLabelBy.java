@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_acoustic.measuring_point;
+package org.mapton.butterfly_acoustic.vibration;
 
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
@@ -29,7 +29,7 @@ import se.trixon.almond.util.SDict;
  *
  * @author Patrik Karlström
  */
-public enum MeasPointLabelBy {
+public enum VibrationLabelBy {
     NAME(LabelByCategories.ROOT, Dict.NAME.toString(), p -> {
         return p.getName();
     }),
@@ -91,7 +91,7 @@ public enum MeasPointLabelBy {
     private final Function<BAcousticVibrationPoint, String> mFunction;
     private final String mName;
 
-    private MeasPointLabelBy(String category, String name, Function<BAcousticVibrationPoint, String> function) {
+    private VibrationLabelBy(String category, String name, Function<BAcousticVibrationPoint, String> function) {
         mCategory = category;
         mName = name;
         mFunction = function;

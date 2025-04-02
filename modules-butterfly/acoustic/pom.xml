@@ -33,7 +33,7 @@ limitations under the License.
                 <configuration>
                     <publicPackages>
                         <publicPackage>org.mapton.butterfly_acoustic.blast</publicPackage>
-                        <publicPackage>org.mapton.butterfly_acoustic.measuring_point</publicPackage>
+                        <publicPackage>org.mapton.butterfly_acoustic.vibration</publicPackage>
                     </publicPackages>
                 </configuration>
             </plugin>

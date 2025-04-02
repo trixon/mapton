@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_acoustic.measuring_point;
+package org.mapton.butterfly_acoustic.vibration;
 
 import org.mapton.butterfly_core.api.GraphicRenderItemLimitProvider;
 import se.trixon.almond.util.SDict;

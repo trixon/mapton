@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_acoustic.measuring_point;
+package org.mapton.butterfly_acoustic.vibration;
 
 import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Material;
@@ -24,17 +24,17 @@ import org.mapton.butterfly_core.api.BaseAttributeManager;
  *
  * @author Patrik Karlström
  */
-public class MeasPointAttributeManager extends BaseAttributeManager {
+public class VibrationAttributeManager extends BaseAttributeManager {
 
     private BasicShapeAttributes mComponentEllipsoidAttributes;
     private BasicShapeAttributes mComponentGroundPathAttributes;
     private BasicShapeAttributes mSurfaceAttributes;
 
-    public static MeasPointAttributeManager getInstance() {
+    public static VibrationAttributeManager getInstance() {
         return Holder.INSTANCE;
     }
 
-    private MeasPointAttributeManager() {
+    private VibrationAttributeManager() {
     }
 
     public BasicShapeAttributes getComponentEllipsoidAttributes() {
@@ -84,6 +84,6 @@ public class MeasPointAttributeManager extends BaseAttributeManager {
 
     private static class Holder {
 
-        private static final MeasPointAttributeManager INSTANCE = new MeasPointAttributeManager();
+        private static final VibrationAttributeManager INSTANCE = new VibrationAttributeManager();
     }
 }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_acoustic.measuring_point;
+package org.mapton.butterfly_acoustic.vibration;
 
 import java.awt.Color;
 import java.util.Objects;
@@ -35,7 +35,7 @@ import se.trixon.almond.util.DateHelper;
  *
  * @author Patrik Karlström
  */
-public class MeasPointChartBuilder extends XyzChartBuilder<BAcousticVibrationPoint> {
+public class VibrationChartBuilder extends XyzChartBuilder<BAcousticVibrationPoint> {
 
     private final NumberAxis mFreqAxis = new NumberAxis("Hz");
     private final TimeSeriesCollection mFreqDataset = new TimeSeriesCollection();
@@ -44,7 +44,7 @@ public class MeasPointChartBuilder extends XyzChartBuilder<BAcousticVibrationPoi
     private final TimeSeries mTimeSeriesLimit = new TimeSeries("Riktvärde");
     private final TimeSeries mTimeSeriesZ = new TimeSeries("Mark Z");
 
-    public MeasPointChartBuilder() {
+    public VibrationChartBuilder() {
         initChart("mm/s", "0.00");
 
         var plot = (XYPlot) mChart.getPlot();

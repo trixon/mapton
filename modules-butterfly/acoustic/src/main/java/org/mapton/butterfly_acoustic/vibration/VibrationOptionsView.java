@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_acoustic.measuring_point;
+package org.mapton.butterfly_acoustic.vibration;
 
 import java.util.LinkedHashMap;
 import java.util.stream.Stream;
@@ -37,18 +37,18 @@ import se.trixon.almond.util.fx.session.SessionComboBox;
  *
  * @author Patrik Karlström
  */
-public class MeasPointOptionsView extends MOptionsView {
+public class VibrationOptionsView extends MOptionsView {
 
-    private static final MeasPointLabelBy DEFAULT_LABEL_BY = MeasPointLabelBy.NAME;
-    private static final PointBy DEFAULT_POINT_BY = PointBy.PIN;
+    private static final VibrationLabelBy DEFAULT_LABEL_BY = VibrationLabelBy.NAME;
+    private static final VibrationPointBy DEFAULT_POINT_BY = VibrationPointBy.PIN;
 
     private final SessionCheckComboBox<GraphicRendererItem> mGraphicSccb = new SessionCheckComboBox<>();
     private final SimpleStringProperty mLabelByIdProperty = new SimpleStringProperty(DEFAULT_LABEL_BY.name());
-    private final SimpleObjectProperty<MeasPointLabelBy> mLabelByProperty = new SimpleObjectProperty<>();
+    private final SimpleObjectProperty<VibrationLabelBy> mLabelByProperty = new SimpleObjectProperty<>();
     private final MenuButton mLabelMenuButton = new MenuButton();
-    private final SessionComboBox<PointBy> mPointScb = new SessionComboBox<>();
+    private final SessionComboBox<VibrationPointBy> mPointScb = new SessionComboBox<>();
 
-    public MeasPointOptionsView(MeasPointLayerBundle layerBundle) {
+    public VibrationOptionsView(VibrationLayerBundle layerBundle) {
         super(layerBundle);
         createUI();
         initListeners();
@@ -59,20 +59,20 @@ public class MeasPointOptionsView extends MOptionsView {
         return mGraphicSccb.getCheckModel();
     }
 
-    public MeasPointLabelBy getLabelBy() {
+    public VibrationLabelBy getLabelBy() {
         return mLabelByProperty.get();
     }
 
-    public PointBy getPointBy() {
+    public VibrationPointBy getPointBy() {
         return mPointScb.valueProperty().get();
     }
 
-    public SimpleObjectProperty<MeasPointLabelBy> labelByProperty() {
+    public SimpleObjectProperty<VibrationLabelBy> labelByProperty() {
         return mLabelByProperty;
     }
 
     private void createUI() {
-        mPointScb.getItems().setAll(PointBy.values());
+        mPointScb.getItems().setAll(VibrationPointBy.values());
         mPointScb.setValue(DEFAULT_POINT_BY);
 
         mGraphicSccb.setTitle(Dict.GRAPHICS.toString());
@@ -113,17 +113,17 @@ public class MeasPointOptionsView extends MOptionsView {
 
     private void initSession() {
         var sessionManager = getSessionManager();
-        sessionManager.register("options.measPoint.pointBy", mPointScb.selectedIndexProperty());
-        sessionManager.register("options.measPoint.labelBy", mLabelByIdProperty);
-        sessionManager.register("options.measPoint.checkedGraphics", mGraphicSccb.checkedStringProperty());
+        sessionManager.register("options.Vibration.pointBy", mPointScb.selectedIndexProperty());
+        sessionManager.register("options.Vibration.labelBy", mLabelByIdProperty);
+        sessionManager.register("options.Vibration.checkedGraphics", mGraphicSccb.checkedStringProperty());
 
-        mLabelByProperty.set(MeasPointLabelBy.valueOf(mLabelByIdProperty.get()));
+        mLabelByProperty.set(VibrationLabelBy.valueOf(mLabelByIdProperty.get()));
     }
 
     private void populateLabelMenuButton() {
         var categoryToMenu = new LinkedHashMap<String, Menu>();
 
-        for (var topoLabel : MeasPointLabelBy.values()) {
+        for (var topoLabel : VibrationLabelBy.values()) {
             var menu = categoryToMenu.computeIfAbsent(topoLabel.getCategory(), k -> {
                 return new Menu(k);
             });

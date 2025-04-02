@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_acoustic.measuring_point;
+package org.mapton.butterfly_acoustic.vibration;
 
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVListImpl;
@@ -37,17 +37,17 @@ import se.trixon.almond.util.SDict;
  * @author Patrik Karlström
  */
 @ServiceProvider(service = LayerBundle.class)
-public class MeasPointLayerBundle extends BfLayerBundle {
+public class VibrationLayerBundle extends BfLayerBundle {
 
-    private final MeasPointAttributeManager mAttributeManager = MeasPointAttributeManager.getInstance();
+    private final VibrationAttributeManager mAttributeManager = VibrationAttributeManager.getInstance();
     private final GraphicRenderer mGraphicRenderer;
-    private final MeasPointManager mManager = MeasPointManager.getInstance();
-    private final MeasPointOptionsView mOptionsView;
+    private final VibrationManager mManager = VibrationManager.getInstance();
+    private final VibrationOptionsView mOptionsView;
 
-    public MeasPointLayerBundle() {
+    public VibrationLayerBundle() {
         init();
         initRepaint();
-        mOptionsView = new MeasPointOptionsView(this);
+        mOptionsView = new VibrationOptionsView(this);
         mGraphicRenderer = new GraphicRenderer(mLayer, null, mOptionsView.getGraphicCheckModel());
         initListeners();
 
@@ -66,7 +66,7 @@ public class MeasPointLayerBundle extends BfLayerBundle {
     }
 
     private void init() {
-        initCommons(Bundle.CTL_MeasPointAction(), SDict.NOISE.toString(), "AcousticMeasuringPointTopComponent");
+        initCommons(Bundle.CTL_VibrationAction(), SDict.NOISE.toString(), "VibrationTopComponent");
 
         mLayer.setMaxActiveAltitude(6000);
         mSurfaceLayer.setMaxActiveAltitude(6000);
@@ -151,8 +151,8 @@ public class MeasPointLayerBundle extends BfLayerBundle {
         });
     }
 
-    private PointPlacemark plotLabel(BAcousticVibrationPoint p, MeasPointLabelBy labelBy, Position position) {
-        if (labelBy == MeasPointLabelBy.NONE) {
+    private PointPlacemark plotLabel(BAcousticVibrationPoint p, VibrationLabelBy labelBy, Position position) {
+        if (labelBy == VibrationLabelBy.NONE) {
             return null;
         }
 

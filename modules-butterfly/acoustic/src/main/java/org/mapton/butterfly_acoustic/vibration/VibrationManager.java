@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_acoustic.measuring_point;
+package org.mapton.butterfly_acoustic.vibration;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -34,16 +34,16 @@ import se.trixon.almond.util.DateHelper;
  *
  * @author Patrik Karlström
  */
-public class MeasPointManager extends BaseManager<BAcousticVibrationPoint> {
+public class VibrationManager extends BaseManager<BAcousticVibrationPoint> {
 
-    private final MeasPointChartBuilder mChartBuilder = new MeasPointChartBuilder();
-    private final MeasPointPropertiesBuilder mPropertiesBuilder = new MeasPointPropertiesBuilder();
+    private final VibrationChartBuilder mChartBuilder = new VibrationChartBuilder();
+    private final VibrationPropertiesBuilder mPropertiesBuilder = new VibrationPropertiesBuilder();
 
-    public static MeasPointManager getInstance() {
+    public static VibrationManager getInstance() {
         return Holder.INSTANCE;
     }
 
-    private MeasPointManager() {
+    private VibrationManager() {
         super(BAcousticVibrationPoint.class);
     }
 
@@ -159,6 +159,6 @@ public class MeasPointManager extends BaseManager<BAcousticVibrationPoint> {
 
     private static class Holder {
 
-        private static final MeasPointManager INSTANCE = new MeasPointManager();
+        private static final VibrationManager INSTANCE = new VibrationManager();
     }
 }

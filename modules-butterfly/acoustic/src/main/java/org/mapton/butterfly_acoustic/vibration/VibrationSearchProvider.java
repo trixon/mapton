@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_acoustic.measuring_point;
+package org.mapton.butterfly_acoustic.vibration;
 
 import org.mapton.api.MLatLon;
 import org.mapton.api.Mapton;
@@ -22,11 +22,11 @@ import org.netbeans.spi.quicksearch.SearchRequest;
 import org.netbeans.spi.quicksearch.SearchResponse;
 import se.trixon.almond.util.StringHelper;
 
-public class MeasPointSearchProvider implements SearchProvider {
+public class VibrationSearchProvider implements SearchProvider {
 
     @Override
     public void evaluate(SearchRequest request, SearchResponse response) {
-        for (var o : MeasPointManager.getInstance().getAllItems()) {
+        for (var o : VibrationManager.getInstance().getAllItems()) {
             if (StringHelper.matchesSimpleGlob(request.getText(), true, true, o.getName(), o.getGroup())) {
                 if (!response.addResult(() -> {
                     Mapton.getEngine().panTo(new MLatLon(o.getLat(), o.getLon()), .95);

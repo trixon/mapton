@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_acoustic.measuring_point;
+package org.mapton.butterfly_acoustic.vibration;
 
 import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
@@ -29,9 +29,9 @@ import org.openide.util.NbBundle;
  *
  * @author Patrik Karlström
  */
-public class MeasPointPropertiesBuilder extends BPropertiesBuilder<BAcousticVibrationPoint> {
+public class VibrationPropertiesBuilder extends BPropertiesBuilder<BAcousticVibrationPoint> {
 
-    private final ResourceBundle mBundle = NbBundle.getBundle(MeasPointPropertiesBuilder.class);
+    private final ResourceBundle mBundle = NbBundle.getBundle(VibrationPropertiesBuilder.class);
 
     @Override
     public Object build(BAcousticVibrationPoint p) {
