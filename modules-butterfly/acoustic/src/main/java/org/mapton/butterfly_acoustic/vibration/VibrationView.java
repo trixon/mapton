@@ -20,27 +20,32 @@ import javafx.scene.layout.Pane;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.ui.forms.ListFormConfiguration;
 import org.mapton.api.ui.forms.SingleListForm;
+import org.mapton.butterfly_core.api.CopyNamesAction;
 import org.mapton.butterfly_core.api.ExternalSearchAction;
 import org.mapton.butterfly_format.types.acoustic.BAcousticVibrationPoint;
+import org.mapton.core.api.ui.MFilterPresetPopOver;
 import se.trixon.almond.util.Dict;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class VibrationPointView {
+public class VibrationView {
 
     private final VibrationFilter mFilter = new VibrationFilter();
     private final VibrationFilterPopOver mFilterPopOver = new VibrationFilterPopOver(mFilter);
+    private final MFilterPresetPopOver mFilterPresetPopOver = new MFilterPresetPopOver(mFilterPopOver, "aco.vibration");
     private final SingleListForm<VibrationManager, BAcousticVibrationPoint> mListForm;
     private final VibrationManager mManager = VibrationManager.getInstance();
 
-    public VibrationPointView() {
+    public VibrationView() {
         var actions = Arrays.asList(
                 new ExternalSearchAction(mManager),
+                new CopyNamesAction(mManager),
                 ActionUtils.ACTION_SPAN,
                 mManager.geZoomExtentstAction(),
                 mFilter.getInfoPopOver().getAction(),
+                mFilterPresetPopOver.getAction(),
                 mFilterPopOver.getAction()
         );
 
