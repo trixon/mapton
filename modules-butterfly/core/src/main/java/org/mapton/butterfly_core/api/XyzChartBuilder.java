@@ -55,6 +55,7 @@ import se.trixon.almond.util.swing.SwingHelper;
 /**
  *
  * @author Patrik Karlström
+ * @param <T>
  */
 public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends ChartBuilder<T> {
 
@@ -100,17 +101,22 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
         var extensometer = new MLatLon(p.getLat(), p.getLon());
         ButterflyManager.getInstance().getButterfly().noise().getBlasts().stream()
                 .filter(b -> {
-                    var blast = new MLatLon(b.getLat(), b.getLon());
-                    return blast.distance(extensometer) <= 40 && DateHelper.isBetween(
+                    return DateHelper.isBetween(
                             firstDate,
                             lastDate,
                             b.getDateTime().toLocalDate());
                 })
                 .forEachOrdered(b -> {
-                    var minute = mChartHelper.convertToMinute(b.getDateTime());
-                    var marker = new ValueMarker(minute.getFirstMillisecond());
-                    marker.setPaint(Color.BLACK);
-                    plot.addDomainMarker(marker);
+                    var blast = new MLatLon(b.getLat(), b.getLon());
+                    var distance = blast.distance(extensometer);
+                    if (distance <= 40.0) {
+                        int alpha = (int) ((100d - distance) / 200d * 255d);
+                        var color = new Color(0, 0, 255, alpha);
+                        var minute = mChartHelper.convertToMinute(b.getDateTime());
+                        var marker = new ValueMarker(minute.getFirstMillisecond());
+                        marker.setPaint(color);
+                        plot.addDomainMarker(marker);
+                    }
                 });
     }
 
