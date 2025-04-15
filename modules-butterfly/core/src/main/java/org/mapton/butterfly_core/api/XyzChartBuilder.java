@@ -41,6 +41,7 @@ import org.jfree.chart.ui.RectangleInsets;
 import org.jfree.chart.ui.TextAnchor;
 import org.jfree.chart.ui.VerticalAlignment;
 import org.jfree.data.time.Minute;
+import org.jfree.data.time.MovingAverage;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.mapton.api.MLatLon;
@@ -81,6 +82,16 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
         }
     }
 
+    public TimeSeries createSubSetMovingAverage(TimeSeries timeSeries, Minute start, Minute end, String name, int periodCount, int skip) {
+        try {
+            return MovingAverage.createMovingAverage(timeSeries.createCopy(start, end), name, periodCount, skip);
+        } catch (CloneNotSupportedException ex) {
+//            Exceptions.printStackTrace(ex);
+        }
+
+        return null;
+    }
+
     public ChartPanel getChartPanel() {
         return mChartPanel;
     }
@@ -104,7 +115,7 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
                     return DateHelper.isBetween(
                             firstDate,
                             lastDate,
-                            b.getDateTime().toLocalDate());
+                            b.getDateLatest().toLocalDate());
                 })
                 .forEachOrdered(b -> {
                     var blast = new MLatLon(b.getLat(), b.getLon());
@@ -112,7 +123,7 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
                     if (distance <= 40.0) {
                         int alpha = (int) ((100d - distance) / 200d * 255d);
                         var color = new Color(0, 0, 255, alpha);
-                        var minute = mChartHelper.convertToMinute(b.getDateTime());
+                        var minute = mChartHelper.convertToMinute(b.getDateLatest());
                         var marker = new ValueMarker(minute.getFirstMillisecond());
                         marker.setPaint(color);
                         plot.addDomainMarker(marker);

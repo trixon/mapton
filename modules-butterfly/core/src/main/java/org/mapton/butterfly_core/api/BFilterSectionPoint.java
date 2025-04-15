@@ -18,6 +18,7 @@ package org.mapton.butterfly_core.api;
 import com.dlsc.gemsfx.util.SessionManager;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -36,6 +37,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.IndexedCheckModel;
 import org.controlsfx.tools.Borders;
 import org.mapton.api.ui.forms.MBaseFilterSection;
+import static org.mapton.butterfly_core.api.BFilterSectionPoint.PointElement.*;
 import static org.mapton.butterfly_format.types.BDimension._1d;
 import static org.mapton.butterfly_format.types.BDimension._2d;
 import static org.mapton.butterfly_format.types.BDimension._3d;
@@ -109,6 +111,25 @@ public class BFilterSectionPoint extends MBaseFilterSection {
         map.put("Mätläge", makeInfo(mMeasurementModeSccb.getCheckModel().getCheckedItems()));
     }
 
+    public void disable(PointElement... elements) {
+        var map = new HashMap<PointElement, Node>();
+        map.put(ALARM, mAlarmNameSccb);
+        map.put(CATEGORY, mCategorySccb);
+        map.put(FREQUENCY_DEFAULT, mDefaultFrequencySccb);
+        map.put(FREQUENCY_DEFAULT_STAT, mDefaultFrequencyStatSccb);
+        map.put(FREQUENCY, mFrequencySccb);
+        map.put(GROUP, mGroupSccb);
+        map.put(MEAS_NEXT, mMeasNextSccb);
+        map.put(MEAS_MODE, mMeasurementModeSccb);
+        map.put(OPERATOR, mOperatorSccb);
+        map.put(ORIGIN, mOriginSccb);
+        map.put(STATUS, mStatusSccb);
+
+        for (var element : elements) {
+            map.get(element).setDisable(true);
+        }
+    }
+
     public boolean filter(BXyzPoint p, Long remainingDays) {
         if (isSelected()) {
             return validateCheck(getStatusSccb().getCheckModel(), p.getStatus())
@@ -129,53 +150,42 @@ public class BFilterSectionPoint extends MBaseFilterSection {
     }
 
     public SessionCheckComboBox<String> getAlarmNameSccb() {
-        mAlarmNameSccb.setDisable(false);
         return mAlarmNameSccb;
     }
 
     public SessionCheckComboBox<String> getCategorySccb() {
-        mCategorySccb.setDisable(false);
         return mCategorySccb;
     }
 
     public SessionCheckComboBox<Integer> getDefaultFrequencySccb() {
-        mDefaultFrequencySccb.setDisable(false);
         return mDefaultFrequencySccb;
     }
 
     public SessionCheckComboBox<DefaultFreqFlags> getDefaultFrequencyStatSccb() {
-        mDefaultFrequencyStatSccb.setDisable(false);
         return mDefaultFrequencyStatSccb;
     }
 
     public SessionCheckComboBox<Integer> getFrequencySccb() {
-        mFrequencySccb.setDisable(false);
         return mFrequencySccb;
     }
 
     public SessionCheckComboBox<String> getGroupSccb() {
-        mGroupSccb.setDisable(false);
         return mGroupSccb;
     }
 
     public SessionCheckComboBox<String> getMeasNextSccb() {
-        mMeasNextSccb.setDisable(false);
         return mMeasNextSccb;
     }
 
     public SessionCheckComboBox<String> getMeasurementModeSccb() {
-        mMeasurementModeSccb.setDisable(false);
-
         return mMeasurementModeSccb;
     }
 
     public SessionCheckComboBox<String> getOperatorSccb() {
-        mOperatorSccb.setDisable(false);
         return mOperatorSccb;
     }
 
     public SessionCheckComboBox<String> getOriginSccb() {
-        mOriginSccb.setDisable(false);
         return mOriginSccb;
     }
 
@@ -184,7 +194,6 @@ public class BFilterSectionPoint extends MBaseFilterSection {
     }
 
     public SessionCheckComboBox<String> getStatusSccb() {
-        mStatusSccb.setDisable(false);
         return mStatusSccb;
     }
 
@@ -357,6 +366,20 @@ public class BFilterSectionPoint extends MBaseFilterSection {
 
     }
 
+    public enum PointElement {
+        ALARM,
+        CATEGORY,
+        FREQUENCY_DEFAULT,
+        FREQUENCY_DEFAULT_STAT,
+        FREQUENCY,
+        GROUP,
+        MEAS_NEXT,
+        MEAS_MODE,
+        OPERATOR,
+        ORIGIN,
+        STATUS;
+    }
+
     public class PointFilterUI {
 
         private Node mBaseBorderBox;
@@ -445,18 +468,6 @@ public class BFilterSectionPoint extends MBaseFilterSection {
                     mDefaultFrequencySccb,
                     mDefaultFrequencyStatSccb
             );
-
-            mStatusSccb.setDisable(true);
-            mGroupSccb.setDisable(true);
-            mCategorySccb.setDisable(true);
-            mAlarmNameSccb.setDisable(true);
-            mOperatorSccb.setDisable(true);
-            mOriginSccb.setDisable(true);
-            mFrequencySccb.setDisable(true);
-            mDefaultFrequencySccb.setDisable(true);
-            mDefaultFrequencyStatSccb.setDisable(true);
-            mMeasNextSccb.setDisable(true);
-            mMeasurementModeSccb.setDisable(true);
 
             mMeasNextSccb.setTitle(mBundle.getString("nextMeasCheckComboBoxTitle"));
             mStatusSccb.setTitle(Dict.STATUS.toString());

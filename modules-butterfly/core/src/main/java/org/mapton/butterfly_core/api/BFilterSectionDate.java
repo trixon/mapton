@@ -18,19 +18,24 @@ package org.mapton.butterfly_core.api;
 import com.dlsc.gemsfx.util.SessionManager;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.prefs.Preferences;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import javafx.scene.layout.GridPane;
 import org.apache.commons.configuration2.PropertiesConfiguration;
+import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.IndexedCheckModel;
 import org.controlsfx.tools.Borders;
+import org.mapton.api.MDatePreset;
 import org.mapton.api.MTemporalRange;
 import org.mapton.api.ui.forms.DateRangePane;
 import org.mapton.api.ui.forms.MBaseFilterSection;
+import static org.mapton.butterfly_core.api.BFilterSectionDate.DateElement.*;
 import org.mapton.butterfly_format.types.BXyzPoint;
 import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
@@ -44,6 +49,8 @@ import se.trixon.almond.util.fx.session.SessionCheckComboBox;
  */
 public class BFilterSectionDate extends MBaseFilterSection {
 
+    private static final String KEY_DATE_PRESET_FIRST = "filter.date.preset.first";
+    private static final String KEY_DATE_PRESET_LAST = "filter.date.preset.last";
     private Node mDateFirstBorderBox;
     private Node mDateLastBorderBox;
     private final DateRangePane mDateRangeFirstPane = new DateRangePane();
@@ -80,20 +87,15 @@ public class BFilterSectionDate extends MBaseFilterSection {
         map.put("Senaste " + Dict.TO.toString(), dateLastHighProperty().get() != null ? dateLastHighProperty().get().toString() : "");
     }
 
-    private SimpleObjectProperty<LocalDate> dateFirstHighProperty() {
-        return mDateRangeFirstPane.highDateProperty();
-    }
+    public void disable(DateElement... elements) {
+        var map = new HashMap<DateElement, Node>();
+        map.put(FIRST, mDateFirstBorderBox);
+        map.put(LAST, mDateLastBorderBox);
+        map.put(HAS_FROM_TO, mHasDateFromToSccb);
 
-    private SimpleObjectProperty<LocalDate> dateFirstLowProperty() {
-        return mDateRangeFirstPane.lowDateProperty();
-    }
-
-    private SimpleObjectProperty<LocalDate> dateLastHighProperty() {
-        return mDateRangeLastPane.highDateProperty();
-    }
-
-    private SimpleObjectProperty<LocalDate> dateLastLowProperty() {
-        return mDateRangeLastPane.lowDateProperty();
+        for (var element : elements) {
+            map.get(element).setDisable(true);
+        }
     }
 
     public boolean filter(BXyzPoint p, LocalDateTime dateFirst) {
@@ -166,10 +168,15 @@ public class BFilterSectionDate extends MBaseFilterSection {
             getDateRangeLastPane().setMinMaxDate(temporalRange.getFromLocalDate(), temporalRange.getToLocalDate());
         }
         var sessionManager = getSessionManager();
-        sessionManager.register("filter.DateFirstLow", getDateRangeFirstPane().lowStringProperty());
-        sessionManager.register("filter.DateFirstHigh", getDateRangeFirstPane().highStringProperty());
-        sessionManager.register("filter.DateLastLow", getDateRangeLastPane().lowStringProperty());
-        sessionManager.register("filter.DateLastHigh", getDateRangeLastPane().highStringProperty());
+        sessionManager.register("filter.date.FirstLow", getDateRangeFirstPane().lowStringProperty());
+        sessionManager.register("filter.date.FirstHigh", getDateRangeFirstPane().highStringProperty());
+        sessionManager.register("filter.date.LastLow", getDateRangeLastPane().lowStringProperty());
+        sessionManager.register("filter.date.LastHigh", getDateRangeLastPane().highStringProperty());
+
+        sessionManager.register(KEY_DATE_PRESET_FIRST, mDateRangeFirstPane.datePresetProperty());
+        sessionManager.register(KEY_DATE_PRESET_LAST, mDateRangeLastPane.datePresetProperty());
+
+        restoreCustomDates(sessionManager.getPreferences());
     }
 
     @Override
@@ -199,6 +206,38 @@ public class BFilterSectionDate extends MBaseFilterSection {
         mRoot.addRow(row++, getDateFirstBorderBox(), getDateLastBorderBox());
         mRoot.addRow(row++, getHasDateFromToSccb());
         FxHelper.autoSizeColumn(mRoot, 2);
+    }
+
+    private SimpleObjectProperty<LocalDate> dateFirstHighProperty() {
+        return mDateRangeFirstPane.highDateProperty();
+    }
+
+    private SimpleObjectProperty<LocalDate> dateFirstLowProperty() {
+        return mDateRangeFirstPane.lowDateProperty();
+    }
+
+    private SimpleObjectProperty<LocalDate> dateLastHighProperty() {
+        return mDateRangeLastPane.highDateProperty();
+    }
+
+    private SimpleObjectProperty<LocalDate> dateLastLowProperty() {
+        return mDateRangeLastPane.lowDateProperty();
+    }
+
+    private void restoreCustomDates(Preferences preferences) {
+        var firstPreset = preferences.get(KEY_DATE_PRESET_FIRST, "");
+        if (StringUtils.isNotBlank(firstPreset)) {
+            var datePreset = new MDatePreset(firstPreset);
+            mDateRangeFirstPane.getDatePane().getDateRangeSlider().setLowHighDate(datePreset.getStartDate(), datePreset.getEndDate());
+            preferences.put(KEY_DATE_PRESET_FIRST, firstPreset);
+        }
+
+        var lastPreset = preferences.get(KEY_DATE_PRESET_LAST, "");
+        if (StringUtils.isNotBlank(lastPreset)) {
+            var datePreset = new MDatePreset(lastPreset);
+            mDateRangeLastPane.getDatePane().getDateRangeSlider().setLowHighDate(datePreset.getStartDate(), datePreset.getEndDate());
+            preferences.put(KEY_DATE_PRESET_LAST, lastPreset);
+        }
     }
 
     private boolean validateAge(LocalDateTime dateTime, SimpleObjectProperty<LocalDate> low, SimpleObjectProperty<LocalDate> high) {
@@ -255,4 +294,9 @@ public class BFilterSectionDate extends MBaseFilterSection {
         return valid;
     }
 
+    public enum DateElement {
+        FIRST,
+        LAST,
+        HAS_FROM_TO;
+    }
 }
