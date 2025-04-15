@@ -41,7 +41,7 @@ public class GradeVPropertiesBuilder extends GradeHPropertiesBuilder {
 //        propertyMap.put(getCatKey(cat1, mBundle.getString("gradeVDeg")), MathHelper.convertDoubleToString(p.ext().getDiff().getRAngleDeg(), 0));
 //        propertyMap.put(getCatKey(cat1, mBundle.getString("gradeVGon")), MathHelper.convertDoubleToString(p.ext().getDiff().getRAngleGon(), 0));
 //        propertyMap.put(getCatKey(cat1, mBundle.getString("gradeVRad")), MathHelper.convertDoubleToString(p.ext().getDiff().getRAngleRad(), 4));
-        propertyMap.put(getCatKey(cat1, mBundle.getString("gradeVPerCent")), MathHelper.convertDoubleToString(p.ext().getDiff().getZPercentage(), 1));
+        propertyMap.put(getCatKey(cat1, mBundle.getString("gradeVPerCent")), MathHelper.convertDoubleToString(p.ext().getDiff().getRPercentage(), 1));
 //        propertyMap.put(getCatKey(cat1, mBundle.getString("gradeHPerMille")), MathHelper.convertDoubleToString(p.ext().getDiff().getZPerMille(), 1));
         propertyMap.put(getCatKey(cat1, mBundle.getString("gradeVPerMille")), MathHelper.convertDoubleToString(p.ext().getDiff().getRPerMille(), 1));
 

@@ -28,7 +28,7 @@ import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.ui.LengthAdjustmentType;
-import org.jfree.data.time.MovingAverage;
+import org.jfree.data.time.Minute;
 import org.jfree.data.time.TimeSeries;
 import org.mapton.butterfly_alarm.api.AlarmHelper;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
@@ -47,6 +47,8 @@ public class TopoChartBuilder extends XyzChartBuilder<BTopoControlPoint> {
 
     private Date mDateEnd;
     private Date mDateNull;
+    private Minute mSubSetLastMinute;
+    private Minute mSubSetZeroMinute;
     private final TimeSeries mTimeSeries2d = new TimeSeries(Dict.Geometry.PLANE);
     private final TimeSeries mTimeSeries3d = new TimeSeries("3d");
     private final TimeSeries mTimeSeriesH = new TimeSeries(Dict.Geometry.HEIGHT);
@@ -140,11 +142,13 @@ public class TopoChartBuilder extends XyzChartBuilder<BTopoControlPoint> {
 
         p.ext().getObservationsTimeFiltered().forEach(o -> {
             var minute = mChartHelper.convertToMinute(o.getDate());
+            mSubSetLastMinute = minute;
             if (o.isReplacementMeasurement()) {
                 addMarker(plot, minute, "E", Color.RED);
             } else if (o.isZeroMeasurement()) {
                 addMarker(plot, minute, "N", Color.BLUE);
                 mDateNull = DateHelper.convertToDate(o.getDate());
+                mSubSetZeroMinute = minute;
             }
 
             if (p.getDimension() == BDimension._1d || p.getDimension() == BDimension._3d) {
@@ -176,11 +180,13 @@ public class TopoChartBuilder extends XyzChartBuilder<BTopoControlPoint> {
             getDataset().addSeries(mTimeSeriesH);
             renderer.setSeriesPaint(getDataset().getSeriesIndex(mTimeSeriesH.getKey()), Color.RED);
             if (plotAvg) {
-                var mavg = MovingAverage.createMovingAverage(mTimeSeriesH, "%s (avg)".formatted(mTimeSeriesH.getKey()), avdDays, avgSkipMeasurements);
-                getDataset().addSeries(mavg);
-                int index = getDataset().getSeriesIndex(mavg.getKey());
-                renderer.setSeriesPaint(index, Color.RED);
-                renderer.setSeriesStroke(index, avgStroke);
+                var mavg = createSubSetMovingAverage(mTimeSeriesH, mSubSetZeroMinute, mSubSetLastMinute, "%s (avg)".formatted(mTimeSeriesH.getKey()), avdDays, avgSkipMeasurements);
+                if (mavg != null) {
+                    getDataset().addSeries(mavg);
+                    int index = getDataset().getSeriesIndex(mavg.getKey());
+                    renderer.setSeriesPaint(index, Color.RED);
+                    renderer.setSeriesStroke(index, avgStroke);
+                }
             }
         }
 
@@ -188,11 +194,13 @@ public class TopoChartBuilder extends XyzChartBuilder<BTopoControlPoint> {
             getDataset().addSeries(mTimeSeries2d);
             renderer.setSeriesPaint(getDataset().getSeriesIndex(mTimeSeries2d.getKey()), Color.GREEN);
             if (plotAvg) {
-                var mavg = MovingAverage.createMovingAverage(mTimeSeries2d, "%s (avg)".formatted(mTimeSeries2d.getKey()), avdDays, avgSkipMeasurements);
-                getDataset().addSeries(mavg);
-                int index = getDataset().getSeriesIndex(mavg.getKey());
-                renderer.setSeriesPaint(index, Color.GREEN);
-                renderer.setSeriesStroke(index, avgStroke);
+                var mavg = createSubSetMovingAverage(mTimeSeries2d, mSubSetZeroMinute, mSubSetLastMinute, "%s (avg)".formatted(mTimeSeries2d.getKey()), avdDays, avgSkipMeasurements);
+                if (mavg != null) {
+                    getDataset().addSeries(mavg);
+                    int index = getDataset().getSeriesIndex(mavg.getKey());
+                    renderer.setSeriesPaint(index, Color.GREEN);
+                    renderer.setSeriesStroke(index, avgStroke);
+                }
             }
         }
 
@@ -200,14 +208,16 @@ public class TopoChartBuilder extends XyzChartBuilder<BTopoControlPoint> {
             getDataset().addSeries(mTimeSeries3d);
             renderer.setSeriesPaint(getDataset().getSeriesIndex(mTimeSeries3d.getKey()), Color.BLUE);
             if (plotAvg) {
-                var mavg = MovingAverage.createMovingAverage(mTimeSeries3d, "%s (avg)".formatted(mTimeSeries3d.getKey()), avdDays, avgSkipMeasurements);
-                try {
-                    getDataset().addSeries(mavg);
-                    int index = getDataset().getSeriesIndex(mavg.getKey());
-                    renderer.setSeriesPaint(index, Color.BLUE);
-                    renderer.setSeriesStroke(index, avgStroke);
-                } catch (Exception e) {
-                    Exceptions.printStackTrace(e);
+                var mavg = createSubSetMovingAverage(mTimeSeries3d, mSubSetZeroMinute, mSubSetLastMinute, "%s (avg)".formatted(mTimeSeries3d.getKey()), avdDays, avgSkipMeasurements);
+                if (mavg != null) {
+                    try {
+                        getDataset().addSeries(mavg);
+                        int index = getDataset().getSeriesIndex(mavg.getKey());
+                        renderer.setSeriesPaint(index, Color.BLUE);
+                        renderer.setSeriesStroke(index, avgStroke);
+                    } catch (Exception e) {
+                        Exceptions.printStackTrace(e);
+                    }
                 }
             }
         }

@@ -22,11 +22,11 @@ import gov.nasa.worldwind.render.Ellipsoid;
 import gov.nasa.worldwind.render.Path;
 import org.apache.commons.lang3.ObjectUtils;
 import org.mapton.api.MSimpleObjectStorageManager;
+import org.mapton.butterfly_core.api.sos.ScalePlot3dHSosi;
+import org.mapton.butterfly_core.api.sos.ScalePlot3dPSosi;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
-import org.mapton.butterfly_core.api.sos.ScalePlot3dHSosi;
-import org.mapton.butterfly_core.api.sos.ScalePlot3dPSosi;
 import org.mapton.worldwind.api.WWHelper;
 import se.trixon.almond.util.MathHelper;
 
@@ -53,7 +53,7 @@ public class GraphicRendererVector extends GraphicRendererBase {
             plot1d(p, position);
         }
 
-        if (sCheckModel.isChecked(GraphicRendererItem.VECTOR_1D_ALARM) && (dimension == BDimension._1d || dimension == BDimension._3d)) {
+        if (sCheckModel.isChecked(GraphicRendererItem.VECTOR_1D) && sCheckModel.isChecked(GraphicRendererItem.VECTOR_1D_ALARM) && (dimension == BDimension._1d || dimension == BDimension._3d)) {
             plot1dVectorAlarm(p, position);
         }
 
