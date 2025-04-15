@@ -15,35 +15,49 @@
  */
 package org.mapton.butterfly_acoustic.blast;
 
+import com.dlsc.gemsfx.util.SessionManager;
+import java.util.prefs.Preferences;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.VBox;
-import org.controlsfx.tools.Borders;
-import static org.mapton.api.ui.MPopOver.GAP;
-import org.mapton.api.ui.forms.DateRangePane;
-import org.mapton.butterfly_core.api.BaseFilterPopOver;
+import org.mapton.butterfly_core.api.BFilterSectionDate;
+import org.mapton.butterfly_core.api.BFilterSectionDate.DateElement;
+import org.mapton.butterfly_core.api.BFilterSectionPoint;
+import org.mapton.butterfly_core.api.BFilterSectionPoint.PointElement;
+import org.mapton.butterfly_core.api.BaseTabbedFilterPopOver;
+import org.mapton.butterfly_core.api.FilterSectionMisc;
 import org.mapton.butterfly_format.Butterfly;
-import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.fx.FxHelper;
+import org.openide.util.NbPreferences;
 import se.trixon.almond.util.fx.control.RangeSliderPane;
-import se.trixon.almond.util.fx.session.SessionCheckComboBox;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class BlastFilterPopOver extends BaseFilterPopOver {
+public class BlastFilterPopOver extends BaseTabbedFilterPopOver {
 
     private final RangeSliderPane mAltitudeRangeSlider = new RangeSliderPane("Z", -100.0, 100.0, false);
-    private final DateRangePane mDateRangePane = new DateRangePane();
     private final BlastFilter mFilter;
-    private final SessionCheckComboBox<String> mGroupSccb = new SessionCheckComboBox<>();
+    private final BFilterSectionDate mFilterSectionDate;
+    private final FilterSectionMisc mFilterSectionMisc;
+    private final BFilterSectionPoint mFilterSectionPoint;
     private final BlastManager mManager = BlastManager.getInstance();
 
     public BlastFilterPopOver(BlastFilter filter) {
+        mFilterSectionPoint = new BFilterSectionPoint();
+        mFilterSectionDate = new BFilterSectionDate();
+        mFilterSectionMisc = new FilterSectionMisc();
+
         mFilter = filter;
+        mFilter.setFilterSection(mFilterSectionPoint);
+        mFilter.setFilterSection(mFilterSectionDate);
+
+        setFilter(filter);
         createUI();
         initListeners();
-        initSession();
+        initSession(NbPreferences.forModule(getClass()).node(getClass().getSimpleName()));
+
+        mFilterSectionPoint.getMeasNextSccb().setDisable(true);
+        mFilterSectionPoint.getMeasNextSccb().setDisable(true);
+        mFilterSectionPoint.getAlarmNameSccb().setDisable(true);
 
         populate();
     }
@@ -52,30 +66,37 @@ public class BlastFilterPopOver extends BaseFilterPopOver {
     public void clear() {
         setUsePolygonFilter(false);
         mFilter.freeTextProperty().set("");
-        SessionCheckComboBox.clearChecks(
-                mGroupSccb
-        );
-        mDateRangePane.reset();
+
+        mFilterSectionPoint.clear();
+        mFilterSectionDate.clear();
+        mFilterSectionMisc.clear();
+
         mAltitudeRangeSlider.clear();
+    }
+
+    @Override
+    public void filterPresetRestore(Preferences preferences) {
+        clear();
+        filterPresetStore(preferences);
+        //mDateRangePane.reset();
+    }
+
+    @Override
+    public void filterPresetStore(Preferences preferences) {
+        var sessionManager = initSession(preferences);
+        sessionManager.unregisterAll();
     }
 
     @Override
     public void load(Butterfly butterfly) {
         var blasts = butterfly.noise().getBlasts();
-        var groups = blasts.stream().map(b -> b.getGroup());
-        mGroupSccb.loadAndRestoreCheckItems(groups);
 
-        var temporalRange = mManager.getTemporalRange();
-        if (temporalRange != null) {
-            mDateRangePane.setMinMaxDate(temporalRange.getFromLocalDate(), temporalRange.getToLocalDate());
+        mFilterSectionPoint.load(blasts);
+        mFilterSectionDate.load(mManager.getTemporalRange());
+        mFilterSectionMisc.load();
 
-            var sessionManager = getSessionManager();
-            sessionManager.register("filter.DateLow", mDateRangePane.lowStringProperty());
-            sessionManager.register("filter.DateHigh", mDateRangePane.highStringProperty());
-        }
-
-        var min = blasts.stream().filter(b -> b.getZ() != null).mapToDouble(b -> b.getZ()).min().orElse(-100d);
-        var max = blasts.stream().filter(b -> b.getZ() != null).mapToDouble(b -> b.getZ()).max().orElse(100d);
+        var min = blasts.stream().filter(b -> b.getZeroZ() != null).mapToDouble(b -> b.getZeroZ()).min().orElse(-100d);
+        var max = blasts.stream().filter(b -> b.getZeroZ() != null).mapToDouble(b -> b.getZeroZ()).max().orElse(100d);
         mAltitudeRangeSlider.setMinMaxValue(min - 1, max + 1);
     }
 
@@ -86,55 +107,57 @@ public class BlastFilterPopOver extends BaseFilterPopOver {
 
     @Override
     public void onShownFirstTime() {
-        var dropDownCount = 25;
-        FxHelper.getComboBox(mGroupSccb).setVisibleRowCount(dropDownCount);
+        mFilterSectionPoint.onShownFirstTime();
     }
 
     @Override
     public void reset() {
         clear();
         mFilter.freeTextProperty().set("*");
-        SessionCheckComboBox.clearChecks(
-                mGroupSccb
-        );
+
+        mFilterSectionPoint.reset(null);
+        mFilterSectionMisc.reset(null);
     }
 
     private void createUI() {
-        mGroupSccb.setShowCheckedCount(true);
-        mGroupSccb.setTitle(Dict.GROUP.toString());
+        var root = new BorderPane(getTabPane());
+        root.setTop(getToolBar());
+        populateToolBar(mFilterSectionMisc.getInvertCheckboxToolBarItem());
 
-        double borderInnerPadding = FxHelper.getUIScaled(8.0);
-        double topBorderInnerPadding = FxHelper.getUIScaled(16.0);
-        var wrappedDateBox = Borders.wrap(mDateRangePane.getRoot())
-                .etchedBorder()
-                .title("Period för sprängning")
-                .innerPadding(topBorderInnerPadding, borderInnerPadding, borderInnerPadding, borderInnerPadding)
-                .outerPadding(0)
-                .raised()
-                .build()
-                .build();
-
-        var vBox = new VBox(GAP,
-                mGroupSccb,
-                mAltitudeRangeSlider,
-                wrappedDateBox
+        getTabPane().getTabs().addAll(
+                mFilterSectionPoint.getTab(),
+                mFilterSectionDate.getTab()
         );
 
-        FxHelper.bindWidthForChildrens(vBox);
-        int prefWidth = FxHelper.getUIScaled(250);
-        vBox.setPrefWidth(prefWidth);
-
-        var root = new BorderPane(vBox);
-        root.setTop(getToolBar());
         setContentNode(root);
+
+        mFilterSectionPoint.disable(
+                PointElement.ALARM,
+                PointElement.CATEGORY,
+                PointElement.FREQUENCY,
+                PointElement.FREQUENCY_DEFAULT,
+                PointElement.FREQUENCY_DEFAULT_STAT,
+                PointElement.MEAS_MODE,
+                PointElement.MEAS_NEXT,
+                PointElement.STATUS
+        );
+
+        mFilterSectionDate.disable(
+                DateElement.FIRST,
+                DateElement.HAS_FROM_TO
+        );
     }
 
     private void initListeners() {
-        mFilter.polygonFilterProperty().bind(usePolygonFilterProperty());
+        activatePasteName(actionEvent -> {
+            mFilter.freeTextProperty().set(mManager.getSelectedItem().getName());
+        });
 
-        mFilter.mGroupCheckModel = mGroupSccb.getCheckModel();
-        mFilter.dateLowProperty().bind(mDateRangePane.lowDateProperty());
-        mFilter.dateHighProperty().bind(mDateRangePane.highDateProperty());
+        mFilterSectionMisc.initListeners(mFilter);
+
+        mFilter.polygonFilterProperty().bind(usePolygonFilterProperty());
+        mFilter.initCheckModelListeners();
+
         mFilter.mAltitudeSelectedProperty.bind(mAltitudeRangeSlider.selectedProperty());
         mFilter.mAltitudeMinProperty.bind(mAltitudeRangeSlider.minProperty());
         mFilter.mAltitudeMaxProperty.bind(mAltitudeRangeSlider.maxProperty());
@@ -142,11 +165,16 @@ public class BlastFilterPopOver extends BaseFilterPopOver {
         mFilter.initCheckModelListeners();
     }
 
-    private void initSession() {
-        var sessionManager = getSessionManager();
-        sessionManager.register("filter.blast.freeText", mFilter.freeTextProperty());
-        sessionManager.register("filter.blast.checkedGroup", mGroupSccb.checkedStringProperty());
+    private SessionManager initSession(Preferences preferences) {
+        var sessionManager = new SessionManager(preferences);
+        mFilterSectionPoint.initSession(sessionManager);
+        mFilterSectionDate.initSession(sessionManager);
+        mFilterSectionMisc.initSession(sessionManager);
+
         mAltitudeRangeSlider.initSession("filter.altitude", sessionManager);
+        sessionManager.register("filter.blast.freeText", mFilter.freeTextProperty());
+
+        return sessionManager;
     }
 
 }

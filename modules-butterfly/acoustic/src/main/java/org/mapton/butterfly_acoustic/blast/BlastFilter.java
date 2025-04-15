@@ -16,32 +16,37 @@
 package org.mapton.butterfly_acoustic.blast;
 
 import j2html.tags.ContainerTag;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.ui.forms.FormFilter;
-import org.mapton.butterfly_format.types.acoustic.BBlast;
-import se.trixon.almond.util.DateHelper;
+import org.mapton.butterfly_core.api.BFilterSectionDate;
+import org.mapton.butterfly_core.api.BFilterSectionDateProvider;
+import org.mapton.butterfly_core.api.BFilterSectionPoint;
+import org.mapton.butterfly_core.api.BFilterSectionPointProvider;
+import org.mapton.butterfly_core.api.FilterSectionMiscProvider;
+import org.mapton.butterfly_format.types.acoustic.BAcousticBlast;
 import se.trixon.almond.util.Dict;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class BlastFilter extends FormFilter<BlastManager> {
+public class BlastFilter extends FormFilter<BlastManager> implements
+        FilterSectionMiscProvider,
+        BFilterSectionPointProvider,
+        BFilterSectionDateProvider {
 
     DoubleProperty mAltitudeMaxProperty = new SimpleDoubleProperty();
     DoubleProperty mAltitudeMinProperty = new SimpleDoubleProperty();
     SimpleBooleanProperty mAltitudeSelectedProperty = new SimpleBooleanProperty();
-    IndexedCheckModel mGroupCheckModel;
-    private final SimpleObjectProperty<LocalDate> mDateHighProperty = new SimpleObjectProperty();
-    private final SimpleObjectProperty<LocalDate> mDateLowProperty = new SimpleObjectProperty();
+    private BFilterSectionDate mFilterSectionDate;
+    private BFilterSectionPoint mFilterSectionPoint;
+    private final SimpleBooleanProperty mInvertProperty = new SimpleBooleanProperty();
     private final BlastManager mManager = BlastManager.getInstance();
 
     public BlastFilter() {
@@ -50,28 +55,43 @@ public class BlastFilter extends FormFilter<BlastManager> {
         initListeners();
     }
 
-    public SimpleObjectProperty<LocalDate> dateHighProperty() {
-        return mDateHighProperty;
-    }
-
-    public SimpleObjectProperty<LocalDate> dateLowProperty() {
-        return mDateLowProperty;
-    }
-
     public void initCheckModelListeners() {
-        mGroupCheckModel.getCheckedItems().addListener(mListChangeListener);
+    }
+
+    @Override
+    public SimpleBooleanProperty invertProperty() {
+        return mInvertProperty;
+    }
+
+    @Override
+    public void setFilterSection(BFilterSectionDate filterSectionDate) {
+        mFilterSectionDate = filterSectionDate;
+        mFilterSectionDate.initListeners(mChangeListenerObject, mListChangeListener);
+    }
+
+    @Override
+    public void setFilterSection(BFilterSectionPoint filterSection) {
+        mFilterSectionPoint = filterSection;
+        mFilterSectionPoint.initListeners(mChangeListenerObject, mListChangeListener);
     }
 
     @Override
     public void update() {
         var filteredItems = mManager.getAllItems().stream()
-                .filter(b -> validateFreeText(b.getName(), b.getGroup(), b.getComment(), b.getExternalId()))
-                .filter(b -> validateCheck(mGroupCheckModel, b.getGroup()))
-                .filter(b -> validateDate(b.getDateTime()))
-                .filter(b -> validateAltitude(b))
-                .filter(b -> validateCoordinateArea(b.getLat(), b.getLon()))
-                .filter(b -> validateCoordinateRuler(b.getLat(), b.getLon()))
+                //                .filter(b -> validateAltitude(b))
+                .filter(p -> validateFreeText(p.getName(), p.getGroup(), p.getComment()))
+                .filter(p -> validateCoordinateArea(p.getLat(), p.getLon()))
+                .filter(p -> validateCoordinateRuler(p.getLat(), p.getLon()))
+                .filter(p -> mFilterSectionPoint.filter(p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS)))
+                .filter(p -> mFilterSectionDate.filter(p, p.ext().getDateFirst()))
                 .toList();
+
+        if (mInvertProperty.get()) {
+            var toBeExluded = new HashSet<>(filteredItems);
+            filteredItems = mManager.getAllItems().stream()
+                    .filter(p -> !toBeExluded.contains(p))
+                    .toList();
+        }
 
         mManager.setItemsFiltered(filteredItems);
 
@@ -80,11 +100,9 @@ public class BlastFilter extends FormFilter<BlastManager> {
 
     private ContainerTag createInfoContent() {
         var map = new LinkedHashMap<String, String>();
-
         map.put(Dict.TEXT.toString(), getFreeText());
-        map.put(Dict.GROUP.toString(), makeInfo(mGroupCheckModel.getCheckedItems()));
-        map.put(Dict.FROM.toString(), mDateLowProperty.get().toString());
-        map.put(Dict.TO.toString(), mDateHighProperty.get().toString());
+        mFilterSectionPoint.createInfoContent(map);
+        mFilterSectionDate.createInfoContent(map);
 
         return createHtmlFilterInfo(map);
     }
@@ -94,17 +112,16 @@ public class BlastFilter extends FormFilter<BlastManager> {
     }
 
     private void initListeners() {
-        List.of(mDateLowProperty,
-                mDateHighProperty,
+        List.of(mInvertProperty,
                 mAltitudeSelectedProperty,
                 mAltitudeMinProperty,
                 mAltitudeMaxProperty
         ).forEach(propertyBase -> propertyBase.addListener(mChangeListenerObject));
     }
 
-    private boolean validateAltitude(BBlast b) {
+    private boolean validateAltitude(BAcousticBlast b) {
         try {
-            var z = b.getZ();
+            var z = b.getZeroZ();
             if (mAltitudeSelectedProperty.get()) {
                 return inRange(z, mAltitudeMinProperty, mAltitudeMaxProperty)
                         || inRange(z - 360.0, mAltitudeMinProperty, mAltitudeMaxProperty);
@@ -112,18 +129,6 @@ public class BlastFilter extends FormFilter<BlastManager> {
                 return true;
             }
         } catch (Exception e) {
-            return false;
-        }
-    }
-
-    private boolean validateDate(LocalDateTime lastMeasurementDateTime) {
-        if (null != lastMeasurementDateTime) {
-            var lowDate = mDateLowProperty.get();
-            var highDate = mDateHighProperty.get();
-            var valid = DateHelper.isBetween(lowDate, highDate, lastMeasurementDateTime.toLocalDate());
-
-            return valid;
-        } else {
             return false;
         }
     }

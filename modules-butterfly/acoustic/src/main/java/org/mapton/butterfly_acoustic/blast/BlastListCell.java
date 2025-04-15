@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,18 +19,18 @@ import java.util.Objects;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.layout.VBox;
-import org.mapton.butterfly_format.types.acoustic.BBlast;
+import org.mapton.butterfly_format.types.acoustic.BAcousticBlast;
 import se.trixon.almond.util.DateHelper;
 
 /**
  *
  * @author Patrik Karlström
  */
-class BlastListCell extends ListCell<BBlast> {
+class BlastListCell extends ListCell<BAcousticBlast> {
 
     private final Label mDateLabel = new Label();
-    private final Label mNameLabel = new Label();
     private final Label mGroupLabel = new Label();
+    private final Label mNameLabel = new Label();
     private final String mStyleBold = "-fx-font-weight: bold;";
     private VBox mVBox;
 
@@ -39,7 +39,7 @@ class BlastListCell extends ListCell<BBlast> {
     }
 
     @Override
-    protected void updateItem(BBlast blast, boolean empty) {
+    protected void updateItem(BAcousticBlast blast, boolean empty) {
         super.updateItem(blast, empty);
         if (blast == null || empty) {
             clearContent();
@@ -48,9 +48,9 @@ class BlastListCell extends ListCell<BBlast> {
         }
     }
 
-    private void addContent(BBlast blast) {
+    private void addContent(BAcousticBlast blast) {
         setText(null);
-        var date = Objects.toString(DateHelper.toDateString(blast.getDateTime()), "-");
+        var date = Objects.toString(DateHelper.toDateString(blast.getDateLatest()), "-");
         mNameLabel.setText(blast.getName());
         mDateLabel.setText("%s %s".formatted(date, blast.getComment()));
         mGroupLabel.setText(blast.getGroup());

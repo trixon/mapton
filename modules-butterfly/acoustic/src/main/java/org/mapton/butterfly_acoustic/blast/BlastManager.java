@@ -23,7 +23,7 @@ import org.mapton.api.MLatLon;
 import org.mapton.api.MTemporalRange;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
-import org.mapton.butterfly_format.types.acoustic.BBlast;
+import org.mapton.butterfly_format.types.acoustic.BAcousticBlast;
 import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
 
@@ -31,7 +31,7 @@ import org.openide.util.lookup.ServiceProvider;
  *
  * @author Patrik Karlström
  */
-public class BlastManager extends BaseManager<BBlast> {
+public class BlastManager extends BaseManager<BAcousticBlast> {
 
     private final static String DISRUPTOR_NAME = Bundle.CTL_BlastAction();
     private final BlastPropertiesBuilder mPropertiesBuilder = new BlastPropertiesBuilder();
@@ -41,11 +41,11 @@ public class BlastManager extends BaseManager<BBlast> {
     }
 
     private BlastManager() {
-        super(BBlast.class);
+        super(BAcousticBlast.class);
     }
 
     @Override
-    public Object getObjectProperties(BBlast selectedObject) {
+    public Object getObjectProperties(BAcousticBlast selectedObject) {
         return mPropertiesBuilder.build(selectedObject);
     }
 
@@ -57,14 +57,19 @@ public class BlastManager extends BaseManager<BBlast> {
     public void load(Butterfly butterfly) {
         try {
             initAllItems(butterfly.noise().getBlasts());
-
-            var dates = new TreeSet<>(getAllItems().stream()
-                    .map(o -> o.getDateTime())
+            var items = getAllItems();
+            var dates = new TreeSet<>(items.stream()
+                    .map(p -> p.getDateLatest())
                     .filter(d -> d != null)
                     .collect(Collectors.toSet()));
 
             if (!dates.isEmpty()) {
                 setTemporalRange(new MTemporalRange(dates.first(), dates.last()));
+            }
+
+            for (var item : items) {
+                item.ext().setDateLatest(item.getDateLatest());
+                item.ext().setDateFirst(item.getDateLatest());
             }
         } catch (Exception e) {
             Exceptions.printStackTrace(e);
@@ -74,7 +79,7 @@ public class BlastManager extends BaseManager<BBlast> {
     @Override
     protected void applyTemporalFilter() {
         var timeFilteredItems = getFilteredItems().stream()
-                .filter(o -> o.getDateTime() == null ? true : getTemporalManager().isValid(o.getDateTime()))
+                .filter(p -> p.getDateLatest() == null ? true : getTemporalManager().isValid(p.getDateLatest()))
                 .toList();
 
         var latLonDisruptors = timeFilteredItems.stream().map(p -> new MLatLon(p.getLat(), p.getLon())).toList();
@@ -83,7 +88,7 @@ public class BlastManager extends BaseManager<BBlast> {
     }
 
     @Override
-    protected void load(ArrayList<BBlast> items) {
+    protected void load(ArrayList<BAcousticBlast> items) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

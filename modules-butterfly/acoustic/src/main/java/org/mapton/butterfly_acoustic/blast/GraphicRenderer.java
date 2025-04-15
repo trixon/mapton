@@ -31,14 +31,14 @@ import java.util.Map;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.butterfly_core.api.BaseGraphicRenderer;
 import org.mapton.butterfly_core.api.PlotLimiter;
-import org.mapton.butterfly_format.types.acoustic.BBlast;
+import org.mapton.butterfly_format.types.acoustic.BAcousticBlast;
 import org.mapton.worldwind.api.WWHelper;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class GraphicRenderer extends BaseGraphicRenderer<GraphicRendererItem, BBlast> {
+public class GraphicRenderer extends BaseGraphicRenderer<GraphicRendererItem, BAcousticBlast> {
 
     protected static final PlotLimiter sPlotLimiter = new PlotLimiter();
 
@@ -52,11 +52,11 @@ public class GraphicRenderer extends BaseGraphicRenderer<GraphicRendererItem, BB
         mCheckModel = checkModel;
     }
 
-    public void plot(BBlast blast, Position position, ArrayList<AVListImpl> mapObjects) {
+    public void plot(BAcousticBlast blast, Position position, ArrayList<AVListImpl> mapObjects) {
         mMapObjects = mapObjects;
 
         if (mCheckModel.isChecked(GraphicRendererItem.BALLS)) {
-            var timeSpan = ChronoUnit.MINUTES.between(blast.getDateTime(), LocalDateTime.now());
+            var timeSpan = ChronoUnit.MINUTES.between(blast.getDateLatest(), LocalDateTime.now());
             var altitude = timeSpan / 24000.0;
             var startPosition = WWHelper.positionFromPosition(position, 0.0);
             var endPosition = WWHelper.positionFromPosition(position, altitude);
@@ -70,8 +70,8 @@ public class GraphicRenderer extends BaseGraphicRenderer<GraphicRendererItem, BB
             addRenderable(groundPath, true, GraphicRendererItem.BALLS, mMapObjects);
         }
 
-        if (mCheckModel.isChecked(GraphicRendererItem.BALLS_Z) && blast.getZ() != null) {
-            var altitude = blast.getZ();
+        if (mCheckModel.isChecked(GraphicRendererItem.BALLS_Z) && blast.getZeroZ() != null) {
+            var altitude = blast.getZeroZ();
             var startPosition = WWHelper.positionFromPosition(position, 0.0);
             var endPosition = WWHelper.positionFromPosition(position, altitude);
             var radius = 1.2;
@@ -100,8 +100,9 @@ public class GraphicRenderer extends BaseGraphicRenderer<GraphicRendererItem, BB
             });
 
         }
+
         if (mCheckModel.isChecked(GraphicRendererItem.RECENT)) {
-            var age = blast.ext().getAge(ChronoUnit.DAYS);
+            var age = blast.ext().getMeasurementAge(ChronoUnit.DAYS);
             var maxAge = 30.0;
 
             if (age < maxAge) {

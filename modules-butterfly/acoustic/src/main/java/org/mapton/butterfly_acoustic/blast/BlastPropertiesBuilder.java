@@ -19,7 +19,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
 import java.util.Objects;
 import org.mapton.api.ui.forms.PropertiesBuilder;
-import org.mapton.butterfly_format.types.acoustic.BBlast;
+import org.mapton.butterfly_format.types.acoustic.BAcousticBlast;
 import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.MathHelper;
@@ -28,25 +28,25 @@ import se.trixon.almond.util.MathHelper;
  *
  * @author Patrik Karlström
  */
-public class BlastPropertiesBuilder extends PropertiesBuilder<BBlast> {
+public class BlastPropertiesBuilder extends PropertiesBuilder<BAcousticBlast> {
 
     @Override
-    public Object build(BBlast p) {
+    public Object build(BAcousticBlast p) {
         if (p == null) {
             return p;
         }
 
         var propertyMap = new LinkedHashMap<String, Object>();
         var cat1 = Dict.BASIC.toString();
-        var date = Objects.toString(DateHelper.toDateString(p.getDateTime()), "-");
+        var date = Objects.toString(DateHelper.toDateString(p.getDateLatest()), "-");
 
         propertyMap.put(getCatKey(cat1, "Ext.id"), p.getExternalId());
         propertyMap.put(getCatKey(cat1, Dict.NAME.toString()), p.getName());
         propertyMap.put(getCatKey(cat1, Dict.GROUP.toString()), p.getGroup());
         propertyMap.put(getCatKey(cat1, Dict.COMMENT.toString()), p.getComment());
         propertyMap.put(getCatKey(cat1, Dict.DATE.toString()), date);
-        propertyMap.put(getCatKey(cat1, Dict.AGE.toString()), p.ext().getAge(ChronoUnit.DAYS));
-        propertyMap.put(getCatKey(cat1, "Z"), MathHelper.convertDoubleToString(p.getZ(), 1));
+        propertyMap.put(getCatKey(cat1, Dict.AGE.toString()), p.ext().getMeasurementAge(ChronoUnit.DAYS));
+        propertyMap.put(getCatKey(cat1, "Z"), MathHelper.convertDoubleToString(p.getZeroZ(), 1));
 
         return propertyMap;
     }
