@@ -16,9 +16,7 @@
 package org.mapton.butterfly_format.types.acoustic;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import org.mapton.butterfly_format.types.BBasePoint;
+import org.mapton.butterfly_format.types.BXyzPoint;
 
 /**
  *
@@ -26,22 +24,17 @@ import org.mapton.butterfly_format.types.BBasePoint;
  */
 @JsonPropertyOrder({
     "id",
-    "dateTime",
-    "lat",
-    "lon",
     "name",
-    "z",
+    "group",
     "comment",
-    "group"
+    "lat",
+    "lon"
 })
-public class BBlast extends BBasePoint {
+public class BAcousticBlast extends BXyzPoint {
 
-    private LocalDateTime dateTime;
     private transient Ext mExt;
-    private String url;
-    private Double z;
 
-    public BBlast() {
+    public BAcousticBlast() {
     }
 
     public Ext ext() {
@@ -52,37 +45,7 @@ public class BBlast extends BBasePoint {
         return mExt;
     }
 
-    public LocalDateTime getDateTime() {
-        return dateTime;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public Double getZ() {
-        return z;
-    }
-
-    public void setDateTime(LocalDateTime dateTime) {
-        this.dateTime = dateTime;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public void setZ(Double z) {
-        this.z = z;
-    }
-
-    public class Ext {
-
-        public long getAge(ChronoUnit chronoUnit) {
-            var latest = getDateTime() != null ? getDateTime() : LocalDateTime.now().minusDays(1);
-
-            return chronoUnit.between(latest, LocalDateTime.now());
-        }
+    public class Ext extends BXyzPoint.Ext<BAcousticBlastObservation> {
 
     }
 

@@ -35,7 +35,7 @@ import org.mapton.butterfly_format.types.acoustic.BAcousticVibrationChannel;
 import org.mapton.butterfly_format.types.acoustic.BAcousticVibrationLimit;
 import org.mapton.butterfly_format.types.acoustic.BAcousticVibrationObservation;
 import org.mapton.butterfly_format.types.acoustic.BAcousticVibrationPoint;
-import org.mapton.butterfly_format.types.acoustic.BBlast;
+import org.mapton.butterfly_format.types.acoustic.BAcousticBlast;
 import org.mapton.butterfly_format.types.geo.BGeoExtensometer;
 import org.mapton.butterfly_format.types.geo.BGeoExtensometerPoint;
 import org.mapton.butterfly_format.types.geo.BGeoExtensometerPointObservation;
@@ -73,7 +73,7 @@ public class Butterfly {
     private final ArrayList<BAlarm> mAlarms = new ArrayList<>();
     private final ArrayList<BAreaActivity> mAreaActivities = new ArrayList<>();
     private final ArrayList<BAreaBase> mAreaFilters = new ArrayList<>();
-    private final ArrayList<BBlast> mBlasts = new ArrayList<>();
+    private final ArrayList<BAcousticBlast> mBlasts = new ArrayList<>();
     private final ArrayList<BCoordinate> mCoordinates = new ArrayList<>();
     private final Dev mDev = new Dev();
     private final ArrayList<BGeoExtensometer> mGeoExtensometers = new ArrayList<>();
@@ -167,7 +167,7 @@ public class Butterfly {
         new ImportFromCsv<BCoordinate>(BCoordinate.class) {
         }.load(sourceDir, "coordinates.csv", mCoordinates);
 
-        new ImportFromCsv<BBlast>(BBlast.class) {
+        new ImportFromCsv<BAcousticBlast>(BAcousticBlast.class) {
         }.load(sourceDir, "noiseBlasts.csv", mBlasts);
 
         new ImportFromCsv<BAcousticVibrationPoint>(BAcousticVibrationPoint.class) {
@@ -430,7 +430,7 @@ public class Butterfly {
 
     public class Noise {
 
-        public ArrayList<BBlast> getBlasts() {
+        public ArrayList<BAcousticBlast> getBlasts() {
             return mBlasts;
         }
 
