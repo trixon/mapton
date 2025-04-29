@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import org.apache.commons.lang3.ObjectUtils;
+import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.BfLayerBundle;
 import org.mapton.butterfly_format.types.acoustic.BAcousticBlast;
 import org.mapton.worldwind.api.LayerBundle;
@@ -123,7 +124,7 @@ public class BlastLayerBundle extends BfLayerBundle {
                         var mapObjects = new ArrayList<AVListImpl>();
 
                         mapObjects.add(labelPlacemark);
-                        mapObjects.add(plotPin(position, labelPlacemark));
+                        mapObjects.add(plotPin(p, position, labelPlacemark));
 
                         mGraphicRenderer.plot(p, position, mapObjects);
 
@@ -156,14 +157,18 @@ public class BlastLayerBundle extends BfLayerBundle {
         placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
         placemark.setAttributes(mAttributeManager.getLabelPlacemarkAttributes());
         placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(mAttributeManager.getLabelPlacemarkAttributes(), 1.5));
-        placemark.setLabelText(labelBy.getLabel(p));
+        var label = labelBy.getLabel(p);
+        placemark.setLabelText(label);
         mLabelLayer.addRenderable(placemark);
+        p.setValue(BKey.PIN_NAME, label);
 
         return placemark;
     }
 
-    private PointPlacemark plotPin(Position position, PointPlacemark labelPlacemark) {
+    private PointPlacemark plotPin(BAcousticBlast p, Position position, PointPlacemark labelPlacemark) {
         var attrs = mAttributeManager.getPinAttributes(Color.WHITE);
+        p.setValue(BKey.PIN_URL, attrs.getImageAddress());
+        p.setValue(BKey.PIN_COLOR, attrs.getImageColor());
 
         var placemark = new PointPlacemark(position);
         placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
