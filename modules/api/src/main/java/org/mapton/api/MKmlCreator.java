@@ -51,6 +51,52 @@ public abstract class MKmlCreator {
     protected Folder mRootFolder;
     protected final FastDateFormat mTimeStampDateFormat = FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ssX");
 
+    public static Placemark createCircle(String name, double lat, double lon, double radius, int quality, double width, String lineColor, String fillColor, ColorMode colorMode, AltitudeMode altitudeMode) {
+        if (quality < 3) {
+            throw new IllegalArgumentException("Quality must be greater than 2");
+        }
+
+        var center = new MLatLon(lat, lon);
+        var list = new ArrayList<Point3D>();
+
+        for (double i = 0; i < 360.0; i = i + 360.0 / quality) {
+            var latLon = center.getDestinationPoint(i, radius);
+            list.add(new Point3D(latLon.getLongitude(), latLon.getLatitude(), 0));
+        }
+
+        list.add(list.get(0));
+
+        return createPolygon(name, list, width, lineColor, fillColor, colorMode, altitudeMode);
+    }
+
+    public static Placemark createPolygon(String name, ArrayList<Point3D> coordinates, double width, String lineColor, String fillColor, ColorMode colorMode, AltitudeMode altitudeMode) {
+        var placemark = KmlFactory.createPlacemark().withName(name);
+        var style = placemark.createAndAddStyle();
+        var lineStyle = style.createAndSetLineStyle()
+                .withColor(lineColor)
+                .withWidth(width);
+        var polyStyle = style.createAndSetPolyStyle();
+
+        if (fillColor != null) {
+            polyStyle.setColor(fillColor);
+        }
+        if (colorMode != null) {
+            polyStyle.setColorMode(colorMode);
+        }
+
+        var polygon = placemark.createAndSetPolygon();
+        var boundary = polygon.createAndSetOuterBoundaryIs();
+        var linearRing = boundary.createAndSetLinearRing();
+
+        coordinates.forEach(node -> {
+            linearRing.addToCoordinates(node.getX(), node.getY());
+        });
+
+        polygon.setAltitudeMode(altitudeMode);
+
+        return placemark;
+    }
+
     public static Comparator<Feature> getFeatureNameComparator() {
         return (o1, o2) -> o1.getName().compareTo(o2.getName());
     }
@@ -174,24 +220,6 @@ public abstract class MKmlCreator {
         return list;
     }
 
-    public Placemark createCircle(String name, double lat, double lon, double radius, int quality, double width, String lineColor, String fillColor, ColorMode colorMode, AltitudeMode altitudeMode) {
-        if (quality < 3) {
-            throw new IllegalArgumentException("Quality must be greater than 2");
-        }
-
-        var center = new MLatLon(lat, lon);
-        var list = new ArrayList<Point3D>();
-
-        for (double i = 0; i < 360.0; i = i + 360.0 / quality) {
-            var latLon = center.getDestinationPoint(i, radius);
-            list.add(new Point3D(latLon.getLongitude(), latLon.getLatitude(), 0));
-        }
-
-        list.add(list.get(0));
-
-        return createPolygon(name, list, width, lineColor, fillColor, colorMode, altitudeMode);
-    }
-
     public Placemark createLine(String name, ArrayList<Point3D> coordinates, double width, String color, AltitudeMode altitudeMode) {
         var placemark = KmlFactory.createPlacemark().withName(name);
         var style = placemark.createAndAddStyle();
@@ -246,34 +274,6 @@ public abstract class MKmlCreator {
         }
 
         placemark.createAndSetPoint().addToCoordinates(lon, lat);
-
-        return placemark;
-    }
-
-    public Placemark createPolygon(String name, ArrayList<Point3D> coordinates, double width, String lineColor, String fillColor, ColorMode colorMode, AltitudeMode altitudeMode) {
-        var placemark = KmlFactory.createPlacemark().withName(name);
-        var style = placemark.createAndAddStyle();
-        var lineStyle = style.createAndSetLineStyle()
-                .withColor(lineColor)
-                .withWidth(width);
-        var polyStyle = style.createAndSetPolyStyle();
-
-        if (fillColor != null) {
-            polyStyle.setColor(fillColor);
-        }
-        if (colorMode != null) {
-            polyStyle.setColorMode(colorMode);
-        }
-
-        var polygon = placemark.createAndSetPolygon();
-        var boundary = polygon.createAndSetOuterBoundaryIs();
-        var linearRing = boundary.createAndSetLinearRing();
-
-        coordinates.forEach(node -> {
-            linearRing.addToCoordinates(node.getX(), node.getY());
-        });
-
-        polygon.setAltitudeMode(altitudeMode);
 
         return placemark;
     }
