@@ -120,7 +120,7 @@ public class ExtensoChartBuilder extends ChartBuilder<BGeoExtensometer> {
             var series = new TimeSeries(name);
             for (var o : p.ext().getObservationsTimeFiltered()) {
                 var minute = mChartHelper.convertToMinute(o.getDate());
-                series.add(minute, o.ext().getDelta());
+                series.addOrUpdate(minute, o.ext().getDelta());
             }
 
             var timeSeriesCollection = new TimeSeriesCollection(series);
@@ -217,10 +217,10 @@ public class ExtensoChartBuilder extends ChartBuilder<BGeoExtensometer> {
                     return blast.distance(extensometer) <= 40 && DateHelper.isBetween(
                             firstDate,
                             lastDate,
-                            b.getDateTime().toLocalDate());
+                            b.getDateLatest().toLocalDate());
                 })
                 .forEachOrdered(b -> {
-                    var minute = mChartHelper.convertToMinute(b.getDateTime());
+                    var minute = mChartHelper.convertToMinute(b.getDateLatest());
                     var marker = new ValueMarker(minute.getFirstMillisecond());
                     marker.setPaint(Color.BLACK);
                     plot.addDomainMarker(marker);
