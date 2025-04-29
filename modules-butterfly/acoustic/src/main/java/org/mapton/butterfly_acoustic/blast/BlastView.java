@@ -23,6 +23,7 @@ import org.mapton.api.ui.forms.SingleListForm;
 import org.mapton.butterfly_core.api.ExternalSearchAction;
 import org.mapton.butterfly_format.types.acoustic.BAcousticBlast;
 import org.mapton.core.api.ui.ExportAction;
+import org.mapton.core.api.ui.MFilterPresetPopOver;
 import se.trixon.almond.util.Dict;
 
 /**
@@ -35,6 +36,7 @@ public class BlastView {
     private final BlastFilterPopOver mFilterPopOver = new BlastFilterPopOver(mFilter);
     private final SingleListForm<BlastManager, BAcousticBlast> mListForm;
     private final BlastManager mManager = BlastManager.getInstance();
+    private final MFilterPresetPopOver mFilterPresetPopOver = new MFilterPresetPopOver(mFilterPopOver, "aco.blast");
 
     public BlastView() {
         var actions = Arrays.asList(
@@ -43,6 +45,7 @@ public class BlastView {
                 ActionUtils.ACTION_SPAN,
                 mManager.geZoomExtentstAction(),
                 mFilter.getInfoPopOver().getAction(),
+                mFilterPresetPopOver.getAction(),
                 mFilterPopOver.getAction()
         );
 
