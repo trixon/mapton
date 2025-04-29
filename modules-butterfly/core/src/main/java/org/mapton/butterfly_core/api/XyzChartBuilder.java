@@ -15,11 +15,14 @@
  */
 package org.mapton.butterfly_core.api;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Objects;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -47,6 +50,7 @@ import org.jfree.data.time.TimeSeriesCollection;
 import org.mapton.api.MLatLon;
 import org.mapton.api.ui.forms.ChartBuilder;
 import org.mapton.butterfly_format.types.BBaseControlPoint;
+import org.mapton.butterfly_format.types.BBaseControlPointObservation;
 import org.mapton.butterfly_format.types.BBasePoint;
 import org.mapton.ce_jfreechart.api.ChartHelper;
 import se.trixon.almond.util.DateHelper;
@@ -62,6 +66,8 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
 
     protected JFreeChart mChart;
     protected final ChartHelper mChartHelper = new ChartHelper();
+    protected Date mDateEnd;
+    protected Date mDateNull;
     private ChartPanel mChartPanel;
     private final TimeSeriesCollection mDataset = new TimeSeriesCollection();
     private TextTitle mLeftSubTextTitle;
@@ -74,6 +80,19 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
         marker.setLabelAnchor(RectangleAnchor.TOP_RIGHT);
         marker.setLabelTextAnchor(TextAnchor.TOP_LEFT);
         plot.addDomainMarker(marker);
+    }
+
+    public void addNEMarkers(XYPlot plot, BBaseControlPointObservation o, boolean doPlot) {
+        if (!doPlot) {
+            return;
+        }
+        var minute = mChartHelper.convertToMinute(o.getDate());
+        if (o.isReplacementMeasurement()) {
+            addMarker(plot, minute, "E", Color.RED);
+        } else if (o.isZeroMeasurement()) {
+            mDateNull = DateHelper.convertToDate(o.getDate());
+            addMarker(plot, minute, "N", Color.BLUE);
+        }
     }
 
     public void clear(TimeSeries... series) {
@@ -109,7 +128,7 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
     }
 
     public void plotBlasts(XYPlot plot, BBasePoint p, LocalDate firstDate, LocalDate lastDate) {
-        var extensometer = new MLatLon(p.getLat(), p.getLon());
+        var pointLatLon = new MLatLon(p.getLat(), p.getLon());
         ButterflyManager.getInstance().getButterfly().noise().getBlasts().stream()
                 .filter(b -> {
                     return DateHelper.isBetween(
@@ -118,17 +137,57 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
                             b.getDateLatest().toLocalDate());
                 })
                 .forEachOrdered(b -> {
-                    var blast = new MLatLon(b.getLat(), b.getLon());
-                    var distance = blast.distance(extensometer);
+                    var blastLatLon = new MLatLon(b.getLat(), b.getLon());
+                    var distance = blastLatLon.distance(pointLatLon);
                     if (distance <= 40.0) {
-                        int alpha = (int) ((100d - distance) / 200d * 255d);
-                        var color = new Color(0, 0, 255, alpha);
                         var minute = mChartHelper.convertToMinute(b.getDateLatest());
                         var marker = new ValueMarker(minute.getFirstMillisecond());
+                        Color color;
+                        if (b == p) {
+                            color = Color.RED;
+                            marker.setStroke(new BasicStroke(2f));
+                        } else {
+                            int alpha = (int) ((100d - distance) / 200d * 255d);
+                            color = new Color(0, 0, 255, alpha);
+                        }
                         marker.setPaint(color);
                         plot.addDomainMarker(marker);
                     }
                 });
+    }
+
+    public void plotMeasNeed(XYPlot plot, BBaseControlPoint p, long days) {
+        if (p.getFrequency() > 0 && days < 0) {
+            var minute = mChartHelper.convertToMinute(LocalDateTime.now().plusDays(days));
+            var marker = new ValueMarker(minute.getFirstMillisecond());
+            marker.setPaint(Color.ORANGE);
+            marker.setLabel("S");
+            float[] dashPattern = {15f, 15f};
+            marker.setStroke(new BasicStroke(8f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10f, dashPattern, 0f));
+            marker.setLabelAnchor(RectangleAnchor.TOP_RIGHT);
+            marker.setLabelTextAnchor(TextAnchor.TOP_LEFT);
+            plot.addDomainMarker(marker);
+        }
+    }
+
+    public void setDateRangeNullLast(XYPlot plot, BBaseControlPoint p, Date dateNull, Date dateEnd) {
+        try {
+            var dateAxis = (DateAxis) plot.getDomainAxis();
+            dateAxis.setAutoRange(true);
+            dateAxis.setRange(dateNull, dateEnd);
+        } catch (IllegalArgumentException e) {
+            System.out.println("%s: Bad chart plot range".formatted(p.getName()));
+        }
+    }
+
+    public void setDateRangeNullNow(XYPlot plot, BBaseControlPoint p, Date dateNull) {
+        try {
+            var dateAxis = (DateAxis) plot.getDomainAxis();
+            dateAxis.setAutoRange(true);
+            dateAxis.setRange(dateNull, DateHelper.convertToDate(LocalDate.now()));
+        } catch (IllegalArgumentException e) {
+            System.out.println("%s: Bad chart plot range".formatted(p.getName()));
+        }
     }
 
     @Override
