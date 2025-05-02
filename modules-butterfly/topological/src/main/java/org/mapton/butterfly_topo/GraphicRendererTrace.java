@@ -161,9 +161,7 @@ public class GraphicRendererTrace extends GraphicRendererBase {
 
 //        var END_SIZE = 0.25;
 //        if (nodes.isEmpty()) {
-
-
-////            System.out.println(p.getName());
+        ////            System.out.println(p.getName());
 //        } else {
 //            var startEllipsoid = new Ellipsoid(nodes.getFirst(), END_SIZE, END_SIZE, END_SIZE);
 //            addRenderable(startEllipsoid, true, null, sMapObjects);
@@ -171,6 +169,9 @@ public class GraphicRendererTrace extends GraphicRendererBase {
 //            var endEllipsoid = new Ellipsoid(nodes.getLast(), END_SIZE, END_SIZE, END_SIZE);
 //            addRenderable(endEllipsoid, true, null, sMapObjects);
 //        }
+
+        plotLabel(p, positions[0]);
+
     }
 
 }

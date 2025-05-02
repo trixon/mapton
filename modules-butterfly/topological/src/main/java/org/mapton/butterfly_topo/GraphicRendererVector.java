@@ -191,6 +191,8 @@ public class GraphicRendererVector extends GraphicRendererBase {
         var pathDeltaR = new Path(endDeltaZ, endPosition);
         pathDeltaR.setAttributes(mAttributeManager.getComponentVector2dAttributes(p));
         addRenderable(pathDeltaR, true, null, sMapObjects);
+
+        plotLabel(p, positions[0]);
     }
 
 }

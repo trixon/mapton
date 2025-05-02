@@ -15,7 +15,6 @@
  */
 package org.mapton.butterfly_topo;
 
-import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
@@ -23,7 +22,6 @@ import gov.nasa.worldwind.render.Ellipsoid;
 import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.Offset;
 import gov.nasa.worldwind.render.Path;
-import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwind.render.Polygon;
 import java.awt.Point;
 import java.awt.geom.Point2D;
@@ -215,12 +213,7 @@ public class GraphicRendererGroup extends GraphicRendererBase {
                     }
                 }
 
-                var placemark = new PointPlacemark(startPosition);
-                placemark.setAltitudeMode(WorldWind.ABSOLUTE);
-                placemark.setAttributes(labelAttributes);
-                placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(mAttributeManager.getLabelPlacemarkAttributes(), 1.5));
-                placemark.setLabelText(p.getName());
-                //addRenderable(placemark, false, null, null);
+                plotLabel(p, positions[0]);
             }
 
             var path = new Path(pathPositions);

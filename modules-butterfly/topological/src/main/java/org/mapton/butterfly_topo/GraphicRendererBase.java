@@ -15,23 +15,27 @@
  */
 package org.mapton.butterfly_topo;
 
+import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.Ellipsoid;
 import gov.nasa.worldwind.render.Path;
+import gov.nasa.worldwind.render.PointPlacemark;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import org.apache.commons.lang3.ObjectUtils;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.MOptions;
 import org.mapton.api.MSimpleObjectStorageManager;
+import org.mapton.butterfly_core.api.BKey;
 import org.mapton.butterfly_core.api.BaseGraphicRenderer;
 import org.mapton.butterfly_core.api.PlotLimiter;
-import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
-import org.mapton.butterfly_topo.api.TopoManager;
 import org.mapton.butterfly_core.api.sos.ScalePlot3dHSosi;
 import org.mapton.butterfly_core.api.sos.ScalePlot3dPSosi;
+import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
+import org.mapton.butterfly_topo.api.TopoManager;
 import org.mapton.worldwind.api.WWHelper;
 import se.trixon.almond.util.MathHelper;
 
@@ -42,6 +46,7 @@ import se.trixon.almond.util.MathHelper;
 public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicRendererItem, BTopoControlPoint> {
 
     protected static IndexedCheckModel<GraphicRendererItem> sCheckModel;
+    protected static final HashSet<BTopoControlPoint> sLabeledPoints = new HashSet<>();
     protected static ArrayList<AVListImpl> sMapObjects;
     protected static final PlotLimiter sPlotLimiter = new PlotLimiter();
     protected static HashMap<BTopoControlPoint, Position[]> sPointToPositionMap = new HashMap<>();
@@ -115,6 +120,18 @@ public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicRen
 
             return new Position[]{startPosition, currentPosition};
         });
+    }
+
+    public void plotLabel(BTopoControlPoint p, Position position) {
+        if (sCheckModel.isChecked(GraphicRendererItem.LABEL) && !sLabeledPoints.contains(p)) {
+            sLabeledPoints.add(p);
+            var placemark = new PointPlacemark(position);
+            placemark.setAttributes(mAttributeManager.getLabelPlacemarkAttributes());
+            placemark.setAltitudeMode(WorldWind.ABSOLUTE);
+            placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(mAttributeManager.getLabelPlacemarkAttributes(), 1.5));
+            placemark.setLabelText(p.getValue(BKey.PIN_NAME));
+            addRenderable(placemark, false, null, null);
+        }
     }
 
     protected boolean isPlotLimitReached(BTopoControlPoint p, Object key, Position position) {

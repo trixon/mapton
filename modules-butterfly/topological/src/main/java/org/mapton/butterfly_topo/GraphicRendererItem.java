@@ -24,12 +24,13 @@ import se.trixon.almond.util.SDict;
  * @author Patrik Karlström
  */
 public enum GraphicRendererItem implements GraphicRenderItemLimitProvider {
+    LABEL("\t%s".formatted(Dict.LABEL.toString()), Integer.MAX_VALUE),
     CLUSTER_DEFORMATION("Kluster, deformation", Integer.MAX_VALUE),
     CLUSTER_DEFORMATION_PLANE_ALTITUDES("Kluster, deformation plan på olika höjder", Integer.MAX_VALUE),
     BEARING(Dict.BEARING.toString(), Integer.MAX_VALUE),
-    CIRCLE_1D("1d Delta", Integer.MAX_VALUE),
-    CIRCLE_2D("2d Delta", Integer.MAX_VALUE),
-    CIRCLE_3D("3d Delta", Integer.MAX_VALUE),
+    CIRCLE_1D("1d-delta", Integer.MAX_VALUE),
+    CIRCLE_2D("2d-delta", Integer.MAX_VALUE),
+    CIRCLE_3D("3d-delta", Integer.MAX_VALUE),
     CIRCLE_VERTICAL_DIRECTION("Färgskala, vertikalrörelse", Integer.MAX_VALUE),
     TRACE_1D(SDict.TRACE_1D.toString(), 10_000),
     VECTOR_1D(SDict.VECTOR_1D.toString(), 100),
