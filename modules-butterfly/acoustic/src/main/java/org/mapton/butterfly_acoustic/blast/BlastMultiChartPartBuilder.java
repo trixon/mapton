@@ -19,9 +19,13 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.TreeMap;
 import java.util.concurrent.Callable;
+import org.jfree.chart.ChartMouseEvent;
+import org.jfree.chart.ChartMouseListener;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.entity.LegendItemEntity;
+import org.jfree.chart.entity.XYItemEntity;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.time.TimeSeries;
 import org.mapton.api.MLatLon;
@@ -38,7 +42,7 @@ public class BlastMultiChartPartBuilder extends XyzChartBuilder<BAcousticBlast> 
 
     private LocalDate mDateFirst;
     private LocalDate mDateLast;
-    private BMultiChartComponent mDisruptorInfluent;
+    private BMultiChartComponent mMultiChartComponent;
     private final String mTitlePrefix;
     private int mPointSize;
 
@@ -47,11 +51,12 @@ public class BlastMultiChartPartBuilder extends XyzChartBuilder<BAcousticBlast> 
         initChart(axisLabel, decimalPattern);
     }
 
-    public synchronized Callable<ChartPanel> build(BAcousticBlast p, BMultiChartComponent disruptorInfluent) {
+    public synchronized Callable<ChartPanel> build(BAcousticBlast p, BMultiChartComponent multiChartComponent) {
         if (p == null) {
             return null;
         }
-        mDisruptorInfluent = disruptorInfluent;
+
+        mMultiChartComponent = multiChartComponent;
         var callable = (Callable<ChartPanel>) () -> {
             mDateFirst = p.ext().getDateFirst().toLocalDate().minusMonths(2);
             mDateLast = p.ext().getDateFirst().toLocalDate().plusMonths(2);
@@ -64,6 +69,27 @@ public class BlastMultiChartPartBuilder extends XyzChartBuilder<BAcousticBlast> 
 
             var rangeAxis = (NumberAxis) plot.getRangeAxis();
             rangeAxis.setAutoRange(true);
+
+            getChartPanel().addChartMouseListener(new ChartMouseListener() {
+                @Override
+                public void chartMouseClicked(ChartMouseEvent event) {
+                    var e = event.getEntity();
+                    if (e != null) {
+                        if (event.getEntity() instanceof XYItemEntity entity) {
+                            var pointName = getDataset().getSeriesKey(entity.getSeriesIndex()).toString();
+                            mMultiChartComponent.panTo(pointName);
+                        } else if (e instanceof LegendItemEntity entity) {
+                            var pointName = entity.getSeriesKey().toString();
+                            mMultiChartComponent.panTo(pointName);
+                        }
+                    }
+                }
+
+                @Override
+                public void chartMouseMoved(ChartMouseEvent event) {
+                    //nvm
+                }
+            });
 
             return getChartPanel();
         };
@@ -81,14 +107,14 @@ public class BlastMultiChartPartBuilder extends XyzChartBuilder<BAcousticBlast> 
     }
 
     @Override
-    public void setTitle(BAcousticBlast p) {
-        mChart.setTitle("%s: %s".formatted(mTitlePrefix, p.getName()));
+    public void setTitle(BAcousticBlast b) {
+        mChart.setTitle("%s: %s".formatted(mTitlePrefix, b.getName()));
 
 //        setTitle(p, Color.BLUE);
-        var date = "%s ← (%s) → %s".formatted(mDateFirst, p.ext().getDateFirst().toLocalDate(), mDateLast);
+        var date = "%s ← (%s) → %s".formatted(mDateFirst, b.ext().getDateFirst().toLocalDate(), mDateLast);
         getLeftSubTextTitle().setText(date);
 
-        var rightTitle = "Z = %.1f".formatted(p.getZeroZ());
+        var rightTitle = "Z = %.1f".formatted(b.getZeroZ());
         getRightSubTextTitle().setText(rightTitle);
     }
 
@@ -98,7 +124,7 @@ public class BlastMultiChartPartBuilder extends XyzChartBuilder<BAcousticBlast> 
         var plot = (XYPlot) mChart.getPlot();
         plot.clearDomainMarkers();
         var latLon = new MLatLon(b.getLat(), b.getLon());
-        var points = mDisruptorInfluent.getPointsAndSeries(latLon, mDateFirst, mDateLast);
+        var points = mMultiChartComponent.getPoints(latLon, mDateFirst, b.ext().getDateFirst().toLocalDate(), mDateLast);
         mPointSize = points.size();
         for (var p : points) {
             var timeSeries = new TimeSeries(p.getName());

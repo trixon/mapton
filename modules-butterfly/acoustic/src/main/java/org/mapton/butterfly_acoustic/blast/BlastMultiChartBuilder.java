@@ -45,16 +45,16 @@ public class BlastMultiChartBuilder {
         var callable = (Callable<JTabbedPane>) () -> {
             Lookup.getDefault().lookupAll(BMultiChartComponent.class).stream()
                     .sorted(Comparator.comparing(BMultiChartComponent::getName))
-                    .forEachOrdered(disruptorInfluent -> {
+                    .forEachOrdered(multiChartComponent -> {
                         try {
                             var chartBuilder = new BlastMultiChartPartBuilder(
-                                    disruptorInfluent.getName(),
-                                    disruptorInfluent.getAxisLabel(),
-                                    disruptorInfluent.getDecimalPattern()
+                                    multiChartComponent.getName(),
+                                    multiChartComponent.getAxisLabel(),
+                                    multiChartComponent.getDecimalPattern()
                             );
 
-                            var chartPanel = chartBuilder.build(p, disruptorInfluent).call();
-                            var tabTitle = "%s (%d)".formatted(disruptorInfluent.getName(), chartBuilder.getPointSize());
+                            var chartPanel = chartBuilder.build(p, multiChartComponent).call();
+                            var tabTitle = "%s (%d)".formatted(multiChartComponent.getName(), chartBuilder.getPointSize());
                             mTabbedPane.add(tabTitle, chartPanel);
                         } catch (Exception ex) {
                             Exceptions.printStackTrace(ex);
