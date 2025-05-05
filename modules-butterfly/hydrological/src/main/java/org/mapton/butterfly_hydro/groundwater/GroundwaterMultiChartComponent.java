@@ -22,6 +22,7 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 import org.mapton.api.MLatLon;
 import org.mapton.butterfly_core.api.BMultiChartComponent;
+import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.types.BXyzPoint;
 import org.mapton.butterfly_format.types.hydro.BHydroGroundwaterPoint;
 import org.mapton.butterfly_format.types.hydro.BHydroGroundwaterPointObservation;
@@ -39,17 +40,22 @@ public class GroundwaterMultiChartComponent extends BMultiChartComponent {
     }
 
     @Override
-    public String getName() {
-        return "Grundvatten";
-    }
-
-    @Override
     public String getDecimalPattern() {
         return "0.0";
     }
 
     @Override
-    public ArrayList<BHydroGroundwaterPoint> getPointsAndSeries(MLatLon latLon, LocalDate firstDate, LocalDate lastDate) {
+    public BaseManager getManager() {
+        return GroundwaterManager.getInstance();
+    }
+
+    @Override
+    public String getName() {
+        return "Grundvatten";
+    }
+
+    @Override
+    public ArrayList<BHydroGroundwaterPoint> getPoints(MLatLon latLon, LocalDate firstDate, LocalDate date, LocalDate lastDate) {
         var pointList = GroundwaterManager.getInstance().getTimeFilteredItems().stream()
                 .filter(p -> {
                     try {
@@ -63,7 +69,7 @@ public class GroundwaterMultiChartComponent extends BMultiChartComponent {
                     return true;
                 })
                 .filter(p -> {
-                    return latLon.distance(new MLatLon(p.getLat(), p.getLon())) <= DISTANCE_BLAST;
+                    return latLon.distance(new MLatLon(p.getLat(), p.getLon())) <= LIMIT_DISTANCE_BLAST;
                 }).collect(Collectors.toCollection(ArrayList::new));
 
         var pointsToExclude = new ArrayList<BXyzPoint>();
