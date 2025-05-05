@@ -66,17 +66,14 @@ public class BXyzPointObservation extends BBaseControlPointObservation {
 
     public class Ext<T> {
 
+        private Double mAccuZ;
         private Double mDeltaX;
         private Double mDeltaY;
         private Double mDeltaZ;
         private T mParent;
 
-        public T getParent() {
-            return mParent;
-        }
-
-        public void setParent(T parent) {
-            mParent = parent;
+        public Double getAccuZ() {
+            return mAccuZ;
         }
 
         public Double getBearing() {
@@ -136,6 +133,14 @@ public class BXyzPointObservation extends BBaseControlPointObservation {
             return mDeltaZ;
         }
 
+        public T getParent() {
+            return mParent;
+        }
+
+        public void setAccuZ(Double accuZ) {
+            this.mAccuZ = accuZ;
+        }
+
         public void setDeltaX(Double deltaX) {
             this.mDeltaX = deltaX;
         }
@@ -146,6 +151,10 @@ public class BXyzPointObservation extends BBaseControlPointObservation {
 
         public void setDeltaZ(Double deltaZ) {
             this.mDeltaZ = deltaZ;
+        }
+
+        public void setParent(T parent) {
+            mParent = parent;
         }
 
     }
