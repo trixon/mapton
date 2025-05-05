@@ -33,7 +33,7 @@ import org.mapton.butterfly_format.types.topo.BTopoConvergencePair;
 import org.mapton.butterfly_format.types.topo.BTopoConvergencePairObservation;
 import org.mapton.butterfly_topo.api.TopoManager;
 import org.mapton.butterfly_topo_convergence.ConvergenceAttributeManager;
-import org.mapton.butterfly_topo_convergence.group.ConvergenceGroupManager;
+import org.mapton.butterfly_topo_convergence.api.ConvergenceGroupManager;
 import org.mapton.worldwind.api.WWHelper;
 
 /**

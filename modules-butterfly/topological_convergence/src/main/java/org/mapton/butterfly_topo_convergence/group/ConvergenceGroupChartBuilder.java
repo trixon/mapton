@@ -17,10 +17,10 @@ package org.mapton.butterfly_topo_convergence.group;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 import org.jfree.chart.ChartPanel;
-import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.time.MovingAverage;
@@ -54,8 +54,8 @@ public class ConvergenceGroupChartBuilder extends XyzChartBuilder<BTopoConvergen
             setTitle(p);
             updateDataset(p);
             var plot = (XYPlot) mChart.getPlot();
-            var dateAxis = (DateAxis) plot.getDomainAxis();
-            dateAxis.setAutoRange(true);
+            setDateRangeNullNow(plot, p, mDateNull);
+
             plot.clearRangeMarkers();
 
             var rangeAxis = (NumberAxis) plot.getRangeAxis();
@@ -92,15 +92,13 @@ public class ConvergenceGroupChartBuilder extends XyzChartBuilder<BTopoConvergen
 
         var plot = (XYPlot) mChart.getPlot();
         plot.clearDomainMarkers();
+        plotBlasts(plot, p, p.ext().getObservationFilteredFirstDate(), p.ext().getObservationFilteredLastDate());
+        plotMeasNeed(plot, p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS));
 
         p.ext().getObservationsTimeFiltered().forEach(o -> {
-            var minute = mChartHelper.convertToMinute(o.getDate());
-            if (o.isReplacementMeasurement()) {
-                addMarker(plot, minute, "E", Color.RED);
-            } else if (o.isZeroMeasurement()) {
-                addMarker(plot, minute, "N", Color.BLUE);
-            }
+            addNEMarkers(plot, o, true);
 
+            var minute = mChartHelper.convertToMinute(o.getDate());
             mTimeSeriesX.add(minute, 0.0);
         });
 
@@ -119,7 +117,6 @@ public class ConvergenceGroupChartBuilder extends XyzChartBuilder<BTopoConvergen
             renderer.setSeriesPaint(index, Color.RED);
             renderer.setSeriesStroke(index, avgStroke);
         }
-
-        plotBlasts(plot, p, p.ext().getObservationFilteredFirstDate(), p.ext().getObservationFilteredLastDate());
     }
+
 }

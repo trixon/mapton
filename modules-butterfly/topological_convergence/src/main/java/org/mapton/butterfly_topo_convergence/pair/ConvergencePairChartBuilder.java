@@ -210,9 +210,9 @@ public class ConvergencePairChartBuilder extends ChartBuilder<BTopoConvergencePa
 
             if (ll1.distance(ll2) <= 40 && DateHelper.isBetween(p.getObservations().getFirst().getDate().toLocalDate(),
                     p.getObservations().getLast().getDate().toLocalDate(),
-                    b.getDateTime().toLocalDate())) {
+                    b.getDateLatest().toLocalDate())) {
                 try {
-                    var minute = mChartHelper.convertToMinute(b.getDateTime());
+                    var minute = mChartHelper.convertToMinute(b.getDateLatest());
                     mTimeSeriesBlast.add(minute, -20.0);
                 } catch (SeriesException e) {
                     //

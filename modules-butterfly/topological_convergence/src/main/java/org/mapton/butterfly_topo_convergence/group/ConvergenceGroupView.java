@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_topo_convergence.group;
 
+import org.mapton.butterfly_topo_convergence.api.ConvergenceGroupManager;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -32,6 +33,7 @@ import org.mapton.butterfly_core.api.ExternalSearchAction;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoConvergenceGroup;
 import org.mapton.butterfly_topo.api.TopoManager;
+import org.mapton.core.api.ui.MFilterPresetPopOver;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 
@@ -43,6 +45,7 @@ public class ConvergenceGroupView {
 
     private final ConvergenceGroupFilter mFilter = new ConvergenceGroupFilter();
     private final ConvergenceGroupFilterPopOver mFilterPopOver = new ConvergenceGroupFilterPopOver(mFilter);
+    private final MFilterPresetPopOver mFilterPresetPopOver = new MFilterPresetPopOver(mFilterPopOver, "topo.convergence");
     private final SingleListForm<ConvergenceGroupManager, BTopoConvergenceGroup> mListForm;
     private final ConvergenceGroupManager mManager = ConvergenceGroupManager.getInstance();
     private final TopoManager mTopoManager = TopoManager.getInstance();
@@ -58,6 +61,7 @@ public class ConvergenceGroupView {
                 ActionUtils.ACTION_SPAN,
                 mManager.geZoomExtentstAction(),
                 mFilter.getInfoPopOver().getAction(),
+                mFilterPresetPopOver.getAction(),
                 mFilterPopOver.getAction()
         );
 

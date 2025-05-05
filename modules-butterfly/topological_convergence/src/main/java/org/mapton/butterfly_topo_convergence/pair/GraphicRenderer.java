@@ -32,7 +32,7 @@ import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.Mapton;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.topo.BTopoConvergencePair;
-import org.mapton.butterfly_topo_convergence.group.ConvergenceGroupManager;
+import org.mapton.butterfly_topo_convergence.api.ConvergenceGroupManager;
 import org.mapton.worldwind.api.WWHelper;
 
 /**

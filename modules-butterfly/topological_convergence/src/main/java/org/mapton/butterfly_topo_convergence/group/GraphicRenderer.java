@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_topo_convergence.group;
 
+import org.mapton.butterfly_topo_convergence.api.ConvergenceGroupManager;
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;

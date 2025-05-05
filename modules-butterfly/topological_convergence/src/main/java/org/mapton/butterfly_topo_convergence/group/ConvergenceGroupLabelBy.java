@@ -83,6 +83,9 @@ public enum ConvergenceGroupLabelBy {
             return "%s - %s".formatted(dat1, dat2);
         }
     }),
+    MISC_POINT_COUNT(LabelByCategories.MISC, "Punktantal", p -> {
+        return Objects.toString(p.ext2().getControlPoints().size(), "-");
+    }),
     MISC_GROUP(LabelByCategories.MISC, Dict.GROUP.toString(), p -> {
         return Objects.toString(p.getGroup(), "NODATA");
     }),

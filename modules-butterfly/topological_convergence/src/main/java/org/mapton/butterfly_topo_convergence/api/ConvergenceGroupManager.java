@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_topo_convergence.group;
+package org.mapton.butterfly_topo_convergence.api;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -34,6 +34,8 @@ import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.topo.BTopoControlPointObservation;
 import org.mapton.butterfly_format.types.topo.BTopoConvergenceGroup;
 import org.mapton.butterfly_topo.api.TopoManager;
+import org.mapton.butterfly_topo_convergence.group.ConvergenceGroupChartBuilder;
+import org.mapton.butterfly_topo_convergence.group.ConvergenceGroupPropertiesBuilder;
 import org.openide.util.Exceptions;
 
 /**
@@ -96,10 +98,6 @@ public class ConvergenceGroupManager extends BaseManager<BTopoConvergenceGroup> 
     }
 
     @Override
-    public void initObjectToItemMap() {
-    }
-
-    @Override
     public void load(Butterfly butterfly) {
         //nvm - load on topo manager changes instead
     }
@@ -107,6 +105,8 @@ public class ConvergenceGroupManager extends BaseManager<BTopoConvergenceGroup> 
     public void load2(Butterfly butterfly) {
         try {
             initAllItems(butterfly.topo().getConvergenceGroups());
+            initObjectToItemMap();
+
             for (var g : butterfly.topo().getConvergenceGroups()) {
                 g.ext().getObservationsAllRaw().clear();
                 var controlPoints = Arrays.stream(StringUtils.split(g.getRef(), ","))
