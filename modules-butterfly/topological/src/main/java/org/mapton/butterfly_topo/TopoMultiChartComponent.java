@@ -24,6 +24,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import org.mapton.api.MLatLon;
 import org.mapton.butterfly_core.api.BMultiChartComponent;
+import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.topo.BTopoControlPointObservation;
 import org.mapton.butterfly_topo.api.TopoManager;
@@ -43,7 +44,12 @@ public abstract class TopoMultiChartComponent extends BMultiChartComponent {
     }
 
     @Override
-    public List<BTopoControlPoint> getPointsAndSeries(MLatLon latLon, LocalDate firstDate, LocalDate lastDate) {
+    public BaseManager getManager() {
+        return TopoManager.getInstance();
+    }
+
+    @Override
+    public List<BTopoControlPoint> getPoints(MLatLon latLon, LocalDate firstDate, LocalDate date, LocalDate lastDate) {
         var pointList = TopoManager.getInstance().getTimeFilteredItems().stream()
                 .filter(mPredicate)
                 .filter(p -> {
@@ -58,7 +64,7 @@ public abstract class TopoMultiChartComponent extends BMultiChartComponent {
                     return true;
                 })
                 .filter(p -> {
-                    return latLon.distance(new MLatLon(p.getLat(), p.getLon())) <= DISTANCE_BLAST;
+                    return latLon.distance(new MLatLon(p.getLat(), p.getLon())) <= LIMIT_DISTANCE_BLAST;
                 }).collect(Collectors.toCollection(ArrayList::new));
 
         var pointsToExclude = new ArrayList<BTopoControlPoint>();
@@ -99,5 +105,4 @@ public abstract class TopoMultiChartComponent extends BMultiChartComponent {
 
         return pointList;
     }
-
 }
