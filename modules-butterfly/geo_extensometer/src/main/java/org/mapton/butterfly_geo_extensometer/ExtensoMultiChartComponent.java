@@ -22,6 +22,7 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 import org.mapton.api.MLatLon;
 import org.mapton.butterfly_core.api.BMultiChartComponent;
+import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.types.geo.BGeoExtensometerPoint;
 import org.mapton.butterfly_format.types.geo.BGeoExtensometerPointObservation;
 import org.openide.util.lookup.ServiceProvider;
@@ -49,15 +50,20 @@ public class ExtensoMultiChartComponent extends BMultiChartComponent {
     }
 
     @Override
+    public BaseManager getManager() {
+        return ExtensoManager.getInstance();
+    }
+
+    @Override
     public String getName() {
         return "Extensometrar";
     }
 
     @Override
-    public ArrayList<BGeoExtensometerPoint> getPointsAndSeries(MLatLon latLon, LocalDate firstDate, LocalDate lastDate) {
+    public ArrayList<BGeoExtensometerPoint> getPoints(MLatLon latLon, LocalDate firstDate, LocalDate date, LocalDate lastDate) {
         var pointList = ExtensoManager.getInstance().getTimeFilteredItems().stream()
                 .filter(p -> {
-                    return latLon.distance(new MLatLon(p.getLat(), p.getLon())) <= DISTANCE_BLAST;
+                    return latLon.distance(new MLatLon(p.getLat(), p.getLon())) <= LIMIT_DISTANCE_BLAST;
                 })
                 .flatMap(extensometer -> extensometer.getPoints().stream())
                 .filter(p -> {

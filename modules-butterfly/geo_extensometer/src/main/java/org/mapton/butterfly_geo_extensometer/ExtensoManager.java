@@ -61,10 +61,6 @@ public class ExtensoManager extends BaseManager<BGeoExtensometer> {
     }
 
     @Override
-    public void initObjectToItemMap() {
-    }
-
-    @Override
     public void load(Butterfly butterfly) {
         try {
             var geotechnical = butterfly.geotechnical();
@@ -74,6 +70,11 @@ public class ExtensoManager extends BaseManager<BGeoExtensometer> {
 
             initAllItems(extensometers);
             initObjectToItemMap();
+
+            for (var p : extensometersPoints) {
+                getAllItemsMap().put(p.getName(), getItemForKey(p.getExtensometer()));
+                p.getExtensometer();
+            }
 
             var nameToPoint = extensometersPoints.stream().collect(Collectors.toMap(BGeoExtensometerPoint::getName, Function.identity()));
             var nameToObservations = new LinkedHashMap<String, ArrayList<BGeoExtensometerPointObservation>>();
