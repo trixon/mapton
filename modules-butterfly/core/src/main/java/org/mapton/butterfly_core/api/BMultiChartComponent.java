@@ -22,6 +22,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.TreeMap;
 import org.mapton.api.MLatLon;
+import org.mapton.api.Mapton;
 import org.mapton.butterfly_format.types.BBase;
 import org.mapton.butterfly_format.types.BXyzPoint;
 
@@ -31,7 +32,7 @@ import org.mapton.butterfly_format.types.BXyzPoint;
  */
 public abstract class BMultiChartComponent {
 
-    public static final double DISTANCE_BLAST = 40.0;
+    public static final double LIMIT_DISTANCE_BLAST = 40.0;
 
     public String getAxisLabel() {
         return "m";
@@ -41,9 +42,16 @@ public abstract class BMultiChartComponent {
         return "0.000";
     }
 
+    public abstract BaseManager getManager();
+
     public abstract String getName();
 
-    public abstract List<? extends BXyzPoint> getPointsAndSeries(MLatLon latLon, LocalDate firstDate, LocalDate lastDate);
+    public abstract List<? extends BXyzPoint> getPoints(MLatLon latLon, LocalDate firstDate, LocalDate date, LocalDate lastDate);
+
+    public void panTo(String pointName) {
+        var p = getManager().getItemForKey(pointName);
+        Mapton.getEngine().panTo(getManager().getLatLonForItem(p));
+    }
 
     public void sortPointList(ArrayList<? extends BBase> pointList) {
         pointList.sort(new Comparator<BBase>() {
