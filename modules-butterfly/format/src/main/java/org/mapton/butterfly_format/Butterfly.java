@@ -30,12 +30,13 @@ import org.mapton.butterfly_format.types.BAreaBase;
 import org.mapton.butterfly_format.types.BBasePointObservation;
 import org.mapton.butterfly_format.types.BCoordinate;
 import org.mapton.butterfly_format.types.BDimension;
+import org.mapton.butterfly_format.types.BMeasurementMode;
 import org.mapton.butterfly_format.types.BSystemSearchProvider;
+import org.mapton.butterfly_format.types.acoustic.BAcousticBlast;
 import org.mapton.butterfly_format.types.acoustic.BAcousticVibrationChannel;
 import org.mapton.butterfly_format.types.acoustic.BAcousticVibrationLimit;
 import org.mapton.butterfly_format.types.acoustic.BAcousticVibrationObservation;
 import org.mapton.butterfly_format.types.acoustic.BAcousticVibrationPoint;
-import org.mapton.butterfly_format.types.acoustic.BAcousticBlast;
 import org.mapton.butterfly_format.types.geo.BGeoExtensometer;
 import org.mapton.butterfly_format.types.geo.BGeoExtensometerPoint;
 import org.mapton.butterfly_format.types.geo.BGeoExtensometerPointObservation;
@@ -308,6 +309,7 @@ public class Butterfly {
 
         for (var p : mGeoExtensometers) {
             p.setButterfly(this);
+            p.setMeasurementMode(BMeasurementMode.AUTOMATIC);
         }
 
         for (var p : mGeoInclinometerPoints) {

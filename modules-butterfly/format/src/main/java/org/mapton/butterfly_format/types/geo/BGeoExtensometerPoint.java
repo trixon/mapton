@@ -26,6 +26,7 @@ import org.mapton.butterfly_format.types.BXyzPoint;
 @JsonPropertyOrder({
     "name",
     "extensometer",
+    "depth",
     "status",
     "frequency",
     "tag",
@@ -61,6 +62,7 @@ import org.mapton.butterfly_format.types.BXyzPoint;
 public class BGeoExtensometerPoint extends BXyzPoint {
 
     private transient String category;
+    private double depth;
     private String extensometer;
     private transient String group;
     private double limit1;
@@ -79,6 +81,10 @@ public class BGeoExtensometerPoint extends BXyzPoint {
         return mExt;
     }
 
+    public double getDepth() {
+        return depth;
+    }
+
     public String getExtensometer() {
         return extensometer;
     }
@@ -93,6 +99,10 @@ public class BGeoExtensometerPoint extends BXyzPoint {
 
     public double getLimit3() {
         return limit3;
+    }
+
+    public void setDepth(double depth) {
+        this.depth = depth;
     }
 
     public void setExtensometer(String extensometer) {
@@ -148,7 +158,5 @@ public class BGeoExtensometerPoint extends BXyzPoint {
                 return null;
             }
         }
-
     }
-
 }

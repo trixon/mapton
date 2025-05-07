@@ -20,6 +20,18 @@ package org.mapton.butterfly_format.types;
  * @author Patrik Karlström
  */
 public enum BMeasurementMode {
-    AUTOMATIC,
-    MANUAL;
+    AUTOMATIC("Automatisk"),
+    MANUAL("Manuell"),
+    UNDEFINED("Odefinierad");
+    private final String mName;
+
+    private BMeasurementMode(String name) {
+        mName = name;
+    }
+
+    @Override
+    public String toString() {
+        return mName;
+    }
+
 }

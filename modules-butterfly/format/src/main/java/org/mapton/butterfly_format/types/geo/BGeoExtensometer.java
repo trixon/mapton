@@ -33,8 +33,6 @@ import org.mapton.butterfly_format.types.BXyzPoint;
     "frequency",
     "operator",
     "origin",
-    "numOfDecXY",
-    "numOfDecZ",
     "limit1",
     "limit2",
     "limit3",
@@ -49,12 +47,6 @@ import org.mapton.butterfly_format.types.BXyzPoint;
 })
 @JsonIgnoreProperties(value = {
     "values",
-    "offsetX",
-    "offsetY",
-    "offsetZ",
-    "rollingX",
-    "rollingY",
-    "rollingZ",
     "dateRolling",
     "tag",
     "nameOfAlarmHeight",
@@ -69,7 +61,16 @@ public class BGeoExtensometer extends BXyzPoint {
 
     private transient Ext mExt;
     private transient ArrayList<BGeoExtensometerPoint> mPoints = new ArrayList<>();
+    private transient Double numOfDecXY;
+    private transient Double numOfDecZ;
+    private transient Double offsetX;
+    private transient Double offsetY;
+    private transient Double offsetZ;
+    private transient Double rollingX;
+    private transient Double rollingY;
+    private transient Double rollingZ;
     private String sensors;
+    private double groundLevel;
 
     public BGeoExtensometer() {
     }
@@ -83,13 +84,17 @@ public class BGeoExtensometer extends BXyzPoint {
     }
 
     @Override
+    public LocalDateTime getDateChanged() {
+        return getPoints().stream().map(p -> p.getDateChanged()).max(LocalDateTime::compareTo).orElse(null);
+    }
+
+    @Override
     public LocalDateTime getDateCreated() {
         return getPoints().stream().map(p -> p.getDateCreated()).min(LocalDateTime::compareTo).orElse(null);
     }
 
-    @Override
-    public LocalDateTime getDateChanged() {
-        return getPoints().stream().map(p -> p.getDateChanged()).max(LocalDateTime::compareTo).orElse(null);
+    public double getGroundLevel() {
+        return groundLevel;
     }
 
     public ArrayList<BGeoExtensometerPoint> getPoints() {
@@ -98,6 +103,10 @@ public class BGeoExtensometer extends BXyzPoint {
 
     public String getSensors() {
         return sensors;
+    }
+
+    public void setGroundLevel(double groundLevel) {
+        this.groundLevel = groundLevel;
     }
 
     public void setPoints(ArrayList<BGeoExtensometerPoint> points) {
@@ -113,54 +122,6 @@ public class BGeoExtensometer extends BXyzPoint {
         public Ext() {
         }
 
-//        public LocalDateTime getDateFirst() {
-//            var first = getPoints().stream().map(p -> p.ext().getDateFirst()).min(LocalDateTime::compareTo).orElse(LocalDateTime.MAX);
-//
-//            return first;
-//        }
-//
-//        public long getMeasurementUntilNext(ChronoUnit chronoUnit) {
-//            var latest = getPoints().stream().map(p -> p.ext().getDateLatest()).max(LocalDateTime::compareTo).orElse(LocalDateTime.MIN);
-//            var nextMeas = latest.plusDays(getFrequency());
-//
-//            return chronoUnit.between(LocalDate.now(), nextMeas);
-//        }
-//
-//        public LocalDate getObservationFilteredFirstDate() {
-//            return getPoints().stream()
-//                    .map(p -> p.ext().getObservationFilteredFirstDate())
-//                    .min(LocalDate::compareTo)
-//                    .orElse(LocalDate.MAX);
-//        }
-//
-//        public LocalDate getObservationFilteredLastDate() {
-//            return getPoints().stream()
-//                    .map(p -> p.ext().getObservationFilteredLastDate())
-//                    .max(LocalDate::compareTo)
-//                    .orElse(LocalDate.MIN);
-//        }
-//
-//        public LocalDate getObservationRawFirstDate() {
-//            return getPoints().stream()
-//                    .map(p -> p.ext().getObservationRawFirstDate())
-//                    .min(LocalDate::compareTo)
-//                    .orElse(LocalDate.MAX);
-//        }
-//
-//        public LocalDate getObservationRawLastDate() {
-//            return getPoints().stream()
-//                    .map(p -> p.ext().getObservationRawLastDate())
-//                    .max(LocalDate::compareTo)
-//                    .orElse(LocalDate.MIN);
-//        }
-//
-//        public LocalDate getObservationRawNextDate() {
-//            if (ObjectUtils.allNotNull(getObservationRawLastDate(), getFrequency()) && getFrequency() != 0) {
-//                return getObservationRawLastDate().plusDays(getFrequency());
-//            } else {
-//                return null;
-//            }
-//        }
         public boolean hasNoObservations() {
             return mPoints.stream()
                     .noneMatch(point -> !point.ext().getObservationsAllRaw().isEmpty());
