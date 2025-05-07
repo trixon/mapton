@@ -16,16 +16,17 @@
 package org.mapton.butterfly_geo_extensometer;
 
 import org.mapton.butterfly_core.api.GraphicRenderItemLimitProvider;
+import se.trixon.almond.util.Dict;
 
 /**
  *
  * @author Patrik Karlström
  */
 public enum GraphicRendererItem implements GraphicRenderItemLimitProvider {
-    INDICATORS("Indikatorer", Integer.MAX_VALUE),
-    TRACE("Radiellt spår", Integer.MAX_VALUE),
-    TRACE_LABEL("Radiellt spår (etikett)", Integer.MAX_VALUE);
-//    SLICE("Tårtbitar", Integer.MAX_VALUE);
+    LABEL_DELTA_Z("\t%s, ΔZ".formatted(Dict.LABEL.toString()), Integer.MAX_VALUE),
+    LABEL_DEPTH("\t%s, djup".formatted(Dict.LABEL.toString()), Integer.MAX_VALUE),
+    LABEL_ALARM_LEVELS("\t%s, larmnivåer".formatted(Dict.LABEL.toString()), Integer.MAX_VALUE),
+    INDICATORS("Indikatorer", Integer.MAX_VALUE);
     private final String mName;
     private final int mPlotLimit;
 
@@ -35,16 +36,19 @@ public enum GraphicRendererItem implements GraphicRenderItemLimitProvider {
     }
 
     @Override
+
     public String getName() {
         return mName;
     }
 
     @Override
+
     public int getPlotLimit() {
         return mPlotLimit;
     }
 
     @Override
+
     public String toString() {
         return getName();
     }

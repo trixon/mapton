@@ -27,16 +27,15 @@ import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwind.render.Pyramid;
 import gov.nasa.worldwind.render.Renderable;
 import gov.nasa.worldwind.render.airspaces.PartialCappedCylinder;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import org.apache.commons.lang3.StringUtils;
+import java.util.function.Function;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.MLatLon;
 import org.mapton.butterfly_format.types.geo.BGeoExtensometer;
+import org.mapton.butterfly_format.types.geo.BGeoExtensometerPoint;
 import org.mapton.worldwind.api.WWHelper;
-import se.trixon.almond.util.MathHelper;
 
 /**
  *
@@ -61,8 +60,19 @@ public class GraphicRenderer {
             plotIndicators(extenso, position);
         }
 
-        if (mCheckModel.isChecked(GraphicRendererItem.TRACE)) {
-            plotTrace(extenso);
+//        if (mCheckModel.isChecked(GraphicRendererItem.TRACE)) {
+//            plotTrace(extenso);
+//        }
+        if (mCheckModel.isChecked(GraphicRendererItem.LABEL_ALARM_LEVELS)) {
+            plotLabelsAlarm(extenso);
+        }
+
+        if (mCheckModel.isChecked(GraphicRendererItem.LABEL_DELTA_Z)) {
+            plotLabelsDeltaZ(extenso);
+        }
+
+        if (mCheckModel.isChecked(GraphicRendererItem.LABEL_DEPTH)) {
+            plotLabelsDepth(extenso);
         }
 
 //        if (mCheckModel.isChecked(GraphicRendererItem.SLICE)) {
@@ -82,41 +92,93 @@ public class GraphicRenderer {
     }
 
     private void plotIndicators(BGeoExtensometer extenso, Position position) {
+        var scale = 2d;
+        var ground = 1 * scale + Math.abs(ExtensoManager.getInstance().getMinimumDepth() * scale);
+        if (Double.isInfinite(ground)) {
+            return;
+        }
+        var shapeSize = 2.0;
+
         var p0 = WWHelper.positionFromPosition(position, 0.0);
-        var p1 = WWHelper.positionFromPosition(position, 8.0 * (extenso.getPoints().size() + 1));
+        var p1 = WWHelper.positionFromPosition(position, ground);
         var path = new Path(p0, p1);
         path.setAttributes(mAttributeManager.getGroundConnectorAttributes());
         addRenderable(path, true);
 
-        int i = 0;
-        for (var point : extenso.getPoints().reversed()) {
+        var groundCylinder = new Cylinder(p1, 0.2, shapeSize);
+        groundCylinder.setAttributes(mAttributeManager.getComponentZeroAttributes());
+
+        addRenderable(groundCylinder, true);
+
+        var indicatorStep = 10.0 * scale;
+        var indicatorAltitude = ground - indicatorStep;
+        var indicatorAttributes = mAttributeManager.getAlarmInteriorAttributes(-1);
+        indicatorAttributes.setInteriorOpacity(0.10);
+
+        while (indicatorAltitude > 0) {
+            var indicatorPos = WWHelper.positionFromPosition(position, indicatorAltitude);
+            var indicateCylinder = new Cylinder(indicatorPos, 0.05, shapeSize * .75);
+            indicateCylinder.setAttributes(indicatorAttributes);
+            addRenderable(indicateCylinder, true);
+            indicatorAltitude -= indicatorStep;
+        }
+
+        for (var point : extenso.getPoints()) {
             if (point.ext().getObservationsTimeFiltered().isEmpty()) {
                 continue;
             }
 
             var lastObservation = point.ext().getObservationFilteredLast();
-            var p = WWHelper.positionFromPosition(position, 8.0 * (i + 1));
-            var size = 3.0 + lastObservation.ext().getDelta() / 100;
-            size = MathHelper.limit(size, 2, 4);
+            var depth = ground + point.getDepth() * scale;
+            var p = WWHelper.positionFromPosition(position, depth);
             var attrs = mAttributeManager.getComponentAlarmAttributes(point.ext().getAlarmLevel());
 
-            var age = ChronoUnit.DAYS.between(lastObservation.getDate().toLocalDate(), LocalDate.now());
-            if (age > 1) {
+            if (extenso.ext().getMeasurementUntilNext(ChronoUnit.DAYS) < 0) {
                 attrs = new BasicShapeAttributes(attrs);
                 attrs.setInteriorOpacity(0.2);
             }
 
-            var pyramid = new Pyramid(p, size * 1.5, size);
+            var pyramid = new Pyramid(p, shapeSize * 1.0, shapeSize);
             pyramid.setAttributes(attrs);
-
+            point.setValue(Position.class, p);
             if (lastObservation.ext().getDelta() < 0) {
                 pyramid.setRoll(Angle.POS180);
             }
 
             addRenderable(pyramid, true);
-
-            i++;
         }
+    }
+
+    private void plotLabel(BGeoExtensometer extenso, Function<BGeoExtensometerPoint, String> function) {
+        extenso.getPoints().forEach(p -> {
+            Position position = p.getValue(Position.class);
+            var placemark = new PointPlacemark(position);
+            placemark.setAttributes(mAttributeManager.getLabelPlacemarkAttributes());
+            placemark.setAltitudeMode(WorldWind.ABSOLUTE);
+            placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(mAttributeManager.getLabelPlacemarkAttributes(), 1.5));
+            placemark.setLabelText(function.apply(p));
+            addRenderable(placemark, true);
+        });
+
+    }
+
+    private void plotLabelsAlarm(BGeoExtensometer extenso) {
+        var function = (Function<BGeoExtensometerPoint, String>) p -> "%.1f  %.1f  %.1f".formatted(
+                p.getLimit1() * 1000,
+                p.getLimit2() * 1000,
+                p.getLimit3() * 1000
+        );
+        plotLabel(extenso, function);
+    }
+
+    private void plotLabelsDeltaZ(BGeoExtensometer extenso) {
+        var function = (Function<BGeoExtensometerPoint, String>) p -> "%.2f".formatted(p.ext().getDelta());
+        plotLabel(extenso, function);
+    }
+
+    private void plotLabelsDepth(BGeoExtensometer extenso) {
+        var function = (Function<BGeoExtensometerPoint, String>) p -> "%.1f".formatted(p.getDepth());
+        plotLabel(extenso, function);
     }
 
     private void plotSlice(BGeoExtensometer extenso, Position position) {
@@ -185,18 +247,17 @@ public class GraphicRenderer {
 
             var latLon = new MLatLon(extenso.getLat(), extenso.getLon());
 
-            if (mCheckModel.isChecked(GraphicRendererItem.TRACE_LABEL)) {
-                var labelPosition = WWHelper.positionFromLatLon(latLon.getDestinationPoint(angle * i, 8));
-                var placemark = new PointPlacemark(labelPosition);
-                placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
-                placemark.setAttributes(mAttributeManager.getLabelPlacemarkAttributes());
-                placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(mAttributeManager.getLabelPlacemarkAttributes(), 1.5));
-                var label = StringUtils.remove(point.getName(), extenso.getName());
-                label = StringUtils.removeStart(label, "-");
-                placemark.setLabelText(label);
-                addRenderable(placemark, true);
-            }
-
+//            if (mCheckModel.isChecked(GraphicRendererItem.TRACE_LABEL)) {
+//                var labelPosition = WWHelper.positionFromLatLon(latLon.getDestinationPoint(angle * i, 8));
+//                var placemark = new PointPlacemark(labelPosition);
+//                placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
+//                placemark.setAttributes(mAttributeManager.getLabelPlacemarkAttributes());
+//                placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(mAttributeManager.getLabelPlacemarkAttributes(), 1.5));
+//                var label = StringUtils.remove(point.getName(), extenso.getName());
+//                label = StringUtils.removeStart(label, "-");
+//                placemark.setLabelText(label);
+//                addRenderable(placemark, true);
+//            }
             for (int j = 0; j < reversedList.size(); j++) {
                 var o = reversedList.get(j);
 

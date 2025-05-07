@@ -17,6 +17,7 @@ package org.mapton.butterfly_geo_extensometer;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.TreeSet;
 import java.util.function.Function;
@@ -38,8 +39,8 @@ import org.openide.util.Exceptions;
 public class ExtensoManager extends BaseManager<BGeoExtensometer> {
 
     private final ExtensoChartBuilder mChartBuilder = new ExtensoChartBuilder();
+    private double mMinimumDepth = 0.0;
     private final ExtensoPropertiesBuilder mPropertiesBuilder = new ExtensoPropertiesBuilder();
-    private double mMinimumZscaled = 0.0;
 
     public static ExtensoManager getInstance() {
         return Holder.INSTANCE;
@@ -48,6 +49,10 @@ public class ExtensoManager extends BaseManager<BGeoExtensometer> {
     private ExtensoManager() {
         super(BGeoExtensometer.class);
         initListeners();
+    }
+
+    public double getMinimumDepth() {
+        return mMinimumDepth;
     }
 
     @Override
@@ -123,6 +128,7 @@ public class ExtensoManager extends BaseManager<BGeoExtensometer> {
                     if (!dates.isEmpty()) {
                         ext.ext().setDateFirst(dates.first());
                         ext.setDateLatest(dates.last());
+                        ext.ext().setDateLatest(dates.last());
                     }
                 });
             });
@@ -160,7 +166,9 @@ public class ExtensoManager extends BaseManager<BGeoExtensometer> {
 
         getTimeFilteredItemsMap().clear();
         timeFilteredItems.stream().forEach(ext -> {
+            ext.ext().getObservationsTimeFiltered().clear();
             getTimeFilteredItemsMap().put(ext.getName(), ext);
+
             for (var p : ext.getPoints()) {
                 var timeFilteredObservations = p.ext().getObservationsAllRaw().stream()
                         .filter(o -> getTemporalManager().isValid(o.getDate()))
@@ -168,15 +176,15 @@ public class ExtensoManager extends BaseManager<BGeoExtensometer> {
 
                 p.ext().setObservationsTimeFiltered(timeFilteredObservations);
                 p.ext().calculateObservations(timeFilteredObservations);
+                ext.ext().getObservationsTimeFiltered().addAll(timeFilteredObservations);
             }
+            ext.ext().getObservationsTimeFiltered().sort(Comparator.comparing(BGeoExtensometerPointObservation::getDate));
         });
 
-        mMinimumZscaled = Double.MAX_VALUE;
+        mMinimumDepth = Double.MAX_VALUE;
         for (var p : timeFilteredItems) {
-            try {
-                mMinimumZscaled = FastMath.min(mMinimumZscaled, p.getZeroZ());
-                //mMinimumZscaled = FastMath.min(mMinimumZscaled, p.getZeroZ() + TopoLayerBundle.SCALE_FACTOR_Z * p.ext().deltaZero().getDelta());
-            } catch (Exception e) {
+            for (var point : p.getPoints()) {
+                mMinimumDepth = FastMath.min(mMinimumDepth, point.getDepth());
             }
         }
 
