@@ -204,6 +204,7 @@ public class ButterflyManager {
                 calculateLatLonsTmo(butterfly.tmo().getVaderstation());
                 calculateLatLonsTmo(butterfly.tmo().getVattenkemi());
 
+                calculateLatLons(butterfly.noise().getVibrationPoints());
                 calculateLatLons(butterfly.geotechnical().getExtensometers());
 
                 var areas = new ArrayList<MArea>();

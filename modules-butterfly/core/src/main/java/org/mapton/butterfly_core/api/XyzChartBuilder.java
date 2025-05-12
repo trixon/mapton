@@ -65,13 +65,51 @@ import se.trixon.almond.util.swing.SwingHelper;
 public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends ChartBuilder<T> {
 
     protected JFreeChart mChart;
-    protected final ChartHelper mChartHelper = new ChartHelper();
     protected Date mDateEnd;
     protected Date mDateNull;
     private ChartPanel mChartPanel;
     private final TimeSeriesCollection mDataset = new TimeSeriesCollection();
     private TextTitle mLeftSubTextTitle;
     private TextTitle mRightSubTextTitle;
+
+    public static void plotBlasts(XYPlot plot, BBasePoint p, LocalDate firstDate, LocalDate lastDate) {
+        var distanceLimit = 40.0;
+        var currentStroke = new BasicStroke(4f);
+        var otherStroke = new BasicStroke(1.2f);
+        var pointLatLon = new MLatLon(p.getLat(), p.getLon());
+
+        ButterflyManager.getInstance().getButterfly().noise().getBlasts().stream()
+                .filter(b -> {
+                    return DateHelper.isBetween(
+                            firstDate,
+                            lastDate,
+                            b.getDateLatest().toLocalDate());
+                })
+                .forEachOrdered(b -> {
+                    var blastLatLon = new MLatLon(b.getLat(), b.getLon());
+                    var distance = blastLatLon.distance(pointLatLon);
+
+                    if (distance <= distanceLimit) {
+                        var minute = ChartHelper.convertToMinute(b.getDateLatest());
+                        var marker = new ValueMarker(minute.getFirstMillisecond());
+                        Color color;
+
+                        if (b == p) {
+                            color = Color.RED;
+                            marker.setStroke(currentStroke);
+                        } else {
+                            var distanceQuota = (distanceLimit - distance) / (distanceLimit - 10.0);
+                            marker.setStroke(otherStroke);
+                            distanceQuota = Math.min(1, distanceQuota);
+                            int alpha = (int) (distanceQuota * 255d);
+                            color = new Color(0, 0, 255, alpha);
+//                            System.out.println("%.1f : %d".formatted(distance, alpha));
+                        }
+                        marker.setPaint(color);
+                        plot.addDomainMarker(marker);
+                    }
+                });
+    }
 
     public void addMarker(XYPlot plot, Minute minute, String string, Color color) {
         var marker = new ValueMarker(minute.getFirstMillisecond());
@@ -86,7 +124,7 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
         if (!doPlot) {
             return;
         }
-        var minute = mChartHelper.convertToMinute(o.getDate());
+        var minute = ChartHelper.convertToMinute(o.getDate());
         if (o.isReplacementMeasurement()) {
             addMarker(plot, minute, "E", Color.RED);
         } else if (o.isZeroMeasurement()) {
@@ -127,47 +165,27 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
         return mRightSubTextTitle;
     }
 
-    public void plotBlasts(XYPlot plot, BBasePoint p, LocalDate firstDate, LocalDate lastDate) {
-        var pointLatLon = new MLatLon(p.getLat(), p.getLon());
-        ButterflyManager.getInstance().getButterfly().noise().getBlasts().stream()
-                .filter(b -> {
-                    return DateHelper.isBetween(
-                            firstDate,
-                            lastDate,
-                            b.getDateLatest().toLocalDate());
-                })
-                .forEachOrdered(b -> {
-                    var blastLatLon = new MLatLon(b.getLat(), b.getLon());
-                    var distance = blastLatLon.distance(pointLatLon);
-                    if (distance <= 40.0) {
-                        var minute = mChartHelper.convertToMinute(b.getDateLatest());
-                        var marker = new ValueMarker(minute.getFirstMillisecond());
-                        Color color;
-                        if (b == p) {
-                            color = Color.RED;
-                            marker.setStroke(new BasicStroke(2f));
-                        } else {
-                            int alpha = (int) ((100d - distance) / 200d * 255d);
-                            color = new Color(0, 0, 255, alpha);
-                        }
-                        marker.setPaint(color);
-                        plot.addDomainMarker(marker);
-                    }
-                });
-    }
-
     public void plotMeasNeed(XYPlot plot, BBaseControlPoint p, long days) {
         if (p.getFrequency() > 0 && days < 0) {
-            var minute = mChartHelper.convertToMinute(LocalDateTime.now().plusDays(days));
+            var ldt = LocalDateTime.now().plusDays(days);
+            var minute = ChartHelper.convertToMinute(ldt);
             var marker = new ValueMarker(minute.getFirstMillisecond());
             marker.setPaint(Color.ORANGE);
-            marker.setLabel("S");
+            marker.setLabel(ldt.toLocalDate().toString());
             float[] dashPattern = {15f, 15f};
             marker.setStroke(new BasicStroke(8f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10f, dashPattern, 0f));
-            marker.setLabelAnchor(RectangleAnchor.TOP_RIGHT);
-            marker.setLabelTextAnchor(TextAnchor.TOP_LEFT);
+            marker.setLabelAnchor(RectangleAnchor.TOP_LEFT);
+            marker.setLabelTextAnchor(TextAnchor.TOP_RIGHT);
+            marker.setLabelFont(new Font("SansSerif", Font.BOLD, SwingHelper.getUIScaled(12)));
+
             plot.addDomainMarker(marker);
         }
+    }
+
+    public void resetPlot(XYPlot plot) {
+        getDataset().removeAllSeries();
+        plot.clearDomainMarkers();
+        plot.clearAnnotations();
     }
 
     public void setDateRangeNullLast(XYPlot plot, BBaseControlPoint p, Date dateNull, Date dateEnd) {
