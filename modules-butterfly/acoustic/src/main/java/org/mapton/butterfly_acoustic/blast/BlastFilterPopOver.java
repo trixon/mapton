@@ -55,10 +55,6 @@ public class BlastFilterPopOver extends BaseTabbedFilterPopOver {
         initListeners();
         initSession(NbPreferences.forModule(getClass()).node(getClass().getSimpleName()));
 
-        mFilterSectionPoint.getMeasNextSccb().setDisable(true);
-        mFilterSectionPoint.getMeasNextSccb().setDisable(true);
-        mFilterSectionPoint.getAlarmNameSccb().setDisable(true);
-
         populate();
     }
 
@@ -78,7 +74,6 @@ public class BlastFilterPopOver extends BaseTabbedFilterPopOver {
     public void filterPresetRestore(Preferences preferences) {
         clear();
         filterPresetStore(preferences);
-        //mDateRangePane.reset();
     }
 
     @Override
@@ -95,9 +90,9 @@ public class BlastFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionDate.load(mManager.getTemporalRange());
         mFilterSectionMisc.load();
 
-        var min = blasts.stream().filter(b -> b.getZeroZ() != null).mapToDouble(b -> b.getZeroZ()).min().orElse(-100d);
-        var max = blasts.stream().filter(b -> b.getZeroZ() != null).mapToDouble(b -> b.getZeroZ()).max().orElse(100d);
-        mAltitudeRangeSlider.setMinMaxValue(min - 1, max + 1);
+        var minZ = blasts.stream().filter(b -> b.getZeroZ() != null).mapToDouble(b -> b.getZeroZ()).min().orElse(-100d);
+        var maxZ = blasts.stream().filter(b -> b.getZeroZ() != null).mapToDouble(b -> b.getZeroZ()).max().orElse(100d);
+        mAltitudeRangeSlider.setMinMaxValue(minZ - 1, maxZ + 1);
     }
 
     @Override
@@ -171,7 +166,7 @@ public class BlastFilterPopOver extends BaseTabbedFilterPopOver {
         mFilterSectionDate.initSession(sessionManager);
         mFilterSectionMisc.initSession(sessionManager);
 
-        mAltitudeRangeSlider.initSession("filter.altitude", sessionManager);
+        mAltitudeRangeSlider.initSession("altitude", sessionManager);
         sessionManager.register("filter.blast.freeText", mFilter.freeTextProperty());
 
         return sessionManager;

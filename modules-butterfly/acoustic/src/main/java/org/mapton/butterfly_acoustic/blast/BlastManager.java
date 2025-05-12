@@ -34,7 +34,7 @@ import org.openide.util.lookup.ServiceProvider;
 public class BlastManager extends BaseManager<BAcousticBlast> {
 
     private final static String DISRUPTOR_NAME = Bundle.CTL_BlastAction();
-    private final BlastMultiChartBuilder mMultiChartBuilder = new BlastMultiChartBuilder();
+    private final BlastMultiChartAggregate mMultiChartAggregate = new BlastMultiChartAggregate();
     private final BlastPropertiesBuilder mPropertiesBuilder = new BlastPropertiesBuilder();
 
     public static BlastManager getInstance() {
@@ -47,7 +47,7 @@ public class BlastManager extends BaseManager<BAcousticBlast> {
 
     @Override
     public Object getObjectChart(BAcousticBlast selectedObject) {
-        return mMultiChartBuilder.build(selectedObject);
+        return mMultiChartAggregate.build(selectedObject);
     }
 
     @Override

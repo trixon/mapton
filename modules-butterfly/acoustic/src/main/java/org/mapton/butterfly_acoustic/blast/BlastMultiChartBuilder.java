@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Patrik Karlström.
+ * Copyright 2023 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,60 +15,132 @@
  */
 package org.mapton.butterfly_acoustic.blast;
 
-import java.util.Comparator;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.TreeMap;
 import java.util.concurrent.Callable;
-import javax.swing.JTabbedPane;
-import org.mapton.butterfly_core.api.BMultiChartComponent;
+import org.jfree.chart.ChartMouseEvent;
+import org.jfree.chart.ChartMouseListener;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.axis.DateAxis;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.entity.LegendItemEntity;
+import org.jfree.chart.entity.XYItemEntity;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.data.time.TimeSeries;
+import org.mapton.api.MLatLon;
+import org.mapton.butterfly_core.api.BMultiChartPart;
+import org.mapton.butterfly_core.api.XyzChartBuilder;
 import org.mapton.butterfly_format.types.acoustic.BAcousticBlast;
-import org.openide.util.Exceptions;
-import org.openide.util.Lookup;
+import org.mapton.ce_jfreechart.api.ChartHelper;
+import se.trixon.almond.util.DateHelper;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class BlastMultiChartBuilder {
+public class BlastMultiChartBuilder extends XyzChartBuilder<BAcousticBlast> {
 
-    private final JTabbedPane mTabbedPane;
+    private LocalDate mDateFirst;
+    private LocalDate mDateLast;
+    private BMultiChartPart mMultiChartComponent;
+    private final String mTitlePrefix;
+    private int mPointSize;
 
-    public BlastMultiChartBuilder() {
-        mTabbedPane = new JTabbedPane(JTabbedPane.BOTTOM);
+    public BlastMultiChartBuilder(String titlePrefix, String axisLabel, String decimalPattern) {
+        mTitlePrefix = titlePrefix;
+        initChart(axisLabel, decimalPattern);
     }
 
-    public synchronized Callable<JTabbedPane> build(BAcousticBlast p) {
+    public synchronized Callable<ChartPanel> build(BAcousticBlast p, BMultiChartPart multiChartComponent) {
         if (p == null) {
             return null;
         }
 
-        var prevIndex = mTabbedPane.getSelectedIndex();
-        mTabbedPane.removeAll();
-        var callable = (Callable<JTabbedPane>) () -> {
-            Lookup.getDefault().lookupAll(BMultiChartComponent.class).stream()
-                    .sorted(Comparator.comparing(BMultiChartComponent::getName))
-                    .forEachOrdered(multiChartComponent -> {
-                        try {
-                            var chartBuilder = new BlastMultiChartPartBuilder(
-                                    multiChartComponent.getName(),
-                                    multiChartComponent.getAxisLabel(),
-                                    multiChartComponent.getDecimalPattern()
-                            );
+        mMultiChartComponent = multiChartComponent;
+        var callable = (Callable<ChartPanel>) () -> {
+            mDateFirst = p.ext().getDateFirst().toLocalDate().minusMonths(2);
+            mDateLast = p.ext().getDateFirst().toLocalDate().plusMonths(2);
+            setTitle(p);
+            updateDataset(p);
+            var plot = (XYPlot) mChart.getPlot();
+            var dateAxis = (DateAxis) plot.getDomainAxis();
+            dateAxis.setRange(DateHelper.convertToDate(mDateFirst), DateHelper.convertToDate(mDateLast));
+            plot.clearRangeMarkers();
 
-                            var chartPanel = chartBuilder.build(p, multiChartComponent).call();
-                            var tabTitle = "%s (%d)".formatted(multiChartComponent.getName(), chartBuilder.getPointSize());
-                            mTabbedPane.add(tabTitle, chartPanel);
-                        } catch (Exception ex) {
-                            Exceptions.printStackTrace(ex);
+            var rangeAxis = (NumberAxis) plot.getRangeAxis();
+            rangeAxis.setAutoRange(true);
+
+            getChartPanel().addChartMouseListener(new ChartMouseListener() {
+                @Override
+                public void chartMouseClicked(ChartMouseEvent event) {
+                    var e = event.getEntity();
+                    if (e != null) {
+                        if (event.getEntity() instanceof XYItemEntity entity) {
+                            var pointName = getDataset().getSeriesKey(entity.getSeriesIndex()).toString();
+                            mMultiChartComponent.panTo(pointName);
+                        } else if (e instanceof LegendItemEntity entity) {
+                            var pointName = entity.getSeriesKey().toString();
+                            mMultiChartComponent.panTo(pointName);
                         }
-                    });
+                    }
+                }
 
-            if (prevIndex > -1) {
-                mTabbedPane.setSelectedIndex(prevIndex);
-            }
+                @Override
+                public void chartMouseMoved(ChartMouseEvent event) {
+                    //nvm
+                }
+            });
 
-            return mTabbedPane;
+            return getChartPanel();
         };
 
         return callable;
     }
 
+    @Override
+    public Object build(BAcousticBlast selectedObject) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public int getPointSize() {
+        return mPointSize;
+    }
+
+    @Override
+    public void setTitle(BAcousticBlast b) {
+        mChart.setTitle("%s: %s".formatted(mTitlePrefix, b.getName()));
+
+//        setTitle(p, Color.BLUE);
+        var date = "%s ← (%s) → %s".formatted(mDateFirst, b.ext().getDateFirst().toLocalDate(), mDateLast);
+        getLeftSubTextTitle().setText(date);
+
+        var rightTitle = "Z = %.1f".formatted(b.getZeroZ());
+        getRightSubTextTitle().setText(rightTitle);
+    }
+
+    @Override
+    public void updateDataset(BAcousticBlast b) {
+        var plot = (XYPlot) mChart.getPlot();
+        resetPlot(plot);
+
+        var latLon = new MLatLon(b.getLat(), b.getLon());
+        var points = mMultiChartComponent.getPoints(latLon, mDateFirst, b.ext().getDateFirst().toLocalDate(), mDateLast);
+        mPointSize = points.size();
+        for (var p : points) {
+            var timeSeries = new TimeSeries(p.getName());
+            TreeMap<LocalDateTime, Double> map = p.getValue(BMultiChartPart.class);
+            if (map != null) {
+                for (var entry : map.entrySet()) {
+                    var date = entry.getKey();
+                    var z = entry.getValue();
+                    var minute = ChartHelper.convertToMinute(date);
+                    timeSeries.addOrUpdate(minute, z);
+                }
+            }
+            getDataset().addSeries(timeSeries);
+        }
+
+        plotBlasts(plot, b, mDateFirst, mDateLast);
+    }
 }
