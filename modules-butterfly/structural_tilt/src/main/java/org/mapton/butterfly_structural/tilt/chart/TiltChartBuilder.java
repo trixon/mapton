@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_structural.tilt;
+package org.mapton.butterfly_structural.tilt.chart;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.axis.AxisLocation;
-import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
@@ -33,6 +33,8 @@ import org.jfree.data.time.TimeSeriesCollection;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.structural.BStructuralTiltPoint;
+import org.mapton.butterfly_structural.tilt.TiltHelper;
+import org.mapton.ce_jfreechart.api.ChartHelper;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.DateHelper;
 
@@ -71,9 +73,8 @@ public class TiltChartBuilder extends XyzChartBuilder<BStructuralTiltPoint> {
             setTitle(p);
             updateDataset(p);
             var plot = (XYPlot) mChart.getPlot();
-            var dateAxis = (DateAxis) plot.getDomainAxis();
-            //dateAxis.setRange(DateHelper.convertToDate(mTemporalManager.getLowDate()), DateHelper.convertToDate(mTemporalManager.getHighDate()));
-            dateAxis.setAutoRange(true);
+            setDateRangeNullNow(plot, p, mDateNull);
+
             plot.clearRangeMarkers();
             plotAlarmIndicators(p);
 
@@ -107,7 +108,6 @@ public class TiltChartBuilder extends XyzChartBuilder<BStructuralTiltPoint> {
 
     @Override
     public synchronized void updateDataset(BStructuralTiltPoint p) {
-        getDataset().removeAllSeries();
         mTimeSeriesX.clear();
         mTimeSeriesY.clear();
         mTimeSeriesZ.clear();
@@ -116,16 +116,15 @@ public class TiltChartBuilder extends XyzChartBuilder<BStructuralTiltPoint> {
         mTimeSeriesTemperature.clear();
 
         var plot = (XYPlot) mChart.getPlot();
-        plot.clearDomainMarkers();
+        resetPlot(plot);
+
+        plotBlasts(plot, p, p.ext().getObservationFilteredFirstDate(), p.ext().getObservationFilteredLastDate());
+        plotMeasNeed(plot, p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS));
 
         p.ext().getObservationsTimeFiltered().forEach(o -> {
-            var minute = mChartHelper.convertToMinute(o.getDate());
-            if (o.isReplacementMeasurement()) {
-                addMarker(plot, minute, "E", Color.RED);
-            } else if (o.isZeroMeasurement()) {
-                addMarker(plot, minute, "N", Color.BLUE);
-            }
+            addNEMarkers(plot, o, true);
 
+            var minute = ChartHelper.convertToMinute(o.getDate());
             mTimeSeriesX.add(minute, o.ext().getDeltaX());
             mTimeSeriesY.add(minute, o.ext().getDeltaY());
             mTimeSeriesZ.add(minute, o.ext().getDelta2d());

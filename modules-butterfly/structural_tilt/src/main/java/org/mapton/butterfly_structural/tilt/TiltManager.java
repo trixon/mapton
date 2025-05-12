@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_structural.tilt;
 
+import org.mapton.butterfly_structural.tilt.chart.TiltChartBuilder;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
