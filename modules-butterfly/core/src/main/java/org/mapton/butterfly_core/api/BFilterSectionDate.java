@@ -21,7 +21,6 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.prefs.Preferences;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ListChangeListener;
@@ -31,12 +30,13 @@ import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.IndexedCheckModel;
 import org.controlsfx.tools.Borders;
-import org.mapton.api.MDatePreset;
+import org.mapton.api.MDateFormula;
 import org.mapton.api.MTemporalRange;
 import org.mapton.api.ui.forms.DateRangePane;
 import org.mapton.api.ui.forms.MBaseFilterSection;
 import static org.mapton.butterfly_core.api.BFilterSectionDate.DateElement.*;
 import org.mapton.butterfly_format.types.BXyzPoint;
+import org.mapton.core.api.ui.MFilterPresetPopOver;
 import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SDict;
@@ -49,9 +49,15 @@ import se.trixon.almond.util.fx.session.SessionCheckComboBox;
  */
 public class BFilterSectionDate extends MBaseFilterSection {
 
-    private static final String KEY_DATE_PRESET_FIRST = "filter.date.preset.first";
-    private static final String KEY_DATE_PRESET_LAST = "filter.date.preset.last";
+    public static final String KEY_DATE_FIRST_HIGH = "filter.date.FirstHigh";
+    public static final String KEY_DATE_FIRST_LOW = "filter.date.FirstLow";
+    public static final String KEY_DATE_LAST_HIGH = "filter.date.LastHigh";
+    public static final String KEY_DATE_LAST_LOW = "filter.date.LastLow";
+    private static final String KEY_DATE_FORMULA_FIRST = "filter.date.formula.first";
+    private static final String KEY_DATE_FORMULA_LAST = "filter.date.formula.last";
     private Node mDateFirstBorderBox;
+    private String mDateFormulaFirst;
+    private String mDateFormulaLast;
     private Node mDateLastBorderBox;
     private final DateRangePane mDateRangeFirstPane = new DateRangePane();
     private final DateRangePane mDateRangeLastPane = new DateRangePane();
@@ -69,6 +75,8 @@ public class BFilterSectionDate extends MBaseFilterSection {
         super.clear();
         mDateRangeFirstPane.reset();
         mDateRangeLastPane.reset();
+        mDateFormulaFirst = "";
+        mDateFormulaLast = "";
         SessionCheckComboBox.clearChecks(
                 mHasDateFromToSccb
         );
@@ -128,14 +136,6 @@ public class BFilterSectionDate extends MBaseFilterSection {
         return mDateLastBorderBox;
     }
 
-    public DateRangePane getDateRangeFirstPane() {
-        return mDateRangeFirstPane;
-    }
-
-    public DateRangePane getDateRangeLastPane() {
-        return mDateRangeLastPane;
-    }
-
     public SessionCheckComboBox<String> getHasDateFromToSccb() {
         return mHasDateFromToSccb;
     }
@@ -159,24 +159,60 @@ public class BFilterSectionDate extends MBaseFilterSection {
     public void initSession(SessionManager sessionManager) {
         setSessionManager(sessionManager);
         sessionManager.register("filter.section.date", selectedProperty());
+        var preferences = sessionManager.getPreferences();
+        String dateFormulaFirst = null;
+        String dateFormulaLast = null;
+        var isPreset = StringUtils.containsIgnoreCase(preferences.absolutePath(), MFilterPresetPopOver.FILTER_PRESET_NODE);
+
+        if (isPreset) {
+            mDateFormulaFirst = preferences.get(KEY_DATE_FORMULA_FIRST, "");
+            mDateFormulaLast = preferences.get(KEY_DATE_FORMULA_LAST, "");
+            dateFormulaFirst = mDateFormulaFirst;
+            dateFormulaLast = mDateFormulaLast;
+        } else {
+            mDateFormulaFirst = mDateRangeFirstPane.dateFormulaProperty().get();
+            mDateFormulaLast = mDateRangeLastPane.dateFormulaProperty().get();
+        }
+
         sessionManager.register("filter.checkedDateFromTo", mHasDateFromToSccb.checkedStringProperty());
+
+        sessionManager.register(KEY_DATE_FORMULA_FIRST, mDateRangeFirstPane.dateFormulaProperty());
+        sessionManager.register(KEY_DATE_FORMULA_LAST, mDateRangeLastPane.dateFormulaProperty());
+        sessionManager.register(KEY_DATE_FIRST_LOW, mDateRangeFirstPane.lowStringProperty());
+        sessionManager.register(KEY_DATE_FIRST_HIGH, mDateRangeFirstPane.highStringProperty());
+        sessionManager.register(KEY_DATE_LAST_LOW, mDateRangeLastPane.lowStringProperty());
+        sessionManager.register(KEY_DATE_LAST_HIGH, mDateRangeLastPane.highStringProperty());
+
+        if (isPreset) {
+            mDateFormulaFirst = dateFormulaFirst;
+            mDateFormulaLast = dateFormulaLast;
+        }
+
+        restoreCustomDates();
     }
 
     public void load(MTemporalRange temporalRange) {
-        if (temporalRange != null) {
-            getDateRangeFirstPane().setMinMaxDate(temporalRange.getFromLocalDate(), temporalRange.getToLocalDate());
-            getDateRangeLastPane().setMinMaxDate(temporalRange.getFromLocalDate(), temporalRange.getToLocalDate());
-        }
         var sessionManager = getSessionManager();
-        sessionManager.register("filter.date.FirstLow", getDateRangeFirstPane().lowStringProperty());
-        sessionManager.register("filter.date.FirstHigh", getDateRangeFirstPane().highStringProperty());
-        sessionManager.register("filter.date.LastLow", getDateRangeLastPane().lowStringProperty());
-        sessionManager.register("filter.date.LastHigh", getDateRangeLastPane().highStringProperty());
+        List.of(
+                mDateRangeFirstPane.lowStringProperty(),
+                mDateRangeFirstPane.highStringProperty(),
+                mDateRangeLastPane.lowStringProperty(),
+                mDateRangeLastPane.highStringProperty()
+        ).forEach(property -> sessionManager.unregister(property));
 
-        sessionManager.register(KEY_DATE_PRESET_FIRST, mDateRangeFirstPane.datePresetProperty());
-        sessionManager.register(KEY_DATE_PRESET_LAST, mDateRangeLastPane.datePresetProperty());
+        if (temporalRange != null) {
+            mDateRangeFirstPane.setMinMaxDate(temporalRange.getFromLocalDate(), temporalRange.getToLocalDate());
+            mDateRangeLastPane.setMinMaxDate(temporalRange.getFromLocalDate(), temporalRange.getToLocalDate());
+        }
+        sessionManager.register(KEY_DATE_FIRST_LOW, mDateRangeFirstPane.lowStringProperty());
+        sessionManager.register(KEY_DATE_FIRST_HIGH, mDateRangeFirstPane.highStringProperty());
+        sessionManager.register(KEY_DATE_LAST_LOW, mDateRangeLastPane.lowStringProperty());
+        sessionManager.register(KEY_DATE_LAST_HIGH, mDateRangeLastPane.highStringProperty());
 
-        restoreCustomDates(sessionManager.getPreferences());
+        var p = getSessionManager().getPreferences();
+        mDateFormulaFirst = p.get(KEY_DATE_FORMULA_FIRST, "");
+        mDateFormulaLast = p.get(KEY_DATE_FORMULA_LAST, "");
+        initSession(sessionManager);
     }
 
     @Override
@@ -224,19 +260,17 @@ public class BFilterSectionDate extends MBaseFilterSection {
         return mDateRangeLastPane.lowDateProperty();
     }
 
-    private void restoreCustomDates(Preferences preferences) {
-        var firstPreset = preferences.get(KEY_DATE_PRESET_FIRST, "");
-        if (StringUtils.isNotBlank(firstPreset)) {
-            var datePreset = new MDatePreset(firstPreset);
+    private void restoreCustomDates() {
+        if (StringUtils.isNotBlank(mDateFormulaFirst)) {
+            var datePreset = new MDateFormula(mDateFormulaFirst);
             mDateRangeFirstPane.getDatePane().getDateRangeSlider().setLowHighDate(datePreset.getStartDate(), datePreset.getEndDate());
-            preferences.put(KEY_DATE_PRESET_FIRST, firstPreset);
+            mDateRangeFirstPane.dateFormulaProperty().set(mDateFormulaFirst);
         }
 
-        var lastPreset = preferences.get(KEY_DATE_PRESET_LAST, "");
-        if (StringUtils.isNotBlank(lastPreset)) {
-            var datePreset = new MDatePreset(lastPreset);
+        if (StringUtils.isNotBlank(mDateFormulaLast)) {
+            var datePreset = new MDateFormula(mDateFormulaLast);
             mDateRangeLastPane.getDatePane().getDateRangeSlider().setLowHighDate(datePreset.getStartDate(), datePreset.getEndDate());
-            preferences.put(KEY_DATE_PRESET_LAST, lastPreset);
+            mDateRangeLastPane.dateFormulaProperty().set(mDateFormulaLast);
         }
     }
 

@@ -19,24 +19,27 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.List;
 import java.util.TreeMap;
 import org.mapton.api.MLatLon;
 import org.mapton.api.Mapton;
 import org.mapton.butterfly_format.types.BBase;
 import org.mapton.butterfly_format.types.BXyzPoint;
+import se.trixon.almond.util.fx.FxHelper;
 
 /**
  *
  * @author Patrik Karlström
  */
-public abstract class BMultiChartComponent {
+public abstract class BMultiChartPart {
 
     public static final double LIMIT_DISTANCE_BLAST = 40.0;
+    public static final double LIMIT_DISTANCE_TOPO = 40.0;
 
     public String getAxisLabel() {
         return "m";
     }
+
+    public abstract String getCategory();
 
     public String getDecimalPattern() {
         return "0.000";
@@ -46,11 +49,16 @@ public abstract class BMultiChartComponent {
 
     public abstract String getName();
 
-    public abstract List<? extends BXyzPoint> getPoints(MLatLon latLon, LocalDate firstDate, LocalDate date, LocalDate lastDate);
+    public abstract ArrayList<? extends BXyzPoint> getPoints(MLatLon latLon, LocalDate firstDate, LocalDate date, LocalDate lastDate);
 
     public void panTo(String pointName) {
         var p = getManager().getItemForKey(pointName);
         Mapton.getEngine().panTo(getManager().getLatLonForItem(p));
+    }
+
+    public void select(String pointName) {
+        var p = getManager().getItemForKey(pointName);
+        FxHelper.runLater(() -> getManager().selectedItemProperty().setValue(p));
     }
 
     public void sortPointList(ArrayList<? extends BBase> pointList) {
@@ -64,7 +72,7 @@ public abstract class BMultiChartComponent {
             }
 
             private double getDeltaForPeriod(BBase p) {
-                TreeMap<LocalDateTime, Double> map = p.getValue(BMultiChartComponent.class);
+                TreeMap<LocalDateTime, Double> map = p.getValue(BMultiChartPart.class);
                 return Math.abs(map.lastEntry().getValue());
             }
         });
