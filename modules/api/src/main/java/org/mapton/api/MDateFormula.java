@@ -23,11 +23,11 @@ import org.apache.commons.lang3.StringUtils;
  *
  * @author Patrik Karlström
  */
-public class MDatePreset {
+public class MDateFormula {
 
     private final String mCode;
 
-    public MDatePreset(String code) {
+    public MDateFormula(String code) {
         mCode = code;
     }
 

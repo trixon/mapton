@@ -314,7 +314,7 @@
         <dependency>
             <groupId>eu.hansolo</groupId>
             <artifactId>toolbox</artifactId>
-            <version>21.0.17</version>
+            <version>21.0.19</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.openjfx</groupId>
@@ -349,7 +349,7 @@
         <dependency>
             <groupId>com.helger</groupId>
             <artifactId>ph-pdf-layout</artifactId>
-            <version>7.3.6</version>
+            <version>7.3.7</version>
         </dependency>
         <dependency>
             <groupId>com.helger.font</groupId>

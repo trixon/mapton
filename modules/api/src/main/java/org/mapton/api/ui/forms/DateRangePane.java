@@ -20,7 +20,6 @@ import java.time.LocalDate;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
@@ -30,7 +29,7 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import org.controlsfx.control.SegmentedButton;
-import org.mapton.api.MDatePreset;
+import org.mapton.api.MDateFormula;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.control.DatePane;
 
@@ -40,8 +39,8 @@ import se.trixon.almond.util.fx.control.DatePane;
  */
 public class DateRangePane {
 
+    private final StringProperty mDateFormulaProperty = new SimpleStringProperty();
     private final DatePane mDatePane = new DatePane();
-    private final StringProperty mDatePresetProperty = new SimpleStringProperty();
     private final SplitMenuButton mPresetSplitMenuButton = new SplitMenuButton();
     private VBox mRoot;
 
@@ -50,8 +49,8 @@ public class DateRangePane {
         initListeners();
     }
 
-    public StringProperty datePresetProperty() {
-        return mDatePresetProperty;
+    public StringProperty dateFormulaProperty() {
+        return mDateFormulaProperty;
     }
 
     public DatePane getDatePane() {
@@ -80,7 +79,7 @@ public class DateRangePane {
 
     public void reset() {
         mDatePane.reset();
-
+        mDateFormulaProperty.setValue("");
     }
 
     public void setMinMaxDate(LocalDate minDate, LocalDate maxDate) {
@@ -89,10 +88,10 @@ public class DateRangePane {
 
     private MenuItem createPresetMenuItem(String name, String code) {
         var menuItem = new MenuItem(name);
-        var datePreset = new MDatePreset(code);
+        var dateFormula = new MDateFormula(code);
         menuItem.setOnAction(actionEvent -> {
-            mDatePane.getDateRangeSlider().setLowHighDate(datePreset.getStartDate(), datePreset.getEndDate());
-            mDatePresetProperty.set(code);
+            mDatePane.getDateRangeSlider().setLowHighDate(dateFormula.getStartDate(), dateFormula.getEndDate());
+            mDateFormulaProperty.set(code);
         });
 
         return menuItem;
@@ -148,15 +147,16 @@ public class DateRangePane {
         });
 
         mPresetSplitMenuButton.setOnAction(ae -> {
+            mDateFormulaProperty.set("");
             mDatePane.reset();
         });
 
-        ChangeListener<LocalDate> dateChengeListener = (p, o, n) -> {
-            mDatePresetProperty.set("");
-        };
-
-        mDatePane.getDateRangeSlider().highDateProperty().addListener(dateChengeListener);
-        mDatePane.getDateRangeSlider().lowDateProperty().addListener(dateChengeListener);
+        //TODO Reset formula on slider change?
+//        ChangeListener<LocalDate> dateChengeListener = (p, o, n) -> {
+//            mDateFormulaProperty.set("");
+//        };
+//        mDatePane.getDateRangeSlider().highDateProperty().addListener(dateChengeListener);
+//        mDatePane.getDateRangeSlider().lowDateProperty().addListener(dateChengeListener);
     }
 
     private void populatePresets() {
