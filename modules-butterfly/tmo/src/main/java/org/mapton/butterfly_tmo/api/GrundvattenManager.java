@@ -25,7 +25,7 @@ import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.tmo.BGrundvatten;
 import org.mapton.butterfly_format.types.tmo.BGrundvattenObservation;
-import org.mapton.butterfly_tmo.grundvatten.GrundvattenChartBuilder;
+import org.mapton.butterfly_tmo.grundvatten.chart.GrundvattenChartBuilder;
 import org.mapton.butterfly_tmo.grundvatten.GrundvattenPropertiesBuilder;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.CollectionHelper;

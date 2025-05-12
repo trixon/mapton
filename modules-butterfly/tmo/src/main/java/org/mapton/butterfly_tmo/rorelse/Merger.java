@@ -30,9 +30,9 @@ import org.mapton.butterfly_topo.api.TopoManager;
  */
 public class Merger {
 
-    private final TopoManager mTopoManager = TopoManager.getInstance();
-    private final RorelseManager mRorelseManager = RorelseManager.getInstance();
     private final ButterflyManager mButterflyManager = ButterflyManager.getInstance();
+    private final RorelseManager mManager = RorelseManager.getInstance();
+    private final TopoManager mTopoManager = TopoManager.getInstance();
 
     public Merger() {
     }
@@ -56,7 +56,7 @@ public class Merger {
 
         var topoPoints = new ArrayList<BTopoControlPoint>();
 
-        butterfly.tmo().getRorelse().forEach(r -> {
+        mManager.getTimeFilteredItems().forEach(r -> {
             var p = new BTopoControlPoint();
             p.setName(prefix + r.getName());
             p.setGroup(prefix + r.getPlacering());

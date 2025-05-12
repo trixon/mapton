@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_tmo.grundvatten;
+package org.mapton.butterfly_tmo.grundvatten.chart;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -53,7 +53,6 @@ import se.trixon.almond.util.swing.SwingHelper;
 public class GrundvattenChartBuilder extends ChartBuilder<BGrundvatten> {
 
     private JFreeChart mChart;
-    private final ChartHelper mChartHelper = new ChartHelper();
     private ChartPanel mChartPanel;
     private final TimeSeriesCollection mDataset = new TimeSeriesCollection();
     private TextTitle mDateSubTextTitle;
@@ -103,7 +102,7 @@ public class GrundvattenChartBuilder extends ChartBuilder<BGrundvatten> {
         plot.clearDomainMarkers();
 
         p.ext().getObservationsTimeFiltered().forEach(o -> {
-            var minute = mChartHelper.convertToMinute(o.getDate());
+            var minute = ChartHelper.convertToMinute(o.getDate());
 
             mTimeSeriesH.addOrUpdate(minute, o.getNivå());
 
