@@ -925,7 +925,7 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
     private boolean validateMeasYoyo(BTopoControlPoint p) {
         if (!mMeasYoyoProperty.get()) {
             return true;
-        } else if (p.getDimension() != BDimension._1d || p.ext().getObservationsTimeFiltered().size() < 2) {
+        } else if (p.getDimension() == BDimension._2d || p.ext().getObservationsTimeFiltered().size() < 2) {
             return false;
         }
 

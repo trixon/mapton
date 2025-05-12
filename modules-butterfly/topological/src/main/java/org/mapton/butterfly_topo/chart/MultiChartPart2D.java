@@ -13,29 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_topo;
+package org.mapton.butterfly_topo.chart;
 
-import org.mapton.butterfly_core.api.BMultiChartComponent;
+import org.mapton.butterfly_core.api.BMultiChartPart;
 import org.mapton.butterfly_format.types.BDimension;
-import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
  * @author Patrik Karlström
  */
-@ServiceProvider(service = BMultiChartComponent.class)
-public class TopoMultiChartComponent3D extends TopoMultiChartComponent {
+@ServiceProvider(service = BMultiChartPart.class)
+public class MultiChartPart2D extends MultiChartPart {
 
-    public TopoMultiChartComponent3D() {
-        super((BTopoControlPoint p) -> {
-            return p.getDimension() == BDimension._3d;
-        });
+    public MultiChartPart2D() {
+        super(BDimension._2d);
     }
 
     @Override
     public String getName() {
-        return ".Prismor";
+        return "2D";
     }
 
 }

@@ -59,7 +59,6 @@ import se.trixon.almond.util.swing.SwingHelper;
 public class GradeChartBuilder extends ChartBuilder<BTopoGrade> {
 
     private JFreeChart mChart;
-    private final ChartHelper mChartHelper = new ChartHelper();
     private ChartPanel mChartPanel;
     private final TimeSeriesCollection mDataset = new TimeSeriesCollection();
     private TextTitle mDateSubTextTitle;
@@ -266,7 +265,7 @@ public class GradeChartBuilder extends ChartBuilder<BTopoGrade> {
             var p2 = entry.getValue();
             //TODO Handle replacement & zero measurements
 
-            var minute = mChartHelper.convertToMinute(date.atStartOfDay());
+            var minute = ChartHelper.convertToMinute(date.atStartOfDay());
             var gradeDiff = p.ext().getDiff(p.getFirstObservation(), p2);
 
             if (p.getAxis() == BAxis.HORIZONTAL) {

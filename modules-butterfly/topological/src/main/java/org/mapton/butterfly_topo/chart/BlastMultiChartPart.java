@@ -13,18 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_topo;
+package org.mapton.butterfly_topo.chart;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.TreeMap;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import org.mapton.api.MLatLon;
-import org.mapton.butterfly_core.api.BMultiChartComponent;
+import org.mapton.butterfly_core.api.BMultiChartPart;
 import org.mapton.butterfly_core.api.BaseManager;
+import org.mapton.butterfly_format.types.acoustic.BAcousticBlast;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.topo.BTopoControlPointObservation;
 import org.mapton.butterfly_topo.api.TopoManager;
@@ -35,12 +35,17 @@ import se.trixon.almond.util.MathHelper;
  *
  * @author Patrik Karlström
  */
-public abstract class TopoMultiChartComponent extends BMultiChartComponent {
+public abstract class BlastMultiChartPart extends BMultiChartPart {
 
     private final Predicate<BTopoControlPoint> mPredicate;
 
-    public TopoMultiChartComponent(Predicate<BTopoControlPoint> predicate) {
+    public BlastMultiChartPart(Predicate<BTopoControlPoint> predicate) {
         mPredicate = predicate;
+    }
+
+    @Override
+    public String getCategory() {
+        return BAcousticBlast.class.getName();
     }
 
     @Override
@@ -49,7 +54,7 @@ public abstract class TopoMultiChartComponent extends BMultiChartComponent {
     }
 
     @Override
-    public List<BTopoControlPoint> getPoints(MLatLon latLon, LocalDate firstDate, LocalDate date, LocalDate lastDate) {
+    public ArrayList<BTopoControlPoint> getPoints(MLatLon latLon, LocalDate firstDate, LocalDate date, LocalDate lastDate) {
         var pointList = TopoManager.getInstance().getTimeFilteredItems().stream()
                 .filter(mPredicate)
                 .filter(p -> {
@@ -86,12 +91,12 @@ public abstract class TopoMultiChartComponent extends BMultiChartComponent {
                 var firstAccuZ = MathHelper.convertDoubleToDouble(observations.getFirst().ext().getAccuZ());
                 for (var o : observations) {
                     var accuZ = MathHelper.convertDoubleToDouble(o.ext().getAccuZ());
-                    var z = o.getMeasuredZ() - observations.getFirst().getMeasuredZ();
-                    z = z + firstAccuZ - accuZ;
-                    map.put(o.getDate(), z);
+                    var value = o.getMeasuredZ() - observations.getFirst().getMeasuredZ();
+                    value = value + firstAccuZ - accuZ;
+                    map.put(o.getDate(), value);
                 }
                 if (Math.abs(map.lastEntry().getValue()) > 0.002) {
-                    p.setValue(BMultiChartComponent.class, map);
+                    p.setValue(BMultiChartPart.class, map);
                 } else {
                     pointsToExclude.add(p);
                 }

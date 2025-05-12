@@ -15,6 +15,8 @@
  */
 package org.mapton.butterfly_topo.api;
 
+import com.sun.jna.platform.KeyboardUtils;
+import java.awt.event.KeyEvent;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -31,8 +33,9 @@ import org.mapton.butterfly_core.api.sos.ScalePlot3dHSosi;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.topo.BTopoControlPointObservation;
-import org.mapton.butterfly_topo.TopoChartBuilder;
 import org.mapton.butterfly_topo.TopoPropertiesBuilder;
+import org.mapton.butterfly_topo.chart.MultiChartAggregate;
+import org.mapton.butterfly_topo.chart.TopoChartBuilder;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.CollectionHelper;
 
@@ -45,6 +48,7 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
     public static final String KEY_TOPO_POINTS_LOADED = "TopoPointsLoaded";
     private final TopoChartBuilder mChartBuilder = new TopoChartBuilder();
     private double mMinimumZscaled = 0.0;
+    private final MultiChartAggregate mMultiChartAggregate = new MultiChartAggregate();
     private final TopoPropertiesBuilder mPropertiesBuilder = new TopoPropertiesBuilder();
 
     public static TopoManager getInstance() {
@@ -61,7 +65,12 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
 
     @Override
     public Object getObjectChart(BTopoControlPoint selectedObject) {
-        return mChartBuilder.build(selectedObject);
+        boolean isCtrlPressed = KeyboardUtils.isPressed(KeyEvent.VK_CONTROL);
+        if (isCtrlPressed) {
+            return mMultiChartAggregate.build(selectedObject);
+        } else {
+            return mChartBuilder.build(selectedObject);
+        }
     }
 
     @Override

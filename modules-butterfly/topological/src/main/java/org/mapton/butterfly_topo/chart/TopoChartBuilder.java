@@ -13,17 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_topo;
+package org.mapton.butterfly_topo.chart;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.util.Date;
+import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.numbers.core.Precision;
 import org.jfree.chart.ChartPanel;
-import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
@@ -35,6 +34,8 @@ import org.mapton.butterfly_core.api.XyzChartBuilder;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
+import org.mapton.butterfly_topo.TopoHelper;
+import org.mapton.ce_jfreechart.api.ChartHelper;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
@@ -45,8 +46,6 @@ import se.trixon.almond.util.Dict;
  */
 public class TopoChartBuilder extends XyzChartBuilder<BTopoControlPoint> {
 
-    private Date mDateEnd;
-    private Date mDateNull;
     private Minute mSubSetLastMinute;
     private Minute mSubSetZeroMinute;
     private final TimeSeries mTimeSeries2d = new TimeSeries(Dict.Geometry.PLANE);
@@ -66,15 +65,9 @@ public class TopoChartBuilder extends XyzChartBuilder<BTopoControlPoint> {
         var callable = (Callable<ChartPanel>) () -> {
             setTitle(p);
             var plot = (XYPlot) mChart.getPlot();
-            var dateAxis = (DateAxis) plot.getDomainAxis();
-            dateAxis.setAutoRange(true);
             updateDataset(p);
-//            dateAxis.setRange(DateHelper.convertToDate(mTemporalManager.getLowDate()), DateHelper.convertToDate(mTemporalManager.getHighDate()));
-            try {
-                dateAxis.setRange(mDateNull, mDateEnd);
-            } catch (IllegalArgumentException e) {
-                System.out.println("%s: Bad chart plot range".formatted(p.getName()));
-            }
+
+            setDateRangeNullNow(plot, p, mDateNull);
             plot.clearRangeMarkers();
             plotAlarmIndicators(p);
 
@@ -132,22 +125,21 @@ public class TopoChartBuilder extends XyzChartBuilder<BTopoControlPoint> {
 
     @Override
     public void updateDataset(BTopoControlPoint p) {
-        getDataset().removeAllSeries();
         mTimeSeriesH.clear();
         mTimeSeries2d.clear();
         mTimeSeries3d.clear();
 
         var plot = (XYPlot) mChart.getPlot();
-        plot.clearDomainMarkers();
+        resetPlot(plot);
+        plotBlasts(plot, p, p.ext().getObservationFilteredFirstDate(), p.ext().getObservationFilteredLastDate());
+        plotMeasNeed(plot, p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS));
 
         p.ext().getObservationsTimeFiltered().forEach(o -> {
-            var minute = mChartHelper.convertToMinute(o.getDate());
+            addNEMarkers(plot, o, true);
+
+            var minute = ChartHelper.convertToMinute(o.getDate());
             mSubSetLastMinute = minute;
-            if (o.isReplacementMeasurement()) {
-                addMarker(plot, minute, "E", Color.RED);
-            } else if (o.isZeroMeasurement()) {
-                addMarker(plot, minute, "N", Color.BLUE);
-                mDateNull = DateHelper.convertToDate(o.getDate());
+            if (o.isZeroMeasurement()) {
                 mSubSetZeroMinute = minute;
             }
 
