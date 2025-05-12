@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_topo_convergence.group;
+package org.mapton.butterfly_topo_convergence.group.chart;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -27,6 +27,7 @@ import org.jfree.data.time.MovingAverage;
 import org.jfree.data.time.TimeSeries;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
 import org.mapton.butterfly_format.types.topo.BTopoConvergenceGroup;
+import org.mapton.ce_jfreechart.api.ChartHelper;
 import se.trixon.almond.util.DateHelper;
 
 /**
@@ -87,18 +88,17 @@ public class ConvergenceGroupChartBuilder extends XyzChartBuilder<BTopoConvergen
 
     @Override
     public synchronized void updateDataset(BTopoConvergenceGroup p) {
-        getDataset().removeAllSeries();
         mTimeSeriesX.clear();
 
         var plot = (XYPlot) mChart.getPlot();
-        plot.clearDomainMarkers();
+        resetPlot(plot);
         plotBlasts(plot, p, p.ext().getObservationFilteredFirstDate(), p.ext().getObservationFilteredLastDate());
         plotMeasNeed(plot, p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS));
 
         p.ext().getObservationsTimeFiltered().forEach(o -> {
             addNEMarkers(plot, o, true);
 
-            var minute = mChartHelper.convertToMinute(o.getDate());
+            var minute = ChartHelper.convertToMinute(o.getDate());
             mTimeSeriesX.add(minute, 0.0);
         });
 

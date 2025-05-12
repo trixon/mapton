@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_topo_convergence.group;
+package org.mapton.butterfly_topo_convergence.group.chart;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -32,7 +32,6 @@ import org.jfree.data.xy.XYSeriesCollection;
 import org.mapton.api.MTemporalManager;
 import org.mapton.api.ui.forms.ChartBuilder;
 import org.mapton.butterfly_format.types.topo.BTopoConvergenceGroup;
-import org.mapton.ce_jfreechart.api.ChartHelper;
 
 /**
  *
@@ -41,7 +40,6 @@ import org.mapton.ce_jfreechart.api.ChartHelper;
 public class ConvergenceGroupChartBuilder2 extends ChartBuilder<BTopoConvergenceGroup> {
 
     private JFreeChart mChart;
-    private final ChartHelper mChartHelper = new ChartHelper();
     private ChartPanel mChartPanel;
     private final XYSeriesCollection mDataset = new XYSeriesCollection();
     private TextTitle mDateSubTextTitle;

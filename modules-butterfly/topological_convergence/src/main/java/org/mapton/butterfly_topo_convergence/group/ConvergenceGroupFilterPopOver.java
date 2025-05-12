@@ -24,6 +24,7 @@ import org.mapton.butterfly_core.api.BFilterSectionPoint;
 import org.mapton.butterfly_core.api.BaseTabbedFilterPopOver;
 import org.mapton.butterfly_core.api.FilterSectionMisc;
 import org.mapton.butterfly_format.Butterfly;
+import org.mapton.butterfly_topo_convergence.api.ConvergenceGroupManager;
 import org.openide.util.NbPreferences;
 
 /**
@@ -54,10 +55,6 @@ public class ConvergenceGroupFilterPopOver extends BaseTabbedFilterPopOver {
         createUI();
         initListeners();
         initSession(NbPreferences.forModule(getClass()).node(getClass().getSimpleName()));
-
-        mFilterSectionPoint.getMeasNextSccb().setDisable(true);
-        mFilterSectionPoint.getMeasNextSccb().setDisable(true);
-        mFilterSectionPoint.getAlarmNameSccb().setDisable(true);
 
         populate();
     }
@@ -128,6 +125,10 @@ public class ConvergenceGroupFilterPopOver extends BaseTabbedFilterPopOver {
         );
 
         setContentNode(root);
+
+        mFilterSectionPoint.disable(
+                BFilterSectionPoint.PointElement.ALARM
+        );
     }
 
     private void initListeners() {

@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_topo_convergence.pair;
 
+import org.mapton.butterfly_topo_convergence.pair.chart.ConvergencePairChartBuilder;
 import gov.nasa.worldwind.render.Ellipsoid;
 import java.time.LocalDateTime;
 import java.util.ArrayList;

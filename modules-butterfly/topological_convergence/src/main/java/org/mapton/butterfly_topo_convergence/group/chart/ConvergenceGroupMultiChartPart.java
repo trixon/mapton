@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_topo_convergence.group;
+package org.mapton.butterfly_topo_convergence.group.chart;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -22,11 +22,12 @@ import java.util.Comparator;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 import org.mapton.api.MLatLon;
-import org.mapton.butterfly_core.api.BMultiChartComponent;
+import org.mapton.butterfly_core.api.BMultiChartPart;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.types.BBase;
 import org.mapton.butterfly_format.types.BXyzPoint;
 import org.mapton.butterfly_format.types.BXyzPointObservation;
+import org.mapton.butterfly_format.types.acoustic.BAcousticBlast;
 import org.mapton.butterfly_format.types.topo.BTopoConvergenceGroup;
 import org.mapton.butterfly_topo_convergence.api.ConvergenceGroupManager;
 import org.openide.util.lookup.ServiceProvider;
@@ -36,15 +37,20 @@ import se.trixon.almond.util.DateHelper;
  *
  * @author Patrik Karlström
  */
-@ServiceProvider(service = BMultiChartComponent.class)
-public class ConvergenceGroupMultiChartComponent extends BMultiChartComponent {
+@ServiceProvider(service = BMultiChartPart.class)
+public class ConvergenceGroupMultiChartPart extends BMultiChartPart {
 
-    public ConvergenceGroupMultiChartComponent() {
+    public ConvergenceGroupMultiChartPart() {
     }
 
     @Override
     public String getAxisLabel() {
         return "Avstånd";
+    }
+
+    @Override
+    public String getCategory() {
+        return BAcousticBlast.class.getName();
     }
 
     @Override
@@ -107,7 +113,7 @@ public class ConvergenceGroupMultiChartComponent extends BMultiChartComponent {
                 for (var o : observations) {
                     map.put(o.getDate(), sign * o.getMeasuredZ());
                 }
-                p.setValue(BMultiChartComponent.class, map);
+                p.setValue(BMultiChartPart.class, map);
             } else {
                 pointsToExclude.add(p);
             }
@@ -116,7 +122,7 @@ public class ConvergenceGroupMultiChartComponent extends BMultiChartComponent {
         pointList.removeAll(pointsToExclude);
 
         var debtList = pointList.stream().filter(p -> {
-            TreeMap<LocalDateTime, Double> map = p.getValue(BMultiChartComponent.class);
+            TreeMap<LocalDateTime, Double> map = p.getValue(BMultiChartPart.class);
             return map.lastEntry().getValue() < 0;
         }).sorted(new Comparator<BTopoConvergenceGroup>() {
             @Override
@@ -128,7 +134,7 @@ public class ConvergenceGroupMultiChartComponent extends BMultiChartComponent {
             }
 
             private double getDeltaForPeriod(BBase p) {
-                TreeMap<LocalDateTime, Double> map = p.getValue(BMultiChartComponent.class);
+                TreeMap<LocalDateTime, Double> map = p.getValue(BMultiChartPart.class);
                 return map.lastEntry().getValue();
             }
         })
@@ -155,7 +161,7 @@ public class ConvergenceGroupMultiChartComponent extends BMultiChartComponent {
             }
 
             private double getDeltaForPeriod(BBase p) {
-                TreeMap<LocalDateTime, Double> map = p.getValue(BMultiChartComponent.class);
+                TreeMap<LocalDateTime, Double> map = p.getValue(BMultiChartPart.class);
                 Double value = map.lastEntry().getValue();
 
                 return value;

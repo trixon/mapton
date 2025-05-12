@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_topo_convergence.group;
+package org.mapton.butterfly_topo_convergence.group.chart;
 
 import java.awt.Color;
 import java.util.Objects;
@@ -28,6 +28,7 @@ import org.mapton.api.MTemporalManager;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.topo.BTopoConvergencePair;
+import org.mapton.ce_jfreechart.api.ChartHelper;
 import se.trixon.almond.util.DateHelper;
 
 /**
@@ -90,20 +91,19 @@ public class AnchorChartBuilder extends XyzChartBuilder<BTopoConvergencePair> {
 
     @Override
     public void updateDataset(BTopoConvergencePair p) {
-        getDataset().removeAllSeries();
         mTimeSeriesAnchor.clear();
         mTimeSeriesPoint.clear();
         mTimeSeriesDeltaZ.clear();
 
         var plot = (XYPlot) mChart.getPlot();
-        plot.clearDomainMarkers();
+        resetPlot(plot);
 
         if (p.getObservations().isEmpty()) {
             return;
         }
 
         for (var o : p.getObservations()) {
-            var minute = mChartHelper.convertToMinute(o.getDate());
+            var minute = ChartHelper.convertToMinute(o.getDate());
             mTimeSeriesDeltaZ.add(minute, o.getDeltaDeltaZComparedToFirst());
         }
 
@@ -125,7 +125,7 @@ public class AnchorChartBuilder extends XyzChartBuilder<BTopoConvergencePair> {
                 lastDate,
                 o.getDate().toLocalDate()))
                 .forEachOrdered(o -> {
-                    var minute = mChartHelper.convertToMinute(o.getDate());
+                    var minute = ChartHelper.convertToMinute(o.getDate());
                     series.add(minute, o.ext().getDeltaZ());
                 });
         getDataset().addSeries(series);

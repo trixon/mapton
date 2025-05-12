@@ -34,7 +34,7 @@ import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.topo.BTopoControlPointObservation;
 import org.mapton.butterfly_format.types.topo.BTopoConvergenceGroup;
 import org.mapton.butterfly_topo.api.TopoManager;
-import org.mapton.butterfly_topo_convergence.group.ConvergenceGroupChartBuilder;
+import org.mapton.butterfly_topo_convergence.group.chart.ConvergenceGroupChartBuilder;
 import org.mapton.butterfly_topo_convergence.group.ConvergenceGroupPropertiesBuilder;
 import org.openide.util.Exceptions;
 

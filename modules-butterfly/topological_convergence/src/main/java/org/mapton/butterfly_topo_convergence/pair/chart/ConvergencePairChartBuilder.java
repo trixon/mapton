@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_topo_convergence.pair;
+package org.mapton.butterfly_topo_convergence.pair.chart;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -50,6 +50,7 @@ import org.mapton.api.ui.forms.ChartBuilder;
 import org.mapton.butterfly_core.api.ButterflyManager;
 import org.mapton.butterfly_format.types.topo.BTopoConvergencePair;
 import org.mapton.butterfly_format.types.topo.BTopoConvergencePairObservation;
+import org.mapton.butterfly_topo_convergence.pair.ConvergencePairManager;
 import org.mapton.ce_jfreechart.api.ChartHelper;
 import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
@@ -63,7 +64,6 @@ import se.trixon.almond.util.swing.SwingHelper;
 public class ConvergencePairChartBuilder extends ChartBuilder<BTopoConvergencePair> {
 
     private JFreeChart mChart;
-    private final ChartHelper mChartHelper = new ChartHelper();
     private ChartPanel mChartPanel;
     private final TimeSeriesCollection mDataset = new TimeSeriesCollection();
     private TextTitle mDateSubTextTitle;
@@ -122,7 +122,7 @@ public class ConvergencePairChartBuilder extends ChartBuilder<BTopoConvergencePa
 
         BTopoConvergencePairObservation prevO = null;
         for (var o : p.getObservations()) {
-            var minute = mChartHelper.convertToMinute(o.getDate());
+            var minute = ChartHelper.convertToMinute(o.getDate());
             mTimeSeriesDeltaL.add(minute, o.getDeltaDeltaDistanceComparedToFirst() * 1000);
 
             var velocity = 0.0;
@@ -212,7 +212,7 @@ public class ConvergencePairChartBuilder extends ChartBuilder<BTopoConvergencePa
                     p.getObservations().getLast().getDate().toLocalDate(),
                     b.getDateLatest().toLocalDate())) {
                 try {
-                    var minute = mChartHelper.convertToMinute(b.getDateLatest());
+                    var minute = ChartHelper.convertToMinute(b.getDateLatest());
                     mTimeSeriesBlast.add(minute, -20.0);
                 } catch (SeriesException e) {
                     //
@@ -256,7 +256,7 @@ public class ConvergencePairChartBuilder extends ChartBuilder<BTopoConvergencePa
             var theOtherOne = StringHelper.getTheOtherOne(node, pair.getP1().getName(), pair.getP2().getName());
             var series = new TimeSeries(theOtherOne);
             pair.getObservations().forEach(o -> {
-                var minute = mChartHelper.convertToMinute(o.getDate());
+                var minute = ChartHelper.convertToMinute(o.getDate());
                 series.add(minute, o.getDeltaDeltaDistanceComparedToFirst() * 1000);
             });
 

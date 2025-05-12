@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_topo_convergence.group;
 
+import org.mapton.butterfly_topo_convergence.api.ConvergenceGroupManager;
 import j2html.tags.ContainerTag;
 import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
