@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_geo.inclinometer;
+package org.mapton.butterfly_geo.inclinometer.chart;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -58,7 +58,6 @@ import se.trixon.almond.util.swing.SwingHelper;
  */
 public class InclinoChartBuilder extends ChartBuilder<BGeoInclinometerPoint> {
 
-    private final ChartHelper mChartHelper = new ChartHelper();
     private final CircularInt mColorCircularInt = new CircularInt(0, 5);
     private final XYLineAndShapeRenderer mSecondaryRenderer = new XYLineAndShapeRenderer();
     private final NumberAxis mTemperatureAxis = new NumberAxis("°C");
@@ -189,7 +188,7 @@ public class InclinoChartBuilder extends ChartBuilder<BGeoInclinometerPoint> {
         var depthToSeries = new LinkedHashMap<Double, TimeSeries>();
 
         for (var o : ppp.ext().getObservationsTimeFiltered()) {
-            var minute = mChartHelper.convertToMinute(o.getDate());
+            var minute = ChartHelper.convertToMinute(o.getDate());
             for (var oi : o.getObservationItems()) {
                 var timeSeries = depthToSeries.computeIfAbsent(oi.getDown(), k -> new TimeSeries("%.1f".formatted(k)));
                 timeSeries.add(minute, oi.getDistance());
@@ -213,7 +212,7 @@ public class InclinoChartBuilder extends ChartBuilder<BGeoInclinometerPoint> {
 //            name = StringUtils.removeStartIgnoreCase(name, "-");
 //            var series = new TimeSeries(name);
 //            for (var o : p.ext().getObservationsTimeFiltered()) {
-//                var minute = mChartHelper.convertToMinute(o.getDate());
+//                var minute = ChartHelper.convertToMinute(o.getDate());
 //                series.add(minute, o.ext().getDelta());
 //            }
 
@@ -253,7 +252,7 @@ public class InclinoChartBuilder extends ChartBuilder<BGeoInclinometerPoint> {
         mColorCircularInt.set(0);
 
         for (var o : p.ext().getObservationsTimeFiltered()) {
-            var minute = mChartHelper.convertToMinute(o.getDate());
+            var minute = ChartHelper.convertToMinute(o.getDate());
             for (var oi : o.getObservationItems()) {
                 var timeSeries = depthToSeries.computeIfAbsent(oi.getDown(), k -> new TimeSeries("%.1f".formatted(k)));
                 double value = oi.getDown() + oi.getDistance() * 100;
@@ -327,7 +326,7 @@ public class InclinoChartBuilder extends ChartBuilder<BGeoInclinometerPoint> {
         var timeSeries = new TimeSeries(p.getName());
 
         p.ext().getObservationsTimeFiltered().forEach(o -> {
-            var minute = mChartHelper.convertToMinute(o.getDate());
+            var minute = ChartHelper.convertToMinute(o.getDate());
 //            if (plotZeroAndReplacement) {
 //                if (o.isReplacementMeasurement()) {
 //                    addMarker(plot, minute, "E", Color.RED);
@@ -349,7 +348,7 @@ public class InclinoChartBuilder extends ChartBuilder<BGeoInclinometerPoint> {
 
     private void updateDatasetTemperature(BGeoInclinometerPoint p) {
         p.ext().getObservationsTimeFiltered().forEach(o -> {
-            var minute = mChartHelper.convertToMinute(o.getDate());
+            var minute = ChartHelper.convertToMinute(o.getDate());
 //            if (MathHelper.isBetween(-40d, +40d, o.getA())) {
 //                mTimeSeriesTemperature.addOrUpdate(minute, o.getA());
 //            }

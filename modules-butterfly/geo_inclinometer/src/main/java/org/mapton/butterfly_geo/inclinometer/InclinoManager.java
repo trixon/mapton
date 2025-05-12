@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_geo.inclinometer;
 
+import org.mapton.butterfly_geo.inclinometer.chart.InclinoChartBuilder;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_geo.inclinometer;
+package org.mapton.butterfly_geo.inclinometer.chart;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -21,9 +21,12 @@ import java.util.ArrayList;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 import org.mapton.api.MLatLon;
-import org.mapton.butterfly_core.api.BMultiChartComponent;
+import org.mapton.butterfly_core.api.BMultiChartPart;
+import org.mapton.butterfly_core.api.BaseManager;
+import org.mapton.butterfly_format.types.acoustic.BAcousticBlast;
 import org.mapton.butterfly_format.types.geo.BGeoInclinometerPoint;
 import org.mapton.butterfly_format.types.geo.BGeoInclinometerPointObservation;
+import org.mapton.butterfly_geo.inclinometer.InclinoManager;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.DateHelper;
 
@@ -31,10 +34,10 @@ import se.trixon.almond.util.DateHelper;
  *
  * @author Patrik Karlström
  */
-@ServiceProvider(service = BMultiChartComponent.class)
-public class InclinoMultiChartComponent extends BMultiChartComponent {
+@ServiceProvider(service = BMultiChartPart.class)
+public class InclinoMultiChartPart extends BMultiChartPart {
 
-    public InclinoMultiChartComponent() {
+    public InclinoMultiChartPart() {
     }
 
     @Override
@@ -43,8 +46,18 @@ public class InclinoMultiChartComponent extends BMultiChartComponent {
     }
 
     @Override
+    public String getCategory() {
+        return BAcousticBlast.class.getName();
+    }
+
+    @Override
     public String getDecimalPattern() {
         return "0.0";
+    }
+
+    @Override
+    public BaseManager getManager() {
+        return InclinoManager.getInstance();
     }
 
     @Override
@@ -53,10 +66,10 @@ public class InclinoMultiChartComponent extends BMultiChartComponent {
     }
 
     @Override
-    public ArrayList<BGeoInclinometerPoint> getPointsAndSeries(MLatLon latLon, LocalDate firstDate, LocalDate lastDate) {
+    public ArrayList<BGeoInclinometerPoint> getPoints(MLatLon latLon, LocalDate firstDate, LocalDate date, LocalDate lastDate) {
         var pointList = InclinoManager.getInstance().getTimeFilteredItems().stream()
                 .filter(p -> {
-                    return latLon.distance(new MLatLon(p.getLat(), p.getLon())) <= DISTANCE_BLAST;
+                    return latLon.distance(new MLatLon(p.getLat(), p.getLon())) <= LIMIT_DISTANCE_BLAST;
                 })
                 .filter(p -> {
                     try {
@@ -71,7 +84,6 @@ public class InclinoMultiChartComponent extends BMultiChartComponent {
                 })
                 .collect(Collectors.toCollection(ArrayList::new));
 
-        System.out.println("FILTERED INCLINOMETERS");
         for (var p : pointList) {
             System.out.println(p.getName());
         }
@@ -94,7 +106,7 @@ public class InclinoMultiChartComponent extends BMultiChartComponent {
                 for (var o : observations) {
                     map.put(o.getDate(), o.getMeasuredZ() - observations.getFirst().getMeasuredZ());
                 }
-                p.setValue(BMultiChartComponent.class, map);
+                p.setValue(BMultiChartPart.class, map);
             } else {
                 pointsToExclude.add(p);
             }
