@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_hydro.groundwater;
 
+import org.mapton.butterfly_hydro.groundwater.chart.GroundwaterChartBuilder;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;

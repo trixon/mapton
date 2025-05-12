@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_hydro.groundwater;
+package org.mapton.butterfly_hydro.groundwater.chart;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -21,11 +21,13 @@ import java.util.ArrayList;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 import org.mapton.api.MLatLon;
-import org.mapton.butterfly_core.api.BMultiChartComponent;
+import org.mapton.butterfly_core.api.BMultiChartPart;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.types.BXyzPoint;
+import org.mapton.butterfly_format.types.acoustic.BAcousticBlast;
 import org.mapton.butterfly_format.types.hydro.BHydroGroundwaterPoint;
 import org.mapton.butterfly_format.types.hydro.BHydroGroundwaterPointObservation;
+import org.mapton.butterfly_hydro.groundwater.GroundwaterManager;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.DateHelper;
 
@@ -33,10 +35,15 @@ import se.trixon.almond.util.DateHelper;
  *
  * @author Patrik Karlström
  */
-@ServiceProvider(service = BMultiChartComponent.class)
-public class GroundwaterMultiChartComponent extends BMultiChartComponent {
+@ServiceProvider(service = BMultiChartPart.class)
+public class GroundwaterMultiChartPart extends BMultiChartPart {
 
-    public GroundwaterMultiChartComponent() {
+    public GroundwaterMultiChartPart() {
+    }
+
+    @Override
+    public String getCategory() {
+        return BAcousticBlast.class.getName();
     }
 
     @Override
@@ -90,7 +97,7 @@ public class GroundwaterMultiChartComponent extends BMultiChartComponent {
                 for (var o : observations) {
                     map.put(o.getDate(), o.getGroundwaterLevel() - observations.getFirst().getGroundwaterLevel());
                 }
-                p.setValue(BMultiChartComponent.class, map);
+                p.setValue(BMultiChartPart.class, map);
             } else {
                 pointsToExclude.add(p);
             }

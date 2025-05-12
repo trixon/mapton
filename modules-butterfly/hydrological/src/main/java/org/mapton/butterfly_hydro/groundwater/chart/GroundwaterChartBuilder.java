@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_hydro.groundwater;
+package org.mapton.butterfly_hydro.groundwater.chart;
 
 import java.awt.Color;
 import java.util.concurrent.Callable;
@@ -25,6 +25,7 @@ import org.jfree.data.time.TimeSeries;
 import org.mapton.api.MTemporalManager;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
 import org.mapton.butterfly_format.types.hydro.BHydroGroundwaterPoint;
+import org.mapton.ce_jfreechart.api.ChartHelper;
 
 /**
  *
@@ -71,14 +72,13 @@ public class GroundwaterChartBuilder extends XyzChartBuilder<BHydroGroundwaterPo
 
     @Override
     public void updateDataset(BHydroGroundwaterPoint p) {
-        getDataset().removeAllSeries();
         mTimeSeriesH.clear();
 
         var plot = (XYPlot) mChart.getPlot();
-        plot.clearDomainMarkers();
+        resetPlot(plot);
 
         p.ext().getObservationsTimeFiltered().forEach(o -> {
-            var minute = mChartHelper.convertToMinute(o.getDate());
+            var minute = ChartHelper.convertToMinute(o.getDate());
 
             mTimeSeriesH.addOrUpdate(minute, o.getGroundwaterLevel());
         });

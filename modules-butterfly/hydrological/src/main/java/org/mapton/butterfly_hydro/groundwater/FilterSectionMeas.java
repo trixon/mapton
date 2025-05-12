@@ -160,24 +160,38 @@ public class FilterSectionMeas extends MBaseFilterSection {
         if (!mLevelPeriodCheckbox.isSelected()) {
             return true;
         }
-
-        var value = p.ext().getGroundwaterLevelDiff(levelPeriodDateLowProperty().get(), levelPeriodDateHighProperty().get());
-        if (value == null) {
-            return false;
-        }
-        var lim = mLevelPeriodAllSds.getValue();
         var direction = mLevelPeriodDirectionScb.getValue();
-        var validDirection = value < 0 && direction == Direction.DOWN
-                || value > 0 && direction == Direction.UP
-                || direction == Direction.EITHER;
-        value = Math.abs(value);
+        var lim = mLevelPeriodAllSds.getValue();
+        if (direction == Direction.MIN_MAX_SPAN) {
+            var value = p.ext().getGroundwaterLevelMinMaxSpan(levelPeriodDateLowProperty().get(), levelPeriodDateHighProperty().get());
+            if (value == null) {
+                return false;
+            }
 
-        if (lim == 0) {
-            return value == 0;
-        } else if (lim < 0) {//Up to
-            return value <= Math.abs(lim) && validDirection;
-        } else {//at least
-            return value >= lim && validDirection;
+            if (lim == 0) {
+                return value == 0;
+            } else if (lim < 0) {//Up to
+                return value <= Math.abs(lim);
+            } else {//at least
+                return value >= lim;
+            }
+        } else {
+            var value = p.ext().getGroundwaterLevelDiff(levelPeriodDateLowProperty().get(), levelPeriodDateHighProperty().get());
+            if (value == null) {
+                return false;
+            }
+            var validDirection = value < 0 && direction == Direction.DOWN
+                    || value > 0 && direction == Direction.UP
+                    || direction == Direction.EITHER;
+            value = Math.abs(value);
+
+            if (lim == 0) {
+                return value == 0;
+            } else if (lim < 0) {//Up to
+                return value <= Math.abs(lim) && validDirection;
+            } else {//at least
+                return value >= lim && validDirection;
+            }
         }
     }
 
@@ -268,7 +282,8 @@ public class FilterSectionMeas extends MBaseFilterSection {
     private enum Direction {
         UP("Höjning"),
         DOWN("Sänkning"),
-        EITHER("±");
+        EITHER("±"),
+        MIN_MAX_SPAN("Min-Max spann");
         private final String mTitle;
 
         private Direction(String title) {
