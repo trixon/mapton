@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_structural.strain;
 
+import org.mapton.butterfly_structural.strain.chart.StrainChartBuilder;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;

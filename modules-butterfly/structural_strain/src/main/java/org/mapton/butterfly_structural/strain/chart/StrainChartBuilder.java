@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_structural.strain;
+package org.mapton.butterfly_structural.strain.chart;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.axis.AxisLocation;
-import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
@@ -32,6 +32,9 @@ import org.jfree.data.time.TimeSeriesCollection;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.structural.BStructuralStrainGaugePoint;
+import org.mapton.butterfly_structural.strain.StrainHelper;
+import org.mapton.butterfly_structural.strain.StrainManager;
+import org.mapton.ce_jfreechart.api.ChartHelper;
 import se.trixon.almond.util.CircularInt;
 import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.MathHelper;
@@ -70,9 +73,8 @@ public class StrainChartBuilder extends XyzChartBuilder<BStructuralStrainGaugePo
             setTitle(p);
             updateDataset(p);
             var plot = (XYPlot) mChart.getPlot();
-            var dateAxis = (DateAxis) plot.getDomainAxis();
-            //dateAxis.setRange(DateHelper.convertToDate(mTemporalManager.getLowDate()), DateHelper.convertToDate(mTemporalManager.getHighDate()));
-            dateAxis.setAutoRange(true);
+            setDateRangeNullNow(plot, p, mDateNull);
+
             plot.clearRangeMarkers();
             plotAlarmIndicators(p);
 
@@ -101,14 +103,16 @@ public class StrainChartBuilder extends XyzChartBuilder<BStructuralStrainGaugePo
 
     @Override
     public synchronized void updateDataset(BStructuralStrainGaugePoint p) {
-        getDataset().removeAllSeries();
         mTimeSeriesZ.clear();
 
         mTemperatureDataset.removeAllSeries();
         mTimeSeriesTemperature.clear();
 
         var plot = (XYPlot) mChart.getPlot();
-        plot.clearDomainMarkers();
+        resetPlot(plot);
+
+        plotBlasts(plot, p, p.ext().getObservationFilteredFirstDate(), p.ext().getObservationFilteredLastDate());
+        plotMeasNeed(plot, p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS));
 
         updateDatasetTemperature(p);
 
@@ -181,16 +185,10 @@ public class StrainChartBuilder extends XyzChartBuilder<BStructuralStrainGaugePo
         var timeSeries = new TimeSeries(p.getName());
 
         p.ext().getObservationsTimeFiltered().forEach(o -> {
-            var minute = mChartHelper.convertToMinute(o.getDate());
-            if (plotZeroAndReplacement) {
-                if (o.isReplacementMeasurement()) {
-                    addMarker(plot, minute, "E", Color.RED);
-                } else if (o.isZeroMeasurement()) {
-                    addMarker(plot, minute, "N", Color.BLUE);
-                }
-            }
+            addNEMarkers(plot, o, plotZeroAndReplacement);
 
             if (o.ext().getDeltaZ() != null) {
+                var minute = ChartHelper.convertToMinute(o.getDate());
                 timeSeries.addOrUpdate(minute, o.ext().getDeltaZ());
             }
         });
@@ -203,7 +201,7 @@ public class StrainChartBuilder extends XyzChartBuilder<BStructuralStrainGaugePo
 
     private void updateDatasetTemperature(BStructuralStrainGaugePoint p) {
         p.ext().getObservationsTimeFiltered().forEach(o -> {
-            var minute = mChartHelper.convertToMinute(o.getDate());
+            var minute = ChartHelper.convertToMinute(o.getDate());
             if (MathHelper.isBetween(-40d, +40d, o.getTemperature())) {
                 mTimeSeriesTemperature.addOrUpdate(minute, o.getTemperature());
             }
