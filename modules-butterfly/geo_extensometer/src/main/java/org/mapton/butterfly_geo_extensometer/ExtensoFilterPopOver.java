@@ -55,7 +55,6 @@ public class ExtensoFilterPopOver extends BaseTabbedFilterPopOver {
         initListeners();
         initSession(NbPreferences.forModule(getClass()).node(getClass().getSimpleName()));
 
-        mFilterSectionPoint.getAlarmNameSccb().setDisable(true);
         populate();
     }
 
@@ -124,6 +123,10 @@ public class ExtensoFilterPopOver extends BaseTabbedFilterPopOver {
         );
 
         setContentNode(root);
+
+        mFilterSectionPoint.disable(
+                BFilterSectionPoint.PointElement.ALARM
+        );
     }
 
     private void initListeners() {

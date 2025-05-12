@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_geo_extensometer;
 
+import org.mapton.butterfly_geo_extensometer.chart.ExtensoChartBuilder;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;

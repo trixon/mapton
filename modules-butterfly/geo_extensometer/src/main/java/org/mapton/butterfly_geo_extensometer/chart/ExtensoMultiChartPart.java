@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_geo_extensometer;
+package org.mapton.butterfly_geo_extensometer.chart;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -21,10 +21,12 @@ import java.util.ArrayList;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 import org.mapton.api.MLatLon;
-import org.mapton.butterfly_core.api.BMultiChartComponent;
+import org.mapton.butterfly_core.api.BMultiChartPart;
 import org.mapton.butterfly_core.api.BaseManager;
+import org.mapton.butterfly_format.types.acoustic.BAcousticBlast;
 import org.mapton.butterfly_format.types.geo.BGeoExtensometerPoint;
 import org.mapton.butterfly_format.types.geo.BGeoExtensometerPointObservation;
+import org.mapton.butterfly_geo_extensometer.ExtensoManager;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.MathHelper;
@@ -33,15 +35,20 @@ import se.trixon.almond.util.MathHelper;
  *
  * @author Patrik Karlström
  */
-@ServiceProvider(service = BMultiChartComponent.class)
-public class ExtensoMultiChartComponent extends BMultiChartComponent {
+@ServiceProvider(service = BMultiChartPart.class)
+public class ExtensoMultiChartPart extends BMultiChartPart {
 
-    public ExtensoMultiChartComponent() {
+    public ExtensoMultiChartPart() {
     }
 
     @Override
     public String getAxisLabel() {
         return "mm";
+    }
+
+    @Override
+    public String getCategory() {
+        return BAcousticBlast.class.getName();
     }
 
     @Override
@@ -102,7 +109,7 @@ public class ExtensoMultiChartComponent extends BMultiChartComponent {
                     z = z + firstAccuZ - accuZ;
                     map.put(o.getDate(), z);
                 }
-                p.setValue(BMultiChartComponent.class, map);
+                p.setValue(BMultiChartPart.class, map);
             } else {
                 pointsToExclude.add(p);
             }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_geo_extensometer;
+package org.mapton.butterfly_geo_extensometer.chart;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -49,6 +49,7 @@ import org.jfree.data.time.TimeSeriesCollection;
 import org.mapton.api.MLatLon;
 import org.mapton.api.ui.forms.ChartBuilder;
 import org.mapton.butterfly_core.api.ButterflyManager;
+import org.mapton.butterfly_core.api.XyzChartBuilder;
 import org.mapton.butterfly_format.types.BBasePoint;
 import org.mapton.butterfly_format.types.geo.BGeoExtensometer;
 import org.mapton.ce_jfreechart.api.ChartHelper;
@@ -62,7 +63,6 @@ import se.trixon.almond.util.swing.SwingHelper;
 public class ExtensoChartBuilder extends ChartBuilder<BGeoExtensometer> {
 
     private JFreeChart mChart;
-    private final ChartHelper mChartHelper = new ChartHelper();
     private ChartPanel mChartPanel;
     private TextTitle mDateSubTextTitle;
     private TextTitle mDeltaSubTextTitle;
@@ -119,7 +119,7 @@ public class ExtensoChartBuilder extends ChartBuilder<BGeoExtensometer> {
             name = StringUtils.removeStartIgnoreCase(name, "-");
             var series = new TimeSeries(name);
             for (var o : p.ext().getObservationsTimeFiltered()) {
-                var minute = mChartHelper.convertToMinute(o.getDate());
+                var minute = ChartHelper.convertToMinute(o.getDate());
                 series.addOrUpdate(minute, o.ext().getDelta());
             }
 
@@ -137,9 +137,9 @@ public class ExtensoChartBuilder extends ChartBuilder<BGeoExtensometer> {
             rangeAxis.setRange(rangeMin, rangeMax);
             subplot.getRangeAxis().setLabelFont(new Font(Font.SANS_SERIF, Font.BOLD, SwingHelper.getUIScaled(12)));
             renderer.setSeriesPaint(timeSeriesCollection.getSeriesIndex(series.getKey()), Color.RED);
-            plotBlasts(subplot, extenso, p.ext().getObservationFilteredFirstDate(), p.ext().getObservationFilteredLastDate());
+            XyzChartBuilder.plotBlasts(subplot, extenso, p.ext().getObservationFilteredFirstDate(), p.ext().getObservationFilteredLastDate());
             for (var o : p.ext().getObservationsTimeFiltered()) {
-                var minute = mChartHelper.convertToMinute(o.getDate());
+                var minute = ChartHelper.convertToMinute(o.getDate());
                 if (o.isReplacementMeasurement()) {
                     var marker = new ValueMarker(minute.getFirstMillisecond());
                     marker.setPaint(Color.RED);
@@ -209,7 +209,7 @@ public class ExtensoChartBuilder extends ChartBuilder<BGeoExtensometer> {
         mChart.addSubtitle(compositeTitle);
     }
 
-    private void plotBlasts(XYPlot plot, BBasePoint p, LocalDate firstDate, LocalDate lastDate) {
+    private void plotBlastsX(XYPlot plot, BBasePoint p, LocalDate firstDate, LocalDate lastDate) {
         var extensometer = new MLatLon(p.getLat(), p.getLon());
         ButterflyManager.getInstance().getButterfly().noise().getBlasts().stream()
                 .filter(b -> {
@@ -220,7 +220,7 @@ public class ExtensoChartBuilder extends ChartBuilder<BGeoExtensometer> {
                             b.getDateLatest().toLocalDate());
                 })
                 .forEachOrdered(b -> {
-                    var minute = mChartHelper.convertToMinute(b.getDateLatest());
+                    var minute = ChartHelper.convertToMinute(b.getDateLatest());
                     var marker = new ValueMarker(minute.getFirstMillisecond());
                     marker.setPaint(Color.BLACK);
                     plot.addDomainMarker(marker);
