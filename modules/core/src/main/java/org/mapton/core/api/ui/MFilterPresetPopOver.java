@@ -46,13 +46,15 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
  */
 public class MFilterPresetPopOver extends MPopOver {
 
+    public static final String FILTER_PRESET_NODE = "filterPresets";
+
     protected EditableList<DefaultEditableListItem> mEditableList;
     private final MFilterPopOver mFilterPopOver;
     private final ObjectProperty<ObservableList<DefaultEditableListItem>> mItemsProperty = new SimpleObjectProperty<>();
     private final Preferences mPreferences;
 
     public MFilterPresetPopOver(MFilterPopOver filterPopOver, String path) {
-        mPreferences = NbPreferences.forModule(filterPopOver.getClass()).node("filterPresets").node(path);
+        mPreferences = NbPreferences.forModule(filterPopOver.getClass()).node(FILTER_PRESET_NODE).node(path);
         mFilterPopOver = filterPopOver;
         mItemsProperty.set(FXCollections.observableArrayList());
         createUI();
@@ -69,6 +71,14 @@ public class MFilterPresetPopOver extends MPopOver {
         }
 
         initListeners();
+    }
+
+    public ObservableList<DefaultEditableListItem> getItems() {
+        return mItemsProperty.get();
+    }
+
+    public ObjectProperty<ObservableList<DefaultEditableListItem>> itemsProperty() {
+        return mItemsProperty;
     }
 
     private void createUI() {
@@ -102,14 +112,6 @@ public class MFilterPresetPopOver extends MPopOver {
         this.setOnHidden(windowEvent -> {
             mEditableList.getListView().getSelectionModel().select(null);
         });
-    }
-
-    public ObservableList<DefaultEditableListItem> getItems() {
-        return mItemsProperty.get();
-    }
-
-    public ObjectProperty<ObservableList<DefaultEditableListItem>> itemsProperty() {
-        return mItemsProperty;
     }
 
     private void initListeners() {
