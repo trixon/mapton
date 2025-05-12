@@ -26,10 +26,10 @@ import org.jfree.data.time.Minute;
  */
 public class ChartHelper {
 
-    public ChartHelper() {
+    private ChartHelper() {
     }
 
-    public Day convertToDay(LocalDate ld) {
+    public static Day convertToDay(LocalDate ld) {
         return new Day(
                 ld.getDayOfMonth(),
                 ld.getMonthValue(),
@@ -37,7 +37,7 @@ public class ChartHelper {
         );
     }
 
-    public Minute convertToMinute(LocalDateTime ldt) {
+    public static Minute convertToMinute(LocalDateTime ldt) {
         return new Minute(
                 ldt.getMinute(),
                 ldt.getHour(),
