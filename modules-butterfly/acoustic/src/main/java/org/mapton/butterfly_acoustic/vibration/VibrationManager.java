@@ -23,6 +23,7 @@ import java.util.LinkedHashMap;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import org.mapton.api.MTemporalRange;
+import org.mapton.butterfly_acoustic.vibration.chart.VibrationChartBuilder;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.acoustic.BAcousticVibrationPoint;
@@ -55,10 +56,6 @@ public class VibrationManager extends BaseManager<BAcousticVibrationPoint> {
     @Override
     public Object getObjectProperties(BAcousticVibrationPoint selectedObject) {
         return mPropertiesBuilder.build(selectedObject);
-    }
-
-    @Override
-    public void initObjectToItemMap() {
     }
 
     @Override

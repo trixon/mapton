@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_acoustic.blast;
 
+import org.mapton.butterfly_acoustic.blast.chart.BlastMultiChartAggregate;
 import java.util.ArrayList;
 import java.util.TreeSet;
 import java.util.stream.Collectors;

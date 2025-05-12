@@ -58,10 +58,6 @@ public class VibrationFilterPopOver extends BaseTabbedFilterPopOver {
         initListeners();
         initSession(NbPreferences.forModule(getClass()).node(getClass().getSimpleName()));
 
-        mFilterSectionPoint.getMeasNextSccb().setDisable(true);
-        mFilterSectionPoint.getMeasNextSccb().setDisable(true);
-        mFilterSectionPoint.getAlarmNameSccb().setDisable(true);
-
         populate();
     }
 
@@ -130,6 +126,11 @@ public class VibrationFilterPopOver extends BaseTabbedFilterPopOver {
         );
 
         setContentNode(root);
+
+        mFilterSectionPoint.disable(
+                BFilterSectionPoint.PointElement.ALARM,
+                BFilterSectionPoint.PointElement.MEAS_NEXT
+        );
     }
 
     private void initListeners() {

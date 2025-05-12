@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_acoustic.vibration;
+package org.mapton.butterfly_acoustic.vibration.chart;
 
 import java.awt.Color;
 import java.util.Objects;
@@ -29,6 +29,7 @@ import org.jfree.data.time.TimeSeriesCollection;
 import org.mapton.butterfly_core.api.XyzChartBuilder;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.acoustic.BAcousticVibrationPoint;
+import org.mapton.ce_jfreechart.api.ChartHelper;
 import se.trixon.almond.util.DateHelper;
 
 /**
@@ -96,7 +97,6 @@ public class VibrationChartBuilder extends XyzChartBuilder<BAcousticVibrationPoi
 
     @Override
     public void updateDataset(BAcousticVibrationPoint p) {
-        getDataset().removeAllSeries();
         mFreqDataset.removeAllSeries();
         clear(
                 mTimeSeriesZ,
@@ -105,9 +105,10 @@ public class VibrationChartBuilder extends XyzChartBuilder<BAcousticVibrationPoi
         );
 
         var plot = (XYPlot) mChart.getPlot();
-        plot.clearDomainMarkers();
+        resetPlot(plot);
+
         p.ext().getObservationsTimeFiltered().forEach(o -> {
-            var minute = mChartHelper.convertToMinute(o.getDate());
+            var minute = ChartHelper.convertToMinute(o.getDate());
 
             if (p.getDimension() == BDimension._1d || p.getDimension() == BDimension._3d) {
                 mTimeSeriesZ.add(minute, o.getMeasuredZ());

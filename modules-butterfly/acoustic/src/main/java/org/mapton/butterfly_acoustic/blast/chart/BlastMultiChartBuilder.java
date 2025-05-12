@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_acoustic.blast;
+package org.mapton.butterfly_acoustic.blast.chart;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
