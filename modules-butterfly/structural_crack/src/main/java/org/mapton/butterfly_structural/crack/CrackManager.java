@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_structural.crack;
 
+import org.mapton.butterfly_structural.crack.chart.CrackChartBuilder;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;

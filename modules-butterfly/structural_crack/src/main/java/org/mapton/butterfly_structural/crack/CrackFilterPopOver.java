@@ -58,10 +58,6 @@ public class CrackFilterPopOver extends BaseTabbedFilterPopOver {
         initListeners();
         initSession(NbPreferences.forModule(getClass()).node(getClass().getSimpleName()));
 
-        mFilterSectionPoint.getMeasNextSccb().setDisable(true);
-        mFilterSectionPoint.getMeasNextSccb().setDisable(true);
-        mFilterSectionPoint.getAlarmNameSccb().setDisable(true);
-
         populate();
     }
 
