@@ -305,6 +305,8 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
                     o.ext().setDeltaZ(o.ext().getDeltaZ() + offsetZ);
                 }
 
+                o.ext().setAccuX(accumulatedReplacementsX);
+                o.ext().setAccuY(accumulatedReplacementsY);
                 o.ext().setAccuZ(accumulatedReplacementsZ);
             }
         }

@@ -55,9 +55,6 @@ public class BHydroGroundwaterPoint extends BXyzPoint {
 
     private transient BDimension dimension;
     private transient Ext mExt;
-    private Double offsetX;
-    private Double offsetY;
-    private Double offsetZ;
 
     public BHydroGroundwaterPoint() {
     }
@@ -70,31 +67,47 @@ public class BHydroGroundwaterPoint extends BXyzPoint {
         return mExt;
     }
 
-    public Double getOffsetX() {
-        return offsetX;
-    }
-
-    public Double getOffsetY() {
-        return offsetY;
-    }
-
-    public Double getOffsetZ() {
-        return offsetZ;
-    }
-
-    public void setOffsetX(Double offsetX) {
-        this.offsetX = offsetX;
-    }
-
-    public void setOffsetY(Double offsetY) {
-        this.offsetY = offsetY;
-    }
-
-    public void setOffsetZ(Double offsetZ) {
-        this.offsetZ = offsetZ;
-    }
-
     public class Ext extends BBasePoint.Ext<BHydroGroundwaterPointObservation> {
+
+        public Double getGroundwaterLevelDiff(int daysBeforeNow) {
+            var now = LocalDate.now();
+            return getGroundwaterLevelDiff(now.minusDays(daysBeforeNow), now);
+        }
+
+        public Double getGroundwaterLevelDiff(LocalDate firstDate, LocalDate lastDate) {
+            var obs = getObservationsTimeFiltered().stream()
+                    .filter(o -> o.getGroundwaterLevel() != null)
+                    .filter(o -> DateHelper.isBetween(firstDate, lastDate, o.getDate().toLocalDate()))
+                    .toList();
+
+            if (obs.size() < 2) {
+                return null;
+            } else {
+                var o1 = obs.getFirst();
+                var o2 = obs.getLast();
+
+                if (ObjectUtils.anyNull(o1.getGroundwaterLevel(), o2.getGroundwaterLevel())) {
+                    return null;
+                }
+                return o2.getGroundwaterLevel() - o1.getGroundwaterLevel();
+            }
+        }
+
+        public Double getGroundwaterLevelMinMaxSpan(LocalDate firstDate, LocalDate lastDate) {
+            var obs = getObservationsTimeFiltered().stream()
+                    .filter(o -> o.getGroundwaterLevel() != null)
+                    .filter(o -> DateHelper.isBetween(firstDate, lastDate, o.getDate().toLocalDate()))
+                    .toList();
+
+            if (obs.size() < 2) {
+                return null;
+            } else {
+                var min = obs.stream().mapToDouble(o -> o.getGroundwaterLevel()).min().orElse(0);
+                var max = obs.stream().mapToDouble(o -> o.getGroundwaterLevel()).max().orElse(0);
+
+                return max - min;
+            }
+        }
 
         public BHydroGroundwaterPointObservation getMaxObservation() {
             return getObservationsAllRaw().stream()
@@ -115,29 +128,6 @@ public class BHydroGroundwaterPoint extends BXyzPoint {
                     .filter(o -> o.getGroundwaterLevel() != null)
                     .min(Comparator.comparing(BHydroGroundwaterPointObservation::getGroundwaterLevel))
                     .orElse(null);
-        }
-
-        public Double getGroundwaterLevelDiff(int daysBeforeNow) {
-            var now = LocalDate.now();
-            return getGroundwaterLevelDiff(now.minusDays(daysBeforeNow), now);
-        }
-
-        public Double getGroundwaterLevelDiff(LocalDate firstDate, LocalDate lastDate) {
-            var obs = getObservationsTimeFiltered().stream()
-                    .filter(o -> DateHelper.isBetween(firstDate, lastDate, o.getDate().toLocalDate()))
-                    .toList();
-
-            if (obs.size() < 2) {
-                return null;
-            } else {
-                var o1 = obs.getFirst();
-                var o2 = obs.getLast();
-
-                if (ObjectUtils.anyNull(o1.getGroundwaterLevel(), o2.getGroundwaterLevel())) {
-                    return null;
-                }
-                return o2.getGroundwaterLevel() - o1.getGroundwaterLevel();
-            }
         }
     }
 }
