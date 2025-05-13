@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_projektnav.editor.topo;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.TreeSet;
 import javafx.scene.Node;
@@ -218,8 +219,10 @@ public class ParameterEditor extends BaseTopoEditor {
     }
 
     private void preview() {
+        HashMap<String, String> originToId = Mapton.getGlobalState().getOrDefault("ParamEditor.originToId", new HashMap<String, String>());
         mPreviewLogPanel.clear();
-        var sb = new StringBuilder("nr");
+        var sb = new StringBuilder("projid");
+        addConditionlly(sb, true, "nr");
         addConditionlly(sb, mDagCheckBox.isSelected(), "dag");
         addConditionlly(sb, mDefDagCheckBox.isSelected(), "meta");
         addConditionlly(sb, mStatusCheckBox.isSelected(), "status");
@@ -256,7 +259,10 @@ public class ParameterEditor extends BaseTopoEditor {
                     toDate = date.toString();
                 }
             }
-            sb.append(name);
+
+            var projid = originToId.getOrDefault(p.getOrigin(), "ERROR");
+            sb.append(projid);
+            addConditionlly(sb, true, name);
             var dag = mDagSpinner.getValue();
             if (mDefDagRestoreCheckBox.isSelected() && p.getDefaultFrequency() != null) {
                 dag = p.getDefaultFrequency();
