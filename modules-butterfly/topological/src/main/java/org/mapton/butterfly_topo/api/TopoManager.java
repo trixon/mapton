@@ -34,8 +34,8 @@ import org.mapton.butterfly_format.Butterfly;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.topo.BTopoControlPointObservation;
 import org.mapton.butterfly_topo.TopoPropertiesBuilder;
+import org.mapton.butterfly_topo.chart.ChartAggregate;
 import org.mapton.butterfly_topo.chart.MultiChartAggregate;
-import org.mapton.butterfly_topo.chart.TopoChartBuilder;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.CollectionHelper;
 
@@ -46,7 +46,7 @@ import se.trixon.almond.util.CollectionHelper;
 public class TopoManager extends BaseManager<BTopoControlPoint> {
 
     public static final String KEY_TOPO_POINTS_LOADED = "TopoPointsLoaded";
-    private final TopoChartBuilder mChartBuilder = new TopoChartBuilder();
+    private final ChartAggregate mChartAggregate = new ChartAggregate();
     private double mMinimumZscaled = 0.0;
     private final MultiChartAggregate mMultiChartAggregate = new MultiChartAggregate();
     private final TopoPropertiesBuilder mPropertiesBuilder = new TopoPropertiesBuilder();
@@ -69,7 +69,7 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
         if (isCtrlPressed) {
             return mMultiChartAggregate.build(selectedObject);
         } else {
-            return mChartBuilder.build(selectedObject);
+            return mChartAggregate.build(selectedObject);
         }
     }
 

@@ -140,8 +140,6 @@ public class MultiChartBuilder extends XyzChartBuilder<BTopoControlPoint> {
 
         updateDataset2(p);
         points.stream().filter(pp -> pp != p).forEachOrdered(pp -> updateDataset2(pp));
-
-        plotBlasts(plot, p, mDateFirst, mDateLast);
     }
 
     public void updateDataset2(BXyzPoint p) {

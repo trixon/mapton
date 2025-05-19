@@ -17,7 +17,6 @@ package org.mapton.butterfly_topo.chart;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 import org.apache.commons.lang3.StringUtils;
@@ -35,8 +34,6 @@ import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_topo.TopoHelper;
-import org.mapton.ce_jfreechart.api.ChartHelper;
-import org.openide.util.Exceptions;
 import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
 
@@ -44,15 +41,15 @@ import se.trixon.almond.util.Dict;
  *
  * @author Patrik Karlström
  */
-public class TopoChartBuilder extends XyzChartBuilder<BTopoControlPoint> {
+public abstract class ChartBuilderBase extends XyzChartBuilder<BTopoControlPoint> {
 
-    private Minute mSubSetLastMinute;
-    private Minute mSubSetZeroMinute;
-    private final TimeSeries mTimeSeries2d = new TimeSeries(Dict.Geometry.PLANE);
-    private final TimeSeries mTimeSeries3d = new TimeSeries("3d");
-    private final TimeSeries mTimeSeriesH = new TimeSeries(Dict.Geometry.HEIGHT);
+    protected Minute mSubSetLastMinute;
+    protected Minute mSubSetZeroMinute;
+    protected final TimeSeries mTimeSeries1d = new TimeSeries(Dict.Geometry.HEIGHT);
+    protected final TimeSeries mTimeSeries2d = new TimeSeries(Dict.Geometry.PLANE);
+    protected final TimeSeries mTimeSeries3d = new TimeSeries("3d");
 
-    public TopoChartBuilder() {
+    public ChartBuilderBase() {
         initChart(null, null);
     }
 
@@ -61,7 +58,6 @@ public class TopoChartBuilder extends XyzChartBuilder<BTopoControlPoint> {
         if (p == null) {
             return null;
         }
-
         var callable = (Callable<ChartPanel>) () -> {
             setTitle(p);
             var plot = (XYPlot) mChart.getPlot();
@@ -121,98 +117,6 @@ public class TopoChartBuilder extends XyzChartBuilder<BTopoControlPoint> {
 
         var rightTitle = "%s%s: %s".formatted(hAlarm, pAlarm, delta);
         getRightSubTextTitle().setText(rightTitle);
-    }
-
-    @Override
-    public void updateDataset(BTopoControlPoint p) {
-        mTimeSeriesH.clear();
-        mTimeSeries2d.clear();
-        mTimeSeries3d.clear();
-
-        var plot = (XYPlot) mChart.getPlot();
-        resetPlot(plot);
-        plotBlasts(plot, p, p.ext().getObservationFilteredFirstDate(), p.ext().getObservationFilteredLastDate());
-        plotMeasNeed(plot, p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS));
-
-        p.ext().getObservationsTimeFiltered().forEach(o -> {
-            addNEMarkers(plot, o, true);
-
-            var minute = ChartHelper.convertToMinute(o.getDate());
-            mSubSetLastMinute = minute;
-            if (o.isZeroMeasurement()) {
-                mSubSetZeroMinute = minute;
-            }
-
-            if (p.getDimension() == BDimension._1d || p.getDimension() == BDimension._3d) {
-                mTimeSeriesH.add(minute, o.ext().getDeltaZ());
-            }
-
-            if (p.getDimension() == BDimension._2d || p.getDimension() == BDimension._3d) {
-                mTimeSeries2d.add(minute, o.ext().getDelta2d());
-            }
-
-            if (p.getDimension() == BDimension._3d) {
-                try {
-                    mTimeSeries3d.add(minute, Math.abs(o.ext().getDelta3d()));
-                } catch (NullPointerException e) {
-                    System.err.println("Failed to add observation to chart %s %s".formatted(p.getName(), o.getDate()));
-                }
-            }
-
-            mDateEnd = DateHelper.convertToDate(o.getDate());
-        });
-
-        var renderer = plot.getRenderer();
-        var avgStroke = new BasicStroke(5.0f);
-        int avdDays = 90 * 60 * 24;
-        int avgSkipMeasurements = 0;
-        boolean plotAvg = true;
-
-        if (p.getDimension() == BDimension._1d || p.getDimension() == BDimension._3d) {
-            getDataset().addSeries(mTimeSeriesH);
-            renderer.setSeriesPaint(getDataset().getSeriesIndex(mTimeSeriesH.getKey()), Color.RED);
-            if (plotAvg) {
-                var mavg = createSubSetMovingAverage(mTimeSeriesH, mSubSetZeroMinute, mSubSetLastMinute, "%s (avg)".formatted(mTimeSeriesH.getKey()), avdDays, avgSkipMeasurements);
-                if (mavg != null) {
-                    getDataset().addSeries(mavg);
-                    int index = getDataset().getSeriesIndex(mavg.getKey());
-                    renderer.setSeriesPaint(index, Color.RED);
-                    renderer.setSeriesStroke(index, avgStroke);
-                }
-            }
-        }
-
-        if (p.getDimension() == BDimension._2d || p.getDimension() == BDimension._3d) {
-            getDataset().addSeries(mTimeSeries2d);
-            renderer.setSeriesPaint(getDataset().getSeriesIndex(mTimeSeries2d.getKey()), Color.GREEN);
-            if (plotAvg) {
-                var mavg = createSubSetMovingAverage(mTimeSeries2d, mSubSetZeroMinute, mSubSetLastMinute, "%s (avg)".formatted(mTimeSeries2d.getKey()), avdDays, avgSkipMeasurements);
-                if (mavg != null) {
-                    getDataset().addSeries(mavg);
-                    int index = getDataset().getSeriesIndex(mavg.getKey());
-                    renderer.setSeriesPaint(index, Color.GREEN);
-                    renderer.setSeriesStroke(index, avgStroke);
-                }
-            }
-        }
-
-        if (p.getDimension() == BDimension._3d) {
-            getDataset().addSeries(mTimeSeries3d);
-            renderer.setSeriesPaint(getDataset().getSeriesIndex(mTimeSeries3d.getKey()), Color.BLUE);
-            if (plotAvg) {
-                var mavg = createSubSetMovingAverage(mTimeSeries3d, mSubSetZeroMinute, mSubSetLastMinute, "%s (avg)".formatted(mTimeSeries3d.getKey()), avdDays, avgSkipMeasurements);
-                if (mavg != null) {
-                    try {
-                        getDataset().addSeries(mavg);
-                        int index = getDataset().getSeriesIndex(mavg.getKey());
-                        renderer.setSeriesPaint(index, Color.BLUE);
-                        renderer.setSeriesStroke(index, avgStroke);
-                    } catch (Exception e) {
-                        Exceptions.printStackTrace(e);
-                    }
-                }
-            }
-        }
     }
 
     private void plotAlarmIndicator(BComponent component, double value, Color color) {

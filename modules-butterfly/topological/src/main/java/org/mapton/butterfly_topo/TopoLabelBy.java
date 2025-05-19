@@ -195,7 +195,8 @@ public enum TopoLabelBy {
     MEAS_NEED_FREQ(LabelByCategories.MEAS, "%s (%s)".formatted(Dict.NEED.toString(), SDict.FREQUENCY.toString()), p -> {
         var need = p.getFrequency() == 0 ? "-" : Long.toString(p.ext().getMeasurementUntilNext(ChronoUnit.DAYS));
         var freq = p.getFrequency() != null ? p.getFrequency().toString() : "--";
-        return "%s / %s".formatted(need, freq);
+
+        return "%s (%s)".formatted(need, freq);
     }),
     VALUE_Z(LabelByCategories.VALUE, "Z", p -> {
         var z = p.getZeroZ();
