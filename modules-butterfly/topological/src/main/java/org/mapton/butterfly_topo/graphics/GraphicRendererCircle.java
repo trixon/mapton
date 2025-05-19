@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_topo;
+package org.mapton.butterfly_topo.graphics;
 
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
@@ -27,6 +27,7 @@ import java.time.temporal.ChronoUnit;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.topo.BTopoControlPointObservation;
+import org.mapton.butterfly_topo.TopoHelper;
 import org.mapton.worldwind.api.WWHelper;
 
 /**
@@ -40,25 +41,25 @@ public class GraphicRendererCircle extends GraphicRendererBase {
     }
 
     public void plot(BTopoControlPoint p, Position position) {
-        if (sCheckModel.isChecked(GraphicRendererItem.CIRCLE_1D) && p.getDimension() == BDimension._1d) {
+        if (sCheckModel.isChecked(GraphicItem.CIRCLE_1D) && p.getDimension() == BDimension._1d) {
             plot1dCircle(p, position);
         }
 
-        if (sCheckModel.isChecked(GraphicRendererItem.CIRCLE_2D) && p.getDimension() != BDimension._1d) {
+        if (sCheckModel.isChecked(GraphicItem.CIRCLE_2D) && p.getDimension() != BDimension._1d) {
             plot2dCircle(p, position);
         }
 
-        if (sCheckModel.isChecked(GraphicRendererItem.CIRCLE_3D) && p.getDimension() == BDimension._3d) {
+        if (sCheckModel.isChecked(GraphicItem.CIRCLE_3D) && p.getDimension() == BDimension._3d) {
             plot3dCircle(p, position);
         }
 
-        if (sCheckModel.isChecked(GraphicRendererItem.CIRCLE_VERTICAL_DIRECTION) && p.getDimension() != BDimension._2d) {
+        if (sCheckModel.isChecked(GraphicItem.CIRCLE_VERTICAL_DIRECTION) && p.getDimension() != BDimension._2d) {
             plotVerticalDirection(p, position);
         }
     }
 
     private void plot1dCircle(BTopoControlPoint p, Position position) {
-        if (isPlotLimitReached(p, GraphicRendererItem.CIRCLE_1D, position)) {
+        if (isPlotLimitReached(p, GraphicItem.CIRCLE_1D, position)) {
             return;
         }
 
@@ -85,11 +86,11 @@ public class GraphicRendererCircle extends GraphicRendererBase {
 //        }
 
         cylinder.setAttributes(attrs);
-        addRenderable(cylinder, true, GraphicRendererItem.CIRCLE_1D, sMapObjects);
+        addRenderable(cylinder, true, GraphicItem.CIRCLE_1D, sMapObjects);
     }
 
     private void plot2dCircle(BTopoControlPoint p, Position position) {
-        if (isPlotLimitReached(p, GraphicRendererItem.CIRCLE_2D, position)) {
+        if (isPlotLimitReached(p, GraphicItem.CIRCLE_2D, position)) {
             return;
         }
 
@@ -110,11 +111,11 @@ public class GraphicRendererCircle extends GraphicRendererBase {
         var attrs = mAttributeManager.getComponentCircle1dAttributes(p, alarmLevel, false, maximus);
 
         cylinder.setAttributes(attrs);
-        addRenderable(cylinder, true, GraphicRendererItem.CIRCLE_2D, sMapObjects);
+        addRenderable(cylinder, true, GraphicItem.CIRCLE_2D, sMapObjects);
     }
 
     private void plot3dCircle(BTopoControlPoint p, Position position) {
-        if (isPlotLimitReached(p, GraphicRendererItem.CIRCLE_3D, position)) {
+        if (isPlotLimitReached(p, GraphicItem.CIRCLE_3D, position)) {
             return;
         }
 
@@ -136,7 +137,7 @@ public class GraphicRendererCircle extends GraphicRendererBase {
         var attrs = mAttributeManager.getComponentCircle1dAttributes(p, alarmLevel, rise, maximus);
 
         cylinder.setAttributes(attrs);
-        addRenderable(cylinder, true, GraphicRendererItem.CIRCLE_3D, sMapObjects);
+        addRenderable(cylinder, true, GraphicItem.CIRCLE_3D, sMapObjects);
     }
 
     private void plotVerticalDirection(BTopoControlPoint p, Position position) {
@@ -173,7 +174,7 @@ public class GraphicRendererCircle extends GraphicRendererBase {
             shape = box;
         }
         shape.setAttributes(sa);
-        addRenderable(shape, true, GraphicRendererItem.CIRCLE_VERTICAL_DIRECTION, sMapObjects);
+        addRenderable(shape, true, GraphicItem.CIRCLE_VERTICAL_DIRECTION, sMapObjects);
 
         var sa2 = new BasicShapeAttributes();
         sa2.setDrawOutline(false);
@@ -182,7 +183,7 @@ public class GraphicRendererCircle extends GraphicRendererBase {
         if (radius == maxRadius) {
             var circle = new SurfaceCircle(sa, position, minRadius);
             circle.setAttributes(sa2);
-            addRenderable(circle, false, GraphicRendererItem.CIRCLE_VERTICAL_DIRECTION, sMapObjects);
+            addRenderable(circle, false, GraphicItem.CIRCLE_VERTICAL_DIRECTION, sMapObjects);
         }
     }
 }

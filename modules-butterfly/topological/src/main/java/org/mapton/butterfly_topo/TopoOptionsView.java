@@ -15,6 +15,7 @@
  */
 package org.mapton.butterfly_topo;
 
+import org.mapton.butterfly_topo.graphics.GraphicItem;
 import java.util.LinkedHashMap;
 import java.util.stream.Stream;
 import javafx.beans.property.BooleanProperty;
@@ -56,7 +57,7 @@ public class TopoOptionsView extends MOptionsView implements MRunnable {
     private static final PointBy DEFAULT_POINT_BY = PointBy.AUTO;
 
     private final SessionComboBox<ColorBy> mColorScb = new SessionComboBox<>();
-    private final SessionCheckComboBox<GraphicRendererItem> mGraphicSccb = new SessionCheckComboBox<>();
+    private final SessionCheckComboBox<GraphicItem> mGraphicSccb = new SessionCheckComboBox<>();
     private final SessionCheckComboBox<Direction> mIndicatorSccb = new SessionCheckComboBox<>();
     private final SimpleStringProperty mLabelByIdProperty = new SimpleStringProperty(DEFAULT_LABEL_BY.name());
     private final SimpleObjectProperty<TopoLabelBy> mLabelByProperty = new SimpleObjectProperty<>();
@@ -81,7 +82,7 @@ public class TopoOptionsView extends MOptionsView implements MRunnable {
         return mColorScb.valueProperty().get();
     }
 
-    public IndexedCheckModel<GraphicRendererItem> getComponentCheckModel() {
+    public IndexedCheckModel<GraphicItem> getComponentCheckModel() {
         return mGraphicSccb.getCheckModel();
     }
 
@@ -122,7 +123,7 @@ public class TopoOptionsView extends MOptionsView implements MRunnable {
 
         mGraphicSccb.setTitle(Dict.GRAPHICS.toString());
         mGraphicSccb.setShowCheckedCount(true);
-        mGraphicSccb.getItems().setAll(GraphicRendererItem.values());
+        mGraphicSccb.getItems().setAll(GraphicItem.values());
         mIndicatorSccb.setTitle(Dict.INDICATORS.toString());
         mIndicatorSccb.setShowCheckedCount(true);
         mIndicatorSccb.getItems().addAll(

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_topo;
+package org.mapton.butterfly_topo.graphics;
 
 import org.mapton.butterfly_core.api.GraphicRenderItemLimitProvider;
 import se.trixon.almond.util.Dict;
@@ -23,7 +23,7 @@ import se.trixon.almond.util.SDict;
  *
  * @author Patrik Karlström
  */
-public enum GraphicRendererItem implements GraphicRenderItemLimitProvider {
+public enum GraphicItem implements GraphicRenderItemLimitProvider {
     LABEL("\t%s".formatted(Dict.LABEL.toString()), Integer.MAX_VALUE),
     CLUSTER_DEFORMATION("Kluster, deformation", Integer.MAX_VALUE),
     CLUSTER_DEFORMATION_PLANE_ALTITUDES("Kluster, deformation plan på olika höjder", Integer.MAX_VALUE),
@@ -51,7 +51,7 @@ public enum GraphicRendererItem implements GraphicRenderItemLimitProvider {
     private final String mName;
     private final int mPlotLimit;
 
-    private GraphicRendererItem(String name, int plotLimit) {
+    private GraphicItem(String name, int plotLimit) {
         mName = name;
         mPlotLimit = plotLimit;
     }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_topo;
+package org.mapton.butterfly_topo.graphics;
 
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.TreeMap;
 import org.apache.commons.math3.util.FastMath;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
-import static org.mapton.butterfly_topo.GraphicRendererBase.sMapObjects;
+import static org.mapton.butterfly_topo.graphics.GraphicRendererBase.sMapObjects;
 import org.mapton.worldwind.api.WWHelper;
 import se.trixon.almond.util.CollectionHelper;
 
@@ -45,16 +45,16 @@ public class GraphicRendererCount extends GraphicRendererBase {
     }
 
     public void plot(BTopoControlPoint p, Position position) {
-        if (sCheckModel.isChecked(GraphicRendererItem.MEASUREMENTS)) {
+        if (sCheckModel.isChecked(GraphicItem.MEASUREMENTS)) {
             plotCount(p, position);
         }
-        if (sCheckModel.isChecked(GraphicRendererItem.MEASUREMENTS_PER_MONTH)) {
+        if (sCheckModel.isChecked(GraphicItem.MEASUREMENTS_PER_MONTH)) {
             plotCountPerMonth(p, position);
         }
     }
 
     private void plotCount(BTopoControlPoint p, Position position) {
-        if (isPlotLimitReached(p, GraphicRendererItem.MEASUREMENTS, position)) {
+        if (isPlotLimitReached(p, GraphicItem.MEASUREMENTS, position)) {
             return;
         }
         var count = p.ext().getObservationsTimeFiltered().size();
@@ -64,7 +64,7 @@ public class GraphicRendererCount extends GraphicRendererBase {
     }
 
     private void plotCountPerMonth(BTopoControlPoint p, Position position) {
-        if (isPlotLimitReached(p, GraphicRendererItem.MEASUREMENTS_PER_MONTH, position)) {
+        if (isPlotLimitReached(p, GraphicItem.MEASUREMENTS_PER_MONTH, position)) {
             return;
         }
 
@@ -111,7 +111,7 @@ public class GraphicRendererCount extends GraphicRendererBase {
             }
             cylinder.setAttributes(attrs);
 
-            addRenderable(cylinder, true, GraphicRendererItem.MEASUREMENTS_PER_MONTH, sMapObjects);
+            addRenderable(cylinder, true, GraphicItem.MEASUREMENTS_PER_MONTH, sMapObjects);
         }
 
     }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_topo;
+package org.mapton.butterfly_topo.graphics;
 
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.topo.BTopoControlPointObservation;
+import org.mapton.butterfly_topo.TopoHelper;
 import org.mapton.worldwind.api.WWHelper;
 
 /**
@@ -39,17 +40,17 @@ public class GraphicRendererSpeed extends GraphicRendererBase {
     }
 
     public void plot(BTopoControlPoint p, Position position) {
-        if (sCheckModel.isChecked(GraphicRendererItem.SPEED_1D)) {
+        if (sCheckModel.isChecked(GraphicItem.SPEED_1D)) {
             plotSpeed(p, position);
         }
 
-        if (sCheckModel.isChecked(GraphicRendererItem.SPEED_1D_TRACE)) {
+        if (sCheckModel.isChecked(GraphicItem.SPEED_1D_TRACE)) {
             plotSpeedTrace(p, position);
         }
     }
 
     private void plotSpeed(BTopoControlPoint p, Position position) {
-        if (isPlotLimitReached(p, GraphicRendererItem.SPEED_1D, position) || p.getDimension() == BDimension._2d) {
+        if (isPlotLimitReached(p, GraphicItem.SPEED_1D, position) || p.getDimension() == BDimension._2d) {
             return;
         }
 
@@ -135,7 +136,7 @@ public class GraphicRendererSpeed extends GraphicRendererBase {
             cylinder.setAttributes(attrs);
 
             if (height > 0) {
-                addRenderable(cylinder, true, GraphicRendererItem.TRACE_1D, sMapObjects);
+                addRenderable(cylinder, true, GraphicItem.TRACE_1D, sMapObjects);
             }
         }
     }

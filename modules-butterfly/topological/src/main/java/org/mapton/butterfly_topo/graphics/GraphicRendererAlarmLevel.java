@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_topo;
+package org.mapton.butterfly_topo.graphics;
 
 import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.Position;
@@ -44,7 +44,7 @@ import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.topo.BTopoControlPointObservation;
-import static org.mapton.butterfly_topo.GraphicRendererBase.sMapObjects;
+import static org.mapton.butterfly_topo.graphics.GraphicRendererBase.sMapObjects;
 import org.mapton.worldwind.api.WWHelper;
 import se.trixon.almond.util.DateHelper;
 
@@ -59,21 +59,21 @@ public class GraphicRendererAlarmLevel extends GraphicRendererBase {
     }
 
     public void plot(BTopoControlPoint p, Position position) {
-        if (sCheckModel.isChecked(GraphicRendererItem.ALARM_LEVEL)) {
+        if (sCheckModel.isChecked(GraphicItem.ALARM_LEVEL)) {
             plotAlarmLevel(p, position);
         }
 
-        if (sCheckModel.isChecked(GraphicRendererItem.ALARM_CONSUMPTION)) {
+        if (sCheckModel.isChecked(GraphicItem.ALARM_CONSUMPTION)) {
             plotAlarmConsumption(p, position);
-            if (sCheckModel.isChecked(GraphicRendererItem.ALARM_CONSUMPTION_TRACE_1)) {
+            if (sCheckModel.isChecked(GraphicItem.ALARM_CONSUMPTION_TRACE_1)) {
                 plotAlarmConsumptionTrace1(p, position);
             }
-            if (sCheckModel.isChecked(GraphicRendererItem.ALARM_CONSUMPTION_TRACE_2)) {
+            if (sCheckModel.isChecked(GraphicItem.ALARM_CONSUMPTION_TRACE_2)) {
                 plotAlarmConsumptionTrace2(p, position);
             }
         }
 
-        if (sCheckModel.isChecked(GraphicRendererItem.TRACE_ALARM_LEVEL)) {
+        if (sCheckModel.isChecked(GraphicItem.TRACE_ALARM_LEVEL)) {
             plotAlarmLevelTrace(p, position, BComponent.HEIGHT);
             plotAlarmLevelTrace(p, position, BComponent.PLANE);
         }
@@ -96,7 +96,7 @@ public class GraphicRendererAlarmLevel extends GraphicRendererBase {
     }
 
     private void plotAlarmConsumption(BTopoControlPoint p, Position position) {
-        if (isPlotLimitReached(p, GraphicRendererItem.ALARM_CONSUMPTION, position)) {
+        if (isPlotLimitReached(p, GraphicItem.ALARM_CONSUMPTION, position)) {
             return;
         }
         var alarmPercent = p.ext().getAlarmPercent();
@@ -185,7 +185,7 @@ public class GraphicRendererAlarmLevel extends GraphicRendererBase {
     }
 
     private void plotAlarmConsumptionTrace1(BTopoControlPoint p, Position position) {
-        if (isPlotLimitReached(p, GraphicRendererItem.ALARM_CONSUMPTION_TRACE_1, position) || p.getDimension() == BDimension._2d) {
+        if (isPlotLimitReached(p, GraphicItem.ALARM_CONSUMPTION_TRACE_1, position) || p.getDimension() == BDimension._2d) {
             return;
         }
 
@@ -211,7 +211,7 @@ public class GraphicRendererAlarmLevel extends GraphicRendererBase {
     }
 
     private void plotAlarmConsumptionTrace2(BTopoControlPoint p, Position position) {
-        if (isPlotLimitReached(p, GraphicRendererItem.ALARM_CONSUMPTION_TRACE_2, position) || p.getDimension() == BDimension._1d) {
+        if (isPlotLimitReached(p, GraphicItem.ALARM_CONSUMPTION_TRACE_2, position) || p.getDimension() == BDimension._1d) {
             return;
         }
 
@@ -246,7 +246,7 @@ public class GraphicRendererAlarmLevel extends GraphicRendererBase {
     }
 
     private void plotAlarmLevel(BTopoControlPoint p, Position position) {
-        if (isPlotLimitReached(p, GraphicRendererItem.ALARM_LEVEL, position)) {
+        if (isPlotLimitReached(p, GraphicItem.ALARM_LEVEL, position)) {
             return;
         }
 
@@ -357,13 +357,13 @@ public class GraphicRendererAlarmLevel extends GraphicRendererBase {
                 attrs.setInteriorMaterial(material);
                 attrs.setEnableLighting(true);
                 shape.setAttributes(attrs);
-                addRenderable(shape, true, GraphicRendererItem.TRACE_ALARM_LEVEL, sMapObjects);
+                addRenderable(shape, true, GraphicItem.TRACE_ALARM_LEVEL, sMapObjects);
             } else if (airspace != null) {
                 airspace.setAltitudes(altitude - height / 2, altitude + height / 2);
                 var attrs = new BasicAirspaceAttributes();
                 attrs.setInteriorMaterial(material);
                 airspace.setAttributes(attrs);
-                addRenderable(airspace, true, GraphicRendererItem.TRACE_ALARM_LEVEL, sMapObjects);
+                addRenderable(airspace, true, GraphicItem.TRACE_ALARM_LEVEL, sMapObjects);
             }
         }
     }

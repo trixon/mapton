@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_topo;
+package org.mapton.butterfly_topo.graphics;
 
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
@@ -35,8 +35,9 @@ import org.apache.commons.math3.ml.clustering.DBSCANClusterer;
 import org.apache.commons.math3.ml.distance.DistanceMeasure;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
-import static org.mapton.butterfly_topo.GraphicRendererBase.sCheckModel;
-import static org.mapton.butterfly_topo.GraphicRendererBase.sMapObjects;
+import org.mapton.butterfly_topo.TopoLayerBundle;
+import static org.mapton.butterfly_topo.graphics.GraphicRendererBase.sCheckModel;
+import static org.mapton.butterfly_topo.graphics.GraphicRendererBase.sMapObjects;
 import org.mapton.worldwind.api.WWHelper;
 import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.ext.GrahamScan;
@@ -70,11 +71,11 @@ public class GraphicRendererGroup extends GraphicRendererBase {
 
     @Override
     public void postPlot() {
-        if (sCheckModel.isChecked(GraphicRendererItem.CLUSTER_DEFORMATION) && mPoints.size() > 2) {
+        if (sCheckModel.isChecked(GraphicItem.CLUSTER_DEFORMATION) && mPoints.size() > 2) {
             plotDeformation();
         }
 
-        if (sCheckModel.isChecked(GraphicRendererItem.CLUSTER_DEFORMATION_PLANE_ALTITUDES) && mPoints.size() > 1) {
+        if (sCheckModel.isChecked(GraphicItem.CLUSTER_DEFORMATION_PLANE_ALTITUDES) && mPoints.size() > 1) {
             plotDeformationPlaneAltitudes();
         }
     }

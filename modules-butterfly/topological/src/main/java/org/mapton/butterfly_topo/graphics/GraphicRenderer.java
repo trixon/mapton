@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_topo;
+package org.mapton.butterfly_topo.graphics;
 
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.geom.Position;
@@ -39,7 +39,7 @@ public class GraphicRenderer extends GraphicRendererBase {
     private final GraphicRendererTrace mTraceRenderer;
     private final GraphicRendererVector mVectorRenderer;
 
-    public GraphicRenderer(RenderableLayer layer, RenderableLayer passiveLayer, IndexedCheckModel<GraphicRendererItem> checkModel) {
+    public GraphicRenderer(RenderableLayer layer, RenderableLayer passiveLayer, IndexedCheckModel<GraphicItem> checkModel) {
         super(layer, passiveLayer);
         mVectorRenderer = new GraphicRendererVector(layer, passiveLayer);
         mTraceRenderer = new GraphicRendererTrace(layer, passiveLayer);
@@ -83,7 +83,7 @@ public class GraphicRenderer extends GraphicRendererBase {
 
     private void plotBearing(BTopoControlPoint p, Position position) {
         int size = p.ext().getObservationsTimeFiltered().size();
-        if (!sCheckModel.isChecked(GraphicRendererItem.BEARING)
+        if (!sCheckModel.isChecked(GraphicItem.BEARING)
                 || p.getDimension() == BDimension._1d
                 || p.ext().getNumOfObservationsFiltered() == 0) {
             return;

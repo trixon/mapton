@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_topo;
+package org.mapton.butterfly_topo.graphics;
 
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
@@ -32,6 +32,7 @@ import org.mapton.butterfly_core.api.sos.ScalePlot3dHSosi;
 import org.mapton.butterfly_core.api.sos.ScalePlot3dPSosi;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
+import org.mapton.butterfly_topo.TopoLayerBundle;
 import org.mapton.worldwind.api.WWHelper;
 import se.trixon.almond.util.MathHelper;
 
@@ -56,17 +57,17 @@ public class GraphicRendererTrace extends GraphicRendererBase {
 
         var dimension = p.getDimension();
 
-        if (sCheckModel.isChecked(GraphicRendererItem.TRACE_1D) && (dimension == BDimension._1d || dimension == BDimension._3d)) {
+        if (sCheckModel.isChecked(GraphicItem.TRACE_1D) && (dimension == BDimension._1d || dimension == BDimension._3d)) {
             plot1d(p, position);
-//        } else if (sCheckModel.isChecked(GraphicRendererItem.TRACE_2D) && p.getDimension() == BDimension._2d) {
+//        } else if (sCheckModel.isChecked(GraphicItem.TRACE_2D) && p.getDimension() == BDimension._2d) {
 //            plot2d(p, position, mapObjects);
-        } else if (sCheckModel.isChecked(GraphicRendererItem.TRACE_3D) && dimension == BDimension._3d) {
+        } else if (sCheckModel.isChecked(GraphicItem.TRACE_3D) && dimension == BDimension._3d) {
             plot3d(p, position);
         }
     }
 
     private void plot1d(BTopoControlPoint p, Position position) {
-        if (isPlotLimitReached(p, GraphicRendererItem.TRACE_1D, position)) {
+        if (isPlotLimitReached(p, GraphicItem.TRACE_1D, position)) {
             return;
         }
         var reversedList = p.ext().getObservationsTimeFiltered().reversed();
@@ -107,7 +108,7 @@ public class GraphicRendererTrace extends GraphicRendererBase {
             }
 
             cylinder.setAttributes(attrs);
-            addRenderable(cylinder, true, GraphicRendererItem.TRACE_1D, sMapObjects);
+            addRenderable(cylinder, true, GraphicItem.TRACE_1D, sMapObjects);
         }
     }
 

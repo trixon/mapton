@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_topo;
+package org.mapton.butterfly_topo.graphics;
 
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVListImpl;
@@ -35,6 +35,8 @@ import org.mapton.butterfly_core.api.PlotLimiter;
 import org.mapton.butterfly_core.api.sos.ScalePlot3dHSosi;
 import org.mapton.butterfly_core.api.sos.ScalePlot3dPSosi;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
+import org.mapton.butterfly_topo.TopoAttributeManager;
+import org.mapton.butterfly_topo.TopoLayerBundle;
 import org.mapton.butterfly_topo.api.TopoManager;
 import org.mapton.worldwind.api.WWHelper;
 import se.trixon.almond.util.MathHelper;
@@ -43,9 +45,9 @@ import se.trixon.almond.util.MathHelper;
  *
  * @author Patrik Karlström
  */
-public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicRendererItem, BTopoControlPoint> {
+public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicItem, BTopoControlPoint> {
 
-    protected static IndexedCheckModel<GraphicRendererItem> sCheckModel;
+    protected static IndexedCheckModel<GraphicItem> sCheckModel;
     protected static final HashSet<BTopoControlPoint> sLabeledPoints = new HashSet<>();
     protected static ArrayList<AVListImpl> sMapObjects;
     protected static final PlotLimiter sPlotLimiter = new PlotLimiter();
@@ -54,7 +56,7 @@ public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicRen
     protected final TopoManager mManager = TopoManager.getInstance();
 
     static {
-        for (var renderItem : GraphicRendererItem.values()) {
+        for (var renderItem : GraphicItem.values()) {
             sPlotLimiter.setLimit(renderItem, renderItem.getPlotLimit());
         }
     }
@@ -123,7 +125,7 @@ public abstract class GraphicRendererBase extends BaseGraphicRenderer<GraphicRen
     }
 
     public void plotLabel(BTopoControlPoint p, Position position) {
-        if (sCheckModel.isChecked(GraphicRendererItem.LABEL) && !sLabeledPoints.contains(p)) {
+        if (sCheckModel.isChecked(GraphicItem.LABEL) && !sLabeledPoints.contains(p)) {
             sLabeledPoints.add(p);
             var placemark = new PointPlacemark(position);
             placemark.setAttributes(mAttributeManager.getLabelPlacemarkAttributes());

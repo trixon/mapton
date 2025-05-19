@@ -20,7 +20,7 @@ import gov.nasa.worldwind.layers.RenderableLayer;
 import java.util.HashMap;
 import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.butterfly_format.types.topo.BTopoGrade;
-import org.mapton.butterfly_topo.GraphicRendererBase;
+import org.mapton.butterfly_topo.graphics.GraphicRendererBase;
 import org.mapton.butterfly_topo.grade.GradeAttributeManager;
 
 /**

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mapton.butterfly_topo;
+package org.mapton.butterfly_topo.graphics;
 
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
@@ -27,6 +27,8 @@ import org.mapton.butterfly_core.api.sos.ScalePlot3dPSosi;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
+import org.mapton.butterfly_topo.TopoHelper;
+import org.mapton.butterfly_topo.TopoLayerBundle;
 import org.mapton.worldwind.api.WWHelper;
 import se.trixon.almond.util.MathHelper;
 
@@ -49,15 +51,15 @@ public class GraphicRendererVector extends GraphicRendererBase {
 
         var dimension = p.getDimension();
 
-        if (sCheckModel.isChecked(GraphicRendererItem.VECTOR_1D) && (dimension == BDimension._1d || dimension == BDimension._3d)) {
+        if (sCheckModel.isChecked(GraphicItem.VECTOR_1D) && (dimension == BDimension._1d || dimension == BDimension._3d)) {
             plot1d(p, position);
         }
 
-        if (sCheckModel.isChecked(GraphicRendererItem.VECTOR_1D) && sCheckModel.isChecked(GraphicRendererItem.VECTOR_1D_ALARM) && (dimension == BDimension._1d || dimension == BDimension._3d)) {
+        if (sCheckModel.isChecked(GraphicItem.VECTOR_1D) && sCheckModel.isChecked(GraphicItem.VECTOR_1D_ALARM) && (dimension == BDimension._1d || dimension == BDimension._3d)) {
             plot1dVectorAlarm(p, position);
         }
 
-        if (sCheckModel.isChecked(GraphicRendererItem.VECTOR_3D) && dimension == BDimension._3d) {
+        if (sCheckModel.isChecked(GraphicItem.VECTOR_3D) && dimension == BDimension._3d) {
             plot3d(p, position);
         }
     }
