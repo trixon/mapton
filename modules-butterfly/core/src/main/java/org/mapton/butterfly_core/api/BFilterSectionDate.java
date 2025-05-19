@@ -49,16 +49,24 @@ import se.trixon.almond.util.fx.session.SessionCheckComboBox;
  */
 public class BFilterSectionDate extends MBaseFilterSection {
 
+    public static final String KEY_DATE_FIRST_FROM_START = "filter.date.FirstFromStart";
     public static final String KEY_DATE_FIRST_HIGH = "filter.date.FirstHigh";
     public static final String KEY_DATE_FIRST_LOW = "filter.date.FirstLow";
+    public static final String KEY_DATE_FIRST_TO_END = "filter.date.FirstToEnd";
+    public static final String KEY_DATE_LAST_FROM_START = "filter.date.LastFromStart";
     public static final String KEY_DATE_LAST_HIGH = "filter.date.LastHigh";
     public static final String KEY_DATE_LAST_LOW = "filter.date.LastLow";
+    public static final String KEY_DATE_LAST_TO_END = "filter.date.LastToEnd";
     private static final String KEY_DATE_FORMULA_FIRST = "filter.date.formula.first";
     private static final String KEY_DATE_FORMULA_LAST = "filter.date.formula.last";
     private Node mDateFirstBorderBox;
+    private boolean mDateFirstFromStart;
+    private boolean mDateFirstToEnd;
     private String mDateFormulaFirst;
     private String mDateFormulaLast;
     private Node mDateLastBorderBox;
+    private boolean mDateLastFromStart;
+    private boolean mDateLastToEnd;
     private final DateRangePane mDateRangeFirstPane = new DateRangePane();
     private final DateRangePane mDateRangeLastPane = new DateRangePane();
     private final SessionCheckComboBox<String> mHasDateFromToSccb = new SessionCheckComboBox<>(true);
@@ -77,6 +85,10 @@ public class BFilterSectionDate extends MBaseFilterSection {
         mDateRangeLastPane.reset();
         mDateFormulaFirst = "";
         mDateFormulaLast = "";
+        mDateFirstFromStart = true;
+        mDateFirstToEnd = true;
+        mDateLastFromStart = true;
+        mDateLastToEnd = true;
         SessionCheckComboBox.clearChecks(
                 mHasDateFromToSccb
         );
@@ -108,11 +120,19 @@ public class BFilterSectionDate extends MBaseFilterSection {
 
     public boolean filter(BXyzPoint p, LocalDateTime dateFirst) {
         if (isSelected()) {
-            return validateDateFromToHas(p.getDateValidFrom(), p.getDateValidTo())
+            var valid = validateDateFromToHas(p.getDateValidFrom(), p.getDateValidTo())
                     && validateDateFromToWithout(p.getDateValidFrom(), p.getDateValidTo())
-                    && validateDateFromToIs(p.getDateValidFrom(), p.getDateValidTo())
-                    && validateAge(dateFirst, dateFirstLowProperty(), dateFirstHighProperty())
-                    && validateAge(p.getDateLatest(), dateLastLowProperty(), dateLastHighProperty());
+                    && validateDateFromToIs(p.getDateValidFrom(), p.getDateValidTo());
+
+            if (valid && mDateFirstBorderBox.isDisabled() == false) {
+                valid = validateAge(dateFirst, dateFirstLowProperty(), dateFirstHighProperty());
+            }
+
+            if (valid && mDateLastBorderBox.isDisabled() == false) {
+                valid = validateAge(p.getDateLatest(), dateLastLowProperty(), dateLastHighProperty());
+            }
+
+            return valid;
         } else {
             return true;
         }
@@ -162,14 +182,31 @@ public class BFilterSectionDate extends MBaseFilterSection {
         var preferences = sessionManager.getPreferences();
         String dateFormulaFirst = null;
         String dateFormulaLast = null;
+        var dateFirstFromStart = true;
+        var dateFirstToEnd = true;
+        var dateLastFromStart = true;
+        var dateLastToEnd = true;
         var isPreset = StringUtils.containsIgnoreCase(preferences.absolutePath(), MFilterPresetPopOver.FILTER_PRESET_NODE);
 
         if (isPreset) {
+            mDateFirstToEnd = preferences.getBoolean(KEY_DATE_FIRST_TO_END, true);
+            mDateFirstFromStart = preferences.getBoolean(KEY_DATE_FIRST_FROM_START, true);
+            mDateLastToEnd = preferences.getBoolean(KEY_DATE_LAST_TO_END, true);
+            mDateLastFromStart = preferences.getBoolean(KEY_DATE_LAST_FROM_START, true);
+            dateFirstFromStart = mDateFirstFromStart;
+            dateFirstToEnd = mDateFirstToEnd;
+            dateLastFromStart = mDateLastFromStart;
+            dateLastToEnd = mDateLastToEnd;
+
             mDateFormulaFirst = preferences.get(KEY_DATE_FORMULA_FIRST, "");
             mDateFormulaLast = preferences.get(KEY_DATE_FORMULA_LAST, "");
             dateFormulaFirst = mDateFormulaFirst;
             dateFormulaLast = mDateFormulaLast;
         } else {
+            mDateFirstFromStart = true;
+            mDateFirstToEnd = true;
+            mDateLastFromStart = true;
+            mDateLastToEnd = true;
             mDateFormulaFirst = mDateRangeFirstPane.dateFormulaProperty().get();
             mDateFormulaLast = mDateRangeLastPane.dateFormulaProperty().get();
         }
@@ -177,15 +214,34 @@ public class BFilterSectionDate extends MBaseFilterSection {
         sessionManager.register("filter.checkedDateFromTo", mHasDateFromToSccb.checkedStringProperty());
 
         sessionManager.register(KEY_DATE_FORMULA_FIRST, mDateRangeFirstPane.dateFormulaProperty());
-        sessionManager.register(KEY_DATE_FORMULA_LAST, mDateRangeLastPane.dateFormulaProperty());
-        sessionManager.register(KEY_DATE_FIRST_LOW, mDateRangeFirstPane.lowStringProperty());
         sessionManager.register(KEY_DATE_FIRST_HIGH, mDateRangeFirstPane.highStringProperty());
-        sessionManager.register(KEY_DATE_LAST_LOW, mDateRangeLastPane.lowStringProperty());
+        sessionManager.register(KEY_DATE_FIRST_LOW, mDateRangeFirstPane.lowStringProperty());
+        sessionManager.register(KEY_DATE_FIRST_FROM_START, mDateRangeFirstPane.selectedFromStartProperty());
+        sessionManager.register(KEY_DATE_FIRST_TO_END, mDateRangeFirstPane.selectedToEndProperty());
+
+        sessionManager.register(KEY_DATE_FORMULA_LAST, mDateRangeLastPane.dateFormulaProperty());
         sessionManager.register(KEY_DATE_LAST_HIGH, mDateRangeLastPane.highStringProperty());
+        sessionManager.register(KEY_DATE_LAST_LOW, mDateRangeLastPane.lowStringProperty());
+        sessionManager.register(KEY_DATE_LAST_FROM_START, mDateRangeLastPane.selectedFromStartProperty());
+        sessionManager.register(KEY_DATE_LAST_TO_END, mDateRangeLastPane.selectedToEndProperty());
 
         if (isPreset) {
+            mDateFirstFromStart = dateFirstFromStart;
+            mDateFirstToEnd = dateFirstToEnd;
+            mDateLastFromStart = dateLastFromStart;
+            mDateLastToEnd = dateLastToEnd;
+
             mDateFormulaFirst = dateFormulaFirst;
             mDateFormulaLast = dateFormulaLast;
+        }
+
+        if (StringUtils.isNotBlank(mDateFormulaFirst)) {
+            mDateFirstFromStart = false;
+            mDateFirstToEnd = false;
+        }
+        if (StringUtils.isNotBlank(mDateFormulaLast)) {
+            mDateLastFromStart = false;
+            mDateLastToEnd = false;
         }
 
         restoreCustomDates();
@@ -194,10 +250,14 @@ public class BFilterSectionDate extends MBaseFilterSection {
     public void load(MTemporalRange temporalRange) {
         var sessionManager = getSessionManager();
         List.of(
+                mDateRangeFirstPane.selectedFromStartProperty(),
+                mDateRangeFirstPane.selectedToEndProperty(),
                 mDateRangeFirstPane.lowStringProperty(),
                 mDateRangeFirstPane.highStringProperty(),
                 mDateRangeLastPane.lowStringProperty(),
-                mDateRangeLastPane.highStringProperty()
+                mDateRangeLastPane.highStringProperty(),
+                mDateRangeLastPane.selectedFromStartProperty(),
+                mDateRangeLastPane.selectedToEndProperty()
         ).forEach(property -> sessionManager.unregister(property));
 
         if (temporalRange != null) {
@@ -206,10 +266,19 @@ public class BFilterSectionDate extends MBaseFilterSection {
         }
         sessionManager.register(KEY_DATE_FIRST_LOW, mDateRangeFirstPane.lowStringProperty());
         sessionManager.register(KEY_DATE_FIRST_HIGH, mDateRangeFirstPane.highStringProperty());
+        sessionManager.register(KEY_DATE_FIRST_FROM_START, mDateRangeFirstPane.selectedFromStartProperty());
+        sessionManager.register(KEY_DATE_FIRST_TO_END, mDateRangeFirstPane.selectedToEndProperty());
+
         sessionManager.register(KEY_DATE_LAST_LOW, mDateRangeLastPane.lowStringProperty());
         sessionManager.register(KEY_DATE_LAST_HIGH, mDateRangeLastPane.highStringProperty());
+        sessionManager.register(KEY_DATE_LAST_FROM_START, mDateRangeLastPane.selectedFromStartProperty());
+        sessionManager.register(KEY_DATE_LAST_TO_END, mDateRangeLastPane.selectedToEndProperty());
 
         var p = getSessionManager().getPreferences();
+        mDateFirstFromStart = p.getBoolean(KEY_DATE_FIRST_FROM_START, true);
+        mDateFirstToEnd = p.getBoolean(KEY_DATE_FIRST_TO_END, true);
+        mDateLastFromStart = p.getBoolean(KEY_DATE_LAST_FROM_START, true);
+        mDateLastToEnd = p.getBoolean(KEY_DATE_LAST_TO_END, true);
         mDateFormulaFirst = p.get(KEY_DATE_FORMULA_FIRST, "");
         mDateFormulaLast = p.get(KEY_DATE_FORMULA_LAST, "");
         initSession(sessionManager);
@@ -271,6 +340,26 @@ public class BFilterSectionDate extends MBaseFilterSection {
             var datePreset = new MDateFormula(mDateFormulaLast);
             mDateRangeLastPane.getDatePane().getDateRangeSlider().setLowHighDate(datePreset.getStartDate(), datePreset.getEndDate());
             mDateRangeLastPane.dateFormulaProperty().set(mDateFormulaLast);
+        }
+
+        if (mDateFirstFromStart) {
+            var dateRangeSlider = mDateRangeFirstPane.getDatePane().getDateRangeSlider();
+            dateRangeSlider.setLowDate(dateRangeSlider.getMinDate());
+        }
+
+        if (mDateFirstToEnd) {
+            var dateRangeSlider = mDateRangeFirstPane.getDatePane().getDateRangeSlider();
+            dateRangeSlider.setHighDate(dateRangeSlider.getMaxDate());
+        }
+
+        if (mDateLastFromStart) {
+            var dateRangeSlider = mDateRangeLastPane.getDatePane().getDateRangeSlider();
+            dateRangeSlider.setLowDate(dateRangeSlider.getMinDate());
+        }
+
+        if (mDateLastToEnd) {
+            var dateRangeSlider = mDateRangeLastPane.getDatePane().getDateRangeSlider();
+            dateRangeSlider.setHighDate(dateRangeSlider.getMaxDate());
         }
     }
 
