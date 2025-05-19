@@ -17,6 +17,8 @@ package org.mapton.api.ui.forms;
 
 import com.dlsc.gemsfx.Spacer;
 import java.time.LocalDate;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -43,6 +45,8 @@ public class DateRangePane {
     private final DatePane mDatePane = new DatePane();
     private final SplitMenuButton mPresetSplitMenuButton = new SplitMenuButton();
     private VBox mRoot;
+    private final BooleanProperty mSelectedFromStartProperty = new SimpleBooleanProperty();
+    private final BooleanProperty mSelectedToEndProperty = new SimpleBooleanProperty();
 
     public DateRangePane() {
         createUI();
@@ -80,6 +84,14 @@ public class DateRangePane {
     public void reset() {
         mDatePane.reset();
         mDateFormulaProperty.setValue("");
+    }
+
+    public BooleanProperty selectedFromStartProperty() {
+        return mSelectedFromStartProperty;
+    }
+
+    public BooleanProperty selectedToEndProperty() {
+        return mSelectedToEndProperty;
     }
 
     public void setMinMaxDate(LocalDate minDate, LocalDate maxDate) {
@@ -157,6 +169,14 @@ public class DateRangePane {
 //        };
 //        mDatePane.getDateRangeSlider().highDateProperty().addListener(dateChengeListener);
 //        mDatePane.getDateRangeSlider().lowDateProperty().addListener(dateChengeListener);
+        mDatePane.getDateRangeSlider().lowDateProperty().addListener((it, o, n) -> {
+            mSelectedFromStartProperty.setValue(mDatePane.getDateRangeSlider().isSelectedFromStart());
+            mSelectedToEndProperty.setValue(mDatePane.getDateRangeSlider().isSelectedToEnd());
+        });
+        mDatePane.getDateRangeSlider().highDateProperty().addListener((it, o, n) -> {
+            mSelectedFromStartProperty.setValue(mDatePane.getDateRangeSlider().isSelectedFromStart());
+            mSelectedToEndProperty.setValue(mDatePane.getDateRangeSlider().isSelectedToEnd());
+        });
     }
 
     private void populatePresets() {
