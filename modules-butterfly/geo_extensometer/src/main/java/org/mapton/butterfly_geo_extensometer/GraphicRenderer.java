@@ -149,14 +149,15 @@ public class GraphicRenderer {
         }
     }
 
-    private void plotLabel(BGeoExtensometer extenso, Function<BGeoExtensometerPoint, String> function) {
+    private void plotLabel(BGeoExtensometer extenso, Function<BGeoExtensometerPoint, String> function, double offset) {
         extenso.getPoints().forEach(p -> {
             Position position = p.getValue(Position.class);
-            var placemark = new PointPlacemark(position);
+            var placemark = new PointPlacemark(WWHelper.positionFromPosition(position, position.elevation + offset));
             placemark.setAttributes(mAttributeManager.getLabelPlacemarkAttributes());
             placemark.setAltitudeMode(WorldWind.ABSOLUTE);
             placemark.setHighlightAttributes(WWHelper.createHighlightAttributes(mAttributeManager.getLabelPlacemarkAttributes(), 1.5));
-            placemark.setLabelText(function.apply(p));
+            placemark.setLabelText("•    " + function.apply(p));
+            placemark.setAlwaysOnTop(true);
             addRenderable(placemark, true);
         });
 
@@ -168,17 +169,17 @@ public class GraphicRenderer {
                 p.getLimit2() * 1000,
                 p.getLimit3() * 1000
         );
-        plotLabel(extenso, function);
+        plotLabel(extenso, function, .75);
     }
 
     private void plotLabelsDeltaZ(BGeoExtensometer extenso) {
         var function = (Function<BGeoExtensometerPoint, String>) p -> "%.2f".formatted(p.ext().getDelta());
-        plotLabel(extenso, function);
+        plotLabel(extenso, function, 0);
     }
 
     private void plotLabelsDepth(BGeoExtensometer extenso) {
         var function = (Function<BGeoExtensometerPoint, String>) p -> "%.1f".formatted(p.getDepth());
-        plotLabel(extenso, function);
+        plotLabel(extenso, function, -.75);
     }
 
     private void plotSlice(BGeoExtensometer extenso, Position position) {
