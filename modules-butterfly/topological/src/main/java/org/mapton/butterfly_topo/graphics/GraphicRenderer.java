@@ -37,6 +37,7 @@ public class GraphicRenderer extends GraphicRendererBase {
     private final GraphicRendererGroup mGroupRenderer;
     private final GraphicRendererSpeed mSpeedRenderer;
     private final GraphicRendererTrace mTraceRenderer;
+    private final GraphicRendererTrend mTrendRenderer;
     private final GraphicRendererVector mVectorRenderer;
 
     public GraphicRenderer(RenderableLayer layer, RenderableLayer passiveLayer, IndexedCheckModel<GraphicItem> checkModel) {
@@ -47,6 +48,7 @@ public class GraphicRenderer extends GraphicRendererBase {
         mCountRenderer = new GraphicRendererCount(layer, passiveLayer);
         mCircleRenderer = new GraphicRendererCircle(layer, passiveLayer);
         mAlarmRenderer = new GraphicRendererAlarmLevel(layer, passiveLayer);
+        mTrendRenderer = new GraphicRendererTrend(layer, passiveLayer);
         mGroupRenderer = new GraphicRendererGroup(layer, passiveLayer);
 
         sCheckModel = checkModel;
@@ -63,6 +65,7 @@ public class GraphicRenderer extends GraphicRendererBase {
             mVectorRenderer.plot(p, position);
             mCountRenderer.plot(p, position);
             mAlarmRenderer.plot(p, position);
+            mTrendRenderer.plot(p, position);
             mSpeedRenderer.plot(p, position);
             mGroupRenderer.plot(p, position);
         }

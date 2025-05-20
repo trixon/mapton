@@ -20,17 +20,24 @@ import java.awt.event.KeyEvent;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.TreeSet;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.math3.util.FastMath;
 import org.mapton.api.MSimpleObjectStorageManager;
 import org.mapton.api.MTemporalRange;
 import org.mapton.api.Mapton;
 import org.mapton.butterfly_core.api.BaseManager;
 import org.mapton.butterfly_core.api.ButterflyManager;
+import org.mapton.butterfly_core.api.TrendHelper;
+import org.mapton.butterfly_core.api.TrendHelper.Trend;
 import org.mapton.butterfly_core.api.sos.ScalePlot3dHSosi;
 import org.mapton.butterfly_format.Butterfly;
+import static org.mapton.butterfly_format.types.BDimension._1d;
+import org.mapton.butterfly_format.types.BXyzPointObservation;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.topo.BTopoControlPointObservation;
 import org.mapton.butterfly_topo.TopoPropertiesBuilder;
@@ -46,10 +53,13 @@ import se.trixon.almond.util.CollectionHelper;
 public class TopoManager extends BaseManager<BTopoControlPoint> {
 
     public static final String KEY_TOPO_POINTS_LOADED = "TopoPointsLoaded";
+    public static final String KEY_TRENDS_H = "trendsH";
+    public static final String KEY_TRENDS_P = "trendsP";
     private final ChartAggregate mChartAggregate = new ChartAggregate();
     private double mMinimumZscaled = 0.0;
     private final MultiChartAggregate mMultiChartAggregate = new MultiChartAggregate();
     private final TopoPropertiesBuilder mPropertiesBuilder = new TopoPropertiesBuilder();
+    private int mLoadTrends = 0;
 
     public static TopoManager getInstance() {
         return TopoManagerHolder.INSTANCE;
@@ -131,6 +141,13 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
             Exceptions.printStackTrace(e);
         }
 
+//        for (var p : butterfly.topo().getControlPoints()) {
+//            try {
+//                populateTrends(p);
+//            } catch (Exception e) {
+//                //System.err.println(e);
+//            }
+//        }
         Mapton.getGlobalState().put(KEY_TOPO_POINTS_LOADED, ButterflyManager.getInstance().getButterfly());
     }
 
@@ -158,6 +175,21 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
             getTimeFilteredItemsMap().put(p.getName(), p);
             var timeFilteredObservations = p.ext().getObservationsAllRaw().stream()
                     .filter(o -> getTemporalManager().isValid(o.getDate()))
+                    .filter(o -> {
+                        switch (p.getDimension()) {
+                            case _1d -> {
+                                return ObjectUtils.allNotNull(o.getMeasuredZ());
+                            }
+                            case _2d -> {
+                                return ObjectUtils.allNotNull(o.getMeasuredX(), o.getMeasuredY());
+                            }
+                            case _3d -> {
+                                return ObjectUtils.allNotNull(o.getMeasuredX(), o.getMeasuredY(), o.getMeasuredZ());
+                            }
+                            default ->
+                                throw new AssertionError();
+                        }
+                    })
                     .collect(Collectors.toCollection(ArrayList::new));
 
             p.ext().setObservationsTimeFiltered(timeFilteredObservations);
@@ -181,12 +213,69 @@ public class TopoManager extends BaseManager<BTopoControlPoint> {
             }
         }
 
+        if (mLoadTrends++ < 3) {
+            for (var p : timeFilteredItems) {
+                try {
+                    populateTrends(p);
+                } catch (Exception e) {
+                    //System.err.println(e);
+                }
+            }
+        }
+
         setItemsTimeFiltered(timeFilteredItems);
     }
 
     @Override
     protected void load(ArrayList<BTopoControlPoint> items) {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    private void populateTrend(BTopoControlPoint p, String key, LocalDateTime startDate, LocalDateTime endDate) {
+        switch (p.getDimension()) {
+            case _1d ->
+                populateTrendH(p, key, startDate, endDate, (BXyzPointObservation o) -> o.ext().getDelta1d());
+            case _2d ->
+                populateTrendP(p, key, startDate, endDate, (BXyzPointObservation o) -> o.ext().getDelta2d());
+            case _3d -> {
+                populateTrendH(p, key, startDate, endDate, (BXyzPointObservation o) -> o.ext().getDelta1d());
+                populateTrendP(p, key, startDate, endDate, (BXyzPointObservation o) -> o.ext().getDelta2d());
+            }
+        }
+    }
+
+    private void populateTrendH(BTopoControlPoint p, String key, LocalDateTime startDate, LocalDateTime endDate, Function<BXyzPointObservation, Double> function) {
+        try {
+            var trend = TrendHelper.createTrend(p, startDate, endDate, function);
+            HashMap<String, Trend> map = (HashMap<String, Trend>) p.getValue(KEY_TRENDS_H, new HashMap<String, Trend>());
+            map.put(key, trend);
+            p.setValue(KEY_TRENDS_H, map);
+        } catch (Exception e) {
+        }
+    }
+
+    private void populateTrendP(BTopoControlPoint p, String key, LocalDateTime startDate, LocalDateTime endDate, Function<BXyzPointObservation, Double> function) {
+        var trend = TrendHelper.createTrend(p, startDate, endDate, function);
+        HashMap<String, Trend> map = (HashMap<String, Trend>) p.getValue(KEY_TRENDS_P, new HashMap<String, Trend>());
+        map.put(key, trend);
+        p.setValue(KEY_TRENDS_P, map);
+    }
+
+    private void populateTrends(BTopoControlPoint p) {
+        var startDateFirst = p.ext().getDateFirst();
+        var startDateZero = p.getDateZero().atStartOfDay();
+        var endDate = LocalDateTime.now();
+        var startDateMinus6m = endDate.minusMonths(6);
+        var startDateMinus3m = endDate.minusMonths(3);
+        var startDateMinus1m = endDate.minusMonths(1);
+        var startDateMinus1w = endDate.minusWeeks(1);
+
+        populateTrend(p, "f", startDateFirst, endDate);
+        populateTrend(p, "z", startDateZero, endDate);
+        populateTrend(p, "6m", startDateMinus6m, endDate);
+        populateTrend(p, "3m", startDateMinus3m, endDate);
+        populateTrend(p, "1m", startDateMinus1m, endDate);
+        populateTrend(p, "1w", startDateMinus1w, endDate);
     }
 
     private static class TopoManagerHolder {
