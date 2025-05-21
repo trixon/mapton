@@ -124,11 +124,11 @@ public enum ExtensoLabelBy {
         return p.getFrequency() != null ? p.getFrequency().toString() : "--";
     }),
     MISC_FREQUENCY_DEFAULT(LabelByCategories.MISC, "%s (%s)".formatted(SDict.FREQUENCY.toString(), Dict.DEFAULT.toLower()), p -> {
-        return p.getDefaultFrequency().toString();
+        return p.getFrequencyDefault().toString();
     }),
     MISC_FREQUENCY_AND_DEFAULT(LabelByCategories.MISC, "%s / %s".formatted(SDict.FREQUENCY.toString(), Dict.DEFAULT.toString()), p -> {
         var freq = p.getFrequency() != null ? p.getFrequency().toString() : "--";
-        var def = p.getDefaultFrequency() != null ? p.getDefaultFrequency().toString() : "--";
+        var def = p.getFrequencyDefault() != null ? p.getFrequencyDefault().toString() : "--";
 
         return "%s / %s".formatted(freq, def);
     }),
