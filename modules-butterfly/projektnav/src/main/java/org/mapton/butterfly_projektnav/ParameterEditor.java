@@ -15,10 +15,13 @@
  */
 package org.mapton.butterfly_projektnav;
 
-import org.mapton.butterfly_projektnav.editor.topo.*;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.TreeSet;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
@@ -28,6 +31,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Region;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
@@ -35,6 +39,16 @@ import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
 import org.mapton.api.report.MEditor;
 import org.mapton.api.report.MSplitNavSettings;
+import org.mapton.butterfly_core.api.BaseManager;
+import org.mapton.butterfly_core.api.BaseManagerProvider;
+import static org.mapton.butterfly_format.types.BDimension._1d;
+import static org.mapton.butterfly_format.types.BDimension._2d;
+import static org.mapton.butterfly_format.types.BDimension._3d;
+import org.mapton.butterfly_format.types.BXyzPoint;
+import org.mapton.butterfly_projektnav.editor.BaseEditor;
+import org.mapton.butterfly_projektnav.editor.topo.*;
+import org.openide.util.Lookup;
+import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
@@ -47,19 +61,24 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
  * @author Patrik Karlström
  */
 @ServiceProvider(service = MEditor.class)
-public class ParameterEditor extends BaseTopoEditor {
+public class ParameterEditor extends BaseEditor {
 
     private BorderPane mBorderPane;
+    private final ResourceBundle mBundle = NbBundle.getBundle(BaseTopoEditor.class);
     private final CheckBox mDagCheckBox = new CheckBox("Dag");
-    private final CheckBox mDefDagCheckBox = new CheckBox("DefDag");
-    private final CheckBox mDefDagRestoreCheckBox = new CheckBox("Reset def");
     private final Spinner<Integer> mDagSpinner = new Spinner<>(0, 999, 1);
-    private final Spinner<Integer> mDefDagSpinner = new Spinner<>(0, 999, 1);
     private final CheckBox mDatFromCheckBox = new CheckBox("Från");
     private final DatePicker mDatFromDatePicker = new DatePicker();
     private final CheckBox mDatToCheckBox = new CheckBox("Till");
     private final DatePicker mDatToDatePicker = new DatePicker();
     private final CheckBox mDatToLatestCheckBox = new CheckBox("Till (senaste)");
+    private final CheckBox mDagDefCheckBox = new CheckBox("DagDef");
+    private final CheckBox mDagDefRestoreCheckBox = new CheckBox("Reset dag def");
+    private final CheckBox mDagIntCheckBox = new CheckBox("DagInt");
+    private final CheckBox mDagIntRestoreCheckBox = new CheckBox("Reset dag int");
+    private final CheckBox mDagIntParamCheckBox = new CheckBox("DagIntParam");
+    private final Spinner<Integer> mDagDefSpinner = new Spinner<>(0, 999, 1);
+    private final Spinner<Integer> mDagIntSpinner = new Spinner<>(0, 999, 1);
     private final CheckBox mGruppCheckBox = new CheckBox("Grupp");
     private final ComboBox<String> mGruppComboBox = new ComboBox<>();
     private final CheckBox mKategoriCheckBox = new CheckBox("Kategori");
@@ -68,6 +87,7 @@ public class ParameterEditor extends BaseTopoEditor {
     private final ComboBox<String> mLarmHComboBox = new ComboBox<>();
     private final CheckBox mLarmPCheckBox = new CheckBox("Larm P");
     private final ComboBox<String> mLarmPComboBox = new ComboBox<>();
+    private BaseManager<? extends BXyzPoint> mManager;
     private final LogPanel mPreviewLogPanel = new LogPanel();
     private final TextArea mSourceTextArea = new TextArea();
     private final CheckBox mStatusCheckBox = new CheckBox("Status");
@@ -76,6 +96,8 @@ public class ParameterEditor extends BaseTopoEditor {
     private final ComboBox<String> mUtforareComboBox = new ComboBox<>();
     private final CheckBox mUtglesningCheckBox = new CheckBox("Utglesning");
     private final TextField mUtglesningTextField = new TextField("MEDIAN / 2D");
+    private final TextField mDagIntParamTextField = new TextField();
+    private final ComboBox<BaseManagerProvider> mManagerComboBox = new ComboBox<>();
 
     public ParameterEditor() {
         setName("Parametrar");
@@ -93,28 +115,59 @@ public class ParameterEditor extends BaseTopoEditor {
         return mBody;
     }
 
+    public ArrayList<String> getPointWithNavetNames(String[] points) {
+        var names = new ArrayList<String>();
+        for (var name : points) {
+            var p = mManager.getItemForKey(name);
+
+            if (p != null) {
+                if (null == p.getDimension()) {
+                    names.add(name + "_P");
+                } else {
+                    switch (p.getDimension()) {
+                        case _1d ->
+                            names.add(name);
+                        case _2d ->
+                            names.add(name + "_P");
+                        case _3d -> {
+                            names.add(name + "_P");
+                            names.add(name + "_H");
+                        }
+                    }
+                }
+            } else {
+                System.err.println("Point not found: " + name);
+            }
+            mManager.getAllItemsSet();
+        }
+
+        return names;
+    }
+
     private void addConditionlly(StringBuilder sb, boolean selected, Object o) {
         if (selected) {
             sb.append("\t").append(o);
         }
     }
 
+    private Region createSpacer() {
+        var region = new Region();
+        region.setPrefHeight(FxHelper.getUIScaled(4.0));
+        return region;
+    }
+
     private void createUI() {
         mSourceTextArea.setPromptText(mBundle.getString("prompt_source"));
-
-        var gridPane = new GridPane();
-        gridPane.addRow(0, mSourceTextArea, mPreviewLogPanel);
-        FxHelper.autoSizeColumn(gridPane, 2);
         mPreviewLogPanel.setWrapText(true);
-        mBorderPane = new BorderPane(gridPane);
-        gridPane.prefHeightProperty().bind(mBorderPane.heightProperty());
-        mSourceTextArea.prefHeightProperty().bind(gridPane.heightProperty());
+        mBorderPane = new BorderPane(mPreviewLogPanel);
+        mBorderPane.setLeft(mSourceTextArea);
+        mSourceTextArea.setPrefWidth(FxHelper.getUIScaled(200));
         mNotificationPane.setContent(mBorderPane);
 
         createUIParameter();
     }
 
-    private void createUIParameter() {
+    private void loadUIParameter() {
         mStatusComboBox.getItems().setAll("S0", "S1", "S2", "S3", "S4", "S5");
         mStatusComboBox.getSelectionModel().select("S1");
 
@@ -132,9 +185,13 @@ public class ParameterEditor extends BaseTopoEditor {
         mKategoriComboBox.getItems().setAll(kategorier);
         var utforare = new TreeSet<>(mManager.getAllItems().stream().map(p -> p.getOperator()).toList());
         mUtforareComboBox.getItems().setAll(utforare);
+    }
 
+    private void createUIParameter() {
         mDagSpinner.disableProperty().bind(mDagCheckBox.selectedProperty().not());
-        mDefDagSpinner.disableProperty().bind(mDefDagCheckBox.selectedProperty().not());
+        mDagDefSpinner.disableProperty().bind(mDagDefCheckBox.selectedProperty().not());
+        mDagIntSpinner.disableProperty().bind(mDagIntCheckBox.selectedProperty().not());
+        mDagIntParamTextField.disableProperty().bind(mDagIntParamCheckBox.selectedProperty().not());
         mStatusComboBox.disableProperty().bind(mStatusCheckBox.selectedProperty().not());
         mUtforareComboBox.disableProperty().bind(mUtforareCheckBox.selectedProperty().not());
         mGruppComboBox.disableProperty().bind(mGruppCheckBox.selectedProperty().not());
@@ -145,26 +202,32 @@ public class ParameterEditor extends BaseTopoEditor {
         mDatToDatePicker.disableProperty().bind(mDatToCheckBox.selectedProperty().not());
         mUtglesningTextField.disableProperty().bind(mUtglesningCheckBox.selectedProperty().not());
 
-        var settingsGridPane = new GridPane();
-        int col = 0;
-        settingsGridPane.addColumn(col++, mDagCheckBox, mDagSpinner);
-        settingsGridPane.addColumn(col++, mDefDagCheckBox, mDefDagSpinner);
-        settingsGridPane.addColumn(col++, mDefDagRestoreCheckBox);
-        settingsGridPane.addColumn(col++, mStatusCheckBox, mStatusComboBox);
-        settingsGridPane.addColumn(col++, mGruppCheckBox, mGruppComboBox);
-        settingsGridPane.addColumn(col++, mKategoriCheckBox, mKategoriComboBox);
-        settingsGridPane.addColumn(col++, mLarmHCheckBox, mLarmHComboBox);
-        settingsGridPane.addColumn(col++, mLarmPCheckBox, mLarmPComboBox);
-        settingsGridPane.addColumn(col++, mUtforareCheckBox, mUtforareComboBox);
-        settingsGridPane.addColumn(col++, mDatFromCheckBox, mDatFromDatePicker);
-        settingsGridPane.addColumn(col++, mDatToCheckBox, mDatToDatePicker);
-        settingsGridPane.addColumn(col++, mDatToLatestCheckBox);
-        settingsGridPane.addColumn(col++, mUtglesningCheckBox, mUtglesningTextField);
-        FxHelper.setEditable(true, mDagSpinner, mDefDagSpinner);
-        FxHelper.autoCommitSpinners(mDagSpinner, mDefDagSpinner);
+        var gp = new GridPane(FxHelper.getUIScaled(8.0), FxHelper.getUIScaled(2.0));
+        gp.setPadding(FxHelper.getUIScaledInsets(8.0));
+        int row = 0;
+        gp.addRow(row, mDagCheckBox, mDagDefCheckBox, mDagIntCheckBox);
+        gp.addRow(++row, mDagSpinner, mDagDefSpinner, mDagIntSpinner);
+        gp.addRow(++row, mDagIntParamCheckBox, mDagDefRestoreCheckBox, mDagIntRestoreCheckBox);
+        gp.addRow(++row, mDagIntParamTextField);
+        gp.addRow(++row, createSpacer());
+        gp.addRow(++row, mStatusCheckBox, mGruppCheckBox, mKategoriCheckBox);
+        gp.addRow(++row, mStatusComboBox, mGruppComboBox, mKategoriComboBox);
+        gp.addRow(++row, createSpacer());
+        gp.addRow(++row, mLarmHCheckBox, mLarmPCheckBox, mUtforareCheckBox);
+        gp.addRow(++row, mLarmHComboBox, mLarmPComboBox, mUtforareComboBox);
+        gp.addRow(++row, createSpacer());
+        gp.addRow(++row, mDatFromCheckBox, mDatToCheckBox, mDatToLatestCheckBox);
+        gp.addRow(++row, mDatFromDatePicker, mDatToDatePicker);
+        gp.addRow(++row, createSpacer());
+        gp.addRow(++row, mUtglesningCheckBox);
+        gp.addRow(++row, mUtglesningTextField);
+        FxHelper.autoSizeColumn(gp, 3);
+
+        FxHelper.setEditable(true, mDagSpinner, mDagDefSpinner, mDagIntSpinner);
+        FxHelper.autoCommitSpinners(mDagSpinner, mDagDefSpinner);
         FxHelper.setEditable(true, mGruppComboBox, mKategoriComboBox, mUtforareComboBox);
 
-        mBorderPane.setTop(settingsGridPane);
+        mBorderPane.setRight(gp);
 
     }
 
@@ -216,6 +279,26 @@ public class ParameterEditor extends BaseTopoEditor {
         FxHelper.slimToolBar(toolBar);
         FxHelper.undecorateButtons(toolBar.getItems().stream());
 
+        var managerProviders = Lookup.getDefault().lookupAll(BaseManagerProvider.class).stream()
+                .sorted(Comparator.comparing(BaseManagerProvider::getName))
+                .toList();
+        mManagerComboBox.getItems().setAll(managerProviders);
+        mManagerComboBox.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends BaseManagerProvider> observable, BaseManagerProvider oldValue, BaseManagerProvider newValue) -> {
+            mManager = newValue.getManager();
+            mSourceTextArea.clear();
+            mPreviewLogPanel.clear();
+            loadUIParameter();
+        });
+
+        var defultProvider = managerProviders.stream()
+                .filter(p -> p.getName().equalsIgnoreCase("Topografiska"))
+                .findAny().orElse(null);
+        if (defultProvider != null) {
+            mManagerComboBox.getSelectionModel().select(defultProvider);
+        } else {
+            mManagerComboBox.getSelectionModel().selectFirst();
+        }
+        toolBar.getItems().add(0, mManagerComboBox);
         mSplitNavSetting.getToolBarItems().setAll(toolBar.getItems());
     }
 
@@ -225,7 +308,9 @@ public class ParameterEditor extends BaseTopoEditor {
         var sb = new StringBuilder("projid");
         addConditionlly(sb, true, "nr");
         addConditionlly(sb, mDagCheckBox.isSelected(), "dag");
-        addConditionlly(sb, mDefDagCheckBox.isSelected(), "meta");
+        addConditionlly(sb, mDagDefCheckBox.isSelected(), "meta");
+        addConditionlly(sb, mDagIntCheckBox.isSelected(), "meta");
+        addConditionlly(sb, mDagIntParamCheckBox.isSelected(), "meta");
         addConditionlly(sb, mStatusCheckBox.isSelected(), "status");
         addConditionlly(sb, mGruppCheckBox.isSelected(), "grupp");
         addConditionlly(sb, mKategoriCheckBox.isSelected(), "kategori");
@@ -254,22 +339,27 @@ public class ParameterEditor extends BaseTopoEditor {
             baseName = StringUtils.removeEnd(baseName, "_P");
             var p = mManager.getAllItemsMap().get(baseName);
             var toDate = "ERROR";
-            if (p != null) {
-                var date = p.ext().getObservationRawLastDate();
-                if (date != null) {
-                    toDate = date.toString();
-                }
-            }
+//            if (p != null) {
+//                var date = p.ext().getObservationRawLastDate();
+//                if (date != null) {
+//                    toDate = date.toString();
+//                }
+//            }
 
             var projid = originToId.getOrDefault(p.getOrigin(), "ERROR");
             sb.append(projid);
             addConditionlly(sb, true, name);
             var dag = mDagSpinner.getValue();
-            if (mDefDagRestoreCheckBox.isSelected() && p.getDefaultFrequency() != null) {
-                dag = p.getDefaultFrequency();
+            if (mDagDefRestoreCheckBox.isSelected() && p.getFrequencyDefault() != null) {
+                dag = p.getFrequencyDefault();
+            }
+            if (mDagIntRestoreCheckBox.isSelected() && p.getFrequencyIntense() != null) {
+                dag = p.getFrequencyIntense();
             }
             addConditionlly(sb, mDagCheckBox.isSelected(), dag);
-            addConditionlly(sb, mDefDagCheckBox.isSelected(), "DefaultDag=%d".formatted(mDefDagSpinner.getValue()));
+            addConditionlly(sb, mDagDefCheckBox.isSelected(), "DefaultDag=%d".formatted(mDagDefSpinner.getValue()));
+            addConditionlly(sb, mDagIntCheckBox.isSelected(), "IntenseDag=%d".formatted(mDagIntSpinner.getValue()));
+            addConditionlly(sb, mDagIntParamCheckBox.isSelected(), "IntenseDagParam=%s".formatted(mDagIntParamTextField.getText()));
             addConditionlly(sb, mStatusCheckBox.isSelected(), mStatusComboBox.getValue());
             addConditionlly(sb, mGruppCheckBox.isSelected(), mGruppComboBox.getValue());
             addConditionlly(sb, mKategoriCheckBox.isSelected(), mKategoriComboBox.getValue());

@@ -32,9 +32,7 @@ import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
-import org.mapton.api.report.MEditor;
 import org.mapton.api.report.MSplitNavSettings;
-import org.openide.util.lookup.ServiceProvider;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.FxHelper;
@@ -45,7 +43,7 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
  *
  * @author Patrik Karlström
  */
-@ServiceProvider(service = MEditor.class)
+//@ServiceProvider(service = MEditor.class)
 public class ParameterEditor extends BaseTopoEditor {
 
     private BorderPane mBorderPane;
@@ -264,8 +262,8 @@ public class ParameterEditor extends BaseTopoEditor {
             sb.append(projid);
             addConditionlly(sb, true, name);
             var dag = mDagSpinner.getValue();
-            if (mDefDagRestoreCheckBox.isSelected() && p.getDefaultFrequency() != null) {
-                dag = p.getDefaultFrequency();
+            if (mDefDagRestoreCheckBox.isSelected() && p.getFrequencyDefault() != null) {
+                dag = p.getFrequencyDefault();
             }
             addConditionlly(sb, mDagCheckBox.isSelected(), dag);
             addConditionlly(sb, mDefDagCheckBox.isSelected(), "DefaultDag=%d".formatted(mDefDagSpinner.getValue()));
