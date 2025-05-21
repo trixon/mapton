@@ -56,6 +56,10 @@ public class GraphicRendererCircle extends GraphicRendererBase {
         if (sCheckModel.isChecked(GraphicItem.CIRCLE_VERTICAL_DIRECTION) && p.getDimension() != BDimension._2d) {
             plotVerticalDirection(p, position);
         }
+
+        if (sCheckModel.isChecked(GraphicItem.FREQ_BUFFER)) {
+            plotFreqBuffer(p, position);
+        }
     }
 
     private void plot1dCircle(BTopoControlPoint p, Position position) {
@@ -138,6 +142,23 @@ public class GraphicRendererCircle extends GraphicRendererBase {
 
         cylinder.setAttributes(attrs);
         addRenderable(cylinder, true, GraphicItem.CIRCLE_3D, sMapObjects);
+    }
+
+    private void plotFreqBuffer(BTopoControlPoint p, Position position) {
+        var radius = p.ext().getFrequenceIntenseBuffer();
+        if (radius != null) {
+            var circle = new SurfaceCircle(position, Math.max(0.1, radius));
+            var attrs = new BasicShapeAttributes();
+            attrs.setDrawInterior(false);
+            attrs.setDrawOutline(true);
+            attrs.setOutlineMaterial(Material.CYAN);
+            attrs.setOutlineWidth(1.0);
+            attrs.setOutlineOpacity(0.25);
+            circle.setAttributes(attrs);
+
+            addRenderable(circle, false, GraphicItem.FREQ_BUFFER, null);
+
+        }
     }
 
     private void plotVerticalDirection(BTopoControlPoint p, Position position) {
