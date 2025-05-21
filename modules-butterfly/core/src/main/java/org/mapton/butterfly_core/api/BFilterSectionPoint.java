@@ -62,6 +62,8 @@ public class BFilterSectionPoint extends MBaseFilterSection {
     private final SessionCheckComboBox<DefaultFreqFlags> mDefaultFrequencyStatSccb;
     private final SessionCheckComboBox<Integer> mFrequencySccb;
     private final SessionCheckComboBox<String> mGroupSccb;
+    private final SessionCheckComboBox<Integer> mIntenseFrequencySccb;
+    private final SessionCheckComboBox<IntenseFreqFlags> mIntenseFrequencyStatSccb;
     private final SessionCheckComboBox<String> mMeasNextSccb;
     private final SessionCheckComboBox<String> mMeasurementModeSccb;
     private final SessionCheckComboBox<String> mOperatorSccb;
@@ -80,6 +82,8 @@ public class BFilterSectionPoint extends MBaseFilterSection {
         mFrequencySccb = new SessionCheckComboBox<>();
         mDefaultFrequencySccb = new SessionCheckComboBox<>();
         mDefaultFrequencyStatSccb = new SessionCheckComboBox<>();
+        mIntenseFrequencySccb = new SessionCheckComboBox<>();
+        mIntenseFrequencyStatSccb = new SessionCheckComboBox<>();
         mCategorySccb = new SessionCheckComboBox<>();
         mMeasurementModeSccb = new SessionCheckComboBox<>();
         mPointFilterUI = new PointFilterUI();
@@ -102,6 +106,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
         map.put(Dict.STATUS.toString(), makeInfo(mStatusSccb.getCheckModel().getCheckedItems()));
         map.put(SDict.FREQUENCY.toString(), makeInfoInteger(mFrequencySccb.getCheckModel().getCheckedItems()));
         map.put("%s (%s)".formatted(SDict.FREQUENCY.toString(), Dict.DEFAULT.toLower()), makeInfoInteger(mDefaultFrequencySccb.getCheckModel().getCheckedItems()));
+        map.put("%s (%s)".formatted(SDict.FREQUENCY.toString(), "INTENSE"), makeInfoInteger(mIntenseFrequencySccb.getCheckModel().getCheckedItems()));
         map.put(mBundle.getString("nextMeasCheckComboBoxTitle"), makeInfo(mMeasNextSccb.getCheckModel().getCheckedItems()));
         map.put(Dict.GROUP.toString(), makeInfo(mGroupSccb.getCheckModel().getCheckedItems()));
         map.put(Dict.CATEGORY.toString(), makeInfo(mCategorySccb.getCheckModel().getCheckedItems()));
@@ -117,6 +122,8 @@ public class BFilterSectionPoint extends MBaseFilterSection {
         map.put(CATEGORY, mCategorySccb);
         map.put(FREQUENCY_DEFAULT, mDefaultFrequencySccb);
         map.put(FREQUENCY_DEFAULT_STAT, mDefaultFrequencyStatSccb);
+        map.put(FREQUENCY_INTENSE, mIntenseFrequencySccb);
+        map.put(FREQUENCY_INTENSE_STAT, mIntenseFrequencyStatSccb);
         map.put(FREQUENCY, mFrequencySccb);
         map.put(GROUP, mGroupSccb);
         map.put(MEAS_NEXT, mMeasNextSccb);
@@ -137,8 +144,10 @@ public class BFilterSectionPoint extends MBaseFilterSection {
                     && validateCheck(getCategorySccb().getCheckModel(), p.getCategory())
                     && validateAlarmName(p, getAlarmNameSccb().getCheckModel())
                     && validateCheck(getFrequencySccb().getCheckModel(), p.getFrequency())
-                    && validateCheck(getDefaultFrequencySccb().getCheckModel(), p.getDefaultFrequency())
-                    && validateDefaultFregFlags(p, getDefaultFrequencyStatSccb().getCheckModel())
+                    && validateCheck(mDefaultFrequencySccb.getCheckModel(), p.getFrequencyDefault())
+                    && validateDefaultFregFlags(p, mDefaultFrequencyStatSccb.getCheckModel())
+                    && validateCheck(mIntenseFrequencySccb.getCheckModel(), p.getFrequencyIntense())
+                    && validateIntenseFregFlags(p, mIntenseFrequencyStatSccb.getCheckModel())
                     && validateCheck(getOperatorSccb().getCheckModel(), p.getOperator())
                     && validateCheck(getOriginSccb().getCheckModel(), p.getOrigin())
                     && validateCheckMeasurementMode(getMeasurementModeSccb().getCheckModel(), p.getMeasurementMode())
@@ -155,14 +164,6 @@ public class BFilterSectionPoint extends MBaseFilterSection {
 
     public SessionCheckComboBox<String> getCategorySccb() {
         return mCategorySccb;
-    }
-
-    public SessionCheckComboBox<Integer> getDefaultFrequencySccb() {
-        return mDefaultFrequencySccb;
-    }
-
-    public SessionCheckComboBox<DefaultFreqFlags> getDefaultFrequencyStatSccb() {
-        return mDefaultFrequencyStatSccb;
     }
 
     public SessionCheckComboBox<Integer> getFrequencySccb() {
@@ -209,8 +210,10 @@ public class BFilterSectionPoint extends MBaseFilterSection {
                 getCategorySccb().getCheckModel(),
                 getAlarmNameSccb().getCheckModel(),
                 getFrequencySccb().getCheckModel(),
-                getDefaultFrequencySccb().getCheckModel(),
-                getDefaultFrequencyStatSccb().getCheckModel(),
+                mDefaultFrequencySccb.getCheckModel(),
+                mDefaultFrequencyStatSccb.getCheckModel(),
+                mIntenseFrequencySccb.getCheckModel(),
+                mIntenseFrequencyStatSccb.getCheckModel(),
                 getMeasurementModeSccb().getCheckModel(),
                 getOperatorSccb().getCheckModel(),
                 getOriginSccb().getCheckModel()
@@ -233,7 +236,8 @@ public class BFilterSectionPoint extends MBaseFilterSection {
         getOriginSccb().loadAndRestoreCheckItems(items.stream().map(o -> o.getOrigin()));
         getStatusSccb().loadAndRestoreCheckItems(items.stream().map(o -> o.getStatus()));
         getFrequencySccb().loadAndRestoreCheckItems(items.stream().filter(o -> o.getFrequency() != null).map(o -> o.getFrequency()));
-        getDefaultFrequencySccb().loadAndRestoreCheckItems(items.stream().filter(o -> o.getDefaultFrequency() != null).map(o -> o.getDefaultFrequency()));
+        mDefaultFrequencySccb.loadAndRestoreCheckItems(items.stream().filter(o -> o.getFrequencyDefault() != null).map(o -> o.getFrequencyDefault()));
+        mIntenseFrequencySccb.loadAndRestoreCheckItems(items.stream().filter(o -> o.getFrequencyIntense() != null).map(o -> o.getFrequencyIntense()));
         getMeasNextSccb().loadAndRestoreCheckItems();
         getMeasurementModeSccb().loadAndRestoreCheckItems(Stream.of("Automatisk", "Manuell", "Odefinierad"));
     }
@@ -298,25 +302,69 @@ public class BFilterSectionPoint extends MBaseFilterSection {
         var nset = true;
 
         if (checkModel.isChecked(DefaultFreqFlags.EQUALS)) {
-            eq = ObjectUtils.compare(p.getFrequency(), p.getDefaultFrequency()) == 0;
+            eq = ObjectUtils.compare(p.getFrequency(), p.getFrequencyDefault()) == 0;
         }
 
         if (checkModel.isChecked(DefaultFreqFlags.NOT_EQUALS)) {
-            neq = ObjectUtils.compare(p.getFrequency(), p.getDefaultFrequency()) != 0;
+            neq = ObjectUtils.compare(p.getFrequency(), p.getFrequencyDefault()) != 0;
         }
 
         if (checkModel.isChecked(DefaultFreqFlags.SET)) {
-            set = ObjectUtils.compare(-1, p.getDefaultFrequency()) != 0;
+            set = ObjectUtils.compare(-1, p.getFrequencyDefault()) != 0;
         }
 
         if (checkModel.isChecked(DefaultFreqFlags.NOT_SET)) {
-            nset = ObjectUtils.compare(-1, p.getDefaultFrequency()) == 0;
+            nset = ObjectUtils.compare(-1, p.getFrequencyDefault()) == 0;
         }
 
         return eq
                 && neq
                 && set
                 && nset;
+    }
+
+    public boolean validateIntenseFregFlags(BXyzPoint p, IndexedCheckModel checkModel) {
+        if (checkModel.isEmpty()) {
+            return true;
+        }
+
+        var eq = true;
+        var neq = true;
+        var set = true;
+        var nset = true;
+        var paramset = true;
+        var paramnset = true;
+
+        if (checkModel.isChecked(IntenseFreqFlags.EQUALS)) {
+            eq = ObjectUtils.compare(p.getFrequency(), p.getFrequencyIntense()) == 0;
+        }
+
+        if (checkModel.isChecked(IntenseFreqFlags.NOT_EQUALS)) {
+            neq = ObjectUtils.compare(p.getFrequency(), p.getFrequencyIntense()) != 0;
+        }
+
+        if (checkModel.isChecked(IntenseFreqFlags.SET)) {
+            set = ObjectUtils.compare(-1, p.getFrequencyIntense()) != 0;
+        }
+
+        if (checkModel.isChecked(IntenseFreqFlags.NOT_SET)) {
+            nset = ObjectUtils.compare(-1, p.getFrequencyIntense()) == 0;
+        }
+
+        if (checkModel.isChecked(IntenseFreqFlags.PARAM_SET)) {
+            paramset = StringUtils.isNotBlank(p.getFrequencyIntenseParam());
+        }
+
+        if (checkModel.isChecked(IntenseFreqFlags.PARAM_NOT_SET)) {
+            paramnset = StringUtils.isBlank(p.getFrequencyIntenseParam());
+        }
+
+        return eq
+                && neq
+                && set
+                && nset
+                && paramset
+                && paramnset;
     }
 
     public boolean validateNextMeas(BXyzPoint p, IndexedCheckModel<String> checkModel, long remainingDays) {
@@ -366,11 +414,33 @@ public class BFilterSectionPoint extends MBaseFilterSection {
 
     }
 
+    public enum IntenseFreqFlags {
+        EQUALS("= %s".formatted(SDict.FREQUENCY.toString())),
+        NOT_EQUALS("≠ %s".formatted(SDict.FREQUENCY.toString())),
+        SET("Har intensifierad frekvens"),
+        NOT_SET("Saknar intensifierad frekvens"),
+        PARAM_SET("Har intensifierad frekvensparameter"),
+        PARAM_NOT_SET("Saknar intensifierad frekvensparameter");
+        private final String mTitle;
+
+        private IntenseFreqFlags(String title) {
+            mTitle = title;
+        }
+
+        @Override
+        public String toString() {
+            return mTitle;
+        }
+
+    }
+
     public enum PointElement {
         ALARM,
         CATEGORY,
         FREQUENCY_DEFAULT,
         FREQUENCY_DEFAULT_STAT,
+        FREQUENCY_INTENSE,
+        FREQUENCY_INTENSE_STAT,
         FREQUENCY,
         GROUP,
         MEAS_NEXT,
@@ -403,7 +473,9 @@ public class BFilterSectionPoint extends MBaseFilterSection {
                     mMeasurementModeSccb,
                     mFrequencySccb,
                     mDefaultFrequencyStatSccb,
-                    mDefaultFrequencySccb
+                    mDefaultFrequencySccb,
+                    mIntenseFrequencyStatSccb,
+                    mIntenseFrequencySccb
             );
         }
 
@@ -431,6 +503,8 @@ public class BFilterSectionPoint extends MBaseFilterSection {
             sessionManager.register("filter.checkedFrequency", mFrequencySccb.checkedStringProperty());
             sessionManager.register("filter.checkedDefaultFrequency", mDefaultFrequencySccb.checkedStringProperty());
             sessionManager.register("filter.checkedDefaultFrequencyStat", mDefaultFrequencyStatSccb.checkedStringProperty());
+            sessionManager.register("filter.checkedIntenseFrequency", mIntenseFrequencySccb.checkedStringProperty());
+            sessionManager.register("filter.checkedIntenseFrequencyStat", mIntenseFrequencyStatSccb.checkedStringProperty());
             sessionManager.register("filter.checkedGroup", mGroupSccb.checkedStringProperty());
             sessionManager.register("filter.checkedOperators", mOperatorSccb.checkedStringProperty());
             sessionManager.register("filter.checkedOrigin", mOriginSccb.checkedStringProperty());
@@ -466,7 +540,9 @@ public class BFilterSectionPoint extends MBaseFilterSection {
                     mMeasurementModeSccb,
                     mFrequencySccb,
                     mDefaultFrequencySccb,
-                    mDefaultFrequencyStatSccb
+                    mDefaultFrequencyStatSccb,
+                    mIntenseFrequencySccb,
+                    mIntenseFrequencyStatSccb
             );
 
             mMeasNextSccb.setTitle(mBundle.getString("nextMeasCheckComboBoxTitle"));
@@ -477,9 +553,14 @@ public class BFilterSectionPoint extends MBaseFilterSection {
             mOperatorSccb.setTitle(SDict.OPERATOR.toString());
             mOriginSccb.setTitle(Dict.ORIGIN.toString());
             mFrequencySccb.setTitle(SDict.FREQUENCY.toString());
-            mDefaultFrequencySccb.setTitle("Standardfrekvens");
-            mDefaultFrequencyStatSccb.setTitle("Status, standardfrekvens");
+
+            mDefaultFrequencySccb.setTitle("Frekvens, standard");
+            mDefaultFrequencyStatSccb.setTitle("Status, standard");
             mDefaultFrequencyStatSccb.getItems().setAll(DefaultFreqFlags.values());
+
+            mIntenseFrequencySccb.setTitle("Frekvens, intensifierad");
+            mIntenseFrequencyStatSccb.setTitle("Status, intensifierad");
+            mIntenseFrequencyStatSccb.getItems().setAll(IntenseFreqFlags.values());
             mMeasurementModeSccb.setTitle("Mätläge");
             mMeasNextSccb.getItems().setAll(List.of(
                     "<0",
@@ -497,6 +578,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
                     mStatusSccb,
                     mFrequencySccb,
                     mDefaultFrequencySccb,
+                    mIntenseFrequencySccb,
                     mMeasurementModeSccb,
                     mGroupSccb,
                     mOriginSccb
@@ -509,6 +591,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
                     mAlarmNameSccb,
                     mMeasNextSccb,
                     mDefaultFrequencyStatSccb,
+                    mIntenseFrequencyStatSccb,
                     dummyLabel,
                     mCategorySccb,
                     mOperatorSccb
