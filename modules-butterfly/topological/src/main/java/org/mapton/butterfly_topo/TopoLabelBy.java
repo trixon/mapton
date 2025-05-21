@@ -126,11 +126,17 @@ public enum TopoLabelBy {
         return p.getFrequency() != null ? p.getFrequency().toString() : "--";
     }),
     MISC_FREQUENCY_DEFAULT(LabelByCategories.MISC, "%s (%s)".formatted(SDict.FREQUENCY.toString(), Dict.DEFAULT.toLower()), p -> {
-        return p.getDefaultFrequency().toString();
+        return p.getFrequencyDefault().toString();
+    }),
+    MISC_FREQUENCY_INTENSE(LabelByCategories.MISC, "%s (%s)".formatted(SDict.FREQUENCY.toString(), "INTENSE"), p -> {
+        return p.getFrequencyIntense().toString();
+    }),
+    MISC_FREQUENCY_INTENSE_PARAM(LabelByCategories.MISC, "%s (%s)".formatted(SDict.FREQUENCY.toString(), "INTENSE PARAM"), p -> {
+        return p.getFrequencyIntenseParam();
     }),
     MISC_FREQUENCY_AND_DEFAULT(LabelByCategories.MISC, "%s / %s".formatted(SDict.FREQUENCY.toString(), Dict.DEFAULT.toString()), p -> {
         var freq = p.getFrequency() != null ? p.getFrequency().toString() : "--";
-        var def = p.getDefaultFrequency() != null ? p.getDefaultFrequency().toString() : "--";
+        var def = p.getFrequencyDefault() != null ? p.getFrequencyDefault().toString() : "--";
 
         return "%s / %s".formatted(freq, def);
     }),
