@@ -15,6 +15,8 @@
  */
 package org.mapton.core.api.ui;
 
+import com.dlsc.gemsfx.Spacer;
+import java.io.File;
 import java.util.Arrays;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
@@ -24,6 +26,9 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import org.apache.commons.lang3.StringUtils;
+import org.controlsfx.control.action.Action;
+import org.controlsfx.control.action.ActionUtils;
+import org.controlsfx.control.action.ActionUtils.ActionTextBehavior;
 import org.mapton.api.MDict;
 import org.mapton.api.Mapton;
 import static org.mapton.api.Mapton.getIconSizeToolBarInt;
@@ -31,10 +36,12 @@ import org.mapton.api.ui.MFilterPopOver;
 import org.mapton.api.ui.MPopOver;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
+import org.openide.modules.Places;
 import org.openide.util.Exceptions;
 import org.openide.util.NbPreferences;
 import se.trixon.almond.nbp.fx.NbEditableList;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.control.editable_list.DefaultEditableListItem;
 import se.trixon.almond.util.fx.control.editable_list.EditableList;
@@ -112,6 +119,22 @@ public class MFilterPresetPopOver extends MPopOver {
         this.setOnHidden(windowEvent -> {
             mEditableList.getListView().getSelectionModel().select(null);
         });
+
+        var desktopOpenAction = new Action(Dict.OPEN_DIRECTORY.toString(), actionEvent -> {
+            var file = new File(Places.getUserDirectory(), "config/Preferences" + mPreferences.absolutePath());
+            try {
+                SystemHelper.desktopOpen(file);
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+        });
+        desktopOpenAction.setGraphic(MaterialIcon._Action.OPEN_WITH.getImageView(getIconSizeToolBarInt()));
+        var toolBarItems = mEditableList.getToolBar().getItems();
+        var doa = ActionUtils.createButton(desktopOpenAction, ActionTextBehavior.HIDE);
+        toolBarItems.add(new Spacer());
+        toolBarItems.add(doa);
+        FxHelper.undecorateButtons(toolBarItems.stream());
+        FxHelper.slimToolBar(mEditableList.getToolBar());
     }
 
     private void initListeners() {
