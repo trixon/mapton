@@ -85,8 +85,8 @@ public class GraphicRenderer extends BaseGraphicRenderer<GraphicRendererItem, BA
         }
 
         if (mCheckModel.isChecked(GraphicRendererItem.RADIUS_40)) {
-            var map = Map.of(40.0, Material.RED, 60.0, Material.ORANGE);
-            List.of(40.0, 60.0, 80.0).forEach(r -> {
+            var map = Map.of(40.0, Material.RED, 50.0, Material.ORANGE);
+            List.of(40.0, 50.0, 100.0).forEach(r -> {
                 var circle = new SurfaceCircle(position, r);
                 var attrs = new BasicShapeAttributes(mAttributeManager.getSurfaceAttributes());
                 attrs.setDrawInterior(false);

@@ -15,6 +15,8 @@
  */
 package org.mapton.butterfly_acoustic.blast.chart;
 
+import com.sun.jna.platform.KeyboardUtils;
+import java.awt.event.KeyEvent;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.TreeMap;
@@ -76,12 +78,19 @@ public class BlastMultiChartBuilder extends XyzChartBuilder<BAcousticBlast> {
                 public void chartMouseClicked(ChartMouseEvent event) {
                     var e = event.getEntity();
                     if (e != null) {
+                        var name = "";
                         if (event.getEntity() instanceof XYItemEntity entity) {
-                            var pointName = getDataset().getSeriesKey(entity.getSeriesIndex()).toString();
-                            mMultiChartComponent.panTo(pointName);
+                            name = getDataset().getSeriesKey(entity.getSeriesIndex()).toString();
                         } else if (e instanceof LegendItemEntity entity) {
-                            var pointName = entity.getSeriesKey().toString();
-                            mMultiChartComponent.panTo(pointName);
+                            name = entity.getSeriesKey().toString();
+                        }
+
+                        if (!name.isBlank()) {
+                            var isKeyPressed = KeyboardUtils.isPressed(KeyEvent.VK_SHIFT);
+                            mMultiChartComponent.panTo(name);
+                            if (isKeyPressed) {
+                                mMultiChartComponent.select(name);
+                            }
                         }
                     }
                 }
