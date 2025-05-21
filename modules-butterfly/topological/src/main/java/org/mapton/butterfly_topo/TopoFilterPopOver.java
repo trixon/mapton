@@ -43,6 +43,7 @@ import se.trixon.almond.util.fx.FxHelper;
  */
 public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
 
+    private final CheckBox m1dCloseToAutoCheckbox = new CheckBox("Dubbar Auto 10");
     private final CheckBox mDimens1Checkbox = new CheckBox("1");
     private final CheckBox mDimens2Checkbox = new CheckBox("2");
     private final CheckBox mDimens3Checkbox = new CheckBox("3");
@@ -86,6 +87,7 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
                 mDimens1Checkbox,
                 mDimens2Checkbox,
                 mDimens3Checkbox,
+                m1dCloseToAutoCheckbox,
                 mSameAlarmCheckbox,
                 mMeasIncludeWithoutCheckbox
         );
@@ -165,7 +167,13 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
         dimensButton.setOnAction(actionEvent -> {
             List.of(mDimens1Checkbox, mDimens2Checkbox, mDimens3Checkbox).forEach(cb -> cb.setSelected(false));
         });
-        var dimensBox = new HBox(FxHelper.getUIScaled(8), mDimens1Checkbox, mDimens2Checkbox, mDimens3Checkbox, new Spacer(), dimensButton);
+        var dimensBox = new HBox(FxHelper.getUIScaled(8),
+                mDimens1Checkbox,
+                mDimens2Checkbox,
+                mDimens3Checkbox,
+                dimensButton,
+                new Spacer(),
+                m1dCloseToAutoCheckbox);
         dimensBox.setAlignment(Pos.CENTER_LEFT);
 
         mFilterSectionPoint.getRoot().add(dimensBox, 0, 0, GridPane.REMAINING, 1);
@@ -184,6 +192,7 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
         mFilter.dimens1Property().bind(mDimens1Checkbox.selectedProperty());
         mFilter.dimens2Property().bind(mDimens2Checkbox.selectedProperty());
         mFilter.dimens3Property().bind(mDimens3Checkbox.selectedProperty());
+        mFilter.closeToAutoProperty().bind(m1dCloseToAutoCheckbox.selectedProperty());
 
         mFilter.sameAlarmProperty().bind(mSameAlarmCheckbox.selectedProperty());
 
@@ -206,6 +215,7 @@ public class TopoFilterPopOver extends BaseTabbedFilterPopOver {
         sessionManager.register("filter.checkedDimension1", mDimens1Checkbox.selectedProperty());
         sessionManager.register("filter.checkedDimension2", mDimens2Checkbox.selectedProperty());
         sessionManager.register("filter.checkedDimension3", mDimens3Checkbox.selectedProperty());
+        sessionManager.register("filter.checkedDimension1dCloseToAuto", m1dCloseToAutoCheckbox.selectedProperty());
 
         sessionManager.register("filter.measIncludeWithout", mMeasIncludeWithoutCheckbox.selectedProperty());
 

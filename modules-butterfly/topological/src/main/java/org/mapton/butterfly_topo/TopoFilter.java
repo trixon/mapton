@@ -36,6 +36,7 @@ import javax.swing.SortOrder;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.IndexedCheckModel;
+import org.mapton.api.MLatLon;
 import org.mapton.api.MTemporalManager;
 import org.mapton.api.ui.forms.FormHelper;
 import org.mapton.butterfly_core.api.BFilterSectionDate;
@@ -48,6 +49,7 @@ import org.mapton.butterfly_core.api.ButterflyFormFilter;
 import org.mapton.butterfly_core.api.FilterSectionMiscProvider;
 import org.mapton.butterfly_format.types.BComponent;
 import org.mapton.butterfly_format.types.BDimension;
+import org.mapton.butterfly_format.types.BMeasurementMode;
 import org.mapton.butterfly_format.types.topo.BTopoControlPoint;
 import org.mapton.butterfly_format.types.topo.BTopoControlPointObservation;
 import org.mapton.butterfly_topo.api.TopoManager;
@@ -76,6 +78,7 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
     SimpleBooleanProperty mMeasBearingSelectedProperty = new SimpleBooleanProperty();
     IndexedCheckModel<String> mMeasCodeCheckModel;
     IndexedCheckModel<String> mMeasOperatorsCheckModel;
+    private final SimpleBooleanProperty m1dCloseToAutoProperty = new SimpleBooleanProperty();
     private final SimpleBooleanProperty mDimens1Property = new SimpleBooleanProperty();
     private final SimpleBooleanProperty mDimens2Property = new SimpleBooleanProperty();
     private final SimpleBooleanProperty mDimens3Property = new SimpleBooleanProperty();
@@ -120,6 +123,10 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
         super(TopoManager.getInstance());
 
         initListeners();
+    }
+
+    public SimpleBooleanProperty closeToAutoProperty() {
+        return m1dCloseToAutoProperty;
     }
 
     public SimpleBooleanProperty dimens1Property() {
@@ -304,6 +311,7 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
                 .filter(p -> validateCoordinateArea(p.getLat(), p.getLon()))
                 .filter(p -> validateCoordinateRuler(p.getLat(), p.getLon()))
                 .filter(p -> mFilterSectionPoint.isSelected() && validateDimension(p.getDimension()))
+                .filter(p -> validate1dCloseToAuto(p))
                 .filter(p -> mFilterSectionPoint.filter(p, p.ext().getMeasurementUntilNext(ChronoUnit.DAYS)))
                 .filter(p -> mFilterSectionDate.filter(p, p.ext().getDateFirst()))
                 .filter(p -> mFilterSectionDisruptor.filter(p))
@@ -454,6 +462,7 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
                 mDimens1Property,
                 mDimens2Property,
                 mDimens3Property,
+                m1dCloseToAutoProperty,
                 mMeasAlarmLevelChangeProperty,
                 mMeasAlarmLevelChangeLimitProperty,
                 mMeasAlarmLevelChangeModeProperty,
@@ -498,6 +507,25 @@ public class TopoFilter extends ButterflyFormFilter<TopoManager> implements
                 .append(BooleanHelper.asCheckBox(d3, "3"));
 
         return sb.toString();
+    }
+
+    private boolean validate1dCloseToAuto(BTopoControlPoint point) {
+        if (point.getDimension() != BDimension._1d || !m1dCloseToAutoProperty.get()) {
+            return true;
+        } else {
+            var pointLatLon = new MLatLon(point.getLat(), point.getLon());
+
+            return mManager.getAllItems().stream()
+                    .filter(p -> p.getMeasurementMode() == BMeasurementMode.AUTOMATIC)
+                    .filter(p -> p.ext().getMeasurementAge(ChronoUnit.DAYS) < 7)
+                    .filter(p -> {
+                        var latLon = new MLatLon(p.getLat(), p.getLon());
+                        var distance = latLon.distance(pointLatLon);
+                        return distance <= 10.0;
+                    })
+                    .findFirst()
+                    .isPresent();
+        }
     }
 
     private boolean validateAlarm(BTopoControlPoint p) {
