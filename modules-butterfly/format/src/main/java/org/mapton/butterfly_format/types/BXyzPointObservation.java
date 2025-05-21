@@ -109,6 +109,10 @@ public class BXyzPointObservation extends BBaseControlPointObservation {
             }
         }
 
+        public Double getDelta1d() {
+            return mDeltaZ;
+        }
+
         public Double getDelta2d() {
             Double deltaX = getDeltaX();
             Double deltaY = getDeltaY();

@@ -58,6 +58,10 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
         return alarm1Id;
     }
 
+    public Object ext() {
+        return null;
+    }
+
     public String getAlarm2Id() {
         return alarm2Id;
     }
@@ -207,6 +211,7 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
 
         private transient final DeltaRolling deltaRolling = new DeltaRolling();
         private transient final DeltaZero deltaZero = new DeltaZero();
+        private transient Double mFrequenceIntenseBuffer;
 
         public void calculateObservations(List<T> observations) {
             if (observations.isEmpty()) {
@@ -539,6 +544,10 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
 
         }
 
+        public Double getFrequenceIntenseBuffer() {
+            return mFrequenceIntenseBuffer;
+        }
+
         /**
          * WARNING!!!
          */
@@ -668,6 +677,10 @@ public abstract class BXyzPoint extends BBaseControlPoint implements Clusterable
             } else {
                 return -1L;
             }
+        }
+
+        public void setFrequenceIntenseBuffer(Double frequenceIntenseBuffer) {
+            this.mFrequenceIntenseBuffer = frequenceIntenseBuffer;
         }
 
         private double rounder(double d) {

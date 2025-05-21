@@ -32,6 +32,8 @@ import org.mapton.butterfly_format.types.BCoordinate;
 import org.mapton.butterfly_format.types.BDimension;
 import org.mapton.butterfly_format.types.BMeasurementMode;
 import org.mapton.butterfly_format.types.BSystemSearchProvider;
+import org.mapton.butterfly_format.types.BXyzPoint;
+import org.mapton.butterfly_format.types.BXyzPointObservation;
 import org.mapton.butterfly_format.types.acoustic.BAcousticBlast;
 import org.mapton.butterfly_format.types.acoustic.BAcousticVibrationChannel;
 import org.mapton.butterfly_format.types.acoustic.BAcousticVibrationLimit;
@@ -87,10 +89,6 @@ public class Butterfly {
     private final Hydro mHydro = new Hydro();
     private final ArrayList<BHydroGroundwaterPoint> mHydroGroundwaterPoints = new ArrayList<>();
     private final ArrayList<BHydroGroundwaterPointObservation> mHydroGroundwaterPointsObservations = new ArrayList<>();
-    private final ArrayList<BAcousticVibrationChannel> mVibrationChannels = new ArrayList<>();
-    private final ArrayList<BAcousticVibrationLimit> mVibrationLimits = new ArrayList<>();
-    private final ArrayList<BAcousticVibrationObservation> mVibrationObservations = new ArrayList<>();
-    private final ArrayList<BAcousticVibrationPoint> mVibrationPoints = new ArrayList<>();
     private final ArrayList<BMonmon> mMonmons = new ArrayList<>();
     private final Noise mNoise = new Noise();
     private final Structural mStructural = new Structural();
@@ -107,6 +105,10 @@ public class Butterfly {
     private final ArrayList<BTopoControlPoint> mTopoControlPoints = new ArrayList<>();
     private final ArrayList<BTopoControlPointObservation> mTopoControlPointsObservations = new ArrayList<>();
     private final ArrayList<BTopoConvergenceGroup> mTopoConvergenceGroups = new ArrayList<>();
+    private final ArrayList<BAcousticVibrationChannel> mVibrationChannels = new ArrayList<>();
+    private final ArrayList<BAcousticVibrationLimit> mVibrationLimits = new ArrayList<>();
+    private final ArrayList<BAcousticVibrationObservation> mVibrationObservations = new ArrayList<>();
+    private final ArrayList<BAcousticVibrationPoint> mVibrationPoints = new ArrayList<>();
 
     public Butterfly() {
     }
@@ -299,8 +301,10 @@ public class Butterfly {
         for (var p : mTopoConvergenceGroups) {
             p.setButterfly(this);
         }
+
         for (var p : mTopoControlPoints) {
             p.setButterfly(this);
+            calcFreqIntenseBuffer(p);
         }
 
         for (var p : tmo().mGrundvatten) {
@@ -320,6 +324,16 @@ public class Butterfly {
         topo().postLoad();
         geotechnical().postLoad();
         populateMonmon();
+    }
+
+    private void calcFreqIntenseBuffer(BXyzPoint p) {
+        var param = p.getFrequencyIntenseParam();
+        if (param != null && p.ext() instanceof BXyzPoint.Ext<? extends BXyzPointObservation> ext) {
+            var numberString = param.replaceAll("[^0-9]", "");
+            if (StringUtils.isNotBlank(numberString)) {
+                ext.setFrequenceIntenseBuffer(Double.valueOf(numberString + "d"));
+            }
+        }
     }
 
     private void populateMonmon() {

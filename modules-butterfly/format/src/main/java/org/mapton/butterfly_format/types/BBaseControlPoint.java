@@ -30,8 +30,10 @@ public abstract class BBaseControlPoint extends BBasePoint {
     private LocalDate dateValidFrom;
     private LocalDate dateValidTo;
     private LocalDate dateZero;
-    private Integer defaultFrequency;
     private Integer frequency;
+    private Integer frequencyDefault;
+    private Integer frequencyIntense;
+    private String frequencyIntenseParam;
     private String operator;
     private String status;
     private String tag;
@@ -63,16 +65,28 @@ public abstract class BBaseControlPoint extends BBasePoint {
         return dateZero;
     }
 
-    public Integer getDefaultFrequency() {
-        if (defaultFrequency == null) {
-            defaultFrequency = -1;
-        }
-
-        return defaultFrequency;
-    }
-
     public Integer getFrequency() {
         return frequency;
+    }
+
+    public Integer getFrequencyDefault() {
+        if (frequencyDefault == null) {
+            frequencyDefault = -1;
+        }
+
+        return frequencyDefault;
+    }
+
+    public Integer getFrequencyIntense() {
+        if (frequencyIntense == null) {
+            frequencyIntense = -1;
+        }
+
+        return frequencyIntense;
+    }
+
+    public String getFrequencyIntenseParam() {
+        return frequencyIntenseParam;
     }
 
     public String getOperator() {
@@ -111,12 +125,20 @@ public abstract class BBaseControlPoint extends BBasePoint {
         this.dateZero = dateZero;
     }
 
-    public void setDefaultFrequency(Integer defaultFrequency) {
-        this.defaultFrequency = defaultFrequency;
-    }
-
     public void setFrequency(Integer frequency) {
         this.frequency = frequency;
+    }
+
+    public void setFrequencyDefault(Integer frequencyDefault) {
+        this.frequencyDefault = frequencyDefault;
+    }
+
+    public void setFrequencyIntense(Integer frequencyIntense) {
+        this.frequencyIntense = frequencyIntense;
+    }
+
+    public void setFrequencyIntenseParam(String frequencyIntenseParam) {
+        this.frequencyIntenseParam = frequencyIntenseParam;
     }
 
     public void setOperator(String operator) {
