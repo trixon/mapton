@@ -33,9 +33,6 @@ import se.trixon.almond.util.DateHelper;
  */
 public class TrendHelper {
 
-    private TrendHelper() {
-    }
-
     public static Trend createTrend(BXyzPoint p, LocalDateTime startDate, LocalDateTime endDate, Function<BXyzPointObservation, Double> function) throws IllegalArgumentException {
         var timeSeries = new TimeSeries("-");
 
@@ -43,7 +40,7 @@ public class TrendHelper {
             ext.getObservationsTimeFiltered().stream()
                     .filter(o -> DateHelper.isBetween(startDate.toLocalDate(), endDate.toLocalDate().plusDays(1), o.getDate().toLocalDate()))
                     .forEachOrdered(o -> {
-                        timeSeries.add(ChartHelper.convertToMinute(o.getDate()), function.apply(o));
+                        timeSeries.addOrUpdate(ChartHelper.convertToMinute(o.getDate()), function.apply(o));
                     });
         }
 
@@ -56,6 +53,9 @@ public class TrendHelper {
                 ChartHelper.convertToMinute(startDate),
                 ChartHelper.convertToMinute(endDate)
         );
+    }
+
+    private TrendHelper() {
     }
 
     public record Trend(LineFunction2D function, Minute startMinute, Minute endMinute) {

@@ -52,6 +52,8 @@ import org.mapton.api.ui.forms.ChartBuilder;
 import org.mapton.butterfly_format.types.BBaseControlPoint;
 import org.mapton.butterfly_format.types.BBaseControlPointObservation;
 import org.mapton.butterfly_format.types.BBasePoint;
+import org.mapton.butterfly_format.types.BXyzPoint;
+import org.mapton.butterfly_format.types.BXyzPointObservation;
 import org.mapton.ce_jfreechart.api.ChartHelper;
 import se.trixon.almond.util.DateHelper;
 import se.trixon.almond.util.Dict;
@@ -73,7 +75,11 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
     private TextTitle mRightSubTextTitle;
 
     public static void plotBlasts(XYPlot plot, BBasePoint p, LocalDate firstDate, LocalDate lastDate) {
-        var distanceLimit = 40.0;
+        var distanceLimitDefault = 40.0;
+        if (p instanceof BXyzPoint xyz && xyz.ext() instanceof BXyzPoint.Ext<? extends BXyzPointObservation> ext && ext.getFrequenceIntenseBuffer() != null) {
+            distanceLimitDefault = ext.getFrequenceIntenseBuffer();
+        }
+        var distanceLimit = distanceLimitDefault;
         var currentStroke = new BasicStroke(4f);
         var otherStroke = new BasicStroke(1.2f);
         var pointLatLon = new MLatLon(p.getLat(), p.getLon());
@@ -101,9 +107,12 @@ public abstract class XyzChartBuilder<T extends BBaseControlPoint> extends Chart
                             var distanceQuota = (distanceLimit - distance) / (distanceLimit - 10.0);
                             marker.setStroke(otherStroke);
                             distanceQuota = Math.min(1, distanceQuota);
-                            int alpha = (int) (distanceQuota * 255d);
+                            int alpha = (int) (Math.max(distanceQuota, 0.25) * 255d);
                             color = new Color(0, 0, 255, alpha);
-//                            System.out.println("%.1f : %d".formatted(distance, alpha));
+                            marker.setLabel("%.0f".formatted(distance));
+                            marker.setLabelFont(new Font("SansSerif", Font.PLAIN, SwingHelper.getUIScaled(10)));
+                            marker.setLabelAnchor(RectangleAnchor.TOP_LEFT);
+                            marker.setLabelTextAnchor(TextAnchor.TOP_RIGHT);
                         }
                         marker.setPaint(color);
                         plot.addDomainMarker(marker);
