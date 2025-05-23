@@ -47,6 +47,7 @@ import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SDict;
 import se.trixon.almond.util.fx.FxHelper;
+import se.trixon.almond.util.fx.control.RangeSliderPane;
 import se.trixon.almond.util.fx.session.SessionCheckComboBox;
 
 /**
@@ -70,6 +71,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
     private final SessionCheckComboBox<String> mOriginSccb;
     private final PointFilterUI mPointFilterUI;
     private final SessionCheckComboBox<String> mStatusSccb;
+    private final RangeSliderPane mAltitudeRangeSlider = new RangeSliderPane("Z", -100.0, 100.0, false);
 
     public BFilterSectionPoint() {
         super("Grunddata");
@@ -119,6 +121,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
     public void disable(PointElement... elements) {
         var map = new HashMap<PointElement, Node>();
         map.put(ALARM, mAlarmNameSccb);
+        map.put(ALTITUDE, mAltitudeRangeSlider);
         map.put(CATEGORY, mCategorySccb);
         map.put(FREQUENCY_DEFAULT, mDefaultFrequencySccb);
         map.put(FREQUENCY_DEFAULT_STAT, mDefaultFrequencyStatSccb);
@@ -139,84 +142,52 @@ public class BFilterSectionPoint extends MBaseFilterSection {
 
     public boolean filter(BXyzPoint p, Long remainingDays) {
         if (isSelected()) {
-            return validateCheck(getStatusSccb().getCheckModel(), p.getStatus())
-                    && validateCheck(getGroupSccb().getCheckModel(), p.getGroup())
-                    && validateCheck(getCategorySccb().getCheckModel(), p.getCategory())
-                    && validateAlarmName(p, getAlarmNameSccb().getCheckModel())
-                    && validateCheck(getFrequencySccb().getCheckModel(), p.getFrequency())
+            return validateCheck(mStatusSccb.getCheckModel(), p.getStatus())
+                    && validateCheck(mGroupSccb.getCheckModel(), p.getGroup())
+                    && validateCheck(mCategorySccb.getCheckModel(), p.getCategory())
+                    && validateAlarmName(p, mAlarmNameSccb.getCheckModel())
+                    && validateCheck(mFrequencySccb.getCheckModel(), p.getFrequency())
                     && validateCheck(mDefaultFrequencySccb.getCheckModel(), p.getFrequencyDefault())
                     && validateDefaultFregFlags(p, mDefaultFrequencyStatSccb.getCheckModel())
                     && validateCheck(mIntenseFrequencySccb.getCheckModel(), p.getFrequencyIntense())
                     && validateIntenseFregFlags(p, mIntenseFrequencyStatSccb.getCheckModel())
-                    && validateCheck(getOperatorSccb().getCheckModel(), p.getOperator())
-                    && validateCheck(getOriginSccb().getCheckModel(), p.getOrigin())
-                    && validateCheckMeasurementMode(getMeasurementModeSccb().getCheckModel(), p.getMeasurementMode())
-                    && validateNextMeas(p, getMeasNextSccb().getCheckModel(), remainingDays)
+                    && validateCheck(mOperatorSccb.getCheckModel(), p.getOperator())
+                    && validateCheck(mOriginSccb.getCheckModel(), p.getOrigin())
+                    && validateCheckMeasurementMode(mMeasurementModeSccb.getCheckModel(), p.getMeasurementMode())
+                    && validateNextMeas(p, mMeasNextSccb.getCheckModel(), remainingDays)
+                    && validateAltitude(p)
                     && true;
         } else {
             return true;
         }
     }
 
-    public SessionCheckComboBox<String> getAlarmNameSccb() {
-        return mAlarmNameSccb;
-    }
-
-    public SessionCheckComboBox<String> getCategorySccb() {
-        return mCategorySccb;
-    }
-
-    public SessionCheckComboBox<Integer> getFrequencySccb() {
-        return mFrequencySccb;
-    }
-
-    public SessionCheckComboBox<String> getGroupSccb() {
-        return mGroupSccb;
-    }
-
-    public SessionCheckComboBox<String> getMeasNextSccb() {
-        return mMeasNextSccb;
-    }
-
-    public SessionCheckComboBox<String> getMeasurementModeSccb() {
-        return mMeasurementModeSccb;
-    }
-
-    public SessionCheckComboBox<String> getOperatorSccb() {
-        return mOperatorSccb;
-    }
-
-    public SessionCheckComboBox<String> getOriginSccb() {
-        return mOriginSccb;
-    }
-
     public GridPane getRoot() {
         return mPointFilterUI.getBaseBox();
     }
 
-    public SessionCheckComboBox<String> getStatusSccb() {
-        return mStatusSccb;
-    }
-
     public void initListeners(ChangeListener changeListenerObject, ListChangeListener<Object> listChangeListener) {
         List.of(
-                selectedProperty()
+                selectedProperty(),
+                mAltitudeRangeSlider.selectedProperty(),
+                mAltitudeRangeSlider.minProperty(),
+                mAltitudeRangeSlider.maxProperty()
         ).forEach(propertyBase -> propertyBase.addListener(changeListenerObject));
 
         List.of(
-                getMeasNextSccb().getCheckModel(),
-                getStatusSccb().getCheckModel(),
-                getGroupSccb().getCheckModel(),
-                getCategorySccb().getCheckModel(),
-                getAlarmNameSccb().getCheckModel(),
-                getFrequencySccb().getCheckModel(),
+                mMeasNextSccb.getCheckModel(),
+                mStatusSccb.getCheckModel(),
+                mGroupSccb.getCheckModel(),
+                mCategorySccb.getCheckModel(),
+                mAlarmNameSccb.getCheckModel(),
+                mFrequencySccb.getCheckModel(),
                 mDefaultFrequencySccb.getCheckModel(),
                 mDefaultFrequencyStatSccb.getCheckModel(),
                 mIntenseFrequencySccb.getCheckModel(),
                 mIntenseFrequencyStatSccb.getCheckModel(),
-                getMeasurementModeSccb().getCheckModel(),
-                getOperatorSccb().getCheckModel(),
-                getOriginSccb().getCheckModel()
+                mMeasurementModeSccb.getCheckModel(),
+                mOperatorSccb.getCheckModel(),
+                mOriginSccb.getCheckModel()
         ).forEach(cm -> cm.getCheckedItems().addListener(listChangeListener));
     }
 
@@ -229,17 +200,21 @@ public class BFilterSectionPoint extends MBaseFilterSection {
     public void load(ArrayList<? extends BXyzPoint> items) {
         var allAlarmNames = items.stream().map(o -> o.getAlarm1Id()).collect(Collectors.toCollection(HashSet::new));
         allAlarmNames.addAll(items.stream().map(o -> o.getAlarm2Id()).collect(Collectors.toSet()));
-        getAlarmNameSccb().loadAndRestoreCheckItems(allAlarmNames.stream());
-        getGroupSccb().loadAndRestoreCheckItems(items.stream().map(o -> o.getGroup()));
-        getCategorySccb().loadAndRestoreCheckItems(items.stream().map(o -> o.getCategory()));
-        getOperatorSccb().loadAndRestoreCheckItems(items.stream().map(o -> o.getOperator()));
-        getOriginSccb().loadAndRestoreCheckItems(items.stream().map(o -> o.getOrigin()));
-        getStatusSccb().loadAndRestoreCheckItems(items.stream().map(o -> o.getStatus()));
-        getFrequencySccb().loadAndRestoreCheckItems(items.stream().filter(o -> o.getFrequency() != null).map(o -> o.getFrequency()));
+        mAlarmNameSccb.loadAndRestoreCheckItems(allAlarmNames.stream());
+        mGroupSccb.loadAndRestoreCheckItems(items.stream().map(o -> o.getGroup()));
+        mCategorySccb.loadAndRestoreCheckItems(items.stream().map(o -> o.getCategory()));
+        mOperatorSccb.loadAndRestoreCheckItems(items.stream().map(o -> o.getOperator()));
+        mOriginSccb.loadAndRestoreCheckItems(items.stream().map(o -> o.getOrigin()));
+        mStatusSccb.loadAndRestoreCheckItems(items.stream().map(o -> o.getStatus()));
+        mFrequencySccb.loadAndRestoreCheckItems(items.stream().filter(o -> o.getFrequency() != null).map(o -> o.getFrequency()));
         mDefaultFrequencySccb.loadAndRestoreCheckItems(items.stream().filter(o -> o.getFrequencyDefault() != null).map(o -> o.getFrequencyDefault()));
         mIntenseFrequencySccb.loadAndRestoreCheckItems(items.stream().filter(o -> o.getFrequencyIntense() != null).map(o -> o.getFrequencyIntense()));
-        getMeasNextSccb().loadAndRestoreCheckItems();
-        getMeasurementModeSccb().loadAndRestoreCheckItems(Stream.of("Automatisk", "Manuell", "Odefinierad"));
+        mMeasNextSccb.loadAndRestoreCheckItems();
+        mMeasurementModeSccb.loadAndRestoreCheckItems(Stream.of("Automatisk", "Manuell", "Odefinierad"));
+
+        var minZ = items.stream().filter(p -> p.getZeroZ() != null).mapToDouble(p -> p.getZeroZ()).min().orElse(-100d);
+        var maxZ = items.stream().filter(p -> p.getZeroZ() != null).mapToDouble(p -> p.getZeroZ()).max().orElse(100d);
+        mAltitudeRangeSlider.setMinMaxValue(minZ - 1, maxZ + 1);
     }
 
     @Override
@@ -321,6 +296,19 @@ public class BFilterSectionPoint extends MBaseFilterSection {
                 && neq
                 && set
                 && nset;
+    }
+
+    private boolean validateAltitude(BXyzPoint p) {
+        try {
+            var z = p.getZeroZ();
+            if (mAltitudeRangeSlider.selectedProperty().get()) {
+                return inRange(z, mAltitudeRangeSlider.minProperty(), mAltitudeRangeSlider.maxProperty());
+            } else {
+                return true;
+            }
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     public boolean validateIntenseFregFlags(BXyzPoint p, IndexedCheckModel checkModel) {
@@ -436,6 +424,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
 
     public enum PointElement {
         ALARM,
+        ALTITUDE,
         CATEGORY,
         FREQUENCY_DEFAULT,
         FREQUENCY_DEFAULT_STAT,
@@ -462,6 +451,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
         }
 
         public void clear() {
+            mAltitudeRangeSlider.clear();
             SessionCheckComboBox.clearChecks(
                     mStatusSccb,
                     mGroupSccb,
@@ -511,6 +501,7 @@ public class BFilterSectionPoint extends MBaseFilterSection {
             sessionManager.register("filter.checkedStatus", mStatusSccb.checkedStringProperty());
             sessionManager.register("filter.measCheckedNextMeas", mMeasNextSccb.checkedStringProperty());
             sessionManager.register("filter.measCheckedMeasMode", mMeasurementModeSccb.checkedStringProperty());
+            mAltitudeRangeSlider.initSession("altitude", sessionManager);
         }
 
         public void onShownFirstTime() {
@@ -581,7 +572,8 @@ public class BFilterSectionPoint extends MBaseFilterSection {
                     mIntenseFrequencySccb,
                     mMeasurementModeSccb,
                     mGroupSccb,
-                    mOriginSccb
+                    mOriginSccb,
+                    mAltitudeRangeSlider
             );
 
             var dummyLabel = new Label();

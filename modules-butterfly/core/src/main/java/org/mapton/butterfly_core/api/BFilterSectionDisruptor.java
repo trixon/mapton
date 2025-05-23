@@ -21,14 +21,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ListChangeListener;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import org.apache.commons.configuration2.PropertiesConfiguration;
-import org.controlsfx.control.IndexedCheckModel;
 import org.mapton.api.MDisruptorManager;
 import org.mapton.api.ui.forms.MBaseFilterSection;
 import org.mapton.butterfly_format.types.BXyzPoint;
@@ -44,11 +41,16 @@ import se.trixon.almond.util.fx.session.SessionDoubleSpinner;
  */
 public class BFilterSectionDisruptor extends MBaseFilterSection {
 
-    private final DisruptorFilterUI mDisruptorFilterUI = new DisruptorFilterUI();
+    private final double mDefaultDisruptorDistance = 75.0;
+    private final DisruptorFilterUI mDisruptorFilterUI;
+    private final SessionComboBox<String> mDisruptorGtLtScb = new SessionComboBox<>();
     private final MDisruptorManager mDisruptorManager = MDisruptorManager.getInstance();
+    private final SessionCheckComboBox<String> mDisruptorSccb = new SessionCheckComboBox<>();
+    private final SessionDoubleSpinner mDisruptorSds = new SessionDoubleSpinner(0, 500.0, mDefaultDisruptorDistance, 5.0);
 
     public BFilterSectionDisruptor() {
         super("Störningskällor");
+        mDisruptorFilterUI = new DisruptorFilterUI();
         setContent(mDisruptorFilterUI.mRoot);
     }
 
@@ -77,13 +79,13 @@ public class BFilterSectionDisruptor extends MBaseFilterSection {
     public void initListeners(ChangeListener changeListener, ListChangeListener<Object> listChangeListener) {
         List.of(
                 selectedProperty(),
-                mDisruptorFilterUI.distanceProperty(),
+                mDisruptorSds.sessionValueProperty(),
                 mDisruptorManager.lastChangedProperty(),
-                mDisruptorFilterUI.mDisruptorGtLtScb.getSelectionModel().selectedItemProperty()
+                mDisruptorGtLtScb.getSelectionModel().selectedItemProperty()
         ).forEach(propertyBase -> propertyBase.addListener(changeListener));
 
         List.of(
-                getDisruptorCheckModel()
+                mDisruptorSccb.getCheckModel()
         ).forEach(cm -> cm.getCheckedItems().addListener(listChangeListener));
     }
 
@@ -91,9 +93,9 @@ public class BFilterSectionDisruptor extends MBaseFilterSection {
     public void initSession(SessionManager sessionManager) {
         setSessionManager(sessionManager);
         sessionManager.register("filter.section.disruptor", selectedProperty());
-        sessionManager.register("filter.checkedDisruptors", mDisruptorFilterUI.checkedStringProperty());
-        sessionManager.register("filter.disruptorDistance", mDisruptorFilterUI.distanceProperty());
-        sessionManager.register("filter.disruptor.gtlt", mDisruptorFilterUI.mDisruptorGtLtScb.selectedIndexProperty());
+        sessionManager.register("filter.checkedDisruptors", mDisruptorSccb.checkedStringProperty());
+        sessionManager.register("filter.disruptorDistance", mDisruptorSds.sessionValueProperty());
+        sessionManager.register("filter.disruptor.gtlt", mDisruptorGtLtScb.selectedIndexProperty());
     }
 
     public void load() {
@@ -108,19 +110,15 @@ public class BFilterSectionDisruptor extends MBaseFilterSection {
     public void reset(PropertiesConfiguration filterConfig) {
     }
 
-    private IndexedCheckModel<String> getDisruptorCheckModel() {
-        return mDisruptorFilterUI.mDisruptorSccb.getCheckModel();
-    }
-
     private boolean validateDisruptor(Double x, Double y) {
-        if (getDisruptorCheckModel().isEmpty()) {
+        if (mDisruptorSccb.getCheckModel().isEmpty()) {
             return true;
         } else {
-            var min = mDisruptorFilterUI.mDisruptorGtLtScb.getSelectionModel().getSelectedIndex() == 0;
+            var min = mDisruptorGtLtScb.getSelectionModel().getSelectedIndex() == 0;
             return mDisruptorManager.isValidDistance(
-                    getDisruptorCheckModel(),
+                    mDisruptorSccb.getCheckModel(),
                     min,
-                    mDisruptorFilterUI.distanceProperty().getValue(),
+                    mDisruptorSds.sessionValueProperty().getValue(),
                     x, y);
         }
     }
@@ -128,27 +126,11 @@ public class BFilterSectionDisruptor extends MBaseFilterSection {
     public class DisruptorFilterUI {
 
         private final ResourceBundle mBundle = NbBundle.getBundle(DisruptorFilterUI.class);
-        private final double mDefaultDisruptorDistance = 75.0;
-        private final SessionComboBox<String> mDisruptorGtLtScb = new SessionComboBox<>();
         private final MDisruptorManager mDisruptorManager = MDisruptorManager.getInstance();
-        private final SessionCheckComboBox<String> mDisruptorSccb = new SessionCheckComboBox<>();
-        private final SessionDoubleSpinner mDisruptorSds = new SessionDoubleSpinner(0, 500.0, mDefaultDisruptorDistance, 5.0);
         private HBox mRoot;
 
         public DisruptorFilterUI() {
             createUI();
-        }
-
-        public SimpleStringProperty checkedStringProperty() {
-            return mDisruptorSccb.checkedStringProperty();
-        }
-
-        public SimpleDoubleProperty distanceProperty() {
-            return mDisruptorSds.sessionValueProperty();
-        }
-
-        public IndexedCheckModel<String> getCheckModel() {
-            return mDisruptorSccb.getCheckModel();
         }
 
         public void load() {
