@@ -33,6 +33,52 @@ import se.trixon.almond.util.DateHelper;
  */
 public class TrendHelper {
 
+    public static Trend createTrend(BXyzPoint p, LocalDateTime startDate, LocalDateTime endDate, Function<BXyzPointObservation, Double> function, int percentile) throws IllegalArgumentException {
+        if (percentile < -100 || percentile > 100) {
+            throw new IllegalArgumentException("percentile must be between -100 and +100.");
+        }
+
+        if (p.ext() instanceof BXyzPoint.Ext<? extends BXyzPointObservation> ext) {
+            var timeFilteredValues = ext.getObservationsTimeFiltered().stream()
+                    .filter(o -> DateHelper.isBetween(startDate.toLocalDate(), endDate.toLocalDate().plusDays(1), o.getDate().toLocalDate()))
+                    .toList();
+
+            var values = timeFilteredValues.stream()
+                    .mapToDouble(o -> function.apply(o))
+                    .sorted()
+                    .boxed()
+                    .toList();
+
+            int index = (int) Math.ceil(Math.abs(percentile) / 100.0 * values.size()) - 1;
+            var limit = values.get(index);
+            var timeSeries = new TimeSeries("-");
+
+            timeFilteredValues.stream()
+                    .filter(o -> {
+                        if (percentile < 0) {
+                            return function.apply(o) < limit;
+                        } else {
+                            return function.apply(o) > limit;
+                        }
+                    })
+                    .forEachOrdered(o -> {
+                        timeSeries.addOrUpdate(ChartHelper.convertToMinute(o.getDate()), function.apply(o));
+                    });
+
+            var dataset = new TimeSeriesCollection();
+            dataset.addSeries(timeSeries);
+            var coefficients = Regression.getOLSRegression(dataset, 0);
+
+            return new Trend(
+                    new LineFunction2D(coefficients[0], coefficients[1]),
+                    ChartHelper.convertToMinute(startDate),
+                    ChartHelper.convertToMinute(endDate)
+            );
+        }
+
+        return null;
+    }
+
     public static Trend createTrend(BXyzPoint p, LocalDateTime startDate, LocalDateTime endDate, Function<BXyzPointObservation, Double> function) throws IllegalArgumentException {
         var timeSeries = new TimeSeries("-");
 
