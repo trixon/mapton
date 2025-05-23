@@ -191,21 +191,7 @@ public class ButterflyManager {
                 }
 
                 var butterfly = mButterflyLoader.getButterfly();
-
-                calculateLatLons(butterfly.hydro().getGroundwaterPoints());
-                calculateLatLons(butterfly.structural().getTiltPoints());
-                calculateLatLons(butterfly.topo().getControlPoints());
-                calculateLatLons(butterfly.topo().getConvergenceGroups());
-
-                calculateLatLonsTmo(butterfly.tmo().getGrundvatten());
-                calculateLatLonsTmo(butterfly.tmo().getInfiltration());
-                calculateLatLonsTmo(butterfly.tmo().getRorelse());
-                calculateLatLonsTmo(butterfly.tmo().getTunnelvatten());
-                calculateLatLonsTmo(butterfly.tmo().getVaderstation());
-                calculateLatLonsTmo(butterfly.tmo().getVattenkemi());
-
-                calculateLatLons(butterfly.noise().getVibrationPoints());
-                calculateLatLons(butterfly.geotechnical().getExtensometers());
+                calculateCoordinates(butterfly);
 
                 var areas = new ArrayList<MArea>();
                 var prefix = "Haga/";
@@ -249,6 +235,27 @@ public class ButterflyManager {
 
     public void setButterfly(Butterfly butterfly) {
         mButterflyProperty.set(butterfly);
+    }
+
+    private void calculateCoordinates(Butterfly butterfly) {
+        calculateLatLons(butterfly);
+    }
+
+    private void calculateLatLons(Butterfly butterfly) {
+        calculateLatLons(butterfly.hydro().getGroundwaterPoints());
+        calculateLatLons(butterfly.structural().getTiltPoints());
+        calculateLatLons(butterfly.topo().getControlPoints());
+        calculateLatLons(butterfly.topo().getConvergenceGroups());
+
+        calculateLatLonsTmo(butterfly.tmo().getGrundvatten());
+        calculateLatLonsTmo(butterfly.tmo().getInfiltration());
+        calculateLatLonsTmo(butterfly.tmo().getRorelse());
+        calculateLatLonsTmo(butterfly.tmo().getTunnelvatten());
+        calculateLatLonsTmo(butterfly.tmo().getVaderstation());
+        calculateLatLonsTmo(butterfly.tmo().getVattenkemi());
+
+        calculateLatLons(butterfly.noise().getVibrationPoints());
+        calculateLatLons(butterfly.geotechnical().getExtensometers());
     }
 
     private void calculateLatLonsTmo(ArrayList<? extends BBasObjekt> baseControlPoints) {
